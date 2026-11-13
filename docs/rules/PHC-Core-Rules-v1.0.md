@@ -4181,6 +4181,55 @@ and `"all"` / `"zero"` for a resource; **react()**, the one door of every reacti
 a unit's `eyes`); and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the
 resource rows (Pressure, MP). How each is written: `docs/design/handoffs/classes-3.0-step-1a.md`. Items 1750 to 1756.
 
+## Rules revision 1.30: reactions made real, and the Skirmisher (Classes 3.0, step 3)
+
+Built on 13 Nov 2026 from `docs/design/reactions-spec.md` (binding) and `docs/design/rev4-weapon-neutral-audit.md` 4.1.
+It overrides every body line on reactions and on the Marksman's moves that says otherwise (rules 1.3 "Reactions", the
+class table of rules 1.10, items 89 and 1750 to 1756 where they differ). The class id stays `marksman`; its display name
+is the rename step's. Every number here is PROVISIONAL (items 1800 to 1815).
+
+### 1. The reaction rule, complete
+
+1. **Everyone has one reaction a round** (`rules.json combat.reactions.per_round`, 1); a new round gives it back.
+   Everything a unit does outside its own turn spends one.
+2. **A reaction never triggers a reaction**, and **one event, one reaction a unit** (rules 1.28, unchanged).
+3. **More only from:** Reflex (the Skirmisher: two), an item that says so (Before the Blink: one more), a Call that
+   gives one (Cue: exactly one, before the giver's next turn), or a Many Hands donor's (spent on the donor).
+4. **A reaction that attacks is a plain attack** (the weapon's plain shot or blow), unless its own text gives it
+   something (Riposte's Edge or Point +2, the Breaker's Counter; Overwatch's +2 when Precise; Killzone's +2).
+5. **Held fire:** a held Burst fires its rounds on one reaction. **Killzone** holds two attacks and **spends both of
+   the Skirmisher's reactions** on the first one it fires; with one reaction left, only one fires.
+6. **Suppressed** forbids attacking and moving reactions, never protective ones (rules 1.28); **forced movement**
+   provokes nothing (`rules.json forced_movement`).
+7. **Keep one for a held shot** (on by default): a unit with two or more reactions that holds a shot (Overwatch, a
+   Watch, Killzone, a held Outburst's watch) never spends its last reaction on anything that fires by itself (an
+   opportunity attack, an Answer, Duck and Roll, an item's reaction): the held shot keeps it.
+8. **The dial** `rules.json combat.reactions.second_hit` (0): a to-hit step on the attack of a unit's second reaction
+   in a round, defined and unused (moved only if the measured Skirmisher passes its line by more than 12%).
+
+### 2. The Skirmisher (`marksman`; Agility): the class
+
+**At class gain, Reflex:** two reactions a round (stat `reactions` +1). **Weapon-neutral** (Leon, 13 Nov 2026): every
+move works with whatever the Skirmisher attacks with; only Heat stays the gun's.
+
+| Rank | Move | What it does |
+| --- | --- | --- |
+| I | **Fire Discipline** | Aimed attacks add no Heat and have +1 to hit. Once a turn, your first attack costs 1 AP less (at least 1): a Burst 2, a shot or a light strike 1. |
+| I | **Speed Loader** | Your first main-hand reload, draw, swap or pick-up each turn costs 1 AP less (at least 1). |
+| II | **Duck and Roll** | Unchanged (reaction, kind move). |
+| II | **Special Ammo** | One load each of armour-piercing, hollow-point and incendiary a rest, on any weapon: a magazine for a gun, a quiver of 12 for a bow (filled before the fight), and for a blade, a fist or a thrown blade a load that lasts 12 attacks or the fight. Loading is your reload's AP; 1 AP for a weapon that never reloads. Never a consumable (a grenade is its own payload). The rounds' effects are `rules.json ammo_types`. |
+| III | **Killzone** | Hold two attacks with any weapon, for twice the attack's AP: one at each of the first two different enemies that move into your line (a gun, a bow) or your reach (a melee weapon), +2 to hit each. It spends both your reactions; with one left, only one fires. |
+| III | **Run and Gun** (new) | Once a turn, after you attack, your next move of up to 2 tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds 1 more Pressure. |
+
+**Called Shot leaves the class** (to the Operative, Classes 3.0 step 4); its key `gunslinger.called_shot` stays.
+
+### 3. Riposte: the two become one
+
+The Breaker's class Riposte and the technique Riposte are one Answer and one reaction. The class move gives the
+Breaker the Answer with any melee weapon and two riders on it: it costs 1 Momentum, and it adds the Breaker's Counter
+bonus to hit. With no Momentum the Breaker does not Riposte (even with a weapon that lends the technique). The
+technique's own policy (the character's Answers) is the only on/off.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -7055,3 +7104,15 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1754. **What burns reactions without being one (rules 1.28):** Dread (all), Rewrite (one) and an Order (the ally's one) go through `loseReactions`; since Suppressed no longer zeroes a unit's reactions, Dread and Rewrite now take a Suppressed unit's reaction too (a consequence of item 1751).
 1755. **A reaction made by an item in data (rules 1.28):** an item op whose `limit` is `{reaction: 1 or 2, kind}` is a reaction (it spends that many and resolves inside `react()`); the trigger `reaction` fires as one is made (its kind for the predicate `how`). Nothing in the data uses either yet.
 1756. **The general primitives of Classes 3.0, step 1a (rules 1.28 section 2):** `acted`, number blocks and sources, `react()`, conditions as items, `targets`, the sight words and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the resource rows `pressure` and MP (`max`, `needs`). No number and no rule moved with them (the golden tables and the replays say so; the replays moved only for items 1750, 1751 and 1753's new saved field).
+1800. **Reactions a round: 1 for everyone (rules 1.30; `rules.json combat.reactions.per_round`):** read from data by `tactics.ts maxReactions`; items add through stat `reactions`. PROVISIONAL.
+1801. **Reflex (rules 1.30; Leon chose the full form, 13 Nov 2026):** the Skirmisher has one more reaction a round (two), any kind, from class gain (`classes.json` the class's `gain` list: `marksman.reflex`, `stat_mod reactions +1`). Before the Blink stacks (three). PROVISIONAL.
+1802. **Keep one for a held shot (rules 1.30, `reactions-spec.md` rule 10; `rules.json combat.reactions.keep_for_held`, 1):** a unit with more reactions than this that holds a shot keeps the last one for it: a reaction that fires by itself is refused when it would leave fewer. On by default; a unit's `keepForHeld: false` turns it off (the switch on the screen is Classes 3.0 step 10). PROVISIONAL.
+1803. **The second reaction's to-hit dial (rules 1.30; `rules.json combat.reactions.second_hit`, 0):** defined, unused. PROVISIONAL.
+1804. **Fire Discipline (rules 1.30, weapon-neutral):** Aimed attacks add no Heat (the gun's door) and have +1 to hit (any weapon: new for guns); once a turn the first attack of your own turn costs 1 AP less, at least 1 (any attack: a Burst 3 → 2, a shot 2 → 1, a melee strike). It replaces "one Burst a turn 2 AP" and "+1 on Aimed with a bow". A free attack on your own turn (a Lunge's strike) counts as the first. PROVISIONAL.
+1805. **Speed Loader (rules 1.30):** the first main-hand reload, swap or draw from the pack, or pick-up, each turn costs 1 AP less, at least 1 (one use a turn shared by all four). PROVISIONAL.
+1806. **Special Ammo on any weapon (rules 1.30):** a load for a weapon with no magazine (a blade, a fist, a thrown blade) lasts 12 attacks (`numbers.load_attacks`) or the fight, costs 1 AP to load (`numbers.load_ap`), and its rounds' effects apply to that weapon's hits as a gun's (armour-piercing ×0.8 ignoring armour, hollow-point ×1.3 against doubled armour, incendiary ×0.9 and Burning). A gun, a bow and a launcher load as before. Never a grenade or other consumable. PROVISIONAL.
+1807. **Killzone (rules 1.30):** two held attacks with any weapon (a melee weapon holds strikes at enemies entering its reach), twice the attack's AP, +2 to hit each (`numbers.hit`); the first one fired spends both reactions (`numbers.spend`, 2; Leon); with one reaction left only that one fires. The second, if it fires in the next round (before your turn), spends that round's one. PROVISIONAL.
+1808. **Run and Gun (rules 1.30, new, rank III):** once a turn, after an attack of your own turn, your next move of up to 2 tiles (`numbers.tiles`) costs no AP and draws no opportunity attack (the condition `slipping`, one move); your next hit that turn adds 1 Pressure more (`numbers.pressure`). A longer move leaves it unused. PROVISIONAL.
+1809. **Called Shot leaves the Skirmisher (rules 1.30):** out of rank III; its key `gunslinger.called_shot` stays in data for the Operative (step 4). PROVISIONAL.
+1810. **Riposte, one Answer (rules 1.30):** the Breaker's class move gives the Answer Riposte with any melee weapon (stat `technique:riposte`), costs 1 Momentum (the strike's roll) and adds the Counter bonus to hit; with no Momentum the Breaker does not Riposte. The class's own Riposte handler and its on/off policy are gone; the character's Answers are the policy. PROVISIONAL.
+1811. **A free move priced at 0 AP by an item keeps the move bank (rules 1.30):** tiles walked on a move an item made free are not taken from the tiles banked earlier in the turn. PROVISIONAL.
