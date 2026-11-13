@@ -44,6 +44,7 @@ export const STATS = {
   heat_limit: 'A gun\'s Heat limit', never_jams: 'The main-hand gun never jams (>0)', hide_weapon_skill: 'Hide a weapon\'s own skill from the pad (>0)',
   field_repair_amount: 'Durability a Field Repair restores', reactions: 'Reactions a round', rider_stage: 'Outburst rider stage bonus', push_tiles: 'Extra tiles a technique pushes',
   shove_guard: 'Guard gained when a Shove moves its target', prey_lock: 'Defender\'s Prey Lock holds (>0)', hymn_wait: 'Rounds between Hymns',
+  intervention_keeps_witnessed: 'A patron\'s intervention does not end Witnessed (>0; faith.ts intervene, Classes 3.0: the Chaplain, rule 11)',
   always_seen: 'The other side sees this unit wherever it is (>0; tactics.ts sightOf, Classes 3.0 P7: Traced, a Figment\'s Stare)',
   // ---- asked by the sheet (character.ts)
   equip_ban: 'This weapon or mod may not be equipped (>0)', one_hand_heavy: 'Heavy weapons in one hand (>0)',
@@ -56,12 +57,13 @@ export const STAT_FAMILIES = {
   'skill:': 'a modifier to a d20 that uses this skill id (effects/core.ts skillRollMod)',
   'immune:': 'immunity to a condition id or one of IMMUNE_IDS (effects/core.ts immune; >0 is immune)',
   'save_': 'a save bonus: body, brain or heart (character.ts saveBonus)',
+  'ties_max:': 'Classes 3.0 P8: how many ties of this kind a unit may hold more than its kind\'s max (kit.ts tieCap)',
   'passive:': 'a passive score of this skill id (character.ts passive)',
   'technique:': 'this technique id comes with a perk (>0; physical/core.ts)',
   'momentum_needed:': 'Momentum a finisher of this technique id needs (physical/core.ts finisherNeed)',
 } as const;
 
-export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}`;
+export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `ties_max:${string}`;
 
 /** Is this string a declared stat id? (For data and tests; code is checked by the type.) */
 export function isStatId(id: string): id is StatId {

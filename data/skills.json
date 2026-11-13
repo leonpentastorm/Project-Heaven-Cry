@@ -484,7 +484,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "5": {
           "name": "Follow Through",
@@ -500,7 +501,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
@@ -922,7 +924,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
@@ -1759,7 +1762,8 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true
         },
         "5": {
           "name": "Twin Draw",
@@ -1774,7 +1778,8 @@
               "uses": "per_combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
@@ -1914,7 +1919,8 @@
               "when": "against a spell or condition that has already hit you this combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
@@ -2200,7 +2206,8 @@
               "value": 1
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
@@ -2338,7 +2345,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
@@ -2743,7 +2751,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "5": {
           "name": "Nobody Left Behind",
@@ -3022,7 +3031,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "5": {
           "name": "Pure Heart",
@@ -3038,7 +3048,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
@@ -3188,7 +3199,8 @@
             }
           ],
           "adjudication": "engine",
-          "provisional": true
+          "provisional": true,
+          "item": true
         },
         "7": {
           "name": "Mastery 3",

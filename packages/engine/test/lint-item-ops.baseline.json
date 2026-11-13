@@ -92,7 +92,6 @@
    "lumeri_templar.blessed_shells",
    "lumeri_templar.judgement",
    "lumeri_templar.under_the_eye",
-   "shade.lingering_dread",
    "shade.nightmare_mark",
    "shade.silent_kill",
    "stroke_gambler.half_sigil",
@@ -328,9 +327,9 @@
   ]
  },
  "literals": {
-  "classes/i.ts": 88,
+  "classes/i.ts": 87,
   "classes/j.ts": 105,
-  "classes/k.ts": 113,
+  "classes/k.ts": 112,
   "classes/rev3.ts": 27,
   "perks/a.ts": 52,
   "perks/b.ts": 49,

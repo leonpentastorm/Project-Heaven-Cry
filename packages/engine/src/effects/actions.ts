@@ -12,8 +12,8 @@ import { say } from '../log';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
-import { handlerOf, holdersOf, genericOf, boundGame } from './hooks';
-import { keyOf } from './collect';
+import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp } from './hooks';
+import { keyOf, rawItem } from './collect';
 import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
@@ -34,23 +34,78 @@ const TARGETING = (e: any): ActionDef['target'] => {
   return 'none';
 };
 
+// ---------- the one action shape (Classes 3.0 P6: door verbs) ----------
+// A grant_action may carry, besides `ap` and `uses`: `res` (resources it costs, by id), `if` (the holder's predicates:
+// the action is greyed while one fails), `reach` {tiles, sight, side, self, if} (who it may go at: it builds the pick
+// list and the refusal), `pick` (a closed list, or 'words', 'squad', 'designs', 'gamma'), `pick_label`, `limit` {per, n}
+// (its use window), `prayer` ('whisper' | 'hymn': prayed through faith.ts, its slot, wait, dice and Witnessed; `tier`
+// for a Hymn's gate) and nested `effects`. A door verb's (item kind `verb`) nested item ops run as the action's own
+// effects when it succeeds (on a ctx shaped as `acted`'s); another item's nested `when: "acted"` effects are lifted
+// onto the item (collect.ts liftActed).
+/** The words a reach's side takes (a target relation to the holder). */
+export const REACH_SIDES = ['foe', 'ally', 'side', 'any'];
+/** The fields of a grant_action's `reach`. */
+export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied'];
+/** The prayers a grant_action may be. */
+export const PRAYER_KINDS = ['whisper', 'hymn'];
+/** faith.ts registers the prayer door here as it loads (this file can't import it: its load order places its hooks). */
+let PRAYER: { why(cb: Combat, u: Unit, kind: 'whisper' | 'hymn'): string | null; pray(cb: Combat, rng: { state: number }, u: Unit, kind: 'whisper' | 'hymn', name: string, tier?: number): boolean } | null = null;
+/** faith.ts's prayer door for a verb that is a prayer (verbPrayerWhy, verbPray). */
+export const setPrayerDoor = (p: typeof PRAYER) => { PRAYER = p; };
+/** Why this holder can't aim its action at this unit by its `reach` (null: it can). */
+export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): string | null {
+  const u = h.u, cb = h.cb; if (!reach || !u || !cb) return null;
+  if (!t || t.dead) return 'Pick a living target.';
+  if (t === u) return reach.self ? null : 'Not on yourself.';
+  const side = reach.side || 'any';
+  if (side === 'foe' && t.side === u.side) return 'Pick an enemy.';
+  if ((side === 'ally' || side === 'side') && t.side !== u.side) return 'Pick an ally.';
+  if (typeof reach.tiles === 'number' && distK(u.pos, t.pos) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
+  if (reach.sight && t.side !== u.side && ifFails(h, { target_sight: ['seen'] }, t)) return 'You can\'t see them.'; // the holder's side sees it (P7)
+  if (reach.tied && ifFails(h, { target_tied: reach.tied }, t)) return t.name + ' isn\'t tied to you.'; // P8
+  if (reach.if) { const k = ifFails(h, reach.if, t); if (k) return 'Not on ' + t.name + ' (' + human(k) + ').'; }
+  return null;
+}
+const TARGET_OF_SIDE: Record<string, ActionDef['target']> = { foe: 'enemy', ally: 'ally', side: 'ally', any: 'unit' };
+
 /** The default actions of an item, from its data. */
 export function defaultActions(info: ItemInfo): ActionDef[] {
   const grants = info.effects.filter((e) => e?.op === 'grant_action');
   const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
-  const mk = (id: string, label: string, apRaw: any, usesRaw: string, effs: any[]): ActionDef => {
-    const target = effs.map(TARGETING).find((t) => t !== 'none') || 'none', per = scopeOf(usesRaw);
-    return {
-      id, label, scope: per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n: 1 }, target,
-      run: (h, args, rng) => defaultRun(h, effs, args, rng),
+  const verb = info.kind === 'verb';
+  const mk = (id: string, label: string, apRaw: any, usesRaw: string, effs: any[], g: any = {}): ActionDef => {
+    const reach = g.reach, per = g.limit?.per || scopeOf(usesRaw), n = g.limit?.n ?? 1;
+    const target = reach ? TARGET_OF_SIDE[reach.side || 'any'] || 'unit' : effs.map(TARGETING).find((t) => t !== 'none') || 'none';
+    // a door verb's nested item ops are its own effects, run once it succeeds; the rest run by the generic runners
+    const mine = verb ? effs.filter((e) => isItemOp(e)) : [], rest = verb ? effs.filter((e) => !isItemOp(e)) : effs;
+    const d: ActionDef = {
+      id, label, scope: per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
+      run: (h, args, rng) => {
+        if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
+        const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
+        if (rest.length || !mine.length) defaultRun(h, rest, args, rng);
+        if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null });
+        return null;
+      },
     };
+    if (g.res) d.res = { ...g.res };
+    if (typeof reach?.tiles === 'number') d.range = reach.tiles;
+    if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
+    if (g.if || g.prayer) d.available = (h) => {
+      if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return 'Not now (' + human(k) + ').'; }
+      if (g.prayer && h.u && h.cb && PRAYER) return PRAYER.why(h.cb, h.u, g.prayer) || true;
+      return true;
+    };
+    if (reach) { d.reach = (h, t) => reachWhy(h, reach, t); d.choices = (h) => (h.cb ? h.cb.units.filter((t) => !reachWhy(h, reach, t)).map((t) => t.id) : []); }
+    return d;
   };
   // a nested `when: "acted"` effect is the item's own triggered effect (collect.ts liftActed): the trigger runs it, not the action
   const nested = (g: any) => (g.effects || []).filter((e: any) => e?.when !== 'acted');
-  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...nested(g), ...own]));
+  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...(verb ? g.effects || [] : nested(g)), ...own], g));
   if (info.bound) return [mk('use', info.name, info.ap, info.uses, own)];
   return [];
 }
+
 /** Run what the generic runners can, and give the Narrator the rest. Returns null (never refuses). */
 function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: number }): null {
   let line = '', rest = false;
@@ -74,6 +129,8 @@ export function actionDefs(info: ItemInfo): ActionDef[] {
   return lane.length ? lane : hd?.noDefaultActions ? [] : defaultActions(info);
 }
 
+/** The grant_action of an item's data that names this action id, or null. */
+const dataGrant = (info: ItemInfo, actionId: string): any => info.effects.filter((e) => e?.op === 'grant_action').find((x, i) => (x.action || 'use' + i) === actionId) || null;
 /** The data's AP for an item's action: the `ap` of the grant_action that names it, else the item's own (ap_cost). An
  * ActionDef that says `ap: 'data'` for an item whose data has no number is a missing line of data: it throws. */
 export function dataAp(info: ItemInfo, actionId: string): number | string {
@@ -103,6 +160,8 @@ export interface PerkActionEntry {
   tier: string;
   /** What the action's choice takes (chips in the client), how many at once, and the prompt for a pick or typed detail. */
   options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
+  /** The units it may go at, worked out by the engine (a door verb's reach): the pick list. */
+  choices?: string[];
 }
 type Who = { u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
 
@@ -146,6 +205,8 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   const cost = costOf(h, d, {}), ap = cost.ap, per = d.uses?.per || 'at_will', n = d.uses?.n ?? 1;
   const left = uses(h).left(per, n, h.key + '#' + d.id);
   let why: string | null = typeof av === 'string' ? av : null;
+  // P6: a lane's action keeps its own words, and its data `if` (Vanish's) is the backstop: the data is read, never dead
+  if (!why && h.u && h.cb && handlerOf(h.key)?.actions?.some((a) => a.id === d.id)) { const g = dataGrant(h.info, d.id); if (g?.if) { const k = ifFails(h, g.if); if (k) why = 'Not now (' + human(k) + ').'; } }
   if (!why && left <= 0) why = USED_WHY[per] || 'Used (' + usesLabel(per, n, 0) + ').';
   if (!why && per === 'out_of_combat' && h.cb && !overworld(h.cb)) why = 'Out of combat only.';
   if (!why && h.u && (h.u.downed || h.u.dead)) why = 'Downed.';
@@ -156,7 +217,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
     target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: h.kind === 'class' ? 'class' : 'perks', cls: h.info.classId,
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
-    ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}) };
+    ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}) };
 }
 /** The choices an action's pick offers this holder (ids are what args.choice takes). */
 function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
@@ -199,6 +260,7 @@ export function previewPerkAction(x: Who, id: string, args: ActionArgs & { actio
     else if (d.target === 'ally' && t.side !== h.u?.side) { base.ok = false; base.why = 'Pick an ally.'; }
     else if (d.target === 'enemy' && t.side === h.u?.side) { base.ok = false; base.why = 'Pick an enemy.'; }
     else if (d.range != null && h.u && distK(h.u.pos, t.pos) > d.range) { base.ok = false; base.why = 'Out of range (' + d.range + ' tiles).'; }
+    else if (d.reach) { const why = d.reach(h, t); if (why) { base.ok = false; base.why = why; } } // P6: a door verb's reach (side, sight, its `if`)
   }
   if (base.ok && d.target === 'tile' && !args.tile) { base.ok = false; base.why = 'Pick a tile.'; }
   if (base.ok && d.target === 'text' && !String(args.text || '').trim()) { base.ok = false; base.why = 'Say what you do.'; }
@@ -244,7 +306,7 @@ export interface ToggleEntry { id: string; itemKey: string; label: string; why: 
 /** The toggles a holder can set on an action type ('combat/attack', 'combat/move', …), with their state for these mods. */
 export function togglesFor(x: Who, actionType: string, actx: any = {}, mods: string[] = []): ToggleEntry[] {
   const out: ToggleEntry[] = [];
-  for (const h of holdersOf(x)) for (const t of handlerOf(h.key)?.toggles || []) {
+  for (const h of holdersOf(x)) for (const t of togglesOf(h)) {
     if (!t.on.includes(actionType)) continue;
     const av = t.available ? t.available(h, actx) : true; if (av === false) continue;
     const id = h.key + '#' + t.id;
@@ -252,10 +314,27 @@ export function togglesFor(x: Who, actionType: string, actx: any = {}, mods: str
   }
   return out;
 }
+// ---------- data toggles (Classes 3.0 P12) ----------
+// An item's `toggles: [{id, name, on: [action types: 'combat/attack'…], if, default_on, effects}]` in its data: a flag
+// on an existing action, shown by togglesFor like a lane's; its `if` (the holder's predicates) greys it; its effects are
+// the item's own triggered effects with `if: {toggle: [id]}` (collect.ts liftToggles), so they run only while it is on
+// for the action being resolved (cb.mods; the trigger `acted` carries them too).
+/** A data toggle as the runtime's ToggleDef. */
+function dataToggle(h: Holder, t: any): ToggleDef {
+  return { id: t.id, label: t.name || human(t.id), on: [...(t.on || [])], defaultOn: !!t.default_on,
+    ...(t.if ? { available: (hh: Holder) => { const k = ifFails({ ...hh, u: hh.u ?? h.u, cb: hh.cb ?? h.cb }, t.if); return k ? 'Not now (' + human(k) + ').' : true; } } : {}) };
+}
+/** Every toggle an item gives: its lane's, then its data's. */
+export function togglesOf(h: Holder): ToggleDef[] {
+  const lane = handlerOf(h.key)?.toggles || [], data = (rawItem(h.key)?.toggles || []) as any[];
+  return data.length ? [...lane, ...data.map((t) => dataToggle(h, t))] : lane;
+}
+/** Is an item's toggle on for these mods (its key#id, its bare id, or its default unless turned off with '!')? */
+export const toggleOnIn = (t: ToggleDef, key: string, mods: string[]) => toggleState(t, key + '#' + t.id, mods);
 const toggleState = (t: ToggleDef, id: string, mods: string[]) => mods.includes(id) || mods.includes(t.id) || (!!t.defaultOn && !mods.includes('!' + id) && !mods.includes('!' + t.id));
 /** Inside a hook: is this item's toggle on for the action being resolved (cb.mods, set by the reducer)? */
 export function modOn(h: Holder, toggleId: string): boolean {
-  const t = (handlerOf(h.key)?.toggles || []).find((x) => x.id === toggleId); if (!t) return false;
+  const t = togglesOf(h).find((x) => x.id === toggleId); if (!t) return false;
   const mods: string[] = (h.cb as any)?.mods || (h.g?.story as any)?.mods || [];
   return toggleState(t, h.key + '#' + toggleId, mods);
 }

@@ -13,7 +13,7 @@ import {
   stageMult, resonanceFor, RESONANCE_BONUS, RESONANCE_MAX,
 } from '../magic';
 import { type Rng } from '../rng';
-import { rollVs } from '../rolls';
+import { rollVs, toHitAdd } from '../rolls';
 
 const SKIP = ['armour_full', 'bonus_damage', 'ignore_cover', 'chain'];
 /** Armour a tone's damage counts at this rider stage: Raw none, an element half (Stone from stage 1: full). */
@@ -31,7 +31,7 @@ export function soulStrike(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: 
   if (roll) {
     const homing = (d.modules || []).includes('homing'), ign = homing || toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover');
     const cover = !ign && coverTileFor(cb, u.pos, t.pos) ? 5 : 0;
-    const sr = rollVs(cb, rng, { by: u, mod: m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t), tn: t.def, why: 'soul' }); // rules 1.17: a spell's roll reads the level gap
+    const sr = rollVs(cb, rng, { by: u, mod: m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t) + toHitAdd(cb, u, t, 'soul', { preview: false }), tn: t.def, why: 'soul' }); // rules 1.17: a spell's roll reads the level gap
     if (!sr.ok) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); return 'misses ' + t.name + ' (' + sr.text + ')'; }
     crit = sr.nat === 20; head = 'hits ' + t.name + ' (' + sr.text + (crit ? ', CRITICAL' : '') + ')';
   }

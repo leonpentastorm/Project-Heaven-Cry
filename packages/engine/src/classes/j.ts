@@ -547,7 +547,7 @@ register({
       let line = 'The Company strike hits ' + refOf(at);
       for (const v of cb.units) {
         if (v.dead || !tiles.includes(v.pos)) continue;
-        if (alive(v) && canReact(cb, v, 'move')) { const out = stepOut(cb, v, tiles); if (out && react(cb, v, { kind: 'move' })) { emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); continue; } }
+        if (alive(v) && canReact(cb, v, 'move')) { const out = stepOut(cb, v, tiles); if (out && react(cb, v, { kind: 'move' }, () => { emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); })) continue; }
         line += hurtUnit(v, itemAmount('class:rtc_contractor.strike_call', 'damage'), false, cb, 'explosion', u);
       }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) line += damageObject(cb, o.pos, 50, 0, u);
@@ -1159,12 +1159,15 @@ register({
       })) return;
       // Reactive Plate: on the Knight.
       if (ctx.t !== u || has(u, DEF_PLATE) || resOf(u, 'guard') <= 0) return;
-      if (INTERPOSE !== u.id && !ctx.src?.interposed) { if (!canReact(cb, u, 'protect') || !react(cb, u, { kind: 'protect', event: attackEvent() })) return; } // a hit Interposed for (either Interpose) is free
-      const k = Math.min(resOf(u, 'guard'), Math.ceil(ctx.dmg / 10)); resSpend(u, 'guard', k);
-      ctx.dmg = Math.max(0, ctx.dmg - 10 * k);
-      const st = stateOf(h); st.lost = (st.lost || 0) + k; let line = u.name + '\'s plate hardens: ' + k + ' Guard cuts ' + 10 * k;
-      while (st.lost >= 3) { st.lost -= 3; shiftMana(cb, 2, 'bots shed by Reactive Plate'); line += ' · it sheds bots (+2 on the meter)'; }
-      say(cb, line + plateShare(h, k) + '.');
+      const plate = () => {
+        const k = Math.min(resOf(u, 'guard'), Math.ceil(ctx.dmg / 10)); resSpend(u, 'guard', k);
+        ctx.dmg = Math.max(0, ctx.dmg - 10 * k);
+        const st = stateOf(h); st.lost = (st.lost || 0) + k; let line = u.name + '\'s plate hardens: ' + k + ' Guard cuts ' + 10 * k;
+        while (st.lost >= 3) { st.lost -= 3; shiftMana(cb, 2, 'bots shed by Reactive Plate'); line += ' · it sheds bots (+2 on the meter)'; }
+        say(cb, line + plateShare(h, k) + '.');
+      };
+      if (INTERPOSE !== u.id && !ctx.src?.interposed) { if (canReact(cb, u, 'protect')) react(cb, u, { kind: 'protect', event: attackEvent() }, plate); } // the plate is the reaction
+      else plate(); // a hit Interposed for (either Interpose) is free
     },
     // A Knight who is also a rank III Defender spends Guard through the Defender's plate: the shed plate still shields.
     // The Interposed hit's critical injury goes to the Knight, not the ally (as the Defender's: audit problem 3, PROVISIONAL).

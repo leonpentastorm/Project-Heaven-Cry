@@ -22,6 +22,7 @@ import type { Combat, Unit } from './combat';
 import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
 import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { pushAway } from './effects/core';
+import { setPrayerDoor } from './effects/actions';
 import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot } from './effects/cost';
 import { sessionN, dayOf, uses as usesOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
@@ -30,7 +31,8 @@ import { amountOf, term, levelOf, profileOf, type Term } from './effects/output'
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory, statQuery } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
-import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing , dropHeldShot } from './tactics';
+import { surrender, reveal, blessing as legacyBlessing , dropHeldShot } from './tactics';
+import { FAITH_PATRONS, FAITH_PATRON, patronById, beliefOf } from './belief';
 import { die, type Rng } from './rng';
 import { rollVs, rerollAttack, attackHits } from './rolls';
 import { spotlight } from './spotlight';
@@ -53,11 +55,8 @@ export const WHISPER: Record<string, any> = Object.fromEntries(WHISPERS.map((w) 
 export const VOWS: any[] = PJ.vows || [];
 export const VOW: Record<string, any> = Object.fromEntries(VOWS.map((v) => [v.id, v]));
 export const LINE_BANKS: string[] = PJ.line_banks || ['answered', 'refused', 'taboo', 'vow_kept', 'vow_broken', 'witnessed', 'intervention', 'miracle', 'conversion', 'farewell', 'grant'];
-/** The patrons (rules 1.6 shape; tactics.ts PATRON is the same list with the old `blessings` alias = hymns). */
-export const FAITH_PATRONS: any[] = PJ.items || [];
-export const FAITH_PATRON: Record<string, any> = Object.fromEntries(FAITH_PATRONS.map((p) => [p.id, p]));
-/** A patron by id: patrons.json, or one added to tactics.ts PATRON at run time (old-shape patrons: blessings = Hymns). */
-export const patronById = (id: string | null | undefined): any | null => (id ? FAITH_PATRON[id] || LEGACY_PATRON[id] || null : null);
+// The patrons, patronById and beliefOf live in belief.ts (no global hooks: the predicate `patron` reads the same copy).
+export { FAITH_PATRONS, FAITH_PATRON, patronById, beliefOf } from './belief';
 const hymnsOf = (p: any): any[] => p?.hymns || p?.blessings || [];
 
 const PR = PJ.prayer || {};
@@ -192,12 +191,6 @@ let B: FaithBindings | null = null;
 export function bindFaith(b: FaithBindings) { B = b; }
 
 // ---------- belief, Devotion, the kit ----------
-/** A character's belief. Old saves (no belief): a pact makes them Faithful to that patron, else Atheist (spec 1.6 §1). */
-export function beliefOf(c: Character): Belief {
-  if (c.belief?.kind === 'faithful' && patronById(c.belief.patron)) return c.belief;
-  if (c.belief?.kind === 'atheist') return c.belief;
-  return c.patron && patronById(c.patron) ? { kind: 'faithful', patron: c.patron } : { kind: 'atheist' };
-}
 export const patronOf = (c: Character): any | null => { const b = beliefOf(c); return b.kind === 'faithful' ? patronById(b.patron) : null; };
 export const faithOf = (c: Character) => c.skills?.faith || 0;
 /** Devotion (Faithful only; 0-10). */
@@ -625,7 +618,8 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, am
   const g = G(), why = String(said || '').replace(/^[\s:·]+/, '').trim();
   if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
     ...(target ? { target: target.id, targetName: target.name } : {}), ...(target?.charId && target.charId !== c.id && target.side === f.side ? { targetChar: target.charId } : {}) });
-  if (condOn(f, 'witnessed')) { endCond(f, 'witnessed', cb); say(cb, f.name + ' is no longer Witnessed.'); }
+  // Classes 3.0 (rev4 batch row; chaplain-spec.md rule 11): stat intervention_keeps_witnessed keeps it on
+  if (condOn(f, 'witnessed') && !(statQuery({ cb, u: f, c }, 'intervention_keeps_witnessed').add > 0)) { endCond(f, 'witnessed', cb); say(cb, f.name + ' is no longer Witnessed.'); }
 }
 /** The Quartermaster (item 742): a reload of yours that cost AP gives it all back. game.ts calls this after a
  * combat/reload action that succeeded, with the AP it took. */
@@ -943,6 +937,53 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   }
   return null;
 }
+// ---------- a door verb that is a prayer (Classes 3.0 P6: grant_action `prayer: "whisper" | "hymn"`) ----------
+// The verb is prayed as one of the patron's own prayers would be: the same gate (Faith, Silenced, your turn), the same
+// slot (one Whisper a turn; a Hymn's wait), the same dice (an Atheist rolls; a Faithful's Hymn above its standing is an
+// overreach: grant_action `tier`, default 1), the mana, Witnessed after a Hymn. Its effects are the verb's own.
+/** Why this unit can't pray a verb of this kind now (null: it can). */
+export function verbPrayerWhy(cb: Combat, u: Unit, kind: 'whisper' | 'hymn'): string | null {
+  const c = unitChar(u), g = boundGame(); if (!c) return 'Only a character can pray.';
+  if (faithOf(c) < FAITH_MIN) return 'Praying needs Faith ' + FAITH_MIN + '.';
+  if (condOn(u, 'silenced')) return 'Silenced: no prayers.';
+  if (cb.order[cb.turn] !== u.id) return 'Pray on your turn.';
+  const lim = prayed({ c, u, cb, g });
+  if (kind === 'whisper' && lim.left('per_turn', 1, WHISPER_KEY) <= 0) return 'One Whisper a turn.';
+  if (kind === 'hymn') { const cd = hymnWait(c, u), last = lim.cooledAt(HYMN_KEY); if (last != null && lim.coolLeft(cd, HYMN_KEY) > 0) return 'Your last Hymn was ' + (cb.round - last) + ' round(s) ago: wait ' + cd + '.'; }
+  return null;
+}
+/** Pray a verb (its gate already asked): takes the slot, moves the meter, rolls when the rules say so. True: the patron
+ * answers (the verb's effects run); false: no answer (the AP and the slot are spent, as a prayer's). */
+export function verbPray(cb: Combat, rng: Rng, u: Unit, kind: 'whisper' | 'hymn', name: string, tier = 1): boolean {
+  const c = unitChar(u)!, g = boundGame(), lim = prayed({ c, u, cb, g }), belief = beliefOf(c), patron = patronOf(c);
+  if (kind === 'whisper') lim.take('per_turn', 1, WHISPER_KEY); else { lim.uncool(HYMN_KEY); lim.cool(0, HYMN_KEY); }
+  shiftMana(cb, PRAYER_MANA, 'a prayer');
+  let roll: { tn: number; mod: number } | null = null, over = false;
+  if (belief.kind !== 'faithful') roll = { tn: kind === 'whisper' ? ATHEIST_TN.whisper : ATHEIST_TN[tier] ?? ATHEIST_TN[1], mod: prayerMod(g, c, u) };
+  else if (kind === 'hymn') { const gate = (GATE as any)[tier] ?? GATE[1], dv = devotionNow(c); if (dv < gate) { over = true; roll = { tn: OVERREACH.base + OVERREACH.step * (gate - dv), mod: prayerMod(g, c, u) }; } }
+  let line = u.name + (kind === 'whisper' ? ' whispers a prayer' : ' prays') + (patron ? ' to ' + patron.name : '') + ': ' + name;
+  if (roll) {
+    const rv = rollVs(cb, rng, { by: u, mod: roll.mod, tn: roll.tn, why: 'pray' });
+    line += ' · ' + rv.text + (over ? ' (overreach)' : '');
+    if (!rv.ok) {
+      emitFx(cb, FAITH_FX.prayer_fail, { unit: u.id, kind, id: name, patron: patron?.id || null, at: u.pos, why: over ? 'overreach' : 'dice' });
+      say(cb, line + ' · no answer.');
+      if (over) { shiftDevotion(g, cb, c, OVERREACH.miss, 'a failed overreach'); speak(g, cb, rng, c, patron, 'refused'); }
+      return false;
+    }
+  }
+  emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id: name, patron: patron?.id || null, at: u.pos, target: null, ok: true });
+  say(cb, line + '.');
+  if (patron && kind === 'hymn') speak(g, cb, rng, c, patron, 'answered');
+  if (kind === 'hymn' && belief.kind === 'faithful' && patron && faithOf(c) >= WITNESS_FAITH) {
+    applyCond(cb, rng, u, u, 'witnessed', undefined, undefined, { skipSave: true, via: 'faith' });
+    emitFx(cb, FAITH_FX.witnessed, { unit: u.id, patron: patron.id, at: u.pos });
+    speak(g, cb, rng, c, patron, 'witnessed');
+  }
+  return true;
+}
+setPrayerDoor({ why: verbPrayerWhy, pray: verbPray });
+
 type Target = Unit | null | { units: Unit[] };
 function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs): Target | string {
   const byId = (id?: string) => (id ? cb.units.find((x) => x.id === id) || null : null);

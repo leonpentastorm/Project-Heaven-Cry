@@ -53,16 +53,22 @@ export const callTn = (u: Unit, def: CallDef, tnAdd = 0): number => CALL_RULES.s
 
 // ---------- who may Call, and to whom ----------
 /** Why this unit can't make this Call now, before any target is looked at (null: it can). */
+/** A Call made as a reaction is of kind `protect`: only a helping Call can be one (it moves or hurts nobody); a Call
+ * that harms or hinders an enemy is never a reaction (the lead's rulings on rules 1.28, 13 Nov 2026; item 1764). */
+export const callReactKind = (def: CallDef): 'attack' | 'protect' => (def.kind === 'helping' ? 'protect' : 'attack');
+/** Why this Call can't be a reaction at all (null: it can): a hindering Call is made on your own turn only. */
+export const callReactWhy = (def: CallDef): string | null => (def.kind === 'helping' ? null : 'A Call that hinders an enemy is made on your own turn, never as a reaction.');
 function gate(cb: Combat, u: Unit, def: CallDef, args: CallArgs): string | null {
   if (!alive(u)) return 'Out of the fight.';
   const level = callLevel(u, def);
   if (level < 1) return 'Needs a point of ' + callSkillName(def) + '.';
   if (condOn(u, 'silenced')) return 'You are Silenced and can\'t Call.';
   if (args.react) {
+    { const no = callReactWhy(def); if (no) return no; }
     if (level < CALL_RULES.reaction_at) return 'A Call as a reaction needs ' + CALL_RULES.reaction_at + ' points of ' + callSkillName(def) + '.';
     if (active(cb) === u) return 'It is your turn. Make the Call as an action.';
     if (spoken(cb, u).left('reaction', 1, REACT_KEY) <= 0) return 'One Call as a reaction a round.';
-    if (!canReact(cb, u, 'attack')) return 'No reaction left this round.'; // (a Call is not a protective reaction: Suppressed still stops it)
+    if (!canReact(cb, u, callReactKind(def))) return 'No reaction left this round.'; // a helping Call protects (Suppressed does not stop it)
   }
   const ap = callAp(cb, u, def, !!args.react);
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/call', id: def.id } }); if (no) return no; }
@@ -133,9 +139,9 @@ export function useCall(cb: Combat, u: Unit, id: string, args: CallArgs, rng: Rn
   // A Call as a reaction (rules 1.13) goes through react() (rules 1.28): its window, its reaction, and while it resolves
   // no reaction answers anything it does.
   if (t.react) {
-    if (!canReact(cb, u, 'attack')) return 'No reaction left this round.';
+    if (!canReact(cb, u, callReactKind(def))) return 'No reaction left this round.';
     let out: string | null = 'Not now.';
-    react(cb, u, { kind: 'attack', window: { kind: 'call', mover: tgt, id, at: u.pos, rng } }, () => { out = speak(cb, u, def, args, p, t, tgt, ap); });
+    react(cb, u, { kind: callReactKind(def), window: { kind: 'call', mover: tgt, id, at: u.pos, rng } }, () => { out = speak(cb, u, def, args, p, t, tgt, ap); });
     return out;
   }
   return speak(cb, u, def, args, p, t, tgt, ap);

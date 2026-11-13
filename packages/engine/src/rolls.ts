@@ -20,7 +20,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import rulesJ from '../../../data/rules.json';
 import type { Combat, Unit } from './combat';
 import { emitFx } from './combat';
-import { emit } from './effects/hooks';
+import { emit, hookUsed } from './effects/hooks';
 import { d20, type Rng } from './rng';
 
 const R: any = (rulesJ as any).rolls || {}, LADDER: any = (rulesJ as any).resolution?.tn_ladder || {};
@@ -163,6 +163,20 @@ export function contest(cb: Combat | null | undefined, rng: Rng, a: { by?: Unit 
   return { a: ra, b: rb, won: ra.ok, text: 'd20 ' + ra.die + ' ' + sign(ra.mod) + ' = ' + ra.total + ' vs d20 ' + rb.die + ' ' + sign(rb.mod) + ' = ' + rb.total };
 }
 
+/** What kind of roll to hit: a weapon attack, a Sigil's hit roll, an Outburst's (a Bolt or a Lance). */
+export type HitKind = 'weapon' | 'sigil' | 'soul';
+/** THE hook of every roll to hit a target (Leon, 13 Nov 2026: "one hook"; Classes 3.0 step 1b): 'to_hit' {att, tgt,
+ * type ('weapon', 'sigil', 'soul': the item-op predicate `damage` reads it), mode (a weapon's), terms, preview, cb}.
+ * A weapon attack's preview (combat.ts previewAttack), a Sigil's hit (sigil.ts) and an Outburst's (magic.ts rollFor,
+ * classes/soul.ts soulStrike) all ask here, so an item or a condition that changes "a roll to hit this target" reaches
+ * all three. Pure: a listener only adds terms ({v, label}). Returns the terms added (none while nobody listens). */
+export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | undefined, tgt: Unit, type: HitKind, o: { mode?: string; preview?: boolean } = {}): { v: number; label: string }[] {
+  if (!cb || !att || !hookUsed('to_hit')) return [];
+  const ctx: any = emit(cb, 'to_hit', { att, tgt, type, mode: o.mode ?? null, terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
+  return (ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v);
+}
+/** The sum of toHitTerms. */
+export const toHitAdd = (cb: Combat | null | undefined, att: Unit | null | undefined, tgt: Unit, type: HitKind, o: { mode?: string; preview?: boolean } = {}): number => toHitTerms(cb, att, tgt, type, o).reduce((n, t) => n + t.v, 0);
 /** How many of the 20 faces pass d20 + mod against a TN (a natural 20 passes, a natural 1 fails): the odds a card shows. */
 export const passFaces = (mod: number, tn: number): number => { let n = 0; for (let f = 1; f <= 20; f++) if (judge('roll', { die: f }, mod, tn).ok) n++; return n; };
 /** Does this attack roll hit, by the attack's own rule (a natural 1 misses, the critical range hits, else the total

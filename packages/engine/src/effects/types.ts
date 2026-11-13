@@ -8,7 +8,7 @@ import type { Combat, Unit } from '../combat';
 /** Where an item comes from. Class moves are keyed "class:<classId>.<moveId>". */
 /** 'relic': an item a holder carries that is neither a perk nor a trait (engine foundations 3: a roguelike's relics),
  * loaded with addItems('relic', [...]); written in data only. */
-export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic' | 'condition';
+export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic' | 'condition' | 'verb';
 /** The tier an item is held at: a perk's I or II, a granted perk's kind, 'trait', or a class move's rank ('adv' for an advanced class). */
 export type Tier = 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' | 'trait' | 'III' | 'adv';
 
@@ -53,11 +53,11 @@ export type HookName =
   // combat
   | 'combat_start' | 'round_start' | 'turn_start_pre' | 'turn_start' | 'turn_end'
   | 'move_cost' | 'move_step' | 'moved' | 'forced_move'
-  | 'attack_preview' | 'attack_target' | 'attack_roll' | 'damage_out' | 'on_hit' | 'on_miss'
+  | 'attack_preview' | 'attack_target' | 'attack_roll' | 'to_hit' | 'damage_out' | 'on_hit' | 'on_miss'
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
   | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end' | 'displaced'
   | 'heal_given' | 'heal_in' | 'shield_grant'
-  | 'reaction_window' | 'reaction' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
+  | 'reaction_window' | 'reaction' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed' | 'tie_end'
   | 'reload' | 'jam_clear' | 'swap'
   // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
   | 'stood_up'
@@ -191,6 +191,8 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   action_refuse: 'an item may refuse an action before it is done (a shove, an Overwatch)',
   evoke_reach: 'how far from its Line a caster may Evoke',
   spell_roll: 'a spell\'s to-hit d20 was rolled: items may add to it',
+  tie_end: 'a tie between two units ended (kit.ts untie, Classes 3.0 P8) {cb, tie, unmake}: unmake when its kind says the far end is unmade (owned.ts)',
+  to_hit: 'THE hook of every roll to hit a target (rolls.ts toHitTerms): a weapon attack, a Sigil, an Outburst {att, tgt, type, mode, terms, preview}: a listener adds to-hit terms',
   session_heal: 'the heal at a session\'s start: HP and MP multipliers',
   story_blessing: 'a prayer is answered outside a fight (lines to add)',
   ap_gift: 'a unit is about to receive AP from another (the receiver may refuse)',
@@ -267,6 +269,10 @@ export interface ActionDef {
   pickMulti?: number;
   /** The prompt for the pick or typed detail ("Head, arm or leg", "The squadmate"). */
   pickLabel?: string;
+  /** Who it may go at, worked out by the engine (Classes 3.0 P6: a door verb's `reach`): the descriptor's pick list. */
+  choices?(h: Holder): string[];
+  /** Why it can't go at this unit (a door verb's `reach`: side, range, sight, its `if`), or null. */
+  reach?(h: Holder, t: Unit): string | null;
 }
 
 /** A flag on an existing action (Ricochet, Double or Nothing, Nonlethal…): the player turns it on with `mods`. */

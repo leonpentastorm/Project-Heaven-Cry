@@ -7,7 +7,7 @@ import { magazineSize } from '../character';
 import { pileAt } from '../containers';
 import { charOfUnit } from '../effects/hooks';
 import { condOn, endCond, applyCond, condFam, freshSave } from '../magic';
-import { canReact, loseReactions, maxReactions, setThreaten } from '../tactics';
+import { canReact, loseReactions, maxReactions, setThreaten, react, refundReaction } from '../tactics';
 import { lowerPressureOf, pressureOf, isSuppressed, isPressed } from '../physical/pressure';
 import type { Combat } from '../combat';
 import type { Rng } from '../rng';
@@ -85,9 +85,18 @@ call({
       if (th.includes('move') && t.args.tile) (t.pv.moves ||= []).push({ unit: a.id, to: t.args.tile });
       return null;
     }
-    const first = doThing(t, th[0]); if (first) return first; // refused before anything changed: the Call isn't spent
-    loseReactions(t.cb, a, 1); // the ally's reaction is what it acts on (not a reaction it makes: it answers nothing)
-    for (const x of th.slice(1)) { if (!alive(a)) break; const no = doThing(t, x); if (no) t.note(a.name + ' can\'t ' + THING_WORDS[x] + ': ' + no); }
+    // The lead's ruling on rules 1.28 (13 Nov 2026): what the ordered ally does IS that ally's reaction (kind move), so it
+    // provokes nothing (a reaction never triggers a reaction). A Call made as a reaction is already inside one: the
+    // ally's reaction is spent and nothing answers what it does all the same.
+    let err: string | null = null;
+    const act = () => {
+      const first = doThing(t, th[0]); if (first) { err = first; return; } // refused before anything changed
+      for (const x of th.slice(1)) { if (!alive(a)) break; const no = doThing(t, x); if (no) t.note(a.name + ' can\'t ' + THING_WORDS[x] + ': ' + no); }
+    };
+    if (t.cb.reacting) { act(); if (!err) loseReactions(t.cb, a, 1); }
+    else if (!react(t.cb, a, { kind: 'move' }, act)) return a.name + ' has no reaction left to act on.';
+    else if (err) refundReaction(t.cb, a); // the first thing was refused: the Call isn't spent, nor the ally's reaction
+    if (err) return err;
     t.note(a.name + ' acts on their reaction, for none of their AP.');
     return null;
   },

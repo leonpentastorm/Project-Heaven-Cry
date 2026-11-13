@@ -30,6 +30,7 @@ export interface CondMods {
   /** AP added to drawing and Evoking (Left Brain Debuff +1). */ sigilAp?: number; /** × the MP of Soul spells (Right Brain Debuff 1.2). */ soulCostMult?: number;
   /** on d20s with a skill of this tag ('core:mind', 'core:soul', 'attr:expression'). */ skills?: { tag: string; value: number }[];
   /** to hit, by what it applies to. */ hit?: Partial<Record<HitContext, number>>;
+  /** its source's side sees the bearer's next action (a `reveal` of what `intent`: the row `read`; Classes 3.0). */ intent?: boolean;
   /** the reaction kinds it forbids (a `forbid` of action `reaction`, with its `kinds`; none named: 'all'). Rules 1.28. */ noReact?: string[] | 'all';
 }
 /** One condition as the engine reads its data/conditions.json row. */
@@ -41,18 +42,23 @@ export interface CondDef {
 }
 
 const HIT_CONTEXTS: HitContext[] = ['own_attacks', 'next_attack', 'not_vs_source', 'vs_source', 'marker_squad_vs_self', 'melee_vs_self', 'ranged_vs_self'];
+/** The stats a row's plain stat_mod sets in the table itself (each with where it goes): these are read here, never
+ * answered through statQuery (effects/triggers.ts P4 reads COND_TABLE_STATS), so nothing is counted twice. */
+const TABLE_STAT: Record<string, (m: CondMods, v: number) => void> = {
+  defense: (m, v) => { m.defense = v; }, move_mult: (m, v) => { m.moveMult = v; }, vision: (m, v) => { m.vision = v; }, ap: (m, v) => { m.ap = v; },
+  damage_dealt_pct: (m, v) => { m.dealtMult = 1 + v / 100; }, sigil_ap: (m, v) => { m.sigilAp = v; }, soul_cost_pct: (m, v) => { m.soulCostMult = 1 + v / 100; },
+  save_body: (m, v) => { (m.save ||= {}).body = v; }, save_brain: (m, v) => { (m.save ||= {}).brain = v; }, save_heart: (m, v) => { (m.save ||= {}).heart = v; },
+};
+/** The stats the table reads from a row itself (the one list: P4's statQuery path skips them). */
+export const COND_TABLE_STATS: ReadonlySet<string> = new Set(Object.keys(TABLE_STAT));
 function modsOf(row: any): CondMods {
   const m: CondMods = {};
   for (const e of (row.effects || []) as any[]) {
-    if (e.op === 'stat_mod' && typeof e.value === 'number' && !e.when) {
-      if (e.stat === 'defense') m.defense = e.value; else if (e.stat === 'move_mult') m.moveMult = e.value; else if (e.stat === 'vision') m.vision = e.value;
-      else if (e.stat === 'ap') m.ap = e.value; else if (e.stat === 'damage_dealt_pct') m.dealtMult = 1 + e.value / 100;
-      else if (e.stat === 'sigil_ap') m.sigilAp = e.value; else if (e.stat === 'soul_cost_pct') m.soulCostMult = 1 + e.value / 100;
-      else if (/^save_(body|brain|heart)$/.test(e.stat)) (m.save ||= {})[e.stat.slice(5) as Fam] = e.value;
-    }
+    if (e.op === 'stat_mod' && typeof e.value === 'number' && !e.when) TABLE_STAT[e.stat]?.(m, e.value);
     if (e.op === 'skill_mod_tag' && typeof e.value === 'number') (m.skills ||= []).push({ tag: e.tag, value: e.value });
     if (e.op === 'attack_mod' && typeof e.value === 'number' && HIT_CONTEXTS.includes(e.context || 'own_attacks')) (m.hit ||= {})[(e.context || 'own_attacks') as HitContext] = e.value;
     if (e.op === 'damage_mult' && typeof e.value === 'number' && e.context === 'next_attack') m.nextAttackMult = e.value;
+    if (e.op === 'reveal' && e.what === 'intent') m.intent = true;
     if (e.op === 'forbid' && e.action === 'reaction') m.noReact = Array.isArray(e.kinds) && e.kinds.length ? [...e.kinds] : 'all';
   }
   return m;

@@ -20,9 +20,9 @@ describe('P5: targets, the unit set', () => {
   beforeAll(() => addItems('relic', FIX.relics));
   afterAll(() => clearAddedItems());
   it('the shape is checked: fields, words, a cone\'s length', () => {
-    expect(Object.keys(TARGET_FIELDS)).toEqual(['of', 'side', 'within', 'shape', 'seen', 'alive', 'downed', 'max']);
+    expect(Object.keys(TARGET_FIELDS)).toEqual(['of', 'side', 'within', 'shape', 'seen', 'alive', 'downed', 'max', 'sees', 'tied', 'aims_at']);
     expect(targetsProblem({ of: 'target', side: 'foe', within: 3 })).toBeNull();
-    expect(targetsProblem({ side: 'enemy' })).toMatch(/side/); expect(targetsProblem({ shape: 'cone' })).toMatch(/within/); expect(targetsProblem({ tied: 'bond' })).toMatch(/unknown/);
+    expect(targetsProblem({ side: 'enemy' })).toMatch(/side/); expect(targetsProblem({ shape: 'cone' })).toMatch(/within/); expect(targetsProblem({ nearby: 1 })).toMatch(/unknown/); expect(targetsProblem({ tied: 'bond' })).toBeNull(); // (step 1b: tied came with ties)
   });
   it('of target, side foe, within: a kill marks the other enemies within reach of the body (not the body, not the holder\'s side)', () => {
     const e = relic('test_targets_dread').effects[0], g = opsFight({ relics: ['test_targets_dread'] }), u = pcs(g)[0], far = foes(g)[1];

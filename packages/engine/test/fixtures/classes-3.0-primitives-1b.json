@@ -1,0 +1,469 @@
+{
+  "about": "Classes 3.0 step 1b (docs/design/rev4-primitives.md rows 7 to 11, section 6, the step 1a review's list): one fixture item per primitive, written in data only, loaded with addItems() / addConditions() by test/prim-*.test.ts. Test only: not game content. The tests read their numbers from here.",
+  "perks": [],
+  "relics": [
+    {
+      "id": "test_aura_reactions",
+      "name": "Steady Line (test)",
+      "text": "Allies within {=effects.0.targets.within} tiles of you have {=effects.0.value} more reaction a round while you stand (a standing aura: P5).",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "reactions",
+          "value": 1,
+          "targets": {
+            "side": "ally",
+            "within": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_witness_dread",
+      "name": "Witnessed Dread (test)",
+      "text": "When you kill, every enemy within {=effects.0.targets.within} tiles of the body with a line of sight to it saves against your Will Power or is Shaken.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "kill",
+          "condition": "shaken",
+          "via": "will_power",
+          "targets": {
+            "of": "target",
+            "side": "foe",
+            "within": 3,
+            "sees": "line"
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_acted_foe",
+      "name": "Foe's habit (test)",
+      "text": "After its own action, it marks it (the trigger acted, fired by the enemy AI too).",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "flag": "acted"
+        }
+      ]
+    },
+    {
+      "id": "test_to_hit_marked",
+      "name": "Sure Mark (test)",
+      "text": "Any roll to hit a Marked enemy, a weapon's, a Sigil's or an Outburst's, gets +{=effects.0.value}; a Sigil's +{=effects.1.value} more.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "target_has": [
+              "marked"
+            ]
+          },
+          "value": 3
+        },
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "target_has": [
+              "marked"
+            ],
+            "damage": [
+              "sigil"
+            ]
+          },
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "test_zone_bulwark",
+      "name": "Bulwark Ground (test)",
+      "text": "At your turn start, lay a sanctuary of radius {=effects.0.within} on yourself for {=effects.0.rounds} rounds that can prevent {=effects.0.pool} damage; allies in it take half damage, out of its pool.",
+      "effects": [
+        {
+          "op": "zone",
+          "when": "turn_start",
+          "kind": "sanctuary",
+          "at": "self",
+          "within": 1,
+          "rounds": 2,
+          "pool": 10
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "value": 0.5,
+          "pool": "sanctuary",
+          "if": {
+            "target": "ally",
+            "target_in_zone": {
+              "kind": "sanctuary",
+              "owner": "self"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_layer_ward",
+      "name": "Ward Layer (test)",
+      "text": "At your turn start, every ally within {=effects.0.targets.within} tiles gains a ward of {=effects.0.amount.base} on its own layer; at most {=effects.0.holders} carry yours.",
+      "effects": [
+        {
+          "op": "mend",
+          "when": "turn_start",
+          "amount": {
+            "kind": "shield",
+            "base": 7,
+            "profile": "flat"
+          },
+          "layer": "ward",
+          "holders": 1,
+          "targets": {
+            "side": "ally",
+            "within": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_toggle_heavy",
+      "name": "Heavy Hand (test)",
+      "text": "A toggle on an attack while you are not Marked: its damage is multiplied by {=toggles.0.effects.0.value}.",
+      "toggles": [
+        {
+          "id": "heavy",
+          "name": "Heavy swing",
+          "on": [
+            "combat/attack"
+          ],
+          "if": {
+            "self_lacks": [
+              "marked"
+            ]
+          },
+          "effects": [
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "value": 1.5
+            }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "test_tie_on_hit",
+      "name": "Hook (test)",
+      "text": "When you hit an enemy, you tie it to you (test_bond); you deal {=effects.1.value} more damage to a unit tied to you; at your turn start each tied unit is Marked.",
+      "effects": [
+        {
+          "op": "tie",
+          "when": "hit",
+          "kind": "test_bond",
+          "target": "target"
+        },
+        {
+          "op": "damage_mod",
+          "when": "dealing",
+          "value": 5,
+          "if": {
+            "target_tied": "test_bond"
+          }
+        },
+        {
+          "op": "condition",
+          "when": "turn_start",
+          "condition": "marked",
+          "skip_save": true,
+          "rounds": 2,
+          "targets": {
+            "side": "foe",
+            "tied": "test_bond"
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_ties_more",
+      "name": "Two Hooks (test)",
+      "text": "You may hold {=effects.0.value} more test bond.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ties_max:test_bond",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "test_spawn_wisp",
+      "name": "Wisp Maker (test)",
+      "text": "Once a fight, at your turn start: make a Wisp next to you.",
+      "effects": [
+        {
+          "op": "spawn",
+          "when": "turn_start",
+          "block": "test_wisp",
+          "at": "self",
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_unmake_hit",
+      "name": "Let It Go (test)",
+      "text": "When a unit you own is hit, unmake it, giving back what it took.",
+      "effects": [
+        {
+          "op": "unmake",
+          "when": "taking",
+          "refund": true,
+          "if": {
+            "target": "any",
+            "actor": "foe"
+          },
+          "target": "target"
+        }
+      ]
+    },
+    {
+      "id": "test_delay_sting",
+      "name": "Late Sting (test)",
+      "text": "Your hit stings again at the start of the target's next turn ({=effects.0.amount.base}, fixed now).",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "hit",
+          "amount": {
+            "kind": "damage",
+            "base": 5,
+            "profile": "flat",
+            "type": "true"
+          },
+          "target": "target",
+          "delay": {
+            "until": "target_turn_start"
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_ties_count",
+      "name": "Many Hooks (test)",
+      "text": "You deal {=effects.0.value.per.0.value} more damage for each test bond you hold.",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "dealing",
+          "value": {
+            "base": 0,
+            "per": [
+              {
+                "of": "ties:test_bond",
+                "value": 2
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_share_hit",
+      "name": "Share a Hit (test)",
+      "text": "When an ally within {=effects.0.if.target_within} tiles takes damage, half of it comes to you.",
+      "effects": [
+        {
+          "op": "redirect",
+          "when": "taking",
+          "share": 0.5,
+          "if": {
+            "target": "ally",
+            "target_within": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_share_split",
+      "name": "Spread It (test)",
+      "text": "When you take damage, half of it is divided among your allies within {=effects.0.targets.within} tiles.",
+      "effects": [
+        {
+          "op": "redirect",
+          "when": "taking",
+          "share": 0.5,
+          "split": true,
+          "targets": {
+            "side": "ally",
+            "within": 3
+          }
+        }
+      ]
+    }
+  ],
+  "conditions": [],
+  "verbs": [
+    {
+      "id": "test_verb_mark",
+      "name": "Paint Them (test)",
+      "kind": "verb",
+      "requires": [
+        {
+          "skill": "dexterity",
+          "min": 1
+        }
+      ],
+      "text": "Costs {=effects.0.ap} AP, once a turn: an enemy you see within {=effects.0.reach.tiles} tiles that is not Marked is Marked for {=effects.0.effects.0.rounds} rounds.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "test_mark",
+          "ap": 1,
+          "uses": "at_will",
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "reach": {
+            "tiles": 3,
+            "side": "foe",
+            "sight": true,
+            "if": {
+              "target_lacks": [
+                "marked"
+              ]
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "marked",
+              "target": "target",
+              "skip_save": true,
+              "rounds": 2
+            }
+          ]
+        }
+      ],
+      "adjudication": "engine"
+    },
+    {
+      "id": "test_verb_steady",
+      "name": "Steady (test)",
+      "kind": "verb",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 1
+        }
+      ],
+      "text": "Costs {=effects.0.ap} AP and {=effects.0.res.echo} Echo, while you are not Marked: gain {=effects.0.effects.0.value} perk AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "test_steady",
+          "ap": 1,
+          "uses": "at_will",
+          "res": {
+            "echo": 1
+          },
+          "if": {
+            "self_lacks": [
+              "marked"
+            ]
+          },
+          "effects": [
+            {
+              "op": "grant_ap",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "adjudication": "engine"
+    },
+    {
+      "id": "test_verb_whisper",
+      "name": "Small Grace (test)",
+      "kind": "verb",
+      "requires": [
+        {
+          "skill": "faith",
+          "min": 1
+        }
+      ],
+      "text": "A Whisper ({=effects.0.ap} AP, your Whisper this turn): an ally within {=effects.0.reach.tiles} tiles, or you, gains {=effects.0.effects.0.value} perk AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "test_grace",
+          "ap": 1,
+          "uses": "at_will",
+          "prayer": "whisper",
+          "reach": {
+            "tiles": 4,
+            "side": "ally",
+            "self": true
+          },
+          "effects": [
+            {
+              "op": "grant_ap",
+              "target": "target",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "adjudication": "engine"
+    }
+  ],
+  "tie_kinds": [
+    {
+      "id": "test_bond",
+      "max": 1,
+      "ends_on": [
+        "from_down",
+        "to_dead",
+        "unseen_round",
+        "combat_end"
+      ],
+      "on_end": "none"
+    },
+    {
+      "id": "test_leash",
+      "ends_on": [
+        "to_down"
+      ],
+      "on_end": "none"
+    }
+  ],
+  "owned_blocks": [
+    {
+      "id": "test_wisp",
+      "name": "Wisp (test)",
+      "kind": "machine",
+      "hp": 20,
+      "defense": 10,
+      "attack_bonus": 1,
+      "armour": 0,
+      "movement": 2,
+      "weapon": "fists",
+      "turn": "own",
+      "eyes": false,
+      "cover": true,
+      "upkeep": {
+        "res": "echo",
+        "n": 1
+      }
+    }
+  ]
+}

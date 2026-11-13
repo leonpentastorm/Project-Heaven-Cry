@@ -26,7 +26,7 @@
       "per_turn": 1,
       "beats": 5
     },
-    "text": "A Call is something you say to one unit that can hear you. It costs 2 AP, reaches 4 tiles + 1 per point of its skill, and never deals damage. More points make it better: step 2 of its effect at 3 points, 1 AP instead of 2 at 5 points, step 3 at 7 points, usable as a reaction for 0 AP once a round at 9 points, and the first Call of each turn free at 10 points. Each round a unit can be the target of one helping Call and one hindering Call. An enemy saves against 12 + your strength with the Call's skill (its points − 1). A Silenced unit can't Call. AP from a Call arrives this turn if the ally has not acted yet this round, and on their next turn if they have; nobody gains more than 3 AP in a turn or goes above 9 AP."
+    "text": "A Call is something you say to one unit that can hear you. It costs 2 AP, reaches 4 tiles + 1 per point of its skill, and never deals damage. More points make it better: step 2 of its effect at 3 points, 1 AP instead of 2 at 5 points, step 3 at 7 points, a helping Call usable as a reaction for 0 AP once a round at 9 points (a hindering one only on your own turn), and the first Call of each turn free at 10 points. Each round a unit can be the target of one helping Call and one hindering Call. An enemy saves against 12 + your strength with the Call's skill (its points − 1). A Silenced unit can't Call. AP from a Call arrives this turn if the ally has not acted yet this round, and on their next turn if they have; nobody gains more than 3 AP in a turn or goes above 9 AP."
   },
   "items": [
     {

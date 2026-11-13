@@ -27,7 +27,7 @@ import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
 import { term } from '../effects/output';
 import { itemAmount, amountMult, amountBlock } from '../effects/amounts';
-import { BUFF_HEAL, saveTn } from '../magic';
+import { BUFF_HEAL, saveTn, makeZone } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, saveAgainst, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
   grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
@@ -1354,14 +1354,16 @@ register({
       const me = h.u!, cb = h.cb!, t: Unit = ctx.t, src = ctx.src;
       if (ctx.phase !== 'shield' || !((t.shield || 0) > 0) || ctx.dmg <= 0 || !stateOf(h).shields?.[t.id]) return;
       if (!src?.by || src.by.side === me.side || !['sigil', 'elemental', 'soul', 'wall'].includes(src.type)) return;
-      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me, 'attack')) return;
-      if (!react(cb, me, { kind: 'attack', event: attackEvent() })) return; // (not a protective reaction in rules 1.28's list: Suppressed still stops it)
-      // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
-      // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
-      // Rules 1.5: an elemental Outburst is 'elemental' damage, told from a Sigil by the MP it carries.
-      const gain = src.type === 'soul' || src.spellMp != null ? (src.spellMp || SCHOOL.damage?.base_cost || 25) : 10 * (src.spellWords || 2), was = me.mg.mp; me.mg.mp = Math.min(me.mg.mpMax, me.mg.mp + gain);
-      emitFx(cb, 'syphon', { unit: me.id, at: me.pos, mp: me.mg.mp - was });
-      say(cb, me.name + ' drinks the spell off the shield: +' + (me.mg.mp - was) + ' MP (' + me.mg.mp + '/' + me.mg.mpMax + ').');
+      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me, 'protect')) return;
+      // a protective reaction (the lead's ruling on rules 1.28: it helps an ally and moves or hurts nobody): Suppressed doesn't stop it
+      react(cb, me, { kind: 'protect', event: attackEvent() }, () => {
+        // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
+        // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
+        // Rules 1.5: an elemental Outburst is 'elemental' damage, told from a Sigil by the MP it carries.
+        const gain = src.type === 'soul' || src.spellMp != null ? (src.spellMp || SCHOOL.damage?.base_cost || 25) : 10 * (src.spellWords || 2), was = me.mg!.mp; me.mg!.mp = Math.min(me.mg!.mpMax, me.mg!.mp + gain);
+        emitFx(cb, 'syphon', { unit: me.id, at: me.pos, mp: me.mg!.mp - was });
+        say(cb, me.name + ' drinks the spell off the shield: +' + (me.mg!.mp - was) + ' MP (' + me.mg!.mp + '/' + me.mg!.mpMax + ').');
+      });
     },
   },
   brief: () => null,
@@ -1372,7 +1374,7 @@ register({
 // take half damage until the start of your next turn; it releases at once and can't be held (PROVISIONAL). All damage
 // but your own heart's burn (rules 1.5; PROVISIONAL). Out of combat it is the Narrator's (a safe room against a collapse).
 register({
-  id: 'guardian.sanctuary', claims: 'all',
+  id: 'guardian.sanctuary', // its data effects are item ops (Classes 3.0 P10): the runner runs them
   actions: [
     {
       id: 'sanctuary', label: 'Sanctuary', scope: ['combat'], target: 'tile', ap: (h) => (h.u?.mg ? soulPrice(h, 'buff', 60, 1).ap : 2), uses: { per: 'per_scene', n: 1 },
@@ -1380,8 +1382,7 @@ register({
       preview: (h, args) => { const t = tileOf(h.cb!, args.tile); if (!t) return {}; const p = soulPrice(h, 'buff', 60, 1), e = soulAim(h, t, p.range); return e ? { ok: false, why: e } : { tiles: tilesAround(t, 1), lines: ['Sanctuary on ' + refOf(t) + ' (' + p.mp + ' MP, ' + p.strain + ' Strain).'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile)!, p = soulPrice(h, 'buff', 60, 1);
-        cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'sanctuary' as any, tiles: tilesAround(t, 1), words: ['sanctuary'], by: u.id, side: u.side, left: 2, mult: 0.5, who: u.name }];
-        stateOf(h).zone = cb.zones[cb.zones.length - 1].id;
+        makeZone(cb, u, { kind: 'sanctuary', tiles: tilesAround(t, 1), rounds: 2, mult: 0.5 }); // P10: its halving and its end are the move's data (classes.json)
         emitFx(cb, 'release', { unit: u.id, at: u.pos, to: t, school: 'buff', option: 'sanctuary', stage: 1, wild: false, area: 1, targets: [] });
         say(cb, u.name + ' raises a Sanctuary around ' + refOf(t) + ': allies inside take half damage until ' + u.name + '\'s next turn (' + p.mp + ' MP)' + soulPay(h, rng as Rng, p) + '.');
       },
@@ -1394,15 +1395,7 @@ register({
         pendRuling(h.g, c, h.key, 'Sanctuary out of combat (60 MP paid): a 3×3 safe zone where allies take half damage until the danger passes. Rule what it keeps out.', eid || undefined); },
     },
   ],
-  on: {
-    damage_in: (ctx, h) => {
-      const z: any = (h.cb?.zones || []).find((x: any) => x.id === stateOf(h).zone); if (!z || ctx.phase !== 'reduce') return;
-      // Rules 1.5: your own heart's harm (the burn, src.type 'strain'; an old save's Short) isn't halved (item 525).
-      const t: Unit = ctx.t; if (t.side !== z.side || !z.tiles.includes(t.pos) || ((ctx.src?.type === 'short' || ctx.src?.type === 'strain') && t === h.u)) return;
-      ctx.dmg = Math.ceil(ctx.dmg * 0.5);
-    },
-    turn_start: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (!st.zone || !h.cb) return; h.cb.zones = (h.cb.zones || []).filter((x) => x.id !== st.zone); st.zone = null; say(h.cb, h.u!.name + '\'s Sanctuary fades.'); },
-  },
+  // (its halving, item 525's exception for your own heart's burn, and its end at your next turn are item ops in its data)
   brief: () => 'Sanctuary out of combat: the Narrator rules what it keeps out.',
 });
 

@@ -2463,15 +2463,31 @@
         "text": "Once per scene. It costs your Soul cast AP and 60 MP, and adds 1 Strain more than a normal cast. Pick a tile you can see within Soul reach: allies on the 3×3 tiles around it, you included, take half damage until the start of your next turn. The burn from your own Strain is not halved.",
         "effects": [
           {
-            "op": "state",
-            "state": "sanctuary",
-            "area": "3x3",
-            "rounds": 1
+            "op": "damage_mult",
+            "when": "taking",
+            "value": 0.5,
+            "round": "up",
+            "if": {
+              "target": "ally",
+              "target_in_zone": { "kind": "sanctuary", "owner": "self" }
+            }
           },
           {
             "op": "damage_mult",
-            "value": -0.5,
-            "target": "allies_in_zone"
+            "when": "taking",
+            "value": 0.5,
+            "round": "up",
+            "if": {
+              "target_in_zone": { "kind": "sanctuary", "owner": "self" },
+              "not_damage": [ "short", "strain" ]
+            }
+          },
+          {
+            "op": "zone",
+            "when": "turn_start",
+            "kind": "sanctuary",
+            "clear": true,
+            "say": "{self}'s Sanctuary fades."
           }
         ],
         "adjudication": "engine",
@@ -4315,8 +4331,15 @@
             {
               "op": "condition",
               "condition": "shaken",
-              "target": "area",
-              "when": "on_kill"
+              "when": "kill",
+              "via": "will_power",
+              "targets": {
+                "of": "target",
+                "side": "foe",
+                "within": 3,
+                "sees": "line"
+              },
+              "say": "Dread lingers over {target}'s body (Lingering Dread){then}."
             }
           ],
           "adjudication": "engine",

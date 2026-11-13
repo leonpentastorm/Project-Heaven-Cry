@@ -8,15 +8,18 @@ import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
-import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN } from './rolls';
+import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
-import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook } from './effects/hooks';
+import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard } from './effects/hooks';
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
+import type { ShieldLayer } from './effects/damage';
+import type { Tie } from './kit';
+import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { itemAmount } from './effects/amounts';
@@ -102,7 +105,7 @@ export interface Unit {
   ignoreDifficult?: boolean; unarmedBonus?: number; moved?: boolean; firstShotDone?: boolean; proficiency?: number; parts?: number; baseArmour?: number; dexterity?: number; athleticsPts?: number;
   /** Magic (spec: Mana, rules 1.2): what the unit knows and carries; conditions (rounds left); a shield; the base
    * Movement and Vision a condition halved. */
-  mg?: MagicUnit; conds?: Record<string, number>; shield?: number; baseMove?: number; baseVision?: number;
+  mg?: MagicUnit; conds?: Record<string, number>; shield?: number; /** Classes 3.0 P11: shield layers above the base shield (effects/damage.ts grantShield with a layer), oldest first */ shields?: ShieldLayer[]; baseMove?: number; baseVision?: number;
   /** The effect runtime (effects/): what the unit holds (perks with tiers, traits, class and rank, advanced class), per-fight
    * item state (ps, by item key), use counters (uses), armed presets (armed), and the AP economy: AP banked for the next
    * turn, debt (after the floor), perk AP gained this turn (the +3 cap) and the turn's total (the 9 ceiling). */
@@ -159,7 +162,7 @@ export interface Unit {
    * weapon, so the Heat limit both guns pool is still main + off (Leon's ruling, 13 Nov 2026: the jam lands on the gun that fired). */
   swapMain?: string;
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
-  ctrl?: string; companion?: string;
+  ctrl?: string; companion?: string; /** Classes 3.0 P9: an owned unit's own block (owned.ts: turn, eyes, upkeep, cover, lure); its owner is its `owned` tie's far end */ owned?: OwnedBlock;
   /** The only actions this unit has (action ids as the action list names them: 'move', 'shot'…), besides ending its
    * turn and declining a reaction window. Unset: every action its weapon and kind allow. The drone (enemies.json
    * companions `actions`; spec §14 item 370): move and a plain shot. */
@@ -194,7 +197,7 @@ export interface Unit {
    * two rounds are kept). The enemy AI reads it: the enemies go for whoever is mending the squad (healerMark). */
   tended?: { r: number; n: number }[];
   /** What a Trickster's Read showed this unit means to do on its next turn (enemyIntent; cleared when its turn ends). */
-  readIntent?: Intent & { by: string; round: number };
+  readIntent?: Intent & { by: string; round: number; /** the condition that keeps it (the row `read`), else the Read move's own */ cond?: string };
   /** Rules 1.9 drop tables (loot.ts): what this enemy drops beyond its weapon and magazines, from the campaign or the
    * Narrator (absent: the engine's default for its kind and tier). */
   drops?: import('./loot').Drops;
@@ -211,6 +214,8 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Magic on the field (spec: Mana): Sigil glyphs on tiles, standing zones (walls, smoke, light), the ambient mana
    * meter, and the dead already counted toward it. */
   glyphs?: Glyph[]; zones?: Zone[]; mana?: number; deadSeen?: string[]; glyphSeq?: number;
+  /** Classes 3.0 section 6: ops queued by `delay` (effects/triggers.ts), oldest first; absent while there are none. */ delayed?: any[];
+  /** Classes 3.0 P8: the ties between units (kit.ts tie / untie / tiesOf; their kinds: data/rules.json ties.kinds), oldest first; absent while there are none. */ ties?: Tie[];
   /** Rules 1.10: scuffed glyphs' traces (readable for a few rounds). */
   traces?: Trace[];
   /** The Sigil rules revision this fight's glyphs follow (14 = rules 1.4; absent: a 1.2 save, migrated on first use); the
@@ -502,7 +507,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
     parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
-    mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass || c.relics?.length || skillItemsOf(c.skills).length ? { held: heldOfChar(c) } : {}),
+    mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass || c.relics?.length || skillItemsOf(c.skills).length || heldOfChar(c).verbs?.length ? { held: heldOfChar(c) } : {}),
     ...pcExtras(c, w),
   };
 }
@@ -675,11 +680,14 @@ export const objectsAt = (cb: Combat, k: string) => objectsOf(cb).filter((o) => 
 export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp: number; max: number; id: string; name: string }> {
   const out: Record<string, any> = {};
   for (const o of objectsOf(cb)) { const c = coverKind(o); if (c) out[o.pos] = { kind: c, hp: o.hp ?? 0, max: o.max ?? 0, id: o.id, name: o.name }; }
+  for (const u of coverUnits(cb)) if (!out[u.pos]) out[u.pos] = { kind: 'half', hp: u.hp, max: u.maxHp, id: u.id, name: u.name }; // Classes 3.0 P9: an owned unit whose block is cover
   return out;
 }
+/** Classes 3.0 P9: the living owned units whose block is cover (half cover for those behind them; they block sight). */
+const coverUnits = (cb: Combat): Unit[] => cb.units.filter((u) => u.owned?.cover && !u.dead && !u.downed);
 export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
-export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
+export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb), ...coverUnits(cb).map((u) => u.pos)]);
 
 /** What hurtUnit deals that an item may speak about when someone made it (its `damage_kinds`). */
 export const BLAST_KINDS = ['explosion', 'trap', 'thrown'];
@@ -927,6 +935,7 @@ export function coverTileFor(cb: Combat, from: string, to: string): string | nul
     const [cx, cy] = xy(o.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) !== 1) continue;
     const e = near && near.find((q) => q.k === o.pos); if (e) e.kind = c; else (near ||= []).push({ k: o.pos, kind: c });
   }
+  for (const u of coverUnits(cb)) { const [cx, cy] = xy(u.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && !(near && near.some((q) => q.k === u.pos))) (near ||= []).push({ k: u.pos, kind: 'half' }); }
   if (!near) return null;
   const far = dist(from, to);
   for (const e of near) if (e.kind === 'half' && dist(from, e.k) < far) return e.k;
@@ -967,9 +976,15 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
 /** Items that change who is seen (Sixth Sense, Skin Map, Sworn Sibling, Upper-Touched, Chain Smoker): the 'sees' hook
  * {cb, side, t, by, seen, sensed}. side is the side looking; by is the one unit looking (an attack, a reaction) or null
  * for the side's shared sight (the fog of war). Handlers may set seen or sensed. Allies count too (a sibling). */
-const sightHooked = (cb: Combat) => anyOn(cb, 'sees') || cb.units.some((u) => u.hidden && !!u.call?.spot?.unhide); // rules 1.13: a Spotted unit isn't Hidden to the allies it was pointed out to (calls/rules.ts)
+const sightHooked = (cb: Combat) => anyOn(cb, 'sees') || cb.units.some((u) => u.hidden && !!u.call?.spot?.unhide) || statHeard(cb, 'always_seen'); // rules 1.13: a Spotted unit isn't Hidden to the allies it was pointed out to (calls/rules.ts); Classes 3.0 P7: someone may be always seen
+/** Is this unit seen by the other side wherever it is (its stat `always_seen` over 0: Classes 3.0 P7)? Asked only when
+ * something in the fight can answer it (effects/hooks.ts statHeard). */
+export const alwaysSeen = (cb: Combat, t: Unit): boolean => !t.dead && statHeard(cb, 'always_seen') && statQuery({ u: t, cb }, 'always_seen').add > 0;
 function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen: boolean, sensed: boolean): { seen: boolean; sensed: boolean } {
   const r: any = emit(cb, 'sees', { cb, side, t, by, seen, sensed });
+  // Classes 3.0 P7: a unit whose stat `always_seen` is over 0 is seen by the other side wherever it is (Traced, Stare):
+  // the fog, the AI's targets and every sight test read it here
+  if (!r.seen && t.side !== side && alwaysSeen(cb, t)) return { seen: true, sensed: false };
   return { seen: !!r.seen, sensed: !!r.sensed };
 }
 /** Does this side see the unit t where it stands now? For a unit on the map, the same answer as
@@ -1189,7 +1204,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const terms: Term[] = [...T(att.attack, 'skill'), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
     ...T(mode === 'aimed' ? 2 : 0, 'aimed'), ...T(mode === 'auto' ? -2 : 0, 'full auto'), ...T(opts.extra || 0, 'volley'), ...T(rangePenalty, 'range'), ...T(heat, 'Heat'), ...T(armPenalty(att, useW), 'injured arm'),
     ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),
-    ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...T(levelGap(att, tgt, cb) * ENEMY_LEVELS.gap.to_hit_per_level, 'level gap'), ...(hk.terms as Term[]).filter((t) => t && t.v)];
+    ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...T(levelGap(att, tgt, cb) * ENEMY_LEVELS.gap.to_hit_per_level, 'level gap'), ...(hk.terms as Term[]).filter((t) => t && t.v), ...toHitTerms(cb, att, tgt, 'weapon', { mode })]; // the one hook of every roll to hit (rolls.ts)
   if (hk.ignoreCover && coverTile0) terms.push({ v: 0, label: 'cover ignored' });
   if (farBelow(tgt, att, cb)) terms.push({ v: 0, label: 'far below your level: any hit takes it out' }); // rules 1.15
   const toHit = terms.reduce((t, x) => t + x.v, 0);
@@ -1276,6 +1291,14 @@ export const weaponVia = (att: Unit, mode: string): string => strikeWeapon(att, 
 const ATTACKS: number[] = []; let ATTACK_N = 0;
 /** The event id of the attack being resolved now ('atk<serial>'), or null outside one. */
 export const attackEvent = (): string | null => (ATTACKS.length ? 'atk' + ATTACKS[ATTACKS.length - 1] : null);
+/** The step each unit is taking now (a serial each step; never saved): what react()'s `event` names for every answer
+ * to a step (an opportunity attack, Overwatch, a held Watch, Heart Overwatch, Anchor), so a unit answers one step once
+ * (rules 1.28, rule 3), whichever reaction it makes, and the same tiles walked twice are two steps. */
+const STEP_OF = new WeakMap<Unit, number>(); let STEP_N = 0;
+/** A unit takes a step (a walk's step, a forced tile entered, a drag): a fresh serial for stepEvent. */
+export const newStep = (u: Unit): void => { STEP_OF.set(u, ++STEP_N); };
+/** THE event id of a unit's step now: 'step:<mover>:<serial>:<arrival tile>' (one key for every reaction to it). */
+export const stepEvent = (u: Unit): string => 'step:' + u.id + ':' + (STEP_OF.get(u) ?? 0) + ':' + u.pos;
 export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: AttackOpts = {}): AttackResult {
   // Whatever this attack puts on someone (a weapon's rider, a perk's on-hit) is delivered by the weapon's skill.
   ATTACKS.push(++ATTACK_N);
@@ -1477,6 +1500,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: [], over: null, level, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
+  tieCompanions(cb); // Classes 3.0 P9: each companion is tied to its owner (the owned-unit record)
   say(cb, 'Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')); // (re-marked by sightQuietly when the set-up hides someone)
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
@@ -1700,7 +1724,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   const flush = () => { if (seg.length > 1) moveFx(cb, u, seg, how, tileSight); restart(); };
   for (let i = 0; i < route.length; i++) {
     const k = route[i], was = u.pos;
-    u.pos = k; seg.push(k); tileSight.push(sightHere(cb, u)); eyes.steps.push({ at: k, ids: new Set(seenIds(cb, u.side as 'pc' | 'foe')) });
+    u.pos = k; newStep(u); seg.push(k); tileSight.push(sightHere(cb, u)); eyes.steps.push({ at: k, ids: new Set(seenIds(cb, u.side as 'pc' | 'foe')) });
     { const sh = tileSight[tileSight.length - 1], other = u.side === 'pc' ? 'foe' : 'pc'; if (sh[other === 'pc' ? 0 : 1] === '1') noteSeen(cb, other, u.id, k); // the other side saw it step here
       for (const id of eyes.steps[eyes.steps.length - 1].ids) { const t = cb.units.find((x) => x.id === id); if (t) noteSeen(cb, u.side, id, t.pos); } } // and what the walker's side sees from here
     { const en = enterTile(cb, rng, u, k, flush); if (en.sprung) sprung = en.sprung; if (en.stopped) stopped = en.stopped; } // what the tile does to whoever enters it (a trap, a field, a hazard)
@@ -1712,7 +1736,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
         if (u.dead || u.downed) break;
         if (h.side === u.side || !alive(h) || dist(h.pos, was) > 1 || dist(h.pos, k) <= 1 || !canReact(cb, h, 'attack')) continue;
         // react(): the reaction window {reactor, mover, kind, cancel} (an item may cancel it), then the blow.
-        react(cb, h, { kind: 'attack', event: 'step:' + u.id + ':' + was + '>' + k, window: { kind: 'opportunity', mover: u, at: k, rng } }, () => {
+        react(cb, h, { kind: 'attack', event: stepEvent(u), window: { kind: 'opportunity', mover: u, at: k, rng } }, () => {
           // The walk so far plays up to the tile it is leaving, then the blow; the step out plays after it, and only if
           // the mover is still on its feet (a mover dropped there never showed the step it didn't finish).
           if (seg[seg.length - 1] === k) { seg.pop(); tileSight.pop(); }
@@ -1781,7 +1805,7 @@ export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string
     // Killzone's first shot spends both reactions (owSpend, rules 1.30); with fewer left, one (and only it fires)
     const want = paid ? 0 : Math.max(1, h.owSpend || 1), spend = want > 1 && !canReact(cb, h, 'attack', want) ? 1 : want;
     if (!canReact(cb, h, 'attack', spend)) continue;
-    react(cb, h, { kind: 'attack', spend, event: 'step:' + mover.id + ':' + mover.pos, window: { kind: 'overwatch', mover, at: mover.pos, rng } }, () => {
+    react(cb, h, { kind: 'attack', spend, event: stepEvent(mover), window: { kind: 'overwatch', mover, at: mover.pos, rng } }, () => {
       if (seg && seg.length > 1) { moveFx(cb, mover, seg, 'move', walked); seg.splice(0, seg.length - 1); walked?.splice(0, walked.length - 1); }
       if (paid) spendPaidShot(cb, h); const mode = h.overwatch!, shots = Math.max(1, h.owShots || 1); h.overwatch = null; h.owShots = 0; delete h.owSpend;
       // Presentation: the held shot is sprung here (the client stops the mover's walk on this tile for it).
@@ -1972,7 +1996,7 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
     // `reactions` (false for every kind today: nobody reacts to forced movement). Turned on in the data, a held Watch
     // and Overwatch answer each tile entered, as they answer a walk.
     if (rule.reactions && !o.willing && rng) {
-      const prev = entered > 1 ? path[entered - 2] : from;
+      const prev = entered > 1 ? path[entered - 2] : from; newStep(u);
       const ms: any = emit(cb, 'move_step', { u, from: prev, at: k, i: entered - 1, route: [prev, k], how: 'forced', stop: false, cb, rng, forced: true });
       if (!u.dead && !u.downed) triggerOverwatch(cb, rng, u);
       if (ms.stop || u.dead || u.downed) { if (k !== last) { res.stoppedBy = 'watch'; delete res.blockedAt; } break; }
@@ -2483,6 +2507,11 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   const stood = new Set<string>([u.pos]); // the tiles it has stood on this turn: it doesn't pace between them
   let hunted = false; // rules 1.23: it repositions for a line on the healer at most once a turn
+  // Classes 3.0 P2 (the review's finding 14): an enemy's own action fires `acted` as a player's does (the reducer's), named
+  // as the reducer names it (a cost site, a move's kind, 'attack' with its mode). Its magic, technique and clearing steps
+  // (ai-sigil.ts, ai-soul.ts, ENEMY_STEPS, aiClearBlock), whose own verbs the AI does not report, are named by their
+  // system: 'sigil', 'outburst', 'technique', 'clear_block'.
+  const did = (action: string, o: { t?: Unit | null; tile?: string | null; mode?: string | null } = {}) => acted(cb, u, { action, ...o });
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
     stood.add(u.pos);
     // 'enemy_action_start' {u, step}: before each enemy action; an item may open a window (Between Heartbeats) or set
@@ -2490,32 +2519,33 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     const ea: any = emit(cb, 'enemy_action_start', { u, step, skip: false, cb, rng });
     if (cb.window || u.dead || u.downed || u.surrendered) break;
     if (ea.skip) continue; // the handler took the action away (and its AP)
-    if (condOn(u, 'burning') && affords(cb, u, 'extinguish')) { extinguishSelf(cb, u); continue; }
-    if (condOn(u, 'grappled') && affords(cb, u, 'escape')) { escapeHold(cb, rng, u); continue; }
-    if (u.nailed && canPay(cb, u, price({ cb, u }, 'pull_free', u.nailed.ap))) { pullFree(cb, u); continue; } // rules 1.12
-    if ((condOn(u, 'disarmed') && affords(cb, u, 'recover')) || (condOn(u, 'lowered') && affords(cb, u, 'recover', 'ap_lowered'))) { recoverHeld(cb, u); continue; }
-    if (u.prone && affords(cb, u, 'prone') && order !== 'kneel') { toggleProne(cb, u); continue; }
-    if (u.jammed && affords(cb, u, 'clear_jam')) { clearJam(cb, u); continue; }
-    if (enemyScuff(cb, u)) continue;
+    if (condOn(u, 'burning') && affords(cb, u, 'extinguish')) { extinguishSelf(cb, u); did('extinguish'); continue; }
+    if (condOn(u, 'grappled') && affords(cb, u, 'escape')) { escapeHold(cb, rng, u); did('escape'); continue; }
+    if (u.nailed && canPay(cb, u, price({ cb, u }, 'pull_free', u.nailed.ap))) { pullFree(cb, u); did('pull_free'); continue; } // rules 1.12
+    if ((condOn(u, 'disarmed') && affords(cb, u, 'recover')) || (condOn(u, 'lowered') && affords(cb, u, 'recover', 'ap_lowered'))) { recoverHeld(cb, u); did('recover'); continue; }
+    if (u.prone && affords(cb, u, 'prone') && order !== 'kneel') { toggleProne(cb, u); did('prone'); continue; }
+    if (u.jammed && affords(cb, u, 'clear_jam')) { clearJam(cb, u); did('clear_jam'); continue; }
+    if (enemyScuff(cb, u)) { did('scuff'); continue; }
     // Sigil casters (rules 1.4): step out of a hostile field, scuff a turret underfoot, then weigh a spell against the weapon.
     // Sigil magic (rules 1.4, ai-sigil.ts): any enemy steps out of a field of yours and scuffs a turret underfoot; a caster
     // then weighs a spell against its weapon.
-    if (!order && aiSigilStep(cb, rng, u)) { checkOver(cb); continue; }
+    if (!order && aiSigilStep(cb, rng, u)) { did('sigil'); checkOver(cb); continue; }
     // Soul casters (rules 1.5, ai-soul.ts): Begin, Pump, hold for the big release, watch with the heart, calm the Strain.
-    if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
+    if (!order && aiSoulStep(cb, rng, u)) { did('outburst'); checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
-    if (enemyNeedsReload(u) && canPay(cb, u, reloadAp(u, cb))) { reload(cb, u); continue; }
-    if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
+    if (enemyNeedsReload(u) && canPay(cb, u, reloadAp(u, cb))) { reload(cb, u); did('reload'); continue; }
+    if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { did('technique'); checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
     // Rules 1.23, the hunt: an Elite or a Boss with a gun and no shot at the squad's healer steps to where it has one.
-    if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; checkOver(cb); continue; } }
-    if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
-    if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
+    if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
+    if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
+    if (!order && aiClearBlock(cb, rng, u)) { did('clear_block'); checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
-    if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; continue; } // nobody it perceives: it searches where its side last saw one
+    if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; did('move', { tile: go.tile }); continue; } // nobody it perceives: it searches where its side last saw one
     const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);
     if (!best || moveUnit(cb, u, best.tile, rng)) break;
+    did('move', { tile: best.tile });
   }
 }
 const enemyDry = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0); };
@@ -2715,6 +2745,18 @@ export function enemyIntent(cb: Combat, u: Unit): Intent {
   u.bank = 0; u.shotsThisTurn = 0; u.moved = false;
   try { return withAp(u, Math.max(AP_MIN, AP_BASE - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)), () => intentInner(cb, u)); } finally { u.bank = save.bank; u.shotsThisTurn = save.shots; u.moved = save.moved; }
 }
+// Classes 3.0 (rev4-primitives.md batch row `read`): a condition whose row reveals `intent` (the row `read`) shows its
+// source's side what the bearer means to do: enemyIntent read as it lands, kept on the bearer (readIntent, the same
+// field and fx the Trickster's Read uses) until the condition ends (its one round: the bearer's turn end). A player's
+// unit has no intent to read (the enemy AI reads nothing): nothing is kept.
+onHook('cond_landed', (ctx: any, cb: Combat) => {
+  const t: Unit = ctx.t, by: Unit | null = ctx.by; if (!t || !by || t.side === 'pc' || !condDef(ctx.id)?.mods.intent) return;
+  const it = enemyIntent(cb, t);
+  t.readIntent = { ...it, by: by.id, round: cb.round, cond: ctx.id };
+  emitFx(cb, 'intent', { unit: by.id, target: t.id, at: t.pos, kind: it.kind, text: it.text, ...(it.targetId ? { targetUnit: it.targetId } : {}), ...(it.to ? { to: it.to } : {}), ...(it.image ? { image: it.image } : {}) });
+  say(cb, 'Read: ' + t.name + ' means to ' + it.text + '.');
+});
+onHook('cond_end', (ctx: any) => { const u: Unit = ctx.u; if (u?.readIntent?.cond && u.readIntent.cond === ctx.id) delete u.readIntent; });
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
 /** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */

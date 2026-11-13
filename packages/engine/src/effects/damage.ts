@@ -23,6 +23,7 @@ export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => vo
 export interface DamageSrc {
   /** Who did it (null: a hazard, a trap, bleeding, burning). */
   by?: Unit | null;
+  /** Classes 3.0: a share moved by the item op `redirect` (it is not moved again). */ redirected?: boolean;
   /** 'weapon' (an attack), 'hazard', 'trap', 'explosion', 'bleed', 'burn', 'sigil', 'elemental', 'soul', 'true', 'short', … */
   type: string;
   melee?: boolean; ranged?: boolean; crit?: boolean; explosive?: boolean; ambush?: boolean; shared?: boolean;
@@ -78,7 +79,9 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
   if (src.shield !== false && !t.downed) {
     ctx.phase = 'shield'; if (cb) emit(cb, 'damage_in', ctx);
-    if (t.shield && t.shield > 0) { const s = Math.min(t.shield, ctx.dmg); t.shield -= s; ctx.dmg -= s; res.shielded = s; }
+    // Classes 3.0 P11: the layers first, the newest first, then the base shield
+    if (t.shields?.length) { for (let i = t.shields.length - 1; i >= 0 && ctx.dmg > 0; i--) { const l = t.shields[i], s = Math.min(l.n, ctx.dmg); l.n -= s; ctx.dmg -= s; res.shielded += s; } t.shields = t.shields.filter((l) => l.n > 0); if (!t.shields.length) delete t.shields; }
+    if (t.shield && t.shield > 0) { const s = Math.min(t.shield, ctx.dmg); t.shield -= s; ctx.dmg -= s; res.shielded += s; }
   }
   res.amount = ctx.dmg;
   if (t.downed) {
@@ -120,27 +123,60 @@ function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, 
 
 /** Healing a unit through the hooks: 'heal_in' {t, by, n, kind} may change n, then HP; 'heal_given' after. Returns HP
  * actually restored (a Downed unit is brought back up at max(1, n)). */
-export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string, _o: { /** (rules 1.20's round limit is withdrawn, rules 1.23: nothing reads this) */ noLimit?: boolean } = {}): { restored: number; revived: boolean; /** always false since rules 1.23 (there is no round limit) */ limited?: boolean } {
+export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string, _o: { /** (rules 1.20's round limit is withdrawn, rules 1.23: nothing reads this) */ noLimit?: boolean; /** the most one heal restores (effects/output.ts mend: the percent cap), after the received bonuses */ cap?: number } = {}): { restored: number; revived: boolean; /** always false since rules 1.23 (there is no round limit) */ limited?: boolean } {
   if (t.dead) return { restored: 0, revived: false };
   // Healing received: +10% × Camaraderie (rules 1.13).
   const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), kind, cb };
   if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }
+  if (_o.cap != null) ctx.n = Math.min(ctx.n, _o.cap);
   // (Rules 1.20 held spells and prayers to half of a creature's max HP a round here. Withdrawn by rules 1.23: healing
   // is priced in AP, and the enemies go for whoever mends the most: noteTended below is what they read.)
   let restored = 0, revived = false;
   if (t.downed) { setDowned(t, false); t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
   else { const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + ctx.n); restored = t.hp - was; }
   noteTended(cb, by, t, restored);
-  if (cb) emit(cb, 'heal_given', { t, by, n: restored, kind, revived, cb });
+  if (cb) emit(cb, 'heal_given', { t, by, n: restored, over: Math.max(0, ctx.n - restored), kind, revived, cb }); // over: the heal that didn't fit (P3 event:over)
   if (cb && by && (restored > 0 || revived)) tendHook.f?.(cb, by, t);
   return { restored, revived, limited: false };
 }
-/** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
-export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {
-  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
+/** A shield layer (Classes 3.0 P11): its kind, what is left of it, its giver, its serial (the oldest of a giver's ends first). */
+export interface ShieldLayer { layer: string; n: number; by: string; s: number }
+/** How a shield is given: on a layer above the base (layer), at most `holders` units carrying one giver's layer at once
+ * (a new one ends the oldest), or added to what stands (stack). */
+export interface ShieldOpts { layer?: string; holders?: number; stack?: boolean; /** the shield's kind for 'shield_grant' (tending, prayer, perk…: the `how` predicate) */ kind?: string }
+/** A unit's shield in all: the base and every layer. */
+export const shieldTotal = (t: Unit): number => (t.shield || 0) + (t.shields || []).reduce((a, l) => a + l.n, 0);
+/** Give a shield through the hooks ('shield_grant' {by, t, n, layer, kind} may change n). Shields don't stack: the larger
+ * stands (the base shield; on a layer, the larger of one giver's layer on a unit). A layer is spent before the base,
+ * the newest first (Classes 3.0 P11). `o`: a boolean is the old `stack`. */
+export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, o: boolean | ShieldOpts = false): number {
+  const so: ShieldOpts = typeof o === 'boolean' ? { stack: o } : o, stack = !!so.stack;
+  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb, ...(so.layer ? { layer: so.layer } : {}), ...(so.kind ? { kind: so.kind } : {}) }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
+  if (so.layer) return layerShield(cb, t, Math.max(0, Math.floor(ctx.n)), by, so);
   const had = t.shield || 0, v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? had + v : Math.max(had, v);
   noteTended(cb, by, t, (t.shield || 0) - had); // rules 1.23: only what the shield really added (a smaller one over a bigger adds nothing)
   if (cb && by && v > 0) tendHook.f?.(cb, by, t);
   return v;
 }
+/** A shield on a layer: one giver's layer on a unit is one entry (the larger stands, or it adds with stack); with
+ * `holders`, a giver's layer of this kind stands on at most that many units (a new one ends the oldest). */
+function layerShield(cb: Combat | null, t: Unit, v: number, by: Unit | null, so: ShieldOpts): number {
+  const ls = (t.shields ||= []), byId = by?.id || '', i = ls.findIndex((l) => l.layer === so.layer && l.by === byId), was = i >= 0 ? ls[i].n : 0;
+  const s = cb ? ((cb as any).shieldSeq = ((cb as any).shieldSeq || 0) + 1) : ls.length + 1;
+  const n = so.stack ? was + v : Math.max(was, v);
+  if (i >= 0) ls.splice(i, 1);
+  ls.push({ layer: so.layer!, n, by: byId, s });
+  if (cb && so.holders != null && byId) {
+    const carriers = cb.units.filter((u) => (u.shields || []).some((l) => l.layer === so.layer && l.by === byId));
+    while (carriers.length > so.holders) {
+      const old = carriers.reduce((a, u) => (lay(u, so.layer!, byId)!.s < lay(a, so.layer!, byId)!.s ? u : a));
+      old.shields = old.shields!.filter((l) => !(l.layer === so.layer && l.by === byId)); if (!old.shields.length) delete old.shields;
+      carriers.splice(carriers.indexOf(old), 1);
+    }
+  }
+  noteTended(cb, by, t, n - was);
+  if (cb && by && v > 0) tendHook.f?.(cb, by, t);
+  return v;
+}
+const lay = (u: Unit, layer: string, by: string) => (u.shields || []).find((l) => l.layer === layer && l.by === by);
 

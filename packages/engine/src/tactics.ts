@@ -25,6 +25,7 @@ import { tilesAround, unitsIn } from './kit';
 import { rawHidden, setDowned, startHidden } from './unitstate';
 import { setCondRounds } from './magic';
 import { price, costOf, whyNot, pay, setAp, spend } from './effects/cost';
+import { ownedRecord } from './owned';
 
 // ---------- damage types, special ammo, the damage bucket ----------
 export interface AmmoType { id: string; damage_mult?: number; ignores_armor?: boolean; armor_mult?: number; applies?: string; damage_type?: string; meter_per_hit?: number }
@@ -443,6 +444,7 @@ export function companionUnits(cb: Combat | null, c: Character, owner: Unit, tak
     levelCompanion(u, k, c.level, comp.hp); // rules 1.15: a companion is its owner's level (its block is the level 1 block)
     if (Array.isArray(k.actions) && k.actions.length) u.allowedActions = [...k.actions];
     if (k.infinite_ammo) u.infiniteAmmo = true;
+    u.owned = ownedRecord(k); // Classes 3.0 P9: its record (turn own: it acts right after its owner); the tie is made with the fight (owned.ts tieCompanions)
     // The twin (Twinbound's Call on the area map): half its owner's maximum HP, the owner's Defense, tied to the owner.
     if (comp.kind === 'twin') Object.assign(u, { hp: comp.hp ?? Math.floor(0.5 * owner.maxHp), maxHp: comp.maxHp ?? Math.floor(0.5 * owner.maxHp), def: owner.def, attack: owner.mg?.will ?? 0, init: owner.init - 0.4, short: 'TW', img: comp.img || owner.img, twinOf: owner.id });
     out.push(u);

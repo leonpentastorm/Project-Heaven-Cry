@@ -7,7 +7,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { addConditions, clearAddedConditionRows, statQuery } from '../src/effects/hooks';
-import { COND_TABLE_STATS } from '../src/effects/triggers';
+import { COND_TABLE_STATS } from '../src/condtable';
 import { condDef } from '../src/condtable';
 import { maxReactions } from '../src/tactics';
 import { A, W, dice, HIT, pcs, foes, charOf, turn } from './golden/harness';

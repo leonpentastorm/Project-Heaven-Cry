@@ -17,13 +17,16 @@ import '../datatext'; // fills the texts' {=placeholders} before any data is rea
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
-import { setTriggerRunner, setAllItems } from './hooks';
-import { allItems } from './collect';
-import { overworld, rngOf, unitsIn, type Area } from '../kit';
-import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent } from '../combat';
-import { applyCond, endCond, condOn, condId, debuffsOf, withVia } from '../magic';
+import { setTriggerRunner, setAllItems, onHook } from './hooks';
+import { allItems, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
+import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, canStand, tiesOf as tiesOfK, type Area } from '../kit';
+import { holds } from '../character';
+import { applyDamage } from './damage';
+import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
+import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent } from '../combat';
+import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS } from '../magic';
 import { nextToCover } from '../combat';
-import { CONDITION_ROWS, condRowsVersion } from '../condtable';
+import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
 import { isStatId } from './stats';
 import type { ItemInfo } from './types';
 import { charOfUnit } from './hooks';
@@ -34,9 +37,10 @@ import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
-import { deal, mend, type AmountSpec } from './output';
+import { deal, mend, amountOf, type AmountSpec } from './output';
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
 import { resOf } from '../tactics';
+import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
 import { resLeft } from './cost';
 
 // ============================================================================================== the triggers
@@ -80,6 +84,7 @@ export const TRIGGERS: Record<string, Trigger> = {
   // Classes 3.0 step 1 (docs/design/rev4-primitives.md P2 and the batch rows)
   acted: { hook: 'acted', actor: u_, target: t_, self: 'actor', about: 'a unit\'s own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action\'s nested `when: acted` effects need no `if.action`' },
   reaction: { hook: 'reaction', actor: u_, self: 'actor', about: 'the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves' },
+  to_hit: { hook: 'to_hit', actor: att, target: tgt, self: 'actor', about: 'a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term' },
   spot: { hook: 'spot', actor: by, target: u_, self: 'target', about: 'a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel)' },
 };
 
@@ -116,17 +121,14 @@ const byHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].in
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 /** The patron ids (data/patrons.json): the words predicate `patron` takes. */
 const PATRON_IDS: string[] = ((patronsJ as any).items || []).map((p: any) => p.id);
-/** A character's patron id (faith.ts beliefOf, read here without importing faith.ts: its load order places its global
- * hooks): Faithful to a patron of patrons.json, else none. */
-const patronIdOf = (c: any): string | null => { if (!c) return null; const b = c.belief; if (b?.kind === 'faithful') return PATRON_IDS.includes(b.patron) ? b.patron : null; if (b?.kind === 'atheist') return null; return PATRON_IDS.includes(c.patron) ? c.patron : null; };
 const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.flags || {};
 
 // ============================================================================================== the predicates
 /** The closed list of `if` keys. Each reads the event; all of an effect's keys must hold. `<who>` is self, actor or
  * target. Numbers are shares of max HP (0.5: half) or tiles. */
-export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
+export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
 /** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
-const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
+const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
   PREDICATES[name] = { about, arg, test };
   // (a function: read when asked, for a list defined in a module this one is loaded inside of: tactics.ts SIGHT_WORDS)
   if (values) Object.defineProperty(PREDICATES[name], 'values', { enumerable: true, get: typeof values === 'function' ? values : () => values });
@@ -151,6 +153,7 @@ P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev
 P('crit', 'bool', 'the attack is (or is not) a critical', (ev, v) => !!(ev.ctx.crit ?? ev.ctx.src?.crit) === v);
 P('mode', 'words', 'the attack\'s mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech)', (ev, v) => list(v).includes(ev.ctx.mode) || (!!ev.ctx.tech && list(v).includes(ev.ctx.tech)));
 P('damage', 'words', 'the damage is of one of these kinds (' + DMG_WORDS.join(', ') + ')', (ev, v) => list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
+P('not_damage', 'words', 'the damage is of none of these kinds (as damage; also a source type: strain, short)', (ev, v) => !list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
 P('by_hit', 'bool', 'the damage came (or did not come) from someone\'s blow, not a hazard, trap, Bleeding or Burning', (ev, v) => byHit(ev.ctx.src) === v);
 P('self_harm', 'bool', 'the damage is (or is not) the unit\'s own doing (a Mana Short, an overload, Strain, Flux)', (ev, v) => selfHarm(ev.ctx) === v);
 P('hostile', 'bool', 'the actor and the target are (or are not) on different sides', (ev, v) => (!!ev.actor && !!ev.target && ev.actor.side !== ev.target.side) === v);
@@ -159,17 +162,36 @@ P('cond_family', 'words', 'the condition\'s family is one of these (body, brain,
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
 P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
-P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
+P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (tending, prayer, perk, stim…)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
 P('ap_above', 'number', 'the event\'s AP (a price, a swap) is over this', (ev, v) => (ev.ctx.ap ?? 0) > v);
 P('own_turn', 'bool', 'it is (or is not) the holder\'s own turn', (ev, v) => (ev.cb.order[ev.cb.turn] === ev.self.id && !ev.cb.window) === v);
 P('flag', 'string', 'the item\'s flag is set (the mark op sets it)', (ev, v) => !!flags(ev)[v]);
 P('no_flag', 'string', 'the item\'s flag is not set', (ev, v) => !flags(ev)[v]);
 P('self_alive', 'bool', 'the holder is (or is not) up: not Downed, dead or surrendered', (ev, v) => (!ev.self.dead && !ev.self.downed && !ev.self.surrendered) === v);
+// P6's two (rev4-primitives.md: a door verb's reach and its effects): the actor or the target is (or is not) up
+for (const who of ['actor', 'target'] as Who[]) P(who + '_alive', 'bool', 'the ' + who + ' is (or is not) up: not Downed, dead or surrendered', (ev, v) => { const u = unitOf(ev, who); return !!u && (!u.dead && !u.downed && !u.surrendered) === v; });
 P('open', 'bool', 'nothing has stopped it yet: not cancelled, and (would_drop) not floored', (ev, v) => (!ev.ctx.cancel && ev.ctx.floor == null) === v);
 P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) > v);
 P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);
 // Classes 3.0 step 1 (the batch rows of docs/design/rev4-primitives.md)
 P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover: every end named must be', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to']);
+// Classes 3.0 P10: zones from data. {kind, owner: self (the holder's own), side (its side's) or any}
+const zoneArg = (v: any) => (typeof v === 'string' ? { kind: v, owner: 'any' } : { kind: v?.kind, owner: v?.owner || 'any' });
+for (const who of ['self', 'target'] as Who[]) P(who + '_in_zone', 'zone', who + ' stands in a zone of this kind (a kind, or {kind, owner: self, side or any})', (ev, v) => { const u = unitOf(ev, who), a = zoneArg(v); return !!u && zonesAt(ev.cb, u.pos, a.kind, a.owner, ev.self).length > 0; }, () => [...DATA_ZONE_KINDS]);
+// Classes 3.0 P8: ties. `<who>_tied: "<kind>"` (tied to the holder either way) or {kind, as: from or to} (the unit is
+// the tie's from end, the holder its to end: an owned unit's owner is `actor_tied: {kind: "owned", as: "from"}`)
+const tieArg = (v: any): { kind: string; as: 'from' | 'to' | 'any' } => (typeof v === 'string' ? { kind: v, as: 'any' } : { kind: v?.kind, as: v?.as || 'any' });
+for (const who of ['actor', 'target'] as Who[]) P(who + '_tied', 'tie', who + ' is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit\'s end of it)', (ev, v) => { const u = unitOf(ev, who), a = tieArg(v); return !!u && tiedTo(ev.cb, ev.self, u, a.kind, a.as); }, () => tieKinds().map((k) => k.id));
+// Classes 3.0 section 6: what the holder holds. {slot: hand | person, door: evoker | emanator} or {slot, item: <id>}
+// (character.ts holds: the one "focus in hand" test, which hasEvoker and hasEmanator are)
+const holdsOf = (ev: Ev, v: any): boolean => { const c = ev.h.c || charOfUnit(ev.self); return !!c && holds(c, v || {}); };
+P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: ' + 'evoker or emanator} (a focus) or {slot, item: an item id}', (ev, v) => holdsOf(ev, v));
+P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev, v) => !holdsOf(ev, v));
+// Classes 3.0 P12: a data toggle is on for the action being resolved (cb.mods; acted's ctx.toggles): `toggle: [ids]`
+P('toggle', 'words', 'one of the holder\'s item\'s data toggles (its ids) is on for the action being resolved', (ev, v) => {
+  const mods: string[] = ev.ctx.toggles?.length ? ev.ctx.toggles : (ev.cb as any).mods || [], defs = (rawItemT(ev.h.key)?.toggles || []) as any[];
+  return list(v).some((id) => { const t = defs.find((x) => x.id === id); const k = ev.h.key + '#' + id; return mods.includes(k) || mods.includes(id) || (!!t?.default_on && !mods.includes('!' + k) && !mods.includes('!' + id)); });
+});
 // Classes 3.0 step 3 (rules 1.30): Run and Gun's 2-tile cap (reactions-spec.md 10), the Breaker's Momentum-priced rider
 /** The free techniques (techniques.json `free`: everyone's, whatever they have readied: Shot, Aimed Shot, Cut,
  * Overwatch, Pull Out): rules 1.30, Fire Discipline's dear technique is any other. */
@@ -194,20 +216,21 @@ function unitField(u: Unit | null, f: string): number {
 /** What a holder has of a resource now: a class resource (guard, momentum…), else a data/actions.json row (MP, Pressure…). */
 const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || !RESOURCES[id] ? resOf(ev.self, id) : resLeft(ev.self, id, ev.h.c));
 /** THE source reader of a number block's `of` (and an amount block's per-point parts) in an item op: res:<id>,
- * event:<field> (amount: the damage or heal; any other field of the payload, else of its damage source ctx.src: ambush, crit; true as 1), self:/actor:/target:<field>.
+ * event:<field> (amount: the damage or heal, on `dealing` its base before the multipliers; over: a heal's part that didn't fit; any other field of the payload, else of its damage source ctx.src: ambush, crit; true as 1), self:/actor:/target:<field>.
  * A plain name is 0 here (a handler counts its own). */
 export function sourceOf(ev: Ev, of: string): number {
   const i = of.indexOf(':'); if (i < 0) return 0;
   const ns = of.slice(0, i), f = of.slice(i + 1);
   if (ns === 'res') return resNow(ev, f);
-  if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
+  if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount ?? ev.ctx.base) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
   if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
+  if (ns === 'ties') return tiesOfK(ev.cb, ev.self, f).length; // section 6: how many ties of a kind the holder has
   return 0;
 }
 /** The namespaces a number block's `of` may name in an item op. */
-export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target'];
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties'];
 /** The numeric fields of an item op that may be number blocks. */
-const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds'];
+const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders'];
 /** An op with its number blocks read for this event (a plain op is itself). */
 function withNumbers(ev: Ev, x: any): any {
   let out = x;
@@ -224,23 +247,29 @@ function fill(s: string, ev: Ev): string {
 
 // ============================================================================================== the ops
 /** The closed list of ops a triggered effect may run, with the triggers each one understands. */
-export interface TriggerOp { on: string[]; state: boolean; about: string; fields: string[]; run: (ev: Ev, e: any, label: string) => string | void }
+export interface TriggerOp { on: string[]; state: boolean; about: string; fields: string[]; run: (ev: Ev, e: any, label: string) => string | void | false }
 /** THE OPS: filled by O(...) below, one line each (data/effect_ops.json item_ops.ops is written from it). */
 export const OPS: Record<string, TriggerOp> = {};
 const O = (name: string, on: string[], state: boolean, fields: string[], about: string, run: TriggerOp['run']) => { OPS[name] = { on, state, fields, about, run }; };
 const ANY = Object.keys(TRIGGERS);
 const pick = (ev: Ev, e: any): Unit | null => (e.target === 'actor' ? ev.actor : e.target === 'target' ? ev.target : ev.self);
 
-O('damage_mult', ['dealing', 'taking'], false, ['value'], 'multiply the amount being dealt or taken', (ev, e, label) => {
-  if (ev.trig.hook === 'damage_out') ev.ctx.mults.push({ v: e.value, label }); else ev.ctx.dmg = ev.ctx.dmg * e.value;
+O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent)', (ev, e, label) => {
+  if (ev.trig.hook === 'damage_out') { ev.ctx.mults.push({ v: e.value, label }); return; }
+  const was = ev.ctx.dmg; let now = e.round === 'up' ? Math.ceil(was * e.value) : was * e.value;
+  if (typeof e.pool === 'string' && ev.target) { // P10: a zone's pool caps what it prevents
+    const z = zonesAt(ev.cb, ev.target.pos, e.pool, 'self', ev.self).find((x) => x.pool != null);
+    if (z) { const cut = Math.min(Math.max(0, was - now), z.pool!); now = was - cut; z.pool = z.pool! - cut; if (z.pool <= 0) endZones(ev.cb, (x) => x === z); }
+  }
+  ev.ctx.dmg = now;
 });
 O('damage_mod', ['dealing', 'taking'], false, ['value', 'value_pct'], 'add to the amount (value), or change it by a percentage (value_pct)', (ev, e, label) => {
   if (ev.trig.hook === 'damage_out') { if (typeof e.value_pct === 'number') ev.ctx.mults.push({ v: 1 + e.value_pct / 100, label }); else ev.ctx.add += e.value; }
   else if (typeof e.value_pct === 'number') ev.ctx.dmg = ev.ctx.dmg * (1 + e.value_pct / 100); else ev.ctx.dmg += e.value;
 });
 O('damage_vs', ['dealing'], false, ['value'], 'a bonus against this target (added with the other target bonuses)', (ev, e, label) => { ev.ctx.vs.push({ v: e.value, label }); });
-O('roll_mod', ['attack', 'cond_incoming', 'save', 'spot'], false, ['value', 'roll'], 'a to-hit term on an attack; on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN', (ev, e, label) => {
-  if (ev.trig.hook === 'attack_preview') ev.ctx.terms.push({ v: e.value, label });
+O('roll_mod', ['attack', 'to_hit', 'cond_incoming', 'save', 'spot'], false, ['value', 'roll'], 'a to-hit term on an attack (to_hit: on any roll to hit, weapon, Sigil or Outburst); on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN', (ev, e, label) => {
+  if (ev.trig.hook === 'attack_preview' || ev.trig.hook === 'to_hit') ev.ctx.terms.push({ v: e.value, label });
   else if (ev.trig.hook === 'spot') { if (e.roll === 'tn') ev.ctx.tn += e.value; else ev.ctx.mod += e.value; }
   else if (e.roll === 'tn') ev.ctx.tnAdd = (ev.ctx.tnAdd || 0) + e.value; else ev.ctx.saveAdd = (ev.ctx.saveAdd || 0) + e.value;
 });
@@ -265,9 +294,14 @@ O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource
   const n = e.value === 'all' || e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c)) : e.value;
   (ev as any).gain = own ? resGain(u, e.resource, n) : resGive(ev.cb, u, e.resource, n, { by: ev.self, c: ev.h.c, why: label });
 });
-O('condition', ANY, true, ['condition', 'rounds', 'skip_save'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save', (ev, e) => {
+/** The value of op `condition` that names the condition being put on (on cond_incoming: Take the Weight's "you take it
+ * instead"; rev4-primitives.md batch row `condition: "incoming"`). */
+export const INCOMING = 'incoming';
+O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal\'s via; default the ambient source); condition "incoming" (on cond_incoming): the condition being put on, with its rounds unless rounds is given', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
-  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, e.condition, typeof e.rounds === 'number' ? e.rounds : undefined, undefined, e.skip_save ? { skipSave: true } : {});
+  const inc = e.condition === INCOMING; if (inc && (ev.trig.hook !== 'cond_apply' || !ev.ctx.id)) return false;
+  const id = inc ? ev.ctx.id : e.condition, rounds = typeof e.rounds === 'number' ? e.rounds : inc && typeof ev.ctx.rounds === 'number' ? ev.ctx.rounds : undefined;
+  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}) });
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -283,21 +317,56 @@ O('cancel', ['cond_incoming', 'forced_move', 'injury', 'attack', 'spot'], false,
   if (ev.trig.hook === 'attack_preview') { if (!ev.ctx.fail) ev.ctx.fail = e.why ? fill(e.why, ev) : label; return; }
   ev.ctx.cancel = true; ev.ctx.why = e.why ? fill(e.why, ev) : label;
 });
+// rev4-primitives.md batch row: the damage_mult of mending. On `heal` (heal_in) and `shield` (shield_grant), before the
+// heal or shield is floored and capped; the kind of a heal or shield (tending, prayer, perk…) is read with `how`.
+// (Not on heal_given: by then the heal has landed and there is nothing left to multiply.)
+O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, prayer, perk…)', (ev, e) => {
+  const v = typeof e.value === 'number' ? e.value : 1; if (typeof ev.ctx.n === 'number') ev.ctx.n = ev.ctx.n * v;
+});
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
 O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
-  const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
+  const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
   const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
-  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: true }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
+  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
 });
-O('mend', ANY, true, ['amount'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk)', (ev, e) => {
-  const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
-  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b) });
+O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {
+  const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
+  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
 });
 O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder (how: push) or pull it closer (pull)', (ev, e) => {
   const t = pick(ev, e); if (!t || t === ev.self) return;
   const how = e.how === 'pull' ? 'pull' : 'push', to = how === 'pull' ? { toward: ev.self.pos, tiles: e.tiles } : { away: ev.self.pos, tiles: e.tiles };
   return displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key }).text || '';
+});
+O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event\'s), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder\'s zones of that kind (nothing said when it had none)', (ev, e) => {
+  if (e.clear) return endZones(ev.cb, (z) => z.kind === e.kind && z.by === ev.self.id) > 0 ? undefined : false;
+  const at: string | null = e.at === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? null : (e.at === 'target' ? ev.target : ev.self)?.pos ?? null; if (!at) return false;
+  makeZone(ev.cb, ev.self, { kind: e.kind, tiles: tilesAround(at, e.within ?? 0), rounds: typeof e.rounds === 'number' ? e.rounds : 1, ...(typeof e.pool === 'number' ? { pool: e.pool } : {}) });
+});
+O('tie', ANY, true, ['kind', 'clear'], 'tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder\'s cap: nothing said); clear: "target" ends the holder\'s ties of that kind to the target, "all" every one of that kind it holds', (ev, e) => {
+  const t = pick(ev, e);
+  if (e.clear === 'all') return untie(ev.cb, (x) => x.kind === e.kind && x.from === ev.self.id) > 0 ? undefined : false;
+  if (e.clear === 'target') return t && untie(ev.cb, (x) => x.kind === e.kind && x.from === ev.self.id && x.to === t.id) > 0 ? undefined : false;
+  return t && tie(ev.cb, ev.self, t, e.kind) ? undefined : false;
+});
+O('spawn', ANY, true, ['block', 'at'], 'make an owned unit (P9: owned.ts spawnOwned) from a data block (enemies.json companions, a system\'s forms) at the holder\'s level, on the free tile nearest the holder (at: self), the target or the event\'s tile; tied to the holder (owned); refused at its cap (ties_max:owned): nothing said', (ev, e) => {
+  const anchor: string | null = e.at === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? null : (e.at === 'target' ? ev.target : ev.self)?.pos ?? null; if (!anchor) return false;
+  const free = [anchor, ...[1, 2, 3].flatMap((r) => tilesAround(anchor, r, ev.cb))].find((k) => canStand(ev.cb, k)); if (!free) return false;
+  const u = spawnOwned(ev.cb, ev.self, e.block, free, rngOf(ev.h, ev.ctx) as any);
+  return typeof u === 'string' ? false : ' · ' + u.name + ' appears';
+});
+O('unmake', ANY, true, ['refund'], 'unmake an owned unit (P9: owned.ts unmakeOwned; the target, else the holder): it leaves the fight; refund: what its making took goes back to its owner', (ev, e) => {
+  const u = e.target === 'target' ? ev.target : e.target === 'actor' ? ev.actor : ev.self; if (!u || !ownerOf(ev.cb, u)) return false;
+  unmakeOwned(ev.cb, u, { refund: !!e.refund });
+});
+O('redirect', ['taking'], true, ['share', 'split'], 'move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again)', (ev, e) => {
+  const c = ev.ctx; if (c.src?.redirected || !(c.dmg > 0)) return false;
+  const share = Math.max(0, Math.min(1, typeof e.share === 'number' ? e.share : 0.5)), moved = Math.floor(c.dmg * share); if (moved <= 0) return false;
+  const to: Unit[] = e.split && e.targets ? selectUnits(ev, e.targets).filter((u) => u !== c.t) : [ev.self].filter((u) => u !== c.t); if (!to.length) return false;
+  c.dmg -= moved; const each = Math.floor(moved / to.length);
+  if (ev.preview) return;
+  to.forEach((u, i) => { const n = i === 0 ? moved - each * (to.length - 1) : each; if (n > 0) applyDamage(ev.cb, u, n, { ...c.src, redirected: true }); });
 });
 O('use', ANY, true, [], 'nothing but its limit: spends one use (for a limit another effect reads with peek)', () => undefined);
 O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of the item\'s own flags, for a later trigger\'s flag / no_flag', (ev, e) => {
@@ -305,6 +374,8 @@ O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of
   if (e.clear) delete f[e.flag]; else f[e.flag] = true;
 });
 
+/** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
+const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);
 const blockOf = (h: Holder, e: any): AmountBlock | null => {
   if (e.amount && typeof e.amount === 'object' && typeof e.amount.base === 'number') return e.amount as AmountBlock;
   if (typeof e.amount === 'string') { try { return amountBlock(h.key, e.amount); } catch { return null; } }
@@ -312,7 +383,7 @@ const blockOf = (h: Holder, e: any): AmountBlock | null => {
 };
 /** P3: an amount block's per-point parts that name a source (res:, event:, self:, target:) are counted from the event. */
 const countsOf = (ev: Ev, b: AmountBlock): Record<string, number> => Object.fromEntries((b.per || []).filter((p) => p.of.includes(':')).map((p) => [p.of, sourceOf(ev, p.of)]));
-const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' });
+const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), ...(b.min_pct != null ? { min_pct: b.min_pct } : {}), ...(b.gate_hp !== undefined ? { gate_hp: b.gate_hp } : {}), round: 'none' });
 
 // ============================================================================================== the unit set (P5)
 /** `targets` on any op (Classes 3.0 P5): the op runs once for each unit of the set, as its target, in the fight's order
@@ -321,18 +392,35 @@ const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ..
  * line: from the centre toward the event's target, or its actor, `within` long), seen (seen, or not, by the holder's
  * side), alive (default true: still in the fight; false: Downed only), downed (true: the Downed too), max (the first n).
  * With no within and no shape, the whole field. `tied` and `aims_at` come with ties (P8) and the enemy's aim (a batch row). */
-export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number }
+export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes'; tied?: string; aims_at?: string }
 /** The fields of `targets` and the words each takes (data/effect_ops.json item_ops.targets is written from it). */
-export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number' };
+export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool' | 'string'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'], tied: 'string', aims_at: 'string' };
 /** Why a `targets` block is malformed (null: it is fine). */
 export function targetsProblem(t: any): string | null {
   if (!t || typeof t !== 'object' || Array.isArray(t)) return '`targets` is an object';
   for (const [k, v] of Object.entries(t)) {
     const f = TARGET_FIELDS[k]; if (!f) return 'unknown targets field ' + k;
-    if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
+    if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : f === 'string' ? typeof v !== 'string' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
   }
   if ((t.shape === 'cone' || t.shape === 'line') && typeof t.within !== 'number') return 'a cone or a line needs `within` (its length)';
   if ((t.shape === 'burst' || t.shape === 'aura') && typeof t.within !== 'number') return 'a burst or an aura needs `within` (its radius)';
+  return null;
+}
+/** The batch row `aims_at` (rev4): does this unit's next action (combat.ts enemyIntent) go at the holder ("self") or at a
+ * unit tied to the holder ("tied:<kind>")? */
+function aimsAt(cb: Combat, holder: Unit, v: Unit, w: string): boolean {
+  const id = enemyIntent(cb, v).targetId; if (!id) return false;
+  if (w === 'self') return id === holder.id;
+  const k = w.startsWith('tied:') ? w.slice(5) : null, t = k ? cb.units.find((x) => x.id === id) : null;
+  return !!t && tiedTo(cb, holder, t, k!);
+}
+/** P5's standing aura (a `stat_mod` with `targets` and no `when`): the units its holder's set holds now. */
+const auraSet = (cb: Combat, holder: Unit, t: TargetSet): Unit[] => selectUnits({ ctx: {}, trig: TRIGGERS.combat_start, h: { key: '', info: null as any, u: holder, cb } as any, self: holder, cb, actor: null, target: null, preview: true }, t);
+/** Why a standing aura is malformed (null: fine): a well-formed set, centred on its holder, of a declared stat. */
+export function auraProblem(e: any): string | null {
+  const why = targetsProblem(e.targets); if (why) return why;
+  if (e.targets.of && e.targets.of !== 'self') return 'a standing aura is centred on its holder (targets.of: self)';
+  if (!isStatId(e.stat)) return 'unknown stat ' + e.stat;
   return null;
 }
 /** THE unit set of an op's `targets` for this event (see TargetSet). */
@@ -344,7 +432,12 @@ export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
   const area: Area | null = shape === 'burst' || shape === 'aura' ? { shape, at, r: t.within! } : (shape === 'cone' || shape === 'line') && toward && toward !== at ? (shape === 'cone' ? { shape, from: at, toward, n: t.within! } : { shape, from: at, toward, n: t.within }) : null;
   if ((shape === 'cone' || shape === 'line') && !area) return [];
   const downed = t.downed || t.alive === false, all = area ? unitsIn(cb, area, { downed }) : unitsIn(cb, { shape: 'burst', at, r: Math.max(cb.map.w, cb.map.h) }, { downed });
-  const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen));
+  // sees (witnesses, the step 1a review): each unit of the set sees the centre's tile: `line` a line of sight to it and not
+  // Blinded (a body falling in the dark is still seen); `eyes` its own eyes reach it (combat.ts unitSees: range, light)
+  const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen)
+    && (!t.sees || (t.sees === 'eyes' ? unitSees(cb, v, at) : !condOn(v, 'blinded') && lineOfSight(cb, v.pos, at)))
+    && (!t.tied || tiedTo(cb, ev.self, v, t.tied)) // P8: tied to the holder by this kind
+    && (!t.aims_at || aimsAt(cb, ev.self, v, t.aims_at))); // the batch row: what the unit means to do next is aimed at the holder (self) or at a unit tied to it (tied:<kind>)
   return typeof t.max === 'number' ? out.slice(0, t.max) : out;
 }
 
@@ -377,6 +470,7 @@ export function triggerProblem(e: any): string | null {
   }
   if (e.if != null) { if (typeof e.if !== 'object' || Array.isArray(e.if)) return '`if` must be an object'; for (const k of Object.keys(e.if)) if (!PREDICATES[k]) return 'unknown predicate ' + k; }
   for (const x of [e, ...(Array.isArray(e.and) ? e.and : [])]) if (x.targets != null) { const why = targetsProblem(x.targets); if (why) return why; }
+  for (const x of [e, ...(Array.isArray(e.and) ? e.and : [])]) if (x.delay != null && (typeof x.delay !== 'object' || !(DELAY_UNTIL as readonly string[]).includes(x.delay.until))) return 'delay is {until: ' + DELAY_UNTIL.join(' | ') + ', n?}';
   if (e.limit != null) { const l = e.limit; if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per) && typeof l.reaction !== 'number')) return 'limit must be { per, n }, { cooldown } or { reaction, kind }'; if (typeof l.reaction === 'number' && !REACT_KINDS.includes(l.kind)) return 'a reaction limit names its kind (' + REACT_KINDS.join(', ') + ')'; }
   return null;
 }
@@ -392,17 +486,73 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   const all = [e, ...(Array.isArray(e.and) ? e.and : [])], changes = all.some((x) => OPS[x.op]?.state);
   if (ev.preview && changes) return; // a preview changes nothing
   const lim = e.limit, asReaction = !!lim && typeof lim.reaction === 'number';
-  if (asReaction ? !canReact(cb, self, lim.kind, lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
+  if (asReaction ? !canReact(cb, self, lim.kind, lim.of === 'owner' ? 0 : lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
   const label = e.label || h.info.name, parts: string[] = [];
   let ran = 0;
-  const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); ran++; if (typeof r === 'string' && r) parts.push(r); };
+  const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); if (r !== false) ran++; if (typeof r === 'string' && r) parts.push(r); }; // an op that returns false did nothing (a zone cleared that wasn't there)
   // P5: an op with `targets` runs once for each unit of its set, that unit as its target
-  const go = () => { for (const x0 of all) { if (x0.targets) { for (const t of selectUnits(ev, x0.targets)) one({ ...ev, target: t }, { ...x0, target: 'target' }); } else one(ev, x0); } };
-  if (asReaction && !ev.preview) { if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent() }, go)) return; } else go();
+  // section 6: an op with `delay` is queued (its numbers and amount fixed now) and run then (runDelayed)
+  const run1 = (ev1: Ev, x0: any) => { if (x0.delay) { queueDelayed(ev1, x0, x0.label || label); ran++; } else one(ev1, x0); };
+  const go = () => { for (const x0 of all) { if (x0.targets && !(x0.op === 'redirect' && x0.split)) { for (const t of selectUnits(ev, x0.targets)) run1({ ...ev, target: t }, { ...x0, target: 'target' }); } else run1(ev, x0); } };
+  // the batch row limit.of "owner": an owned unit's reaction is its owner's (P1's payer, P9's record)
+  if (asReaction && !ev.preview) { const payer = lim.of === 'owner' ? ownerOf(cb, self) : null; if (lim.of === 'owner' && !payer) return; if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent(), ...(payer ? { payer } : {}) }, go)) return; } else go();
   if (ev.preview || !ran) return; // a set with nobody in it: nothing happened, nothing is said
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));
 }
+// ============================================================================================== delay (section 6)
+/** When a delayed op runs: at the start of the target's next turn, of the holder's next turn, or after n rounds. */
+export const DELAY_UNTIL = ['target_turn_start', 'holder_turn_start', 'rounds'] as const;
+/** A queued op (cb.delayed; saved with the fight). Its numbers are fixed (a deal's or a mend's amount too). */
+export interface Delayed { key: string; holder: string; actor: string | null; target: string | null; op: any; label: string; until: (typeof DELAY_UNTIL)[number]; n: number; round: number }
+/** The item keys whose delayed ops are running now: what they do queues nothing more of the same item (an echo never
+ * echoes itself: a delayed heal's own heal_given would queue the next one, turn after turn). */
+const DELAYED_NOW: string[] = [];
+function queueDelayed(ev: Ev, x0: any, label: string): void {
+  if (DELAYED_NOW.includes(ev.h.key)) return;
+  // a copy: withNumbers hands back the item's own object when it has no number block, and the fields below are deleted
+  const x: any = { ...withNumbers(ev, x0) }, d = x0.delay || {};
+  if ((x.op === 'deal' || x.op === 'mend') && !x.fixed) { const b = blockOf(ev.h, x); if (b) { const r = amountOf({ ...specOf(b), kind: b.kind }, ev.self, { who: ev.h.c || null, counts: countsOf(ev, b) }); x.fixed = { kind: b.kind, n: r.raw, ...(b.type ? { type: b.type } : {}), ...(b.armour ? { armour: b.armour } : {}), ...(b.heal_kind ? { heal_kind: b.heal_kind } : {}) }; } }
+  delete x.delay; delete x.targets; delete x.when; delete x.if; delete x.limit; delete x.and;
+  const q: Delayed = { key: ev.h.key, holder: ev.self.id, actor: ev.actor?.id || null, target: ev.target?.id || null, op: x, label, until: d.until, n: typeof d.n === 'number' ? d.n : 1, round: ev.cb.round };
+  ev.cb.delayed = [...(ev.cb.delayed || []), q];
+}
+/** Run the queued ops that are due (a turn's start, a round's): a queued op whose holder or target is dead is dropped. */
+function runDelayed(cb: Combat, due: (d: Delayed) => boolean): void {
+  const now = (cb.delayed || []).filter(due); if (!now.length) return;
+  cb.delayed = (cb.delayed || []).filter((d) => !now.includes(d)); if (!cb.delayed.length) delete cb.delayed;
+  const byId = (id: string | null) => (id ? cb.units.find((x) => x.id === id) || null : null);
+  for (const d of now) {
+    const self = byId(d.holder), target = byId(d.target), actor = byId(d.actor), op = OPS[d.op.op];
+    if (!self || self.dead || (d.target && (!target || target.dead)) || !op) continue;
+    const info = itemInfoT(d.key) || { key: d.key, kind: 'perk', id: d.key, name: d.label, tier: 'I', effects: [], effTier: [], text: '', adjudication: 'engine', active: false, bound: false, ap: null, uses: 'at_will' } as ItemInfo;
+    const h: Holder = { key: d.key, itemId: info.id, kind: info.kind, tier: info.tier, info, c: charOfUnit(self), u: self, cb, g: null } as any;
+    const ev: Ev = { ctx: { cb }, trig: TRIGGERS.acted, h, self, cb, actor, target, preview: false };
+    DELAYED_NOW.push(d.key); let r: any;
+    try { r = op.run(ev, d.op, d.label); } finally { DELAYED_NOW.splice(DELAYED_NOW.lastIndexOf(d.key), 1); }
+    if (typeof r === 'string' && r) say(cb, self.name + ' (' + d.label + ')' + r + '.');
+  }
+}
+/** Drop the queued ops whose holder or target is dead or gone (a dead unit has no turn start to run them at). */
+function dropDeadDelayed(cb: Combat): void {
+  if (!cb.delayed?.length) return;
+  const alive = (id: string | null) => !id || cb.units.some((x) => x.id === id && !x.dead);
+  cb.delayed = cb.delayed.filter((d) => alive(d.holder) && alive(d.target)); if (!cb.delayed.length) delete cb.delayed;
+}
+onHook('turn_start', (ctx: any, cb: Combat) => { dropDeadDelayed(cb); const u: Unit = ctx.u; if (u && cb.delayed?.length) runDelayed(cb, (d) => (d.until === 'target_turn_start' && d.target === u.id) || (d.until === 'holder_turn_start' && d.holder === u.id)); });
+onHook('round_start', (_ctx: any, cb: Combat) => { if (cb.delayed?.length) runDelayed(cb, (d) => d.until === 'rounds' && cb.round >= d.round + d.n); });
+
+// ============================================================================================== door verbs (P6)
+/** The first predicate of an `if` block that fails for this holder and target (the action's), outside a trigger (a
+ * door verb's `if` and its `reach.if`), or null. Unknown keys fail. */
+function ifFailsImpl(h: Holder, cond: any, target?: Unit | null): string | null {
+  const self = h.u!, ev: Ev = { ctx: { u: self, t: target || null }, trig: TRIGGERS.acted, h, self, cb: h.cb!, actor: self, target: target || null, preview: true };
+  for (const k of Object.keys(cond || {})) if (!PREDICATES[k]?.test(ev, cond[k])) return k;
+  return null;
+}
+/** Run item ops as an action's own effects: each as a triggered effect on `acted` (its `if`, `limit`, `targets`, `say`). */
+function runOwnImpl(h: Holder, effects: any[], ctx: any): void { for (const e of effects) if (e && OPS[e.op]) runTriggered({ ...ctx, cb: h.cb }, h, { ...e, when: 'acted' }); }
+
 /** The hooks any data effect listens on (hooks.ts hookUsed asks, so a hook that is skipped when nobody listens, the
  * `cost` hook, still fires for a data item). */
 export const triggerHook = (e: any): HookName | null => (isTriggered(e) ? TRIGGERS[e.when].hook : null);
@@ -414,8 +564,6 @@ export const triggerHook = (e: any): HookName | null => (isTriggered(e) ? TRIGGE
 // (defense, move_mult, vision, ap, damage_dealt_pct, sigil_ap, soul_cost_pct, save_<family>): those are not answered
 // twice. A row's effect with a trigger word and an op that is not an item op (Bleeding's turn_start stat_mod) is still
 // the engine's own rule, not run here.
-/** The stats condtable.ts reads from a row itself (they are not answered through statQuery). */
-export const COND_TABLE_STATS = new Set(['defense', 'move_mult', 'vision', 'ap', 'damage_dealt_pct', 'sigil_ap', 'soul_cost_pct', 'save_body', 'save_brain', 'save_heart']);
 /** A condition row as the item it is (key condition:<id>). */
 const condInfo = (row: any): ItemInfo => ({ key: 'condition:' + row.id, kind: 'condition', id: row.id, name: row.name, tier: 'I', effects: row.effects || [], effTier: (row.effects || []).map(() => 'I'), text: row.text || '', adjudication: row.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will' });
 /** The index over the rows (rebuilt when rows are added: condtable.ts condRowsVersion): per hook, the rows with a
@@ -444,5 +592,5 @@ function condsOn(u: Unit, name: HookName, cb: Combat) {
 }
 function condStat(u: Unit, stat: string): number { const l = condIndex().stat[stat]; if (!l) return 0; let n = 0; for (const x of l) if (bears(u, x.row.id)) n += x.value; return n; }
 
-setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat });
+setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat, auraSet, auraProblem, ifFails: ifFailsImpl, runOwn: runOwnImpl, isOp: (op) => !!OPS[op], condStatRows: (s) => (condIndex().stat[s] || []).map((x) => x.row.id) });
 setAllItems(allItems);

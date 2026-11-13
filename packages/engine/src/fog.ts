@@ -111,6 +111,14 @@ function fogFx(e: FxEvent, me: Side, own: Set<string>, c: Ctx): FxEvent | null {
   return names(out, c) ? scrub(out, c, { near: true }) : out;
 }
 
+/** What another side's unit never shows (Classes 3.0, step 1b review): its owned record (whose turn, upkeep, a lure:
+ * a Double would give itself away) and a read of its intent that its own side made; a read your side made stays. */
+function otherSide<U extends Combat['units'][number]>(u: U, me: Side, own: Set<string>): U {
+  if (u.side === me) return u;
+  const x: any = u; if (!x.owned && !(x.readIntent && !own.has(x.readIntent.by))) return u;
+  const out: any = { ...u }; delete out.owned; if (out.readIntent && !own.has(out.readIntent.by)) delete out.readIntent;
+  return out;
+}
 /**
  * The fight as the viewer's side may know it (see the top of this file). real: the whole fight; view: viewFor's copy
  * of it so far (the other filters already applied). g: the game, bound while sight is worked out (the 'sees' hooks).
@@ -128,12 +136,12 @@ export function fogFight(g: unknown, real: Combat, view: Combat, me: Side, full 
   const seenNames = new Set(real.units.filter((u) => !hid.has(u.id)).map((u) => u.name));
   const c: Ctx = { hid, names: new Set([...hid.values()].map((u) => u.name).filter((n) => !!n && !seenNames.has(n))), tiles: vis.tiles };
   const own = new Set(real.units.filter((u) => u.side === me).map((u) => u.id));
-  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, seenAt, sightPos, log, logSee, ...rest } = view as Combat & { sightPos?: unknown };
+  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, seenAt, sightPos, log, logSee, ties, delayed, ...rest } = view as Combat & { sightPos?: unknown };
   const lg = fogLog(log || [], logSee, me);
   const mine = (x: { side?: string }) => x.side === me;
   const out = {
     ...scrub(rest, c),
-    units: units.filter((u) => !hid.has(u.id)).map((u) => scrub(u, c)),
+    units: units.filter((u) => !hid.has(u.id)).map((u) => scrub(otherSide(u, me, own), c)),
     order: order.map((id, i) => (hid.has(id) ? UNSEEN + i : id)),
     log: lg.log,
     fx: (fx || []).map((e) => fogFx(e, me, own, c)).filter((e): e is FxEvent => !!e).map((e) => (typeof e.L === 'number' && lg.log !== log ? { ...e, L: lg.keptBefore(e.L) } : e)),
@@ -144,6 +152,10 @@ export function fogFight(g: unknown, real: Combat, view: Combat, me: Side, full 
       const o = hid.get(i.owner); if (!o) return scrub(i, c);
       return { ...scrub(i, c), owner: UNSEEN, look: { name: o.name, short: (o as any).short, img: (o as any).img, kind: (o as any).kind, side: o.side } };
     }) } : {}),
+    // Classes 3.0 P8: a side keeps its own ties (a tie whose near end is one of its units); another side's are never sent
+    ...(ties ? { ties: ties.filter((t) => own.has(t.from)).map((t) => (hid.has(t.to) ? { ...t, to: UNSEEN } : t)) } : {}),
+    // Classes 3.0 (step 1b review): a side keeps its own delayed ops (their holder is one of its units)
+    ...(delayed?.some((d) => own.has(d.holder)) ? { delayed: delayed.filter((d) => own.has(d.holder)).map((d) => scrub(d, c)) } : {}),
     fog,
   };
   return out as unknown as Combat;

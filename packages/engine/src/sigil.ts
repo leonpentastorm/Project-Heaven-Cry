@@ -18,7 +18,7 @@ import { say,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
 import { type Rng } from './rng';
-import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE } from './rolls';
+import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE, toHitAdd } from './rolls';
 import { emit, boundGame, onHook } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
@@ -454,7 +454,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const [E, S] = [sigilDamage(mg, 'elemental', el, m, lm, sharp, hook('damage'), 1), sigilDamage(mg, 'sigil', sg, m, lm, sharp, hook('damage'), 1)];
   const arm = (S ? landed(S, armourAgainst(t, 'full')) : 0) + (E ? landed(E, armourAgainst(t, 'half')) : 0); // as harm will take it: Sigil damage meets armour in full, Elemental half
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
-  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) : 0;
+  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) + toHitAdd(cb, caster, t, 'sigil') : 0; // the one hook of every roll to hit (rolls.ts)
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: saveTn(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: saveTn(caster, 'brain_power') });

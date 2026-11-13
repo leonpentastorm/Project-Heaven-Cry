@@ -1582,5 +1582,16 @@
   "weapon_mastery": {
     "data": "weapon_mastery.json",
     "provisional": true
+  },
+  "ties": {
+    "about": "Classes 3.0 P8 (engine: kit.ts tie, untie, tiesOf): the kinds of tie between two units. A row: id, max (a holder's base cap; the stat ties_max:<kind> adds to it; no max: no cap), ends_on (from_down, to_down, to_dead, unseen_round, combat_end), on_end (none, or unmake: the far end is unmade, P9). Each system adds its own kind.",
+    "kinds": [
+      {
+        "id": "owned",
+        "about": "Classes 3.0 P9: an owned unit (owned.ts): its owner is the from end. The drone, the beast and the twin are tied so, for the whole fight; a system that needs more ends (an owner going Down, an unmake) adds its own kind.",
+        "ends_on": ["combat_end"],
+        "on_end": "none"
+      }
+    ]
   }
 }

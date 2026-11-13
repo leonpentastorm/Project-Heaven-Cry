@@ -150,11 +150,13 @@ register({
       if (ctx.cancel || ctx.u.side === d.side || !alive(d) || st.caught || !canReact(cb, d, 'attack')) return;
       if ((WEAPON[ctx.item]?.properties || []).includes('placed')) return;
       const covered = ctx.tile === d.pos || cb.units.some((v) => v !== d && v.side === d.side && alive(v) && v.pos === ctx.tile && dist(v.pos, d.pos) <= 1);
-      if (!covered || !react(cb, d, { kind: 'attack' })) return;
-      ctx.cancel = true; ctx.caughtBy = d; // no blast, no fire left on the tile
-      st.caught = { item: ctx.item, by: ctx.u.id, round: cb.round, seen: false };
-      (d.throwables ||= {})[ctx.item] = (d.throwables[ctx.item] || 0) + 1;
-      say(cb, d.name + ' catches the ' + (WEAPON[ctx.item]?.name || ctx.item).toLowerCase() + ' out of the air (Catch)!');
+      if (!covered) return;
+      react(cb, d, { kind: 'attack' }, () => {
+        ctx.cancel = true; ctx.caughtBy = d; // no blast, no fire left on the tile
+        st.caught = { item: ctx.item, by: ctx.u.id, round: cb.round, seen: false };
+        (d.throwables ||= {})[ctx.item] = (d.throwables[ctx.item] || 0) + 1;
+        say(cb, d.name + ' catches the ' + (WEAPON[ctx.item]?.name || ctx.item).toLowerCase() + ' out of the air (Catch)!');
+      });
     },
     turn_start: (ctx, h) => { if (ctx.u === h.u && stateOf(h).caught) stateOf(h).caught.seen = true; },
     turn_end: (ctx, h) => {

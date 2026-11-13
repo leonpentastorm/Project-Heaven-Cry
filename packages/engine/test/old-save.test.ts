@@ -127,6 +127,26 @@ describe('a save written by the live build (origin/main, 0.22.0) loads and plays
   }, 60_000);
 });
 
+// save-1b-pre-owned-companion-mid-fight.json: written by the engine at d52d37c (Classes 3.0 step 1b, before P9's owned
+// units), with test/helpers/perkfight.ts storyWith: two characters, one with a drone (Kestrel), one with a beast (Rook),
+// a fight saved in its second round. No unit carries the owned record and the fight has no ties.
+describe('a fight saved before owned units (P9) with a drone and a beast loads and plays on', () => {
+  const NAME = 'save-1b-pre-owned-companion-mid-fight';
+  it('the companions keep their turns, are read as owned (their owner found), and the fight goes on', async () => {
+    const { ownerOf } = await import('../src/owned');
+    const g0 = load(NAME), cb0 = g0.combat;
+    expect(cb0.ties).toBeUndefined();
+    const comps = cb0.units.filter((u: any) => u.companion);
+    expect(comps.map((u: any) => u.companion).sort()).toEqual(['beast', 'drone']);
+    for (const d of comps) { const o = ownerOf(cb0, d); expect(o?.charId).toBe(d.ctrl); expect(cb0.order.indexOf(d.id)).toBe(cb0.order.indexOf(o!.id) + 1); }
+    const r = new Rec(g0, [{ build: 'opt_gun', level: 1 }, { build: 'opt_gun', level: 1 }]);
+    r.fight(6);
+    expect(r.errors).toEqual([]);
+    expect(r.g.combat.round > cb0.round || !!r.g.combat.over).toBe(true);
+    expect(() => viewFor(r.g, 'host')).not.toThrow();
+  }, 60_000);
+});
+
 // Classes 3.0 step 2 (rules 1.29): the nine base classes show new names; ids, move keys and classRev stay, so a save
 // written before the rename loads with the same class and the same moves, and only the name it shows is new.
 describe('Classes 3.0 renamed the base classes: an old save keeps its class, its moves and its rev', () => {

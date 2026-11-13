@@ -59,7 +59,7 @@ renamed (Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Chan
 Each step: a builder agent with the brief of section 5; then the checks; then merge.
 
 - [x] **0. The tools** (merged 13 Nov; the self-check still fails `rev4-moves-and-rename.md` for having no Built-from table: give it one before step 2): `docs/ENGINE-HOOKS.md` generated and checked by `npm run check`; `npm run built-from`.
-- [ ] **1. The primitives** (1a merged 13 Nov, reviewed: `classes-3.0-step-1a.md` and `-review.md`; **1b is next**: P6, P10, P11, P12, P8, P9, the addendum rows of `rev4-primitives.md` section 6, the one hook for every roll to hit, and what the review lists under "step 1b must add") of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
+- [ ] **1. The primitives** (1a merged 13 Nov, reviewed: `classes-3.0-step-1a.md` and `-review.md`; **1b built 13 Nov, to review and merge**: `classes-3.0-step-1b.md` (P6, P10, P11, P12, P8, P9 without its `owned` action system, the addendum, the one hook for every roll to hit, the review's list); left for a step 1c or the systems' own steps: the batch rows `mend_mult`, `condition: "incoming"`, `intervention_keeps_witnessed`, `read`) of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
       test, its lint baseline, the catalogue regenerated, and the bespoke handlers it replaces deleted. Golden
       tables and replay hashes unchanged (a primitive that moves a golden line is wrong).
 - [x] **2. The rename** (merged 13 Nov) (`rev4-moves-and-rename.md`): display names only, ids stay; the level-up picker, card
@@ -148,6 +148,21 @@ merged back):
     but the RAISE Grand form is "Ramparts"): display name only; the validator refuses a perk named as a class.
 11. Reflex measured in whole fights: the second reaction is never used by the simulator's enemies (+0); unconfirmed:
     to measure in step 11 (the step 3 hand-off says what the simulator needs).
+
+Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
+7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be
+   made as a reaction (kind `attack`), as before; a helping one is `protect` (item 1764).
+8. The tie kind `owned` (the drone, the beast, the twin) ends only with the fight and unmakes nothing, so a drone stays
+   when its owner falls (as today). Figments want `on_end: unmake` and their owner's fall to end them: one kind for both
+   (the drone unmade too) or a second kind for Figments? Built: one kind, the companions' behaviour kept.
+9. `self_holds` takes rev4's object `{slot, door | item}`; Bonds' `["focus:empathy"]` is rewritten in that shape when a
+   focus names its door in data (the Attuner).
+10. P9's action system `owned` (a `turn: owner` unit's verbs, a `turn: auto` unit's driver) is not built: rev4 does not say
+    how the reducer takes an action of a unit with no turn; it is Figments' to design (step 8).
+**Ruled by the lead at step 1b's integration (13 Nov; `classes-3.0-step-1b.md` section 7):** 7 reversed: a Call that harms
+or hinders an enemy is never a reaction (item 1764 amended). 8: one tie kind `owned` for both; the unit's record `kind`
+tells a Figment from a drone. 9: accepted. 10 built: a `turn: owner` unit's verbs are its owner's actions
+(`combat/owned`, paid by the owner); a `turn: auto` unit acts at its owner's turn start (items 1768, 1769).
 
 ## 7. State when this was last touched
 

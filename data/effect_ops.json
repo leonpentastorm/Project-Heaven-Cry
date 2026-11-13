@@ -4044,6 +4044,138 @@
       ],
       "used_by": [],
       "example": null
+    },
+    {
+      "id": "zone",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P10): lay a zone the holder owns (kind, at, within, rounds, pool), or with clear: true end the holder's zones of that kind; read by the predicates self_in_zone and target_in_zone and by damage_mult's pool. Runs on a trigger (`when`).",
+      "count": 0,
+      "params": [
+        "and",
+        "at",
+        "clear",
+        "if",
+        "kind",
+        "label",
+        "limit",
+        "pool",
+        "priority",
+        "rounds",
+        "say",
+        "target",
+        "when",
+        "within"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "zone",
+        "when": "acted",
+        "kind": "sanctuary",
+        "at": "tile",
+        "within": 1,
+        "rounds": 2
+      }
+    },
+    {
+      "id": "tie",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P8): tie the holder to the target by a kind of rules.json ties.kinds (kit.ts tie: refused at the holder's cap), or with clear (target: its ties of that kind to the target; all: every one it holds) end them; read by the predicates actor_tied and target_tied and by targets.tied. Runs on a trigger.",
+      "count": 0,
+      "params": [
+        "and",
+        "clear",
+        "if",
+        "kind",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "tie",
+        "when": "acted",
+        "kind": "bond",
+        "target": "target"
+      }
+    },
+    {
+      "id": "spawn",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P9): make an owned unit (owned.ts spawnOwned) from a data block (enemies.json companions, a system's forms) at the holder's level on the free tile nearest the holder (at: self), the target or the event's tile, tied to the holder (owned); its record: turn (own, owner, auto), eyes, upkeep, cover, lure. Runs on a trigger.",
+      "count": 0,
+      "params": [
+        "and",
+        "at",
+        "block",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "spawn",
+        "when": "acted",
+        "block": "drone",
+        "at": "self"
+      }
+    },
+    {
+      "id": "unmake",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P9): unmake an owned unit (owned.ts unmakeOwned): it leaves the fight, its tie ends; refund: what its making took goes back to its owner. Runs on a trigger.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "refund",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "unmake",
+        "when": "acted",
+        "target": "target",
+        "refund": true
+      }
+    },
+    {
+      "id": "redirect",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0, the batch row and section 6's split): on taking, move a share of the damage to the holder (a protector), or with targets and split: true divide it among that set; what is moved lands as the same blow and is not moved again. Runs on the trigger taking.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "share",
+        "split",
+        "targets",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "redirect",
+        "when": "taking",
+        "share": 0.5,
+        "if": {
+          "target": "ally",
+          "target_within": 1
+        }
+      }
     }
   ],
   "item_ops": {
@@ -4210,6 +4342,11 @@
         "hook": "reaction",
         "self": "actor",
         "about": "the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves"
+      },
+      "to_hit": {
+        "hook": "to_hit",
+        "self": "actor",
+        "about": "a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term"
       },
       "spot": {
         "hook": "spot",
@@ -4396,6 +4533,10 @@
         "arg": "words",
         "about": "the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true)"
       },
+      "not_damage": {
+        "arg": "words",
+        "about": "the damage is of none of these kinds (as damage; also a source type: strain, short)"
+      },
       "by_hit": {
         "arg": "bool",
         "about": "the damage came (or did not come) from someone's blow, not a hazard, trap, Bleeding or Burning"
@@ -4430,7 +4571,7 @@
       },
       "how": {
         "arg": "words",
-        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect)"
+        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (tending, prayer, perk, stim…)"
       },
       "ap_above": {
         "arg": "number",
@@ -4452,6 +4593,14 @@
         "arg": "bool",
         "about": "the holder is (or is not) up: not Downed, dead or surrendered"
       },
+      "actor_alive": {
+        "arg": "bool",
+        "about": "the actor is (or is not) up: not Downed, dead or surrendered"
+      },
+      "target_alive": {
+        "arg": "bool",
+        "about": "the target is (or is not) up: not Downed, dead or surrendered"
+      },
       "open": {
         "arg": "bool",
         "about": "nothing has stopped it yet: not cancelled, and (would_drop) not floored"
@@ -4471,6 +4620,46 @@
           "from",
           "to"
         ]
+      },
+      "self_in_zone": {
+        "arg": "zone",
+        "about": "self stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
+        "values": [
+          "sanctuary"
+        ]
+      },
+      "target_in_zone": {
+        "arg": "zone",
+        "about": "target stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
+        "values": [
+          "sanctuary"
+        ]
+      },
+      "actor_tied": {
+        "arg": "tie",
+        "about": "actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
+        "values": [
+          "owned"
+        ]
+      },
+      "target_tied": {
+        "arg": "tie",
+        "about": "target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
+        "values": [
+          "owned"
+        ]
+      },
+      "self_holds": {
+        "arg": "hold",
+        "about": "the holder has it: {slot: hand or person, door: evoker or emanator} (a focus) or {slot, item: an item id}"
+      },
+      "self_lacks_gear": {
+        "arg": "hold",
+        "about": "the holder does not have it (as self_holds)"
+      },
+      "toggle": {
+        "arg": "words",
+        "about": "one of the holder's item's data toggles (its ids) is on for the action being resolved"
       },
       "free_tech": {
         "arg": "bool",
@@ -4540,10 +4729,12 @@
           "taking"
         ],
         "fields": [
-          "value"
+          "value",
+          "round",
+          "pool"
         ],
         "changes_state": false,
-        "about": "multiply the amount being dealt or taken"
+        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent)"
       },
       "damage_mod": {
         "on": [
@@ -4570,6 +4761,7 @@
       "roll_mod": {
         "on": [
           "attack",
+          "to_hit",
           "cond_incoming",
           "save",
           "spot"
@@ -4579,7 +4771,7 @@
           "roll"
         ],
         "changes_state": false,
-        "about": "a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"); on a spot roll, its modifier or (roll: \"tn\") its TN"
+        "about": "a to-hit term on an attack (to_hit: on any roll to hit, weapon, Sigil or Outburst); on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"); on a spot roll, its modifier or (roll: \"tn\") its TN"
       },
       "cost_mod": {
         "on": [
@@ -4633,6 +4825,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4676,6 +4869,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4719,15 +4913,17 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
           "condition",
           "rounds",
-          "skip_save"
+          "skip_save",
+          "via"
         ],
         "changes_state": true,
-        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save"
+        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal's via; default the ambient source); condition \"incoming\" (on cond_incoming): the condition being put on, with its rounds unless rounds is given"
       },
       "cleanse": {
         "on": [
@@ -4763,6 +4959,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4805,6 +5002,17 @@
         ],
         "changes_state": false,
         "about": "stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown)"
+      },
+      "mend_mult": {
+        "on": [
+          "heal",
+          "shield"
+        ],
+        "fields": [
+          "value"
+        ],
+        "changes_state": false,
+        "about": "multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, prayer, perk…)"
       },
       "floor": {
         "on": [
@@ -4850,6 +5058,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4894,13 +5103,16 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
-          "amount"
+          "amount",
+          "layer",
+          "holders"
         ],
         "changes_state": true,
-        "about": "heal or shield by an amount block (its heal_kind is the heal's kind for heal_in: tending, prayer…; default perk)"
+        "about": "heal or shield by an amount block (its heal_kind is the heal's kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder's layer)"
       },
       "displace": {
         "on": [
@@ -4936,6 +5148,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4944,6 +5157,196 @@
         ],
         "changes_state": true,
         "about": "push the target away from the holder (how: push) or pull it closer (pull)"
+      },
+      "zone": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "kind",
+          "at",
+          "within",
+          "rounds",
+          "pool",
+          "clear"
+        ],
+        "changes_state": true,
+        "about": "lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event's), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder's zones of that kind (nothing said when it had none)"
+      },
+      "tie": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "kind",
+          "clear"
+        ],
+        "changes_state": true,
+        "about": "tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder's cap: nothing said); clear: \"target\" ends the holder's ties of that kind to the target, \"all\" every one of that kind it holds"
+      },
+      "spawn": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "block",
+          "at"
+        ],
+        "changes_state": true,
+        "about": "make an owned unit (P9: owned.ts spawnOwned) from a data block (enemies.json companions, a system's forms) at the holder's level, on the free tile nearest the holder (at: self), the target or the event's tile; tied to the holder (owned); refused at its cap (ties_max:owned): nothing said"
+      },
+      "unmake": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "refund"
+        ],
+        "changes_state": true,
+        "about": "unmake an owned unit (P9: owned.ts unmakeOwned; the target, else the holder): it leaves the fight; refund: what its making took goes back to its owner"
+      },
+      "redirect": {
+        "on": [
+          "taking"
+        ],
+        "fields": [
+          "share",
+          "split"
+        ],
+        "changes_state": true,
+        "about": "move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again)"
       },
       "use": {
         "on": [
@@ -4979,6 +5382,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [],
@@ -5019,6 +5423,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -5062,7 +5467,13 @@
         "seen": "bool",
         "alive": "bool",
         "downed": "bool",
-        "max": "number"
+        "max": "number",
+        "sees": [
+          "line",
+          "eyes"
+        ],
+        "tied": "string",
+        "aims_at": "string"
       }
     }
   }
