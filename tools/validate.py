@@ -1974,6 +1974,36 @@ if TRIG:
                 if not (isinstance(q, dict) and ((q.get("skill") in _SK and isinstance(q.get("min", 1), int)) or (q.get("class") in _CL and q.get("rank", 1) in (1, 2, 3)))): errors.append(f"{w}: a verb's requires entry is {{skill, min}} or {{class, rank}}")
             if sum(1 for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action") != 1: errors.append(f"{w}: a verb has one grant_action")
             _walk_grant(_x, w); walk_triggers(_x, w); _check_toggles(_x, w)
+    # Shadow (rules 1.32, shadow-spec.md section 10): a shadow.* verb costs at most the cap its Ingenuity gives; a skill
+    # unlock's toggles are item ops; a number block's res: source names a resource; Ingenuity's per_point has no ambush
+    # slope; the door's Break term and the Operative's start read the same numbers as rules.json shadow
+    _SHR = (data.get("rules") or {}).get("shadow") or {}
+    _RESIDS = set(((data.get("actions") or {}).get("resources") or {}).keys())
+    def _sh_cap(n):
+        return max([v for k, v in (_SHR.get("cap_by_points") or {}).items() if n >= int(k)] or [0])
+    for _x in (data.get("shadow") or {}).get("items") or []:
+        _g = next((e for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action"), {})
+        _need = ((_x.get("requires") or [{}])[0] or {}).get("min", 0)
+        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need): errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
+    def _walk_res(o, w):
+        if isinstance(o, dict):
+            if isinstance(o.get("of"), str) and o["of"].startswith("res:") and o["of"][4:] not in _RESIDS: errors.append(f"{w}: number block source {o['of']} names no actions.json resource")
+            for v in o.values(): _walk_res(v, w)
+        elif isinstance(o, list):
+            for v in o: _walk_res(v, w)
+    for _x in items("skills"):
+        for _l, _u in (_x.get("unlocks") or {}).items():
+            _check_toggles(_u, f"skills:{_x.get('id')}.{_l}"); _walk_res(_u, f"skills:{_x.get('id')}.{_l}")
+    _ing = next((x for x in items("skills") if x.get("id") == "ingenuity"), {})
+    if "ambush_per_point" in (_ing.get("per_point") or {}): errors.append("skills:ingenuity: per_point has no ambush_per_point (rules 1.32: the Ambush is a flat 1 + rules.json shadow.ambush_bonus)")
+    _door = ((_ing.get("unlocks") or {}).get("1") or {})
+    _brk = next((t for t in _door.get("toggles") or [] if t.get("id") == "shadow.break"), None)
+    if _SHR and _brk:
+        _per = {p.get("of"): p.get("value") for e in _brk.get("effects") or [] if isinstance(e.get("value"), dict) for p in e["value"].get("per") or []}
+        if _per != {"res:shadow": _SHR.get("per_point"), "event:ambush": _SHR.get("ambush_bonus"), "target:marked": _SHR.get("marked_bonus")}: errors.append("skills:ingenuity.1: the Break's term must read rules.json shadow per_point, ambush_bonus, marked_bonus")
+        if any((e.get("limit") or {}).get("key") == "gain" and (e["limit"].get("n") != _SHR.get("door_gains_per_turn")) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit is rules.json shadow.door_gains_per_turn")
+    _op = next((m for b in base if b.get("id") == "infiltrator" for m in b.get("gain") or [] if m.get("id") == "tradecraft"), None)
+    if _SHR and _op and not any(e.get("op") == "resource" and e.get("when") == "combat_start" and e.get("value") == _SHR.get("operative_start") for e in _op.get("effects") or []): errors.append("classes:infiltrator.tradecraft: its combat_start Shadow is rules.json shadow.operative_start")
     # skills.json unlocks marked `item` are run as items (effects/collect.ts SKILL_ITEMS)
     for _x in items("skills"):
         for _l, _u in (_x.get("unlocks") or {}).items():
