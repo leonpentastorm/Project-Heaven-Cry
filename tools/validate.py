@@ -433,6 +433,43 @@ for _p in items("perks"):
     if isinstance(_p, dict) and _p.get("name", "").lower() in _class_names:
         errors.append(f"perk {_p.get('id')}: name {_p.get('name')!r} collides with a class name")
 
+# Classes 3.0 step 5, the Chaplain (rules 1.31; chaplain-spec.md section 10): Smite is Rebuke's size; every shield
+# layer a move names is a known one; the Judged row exists; no Virtue base-class move costs MP or Strain.
+_SHIELD_LAYERS = {"ward"}
+conds_ids = ids_of(items("conditions"))
+_pool_by = {(m.get("id"), m.get("origin")): m for m in ((data.get("classes") or {}).get("move_pool") or {}).get("moves", []) if isinstance(m, dict)}
+def _class_moves(c):
+    out = []
+    for r in ("I", "II", "III"):
+        for m in ((c.get("ranks") or {}).get(r) or {}).get("moves", []):
+            if "ref" in m:
+                cls_id, mv = m["ref"].split(".", 1)
+                out.append(_pool_by.get((mv, cls_id)) or next((x for a in adv if isinstance(a, dict) and a.get("id") == cls_id for x in a.get("moves", []) if x.get("id") == mv), {}))
+            else: out.append(m)
+    return out + list(c.get("gain") or [])
+def _walk_ops(o):
+    if isinstance(o, dict):
+        yield o
+        for v in o.values(): yield from _walk_ops(v)
+    elif isinstance(o, list):
+        for v in o: yield from _walk_ops(v)
+_rebuke = next((w for w in (data.get("patrons") or {}).get("whispers", []) if w.get("id") == "rebuke"), None)
+_rebuke_n = -next((e.get("value") for e in (_rebuke or {}).get("effects", []) if e.get("op") == "stat_mod" and e.get("stat") == "hp"), 0)
+for c in base:
+    if not isinstance(c, dict): continue
+    for m in _class_moves(c):
+        for e in _walk_ops(m.get("effects") or []):
+            if e.get("layer") is not None and e.get("layer") not in _SHIELD_LAYERS:
+                errors.append(f"classes:{c.get('id')}.{m.get('id')}: unknown shield layer {e.get('layer')!r} (known: {sorted(_SHIELD_LAYERS)})")
+            if c.get("attribute") == "virtue" and (e.get("resource") in ("mp", "strain") or any(k in ("mp", "strain") for k in (e.get("res") or {}))):
+                errors.append(f"classes:{c.get('id')}.{m.get('id')}: a Virtue class move costs no MP or Strain (rules 1.31)")
+    if c.get("id") == "guardian":
+        sm = next((m for m in _class_moves(c) if m.get("id") == "smite"), None)
+        if sm is not None:
+            for k, b in (sm.get("amounts") or {}).items():
+                if b.get("base") != _rebuke_n: errors.append(f"classes:guardian.smite: amounts.{k}.base {b.get('base')} is not Rebuke's {_rebuke_n} (rules 1.31: Smite is Rebuke's size)")
+        if "judged" not in conds_ids: errors.append("conditions: the row 'judged' is missing (rules 1.31: the Chaplain's Smite puts it on)")
+
 # archetypes: creation presets (guidance only)
 arch = data.get("archetypes")
 if isinstance(arch, dict):
