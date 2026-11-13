@@ -451,6 +451,7 @@
 "shelved/rev2/trickster/taken-soul": "P1 res.guard5>2",
 "shelved/rev2/trickster/taken-true": "P1 res.guard5>2",
 "shelved/rev2/trickster/trickster.rewrite/rewrite": "P1 ap9>6 mg.charge10>7 mg.flux0>1 | short: Needs 3 AP. | again: NO Used this turn. | next: P1 ap9>6 mg.charge7>4 mg.flux1>2 | later: P1 ap9>6 mg.charge7>4 mg.flux1>2",
+"shelved/rev2/trickster/trickster.silver_tongue/silver_tongue": "P1 ap9>7 | short: Needs 2 AP. | again: P1 ap9>7 | next: P1 ap9>7 | later: P1 ap9>7",
 "shelved/rev2/warden/ally-taken": "P1 res.guard5>1; F2 ammo24>23 ap0>7 heat0>1",
 "shelved/rev2/warden/taken": "P1 res.guard5>1; F2 ammo24>23 ap0>7 heat0>1",
 "shelved/rev2/warden/taken-blast": "P1 res.guard5>2",
