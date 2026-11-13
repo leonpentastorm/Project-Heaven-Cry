@@ -78,6 +78,8 @@ describe('the Narrator and faith', () => {
     // Brace and Lunge, a few tokens: the cap moves to 25.7k on purpose.
     // Classes 3.0 step 3 (rules 1.30): the Skirmisher's moves reworded weapon-neutral (Fire Discipline, Speed Loader,
     // Special Ammo, Killzone, Run and Gun), a few tokens: the cap moves to 25.7k on purpose.
-    expect(e.stable).toBeLessThan(25700);
+    // Classes 3.0 step 7 (rules 1.33): the Mender's moves and Tending (the door's verbs on every sheet with Empathy), about
+    // 0.08k: the cap moves to 25.9k on purpose.
+    expect(e.stable).toBeLessThan(25900);
   });
 });

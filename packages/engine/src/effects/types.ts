@@ -265,10 +265,12 @@ export interface ActionDef {
   arm?: boolean;
   /** What args.choice takes, so the client can offer it (UI chips): a fixed list, or the holder's Sigil words, squadmates,
    * Outburst designs or γ skills. pickMulti: how many it may take at once (words: space-separated). */
-  pick?: string[] | 'words' | 'squad' | 'designs' | 'gamma' | 'forms';
+  pick?: string[] | 'words' | 'squad' | 'designs' | 'gamma' | 'felt' | 'forms'; // felt, forms: registered lists (effects/actions.ts registerPickList: Inspire's felt feelings, rules 1.33; Picture's forms, rules 1.34)
   pickMulti?: number;
   /** The prompt for the pick or typed detail ("Head, arm or leg", "The squadmate"). */
   pickLabel?: string;
+  /** Rules 1.33: the cost site the action is priced at (a data grant_action's `site`; default '<item key>#<action id>'). */
+  site?: string;
   /** Who it may go at, worked out by the engine (Classes 3.0 P6: a door verb's `reach`): the descriptor's pick list. */
   choices?(h: Holder): string[];
   /** Why it can't go at this unit (a door verb's `reach`: side, range, sight, its `if`), or null. */
@@ -303,6 +305,8 @@ export interface ItemHandler {
   actions?: ActionDef[];
   /** The data's grant_action is run another way (an automatic shot, a toggle): no default action button for it. */
   noDefaultActions?: boolean;
+  /** Rules 1.33: keep the data's default actions beside this lane's (their ids differ): a lane that adds only a story half (Triage out of a fight). */
+  dataActions?: boolean;
   toggles?: ToggleDef[];
   /** The Narrator-ruled remainder in about 15 words, or null when the engine runs all of it. */
   brief?(h: Holder): string | null;

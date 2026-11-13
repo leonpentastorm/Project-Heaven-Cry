@@ -68,10 +68,10 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
       triggers a reaction, Suppressed never blocks a protective one, Reflex (two), Killzone on both, Run and Gun.
 - [x] **4. The moves that change hands** (Bulwark and Breaker merged 13 Nov; each moved move rides with its system's step below) and the small changes to Bulwark, Breaker, Sigilist.
 - [x] **5. The Chaplain** (merged 13 Nov; all in 131 against 125; not built: two Sanctuaries on one tile still stack; step 11 re-measures: the door's Whisper-turn band was widened 1.40 to 1.42 by the lead and the old faith caps were raised by Smite's share) (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
-- [ ] **6. Shadow and the Operative** (`shadow-spec.md`).
-- [ ] **7. Tending, Bonds and the Mender** (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
+- [x] **6. Shadow and the Operative** (merged 13 Nov, integrated; 19 of 21 verbs: Parting Cut and Case still pending; the door measures about 22% under its line: step 11) (`shadow-spec.md`).
+- [x] **7. Tending, Bonds and the Mender** (merged 13 Nov, integrated; NOT built: the TEND tab, Bond strip and Ledger bar (step 10, started), the enemy hunt of a Bonded healer (step 9), the solo fights; offence measures 79 / 83 against 70, healing 175 against 200: steps 7b and 11) (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
       moves to Will Power.
-- [ ] **7b. Healing and shields in percent of HP** (`docs/design/heal-shield-percent-spec.md`; Leon, 13 Nov: the top heal is 65% of HP a turn, the strongest shield soaks about two turns of a full assault, balanced by cost, a percent gate on every heal and shield). **Leon: built inside Classes 3.0, not as a hotfix before it** ("just implement it to Classes 3.0"). It sets the numbers of step 7 and re-fits every existing heal and shield; do it right after step 7's systems exist, before step 8.
+- [ ] **7b. The level scale AND healing and shields in percent of HP, as one step** (`docs/design/level-scale-spec.md`: Leon, 13 Nov: a plain hit 40 at level 1 as today and about 300 at level 20: the scale is x7.5, geometric; everything measured in HP grows with it). Old title: **Healing and shields in percent of HP** (`docs/design/heal-shield-percent-spec.md`; Leon, 13 Nov: the top heal is 65% of HP a turn, the strongest shield soaks about two turns of a full assault, balanced by cost, a percent gate on every heal and shield). **Leon: built inside Classes 3.0, not as a hotfix before it** ("just implement it to Classes 3.0"). It sets the numbers of step 7 and re-fits every existing heal and shield; do it right after step 7's systems exist, before step 8.
 - [ ] **8. Figments, the Visualizer and the Rigger** (`figments-spec.md`): the owned-unit primitive first, with the
       drone, the beast and the twin moved onto it and their golden lines unchanged; then the forms.
 - [ ] **9. The enemy side:** what each spec's section 8 asks of the AI, in one piece, after all systems exist.
@@ -162,10 +162,23 @@ Step 5 (`docs/design/handoffs/classes-3.0-step-5.md` section 5, rules 1.31 items
    contract's whisper and hymn rows measure a classless Faith sheet (`doorFaithBuild`). Measured: the Chaplain all in
    122 / 130 / 123 / 149 (mean 131 against 125, +5%); normal share 110 against 100.
 
+Step 6 (`docs/design/handoffs/classes-3.0-step-6.md` section 5, rules 1.32 items 1950 to 1969; built on
+`worktree-agent-a240d31a3975ddb8c`, not merged back):
+1. Of the nine verbs not built, seven were built at the integration (Decoy, Close Quarters, Vault, Pick, Douse, Shadow
+   Run, Rig; items 1970 to 1976); **Parting Cut and Case stay pending** (item 1966: a toggle riding the Break; a kit
+   read-out). See the step 6 hand-off's "Integration".
+2. `<who>_has` / `_lacks` and `cleanse` see flag conditions (Hidden, Prone, Bleeding, Dazed), and `<who>_sees_self`
+   is false while the holder is Hidden (item 1967): general meaning changes, no golden line outside Shadow moved.
+3. The Break's 1-Shadow floor is the toggle's `if` (`self_has_res`); the turn's attack mark is `attack_roll`; the
+   MARK verbs' reach is 8 (the spec's example); machine saves by Ingenuity only; Foul's save is the `lowered` row's
+   Heart; Off Balance's "two rounds running" is a 2-round cooldown a target; Fade picks its own tile.
+4. **Measured, not refitted:** door all in 85 (line 109), Operative all in 101 (line 125, before Mark's squad
+   value), an upper bound; the dial `rules.json shadow.per_point` is the lead's to move.
 Step 8 (`docs/design/handoffs/classes-3.0-step-8.md` section 5, rules 1.34 items 2100 to 2140; built on
-`worktree-agent-ab68f95a6fcdfab8e`, not merged):
-1. On the branch Field Fix is a move-pool move the Rigger refs, and Read stands in the Operative's rank II in its place:
-   the Shadow step's merge sets that rank (take theirs).
+`worktree-agent-ab68f95a6fcdfab8e`; integrated, see that hand-off's "Integration"):
+1. Field Fix is a move-pool move the Rigger refs. **Settled at the integration (the lead's ruling):** the Operative's
+   ranks are step 6's (rank II Toxin and Sabotage); Read is folded into the Operative's Analyze, the branch's Read and
+   its `trickster.read` handler are gone.
 2. The held count counts Figments made by Picture only (not the drone, the Rigger's Double or the Scrap Turret).
 3. A Figment acts only on what its side sees (rule 9, literal): a Beast beside an unseen enemy can't strike it.
 4. A Figment's fall is no death: no mana, no Pressure spill.
@@ -189,6 +202,22 @@ Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 ite
 or hinders an enemy is never a reaction (item 1764 amended). 8: one tie kind `owned` for both; the unit's record `kind`
 tells a Figment from a drone. 9: accepted. 10 built: a `turn: owner` unit's verbs are its owner's actions
 (`combat/owned`, paid by the owner); a `turn: auto` unit acts at its owner's turn start (items 1768, 1769).
+
+Step 7 (`docs/design/handoffs/classes-3.0-step-7.md` section 6, rules 1.33 items 2000 to 2041; built on
+`worktree-agent-ab6c4efb0b594722e`, not merged):
+1. The echo is 0.20 (Leon); a Bond past the cap is refused (Let Go first); every Bonded unit bears `bonded` (the tie's
+   mark); a Boss Bond lasts 3 of its turns, then 4 rounds from the Bond before you can Bond it again.
+2. The share skips damage you do to yourself; per-Bond counts the ties you hold at either end.
+3. Brimming leaves half the overheal as a shield; Take the Weight's condition is taken with no save.
+4. Given feelings: "next attack" boons end with the next damage; the edge +2 with a weapon hit or miss; an enemy given a
+   feeling with no enemy face gets nothing for the AP and MP (the screen should grey it).
+5. **Share a Hit fires automatically for everyone with Camaraderie 1**: it changes every squad fight. Leon may prefer a
+   toggle. The item tables' squad does not share (`harness.ts noShare`).
+6. Field Surgery needs a field kit carried (not used up) and 15 MP; Triage is not offered on the area map (the story
+   Triage, ×3, stays).
+7. **Measured, not refitted:** the Mender's healing turn 175 against 200 (−12%), the door's 164 against 174; the Mender's
+   offence 79 (solo) / 83 (squad) against 70 (+13% / +19%). The balance guard was not given the three new rows (it would
+   fail); the dials are `output.profiles.tend.k` and `tending.json bond.per_bond`.
 
 ## 7. State when this was last touched
 

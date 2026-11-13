@@ -6,7 +6,7 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
@@ -328,7 +328,7 @@ export type Action =
   | { type: 'combat/gift'; unitId: string; aim: string }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string; targetId?: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
   | { type: 'gear/equip'; charId: string; idx: number | string; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number | string }
-  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string; /** The off-hand gun's jam (its own Clear jam). */ hand?: 'main' | 'off' } | { type: 'combat/stim'; unitId: string; targetId: string }
+  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string; /** The off-hand gun's jam (its own Clear jam). */ hand?: 'main' | 'off' } | { type: 'combat/stim'; unitId: string; targetId: string; /** rules 1.33: Stim Throw (within 4 in sight) */ thrown?: boolean }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
   | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number | string; mod?: number | string; to?: 'main' | 'off' }
   /** Rules 1.9 gear in a fight (items 684–690): draw from the pack into a hand, or put on a light armour piece ('worn');
@@ -1161,7 +1161,7 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
     if (c.hp > 0 || kind === 'long') { c.hp = Math.min(max, Math.max(c.hp, 0) + back); if (c.hp > 0) c.downedFails = 0; }
     if (g.story.heat) g.story.heat[c.id] = 0;
     const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
-    if (kind === 'long') { if (carriesEmanator(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
+    if (kind === 'long') { if (carriesMpFocus(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
   }
   push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full. Day ' + dayOf(g) + '.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
 }
@@ -1172,7 +1172,7 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
 function beginSession(g: GameState) {
   g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
   const sh: any = emitStory(g, 'session_heal', { g, mult: {} as Record<string, { hp?: number; mp?: number }> });
-  for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); }
+  for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesMpFocus(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); }
   emitStory(g, 'session_start', { g, n: g.sessionN });
 }
 /** Days pass (rules 1.6.1, item 709): the Narrator's turn field days, a whole number from 1 to 3650 (clamped; rounded;
@@ -1564,7 +1564,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); if (!err) readDrawnBy(cb!, u, t!); break; } // rules 1.10: its glyphs are read too
     case 'combat/read': err = readGlyph(cb!, u, tileKey(g, a.tile)); break;
     case 'combat/clear': err = clearJam(cb!, u, a.hand === 'off' ? 'off' : 'main'); break;
-    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
+    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!), { thrown: !!(a as any).thrown }); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
     case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile), a.stroke); break;
     case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined, evokeOptsOf(g, a)); break;
@@ -1593,7 +1593,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   } finally { toggles = cb!.mods || []; delete cb!.mods; delete (cb as any).acting; }
   if (err) { unlend(cb); fail(err); }
   // Classes 3.0 P2: the trigger `acted`, once, after the unit's own action succeeded (Analyze fires its own: analyze()).
-  { const name = actedName(g, cb!, u, c, a); if (name) acted(cb!, u, { action: name, t: 'targetId' in a && a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null, tile: tileOfAction(g, a), toggles, mode: a.type === 'combat/attack' ? a.mode || 'shot' : null }); }
+  { const name = actedName(g, cb!, u, c, a); if (name) acted(cb!, u, { action: name, t: 'targetId' in a && a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null, tile: tileOfAction(g, a), toggles, mode: a.type === 'combat/attack' ? a.mode || 'shot' : null, ...('choice' in a && (a as any).choice != null ? { choice: String((a as any).choice) } : {}) }); }
   { const used = settleCredit(cb!, loan); if (used) { briefUsed(cb!, u, used.brief); if (used.hadEncore) encoreUsed(cb!, u, used.spent - used.brief, loan!.encore); } }
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
@@ -1780,11 +1780,13 @@ function physAction(c: Character, a: Extract<Action, { type: 'phys/ready' | 'phy
     case 'phys/quiver': return loadQuiverWith(c, a.weaponId, a.load || {});
     case 'phys/answers': {
       if (a.ids == null) { delete ensurePhys(c).answers; return null; }
-      const ids = (Array.isArray(a.ids) ? a.ids : []).filter((x) => TECHNIQUE[x]?.group === 'answer'); if (new Set(ids).size !== ids.length) return 'Each Answer once.';
+      const ids = (Array.isArray(a.ids) ? a.ids : []).filter((x) => TECHNIQUE[x]?.group === 'answer' || ITEM_ANSWERS.has(x)); // an item Answer too (predicate answer_on: Share a Hit) if (new Set(ids).size !== ids.length) return 'Each Answer once.';
       ensurePhys(c).answers = ids; return null;
     }
   }
 }
+/** The item Answers (each `if.answer_on` in the data: Share a Hit, rules 1.33): switched on and off by phys/answers like the techniques' Answers. */
+const ITEM_ANSWERS: Set<string> = new Set([...JSON.stringify([SKILL, PERK, TRAITS, CLASSES]).matchAll(/"answer_on":"([a-z_]+)"/g)].map((m) => m[1]));
 const anyTarget = (t: Combat['units'][number] | undefined, u: Combat['units'][number]) => !!t && t.id !== u.id && !t.dead && !t.surrendered;
 /** What a companion or a puppet may do (rules 1.3). */
 const ACT_NAME: Record<string, string> = { move: 'move', sprint: 'sprint', disengage: 'disengage', shot: 'shoot', aimed: 'take an aimed shot', melee: 'strike' };
@@ -3157,7 +3159,7 @@ function sbRefill(c: Character) {
   if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
   if (carriesEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: 'ammo' }); }
   c.pack = pack;
-  if (carriesEmanator(c)) c.mp = maxMp(c);
+  if (carriesMpFocus(c)) c.mp = maxMp(c);
   c.stims = Math.max(c.stims, 3);
   if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };
 }

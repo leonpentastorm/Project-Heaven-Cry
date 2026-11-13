@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
 import { STATS, STAT_FAMILIES, COST_SITE_IDS, COST_SITES, IMMUNE_IDS, isStatId, isCondition } from '../src';
 import ACTIONS_JSON from '../../../data/actions.json';
+import CLASSES_JSON from '../../../data/classes.json';
+import TENDING_JSON from '../../../data/tending.json';
 import LINT_PATTERNS from './lint-patterns.json';
 /** A pattern shared with tools/built_from.py (test/lint-patterns.json): one list, read by both. */
 const RE = (id: string) => new RegExp((LINT_PATTERNS as any).patterns[id].re);
@@ -43,8 +45,10 @@ describe('F14: stat ids are declared, asked and answered', () => {
       const [a, b] = split(m[2]); if (b) asked.add(a + b); else if (FAMS.includes(a)) askedFam.add(a); else asked.add(a);
     }
     // cost sites: price(x, '<action>', …) (effects/cost.ts) asks 'ap_cost:<site>' for the action's site (data/actions.json `site`, default the id)
-    for (const m of f.code.matchAll(/\b(?:price|affords)\(\s*(?:\{[^{}]*\}|cb, u),\s*([^,)]+)[,)]/g)) { if (f.rel === 'effects/cost.ts') continue; const lit = [...m[1].matchAll(/'([a-z_0-9]+)'/g)].map((x) => x[1]); for (const s of lit) costSites.add(SITE_OF[s] || s); if (!lit.length && !/^def\.id$|^action$|^id$|^h\.key/.test(m[1].trim())) throw new Error('price() with an action the lint cannot read: ' + f.rel + ':' + lineOf(f.code, m.index!) + ' ' + m[0]); }
+    for (const m of f.code.matchAll(/\b(?:price|affords)\(\s*(?:\{[^{}]*\}|cb, u),\s*([^,)]+)[,)]/g)) { if (f.rel === 'effects/cost.ts') continue; const lit = [...m[1].matchAll(/'([a-z_0-9]+)'/g)].map((x) => x[1]); for (const s of lit) costSites.add(SITE_OF[s] || s); if (!lit.length && !/^def\.id$|^action$|^id$|^site$|^h\.key/.test(m[1].trim())) throw new Error('price() with an action the lint cannot read: ' + f.rel + ':' + lineOf(f.code, m.index!) + ' ' + m[0]); }
     // actions.ts prices the basic actions from data/actions.json (`site as CostSite`, asked only when the site is declared)
+    // rules 1.33: a data grant_action that names its cost site (Triage: 'triage') is priced there (effects/actions.ts costOf)
+    if (f.rel === 'effects/actions.ts') { const walk = (o: any): void => { if (Array.isArray(o)) o.forEach(walk); else if (o && typeof o === 'object') { if (o.op === 'grant_action' && typeof o.site === 'string') costSites.add(o.site); Object.values(o).forEach(walk); } }; walk([CLASSES_JSON, TENDING_JSON]); }
     if (f.rel === 'actions.ts') for (const x of (ACTIONS_JSON as any).items) { const site = x.site || x.id; if ((COST_SITE_IDS as readonly string[]).includes(site)) costSites.add(site); } // (a row with no site of its own and no fixed AP is priced by its own pipeline: Move by tiles)
     for (const m of f.code.matchAll(/AP_BY_NAME[^=]*= new Set<CostSite>\(\[([^\]]+)\]/g)) for (const x of m[1].matchAll(/'([a-z_]+)'/g)) costSites.add(x[1]);
     for (const m of f.code.matchAll(/\bimmune\(\s*\{[^{}]*\},\s*'([a-z_]+)'/g)) immuneAsked.add(m[1]);
@@ -99,7 +103,7 @@ describe('F6: the kit is the only home of the lane helpers (src/kit.ts)', () => 
     // item that does "to every enemy within 3 of the body" is data. Each number is what the perks and class lanes still
     // walk by hand (the six aura items, Rally, Rally Cry, Grim Reaper, The Name They Whisper, Lingering Dread... see the
     // step 1a hand-off for why each could not move yet). Never raise one; lower it when a lane moves onto targets.
-    const LEFT: Record<string, number> = { 'classes/i.ts': 10, 'classes/j.ts': 15, 'classes/k.ts': 20, 'classes/rev3.ts': 1, 'perks/a.ts': 2, 'perks/b.ts': 9, 'perks/c.ts': 15, 'perks/d.ts': 11,
+    const LEFT: Record<string, number> = { 'classes/i.ts': 10, 'classes/j.ts': 15, 'classes/k.ts': 20, 'perks/a.ts': 2, 'perks/b.ts': 9, 'perks/c.ts': 15, 'perks/d.ts': 11,
       'perks/e.ts': 13, 'perks/f.ts': 17, 'perks/g.ts': 8, 'perks/h.ts': 4, 'perks/skeleton.ts': 4 };
     const got: Record<string, number> = {};
     for (const h of hits(/\bcb!?\.units\.(?:filter|find|some|every|forEach)\b|\bof cb!?\.units\b/, (rel) => !/^(perks|classes)\//.test(rel))) { const f = h.split(':')[0]; got[f] = (got[f] || 0) + 1; }

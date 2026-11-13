@@ -8,6 +8,7 @@ import RULESJ from '../../../data/rules.json';
 import ENEMIESJ from '../../../data/enemies.json';
 import ACTIONSJ from '../../../data/actions.json';
 import ITEMSJ from '../../../data/items.json';
+import { FOCUS_IDS } from '../src/character';
 import { ladderAt, projectionRange, heldMax, figmentCharge, setFigmentDesign, designsMax, pictureOptions, FORM, FIG_TRAIT, isFigment, figmentMeter, levelFactor, enemyLevelRow, mod, applyCond, condOn, perceivedFoes, isGhost, actionsFor, applyDamage, emit } from '../src';
 
 const F: any = FIGJ, R: any = RULESJ, ACT: any = ACTIONSJ;
@@ -16,9 +17,10 @@ const lvl = (n: number) => enemyLevelRow(n) as any;
 const SPOT = '3,4', FAR = '12,4';
 
 describe('figments: the data', () => {
-  it('the Visualizer is the third focus: off hand, its own door; vcharge is a resource; the verbs are cost sites', () => {
+  it('the Visualizer is a standard focus: off hand, its focus block opens Visualization (rules 1.33 shape); vcharge is a resource; the verbs are cost sites', () => {
     const v = (ITEMSJ as any).items.find((x: any) => x.id === 'visualizer');
-    expect(v).toMatchObject({ category: 'focus', slot: 'off_hand', door: 'visualizer' });
+    expect(v).toMatchObject({ category: 'focus', slot: 'off_hand', focus: { door: 'visualization', hand: 'one', fuel: 'core' } });
+    expect(FOCUS_IDS.visualizer).toContain('visualizer');
     expect(ACT.resources.vcharge.path).toBe('mg.vcharge');
     for (const s of ['picture', 'let_go', 'figment_strike', 'figment_pounce', 'figment_cut', 'figment_stare']) expect(typeof cost(s)).toBe('number');
     expect(R.output.profiles.figment.level).toBe('deal'); expect(R.output.factors.figment).toBeGreaterThan(0);

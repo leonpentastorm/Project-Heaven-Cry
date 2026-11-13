@@ -33,9 +33,9 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(24); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; rules 1.34: the Rigger + Salvage, Overclock, Scrap Turret, − Silver Tongue (Field Fix and Read change hands)
+    expect(NEW.length).toBe(25); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; − Field Fix (to the move pool, rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
     for (const m of NEW as any[]) {
-      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3)
+      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3; a data action: P6, rules 1.32's Vanish; rules 1.33: a data action whose ops run on acted)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
     }
   });
@@ -193,7 +193,7 @@ describe('Infiltrator', () => {
     expect(f.unit(u.id).hidden).toBe(true); expect(f.unit(u.id).ap).toBe(5);
     const g = fightWith([cls('infiltrator', 3)], [{}]);
     const v = g.turn(at(g, g.pc, '4,2')); at(g, g.foe, '8,2');
-    expect(() => perk(g, v, 'class:infiltrator.vanish')).toThrow(/can see you/);
+    expect(() => perk(g, v, 'class:infiltrator.vanish')).toThrow(/Not now/); // rules 1.32: data only, its `if` (out of view)
   });
   it('Field Fix (now the Rigger\'s, rules 1.34): clear a squadmate\'s jam, restore their weapon, repair a machine; nothing to fix is refused', () => {
     const f = fightWith([cls('trickster', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);
@@ -210,11 +210,11 @@ describe('Infiltrator', () => {
     f.unit(a.id).hp = f.unit(a.id).maxHp; f.unit(a.id).dur = f.unit(a.id).maxDur;
     expect(() => perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id })).toThrow(/Nothing to fix/);
   });
-  it('Sabotage: a drone is disabled for 2 rounds (no turns); a human is refused', () => {
+  it('Sabotage: a drone is disabled for numbers.rounds (1, rules 1.32; no turns); a human is refused', () => {
     const f = fightWith([cls('infiltrator', 8)], [{ name: 'Drill drone' }, { name: 'Trooper' }]);
     const u = at(f, f.pc, '4,2'), drone = at(f, f.foes[0], '5,2'); at(f, f.foes[1], '5,3'); f.turn(u);
     perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: drone.id });
-    expect(condOn(f.unit(drone.id), 'stunned')).toBe(true); expect(f.unit(drone.id).conds!.stunned).toBe(2);
+    expect(condOn(f.unit(drone.id), 'stunned')).toBe(true); expect(f.unit(drone.id).conds!.stunned).toBe((CLASS.infiltrator as any).ranks.II.moves.find((m: any) => m.id === 'sabotage').numbers.rounds);
     expect(() => perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: f.foes[1].id })).toThrow(/isn't a machine/);
   });
   it('Sabotage: a rigged tile springs on the next enemy (30, Pinned on a failed Body save), never on your side', () => {
@@ -229,14 +229,13 @@ describe('Infiltrator', () => {
     expect(f.unit(foe.id).hp).toBe(999 - Math.floor(30 * levelFactor('deal', f.unit(i.id).level))); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true); // rules 1.26 b7: a trap a character set grows with its level
     expect(objectsOf(f.cb).some((o: any) => o.rig)).toBe(false);
   });
-  it('Sabotage: a barricade stops blocking the way for 2 rounds (a way through, not a place to stop: item 568)', () => {
+  it('Sabotage: a barricade next to you breaks (rules 1.32: its hp to 0)', () => {
     const f = fightWith([cls('infiltrator', 8)], [{ at: 'P11' }]);
     const u = at(f, f.pc, '4,2'); f.cb.objects = [...objectsOf(f.cb), makeObject('bx', 'barricade', '5,2')]; f.turn(u);
     perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage_object', tile: '5,2' });
-    expect(paths(f.cb, '4,2', u.id).dist['6,2']).toBe(2); // straight through it
-    expect(() => act(f, f.unit(u.id), { type: 'combat/move', to: '5,2' })).toThrow();
-    act(f, f.unit(u.id), { type: 'combat/move', to: '6,2' });
-    expect(f.unit(u.id).pos).toBe('6,2');
+    expect(objectsOf(f.cb).some((o: any) => o.id === 'bx' && (o.hp == null || o.hp > 0))).toBe(false);
+    act(f, f.unit(u.id), { type: 'combat/move', to: '5,2' });
+    expect(f.unit(u.id).pos).toBe('5,2');
   });
 });
 
@@ -296,23 +295,8 @@ describe('Trickster', () => {
 
 // ======================================================================================================== BARD
 describe('Bard', () => {
-  it('Rally: allies within 4 heal 6 × Healing given × the level factor (rules 1.23; it was 20 × Healing given) and lose Fear and Shaken; the far one doesn\'t; once a scene', () => {
-    const f = fightWith([cls('bard', 8), {}, {}], [{ at: 'P11' }]);
-    const [b, a, far] = f.pcs; at(f, b, '2,2'); at(f, a, '4,2'); at(f, far, '9,2');
-    f.unit(a.id).hp = 20; f.unit(far.id).hp = 20;
-    withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'fear', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'shaken', 3, undefined, { skipSave: true }); });
-    f.turn(b); perk(f, f.unit(b.id), 'class:bard.rally');
-    const n = Math.floor(Math.floor(6 * healingMult(charOf(f, b)) * mendFactor(charOf(f, b).level)) * (f.unit(a.id).healRecv || 1));
-    expect(f.unit(a.id).hp).toBe(20 + n);
-    expect(condOn(f.unit(a.id), 'fear')).toBe(false); expect(condOn(f.unit(a.id), 'shaken')).toBe(false);
-    expect(f.unit(far.id).hp).toBe(20); expect(f.unit(b.id).ap).toBe(4);
-    expect(() => perk(f, f.unit(b.id), 'class:bard.rally')).toThrow(/next scene/);
-  });
-  it('Rally: refused with nobody in reach', () => {
-    const f = fightWith([cls('bard', 8)], [{ at: 'P11' }]);
-    const b = f.turn(f.pc);
-    expect(() => perk(f, b, 'class:bard.rally')).toThrow(/No squadmate within 4/);
-  });
+  // Rules 1.33: Rally is data (an Attuner in hand, MP; every Bonded ally anywhere and every ally within reach): test/tending.test.ts.
+  it('Rally is the data\'s own action', () => { expect(itemInfo('class:bard.rally')!.effects.some((e: any) => e.op === 'grant_action' && e.action === 'rally')).toBe(true); });
 });
 
 // ======================================================================================================== CHANNELER

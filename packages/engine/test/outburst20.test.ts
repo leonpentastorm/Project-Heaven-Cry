@@ -105,9 +105,9 @@ describe('the swell, the Empathy Pumps, Steady (sections 1 and 3)', () => {
     me(f).mg!.cast = true; // no stillness for this check
     f.turn(f.pc); expect(me(f).mg!.held!.stage).toBe(2); expect(me(f).mg!.strain).toBe(3); expect(fx(f.cb, 'swell').length).toBe(0);
   });
-  it('Empathy: 1 free Pump a round from Empathy 3 (rules 1.19: Empathy 7 no longer gives a second); free Pumps cost 0 AP and come back each round', () => {
+  it('Will Power (rules 1.33; it was Empathy): 1 free Pump a round from Empathy 3 (rules 1.19: Empathy 7 no longer gives a second); free Pumps cost 0 AP and come back each round', () => {
     const s = storyWith([{ archetype: 'stormcaller', kit: 'soul' }]); const c = s.g.characters[s.chars[0].id];
-    for (const [e, n] of [[0, 0], [2, 0], [3, 1], [6, 1], [7, 1], [10, 1]]) { c.skills.empathy = e; expect(freePumps(c), 'empathy ' + e).toBe(n); }
+    for (const [e, n] of [[0, 0], [2, 0], [3, 1], [6, 1], [7, 1], [10, 1]]) { c.skills.will_power = e; expect(freePumps(c), 'will power ' + e).toBe(n); }
     const f = rig(); const d = give(f.pc, {}); me(f).mg!.freePumpsMax = 2; me(f).mg!.freePumps = 2;
     begin(f, d); const ap = me(f).ap;
     pump(f, 2); expect(me(f).ap).toBe(ap - 1); expect(fx(f.cb, 'pump').map((e) => !!e.free)).toEqual([true, false]); // rules 1.19: one free Pump a turn, whatever gives them

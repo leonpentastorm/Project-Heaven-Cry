@@ -18,7 +18,7 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange } from './combat';
 import { kindOf } from './objects';
 import { apFor } from './effects/cost';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
@@ -38,9 +38,9 @@ import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
-export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'sigils' | 'outbursts' | 'faith' | 'calls';
+export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'sigils' | 'outbursts' | 'faith' | 'calls';
 /** The order of the action groups on the fight screen's tabs. */
-export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'sigils', 'outbursts', 'faith', 'calls'];
+export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'sigils', 'outbursts', 'faith', 'calls'];
 /** What a pick step asks for. enemy/ally/unit: a unit clicked on the grid; tile: a tile; option: one (or up to `max`)
  * of `options`; custom: a bespoke panel the screen registers under `renderer` fills `key` (the glyph keyboard, the
  * HEART panel, a perk's form, the pile checklist, the Evoke planner). */
@@ -320,6 +320,7 @@ const BASIC_SEND: Record<string, (x: DescCtx, p: Picks) => any> = {
   door: (x, p) => p.tile && { type: 'combat/door', unitId: x.u.id, tile: p.tile },
   pickup: (x, p) => { const t = p.tile || pileTiles(x, true)[0]; return t && { type: 'combat/pickup', unitId: x.u.id, tile: t, ...(p.take ? { take: p.take } : {}) }; },
   stim: (x, p) => p.targetId && { type: 'combat/stim', unitId: x.u.id, targetId: p.targetId },
+  stim_throw: (x, p) => p.targetId && { type: 'combat/stim', unitId: x.u.id, targetId: p.targetId, thrown: true },
   song: (x) => ({ type: 'combat/song', unitId: x.u.id }),
   extinguish: (x) => ({ type: 'combat/extinguish', unitId: x.u.id }),
   escape: (x) => ({ type: 'combat/escape', unitId: x.u.id }),
@@ -363,6 +364,7 @@ function basicPicks(x: DescCtx, id: string): PickStep[] {
     case 'door': return [{ key: 'tile', kind: 'tile', prompt: 'Click an adjacent door.', choices: objectsOf(x.seen).filter((o: any) => kindOf(o).door && dist(x.u.pos, o.pos) <= 1).map((o: any) => o.pos) }];
     case 'pickup': return [{ key: 'tile', kind: 'tile', prompt: 'Click a pile next to you.', optional: true, choices: pileTiles(x) }, { key: 'take', kind: 'custom', renderer: 'pile', prompt: 'Untick what to leave on the ground.', optional: true }];
     case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an adjacent ally.', choices: allyIds(x, true) }];
+    case 'stim_throw': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an ally you can see, within ' + stimThrowRange() + ' tiles.', choices: allyIds(x).filter((id) => { const v = x.seen.units.find((w: any) => w.id === id); return !!v && dist(x.u.pos, v.pos) <= stimThrowRange(); }) }];
     case 'pullfree': return [{ key: 'targetId', kind: 'unit', prompt: 'Click whom to pull free.', optional: true, choices: pullFreeTargets(x.cb, x.u).map((v) => v.id) }];
     case 'analyze': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile, or a glyph or trace to read (dashed).', choices: foeIds(x) }];
     case 'paired': case 'shot': case 'aimed': case 'melee': case 'burst': case 'auto': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile to target it.', choices: others(x) }];
@@ -434,7 +436,7 @@ const PHYSICAL: ActionSystem = {
       ...(L ? [D('load', 'utility', L.label, li ? li.ap : L.ap, li ? li.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', li ? 'Load ' + li.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : L.text, L.why)] : []),
       ...(gunTab ? [] : clear('utility')),
       ...wRow('repair', 'utility', { label: 'Field Repair', text: 'Needs Improvisation 3 and one spare-parts charge (' + (u.parts || 0) + ' left). Your weapon regains 10% durability, plus 5% for each Improvisation point above 3. Weapon durability: ' + (u.maxDur ? (u.dur ?? u.maxDur) + '/' + u.maxDur : 'n/a') + '.' }),
-      ...B('pickup', 'door', 'stim', 'song', 'extinguish', 'escape', 'recover'), ...(dual ? [] : bothRows), ...B('hide', 'analyze'));
+      ...B('pickup', 'door', 'stim', 'stim_throw', 'song', 'extinguish', 'escape', 'recover'), ...(dual ? [] : bothRows), ...B('hide', 'analyze'));
     return out;
   },
   send(x, d, p) {

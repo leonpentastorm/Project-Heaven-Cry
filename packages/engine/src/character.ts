@@ -11,7 +11,7 @@ import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
-import { statOf } from './effects/output';
+import { statOf, levelFactor } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
@@ -661,9 +661,9 @@ export const soulCastAp = (c: Character) => { void c; return 2; };
 /** Empathy's free Pump each round (rules 1.19: one from Empathy 3; Empathy 7 no longer gives a second: see swellFree).
  * The table is soul_modules.json cycle.free_pumps; whatever items add, a character takes one free Pump a turn at most
  * (magic.ts FREE_PER_TURN). */
-export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { empathy: number; pumps: number }[] || [{ empathy: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'empathy') >= r.empathy ? Math.max(n, r.pumps) : n), 0))));
+export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { will_power: number; pumps: number }[] || [{ will_power: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'will_power') >= r.will_power ? Math.max(n, r.pumps) : n), 0)))); // rules 1.33: Will Power's (it was Empathy's)
 /** Rules 1.19: from Empathy 7 a held Outburst swells without Strain. */
-export const swellFree = (c: Character) => P(c, 'empathy') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.empathy ?? 99);
+export const swellFree = (c: Character) => P(c, 'will_power') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.will_power ?? 99); // rules 1.33: Will Power's (it was Empathy's)
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
@@ -741,29 +741,43 @@ export const strengthOf = (c: Character, via: string) => Math.max(0, mod(P(c, vi
 /** Every strength above 0, by skill id: what a unit carries into a fight (Unit.dbf; a missing skill reads 0). */
 export const strengthTable = (c: Character): Record<string, number> => Object.fromEntries(SKILLS.map((s) => [s.id, strengthOf(c, s.id)] as [string, number]).filter(([, n]) => n > 0));
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
-/** What counts as each focus: the focus items, and the mana arms that count as one. */
-export const FOCUS_IDS: Record<'evoker' | 'emanator' | 'visualizer', string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'], visualizer: ['visualizer'] };
+/** A focus kind: the standard gloves of the gear companies' line (rules 1.33: the Attuner is the third with a door here; rules 1.34: the Visualizer the fourth). */
+export type FocusKind = 'evoker' | 'emanator' | 'attuner' | 'visualizer';
+/** What counts as each focus: the focus items, and the mana arms that count as one. Rules 1.33 (a focus is data): each
+ * focus item of items.json names `focus: {door, hand, fuel}`; every item whose `focus.door` is a kind's door counts as
+ * that kind (a faction's focus later is one more item, never a new kind in code). */
+const FOCUS_BASE: Record<FocusKind, string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'], attuner: [], visualizer: [] };
+/** The door (a skill id) each focus kind opens (rules 1.33). */
+export const FOCUS_DOOR: Record<FocusKind, string> = { evoker: 'brain_power', emanator: 'will_power', attuner: 'empathy', visualizer: 'visualization' };
+const FOCUS_KINDS = Object.keys(FOCUS_BASE) as FocusKind[];
+/** A focus kind by its own name or by the door it opens (null: neither). */
+export const kindOfDoor = (door: string): FocusKind | null => (FOCUS_KINDS.includes(door as FocusKind) ? door as FocusKind : FOCUS_KINDS.find((k) => FOCUS_DOOR[k] === door) || null);
+export const FOCUS_IDS: Record<FocusKind, string[]> = Object.fromEntries(FOCUS_KINDS.map((k) =>
+  [k, [...new Set([...FOCUS_BASE[k], ...Object.values(ITEM).filter((it: any) => it?.focus && kindOfDoor(String(it.focus.door)) === k).map((it: any) => String(it.id))])]])) as Record<FocusKind, string[]>;
+/** The focus kinds whose fuel is MP (items.json focus.fuel): an Emanator or an Attuner keeps a character's MP. */
+const MP_FOCUS_KINDS: FocusKind[] = FOCUS_KINDS.filter((k) => FOCUS_IDS[k].some((id) => (ITEM[id] as any)?.focus?.fuel === 'mp'));
 /** What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. */
 export const inHands = (c: Character): string[] => [c.weapon, ...(c.offHand && !twoHands(c, c.weapon) ? [c.offHand.id] : [])];
 /** Which hand holds this kind of focus ('main' or 'off'), 'pack' if it is only carried, else null. */
-export function focusHand(c: Character, kind: 'evoker' | 'emanator' | 'visualizer'): 'main' | 'off' | 'pack' | null {
+export function focusHand(c: Character, kind: FocusKind): 'main' | 'off' | 'pack' | null {
   const ids = FOCUS_IDS[kind], held = inHands(c);
   if (ids.includes(held[0])) return 'main';
   if (held[1] && ids.includes(held[1])) return 'off';
   return carries(c, ids) ? 'pack' : null;
 }
 const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.offHand && ids.includes(c.offHand.id)) || packOf(c).some((x) => ids.includes(x.item || x.id) && x.qty > 0);
-/** What a holder holds (Classes 3.0 section 6: the predicates self_holds / self_lacks_gear): a door's focus (door:
- * evoker, emanator) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or
- * the pack). THE one test of "a focus in hand": hasEvoker and hasEmanator are it. */
+/** What a holder holds (Classes 3.0 section 6: the predicates self_holds / self_lacks_gear): a door's focus (door: a
+ * focus kind, evoker, emanator or attuner, or the door it opens, a skill id: brain_power, will_power, empathy; rules
+ * 1.33) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or the pack).
+ * THE one test of "a focus in hand": hasEvoker, hasEmanator and hasAttuner are it. */
+export interface HoldSpec { slot?: 'hand' | 'person'; door?: string; item?: string }
 /** A Figment design (rules 1.34, figments.json): a form and up to two traits, named. */
 export interface FigmentDesign { id: string; name: string; form: string; traits: string[] }
-export interface HoldSpec { slot?: 'hand' | 'person'; door?: 'evoker' | 'emanator' | 'visualizer'; item?: string }
-/** The doors whose focus `holds` knows (FOCUS_IDS). */
-export const FOCUS_DOORS = Object.keys(FOCUS_IDS) as ('evoker' | 'emanator' | 'visualizer')[];
+/** The doors whose focus `holds` knows: each kind's name and the skill it opens (FOCUS_IDS, FOCUS_DOOR). */
+export const FOCUS_DOORS: string[] = [...FOCUS_KINDS, ...FOCUS_KINDS.map((k) => FOCUS_DOOR[k])];
 /** Does this character hold it (see HoldSpec)? */
 export function holds(c: Character, o: HoldSpec): boolean {
-  const ids = o.door ? FOCUS_IDS[o.door] || [] : o.item ? [o.item] : [];
+  const k = o.door ? kindOfDoor(o.door) : null, ids = o.door ? (k ? FOCUS_IDS[k] : []) : o.item ? [o.item] : [];
   if (!ids.length) return false;
   if ((o.slot || 'hand') === 'person') return carries(c, ids);
   return inHands(c).some((x) => ids.includes(x));
@@ -780,12 +794,18 @@ export const carriesVisualizer = (c: Character) => carries(c, FOCUS_IDS.visualiz
 export const carriesEvoker = (c: Character) => carries(c, FOCUS_IDS.evoker);
 /** An Emanator anywhere (a hand or the pack): it keeps its MP. */
 export const carriesEmanator = (c: Character) => carries(c, FOCUS_IDS.emanator);
+/** Rules 1.33: an Attuner in a hand (Bonds and Tending). */
+export const hasAttuner = (c: Character) => holds(c, { slot: 'hand', door: 'attuner' });
+/** Rules 1.33: an MP focus (items.json focus.fuel mp: an Emanator or an Attuner) in a hand: MP can be spent through it. */
+export const hasMpFocus = (c: Character) => MP_FOCUS_KINDS.some((k) => holds(c, { slot: 'hand', door: k }));
+/** Rules 1.33: an MP focus anywhere on the person: it keeps the character's MP (MP is the Soul's fuel, whichever glove). */
+export const carriesMpFocus = (c: Character) => MP_FOCUS_KINDS.some((k) => carries(c, FOCUS_IDS[k]));
 /** Why a character can't cast now, by focus (null: it can). */
 export const focusWhy = (c: Character, kind: 'evoker' | 'emanator'): string | null => ((kind === 'evoker' ? hasEvoker(c) : hasEmanator(c)) ? null : kind === 'evoker' ? NEEDS_EVOKER : NEEDS_EMANATOR);
 export const NEEDS_EVOKER = 'Needs an Evoker in hand.', NEEDS_EMANATOR = 'Needs an Emanator in hand.';
 export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0);
-/** MP now: the Emanator's charge (full when first carried); no Emanator, no MP. */
-export const mpNow = (c: Character) => (carriesEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
+/** MP now: the MP focus's charge (an Emanator or, rules 1.33, an Attuner; full when first carried); no MP focus, no MP. */
+export const mpNow = (c: Character) => (carriesMpFocus(c) ?Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
 export const evoChargeNow = (c: Character) => (carriesEvoker(c) ? c.evoCharge ?? 10 : 0);
 /** The modifier on a skill CHECK (rules 1.13): a gamma-slot skill adds its full points, every other skill points − 1;
@@ -815,7 +835,13 @@ export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P
 /** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */
 export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 0.5 * P(c, 'dexterity')));
 /** Ambush multiplier: 1.5 + 0.05 × Ingenuity. */
-export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + ((SKILL.ingenuity as any).per_point?.ambush_per_point ?? 0.05) * P(c, 'ingenuity')); // the card's number (skills.json Ingenuity per_point)
+/** Shadow's numbers (rules 1.32; data/rules.json shadow, provisional): the meter's cap by Ingenuity, the Operative's add
+ * and start, the Break's term. */
+export const SHADOW_RULES: { cap_by_points: Record<string, number>; operative_cap_add: number; operative_start: number; ambush_bonus: number; per_point: number; marked_bonus: number; door_gains_per_turn: number } = (RULES as any).shadow;
+/** The Ambush multiplier: a flat 1 + the ambush bonus (×1.5; rules 1.32: Ingenuity's slope went into Shadow's Break). */
+export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1 + SHADOW_RULES.ambush_bonus);
+/** Shadow's cap for an Ingenuity (rules 1.32): the highest rung reached of rules.json shadow.cap_by_points (0 below the first). */
+export const shadowCap = (points: number): number => Object.entries(SHADOW_RULES.cap_by_points).reduce((n, [at, v]) => (points >= +at ? Math.max(n, v) : n), 0);
 /** Blessing power: 1 + 0.1 × Faith. */
 export const blessingPower = (c: Character) => fx(c, 'blessing_power', statOf('blessing', c));
 /** The Hymn cooldown's numbers (rules 1.22; patrons.json prayer.hymn.cooldown_rule; PROVISIONAL). */
@@ -1162,6 +1188,12 @@ export const magazineSize = (weaponId: string, mods?: string[]) => { const m = W
  * rest) or starts each fight at 0 (Momentum, Guard, Marks, Charges). Heat, Flux and Strain are shared rules that
  * every gun, Evoker or Emanator user already runs; they aren't listed here. */
 export interface ClassResource { id: string; max: number; persist: boolean }
+/** Rules 1.33: the Ledger's cap, from the move's own amount block (classes.json bard ledger `amounts.cap`: base × the
+ * block's profile Stat (tend: Healing given) × its Level term (mend)); 0 when the data has none. */
+export function ledgerCap(c: Character): number {
+  const b: any = rawItem('class:bard.ledger')?.amounts?.cap; if (!b || typeof b.base !== 'number') return 0;
+  return Math.floor(b.base * (b.profile ? statOf(b.profile, c) * levelFactor((RULES as any).output?.profiles?.[b.profile]?.level ?? null, c.level) : 1));
+}
 const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   momentum: () => ({ id: 'momentum', max: 5, persist: false }),
   guard: () => ({ id: 'guard', max: GUARD_RULES.max ?? 5, persist: false }),
@@ -1169,6 +1201,10 @@ const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
   charges: () => ({ id: 'charges', max: 3, persist: false }),
+  // Shadow (rules 1.32): a class that brings it (the Operative) holds operative_cap_add more than the door gives
+  shadow: (c) => ({ id: 'shadow', max: shadowCap(P(c, 'ingenuity')) + SHADOW_RULES.operative_cap_add, persist: false }),
+  // rules 1.33: the Mender's Ledger, at most its move's amount block `cap` (classes.json bard.ledger: base × the tend Stat × the mend level factor)
+  ledger: (c) => ({ id: 'ledger', max: ledgerCap(c), persist: false }),
 };
 /** Which resources a class brings. Base classes: their classes.json `resources` (Revision 3: the resources follow the
  * moves; Heat, MP, Strain and Devotion are shared rules, so only the ones in RES_RULES count here). Advanced classes
@@ -1185,6 +1221,10 @@ export function classResources(c: Character): ClassResource[] {
   // (the larger of the two is the pool).
   const pool = guardPool(c);
   if (pool > 0) { const own = out.find((r) => r.id === 'guard'); if (own) own.max = Math.max(own.max, pool); else out.push({ id: 'guard', max: pool, persist: false }); }
+  // Rules 1.32, Perception's door: anyone with Ingenuity has a Shadow meter, built the way Guard is (a class that brings
+  // Shadow, the Operative, keeps its own larger one).
+  const sh = shadowCap(P(c, 'ingenuity'));
+  if (sh > 0 && !out.some((r) => r.id === 'shadow')) out.push({ id: 'shadow', max: sh, persist: false });
   return out;
 }
 /** Durability's Guard (rules 1.13; numbers in techniques.json rules.guard, provisional): the pool is the Durability

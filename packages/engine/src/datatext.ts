@@ -12,6 +12,7 @@ import conditionsJ from '../../../data/conditions.json';
 import enemiesJ from '../../../data/enemies.json';
 import feelingsJ from '../../../data/feelings.json';
 import figmentsJ from '../../../data/figments.json';
+import tendingJ from '../../../data/tending.json';
 import itemsJ from '../../../data/items.json';
 import objectsJ from '../../../data/objects.json';
 import patronsJ from '../../../data/patrons.json';
@@ -66,4 +67,4 @@ function walk(node: any) {
 /** Fill every placeholder under a parsed data file, in place. Filling twice changes nothing. */
 export function resolveTexts<T>(root: T): T { walk(root); return root; }
 
-for (const j of [actionsJ, callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, figmentsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ]) resolveTexts(j);
+for (const j of [actionsJ, callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ, tendingJ, figmentsJ]) resolveTexts(j);

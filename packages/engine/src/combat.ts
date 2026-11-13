@@ -10,7 +10,7 @@ import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HAND
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
-import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
+import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
@@ -626,9 +626,17 @@ export function bossGuards(t: Unit, src: any, cb?: Combat | null): boolean {
 export function guardHeld(t: Unit, by: Unit | null | undefined): boolean {
   const m = GUARD_MARK.get(t); return !!m && !!by && m.seq === GUARD_SEQ && m.by === by.id;
 }
+/** Rules 1.32: was this Elite or Boss at full HP when the action `by` is taking now first hurt it, whatever the level gap
+ * (Execution never finishes it in that action)? */
+const FULL_MARK = new WeakMap<Unit, { by: string; seq: number }>();
+export function fullAtAction(t: Unit, by: Unit | null | undefined): boolean {
+  const m = FULL_MARK.get(t); return !!m && !!by && m.seq === GUARD_SEQ && m.by === by.id;
+}
 onHook('damage_in', (ctx: any) => {
   const t: Unit = ctx.t, src = ctx.src;
-  if (ctx.phase === 'reduce') { if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
+  if (ctx.phase === 'reduce') {
+    if (t.hp >= t.maxHp && !t.downed && src?.by && BOSS_GUARD.tiers.includes(t.tier || '') && t.side === 'foe') { const f = FULL_MARK.get(t); if (!f || f.seq !== GUARD_SEQ || f.by !== src.by.id) FULL_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); }
+    if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
   // (an Evoke says it in its own line: sigil.ts, ctx.lineGuard)
   if (ctx.phase === 'after') { if (ctx.bossGuard && !ctx.lineGuard && !ctx.killed && ctx.cb) say(ctx.cb, bossGuardLine(t, src)); return; }
   if (ctx.phase !== 'would_drop_to_0') return;
@@ -1402,6 +1410,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   if (hit && melee && !opts.noMomentum && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
   if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
+  const spotBack = att.hidden && !opts.quiet && tgt.side !== att.side && alive(tgt) && !tgt.hidden; // rules 1.32 (2.6): a silent attack from Hidden; rolled after the line
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
   if (condOn(att, 'sharpened')) endCond(att, 'sharpened', cb); // spent on this attack
   // A shot that misses only because of half cover's −5 hits the cover (spec: Cover).
@@ -1416,6 +1425,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
   if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, cb, rng, mods: cb.mods || [] });
   else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
+  // Rules 1.32 (shadow-spec 2.6): the target of a silent attack from Hidden that is still up, and whose eyes reach the
+  // attacker's tile, rolls to spot it at once (the one spotting roll, for that one looker); no reaction is spent.
+  if (spotBack && att.hidden && alive(tgt) && unitSees(cb, tgt, att.pos)) spotHidden(cb, rng, tgt, att);
   // The flamer's cone (cone_3): everyone else in a 3-tile cone toward the target gets the same attack, each its own roll.
   if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of unitsIn(cb, { shape: 'cone', from: att.pos, toward: tgtAt, n: 3 }, { downed: true, not: [tgt, att] })) if (previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true, ...(opts.fx ? { fx: opts.fx } : {}) }), 'cone');
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
@@ -1680,7 +1692,7 @@ export const sprintTiles = (u: Unit) => Math.floor(3 * u.movement);
 /** A move as the engine would make it, before anything is paid or walked: its refusal in words, or its route and its
  * price after the items have priced it ('move_cost'). moveUnit() makes exactly this move; actions.ts moveOptions() asks
  * it for every tile, on a throwaway copy (some items count a use as they price a move), with o.preview set. */
-export interface MovePlan { ap: number; /** the move's own price, before a free step or an item changed it */ ap0: number; tiles: number; route: string[]; mc: any; P: ReturnType<typeof paths> }
+export interface MovePlan { ap: number; /** the move's own price, before a free step or an item changed it */ ap0: number; tiles: number; route: string[]; mc: any; P: ReturnType<typeof paths>; /** its price after the items on move_cost, before the `cost` hook (the bank counts this when the hook cut it) */ apPre: number }
 export type MoveOpts = { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> }; /** A step that is part of something already paid for (a technique's step, rules 1.12): 0 AP and no opportunity attacks (unless oa), told to the items before they price the move. */ free?: boolean; oa?: boolean; /** A paid walk that is a technique's own run (Charge's): priced and walked as any move, but it costs no Momentum. */ part?: boolean } & { /** a dry run (told to the items on 'move_cost') */ preview?: boolean; /** the unit's shortest paths, already worked out */ base?: ReturnType<typeof paths> };
 export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): MovePlan | string {
   const blk = moveBlock(u); if (blk) return blk;
@@ -1706,12 +1718,12 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [], ...(o.preview ? { preview: true } : {}) });
   ap = o.free ? 0 : how === 'move' ? priced({ cb, u }, 'move', Math.max(0, mc.ap), undefined, { to, tiles }).ap : Math.max(0, mc.ap); // (a Sprint and a Disengage passed the `cost` hook when they were priced above) a free step stays free whatever the ground adds (the items were told it is free before they priced it)
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/move', how } }); if (no) return no; }
-  return { ap, ap0, tiles, route, mc, P };
+  return { ap, ap0, tiles, route, mc, P, apPre: o.free ? 0 : Math.max(0, mc.ap) };
 }
 /** A unit walks to a tile on its own (move, sprint or disengage): priced, paid, step by step with every reaction, trap and hazard. */
 export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): string | null {
   const pl = movePlan(cb, u, to, how, o); if (typeof pl === 'string') return pl;
-  const { ap, ap0, tiles, route, mc, P } = pl;
+  const { ap, ap0, tiles, route, mc, P, apPre } = pl;
   const from = u.pos, bank0 = u.bank;
   pay(cb, u, ap); if (how === 'sprint') u.sprinted = true; setBraced(u, false); u.moved = true;
   if (condOn(u, 'emplaced')) endCond(u, 'emplaced', cb);
@@ -1759,7 +1771,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   const end = u.pos, walked = P.dist[end] ?? tiles;
   // The bank: tiles paid for and not walked carry over (a walk cut short keeps them).
   // A move an item made free (priced a paid move at 0 AP: Run and Gun, rules 1.30 item 1811) keeps the bank as it was.
-  if (how === 'move' && !mc.free && !(ap0 > 0 && ap === 0)) u.bank = bank0 + ap * u.movement - walked;
+  // A cut the `cost` hook made (Shadow Run, rules 1.32) is a discount, not a debt: the bank counts the walk's price before it.
+  if (how === 'move' && !mc.free && !(ap0 > 0 && ap === 0)) u.bank = bank0 + (ap > 0 && ap < apPre ? apPre : ap) * u.movement - walked;
   say(cb, u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + walked + (walked === 1 ? ' tile' : ' tiles') + (walked < tiles ? ' of ' + tiles : '') + ', ' + ap + ' AP)' + sprung + '.');
   if (u.side === 'pc' && !u.dead) { spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => say(cb, l)); spotHazards(cb, u); }
   if (!u.dead && (cb.zones || []).length) sigilSpot(cb, u);
@@ -1906,11 +1919,11 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
 //   4. WHO REACTS. Nobody (`reactions: false` for every kind). A held Watch, Overwatch and opportunity attacks answer a
 //      unit that CHOSE to move. The flag is read: set true for a kind, held Watches and Overwatch answer each tile of it.
 //   5. It ends Braced.
-export type DisplaceHow = 'push' | 'pull' | 'throw' | 'teleport' | 'swap';
+export type DisplaceHow = 'push' | 'pull' | 'throw' | 'teleport' | 'swap' | 'guide'; // guide: rules 1.33 (Tending's Guide: an ally steps, willing, to a tile its Bonder picks)
 interface ForcedRule { tiles: 'each' | 'landing'; traps: boolean; fields: boolean; hazards: boolean; immunity: boolean; reactions: boolean }
 const FORCED: Record<DisplaceHow, ForcedRule> = (() => {
   const d: any = (RULES as any).forced_movement || {}, base = (tiles: 'each' | 'landing'): ForcedRule => ({ tiles, traps: true, fields: true, hazards: true, immunity: true, reactions: false });
-  return { push: { ...base('each'), ...d.push }, pull: { ...base('each'), ...d.pull }, throw: { ...base('landing'), ...d.throw }, teleport: { ...base('landing'), ...d.teleport }, swap: { ...base('landing'), ...d.swap } };
+  return { push: { ...base('each'), ...d.push }, pull: { ...base('each'), ...d.pull }, throw: { ...base('landing'), ...d.throw }, teleport: { ...base('landing'), ...d.teleport }, swap: { ...base('landing'), ...d.swap }, guide: { ...base('landing'), ...d.guide } };
 })();
 /** The trigger table of forced movement (data/rules.json forced_movement), by kind of move. */
 export const forcedRule = (how: DisplaceHow): ForcedRule => FORCED[how];
@@ -2431,9 +2444,10 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
 export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
- * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap}. */
-export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number }): void {
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), cb });
+ * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap, choice}
+ * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
+export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
 }
 /** How far Analyze reads: 4 tiles + Analysis. */
 export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);
@@ -2495,11 +2509,12 @@ export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): st
 /** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
  * Else heal 6 × Healing given × the level factor (rules 1.23: it was 30 × Healing given at every level). */
 export const stimHeal = (u: Unit, who: Character) => kitHeal(STIM_HEAL, healingMult(who), mendFactorOf(u));
-export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean): string | null {
+export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean, o: { thrown?: boolean } = {}): string | null {
   if (who.stims <= 0) return 'No stims left.';
-  if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';
+  // rules 1.33: Stim Throw is everyone's gear action: an ally within the row's range that you see, at its own price
+  if (o.thrown ? dist(u.pos, t.pos) > stimThrowRange() || (t !== u && !unitSees(cb, u, t.pos)) : dist(u.pos, t.pos) > 1) return o.thrown ? 'Out of reach: within ' + stimThrowRange() + ' tiles you can see.' : 'Must be adjacent.';
   if (t.dead) return 'Too late.';
-  const cost = stimAp(u, t, isMedic, cb);
+  const cost = o.thrown ? price({ cb, u }, 'stim_throw').ap : stimAp(u, t, isMedic, cb);
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (forbids({ u }, 'stim')) return forbids({ u }, 'stim') + ': no stims.';
   // 'stim_start' {u, t, cb, cancel, why}: an item may stop the stim before anything is spent, revive included (Rival's
@@ -2514,6 +2529,8 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   return null;
 }
 
+/** Stim Throw's reach (data/actions.json stim_throw.range; rules 1.33). */
+export const stimThrowRange = (): number => costOf('stim_throw', 'range');
 /** A stim's AP: stabilising a Downed ally 2 (1 for a Medic), healing 1; then items ('stabilise' / 'stim' costs). */
 export const stimAp = (u: Unit, t: Unit, isMedic: boolean, cb?: Combat | null) => (t.downed ? price({ cb, u }, 'stabilise', costOf('stim', isMedic ? 'ap_downed_medic' : 'ap_downed')).ap : price({ cb, u }, 'stim').ap);
 
@@ -2531,6 +2548,9 @@ export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId
 const ENEMY_STEPS: EnemyStep[] = [];
 /** first: tried before the steps already registered (a Call comes before a technique: calls/ai.ts). */
 export const enemyStep = (s: EnemyStep, first = false) => { if (first) ENEMY_STEPS.unshift(s); else ENEMY_STEPS.push(s); };
+/** Does this enemy skulk (rules 1.32: tag skulk, and only a Vermin, a Minion or a Soldier)? */
+const SKULK_TIERS = ['vermin', 'minion', 'soldier'];
+export const skulks = (u: Unit): boolean => (u.tags || []).includes('skulk') && SKULK_TIERS.includes(u.tier || '');
 export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
@@ -2570,6 +2590,9 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
     if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode, rng); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { did('clear_block'); checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
+    // Rules 1.32 (shadow-spec 8.1): a skulker (tag skulk: a Vermin, Minion or Soldier) with no shot goes to ground when no
+    // enemy has it in view, and ambushes from there (the flat Ambush multiplier); it carries no Shadow meter.
+    if (!order && skulks(u) && !hideBlock(cb, u) && affords(cb, u, 'hide')) { hideAction(cb, u); did('hide'); continue; }
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
     if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; did('move', { tile: go.tile }); continue; } // nobody it perceives: it searches where its side last saw one
     const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);

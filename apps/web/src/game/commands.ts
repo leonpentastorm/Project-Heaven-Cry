@@ -106,6 +106,8 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   if (perks.length || info.length) out.push(['PERKS & TRAITS', [...perks, ...info], null, 'perks']);
   const moves = by('class');
   if (moves.length) { const pe = perkEntries(opts.g, cb, cur, ch, 'combat').find((e) => e.tab === 'class'); const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), pe?.cls); out.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves, k ? k.ink : null, 'class']); }
+  const shadowRows = by('shadow'); // rules 1.32: Perception's door verbs (Slip, Mark, Work, Break), in Perception ink
+  if (shadowRows.length) out.push(['SHADOW · UNSEEN', shadowRows, '#40BAA0', 'shadow']);
   const sig = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
   if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
   if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);

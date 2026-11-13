@@ -1,7 +1,7 @@
 // Class Roster Revision 3's new moves in play (Proving Ground with a friend: the host acts, the guest is the squadmate):
 //  · Fighter: Shove (the "Knock Prone" chip) and Unstoppable (+2 Momentum);
 //  · Chaplain (was Guardian; rules 1.31): Ward (click the squadmate: a shield on its own layer, the turn's Whisper);
-//  · Infiltrator: Vanish (out of every enemy's sight), Field Fix (the "Clear the jam" chip on a jammed squadmate),
+//  · Infiltrator (the Operative): Vanish (out of every enemy's sight),
 //    Sabotage on a drone, and Rig (the rigged tile marked on the grid);
 //  · Trickster: Read (Analyze names the enemy's next move: a marker on the enemy and its target), False Image (a
 //    translucent copy of the caster on the grid), Silver Tongue, Sleight (swap with the squadmate);
@@ -248,6 +248,7 @@ await settle(host, 300); await snap('08-sleight');
 // ---------- 5. Bard: Rally ----------
 await act(host, { type: 'sandbox/clear' });
 await setClass('bard', 3);
+await act(host, { type: 'sandbox/give', charId: hostChar, item: 'attuner', equip: true }); // rules 1.33: Rally is Tending, through the Attuner
 ok('host turn', await newTurn());
 ok('squadmate within 4', await mateNear(3));
 n0 = await fxN();

@@ -23,7 +23,7 @@ export interface ResRow {
 }
 
 // ---------- colours (CLAUDE.md; docs/design/colour-system.md) ----------
-export const RES_INK = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF', mp: '#5C9EFF', hp: '#F65157', alert: '#F65157', white: '#FFFFFF', ok: '#6FEA77', muted: '#A3AEC2', faith: '#D36A90', /** Expression's ink (rules 1.34: Figments) */ expression: '#5394AC' };
+export const RES_INK = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF', mp: '#5C9EFF', hp: '#F65157', alert: '#F65157', white: '#FFFFFF', ok: '#6FEA77', muted: '#A3AEC2', faith: '#D36A90', perception: '#40BAA0', /** Expression's ink (rules 1.34: Figments) */ expression: '#5394AC' };
 
 // ---------- the held Outburst: the ONE adapter over the Soul engine's held-heart fields ----------
 export interface HeldHeart {
@@ -81,7 +81,7 @@ export function heldOutburstOf(m: any, designs?: any[], limit?: number, ctx: Hea
 }
 
 // ---------- class resources, named from the data ----------
-const RES_WORD: Record<string, string> = { momentum: 'Momentum', guard: 'Guard', marks: 'Marks', supplies: 'Supplies', toxins: 'Toxin doses', charges: 'Charges', heat: 'Heat' };
+const RES_WORD: Record<string, string> = { momentum: 'Momentum', guard: 'Guard', marks: 'Marks', supplies: 'Supplies', toxins: 'Toxin doses', charges: 'Charges', heat: 'Heat', shadow: 'Shadow' };
 const RES_ALIAS: Record<string, string> = { storm_charge: 'charges', toxin: 'toxins', toxins: 'toxins' };
 const RES_CORE: Record<string, keyof typeof RES_INK> = { charges: 'soul' };
 const words = (id: string) => RES_WORD[id] || id.replace(/_/g, ' ').replace(/\b\w/g, (x) => x.toUpperCase());
@@ -299,9 +299,12 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     // engine (physView), and the engine's fuller hint beside the pips in a fight.
     const gv = id === 'guard' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.guard || null; } catch { return null; } })() : null;
     const gRule = id === 'guard' ? guardRule(gv?.soak ?? ((E.phys as any).PHYS_RULES?.guard?.soak ?? 10)) : '';
-    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: ink, sub: id === 'momentum' ? MOMENTUM_SUB : (id === 'guard' ? gRule : '') || info.source || '',
+    // Shadow (rules 1.32): Perception's door, in Perception ink, with the engine's sight word for the unit (Unseen, In view, Seen)
+    const sight = id === 'shadow' && u && cb ? (() => { try { const [s1, s2] = E.sightOf(cb, u); return s1 === 'seen' ? 'Seen' : s2 === 'in_view' ? 'In view' : 'Unseen'; } catch { return ''; } })() : '';
+    const sRule = id === 'shadow' ? 'Shadow: built while unseen (a turn ended Hidden with no attack, a move from cover to cover, a kill nobody saw; at most 2 a turn), lost 1 at the start of a turn while seen, spent all at once by a Break on a weapon attack from Hidden.' : '';
+    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: id === 'shadow' ? RES_INK.perception : ink, sub: id === 'momentum' ? MOMENTUM_SUB : id === 'shadow' ? (sight ? 'Eye: ' + sight : 'Built while unseen') : (id === 'guard' ? gRule : '') || info.source || '',
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),
-      hint: (mRule || (gRule ? gRule + (gv?.hint ? ' ' + gv.hint : '') : '') || rule || (info.source ? info.label + ' (' + info.source + ').' : info.label + '.')) + spend });
+      hint: (mRule || sRule || (gRule ? gRule + (gv?.hint ? ' ' + gv.hint : '') : '') || rule || (info.source ? info.label + ' (' + info.source + ').' : info.label + '.')) + spend });
   }
   // ---- faith (Blessing 2.0, rules 1.6): Devotion with its gates, Witnessed, the vow; an Atheist's pieces ----
   rows.push(...faithRows(u, c));

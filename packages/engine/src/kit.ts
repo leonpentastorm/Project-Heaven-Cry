@@ -9,7 +9,9 @@
 //   AREAS       Area (burst, aura, cone, line, band), inArea, tilesIn, unitsIn   (engine foundations 2)
 import type { Combat, Unit } from './combat';
 import { keyOf, key, xy, dist, moveBlockers, unitSees } from './combat';
-import { boundGame, onHook, statQuery, emit } from './effects/hooks';
+import { boundGame, onHook, statQuery, emit, charOfUnit } from './effects/hooks';
+import { condOn, endCond } from './magic';
+import { holds } from './character';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import RULES_K from '../../../data/rules.json';
 import type { Rng } from './rng';
@@ -169,8 +171,14 @@ export interface Tie { kind: string; from: string; to: string; lost?: number }
 export const TIE_ENDS = ['from_down', 'to_down', 'to_dead', 'unseen_round', 'combat_end'] as const;
 /** What happens when a tie ends (a kind's `on_end`). */
 export const TIE_ON_END = ['none', 'unmake'] as const;
-/** A kind of tie, as data/rules.json ties.kinds has it. */
-export interface TieKind { id: string; max?: number; ends_on?: (typeof TIE_ENDS)[number][]; on_end?: (typeof TIE_ON_END)[number]; about?: string }
+/** An end rule: a word, or (rules 1.33) {word, side}: only for a tie whose far end is of that side to the near end
+ * (foe, ally). */
+export type TieEnd = (typeof TIE_ENDS)[number] | { word: (typeof TIE_ENDS)[number]; side?: 'foe' | 'ally' };
+/** A kind of tie, as data/rules.json ties.kinds has it. Rules 1.33: `mark`, a condition the far end bears while it is
+ * tied by this kind (the Bonded mark): when the last such tie to it ends the mark ends, and when the mark ends (its
+ * rounds, a cleanse) every such tie to it ends. `gear`: a focus the near end must carry on its person ({door}), else
+ * at a round's start its ties of this kind end (the Attuner leaving your person). */
+export interface TieKind { id: string; max?: number; ends_on?: TieEnd[]; on_end?: (typeof TIE_ON_END)[number]; about?: string; mark?: string; gear?: { door: string } }
 const TIE_DATA: TieKind[] = (((RULES_K as any).ties?.kinds || []) as TieKind[]);
 let TIE_ADDED: TieKind[] = [];
 /** The kinds of tie (the data's, then those added at run time: a test's fixture). */
@@ -207,21 +215,42 @@ export function untie(cb: Combat, pick: (t: Tie) => boolean): number {
   cb.ties = (cb.ties || []).filter((t) => !gone.includes(t)); if (!cb.ties.length) delete cb.ties;
   // 'tie_end' {cb, tie, unmake}: a tie ended (owned.ts unmakes the far end when its kind says so: P9)
   for (const t of gone) emit(cb, 'tie_end', { cb, tie: t, unmake: tieKind(t.kind)?.on_end === 'unmake' });
+  // rules 1.33: a kind's mark ends with the last tie of that kind to its bearer
+  for (const t of gone) { const m = tieKind(t.kind)?.mark; if (!m || (cb.ties || []).some((x) => x.kind === t.kind && x.to === t.to)) continue; const v = cb.units.find((x) => x.id === t.to); if (v && condOn(v, m)) endCond(v, m, cb); }
   return gone.length;
 }
-const tieEnds = (t: Tie, w: (typeof TIE_ENDS)[number]) => !!tieKind(t.kind)?.ends_on?.includes(w);
+/** Does this tie's kind end on this word (a plain word, or {word, side} when its far end is of that side to its near end)? */
+function tieEnds(t: Tie, w: (typeof TIE_ENDS)[number], cb?: Combat): boolean {
+  return !!tieKind(t.kind)?.ends_on?.some((e) => {
+    if (typeof e === 'string') return e === w;
+    if (e.word !== w) return false; if (!e.side || !cb) return !e.side;
+    const a = cb.units.find((x) => x.id === t.from), b = cb.units.find((x) => x.id === t.to); if (!a || !b) return true;
+    return e.side === 'foe' ? a.side !== b.side : a.side === b.side;
+  });
+}
 // the end rules, while there are ties: a unit going Down or dying; a round's sight
 onHook('on_downed', (ctx: any, cb: Combat) => {
   if (!cb.ties?.length) return; const v: Unit = ctx.victim; if (!v) return;
-  untie(cb, (t) => (t.from === v.id && tieEnds(t, 'from_down')) || (t.to === v.id && (tieEnds(t, 'to_down') || (!!v.dead && tieEnds(t, 'to_dead')))));
+  // rules 1.33: a unit that answers ties_keep:<kind> keeps its ties of that kind to its own side when it goes Down (not when it dies)
+  const keeps = (t: Tie) => !v.dead && cb.units.some((x) => x.id === t.to && x.side === v.side) && statQuery({ u: v, cb }, `ties_keep:${t.kind}`).add > 0;
+  untie(cb, (t) => (t.from === v.id && tieEnds(t, 'from_down', cb) && !keeps(t)) || (t.to === v.id && (tieEnds(t, 'to_down', cb) || (!!v.dead && tieEnds(t, 'to_dead', cb)))));
+});
+// rules 1.33: a kind's mark ends: every tie of that kind to its bearer ends with it
+onHook('cond_end', (ctx: any, cb: Combat) => {
+  if (!cb?.ties?.length) return; const u: Unit = ctx.u || ctx.t, id: string = ctx.id; if (!u || !id) return;
+  const kinds = tieKinds().filter((k) => k.mark === id).map((k) => k.id); if (!kinds.length) return;
+  untie(cb, (t) => t.to === u.id && kinds.includes(t.kind));
 });
 onHook('combat_end', (_ctx: any, cb: Combat) => { if (cb.ties?.length) untie(cb, (t) => tieEnds(t, 'combat_end')); });
 onHook('round_start', (_ctx: any, cb: Combat) => {
   if (!cb.ties?.length) return;
   const byId = (id: string) => cb.units.find((x) => x.id === id);
   for (const t of [...cb.ties]) {
-    if (!tieEnds(t, 'unseen_round')) continue;
     const a = byId(t.from), b = byId(t.to); if (!a || !b) continue;
+    // rules 1.33: the kind's focus left its near end's person (the Attuner: its Bonds end at the next round's start)
+    const g = tieKind(t.kind)?.gear, c = g ? charOfUnit(a) : null;
+    if (g && c && !holds(c, { slot: 'person', door: g.door })) { untie(cb, (x) => x === t); continue; }
+    if (!tieEnds(t, 'unseen_round', cb)) continue;
     if (unitSees(cb, a, b.pos)) { delete t.lost; continue; }
     t.lost = (t.lost || 0) + 1; if (t.lost >= 2) untie(cb, (x) => x === t); // out of sight at two round starts in a row: a full round
   }

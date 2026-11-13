@@ -18,7 +18,7 @@
  * may name, and the suffixes of 'ap_cost:<site>'. Kept equal to the real call sites by the lint test. */
 export const COST_SITE_IDS = [
   'analyze', 'break', 'clear_jam', 'crystallise', 'disengage', 'escape', 'extinguish', 'field_repair', 'hide', 'parley', 'pray', 'recover',
-  'reload', 'reload_both', 'set_explosive', 'shove', 'sprint', 'stabilise', 'stim', 'swap_core', 'throw', 'triage', 'vent', 'ward', 'whisper',
+  'reload', 'reload_both', 'set_explosive', 'shove', 'sprint', 'stabilise', 'stim', 'stim_throw', 'swap_core', 'throw', 'triage', 'vent', 'ward', 'whisper',
   // Classes 3.0 step 8 (rules 1.34): Picture (figments.ts). A Figment's own verbs are priced at their data site
   // (owned.ts runDataVerb): the `cost` hook hears them by name (`action`), no `ap_cost:` stat asks for them.
   'picture',
@@ -65,12 +65,13 @@ export const STAT_FAMILIES = {
   'immune:': 'immunity to a condition id or one of IMMUNE_IDS (effects/core.ts immune; >0 is immune)',
   'save_': 'a save bonus: body, brain or heart (character.ts saveBonus)',
   'ties_max:': 'Classes 3.0 P8: how many ties of this kind a unit may hold more than its kind\'s max (kit.ts tieCap)',
+  'ties_keep:': 'Rules 1.33: >0, the ties of this kind the unit holds to its own side do not end when it goes Down (kit.ts; Empathy 10: ally Bonds hold)',
   'passive:': 'a passive score of this skill id (character.ts passive)',
   'technique:': 'this technique id comes with a perk (>0; physical/core.ts)',
   'momentum_needed:': 'Momentum a finisher of this technique id needs (physical/core.ts finisherNeed)',
 } as const;
 
-export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `ties_max:${string}`;
+export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `ties_max:${string}` | `ties_keep:${string}`;
 
 /** Is this string a declared stat id? (For data and tests; code is checked by the type.) */
 export function isStatId(id: string): id is StatId {

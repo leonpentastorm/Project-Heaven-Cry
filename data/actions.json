@@ -123,6 +123,18 @@
       "adjudication": "engine"
     },
     {
+      "id": "stim_throw",
+      "name": "Throw a stim",
+      "tab": "utility",
+      "type": "combat/stim",
+      "ap": 1,
+      "site": "stim_throw",
+      "range": 4,
+      "pick": "ally_in_sight",
+      "text": "Throw a stim to an ally within {range} tiles you can see (rules 1.33: Stim Throw is everyone's). A Downed ally is stabilised; anyone else heals as from a stim and stops Bleeding. Uses one stim{stims_left}.",
+      "adjudication": "engine"
+    },
+    {
       "id": "song",
       "name": "Play my song",
       "tab": "utility",
@@ -207,7 +219,10 @@
       "on": "unit",
       "path": "mg.mp",
       "max": "mg.mpMax",
-      "needs": "mg.emanator"
+      "needs": [
+        "mg.emanator",
+        "mg.attuner"
+      ]
     },
     "charge": {
       "name": "charge",
@@ -266,6 +281,17 @@
       "path": "mg.vcharge",
       "max": "mg.vchargeMax",
       "needs": "mg.vcarry"
+    },
+    "shadow": {
+      "name": "Shadow",
+      "on": "unit",
+      "path": "res.shadow"
+    },
+    "ledger": {
+      "name": "Ledger",
+      "on": "unit",
+      "path": "res.ledger",
+      "max": "resMax.ledger"
     }
   },
   "costs": {
