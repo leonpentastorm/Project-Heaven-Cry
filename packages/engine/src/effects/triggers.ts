@@ -241,7 +241,7 @@ export function sourceOf(ev: Ev, of: string): number {
 /** The namespaces a number block's `of` may name in an item op. */
 export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill'];
 /** The numeric fields of an item op that may be number blocks. */
-const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders', 'share'];
+const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders', 'share', 'count'];
 /** Rules 1.33: `{choice}` in a word field (a condition's id, a limit's key) is the action's pick (a felt feeling). */
 const withChoice = (s: string, ev: Ev): string => (s.includes('{choice}') ? s.replace(/\{choice\}/g, String(ev.ctx.choice ?? '')) : s);
 /** An op with its number blocks read for this event (a plain op is itself). */

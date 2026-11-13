@@ -2402,9 +2402,10 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
 export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
- * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap}. */
-export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number }): void {
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), cb });
+ * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap, choice}
+ * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
+export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
 }
 /** How far Analyze reads: 4 tiles + Analysis. */
 export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);

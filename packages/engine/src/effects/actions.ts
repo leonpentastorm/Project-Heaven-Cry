@@ -20,7 +20,8 @@ import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
-import { price, whyNot, pay, setAp, resWhyNot, resPay, type Priced } from './cost';
+import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, type Priced } from './cost';
+import { isNumberBlock, numberOf } from './amounts';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -56,6 +57,14 @@ export const PRAYER_KINDS = ['whisper', 'hymn'];
 let PRAYER: { why(cb: Combat, u: Unit, kind: 'whisper' | 'hymn'): string | null; pray(cb: Combat, rng: { state: number }, u: Unit, kind: 'whisper' | 'hymn', name: string, tier?: number): boolean } | null = null;
 /** faith.ts's prayer door for a verb that is a prayer (verbPrayerWhy, verbPray). */
 export const setPrayerDoor = (p: typeof PRAYER) => { PRAYER = p; };
+/** A number of an action's shape for this holder (rules 1.33: a number block's `skill:<id>` and `res:<id>` read the
+ * holder: a door's ladder, as Bond's reach 6, 9 from Empathy 6). A plain number is itself; anything else is null. */
+export function holderNumber(h: Holder, x: unknown): number | null {
+  if (typeof x === 'number') return x;
+  if (!isNumberBlock(x)) return null;
+  const c = h.c || charOfUnit(h.u);
+  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c) : 0; });
+}
 /** Why this holder can't aim its action at this unit by its `reach` (null: it can). */
 export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): string | null {
   const u = h.u, cb = h.cb; if (!reach || !u || !cb) return null;
@@ -67,7 +76,8 @@ export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): str
   // rules 1.33: reach.beyond (a tie kind): a unit tied to the holder by it is in reach at any range the holder itself sees
   const far = !!reach.beyond && !ifFails(h, { target_tied: reach.beyond }, t);
   if (far && !unitSees(cb, u, t.pos)) return 'Not in sight: a Bond carries it only where you can see.';
-  if (!far && typeof reach.tiles === 'number' && distK(u.pos, t.pos) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
+  const tiles = holderNumber(h, reach.tiles);
+  if (!far && tiles != null && distK(u.pos, t.pos) > tiles) return 'Out of range (' + tiles + (tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && t.side !== u.side && ifFails(h, { target_sight: ['seen'] }, t)) return 'You can\'t see them.'; // the holder's side sees it (P7)
   if (reach.tied && ifFails(h, { target_tied: reach.tied }, t)) return t.name + ' isn\'t tied to you.'; // P8
   if (reach.if) { const k = ifFails(h, reach.if, t); if (k) return 'Not on ' + t.name + ' (' + human(k) + ').'; }
@@ -95,7 +105,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
         return null;
       },
     };
-    if (g.res) d.res = { ...g.res };
+    if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend 2 MP cheaper from Empathy 9)
     if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (g.if || g.prayer) d.available = (h) => {
