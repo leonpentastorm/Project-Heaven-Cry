@@ -229,6 +229,11 @@
       "on": "unit",
       "path": "res.guard"
     },
+    "shadow": {
+      "name": "Shadow",
+      "on": "unit",
+      "path": "res.shadow"
+    },
     "supplies": {
       "name": "Supplies",
       "on": "unit",

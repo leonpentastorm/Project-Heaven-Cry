@@ -1675,6 +1675,7 @@ COND_READS = {
     "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
     "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
     "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"],
+    "exposed": ["stat_mod:defense"], "off_balance": ["stat_mod:ap"],  # Classes 3.0 step 6 (Shadow, rules 1.32)
 }
 COND_ENGINE_STATS = {"defense", "move_mult", "vision", "ap", "damage_dealt_pct", "sigil_ap", "soul_cost_pct", "save_body", "save_brain", "save_heart"}
 # stat_mod stats and attack_mod contexts a row may carry that the loader does not read (another part of the engine does)

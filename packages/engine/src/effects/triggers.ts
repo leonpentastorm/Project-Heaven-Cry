@@ -23,8 +23,10 @@ import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, c
 import { holds } from '../character';
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
-import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent } from '../combat';
-import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS } from '../magic';
+import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile } from '../combat';
+import { WEAPON } from '../data';
+import { magsOf, type PackItem } from '../character';
+import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst } from '../magic';
 import { nextToCover } from '../combat';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
 import { isStatId } from './stats';
@@ -174,7 +176,7 @@ P('open', 'bool', 'nothing has stopped it yet: not cancelled, and (would_drop) n
 P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) > v);
 P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);
 // Classes 3.0 step 1 (the batch rows of docs/design/rev4-primitives.md)
-P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover: every end named must be', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to']);
+P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover, or (here) the holder stands next to it now: every word named must hold', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : w === 'here' ? ev.self.pos : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to', 'here']);
 // Classes 3.0 P10: zones from data. {kind, owner: self (the holder's own), side (its side's) or any}
 const zoneArg = (v: any) => (typeof v === 'string' ? { kind: v, owner: 'any' } : { kind: v?.kind, owner: v?.owner || 'any' });
 for (const who of ['self', 'target'] as Who[]) P(who + '_in_zone', 'zone', who + ' stands in a zone of this kind (a kind, or {kind, owner: self, side or any})', (ev, v) => { const u = unitOf(ev, who), a = zoneArg(v); return !!u && zonesAt(ev.cb, u.pos, a.kind, a.owner, ev.self).length > 0; }, () => [...DATA_ZONE_KINDS]);
@@ -254,8 +256,8 @@ const O = (name: string, on: string[], state: boolean, fields: string[], about: 
 const ANY = Object.keys(TRIGGERS);
 const pick = (ev: Ev, e: any): Unit | null => (e.target === 'actor' ? ev.actor : e.target === 'target' ? ev.target : ev.self);
 
-O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent)', (ev, e, label) => {
-  if (ev.trig.hook === 'damage_out') { ev.ctx.mults.push({ v: e.value, label }); return; }
+O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool', 'replaces'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush) is taken out and this one stands in its place, so the two never multiply: Shadow\'s Break, rules 1.32)', (ev, e, label) => {
+  if (ev.trig.hook === 'damage_out') { if (typeof e.replaces === 'string') for (let i = ev.ctx.mults.length - 1; i >= 0; i--) if (ev.ctx.mults[i].label === e.replaces) ev.ctx.mults.splice(i, 1); ev.ctx.mults.push({ v: e.value, label }); return; }
   const was = ev.ctx.dmg; let now = e.round === 'up' ? Math.ceil(was * e.value) : was * e.value;
   if (typeof e.pool === 'string' && ev.target) { // P10: a zone's pool caps what it prevents
     const z = zonesAt(ev.cb, ev.target.pos, e.pool, 'self', ev.self).find((x) => x.pool != null);
@@ -297,11 +299,11 @@ O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource
 /** The value of op `condition` that names the condition being put on (on cond_incoming: Take the Weight's "you take it
  * instead"; rev4-primitives.md batch row `condition: "incoming"`). */
 export const INCOMING = 'incoming';
-O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal\'s via; default the ambient source); condition "incoming" (on cond_incoming): the condition being put on, with its rounds unless rounds is given', (ev, e) => {
+O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via', 'same_entry'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal\'s via; default the ambient source); condition "incoming" (on cond_incoming): the condition being put on, with its rounds unless rounds is given; same_entry (hidden only): the same Hidden entry as before, no new ambush', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
   const inc = e.condition === INCOMING; if (inc && (ev.trig.hook !== 'cond_apply' || !ev.ctx.id)) return false;
   const id = inc ? ev.ctx.id : e.condition, rounds = typeof e.rounds === 'number' ? e.rounds : inc && typeof ev.ctx.rounds === 'number' ? ev.ctx.rounds : undefined;
-  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}) });
+  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}), ...(e.same_entry ? { sameEntry: true } : {}) });
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -334,7 +336,8 @@ O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amoun
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
   mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
 });
-O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder (how: push) or pull it closer (pull)', (ev, e) => {
+O('displace', ANY, true, ['tiles', 'how', 'to'], 'push the target away from the holder (how: push) or pull it closer (pull); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens', (ev, e) => {
+  if (e.to === 'cover') return toCover(ev, pick(ev, e), e);
   const t = pick(ev, e); if (!t || t === ev.self) return;
   const how = e.how === 'pull' ? 'pull' : 'push', to = how === 'pull' ? { toward: ev.self.pos, tiles: e.tiles } : { away: ev.self.pos, tiles: e.tiles };
   return displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key }).text || '';
@@ -373,6 +376,31 @@ O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of
   const st: any = ((ev.self.ps ||= {}) as any)[ev.h.key] ||= {}; const f = (st.flags ||= {});
   if (e.clear) delete f[e.flag]; else f[e.flag] = true;
 });
+// Classes 3.0 step 6 (Shadow, rules 1.32): Lift's taking, and Fade's step to cover
+O('take', ANY, true, ['save', 'via'], 'take one thing the target carries into the pile on the holder\'s tile: a throwable, else a spare magazine (Shadow\'s Lift); save: the target\'s save family (body, brain, heart) rolled against the holder\'s strength (via: by that skill), and a success keeps it', (ev, e) => {
+  const t = pick(ev, e); if (!t || t === ev.self || t.dead) return false;
+  if (typeof e.save === 'string') { const sv = saveAgainst(ev.cb, rngOf(ev.h, ev.ctx), ev.self, t, e.save, 'lift', { ...(typeof e.via === 'string' ? { via: e.via } : {}) }); if (sv.ok) return ' · ' + t.name + ' ' + sv.text + ', and keeps hold of it'; }
+  const thr = Object.entries(t.throwables || {}).find(([, n]) => (n || 0) > 0);
+  let item: PackItem | null = null;
+  if (thr) { const [id] = thr; t.throwables![id] -= 1; if (!t.throwables![id]) delete t.throwables![id]; item = { id, name: WEAPON[id]?.name || id, qty: 1, kind: 'weapon', weapon: id }; }
+  else if (t.mags?.length) { const n = t.mags.pop()!; item = { ...magsOf(t.weapon, 1), mags: [n] } as PackItem; }
+  if (!item) return ' · ' + t.name + ' carries nothing to take';
+  dropToPile(ev.cb, ev.self.pos, [item], 'lift');
+  return ' · takes ' + (item.kind === 'ammo' ? 'a ' : 'the ') + item.name.toLowerCase() + ' from ' + t.name;
+});
+/** Fade's step (op displace, to: "cover"): the nearest free tile next to standing cover within reach, out of every
+ * enemy's view first; the unit's own tile when it already stands by cover. */
+function toCover(ev: Ev, u: Unit | null, e: any): string | false {
+  if (!u) return false;
+  const r = typeof e.tiles === 'number' ? e.tiles : Math.max(1, Math.floor(u.movement || 1)), foes = ev.cb.units.filter((v) => v.side !== u.side && !v.dead && !v.downed && !v.hidden);
+  const seen = (k: string) => foes.some((v) => unitSees(ev.cb, v, k));
+  const cands = [u.pos, ...tilesAround(u.pos, r, ev.cb)].filter((k) => (k === u.pos || canStand(ev.cb, k)) && nextToCover(ev.cb, k));
+  if (!cands.length) return false;
+  cands.sort((a, b) => (seen(a) ? 1 : 0) - (seen(b) ? 1 : 0) || dist(u.pos, a) - dist(u.pos, b));
+  const k = cands[0]; if (k === u.pos) return '';
+  const r1 = displace(ev.cb, rngOf(ev.h, ev.ctx), u, { tile: k }, { by: u, how: 'teleport', source: ev.h.key, willing: true, fx: { magic: true } });
+  return r1.moved ? ' · steps to cover' : '';
+}
 
 /** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
 const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);

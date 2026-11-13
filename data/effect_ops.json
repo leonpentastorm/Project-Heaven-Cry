@@ -4176,6 +4176,32 @@
           "target_within": 1
         }
       }
+    },
+    {
+      "id": "take",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 step 6, Shadow's Lift, rules 1.32): take one thing the target carries (a throwable, else a spare magazine) into the pile on the holder's tile; save: the target's save family against the holder's strength (via: by that skill), and a success keeps it. Runs on a trigger.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "save",
+        "say",
+        "target",
+        "via",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "take",
+        "when": "acted",
+        "target": "target",
+        "save": "body",
+        "via": "ingenuity"
+      }
     }
   ],
   "item_ops": {
@@ -4615,10 +4641,11 @@
       },
       "by_cover": {
         "arg": "words",
-        "about": "the move started (from) and / or ended (to) next to standing cover: every end named must be",
+        "about": "the move started (from) and / or ended (to) next to standing cover, or (here) the holder stands next to it now: every word named must hold",
         "values": [
           "from",
-          "to"
+          "to",
+          "here"
         ]
       },
       "self_in_zone": {
@@ -4682,6 +4709,7 @@
           "cores",
           "momentum",
           "guard",
+          "shadow",
           "supplies",
           "toxins",
           "parts",
@@ -4699,6 +4727,7 @@
           "cores",
           "momentum",
           "guard",
+          "shadow",
           "supplies",
           "toxins",
           "parts",
@@ -4731,10 +4760,11 @@
         "fields": [
           "value",
           "round",
-          "pool"
+          "pool",
+          "replaces"
         ],
         "changes_state": false,
-        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent)"
+        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush) is taken out and this one stands in its place, so the two never multiply: Shadow's Break, rules 1.32)"
       },
       "damage_mod": {
         "on": [
@@ -4920,10 +4950,11 @@
           "condition",
           "rounds",
           "skip_save",
-          "via"
+          "via",
+          "same_entry"
         ],
         "changes_state": true,
-        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal's via; default the ambient source); condition \"incoming\" (on cond_incoming): the condition being put on, with its rounds unless rounds is given"
+        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal's via; default the ambient source); condition \"incoming\" (on cond_incoming): the condition being put on, with its rounds unless rounds is given; same_entry (hidden only): the same Hidden entry as before, no new ambush"
       },
       "cleanse": {
         "on": [
@@ -5153,10 +5184,11 @@
         ],
         "fields": [
           "tiles",
-          "how"
+          "how",
+          "to"
         ],
         "changes_state": true,
-        "about": "push the target away from the holder (how: push) or pull it closer (pull)"
+        "about": "push the target away from the holder (how: push) or pull it closer (pull); to: \"cover\", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy's view first (Shadow's Fade, rules 1.32): no tile, nothing happens"
       },
       "zone": {
         "on": [
@@ -5432,6 +5464,50 @@
         ],
         "changes_state": true,
         "about": "set (or with clear: true, clear) one of the item's own flags, for a later trigger's flag / no_flag"
+      },
+      "take": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "save",
+          "via"
+        ],
+        "changes_state": true,
+        "about": "take one thing the target carries into the pile on the holder's tile: a throwable, else a spare magazine (Shadow's Lift); save: the target's save family (body, brain, heart) rolled against the holder's strength (via: by that skill), and a success keeps it"
       }
     },
     "limit_scopes": [

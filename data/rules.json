@@ -1304,7 +1304,8 @@
       "healer_turn": { "allin": 200, "what": "a healer's turn, all in, in Soldier-turns x 100 (rules 1.27, the heal re-fit: was 125; a normal share 160): the Soul healer's steady Buff heal; the Sigil healer's MEND line of 3 glyphs sits on the same ceiling through output.profiles.sigil_mend.k; a Hymn turn's healing is capped at hymn_heal_cap", "dial": "rules.json output.profiles.healing.k (and mend; sigil_mend, soul_mend and blessing_mend for their own systems)", "hymn_heal_cap": 250 },
       "shield": { "of_heal": 1.2, "what": "a shield is worth 1.2 times the heal of the same cost" },
       "weapon_art": { "what": "not built: may break the ceiling as a charged ultimate, counted in the build's fight average (steady + 10%)" },
-      "miracle": { "what": "exempt" }
+      "miracle": { "what": "exempt" },
+      "shadow": { "allin": 125, "door_allin": 109, "door_normal": 87, "what": "Shadow (rules 1.32): a three-turn window with one Break, the Operative all in (the class on the ceiling; the door all in 125 / 1.15, the door at a normal share that / 1.25)", "dial": "rules.json shadow.per_point (fitted after the window rows are measured)" }
     },
     "yardsticks": {
       "soldier_turn": { "1": 18.5, "3": 21.5, "6": 25.4, "9": 32.4, "12": 37.8, "20": 60.2, "note": "what one Soldier of the fight's level takes off the plain rifleman in one of its turns (heal-shield-pass.md 1.1); one Soldier-turn kept off the squad counts as one plain rifle's turn of damage" },
@@ -1581,6 +1582,17 @@
   },
   "weapon_mastery": {
     "data": "weapon_mastery.json",
+    "provisional": true
+  },
+  "shadow": {
+    "about": "rules 1.32 (shadow-spec.md): Perception's door, through Ingenuity. The meter on the unit (res.shadow): its cap by Ingenuity points, the Operative's own add and start, and the Break's one multiplier (1 + per_point a point spent + ambush_bonus on a fresh ambush + marked_bonus against an enemy you Marked). The door item (skills.json ingenuity.1) carries the Break's numbers; the validator holds them equal to these.",
+    "cap_by_points": { "1": 1, "5": 2, "7": 3 },
+    "operative_cap_add": 1,
+    "operative_start": 1,
+    "ambush_bonus": 0.5,
+    "per_point": 0.15,
+    "marked_bonus": 0.15,
+    "door_gains_per_turn": 2,
     "provisional": true
   },
   "ties": {

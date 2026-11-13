@@ -237,11 +237,12 @@ export function hideAction(cb: Combat, u: Unit): string | null {
 export const ambushReady = (u: Unit) => !!u.hidden && (u.ambushUsed || 0) < (u.hideEntry || 1);
 /** Spotting, at the end of a unit's turn (rules 1.3): it rolls d20 + its notice (enemies by tier, PCs Vigilant) against
  * 10 + each Hidden enemy's Ingenuity modifier + Stealth, for every one whose tile it can see; ending next to one finds
- * it outright. 'spot' {by, u, die, mod, tn, cancel} lets items change it. */
-export function spotHidden(cb: Combat, rng: Rng, by: Unit) {
+ * it outright. 'spot' {by, u, die, mod, tn, cancel} lets items change it. only: look for that one unit alone (rules 1.32:
+ * the target of a silent attack from Hidden rolls at once). */
+export function spotHidden(cb: Combat, rng: Rng, by: Unit, only?: Unit | null) {
   if (!alive(by)) return;
   for (const u of cb.units) {
-    if (u.side === by.side || !u.hidden || u.dead) continue;
+    if (u.side === by.side || !u.hidden || u.dead || (only && u !== only)) continue;
     if (dist(u.pos, by.pos) <= 1) { reveal(cb, u, by.name + ' is right next to them'); continue; }
     if (!unitSees(cb, by, u.pos)) continue;
     const m = by.side === 'foe' ? TIER_NOTICE[by.tier || 'minion'] ?? 0 : mod(by.vigilant || 0) + (by.sk?.vigilant || 0);

@@ -1228,6 +1228,51 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "Classes 3.0 step 3, Run and Gun (rules 1.30, item 1808)"
+    },
+    {
+      "id": "exposed",
+      "name": "Exposed",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": false,
+      "text": "A seam in your guard is open: {=effects.0.value} Defense. Lasts {=duration.rounds} round.",
+      "effects": [
+        {"op": "stat_mod", "stat": "defense", "value": -2}
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "Classes 3.0 step 6, Shadow's Open Seam (rules 1.32)"
+    },
+    {
+      "id": "off_balance",
+      "name": "Off Balance",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "engine": "table",
+      "text": "Caught at the wrong moment: you have {=effects.0.value|abs} AP less on your next turn.",
+      "effects": [
+        {"op": "stat_mod", "stat": "ap", "value": -1, "duration": "next_turn"}
+      ],
+      "duration": {
+        "until": "next_turn"
+      },
+      "ends_on": [
+        "used at your next turn start"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "Classes 3.0 step 6, Shadow's Timing (rules 1.32)"
     }
   ],
   "families": {

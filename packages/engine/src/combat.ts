@@ -626,9 +626,17 @@ export function bossGuards(t: Unit, src: any, cb?: Combat | null): boolean {
 export function guardHeld(t: Unit, by: Unit | null | undefined): boolean {
   const m = GUARD_MARK.get(t); return !!m && !!by && m.seq === GUARD_SEQ && m.by === by.id;
 }
+/** Rules 1.32: was this Elite or Boss at full HP when the action `by` is taking now first hurt it, whatever the level gap
+ * (Execution never finishes it in that action)? */
+const FULL_MARK = new WeakMap<Unit, { by: string; seq: number }>();
+export function fullAtAction(t: Unit, by: Unit | null | undefined): boolean {
+  const m = FULL_MARK.get(t); return !!m && !!by && m.seq === GUARD_SEQ && m.by === by.id;
+}
 onHook('damage_in', (ctx: any) => {
   const t: Unit = ctx.t, src = ctx.src;
-  if (ctx.phase === 'reduce') { if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
+  if (ctx.phase === 'reduce') {
+    if (t.hp >= t.maxHp && !t.downed && src?.by && BOSS_GUARD.tiers.includes(t.tier || '') && t.side === 'foe') { const f = FULL_MARK.get(t); if (!f || f.seq !== GUARD_SEQ || f.by !== src.by.id) FULL_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); }
+    if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
   // (an Evoke says it in its own line: sigil.ts, ctx.lineGuard)
   if (ctx.phase === 'after') { if (ctx.bossGuard && !ctx.lineGuard && !ctx.killed && ctx.cb) say(ctx.cb, bossGuardLine(t, src)); return; }
   if (ctx.phase !== 'would_drop_to_0') return;
@@ -1400,6 +1408,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   if (hit && melee && !opts.noMomentum && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
   if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
+  const spotBack = att.hidden && !opts.quiet && tgt.side !== att.side && alive(tgt) && !tgt.hidden; // rules 1.32 (2.6): a silent attack from Hidden; rolled after the line
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
   if (condOn(att, 'sharpened')) endCond(att, 'sharpened', cb); // spent on this attack
   // A shot that misses only because of half cover's −5 hits the cover (spec: Cover).
@@ -1414,6 +1423,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
   if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, cb, rng, mods: cb.mods || [] });
   else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
+  // Rules 1.32 (shadow-spec 2.6): the target of a silent attack from Hidden that is still up, and whose eyes reach the
+  // attacker's tile, rolls to spot it at once (the one spotting roll, for that one looker); no reaction is spent.
+  if (spotBack && att.hidden && alive(tgt) && unitSees(cb, tgt, att.pos)) spotHidden(cb, rng, tgt, att);
   // The flamer's cone (cone_3): everyone else in a 3-tile cone toward the target gets the same attack, each its own roll.
   if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of unitsIn(cb, { shape: 'cone', from: att.pos, toward: tgtAt, n: 3 }, { downed: true, not: [tgt, att] })) if (previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true, ...(opts.fx ? { fx: opts.fx } : {}) }), 'cone');
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };

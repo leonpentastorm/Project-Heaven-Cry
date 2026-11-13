@@ -1,0 +1,561 @@
+{
+  "$schema_version": "1.0",
+  "kind": "shadow",
+  "source": "docs/design/shadow-spec.md section 3; rules 1.32 (Classes 3.0 step 6): Perception's door verbs, through Ingenuity. Each is a door verb (kind verb, P6) held by anyone whose Ingenuity reaches its `requires`; the Break is a toggle on the attack card (skills.json ingenuity.1); the passive Still Breath is Ingenuity's unlock 5.",
+  "groups": {
+    "slip": "Slip",
+    "mark": "Mark",
+    "work": "Work",
+    "break": "Break"
+  },
+  "items": [
+    {
+      "id": "shadow.lift",
+      "name": "Lift",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP: take a grenade or a spare magazine from an adjacent enemy into the pile on your tile. Unseen it isn't told; if it can see you, it makes a Body save against your Ingenuity.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lift",
+          "ap": 2,
+          "uses": "at_will",
+          "reach": {
+            "tiles": 1,
+            "side": "foe"
+          },
+          "effects": [
+            {
+              "op": "take",
+              "target": "target",
+              "if": {
+                "target_sees_self": false
+              },
+              "say": "{self} lifts it unseen{then}."
+            },
+            {
+              "op": "take",
+              "target": "target",
+              "save": "body",
+              "via": "ingenuity",
+              "if": {
+                "target_sees_self": true
+              },
+              "say": "{self} tries a lift in plain sight{then}."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.fade",
+      "name": "Fade",
+      "kind": "verb",
+      "group": "break",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 5
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow: even while an enemy sees you, step to the nearest tile next to cover within one Move and become Hidden (a new entry: a fresh ambush). Not while Marked.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "fade",
+          "ap": 2,
+          "res": {
+            "shadow": 2
+          },
+          "uses": "at_will",
+          "if": {
+            "self_lacks": [
+              "marked",
+              "hidden"
+            ]
+          },
+          "effects": [
+            {
+              "op": "displace",
+              "to": "cover",
+              "say": "{self} fades into the shadows{then}."
+            },
+            {
+              "op": "condition",
+              "condition": "hidden",
+              "skip_save": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.read_intent",
+      "name": "Read Intent",
+      "kind": "verb",
+      "group": "mark",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP, from Hidden: an enemy that can't see you is Read: your side sees its next action until its turn ends.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "read_intent",
+          "ap": 1,
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 12,
+            "side": "foe",
+            "if": {
+              "target_sees_self": false
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "read",
+              "target": "target",
+              "skip_save": true,
+              "say": "{self} reads {target}'s next move."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.open_seam",
+      "name": "Open Seam",
+      "kind": "verb",
+      "group": "mark",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 5
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: an enemy that can't see you is Exposed until your next turn (Defense lower).",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "open_seam",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 12,
+            "side": "foe",
+            "if": {
+              "target_sees_self": false
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "exposed",
+              "target": "target",
+              "skip_save": true,
+              "say": "{self} finds the seam in {target}'s guard."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.timing",
+      "name": "Timing",
+      "kind": "verb",
+      "group": "mark",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 7
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: an enemy that can't see you is Off Balance (one AP less on its next turn); never the same enemy two rounds running.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "timing",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 12,
+            "side": "foe",
+            "if": {
+              "target_sees_self": false,
+              "target_lacks": [
+                "off_balance"
+              ]
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "off_balance",
+              "target": "target",
+              "skip_save": true,
+              "limit": {
+                "cooldown": 2,
+                "each": "target"
+              },
+              "say": "{self} catches {target} at the wrong moment."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.cut_strap",
+      "name": "Cut the Strap",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: an adjacent enemy that can't see you is Disarmed unless it makes a Heart save against your Ingenuity.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "cut_strap",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 1,
+            "side": "foe",
+            "if": {
+              "target_sees_self": false
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "disarmed",
+              "target": "target",
+              "via": "ingenuity",
+              "say": "{self} cuts {target}'s strap{then}."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.foul",
+      "name": "Foul the Action",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 5
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: an adjacent enemy that can't see you has its weapon Lowered (a save against your Ingenuity).",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "foul",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 1,
+            "side": "foe",
+            "if": {
+              "target_sees_self": false
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "lowered",
+              "target": "target",
+              "via": "ingenuity",
+              "say": "{self} fouls {target}'s weapon{then}."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.plant",
+      "name": "Plant",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 7
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: slip a tracker onto an adjacent enemy that can't see you: it is Marked by you (your squad hits it more easily, and it can't hide).",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "plant",
+          "ap": 2,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 1,
+            "side": "foe",
+            "if": {
+              "target_sees_self": false
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "marked",
+              "target": "target",
+              "skip_save": true,
+              "say": "{self} plants a tracker on {target}{then}."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.disable",
+      "name": "Disable",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 7
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: a machine, turret, drone or robot next to you is Stunned for {=effects.0.effects.0.rounds} round (a save against your Ingenuity).",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "disable",
+          "ap": 2,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 1,
+            "side": "foe",
+            "if": {
+              "target_kind": [
+                "machine",
+                "robot",
+                "turret",
+                "drone"
+              ]
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "stunned",
+              "target": "target",
+              "rounds": 1,
+              "via": "ingenuity",
+              "say": "{self} reaches into {target}'s works{then}."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.hijack",
+      "name": "Hijack",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 9
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: a machine, turret, drone or robot next to you is Puppeted for {=effects.0.effects.0.rounds} round (a save against your Ingenuity): you spend its AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "hijack",
+          "ap": 2,
+          "res": {
+            "shadow": 2
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 1,
+            "side": "foe",
+            "if": {
+              "target_kind": [
+                "machine",
+                "robot",
+                "turret",
+                "drone"
+              ]
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "puppeted",
+              "target": "target",
+              "rounds": 1,
+              "via": "ingenuity",
+              "say": "{self} takes over {target}{then}."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pending": [
+    {
+      "id": "shadow.parting_cut",
+      "name": "Parting Cut",
+      "group": "break",
+      "min": 9,
+      "why": "a toggle that rides on the Break (both on one attack) and a points gate on a toggle: no primitive carries either (rules 1.32 item 1966)"
+    },
+    {
+      "id": "shadow.decoy",
+      "name": "Decoy",
+      "group": "slip",
+      "min": 3,
+      "why": "no op writes an enemy's last-seen tile (cb.lastSeen) (item 1966)"
+    },
+    {
+      "id": "shadow.close_quarters",
+      "name": "Close Quarters",
+      "group": "slip",
+      "min": 3,
+      "why": "the spot hook does not carry the 'ending next to it finds it outright' case (tactics.ts spotHidden) (item 1966)"
+    },
+    {
+      "id": "shadow.vault",
+      "name": "Vault",
+      "group": "slip",
+      "min": 5,
+      "why": "a verb's reach picks units, not a tile beyond cover (item 1966)"
+    },
+    {
+      "id": "shadow.shadow_run",
+      "name": "Shadow Run",
+      "group": "slip",
+      "min": 7,
+      "why": "the cost hook does not know a move will end by cover before it is walked (item 1966)"
+    },
+    {
+      "id": "shadow.case",
+      "name": "Case",
+      "group": "mark",
+      "min": 3,
+      "why": "no read-out of an enemy's kit and loot for a side (item 1966)"
+    },
+    {
+      "id": "shadow.pick",
+      "name": "Pick",
+      "group": "work",
+      "min": 5,
+      "why": "a verb's reach picks units, not a door tile (item 1966)"
+    },
+    {
+      "id": "shadow.douse",
+      "name": "Douse",
+      "group": "work",
+      "min": 5,
+      "why": "a verb's reach picks units, not a light object (item 1966)"
+    },
+    {
+      "id": "shadow.rig",
+      "name": "Rig",
+      "group": "work",
+      "min": 7,
+      "why": "no op lays a trap object (the Operative's Sabotage rigs through its own handler) (item 1966)"
+    }
+  ]
+}

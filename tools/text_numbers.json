@@ -1,6 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
- "ceiling": 1396,
+ "ceiling": 1393,
  "allow": {
   "actions:extinguish:text:10": "Burning's 10 a turn: conditions.json burning (an amounts block the engine reads); a placeholder reads only its own item",
   "actions:hide:text:19": "the ambush's critical range 19-20 (the engine's Hidden ambush, a rule of combat with no field on this action)",
@@ -96,10 +96,7 @@
   "classes:hellraiser_heavy/belt_discipline:text:2": 1,
   "classes:hellraiser_heavy/belt_discipline:text:4": 1,
   "classes:hellraiser_heavy/emplace:text:5": 1,
-  "classes:infiltrator/field_fix:text:2": 1,
   "classes:infiltrator/sabotage:text:12": 1,
-  "classes:infiltrator/sabotage:text:2": 1,
-  "classes:infiltrator/vanish:text:1": 1,
   "classes:inscribe_gear:text:2": 1,
   "classes:inscribe_gear:text:5": 1,
   "classes:inspire:text:2": 1,

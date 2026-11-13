@@ -1298,25 +1298,206 @@
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "per_point": {
-        "text": "+{=per_point.ambush_per_point|pct}% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
-        "ambush_per_point": 0.05
+        "text": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons, and what you do unseen, are harder to save against."
       },
       "gates": [
         "gear:stealth"
       ],
       "unlocks": {
-        "3": {
-          "name": "Lift",
-          "category": "Combat Interaction",
-          "mastery": 1,
-          "text": "{=unlocks.3.effects.0.ap} AP: steal one item or magazine from an adjacent enemy.",
+        "1": {
+          "name": "Shadow",
+          "category": "Active Skill",
+          "mastery": 0,
+          "item": true,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "lift",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "turn_end",
+              "if": {
+                "self_has": [
+                  "hidden"
+                ],
+                "no_flag": "struck"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "gain"
+              },
+              "say": "{self} stays unseen: Shadow {res:shadow}."
             },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "moved",
+              "if": {
+                "how": [
+                  "move",
+                  "sprint"
+                ],
+                "self_has": [
+                  "hidden"
+                ],
+                "by_cover": [
+                  "from",
+                  "to"
+                ],
+                "self_sight": [
+                  "out_of_view"
+                ],
+                "no_flag": "cover"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "gain"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "cover"
+                }
+              ],
+              "say": "{self} slips from cover to cover: Shadow {res:shadow}."
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "hit",
+              "if": {
+                "hostile": true,
+                "target_alive": false,
+                "self_sight": [
+                  "unseen"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "gain"
+              },
+              "say": "{self} kills unseen: Shadow {res:shadow}."
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": -1,
+              "when": "turn_start",
+              "if": {
+                "self_sight": [
+                  "seen"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "say": "{self} is seen: Shadow {res:shadow}."
+            },
+            {
+              "op": "mark",
+              "flag": "struck",
+              "when": "hit"
+            },
+            {
+              "op": "mark",
+              "flag": "struck",
+              "when": "miss"
+            },
+            {
+              "op": "mark",
+              "flag": "struck",
+              "clear": true,
+              "when": "turn_start",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "cover",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": "zero",
+              "when": "downed"
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": "zero",
+              "when": "combat_end"
+            }
+          ],
+          "toggles": [
+            {
+              "id": "shadow.break",
+              "name": "Break",
+              "on": [
+                "combat/attack"
+              ],
+              "if": {
+                "self_has": [
+                  "hidden"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "effects": [
+                {
+                  "op": "damage_mult",
+                  "when": "dealing",
+                  "label": "shadow",
+                  "replaces": "ambush",
+                  "value": {
+                    "base": 1,
+                    "per": [
+                      {
+                        "of": "res:shadow",
+                        "value": 0.15
+                      },
+                      {
+                        "of": "event:ambush",
+                        "value": 0.5
+                      },
+                      {
+                        "of": "target:marked",
+                        "value": 0.15
+                      }
+                    ]
+                  }
+                },
+                {
+                  "op": "resource",
+                  "resource": "shadow",
+                  "value": "all",
+                  "when": "acted",
+                  "and": [
+                    {
+                      "op": "cleanse",
+                      "condition": "hidden"
+                    }
+                  ],
+                  "say": "{self} breaks from the shadows and is revealed."
+                }
+              ]
+            }
+          ]
+        },
+        "3": {
+          "name": "Mastery 1",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "A perk step in this skill. The Shadow verbs of this rung open: Lift, Read Intent and Cut the Strap.",
+          "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
@@ -1326,30 +1507,17 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Vanish",
+          "name": "Mastery 2",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP: become Hidden even while watched, if there's cover within one Move.",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "vanish",
-              "ap": 3,
-              "uses": "at_will"
-            },
-            {
-              "op": "condition",
-              "condition": "hidden",
-              "target": "self",
-              "when": "on_vanish"
-            }
-          ],
+          "text": "Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Still Breath, Open Seam and Foul the Action.",
+          "effects": [],
           "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Plant and Disable.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1362,7 +1530,7 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verbs of this rung open: Parting Cut and Hijack.",
           "effects": [],
           "adjudication": "engine"
         },
@@ -1432,7 +1600,7 @@
           "A thousand gold for two rocks. The number of people still paying in gold coins outside Central City is baffling. Back when I worked the city, I'd swipe a bank card out of some guy's pocket and that was dinner sorted. Back then I still had Travis to crack the cards... People call it petty theft, but the trade takes real skill. First you learn to walk in step with the crowd and spot which pocket bulges most. Then you work out how much weight to slip back in so they don't notice the coins have flown. If you don't know how, don't mess around. The old men at the guard post started carrying shock batons last week, and it hurts like you wouldn't believe."
         ],
         "intro": "Ingenuity is the finesse in everything you do: staying unseen while sneaking, picking pockets, that sort of thing.",
-        "effect": "+5% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
+        "effect": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
         "high_levels": "you turn into a cosplayer of the sneaking-soldier legend, flickering in and out of the shadows. But all that shifty behaviour makes it hard to look a cop in the eye.",
         "good_for": "rogues, scouts, bandits, gamblers.",
         "bad_for": "model citizens, uniformed (not undercover) cops, anyone trying to romance a uniformed (not undercover) cop.",

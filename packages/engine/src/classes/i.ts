@@ -16,7 +16,7 @@ import { strikeFromWorld, apLeft } from '../game';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, sideSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, paths, moveUnit,
-  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury, guardHeld,
+  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury, guardHeld, fullAtAction,
   attackEvent,
 } from '../combat';
 import {
@@ -607,17 +607,19 @@ register({
 });
 
 // ---------- Toxin (rank II, 1 AP) ----------
-// Spend 1 dose: your next hit with a blade, dart, thrown weapon or arrow (not bullets, PROVISIONAL) also inflicts
+// Spend 1 dose: your next hit with any weapon (rules 1.32: weapon-neutral, the next rounds of a gun too) also inflicts
 // Weakened, Slowed or Bleeding (your choice; Body save against 12 + your Ingenuity strength: poison, rules 1.13). The coat lasts until
 // that hit or the fight's end. Out of combat: coat before the fight (the first fight starts coated).
 const TOX = [['weakened', 'Weakened'], ['slowed', 'Slowed'], ['bleeding', 'Bleeding']] as const;
-const coatable = (u: Unit) => { const w = WEAPON[u.weapon]; return !!w && (isMelee(w) || /bow|thrown/.test(w.category)); };
+const coatable = (u: Unit) => !!WEAPON[u.weapon]; // any weapon (rules 1.32; rev4-weapon-neutral-audit.md 4.4)
+/** A Break on the hit (Shadow, rules 1.32): the poison's TN rises by the Shadow it spends (still on the meter until the action ends). */
+const breakTn = (cb: Combat, u: Unit): number => ((cb.mods || []).some((m) => m === 'shadow.break' || m.endsWith('#shadow.break')) ? resOf(u, 'shadow') : 0);
 register({
   id: 'assassin.toxin', claims: 'all',
   actions: [
     ...TOX.map(([id, name]): ActionDef => ({
       id: 'toxin_' + id, label: 'Toxin: ' + name, scope: ['combat'], target: 'none', ap: 1, res: { toxins: 1 },
-      available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'toxins') < 1) return 'No toxin doses left. They are restocked when you rest.'; if (!coatable(u)) return 'Toxin goes on a blade, a dart or an arrow, not a gun.'; return true; },
+      available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'toxins') < 1) return 'No toxin doses left. They are restocked when you rest.'; if (!coatable(u)) return 'Draw a weapon to coat first.'; return true; },
       run: (h) => { const u = h.u!; stateOf(h).coat = id; say(h.cb, u.name + ' coats the weapon (' + name + '; ' + resOf(u, 'toxins') + ' doses left).'); },
     })),
     ...TOX.map(([id, name]): ActionDef => ({
@@ -632,7 +634,7 @@ register({
     on_hit: (ctx, h) => {
       const st = stateOf(h), u = h.u!; if (ctx.att !== u || !st.coat || !coatable(u) || ctx.tgt.dead) return;
       const id = st.coat; delete st.coat;
-      const sv = saveAgainst(h.cb!, rngOf(h, ctx), u, ctx.tgt, 'body', id, { via: 'ingenuity' }), ok = sv.ok;
+      const sv = saveAgainst(h.cb!, rngOf(h, ctx), u, ctx.tgt, 'body', id, { via: 'ingenuity', tnAdd: breakTn(h.cb!, u) }), ok = sv.ok;
       say(h.cb, 'The toxin on ' + u.name + '\'s weapon: ' + ctx.tgt.name + ' ' + sv.text + (ok ? ' · resists.' : (applyCond(h.cb!, rngOf(h, ctx), u, ctx.tgt, id, undefined, 'body', { skipSave: true, via: 'ingenuity' }) || ' · takes hold') + '.'));
     },
   },
@@ -642,14 +644,15 @@ register({
 // ---------- Execution (rank III, passive) ----------
 // Your hit on a Marked enemy (any of your squad's Marks, PROVISIONAL) that leaves it at or below a quarter of its max HP
 // (after the hit's damage, PROVISIONAL) kills it outright. Bosses and Celestials are immune. Never in an action in
-// which the Elite and Boss guard held the target (rules 1.17; bug, 13 Nov 2026).
+// which the Elite and Boss guard held the target (rules 1.17; bug, 13 Nov 2026), nor on an Elite that was at full HP
+// when the action began (rules 1.32: a Break's usual set-up).
 register({
   id: 'assassin.execution', claims: 'all',
   on: {
     on_hit: (ctx, h) => {
       const u = h.u!, t: Unit = ctx.tgt, cb = h.cb!; if (ctx.att !== u || t.dead || t.side === u.side || !condOn(t, 'marked') || isBoss(t)) return;
       const by = unitById(cb, condSource(t, 'marked')); if (by && by.side !== u.side) return;
-      if (t.hp > t.maxHp / 4 || guardHeld(t, u)) return; // the Elite and Boss guard held it this action: not executed in it
+      if (t.hp > t.maxHp / 4 || guardHeld(t, u) || fullAtAction(t, u)) return; // the guard held it this action, or (rules 1.32) an Elite or Boss at full HP when the action began: not executed in it
       t.shield = 0; const r = applyDamage(cb, t, Math.max(1, t.hp), { by: u, type: 'execution', shield: false, credit: 'all' });
       if (t.dead || r.killed) { fxFell(cb, t); say(cb, 'EXECUTION: ' + u.name + ' finishes ' + t.name + '.'); }
     },

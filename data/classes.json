@@ -522,21 +522,97 @@
         "vigilant"
       ],
       "role": "debuff",
-      "tagline": "See first, strike first, fix what breaks.",
+      "tagline": "Never where they are looking: reads, marks and takes their machines apart.",
       "resource": {
         "id": "marks",
         "max": 3,
-        "rule": "You can keep up to 3 enemies Marked at once. You carry 2 toxin doses, +1 for every 3 points of Ingenuity, restocked when you rest."
+        "rule": "You start each fight with Shadow and hold one more than your Ingenuity gives. You can keep up to 3 enemies Marked at once. You carry 2 toxin doses, +1 for every 3 points of Ingenuity, restocked when you rest."
       },
       "resources": [
         "marks",
-        "toxins"
+        "toxins",
+        "shadow"
       ],
       "foundation_for": [
         "the assassin",
         "the sniper-analyst",
         "the saboteur",
         "the shade"
+      ],
+      "gain": [
+        {
+          "id": "tradecraft",
+          "name": "Tradecraft",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "numbers": {
+            "start": 1,
+            "analyze_ap": 1,
+            "gain": 1
+          },
+          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze costs {=numbers.analyze_ap} AP and Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "combat_start"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "set": 1,
+              "if": {
+                "action": [
+                  "analyze"
+                ]
+              }
+            },
+            {
+              "op": "condition",
+              "condition": "read",
+              "target": "target",
+              "skip_save": true,
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ]
+              }
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ],
+                "target_sees_self": false
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "eye"
+              },
+              "say": "{self} reads {target} unseen: Shadow {res:shadow}."
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "infiltrator",
+          "new": true,
+          "fantasy_tags": [
+            "stealth",
+            "analysis"
+          ],
+          "attributes": [
+            "perception"
+          ],
+          "status": "active",
+          "surface": "combat"
+        }
       ],
       "ranks": {
         "I": {
@@ -550,7 +626,7 @@
               "name": "Vanish",
               "ap_cost": 1,
               "uses": "per_turn",
-              "text": "Costs 1 AP, once per turn. If no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden. You can't Vanish while you are Marked.",
+              "text": "Costs {=ap_cost} AP, once per turn. If no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden: a new entry, a fresh ambush. You can't Vanish while you are Marked.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -565,13 +641,17 @@
                       "marked",
                       "hidden"
                     ]
-                  }
-                },
-                {
-                  "op": "condition",
-                  "condition": "hidden",
-                  "target": "self",
-                  "when": "on_use"
+                  },
+                  "effects": [
+                    {
+                      "op": "condition",
+                      "condition": "hidden",
+                      "target": "self",
+                      "when": "acted",
+                      "skip_save": true,
+                      "say": "{self} vanishes{then}."
+                    }
+                  ]
                 }
               ],
               "adjudication": "engine",
@@ -597,61 +677,20 @@
               "ref": "assassin.toxin"
             },
             {
-              "id": "field_fix",
-              "amounts": {"repair": {"kind": "heal", "base": 20, "profile": "flat", "text": "a repair, not a heal: no healing multipliers", "provisional": true}},
-              "name": "Field Fix",
-              "ap_cost": 2,
-              "uses": "at_will",
-              "text": "Costs 2 AP. Do one of three things for an ally next to you: clear their jammed weapon, restore some of their weapon's durability, or repair a robot, drone, turret or machine for {=effects.1.repair} HP. The repair also brings a Downed machine back up.",
-              "effects": [
-                {
-                  "op": "grant_action",
-                  "action": "field_fix",
-                  "ap": 2,
-                  "uses": "at_will",
-                  "range": 1,
-                  "target": "ally_adjacent"
-                },
-                {
-                  "op": "field_repair",
-                  "choose": [
-                    "clear_jam",
-                    "restore_durability",
-                    "repair_machine"
-                  ],
-                  "repair": 20
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true,
-              "origin": "infiltrator",
-              "new": true,
-              "fantasy_tags": [
-                "mechanic",
-                "repair",
-                "support"
-              ],
-              "attributes": [
-                "perception"
-              ],
-              "status": "active",
-              "surface": "combat"
-            }
-          ]
-        },
-        "III": {
-          "threshold": 8,
-          "moves": [
-            {
-              "ref": "assassin.execution"
-            },
-            {
               "id": "sabotage",
-              "amounts": {"damage": {"kind": "damage", "base": 30, "profile": "flat", "type": "physical", "provisional": true}},
+              "amounts": {
+                "damage": {
+                  "kind": "damage",
+                  "base": 30,
+                  "profile": "flat",
+                  "type": "physical",
+                  "provisional": true
+                }
+              },
               "name": "Sabotage",
               "ap_cost": 2,
               "uses": "at_will",
-              "text": "Costs 2 AP. Disable an enemy machine, turret or drone next to you for {=effects.1.duration_rounds} rounds, or make a barricade next to you stop blocking the way for {=effects.1.duration_rounds} rounds. Or rig your own tile: the next enemy to step on it takes {=effects.2.damage} damage, stops there, and makes a Body save against 12 + your strength with Ingenuity or is Pinned. You can have one rigged tile at a time.",
+              "text": "Costs {=ap_cost} AP. Disable an enemy machine, turret or drone next to you: it is Stunned for {=numbers.rounds} round, with no save and no Shadow spent. Or break a barricade next to you. Or rig your own tile: the next enemy to step on it takes {=effects.2.damage} damage, stops there, and makes a Body save against 12 + your strength with Ingenuity or is Pinned. You can have one rigged tile at a time.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -662,7 +701,7 @@
                 },
                 {
                   "op": "disable_machine",
-                  "duration_rounds": 2,
+                  "duration_rounds": 1,
                   "targets": [
                     "machine",
                     "turret",
@@ -690,7 +729,21 @@
                 "perception"
               ],
               "status": "active",
-              "surface": "combat"
+              "surface": "combat",
+              "numbers": {
+                "rounds": 1
+              }
+            }
+          ]
+        },
+        "III": {
+          "threshold": 8,
+          "moves": [
+            {
+              "ref": "assassin.execution"
+            },
+            {
+              "ref": "gunslinger.called_shot"
             }
           ]
         }
@@ -2700,6 +2753,56 @@
         ],
         "status": "shelved",
         "future_home": "Hexer (Expression + Insight; batch 2)"
+      },
+      {
+        "id": "field_fix",
+        "amounts": {
+          "repair": {
+            "kind": "heal",
+            "base": 20,
+            "profile": "flat",
+            "text": "a repair, not a heal: no healing multipliers",
+            "provisional": true
+          }
+        },
+        "name": "Field Fix",
+        "ap_cost": 2,
+        "uses": "at_will",
+        "text": "Costs {=ap_cost} AP. Do one of three things for an ally next to you: clear their jammed weapon, restore some of their weapon's durability, or repair a robot, drone, turret or machine for {=effects.1.repair} HP. The repair also brings a Downed machine back up.",
+        "effects": [
+          {
+            "op": "grant_action",
+            "action": "field_fix",
+            "ap": 2,
+            "uses": "at_will",
+            "range": 1,
+            "target": "ally_adjacent"
+          },
+          {
+            "op": "field_repair",
+            "choose": [
+              "clear_jam",
+              "restore_durability",
+              "repair_machine"
+            ],
+            "repair": 20
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "infiltrator",
+        "new": true,
+        "fantasy_tags": [
+          "mechanic",
+          "repair",
+          "support"
+        ],
+        "attributes": [
+          "perception"
+        ],
+        "status": "shelved",
+        "surface": "combat",
+        "future_home": "Rigger (Classes 3.0 step 8; figments-spec.md 4): it left the Operative in rules 1.32, its key stays"
       }
     ],
     "revision_2_classes": [
@@ -3170,7 +3273,7 @@
           "name": "Called Shot",
           "ap_cost": 3,
           "uses": "at_will",
-          "text": "Costs {=ap_cost} AP. Needs a gun or a bow. Name the head, an arm or a leg and shoot at −2 to hit. A hit causes that injury without needing a critical hit: head, Dazed; arm, −2 to attacks with that arm; leg, half Movement. A target with Injury resistance can still resist it.",
+          "text": "Costs {=ap_cost} AP. With any weapon (a shot, a throw, or a strike in reach), name the head, an arm or a leg and attack at {=effects.0.value} to hit, or with no penalty while the target can't see you. A hit causes that injury without needing a critical hit: head, Dazed; arm, −2 to attacks with that arm; leg, half Movement. A target with Injury resistance can still resist it.",
           "effects": [
             {
               "op": "attack_mod",
@@ -3196,8 +3299,7 @@
           "attributes": [
             "agility"
           ],
-          "status": "shelved",
-          "future_home": "Operative III (Classes 3.0 step 4; rev4-moves-and-rename.md section 2): it left the Skirmisher's rank III in rules 1.30, its key stays"
+          "status": "active"
         }
       ],
       "shelved": true,

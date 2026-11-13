@@ -807,7 +807,13 @@ export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P
 /** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */
 export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 0.5 * P(c, 'dexterity')));
 /** Ambush multiplier: 1.5 + 0.05 × Ingenuity. */
-export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + ((SKILL.ingenuity as any).per_point?.ambush_per_point ?? 0.05) * P(c, 'ingenuity')); // the card's number (skills.json Ingenuity per_point)
+/** Shadow's numbers (rules 1.32; data/rules.json shadow, provisional): the meter's cap by Ingenuity, the Operative's add
+ * and start, the Break's term. */
+export const SHADOW_RULES: { cap_by_points: Record<string, number>; operative_cap_add: number; operative_start: number; ambush_bonus: number; per_point: number; marked_bonus: number; door_gains_per_turn: number } = (RULES as any).shadow;
+/** The Ambush multiplier: a flat 1 + the ambush bonus (×1.5; rules 1.32: Ingenuity's slope went into Shadow's Break). */
+export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1 + SHADOW_RULES.ambush_bonus);
+/** Shadow's cap for an Ingenuity (rules 1.32): the highest rung reached of rules.json shadow.cap_by_points (0 below the first). */
+export const shadowCap = (points: number): number => Object.entries(SHADOW_RULES.cap_by_points).reduce((n, [at, v]) => (points >= +at ? Math.max(n, v) : n), 0);
 /** Blessing power: 1 + 0.1 × Faith. */
 export const blessingPower = (c: Character) => fx(c, 'blessing_power', statOf('blessing', c));
 /** The Hymn cooldown's numbers (rules 1.22; patrons.json prayer.hymn.cooldown_rule; PROVISIONAL). */
@@ -1161,6 +1167,8 @@ const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
   charges: () => ({ id: 'charges', max: 3, persist: false }),
+  // Shadow (rules 1.32): a class that brings it (the Operative) holds operative_cap_add more than the door gives
+  shadow: (c) => ({ id: 'shadow', max: shadowCap(P(c, 'ingenuity')) + SHADOW_RULES.operative_cap_add, persist: false }),
 };
 /** Which resources a class brings. Base classes: their classes.json `resources` (Revision 3: the resources follow the
  * moves; Heat, MP, Strain and Devotion are shared rules, so only the ones in RES_RULES count here). Advanced classes
@@ -1177,6 +1185,10 @@ export function classResources(c: Character): ClassResource[] {
   // (the larger of the two is the pool).
   const pool = guardPool(c);
   if (pool > 0) { const own = out.find((r) => r.id === 'guard'); if (own) own.max = Math.max(own.max, pool); else out.push({ id: 'guard', max: pool, persist: false }); }
+  // Rules 1.32, Perception's door: anyone with Ingenuity has a Shadow meter, built the way Guard is (a class that brings
+  // Shadow, the Operative, keeps its own larger one).
+  const sh = shadowCap(P(c, 'ingenuity'));
+  if (sh > 0 && !out.some((r) => r.id === 'shadow')) out.push({ id: 'shadow', max: sh, persist: false });
   return out;
 }
 /** Durability's Guard (rules 1.13; numbers in techniques.json rules.guard, provisional): the pool is the Durability
