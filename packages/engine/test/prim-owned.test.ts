@@ -15,7 +15,7 @@ import { coverOf, unitSees } from '../src/combat';
 import { OPS } from '../src/effects/triggers';
 import { A, W, pcs, foes, turn } from './golden/harness';
 import { opsFight } from './golden/itemops';
-import { fightWith } from './helpers/perkfight';
+import { storyWith } from './helpers/perkfight';
 import ENEMIES from '../../../data/enemies.json';
 import RULES from '../../../data/rules.json';
 
@@ -52,9 +52,11 @@ describe('P9: owned units', () => {
     W(g, () => { u.ap = 4; al.ap = 0; expect(whyNot(cb, al, 2)).toMatch(/Needs/); expect(whyNot(cb, al, 2, { payer: u })).toBeNull(); pay(cb, al, 2, { payer: u }); expect(u.ap).toBe(2); expect(al.ap).toBe(0); });
   });
   it('the companions: a drone is tied to its owner when the fight starts; its turn comes right after its owner\'s', () => {
-    const f = fightWith([{ edit: (c: any) => { c.companions = [{ id: 'd1', kind: 'drone', name: 'Drone' }]; } } as any], [{}]);
-    const cb = f.g.combat, d = cb.units.find((x: any) => x.companion === 'drone');
-    if (!d) return; // (the helper's sheet carries no companions: covered by old-save's companion fixture)
+    const s = storyWith([{ name: 'Handler' }], 'OWNED2');
+    s.g.characters[Object.keys(s.g.characters)[0]].companions = [{ id: 'd1', kind: 'drone', name: 'Kestrel' }];
+    s.act({ type: 'narrator/turn', turn: { narration: 'Contact.', combat: { name: 'Drone', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    const cb = s.g.combat!, d = cb.units.find((x: any) => x.companion === 'drone')!;
     const o = ownerOf(cb, d)!; expect(o.charId).toBe(d.ctrl); expect(tiedTo(cb, o, d, OWNED_TIE, 'to')).toBe(true);
+    expect(d.owned).toEqual({ turn: 'own' }); expect(cb.order.indexOf(d.id)).toBe(cb.order.indexOf(o.id) + 1);
   });
 });
