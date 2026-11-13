@@ -331,9 +331,9 @@ function inHand<T>(t: Tech, fn: () => T): T {
   }
   const ow = WEAPON[u.offWeapon], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, heat: u.heat };
   const pts = (t.c?.skills as any)?.[weaponPhys(ow.id).hits_with];
-  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = (u as any).offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
+  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = (u as any).offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
   if (typeof pts === 'number') u.attack = mod(pts);
-  try { return fn(); } finally { if (!t.preview) { u.offAmmo = u.ammo; setOffJam(u, u.jammed); } const heat = u.heat; Object.assign(u, keep); if (!t.preview) u.heat = heat; }
+  try { return fn(); } finally { if (!t.preview) { u.offAmmo = u.ammo; setOffJam(u, u.jammed); } const heat = u.heat; Object.assign(u, keep); delete u.swapMain; if (!t.preview) u.heat = heat; }
 }
 /** The rounds a technique uses (the ranged lane: Load Special's chambered round, sets.ts; the quiver's arrows, quiver.ts).
  * pick: the ammo type this strike fires (null type: standard), or null to leave it alone. It runs in previews too,
@@ -377,8 +377,8 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         const n = t.preview && fires ? st.rolls || 0 : 0, keep = { ammo: u.ammo, heat: u.heat, shots: u.shotsThisTurn, jammed: u.jammed };
         if (n) {
           if (t.w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - n); if (t.w.heat_limit && !u.infiniteAmmo) u.heat += n; u.shotsThisTurn += n;
-          // the earlier rolls reach the Heat limit: the gun jams and the later ones are never fired (the main hand: an off-hand gun's jam isn't kept)
-          if (t.hand !== 'off' && t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
+          // the earlier rolls reach the Heat limit: the gun jams and the later ones are never fired (in the off hand u.jammed is that gun's jam)
+          if (t.w.heat_limit && !u.infiniteAmmo && canJam(t.w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, t.w)) u.jammed = true;
         }
         let pv: ReturnType<typeof previewAttack>;
         try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil, ambush: !!o.ambush }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
@@ -897,8 +897,9 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   }
   if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) {
     u.heat += 1;
-    // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does (the main hand's gun)
-    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; say(cb, u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
+    // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does: the gun that fired (Leon's ruling, 13 Nov 2026)
+    const off = t.hand === 'off' && !!u.offWeapon;
+    if (t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !(off ? u.offJammed : u.jammed) && u.heat >= heatLimit(u, t.w)) { if (off) setOffJam(u, true); else u.jammed = true; say(cb, u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
   } // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
   for (const n of t.pv.notes) say(cb, '  ' + n);
   const st = scratch(t);

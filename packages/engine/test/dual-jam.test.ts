@@ -4,10 +4,13 @@
 // every jammed gun you hold, for the main hand's price once, and resets the Heat they pool. The retired off-hand row's
 // id ('clear-off') still resolves to it, for saved turn-card picks. Shoot an object ("Attack an object") has an
 // off-hand row of its own: its rounds, its jam, its range and damage.
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { actionsFor, sendDescriptor } from '../src';
 import { fightWith } from './helpers/perkfight';
+import { WEAPON, heatLimit } from '../src';
+import { physFight, rig } from './helpers/physfight';
+import { offHand, calm } from './helpers/physfight-ranged';
 
 const twoGuns = () => {
   const f = fightWith([{ archetype: 'deadeye', weapon: 'service_pistol' }], [{ at: 'F6' }]); let u = f.turn(f.pc);
@@ -102,5 +105,46 @@ describe('two guns: Attack an object with the off hand', () => {
     f.unit(u.id).offAmmo = 5; f.unit(u.id).offJammed = true;
     expect(() => f.act(sendDescriptor(f.g, u.id, 'cover-off', { tile: at }, 'host')!)).toThrow(/jammed/);
     expect(f.unit(u.id).offAmmo).toBe(5); expect(f.unit(u.id).ammo).toBe(7);
+  });
+});
+
+// Leon's ruling, 13 Nov 2026 (Hands 5d): Heat is one value both guns share, but a Heat jam lands on the gun that fired.
+// Warning Shot is a Press with no attack roll: its round's Heat (looseRound) and the Press's own +1 both jam.
+describe('two guns: a Heat jam lands on the gun that fired', () => {
+  const OFF = 'decrkm_autopistol';
+  const hot = (hand: 'main' | 'off' | null) => {
+    const f = physFight([{ weapon: 'service_pistol', known: ['warning_shot', 'aimed_shot'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'elite' }]);
+    f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); calm(f); if (hand) offHand(f, OFF); f.turn(f.pc);
+    const u = f.unit(f.pc.id); u.heat = heatLimit(u, WEAPON[hand === 'off' ? OFF : 'service_pistol']) - 1;
+    return f;
+  };
+  beforeEach(() => rig(null));
+
+  it('an off-hand technique that overheats jams the off-hand gun; the main gun still fires', () => {
+    const f = hot('off');
+    expect(f.tech('warning_shot', { hand: 'off', targetId: f.foe.id })).toBeNull();
+    const u = f.unit(f.pc.id);
+    expect(u.offJammed).toBe(true); expect(u.jammed).toBeFalsy();
+    expect(f.pv('aimed_shot', { hand: 'main', targetId: f.foe.id }).why || '').not.toMatch(/Jammed/);
+  });
+
+  it('an off-hand shot with a roll that overheats jams the off-hand gun', () => {
+    const f = hot('off'); rig({ hit: false, die: 5 });
+    expect(f.tech('aimed_shot', { hand: 'off', targetId: f.foe.id })).toBeNull();
+    const u = f.unit(f.pc.id);
+    expect(u.offJammed).toBe(true); expect(u.jammed).toBeFalsy();
+  });
+
+  it('a main-hand technique that overheats jams the main gun, not the off-hand one', () => {
+    const f = hot('main');
+    expect(f.tech('warning_shot', { hand: 'main', targetId: f.foe.id })).toBeNull();
+    const u = f.unit(f.pc.id);
+    expect(u.jammed).toBe(true); expect(u.offJammed).toBeFalsy();
+  });
+
+  it('one weapon: unchanged, the gun jams', () => {
+    const f = hot(null);
+    expect(f.tech('warning_shot', { targetId: f.foe.id })).toBeNull();
+    expect(f.unit(f.pc.id).jammed).toBe(true); expect(f.unit(f.pc.id).offJammed).toBeFalsy();
   });
 });
