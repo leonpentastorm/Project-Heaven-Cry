@@ -7,6 +7,7 @@ import './helpers/yard16';
 import { fightWith, withGame } from './helpers/perkfight';
 import { actionsFor, bondView, reactionView, setDevotionXp, devotionThreshold } from '../src';
 import { tie, tieCap } from '../src/kit';
+import { UNFELT, previewPerkAction } from '../src/effects/actions';
 import tendingJ from '../../../data/tending.json';
 import shadowJ from '../../../data/shadow.json';
 
@@ -100,5 +101,21 @@ describe('step 10: the reaction pips (reactionView)', () => {
     const b = setup({ classId: 'marksman', attrs: { agility: 8 }, level: 12 });
     const v2 = withGame(b.f.g, () => reactionView(b.f.cb, b.me(), b.c()));
     expect(v2.max).toBe(2);
+  });
+});
+
+describe('step 10: Inspire\'s feeling picker (bonds-spec.md section 9)', () => {
+  it('every feeling is offered; the unfelt ones greyed with why; the felt ones first', () => {
+    const s = setup({ classId: 'bard', skills: { empathy: 8 }, attrs: { insight: 8 }, level: 8 }, { attuner: true });
+    const c = s.c(); c.feelings = ['joy']; const mu = s.me(); mu.mg = { ...(mu.mg || {}), attuner: true, mp: 100, mpMax: 100 }; // MP in the Attuner (the fight began before it was handed over)
+    const ins = s.list().find((d) => d.id.includes('bard.inspire'));
+    const opts = (ins.picks.find((p) => p.options)?.options || []) as any[];
+    expect(opts.length).toBeGreaterThan(1);
+    expect(opts[0].id).toBe('joy'); expect(opts[0].why).toBeUndefined();
+    expect(opts.slice(1).every((o) => o.why === UNFELT)).toBe(true);
+    // and the engine refuses an unfelt one (a greyed pick), whatever a client sends
+    const mate = s.f.pcs[1];
+    const r = withGame(s.f.g, () => previewPerkAction({ u: s.me(), c, cb: s.f.cb, g: s.f.g }, 'class:bard.inspire', { actionId: 'inspire', targetId: mate.id, choice: opts[1].id }, 'combat'));
+    expect(r.ok).toBe(false); expect(r.why).toBe(UNFELT);
   });
 });

@@ -233,7 +233,7 @@ export interface PerkActionEntry {
   sub?: string;
   tier: string;
   /** What the action's choice takes (chips in the client), how many at once, and the prompt for a pick or typed detail. */
-  options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
+  options?: { id: string; label: string; off?: string }[]; pickMulti?: number; pickLabel?: string;
   /** The units it may go at, worked out by the engine (a door verb's reach): the pick list. */
   choices?: string[];
 }
@@ -293,14 +293,17 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
     ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}) };
 }
-/** The choices an action's pick offers this holder (ids are what args.choice takes). */
-function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
+/** Why a feeling can't be given yet (rules 1.33: only a felt feeling is given). */
+export const UNFELT = 'Not felt yet: a feeling is yours to give once it has happened to you.';
+/** The choices an action's pick offers this holder (ids are what args.choice takes; `off`: shown greyed, with why). */
+function pickOptions(h: Holder, d: ActionDef): { id: string; label: string; off?: string }[] {
   const p = d.pick, c = h.c;
   if (Array.isArray(p)) return p.map((x) => ({ id: x, label: human(x) }));
   if (p === 'words') { const w = h.u?.mg?.words || [...new Set([...(c?.sigils || [])])]; return w.map((x: string) => ({ id: x, label: x.toUpperCase() })); }
   if (p === 'designs') return (c?.outbursts || []).map((x) => ({ id: x.id, label: x.name }));
   if (p === 'gamma') return SKILLS.filter((s: any) => s.slot === 'gamma').map((s) => ({ id: s.id, label: s.name }));
-  if (p === 'felt') return ((c || charOfUnit(h.u))?.feelings || []).filter((x: string) => FEEL_NAME[x]).map((x: string) => ({ id: x, label: FEEL_NAME[x] })); // rules 1.33: Inspire's felt feelings
+  // rules 1.33: Inspire's feelings: every feeling, the unfelt ones greyed with why (Classes 3.0 step 10: the picker)
+  if (p === 'felt') { const felt: string[] = (c || charOfUnit(h.u))?.feelings || []; return [...felt.filter((x) => FEEL_NAME[x]), ...Object.keys(FEEL_NAME).filter((x) => !felt.includes(x))].map((x: string) => ({ id: x, label: FEEL_NAME[x], ...(felt.includes(x) ? {} : { off: UNFELT }) })); }
   if (p === 'squad') { const g = h.g ?? boundGame(); return (Object.values(g?.characters || {}) as Character[]).filter((x) => x.id !== c?.id && !x.dead).map((x) => ({ id: x.id, label: x.name })); }
   return [];
 }
@@ -329,6 +332,8 @@ export function previewPerkAction(x: Who, id: string, args: ActionArgs & { actio
   if (!e) return { ok: false, why: d.scope.includes(scope) ? 'Not now.' : 'Not here.', ap: 0, lines: [] };
   const base: ActionPreview = { ok: !e.why, why: e.why || undefined, ap: e.ap, lines: [] };
   if (base.ok && (d.target === 'unit' || d.target === 'enemy' || d.target === 'ally') && !args.targetId && !d.arm) { base.ok = false; base.why = 'Pick a target.'; }
+  // a pick the list greys (an unfelt feeling: pickOptions' `off`) is refused with its why
+  if (base.ok && args.choice != null && e.options) { const o = e.options.find((x) => x.id === String(args.choice)); if (o?.off) { base.ok = false; base.why = o.off; } }
   if (base.ok && args.targetId && h.cb) {
     const t = h.cb.units.find((u) => u.id === args.targetId);
     if (!t || t.dead) { base.ok = false; base.why = 'Pick a living target.'; }

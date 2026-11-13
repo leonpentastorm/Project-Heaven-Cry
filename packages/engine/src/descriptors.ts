@@ -586,7 +586,7 @@ const PERKS: ActionSystem = {
       if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: e.choices ? seenOf(x, e.choices) : allyIds(x, true) });
       else if (['unit', 'enemy', 'npc'].includes(e.target as string)) picks.push({ key: 'targetId', kind: e.target === 'enemy' ? 'enemy' : 'unit', prompt: 'Click a target.', choices: e.choices ? seenOf(x, e.choices) : others(x) });
       else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' });
-      if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
+      if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label, ...(o.off ? { why: o.off } : {}) })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules
       return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.sub ? { sub: e.sub } : {}), ...(e.arm ? { available: true } : {}) });
     });
