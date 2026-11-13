@@ -85,7 +85,7 @@ the gun's.
 
 | Rank | Move | Cost | What it does | Data |
 | --- | --- | --- | --- | --- |
-| I | Fire Discipline (changed: weapon-neutral) | 0 | Aimed attacks add no Heat and have +1 to hit (+3 in all); once a turn, your first attack costs 1 AP less, at least 1 (a Burst 2, a shot or a light strike 1, a heavy strike 2) | `move_pool` `fire_discipline`: `heat_mod` kept; `cost_mod` on `attack` replaces `action_cost burst`; `roll_mod` `if: {mode: [aimed]}` replaces `context: aimed_shot_with_bow` |
+| I | Fire Discipline (changed: weapon-neutral; **the lead's ruling, 13 Nov 2026**, after the step's measurement) | 0 | Aimed attacks have +1 to hit, and with a weapon that has Heat they add none; once a turn, on your own turn, a weapon technique that costs 3 AP or more costs 1 AP less (a Burst 3 → 2, a Mag Dump, a dear blow: any weapon family). The free techniques everyone has (a shot, an Aimed shot, a blow: techniques.json `free`) are never cheaper. *(Was, as first specified: "your first attack each turn costs 1 AP less"; measured at 173% of a rifle-turn against 145, and its saved AP bought a Faith dabbler a Whisper every turn: replaced.)* | `move_pool` `fire_discipline`: `heat_mod` kept; `cost_mod` on `attack` `if: {own_turn, free_tech: false, tech_ap_at_least: 3}` (peek) and `use` on `attack_roll` with the same `if` replace `action_cost burst`; `roll_mod` `if: {mode: [aimed]}` replaces `context: aimed_shot_with_bow` |
 | I | Speed Loader (changed: weapon-neutral) | 0 | your first main-hand reload, draw, swap or pick-up each turn −1 AP, min 1 | `cost_mod`, `when: cost`, `if: {action: [reload, pickup], hand: [main]}`, and `cost_mod` `when: swap`, one `limit per_turn 1` by `key` |
 | II | Duck and Roll (kept) | a reaction | a ranged attack at you: step 1 tile before it is rolled; out of sight, no attack; into cover, −2 to hit | as built |
 | II | Special Ammo (changed: weapon-neutral) | your reload's AP (1 AP for a weapon that never reloads), per rest | one load each of AP (×0.8, ignores armour), hollow-point (×1.3, armour doubled), incendiary (×0.9, Burning): a magazine for a gun, a quiver of 12 for a bow, a load that lasts 12 attacks or the fight for a blade, a fist or a thrown blade; never a consumable (a grenade is its own payload) | `numbers.load_attacks` 12; the shared `rules.json ammo_types` |
@@ -108,7 +108,7 @@ shape only; no rule, primitive or number here may depend on it** (Leon, 13 Nov: 
 | Rule 8 | `rules.json forced_movement.*.reactions` |
 | Killzone's two | `spend: 2` on the held shot, passed to `react()` where the Watch fires (`fireWatch`) |
 | Speed Loader | `cost_mod` on `cost`, `if: {action: [reload, pickup], hand: [main]}`, and `cost_mod` on `swap` (the trigger takes it: `effects/triggers.ts` `cost_mod`), sharing one `limit per_turn` by `key` |
-| Fire Discipline | `heat_mod` (kept); `cost_mod` on `attack`, `value: -1`, `min: 1`, `limit: {per: per_turn, n: 1}`; `roll_mod` on `attack`, `if: {mode: [aimed]}` (a technique, not a family). The handler's `mode === 'burst'` and `/bow/` reads (`classes/i.ts` 160-161) go |
+| Fire Discipline | `heat_mod` (kept); `cost_mod` on `attack`, `value: -1`, `min: 1`, `if: {own_turn: true, free_tech: false, tech_ap_at_least: 3}`, `limit: {per: per_turn, n: 1, key: dear, peek: true}` and `use` on `attack_roll` with the same `if` and key (the lead's ruling: the two predicates are new closed-list rows, `free_tech` reads techniques.json `free`, `tech_ap_at_least` the technique's own price on the attack's events, `ctx.techAp`); `roll_mod` on `attack`, `if: {mode: [aimed]}` (a technique, not a family). The handler's `mode === 'burst'` and `/bow/` reads (`classes/i.ts` 160-161) go |
 | Special Ammo, Killzone (any weapon) | the existing handlers (`classes/i.ts` `marksman.special_ammo`, `marksman.killzone`) lose their family refusals (`ammoOk`'s `isMelee`, `thrown`; Killzone's `isMelee`); a payload on a weapon with no magazine counts down per attack. No new handler |
 | Run and Gun's free move | `cost_mod` `set: 0` on `cost`, `if: {action: [move], flag: "fired"}`, `limit per_turn 1`; the flag from `mark` on trigger `attack_roll` with `if: {own_turn: true}`; cleared by `mark clear` on `turn_end` |
 | Run and Gun's +1 Pressure | op `resource` on `hit`, `if: {flag: "ran"}`, then `mark clear`; the `actions.json resources.pressure` row (`on: target`, setter `addPressureTo`: batch row) |
@@ -147,8 +147,8 @@ dial** stays defined and unused: `rules.json reactions.second_hit` (new, 0), the
 attack; moved only if the measured Skirmisher passes 145 + 12%.
 
 **Weapon-neutral (13 Nov):** Fire Discipline's +1 on Aimed is new for guns (about a third of a gun's shots: about
-+1.5%, inside the −7%); the 1 AP a turn is the Burst's old saving for a gun, and new for a light blade or a thrown
-blade (a strike in two turns: that sheet sits on the melee line, 165, not the gun's). Special Ammo's loads on a blade
++1.5%, inside the −7%); the 1 AP a turn is the Burst's old saving for a gun, and for any family's technique of 3 AP or
+more (the lead's ruling; a plain 2-AP attack and the free techniques are never cheaper). Special Ammo's loads on a blade
 and a melee Killzone (fewer triggers than a line of fire) are measured with a light-blade sheet in step 5; nothing
 moves for a gun.
 

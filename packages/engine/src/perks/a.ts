@@ -1,4 +1,4 @@
-// Lane A: Body, melee, damage taken. Perks: Bulwark, Shrug It Off, Used to the Pain, Scar Tissue, Iron Stomach,
+// Lane A: Body, melee, damage taken. Perks: Stonewall, Shrug It Off, Used to the Pain, Scar Tissue, Iron Stomach,
 // Grapple, Breaching Strike, Earthbreaker, Last Wall, Walking Wounded, Nothing Left to Fear, Bite the Bullet, Siege
 // Engine. Traits: Pain Eater, Factory Made, Glass Runner, Right of Way, Heavyworlder, Crawler-Blooded, Old Timer, The
 // Brightest Light, Squad Anchor, Augmented, Southern Fist, Raised by Orks.
@@ -46,10 +46,10 @@ const baseMove = (c: Character) => 1 + 0.5 * ((c.attrs.agility || 1) - 1) + (ARM
 
 // ======================================================================================================== PERKS
 
-// ---------- Bulwark (Durability α) ----------
+// ---------- Stonewall (Durability α; `bulwark`, the perk named Bulwark until rules 1.30) ----------
 // I: an ally on the tile directly behind you (the ray from the attacker through you, 1 tile on) takes 25% less from
 // ranged attacks. II: 50%, 2 tiles. Ranged: weapon shots, and Sigil/Soul/Elemental damage from someone not adjacent;
-// area blasts (explosions) are not (plan 6, Bulwark 3; PROVISIONAL). Two Bulwarks don't stack: the best one counts.
+// area blasts (explosions) are not (plan 6, Bulwark 3; PROVISIONAL). Two Stonewalls don't stack: the best one counts.
 export function behindLine(att: string, guard: string, ally: string, depth: number): boolean {
   const [ax, ay] = xy(att), [gx, gy] = xy(guard), n = Math.max(Math.abs(gx - ax), Math.abs(gy - ay)); if (!n) return false;
   for (let k = 1; k <= depth; k++) if (key(Math.round(gx + ((gx - ax) * k) / n), Math.round(gy + ((gy - ay) * k) / n)) === ally) return true;
@@ -67,16 +67,16 @@ register({
       const frac = tierII(h) ? 0.5 : 0.25, depth = tierII(h) ? 2 : 1, prev = ctx._bulwark || 0;
       if (frac <= prev || !behindLine(fireFrom(ctx.src), g.pos, t.pos, depth)) return;
       ctx.dmg = (ctx.dmg / (1 - prev)) * (1 - frac); ctx._bulwark = frac;
-      say(h.cb, g.name + ' stands in the line of fire (Bulwark): ' + t.name + ' takes ' + Math.round(frac * 100) + '% less.');
+      say(h.cb, g.name + ' stands in the line of fire (Stonewall): ' + t.name + ' takes ' + Math.round(frac * 100) + '% less.');
     },
     // The attack preview names it for the covered ally (the tooltip's damage chain): a multiplier shown only in the
-    // preview, since the real reduction comes after armour (damage_in). The best Bulwark replaces a weaker one.
+    // preview, since the real reduction comes after armour (damage_in). The best Stonewall replaces a weaker one.
     damage_out: (ctx, h) => {
       const g = h.u, t: Unit = ctx.tgt; if (!ctx.preview || !g || t === g || t.side !== g.side || !alive(g) || ctx.att?.side === t.side || !rangedSrc(ctx.src, t)) return;
       const frac = tierII(h) ? 0.5 : 0.25, depth = tierII(h) ? 2 : 1; if (!behindLine(ctx.att.pos, g.pos, t.pos, depth)) return;
-      const i = (ctx.mults as { v: number; label: string }[]).findIndex((m) => /^Bulwark/.test(m.label));
+      const i = (ctx.mults as { v: number; label: string }[]).findIndex((m) => /^Stonewall/.test(m.label));
       if (i >= 0 && ctx.mults[i].v <= 1 - frac) return;
-      const m = { v: 1 - frac, label: 'Bulwark (' + g.name + ')' }; if (i >= 0) ctx.mults[i] = m; else ctx.mults.push(m);
+      const m = { v: 1 - frac, label: 'Stonewall (' + g.name + ')' }; if (i >= 0) ctx.mults[i] = m; else ctx.mults.push(m);
     },
   },
   brief: () => null,

@@ -46,22 +46,27 @@ describe('class coverage', () => {
 
 // ======================================================================================================== MARKSMAN
 describe('Marksman', () => {
-  it('Fire Discipline: an aimed shot adds no Heat; one Burst a turn costs 2 AP, the next 3', () => {
+  it('Fire Discipline (rules 1.30, item 1813): an aimed shot adds no Heat and is never cheaper; once a turn a technique of 3 AP or more costs its cut less (a Burst 2), the next its own', () => {
     const f = fightWith([cls('marksman', 1, { weapon: 'hellraiser_service_rifle' })], [{}]);
     let u = f.turn(f.pc); line(f, [u, 2], [f.foe, 6]); sure(f.unit(u.id));
+    const cut = -itemInfo('class:marksman.fire_discipline')!.effects.find((e: any) => e.op === 'cost_mod').value;
     act(f, u, { type: 'combat/attack', targetId: f.foe.id, mode: 'aimed' });
-    expect(f.pc.heat).toBe(0); expect(f.pc.ap).toBe(3);
+    expect(f.pc.heat).toBe(0); expect(f.pc.ap).toBe(6 - 3); // the aimed shot (3 AP) is everyone's: never cut
     f.unit(u.id).ap = 6; f.unit(f.foe.id).hp = 999; f.unit(f.foe.id).maxHp = 999;
     act(f, u, { type: 'combat/attack', targetId: f.foe.id, mode: 'burst' });
-    expect(f.pc.ap).toBe(4); expect(logHas(f.cb, /Fire Discipline, the burst costs 2 AP/)).toBe(true);
+    expect(f.pc.ap).toBe(6 - (3 - cut)); // the turn's first dear technique: the Burst's 3, cut
+    f.unit(u.id).ap = 6;
     act(f, u, { type: 'combat/attack', targetId: f.foe.id, mode: 'burst' });
-    expect(f.pc.ap).toBe(1);
+    expect(f.pc.ap).toBe(3); // the second: its own 3
   });
-  it('Fire Discipline: with a bow an Aimed shot is +3 to hit (+1 on the aimed +2)', () => {
-    const f = fightWith([cls('marksman', 1, { weapon: 'recurve_bow' })], [{}]);
-    const u = f.turn(f.pc); line(f, [u, 2], [f.foe, 6]);
-    const pv = withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'aimed'));
-    expect(pv.terms!.some((t) => t.label === 'Fire Discipline (bow)' && t.v === 1)).toBe(true);
+  it('Fire Discipline (rules 1.30): Aimed attacks +1 to hit with any weapon (a bow, a rifle)', () => {
+    const plus = itemInfo('class:marksman.fire_discipline')!.effects.find((e: any) => e.op === 'roll_mod').value;
+    for (const weapon of ['recurve_bow', 'hellraiser_service_rifle']) {
+      const f = fightWith([cls('marksman', 1, { weapon })], [{}]);
+      const u = f.turn(f.pc); line(f, [u, 2], [f.foe, 6]);
+      const pv = withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'aimed'));
+      expect(pv.terms!.some((t) => t.label === 'Fire Discipline' && t.v === plus), weapon).toBe(true);
+    }
   });
   it('Special Ammo: load hollow-point as a reload (its AP), once a rest per type; in the story too', () => {
     const f = fightWith([cls('marksman', 2, { weapon: 'hellraiser_service_rifle' })], [{}]);
@@ -88,16 +93,14 @@ describe('Marksman', () => {
     // the quiver record is what the next fight arms from (review fix: c.loadedType alone came out as standard arrows)
     const c = s.g.characters[id]; expect(c.loaded).toBe(12); expect(c.loadedType).toBeNull(); expect((c as any).phys.quiver.recurve_bow).toEqual({ incendiary: 12 });
   });
-  it('Killzone: two held shots, one each at the first two enemies who move into the line, +2 to hit', () => {
+  it('Killzone (rules 1.30): with one reaction it spends that one and only the first held attack fires, at +2', () => {
     const f = fightWith([cls('marksman', 3, { weapon: 'hellraiser_service_rifle' })], [{}, {}]);
     const u = f.turn(f.pc); const [a, b] = f.foes; line(f, [u, 1], [a, 10], [b, 12]);
     act(f, u, { type: 'combat/perk', id: 'class:marksman.killzone' });
     expect(f.pc.overwatch).toBe('shot'); expect(f.pc.ap).toBe(2);
     const g = f.g, cb = f.cb, me = f.unit(u.id); sure(me); for (const x of [a, b]) f.unit(x.id).ap = 6;
     withGame(g, () => { moveUnit(cb, f.unit(a.id), '9,2', g.rng); moveUnit(cb, f.unit(a.id), '9,3', g.rng); moveUnit(cb, f.unit(b.id), '11,3', g.rng); });
-    const shots = cb.log.filter((l) => /fires from overwatch/.test(l)).length;
-    expect(shots).toBe(2);
-    expect(cb.log.filter((l) => new RegExp(me.name + ' fires at').test(l)).length).toBe(2);
+    expect(cb.log.filter((l) => /fires from overwatch/.test(l)).length).toBe(1); // a Revision 2 Marksman has no Reflex: one reaction
   });
 });
 
@@ -117,12 +120,12 @@ describe('Fighter', () => {
     act(f, u, { type: 'combat/attack', targetId: f.foe.id, mode: 'melee' });
     expect(f.pc.res!.momentum).toBe(3);
   });
-  it('Riposte: a melee miss against you, 1 Momentum: a free strike back (one reaction)', () => {
+  it('Riposte (rules 1.30, one Answer): a melee miss against you, 1 Momentum: a free strike back (one reaction)', () => {
     const f = fightWith([cls('fighter', 2, { weapon: 'combat_knife' })], [{ weapon: 'combat_knife' }]);
     line(f, [f.pc, 4], [f.foe, 5]); f.unit(f.pc.id).res!.momentum = 2;
     const foe = f.unit(f.foe.id); foe.attack = -60; f.cb.turn = f.cb.order.indexOf(foe.id);
     withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, f.unit(f.pc.id), 'melee', null, { noAp: true }));
-    expect(logHas(f.cb, /ripostes/)).toBe(true); expect(f.pc.res!.momentum).toBeLessThanOrEqual(2);
+    expect(logHas(f.cb, /answers with Riposte/)).toBe(true); expect(f.pc.res!.momentum).toBeLessThanOrEqual(2); // rules 1.30: the class gives the technique's Answer
     expect(f.cb.log.filter((l) => /strikes Foe 1/.test(l)).length).toBe(1);
   });
   it('Finisher: 3 AP, all Momentum on one strike (+20% each)', () => {

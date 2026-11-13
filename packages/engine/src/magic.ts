@@ -574,7 +574,7 @@ import { work } from './kit';
 let FX_ELEMENT: string | null = null;
 /** Where a Sigil spell's damage comes from (the missile's origin: a Line glyph, SEEK's far glyph, a chain's last target,
  * a turret's tile; SENSE and fields: the target's own tile), carried on the damage source as src.from so items that
- * read the line of fire (Bulwark) trace it from there, not from the caster (item 488). */
+ * read the line of fire (Stonewall) trace it from there, not from the caster (item 488). */
 let SPELL_FROM: string | null = null;
 export function withSpellFrom<T>(from: string | null, f: () => T): T { const was = SPELL_FROM; SPELL_FROM = from; try { return f(); } finally { SPELL_FROM = was; } }
 export function withElement<T>(el: string | null, f: () => T): T { const was = FX_ELEMENT; FX_ELEMENT = el; try { return f(); } finally { FX_ELEMENT = was; } }

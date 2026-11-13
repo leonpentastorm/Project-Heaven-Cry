@@ -452,7 +452,11 @@
         "perk marked reaction",
         "overwatch shot"
       ],
-      "ap_cost": 0
+      "ap_cost": 0,
+      "keep_for_held": 1,
+      "second_hit": 0,
+      "provisional": true,
+      "note": "rules 1.30 (items 1800 to 1803): per_round for everyone (stat reactions adds: Reflex, Before the Blink); keep_for_held: a unit with more reactions than this that holds a shot keeps this many for it from anything that fires by itself; second_hit: the dial, a to-hit step on a unit's second reaction attack in a round (defined, unused)"
     },
     "opportunity_attack": {
       "trigger": "enemy leaves your melee reach without Disengage",

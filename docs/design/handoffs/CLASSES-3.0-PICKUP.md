@@ -117,6 +117,37 @@ Step 1a (`docs/design/handoffs/classes-3.0-step-1a.md` section 3, rules 1.28 ite
 5. `always_seen` is read by the sight words only; the fog and the AI honour it with its first user.
 6. Riposte is not folded, and reactions that never opened a window still open none (step 3).
 
+Step 3 (`docs/design/handoffs/classes-3.0-step-3.md` sections 0 and 5, rules 1.30 items 1800 to 1813; built on
+`worktree-agent-a87f47094562526ef`, finished on `worktree-agent-a5b91e20e7254055a` with the main line merged in; not
+merged back):
+1. Reflex lives in a base class's new `gain` list (moves held from class gain, beside the six); the Bulwark's 1 Guard and
+   the Operative's Read can use it.
+2. The Breaker does not Riposte with no Momentum, even with a weapon that lends the technique; the class gives the
+   Answer with any melee weapon. An item can give an Answer (stat `technique:<id>`), not any other technique.
+3. Fire Discipline's "first attack" is the first attack roll of your own turn, a free one included; its Aimed +1 also
+   applies to a held aimed shot. **Measured: the Skirmisher all in is 173% against 145 (+19%; level 5 +30%) from the
+   new first-attack cut alone (the long rifle); `npm run check`'s balance-contract guard fails on it (176%), and the
+   Faith dabbler guard too (the saved AP buys a Whisper); the dial is the lead's to choose (not refitted).**
+   **Ruled by the lead (item 1813): once a turn a weapon technique of 3 AP or more costs 1 AP less; a plain attack never.
+   The finishing builder's reading: the free techniques (Shot, Aimed Shot, Cut) are never cut, so the Aimed Shot stays
+   3 AP; with it cut the gun measured 170 (outside). As built: 164 / 168 / 166 / 145, mean 161 (inside 145 ± 12%); both
+   guards pass.**
+4. Keep one for a held shot refuses everything but the held fire and a Call made as a reaction; on by default, no screen
+   switch until step 10.
+5. Run and Gun: a move over 2 tiles leaves it waiting; its Pressure ends with the turn.
+6. Special Ammo: a story load arms a no-magazine weapon for the next fight; flamers and launchers now take loads (only
+   a consumable is refused). Speed Loader at 1 AP saves nothing and spends the turn's use.
+7. Killzone's second attack in the next round spends that round's one reaction.
+8. A move an item makes free keeps the move bank, for every item (Glass Runner's golden line moved: a negative bank).
+9. Called Shot is `status: shelved` with a `future_home` until step 4.
+10. **The replay coverage guard failed "actions with a door open" (19, needs more than 20)**: after the ruling the door
+    line holds on its own (57) but "a player's unit Hidden" fell to 13; under the lead's leave to add (never remove), the
+    sight game's blade also goes to ground on its third turn (hiddenPc 33, doors 62).
+12. **The perk Bulwark is renamed Stonewall** (item 1812; Leon asked for a new name; Rampart was the lead's first choice,
+    but the RAISE Grand form is "Ramparts"): display name only; the validator refuses a perk named as a class.
+11. Reflex measured in whole fights: the second reaction is never used by the simulator's enemies (+0); unconfirmed:
+    to measure in step 11 (the step 3 hand-off says what the simulator needs).
+
 ## 7. State when this was last touched
 
 13 Nov 2026, later: **0.25.0 is live** (hover cards everywhere, one Clear jam for two guns, the live bugs, the hooks

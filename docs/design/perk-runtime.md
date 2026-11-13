@@ -166,7 +166,7 @@ Each item below now works in every tier, in a fight and out of one, with a test 
 - **Talks Broke Down:** `combat.fromTalk` (H3).
 - **Mirage:** area map 2 AP, engine Analysis rolls per token, ruling.
 - **Lab Coat II:** `scene.labImmune` blocks the agent for the scene.
-- **Bulwark:** preview multiplier in `damage_out` (preview only); tests for Sigil, Soul, Elemental, blasts, two guards,
+- **Stonewall** (was Bulwark): preview multiplier in `damage_out` (preview only); tests for Sigil, Soul, Elemental, blasts, two guards,
   an enemy's shot through `combat/end-turn`.
 - **Iron Stomach, Nothing Left to Fear:** tested through the story-to-fight carry and `combat/end-turn`.
 
@@ -330,7 +330,7 @@ Each lane's missing hooks, data deltas and UI notes as written. Most hooks and d
   raised_by_orks. Earthbreaker, Last Wall, Walking Wounded, Nothing Left to Fear and Bite the Bullet already have it.
 - **effect_ops.json `damage_reduction`.** The summary should read "a fraction (0–1) of damage taken; a flat amount
   with type flat".
-- **Bulwark.** `context` should become a machine form: `{ "op": "damage_reduction", "type": "ranged", "value": 0.25,
+- **Stonewall** (was Bulwark). `context` should become a machine form: `{ "op": "damage_reduction", "type": "ranged", "value": 0.25,
   "target": "ally", "area": "behind_self", "depth": 1 }` (depth 2 at Tier II).
 - **Breaching Strike.** Drop `ignore_cover`, or redefine it. *(Applied: dropped from both tiers and the text.)*
 - **Siege Engine.** `cost_mod` should become `action_cost` with `value: -1` for shove and break.

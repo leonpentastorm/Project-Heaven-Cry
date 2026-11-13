@@ -129,11 +129,9 @@ export const TECH_FX: Record<string, TechRow> = {
 
   // ----- class moves that are physical attacks (data/classes.json; the engine marks their events with `move`) -----
   'move:fighter.lunge': row([p('dashes', { len: 1.0 }), p('thrust', { len: 0.45, w: 0.08 })], [p('cross', { n: 1 }), p('ring', { r: 0.4 })], [p('whiff')]),
-  'move:fighter.riposte': row([p('guard', { span: 50 }), p('slash', { arc: 50, draw: 45 })], [p('cross', { n: 1, size: 0.24 })], [p('whiff')]),
   'move:fighter.finisher': row([p('chop', { h: 1.25, w: 0.18 })], [p('cross', { n: 2, size: 0.3 }), p('crack', { n: 2 })], [p('deflect')], [p('star', { n: 14 })]),
   'move:fighter.shove': { attack: [p('bash', { half: 0.36 })], hit: [p('chevrons', { n: 3 })], miss: [p('deflect', { side: -1 }), p('ring', { r: 0.4, color: '#A3AEC2' })], crit: [], on: 'shove' },
   'move:defender.anchor': { attack: [p('guard', { span: 160 }), p('ring', { at: 'a', r: 0.5 })], hit: [p('bracket', { r: 0.5, color: '#F65157' })], miss: [p('deflect')], crit: [], on: 'anchor' },
-  'move:gunslinger.called_shot': row([p('aim', { dash: '1 3' }), p('tracer')], [p('brand', { shape: 'target', up: 0, size: 0.18 }), p('cross', { n: 1, size: 0.14 })], [p('wide')]),
   'move:lumeri_templar.judgement': row([p('ring', { at: 'a', r: 0.5, color: VIRTUE }), p('chop', { color: VIRTUE })], [p('brand', { shape: 'cross', color: VIRTUE }), p('crack', { n: 2 })], [p('deflect')], [p('star', { n: 12, color: VIRTUE })]),
 };
 

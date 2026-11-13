@@ -23,7 +23,8 @@
 import { describe, it, expect } from 'vitest';
 import { appendFileSync, readFileSync } from 'node:fs';
 import { useTable } from './fit';
-import { fightRow, fightLine, pairFire, pairLine, yardFire, medicRow, medicLine, healerWeight, PAIRS, SQUADS, FIGHTS, TARGET, D_LEVELS, SOLDIER_TURN } from './defence-measure';
+import { fightRow, fightLine, pairFire, pairLine, yardFire, medicRow, medicLine, healerWeight, reflexRow, reflexLine, PAIRS, SQUADS, FIGHTS, TARGET, D_LEVELS, SOLDIER_TURN } from './defence-measure';
+import { yardOf } from './refit-measure';
 import { ENEMY, TECHNIQUE, enemyStats, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL, RULES } from '../../src';
 // Rules 1.27 (the heal re-fit): the kit rose with Healing given by the healer's ceiling (data) over the 125 these bands
 // were set on (×1.6); its bases did not move.
@@ -123,6 +124,8 @@ describe('the defence step, measured', () => {
         if (process.env.DEFENCE_BURST_FIGHTS) for (const f of list('DEFENCE_FIGHTS', 'standard,elite,boss')) for (const lv of levels) for (const map of list('DEFENCE_MAPS', 'open,cover')) say('[burst ' + trial + '] ' + fightLine(fightRow('sigil', f, lv, map as any, N)));
       } finally { num.enemy_same = was.same; ENEMY.soldier.damage = was.s; ENEMY.elite.damage = was.e; ENEMY.boss.damage = was.b; for (const t of ['soldier', 'elite']) if (ENEMY['sim_bag_' + t]) ENEMY['sim_bag_' + t].damage = ENEMY[t].damage; }
     }
+    // Reflex (rules 1.30): DEFENCE_PARTS=reflex DEFENCE_LEVELS=1,5,10,20 (the Skirmisher all in, the gun squad, a standard fight on cover)
+    if (PARTS.includes('reflex')) for (const lv of LV.length ? LV : [1, 5, 10, 20]) { const y = yardOf(lv, Math.max(N, 8)); for (const f of list('DEFENCE_FIGHTS', 'standard')) say('[reflex] ' + reflexLine(reflexRow(lv, process.env.DEFENCE_VARIANT || 'allin', N, y, { fight: f }))); }
     healerWeight(true);
     expect(true).toBe(true);
   }, 14400000);

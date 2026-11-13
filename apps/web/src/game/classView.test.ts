@@ -30,7 +30,8 @@ describe('classView', () => {
     const m = classMoves({}, c, 'marksman');
     expect(m.map((x) => x.earned)).toEqual([true, true, true, true, false, false]);
     expect(m[4].unlock).toBe('unlocks at Agility 8 and level 12');
-    expect(m.find((x) => x.id === 'called_shot')!.key).toBe('class:gunslinger.called_shot');
+    expect(m.find((x) => x.id === 'run_and_gun')!.key).toBe('class:marksman.run_and_gun'); // rules 1.30: Called Shot left rank III
+    expect(m.find((x) => x.id === 'killzone')!.key).toBe('class:marksman.killzone'); // a reused move keeps its old key
     m.forEach((x) => expect(['Engine runs it', 'Narrator rules it', 'Both']).toContain(x.badge));
     expect(classLabel(c)).toBe(CLASS.marksman.name + ' II');
   });

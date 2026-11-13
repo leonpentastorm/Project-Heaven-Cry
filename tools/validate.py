@@ -426,6 +426,13 @@ slots = data.get("rules", {}).get("equipment_slots", {})
 if slots and slots.get("armour_class_from") not in slots.get("slots", []):
     errors.append("rules.equipment_slots: armour_class_from is not a slot")
 
+# a perk may not share a class's display name (rules 1.30: the perk Bulwark became Stonewall when the Defender became
+# the Bulwark): a card, a log line or the preview's damage chain would name two different things the same
+_class_names = {c.get("name", "").lower() for c in base + adv if isinstance(c, dict) and c.get("name")}
+for _p in items("perks"):
+    if isinstance(_p, dict) and _p.get("name", "").lower() in _class_names:
+        errors.append(f"perk {_p.get('id')}: name {_p.get('name')!r} collides with a class name")
+
 # archetypes: creation presets (guidance only)
 arch = data.get("archetypes")
 if isinstance(arch, dict):
@@ -1659,6 +1666,14 @@ COND_ENGINE_STATS = {"defense", "move_mult", "vision", "ap", "damage_dealt_pct",
 # stat_mod stats and attack_mod contexts a row may carry that the loader does not read (another part of the engine does)
 COND_OTHER_STATS = {"can_act", "hp", "next_attack_mult", "random_target_pct", "untargetable"}
 COND_OTHER_HIT = {"liked_tag", "emplaced_weapon"}
+# Classes 3.0 P4 (rules 1.28): a row's stat_mod of a DECLARED stat (packages/engine/src/effects/stats.ts STATS, or a
+# family prefix with a suffix) answers statQuery for its bearer: Slipping's immune:opportunity_attack (rules 1.30).
+_STATS_TS = (pathlib.Path(__file__).resolve().parent.parent / "packages/engine/src/effects/stats.ts").read_text()
+_STATS_BODY = re.search(r"export const STATS = \{(.*?)\n\} as const", _STATS_TS, re.S).group(1)
+DECLARED_STATS = set(re.findall(r"(?:^|[\s,])([a-z_]+):\s*'", _STATS_BODY))
+DECLARED_FAMILIES = re.findall(r"'([a-z_]+[:_])':", re.search(r"export const STAT_FAMILIES = \{(.*?)\}", _STATS_TS, re.S).group(1))
+def declared_stat(sid):
+    return isinstance(sid, str) and (sid in DECLARED_STATS or any(sid.startswith(f) and len(sid) > len(f) for f in DECLARED_FAMILIES))
 def cond_reads(c):
     out = []
     for e in c.get("effects") or []:
@@ -1700,7 +1715,7 @@ for c in items("conditions"):
     if got != want: errors.append(f"{w}: the engine reads {want or 'no number'} from this row's effects; the row gives it {got or 'none'} (condtable.ts modsOf; tools/validate.py COND_READS)")
     for e in c.get("effects") or []:
         if not isinstance(e, dict): continue
-        if e.get("op") == "stat_mod" and e.get("stat") not in COND_ENGINE_STATS | COND_OTHER_STATS: errors.append(f"{w}: stat_mod stat '{e.get('stat')}' is not one the engine knows ({sorted(COND_ENGINE_STATS | COND_OTHER_STATS)})")
+        if e.get("op") == "stat_mod" and e.get("stat") not in COND_ENGINE_STATS | COND_OTHER_STATS and not declared_stat(e.get("stat")): errors.append(f"{w}: stat_mod stat '{e.get('stat')}' is not one the engine knows ({sorted(COND_ENGINE_STATS | COND_OTHER_STATS)})")
         if e.get("op") == "stat_mod" and e.get("stat") in COND_ENGINE_STATS and e.get("when"): errors.append(f"{w}: stat_mod {e.get('stat')} has a `when`, and the engine skips a condition's number with one")
         if e.get("op") == "attack_mod" and (e.get("context") or "own_attacks") not in COND_HIT | COND_OTHER_HIT: errors.append(f"{w}: attack_mod context '{e.get('context')}' is not one the engine knows ({sorted(COND_HIT | COND_OTHER_HIT)})")
         if e.get("op") == "damage_mult" and e.get("context") != "next_attack": errors.append(f"{w}: damage_mult is read only with context next_attack")
@@ -1867,6 +1882,28 @@ def _walk_react(o, w):
 for _n in ("perks", "traits"):
     for _x in items(_n): _walk_react(_x, f"{_n}:{_x.get('id')}")
 for _x in base + adv + pool: _walk_react(_x, f"classes:{_x.get('id')}")
+# rules 1.30 (reactions-spec.md section 10): more reactions only from the Skirmisher (its class gain) and items that say
+# so in their text; the suppressed row forbids attacking and moving reactions only (never protective ones).
+def _reaction_mods(o, w, text):
+    if isinstance(o, dict):
+        if o.get("op") == "stat_mod" and o.get("stat") == "reactions" and "reaction" not in (text or "").lower():
+            errors.append(f"{w}: gives reactions (stat_mod reactions) but its text never says so")
+        for k, v in o.items():
+            if k != "text": _reaction_mods(v, w, text)
+    elif isinstance(o, list):
+        for v in o: _reaction_mods(v, w, text)
+for _n in ("perks", "traits"):
+    for _x in items(_n): _reaction_mods(_x, f"{_n}:{_x.get('id')}", json.dumps(_x))
+for _b in base:
+    for _m in _b.get("gain") or []:
+        if _b.get("id") != "marksman" and any(e.get("stat") == "reactions" for e in _m.get("effects") or [] if isinstance(e, dict)):
+            errors.append(f"classes:{_b.get('id')}.{_m.get('id')}: only the Skirmisher's class gain gives a reaction (rules 1.30)")
+        _reaction_mods(_m, f"classes:{_b.get('id')}.{_m.get('id')}", _m.get("text"))
+for _c in items("conditions"):
+    if _c.get("id") == "suppressed":
+        _fb = [e for e in _c.get("effects") or [] if isinstance(e, dict) and e.get("op") == "forbid" and e.get("action") == "reaction"]
+        if not _fb or sorted(_fb[0].get("kinds") or []) != ["attack", "move"]:
+            errors.append("conditions:suppressed: its reaction `forbid` names kinds attack and move only (rules 1.28, 1.30)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

@@ -25,22 +25,21 @@ interface Allow { words?: string[]; modes?: string[]; context?: boolean; code?: 
 /** Door's own and incoming attacks (audit section 5): these stay. */
 const DOOR: Record<string, Allow> = {
   'class:fighter.lunge': { words: ['melee'], code: 2, why: 'Momentum is melee\'s door: Lunge strikes with the melee weapon or fists (reachOf, meleeAp); its hit builds Momentum only as a melee hit (isMelee)' },
-  'class:fighter.riposte': { words: ['melee'], code: 1, why: 'Momentum\'s door: a Riposte answers a melee miss (ctx.melee); folded into Answer by the reactions step' },
+  'class:fighter.riposte': { words: ['melee'], modes: ['riposte'], why: 'Momentum\'s door: a Riposte answers a melee miss; folded into the Answer (rules 1.30): its riders read the technique (mode riposte), the handler is gone' },
   'class:fighter.finisher': { words: ['melee'], code: 1, why: 'Momentum\'s door: the Finisher is a melee strike' },
   'class:defender.anchor': { words: ['melee'], why: 'every opportunity attack is a melee strike (base rule), not the class\'s choice' },
   'class:defender.brace': { words: ['weapon attack'], why: 'Interpose answers an enemy\'s weapon attack (the incoming attack)' },
+  // The Skirmisher's step (rules 1.30): neutral in rule; what stays is a door or a branch, never a lock.
+  'class:marksman.fire_discipline': { modes: ['aimed'], why: 'the lead\'s ruling (13 Nov 2026): Aimed is the technique\'s own mode (+1 to hit); the 3-AP discount is any family\'s; Heat (the gun\'s door) is read from the weapon\'s heat_limit, not its family' },
+  'class:marksman.special_ammo': { words: ['magazine', 'quiver'], code: 1, why: 'any weapon takes a load; the text says the form it takes (a magazine, a quiver, else a load of attacks); the one code read is the reload effect\'s art (fx cat)' },
+  'class:marksman.killzone': { code: 2, why: 'any weapon holds: a melee weapon holds strikes at its reach (a branch, not a refusal); an aimed hold needs a weapon that aims (the Aimed technique)' },
   'class:marksman.duck_and_roll': { words: ['ranged'], code: 1, why: 'it answers an enemy\'s ranged attack at you (the incoming attack)' },
   'class:infiltrator.field_fix': { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' },
 };
 /** Locked today; fixed by another Classes 3.0 step. MUST shrink to empty before the patch ships. */
 const PENDING: Record<string, Allow> = {
-  // The Skirmisher's step (reactions-spec.md 5, audit 4.1)
-  'class:marksman.fire_discipline': { words: ['bow', 'burst'], context: true, code: 3, why: 'Skirmisher step: cost_mod on attack, roll_mod on aimed, the burst and /bow/ reads go' },
-  'class:marksman.speed_loader': { words: ['gun'], why: 'Skirmisher step: "your off hand"; reload, draw, swap or pick-up' },
-  'class:marksman.special_ammo': { words: ['magazine', 'quiver', 'rounds', 'arrows', 'bow', 'gun', 'shot', 'shots'], code: 4, why: 'Skirmisher step: any weapon, a load of 12 attacks; ammoOk refuses only consumables' },
-  'class:marksman.killzone': { words: ['shots', 'shot', 'ranged'], code: 1, why: 'Skirmisher step: "Hold two attacks"; the isMelee refusal goes' },
-  // Moves to the Operative (Shadow step) and becomes weapon-neutral there
-  'class:gunslinger.called_shot': { words: ['gun', 'bow', 'round', 'shot'], code: 3, why: 'Shadow step: a shot, a throw or a strike; the isRanged refusal goes' },
+  // Called Shot (`gunslinger.called_shot`) left the Skirmisher (rules 1.30) and is shelved until the Shadow step puts it
+  // in the Operative: that step adds it back here if it is still locked (audit: a shot, a throw or a strike).
   'class:assassin.toxin': { words: ['gun', 'blade', 'dart', 'arrow', 'arrows', 'blades', 'darts', 'melee', 'thrown'], code: 3, why: 'Shadow step: coat any weapon; its family reads include the helper coatable (i.ts), which goes with the handler (P4)' },
   // The Chaplain's step (chaplain-spec.md, audit 4.7)
   'class:lumeri_templar.judgement': { words: ['melee', 'scattergun', 'shotgun'], code: 5, why: 'Chaplain step: Verdict, one attack with any weapon; the shotgun gate goes' },

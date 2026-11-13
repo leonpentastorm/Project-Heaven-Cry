@@ -21,7 +21,7 @@
   "items": [
     {
       "id": "bulwark",
-      "name": "Bulwark",
+      "name": "Stonewall",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
