@@ -25,12 +25,12 @@ presence that keeps watching after it first acts. Its only pool is Devotion and 
 | --- | --- | --- |
 | 1 | **The door is unchanged** (rules 1.6 to 1.22, 1.6.3): anyone with Faith 3 prays; one Whisper a turn (1 AP); a Hymn (3 AP) then the wait of rules 1.22 (9 − 0.75 × Faith − 0.25 × Virtue, at least 3; a vow fulfilled −1, never under 2); Devotion 0 to 10 and its XP; Witnessed at Faith 5 until the fight ends or an intervention; interventions once a fight, twice from Devotion 7, 20 + 4 × Devotion × Blessing power; the Miracle at Faith 7 and Devotion 10. Nothing in this spec changes what a non-Chaplain has. | engine |
 | 2 | **The wait is the same as everyone's** (Leon's ruling 8). The class has no Hymn cut and no extra Whisper. | engine |
-| 3 | **Ward** is a Whisper only the Chaplain can say (rank I). It **uses the turn's one Whisper**. 1 AP, an ally you can see (not yourself), no roll for the Faithful (an Atheist: the Whisper TN, 12). The ally gains a shield of 7 × Blessing power, through the prayer heal dial and the level (as Protection), for the rest of the fight. | engine |
-| 4 | **Wards held:** at most 2 allies carry a Ward of yours at once; a third Ward ends the oldest's remainder. A Ward on an ally who has one tops it up to the new value (never stacks with itself). A Ward **stacks on top** of any other shield (it is its own layer, spent first). | engine |
+| 3 | **Ward** is a Whisper only the Chaplain can say (rank I; Leon, 13 Nov: 7 × Blessing power, the turn's Whisper, two allies). It **uses the turn's one Whisper**. 1 AP, an ally you can see (not yourself), no roll for the Faithful (an Atheist: the Whisper TN, 12). The ally gains a shield of 7 × Blessing power, through the prayer heal dial and the level (as Protection), for the rest of the fight. | engine |
+| 4 | **Wards held:** at most 2 allies carry a Ward of yours at once; a third Ward ends the oldest's remainder. A Ward on an ally who has one tops it up to the new value (never stacks with itself). A Ward **stacks on top** of any other shield: it is its own layer (`ward`, P11 of `rev4-primitives.md`), spent first; every other shield (Protection, Tending's Shield, Brimming) is the base layer, where the larger stands. | engine |
 | 5 | **Sanctuary** is a Hymn only the Chaplain can say (rank III). 3 AP, starts the one Hymn wait (it is the Hymn of that wait: no patron Hymn until it ends). A tile you can see within 6: allies on its 3×3 (you too) take half damage until the start of your next turn. The zone prevents at most 11 × Blessing power × heal dial × level in all, then ends. Your own Strain burn is not halved (you have none: rule 8). A successful Sanctuary makes the Faithful Witnessed (it is a Hymn of their own patron's door). | engine |
-| 6 | **Smite** (rank I): once a turn, on your own turn, when your weapon attack hits a living enemy that is not Downed or surrendered, the patron also deals 20 × Blessing power Soul damage to it (no roll, armour does not lower it). It is not multiplied by the attack's technique, critical, Judgement or ammunition. If the hit kills, Smite is not spent and may ride a later hit that turn. Not on a reaction or an opportunity attack (rule 2.1.4 of Revision 4: a reaction is a plain attack). | engine |
+| 6 | **Smite** (rank I): once a turn, on your own turn, when your weapon attack hits a living enemy that is not Downed or surrendered, the patron also deals 20 × Blessing power Soul damage to it (no roll, armour does not lower it). It is not multiplied by the attack's technique, critical, Verdict or ammunition. If the hit kills, Smite is not spent and may ride a later hit that turn. Not on a reaction or an opportunity attack (rule 2.1.4 of Revision 4: a reaction is a plain attack). Leon, 13 Nov: Smite stays at Rebuke's 20. | engine |
 | 7 | **Smite is a prayer** for everything that counts prayers: its kill is a kill by prayer (the No Magic but Theirs vow, Witnessed's kill edge), its damage carries the patron's element tag (Soul; Old Overcast: lightning, so `storm`). It is **not** a Whisper and uses no prayer limit. For a patron whose taboo is `kill` (the Toll-Keeper, the Matchmaker), Smite never drops a target below 1 HP. An Atheist Chaplain's Smite rolls the Whisper TN (12) on each hit it would ride; a failed roll leaves it unspent. | engine |
-| 8 | **No MP and no Strain.** No class move costs MP, Strain, cores or ammo of its own; Judgement keeps its Devotion XP cost (it is the class's pool). | engine |
+| 8 | **No MP and no Strain.** No class move costs MP, Strain, cores or ammo of its own; Verdict keeps its Devotion XP cost (it is the class's pool). | engine |
 | 9 | **Judged:** an enemy hit by the Chaplain's weapon on its own turn carries the condition Judged (1 round, no save, the Chaplain's). It is how "where the weapon struck" is known. | engine |
 | 10 | **The patron at its side** (Faithful only): while the Chaplain is Witnessed its patron's figure stands on its tile as a **presence**: not a unit, never targeted, blocks nothing, sees nothing, moves with the Chaplain. It ends when Witnessed ends. | engine |
 | 11 | **The first intervention of a fight does not end Witnessed** for a Chaplain. The second (Devotion 7+) does. The intervention count is the door's (once, twice from Devotion 7). | engine |
@@ -52,7 +52,7 @@ stack. Saves: shields, `cb.zones`, conditions, all saved today. Fight end: all o
 | II | `lumeri_templar.under_the_eye` (kept) | Under the Eye | passive | while Witnessed, allies within 3 get +2 to hit | as built (hybrid: its story half) |
 | II | `lumeri_templar.blessed_shells` (kept) | Blessed Shells | 0 AP | load a landed Hymn into the weapon; the next hit releases it (a Smite may ride the same hit) | as built (hybrid) |
 | III | `guardian.sanctuary` (reworked) | **Sanctuary** | 3 AP, the Hymn and its wait | 3×3, allies take half damage until your next turn, at most 11 × BP × dial × level prevented | `amounts.sanctuary_cap` |
-| III | `lumeri_templar.judgement` (kept) | Judgement | 4 AP, 10 Devotion XP, once a fight | one melee or scattergun attack × (1 + Blessing power) | as built |
+| III | `lumeri_templar.judgement` (kept key) | **Verdict** *(Suggested; was Judgement)* | 4 AP, 10 Devotion XP, once a fight | one melee or scattergun attack × (1 + Blessing power) | as built; display name only |
 
 **Better** (Revision 4 section 2): no bigger meter (Devotion is standing: the class keeps Witnessed instead, rule 11);
 **one thing free:** Smite; **six moves:** above.
@@ -73,13 +73,13 @@ stack. Saves: shields, `cb.zones`, conditions, all saved today. Fight end: all o
 ## 4. The ladder
 
 The door's, unchanged (Faith 3 prays, 5 Witnessed, 7 the Miracle; each point −0.75 rounds of wait, +0.06 × 0.956 Blessing
-power). Conscience: +10% shields received (reaches Ward). Gear: any weapon carries Smite; Judgement as built.
+power). Conscience: +10% shields received (reaches Ward). Gear: any weapon carries Smite; Verdict as built. **Doors at 1 point:** the
+ruling binds the new doors; prayer opening at Faith 3 is built (rules 1.6) and is Leon's to change (section 11).
 
 ## 5. The class
 
-**Squared, the Saint, breaks:** "a Hymn makes you wait." Its first Hymn each fight starts no wait. **Bridges:** Adamantile
-Knight (Guard + Blessings): Guard that soaks a hit becomes a Ward on the nearest ally; Inquisitor (Shadow + Blessings): a
-Marked enemy counts as Judged, so the presence's widening reaches it unseen.
+**Squared and mixed classes** (Rev 4 4.9, the Saint): **a sketch of the shape only; no rule, primitive or number here
+may depend on it** (Leon, 13 Nov: the advanced classes may be shelved for a whole new system).
 
 ## 6. On what exists
 
@@ -89,31 +89,24 @@ Marked enemy counts as Judged, so the presence's widening reaches it unseen.
 | --- | --- |
 | Whisper limit, Hymn wait (rules 1, 2, 3, 5) | `faith.ts` `combatPray` → `prayed(...).take('per_turn', 1, WHISPER_KEY)` / `.cool(..., HYMN_KEY)`, i.e. `effects/uses.ts`; `hymnWait` |
 | Atheist rolls (rules 3, 7) | `previewPrayer` → `rollVs` (`rolls.ts`), `patrons.json prayer.atheist_tn` |
-| Ward's amount | an `amounts` block, `profile: "blessing_mend"`, `level: "mend"` (`effects/output.ts`; the same path as `prayerAmount('shield', …)`); the shield sink `grantShield` (`effects/damage.ts`) |
-| Smite (rule 6) | item op `deal` (`effects/triggers.ts`), `when: "hit"`, `if: {own_turn, hostile, mode, target_lacks: [downed], open}`, `limit: {per: "per_turn", n: 1}`; amount `profile: "blessing"` (Blessing power is its Stat term) |
+| Ward | a `verb`-shaped `grant_action` with `prayer: "whisper"` and `reach` (P6), its `mend` on trigger `acted` (P2); an `amounts` block, `profile: "blessing_mend"`, `level: "mend"` (as `prayerAmount('shield', …)`); `grantShield` with `layer: "ward"`, `holders: 2` (P11) |
+| Smite (rule 6, 7) | item op `deal`, `when: "hit"`, `if: {own_turn, hostile, mode, target_lacks: [downed], open}`, `limit: {per: "per_turn", n: 1}`; amount `profile: "blessing"`; fields `via`, `nonlethal` (batch rows) with predicate `patron` for the kill-taboo patrons |
 | Judged (rule 9) | a row in `data/conditions.json`; op `condition` with `skip_save`, `when: "hit"` |
-| Sanctuary's zone and cap | `cb.zones` (`magic.ts` `Zone`, as the old `guardian.sanctuary` uses), `kit.ts` `tilesAround(t, 1)`; the cap a `Zone` pool field (as a turret's `hp`) |
-| Sanctuary's halving | op `damage_mult` on trigger `taking` (needs `in_zone`: below) |
+| Sanctuary | `prayer: "hymn"` (P6); op `zone` (`kind: "sanctuary"`, 3×3, `pool` = the cap) on `acted` (P2, P10); its halving op `damage_mult` on `taking`, `if: {target_in_zone: {kind: "sanctuary", owner: "self"}}`, spent from the pool (P10) |
 | Witnessed, its end | `applyCond` / `endCond`, the `witnessed` row; `intervene()` in `faith.ts` |
-| Rule 11 | a stat id `intervention_keeps_witnessed` in `STATS` (`effects/stats.ts`), asked with `statQuery` in `intervene()`, answered by a data `stat_mod` on the class |
-| The presence (3.2) | the patrons' `intervention.triggers` and `target` words (`patrons.json`), read by `intervening()`; predicates `actor_has`, `target_within`, `actor_within`, `target_hp_below`, `crit` |
+| Rule 11 | stat `intervention_keeps_witnessed` (batch row), asked with `statQuery` in `intervene()`, answered by a data `stat_mod` on the class |
+| The presence (3.2) | the patrons' `intervention.triggers` and `target` words (`patrons.json`), read by `intervening()`; predicates `actor_has`, `target_within`, `actor_within`, `target_hp_below`, `crit`, and `patron` (batch row) so the rows sit on the class |
+| Judged (rule 9), its reads | a condition row (P4) |
 | The figure on screen | the Miracle cut-in's portrait (`apps/web/src/game/cutIn.ts`, `faithArt.ts` `patronPortrait`), fed by the `witnessed` fx event `faith.ts` already emits |
 | Log, hover cards | `say` and the patron's `speak`; the one card (`perkcard.ts`, `glossary.ts`), texts with `{=placeholders}` |
 
-**Needs a new primitive** (each one general, for the closed lists):
+**Needs a new primitive** (shapes in `rev4-primitives.md` only; none restated here): P2 trigger `acted` (it replaces
+this draft's `on_use`); P6 door verbs with `prayer: "whisper" | "hymn"` (through `faith.ts combatPray`); P10 zones
+(`zone` op, `pool`, `target_in_zone`; it replaces `in_zone`); P11 shield layers (`layer`, `holders`); P4 the `judged`
+row; batch rows `via`, `nonlethal`, `patron`, `intervention_keeps_witnessed`.
 
-1. **`prayer` on `grant_action`** (`effects/actions.ts`): `"prayer": "whisper" | "hymn"` routes an item's action through
-   `combatPray`'s door (Whisper slot or Hymn wait, Atheist roll, mana, Witnessed, fx), then runs its effects under a new
-   trigger **`on_use`**. Ward and Sanctuary become data (no new `case` in `runEntryInner`); reused by the Saint, faith items.
-2. **Predicate `in_zone`**: the event's target stands on a live zone of the holder's, of a kind. Reused by Sigil fields
-   and the Figments' Wall; the old Sanctuary's own `damage_in` handler (`classes/i.ts`) is deleted.
-3. **`src` fields on `deal`**: `via` (kill credit, tags and vows read it as `viaOf`) and `nonlethal` (the flag
-   `applyDamage` has). Reused by every bridge that deals one system's damage through another.
-4. **Shield layers** in `grantShield`: a `layer` key (`"ward"`) kept apart from `u.shield` and spent first, so a Ward
-   stacks with Protection, and `layer_holders`: at most N units carry one giver's layer (a new one ends the oldest). Reused by the Bulwark's Guard-as-shield bridge.
-5. **Predicate `patron`** (`words`): the holder's patron is one of these. Lets the class's presence rows sit on the class.
-
-**Removed:** `guardian.will_shield`, `command`, the old Sanctuary's MP and Strain (its story action stays, hybrid, no MP).
+**Removed:** `guardian.will_shield` (`shieldBy(h)`), `command`, the old Sanctuary's MP, Strain and `damage_in` handler
+(`classes/i.ts`; its story action stays, hybrid, no MP).
 **Migration:** the id stays; moves come from the ranks, so no save changes.
 
 ## 7. Balance
@@ -124,20 +117,26 @@ Marked enemy counts as Judged, so the presence's widening reaches it unseen.
 
 **A Chaplain's weapon turn with Smite** = the turn's Whisper (Rebuke) + 2 shots (4 AP) + Smite × P(at least one hit):
 
-| Sheet (all in) | Level 1 | 5 | 10 | 20 | Mean |
-| --- | --- | --- | --- | --- | --- |
-| Door, the contract's Faith build (Dex 0), Whisper turn, measured | 98 | 71 | 57 | 98 | 81 (ceiling 80) |
-| Chaplain, the same sheet: + Smite × P 0.73 / 0.51 / 0.33 / 0.85 | 134 | 91 | 70 | 129 | 106 |
-| Door, Faith all in + Dexterity (shots 0.9 of the rifleman's: 60) | 109 | 100 | 99 | 96 | 101 |
-| **Chaplain, Faith all in + Dexterity** (+ Smite × P 0.84) | **150** | **134** | **132** | **126** | **136** |
-| Chaplain, normal share (Rebuke 37 / 34 / 36 / 36 + shots 53 + Smite × 0.8) | 120 | 114 | 118 | 118 | 118 |
+**The lines (Leon, 13 Nov):** the Chaplain's own line is **125% of a rifle-turn all in** (a new ceiling
+`balance.ceilings.chaplain_turn`: the plain rifle all in, so the god in the gun never out-hits a gunner who put
+everything in the gun). On the budget reading the base class all in sits ON it; the door all in 125 ÷ 1.15 = **109**;
+the door at a normal share 109 ÷ 1.25 = **87**; the Chaplain at a normal share 125 ÷ 1.25 = **100**. (The squared
+column, 125 × 1.13 = 141, is not designed.) The Whisper turn's 80 stays the prayer-only line.
 
-**Recommended line:** a new ceiling `balance.ceilings.chaplain_turn`, **125 all in** (normal 100): the plain rifle all
-in, so the god in the gun never out-hits a gunner who put everything in the gun. Rebuke's full 20 puts the weapon-built
-Chaplain at 136 (+9%, inside ±12%; level 1 +20%, inside ±25%): **Leon's number stands**; the dial `amounts.smite.base`
-goes to 15 only if the measured mean passes 140 (then 127). It is measured on the Faith + Dexterity sheet (Smite needs a
-hit; the Dex-0 build reads 106). **Above the door:** +35% (101 → 136) against the budget's 15%: Leon's ruling, recorded
-as this class's exception.
+| Sheet (all in unless named) | Level 1 | 5 | 10 | 20 | Mean | Line | Off it |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Door, the contract's Faith build (Dex 0), Whisper turn, measured | 98 | 71 | 57 | 98 | 81 | 80 (prayer-only) | +1% |
+| Chaplain, the same sheet: + Smite × P 0.73 / 0.51 / 0.33 / 0.85 | 134 | 91 | 70 | 129 | 106 | 125 | −15% |
+| Door, Faith all in + Dexterity (shots 0.9 of the rifleman's: 60) | 109 | 100 | 99 | 96 | 101 | 109 | −7% |
+| **Chaplain, Faith all in + Dexterity** (+ Smite × P 0.84) | **150** | **134** | **132** | **126** | **136** | **125** | **+9%** |
+| Chaplain, normal share (Rebuke 37 / 34 / 36 / 36 + shots 53 + Smite × 0.8) | 120 | 114 | 118 | 118 | 118 | 100 | +18% |
+
+The class is measured on the Faith + Dexterity sheet (Smite needs a hit; the Dex-0 build reads 106). Its all-in row
+sits +9% on 125 (level 1 +20%, inside the per-level ±25%) and the door's −7% on 109: both inside ±12%, and the
+class-over-door step (136 ÷ 101 = 1.35) is no longer an exception: each sits on its own line. **Smite stays at
+Rebuke's 20 (Leon)**; the dial `amounts.smite.base` goes to 15 only if the measured all-in mean passes 140 (then 127).
+**Watch:** the normal-share row reads +18%, outside ±12%: Blessing power at a normal share (1.3 to 2.0) is close to all
+in (1.7 to 2.0), so the class's lead holds at a normal share; measured with the rest, not fitted ahead of it.
 
 **Contract finding:** the Whisper-turn ceiling (80) holds only for the Dex-0 Faith build; a legal Faith 7 / Dexterity 3
 sheet reads about 101 with no class (row 3), since rules 1.26 made the rifle hit as hard in anyone's hands.
@@ -184,11 +183,10 @@ icons for Ward, Sanctuary and Smite.
 ```json
 { "id": "ward", "name": "Ward", "ap_cost": 1, "uses": "at_will",
   "amounts": { "ward": { "kind": "shield", "base": 7, "profile": "blessing_mend", "provisional": true } },
-  "numbers": { "held": 2 },
-  "text": "A Whisper only you can say, and it is your Whisper for the turn. An ally you can see gains a shield of {=amounts.ward.base} × your Blessing power for the rest of the fight, on top of any other shield. At most {=numbers.held} allies carry your Ward at once.",
+  "text": "A Whisper only you can say, and it is your Whisper for the turn. An ally you can see gains a shield of {=amounts.ward.base} × your Blessing power for the rest of the fight, on top of any other shield. At most {=effects.1.holders} allies carry your Ward at once.",
   "effects": [
-    { "op": "grant_action", "action": "ward", "prayer": "whisper", "target": "ally", "ap": 1 },
-    { "op": "mend", "when": "on_use", "amount": "ward", "target": "target", "layer": "ward", "layer_holders": "numbers.held" } ],
+    { "op": "grant_action", "action": "ward", "prayer": "whisper", "ap": 1, "reach": { "sight": true, "side": "ally", "self": false } },
+    { "op": "mend", "when": "acted", "if": { "action": ["ward"] }, "amount": "ward", "target": "target", "layer": "ward", "holders": 2 } ],
   "adjudication": "engine", "provisional": true, "origin": "guardian", "attributes": ["virtue"], "status": "active" }
 
 { "id": "smite", "name": "Smite", "ap_cost": 0, "uses": "per_turn",
@@ -202,16 +200,21 @@ icons for Ward, Sanctuary and Smite.
   "adjudication": "engine", "provisional": true, "origin": "guardian", "attributes": ["virtue"], "status": "active" }
 ```
 
-The trigger `on_use` and the fields `prayer`, `layer`, `layer_holders`, `via` are section 6's new primitives.
+The trigger `acted` (P2), `prayer` and `reach` (P6), `layer` and `holders` (P11), `via` (batch row): section 6.
 **Validator:** `amounts.smite.base` equals Rebuke's value (`patrons.json`, a cross-file check); `prayer` is `whisper` or
 `hymn`; a `layer` is known; the `judged` row exists; no Virtue class move costs `mp` or `strain`.
 
 ## 11. Open questions for Leon
 
-1. **Ward is allies only** (the Chaplain has Protection for itself). Assumed.
-2. **Ward is 7, not 30** (30 is a healer's whole turn for 1 AP), with a stacking layer. Assumed.
-3. **Smite stays at Rebuke's 20**; the class turn line is 125 all in, +35% over the door: the class's exception. Assumed.
-4. **Re-measure the Whisper turn** on a Faith + Dexterity sheet (80 holds only at Dexterity 0). Recommended.
-5. **Judgement:** the roster says "3 Devotion, once a scene", the data 10 Devotion XP, once a fight. Assumed the data.
-6. **Rename the move Judgement to Verdict** *(Suggested)*: Nerukhan's Hymn II has the name. Not assumed.
-7. **Sanctuary's cap** binds only in Boss fights; **Toll-Keeper and Matchmaker Smites are nonlethal**. Assumed.
+**Settled** (L = Leon; lead = the lead's call, which Leon can reverse):
+1. **Ward is 7 × Blessing power**, uses the turn's Whisper, sits on at most two allies (L); allies only (lead).
+2. **Smite stays at Rebuke's 20; the Chaplain's own line is 125% of a rifle-turn all in** (L); on the budget reading
+   the door's line is 109 and the old "+35%, the class's exception" falls away (section 7).
+3. Re-measure the Whisper turn on a Faith + Dexterity sheet (lead). 4. Verdict keeps the data's cost: 10 Devotion
+   XP, once a fight (lead, rev4-primitives 3.6). 5. **Judgement is renamed Verdict** *(Suggested)*; key kept (lead).
+6. Sanctuary's cap binds only in Boss fights; Toll-Keeper and Matchmaker Smites are nonlethal (lead).
+7. The advanced classes are a sketch only (L).
+
+**Still open (Leon's alone):** **does prayer open at Faith 1?** The door-at-1-point ruling is applied to the new doors;
+prayer opens at Faith 3 (rules 1.6, built), so a smaller loop at Faith 1 and 2 would be a rules change of his own
+(rev4-primitives 3.3). Nothing here assumes it.
