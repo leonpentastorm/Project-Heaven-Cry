@@ -59,14 +59,14 @@ renamed (Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Chan
 Each step: a builder agent with the brief of section 5; then the checks; then merge.
 
 - [x] **0. The tools** (merged 13 Nov; the self-check still fails `rev4-moves-and-rename.md` for having no Built-from table: give it one before step 2): `docs/ENGINE-HOOKS.md` generated and checked by `npm run check`; `npm run built-from`.
-- [ ] **1. The primitives** (1a merged 13 Nov, reviewed: `classes-3.0-step-1a.md` and `-review.md`; **1b built 13 Nov, to review and merge**: `classes-3.0-step-1b.md` (P6, P10, P11, P12, P8, P9 without its `owned` action system, the addendum, the one hook for every roll to hit, the review's list); left for a step 1c or the systems' own steps: the batch rows `mend_mult`, `condition: "incoming"`, `intervention_keeps_witnessed`, `read`) of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
+- [x] **1. The primitives** (1a and 1b merged 13 Nov, each reviewed: `classes-3.0-step-1a.md`, `-1a-review.md`, `-1b.md` with its section 7). **What system builders must know** (1b, section 7): an owned unit's verbs are only move, shot, aimed and melee (Figments adds Pounce, Stare, Hold to `runOwned`); the `zone` op has no `shape` yet; the `pick` lists `felt` and `forms` are not built (Bonds, Figments).
       test, its lint baseline, the catalogue regenerated, and the bespoke handlers it replaces deleted. Golden
       tables and replay hashes unchanged (a primitive that moves a golden line is wrong).
 - [x] **2. The rename** (merged 13 Nov) (`rev4-moves-and-rename.md`): display names only, ids stay; the level-up picker, card
       texts, the spec, CLAUDE.md, the checklist; emblems listed in `art/briefs/ART-REQUESTS.md`.
 - [x] **3. Reactions and the Skirmisher** (merged 13 Nov; all in 161 against 145, inside the band near its top; Reflex unmeasured: step 11) (`reactions-spec.md`): one door for every reaction, a reaction never
       triggers a reaction, Suppressed never blocks a protective one, Reflex (two), Killzone on both, Run and Gun.
-- [ ] **4. The moves that change hands** and the small changes to Bulwark, Breaker, Sigilist.
+- [x] **4. The moves that change hands** (Bulwark and Breaker merged 13 Nov; each moved move rides with its system's step below) and the small changes to Bulwark, Breaker, Sigilist.
 - [ ] **5. The Chaplain** (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
 - [ ] **6. Shadow and the Operative** (`shadow-spec.md`).
 - [ ] **7. Tending, Bonds and the Mender** (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
