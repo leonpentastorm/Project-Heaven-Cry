@@ -1002,10 +1002,10 @@ function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen
  * standing OFF the map (a bug or an old save; no rule puts one there) is where the two part: this draws the line of
  * sight to it all the same, visibility() only looks at the map's tiles. `onMapOnly` gives visibility()'s answer there
  * too (noteSighted; test/sight-order.test.ts holds the two together). */
-export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false): boolean {
+export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false, walls0?: Set<string>): boolean {
   if (t.side === side) return true;
   if (t.dead) return false;
-  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : sightBlockers(cb);
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : walls0 || sightBlockers(cb);
   let isSeen = !t.hidden && !off && eyes.some((u) => unitSees(cb, u, t.pos, walls));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
@@ -1088,7 +1088,21 @@ export function noteSighted(cb: Combat) {
  * its own steps (moveUnit). No dice, no rule read; the same order as seenIds. */
 export function noteSeenAt(cb: Combat) {
   if (cb.over) return;
-  for (const side of ['pc', 'foe'] as const) for (const id of seenIds(cb, side)) { const t = cb.units.find((x) => x.id === id)!; noteSeen(cb, side, id, t.pos); }
+  for (const side of ['pc', 'foe'] as const) {
+    // Rules 1.37, the opening: a fight opens because the sides met, so the first note (after the set-up has hidden who
+    // starts Hidden) gives each side every hostile that is not Hidden where it stands, seen or not; after that a side
+    // knows only what it sees (an old save mid-fight: the same, once).
+    if (!cb.seenAt?.[side]) cb.seenAt = { ...cb.seenAt, [side]: Object.fromEntries(cb.units.filter((t) => t.side !== side && !t.dead && !t.hidden).map((t) => [t.id, t.pos])) };
+    for (const id of seenIds(cb, side)) { const t = cb.units.find((x) => x.id === id)!; noteSeen(cb, side, id, t.pos); }
+  }
+}
+/** Rules 1.37: where a side believes a hostile is when it can't see it: a Hidden one where it was last seen hiding (or
+ * where an item placed it: Decoy, cb.lastSeen), else where the side last saw it (cb.seenAt); before the fight's first
+ * note (a fight just set up, an old save) where it stands if it is not Hidden (the opening). Null: the side knows
+ * nothing. Pure. */
+export function knownTile(cb: Combat, side: string, t: Unit): string | null {
+  if (t.hidden) return cb.lastSeen?.[side]?.[t.id] ?? null;
+  return cb.seenAt?.[side] ? cb.seenAt[side][t.id] ?? cb.lastSeen?.[side]?.[t.id] ?? null : t.pos;
 }
 function noteSeen(cb: Combat, side: string, id: string, at: string) {
   const m = cb.seenAt?.[side]; if (!m || m[id] !== at) cb.seenAt = { ...cb.seenAt, [side]: { ...m, [id]: at } }; // replaced, never written into (a copied fight shares it)
@@ -2774,14 +2788,16 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
  * one turn's walk at a time. Nothing known, or nothing nearer within its AP: null (it holds or takes cover, as before;
  * an old save has no record). Bug, 13 Nov 2026: it used to stand still. Deterministic; no dice. */
 export function enemySearchTile(cb: Combat, u: Unit, stood?: Set<string>): { tile: string; goal: string } | null {
-  const known = cb.lastSeen?.[u.side]; if (!known) return null;
-  const P = paths(cb, u.pos, u.id);
+  if (!cb.lastSeen?.[u.side] && !cb.seenAt?.[u.side] && !cb.units.some((t) => t.side !== u.side && !t.dead && !t.hidden)) return null;
+  let P: ReturnType<typeof paths> | null = null;
   let goal: string | null = null, gd = Infinity;
   for (const t of cb.units) {
-    const at = known[t.id]; if (!at || t.side === u.side || t.dead || t.surrendered || at === u.pos) continue;
+    if (t.side === u.side || t.dead || t.surrendered) continue;
+    const at = knownTile(cb, u.side, t); if (!at || at === u.pos) continue; // (standing on it: searched; from there it may see on)
+    P ||= paths(cb, u.pos, u.id);
     const d = P.dist[at] ?? dist(u.pos, at); if (d < gd) { gd = d; goal = at; }
   }
-  if (!goal) return null;
+  if (!goal || !P) return null;
   const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity, best: string | null = null;
   for (const [k, tiles] of Object.entries(P.dist)) {
     if (k === u.pos || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue;
@@ -2811,6 +2827,14 @@ onHook('cond_landed', (ctx: any, cb: Combat) => {
   t.readIntent = { ...it, by: by.id, round: cb.round, cond: ctx.id };
   emitFx(cb, 'intent', { unit: by.id, target: t.id, at: t.pos, kind: it.kind, text: it.text, ...(it.targetId ? { targetUnit: it.targetId } : {}), ...(it.to ? { to: it.to } : {}), ...(it.image ? { image: it.image } : {}) });
   say(cb, 'Read: ' + t.name + ' means to ' + it.text + '.');
+});
+// Rules 1.37 (shadow-spec 8.2): a unit hit by an attacker its side can't see learns where the attack came from: its
+// side's last-seen tile of the attacker becomes the attacker's tile (a Hidden one's search tile too), so an enemy with
+// nobody in sight searches toward it. No dice; nothing else changes.
+onHook('on_hit', (ctx: any, cb: Combat) => {
+  const att: Unit = ctx.att, t: Unit = ctx.tgt; if (!att || !t || att.side === t.side || att.dead || !cb.units.includes(att) || sideSeesUnit(cb, t.side, att)) return;
+  noteSeen(cb, t.side, att.id, att.pos);
+  if (att.hidden) cb.lastSeen = { ...cb.lastSeen, [t.side]: { ...cb.lastSeen?.[t.side], [att.id]: att.pos } };
 });
 onHook('cond_end', (ctx: any) => { const u: Unit = ctx.u; if (u?.readIntent?.cond && u.readIntent.cond === ctx.id) delete u.readIntent; });
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */

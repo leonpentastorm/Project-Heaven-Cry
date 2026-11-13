@@ -77,6 +77,7 @@ describe('enemy Soul casters choose by situation (rules 1.5)', () => {
   });
   it('players out of reach: it Begins and holds (stage 0) rather than release at nothing', () => {
     const { cb, e } = fight(['2,5'], [{ at: '17,15', caster: 'heart_adept' }]);
+    e.vision = 40; // rules 1.37: it sees them (out of reach, not out of sight)
     turn(cb, e);
     expect(e.mg!.held).toMatchObject({ design: 'heart_bolt' });
     expect(fx(cb, 'release', e)).toHaveLength(0);
@@ -96,6 +97,7 @@ describe('enemy Soul casters choose by situation (rules 1.5)', () => {
   });
   it('Strain: over many turns of holding with nobody in reach it never burns and never shorts (it steadies or lets go)', () => {
     const { cb, e } = fight(['2,5'], [{ at: '17,17', caster: 'heart_adept', weapon: 'combat_knife' }]);
+    e.vision = 40; // rules 1.37: it sees them (out of reach, not out of sight)
     cb.mana = 32; // Flooded air: every swell +2 Strain
     for (let i = 0; i < 8; i++) { cb.round = i + 1; turn(cb, e, seed(60, 100 + i * 7)); e.pos = '17,17'; expect(e.mg!.strain, 'turn ' + i).toBeLessThanOrEqual(e.mg!.strainLimit); }
     expect(cb.log.some((l) => /MANA SHORT/.test(l))).toBe(false);
@@ -104,6 +106,7 @@ describe('enemy Soul casters choose by situation (rules 1.5)', () => {
   });
   it('over the limit while holding, with nothing to hit: it calms the heart before the burn', () => {
     const { cb, e } = fight(['2,5'], [{ at: '17,17', caster: 'heart_adept' }]);
+    e.vision = 40; // rules 1.37: it sees them (out of reach, not out of sight)
     e.mg!.held = { design: 'heart_bolt', stage: 1, cost: 20, tone: 'raw', form: 'bolt', turns: 1, v: 15 } as any; e.mg!.strain = 6; // limit 4
     cb.turn = cb.order.indexOf(e.id); e.ap = 6; enemyTurn(cb, seed()); magicTurnEnd(cb, seed(), e);
     expect(fx(cb, 'letgo', e).length).toBe(1); expect(e.mg!.held).toBeNull();

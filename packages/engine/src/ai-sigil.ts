@@ -20,7 +20,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import { WEAPON } from './data';
-import { type Combat, type Unit, dist, xy, key, paths, moveUnit, apForTiles, previewAttack, isMelee, effectiveRange, lineOfSight, unitSees, objectsOf, shootCover } from './combat';
+import { type Combat, type Unit, dist, xy, key, paths, moveUnit, apForTiles, previewAttack, isMelee, effectiveRange, lineOfSight, unitSees, sideSeesUnit, knownTile, objectsOf, shootCover } from './combat';
 import { type Rng } from './rng';
 import {
   type EvokePreview, type EvokeOpts, type Affected, type Dir, type Spell,
@@ -76,8 +76,9 @@ export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, strin
   let r = 0; for (let t = k; t && t !== u.pos; t = P.prev[t]) r += aiTileRisk(cb, u, t);
   return r;
 }
-// A False Image's fooled enemy doesn't know where its owner really is (illusion.ts): it aims no spell at them.
-const players = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false }).filter((t) => !fooledBy(cb, u, t));
+// A False Image's fooled enemy doesn't know where its owner really is (illusion.ts): it aims no spell at them. Rules 1.37:
+// only those its side sees now (kit.ts seenBySide).
+const players = (cb: Combat, u: Unit) => foesOf(cb, u, { seenBySide: u.side }).filter((t) => !fooledBy(cb, u, t));
 const friendsOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side === u.side && !t.dead);
 
 // ---------- every enemy: avoid, and clear what blocks ----------
@@ -109,12 +110,14 @@ export function aiClearBlock(cb: Combat, rng: Rng, u: Unit): boolean {
   }
   const walls = objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && (o as any).side !== u.side && (o.hp ?? 1) > 0);
   if (!walls.length) return false;
-  const pcs = cb.units.filter((t) => t.side !== u.side && live(t)); if (!pcs.length) return false;
-  const near = pcs.reduce((a, b) => (dist(u.pos, b.pos) < dist(u.pos, a.pos) ? b : a));
-  const P = paths(cb, u.pos, u.id), now = dist(u.pos, near.pos);
-  const closer = Object.entries(P.dist).some(([k, n]) => k !== u.pos && canPay(cb, u, apForTiles(n, u.bank, u.movement)) && dist(k, near.pos) < now);
+  // rules 1.37: the nearest player it sees, else the nearest tile its side last placed one on (it knows nothing more)
+  const seen = players(cb, u), pcs = seen.length ? seen.map((t) => t.pos) : foesOf(cb, u).map((t) => knownTile(cb, u.side, t)).filter((k): k is string => !!k);
+  if (!pcs.length) return false;
+  const near = pcs.reduce((a, b) => (dist(u.pos, b) < dist(u.pos, a) ? b : a));
+  const P = paths(cb, u.pos, u.id), now = dist(u.pos, near);
+  const closer = Object.entries(P.dist).some(([k, n]) => k !== u.pos && canPay(cb, u, apForTiles(n, u.bank, u.movement)) && dist(k, near) < now);
   if (closer) return false;
-  const between = (k: string) => { const [ax, ay] = xy(u.pos), [bx, by] = xy(near.pos), [x, y] = xy(k); return dist(k, u.pos) + dist(k, near.pos) <= now + 1 && (x - ax) * (bx - ax) + (y - ay) * (by - ay) >= 0; };
+  const between = (k: string) => { const [ax, ay] = xy(u.pos), [bx, by] = xy(near), [x, y] = xy(k); return dist(k, u.pos) + dist(k, near) <= now + 1 && (x - ax) * (bx - ax) + (y - ay) * (by - ay) >= 0; };
   const wall = walls.filter((o) => between(o.pos)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos) || (a.pos < b.pos ? -1 : 1))[0];
   if (!wall) return false;
   if (isMelee(w) && dist(u.pos, wall.pos) > 1) return false;
@@ -273,7 +276,7 @@ export function aiPlanValue(cb: Combat, u: Unit, pv: EvokePreview): number {
     const t = unitOf(cb, a.unit);
     const exp = Math.min(t.hp, a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour);
     let cv = 0; for (const sv of a.saves) cv += failChance(t, sv.fam, sv.tn) * (sv.cond === 'teleport' ? 5 : condValue(cb, u, sv.cond, t, singleTarget(sp)));
-    if (!a.ally) { s += exp + cv + (exp >= t.hp * 0.9 ? 10 : 0); continue; }
+    if (!a.ally) { if (sideSeesUnit(cb, u.side, t)) s += exp + cv + (exp >= t.hp * 0.9 ? 10 : 0); continue; } // (rules 1.37: one its side can't see counts 0)
     if (sp.harmful) s -= 1.5 * (exp + cv);
     const miss = t.maxHp - t.hp, threatened = players(cb, u).some((p) => dist(p.pos, t.pos) <= 8);
     if (a.heal) s += Math.min(a.heal, miss) * (t.hp < t.maxHp * 0.5 ? 1.3 : 1);
