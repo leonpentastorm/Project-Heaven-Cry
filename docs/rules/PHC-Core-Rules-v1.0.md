@@ -5339,6 +5339,59 @@ shop) and 1.45 (the fight map's layout) are built beside it.
    pressure band by itself takes a damage scale down to the cap (`anchorDamage`: the HP rule mirrored, damage is
    pressure as HP is bulk), so every fight of stages 1 to 3 composes inside both bands.
 
+## Rules revision 1.45: Survival's fight maps, generated and drawn from kits (Survival, build steps 7 and 8)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-steps-7-8.md`) from `docs/design/survival-spec.md` (draft 4) rule
+22 and section 4.3, section 10 rows 7 and 8. Every number is in `data/survival.json` (`layout`, each setting's
+`layout`, each template's `hazard`) and is PROVISIONAL (items 3200 to 3216). Code: `maplayout.ts` (`generateLayout`,
+`layoutProblems`), `run/encounter.ts` (`layoutRecipe`, `encounterMap`), and the client's `game/kitMap.ts`. Revision 1.44
+is left to the step built beside this one.
+
+1. **A fight's map is generated** for its size (rule 22's `map_size`: 16, 20 or 26 tiles a side by the units in it),
+   its setting and its template, on the node's own stream (`rngFor(seed, node + '#map')`: the fight's foes and dice
+   are untouched by it). The same seed, party and node give the same map.
+2. **Start zones.** The squad's start tiles are the west columns (`map_size.squad_cols`), the enemy's line is the one
+   the deployment rule gives (`deployEnemy`, 10 to 14 tiles off). The squad's first `zone_cols` 4 columns and the enemy
+   line with `foe_zone` 2 columns either side hold no stamp and no hazard; the start columns themselves hold no loose
+   cover.
+3. **Stamps** (small pictures of 3 to 7 tiles in the maps legend: walls, doorways, cover, props), `stamp_count` of them
+   by size (1 to 2 at 16, 2 to 3 at 20, 3 to 5 at 26), each from its setting's list, turned and mirrored by the stream,
+   outside both zones, apart from each other, with a ring of one tile kept clear of loose blockers so its doorways stay
+   open. Fifteen stamps in data (a small room, two rooms under one roof, a bunker corner, a gate with its door, crate
+   stacks, an alley wall, a row of stalls, a trench line, craters, machine rows, a conveyor wall, a colonnade, pews, a
+   bulkhead, containers). A door a stamp places stands **open** (a player may close it).
+4. **Loose cover**, from the setting's half and full kinds (one in `full_every` 3 full; half cover in straight runs of 1
+   to 3 tiles): first within `start_cover_reach` 3 tiles of every start of both sides, then until every tile outside
+   the zones is within `cover_reach` 3 of cover, then up to `cover_share`'s floor (8% of the tiles). Then 0 to 2 barrels
+   beside cover, the setting's props (lamps, terminals), 0 to 2 patches of difficult ground (2 to 4 tiles).
+5. **A hazard** (the setting's kind: toxic, fire, or none for the shrine district) only on a template that allows one
+   (`hazard: true`: a firing line, a caster and guards, a line with a medic, a drone screen, an Elite and its line, a
+   warden, the champion; not a swarm, a rush, an ambush or two Elites) and by the setting's chance (10% or 15%): a patch
+   of 1 to 3 tiles, never in or beside a start zone.
+6. **The checks** (`layoutProblems`; a map passes all or is not used): every tile one can stand on is reachable (no
+   sealed room or pocket); **two lanes** (the shortest way from the squad to the enemy line, its tiles between the zones
+   blocked, still leaves another way); the start gap inside the deployment band (10 to 14); cover within 3 tiles of every
+   start of both sides; no blocker, hazard, trap or hole on a start tile; **every doorway clear** (a tile between two
+   wall tiles is open on both of its other sides); cover 8% to 18% of the tiles. A loose blocker that walls a pocket off
+   is taken away again. A try that fails drops one stamp; after `tries` 8 the open ground cropped (rules 1.41) is used.
+7. **The switch:** `layout.use` `generated` (the default) or `open_ground` (rules 1.41's crop, also the fallback above).
+8. **The encounter's own start tiles** are never on a blocker (a wall, cover, a closed door, a terminal), a hazard, a
+   trap or a hole, and every foe starts at the deployment minimum or more from the squad (as rules 1.41).
+9. **The skin** (`MapDef.skin`, spec 4.2 item 6): the setting's kit, which of its grounds and its quarter turn, and 4 to
+   10 dressing tiles (a piece and a turn each). Presentation only: no rule reads it.
+10. **Drawing from a kit** (spec 4.3's contract). Rules 1.16 stands: **no map is painted.** A kit map is assembled from
+    pieces (`art/sprites/kit/<setting>/`, catalog section `kit`, ids `kit-<setting>-<piece>`) placed by the map's own
+    data, tile by tile: the ground repeated under every tile (one texture covers 4 × 4 tiles), darkened under the grid; on
+    a wall tile a wall piece chosen by which of its four neighbours continue the wall (straight, corner, end; a T is an
+    end under a straight, a cross two straights), half a tile thick (Leon, 13 Nov: "half a tile is ok, just need the
+    part you move in to be clear"); a doorway piece on a gap in a wall line (a breach where rubble lies in it), the door
+    sprite turned with its doorway; cover, props and broken cover as the kit's sprites by engine kind; decals under
+    difficult ground, rubble, toxic spills and fire; dressing on the skin's tiles. Tokens, highlights, fog, hover and
+    effects stay above it; the fog dims the kit with the tile.
+11. **Fallback per piece:** a piece the kit lacks (not delivered, or held back in the catalog with `use: false` and its
+    reason) is not drawn, and that part of the tile draws exactly as before (the flat fill, the glyph). A map with no
+    skin (every campaign map, the Proving Ground) draws as before.
+
 ## Rules revision 1.47: the fight tally and Report a run (Survival, build step 6)
 
 Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-6.md`) from `docs/design/survival-spec.md` (draft 4) rule 35,
@@ -8585,6 +8638,23 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3119. **The kept draft (rules 1.44 item 7):** saved to the player's library only (the browser); **no room takes a levelled character yet** (`char/add` builds a level 1 character from a sheet, and Survival refuses above level 1): open, for Leon. PROVISIONAL.
 3120. **Item 2814's damage scale (rules 1.44 item 8):** the big units' damage x (cap - the rest's pressure) / their pressure, only when the band is passed by required units. PROVISIONAL.
 3121. **Items 3100 to 3121 are rules 1.44's.**
+3200. **Survival's fight maps are generated (rules 1.45 item 1; `layout.use` "generated"):** on the node's own stream `node + '#map'`. PROVISIONAL.
+3201. **Start zones (rules 1.45 item 2; `layout.zone_cols` 4, `layout.foe_zone` 2).** PROVISIONAL.
+3202. **Stamps by size (rules 1.45 item 3; `layout.stamp_count` 16: 1 to 2, 20: 2 to 3, 26: 3 to 5; `stamp_gap` 1 past a kept ring of one tile).** PROVISIONAL.
+3203. **The fifteen stamps and each setting's list (rules 1.45 item 3; `layout.stamps`, `settings[].layout.stamps`):** the spec's examples drawn, plus a small room and two rooms under one roof in five settings so every kit's corners and T joins are used. PROVISIONAL.
+3204. **A stamp's door stands open (rules 1.45 item 3; the legend's `d`):** so no fight opens with a side shut in; a map object may now say `open` (`defaultObjects`). A call made for Leon: closed doors wait on the enemy's AI opening them. PROVISIONAL.
+3205. **Loose cover (rules 1.45 item 4; `full_every` 3, `cover_run` 1 to 3, `start_cover_reach` 3, `cover_reach` 3, `cover_share` 8% to 18%):** the spec's "half to full about 2 : 1" and its 8 to 18% share; the runs are this revision's (single crates read as noise on a 26-tile map). PROVISIONAL.
+3206. **Barrels, props and difficult patches (rules 1.45 item 4; `barrels` 0 to 2, `settings[].layout.props`, `difficult` 0 to 2 patches of 2 to 4).** PROVISIONAL.
+3207. **Hazards only where a template allows (rules 1.45 item 5; `templates[].hazard`, `settings[].layout.hazard`, `hazard_size` 1 to 3):** the seven templates that hold a line allow one; a swarm, a rush, an ambush and two Elites do not (their foes start close or hidden). A call made for Leon. PROVISIONAL.
+3208. **The checks (rules 1.45 item 6):** reachability by plain steps (4 neighbours: stricter than a fight's 8), two lanes as the spec's "block the shortest path, another remains", the doorway rule as written there. PROVISIONAL.
+3209. **Tries and the fallback (rules 1.45 item 6; `tries` 8):** measured over 1,000 seeds × 11 templates × 3 sizes: no map fell back. PROVISIONAL.
+3210. **The data switch (rules 1.45 item 7; `layout.use`).** PROVISIONAL.
+3211. **No start on a blocker, hazard, trap or hole (rules 1.45 item 8).** PROVISIONAL.
+3212. **The skin (rules 1.45 item 9; spec 4.2 item 6; `grounds` 3, `dressing` 4 to 10, `dress_pieces` 4).** PROVISIONAL.
+3213. **Kits, not painted maps (rules 1.45 item 10):** rules 1.16 holds (no map is painted); a kit is assembled from pieces placed by the map's data. A ground covers 4 × 4 tiles; walls are half a tile thick (Leon, 13 Nov). PROVISIONAL.
+3214. **The fallback per piece (rules 1.45 item 11):** proven in the browser (`kit-map`: a kit with no art draws pixel for pixel as a map with no skin). PROVISIONAL.
+3215. **Pieces held back (rules 1.45 item 11; catalog `kit`, `use: false`):** the AHOC kit's second ground and the shrine district's second ground (a seam, `tools/art/kit_seams.py`), the AHOC floor marking with lettering, the rim station's wall corner (another wall than its straight). PROVISIONAL.
+3216. **Items 3200 to 3216 are rules 1.45's.**
 3400. **The fight tally (rules 1.47 item 1):** per character, per fight: dealt, taken, healed, soaked, kills, Downs, deaths, shots, hits, from the effects stream by `fightTally`; kept on `RunFight.tally`; summed by `sumTallies`. No number is a rule: it is a record. PROVISIONAL.
 3401. **Attribution (rules 1.47 item 2):** a `hurt` or `heal` is the actor's (the unit whose `turn` is open); off a squad member's turn it is `other`. A kill is the last character to damage the foe. PROVISIONAL.
 3402. **Not counted (rules 1.47 item 3):** shields given, heals no effect reports, damage by system. The events missing are listed in the build step 6 hand-off. PROVISIONAL.

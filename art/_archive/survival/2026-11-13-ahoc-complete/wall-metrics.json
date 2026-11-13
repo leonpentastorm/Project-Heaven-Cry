@@ -1,0 +1,64 @@
+{
+  "join_method": "Crop the painted straight ends, register the stripe and feather a symmetric cross-section sampled from the straight wall into the first 11 pixels at each connection.",
+  "join_rgba_difference_after": 0,
+  "walls": {
+    "straight": {
+      "connection_edges": [
+        "left",
+        "right"
+      ],
+      "band_px": 128,
+      "stripe_center_before": {
+        "left": 126.02,
+        "right": 125.89
+      },
+      "stripe_center_after": 127.5
+    },
+    "corner": {
+      "connection_edges": [
+        "left",
+        "bottom"
+      ],
+      "band_px": 128,
+      "stripe_center_before": {
+        "left": 126.49,
+        "bottom": 126.79
+      },
+      "stripe_center_after": 127.5
+    },
+    "end": {
+      "connection_edges": [
+        "left"
+      ],
+      "band_px": 128,
+      "stripe_center_before": {
+        "left": 127.37
+      },
+      "stripe_center_after": 127.5
+    },
+    "door": {
+      "connection_edges": [
+        "left",
+        "right"
+      ],
+      "band_px": 128,
+      "stripe_center_before": {
+        "left": 129.23,
+        "right": 129.14
+      },
+      "stripe_center_after": 127.5
+    },
+    "broken": {
+      "connection_edges": [
+        "left",
+        "right"
+      ],
+      "band_px": 128,
+      "stripe_center_before": {
+        "left": 127.04,
+        "right": 126.86
+      },
+      "stripe_center_after": 127.5
+    }
+  }
+}

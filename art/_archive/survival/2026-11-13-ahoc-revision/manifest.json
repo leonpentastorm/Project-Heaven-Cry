@@ -1,0 +1,1041 @@
+[
+  {
+    "id": "B01",
+    "path": "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+    "mode": "backdrop",
+    "filename": "ahoc-a-gate.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "d9d2e0ce81800d939dd695564b479b596dda7d5f019015f6aa8786151be259f0",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B01.png"
+  },
+  {
+    "id": "B02",
+    "path": "art/illustrations/survival/backdrops/ahoc-b-corridor.png",
+    "mode": "backdrop",
+    "filename": "ahoc-b-corridor.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "a00a15e062a055ae4bbae470a907764020183b8f1b45077238ff53f5ee8c3436",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B02.png"
+  },
+  {
+    "id": "B03",
+    "path": "art/illustrations/survival/backdrops/ahoc-c-yard.png",
+    "mode": "backdrop",
+    "filename": "ahoc-c-yard.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "0d6c139df0bd92f8829bcb87257a8d14db51be4bbd5e40f8ba191c1dd32abe17",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B03.png"
+  },
+  {
+    "id": "B04",
+    "path": "art/illustrations/survival/backdrops/ahoc-d-vault.png",
+    "mode": "backdrop",
+    "filename": "ahoc-d-vault.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "e7028a8b9665c3b10c852159b0da54f88fc558ad0cbfeffde3c3c23cacb0640e",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B04.png"
+  },
+  {
+    "id": "B05",
+    "path": "art/illustrations/survival/backdrops/city-a-archway.png",
+    "mode": "backdrop",
+    "filename": "city-a-archway.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "8079205c8af3837ad4a20bebed785f096c8aa8879c169803b58210f6c21c16cc",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B05.png"
+  },
+  {
+    "id": "B06",
+    "path": "art/illustrations/survival/backdrops/city-b-passage.png",
+    "mode": "backdrop",
+    "filename": "city-b-passage.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "5bfa1ca37dd6f8886ad1e096367ae17123847cd0322fe9a23287ced3c8efc6bf",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B06.png"
+  },
+  {
+    "id": "B07",
+    "path": "art/illustrations/survival/backdrops/city-c-rooftops.png",
+    "mode": "backdrop",
+    "filename": "city-c-rooftops.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "2b2aeae729cacacefd0b693da4aef8392e80a20e321f27971564a63e365e17e5",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B07.png"
+  },
+  {
+    "id": "B08",
+    "path": "art/illustrations/survival/backdrops/city-d-square.png",
+    "mode": "backdrop",
+    "filename": "city-d-square.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "be3d533328fb96d4c81d0ded988c51607c9e8bff9c2c4ae4e9dbfdd0f2d3751f",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B08.png"
+  },
+  {
+    "id": "B09",
+    "path": "art/illustrations/survival/backdrops/field-a-ridge.png",
+    "mode": "backdrop",
+    "filename": "field-a-ridge.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "4f117eb9b6de4cfb7560ea33be5905c851cec92bca0b345b6d249d526db79871",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B09.png"
+  },
+  {
+    "id": "B10",
+    "path": "art/illustrations/survival/backdrops/field-b-trench.png",
+    "mode": "backdrop",
+    "filename": "field-b-trench.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "bd1a9f3b5071f87bff2a402accbce1e53397c0c2ae2688e8a3ccb014c8734909",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B10.png"
+  },
+  {
+    "id": "B11",
+    "path": "art/illustrations/survival/backdrops/field-c-craters.png",
+    "mode": "backdrop",
+    "filename": "field-c-craters.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "bd46996a01f5853067cf909fe89016c5e000de982bbdd49b4cdce35bc13a8cc9",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B11.png"
+  },
+  {
+    "id": "B12",
+    "path": "art/illustrations/survival/backdrops/field-d-wreck.png",
+    "mode": "backdrop",
+    "filename": "field-d-wreck.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "ca89cd1e6ea7cd1590bf19a0caa583064b079c6a1c32246d3befd5716c032ec4",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B12.png"
+  },
+  {
+    "id": "B13",
+    "path": "art/illustrations/survival/backdrops/works-a-dock.png",
+    "mode": "backdrop",
+    "filename": "works-a-dock.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "159822c9cf412a4589fee19ac6d6cb3ba714b3edbf810a8a5c197890c113a266",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B13.png"
+  },
+  {
+    "id": "B14",
+    "path": "art/illustrations/survival/backdrops/works-b-assembly.png",
+    "mode": "backdrop",
+    "filename": "works-b-assembly.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "307647fdc76f42d6cc13449a56082d0f7cf05f9fe33e089dd9426866c60d2bb9",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B14.png"
+  },
+  {
+    "id": "B15",
+    "path": "art/illustrations/survival/backdrops/works-c-scrapyard.png",
+    "mode": "backdrop",
+    "filename": "works-c-scrapyard.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "fa6bc8dbc7dd1473698d6e7663f83cb9d602e26bdc2865469babb654f0afd79f",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B15.png"
+  },
+  {
+    "id": "B16",
+    "path": "art/illustrations/survival/backdrops/works-d-furnace.png",
+    "mode": "backdrop",
+    "filename": "works-d-furnace.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "96cf2204846b72c17344b5ca9f118b7e8224221d946b1bd54c0393b2190b5c8c",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B16.png"
+  },
+  {
+    "id": "B17",
+    "path": "art/illustrations/survival/backdrops/shrine-a-steps.png",
+    "mode": "backdrop",
+    "filename": "shrine-a-steps.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "adadf40bffc3cf9eff357266d77563abb6772b3090017e1773bea6d953458d52",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B17.png"
+  },
+  {
+    "id": "B18",
+    "path": "art/illustrations/survival/backdrops/shrine-b-nave.png",
+    "mode": "backdrop",
+    "filename": "shrine-b-nave.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "5db0431e3740e26fe84f85b4439ca193b2bee5f582a3eed59bdda9b2708f4833",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B18.png"
+  },
+  {
+    "id": "B19",
+    "path": "art/illustrations/survival/backdrops/shrine-c-cloister.png",
+    "mode": "backdrop",
+    "filename": "shrine-c-cloister.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "89c21cbc060a2ac6749bb21586513cd3b0c1572db2aa35d4200286ac4c63a958",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B19.png"
+  },
+  {
+    "id": "B20",
+    "path": "art/illustrations/survival/backdrops/shrine-d-altar.png",
+    "mode": "backdrop",
+    "filename": "shrine-d-altar.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "ba515a70a0cf93c60face063f95a2d92fe576d58eb0e2c6bdfe6665c051393ad",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B20.png"
+  },
+  {
+    "id": "B21",
+    "path": "art/illustrations/survival/backdrops/rim-a-airlock.png",
+    "mode": "backdrop",
+    "filename": "rim-a-airlock.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "18fbb06764c38b5cc597075e4f380ba1fb3b1c58d73b6c6ac599dd0d40ead8eb",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B21.png"
+  },
+  {
+    "id": "B22",
+    "path": "art/illustrations/survival/backdrops/rim-b-hangar.png",
+    "mode": "backdrop",
+    "filename": "rim-b-hangar.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "8074206e1f9e4a760882dec8cdbf0f38a2ef5dd63460a2fded10dd192f0375ac",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B22.png"
+  },
+  {
+    "id": "B23",
+    "path": "art/illustrations/survival/backdrops/rim-c-pad.png",
+    "mode": "backdrop",
+    "filename": "rim-c-pad.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "a398789445519c18ce9d8e6c42f2d2e91f1efb985b819e894e9e629a93741820",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B23.png"
+  },
+  {
+    "id": "B24",
+    "path": "art/illustrations/survival/backdrops/rim-d-core.png",
+    "mode": "backdrop",
+    "filename": "rim-d-core.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "status": "review-candidate",
+    "sha256": "48aabb75df07c14ae542c905896b50cfa45efa8ed937613efdb6c2704398b2ec",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/B24.png"
+  },
+  {
+    "id": "K001",
+    "path": "art/sprites/kit/ahoc/ground-1.png",
+    "mode": "ground",
+    "filename": "ground-1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "5fc09820719bb74e50870b6a3bee8729632eb5fbe38a9d91283a35ee14f842d6",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K001.png"
+  },
+  {
+    "id": "K002",
+    "path": "art/sprites/kit/ahoc/ground-2.png",
+    "mode": "ground",
+    "filename": "ground-2.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "33a4fb4792b596533530db57bab437a286aeee2b0cfa4f105b31529e03c3e5b2",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K002.png",
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/ground-2.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K002.png",
+    "native_sha256": "af49a89188682cc8786c49bfc4858723bd410eda2daed2a535d83ce9cedae0c5"
+  },
+  {
+    "id": "K004",
+    "path": "art/sprites/kit/ahoc/decal-rubble.png",
+    "mode": "sprite",
+    "filename": "decal-rubble.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "1ec10051fa0617f5c25cc464b60460b2ba463e362a7d9b61bad513834138cded",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K004.png",
+    "alpha_bbox": [
+      53,
+      28,
+      201,
+      199
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "id": "K005",
+    "path": "art/sprites/kit/ahoc/decal-toxic.png",
+    "mode": "sprite",
+    "filename": "decal-toxic.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "a48e0ec9520ba8f39de34734bb8653cdf5950d669c213bc1c1ec588f9ae6e522",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K005.png",
+    "alpha_bbox": [
+      41,
+      56,
+      229,
+      201
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "id": "K007",
+    "path": "art/sprites/kit/ahoc/wall-straight.png",
+    "mode": "wall",
+    "filename": "wall-straight.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "1415ebe13e1ae807489dc8c98693138e453bffe0b9613c06b72dbb1784bfdbb8",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K007.png",
+    "alpha_bbox": [
+      0,
+      41,
+      256,
+      217
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "id": "K008",
+    "path": "art/sprites/kit/ahoc/wall-corner.png",
+    "mode": "wall",
+    "filename": "wall-corner.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "04a1e2ad4bda920148b5550f85b82c60c533ff69762401e8843bdb814fabf3ca",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K008.png",
+    "alpha_bbox": [
+      0,
+      64,
+      192,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-corner.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K008.png",
+    "native_sha256": "ff3bea3d7f57434a4294fe2a85ef628fee2cd0d14d5bc80fcf9ae31bb21c36e3"
+  },
+  {
+    "id": "K009",
+    "path": "art/sprites/kit/ahoc/wall-end.png",
+    "mode": "wall",
+    "filename": "wall-end.png",
+    "native_dimensions": [
+      1774,
+      887
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "0e7c051a858096f6db4ff615ce61293a9fef7124b9f35516bfdd724ef354cb3b",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K009.png",
+    "alpha_bbox": [
+      0,
+      64,
+      128,
+      192
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-end.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K009.png",
+    "native_sha256": "57bcf57aa9106352b585fb6e8803046e4a4dabaf2298dc55be9f7cb903034a23"
+  },
+  {
+    "id": "K010",
+    "path": "art/sprites/kit/ahoc/wall-door.png",
+    "mode": "wall",
+    "filename": "wall-door.png",
+    "native_dimensions": [
+      1261,
+      1247
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "24928e51eeb509286989c4c7130e8d6a7aa7115a97f2a39de1bbbd8c2f2cc086",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K010.png",
+    "alpha_bbox": [
+      0,
+      64,
+      256,
+      192
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-door.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K010.png",
+    "native_sha256": "606aa6553845e9cf90dab696c3f7c9dc64520baed03dc671a1ecd6555a6ebac3"
+  },
+  {
+    "id": "K011",
+    "path": "art/sprites/kit/ahoc/wall-broken.png",
+    "mode": "wall",
+    "filename": "wall-broken.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "8103627a2eee908fc8f0cc56abfa1865755214db8a65f36fe9c45d25f47b2d18",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K011.png",
+    "alpha_bbox": [
+      0,
+      64,
+      256,
+      192
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-broken.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K011.png",
+    "native_sha256": "277ce7d4def571469f7c953211ac187350253c61171a9f0e4a481abd7bb87571"
+  },
+  {
+    "id": "K012",
+    "path": "art/sprites/kit/ahoc/crate.png",
+    "mode": "sprite",
+    "filename": "crate.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "a14d7e9e09f4ad2dcc982a4ff6823ad019eed7143735cd130163ec40f5c9d6e3",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K012.png",
+    "alpha_bbox": [
+      43,
+      43,
+      213,
+      212
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/crate.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K012.png",
+    "native_sha256": "c5fee2b57936be93bd8f9adb5be393abc739dd88f1eaeb1f26208c6b2ec439bf"
+  },
+  {
+    "id": "K014",
+    "path": "art/sprites/kit/ahoc/low_wall.png",
+    "mode": "sprite",
+    "filename": "low_wall.png",
+    "native_dimensions": [
+      1774,
+      887
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "b1d5a29ab76fdf9d168bbee9987d942db634c2017a0a50afb2bac292dc563d78",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K014.png",
+    "alpha_bbox": [
+      26,
+      112,
+      230,
+      144
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/low_wall.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K014.png",
+    "native_sha256": "95deac88372df8ab61708d840ccb070e61ca61d1ecfe11056d1325057e363ff5"
+  },
+  {
+    "id": "K015",
+    "path": "art/sprites/kit/ahoc/pillar.png",
+    "mode": "sprite",
+    "filename": "pillar.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "65de18a1d394576b0911a022d6c200b2b393e4c03cffa6c78ad4f81fe4b57cc0",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K015.png",
+    "alpha_bbox": [
+      65,
+      32,
+      197,
+      224
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "id": "K017",
+    "path": "art/sprites/kit/ahoc/barricade.png",
+    "mode": "sprite",
+    "filename": "barricade.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "719643de3e833aa2c9da5f38f16d919c9d59b69c2bd673edefcc8424be302166",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K017.png",
+    "alpha_bbox": [
+      26,
+      91,
+      230,
+      164
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/barricade.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K017.png",
+    "native_sha256": "3a78b9b1d645459d37f2b1c9fc3c89f87b43ebe0b4a38a50ed354f0833294440"
+  },
+  {
+    "id": "K019",
+    "path": "art/sprites/kit/ahoc/door.png",
+    "mode": "sprite",
+    "filename": "door.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "8e287953c5a40ac3527670572cbe64387b58dbb3f247319ee798846f2364d75d",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K019.png",
+    "alpha_bbox": [
+      49,
+      112,
+      207,
+      143
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/door.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K019.png",
+    "native_sha256": "5d09e331164e23c8af1230982d56bf012e96d801d39427f83e987239fdf9778f"
+  },
+  {
+    "id": "K020",
+    "path": "art/sprites/kit/ahoc/door-open.png",
+    "mode": "sprite",
+    "filename": "door-open.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "b41a54cbc1603af2eb618b25974301f32d7d9967005d3a6fbf177c8274851593",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K020.png",
+    "alpha_bbox": [
+      49,
+      113,
+      207,
+      143
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/door-open.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K020.png",
+    "native_sha256": "2502c8eec310a68f828f5fd11ad75292adc0679cb259790c2cb66cef5eaf013c"
+  },
+  {
+    "id": "K021",
+    "path": "art/sprites/kit/ahoc/hole.png",
+    "mode": "sprite",
+    "filename": "hole.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "243094ae87f445537605f8d2c2fc0106bf48e0dd3090330bc897da8f35f724ba",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K021.png",
+    "alpha_bbox": [
+      37,
+      28,
+      224,
+      230
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "id": "K023",
+    "path": "art/sprites/kit/ahoc/fire.png",
+    "mode": "sprite",
+    "filename": "fire.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "0168425d519e3ae1ec5b529227703baaf6a27766fb6505382f7ee6fe7b1f5371",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K023.png",
+    "alpha_bbox": [
+      54,
+      25,
+      227,
+      228
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "id": "K024",
+    "path": "art/sprites/kit/ahoc/barrel.png",
+    "mode": "sprite",
+    "filename": "barrel.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "5ce095f78fdd5f43fdb3943db2a838099404ebae7e45529670e86299e0f9d119",
+    "source": "art/_archive/survival/2026-11-13-trial/native-renders/K024.png",
+    "alpha_bbox": [
+      55,
+      25,
+      203,
+      229
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "id": "K025",
+    "path": "art/sprites/kit/ahoc/container.png",
+    "mode": "sprite",
+    "filename": "container.png",
+    "native_dimensions": [
+      1774,
+      887
+    ],
+    "export_dimensions": [
+      384,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "5a520d33c7e5cccfa799566f6f2e33717a3b5d7f53404b81ee2932430bf8281f",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K025.png",
+    "alpha_bbox": [
+      39,
+      68,
+      345,
+      188
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/container.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K025.png",
+    "native_sha256": "bc8c1cd20928000c0e01d75d7577521177a5591894651dc28cbd8737653cbd66"
+  },
+  {
+    "id": "K026",
+    "path": "art/sprites/kit/ahoc/terminal.png",
+    "mode": "sprite",
+    "filename": "terminal.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "afafad563dba46db1faf7fd037a99091ecffe178c95febe6d9fa5af911bd098c",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K026.png",
+    "alpha_bbox": [
+      69,
+      76,
+      186,
+      179
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/terminal.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K026.png",
+    "native_sha256": "f31035bfaf617aa258d2c2f86bf9b948e9bc8d8750179fe91487f54fa6506142"
+  },
+  {
+    "id": "K027",
+    "path": "art/sprites/kit/ahoc/lamp.png",
+    "mode": "sprite",
+    "filename": "lamp.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      256,
+      256
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "sha256": "baccda62b2de89c88b3aefacf0587d915860c2925eb4f191819b1bf29bdb9355",
+    "source": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K027.png",
+    "alpha_bbox": [
+      65,
+      73,
+      191,
+      183
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/lamp.png",
+    "previous_source": "art/_archive/survival/2026-11-13-trial/native-renders/K027.png",
+    "native_sha256": "04d74d451ffb99f0a5ea22057c537031d3edc6f02eb382a938cac16316c9b2c9"
+  }
+]

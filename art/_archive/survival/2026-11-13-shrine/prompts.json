@@ -1,0 +1,322 @@
+{
+  "K145": {
+    "prompt": "One Project Heaven Cry opaque 1024 square Heavenprint ground repeat for the cathedral district. GROUND, opaque 1024 x 1024 seamless tile. Pale flagstone with fine dark joints and gentle wear. Materials: weathered pale flagstone, ivory and ash grey, violet shadows, sparse dull gold wax marks. Hand-painted gouache with dry brush and subtle ink, muted mid-dark overall so gameplay overlays are legible, restrained texture and no single large repeated focal object. Exact orthographic overhead, flat uniform illumination and clear even edges. Left/right and top/bottom must join when repeated. No figures, text, props, shadows, vignette, border, glow or perspective. First reference for the setting palette, second only for repeat unit layout and paint scale.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/ground-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K146": {
+    "prompt": "One Project Heaven Cry opaque 1024 square Heavenprint ground repeat for the cathedral district. GROUND, opaque 1024 x 1024 seamless tile. Dark polished stone floor with a faint ivory inlay line pattern (abstract geometric, no symbols that read as writing). Materials: weathered pale flagstone, ivory and ash grey, violet shadows, sparse dull gold wax marks. Hand-painted gouache with dry brush and subtle ink, muted mid-dark overall so gameplay overlays are legible, restrained texture and no single large repeated focal object. Exact orthographic overhead, flat uniform illumination and clear even edges. Left/right and top/bottom must join when repeated. No figures, text, props, shadows, vignette, border, glow or perspective. First reference for the setting palette, second only for repeat unit layout and paint scale.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/ground-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K147": {
+    "prompt": "One Project Heaven Cry opaque 1024 square Heavenprint ground repeat for the cathedral district. GROUND, opaque 1024 x 1024 seamless tile. Damaged floor: cracked and chipped flagstone, fallen plaster dust, a few weeds in the joints. Materials: weathered pale flagstone, ivory and ash grey, violet shadows, sparse dull gold wax marks. Hand-painted gouache with dry brush and subtle ink, muted mid-dark overall so gameplay overlays are legible, restrained texture and no single large repeated focal object. Exact orthographic overhead, flat uniform illumination and clear even edges. Left/right and top/bottom must join when repeated. No figures, text, props, shadows, vignette, border, glow or perspective. First reference for the setting palette, second only for repeat unit layout and paint scale.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/ground-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K148": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: limestone chunks, plaster and gilded fragments. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/decal-rubble.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K149": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a dark violet-black ichor slick (the toxic spill), soft edge.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/decal-toxic.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K150": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a candle-soot and burn mark, soft edge.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/decal-scorch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K151": {
+    "prompt": "Repaint the EXACT alpha silhouette of the first reference as one 2D tactical map tile. The footprint is ONE RECTANGLE, the middle half of the canvas vertically, from left edge to right edge. Absolutely no turn, branch or angle. A narrow violet grey joint runs straight left to right. Second reference is the corresponding overhead tile from another setting, use it for exact position and shape, not color. This tile is pale aged limestone with small ivory chips and a thin cool violet-grey mortar centerline. Third image shows the setting and paint style. Orthographic plan looking directly down. Opaque gouache and ink within the footprint, genuinely transparent alpha everywhere else. No floor, background, cast shadow or perspective. Keep rim on exposed edges only. Paint to flat cuts without a dark end rim.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-shrine/superseded/K151.png",
+      "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, straight, 256 x 256 cell: a carved pale limestone wall with a gold-leaf cap line and a dark base band, running left to right, half a tile thick, flat cut ends at the cell edges.\nThe footprint from image 1 is exact. Only top cap visible. Use narrow muted violet-grey joint on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+        "art/illustrations/survival/backdrops/shrine-a-steps.png",
+        "art/sprites/kit/ahoc/wall-straight.png"
+      ]
+    }
+  },
+  "K152": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.\nThe footprint from image 1 is exact. Only top cap visible. Use narrow muted violet-grey joint on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/wall-corner.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K153": {
+    "prompt": "Repaint the EXACT alpha silhouette of the first reference as one 2D tactical map tile. The footprint is ONE RECTANGLE, in the left half of the canvas and the central half in height. Its left side touches the left edge, the right side ends at the middle. No bend, other arm or angle. Second reference is the corresponding overhead tile from another setting, use it for exact position and shape, not color. This tile is pale aged limestone with small ivory chips and a thin cool violet-grey mortar centerline. Third image shows the setting and paint style. Orthographic plan looking directly down. Opaque gouache and ink within the footprint, genuinely transparent alpha everywhere else. No floor, background, cast shadow or perspective. Keep rim on exposed edges only. Paint to flat cuts without a dark end rim.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+      "art/sprites/kit/ahoc/wall-end.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-shrine/superseded/K153.png",
+      "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.\nThe footprint from image 1 is exact. Only top cap visible. Use narrow muted violet-grey joint on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+        "art/illustrations/survival/backdrops/shrine-a-steps.png",
+        "art/sprites/kit/ahoc/wall-end.png"
+      ]
+    }
+  },
+  "K154": {
+    "prompt": "Repaint the EXACT alpha silhouette of the first reference as one 2D tactical map tile. The footprint is TWO DISJOINT horizontal rectangular wall caps, each a quarter-cell wide. Each touches only its outer left or right edge. The center half is blank alpha. No bend, leg or connecting structure. Second reference is the corresponding overhead tile from another setting, use it for exact position and shape, not color. This tile is pale aged limestone with small ivory chips and a thin cool violet-grey mortar centerline. Third image shows the setting and paint style. Orthographic plan looking directly down. Opaque gouache and ink within the footprint, genuinely transparent alpha everywhere else. No floor, background, cast shadow or perspective. Keep rim on exposed edges only. Paint to flat cuts without a dark end rim.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+      "art/sprites/kit/ahoc/wall-door.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-shrine/superseded/K154.png",
+      "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.\nThe footprint from image 1 is exact. Only top cap visible. Use narrow muted violet-grey joint on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+        "art/illustrations/survival/backdrops/shrine-a-steps.png",
+        "art/sprites/kit/ahoc/wall-door.png"
+      ]
+    }
+  },
+  "K155": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.\nThe footprint from image 1 is exact. Only top cap visible. Use narrow muted violet-grey joint on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/wall-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K156": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCRATE (`crate`, half cover, destructible): a carved wooden offering chest with an iron band; about a metre, waist-high look, centred.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K157": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/crate-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K158": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nLOW WALL (`low_wall`, half cover): a waist-high stone balustrade or low chancel rail, one tile long; fills the width of the tile, low and clearly waist-high with a visible light top face.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/low_wall.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K159": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nPILLAR (`pillar`, full cover, destructible): a round fluted limestone column with a gilded capital seen from above; strong dark edge, reads as taller than a person, fits one tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/pillar.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K160": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nPILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/pillar-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K161": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nBARRICADE (`barricade`, full cover, destructible): a full-height barricade of stacked pews and altar cloth, tall enough to hide behind; fills the width of the tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/barricade.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K162": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nBARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/barricade-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K163": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDOOR closed (`door`): a tall double wooden door with iron studs in a stone arch, closed; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.\nSlim horizontal overhead slab edge with two jamb caps. No front face, architecture or arch.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/door.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K164": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDOOR open (`door`, open state): the same door swung open, threshold of pale stone visible; the same door seen open, same cell.\nOnly two disjoint small overhead jambs, entire passage transparent. No threshold plate or elevation.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/door-open.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K165": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nHOLE (`hole`): a round open well or floor shaft with a stone lip, black depth; round or square, fits one tile, the depth reads as dark and void.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/hole.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K166": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nTRAP (`trap`): a pressure tile trap: one raised flagstone with a hairline seam and dust spilled; deliberately subtle but readable at 64 px.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/trap.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K167": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nFIRE (`fire`): a toppled candle stand fire: flames seen from above, orange and gold; fits one tile, bright core, no glow or bloom, flat painted flames.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/fire.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K168": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nBARREL (`barrel`, half cover, explodes): a sealed oil jar, round, ceramic with a wax seal and a faint red mark (explosive); about 60 cm across, reads as dangerous.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/barrel.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K169": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a stone sarcophagus or long reliquary chest, a tile and a half long, waist-high.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/container.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K170": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nTERMINAL (`terminal`): a lectern-like reading stand with a softly glowing blank plate, no text; fits one tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/terminal.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K171": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nLAMP (`lamp`): a tall iron candle stand with a cluster of lit candles, seen from above, gold glow; fits one tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/lamp.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K172": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nTURRET (`turret`, half cover): a consecrated emplaced turret: a bronze-and-stone gun cage on a plinth (waist-high); fits one tile, a single clear barrel direction (up).\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/turret.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K173": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCAMERA (`camera`): a small carved lantern eye on a bracket (camera), seen from above; small, about a third of a tile, centred.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/camera.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K174": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nALARM (`alarm`): a hanging prayer-bell on a short frame (alarm), flat from above; small, about a third of a tile, centred.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/alarm.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K175": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCACHE (`cache`, loot): a locked reliquary box with a gold clasp and a violet cloth; about a metre, waist-high look.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/cache.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K176": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nEXIT (`exit`, the way out): a stair-head going down or a small door arch lit gold, with a worn threshold, no letters; fits one tile, reads as a place to leave by.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/exit.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K177": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A fallen prayer cloth, plain violet, no patterns. Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/dress-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K178": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A spill of candle wax and a few burnt-out candles. Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/dress-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K179": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A scatter of dried petals. Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/dress-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K180": {
+    "prompt": "One Cathedral District tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material pale flagstone, pale marble, dark wood, muted violet cloth, bone ivory candle wax and small matte gold touches. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): An abstract floor inlay ring in gold line (geometric, no letters). Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/sprites/kit/ahoc/dress-4.png"
+    ],
+    "imagegen": "built-in"
+  }
+}

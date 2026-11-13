@@ -1,0 +1,312 @@
+{
+  "K073": {
+    "prompt": "Paint a single opaque square 1024×1024 repeatable Project Heaven Cry Daggerfall battlefield terrain. GROUND, opaque 1024 x 1024 seamless tile. Dry cracked grey-brown mud with fine ash and tiny stones. Heavenprint hand-painted gouache and restrained ink with visible brush shape, ashen dead world with charcoal, grey dried mud, soot, burnt wood hues, muted smoky orange #F68A38 undertones. Exact orthographic vertical overhead view. Light flat and even across the entire texture. Quiet, low-contrast floor for grid and figures. Left right and top bottom have the same material values and continuous features align at identical positions. Use the first reference for palette and the second for repeat layout only. No horizon, people, text, border, vignette, cast shadow, or one large repeated landmark.",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/ground-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K074": {
+    "prompt": "Paint a single opaque square 1024×1024 repeatable Project Heaven Cry Daggerfall battlefield terrain. GROUND, opaque 1024 x 1024 seamless tile. Churned dark mud and ash with wheel and boot ruts, wet-dark. Heavenprint hand-painted gouache and restrained ink with visible brush shape, ashen dead world with charcoal, grey dried mud, soot, burnt wood hues, muted smoky orange #F68A38 undertones. Exact orthographic vertical overhead view. Light flat and even across the entire texture. Quiet, low-contrast floor for grid and figures. Left right and top bottom have the same material values and continuous features align at identical positions. Use the first reference for palette and the second for repeat layout only. No horizon, people, text, border, vignette, cast shadow, or one large repeated landmark.",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/ground-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K075": {
+    "prompt": "Paint a single opaque square 1024×1024 repeatable Project Heaven Cry Daggerfall battlefield terrain. GROUND, opaque 1024 x 1024 seamless tile. Damaged ground: cratered blasted earth, glassy fused patches, bone-pale dust. Heavenprint hand-painted gouache and restrained ink with visible brush shape, ashen dead world with charcoal, grey dried mud, soot, burnt wood hues, muted smoky orange #F68A38 undertones. Exact orthographic vertical overhead view. Light flat and even across the entire texture. Quiet, low-contrast floor for grid and figures. Left right and top bottom have the same material values and continuous features align at identical positions. Use the first reference for palette and the second for repeat layout only. No horizon, people, text, border, vignette, cast shadow, or one large repeated landmark.",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/ground-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K076": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nDECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: broken plate, chunks of fused stone and bent wire. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/decal-rubble.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K077": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nDECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: an acid-green and rust slick pooled in cracks (the toxic spill), soft edge.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/decal-toxic.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K078": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nDECAL (hazard and burnt ground), transparent 256 x 256. Scorch: black ash ring with ember specks fading outward.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/decal-scorch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K079": {
+    "prompt": "Draw one straight overhead Daggerfall ruined wall cap for Project Heaven Cry. The first reference is the exact transparent silhouette: a left-to-right flat band half of a square cell, centered, no margins left or right. Match the second reference wall corner exactly in matte weathered soot-dark grey steel, chipped warm bronze-grey edges, and a narrow black seam centered across the band. Keep the slate/steel material tone and scuffed brush pattern, painted Heavenprint gouache. Absolutely vertically overhead, only the flat horizontal cap top with no vertical elevation. The dark outline appears along the two long exposed edges only; both flat ends carry the paint and seam cleanly to the canvas edge. Transparent top and bottom quarters. No sandbags, separate props, shadow, glow or horizon.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+      "art/_archive/survival/2026-11-13-field/native-renders/K080.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-field/superseded/K079.png",
+      "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nWALL piece, straight, 256 x 256 cell: a packed-earth and sandbag trench wall seen from above, dark cut band with a sandbag cap, running left to right, half a tile thick, flat cut ends at the cell edges.\nReference 1 supplies the exact shape and direction. Reference 3 shows which exposed edges get ink. Repaint only the cap in Daggerfall ashen scorched material. Center a narrow soot-black seam along the band, turning with the corner. Wall band is half the cell thick and runs flush to its connecting edges without a dark end line. Alpha outside; transparent doorway or breach.\n",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+        "art/illustrations/survival/backdrops/field-a-ridge.png",
+        "art/sprites/kit/city/wall-straight.png"
+      ]
+    }
+  },
+  "K080": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nWALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.\nReference 1 supplies the exact shape and direction. Reference 3 shows which exposed edges get ink. Repaint only the cap in Daggerfall ashen scorched material. Center a narrow soot-black seam along the band, turning with the corner. Wall band is half the cell thick and runs flush to its connecting edges without a dark end line. Alpha outside; transparent doorway or breach.\nThe left edge at mid-height is the entry, the bottom edge at mid-width the exit. Turn east then south.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/city/wall-corner.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K081": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nWALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.\nReference 1 supplies the exact shape and direction. Reference 3 shows which exposed edges get ink. Repaint only the cap in Daggerfall ashen scorched material. Center a narrow soot-black seam along the band, turning with the corner. Wall band is half the cell thick and runs flush to its connecting edges without a dark end line. Alpha outside; transparent doorway or breach.\n",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/city/wall-end.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K082": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nWALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.\nReference 1 supplies the exact shape and direction. Reference 3 shows which exposed edges get ink. Repaint only the cap in Daggerfall ashen scorched material. Center a narrow soot-black seam along the band, turning with the corner. Wall band is half the cell thick and runs flush to its connecting edges without a dark end line. Alpha outside; transparent doorway or breach.\n",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/city/wall-door.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K083": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nWALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.\nReference 1 supplies the exact shape and direction. Reference 3 shows which exposed edges get ink. Repaint only the cap in Daggerfall ashen scorched material. Center a narrow soot-black seam along the band, turning with the corner. Wall band is half the cell thick and runs flush to its connecting edges without a dark end line. Alpha outside; transparent doorway or breach.\n",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/city/wall-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K084": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nCRATE (`crate`, half cover, destructible): a battered ammunition crate, scorched wood with a steel strap; about a metre, waist-high look, centred.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K085": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nCRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/crate-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K086": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nLOW WALL (`low_wall`, half cover): a waist-high line of sandbags, one tile long, with a worn canvas look; fills the width of the tile, low and clearly waist-high with a visible light top face.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/low_wall.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K087": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nPILLAR (`pillar`, full cover, destructible): a burnt stump or broken stone pylon, blackened, round; strong dark edge, reads as taller than a person, fits one tile.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/pillar.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K088": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nPILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/pillar-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K089": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nBARRICADE (`barricade`, full cover, destructible): a full-height barricade of welded plate and stakes, bent and hasty, tall enough to hide behind; fills the width of the tile.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/barricade.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K090": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nBARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/barricade-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K091": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nDOOR closed (`door`): a field bunker hatch of heavy plate, closed, rivets and a wheel lock; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\nThe door is only a narrow horizontal top-edge bar with small jambs, no broad vertical face.",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/door.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K092": {
+    "prompt": "Project Heaven Cry Daggerfall open gate. Paint only two disjoint very small scorched steel rectangular jamb top caps, one to the left and one to the right. The slab has retracted fully into the right jamb. No part of the gate extends into the large transparent opening. The entire central space is true transparency with no floor, threshold, ledge or wall. Strictly vertically overhead plan, no front, side or arch. Gouache and ink, muted charcoal steel with tiny burnt ochre wear, no glowing, cast shadow or letters. Match reference 2 for spacing and camera and use Daggerfall reference 1 for weathering. The two jambs are collinear horizontally, centered in the square.",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/city/door-open.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-field/superseded/K092.png",
+      "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nDOOR open (`door`, open state): the same bunker hatch swung open, black stair below, threshold clear; the same door seen open, same cell.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\nTop view of two small jambs and a narrow edge of the swung slab, the passage clear. No arch or front face.",
+      "references": [
+        "art/illustrations/survival/backdrops/field-a-ridge.png",
+        "art/sprites/kit/ahoc/door-open.png"
+      ]
+    }
+  },
+  "K093": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nHOLE (`hole`): a deep round shell crater, dark depth, torn lip of earth; round or square, fits one tile, the depth reads as dark and void.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/hole.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K094": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nTRAP (`trap`): a half-buried mine: a round pressure plate and a scatter of disturbed earth; deliberately subtle but readable at 64 px.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/trap.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K095": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nFIRE (`fire`): burning wreckage: flames and black smoke seen from above, orange; fits one tile, bright core, no glow or bloom, flat painted flames.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/fire.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K096": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nBARREL (`barrel`, half cover, explodes): a scorched fuel drum with a dented side and a red band; about 60 cm across, reads as dangerous.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/barrel.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K097": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nCONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a dented field supply container, a tile and a half long, scorched and half buried, waist-high.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/container.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K098": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nTERMINAL (`terminal`): a salvaged field radio terminal on a battered case, cracked glass, faint amber glow, no text; fits one tile.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/terminal.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K099": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nLAMP (`lamp`): a tall field flare stand with a hooded lamp, seen from above, dull orange glow; fits one tile.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/lamp.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K100": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nTURRET (`turret`, half cover): an emplaced field gun on a two-wheel mount behind a shield (waist-high cover); fits one tile, a single clear barrel direction (up).\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/turret.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K101": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nCAMERA (`camera`): a lashed pole with a cracked optics box (camera), seen from above; small, about a third of a tile, centred.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/camera.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K102": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nALARM (`alarm`): a hand-cranked siren post, flat as seen from above; small, about a third of a tile, centred.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/alarm.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K103": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nCACHE (`cache`, loot): a buried supply cache under a torn tarp, lashed down; about a metre, waist-high look.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/cache.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K104": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nEXIT (`exit`, the way out): a rope-marked track out of the field: two stakes with a rag between them and a worn path, no letters; fits one tile, reads as a place to leave by.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/exit.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K105": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A fallen unit banner with no emblem, a plain torn cloth. Low, flat, nothing taller than a few centimetres.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/dress-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K106": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Barbed wire coil lying on the ground. Low, flat, nothing taller than a few centimetres.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/dress-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K107": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Bone-pale rib or plate fragments half in the dust (no faces, no remains that read as bodies). Low, flat, nothing taller than a few centimetres.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/dress-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K108": {
+    "prompt": "One Daggerfall battlefield tactical kit piece for Project Heaven Cry. Style is opaque matte Heavenprint gouache and restrained ink, bold marks, chips and broken directional strokes, ash-grey and burnt charcoal, scorched steel plate, sandbag canvas, burned wood and ivory dust, accents muted smoky orange #F68A38. Exact vertical orthographic plan from straight overhead. No perspective, large side faces, cast or contact shadow, glow, figure, text, ground behind the subject, UI or border. True transparent alpha. One tile 1.5m, export 256 square with an 80% safe box except walls and container, bold readable shape at 64px. One asset only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A broken wooden stake line with rags. Low, flat, nothing taller than a few centimetres.\nReference 2 is a silhouette and scale cue; reinterpret its shape in Daggerfall materials. Paint only the item, with real transparency between disjoint pieces.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/sprites/kit/ahoc/dress-4.png"
+    ],
+    "imagegen": "built-in"
+  }
+}

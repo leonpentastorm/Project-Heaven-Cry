@@ -1,0 +1,974 @@
+[
+  {
+    "id": "P025",
+    "path": "art/illustrations/survival/map/map-display.png",
+    "subject": "(direction A) An **in-world tactical display**: a dark table or a wall of a command room, a raised relief of broken ground and districts in dark slate with thin etched ivory contour lines and faint cyan `#4FC8DF` grid ticks at the edges only, a few brass pins and cables, a lamp's pool of light on one side. Blank, no labels or lettering, no parchment, no paper.",
+    "group": "path-map",
+    "operation": "new"
+  },
+  {
+    "id": "P026",
+    "path": "art/illustrations/survival/map/map-aerial.png",
+    "subject": "(direction B) A **painted aerial** of a district at dusk, as if seen from a drone high over it: a river bend, rooftops and courtyards in layered Heavenprint planes, roads as pale thread-like lines, a rim of mist and darkness at the edges, calm open areas of plaza, field and water where nodes can sit. No labels, no UI, no map symbols, no parchment.",
+    "group": "path-map",
+    "operation": "new"
+  },
+  {
+    "id": "P027",
+    "path": "art/illustrations/survival/nodes/shop-quartermaster.png",
+    "subject": "A quartermaster's counter in an AHOC chapter store: a steel counter with a mesh cage, shelves of boxed kit and rifles in racks behind, a ledger and a bell, a green-shaded lamp. Ordered, military, a little dusty.",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P028",
+    "path": "art/illustrations/survival/nodes/shop-alley-dealer.png",
+    "subject": "A back-alley dealer's pitch in Central City: a canvas awning, a folding table of mismatched goods under a bare bulb, a hanging coat of pockets, crates, wet cobbles, a lookout's empty stool.",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P029",
+    "path": "art/illustrations/survival/nodes/shop-faction-trader.png",
+    "subject": "A faction trader's wagon or stall at the frontier: a Smetanita-style lacquer-black and brass pavilion with a bright lamp, drawers of cores and rounds, bundles of gold-coin pouches; rich, polished, slightly sinister. No logos or lettering.",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P030",
+    "path": "art/illustrations/survival/nodes/rest-safe-room.png",
+    "subject": "A safe room: a reinforced cellar with a cot, a medical kit, a stove, a lamp, a rug over concrete, a door barred from inside. Warm, quiet, human.",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P031",
+    "path": "art/illustrations/survival/nodes/rest-campfire.png",
+    "subject": "A campfire under a broken roof: a ruined hall with rafters open to a night sky, a small fire in a ring of stones, a kettle, bedrolls (empty), sparks rising. The warm fire is the only strong light.",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P032",
+    "path": "art/illustrations/survival/nodes/elite-lair.png",
+    "subject": "An Elite's lair: a wide chamber hung with trophies and salvage (no bodies), a throne of crates and plates, chains, a dim red work lamp; threat without a creature in sight.",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P033",
+    "path": "art/illustrations/survival/nodes/boss-door.png",
+    "subject": "A Boss's arena door: a colossal doorway of black stone and iron at the end of a ruined hall, light leaking along its seam, fallen banners, the floor scratched in a wide arc. The most dramatic picture in the set (still no figure).",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P034",
+    "path": "art/illustrations/survival/nodes/reward-cache.png",
+    "subject": "A reward cache: an open armoured locker or sunken vault holding a few wrapped bundles, a glowing core, a pouch of coins (ivory and gold accents), dust motes in one shaft of light. Generic enough to hold any reward.",
+    "group": "node-scenes",
+    "operation": "new"
+  },
+  {
+    "id": "P035",
+    "path": "art/portraits/survival/shop-quartermaster.png",
+    "subject": "An AHOC chapter quartermaster (Factions.md section 0): a broad middle-aged woman with grey-streaked cropped hair, sleeves rolled, a pencil behind her ear, a mesh counter in front, a lamp. Action: weighing a box of rounds in one hand. Emotion: dry patience, \"you again?\".",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P036",
+    "path": "art/portraits/survival/shop-dealer.png",
+    "subject": "A civilian back-alley dealer in Central City (Sector-Earth): a thin, quick man in his thirties with a patched long coat full of inside pockets, stubble, a rolled sleeve, a bare bulb overhead. Action: opening his coat to show the goods. Emotion: friendly and calculating.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P037",
+    "path": "art/portraits/survival/shop-trader.png",
+    "subject": "A faction trader of the Smetanita Conjunction (Factions.md section 4): a poised older woman in lacquer-black and brass, rings, a gold-thread scarf, a small abacus-like ledger. Action: sliding a coin over the counter with one finger. Emotion: amused, in no hurry.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P038",
+    "path": "art/portraits/survival/rest-medic.png",
+    "subject": "A field medic at a rest stop: a tired young man (or woman) in a stained grey medical smock with a stitched plain plus mark patch (never a real-world cross emblem), a lantern, an open satchel. Action: stitching a bandage. Emotion: gentle, exhausted, steady.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P039",
+    "path": "art/portraits/survival/giver-mission.png",
+    "subject": "A mission-giver (an AHOC chapter officer with the suspicion of the truth, Factions.md section 0): a lean man in his fifties in a worn long coat with a ceramic-grey lapel plate, a map case, a dim office. Action: sliding a sealed folder across a desk. Emotion: controlled urgency, hiding something.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P040",
+    "path": "art/portraits/survival/boss-ork-warlord.png",
+    "subject": "(kind `ork`) An Ork warlord (Orks are the Hellraisers' standing enemy, Sector-Earth.md): a huge green-grey-ochre warrior with a broken tusk, daubed war paint in ochre and rust, a patchwork of salvaged plates, a heavy jaw. Action: hefting a nailed club, looking straight at the viewer. Emotion: delighted menace. Nothing recognisable from any game or film.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P041",
+    "path": "art/portraits/survival/elite-crawler.png",
+    "subject": "(kind `crawler`) A Crawler (NPC version 2: a human esper cursed to look like a monster to ordinary eyes; Sector-Earth.md): drawn as the player sees it, a hunched pale thing with too many joints and long dark fingers, but with a human sorrow in the eyes. Action: crouched on a wall edge, one hand raised. Emotion: wary grief. Not a copy of any known monster.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P042",
+    "path": "art/portraits/survival/boss-robot-warframe.png",
+    "subject": "(kind `robot`) A heavy Factory war robot (Sector-Earth.md; MPAT-and-M813.md): a tall ivory-and-charcoal ceramic combat automaton, chipped, a blank pixel-screen face with a single line of light, a stencilled regimental mark (abstract marks, no letters), welded patches. Action: raising one servo gauntlet. Emotion: none; the line of light on its face is the only expression. In the construction language of MPAT, but bigger and a soldier.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P043",
+    "path": "art/portraits/survival/boss-beast-mana-warped.png",
+    "subject": "(kind `beast`) A mana-warped beast: a lean horned hound-bear creature with faint glowing ivory veins along its flanks (mana as nanobots), ash on its fur, a ring of bone plates on its shoulder. Action: low and about to spring. Emotion: hunger, almost sorrow. Painted creature, not a monster-manual illustration.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P044",
+    "path": "art/portraits/survival/boss-upper-realm-patch.png",
+    "subject": "(kind `upper_realm`) An upper-realm \"patch\": a Celestial's counter to a mistake, a hero made to correct something (World Bible, \"Heroes are patches\"): a tall, immaculate figure in a pale armoured coat with a faint halo of straight lines behind the head, a perfect calm face that is slightly too symmetrical, hands empty. Action: standing quite still, one hand opening. Emotion: serene and mechanical, like a rule being applied. No wings, no religious emblem.",
+    "group": "portraits",
+    "operation": "new"
+  },
+  {
+    "id": "P045",
+    "path": "art/icons/gear/mag-pistol_32.png",
+    "subject": "(-v2) Pistol magazine (.32 Decrkm): a **single, fat, slightly curved stick** with a visible bright brass round at the top, a heavy base plate; 25% wider than before. **At 32 px:** a short fat curve, not a thin sliver.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P046",
+    "path": "art/icons/gear/mag-smg_32.png",
+    "subject": "(-v2) SMG magazine (.32 Decrkm): a **long straight stick, very tall, with a clearly stepped ribbed body and a bright base plate**; twice the height of the pistol one. **At 32 px:** tall and ribbed.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P047",
+    "path": "art/icons/gear/mag-rifle.png",
+    "subject": "(-v2) Rifle magazine: a **broad, strongly curved banana box with three rounds showing at the lip**, a wide bright base plate; the curve is the tell. **At 32 px:** one big banana curve.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P048",
+    "path": "art/icons/gear/mod-extended_mag.png",
+    "subject": "(-v2) Extended magazine: a **very long curved box with a clear step** where the standard mag ends and the extension begins, an amber round at the top, ridged; visibly longer than the pistol, SMG and rifle magazines. **At 32 px:** the longest, with the step visible; amber accent kept.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P049",
+    "path": "art/icons/gear/weapon-service_pistol.png",
+    "subject": "(-v2) Service pistol: the same design (squared slab slide, forward grip cut, open ejection port, stick magazine at the grip base, one faded blue-grey grip panel), **lighter metal**: pale gunmetal slide with bright ivory edge highlights and a mid-grey frame, not charcoal. **At 32 px:** a light slab on the dark panel.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P050",
+    "path": "art/icons/gear/mag-magistrate.png",
+    "subject": "(new) Magistrate heavy-pistol magazine (for `weapon-magistrate_pistol.png`): a **short, thick, heavy single-stack box** with a flat base plate and two large rounds showing; heavy calibre, a plain dark steel body with bright edges; a thin clean-ivory band. **At 32 px:** short and fat, fatter than the pistol magazine.",
+    "group": "gear-followups",
+    "operation": "new"
+  },
+  {
+    "id": "P051",
+    "path": "art/icons/gear/mag-brigade_shotgun.png",
+    "subject": "(new) Brigade auto-shotgun magazine (for `weapon-brigade_auto_shotgun.png`): a **wide flat box magazine with a pale steel plate and a gilt and brass-orange `#F68A38` top rim**, three fat shotgun shells showing at the top with brass bases; Adamantile plate shapes. **At 32 px:** wide and flat, with the orange rim.",
+    "group": "gear-followups",
+    "operation": "new"
+  },
+  {
+    "id": "P052",
+    "path": "art/icons/gear/mag-repeating_crossbow.png",
+    "subject": "(new) Repeating crossbow magazine (for `weapon-repeating_crossbow.png`): a **tall slab-sided wooden-and-iron bolt hopper** with a hinged lid, four short bolts with violet-stained inlay lines showing at the top (Arkvelton), no gun parts. **At 32 px:** a tall box with bolts sticking up.",
+    "group": "gear-followups",
+    "operation": "new"
+  },
+  {
+    "id": "P053",
+    "path": "art/icons/gear/weapon-long_rifle.png",
+    "subject": "(-v2) Long rifle: same design, **thicker silhouette**: a **very long barrel with a clearly oversized scope on top and a heavy bipod folded under the muzzle**; the barrel at least 40% thicker than before. **At 32 px:** the oversized scope and the bipod tell it from the marksman rifle.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P054",
+    "path": "art/icons/gear/weapon-ccec_marksman_rifle.png",
+    "subject": "(-v2) CCEC marksman rifle: same design, **thicker silhouette**: a **stocky semi-auto with a cheek-riser stock, a short thick suppressor-like muzzle and a thin low-profile scope**; shorter and heavier than the long rifle. **At 32 px:** short, thick muzzle and a pale cheek-riser.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P055",
+    "path": "art/icons/gear/weapon-blackpoint_700.png",
+    "subject": "(-v2) The .700 Blackpoint: same design, **much thicker silhouette**: an **absurdly large bore (a huge round muzzle), a short heavy barrel and a massive slab frame** about 60% thicker than the rifles; a visible oversized brass round at the breech. **At 32 px:** the huge round muzzle.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P056",
+    "path": "art/icons/gear/weapon-katana.png",
+    "subject": "(-v2) Katana: a **long slim curved single-edged blade on the diagonal with a plain round guard (tsuba-like, but invented) and a dark wrapped hilt**, a single bright edge highlight along the blade. **At 32 px:** a slim bright curved line, **no ring on the guard larger than a small disc, no gem**; the plain one of the pair.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P057",
+    "path": "art/icons/gear/weapon-emanator_katana.png",
+    "subject": "(-v2) Emanator katana: the same blade shape but with a **large ornate ring guard (a wide circle around the hilt, about 25% of the blade length) and a big violet `#9D7ADC` gem in the guard**, more rounded forms (the Soul line), a violet etched line in the blade. **At 32 px:** the big ring and the bright violet gem; tells it from the plain katana at a glance.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P058",
+    "path": "art/illustrations/survival/cards/title-survival.png",
+    "subject": "The mode's title card: a long road of broken tiles and rubble leading toward a cluster of lit district windows on a dark horizon, three paths forking in the middle ground, a cold sky with a thin crack of gold light high up (Heaven coming down). Hope and dread together.",
+    "group": "cards",
+    "operation": "new"
+  },
+  {
+    "id": "P059",
+    "path": "art/illustrations/survival/cards/run-over.png",
+    "subject": "A \"run over\" card: the same road at night, a single dropped lantern burning low on a cracked step in the foreground, mana motes rising from the ground (the dead feed the air), the lit windows far away and dim. Quiet loss, not gore.",
+    "group": "cards",
+    "operation": "new"
+  },
+  {
+    "id": "P060",
+    "path": "art/illustrations/survival/cards/run-won.png",
+    "subject": "A \"run won\" card: dawn on the same road, the paths merging into one wide road to a lit city gate, the lantern re-lit and placed on a wall, a pale gold sky, warm ivory light. Earned relief, not triumph.",
+    "group": "cards",
+    "operation": "new"
+  },
+  {
+    "id": "K145",
+    "path": "art/sprites/kit/shrine/ground-1.png",
+    "subject": "GROUND, opaque 1024 x 1024 seamless tile. Pale flagstone with fine dark joints and gentle wear.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K146",
+    "path": "art/sprites/kit/shrine/ground-2.png",
+    "subject": "GROUND, opaque 1024 x 1024 seamless tile. Dark polished stone floor with a faint ivory inlay line pattern (abstract geometric, no symbols that read as writing).",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K147",
+    "path": "art/sprites/kit/shrine/ground-3.png",
+    "subject": "GROUND, opaque 1024 x 1024 seamless tile. Damaged floor: cracked and chipped flagstone, fallen plaster dust, a few weeds in the joints.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K148",
+    "path": "art/sprites/kit/shrine/decal-rubble.png",
+    "subject": "DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: limestone chunks, plaster and gilded fragments. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K149",
+    "path": "art/sprites/kit/shrine/decal-toxic.png",
+    "subject": "DECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a dark violet-black ichor slick (the toxic spill), soft edge.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K150",
+    "path": "art/sprites/kit/shrine/decal-scorch.png",
+    "subject": "DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a candle-soot and burn mark, soft edge.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K151",
+    "path": "art/sprites/kit/shrine/wall-straight.png",
+    "subject": "WALL piece, straight, 256 x 256 cell: a carved pale limestone wall with a gold-leaf cap line and a dark base band, running left to right, half a tile thick, flat cut ends at the cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K152",
+    "path": "art/sprites/kit/shrine/wall-corner.png",
+    "subject": "WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K153",
+    "path": "art/sprites/kit/shrine/wall-end.png",
+    "subject": "WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K154",
+    "path": "art/sprites/kit/shrine/wall-door.png",
+    "subject": "WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K155",
+    "path": "art/sprites/kit/shrine/wall-broken.png",
+    "subject": "WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K156",
+    "path": "art/sprites/kit/shrine/crate.png",
+    "subject": "CRATE (`crate`, half cover, destructible): a carved wooden offering chest with an iron band; about a metre, waist-high look, centred.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K157",
+    "path": "art/sprites/kit/shrine/crate-broken.png",
+    "subject": "CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K158",
+    "path": "art/sprites/kit/shrine/low_wall.png",
+    "subject": "LOW WALL (`low_wall`, half cover): a waist-high stone balustrade or low chancel rail, one tile long; fills the width of the tile, low and clearly waist-high with a visible light top face.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K159",
+    "path": "art/sprites/kit/shrine/pillar.png",
+    "subject": "PILLAR (`pillar`, full cover, destructible): a round fluted limestone column with a gilded capital seen from above; strong dark edge, reads as taller than a person, fits one tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K160",
+    "path": "art/sprites/kit/shrine/pillar-broken.png",
+    "subject": "PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K161",
+    "path": "art/sprites/kit/shrine/barricade.png",
+    "subject": "BARRICADE (`barricade`, full cover, destructible): a full-height barricade of stacked pews and altar cloth, tall enough to hide behind; fills the width of the tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K162",
+    "path": "art/sprites/kit/shrine/barricade-broken.png",
+    "subject": "BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K163",
+    "path": "art/sprites/kit/shrine/door.png",
+    "subject": "DOOR closed (`door`): a tall double wooden door with iron studs in a stone arch, closed; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K164",
+    "path": "art/sprites/kit/shrine/door-open.png",
+    "subject": "DOOR open (`door`, open state): the same door swung open, threshold of pale stone visible; the same door seen open, same cell.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K165",
+    "path": "art/sprites/kit/shrine/hole.png",
+    "subject": "HOLE (`hole`): a round open well or floor shaft with a stone lip, black depth; round or square, fits one tile, the depth reads as dark and void.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K166",
+    "path": "art/sprites/kit/shrine/trap.png",
+    "subject": "TRAP (`trap`): a pressure tile trap: one raised flagstone with a hairline seam and dust spilled; deliberately subtle but readable at 64 px.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K167",
+    "path": "art/sprites/kit/shrine/fire.png",
+    "subject": "FIRE (`fire`): a toppled candle stand fire: flames seen from above, orange and gold; fits one tile, bright core, no glow or bloom, flat painted flames.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K168",
+    "path": "art/sprites/kit/shrine/barrel.png",
+    "subject": "BARREL (`barrel`, half cover, explodes): a sealed oil jar, round, ceramic with a wax seal and a faint red mark (explosive); about 60 cm across, reads as dangerous.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K169",
+    "path": "art/sprites/kit/shrine/container.png",
+    "subject": "CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a stone sarcophagus or long reliquary chest, a tile and a half long, waist-high.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K170",
+    "path": "art/sprites/kit/shrine/terminal.png",
+    "subject": "TERMINAL (`terminal`): a lectern-like reading stand with a softly glowing blank plate, no text; fits one tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K171",
+    "path": "art/sprites/kit/shrine/lamp.png",
+    "subject": "LAMP (`lamp`): a tall iron candle stand with a cluster of lit candles, seen from above, gold glow; fits one tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K172",
+    "path": "art/sprites/kit/shrine/turret.png",
+    "subject": "TURRET (`turret`, half cover): a consecrated emplaced turret: a bronze-and-stone gun cage on a plinth (waist-high); fits one tile, a single clear barrel direction (up).",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K173",
+    "path": "art/sprites/kit/shrine/camera.png",
+    "subject": "CAMERA (`camera`): a small carved lantern eye on a bracket (camera), seen from above; small, about a third of a tile, centred.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K174",
+    "path": "art/sprites/kit/shrine/alarm.png",
+    "subject": "ALARM (`alarm`): a hanging prayer-bell on a short frame (alarm), flat from above; small, about a third of a tile, centred.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K175",
+    "path": "art/sprites/kit/shrine/cache.png",
+    "subject": "CACHE (`cache`, loot): a locked reliquary box with a gold clasp and a violet cloth; about a metre, waist-high look.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K176",
+    "path": "art/sprites/kit/shrine/exit.png",
+    "subject": "EXIT (`exit`, the way out): a stair-head going down or a small door arch lit gold, with a worn threshold, no letters; fits one tile, reads as a place to leave by.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K177",
+    "path": "art/sprites/kit/shrine/dress-1.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): A fallen prayer cloth, plain violet, no patterns. Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K178",
+    "path": "art/sprites/kit/shrine/dress-2.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): A spill of candle wax and a few burnt-out candles. Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K179",
+    "path": "art/sprites/kit/shrine/dress-3.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): A scatter of dried petals. Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K180",
+    "path": "art/sprites/kit/shrine/dress-4.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): An abstract floor inlay ring in gold line (geometric, no letters). Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K181",
+    "path": "art/sprites/kit/rim/ground-1.png",
+    "subject": "GROUND, opaque 1024 x 1024 seamless tile. Blue-grey deck plate with fine grip texture and bolted seams.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K182",
+    "path": "art/sprites/kit/rim/ground-2.png",
+    "subject": "GROUND, opaque 1024 x 1024 seamless tile. Dark steel deck with ivory lane stripes, slightly glossy-looking but matte painted.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K183",
+    "path": "art/sprites/kit/rim/ground-3.png",
+    "subject": "GROUND, opaque 1024 x 1024 seamless tile. Damaged deck: scorched, buckled plate, a missing panel showing dark pipework.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K184",
+    "path": "art/sprites/kit/rim/decal-rubble.png",
+    "subject": "DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: plate shards, bolts and glass-free debris. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K185",
+    "path": "art/sprites/kit/rim/decal-toxic.png",
+    "subject": "DECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a cold green coolant slick (the toxic spill), soft edge.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K186",
+    "path": "art/sprites/kit/rim/decal-scorch.png",
+    "subject": "DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a blast burn on the deck, soft edge.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K187",
+    "path": "art/sprites/kit/rim/wall-straight.png",
+    "subject": "WALL piece, straight, 256 x 256 cell: a blue-grey bulkhead wall with an ivory cap band and a thin cyan light strip along the top face, running left to right, half a tile thick, flat cut ends at the cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K188",
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "subject": "WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K189",
+    "path": "art/sprites/kit/rim/wall-end.png",
+    "subject": "WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K190",
+    "path": "art/sprites/kit/rim/wall-door.png",
+    "subject": "WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K191",
+    "path": "art/sprites/kit/rim/wall-broken.png",
+    "subject": "WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K192",
+    "path": "art/sprites/kit/rim/crate.png",
+    "subject": "CRATE (`crate`, half cover, destructible): a sealed grey-blue cargo crate with an ivory corner bracket; about a metre, waist-high look, centred.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K193",
+    "path": "art/sprites/kit/rim/crate-broken.png",
+    "subject": "CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K194",
+    "path": "art/sprites/kit/rim/low_wall.png",
+    "subject": "LOW WALL (`low_wall`, half cover): a waist-high deck rail or equipment casing, one tile long, with an ivory stripe; fills the width of the tile, low and clearly waist-high with a visible light top face.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K195",
+    "path": "art/sprites/kit/rim/pillar.png",
+    "subject": "PILLAR (`pillar`, full cover, destructible): a round steel support strut, ringed with ivory bands, seen from above; strong dark edge, reads as taller than a person, fits one tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K196",
+    "path": "art/sprites/kit/rim/pillar-broken.png",
+    "subject": "PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K197",
+    "path": "art/sprites/kit/rim/barricade.png",
+    "subject": "BARRICADE (`barricade`, full cover, destructible): a full-height wall of stacked cargo plates and crates, tall enough to hide behind; fills the width of the tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K198",
+    "path": "art/sprites/kit/rim/barricade-broken.png",
+    "subject": "BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K199",
+    "path": "art/sprites/kit/rim/door.png",
+    "subject": "DOOR closed (`door`): a sliding bulkhead door in a frame, closed, with a cyan light strip; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K200",
+    "path": "art/sprites/kit/rim/door-open.png",
+    "subject": "DOOR open (`door`, open state): the same bulkhead door retracted, jambs visible, threshold clear; the same door seen open, same cell.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K201",
+    "path": "art/sprites/kit/rim/hole.png",
+    "subject": "HOLE (`hole`): an open maintenance shaft in the deck, black depth, a hatch cover leaning beside it; round or square, fits one tile, the depth reads as dark and void.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K202",
+    "path": "art/sprites/kit/rim/trap.png",
+    "subject": "TRAP (`trap`): a pressure plate trap: a raised deck panel with a hairline seam and a cyan blink; deliberately subtle but readable at 64 px.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K203",
+    "path": "art/sprites/kit/rim/fire.png",
+    "subject": "FIRE (`fire`): an electrical fire in a wrecked panel: flames and sparks seen from above, orange; fits one tile, bright core, no glow or bloom, flat painted flames.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K204",
+    "path": "art/sprites/kit/rim/barrel.png",
+    "subject": "BARREL (`barrel`, half cover, explodes): a pressurised gas canister cluster, ivory with a red band (explosive); about 60 cm across, reads as dangerous.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K205",
+    "path": "art/sprites/kit/rim/container.png",
+    "subject": "CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a long cargo container, a tile and a half long, blue-grey with a cyan latch light, waist-high.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K206",
+    "path": "art/sprites/kit/rim/terminal.png",
+    "subject": "TERMINAL (`terminal`): a station console on a stand, dark screen with abstract cyan bars, no text; fits one tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K207",
+    "path": "art/sprites/kit/rim/lamp.png",
+    "subject": "LAMP (`lamp`): a tall deck floodlamp on a stand, warm lamp glass, seen from above; fits one tile.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": true
+  },
+  {
+    "id": "K208",
+    "path": "art/sprites/kit/rim/turret.png",
+    "subject": "TURRET (`turret`, half cover): an emplaced defence turret on a ring mount, grey-blue housing, one barrel (waist-high); fits one tile, a single clear barrel direction (up).",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K209",
+    "path": "art/sprites/kit/rim/camera.png",
+    "subject": "CAMERA (`camera`): a ceiling camera dome seen from above, black glass, a cyan dot; small, about a third of a tile, centred.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K210",
+    "path": "art/sprites/kit/rim/alarm.png",
+    "subject": "ALARM (`alarm`): a bulkhead alarm panel with an amber beacon, flat; small, about a third of a tile, centred.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K211",
+    "path": "art/sprites/kit/rim/cache.png",
+    "subject": "CACHE (`cache`, loot): a locked equipment cache case, blue-grey with an ivory seal; about a metre, waist-high look.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K212",
+    "path": "art/sprites/kit/rim/exit.png",
+    "subject": "EXIT (`exit`, the way out): an airlock hatch with ivory chevrons toward it, no letters; fits one tile, reads as a place to leave by.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K213",
+    "path": "art/sprites/kit/rim/dress-1.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): Cables: a loose bundle of ivory and cyan cables across the deck. Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K214",
+    "path": "art/sprites/kit/rim/dress-2.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): A floor lane marking: ivory dashes and a corner mark, no letters. Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K215",
+    "path": "art/sprites/kit/rim/dress-3.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): A drifted dust and ice rim along a wall base. Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "K216",
+    "path": "art/sprites/kit/rim/dress-4.png",
+    "subject": "SET DRESSING (non-blocking, any free tile, no rules meaning): A dropped tool case and some bolts, nothing readable. Low, flat, nothing taller than a few centimetres.",
+    "group": "map-kit",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M001",
+    "path": "art/maps/survival/ahoc-1.png",
+    "subject": "The outpost yard and gatehouse: walled compound seen from above; a gate in the south wall, a loading yard of packed gravel with crates and drums in two stacks (cover), a gatehouse and a guard shed on the left, a watchtower base on the right, a long barracks block across the north with two doors; lanes run left and right of a central parked cargo hauler.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M002",
+    "path": "art/maps/survival/ahoc-2.png",
+    "subject": "The corridor grid: a plan of ceramic-grey panelled corridors, four rooms around a central junction hall; each room has a door onto the hall and one back door; pipe runs and filing racks as cover inside the rooms, a bare 4 tile central hall with two pillars.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M003",
+    "path": "art/maps/survival/ahoc-3.png",
+    "subject": "The records vault: a large circular hall with a ring of dark machine banks and cabinets as cover around a bare central floor, four entrances at the compass points, a raised catwalk platform in the north, and two side alcoves.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M004",
+    "path": "art/maps/survival/city-1.png",
+    "subject": "A crossing of alleys: two alleys crossing in the middle between building roofs (roofs are solid), market stalls and crates along one alley, a dry fountain bay at the crossing, three alley mouths and a locked yard in the corner.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M005",
+    "path": "art/maps/survival/city-2.png",
+    "subject": "The rooftop terrace: several rooftops of different heights joined by plank bridges (shown as narrow walkable bands), water tanks, stair housings and chimney stacks as cover, an open central gravel roof, a roof edge (void) on two sides.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M006",
+    "path": "art/maps/survival/city-3.png",
+    "subject": "The plaza: a small square with a stopped clock-tower base on the north side, a dry fountain in the centre as cover, shuttered cafe fronts on three sides with doors, and four streets entering at the corners.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M007",
+    "path": "art/maps/survival/field-1.png",
+    "subject": "The trench line: two parallel trench systems (dark cut bands with sandbag edges) crossed by two spurs, a no-man's-land of craters between them, a wrecked field gun at the east end as cover; open lanes along the north and south edges.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M008",
+    "path": "art/maps/survival/field-2.png",
+    "subject": "The crater field: open cracked mud broken by about a dozen craters of different sizes (low cover), two wrecked tank hulls, a line of burnt stumps; no walls; entry from the west, a dry gully along the east.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M009",
+    "path": "art/maps/survival/field-3.png",
+    "subject": "The crashed hull: the broken ribs of a huge fallen war machine lying diagonally across the map as large solid cover, a ring of open ash ground around it, scattered plates, two lanes passing either end.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M010",
+    "path": "art/maps/survival/works-1.png",
+    "subject": "The assembly hall: two long parallel conveyor lines (solid, crossable at three bridges), unfinished shells on the lines as cover, a clear walkway down the middle, a loading door at each end.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M011",
+    "path": "art/maps/survival/works-2.png",
+    "subject": "The scrap yard: a fenced yard of heaps of broken parts (cover), a gantry crane's rails along the edges, a magnet pad in the centre, a gate in the south fence and a hole in the west fence.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M012",
+    "path": "art/maps/survival/works-3.png",
+    "subject": "The casting hall: a furnace mouth in the north wall, slag channels cutting the floor into three lanes (with plank crossings), pillars in two rows, catwalk supports at the edges, a bare dark iron plate centre.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M013",
+    "path": "art/maps/survival/shrine-1.png",
+    "subject": "The nave: a long hall seen from above, a bare central aisle of flagstones, two rows of pillars and pushed-back pews as cover, a chancel step at the north end and a west door; side chapels as alcoves.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M014",
+    "path": "art/maps/survival/shrine-2.png",
+    "subject": "The cloister: an arcaded square walkway (pillars along the inner edge) around an open courtyard garden with a covered well as central cover, four doors at the compass points.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M015",
+    "path": "art/maps/survival/shrine-3.png",
+    "subject": "The altar apse: a semicircular apse with a raised bare dais, a ring of candle stands as cover, two stairs, a round gold floor pool of light (a lighter painted patch, walkable), and two side vestries.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M016",
+    "path": "art/maps/survival/rim-1.png",
+    "subject": "The hangar bay: an open painted bay floor with gantry feet and empty cradles as cover, a gutted shuttle in the east, a large airlock door in the south and a small door in each corner.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M017",
+    "path": "art/maps/survival/rim-2.png",
+    "subject": "The rear landing pad: an open circular pad with a scorch ring, loose crates and a mast base as cover, a low parapet around the edge (solid), two ramps in the south and a sealed hatch in the north.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M018",
+    "path": "art/maps/survival/rim-3.png",
+    "subject": "The power core chamber: a ring of resonant conduits (solid) around a dim central well (void), catwalk rails and four bridge crossings, two generators in the corners as cover, entrances at north and south.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  }
+]

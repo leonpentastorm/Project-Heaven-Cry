@@ -1,0 +1,364 @@
+{
+  "K181": {
+    "prompt": "One Project Heaven Cry opaque 1024 square Heavenprint ground repeat for the rim station. GROUND, opaque 1024 x 1024 seamless tile. Blue-grey deck plate with fine grip texture and bolted seams. Materials: cold steel blue-grey, black glass, ivory plate and subtle cool cyan-white inlays. Hand-painted gouache with dry brush and subtle ink, muted mid-dark overall so gameplay overlays are legible, restrained texture and no single large repeated focal object. Exact orthographic overhead, flat uniform illumination and clear even edges. Left/right and top/bottom must join when repeated. No figures, text, props, shadows, vignette, border, glow or perspective. First reference for the setting palette, second only for repeat unit layout and paint scale.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/ground-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K182": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. Opaque 1024 square blue-grey deck plates with parallel channels and tiny ivory scuffs. Uniform slate-blue-grey reaches the four outer edges. No visible outer perimeter seams, border or bounding rectangle. Only the interior shows fine panel joints. Make edges continuous in both axes. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. Use references for camera, palette and surface only. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/ground-2.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K182.png",
+      "prompt": "One Project Heaven Cry opaque 1024 square Heavenprint ground repeat for the rim station. GROUND, opaque 1024 x 1024 seamless tile. Dark steel deck with ivory lane stripes, slightly glossy-looking but matte painted. Materials: cold steel blue-grey, black glass, ivory plate and subtle cool cyan-white inlays. Hand-painted gouache with dry brush and subtle ink, muted mid-dark overall so gameplay overlays are legible, restrained texture and no single large repeated focal object. Exact orthographic overhead, flat uniform illumination and clear even edges. Left/right and top/bottom must join when repeated. No figures, text, props, shadows, vignette, border, glow or perspective. First reference for the setting palette, second only for repeat unit layout and paint scale.",
+      "references": [
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/ground-2.png"
+      ]
+    }
+  },
+  "K183": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. Opaque 1024 square worn blue-grey floor plate with flat painted abrasions, dark oil scuffs and scratches. No physical props, grated boxes, metal objects or embossed machinery. Full-bleed floor plane, flat even lighting, edges match in both axes. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. Use references for camera, palette and surface only. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/ground-3.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K183.png",
+      "prompt": "One Project Heaven Cry opaque 1024 square Heavenprint ground repeat for the rim station. GROUND, opaque 1024 x 1024 seamless tile. Damaged deck: scorched, buckled plate, a missing panel showing dark pipework. Materials: cold steel blue-grey, black glass, ivory plate and subtle cool cyan-white inlays. Hand-painted gouache with dry brush and subtle ink, muted mid-dark overall so gameplay overlays are legible, restrained texture and no single large repeated focal object. Exact orthographic overhead, flat uniform illumination and clear even edges. Left/right and top/bottom must join when repeated. No figures, text, props, shadows, vignette, border, glow or perspective. First reference for the setting palette, second only for repeat unit layout and paint scale.",
+      "references": [
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/ground-3.png"
+      ]
+    }
+  },
+  "K184": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: plate shards, bolts and glass-free debris. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/decal-rubble.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K185": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a cold green coolant slick (the toxic spill), soft edge.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/decal-toxic.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K186": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a blast burn on the deck, soft edge.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/decal-scorch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K187": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. A single horizontal solid bar, 50% of the image height, touches both left and right edges. No corner. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. First reference is the required pixel silhouette; fill only that silhouette. Second is a finished corresponding overhead cap shape. Use a narrow centered muted blue seam, exposed perimeter outlines only and no lines across flat joins. True alpha outside the given footprint. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K187.png",
+      "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, straight, 256 x 256 cell: a blue-grey bulkhead wall with an ivory cap band and a thin cyan light strip along the top face, running left to right, half a tile thick, flat cut ends at the cell edges.\nThe footprint from image 1 is exact. Only top cap visible. Use thin slate-blue seam on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/wall-straight.png"
+      ]
+    }
+  },
+  "K188": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. One ┐ shaped elbow, enters the left edge halfway down and exits the bottom edge at the horizontal midpoint. No additional arms. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. First reference is the required pixel silhouette; fill only that silhouette. Second is a finished corresponding overhead cap shape. Use a narrow centered muted blue seam, exposed perimeter outlines only and no lines across flat joins. True alpha outside the given footprint. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+      "art/sprites/kit/ahoc/wall-corner.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K188.png",
+      "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.\nThe footprint from image 1 is exact. Only top cap visible. Use thin slate-blue seam on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/wall-corner.png"
+      ]
+    }
+  },
+  "K189": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. A single solid rectangular cap: from left edge to center only, centered vertically, the right half is all transparent. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. First reference is the required pixel silhouette; fill only that silhouette. Second is a finished corresponding overhead cap shape. Use a narrow centered muted blue seam, exposed perimeter outlines only and no lines across flat joins. True alpha outside the given footprint. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+      "art/sprites/kit/ahoc/wall-end.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K189.png",
+      "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.\nThe footprint from image 1 is exact. Only top cap visible. Use thin slate-blue seam on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/wall-end.png"
+      ]
+    }
+  },
+  "K190": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. Two detached horizontal rectangular stubs, one touching each outer edge, with an entirely transparent middle half. Both stubs have identical height, aligned across the same band. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. First reference is the required pixel silhouette; fill only that silhouette. Second is a finished corresponding overhead cap shape. Use a narrow centered muted blue seam, exposed perimeter outlines only and no lines across flat joins. True alpha outside the given footprint. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+      "art/sprites/kit/ahoc/wall-door.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K190.png",
+      "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.\nThe footprint from image 1 is exact. Only top cap visible. Use thin slate-blue seam on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/wall-door.png"
+      ]
+    }
+  },
+  "K191": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. Two separate horizontal caps from opposite edges, on the same level, with a ragged central break. No bend, no L. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. First reference is the required pixel silhouette; fill only that silhouette. Second is a finished corresponding overhead cap shape. Use a narrow centered muted blue seam, exposed perimeter outlines only and no lines across flat joins. True alpha outside the given footprint. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+      "art/sprites/kit/ahoc/wall-broken.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K191.png",
+      "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nWALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.\nThe footprint from image 1 is exact. Only top cap visible. Use thin slate-blue seam on the centerline, and outlines on exposed sides only. No dark rim on flat-cut connecting edges. Corner enters LEFT at midheight, runs east and exits BOTTOM at midwidth. Wall bands exactly half a tile thick. Doorway and breaches leave central gap transparent.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/wall-broken.png"
+      ]
+    }
+  },
+  "K192": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCRATE (`crate`, half cover, destructible): a sealed grey-blue cargo crate with an ivory corner bracket; about a metre, waist-high look, centred.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K193": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/crate-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K194": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nLOW WALL (`low_wall`, half cover): a waist-high deck rail or equipment casing, one tile long, with an ivory stripe; fills the width of the tile, low and clearly waist-high with a visible light top face.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/low_wall.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K195": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nPILLAR (`pillar`, full cover, destructible): a round steel support strut, ringed with ivory bands, seen from above; strong dark edge, reads as taller than a person, fits one tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/pillar.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K196": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nPILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/pillar-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K197": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nBARRICADE (`barricade`, full cover, destructible): a full-height wall of stacked cargo plates and crates, tall enough to hide behind; fills the width of the tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/barricade.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K198": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nBARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/barricade-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K199": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDOOR closed (`door`): a sliding bulkhead door in a frame, closed, with a cyan light strip; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.\nSlim horizontal overhead slab edge with two jamb caps. No front face, architecture or arch.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/door.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K200": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nDOOR open (`door`, open state): the same bulkhead door retracted, jambs visible, threshold clear; the same door seen open, same cell.\nOnly two disjoint small overhead jambs, entire passage transparent. No threshold plate or elevation.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/door-open.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K201": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nHOLE (`hole`): an open maintenance shaft in the deck, black depth, a hatch cover leaning beside it; round or square, fits one tile, the depth reads as dark and void.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/hole.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K202": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nTRAP (`trap`): a pressure plate trap: a raised deck panel with a hairline seam and a cyan blink; deliberately subtle but readable at 64 px.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/trap.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K203": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nFIRE (`fire`): an electrical fire in a wrecked panel: flames and sparks seen from above, orange; fits one tile, bright core, no glow or bloom, flat painted flames.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/fire.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K204": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nBARREL (`barrel`, half cover, explodes): a pressurised gas canister cluster, ivory with a red band (explosive); about 60 cm across, reads as dangerous.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/barrel.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K205": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a long cargo container, a tile and a half long, blue-grey with a cyan latch light, waist-high.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/container.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K206": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nTERMINAL (`terminal`): a station console on a stand, dark screen with abstract cyan bars, no text; fits one tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/terminal.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K207": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nLAMP (`lamp`): a tall deck floodlamp on a stand, warm lamp glass, seen from above; fits one tile.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/lamp.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K208": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nTURRET (`turret`, half cover): an emplaced defence turret on a ring mount, grey-blue housing, one barrel (waist-high); fits one tile, a single clear barrel direction (up).\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/turret.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K209": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCAMERA (`camera`): a ceiling camera dome seen from above, black glass, a cyan dot; small, about a third of a tile, centred.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/camera.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K210": {
+    "prompt": "Project Heaven Cry Rim Station game asset, true vertically overhead orthographic plan. One small isolated emergency button module, black glass, subtle icy blue-gray frame and a tiny dull amber dot. A small clear silhouette on real transparent alpha. No square of floor or backing tile. Paint restrained matte Heavenprint gouache and ink with broad scuffed blue-grey steel planes, worn bone ivory, and subdued cool slate blue accents. Use references for camera, palette and surface only. One square asset, no text, UI, perspective, cast shadow, border or glow.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/alarm.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-rim/superseded/K210.png",
+      "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nALARM (`alarm`): a bulkhead alarm panel with an amber beacon, flat; small, about a third of a tile, centred.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+      "references": [
+        "art/illustrations/survival/backdrops/rim-a-airlock.png",
+        "art/sprites/kit/ahoc/alarm.png"
+      ]
+    }
+  },
+  "K211": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nCACHE (`cache`, loot): a locked equipment cache case, blue-grey with an ivory seal; about a metre, waist-high look.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/cache.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K212": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nEXIT (`exit`, the way out): an airlock hatch with ivory chevrons toward it, no letters; fits one tile, reads as a place to leave by.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/exit.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K213": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Cables: a loose bundle of ivory and cyan cables across the deck. Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/dress-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K214": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A floor lane marking: ivory dashes and a corner mark, no letters. Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/dress-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K215": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A drifted dust and ice rim along a wall base. Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/dress-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K216": {
+    "prompt": "One Rim Station tactical game kit asset for Project Heaven Cry. Paint in Heavenprint gouache and restrained matte ink, opaque broken brush strokes and bold readable silhouettes, local material cold blue-grey steel, worn ivory plates, black glass, low-saturation icy blue accents, isolated brass. Vertically downward orthographic plan with only a small rim on objects. No vertical facade, landscape, ground patch, cast shadow, glow, text, figures, UI or border. True alpha in empty areas. 256 square export, 1.5m per tile. Readable at 64px. The setting reference supplies material and finish.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A dropped tool case and some bolts, nothing readable. Low, flat, nothing taller than a few centimetres.\nThe second image gives only overhead silhouette and scale; use the setting's own materials and details. Leave background and all gaps true alpha.",
+    "references": [
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/sprites/kit/ahoc/dress-4.png"
+    ],
+    "imagegen": "built-in"
+  }
+}

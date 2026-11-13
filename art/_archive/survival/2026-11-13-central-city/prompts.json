@@ -1,0 +1,347 @@
+{
+  "K037": {
+    "prompt": "Central City: wet cobbles, ivory plaster, weathered brick, blue-grey iron, canvas awnings, amber shop lamps and muted violet-blue shadows. Heavenprint hand-painted opaque gouache and restrained ink with broken strokes, dry brush, spare worn edges. True overhead orthographic plan, flat even light, no words, objects on the floor, perspective, glow or cast/contact shadow. Match the city backdrop for finish and materials.\nGROUND, opaque 1024 x 1024 seamless tile. Wet dark cobblestones in an irregular pattern, a faint blue sheen.\nOne opaque square repeat unit 1024×1024. Left and right edges and top and bottom edges match; continuation points for all joints line up on opposite sides. Keep edge tones low contrast and even. No frame, border, vignette, large focal patch or deep gaps. Texture and wear are local pigment rather than raised relief or lighting gradients. First image is the setting, second is the wrap and scale reference only.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/ground-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K038": {
+    "prompt": "Central City: wet cobbles, ivory plaster, weathered brick, blue-grey iron, canvas awnings, amber shop lamps and muted violet-blue shadows. Heavenprint hand-painted opaque gouache and restrained ink with broken strokes, dry brush, spare worn edges. True overhead orthographic plan, flat even light, no words, objects on the floor, perspective, glow or cast/contact shadow. Match the city backdrop for finish and materials.\nGROUND, opaque 1024 x 1024 seamless tile. Worn flagstone paving, pale and dry, mossy joints.\nOne opaque square repeat unit 1024×1024. Left and right edges and top and bottom edges match; continuation points for all joints line up on opposite sides. Keep edge tones low contrast and even. No frame, border, vignette, large focal patch or deep gaps. Texture and wear are local pigment rather than raised relief or lighting gradients. First image is the setting, second is the wrap and scale reference only.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/ground-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K039": {
+    "prompt": "Central City: wet cobbles, ivory plaster, weathered brick, blue-grey iron, canvas awnings, amber shop lamps and muted violet-blue shadows. Heavenprint hand-painted opaque gouache and restrained ink with broken strokes, dry brush, spare worn edges. True overhead orthographic plan, flat even light, no words, objects on the floor, perspective, glow or cast/contact shadow. Match the city backdrop for finish and materials.\nGROUND, opaque 1024 x 1024 seamless tile. Damaged street: broken cobbles, bare earth showing, puddle-dark patches, pavers missing.\nOne opaque square repeat unit 1024×1024. Left and right edges and top and bottom edges match; continuation points for all joints line up on opposite sides. Keep edge tones low contrast and even. No frame, border, vignette, large focal patch or deep gaps. Texture and wear are local pigment rather than raised relief or lighting gradients. First image is the setting, second is the wrap and scale reference only.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/ground-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K040": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nDECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: brick fragments, plaster and tile shards. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/decal-rubble.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K041": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nDECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill (the engine's `toxic` kind): standing water, a shallow dark puddle with a sheen and a floating leaf, soft edge, with a faint sour green-yellow tint so it reads as the toxic spill.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/decal-toxic.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K042": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nDECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a smudged soot mark and ash from a thrown fire, soft edge.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/decal-scorch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K043": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nWALL piece, straight, 256 x 256 cell: old brick and ivory plaster building wall with a slate cap and a darker mortar band, running left to right, half a tile thick, flat cut ends at the cell edges.\nUse reference 1 as the exact footprint and orientation. Paint only the horizontal wall cap area as seen from overhead; the third reference sets view and graphic depth only. Half-cell band, flat-cut joined sides at exact edges without dark outline across a join. Exposed edges retain a dark rim. Keep surface colour and any material stripe lined up across edge cuts. The central gap of doorway and broken pieces is transparent. No facade or vertical side faces.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/wall-straight.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K044": {
+    "prompt": "Repaint the exact alpha silhouette in reference 1, with the orientation from reference 3. Square tile, right-angle wall corner entering from the LEFT edge half way down, running EAST to the middle, then turning SOUTH to exit the BOTTOM edge at the horizontal midpoint. There is no leg at the left top. Centerline looks like ┐, with long top and right-facing outer edges. The left edge and bottom edge have flat cuts touching the canvas. Band is half a cell thick. View vertically down, paint only the blue grey slate top cap of a Central City brick and plaster wall, weathered gouache, with one dark thin muted mortar line that turns with the cap. True alpha outside. No outline at flat-cut connections, dark rim only along the exposed sides. Reference 2 is the city's materials. Exact same footprint, position, orientation, and camera as references 1 and 3.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/wall-corner.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-central-city/superseded/K044.png",
+      "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nWALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.\nUse reference 1 as the exact footprint and orientation. Paint only the horizontal wall cap area as seen from overhead; the third reference sets view and graphic depth only. Half-cell band, flat-cut joined sides at exact edges without dark outline across a join. Exposed edges retain a dark rim. Keep surface colour and any material stripe lined up across edge cuts. The central gap of doorway and broken pieces is transparent. No facade or vertical side faces.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+        "art/illustrations/survival/backdrops/city-a-archway.png",
+        "art/sprites/kit/ahoc/wall-straight.png"
+      ]
+    }
+  },
+  "K045": {
+    "prompt": "One Central City overhead wall cap for Project Heaven Cry. Image 1 is the exact alpha geometry, image 2 the selected Central City straight wall for the exact blue-grey slate, dark reddish mortar line, slab size and ink palette. One flat slate cap runs from left edge to the middle of the tile and ends with a small square masonry cap, the right half transparent. Match the cold blue-grey slate, don't paint AHOC ceramic, brass bolts, rivets or an industrial hazard stripe. The dark mortar band is centered and runs horizontally into any flat joins without an outline across them. Only top surfaces visible, strictly orthographic overhead. Dark ink only on exposed edges. Flat even light, real transparent alpha, no ground, glow, shadow or front view. Square tile.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+      "art/_archive/survival/2026-11-13-central-city/native-renders/K043.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-central-city/superseded/K045.png",
+      "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nWALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.\nUse reference 1 as the exact footprint and orientation. Paint only the horizontal wall cap area as seen from overhead; the third reference sets view and graphic depth only. Half-cell band, flat-cut joined sides at exact edges without dark outline across a join. Exposed edges retain a dark rim. Keep surface colour and any material stripe lined up across edge cuts. The central gap of doorway and broken pieces is transparent. No facade or vertical side faces.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+        "art/illustrations/survival/backdrops/city-a-archway.png",
+        "art/sprites/kit/ahoc/wall-straight.png"
+      ]
+    }
+  },
+  "K046": {
+    "prompt": "One Central City overhead wall cap for Project Heaven Cry. Image 1 is the exact alpha geometry, image 2 the selected Central City straight wall for the exact blue-grey slate, dark reddish mortar line, slab size and ink palette. Two flat slate wall cap stubs from left and right, each exactly one quarter cell wide; middle half has real transparent alpha. Plain narrow jamb lines on the two inner ends. Match the cold blue-grey slate, don't paint AHOC ceramic, brass bolts, rivets or an industrial hazard stripe. The dark mortar band is centered and runs horizontally into any flat joins without an outline across them. Only top surfaces visible, strictly orthographic overhead. Dark ink only on exposed edges. Flat even light, real transparent alpha, no ground, glow, shadow or front view. Square tile.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+      "art/_archive/survival/2026-11-13-central-city/native-renders/K043.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-central-city/superseded/K046.png",
+      "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nWALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.\nUse reference 1 as the exact footprint and orientation. Paint only the horizontal wall cap area as seen from overhead; the third reference sets view and graphic depth only. Half-cell band, flat-cut joined sides at exact edges without dark outline across a join. Exposed edges retain a dark rim. Keep surface colour and any material stripe lined up across edge cuts. The central gap of doorway and broken pieces is transparent. No facade or vertical side faces.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+        "art/illustrations/survival/backdrops/city-a-archway.png",
+        "art/sprites/kit/ahoc/wall-straight.png"
+      ]
+    }
+  },
+  "K047": {
+    "prompt": "One Central City overhead wall cap for Project Heaven Cry. Image 1 is the exact alpha geometry, image 2 the selected Central City straight wall for the exact blue-grey slate, dark reddish mortar line, slab size and ink palette. Two flat slate wall cap ends from the left and right edges, with one jagged breach in the middle. Tiny exposed brick and plaster shards at the inner break only. The hole is transparent. Match the cold blue-grey slate, don't paint AHOC ceramic, brass bolts, rivets or an industrial hazard stripe. The dark mortar band is centered and runs horizontally into any flat joins without an outline across them. Only top surfaces visible, strictly orthographic overhead. Dark ink only on exposed edges. Flat even light, real transparent alpha, no ground, glow, shadow or front view. Square tile.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+      "art/_archive/survival/2026-11-13-central-city/native-renders/K043.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-central-city/superseded/K047.png",
+      "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nWALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.\nUse reference 1 as the exact footprint and orientation. Paint only the horizontal wall cap area as seen from overhead; the third reference sets view and graphic depth only. Half-cell band, flat-cut joined sides at exact edges without dark outline across a join. Exposed edges retain a dark rim. Keep surface colour and any material stripe lined up across edge cuts. The central gap of doorway and broken pieces is transparent. No facade or vertical side faces.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+        "art/illustrations/survival/backdrops/city-a-archway.png",
+        "art/sprites/kit/ahoc/wall-straight.png"
+      ]
+    }
+  },
+  "K048": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nCRATE (`crate`, half cover, destructible): a wooden market crate with rope handles, slatted; about a metre, waist-high look, centred.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K049": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nCRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/crate-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K050": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nLOW WALL (`low_wall`, half cover): a waist-high brick garden or yard wall, one tile long, with a slate cap; fills the width of the tile, low and clearly waist-high with a visible light top face.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/low_wall.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K051": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nPILLAR (`pillar`, full cover, destructible): a squat round stone column with an iron collar, weathered; strong dark edge, reads as taller than a person, fits one tile.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/pillar.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K052": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nPILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/pillar-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K053": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nBARRICADE (`barricade`, full cover, destructible): a full-height barricade of stacked furniture, doors and barrels, lashed with rope, tall enough to hide behind; fills the width of the tile.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/barricade.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K054": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nBARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/barricade-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K055": {
+    "prompt": "Project Heaven Cry Central City wooden gate insert, exact vertical orthographic plan, real transparency. Draw exactly what would be visible straight overhead: a thin horizontal band showing the top edge of heavy weathered wood with two wrought iron bindings, spanning between two small square worn brick jamb caps. Its outline is a slim straight bar with short square brackets, just like reference 2 in plan. Transparent elsewhere. No broad vertical door face, arch, full height elevation, surrounding wall or floor, cast shadow or glow. Matte Heavenprint gouache and ink. Reference 1 sets local colour. Center in one square; door insert crosses the middle half of the cell left to right.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/door.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-central-city/superseded/K055.png",
+      "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nDOOR closed (`door`): a plain heavy wooden door with iron straps in a brick frame, closed; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+      "references": [
+        "art/illustrations/survival/backdrops/city-a-archway.png",
+        "art/sprites/kit/ahoc/door.png"
+      ]
+    }
+  },
+  "K056": {
+    "prompt": "Open door insert for a Central City alley in the Project Heaven Cry tactical map kit. Strict overhead orthographic plan, exactly the same camera as reference 2. Paint two small disjoint square caps of aged brick and dark iron, left and right, with one narrow aged wooden slab swung north so its top edge projects perpendicular from the right jamb, opening the entire horizontal gap between them. A slim line of wood and iron only, no visible broad face. No arch or surrounding wall. Everything except the three tiny pieces is transparent alpha, particularly the gap and threshold. Gouache and ink, cool slate and warm weathered brick from reference 1, no shadow or glow. Square game sprite.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/door-open.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-central-city/superseded/K056.png",
+      "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nDOOR open (`door`, open state): the same door swung open against the wall, threshold clear; the same door seen open, same cell.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+      "references": [
+        "art/illustrations/survival/backdrops/city-a-archway.png",
+        "art/sprites/kit/ahoc/door-open.png"
+      ]
+    }
+  },
+  "K057": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nHOLE (`hole`): an open drain or manhole shaft, iron cover pushed aside, black depth; round or square, fits one tile, the depth reads as dark and void.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/hole.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K058": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nTRAP (`trap`): a snare trap: a rope loop and weighted bag in the cobbles; deliberately subtle but readable at 64 px.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/trap.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K059": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nFIRE (`fire`): a street fire in a barrel brazier, flames from above; fits one tile, bright core, no glow or bloom, flat painted flames.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/fire.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K060": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nBARREL (`barrel`, half cover, explodes): a wooden oil barrel with iron hoops and a faint red mark; about 60 cm across, reads as dangerous.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/barrel.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K061": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nCONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a covered market stall counter with a canvas awning folded back, a tile and a half long, waist-high.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/container.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K062": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nTERMINAL (`terminal`): a street-side brass public terminal on a short post, dark glass, abstract glow only; fits one tile.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/terminal.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K063": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nLAMP (`lamp`): a tall iron street lamp with a warm amber glass lantern, seen from above; fits one tile.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/lamp.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K064": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nTURRET (`turret`, half cover): a wall-less stolen emplaced turret bolted to a cart, grey and mismatched, waist-high; fits one tile, a single clear barrel direction (up).\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/turret.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K065": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nCAMERA (`camera`): a small iron-bracketed camera box on a bracket, as seen from above; small, about a third of a tile, centred.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/camera.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K066": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nALARM (`alarm`): a brass alarm bell box with a pull-chain, flat; small, about a third of a tile, centred.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/alarm.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K067": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nCACHE (`cache`, loot): a locked iron-bound strongbox with a canvas wrap; about a metre, waist-high look.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/cache.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K068": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nEXIT (`exit`, the way out): a stair-head or cellar door lying open to the dark, with worn steps going down; fits one tile, reads as a place to leave by.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/exit.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K069": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Laundry: a fallen line of cloth and a few dropped sheets, no patterns. Low, flat, nothing taller than a few centimetres.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/dress-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K070": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Cables and bunting: a slack string of paper lanterns lying across the ground. Low, flat, nothing taller than a few centimetres.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/dress-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K071": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A scatter of newspaper-sized blank paper sheets. Low, flat, nothing taller than a few centimetres.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/dress-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K072": {
+    "prompt": "One Project Heaven Cry Central City tactical map kit asset. Heavenprint gouache and restrained ink, broad angular broken brush strokes and dry brush, legible at 64px, strict orthographic plan looking vertically down. City materials are wet cobblestone, blue-grey iron, ivory plaster, weathered brick, wood and canvas with restrained amber details. Even flat top light with subtle top-left pigment highlight. No cast, drop or contact shadow; no glow, ground patch, people, letters, brands, UI or borders. True transparent PNG alpha, centered in 256 square, 80 percent safe box for sprites. A tile is 1.5m. Use backdrop for material and colour only.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A shuttered stall sign board, blank, leaning. Low, flat, nothing taller than a few centimetres.\nSecond reference is an AHOC counterpart for overhead camera and scale only. Design and colour this piece for Central City, reinterpreting its materials. One asset with real transparency outside its silhouette.",
+    "references": [
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/sprites/kit/ahoc/dress-4.png"
+    ],
+    "imagegen": "built-in"
+  }
+}

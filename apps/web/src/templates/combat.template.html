@@ -40,6 +40,7 @@
 <div class="phc-cam"><div class="phc-grid-scroll phc-cam-scroll" role="group" aria-label="{{camLabel}}" style="{{camStyle}}"><div class="phc-grid" style="{{gridStyle}}" onMouseLeave="{{gridLeave}}">
 <sc-for list="{{tiles}}" as="t" memo hint-placeholder-count="176">
 <sc-if value="{{t.isLabel}}"><span aria-hidden="true" class="phc-axis" onMouseEnter="{{t.hover}}" style="{{t.style}}">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" tip="{{t.title}}" data-sfx="{{t.sfx}}" style="{{t.style}}">
+<sc-if value="{{t.hasKit}}" hint-placeholder-val="{{false}}"><sc-for list="{{t.kit}}" as="kp"><img src="{{kp.src}}" alt="" aria-hidden="true" data-kit="{{kp.key}}" style="{{kp.style}}"></sc-for></sc-if>
 <sc-if value="{{t.hasZone}}"><span aria-hidden="true" style="{{t.zoneStyle}}"></span></sc-if>
 <sc-if value="{{t.hasPlan}}"><span aria-hidden="true" class="phc-plan" style="{{t.planStyle}}"></span></sc-if>
 <sc-if value="{{t.hasWatchT}}"><span aria-hidden="true" data-watch-tile="1" tip="{{t.watchTTitle}}" style="{{t.watchTStyle}}"></span></sc-if>

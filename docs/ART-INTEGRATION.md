@@ -70,3 +70,10 @@ Use `catalog.characters.mpat` and `catalog.characters['mpat-comrade']` for the M
 Put revised art in the production folder under the same file name and move the old file to `art/_archive/` (see [art/README.md](../art/README.md)), update catalog paths and hashes (`python3 tools/rehash_art_checksums.py`), then update the palette and style guide if needed. Keep existing IDs stable. The local collection manifest describes artwork; the central catalog is the implementation map. Do not silently replace approved masters with a newly named "final" image.
 
 The source art pack used numbered folders. Their repository equivalents are: `01-Style-Guide` → `art/_archive/style-guide/v1.2`; `02-Wick-Trait-Example` → `art/_archive/traits/wick/mind-without-fog`; `03-Character-Portraits` → `art/portraits/world/new-faces`; `04-POC4-Skill-Portraits` → `art/icons/skills`.
+
+**Map kits (rules 1.45).** Survival's generated fight maps are drawn from the setting's kit, never from a painted map:
+`catalog.kit['kit-<setting>-<piece>']` (written from `art/sprites/kit/<setting>/` by `python3 tools/art/kit_catalog.py`;
+a piece with `use: false` is held back with its reason). `npm run assets` builds each piece as the web asset of the
+same id (a ground in four quarter turns, `-r0` to `-r3`); `apps/web/src/game/kitMap.ts` picks pieces per tile from the
+map's `skin` and draws the plain fallback for any piece that has no asset. Check grounds with
+`python3 tools/art/kit_seams.py --sheet <dir>` (each must print "clean") before taking a delivery in.

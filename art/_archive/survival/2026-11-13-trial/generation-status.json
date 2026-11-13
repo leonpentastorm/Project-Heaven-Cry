@@ -1,0 +1,11 @@
+{
+  "blocker": "image generation usage_limit_reached",
+  "resets_at_unix": 1794623488,
+  "reset_bangkok": "2026-11-14T09:31:28+07:00",
+  "pending_revisions": [
+    "K002 floor seamless unit",
+    "K008 overhead corner",
+    "K011 overhead broken wall"
+  ],
+  "remaining_commission": "Other map kits, 18 painted maps, path map, scenes/cards/portraits and gear follow-ups remain queued. AHOC trial review precedes other kits."
+}

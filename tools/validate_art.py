@@ -450,6 +450,7 @@ def validate():
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
     validate_campaign_art(catalog)
+    validate_map_kits(catalog)
     sys.path.insert(0, str(ROOT / 'tools/art'))
     from export_nov12_icons import validate_delivery
     validate_delivery(PIXEL_ASSET)
@@ -466,6 +467,26 @@ def validate():
           f'{len(catalog.get("emblems", {}))} emblems; '
           f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
           f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
+
+KIT_KINDS = {'floor', 'wall', 'doorway', 'breach', 'cover-half', 'cover-full', 'broken', 'door', 'prop', 'decal', 'dressing'}
+
+def validate_map_kits(catalog):
+    """The map kits (rules 1.45; catalog `kit`, written by tools/art/kit_catalog.py): ids kit-<setting>-<piece>, the file
+    under art/sprites/kit/<setting>/, the size its kind asks (a floor 1024 square, a container 384 x 256, every other
+    piece 256 square, all RGBA PNG), a known kind, `use` with a reason when false, and every PNG of the folders listed."""
+    kit = catalog.get('kit') or {}
+    on_disk = {str(p.relative_to(ROOT)) for p in (ROOT / 'art/sprites/kit').glob('*/*.png')}
+    require({e['path'] for e in kit.values()} == on_disk, 'Map kit catalog out of date: run python3 tools/art/kit_catalog.py')
+    for kid, e in kit.items():
+        require(kid == f"kit-{e['setting']}-{e['piece']}" and e['path'] == f"art/sprites/kit/{e['setting']}/{e['piece']}.png", f'Map kit id and path disagree: {kid}')
+        require(e['kind'] in KIT_KINDS, f'Unknown map kit piece kind: {kid}')
+        data = local(e['path']).read_bytes()
+        require(data[:8] == b'\x89PNG\r\n\x1a\n' and data[12:16] == b'IHDR', f'Not a PNG: {e["path"]}')
+        width, height = struct.unpack('>II', data[16:24])
+        want = (1024, 1024) if e['kind'] == 'floor' else (384, 256) if e['piece'] == 'container' else (256, 256)
+        require((width, height) == (e['width'], e['height']) == want, f'Wrong map kit size: {kid} is {width}x{height}, wants {want[0]}x{want[1]}')
+        require(isinstance(e.get('use'), bool) and (e['use'] or e.get('why')), f'Map kit use flag (and its reason when false): {kid}')
+    print(f'OK: map kits {len(kit)} pieces in {len({e["setting"] for e in kit.values()})} settings ({sum(1 for e in kit.values() if not e["use"])} held back).')
 
 def validate_eye_lines(catalog):
     """Spotlight cut-ins (docs/design/cutin-spec.md 9.1): every character and patron portrait says where its eyes are, as

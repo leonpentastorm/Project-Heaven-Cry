@@ -1,0 +1,12 @@
+{
+  "commission_total": 294,
+  "selected_candidates": 45,
+  "backdrops_completed": 24,
+  "AHOC_core_candidates": 21,
+  "AHOC_core_repainted": 13,
+  "AHOC_trial_accepted": false,
+  "painted_maps_completed": 0,
+  "remaining_planned_renders": 249,
+  "remaining_queue": "art/_archive/survival/2026-11-13-trial/missing-assets.json",
+  "next": "Review the AHOC floor repeats and wall assembly before choosing scope for the other settings."
+}
