@@ -2,44 +2,92 @@
 
 For the Claude Code session on Leon's home PC (RX 9070 XT, 16 GB) that drives Gun Forge (`D:\LocalAI\Forge.bat <command>`).
 **`D:\LocalAI\forge\CLAUDE.md` is the tool's own manual and wins over anything here** (this was written without seeing
-it). Where a command, flag or folder below disagrees with it, follow it. Leon's wish tonight: put the project's art into
-LoRAs and try making new pieces on his own GPU. Read first: `art/style-guide/PHC-Style-Guide.md`,
+it). Where a command, flag or folder below disagrees with it, follow it. Leon's wish (13 Nov): put the project's art into
+LoRAs, **characters, backgrounds and maps included**, so new art does not wait on the image generator's quota. Tonight's
+stack: WSL2 Ubuntu 22.04, ROCm 7.2, AMD's PyTorch, ai-toolkit, **SDXL base**. Read first: `art/style-guide/PHC-Style-Guide.md`,
 `art/style-guide/gear-icons.md`, `art/icons/STYLE-LOCK.md`, `art/README.md`. Repo: `Project-Heaven-Cry`.
 
 ## 0. Verify first (this brief could not)
 
-1. `Forge.bat doctor` must be healthy. Never `--force` past it.
-2. Ask the tool (its CLAUDE.md, `--help`): can it train and export at **1024**? Does it have a resolution flag? (These are
-   1024 masters, not 16 to 128 px icons.) How does it flatten **alpha** (see 2)? Does `--pixel-art` exist: **never use it
-   here**, none of this is pixel art. How does it behave on an AMD card, and how long does a run take at about 150 and
-   at about 190 images? Report the answers to Leon before the long runs.
-3. One GPU job at a time.
+1. `Forge.bat doctor` must be healthy. Never `--force` past it. One GPU job at a time.
+2. Ask the tool (its CLAUDE.md, `--help`): can it train and export at **1024**, with **aspect-ratio buckets** (section 3)? How does
+   it flatten **alpha**? Does `--pixel-art` exist: **never use it here**, none of this is pixel art. How long does a run take at
+   about 150 and at about 190 images, at 16 GB? Report the answers to Leon before the long runs.
 
 ## 1. Not one LoRA: one per art mode
 
-The modes must not blend. Counts are from `art/catalog.json` and the prompt files on 13 Nov 2026.
+The modes must not blend. Counts are from `art/catalog.json` and the prompt files on 13 Nov 2026. "In training" is after the
+hold-outs (the test set to compare against, 5 per mode).
 
 | Mode | Forge project / trigger | Images | In training | Order |
 | --- | --- | --- | --- | --- |
-| (a) **Gear**: Heavenprint painted objects, one object, three-quarter, transparent | `phcgear` / `phcgear` | **149** (60 weapons, 21 armour, 3 shields, 4 focuses, 13 mods, 7 tools, 6 consumables, 4 ammo, 3 food, 2 lights, 2 documents, 12 rounds, 8 mags, augment, loot x2, companion) | 144 (5 held out) | **1st** |
-| (b) **Wick**: the mascot acting out traits, perks, Calls; white flat ink | `phcwick` / `phcwick` | **189** (74 traits, 106 perks, 9 Calls) | 184 (5 held out) | **2nd** |
-| (b2) **Glyphs**: white flat ink, no figure (prayers, feelings, modules) | `phcglyph` / `phcglyph` | **105** (39 + 25 + 41) | 105 | optional, after b |
-| (c) **Character portraits**: Heavenprint paintings, 800 x 1000 | `phcportrait` / `phcportrait` | **145** (46 archetype cards, 54 world NPC, 27 EPCCG cast, 18 M813) | 145 | **only if Leon asks** |
-| (d) **Skill portraits**: faceless gesture figures, black + cream + one pigment | none | **27** | too few for a LoRA alone | skip; maybe fold into (c) later |
-| (e) **Monoline weapon icons** (`art/icons/weapons/*.svg`, 60) | none | placeholders | not worth training | skip |
+| (b) **Wick**: the mascot acting out traits, perks, Calls; white flat ink | `phcwick` / `phcwick` | **189** (74 traits, 106 perks, 9 Calls) | 184 | **1st** (all in the repo) |
+| (a) **Gear**: painted objects, one object, three-quarter, transparent | `phcgear` / `phcgear` | **149** (60 weapons, 21 armour, 3 shields, 4 focuses, 13 mods, 7 tools, 6 consumables, 4 ammo, 3 food, 2 lights, 2 documents, 12 rounds, 8 mags, augment, loot x2, companion) | 144 | **2nd**, when the artist's branch lands |
+| (c) **Character portraits**: 800 x 1000, opaque; people and robots, **not gods** | `phcportrait` / `phcportrait` | **145**: 46 archetype cards, 54 world (27 New Faces + 27 Original Heavenprint), 27 EPCCG cast, 18 M813 | 140 | **3rd** |
+| (f) **Scenes and maps**: wide paintings, one LoRA, see 1.2 | `phcscene` / `phcscene` | **about 12**: 7 illustrations, 1 title-screen painting, 4 archived maps | about 12, plus crops | **last, only if the count supports it** |
+| (b2) **Glyphs**: white flat ink, no figure (prayers, feelings, modules) | `phcglyph` / `phcglyph` | **105** (39 + 25 + 41) | 105 | optional, after Wick |
+| (d) Skill portraits: faceless gesture figures | none | 27 | too few alone | skip |
+| (e) Monoline weapon icons (`art/icons/weapons/*.svg`, 60) | none | placeholders | not worth training | skip |
+| (g) The 8 patron portraits (gods) | none | 8 | far too few | **apart from (c)**, not trained |
 
-- **Tonight: gear first** (cleanest, most uniform set, the roguelike's shop is the clearest need), **Wick second** (the
-  biggest win: today only the artist can draw Wick in a new pose).
-- Gear: the 149 masters are the artist's 13 Nov delivery and are **not in the repo yet** (no `art/icons/gear/`, no `gear` map in
+- **Gear:** the 149 masters are the artist's 13 Nov delivery and are **not in the repo yet** (no `art/icons/gear/`, no `gear` map in
   the catalog). Ask Leon for the folder they were delivered to (files `<kind>-<id>.png`, e.g. `weapon-service_pistol.png`).
-- **Portraits are people.** A portrait LoRA is for new NPC faces only; Leon decides whether he wants it. Nothing
-  recognisable (Unspoken Name). Glyph mode: 38 prayer icons have no caption text and need eyes.
 - Why Wick and glyphs are separate: Wick is a figure doing something with a prop; feelings and modules are abstract
   marks. One LoRA would drift between them.
-- **Exclude always:** anything under `art/_archive/`, `art/illustrations/**/spoilers/`, catalog entries with status
-  `rejected`/`superseded`/`retired` (none today: 411 `review-candidate`, 1 `approved`), the 2020 sources in
-  `source/2020/`, the object sprites (top-down, another mode), maps, the title layers, the AHOC seal, the patron marks.
-  The script enforces the archive, spoiler and status rules.
+- **Exclude always:** anything under `art/_archive/` (except the maps, 1.2), `art/illustrations/**/spoilers/`, catalog entries
+  with status `rejected`/`superseded`/`retired` (none today: 411 `review-candidate`, 1 `approved`), the 2020 sources in
+  `source/2020/`, the object sprites (top-down, another mode), the AHOC seal, the patron marks. The script enforces the
+  archive, spoiler and status rules.
+
+### 1.1 Character portraits (now wanted)
+
+- **Set:** `art/portraits/` Heavenprint paintings, `characters` map: `archetypes/` **46**, `world/` **54** (`new-faces/` 27 named,
+  `original-heavenprint/` 27 unnamed), `epccg/` **27** (the First-Patch Revival cast, 27 named people), `m813/` **18** (MPAT, the
+  comrade's head, 7 robots, 8 humans/machines of the one-shot). None are spoilers. Skill portraits and patron paintings are other modes.
+- **The eight patrons stay out.** They are divine apparitions (faceless ivory effigies, masks, radiant absence, giant scale); in a
+  people LoRA they pull every NPC face toward an effigy. Eight images cannot carry a LoRA; if Leon wants gods, a fresh
+  brief for ten or more first. (The script has `--mode patrons` for their captions, one line each, if that day comes.)
+- **Use:** NEW faces for NPCs (the Narrator casts from a pool; `art/briefs/archetype-portraits.md`), the picker's roleplay cards,
+  enemy tokens. **Never a remake of a named cast member** (the EPCCG 27, New Faces, M813): reject a candidate that reads as a
+  known one; compare against the nearest training file. Nothing recognisable from real Earth (the Unspoken Name).
+- **Format:** 800 x 1000 RGB opaque, face in the upper-middle third (`eye_line`), no text. A generated pick needs an `eye_line`
+  in its catalog entry (`validate_eye_lines`): put it by eye, as a fraction of the image.
+
+### 1.2 Scenes, backgrounds and maps (a new mode, and a small one)
+
+Inventory (13 Nov, verified by listing, not by eye):
+
+- `art/illustrations/` **11** catalog entries at 1600 x 900: 6 M813 (`outpost813`, `shield-line`, `rear-pad-loading`, `outpost-hangar`,
+  `outpost-1`, `how-many`) and 1 Proving Ground (`drill-yard`) are usable = **7**; the 4 under `m813/spoilers/` (the ramp, the choice,
+  the demand, the repair bay) are ending-only and **excluded**.
+- `art/ui/title-screen/`: 3 layers at 4096 x 2304 (`title-back.png` opaque; mid and front RGBA over it). **1** usable painting
+  (the back; the front is a full 16:9 frame with the squad, not independent of it). Treat as 1 image, not 3.
+- `art/_archive/maps/m813/`: **4** distinct paintings (outpost, outpost-1, shield-line, rear-pad), 1600 x 1100 (`v1/` and `retired-2026-11/`;
+  `v1/sources` and `revisions/v2/sources` are earlier states of the same four: near-duplicates, not new images). `art/briefs/m813-tutorial/maps/*-layout.png`
+  are layout guides, not paintings. Archived because maps are no longer painted (rules 1.16), but they are the project's own
+  art and the only map paintings there are. **Recommendation: yes, train on them, as style reference only**, with the
+  archive exclusion lifted for this one folder (the script's `--allow-archive-maps` is not built: copy by hand). **Flag for Leon.**
+- Object sprites (25, top-down props) are another mode. Nothing else in the catalog is scene-like.
+
+**Honest count: about 12 images, 7 of them from one campaign. Far below the 20 to 40 consistent images a style LoRA on SDXL wants.**
+Risk: the LoRA memorises these paintings and hands them back (compositions, the black hole, the hangar) instead of a style.
+Two ways to grow the set properly, and neither makes it a big set:
+
+1. **Crop or tile** each painting into several training crops at the model's resolution: a 1600 x 900 painting gives about 6 crops
+   (3 square 900 x 900 across, plus 3 tighter at 60 to 70 % scale), each scaled to the bucket size and captioned for what it shows;
+   the 4096 x 2304 title back gives more. Crops of one painting are **not independent images**: they teach the style and the
+   local detail (brush, palette, materials) but not new compositions, and a LoRA trained on 6 crops of 12 paintings is still a
+   12-painting LoRA. Cap about 6 crops a painting, keep crops of one painting out of the hold-out.
+2. **Hold the LoRA to a low strength** (start at 0.5 to 0.7, never 1.0) and use it as a flavour on the base model, not as the author.
+
+**One mode or two?** One. Four maps cannot carry a LoRA, and the 7 illustrations are not enough alone; together with the crops they
+reach a workable pool. Mark maps in the caption ("top-down battle map") so the trigger can still pull one or the other. If
+Leon later paints more of either, split them. Train this last, and only if the count after cropping looks usable at the
+`samples` step: if every sample is a copy of a training painting, stop and report.
+
+**What they are for in the game:** campaign illustrations (zone banners, moments, card art: `data/campaigns/*.json` `art`), the
+title screen's key art, and **painted maps, but only IF Leon brings them back**: today the game draws maps from tiles (rules 1.16),
+so a painted map is a **design decision for the lead, not an asset request**. Do not wire a generated map into anything; stage it.
 
 ## 2. Preparing the ingest folder (outside the repo, never touching its files)
 

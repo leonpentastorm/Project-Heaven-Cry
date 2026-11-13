@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Write Forge training captions for one PHC art mode, from text the project already has.
 
-    python3 tools/art/forge_captions.py --mode gear|wick|glyph|portraits|skills --out DIR
+    python3 tools/art/forge_captions.py --mode gear|wick|glyph|portraits|patrons|skills --out DIR
         [--trigger WORD] [--images-out DIR] [--gear-src DIR] [--holdout id,id] [--list-ids]
 
 One <id>.txt per image: "<trigger>, <object description>". Descriptions come from the prompt files in
-art/briefs/ (by file name), the Wick production brief (by data id), the archetype table, the catalog label,
+art/briefs/ (by file name), the Wick production brief (by data id), the archetype table, the M813 brief rows
+(catalog `brief_row`) and m813-mpat.md for the M813 cast, the patron manifest's one-line looks, the catalog label,
 and data/skills.json; style words are stripped (the trigger word is what learns the style). Ids with no
 description found are listed under "missing" and are written NOWHERE: caption those by eye.
 
@@ -21,11 +22,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 ART = REPO / 'art'
 BRIEFS = ART / 'briefs'
-TRIGGERS = {'gear': 'phcgear', 'wick': 'phcwick', 'glyph': 'phcglyph', 'portraits': 'phcportrait', 'skills': 'phcskill'}
+TRIGGERS = {'gear': 'phcgear', 'wick': 'phcwick', 'glyph': 'phcglyph', 'portraits': 'phcportrait', 'patrons': 'phcpatron', 'skills': 'phcskill'}
 # What the caption says about the ground: it must match how the masters are flattened for training (see the brief).
 BACKGROUNDS = {'gear': 'three-quarter view, single object, plain flat grey background',
                'wick': 'plain flat dark blue background', 'glyph': 'plain flat dark blue background',
-               'portraits': '', 'skills': 'plain black background'}
+               'portraits': '', 'patrons': '', 'skills': 'plain black background'}
 EXCLUDED_STATUS = {'rejected', 'superseded', 'retired', 'archived'}
 
 # Style, brand and artist words: never in a caption (the trigger word learns the style).
@@ -52,6 +53,10 @@ def clean(text):
     t = re.sub(r'\s+([,.;:])', r'\1', t)
     t = re.sub(r'([,;:])\s*([,.;:])', r'\2', t)
     return t.strip(' ,;:-')
+
+
+# Names of M813 cast members that appear inside other people's brief rows: a caption never carries a name.
+NAME_SCRUB = re.compile(r'\b(Keel|Novikov|Ilse|Varga|MPAT|Nine-Nine|Seven-Seven|Soft-Hands|Penny|Rook|Hum|Lantern)(\'s)?\b')
 
 
 def read(p):
@@ -132,6 +137,47 @@ def archetype_index():
     return out
 
 
+def m813_row_caption(brief_row):
+    """'| B1 | `id` | **Name**, who | action and emotion |' -> who (name dropped) + the first sentence of the action
+    (the pose; the rest is mood and lore, not something seen)."""
+    cells = [c.strip() for c in brief_row.strip().strip('|').split(' | ')]
+    if len(cells) < 4:
+        return None
+    role = re.match(r'\*\*((?:Engineer|Station|Guard|Scavenger|Enemy)[^*]*)\*\*', cells[2])  # a role, not a name: keep it
+    who = re.sub(r'^\*\*[^*]+\*\*\s*[,:]?\s*', '', cells[2])
+    who = re.sub(r'\(\*?proposal\*?:?\s*[^)]*\)', '', who)
+    who = re.sub(r'^(generic token|a second face)\s*[:,]?\s*', '', who.replace('generic token, a second face', 'a second face').replace('generic token:', ''))
+    action = re.split(r'(?<=[.!?])\s|;', cells[3])[0].strip().rstrip('.')   # first sentence or clause: the pose
+    who = who.strip(' .:,')
+    if role:
+        who = f'{role.group(1).lower()}, {who}'.rstrip(' ,')
+    text = f'{who}, {action[:1].lower()}{action[1:]}'
+    return NAME_SCRUB.sub('someone', text)
+
+
+def mpat_index():
+    """art/briefs/m813-mpat.md sections 1 and 2: the two portraits of MPAT and the robot head."""
+    t = read(BRIEFS / 'm813-mpat.md')
+    def field(name, block):
+        m = re.search(r'\*\*' + name + r'[^*]*\*\*\s*(.*)', block)
+        return re.sub(r'\([^)]*\)', '', m.group(1)).strip() if m else ''
+    sec1 = t.split('## 1.')[-1].split('## 2.')[0]
+    sec2 = t.split('## 2.')[-1].split('## 3.')[0]
+    out = {}
+    cons, act, setting = field('Construction', sec1), field('Action', sec1), field('Setting', sec1)
+    out['mpat'] = ' '.join(x for x in (f'a robot combat medic: {cons}', f'Pose: {act}', f'Setting: {setting}') if x)
+    out['mpat'] = NAME_SCRUB.sub('the robot', out['mpat'])
+    subj = re.sub(r'\s*Its name was never recorded.*$', '', field('Subject', sec2)).strip().rstrip('.')
+    out['mpat-comrade'] = f'{subj}, {field("Action", sec2)}'
+    return out
+
+
+def patron_index():
+    """One-line looks of the eight patron portraits, from the archived delivery manifest (read only)."""
+    m = json.loads(read(ART / '_archive/character-portraits/patrons/v1/manifest.json') or '{"portraits":[]}')
+    return {p['id']: p.get('description', '') for p in m['portraits']}
+
+
 # ---- catalog ----------------------------------------------------------------------------------------------
 def usable(entry):
     p = entry.get('path', '')
@@ -178,12 +224,19 @@ def items_for(mode, cat, gear_src):
                     raw = 'a small diagram glyph: ' + raw
                 rows.append((key if fam != 'prayers' else key, REPO / e['path'], raw, stem))
     elif mode == 'portraits':
-        arch = archetype_index()
+        arch, mpat = archetype_index(), mpat_index()
         for key, e in cat['characters'].items():
             if not usable(e):
                 continue
-            raw = arch.get(e.get('archetype', ''))
+            raw = arch.get(e.get('archetype', '')) or mpat.get(key)
+            if not raw and e.get('brief_row') and key.startswith('m813-'):
+                raw = m813_row_caption(e['brief_row'])
             rows.append((key, REPO / e['path'], raw, Path(e['path']).stem))
+    elif mode == 'patrons':
+        pat = patron_index()
+        for key, e in cat['patrons'].items():
+            if usable(e):
+                rows.append((key, REPO / e['path'], pat.get(key), key))
     elif mode == 'skills':
         data = {s['id']: s for s in json.loads(read(REPO / 'data/skills.json'))['items']}
         for key, e in cat['skills'].items():
