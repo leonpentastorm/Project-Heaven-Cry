@@ -15,7 +15,7 @@ import { strikeFromWorld, apLeft } from '../game';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, sideSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, paths, moveUnit,
-  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury,
+  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury, guardHeld,
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
@@ -635,14 +635,15 @@ register({
 
 // ---------- Execution (rank III, passive) ----------
 // Your hit on a Marked enemy (any of your squad's Marks, PROVISIONAL) that leaves it at or below a quarter of its max HP
-// (after the hit's damage, PROVISIONAL) kills it outright. Bosses and Celestials are immune.
+// (after the hit's damage, PROVISIONAL) kills it outright. Bosses and Celestials are immune. Never in an action in
+// which the Elite and Boss guard held the target (rules 1.17; bug, 13 Nov 2026).
 register({
   id: 'assassin.execution', claims: 'all',
   on: {
     on_hit: (ctx, h) => {
       const u = h.u!, t: Unit = ctx.tgt, cb = h.cb!; if (ctx.att !== u || t.dead || t.side === u.side || !condOn(t, 'marked') || isBoss(t)) return;
       const by = unitById(cb, condSource(t, 'marked')); if (by && by.side !== u.side) return;
-      if (t.hp > t.maxHp / 4) return;
+      if (t.hp > t.maxHp / 4 || guardHeld(t, u)) return; // the Elite and Boss guard held it this action: not executed in it
       t.shield = 0; const r = applyDamage(cb, t, Math.max(1, t.hp), { by: u, type: 'execution', shield: false, credit: 'all' });
       if (t.dead || r.killed) { fxFell(cb, t); say(cb, 'EXECUTION: ' + u.name + ' finishes ' + t.name + '.'); }
     },

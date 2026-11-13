@@ -591,6 +591,11 @@ export function bossGuards(t: Unit, src: any, cb?: Combat | null): boolean {
   if (NOT_AN_ACTION.has(src.type) || src.faithShare) return false;
   return levelGap(by, t, cb) <= 0;
 }
+/** Did the guard find this enemy at full HP in the action `by` is taking now (so it holds it for the whole action)? An
+ * execution must not finish what the guard held, nor in the same action (Execution, classes/i.ts; bug, 13 Nov 2026). */
+export function guardHeld(t: Unit, by: Unit | null | undefined): boolean {
+  const m = GUARD_MARK.get(t); return !!m && !!by && m.seq === GUARD_SEQ && m.by === by.id;
+}
 onHook('damage_in', (ctx: any) => {
   const t: Unit = ctx.t, src = ctx.src;
   if (ctx.phase === 'reduce') { if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
