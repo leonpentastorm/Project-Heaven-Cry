@@ -19,7 +19,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar } from '../src';
+import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
 const load = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
@@ -171,5 +171,24 @@ describe('Classes 3.0 renamed the base classes: an old save keeps its class, its
       for (const k of keys) expect(k).toMatch(/^class:[a-z_]+\.[a-z_]+$/); // keys are ids, never display names
     }
     if (f.startsWith('save-develop')) expect(classed).toBeGreaterThan(0);
+  });
+});
+
+describe('rules 1.36 (the level scale): a save from before it moves into the new units once', () => {
+  const raw = () => JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/save-live-0.22.0-long-mid-fight.json', import.meta.url)), 'utf8'));
+  it('a level 9 character keeps the same share of its bar (HP × scale), and so do its unit, its shield and its armour in a fight saved mid-way', () => {
+    const r = raw(), cid = Object.keys(r.characters)[0], c0 = r.characters[cid]; c0.level = 9; c0.hp = 100; delete c0.hpRev;
+    const u0 = r.combat.units.find((u: any) => u.charId === cid); u0.level = 9; u0.hp = 50; u0.shield = 10; const arm0 = u0.armour;
+    const g = apply(migrateLoaded(r), { type: 'player/online', id: 'p2', online: true } as any, 'host'), c = g.characters[cid], u = g.combat.units.find((x: any) => x.charId === cid);
+    const f = scaleOf(9);
+    expect(c.hpRev).toBe(HP_REV); expect(c.hp).toBe(Math.min(maxHp(c), Math.round(100 * f)));
+    expect(u.maxHp).toBe(maxHp(c)); expect(u.hp).toBe(Math.round(50 * f)); expect(u.shield).toBe(Math.round(10 * f)); expect(u.armour).toBe(Math.round(arm0 * f));
+    const again = apply(g, { type: 'player/online', id: 'p2', online: false } as any, 'host'); // once: a second action moves nothing
+    expect(again.characters[cid].hp).toBe(c.hp); expect(again.combat.units.find((x: any) => x.charId === cid).hp).toBe(u.hp);
+  });
+  it('a level 1 save is untouched to the digit', () => {
+    const r = raw(), before = Object.fromEntries(Object.values(r.characters).map((c: any) => [c.id, c.hp]));
+    const g = apply(migrateLoaded(r), { type: 'player/online', id: 'p2', online: true } as any, 'host');
+    for (const [id, hp] of Object.entries(before)) expect(g.characters[id].hp).toBe(hp);
   });
 });
