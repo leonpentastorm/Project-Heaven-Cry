@@ -18,6 +18,7 @@ import type { Combat, Unit } from './combat';
 /** Does a side see this unit now (combat.ts sideSeesUnit)? Set by combat.ts when it loads: importing it here would
  * close a module cycle and change the load order (13 Nov 2026). */
 let sideSeesUnit: (cb: Combat, side: 'pc' | 'foe', u: Unit) => boolean = () => false;
+/** Wires in the sight test (does a side see a unit) that combat.ts owns; called once when the engine loads. */
 export const setSideSees = (f: typeof sideSeesUnit) => { sideSeesUnit = f; };
 
 // ---------- unit states ----------
