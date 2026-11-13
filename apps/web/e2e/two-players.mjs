@@ -1,4 +1,4 @@
-import { chromium, player, click, shot, BASE, hostAs, pickAction, pause, settle } from './lib.mjs';
+import { chromium, player, click, shot, BASE, hostAs, pickAction, pause, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
 const log = (...a) => console.log(...a);
@@ -14,7 +14,7 @@ async function create(page, name, family, kit) {
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
   await page.locator('button', { hasText: kit }).first().click();
   await click(page, 'Next ›');
-  await click(page, 'Lock in and bring to the room');
+  await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 }
 await hostAs(host, 'Leon');

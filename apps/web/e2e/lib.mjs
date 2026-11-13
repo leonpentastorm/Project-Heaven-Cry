@@ -40,6 +40,11 @@ export async function hostAs(page, name) {
   await click(page, 'Open a room ›');
 }
 export const click = async (page, text, opts = {}) => { const b = page.getByRole('button', { name: text, exact: !!opts.exact }).first(); await b.waitFor({ timeout: opts.timeout || 30000 }); await b.click(); }; // (30 s: a wait only costs time when the button never comes; the title can take 10 s to load beside two other suites)
+/** Creation's final button on the Lock in step (screens/create.js LOCK_LABEL): never the bare "Lock in", which is the
+ *  step's own tab. `room` when the screen was opened from a room's lobby (it brings the character in), `solo` else. */
+export const LOCK_IN = { solo: 'Lock in this character', room: 'Lock in and bring to the room' };
+/** Press creation's final button: lockIn(page) in a room (the usual case), lockIn(page, { solo: true }) outside one. */
+export const lockIn = (page, opts = {}) => click(page, opts.solo ? LOCK_IN.solo : LOCK_IN.room, { exact: true, ...(opts.timeout ? { timeout: opts.timeout } : {}) });
 /** Click a combat action by its button name (string or RegExp). The actions live in tabs (Move · Attack · Utility ·
  *  Sigils · Outbursts) and only the open tab's buttons are on the page, so this flips to the tab that holds it first. */
 export async function pickAction(page, name, opts = {}) {

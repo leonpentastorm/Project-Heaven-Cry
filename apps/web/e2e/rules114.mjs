@@ -1,6 +1,6 @@
 // Rules 1.14 in a real browser: the perk card's three shelves, Heart Overload's offer and Resonance on the HEART panel
 // (the Proving Ground), then speaking and attempting in a fight with the scripted Narrator (a solo room).
-import { chromium, player, click, BASE, hostAs, settle } from './lib.mjs';
+import { chromium, player, click, BASE, hostAs, settle, lockIn } from './lib.mjs';
 const SHOTS = process.env.SHOTS || 'apps/web/e2e/shots/';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -88,7 +88,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
   await p.locator('button', { hasText: 'Field medic' }).first().click(); await click(p, 'Next ›');
-  await click(p, 'Lock in and bring to the room'); await p.waitForSelector('text=✓ LOCKED IN');
+  await lockIn(p); await p.waitForSelector('text=✓ LOCKED IN');
   await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
   await click(p, 'Start session'); await p.waitForSelector('text=The rear pad', { timeout: 30000 });
   await p.getByLabel('What do you do?').fill('I walk up the ramp.'); await click(p, 'Send', { exact: true }); await click(p, 'End turn', { exact: true });

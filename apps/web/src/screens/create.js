@@ -14,7 +14,7 @@ import { spellSummary } from '../game/sigilView';
 import { sfx, reducedMotion } from '../game/sfx';
 import { emblemOf } from '../game/classView';
 import { derivedLines, previewCharacter } from '../game/derived';
-import { patronCards, BELIEF_TEXT, FAITH_INK } from '../game/faithView';
+import { patronCards, BELIEF_TEXT, FAITH_INK, beliefFaithNote } from '../game/faithView';
 import { patronPortrait } from '../game/faithArt';
 
 // ---------- card layout (every step) ----------
@@ -26,6 +26,10 @@ const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var
   + '.phc-cc-grid>*{box-sizing:border-box;min-width:0;min-height:0;height:100%;overflow:hidden}'
   + '.phc-cc-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}'
   + '.phc-cc-scroll::-webkit-scrollbar{width:6px}.phc-cc-scroll::-webkit-scrollbar-thumb{background:#2E3A50;border-radius:3px}'
+  // Back and Next stay on screen at the foot of the page on every step (an outside review of 0.25.0: on a 720 px screen
+  // they were thousands of pixels down the Archetype step); a fade above them says the page goes on behind.
+  + '.phc-cc-foot{position:sticky;bottom:0;z-index:6;background:#0A0D13;box-shadow:0 -8px 18px -8px rgba(0,0,0,.7)}'
+  + '.phc-cc-foot::before{content:"";position:absolute;left:0;right:0;top:-29px;height:28px;background:linear-gradient(to bottom,rgba(10,13,19,0),#0A0D13);pointer-events:none}'
   + '.phc-cc-clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
   + '.phc-cc-art{position:relative;display:block;flex:none;height:100%;padding:0;border:0;border-radius:10px;overflow:hidden;background:#05070B;cursor:zoom-in}'
   + '.phc-cc-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%;transition:transform .25s ease}'
@@ -108,6 +112,8 @@ function shakePage() {
 
 const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill', 'Mara Voss', 'Tamsin Rook', 'Ilya Brand', 'Juno Pike', 'Corvin Ash', 'Dez Morrow', 'Kestrel 7'];
 const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
+/** The Lock in step's final button (apps/web/e2e/lib.mjs LOCK_IN holds the same two for the browser suites). */
+export const LOCK_LABEL = { solo: 'Lock in this character', room: 'Lock in and bring to the room' };
 const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['belief', 'Belief'], ['kit', 'Kit'], ['lockin', 'Lock in']];
 const CORES = ['body', 'mind', 'soul'];
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
@@ -598,7 +604,8 @@ export class CreateLogic extends DCLogic {
             } catch { this.setState({ songState: null }); } } }; })(),
       idv: S.idv, idc: { ...Object.fromEntries(ID_KEYS.map((k) => [k, (e) => this.setState({ idv: { ...this.state.idv, [k]: e.target.value } })])), song: (e) => this.setState({ songState: null, idv: { ...this.state.idv, song: e.target.value, ...(ytId(e.target.value) !== ytId(this.state.idv.song) ? { songTitle: '', songArtist: '' } : {}) } }) },
       lockIn: () => this.lockIn(der), saveDraft: () => this.saveDraft(der), exit: () => go(getState().code ? 'room' : 'home', { draft: null }), exitLabel: getState().code ? 'Back to the room' : 'Home',
-      lockLabel: S.stamp ? 'Approved ✓' : getState().code && getState().game?.phase === 'lobby' ? 'Lock in and bring to the room' : 'Lock in',
+      // Never the bare "Lock in": that is the step's own tab (a second "Lock in" reads the same to the eye and to a screen reader).
+      lockLabel: S.stamp ? 'Approved ✓' : getState().code && getState().game?.phase === 'lobby' ? LOCK_LABEL.room : LOCK_LABEL.solo,
       generate: () => this.setState({ name: NAMES[Math.floor(Math.random() * NAMES.length)], origin: Math.floor(Math.random() * D.origins.length), portrait: Math.floor(Math.random() * D.portraits.length), upload: null }),
       upload: () => uploadPortrait((url) => this.setState({ upload: url, portraitEye: null })),
       // Decision 113: where an uploaded portrait's eyes are, for the spotlight cut-in's torn strip (a live preview of the crop).
@@ -612,7 +619,7 @@ export class CreateLogic extends DCLogic {
   /** The Belief step (Blessing 2.0, rules 1.6): Faithful or Atheist as two big cards; the Faithful pick one of the eight
    *  patrons (game/faithView.ts patronCards). Buttons only; the choice goes on the sheet. */
   beliefVals() {
-    const S = this.state, b = S.belief, faithful = b && b.kind === 'faithful', faith = (S.skills || {}).faith || 0;
+    const S = this.state, b = S.belief, faithful = b && b.kind === 'faithful', faith = (S.skills || {}).faith || 0, low = beliefFaithNote(faith);
     const card = (on) => 'display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 14px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: pointer; flex: 1 1 320px; '
       + (on ? 'border: 2px solid #FFFFFF; background: #1C2536' : 'border: 1px solid #2E3A50; background: #10151F');
     const pick = (x) => () => this.setState({ belief: x });
@@ -631,7 +638,9 @@ export class CreateLogic extends DCLogic {
     return {
       beliefFaithful: { pick: pick(faithful ? b : { kind: 'faithful', patron: (patronCards()[0] || {}).id }), pressed: faithful ? 'true' : 'false', style: card(faithful), text: BELIEF_TEXT.faithful },
       beliefAtheist: { pick: pick({ kind: 'atheist' }), pressed: b && b.kind === 'atheist' ? 'true' : 'false', style: card(b && b.kind === 'atheist'), text: BELIEF_TEXT.atheist },
-      beliefNote: BELIEF_TEXT.faith3 + (faith < 3 ? ' You have Faith ' + faith + ' now: you can choose your belief, and pray once Faith reaches 3.' : ' You have Faith ' + faith + '.'),
+      beliefNote: BELIEF_TEXT.faith3 + (low ? '' : ' You have Faith ' + faith + '.'),
+      // Below what praying needs: say so plainly, with both thresholds read from the engine (game/faithView.ts).
+      beliefLow: low || '', hasBeliefLow: !!low,
       beliefChip: !b ? 'NOT CHOSEN · YOU START AS AN ATHEIST' : b.kind === 'atheist' ? 'ATHEIST · PILGRIM' : 'FAITHFUL · ' + ((patronCards().find((p) => p.id === b.patron) || {}).name || b.patron).toUpperCase(),
       showPatrons: !!faithful, patronCards: cards, faithInk: FAITH_INK,
     };

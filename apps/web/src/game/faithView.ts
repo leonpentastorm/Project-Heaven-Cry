@@ -2,7 +2,8 @@
 // the combat FAITH tab, the story's prayer buttons, the resource rows under the HP bar and the turn card. Everything
 // comes from the engine's faithView() and previewPrayer() (packages/engine/src/faith.ts): this file computes no rule,
 // only words, odds, icons and the reason a button is disabled.
-import { faithView, previewPrayer, devotionWords, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS, FAITH_MIN, type FaithView, type PrayerPreview } from '@engine';
+import { faithView, previewPrayer, devotionWords, FAITH_PATRON, FAITH_PATRONS, DEVOTION_XP, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS, FAITH_MIN, FAITH_RULES, type FaithView, type PrayerPreview } from '@engine';
+import * as Engine from '@engine';
 import { FAITH_INK, FAITH_GOLD, accentOf, patronFace, patronMarkUri, patronPortrait, prayerIconUri, vowIconUri, witnessedUri } from './faithArt';
 
 export type PrayerKindUI = 'whisper' | 'hymn' | 'miracle';
@@ -161,6 +162,26 @@ export function patronCards(): PatronCard[] {
 export const BELIEF_TEXT = {
   faithful: 'Sworn to one patron. Your standing (Devotion) grows with what you do in their sight, and opens their Hymns and, one day, a Miracle.',
   atheist: 'No patron, no leash. Pray by dice, learn Hymns from every faith you meet, and build a pilgrim\'s kit no believer can.',
-  faith3: 'Praying needs Faith ' + FAITH_MIN + '. Belief is who you are; the Faith skill is what you can do with it.',
+  faith3: 'Belief is who you are; the Faith skill is what you can do with it.',
 };
+/** The Faith each kind of prayer needs, read from the engine (never typed here). Whispers and Hymns are read apart:
+ *  today one number gates both (FAITH_MIN, patrons.json prayer.faith_min); a later rule gives each its own (Whispers
+ *  lower), and this picks it up from the engine's export or the prayer data without a change on the client. */
+export function prayFaith(): { whisper: number; hymn: number } {
+  const E: any = Engine, pr: any = FAITH_RULES?.prayer || {};
+  const whisper = E.WHISPER_FAITH ?? pr.whisper?.faith_min ?? FAITH_MIN, hymn = E.HYMN_FAITH ?? pr.hymn?.faith_min ?? FAITH_MIN;
+  return { whisper: Number(whisper), hymn: Number(hymn) };
+}
+/** The Belief step's note when the character's Faith is below what praying needs (null when it is not): what they have,
+ *  what Whispers and Hymns each need, and how many more Faith points would open them. */
+export function beliefFaithNote(faith: number, need = prayFaith()): string | null {
+  const f = Math.max(0, faith || 0);
+  if (f >= need.whisper && f >= need.hymn) return null;
+  const part = (what: string, n: number) => (f >= n ? what + ' are open to you' : what + ' need Faith ' + n);
+  const short = Math.max(need.whisper, need.hymn) - f, first = Math.min(need.whisper, need.hymn) - f;
+  const take = need.whisper === need.hymn || f >= Math.min(need.whisper, need.hymn)
+    ? short + ' more Faith point' + (short === 1 ? '' : 's') + ' on the Skills step would open ' + (need.whisper === need.hymn ? 'both' : f >= need.whisper ? 'Hymns' : 'Whispers')
+    : first + ' more Faith point' + (first === 1 ? '' : 's') + ' on the Skills step would open ' + (need.whisper < need.hymn ? 'Whispers' : 'Hymns') + ', ' + short + ' would open both';
+  return 'Your Faith is ' + f + '. ' + part('Whispers', need.whisper) + '; ' + part('Hymns', need.hymn) + '. ' + take + '. You can still choose your belief now.';
+}
 export { FAITH_INK, FAITH_GOLD, previewPrayer, DEVOTION_XP };

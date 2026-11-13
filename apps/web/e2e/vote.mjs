@@ -1,4 +1,4 @@
-import { chromium, player, click, shot, BASE, hostAs, answerAsk, settle } from './lib.mjs';
+import { chromium, player, click, shot, BASE, hostAs, answerAsk, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
 // Named checks (a green line in the runner must mean something was looked at; this suite printed none and showed "0 checks").
@@ -12,7 +12,7 @@ async function create(page, name, family, kit) {
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
   await page.locator('button', { hasText: kit }).first().click();
-  await click(page, 'Next ›'); await click(page, 'Lock in and bring to the room');
+  await click(page, 'Next ›'); await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 }
 await hostAs(host, 'Leon');

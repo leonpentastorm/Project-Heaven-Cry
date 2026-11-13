@@ -1,6 +1,6 @@
 // The Lock in stamp: make a character in a room, press "Lock in and bring to the room", and catch the big red AHOC seal
 // mid-slam (~120 ms) and landed (~500 ms) with APPROVED across it; the lock-in still completes. Shots: slate-stamp-*.png.
-import { chromium, player, click, BASE, OUT, hostAs, settle, pause } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, hostAs, settle, pause, LOCK_IN } from './lib.mjs';
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
@@ -40,7 +40,7 @@ await click(p, 'Next ›');
 await p.waitForSelector('[data-phc-record]');
 await settle(p, 500);
 await p.screenshot({ path: OUT + 'slate-stamp-0-before.png' });
-const btn = p.getByRole('button', { name: 'Lock in and bring to the room' });
+const btn = p.getByRole('button', { name: LOCK_IN.room, exact: true });
 await watchStamp(p);
 await btn.click();
 await btn.click({ timeout: 300 }).catch(() => {}); // a second press files nothing more
@@ -74,7 +74,7 @@ await p.screenshot({ path: OUT + 'slate-stamp-after.png' });
   await click(q, 'Next ›'); await q.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(q, 'Next ›'); await click(q, 'Next ›'); await click(q, 'Next ›'); await q.locator('button', { hasText: 'Line soldier' }).first().click(); await click(q, 'Next ›');
   await watchStamp(q);
-  await q.getByRole('button', { name: 'Lock in and bring to the room' }).click();
+  await q.getByRole('button', { name: LOCK_IN.room, exact: true }).click();
   const calm = await stampSeen(q, 'mid');
   ok('reduced motion: the stamp fades (data-stamp ' + (calm && calm.mode) + ')', !!calm && calm.mode === 'fade');
   await q.waitForSelector('text=✓ LOCKED IN', { timeout: 30000 });

@@ -2,7 +2,8 @@
 // pickers, the payload, the Belief step's patron cards; read from a real game through the engine's faithView.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, apply, newGame, faithView, FAITH_PATRONS, type Sheet } from '@engine';
-import { oddsOf, oddsText, prayerButtons, prayAction, pickerFor, faithPanel, patronCards, BELIEF_TEXT, devotionLabel, cooldownText, grudgeText, tagCapsText, hymnHeadText } from './faithView';
+import { oddsOf, oddsText, prayerButtons, prayAction, pickerFor, faithPanel, patronCards, BELIEF_TEXT, devotionLabel, cooldownText, grudgeText, tagCapsText, hymnHeadText, prayFaith, beliefFaithNote } from './faithView';
+import { FAITH_RULES, FAITH_MIN } from '@engine';
 
 const sheet = (name: string, belief: any): Sheet => { const a = ARCHETYPES[0]; return { name, portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, belief } as any; };
 function game(belief: any, faith = 5) {
@@ -106,7 +107,20 @@ describe('faith views', () => {
   it('the Belief step: eight patron cards, each with likes, taboos, Open or Jealous and three Hymns', () => {
     const cards = patronCards(); expect(cards.length).toBe(8);
     for (const k of cards) { expect(k.likes.length).toBe(3); expect(k.taboos.length).toBe(2); expect(k.hymns.length).toBe(3); expect(k.ruleText).toMatch(/^(OPEN|JEALOUS)/); expect(k.accent).toMatch(/^#/); }
-    expect(BELIEF_TEXT.faith3).toMatch(/Faith 3/);
+    expect(BELIEF_TEXT.faith3).toMatch(/Faith skill/);
+  });
+  it('the Belief step\'s low-Faith note: both thresholds read from the engine, none typed here', () => {
+    const need = prayFaith();
+    expect(need.whisper).toBe(FAITH_RULES.prayer.whisper?.faith_min ?? FAITH_MIN); expect(need.hymn).toBe(FAITH_RULES.prayer.hymn?.faith_min ?? FAITH_MIN);
+    const top = Math.max(need.whisper, need.hymn);
+    expect(beliefFaithNote(top)).toBeNull();
+    const low = beliefFaithNote(0)!;
+    expect(low).toContain('Your Faith is 0. Whispers need Faith ' + need.whisper + '; Hymns need Faith ' + need.hymn + '.');
+    expect(low).toContain(top + ' more Faith points on the Skills step');
+    // the split a later rule brings (Whispers lower than Hymns): each is said apart
+    expect(beliefFaithNote(0, { whisper: 1, hymn: 3 })).toBe('Your Faith is 0. Whispers need Faith 1; Hymns need Faith 3. 1 more Faith point on the Skills step would open Whispers, 3 would open both. You can still choose your belief now.');
+    expect(beliefFaithNote(1, { whisper: 1, hymn: 3 })).toBe('Your Faith is 1. Whispers are open to you; Hymns need Faith 3. 2 more Faith points on the Skills step would open Hymns. You can still choose your belief now.');
+    expect(beliefFaithNote(3, { whisper: 1, hymn: 3 })).toBeNull();
   });
 });
 

@@ -3,7 +3,7 @@
 // down the column; the order is kept in this browser; Reset puts it back. The player card always has room for five
 // seats (four players and the Narrator): filling it to five changes nothing's size.
 // Screenshots: e2e/shots/rp-*.png (1440 × 900 and 1280 × 720).
-import { chromium, player, click, hostAs, OUT, settle } from './lib.mjs';
+import { chromium, player, click, hostAs, OUT, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -19,7 +19,7 @@ await p.getByPlaceholder('What the squad calls you').fill('MPAT');
 await p.locator('main button[aria-pressed]').first().click();
 await click(p, 'Next ›'); await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›'); await p.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(p, 'Next ›'); await click(p, 'Lock in and bring to the room');
+await click(p, 'Next ›'); await lockIn(p);
 await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(p, 'Start session');
 await p.waitForSelector('.phc-story', { timeout: 30000 });

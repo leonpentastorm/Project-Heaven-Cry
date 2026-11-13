@@ -2,7 +2,7 @@
 // Then the story's FAITH tab: the panel, the prayer buttons with AP, gate and odds, a target picker, the rites.
 // Then a fight: the vow prompt (Shield asks for the ally; skippable), the combat FAITH tab, a prayer aimed on the grid.
 // The rules are implementer 1's (packages/engine/src/faith.ts); this checks the screens send them and show what comes back.
-import { chromium, click, player, hostAs, settle } from './lib.mjs';
+import { chromium, click, player, hostAs, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
@@ -32,7 +32,7 @@ await p.locator('[data-belief="faithful"]').click();
 await p.locator('[data-patron="mother_ember"] [data-swear]').click();
 await click(p, 'Next ›'); // kit
 await p.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(p, 'Next ›'); await click(p, 'Lock in and bring to the room', { timeout: 30000 });
+await click(p, 'Next ›'); await lockIn(p, { timeout: 30000 });
 await p.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length > 0, null, { timeout: 30000 });
 const sheet = await p.evaluate(() => Object.values(window.__phc.getState().game.characters)[0]);
 ok('the sheet carries the belief (Faithful, Mother Ember)', sheet.belief?.kind === 'faithful' && sheet.belief?.patron === 'mother_ember');
