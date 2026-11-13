@@ -61,6 +61,7 @@ import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runS
 import { MAP_DATA } from './run/map';
 import { composeEncounter, SETTING } from './run/encounter';
 import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT } from './run/rewards';
+import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
 import { earnCredits } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -325,6 +326,7 @@ export type Action =
   // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
+  | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/forge, run/fit, run/train, run/shrine, run/trade, run/take
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
   | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
@@ -3139,11 +3141,13 @@ function runAction(g: GameState, a: Action, by: string) {
       }
       const rest = { ...r.offers! }; delete rest[a.charId];
       r.offers = Object.keys(rest).length ? rest : null;
-      if (!r.offers) {
-        const n = runNode(r, r.at);
-        r.state = n?.kind === 'boss' ? 'boon' : 'map';
-        if (r.state === 'boon') push(g, { kind: 'system', head: 'STAGE ' + r.stage + ' CLEARED', text: 'The Boss is down. The boons and the next tile come with a later build: the host can retire the run with its score.' });
-      }
+      runPicksDone(g);
+      return;
+    }
+    case 'run/upgrade': case 'run/forge': case 'run/fit': case 'run/train': case 'run/shrine': case 'run/trade': case 'run/take': { // rules 1.43 (run/progress.ts)
+      const no = progressAction(g, a, by, (text, charId, head) => push(g, { kind: 'system', text, ...(charId ? { charId } : {}), ...(head ? { head } : {}) }));
+      if (no) fail(no);
+      runPicksDone(g);
       return;
     }
     case 'run/skip': { // tests only (the browser suites' room): the fight under way is won at once
@@ -3165,21 +3169,31 @@ function runAction(g: GameState, a: Action, by: string) {
 }
 /** "1 round", "3 rounds". */
 const counted = (n: number, word: string) => n + ' ' + word + (n === 1 ? '' : 's');
+/** The picks after a node are all taken (the weapons, rule 26; the kit, rules 1.43): the squad is back on its map, or
+ * after the Boss the stage is cleared. Nothing happens while any pick waits. */
+function runPicksDone(g: GameState) {
+  const r = g.run!; if (r.state !== 'reward' || r.offers || r.lasting) return;
+  const n = runNode(r, r.at);
+  r.state = n?.kind === 'boss' ? 'boon' : 'map';
+  if (r.state === 'boon') push(g, { kind: 'system', head: 'STAGE ' + r.stage + ' CLEARED', text: 'The Boss is down. The boons and the next tile come with a later build: the host can retire the run with its score.' });
+}
 /** The kind of pay a node gives (the gate pays as an Elite). */
 const payKindOf = (n: RunNode): PayKind => (n.gate ? 'gate' : n.kind === 'elite' || n.kind === 'boss' || n.kind === 'cache' ? n.kind : 'fight');
 /** The squad enters a node (rules 1.41; spec rules 13, 24, 29): a new scene; a fight begins, a rest heals, a cache pays,
  * the nodes still to be built say what will be there. */
 function runEnter(g: GameState, id: string) {
   const r = g.run!, n = runNode(r, id)!, word = (MAP_DATA.words as any)[n.kind] || n.kind;
-  r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null;
+  r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null; r.visit = null;
   newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The gate' : word) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows);
   if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss') { runFight(g, n); return; }
   const text = (NODE_TEXT as any)[n.kind] as string | undefined;
   r.note = { node: id, kind: n.kind, ...(text ? { text } : {}) };
-  if (n.kind === 'rest') { applyRest(g, 'long'); beginSession(g); } // rule 24: the long rest and a new session (the small training: step 4a)
+  r.visit = openVisit(g, n); // rules 1.43: what is done at a safe node, and what it rolled on entry (run/progress.ts)
+  if (n.kind === 'rest') { applyRest(g, 'long'); beginSession(g); } // rule 24: the long rest and a new session; the small training is run/train
   if (n.kind === 'cache') { const k: PayKind = 'cache', xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {};
     for (const c of Object.values(g.characters)) { giveXp(g, c, 'survival', xp, 'a cache'); earnCredits(c, cr); ammo[c.id] = runAmmo(c, packCount(k)); }
-    r.note = { ...r.note, xp, credits: cr, ammo }; }
+    r.note = { ...r.note, xp, credits: cr, ammo };
+    r.lasting = Object.fromEntries(Object.values(g.characters).map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); r.state = 'reward'; } // rules 1.43 (rule 41): the cache's pick of kit
   push(g, { kind: 'system', head: (n.gate ? 'THE GATE' : word.toUpperCase()), text: text || word });
 }
 /** Give a character the ammunition pack (rule 23); the names of what it got, for the panel. */
@@ -3237,6 +3251,7 @@ function runFightOver(g: GameState) {
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP: the squad won.' });
   push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the ammunition pack, and a weapon to pick (or credits instead).' });
   r.out = []; r.state = 'reward'; r.offers = offers;
+  if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
   r.note = { node: n.id, kind: n.kind, xp, credits: cr, ammo, won: true, rounds: cb.round, ...(back.length ? { back } : {}) };
 }
 /** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */

@@ -12,6 +12,7 @@ import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
 import { ENC_BUDGET, type FightKind } from './encounter';
 import type { RunOffer, RunWeapon } from './state';
+import { capRoom, rollProps, worthOf } from './power';
 
 const SV: any = svJ;
 /** What each kind of node without a fight says on its panel (`survival.json nodes`; the shop, Forge, training ground,
@@ -66,13 +67,15 @@ const categoryOf = (id: string): string => (WEAPON[id] as any)?.category || ((IT
 export const priceBand = (k: PayKind, depth: number, stage: number): number => {
   const b = SV.rewards.price_band; return (b.base + b.per_depth * depth + b.per_stage * (Math.max(1, stage) - 1)) * (k === 'elite' || k === 'gate' ? b.elite : k === 'boss' ? b.boss : 1);
 };
-/** A rolled rarity capped by the stage's ceiling (rule 26): a Celestial roll is a Relic; a Relic, whose named property
- * comes with build step 4a, is offered as Masterwork until then. */
+/** The highest grade a stage reaches (rule 26, rules 1.43): `rewards.ceiling` by stage (stage 1 Fine, stage 2
+ * Masterwork, from stage 3 Relic): what its picks give and what its shops and Forges grade to. */
+export const stageCeiling = (stage: number): Rarity => SV.rewards.ceiling[Math.max(0, Math.min(SV.rewards.ceiling.length - 1, stage - 1))];
+/** A rolled rarity capped by the stage's ceiling (rule 26): a Celestial roll is a Relic (Celestial is a Relic and a
+ * quirk, and no quirk is in data yet). A Relic takes its named property in weaponOffer (rules 1.43). */
 export function cappedRarity(r: Rarity, stage: number): Rarity {
-  const ceil: Rarity = SV.rewards.ceiling[Math.max(0, Math.min(SV.rewards.ceiling.length - 1, stage - 1))];
-  let out: Rarity = r === 'celestial' ? 'relic' : r;
-  if (RARITIES.indexOf(out) > RARITIES.indexOf(ceil)) out = ceil;
-  return out === 'relic' ? 'masterwork' : out;
+  const ceil = stageCeiling(stage);
+  const out: Rarity = r === 'celestial' ? 'relic' : r;
+  return RARITIES.indexOf(out) > RARITIES.indexOf(ceil) ? ceil : out;
 }
 /** The door a character leans on (rule 28's preselection): the focus kind whose door skill has the most points (1 or
  * more), else null. */
@@ -84,8 +87,8 @@ export function doorOf(c: Character): string | null {
 /** The weapon pick at a node (rule 26): `offer` weapons within the price band, the first for the character's own door
  * (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled rarity capped by the
  * stage; or credits instead at instead_rate of the cheapest offer's price. From `rngFor(seed, node + '#pick#' + id)`. */
-export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string): RunOffer {
-  const rng = rngFor(seed, node.id + '#pick#' + c.id), band = priceBand(k, node.depth, stage);
+export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' | 'elite' | 'boss'; ammo?: number } = {}): RunOffer {
+  const rng = rngFor(seed, node.id + '#pick#' + c.id), band = priceBand(o.rarity === 'elite' && k === 'fight' ? 'elite' : k, node.depth, stage);
   const fits = PICKABLE.filter((id) => (priceOf(id) || Infinity) <= band);
   const door = doorOf(c), dk = door ? kindOfDoor(door) : null;
   const own = [...(dk ? fits.filter((id) => FOCUS_IDS[dk].includes(id)) : []), ...fits.filter((id) => categoryOf(id) === categoryOf(c.weapon))];
@@ -93,16 +96,20 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
   const ids: string[] = [];
   const first = take(own.length ? own : fits, ids); if (first) ids.push(first);
   while (ids.length < SV.rewards.offer) { const x = take(fits, ids); if (!x) break; ids.push(x); }
-  const table = SV.rewards.rarity[k === 'gate' ? 'elite' : k === 'cache' ? 'fight' : k];
+  const table = SV.rewards.rarity[o.rarity || (k === 'gate' ? 'elite' : k === 'cache' ? 'fight' : k)];
+  let room = capRoom(c);
   const weapons: RunWeapon[] = ids.map((id) => {
     const rolled = (rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([r, w]) => ({ item: r, weight: Number(w) })) })?.item || 'standard') as Rarity;
-    const rarity = cappedRarity(rolled, stage);
-    return { id, rarity, price: priceOf(id, rarity) || 0 };
+    let rarity = cappedRarity(rolled, stage), prop: string | undefined;
+    // rules 1.43 (rule 26): a Relic comes with its named property rolled, worth on the cap; none that fits: Masterwork
+    if (rarity === 'relic') { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
+    return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };
   });
   const cheapest = weapons.length ? Math.min(...weapons.map((w) => w.price)) : 0;
-  return { node: node.id, weapons, instead: Math.round(cheapest * SV.rewards.instead_rate), ammo: packCount(k) };
+  return { node: node.id, weapons, instead: Math.round(cheapest * SV.rewards.instead_rate), ammo: o.ammo ?? packCount(k) };
 }
 /** A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove as a focus, as the creation
  * kits and the Proving Ground's give pack one). */
 export const pickedItem = (w: RunWeapon): PackItem[] => lootToPack({ item: w.id, rarity: w.rarity })
-  .map((it) => ((ITEM[w.id] as any)?.focus ? { ...it, kind: 'focus' as const, ...(w.rarity !== 'standard' ? { rarity: w.rarity } : {}) } : it));
+  .map((it) => ((ITEM[w.id] as any)?.focus ? { ...it, kind: 'focus' as const, ...(w.rarity !== 'standard' ? { rarity: w.rarity } : {}) } : it))
+  .map((it) => (w.prop ? { ...it, prop: w.prop } : it)); // rules 1.43: a Relic's property goes with it

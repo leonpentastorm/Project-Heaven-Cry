@@ -846,16 +846,17 @@ export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Ra
 const GRADES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 /** Rules 1.43 (survival-spec 4.2 item 10): set the rarity of ONE carried weapon or focus instance (a hand, or a pack
  * line: one of a stack is split off), keeping its mods, name, property and identity (drill is per weapon id, so it is
- * kept too). Its durability is restored to the new grade's full (`maxDurOf`; a focus has none). `prop` (optional):
+ * kept too). Its durability is restored to the new grade's full (`maxDurOf`; a focus has none; `o.durShare` leaves a
+ * share of it). `prop` (optional):
  * the named property it takes (a Relic's), or null to clear it. Returns null, or the refusal in words (nothing
  * changes): a rarity past Celestial or not one, a plot item, nothing graded there, a thrown thing. General: a shop's or
  * a Forge's grade step, a trade, a smith, a campaign's reward. */
-export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: string | null): string | null {
+export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: string | null, o: { /** the durability it is left with, a share of the new full (a worn step) */ durShare?: number } = {}): string | null {
   if (!GRADES.includes(rarity)) return 'There is no grade "' + rarity + '": the grades are Standard, Fine, Masterwork, Relic and Celestial.';
   if (typeof where === 'number' && isPlotItem(packOf(c)[where])) return 'A plot item has no grade.';
   const g = gearAt(c, where); if (!g) return 'There is no weapon or focus there to grade.';
   if ((WEAPON[g.id] as any)?.category === 'thrown') return 'A thrown thing is not graded.';
-  const dur = maxDurOf(g.id, rarity), keepProp = prop === undefined ? g.prop : prop || undefined;
+  const dur = Math.round(maxDurOf(g.id, rarity) * Math.max(0, Math.min(1, o.durShare ?? 1))), keepProp = prop === undefined ? g.prop : prop || undefined;
   const st = <T extends { dur?: number; prop?: string; rarity?: Rarity }>(old: T): T => { const { prop: _p, dur: _d, ...rest } = old; void _p; void _d; return { ...rest, rarity, ...(dur ? { dur } : {}), ...(keepProp ? { prop: keepProp } : {}) } as T; };
   if (where === 'main') c.weaponState = st({ ...(c.weaponState || {}) });
   else if (where === 'off') c.offHand = st({ ...c.offHand! });

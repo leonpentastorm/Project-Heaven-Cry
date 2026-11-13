@@ -41,7 +41,7 @@ export interface RunTile { id: string; setting: string; stage: number; links: st
 /** How a run ended (rule 4): lost (the whole party down) or retired after a Boss; the score it keeps. */
 export interface RunEnd { how: 'lost' | 'retired'; stage: number; cleared: number; nodes: number; levels: Record<string, number> }
 /** One weapon of a pick (rule 26): the weapon or focus, its rarity, its price at that rarity. */
-export interface RunWeapon { id: string; rarity: 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial'; price: number }
+export interface RunWeapon { id: string; rarity: 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial'; price: number; /** a Relic's named property (rules 1.43) */ prop?: string }
 /** A character's pick after a won fight (rule 26): three weapons, or credits instead; `ammo`: the node's ammunition
  * pack count (a picked gun takes its share, rule 23). */
 export interface RunOffer { node: string; weapons: RunWeapon[]; instead: number; ammo: number }
@@ -53,6 +53,15 @@ export interface RunFight { node: string; stage: number; depth: number; kind: st
   target: { bulk: number; pressure: number; rounds: number }; spent: { bulk: number; pressure: number }; scaleHp: number;
   foes: { name: string; tier: string; level: number; weapon: string; kind?: string; caster?: string; scale?: { hp?: number; damage?: number } }[];
   outcome?: 'win' | 'loss'; rounds?: number }
+/** One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. */
+export interface RunStock { id: string; price: number; sold?: string }
+/** The safe node the party stands on (rules 1.43, build step 4a): what each character did there this visit and what the
+ * node rolled on entry. `steps`: grade steps taken (rule 37's one a visit); `did`: the node's one choice taken (a rest's
+ * or a training ground's trainings, the shrine's offer, the Crossroads' trade), by character; `stock`: the Forge's
+ * rolled stock; `trades`: the Crossroads' offered trades; `patron`: the shrine's patron. */
+export interface RunVisit { node: string; kind: string; steps: Record<string, number>; did: Record<string, number>; stock?: RunStock[]; trades?: string[]; patron?: string }
+/** An armour-or-item pick (rules 1.43, spec rule 41): three things, at least two lasting; or nothing. */
+export interface RunLasting { node: string; items: { id: string; lasting: boolean }[] }
 /** A Survival run (rule 36): `g.run`. Every field is changed only by a `run/*` action. */
 export interface RunState {
   /** The run's seed: every stage's map and every node's content come from it through named streams (rule 12). */
@@ -89,6 +98,12 @@ export interface RunState {
   note?: RunNote | null;
   /** How the run ended, once it has. */
   end?: RunEnd;
+  /** Rules 1.43: the safe node the party stands on, and what was done there (null elsewhere). */
+  visit?: RunVisit | null;
+  /** Rules 1.43: the armour-or-item picks waiting (an Elite's, a cache's), by character id; null when none. */
+  lasting?: Record<string, RunLasting> | null;
+  /** Rules 1.43: what a character has had once a stage (a shrine's token, the wayside shrine), as "what@stage", by id. */
+  marks?: Record<string, string[]>;
 }
 
 /** A fresh run at stage 1 with nothing walked: stage 1's tile and its path map from the run's seed (rules 10, 12). */
@@ -174,5 +189,5 @@ export function runRetireProblem(g: { hostId: string; run?: RunState | null }, b
  * nodes walked, each character's level. */
 export function endRun(r: RunState, how: RunEnd['how'], levels: Record<string, number>): RunState {
   const cleared = how === 'retired' ? r.stage : r.stage - 1;
-  return { ...r, state: 'over', leans: {}, ready: {}, offers: null, shop: null, end: { how, stage: r.stage, cleared, nodes: r.path.length, levels } };
+  return { ...r, state: 'over', leans: {}, ready: {}, offers: null, shop: null, visit: null, lasting: null, end: { how, stage: r.stage, cleared, nodes: r.path.length, levels } };
 }

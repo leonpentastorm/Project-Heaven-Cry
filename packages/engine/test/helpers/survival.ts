@@ -33,6 +33,7 @@ export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: bool
       else { r.fight(40); if (r.g.combat && !r.g.combat.over && r.g.phase === 'combat') { r.errors.push('a fight did not end in 40 rounds'); break; } }
     } else if (run.state === 'reward') {
       for (let i = 0; i < n; i++) if (run.offers?.['c' + (i + 1)]) r.must({ type: 'run/pick', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i));
+      for (let i = 0; i < n; i++) if (r.g.run.lasting?.['c' + (i + 1)]) r.must({ type: 'run/take', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); // rules 1.43: the kit's pick
     } else break;
   }
   return r;
