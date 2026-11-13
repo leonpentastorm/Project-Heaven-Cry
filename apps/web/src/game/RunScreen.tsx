@@ -4,7 +4,7 @@
 // the stage cleared after the Boss. It draws runView (runView.ts); every action is a `run/*` sent through the store.
 import React from 'react';
 import { act, getState, go } from './store';
-import { runView, type RunNodeV, type OfferV } from './runView';
+import { runView, type RunNodeV, type OfferV, type ChoiceCharV } from './runView';
 import { nodeIconSvg } from './runIcons';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
@@ -50,6 +50,34 @@ function Offer({ o }: { o: OfferV }) {
         </div>
         <button type="button" data-phc-instead="" onClick={() => act({ type: 'run/pick', charId: o.charId, choice: 'credits' })} style={btn(false)}>Take {o.instead} credits instead</button>
       </> : <span style={{ fontSize: 13, color: ink.muted }}>Waiting for {o.name}'s player.</span>}
+    </div>
+  );
+}
+
+/** Rules 1.43: the words over each group of a safe node's choices (the engine names the group; the client its heading). */
+const GROUP: Record<string, string> = { grade: 'GRADE STEP', relic: 'THE RELIC STEP', forge: 'THE ARMOURER\'S STOCK', fit: 'ARMOUR FITTING', train: 'TRAINING', shrine: 'THE SHRINE', trade: 'TRADES', lasting: 'PICK ONE' };
+/** One character's choices at a safe node (the Forge, a training ground, a shrine, a crossroads, a rest's training, the
+ * grade step at a shop) or its pick of kit: every option is the engine's, with its price and its reason when it can't. */
+function Choices({ x, kit }: { x: ChoiceCharV; kit?: boolean }) {
+  const groups = [...new Set(x.options.map((o) => o.group))];
+  return (
+    <div data-phc-choices={x.charId} data-phc-kit={kit ? '' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
+      <span style={kick}>{(x.mine ? 'YOU · ' : '') + x.name.toUpperCase()} · <span data-phc-purse={x.charId} style={{ color: ink.white }}>{x.credits} CREDITS</span> · RUN POWER {x.worth}</span>
+      {x.relics.length ? <span style={{ fontSize: 12, color: ink.muted }}>Carries: {x.relics.join(', ')}</span> : null}
+      {!x.canAct ? <span style={{ fontSize: 13, color: ink.muted }}>{x.name}'s player chooses.</span> : groups.map((gname) => (
+        <div key={gname} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ ...kick, fontSize: 10 }}>{GROUP[gname] || gname.toUpperCase()}</span>
+          {x.options.filter((o) => o.group === gname).map((o) => (
+            <button key={o.key} type="button" data-phc-choice={o.key} data-phc-why={o.why ? '' : undefined} aria-disabled={o.why ? 'true' : undefined}
+              {...tipProps(o.detail + (o.why ? ' ' + o.why : ''))}
+              onClick={(e) => { if (o.why) openTipOn(e.currentTarget); else act(o.action as any); }}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 40, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (o.why ? ink.line : ink.text), background: o.why ? 'transparent' : ink.raised, color: o.why ? ink.muted : ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}>
+              <span style={{ flex: 1, fontSize: 13, lineHeight: 1.35 }}>{o.label}{o.why ? <span style={{ display: 'block', fontSize: 11, color: ink.muted }}>{o.why}</span> : null}</span>
+              {o.price ? <span style={{ fontSize: 12, color: ink.white, whiteSpace: 'nowrap' }}>{o.price} credits</span> : <span style={{ fontSize: 11, color: ink.muted }}>free</span>}
+            </button>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
@@ -113,6 +141,8 @@ export function RunScreen() {
               {v.note.lines.map((l, i) => <span key={i} style={{ fontSize: 13, lineHeight: 1.45 }}>{l}</span>)}
             </div>
           ) : null}
+          {v.kits.map((x) => <Choices key={'kit-' + x.charId} x={x} kit />)}
+          {v.choices.map((x) => <Choices key={'ch-' + x.charId} x={x} />)}
           {mine.map((o) => <Offer key={o.charId} o={o} />)}
           {others.map((o) => <Offer key={o.charId} o={o} />)}
           {v.cleared ? (
