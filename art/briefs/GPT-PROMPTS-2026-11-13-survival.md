@@ -1,9 +1,20 @@
 # Prompts for the artist (image generation): Survival mode art, 13 Nov 2026
 
+> **Read this first (Leon and the lead, 13 Nov).** Make-order: (1) the 24 fight backdrops; (2) **the map kit for ONE
+> setting only, the AHOC outpost, as a trial**: its starred core pieces first (ground, walls, the cover and object
+> sprites): stop there and show them. Two things are being tested: do the ground textures repeat without a visible
+> seam, and do the wall pieces butt together cleanly. If they do, make the other five settings' kits; if they do
+> not, the game will draw walls itself and ground may be made another way, and only cover, objects and dressing are
+> wanted for the other five. (3) The 18 painted maps (training material for the project's own style model; the
+> game draws its maps from tiles and kit pieces). (4) Everything else. Do not paint all six kits before the trial
+> has been looked at.
+
 Everything the Survival mode (`docs/ROADMAP.md`, "Survival mode" and "The roguelike: Leon's scope") needs that an image
 generator can make **now**. Leon, 13 Nov 2026: "Artist is free, ask for more paintings, prepare for Survival mode
 even." The artist is an image generator (GPT): **one image a prompt**. For each image paste **the style block of its
 batch, then the numbered line**, and attach the references the batch names.
+
+**Why a kit, and the new total.** The game draws maps from pieces (batch 1c, 216 of them), because a painted map fixes where cover can stand and a fight's walls, cover and objects are placed by data and by the Survival encounter generator. Kits, backdrops and painted maps of one setting must look like the same place. The painted maps (1b) stay as training material for Leon's style model. **Total now 294 images** (78 + 216).
 
 **Every delivery is a review candidate until Leon approves it.** Send the files to Leon; Claude adds them to the catalog
 and runs the checks (`python3 tools/validate_art.py`, `npm run assets`).
@@ -12,11 +23,12 @@ and runs the checks (`python3 tools/validate_art.py`, `npm run assets`).
 `art/illustrations/survival/` (backdrops in `backdrops/`, the path map in `map/`, node cards in `nodes/`, run cards in
 `cards/`), portraits in `art/portraits/survival/`, gear re-dos replace the files in `art/icons/gear/` (same names).
 
-## Counts (78 images)
+## Counts (294 images)
 
 | Batch | What | Images | Style block |
 | --- | --- | --- | --- |
 | 1 | **Fight backdrops**: six settings, four each (also the scenes-model training set) | **24** | Scene block (below) |
+| 1c | **The map kit** (what the game assembles maps from: ground tiles, decals, walls, one sprite per object kind, set dressing; 36 a setting) | **216** | Kit block (below) |
 | 1b | **Painted battle maps** (top-down, three a setting; training material first) | **18** | Map block (below) |
 | 2 | **The path map**: two directions for Leon to pick from | **2** | Scene block, map variant |
 | 3 | **Node scenes**: shop (3), free rest (2), Elite's lair, Boss's arena door, reward cache | **8** | Scene block, card variant |
@@ -34,7 +46,8 @@ What the first playable Survival build needs first:
 2. **Batch 2** (the path map): the first screen of the run; Leon picks one of the two.
 3. **Batch 3** (node scenes) and **batch 4** (the shopkeepers, medic, mission-giver first; the five Elite and Boss faces
    later): the shop and the rest need them.
-4. **Batch 1b, the 18 painted battle maps** (right after the backdrops; settings 1 to 3 first, so each setting has its matched set of backdrops and maps early). Training material first (Leon, 13 Nov: "painted map too, let it chew on it so we have enough for the LoRA later"); whether the game goes back to showing painted maps is a later design decision, not this request's.
+4. **Batch 1c, the map kit** (right after the backdrops and BEFORE the painted maps; settings 1 to 3 first, the AHOC kit to Leon as the kit style check; the core 21 pieces of a setting first).
+4b. **Batch 1b, the 18 painted battle maps** (after the kit; settings 1 to 3 first, so each setting has its matched set of backdrops and maps early). Training material first (Leon, 13 Nov: "painted map too, let it chew on it so we have enough for the LoRA later"); whether the game goes back to showing painted maps is a later design decision, not this request's.
 5. **Batch 1, settings 4 to 6** (the other 12 backdrops).
 6. **Batch 5** (small, fixes the backpack and shop grid).
 7. **Batch 6** last.
@@ -169,6 +182,547 @@ Light: the cold glow of a black hole's accretion ring (a dark disc, a thin brigh
 **23. `rim-c-pad.png`** The open rear landing pad under the black hole: a scorch ring, loose crates, a mast with a cracked lamp, the dark disc and its bright ring filling the upper sky. Open pad in the middle.
 
 **24. `rim-d-core.png`** The heart: the station's power core chamber, a ring of resonant conduits around a dim central well, catwalk rails at the edges, cold blue light rising from below. The central floor is plain deck plate.
+
+---
+
+## Batch 1c: the map kit (216 pieces; the game draws maps from these)
+
+**Why a kit (Leon, 13 Nov 2026: "Can we do like one of those kits that you can assemble to make a map? A painted painting
+means we only get to place cover where the detail is right?").** He is right: a finished painted map fixes where cover can
+stand, but a fight is a 26 x 26 grid whose walls, cover and objects are placed by data (and, in Survival, by an encounter
+generator). So the game **assembles** its maps from PIECES: a ground texture repeated across the map and darkened under a
+grid, decals, walls repeated along a line of solid tiles, and one sprite for each object kind the engine places. The
+painted maps of batch 1b stay in the file as training material for Leon's own style model, not as what the game shows.
+**Kit, backdrops and painted maps of one setting must look like the same place** (same palette, materials, light): paint a
+setting's kit with that setting's first backdrop attached.
+
+**Make order: right after the backdrops, BEFORE the painted maps.** Settings 1 to 3 first (send the AHOC set to Leon as the
+kit style check), then 4 to 6. Inside a setting the order is: ground, walls, then objects (the cover kinds first: crate,
+low wall, pillar, barricade, container, barrel, door), then decals and dressing.
+
+**What the engine places** (`data/objects.json`, 23 kinds, and `data/maps.json`): terrain `.` open ground, `#` solid wall,
+`~` difficult ground; objects crate, low_wall, pillar, barricade, door, hole, trap, fire, toxic, barrel, rubble, container,
+terminal, lamp, poi, exit, camera, alarm, turret, sigil_wall, cache, sigil_mark, pile. **Not in the kit:** `poi` (the
+existing `obj-poi-marker` serves), and `sigil_wall`, `sigil_mark` and `pile`, which the engine draws as effects and item
+piles. `rubble` and `toxic` are decals (K-decal 1 and 2 of each setting); `hole`, `trap`, `fire` are sprites; `door` has a
+closed and an open sprite; crate, pillar and barricade, the three the engine can destroy, also get a "broken" sprite
+(rubble of themselves). Everything else has one sprite. **Cover reading:** full cover must LOOK like it blocks a standing
+person (taller bulk, strong dark edge); half cover must look waist-high (lower, lighter, a visible top face).
+
+**The view, scale and size (matches what exists).** The 25 object sprites in `art/sprites/objects/` are `painted-topdown`
+(catalog `art_mode`): **straight overhead with a little top face and a hint of side (no perspective tilt), RGBA, 256 x 256
+px for one tile (larger only where noted), the object inside an 80% safe box (about 205 px), top-left
+light.** The kit uses **exactly that view and size**, so kit sprites sit beside the existing ones. One difference: the
+existing sprites bake in a short bottom-right shadow; **kit sprites carry no shadow at all** (the game adds its own; the
+older sprites are re-done to match later). A tile is 1.5 m = 256 px in the master (the game shows it at about 46 to 64 px;
+the catalog previews are 46, 64 and 128): **a crate is about a metre (about 170 px), a standing person's footprint is
+about a third of a tile (about 85 px), a door is one tile wide, a container is one and a half tiles long.** Everything
+must stay readable at 64 px: bold shapes, a clear dark edge, no fine detail that dies when shrunk.
+
+**The kit style block (paste at the start of every kit prompt, after the setting's kit paragraph):**
+
+> Paint one game-map kit piece in Heavenprint: hand-painted gouache and ink with broken, directional brush strokes,
+> selective dry-brush scumbling, restrained hatching and warm ivory accents, the same hand as the attached backdrops and
+> sprites, but **simplified and bold so it reads at 64 px**. **Straight overhead view, no perspective tilt, no horizon.**
+> **Flat, even top light with one consistent soft highlight from the upper left on edges and tops across the whole kit;
+> NO cast shadow, NO drop shadow, NO ground contact shadow, NO glow or bloom, NO lens effects.** Scale: **one tile = 1.5 m =
+> 256 px**; a crate is about a metre, a standing person's footprint about a third of a tile. **No text, no letters, no
+> numbers, no signs with writing (abstract marks only), no logos, no figures, no creatures, no UI, no frame, no border, no
+> watermark.** Everything is invented: nothing recognisable from real-world works, brands, buildings or places.
+> **For a SPRITE, overlay or wall piece:** a **transparent background (PNG with alpha)**, the object centred inside an 80%
+> safe box in a **256 x 256 px** canvas (or the size stated), crisp clean edges, no halo, nothing touching the canvas edge.
+> **For a GROUND texture, exactly this (it is how to ask an image generator for a seamless tile):** "a seamless tileable
+> square texture, **1024 x 1024 px**, straight top-down, **tileable, the left and right edges match and the top and bottom
+> edges match when the image is repeated**, flat even lighting with no directional light and no cast shadows, no vignette,
+> no border, no frame, no large single feature or landmark that would show as a repeat, no objects on it, even mid-dark
+> value with gentle low-contrast variation." The game repeats it across the map, can rotate it by 90 degrees, and darkens it
+> under a grid, so keep it calm.
+
+**Wall pieces (all five of a setting share these rules).** A wall is seen from above as a flat thick band with a dark outline
+and a lighter cap face, **square to the grid**. Each piece is a **256 x 256 px** tile cell; the wall band is **half a tile
+thick (128 px), centred** in the cell; ends are **flat-cut, exactly at the cell edge**, so pieces butt together with no gap
+or overlap; no perspective, no side faces, no baked shadow. Pieces: `wall-straight` (runs left to right through the cell),
+`wall-corner` (an L: joins the left edge and the bottom edge), `wall-end` (a flat cap on the right, runs out to the left
+edge), `wall-door` (two short wall stubs with jambs, an empty 128 px gap between them: the game puts a door sprite in it),
+`wall-broken` (a straight run whose middle is a ragged breach, rubble at the edges of the gap, still butts at both ends).
+Saved facing east/right; the game rotates them.
+
+**Where to save (a proposal; rename at integration):** `art/sprites/kit/<setting>/<piece>.png`, with `<setting>` one of
+`ahoc`, `city`, `field`, `works`, `shrine`, `rim`; ground `ground-1.png` to `ground-3.png` (1024 x 1024, opaque); decals
+`decal-rubble.png`, `decal-toxic.png`, `decal-scorch.png` (256 x 256, transparent, soft edges, sized to cover one tile and
+to tile across several); walls `wall-*.png`; object sprites by the **engine kind id** (`crate.png`, `crate-broken.png`,
+`low_wall.png`, `pillar.png`, `pillar-broken.png`, `barricade.png`, `barricade-broken.png`, `door.png`, `door-open.png`,
+`hole.png`, `trap.png`, `fire.png`, `barrel.png`, `container.png` (384 x 256, one and a half tiles), `terminal.png`,
+`lamp.png`, `turret.png`, `camera.png`, `alarm.png`, `cache.png`, `exit.png`); dressing `dress-1.png` to `dress-4.png`
+(256 x 256, non-blocking, scattered on any free tile, meaning nothing in the rules).
+
+**Per setting: 36 pieces** = 3 ground + 3 decals + 5 walls + 21 object sprites (19 kinds, three with a broken sprite and
+the door with an open one) + 4 set dressing. **6 settings = 216 pieces** (the lead's guess was about 120; the engine's
+kinds make it 36 a setting, so the first pass can stop at the core 21 of a setting marked **\***: ground-1, ground-2,
+decal-rubble, decal-toxic, the five walls, crate, low_wall, pillar, barricade, door, door-open, container, barrel, hole,
+fire, terminal, lamp).
+
+### Kit ahoc: Setting 1: AHOC chapter outpost
+
+Light: cold white strip light and amber work lamps. **Kit paragraph (paste after the kit style block):** Ceramic-grey panels, riveted plate, packed gravel, poured concrete, faded rust-red and ivory stencil bands (no letters). Accent: rust-red `#F65157` marks and amber lamp glass. Reads as a tired, well-kept containment base: grey ceramic, hazard stripes worn to ghosts, everything squared and bolted. Same place as the setting's backdrops and maps: reuse their materials and local colour.
+
+**K1*. `art/sprites/kit/ahoc/ground-1.png`** GROUND, opaque 1024 x 1024 seamless tile. Packed grey gravel and concrete yard apron, fine pale aggregate, a few faint hairline cracks.
+
+**K2*. `art/sprites/kit/ahoc/ground-2.png`** GROUND, opaque 1024 x 1024 seamless tile. Scuffed ceramic-grey floor plates with bolted seams every half tile and faint worn walking lanes.
+
+**K3. `art/sprites/kit/ahoc/ground-3.png`** GROUND, opaque 1024 x 1024 seamless tile. Damaged floor: cracked concrete and plate with oil-dark patches, a peeled hazard stripe ghost, chipped edges.
+
+**K4*. `art/sprites/kit/ahoc/decal-rubble.png`** DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: ceramic panel shards, grey chunks and dust. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.
+
+**K5*. `art/sprites/kit/ahoc/decal-toxic.png`** DECAL (the engine's `toxic` kind), transparent 256 x 256. Spilled coolant: a blue-green slick with a sheen, soft edges (the toxic spill).
+
+**K6. `art/sprites/kit/ahoc/decal-scorch.png`** DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a soot-black blast patch fading to nothing at the rim.
+
+**K7*. `art/sprites/kit/ahoc/wall-straight.png`** WALL piece, straight, 256 x 256 cell: ceramic-grey riveted panel wall with a darker cap band and a rust-red stripe along the top face, running left to right, half a tile thick, flat cut ends at the cell edges.
+
+**K8*. `art/sprites/kit/ahoc/wall-corner.png`** WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.
+
+**K9*. `art/sprites/kit/ahoc/wall-end.png`** WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.
+
+**K10*. `art/sprites/kit/ahoc/wall-door.png`** WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.
+
+**K11*. `art/sprites/kit/ahoc/wall-broken.png`** WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.
+
+**K12*. `art/sprites/kit/ahoc/crate.png`** CRATE (`crate`, half cover, destructible): a sealed grey ceramic supply crate with rust-red corner brackets; about a metre, waist-high look, centred.
+
+**K13. `art/sprites/kit/ahoc/crate-broken.png`** CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.
+
+**K14*. `art/sprites/kit/ahoc/low_wall.png`** LOW WALL (`low_wall`, half cover): a waist-high run of ceramic-grey panel, one tile long, with a worn rust-red cap stripe; fills the width of the tile, low and clearly waist-high with a visible light top face.
+
+**K15*. `art/sprites/kit/ahoc/pillar.png`** PILLAR (`pillar`, full cover, destructible): a squat riveted ceramic-grey support column, square, with a hazard-stripe collar; strong dark edge, reads as taller than a person, fits one tile.
+
+**K16. `art/sprites/kit/ahoc/pillar-broken.png`** PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.
+
+**K17*. `art/sprites/kit/ahoc/barricade.png`** BARRICADE (`barricade`, full cover, destructible): a full-height sandbag-and-plate barricade, tall tarped sandbags and a steel shield plate, one tile; fills the width of the tile.
+
+**K18. `art/sprites/kit/ahoc/barricade-broken.png`** BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.
+
+**K19*. `art/sprites/kit/ahoc/door.png`** DOOR closed (`door`): a plain grey ceramic door in a frame, closed; the door slab fills the gap; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.
+
+**K20*. `art/sprites/kit/ahoc/door-open.png`** DOOR open (`door`, open state): the same door slid open, slab pulled into the wall, jambs visible and the threshold clear; the same door seen open, same cell.
+
+**K21*. `art/sprites/kit/ahoc/hole.png`** HOLE (`hole`): a round maintenance hole in the plate floor, open, black depth with a bent grating beside it; round or square, fits one tile, the depth reads as dark and void.
+
+**K22. `art/sprites/kit/ahoc/trap.png`** TRAP (`trap`): a tripwire trap: two small stakes with a thin wire and a hidden charge, grey-brown; deliberately subtle but readable at 64 px.
+
+**K23*. `art/sprites/kit/ahoc/fire.png`** FIRE (`fire`): a campfire-sized fire in a dented steel bin, flames from above, orange and ivory; fits one tile, bright core, no glow or bloom, flat painted flames.
+
+**K24*. `art/sprites/kit/ahoc/barrel.png`** BARREL (`barrel`, half cover, explodes): a rust-red fuel drum with a hazard band and a bung; about 60 cm across, reads as dangerous.
+
+**K25*. `art/sprites/kit/ahoc/container.png`** CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a long grey cargo container, a tile and a half long, with a latch bar and faded stencil bands, waist-high.
+
+**K26*. `art/sprites/kit/ahoc/terminal.png`** TERMINAL (`terminal`): a wall-less standing field terminal, dark screen glass showing only abstract amber bars, no text; fits one tile.
+
+**K27*. `art/sprites/kit/ahoc/lamp.png`** LAMP (`lamp`): a tall work lamp on a tripod, amber glass, seen from above as a lamp head and three feet; fits one tile.
+
+**K28. `art/sprites/kit/ahoc/turret.png`** TURRET (`turret`, half cover): an emplaced automatic turret on a low ring mount, grey housing, twin barrels (waist-high cover); fits one tile, a single clear barrel direction (up).
+
+**K29. `art/sprites/kit/ahoc/camera.png`** CAMERA (`camera`): a small pole-mounted camera dome as seen from above, grey, red status dot; small, about a third of a tile, centred.
+
+**K30. `art/sprites/kit/ahoc/alarm.png`** ALARM (`alarm`): a wall alarm panel box, grey with a red lens, flat; small, about a third of a tile, centred.
+
+**K31. `art/sprites/kit/ahoc/cache.png`** CACHE (`cache`, loot): a locked steel ration-and-ammo cache box, grey with a red seal strap; about a metre, waist-high look.
+
+**K32. `art/sprites/kit/ahoc/exit.png`** EXIT (`exit`, the way out): a floor hatch with ivory chevrons painted toward it, "way out", no letters; fits one tile, reads as a place to leave by.
+
+**K33. `art/sprites/kit/ahoc/dress-1.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Cables: a loose bundle of black and amber cables snaking across the floor. Low, flat, nothing taller than a few centimetres.
+
+**K34. `art/sprites/kit/ahoc/dress-2.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Stencilled floor marking: a faded ivory arrow and boxed zone lines, no letters. Low, flat, nothing taller than a few centimetres.
+
+**K35. `art/sprites/kit/ahoc/dress-3.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Pipe run: a short run of lagged pipe lying along the floor edge with brackets. Low, flat, nothing taller than a few centimetres.
+
+**K36. `art/sprites/kit/ahoc/dress-4.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A dropped helmet-less ration tin and a scatter of bolts, nothing readable. Low, flat, nothing taller than a few centimetres.
+
+
+### Kit city: Setting 2: Central City back streets
+
+Light: dusk, violet-blue ambient with warm shop-lamp pools, wet surfaces. **Kit paragraph (paste after the kit style block):** Wet cobbles, ivory plaster, weathered brick, iron, canvas awnings, wood crates. Accent: the lamp-lit warm amber and the blue-grey `#5394AC` shadows. Reads as a lived-in old city: wet stone, shuttered stalls, laundry and iron. Same place as the setting's backdrops and maps: reuse their materials and local colour.
+
+**K37*. `art/sprites/kit/city/ground-1.png`** GROUND, opaque 1024 x 1024 seamless tile. Wet dark cobblestones in an irregular pattern, a faint blue sheen.
+
+**K38*. `art/sprites/kit/city/ground-2.png`** GROUND, opaque 1024 x 1024 seamless tile. Worn flagstone paving, pale and dry, mossy joints.
+
+**K39. `art/sprites/kit/city/ground-3.png`** GROUND, opaque 1024 x 1024 seamless tile. Damaged street: broken cobbles, bare earth showing, puddle-dark patches, pavers missing.
+
+**K40*. `art/sprites/kit/city/decal-rubble.png`** DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: brick fragments, plaster and tile shards. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.
+
+**K41*. `art/sprites/kit/city/decal-toxic.png`** DECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill (the engine's `toxic` kind): standing water, a shallow dark puddle with a sheen and a floating leaf, soft edge, with a faint sour green-yellow tint so it reads as the toxic spill.
+
+**K42. `art/sprites/kit/city/decal-scorch.png`** DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a smudged soot mark and ash from a thrown fire, soft edge.
+
+**K43*. `art/sprites/kit/city/wall-straight.png`** WALL piece, straight, 256 x 256 cell: old brick and ivory plaster building wall with a slate cap and a darker mortar band, running left to right, half a tile thick, flat cut ends at the cell edges.
+
+**K44*. `art/sprites/kit/city/wall-corner.png`** WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.
+
+**K45*. `art/sprites/kit/city/wall-end.png`** WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.
+
+**K46*. `art/sprites/kit/city/wall-door.png`** WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.
+
+**K47*. `art/sprites/kit/city/wall-broken.png`** WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.
+
+**K48*. `art/sprites/kit/city/crate.png`** CRATE (`crate`, half cover, destructible): a wooden market crate with rope handles, slatted; about a metre, waist-high look, centred.
+
+**K49. `art/sprites/kit/city/crate-broken.png`** CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.
+
+**K50*. `art/sprites/kit/city/low_wall.png`** LOW WALL (`low_wall`, half cover): a waist-high brick garden or yard wall, one tile long, with a slate cap; fills the width of the tile, low and clearly waist-high with a visible light top face.
+
+**K51*. `art/sprites/kit/city/pillar.png`** PILLAR (`pillar`, full cover, destructible): a squat round stone column with an iron collar, weathered; strong dark edge, reads as taller than a person, fits one tile.
+
+**K52. `art/sprites/kit/city/pillar-broken.png`** PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.
+
+**K53*. `art/sprites/kit/city/barricade.png`** BARRICADE (`barricade`, full cover, destructible): a full-height barricade of stacked furniture, doors and barrels, lashed with rope, tall enough to hide behind; fills the width of the tile.
+
+**K54. `art/sprites/kit/city/barricade-broken.png`** BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.
+
+**K55*. `art/sprites/kit/city/door.png`** DOOR closed (`door`): a plain heavy wooden door with iron straps in a brick frame, closed; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.
+
+**K56*. `art/sprites/kit/city/door-open.png`** DOOR open (`door`, open state): the same door swung open against the wall, threshold clear; the same door seen open, same cell.
+
+**K57*. `art/sprites/kit/city/hole.png`** HOLE (`hole`): an open drain or manhole shaft, iron cover pushed aside, black depth; round or square, fits one tile, the depth reads as dark and void.
+
+**K58. `art/sprites/kit/city/trap.png`** TRAP (`trap`): a snare trap: a rope loop and weighted bag in the cobbles; deliberately subtle but readable at 64 px.
+
+**K59*. `art/sprites/kit/city/fire.png`** FIRE (`fire`): a street fire in a barrel brazier, flames from above; fits one tile, bright core, no glow or bloom, flat painted flames.
+
+**K60*. `art/sprites/kit/city/barrel.png`** BARREL (`barrel`, half cover, explodes): a wooden oil barrel with iron hoops and a faint red mark; about 60 cm across, reads as dangerous.
+
+**K61*. `art/sprites/kit/city/container.png`** CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a covered market stall counter with a canvas awning folded back, a tile and a half long, waist-high.
+
+**K62*. `art/sprites/kit/city/terminal.png`** TERMINAL (`terminal`): a street-side brass public terminal on a short post, dark glass, abstract glow only; fits one tile.
+
+**K63*. `art/sprites/kit/city/lamp.png`** LAMP (`lamp`): a tall iron street lamp with a warm amber glass lantern, seen from above; fits one tile.
+
+**K64. `art/sprites/kit/city/turret.png`** TURRET (`turret`, half cover): a wall-less stolen emplaced turret bolted to a cart, grey and mismatched, waist-high; fits one tile, a single clear barrel direction (up).
+
+**K65. `art/sprites/kit/city/camera.png`** CAMERA (`camera`): a small iron-bracketed camera box on a bracket, as seen from above; small, about a third of a tile, centred.
+
+**K66. `art/sprites/kit/city/alarm.png`** ALARM (`alarm`): a brass alarm bell box with a pull-chain, flat; small, about a third of a tile, centred.
+
+**K67. `art/sprites/kit/city/cache.png`** CACHE (`cache`, loot): a locked iron-bound strongbox with a canvas wrap; about a metre, waist-high look.
+
+**K68. `art/sprites/kit/city/exit.png`** EXIT (`exit`, the way out): a stair-head or cellar door lying open to the dark, with worn steps going down; fits one tile, reads as a place to leave by.
+
+**K69. `art/sprites/kit/city/dress-1.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Laundry: a fallen line of cloth and a few dropped sheets, no patterns. Low, flat, nothing taller than a few centimetres.
+
+**K70. `art/sprites/kit/city/dress-2.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Cables and bunting: a slack string of paper lanterns lying across the ground. Low, flat, nothing taller than a few centimetres.
+
+**K71. `art/sprites/kit/city/dress-3.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A scatter of newspaper-sized blank paper sheets. Low, flat, nothing taller than a few centimetres.
+
+**K72. `art/sprites/kit/city/dress-4.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A shuttered stall sign board, blank, leaning. Low, flat, nothing taller than a few centimetres.
+
+
+### Kit field: Setting 3: Daggerfall battlefield
+
+Light: low smoky orange sun through haze, ash and mud. **Kit paragraph (paste after the kit style block):** Cracked mud, ash, scorched steel plate, sandbag canvas, burnt wood, bone-white dust. Accent: smoky orange `#F68A38` and warm ivory mana specks (faint). Reads as a nuked dead world: ash grey, charred, trenches and wreck plate. Same place as the setting's backdrops and maps: reuse their materials and local colour.
+
+**K73*. `art/sprites/kit/field/ground-1.png`** GROUND, opaque 1024 x 1024 seamless tile. Dry cracked grey-brown mud with fine ash and tiny stones.
+
+**K74*. `art/sprites/kit/field/ground-2.png`** GROUND, opaque 1024 x 1024 seamless tile. Churned dark mud and ash with wheel and boot ruts, wet-dark.
+
+**K75. `art/sprites/kit/field/ground-3.png`** GROUND, opaque 1024 x 1024 seamless tile. Damaged ground: cratered blasted earth, glassy fused patches, bone-pale dust.
+
+**K76*. `art/sprites/kit/field/decal-rubble.png`** DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: broken plate, chunks of fused stone and bent wire. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.
+
+**K77*. `art/sprites/kit/field/decal-toxic.png`** DECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: an acid-green and rust slick pooled in cracks (the toxic spill), soft edge.
+
+**K78. `art/sprites/kit/field/decal-scorch.png`** DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: black ash ring with ember specks fading outward.
+
+**K79*. `art/sprites/kit/field/wall-straight.png`** WALL piece, straight, 256 x 256 cell: a packed-earth and sandbag trench wall seen from above, dark cut band with a sandbag cap, running left to right, half a tile thick, flat cut ends at the cell edges.
+
+**K80*. `art/sprites/kit/field/wall-corner.png`** WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.
+
+**K81*. `art/sprites/kit/field/wall-end.png`** WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.
+
+**K82*. `art/sprites/kit/field/wall-door.png`** WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.
+
+**K83*. `art/sprites/kit/field/wall-broken.png`** WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.
+
+**K84*. `art/sprites/kit/field/crate.png`** CRATE (`crate`, half cover, destructible): a battered ammunition crate, scorched wood with a steel strap; about a metre, waist-high look, centred.
+
+**K85. `art/sprites/kit/field/crate-broken.png`** CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.
+
+**K86*. `art/sprites/kit/field/low_wall.png`** LOW WALL (`low_wall`, half cover): a waist-high line of sandbags, one tile long, with a worn canvas look; fills the width of the tile, low and clearly waist-high with a visible light top face.
+
+**K87*. `art/sprites/kit/field/pillar.png`** PILLAR (`pillar`, full cover, destructible): a burnt stump or broken stone pylon, blackened, round; strong dark edge, reads as taller than a person, fits one tile.
+
+**K88. `art/sprites/kit/field/pillar-broken.png`** PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.
+
+**K89*. `art/sprites/kit/field/barricade.png`** BARRICADE (`barricade`, full cover, destructible): a full-height barricade of welded plate and stakes, bent and hasty, tall enough to hide behind; fills the width of the tile.
+
+**K90. `art/sprites/kit/field/barricade-broken.png`** BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.
+
+**K91*. `art/sprites/kit/field/door.png`** DOOR closed (`door`): a field bunker hatch of heavy plate, closed, rivets and a wheel lock; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.
+
+**K92*. `art/sprites/kit/field/door-open.png`** DOOR open (`door`, open state): the same bunker hatch swung open, black stair below, threshold clear; the same door seen open, same cell.
+
+**K93*. `art/sprites/kit/field/hole.png`** HOLE (`hole`): a deep round shell crater, dark depth, torn lip of earth; round or square, fits one tile, the depth reads as dark and void.
+
+**K94. `art/sprites/kit/field/trap.png`** TRAP (`trap`): a half-buried mine: a round pressure plate and a scatter of disturbed earth; deliberately subtle but readable at 64 px.
+
+**K95*. `art/sprites/kit/field/fire.png`** FIRE (`fire`): burning wreckage: flames and black smoke seen from above, orange; fits one tile, bright core, no glow or bloom, flat painted flames.
+
+**K96*. `art/sprites/kit/field/barrel.png`** BARREL (`barrel`, half cover, explodes): a scorched fuel drum with a dented side and a red band; about 60 cm across, reads as dangerous.
+
+**K97*. `art/sprites/kit/field/container.png`** CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a dented field supply container, a tile and a half long, scorched and half buried, waist-high.
+
+**K98*. `art/sprites/kit/field/terminal.png`** TERMINAL (`terminal`): a salvaged field radio terminal on a battered case, cracked glass, faint amber glow, no text; fits one tile.
+
+**K99*. `art/sprites/kit/field/lamp.png`** LAMP (`lamp`): a tall field flare stand with a hooded lamp, seen from above, dull orange glow; fits one tile.
+
+**K100. `art/sprites/kit/field/turret.png`** TURRET (`turret`, half cover): an emplaced field gun on a two-wheel mount behind a shield (waist-high cover); fits one tile, a single clear barrel direction (up).
+
+**K101. `art/sprites/kit/field/camera.png`** CAMERA (`camera`): a lashed pole with a cracked optics box (camera), seen from above; small, about a third of a tile, centred.
+
+**K102. `art/sprites/kit/field/alarm.png`** ALARM (`alarm`): a hand-cranked siren post, flat as seen from above; small, about a third of a tile, centred.
+
+**K103. `art/sprites/kit/field/cache.png`** CACHE (`cache`, loot): a buried supply cache under a torn tarp, lashed down; about a metre, waist-high look.
+
+**K104. `art/sprites/kit/field/exit.png`** EXIT (`exit`, the way out): a rope-marked track out of the field: two stakes with a rag between them and a worn path, no letters; fits one tile, reads as a place to leave by.
+
+**K105. `art/sprites/kit/field/dress-1.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A fallen unit banner with no emblem, a plain torn cloth. Low, flat, nothing taller than a few centimetres.
+
+**K106. `art/sprites/kit/field/dress-2.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Barbed wire coil lying on the ground. Low, flat, nothing taller than a few centimetres.
+
+**K107. `art/sprites/kit/field/dress-3.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Bone-pale rib or plate fragments half in the dust (no faces, no remains that read as bodies). Low, flat, nothing taller than a few centimetres.
+
+**K108. `art/sprites/kit/field/dress-4.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A broken wooden stake line with rags. Low, flat, nothing taller than a few centimetres.
+
+
+### Kit works: Setting 4: machine works and drone foundry
+
+Light: furnace orange and sparks, cool blue work lamps. **Kit paragraph (paste after the kit style block):** Dark iron plate, soot, ceramic white, cast steel, orange slag. Accent: furnace orange `#F68A38` against cool blue lamp light. Reads as a heavy industrial floor: diamond plate, yellow-less safety lines (use ivory), hot orange seams. Same place as the setting's backdrops and maps: reuse their materials and local colour.
+
+**K109*. `art/sprites/kit/works/ground-1.png`** GROUND, opaque 1024 x 1024 seamless tile. Dark diamond-pattern iron plate floor, evenly worn, tiny bolts.
+
+**K110*. `art/sprites/kit/works/ground-2.png`** GROUND, opaque 1024 x 1024 seamless tile. Soot-grey concrete floor with faint ivory safety lane lines and drain seams.
+
+**K111. `art/sprites/kit/works/ground-3.png`** GROUND, opaque 1024 x 1024 seamless tile. Damaged floor: warped plate, burn marks, cracked concrete and slag spatter.
+
+**K112*. `art/sprites/kit/works/decal-rubble.png`** DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: scrap fragments, bolts, cut metal curls. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.
+
+**K113*. `art/sprites/kit/works/decal-toxic.png`** DECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a pooled coolant or oil slick, blue-black with a rainbow sheen (the toxic spill), soft edge.
+
+**K114. `art/sprites/kit/works/decal-scorch.png`** DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a heat-blackened patch with a faint orange edge glow, soft edge.
+
+**K115*. `art/sprites/kit/works/wall-straight.png`** WALL piece, straight, 256 x 256 cell: a cast iron works wall with a ceramic-white cap band and bolted plates, running left to right, half a tile thick, flat cut ends at the cell edges.
+
+**K116*. `art/sprites/kit/works/wall-corner.png`** WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.
+
+**K117*. `art/sprites/kit/works/wall-end.png`** WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.
+
+**K118*. `art/sprites/kit/works/wall-door.png`** WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.
+
+**K119*. `art/sprites/kit/works/wall-broken.png`** WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.
+
+**K120*. `art/sprites/kit/works/crate.png`** CRATE (`crate`, half cover, destructible): a steel parts crate, welded, with a bolted lid and an orange stripe; about a metre, waist-high look, centred.
+
+**K121. `art/sprites/kit/works/crate-broken.png`** CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.
+
+**K122*. `art/sprites/kit/works/low_wall.png`** LOW WALL (`low_wall`, half cover): a waist-high machine casing or conveyor guard, one tile long, with an ivory safety stripe; fills the width of the tile, low and clearly waist-high with a visible light top face.
+
+**K123*. `art/sprites/kit/works/pillar.png`** PILLAR (`pillar`, full cover, destructible): a square cast steel support pillar with bolts and a base flange; strong dark edge, reads as taller than a person, fits one tile.
+
+**K124. `art/sprites/kit/works/pillar-broken.png`** PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.
+
+**K125*. `art/sprites/kit/works/barricade.png`** BARRICADE (`barricade`, full cover, destructible): a full-height wall of stacked steel plate and welded scrap, tall enough to hide behind; fills the width of the tile.
+
+**K126. `art/sprites/kit/works/barricade-broken.png`** BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.
+
+**K127*. `art/sprites/kit/works/door.png`** DOOR closed (`door`): a heavy iron sliding door in a plate frame, closed, with an orange status light; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.
+
+**K128*. `art/sprites/kit/works/door-open.png`** DOOR open (`door`, open state): the same sliding door retracted, jambs visible, threshold clear; the same door seen open, same cell.
+
+**K129*. `art/sprites/kit/works/hole.png`** HOLE (`hole`): an open maintenance pit with a bent rail edge, black depth; round or square, fits one tile, the depth reads as dark and void.
+
+**K130. `art/sprites/kit/works/trap.png`** TRAP (`trap`): a pressure plate trap with a small hidden spike, set in the plate floor; deliberately subtle but readable at 64 px.
+
+**K131*. `art/sprites/kit/works/fire.png`** FIRE (`fire`): a burning oil pool with flames seen from above, orange; fits one tile, bright core, no glow or bloom, flat painted flames.
+
+**K132*. `art/sprites/kit/works/barrel.png`** BARREL (`barrel`, half cover, explodes): a coolant or fuel drum, dark steel with a red band, explosive-looking; about 60 cm across, reads as dangerous.
+
+**K133*. `art/sprites/kit/works/container.png`** CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a large steel parts bin on skids, a tile and a half long, waist-high.
+
+**K134*. `art/sprites/kit/works/terminal.png`** TERMINAL (`terminal`): a factory control terminal on a stand, dark screen glass with abstract blue bars, no text; fits one tile.
+
+**K135*. `art/sprites/kit/works/lamp.png`** LAMP (`lamp`): a tall work lamp on a gantry stand with cool blue glass, seen from above; fits one tile.
+
+**K136. `art/sprites/kit/works/turret.png`** TURRET (`turret`, half cover): an emplaced auto-turret on a pedestal with a dark housing and a sensor eye (waist-high); fits one tile, a single clear barrel direction (up).
+
+**K137. `art/sprites/kit/works/camera.png`** CAMERA (`camera`): a ceiling-style camera ball on a short arm, seen from above; small, about a third of a tile, centred.
+
+**K138. `art/sprites/kit/works/alarm.png`** ALARM (`alarm`): a wall alarm panel with a red beacon, flat; small, about a third of a tile, centred.
+
+**K139. `art/sprites/kit/works/cache.png`** CACHE (`cache`, loot): a locked steel cache locker, low, with an orange seal; about a metre, waist-high look.
+
+**K140. `art/sprites/kit/works/exit.png`** EXIT (`exit`, the way out): a lift pad or door hatch with ivory chevrons toward it, no letters; fits one tile, reads as a place to leave by.
+
+**K141. `art/sprites/kit/works/dress-1.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Cables: a heavy hose and cable bundle lying across the floor. Low, flat, nothing taller than a few centimetres.
+
+**K142. `art/sprites/kit/works/dress-2.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A loose chain and a hook on the ground. Low, flat, nothing taller than a few centimetres.
+
+**K143. `art/sprites/kit/works/dress-3.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A floor lane marking: ivory dashes and a corner mark, no letters. Low, flat, nothing taller than a few centimetres.
+
+**K144. `art/sprites/kit/works/dress-4.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A scatter of metal shavings and sparks-cold slag nuggets. Low, flat, nothing taller than a few centimetres.
+
+
+### Kit shrine: Setting 5: shrine and cathedral district
+
+Light: candlelight, gold and ivory against deep violet shadow. **Kit paragraph (paste after the kit style block):** Pale flagstone, dark wood pews, gold leaf (abstract), ivory candle wax, violet cloth. Accent: gold `#F2C46A` candle glow. Reads as a hushed sacred place: pale stone, violet shadow, small flames, no figures, no lettering. Same place as the setting's backdrops and maps: reuse their materials and local colour.
+
+**K145*. `art/sprites/kit/shrine/ground-1.png`** GROUND, opaque 1024 x 1024 seamless tile. Pale flagstone with fine dark joints and gentle wear.
+
+**K146*. `art/sprites/kit/shrine/ground-2.png`** GROUND, opaque 1024 x 1024 seamless tile. Dark polished stone floor with a faint ivory inlay line pattern (abstract geometric, no symbols that read as writing).
+
+**K147. `art/sprites/kit/shrine/ground-3.png`** GROUND, opaque 1024 x 1024 seamless tile. Damaged floor: cracked and chipped flagstone, fallen plaster dust, a few weeds in the joints.
+
+**K148*. `art/sprites/kit/shrine/decal-rubble.png`** DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: limestone chunks, plaster and gilded fragments. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.
+
+**K149*. `art/sprites/kit/shrine/decal-toxic.png`** DECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a dark violet-black ichor slick (the toxic spill), soft edge.
+
+**K150. `art/sprites/kit/shrine/decal-scorch.png`** DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a candle-soot and burn mark, soft edge.
+
+**K151*. `art/sprites/kit/shrine/wall-straight.png`** WALL piece, straight, 256 x 256 cell: a carved pale limestone wall with a gold-leaf cap line and a dark base band, running left to right, half a tile thick, flat cut ends at the cell edges.
+
+**K152*. `art/sprites/kit/shrine/wall-corner.png`** WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.
+
+**K153*. `art/sprites/kit/shrine/wall-end.png`** WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.
+
+**K154*. `art/sprites/kit/shrine/wall-door.png`** WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.
+
+**K155*. `art/sprites/kit/shrine/wall-broken.png`** WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.
+
+**K156*. `art/sprites/kit/shrine/crate.png`** CRATE (`crate`, half cover, destructible): a carved wooden offering chest with an iron band; about a metre, waist-high look, centred.
+
+**K157. `art/sprites/kit/shrine/crate-broken.png`** CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.
+
+**K158*. `art/sprites/kit/shrine/low_wall.png`** LOW WALL (`low_wall`, half cover): a waist-high stone balustrade or low chancel rail, one tile long; fills the width of the tile, low and clearly waist-high with a visible light top face.
+
+**K159*. `art/sprites/kit/shrine/pillar.png`** PILLAR (`pillar`, full cover, destructible): a round fluted limestone column with a gilded capital seen from above; strong dark edge, reads as taller than a person, fits one tile.
+
+**K160. `art/sprites/kit/shrine/pillar-broken.png`** PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.
+
+**K161*. `art/sprites/kit/shrine/barricade.png`** BARRICADE (`barricade`, full cover, destructible): a full-height barricade of stacked pews and altar cloth, tall enough to hide behind; fills the width of the tile.
+
+**K162. `art/sprites/kit/shrine/barricade-broken.png`** BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.
+
+**K163*. `art/sprites/kit/shrine/door.png`** DOOR closed (`door`): a tall double wooden door with iron studs in a stone arch, closed; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.
+
+**K164*. `art/sprites/kit/shrine/door-open.png`** DOOR open (`door`, open state): the same door swung open, threshold of pale stone visible; the same door seen open, same cell.
+
+**K165*. `art/sprites/kit/shrine/hole.png`** HOLE (`hole`): a round open well or floor shaft with a stone lip, black depth; round or square, fits one tile, the depth reads as dark and void.
+
+**K166. `art/sprites/kit/shrine/trap.png`** TRAP (`trap`): a pressure tile trap: one raised flagstone with a hairline seam and dust spilled; deliberately subtle but readable at 64 px.
+
+**K167*. `art/sprites/kit/shrine/fire.png`** FIRE (`fire`): a toppled candle stand fire: flames seen from above, orange and gold; fits one tile, bright core, no glow or bloom, flat painted flames.
+
+**K168*. `art/sprites/kit/shrine/barrel.png`** BARREL (`barrel`, half cover, explodes): a sealed oil jar, round, ceramic with a wax seal and a faint red mark (explosive); about 60 cm across, reads as dangerous.
+
+**K169*. `art/sprites/kit/shrine/container.png`** CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a stone sarcophagus or long reliquary chest, a tile and a half long, waist-high.
+
+**K170*. `art/sprites/kit/shrine/terminal.png`** TERMINAL (`terminal`): a lectern-like reading stand with a softly glowing blank plate, no text; fits one tile.
+
+**K171*. `art/sprites/kit/shrine/lamp.png`** LAMP (`lamp`): a tall iron candle stand with a cluster of lit candles, seen from above, gold glow; fits one tile.
+
+**K172. `art/sprites/kit/shrine/turret.png`** TURRET (`turret`, half cover): a consecrated emplaced turret: a bronze-and-stone gun cage on a plinth (waist-high); fits one tile, a single clear barrel direction (up).
+
+**K173. `art/sprites/kit/shrine/camera.png`** CAMERA (`camera`): a small carved lantern eye on a bracket (camera), seen from above; small, about a third of a tile, centred.
+
+**K174. `art/sprites/kit/shrine/alarm.png`** ALARM (`alarm`): a hanging prayer-bell on a short frame (alarm), flat from above; small, about a third of a tile, centred.
+
+**K175. `art/sprites/kit/shrine/cache.png`** CACHE (`cache`, loot): a locked reliquary box with a gold clasp and a violet cloth; about a metre, waist-high look.
+
+**K176. `art/sprites/kit/shrine/exit.png`** EXIT (`exit`, the way out): a stair-head going down or a small door arch lit gold, with a worn threshold, no letters; fits one tile, reads as a place to leave by.
+
+**K177. `art/sprites/kit/shrine/dress-1.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A fallen prayer cloth, plain violet, no patterns. Low, flat, nothing taller than a few centimetres.
+
+**K178. `art/sprites/kit/shrine/dress-2.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A spill of candle wax and a few burnt-out candles. Low, flat, nothing taller than a few centimetres.
+
+**K179. `art/sprites/kit/shrine/dress-3.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A scatter of dried petals. Low, flat, nothing taller than a few centimetres.
+
+**K180. `art/sprites/kit/shrine/dress-4.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): An abstract floor inlay ring in gold line (geometric, no letters). Low, flat, nothing taller than a few centimetres.
+
+
+### Kit rim: Setting 6: rim station
+
+Light: cold blue-grey accretion glow from above, a few warm lamps. **Kit paragraph (paste after the kit style block):** Steel blue-grey, ivory plate, black glass, thin cyan-white light strips. Accent: cold cyan `#8BDEEE` light strips and one warm lamp. Reads as a lonely frontier station: clean blue-grey plate, hazard ivory, black void edges. Same place as the setting's backdrops and maps: reuse their materials and local colour.
+
+**K181*. `art/sprites/kit/rim/ground-1.png`** GROUND, opaque 1024 x 1024 seamless tile. Blue-grey deck plate with fine grip texture and bolted seams.
+
+**K182*. `art/sprites/kit/rim/ground-2.png`** GROUND, opaque 1024 x 1024 seamless tile. Dark steel deck with ivory lane stripes, slightly glossy-looking but matte painted.
+
+**K183. `art/sprites/kit/rim/ground-3.png`** GROUND, opaque 1024 x 1024 seamless tile. Damaged deck: scorched, buckled plate, a missing panel showing dark pipework.
+
+**K184*. `art/sprites/kit/rim/decal-rubble.png`** DECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: plate shards, bolts and glass-free debris. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.
+
+**K185*. `art/sprites/kit/rim/decal-toxic.png`** DECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a cold green coolant slick (the toxic spill), soft edge.
+
+**K186. `art/sprites/kit/rim/decal-scorch.png`** DECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a blast burn on the deck, soft edge.
+
+**K187*. `art/sprites/kit/rim/wall-straight.png`** WALL piece, straight, 256 x 256 cell: a blue-grey bulkhead wall with an ivory cap band and a thin cyan light strip along the top face, running left to right, half a tile thick, flat cut ends at the cell edges.
+
+**K188*. `art/sprites/kit/rim/wall-corner.png`** WALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.
+
+**K189*. `art/sprites/kit/rim/wall-end.png`** WALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.
+
+**K190*. `art/sprites/kit/rim/wall-door.png`** WALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.
+
+**K191*. `art/sprites/kit/rim/wall-broken.png`** WALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.
+
+**K192*. `art/sprites/kit/rim/crate.png`** CRATE (`crate`, half cover, destructible): a sealed grey-blue cargo crate with an ivory corner bracket; about a metre, waist-high look, centred.
+
+**K193. `art/sprites/kit/rim/crate-broken.png`** CRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.
+
+**K194*. `art/sprites/kit/rim/low_wall.png`** LOW WALL (`low_wall`, half cover): a waist-high deck rail or equipment casing, one tile long, with an ivory stripe; fills the width of the tile, low and clearly waist-high with a visible light top face.
+
+**K195*. `art/sprites/kit/rim/pillar.png`** PILLAR (`pillar`, full cover, destructible): a round steel support strut, ringed with ivory bands, seen from above; strong dark edge, reads as taller than a person, fits one tile.
+
+**K196. `art/sprites/kit/rim/pillar-broken.png`** PILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.
+
+**K197*. `art/sprites/kit/rim/barricade.png`** BARRICADE (`barricade`, full cover, destructible): a full-height wall of stacked cargo plates and crates, tall enough to hide behind; fills the width of the tile.
+
+**K198. `art/sprites/kit/rim/barricade-broken.png`** BARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.
+
+**K199*. `art/sprites/kit/rim/door.png`** DOOR closed (`door`): a sliding bulkhead door in a frame, closed, with a cyan light strip; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.
+
+**K200*. `art/sprites/kit/rim/door-open.png`** DOOR open (`door`, open state): the same bulkhead door retracted, jambs visible, threshold clear; the same door seen open, same cell.
+
+**K201*. `art/sprites/kit/rim/hole.png`** HOLE (`hole`): an open maintenance shaft in the deck, black depth, a hatch cover leaning beside it; round or square, fits one tile, the depth reads as dark and void.
+
+**K202. `art/sprites/kit/rim/trap.png`** TRAP (`trap`): a pressure plate trap: a raised deck panel with a hairline seam and a cyan blink; deliberately subtle but readable at 64 px.
+
+**K203*. `art/sprites/kit/rim/fire.png`** FIRE (`fire`): an electrical fire in a wrecked panel: flames and sparks seen from above, orange; fits one tile, bright core, no glow or bloom, flat painted flames.
+
+**K204*. `art/sprites/kit/rim/barrel.png`** BARREL (`barrel`, half cover, explodes): a pressurised gas canister cluster, ivory with a red band (explosive); about 60 cm across, reads as dangerous.
+
+**K205*. `art/sprites/kit/rim/container.png`** CONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a long cargo container, a tile and a half long, blue-grey with a cyan latch light, waist-high.
+
+**K206*. `art/sprites/kit/rim/terminal.png`** TERMINAL (`terminal`): a station console on a stand, dark screen with abstract cyan bars, no text; fits one tile.
+
+**K207*. `art/sprites/kit/rim/lamp.png`** LAMP (`lamp`): a tall deck floodlamp on a stand, warm lamp glass, seen from above; fits one tile.
+
+**K208. `art/sprites/kit/rim/turret.png`** TURRET (`turret`, half cover): an emplaced defence turret on a ring mount, grey-blue housing, one barrel (waist-high); fits one tile, a single clear barrel direction (up).
+
+**K209. `art/sprites/kit/rim/camera.png`** CAMERA (`camera`): a ceiling camera dome seen from above, black glass, a cyan dot; small, about a third of a tile, centred.
+
+**K210. `art/sprites/kit/rim/alarm.png`** ALARM (`alarm`): a bulkhead alarm panel with an amber beacon, flat; small, about a third of a tile, centred.
+
+**K211. `art/sprites/kit/rim/cache.png`** CACHE (`cache`, loot): a locked equipment cache case, blue-grey with an ivory seal; about a metre, waist-high look.
+
+**K212. `art/sprites/kit/rim/exit.png`** EXIT (`exit`, the way out): an airlock hatch with ivory chevrons toward it, no letters; fits one tile, reads as a place to leave by.
+
+**K213. `art/sprites/kit/rim/dress-1.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): Cables: a loose bundle of ivory and cyan cables across the deck. Low, flat, nothing taller than a few centimetres.
+
+**K214. `art/sprites/kit/rim/dress-2.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A floor lane marking: ivory dashes and a corner mark, no letters. Low, flat, nothing taller than a few centimetres.
+
+**K215. `art/sprites/kit/rim/dress-3.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A drifted dust and ice rim along a wall base. Low, flat, nothing taller than a few centimetres.
+
+**K216. `art/sprites/kit/rim/dress-4.png`** SET DRESSING (non-blocking, any free tile, no rules meaning): A dropped tool case and some bolts, nothing readable. Low, flat, nothing taller than a few centimetres.
+
 
 ---
 
