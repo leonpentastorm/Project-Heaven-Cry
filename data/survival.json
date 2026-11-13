@@ -354,12 +354,12 @@
     "lanes": { "3": 1, "4": 1 },
     "junction": { "sizes": { "2": 1, "3": 1 }, "segment": [2, 4] },
     "fight_rows": [1],
-    "junction_kinds": { "fight": 6, "shop": 2, "rest": 2, "event": 1, "cache": 1, "shrine": 1, "training": 1 },
+    "junction_kinds": { "fight": 8, "shop": 2, "rest": 2, "event": 1, "cache": 1, "shrine": 1, "training": 1 },
     "themes": [
       { "id": "hard", "name": "The hard road", "weight": 3, "holds": ["elite"] },
       { "id": "market", "name": "The market road", "weight": 3, "holds": ["shop"], "fill": { "fight": 4, "cache": 1 } },
       { "id": "smithy", "name": "The armourer's road", "weight": 2, "holds": ["forge"] },
-      { "id": "drill", "name": "The drill road", "weight": 2, "holds": ["training", "shrine"] },
+      { "id": "drill", "name": "The drill road", "weight": 2, "holds": ["training"], "fill": { "fight": 3, "shrine": 1 } },
       { "id": "quiet", "name": "The quiet road", "weight": 2, "holds": ["rest"], "fill": { "fight": 4, "event": 1 } }
     ],
     "from_depth": { "elite": 4 },
@@ -375,8 +375,9 @@
     "vault": { "depths": [6, 10], "edge": true },
     "words": { "fight": "Fight", "elite": "Elite", "boss": "Boss", "shop": "Shop", "forge": "Forge", "training": "Training", "shrine": "Shrine", "rest": "Rest", "cache": "Cache", "event": "Crossroads", "vault_guard": "Vault guard", "vault": "Vault" },
     "expect": {
-      "about": { "nodes": 40, "fight": 15, "elite": 4, "shop": 4, "forge": 3, "training": 2, "shrine": 2, "rest": 3, "cache": 2.5, "event": 2, "boss": 1 },
+      "about": { "nodes": 43.5, "fight": 18.3, "elite": 3, "shop": 6, "forge": 2.2, "training": 2, "shrine": 1, "rest": 6, "cache": 1.1, "event": 0.9, "boss": 1, "vault_guard": 1, "vault": 1 },
       "tolerance": { "default": 1.5, "fight": 2, "nodes": 3 },
+      "typical_share": 0.75,
       "path": { "fight": [5, 8], "elite": [1, 3], "shop": [2, 3], "forge": [1, 2], "training": [0, 2], "shrine": [0, 1], "rest": [1, 2], "cache": [0, 2], "event": [0, 2], "boss": [1, 1] }
     },
     "provisional": true

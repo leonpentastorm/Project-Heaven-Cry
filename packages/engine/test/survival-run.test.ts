@@ -16,8 +16,8 @@ const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 
 const SQUAD: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'tank', level: 1 }, { build: 'sigil', level: 1 }, { build: 'outburst', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const started = (pcs: Pc[], seed = 'PHC-0001', test = true) => apply(survivalRoom(seed, pcs, { test }), { type: 'run/start', seed }, 'host');
-/** Take a node: every player marks it. */
-const take = (g: GameState, node: RunNode | string, n: number) => { let x = g; const id = typeof node === 'string' ? node : node.id; for (let i = 0; i < n; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
+/** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
+const take = (g: GameState, node: RunNode | string, n: number) => { let x = g; const id = typeof node === 'string' ? node : node.id; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
 const firstOf = (g: GameState, kind: string) => g.run!.nodes.find((n) => n.kind === kind)!;
 /** A copy with the run standing on `id` (as if the path there was walked), on its map. */
 const standOn = (g: GameState, id: string | null): GameState => { const x: GameState = JSON.parse(JSON.stringify(g)); x.run!.at = id; x.run!.state = 'map'; return x; };

@@ -33,7 +33,9 @@ export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: bool
     if (run.state === 'map') {
       if (o.maxNodes != null && run.path.length >= o.maxNodes) break;
       const node = chooseNode(r.g, o.prefer); if (!node) { r.errors.push('no node to reach'); break; }
-      for (let i = 0; i < n; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
+      // rules 1.48: on a lane with one way forward the first click walks the squad on; where the way forks everyone marks
+      const marks = reachable(r.g.run).length === 1 ? 1 : n;
+      for (let i = 0; i < marks; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
     } else if (run.state === 'fight') {
       if (o.skip) r.must({ type: 'run/skip' });
       else { r.fight(40); if (r.g.combat && !r.g.combat.over && r.g.phase === 'combat') { r.errors.push('a fight did not end in 40 rounds'); break; } }
