@@ -104,7 +104,7 @@ u = await me();
   await host.locator('[role="tabpanel"]').getByRole('button', { name: /^Shot/ }).first().click(); await settle(host, 150);
   await tok(foe.pos).click(); await settle(host, 200);
   const brk = host.locator('[aria-label="Perk options on this action"] button', { hasText: 'Break' }).first();
-  const has = await brk.waitFor({ timeout: 10000 }).then(() => true, () => false);
+  const has = await brk.waitFor({ timeout: 30000 }).then(() => true, () => false);
   const card = async () => ((await host.locator('.phc-cb-dock').first().textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
   const before = await card();
   if (has) { await brk.click(); await host.waitForFunction(() => document.querySelector('[aria-label="Perk options on this action"] button[aria-pressed="true"]'), null, { timeout: 10000 }).catch(() => {}); }

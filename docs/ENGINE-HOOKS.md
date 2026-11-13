@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 34 triggers, 85 predicates, 28 ops, 100 effect ops, 124 hooks, 3 never emitted, 13 profiles, 40 cost sites, 13 resources, 55 stats, 24 condition fields, 386 primitive exports, 130 fx kinds, 171 Unit fields, 58 Combat fields, 40 guards.
+Counts: 34 triggers, 85 predicates, 28 ops, 100 effect ops, 124 hooks, 3 never emitted, 13 profiles, 40 cost sites, 13 resources, 55 stats, 24 condition fields, 387 primitive exports, 130 fx kinds, 171 Unit fields, 58 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -814,6 +814,7 @@ Families: `body`, `brain`, `heart`.
 | `perkActionsFor` | `perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[]` | Every action a holder's items give on this surface, available or greyed (hidden ones left out). |
 | `PerkInfoEntry` | `interface PerkInfoEntry { id, itemId, kind, label, text, tab, tier, via, uses }` | An item the data makes an action, but which is used another way: from another action (a chip on Pump, Begin, an attack: its toggles) or by itself (a hook). |
 | `perkInfoFor` | `perkInfoFor(x: Who, scope: ActionScope): PerkInfoEntry[]` | The read-only Perks-tab entries of a holder's items on this surface (see PerkInfoEntry). |
+| `UNFELT` | `UNFELT` | Why a feeling can't be given yet (rules 1.33: only a felt feeling is given). |
 | `perkActionId` | `perkActionId(x: Who, id: string, actionId?: string): string \| null` | The id of the action an item's `combat/perk` names (its actionId, else the item's first action): what the trigger `acted` carries as `action` (Classes 3.0 P2). null: the holder has no such item or action. |
 | `previewPerkAction` | `previewPerkAction(x: Who, id: string, args: ActionArgs & { actionId?: string } = {}, scope: ActionScope = x.cb && !overworld(x.cb) ? 'combat' : x.cb ? 'world' : 'story')…` | What the action would do (the UI and the reducer use the same truth). |
 | `runPerkAction` | `runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?: string }, rng: { state: number }, scope?: ActionScope): string \| null` | Do it: checks the preview, spends AP and the use, runs the action. |

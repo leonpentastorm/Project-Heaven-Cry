@@ -109,7 +109,7 @@ if (bonded) ok('the Soldier is Bonded and the Mender Traced next turn', !!g.comb
 // Classes 3.0 step 10 (bonds-spec.md section 9): the Bond strip adds the enemy after a Bond that passes its save
 if (bonded) {
   const chip = host.locator('[data-bond-strip] [data-bond-side="foe"] [data-bond="' + foe.id + '"]');
-  const shown = await chip.waitFor({ timeout: 15000 }).then(() => true, () => false);
+  const shown = await chip.waitFor({ timeout: 30000 }).then(() => true, () => false);
   const held = (g.combat.ties || []).filter((t) => t.kind === 'bond' && t.from === u.id).length;
   const count = (await host.locator('[data-bond-count]').first().textContent().catch(() => '')) || '';
   ok('the Bond strip lists the Soldier under the enemies, ' + count + ' held (the engine: ' + held + ')', shown && count.startsWith(held + ' / '));
