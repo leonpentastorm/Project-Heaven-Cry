@@ -1,9 +1,7 @@
 # The Chaplain (Virtue; was the Guardian): special prayers, Smite, the patron at its side (spec, 13 Nov 2026)
 
-A spec for Class Roster Revision 4 (`class-roster-rev4-proposal.md` section 4.9). **Nothing here is built.** It is built
-in the one big patch (`rev4-moves-and-rename.md` section 3). Every number is PROVISIONAL and gets a spec section 14 item
-when it is written into `docs/rules/PHC-Core-Rules-v1.0.md`. The class id stays `guardian`; the display name becomes
-**Chaplain** *(Suggested)*.
+Revision 4 section 4.9. **Nothing is built**: step 4 of the build (`rev4-moves-and-rename.md` section 4). All numbers
+PROVISIONAL (spec section 14 items when written in). The id stays `guardian`; the name becomes **Chaplain** *(Suggested)*.
 
 ## 1. The fantasy and the loop
 
@@ -38,14 +36,10 @@ presence that keeps watching after it first acts. Its only pool is Devotion and 
 | 11 | **The first intervention of a fight does not end Witnessed** for a Chaplain. The second (Devotion 7+) does. The intervention count is the door's (once, twice from Devotion 7). | engine |
 | 12 | **Interventions land where the weapon struck:** a damage intervention that picks a target picks a Judged enemy of the Chaplain's first, else the door's own rule. The presence also widens each patron's trigger (section 3.2). The presence never adds an intervention. | engine |
 
-**Edge cases.** *Fog and sight:* Ward and Sanctuary need sight of the ally or tile (`fog.ts` `unitSees`); Smite needs
-none beyond the hit. *Hidden:* Smite reveals nothing more than the attack did. *Forced movement:* a Sanctuary zone stays
-on its tiles; a Ward moves with its ally; the presence moves with the Chaplain (it is drawn, not placed). *Reactions:*
-none of this is a reaction. *A Downed Chaplain:* Wards and the zone stay; Witnessed stays (as today) and the figure
-dims; a dead one ends all three. *Co-op:* each Chaplain counts its own Wards held;
-two Sanctuaries overlap without stacking (one halving). *Saves mid-fight:* Wards are shields (`u.shield` and a Ward layer
-on the unit), the zone is a `cb.zones` entry, Judged a condition: all already saved. *Fight end:* Wards, zone, Judged
-and the presence end; Witnessed ends as today.
+**Edge cases.** Ward and Sanctuary need sight (`fog.ts` `unitSees`); Smite reveals no more than its attack. A zone stays
+on its tiles, a Ward moves with its ally, the presence with the Chaplain. Nothing here is a reaction. Downed: Wards, zone
+and Witnessed stay, the figure dims; dead: all end. Co-op: Wards held are counted per Chaplain; two Sanctuaries do not
+stack. Saves: shields, `cb.zones`, conditions, all saved today. Fight end: all of it ends.
 
 ## 3. The list
 
@@ -60,9 +54,8 @@ and the presence end; Witnessed ends as today.
 | III | `guardian.sanctuary` (reworked) | **Sanctuary** | 3 AP, the Hymn and its wait | 3×3, allies take half damage until your next turn, at most 11 × BP × dial × level prevented | `amounts.sanctuary_cap` |
 | III | `lumeri_templar.judgement` (kept) | Judgement | 4 AP, 10 Devotion XP, once a fight | one melee or scattergun attack × (1 + Blessing power) | as built |
 
-The class's "better" (Revision 4 section 2): **a bigger meter:** none (Devotion is a standing, not a pool to enlarge;
-the class instead keeps Witnessed through the first intervention, rule 11); **one thing a turn free:** Smite (a prayer's
-damage for 0 AP); **six moves:** above.
+**Better** (Revision 4 section 2): no bigger meter (Devotion is standing: the class keeps Witnessed instead, rule 11);
+**one thing free:** Smite; **six moves:** above.
 
 ### 3.2 The presence, patron by patron (rule 12; each widens the door's own intervention, same count)
 
@@ -79,16 +72,14 @@ damage for 0 AP); **six moves:** above.
 
 ## 4. The ladder
 
-Faith 1 to 10 is the door's ladder, unchanged (rules 1.6, 1.22): 3 prays, 5 Witnessed, 7 the Miracle (with Devotion 10);
-each point lowers the Hymn wait by 0.75 and raises Blessing power by 0.06 × 0.956. Conscience: +10% shields received
-(rules 1.13; it reaches Ward). Authority: its Call, Order (no class move). Gear gates: none (any weapon carries Smite;
-Judgement needs a melee weapon or a scattergun, as built).
+The door's, unchanged (Faith 3 prays, 5 Witnessed, 7 the Miracle; each point −0.75 rounds of wait, +0.06 × 0.956 Blessing
+power). Conscience: +10% shields received (reaches Ward). Gear: any weapon carries Smite; Judgement as built.
 
 ## 5. The class
 
-**Squared, the Saint, breaks:** "a Hymn makes you wait." Its first Hymn each fight starts no wait. **Bridges:**
-Adamantile Knight (Guard + Blessings): Guard that soaks a hit becomes a Ward on the nearest ally, a prayer refills 1 Guard;
-Inquisitor (Shadow + Blessings): a Marked enemy is Judged by your patron, so the presence's widening reaches it unseen.
+**Squared, the Saint, breaks:** "a Hymn makes you wait." Its first Hymn each fight starts no wait. **Bridges:** Adamantile
+Knight (Guard + Blessings): Guard that soaks a hit becomes a Ward on the nearest ally; Inquisitor (Shadow + Blessings): a
+Marked enemy counts as Judged, so the presence's widening reaches it unseen.
 
 ## 6. On what exists
 
@@ -99,40 +90,31 @@ Inquisitor (Shadow + Blessings): a Marked enemy is Judged by your patron, so the
 | Whisper limit, Hymn wait (rules 1, 2, 3, 5) | `faith.ts` `combatPray` → `prayed(...).take('per_turn', 1, WHISPER_KEY)` / `.cool(..., HYMN_KEY)`, i.e. `effects/uses.ts`; `hymnWait` |
 | Atheist rolls (rules 3, 7) | `previewPrayer` → `rollVs` (`rolls.ts`), `patrons.json prayer.atheist_tn` |
 | Ward's amount | an `amounts` block, `profile: "blessing_mend"`, `level: "mend"` (`effects/output.ts`; the same path as `prayerAmount('shield', …)`); the shield sink `grantShield` (`effects/damage.ts`) |
-| Smite (rule 6) | item op `deal` (`effects/triggers.ts`), `when: "hit"`, `if: {own_turn: true, hostile: true, mode: [...]}`, `limit: {per: "per_turn", n: 1}`, amount `profile: "blessing"` (Blessing power is that profile's Stat term) |
-| Smite only on a living, standing target | predicate `target_lacks: [downed]` and the `open` predicate |
+| Smite (rule 6) | item op `deal` (`effects/triggers.ts`), `when: "hit"`, `if: {own_turn, hostile, mode, target_lacks: [downed], open}`, `limit: {per: "per_turn", n: 1}`; amount `profile: "blessing"` (Blessing power is its Stat term) |
 | Judged (rule 9) | a row in `data/conditions.json`; op `condition` with `skip_save`, `when: "hit"` |
-| Sanctuary's zone | `cb.zones` (`magic.ts` `Zone`, the shape the old `guardian.sanctuary` already uses), tiles from `kit.ts` `tilesAround(t, 1)` |
+| Sanctuary's zone and cap | `cb.zones` (`magic.ts` `Zone`, as the old `guardian.sanctuary` uses), `kit.ts` `tilesAround(t, 1)`; the cap a `Zone` pool field (as a turret's `hp`) |
 | Sanctuary's halving | op `damage_mult` on trigger `taking` (needs `in_zone`: below) |
-| Sanctuary's cap, Wards held | `uses(h).take('per_combat', n, key)` counts; a Ward layer is a second shield field (below) |
 | Witnessed, its end | `applyCond` / `endCond`, the `witnessed` row; `intervene()` in `faith.ts` |
 | Rule 11 | a stat id `intervention_keeps_witnessed` in `STATS` (`effects/stats.ts`), asked with `statQuery` in `intervene()`, answered by a data `stat_mod` on the class |
-| The presence's widenings (3.2) | the patrons' `intervention.triggers` lists (`patrons.json`) read by `intervening()`; predicates `actor_has`, `target_within`, `actor_within`, `target_hp_below`, `crit` |
-| Old Overcast's target | the intervention's `target` word in data (`nearest_other_enemy` today) |
+| The presence (3.2) | the patrons' `intervention.triggers` and `target` words (`patrons.json`), read by `intervening()`; predicates `actor_has`, `target_within`, `actor_within`, `target_hp_below`, `crit` |
 | The figure on screen | the Miracle cut-in's portrait (`apps/web/src/game/cutIn.ts`, `faithArt.ts` `patronPortrait`), fed by the `witnessed` fx event `faith.ts` already emits |
-| Log lines | `say`; the patron's lines `speak` (`patronLine`) |
-| Hover cards | the one card (`perkcard.ts` / `glossary.ts`), texts with `{=placeholders}` |
+| Log, hover cards | `say` and the patron's `speak`; the one card (`perkcard.ts`, `glossary.ts`), texts with `{=placeholders}` |
 
 **Needs a new primitive** (each one general, for the closed lists):
 
-1. **`prayer` on `grant_action`** (`effects/actions.ts`): `{"op": "grant_action", "action": "ward", "prayer": "whisper"}`
-   routes a class or item action through `combatPray`'s door (the Whisper slot or the Hymn wait, the Atheist roll, the
-   mana −5, Witnessed after a Hymn, the faith fx) and then runs its effects by the default runner, under a new trigger
-   `on_use` (the action was used; target: its pick). Reused by the Saint,
-   the Adamantile Knight and faith items. Ward and Sanctuary are then data; no new `case` in `runEntryInner`.
-2. **Predicate `in_zone`** (`effects/triggers.ts`): `{"in_zone": "<zone kind>"}`: the event's target stands on a live
-   zone of the holder's of that kind. Reused by Sigil fields, Figments' Wall, the Bulwark. Replaces the old Sanctuary's
-   own `damage_in` handler (`classes/i.ts` `guardian.sanctuary`), which is deleted.
-3. **`src` fields on `deal`**: `"via": "faith"` (kill credit, tags and vows read it as `viaOf`) and `"nonlethal": true`
-   (the `applyDamage` src flag that exists). Reused by every bridge that deals one system's damage through another.
+1. **`prayer` on `grant_action`** (`effects/actions.ts`): `"prayer": "whisper" | "hymn"` routes an item's action through
+   `combatPray`'s door (Whisper slot or Hymn wait, Atheist roll, mana, Witnessed, fx), then runs its effects under a new
+   trigger **`on_use`**. Ward and Sanctuary become data (no new `case` in `runEntryInner`); reused by the Saint, faith items.
+2. **Predicate `in_zone`**: the event's target stands on a live zone of the holder's, of a kind. Reused by Sigil fields
+   and the Figments' Wall; the old Sanctuary's own `damage_in` handler (`classes/i.ts`) is deleted.
+3. **`src` fields on `deal`**: `via` (kill credit, tags and vows read it as `viaOf`) and `nonlethal` (the flag
+   `applyDamage` has). Reused by every bridge that deals one system's damage through another.
 4. **Shield layers** in `grantShield`: a `layer` key (`"ward"`) kept apart from `u.shield` and spent first, so a Ward
    stacks with Protection, and `layer_holders`: at most N units carry one giver's layer (a new one ends the oldest). Reused by the Bulwark's Guard-as-shield bridge.
 5. **Predicate `patron`** (`words`): the holder's patron is one of these. Lets the class's presence rows sit on the class.
 
-**Removed:** `guardian.will_shield` (MP, Strain), `command` (to Authority's Call, Order), the old Sanctuary's Soul-cast
-cost and its story action (out of a fight Sanctuary is the Narrator's: hybrid, the old `sanctuary_story` text kept,
-no MP). **Migration:** the id `guardian` stays; moves are read from ranks, so a Guardian's character gets the new moves
-on load with no save change (`migrateCharacterClass` only acts on a `classRev` change).
+**Removed:** `guardian.will_shield`, `command`, the old Sanctuary's MP and Strain (its story action stays, hybrid, no MP).
+**Migration:** the id stays; moves come from the ranks, so no save changes.
 
 ## 7. Balance
 
@@ -151,16 +133,14 @@ on load with no save change (`migrateCharacterClass` only acts on a `classRev` c
 | Chaplain, normal share (Rebuke 37 / 34 / 36 / 36 + shots 53 + Smite × 0.8) | 120 | 114 | 118 | 118 | 118 |
 
 **Recommended line:** a new ceiling `balance.ceilings.chaplain_turn`, **125 all in** (normal 100): the plain rifle all
-in. A Chaplain with the god in its gun hits like a gunner who put everything in the gun, never more. Smite at Rebuke's
-full 20 puts the weapon-built Chaplain at 136 (+9%, inside the ±12% band; level 1 +20%, inside ±25%), so **Leon's number
-stands**; the dial is `amounts.smite.base` (cut to 15 if the measured mean passes 140: then 127). Measured on the Faith
-+ Dexterity sheet, because Smite needs a hit: the Dex-0 Faith build is not a Smite build (it reads 106, −15%).
-**How far above the door:** +35% over a door user with the same sheet (101 → 136), against the 15% of the budget: Leon's
-ruling ("Smite makes up for their offensive capability"); recorded as this class's exception.
+in, so the god in the gun never out-hits a gunner who put everything in the gun. Rebuke's full 20 puts the weapon-built
+Chaplain at 136 (+9%, inside ±12%; level 1 +20%, inside ±25%): **Leon's number stands**; the dial `amounts.smite.base`
+goes to 15 only if the measured mean passes 140 (then 127). It is measured on the Faith + Dexterity sheet (Smite needs a
+hit; the Dex-0 build reads 106). **Above the door:** +35% (101 → 136) against the budget's 15%: Leon's ruling, recorded
+as this class's exception.
 
-**Contract finding:** the Whisper-turn ceiling (80) holds only for the measured Faith build with Dexterity 0. A legal
-Faith 7 / Dexterity 3 sheet already sits at about 101 with no class (row 3), because since rules 1.26 the rifle hits as
-hard in anyone's hands. Re-measure `whisper_turn` on that sheet (open question 4).
+**Contract finding:** the Whisper-turn ceiling (80) holds only for the Dex-0 Faith build; a legal Faith 7 / Dexterity 3
+sheet reads about 101 with no class (row 3), since rules 1.26 made the rifle hit as hard in anyone's hands.
 
 **Ward against rules 1.27** (a heal or shield turn all in ≤ 200 Soldier-turns × 100; a shield ×1.2 the heal):
 
@@ -171,41 +151,33 @@ hard in anyone's hands. Re-measure `whisper_turn` on that sheet (open question 4
 | **Ward 7 × BP** (dial and level, as Protection) | **97** | **89** | **79** | **64** |
 | Protection 6 × BP, for comparison (the door's Whisper) | 83 | 76 | 68 | 55 |
 
-The draft's 30 is a whole healer's turn and more in 1 AP: **out**. Ward 7 is Protection +17% (the class's 15%), and in
-rifle terms (× 125/200) 61 / 56 / 49 / 40%: level with Rebuke, so a Ward turn and a Rebuke turn are worth the same.
-**What stops free Ward every turn:** it is the turn's Whisper (no Rebuke, no Health), two held at most, and it never
-stacks with itself. No Devotion cost (Devotion is standing; spending it would punish devotion).
+Thirty is more than a healer's whole turn for 1 AP: **out**. Ward 7 is Protection +17% (the class's 15%); in rifle terms
+(× 125/200) 61 / 56 / 49 / 40%, level with Rebuke. **What stops free Ward every turn:** it is the turn's Whisper, two
+held at most, never stacked with itself. No Devotion cost (spending standing would punish devotion).
 
-**Sanctuary** (a Hymn turn's heal-and-shield cap is 250): expected prevented damage, 2.4 of 4 allies inside, 4 Soldiers
-firing, half: 1.2 Soldier-turns = **120**; with the turn's Ward 97: 217 ≤ 250. Against a Boss and 3 Soldiers: 180 + 97 =
-277, over; hence the cap of 11 × BP × dial × level (28 HP all in at level 1 = 153%): 153 + 97 = 250.
+**Sanctuary** (a Hymn turn's cap is 250): 2.4 of 4 allies inside, 4 Soldiers firing, half: **120**; with the turn's Ward
+217. A Boss and 3 Soldiers: 180 + 97 = 277, so the cap 11 × BP × dial × level (28 HP at level 1 all in, 153%) holds 250.
 
-**The presence:** rule 11 changes nothing below Devotion 7 except keeping Witnessed (Under the Eye's +2 for allies within
-3 runs on: watch it); from Devotion 7 the second intervention needs no second Hymn: about one rifle-turn once a fight,
-+5 to +10% on a fight's average. Inside the band.
+**The presence:** below Devotion 7 it only keeps Witnessed (Under the Eye's +2 runs on: watch it); from 7 the second
+intervention needs no new Hymn: one rifle-turn once a fight, +5 to +10% on a fight. Inside the band.
 
-**Measure when built:** `refit-measure.ts` rows `chaplain_turn` (Faith all in + Dexterity, the `faith` policy with Smite),
-`chaplain_ward` and `chaplain_sanctuary` (`heal-measure.ts`, pairs under fire), levels 1 / 5 / 10 / 20; add
-`chaplain_turn` to `balance-contract.test.ts` `SYS`.
+**Measure when built:** `refit-measure.ts` `chaplain_turn` (Faith all in + Dexterity, `faith` policy with Smite) into
+`balance-contract.test.ts` `SYS`; Ward and Sanctuary in `heal-measure.ts` pairs under fire; levels 1 / 5 / 10 / 20.
 
 ## 8. The other side
 
-Enemies: no enemy is a Chaplain in this patch (no enemy has a patron). An enemy priest later uses Smite and Ward from the
-same data. **The AI must learn:** a Sanctuary tile is worth half (target outside it, or wait it out: it ends at the
-Chaplain's turn); a Warded ally is a worse target than an unWarded one of the same HP (read the Ward layer); the healer
-hunt (rules 1.23) counts Ward as tending, so the Chaplain is hunted like a healer when it Wards. Fire doctrine (rules
-1.25): Judged changes nothing for the enemy.
+No enemy has a patron in this patch; an enemy priest later reads the same data. **The AI learns:** shoot outside a
+Sanctuary or wait for its end; a Warded ally is a worse target (read the layer); the healer hunt (rules 1.23) counts Ward
+as tending. Fire doctrine (rules 1.25): unchanged.
 
 ## 9. The screen
 
-The **Faith tab** keeps the Devotion meter and the patron portrait (one place); Ward sits in the Whispers group, marked
-with the class emblem, Sanctuary in the Hymns group (it shows the wait like any Hymn). Smite is not an action: a chip on
-the weapon's attack card ("Smite ready · 32") and a line in the log ("Old Overcast smites the drill sergeant: 32"). A
-Warded ally shows a white shield pip with a small glyph; the zone draws as the existing zone outline in the patron's
-accent. **The presence:** the Miracle cut-in's portrait, cropped to a standing figure, at 40% opacity on the Chaplain's
-tile while Witnessed; it brightens when an intervention fires (the spotlight already plays). Reduced motion: a still.
-**Art needed** (for `art/briefs/ART-REQUESTS.md`, not edited here): eight standing patron figures cut from the existing
-portraits (a crop and mask, Claude can do it); prayer icons for Ward and Sanctuary (Wick, white ink); Smite's icon.
+The Faith tab keeps Devotion and the portrait (one place); Ward sits in the Whispers group, Sanctuary in the Hymns (it
+shows the wait). Smite is a chip on the attack card ("Smite ready · 32") and a log line ("Old Overcast smites the drill
+sergeant: 32"). A Ward is a white shield pip; the zone is the existing outline in the patron's accent. **The presence:**
+the cut-in's portrait cropped to a standing figure at 40% on the Chaplain's tile, brightening when an intervention fires.
+**Art** (for `ART-REQUESTS.md`, not edited here): eight standing figures cropped from the portraits (Claude can); Wick
+icons for Ward, Sanctuary and Smite.
 
 ## 10. Data
 
@@ -230,18 +202,16 @@ portraits (a crop and mask, Claude can do it); prayer icons for Ward and Sanctua
   "adjudication": "engine", "provisional": true, "origin": "guardian", "attributes": ["virtue"], "status": "active" }
 ```
 
-`on_use` (the action's own use: the trigger the default action runner already implies) and the fields `prayer`, `layer`, `layer_holders`, `via` are the new primitives of section 6. **Validator
-rules:** `amounts.smite.base` equals Rebuke's value in `patrons.json` (a cross-file check, so the two cannot drift); an
-action with `prayer` names `whisper` or `hymn`; a `layer` names a known layer; the `judged` condition row exists and is
-used; no class move of a Soul class costs `mp` or `strain` unless its class is Determination's.
+The trigger `on_use` and the fields `prayer`, `layer`, `layer_holders`, `via` are section 6's new primitives.
+**Validator:** `amounts.smite.base` equals Rebuke's value (`patrons.json`, a cross-file check); `prayer` is `whisper` or
+`hymn`; a `layer` is known; the `judged` row exists; no Virtue class move costs `mp` or `strain`.
 
 ## 11. Open questions for Leon
 
-1. **Ward is not on yourself.** Recommended: allies only (the Chaplain guards others; it has Protection). Assumed.
-2. **Ward is 7, not 30.** Thirty is a whole healer's turn for 1 AP (section 7). Assumed 7, with a stacking layer.
-3. **Smite stays at Rebuke's 20**, the Chaplain's turn line 125 all in, +35% over the door: the class's exception to 15%. Assumed.
-4. **Re-measure the Whisper turn** on a Faith + Dexterity sheet: today's 80 holds only at Dexterity 0. Recommended; not assumed.
-5. **Judgement's numbers:** the roster says "4 AP, 3 Devotion, once a scene"; the data says 4 AP, 10 Devotion XP (1 level), once a fight. Assumed the data (the roster says "kept").
-6. **Judgement and Nerukhan's Hymn II Judgement share a name.** Recommended: the class move becomes **Verdict** *(Suggested)*. Not assumed.
-7. **Sanctuary's cap** (11 × BP × dial × level prevented) exists only for Boss fights. Assumed.
-8. **Toll-Keeper and Matchmaker Chaplains' Smite is nonlethal** (their taboo is killing). Assumed.
+1. **Ward is allies only** (the Chaplain has Protection for itself). Assumed.
+2. **Ward is 7, not 30** (30 is a healer's whole turn for 1 AP), with a stacking layer. Assumed.
+3. **Smite stays at Rebuke's 20**; the class turn line is 125 all in, +35% over the door: the class's exception. Assumed.
+4. **Re-measure the Whisper turn** on a Faith + Dexterity sheet (80 holds only at Dexterity 0). Recommended.
+5. **Judgement:** the roster says "3 Devotion, once a scene", the data 10 Devotion XP, once a fight. Assumed the data.
+6. **Rename the move Judgement to Verdict** *(Suggested)*: Nerukhan's Hymn II has the name. Not assumed.
+7. **Sanctuary's cap** binds only in Boss fights; **Toll-Keeper and Matchmaker Smites are nonlethal**. Assumed.

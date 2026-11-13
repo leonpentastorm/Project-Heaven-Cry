@@ -1,8 +1,7 @@
 # Reactions made real, and the Skirmisher (Agility; was the Marksman) (spec, 13 Nov 2026)
 
-For Class Roster Revision 4 (`class-roster-rev4-proposal.md` sections 2.1 and 4.3). **Nothing here is built**; it is the
-first step of the one big patch (`rev4-moves-and-rename.md` section 3), because Reflex stands on it. Every number is
-PROVISIONAL. Leon chose the **full form** of Reflex: two reactions a round, of any kind. The class id stays `marksman`.
+Revision 4 sections 2.1 and 4.3. **Nothing is built**: step 2 of the build (`rev4-moves-and-rename.md` section 4), as
+Reflex stands on it. All PROVISIONAL. Leon chose Reflex's **full form**: two reactions of any kind. Id stays `marksman`.
 
 ## 1. The fantasy and the loop
 
@@ -37,10 +36,9 @@ between its shots for free.
 | 9 | **Spent on a Many Hands donor** counts on the donor. **Order** (Authority's Call) spends the ally's reaction. A Call made as a reaction (9 points) spends the speaker's. | engine |
 | 10 | **Policies:** a reaction that fires by itself (Riposte, Duck and Roll, Shrug It Off, Interpose) keeps its on/off policy; with two reactions the Skirmisher also sets **Keep one for Overwatch** (on by default): automatic reactions leave the last one while a shot is held. | engine |
 
-**Edge cases.** *Fog:* a reaction needs its own sight of the trigger, as built (`unitSees`); a Hidden mover draws no
-reaction (`combat.ts` move walk). *Downed owner:* none. *Co-op:* each unit counts its own. *Saves mid-fight:* the count
-is a `uses` cell on the unit (section 6), saved with it. *Fight end:* nothing carries. *The area map:* the count lives in
-the story's round cells (`SCOPES.reaction.map: 'story'`), so a rebuilt unit cannot get a fresh reaction each action.
+**Edge cases.** Sight: a reaction needs its own sight of the trigger (`unitSees`); a Hidden mover draws none. Downed: none.
+Co-op: each unit counts its own. Saves: the count is a `uses` cell, saved. Fight end: nothing carries. The area map: the
+cell lives in the story (`SCOPES.reaction.map`), so a rebuilt unit gets no fresh reaction each action.
 
 ## 3. Everything that is a reaction today, and what it spends
 
@@ -49,42 +47,29 @@ All found by grep for `useReaction` / `canReact` (`packages/engine/src`) and for
 | Reaction | Where | Spends today | Under the rule |
 | --- | --- | --- | --- |
 | Opportunity attack | `combat.ts` move walk (`opportunityStrike`) | 1 | 1; a plain blow |
-| Overwatch (any mode; a Burst's rounds) | `combat.ts` `triggerOverwatch`; `physical/ranged/watches.ts` `fireWatch` | 1 | 1 |
-| Deny, Cover Me, Dead to Rights (held Watches) | `techniques.json`, `fireWatch` | 1 | 1 |
+| Overwatch (a Burst's rounds too), Deny, Cover Me, Dead to Rights | `combat.ts` `triggerOverwatch`; `watches.ts` `fireWatch` | 1 | 1 |
 | Killzone (two held shots) | `classes.json` move pool `killzone`; `tactics.ts` `payHeldShot` | 1 for both (fixed 13 Nov) | **2** (rule 6) |
 | Heart Overwatch | `magic.ts` (the held Outburst's watch) | 1 | 1 |
-| Answers: Parry, Riposte, Keep Back, Shield Wall, Interpose | `physical/melee/answers.ts`, `answer()` in `physical/core.ts` | 1 (+ Guard for the last two) | 1 |
-| Glaive, Sabre (teach Keep Back, Riposte) | `weapons.json` `phys.teaches` | the Answer's | the Answer's |
+| Answers: Parry, Riposte, Keep Back, Shield Wall, Interpose (also taught by the Sabre, the Glaive) | `melee/answers.ts`, `answer()` (`physical/core.ts`) | 1 (+ Guard for the last two) | 1 |
 | Riposte, the Fighter's class move | `classes/i.ts` `fighter.riposte` (its own `on_miss`) | 1 + 1 Momentum | **folded into the technique** (section 6) |
-| Brace's Interpose (Defender) | `classes/i.ts` (Hold the Line) | 1 + 1 Guard | 1 + 1 Guard |
-| Shrug It Off | `classes/rev3.ts` | 1 + 1 Guard | 1 + 1 Guard |
-| Anchor's held enemy (an opportunity attack) | `classes/rev3.ts` `defender.anchor` | 1 | 1 |
-| Duck and Roll | `classes/rev3.ts` `marksman.duck_and_roll` | 1 | 1 |
-| Adamantile Plate's Interpose | `classes/j.ts` | 1, or **0** ("a hit Interposed for is free") | 1 (shelved class; noted) |
-| Strike Call (story) | `classes/j.ts` | 1 | 1 (shelved) |
-| Share (Heartbinder) | `classes/k.ts` | 1 | 1 (shelved) |
-| Drink It In (Guardian, old) | `classes/i.ts` `guardian.drink_it_in` | 1 | leaves with the Guardian's MP |
-| Rewrite on a held shot | `classes/i.ts` | burns the enemy's 1 | to the move pool (Revision 4) |
-| Catch / Throw it back | `perks/c.ts` | 1 | 1 |
-| Dance of Iron (shot back on a miss) | `perks/c.ts` | 1 | 1; a plain shot |
+| Duck and Roll; Brace's Interpose, Shrug It Off, Anchor (Bulwark) | `classes/rev3.ts`, `classes/i.ts` | 1 (+ Guard) | 1 (+ Guard) |
+| Shelved: Adamantile Plate (`j.ts`: an Interposed hit is **free**), Strike Call, Share (`k.ts`); the Guardian's Drink It In and Rewrite (leave in Revision 4) | `classes/` | 1, or 0 | 1 |
+| Catch, Dance of Iron (perks) | `perks/c.ts` | 1 | 1; a plain shot |
 | Calls as a reaction (9 points); Order | `calls/core.ts`, `calls/handlers.ts` | 1 | 1 |
 | Cue (+1), Before the Blink (+1), Many Hands (a donor's) | `tactics.ts` `cueLive`, stat `reactions`, `reactionDonor` | adds / shares | adds / shares |
 | Dread residue | `magic.ts` | burns all | burns all |
 | Last Word (weapon mastery) | `weapon_mastery.json` text only | no engine path found | 1, built as a held Watch |
 
-**"Riposte fired four times"** (`BUGLIST-0.22.md`; the lead's audit, merged): **not reproduced** (3,314 reactions in 60
-seeded fights, never two by one unit in a round; the class and technique Ripostes share the one reaction). Found and
-fixed on the way: Killzone handed its reaction back between its two shots (now `payHeldShot` / `spendPaidShot`, a cell in
-the `uses` scope `reaction`). Two leads this spec still closes by design: the count is a hand-kept `u.reactUsed` (not
-the `uses` scope), and on the area map units are rebuilt every action (the `SCOPES` comment), so the area map needs its
-own test; and no rule-2 guard exists on the technique Answers. **Test:** `reactions-once-a-round.test.ts` extended to
-the area map, to Cue (exactly two) and to "no Parry of a Riposte".
+**"Riposte fired four times"** (`BUGLIST-0.22.md`, the lead's audit): **not reproduced** (3,314 reactions in 60 seeded
+fights, never two by one unit in a round). Fixed on the way: Killzone gave its reaction back between its shots (now
+`payHeldShot`, a `uses` cell, scope `reaction`). Still open, closed here by design: the count is a hand-kept
+`u.reactUsed`, area-map units are rebuilt every action, and no rule-2 guard sits on the technique Answers. **Test:**
+`reactions-once-a-round.test.ts` extended to the area map, Cue (exactly two) and "no Parry of a Riposte".
 
 ## 4. The ladder (the door, unchanged)
 
-Dexterity 1 to 10 opens ranged techniques and light blades (Physical 2.0, rules 1.12): Pressure on the target (0 to 4;
-Pressed at 2, Suppressed at 3, Broken at 4; `techniques.json rules.pressure`), Heat on the gun (`weapons.json`). Reaction
-Speed: its Call is Cue. Athletics: Dodge and the saves against being moved.
+Dexterity 1 to 10: ranged techniques and light blades (rules 1.12), Pressure on the target (Pressed 2, Suppressed 3,
+Broken 4: `techniques.json rules.pressure`), Heat on the gun. Reaction Speed's Call is Cue; Athletics keeps Dodge.
 
 ## 5. The class
 
@@ -100,10 +85,9 @@ Speed: its Call is Cue. Athletics: Dodge and the saves against being moved.
 | III | Killzone (changed) | twice the shot's AP; **two reactions** | two held shots at the first two different enemies in the line, +2 each; with one reaction left, only one fires | text and `reactions_spent: 2` |
 | III | **Run and Gun** (new) | 0, once a turn | after an attack this turn, your next move of up to 2 tiles costs no AP and provokes no opportunity attack; your next shot this turn adds +1 Pressure | below |
 
-Called Shot leaves for the Operative. **Squared, the Gunslinger, breaks:** "a reaction is spent when used": with a
-pistol in hand its first reaction each round costs nothing (rule 2 still holds). **Bridges:** Banner Dancer (Pressure +
-Bonds): your reactions may be spent for a Bonded ally (an Answer on their behalf); Spellslinger (Pressure + Sigils): a
-glyph loaded into the magazine rides the Overwatch shot, so a held shot carries a word.
+Called Shot leaves for the Operative. **Squared, the Gunslinger, breaks:** "a reaction is spent when used": with a pistol
+its first reaction each round is free (rule 2 holds). **Bridges:** Banner Dancer (Pressure + Bonds): your reactions may
+answer for a Bonded ally; Spellslinger (Pressure + Sigils): a glyph loaded into the magazine rides the held shot.
 
 ## 6. On what exists
 
@@ -140,11 +124,9 @@ exists); nothing else moves. Ids stay.
 
 ## 7. Balance
 
-**A reaction attack** (rule 5: a plain shot) is worth one plain shot: a rifle-turn is three, so **about 33%** of a
-rifle-turn when it fires (Overwatch's +2: about 36%). **The second reaction** fires when a second trigger comes in a
-round: about 25% of rounds for a gunner with Duck and Roll as the only second user, about 50% with Overwatch held and a
-light blade or Dance of Iron (an estimate). So Reflex is worth **+8 to +17%** of a rifle-turn a round; Duck and Roll on
-the second reaction is defence (a shot at it at −2 or not made: about 0.1 Soldier-turn).
+**A reaction attack** (rule 5) is one plain shot: **about 33%** of a rifle-turn (Overwatch's +2: 36%). A second trigger
+comes in about 25% of rounds (Duck and Roll the only second user) to 50% (Overwatch held and a light blade or Dance of
+Iron), an estimate: Reflex is worth **+8 to +17%** a round. Duck and Roll on it is defence (about 0.1 Soldier-turn).
 
 | Skirmisher against the door, the same sheet (estimate, % of a rifle-turn) | Level 1 | 5 | 10 | 20 |
 | --- | --- | --- | --- | --- |
@@ -159,23 +141,19 @@ Against the budget (+15%) and the best-gun ceiling (145): about **+19%, 3 to 5 p
 67% for two plain shots: inside. **The dial:** `rules.json reactions.second_hit` (new, 0): the to-hit of the second
 reaction's attack; −2 takes Reflex to about +8 and the class to +15%. Measure first; cut only if over.
 
-**Measure when built:** add a `reflex` row to `refit-measure.ts` with a policy that holds Overwatch and fights at range
-under fire (the range's target never acts, so the second reaction needs `defence-measure.ts`'s pairs under fire), at
-levels 1 / 5 / 10 / 20; the count tests of section 3.
+**Measure when built:** a `reflex` row in `defence-measure.ts` (pairs under fire: the range's target never acts),
+levels 1 / 5 / 10 / 20, a policy that holds Overwatch.
 
 ## 8. The other side
 
-Enemies have one reaction (`maxReactions`); an Elite or Boss with Reflex is a data line (`stat_mod reactions`). The AI
-must learn: bait the first reaction before crossing a Skirmisher's line (step into Overwatch with the cheapest unit),
-and that a held Killzone wants two movers. Fire doctrine (rules 1.25): a Suppressed Skirmisher keeps Duck and Roll only
-if it is Pressure-Suppressed, not condition-Suppressed (rule 7).
+Enemies keep one reaction; an Elite with Reflex is one data line. The AI learns to bait the first reaction with its
+cheapest unit before crossing a held line, and that a Killzone wants two movers. Fire doctrine (rules 1.25): unchanged.
 
 ## 9. The screen
 
-Reactions show as pips beside AP on the unit card (one fact, one place): white when ready, grey when spent, two for the
-Skirmisher. A reaction in the log names its kind ("Duck and Roll (reaction 1 of 2)"). The Killzone card says "two
-reactions". Run and Gun shows as a chip on the move preview ("free, no opportunity attack"). **Art:** a Run and Gun icon
-(line, Wick's hand); the class emblem (`apps/web/src/game/classIcons.ts`, a crosshair today) fits a Skirmisher.
+Reaction pips beside AP on the unit card (white ready, grey spent; two for the Skirmisher); the log names each ("Duck and
+Roll (reaction 1 of 2)"); Killzone's card says "two reactions"; Run and Gun is a chip on the move preview. **Art:** a Run
+and Gun icon (line); the emblem (`classIcons.ts`) fits.
 
 ## 10. Data
 
@@ -198,16 +176,14 @@ reactions". Run and Gun shows as a chip on the move preview ("free, no opportuni
   "adjudication": "engine", "provisional": true, "origin": "marksman", "attributes": ["agility"], "status": "active" }
 ```
 
-The 2-tile cap of Run and Gun is the move's own pick (the price is set to 0 only when the path is 2 tiles or fewer:
-`if: {"tiles_at_most": 2}`, a predicate to add only if `ap_above` cannot carry it). **Validator rules:** every item whose
-text says "reaction" has a `reaction` kind or `reactions_spent`; `reactions_spent` is 1 or 2; the class `reactions`
-stat_mod appears on the Skirmisher only (and items whose text says so).
+Run and Gun's 2-tile cap is a predicate `path_tiles_at_most` to add only if the move's price cannot carry it.
+**Validator:** a text saying "reaction" has a reaction kind or `reactions_spent` (1 or 2); `reactions` stat_mods only on
+the Skirmisher and items that say so.
 
 ## 11. Open questions for Leon
 
-1. **Killzone spends both reactions** (it said "one between them"). Assumed both (the roster's line).
-2. **Rule 7 split:** condition Suppressed takes every reaction, Pressure's Suppressed only attacking and moving ones. Assumed (as built).
-3. **Keep one for Overwatch** is on by default. Assumed.
-4. **Reflex is about 4 points over the budget**; the dial `reactions.second_hit` is ready, untouched until measured. Assumed.
-5. **The two Ripostes become one** (the technique, with the Breaker's rider). Assumed.
-6. **Run and Gun's "between two attacks" reads "after an attack"** (the engine can't know a second attack is coming). Assumed.
+1. **Killzone spends both reactions** (the data says one). Assumed.
+2. **Rule 7's split:** condition Suppressed takes all, Pressure's only attacking and moving ones (as built). Assumed.
+3. **Keep one for Overwatch** is on by default; **the two Ripostes become one.** Assumed.
+4. **Reflex is about 4 points over budget**; the dial waits for the measure. Assumed.
+5. **Run and Gun's "between two attacks" reads "after an attack"** (the engine can't know a second attack is coming). Assumed.

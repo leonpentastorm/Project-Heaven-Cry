@@ -1,9 +1,7 @@
 # Revision 4: the moves that change hands, the four kept classes, the rename, and the build order (spec, 13 Nov 2026)
 
-The rest of Class Roster Revision 4 (`class-roster-rev4-proposal.md` sections 3 to 7) that the system specs do not
-carry. Its partners: `reactions-spec.md` (the rule, the Skirmisher), `chaplain-spec.md`, and the Shadow, Bonds and
-Figments specs (the Operative, the Mender, the Rigger: their new moves Salvage, Overclock, Jury-Rig and Take the Weight
-are priced there). **Nothing here is built.** Every number is PROVISIONAL.
+The rest of Class Roster Revision 4 that `reactions-spec.md`, `chaplain-spec.md` and the Shadow, Bonds and Figments
+specs (which price Salvage, Overclock, Jury-Rig, Take the Weight) do not carry. **Nothing is built.** All PROVISIONAL.
 
 ## 1. The four classes that keep their mechanic
 
@@ -15,8 +13,7 @@ are priced there). **Nothing here is built.** Every number is PROVISIONAL.
 | **Sigilist** (`mage`) | BLIND, SLOW, MUDDLE back to the common word list | MUDDLE's −1 charge goes | delete the Trickster's `trickster.blind_and_slow` from the move pool and its rank II slot; nothing else: the three words have no gate today (grep: no class check on `subject_affliction` in `sigilgrowth.ts` or `character.ts`), anyone learns them by study | a door user pays MUDDLE's 2 charge: down | engine |
 | **Channeler** (`channeler`) | unchanged | | none | as measured (outburst rows) | engine |
 
-Momentum's class cap of 5 is already in data (`techniques.json rules.momentum.fighter_max`), Guard's 5 for the Bulwark
-too (`classes.json` `defender.resource.max`): the "bigger meter" of both is built.
+The Breaker's Momentum cap of 5 (`techniques.json rules.momentum.fighter_max`) and the Bulwark's Guard 5 are built.
 
 ## 2. The moves that change hands (Revision 4 section 5)
 
@@ -63,17 +60,13 @@ web tests that assert a name (`classView.test.ts`, `levelup-screen.test.ts`, `sa
 "marksman"`): they are history. A tool, not hands: `tools/rename_classes.py` (new, throwaway) reads the id → name map
 from `classes.json` and lists each hit with its file and line for review; it changes nothing by itself.
 
-**Emblems** (`apps/web/src/game/classIcons.ts`, code-drawn, keyed by id, so nothing breaks): Defender's shield,
-Fighter's, Mage's open Sigil square and Channeler's heart-spiral fit; Infiltrator's eye over a lockpick fits the
-Operative; **three need a new picture:** the Trickster's half-mask (Rigger: a wrench crossed with a spark), the Bard's
-lyre (Mender: two hands around a plus), the Guardian's dome (Chaplain: a dome with a flame, the patron's light). Claude
-draws line icons (CLAUDE.md), so these are drawn in the same file; `docs/design/class-icons-sheet.png` is re-exported.
-For `art/briefs/ART-REQUESTS.md` (not edited here): nothing for an artist.
+**Emblems** (`apps/web/src/game/classIcons.ts`, code-drawn, keyed by id): Bulwark, Breaker, Skirmisher, Sigilist,
+Channeler and the Operative (an eye over a lockpick) fit; **three are redrawn** in that file (Claude draws line icons):
+Rigger (the mask → a wrench crossed with a spark), Mender (the lyre → two hands around a plus), Chaplain (the dome → a
+dome under a flame); re-export `class-icons-sheet.png`. Nothing for `ART-REQUESTS.md`.
 
-**Saves and old characters:** nothing migrates. A character stores `classId` and `classRev` (`character.ts`); names are
-read through `className` (`apps/web/src/game/classView.ts`) and `CLASS[id].name`; moves come from the ranks, not the
-save. `migrateCharacterClass` acts only when `CLASS_REV` (3) changes: **leave it at 3** (a bump would only post a
-note). Moves that leave a class leave on load; a policy saved for `fighter.riposte` is ignored.
+**Saves:** nothing migrates. A save holds `classId` and `classRev` (`character.ts`); names come from data (`className`,
+`classView.ts`), moves from the ranks. `migrateCharacterClass` acts only when `CLASS_REV` (3) changes: **leave it at 3**.
 
 **Archetypes:** 0 of the 46 presets name a class (`data/archetypes.json`, grep). The nine families (Frontline, Guns and
 hunters, Shadows, Sigil casters, Minds, Soul and faith, Voices and leaders, Hybrids, All-in) are playstyles, not classes:
@@ -90,7 +83,7 @@ where the step meant to move them, named in the commit.
 | --- | --- | --- |
 | 0 | Pin: record the costs, rules, item-ops, conditions and damage golden tables and the replay hashes on the old code | `GOLDEN_RECORD=1` on the old commit |
 | 1 | **The rename** (names only, no rule) | validator `0 errors`; web tests reading names from data; e2e `classes`, `classes-moves`, `sandbox`; no golden table moves |
-| 2 | **The reaction rule** (`react()` door, the `uses` key, rules 2 and 3, the Riposte fold, Killzone's two) | new `reactions.test.ts` (one Riposte a round in a fight and on the area map; two with Cue; no Parry of a Riposte; Killzone takes both); `golden-costs` marks and `golden-rules` re-recorded on purpose; replay re-recorded; e2e `physical`, `combat-fixes`, `two-players` |
+| 2 | **The reaction rule** (`react()` door, the `uses` key, rules 2 and 3, the Riposte fold, Killzone's two) | `reactions-once-a-round.test.ts` extended (one Riposte a round in a fight and on the area map; two with Cue; no Parry of a Riposte; Killzone takes both); `golden-costs` marks and `golden-rules` re-recorded on purpose; replay re-recorded; e2e `physical`, `combat-fixes`, `two-players` |
 | 3 | **The four kept classes** (section 1) **and the moves that change hands** (section 2) | `golden-itemops` new situations (start Guard, Breaker Momentum on a Shaken hit); `classes-rev3-moves.test.ts` updated; `balance-contract.test.ts` (melee at level 20) |
 | 4 | **The Chaplain** (`chaplain-spec.md`) | `faith-measure` rows `chaplain_turn` within ±12% of 125; `heal-measure` Ward and Sanctuary under 250; `balance-contract` `SYS` gains `chaplain_turn`; e2e `faith`, `faith-pg`, `cutins` |
 | 5 | **The Skirmisher** (Reflex, Run and Gun) | `defence-measure` pairs under fire; the Reflex row within +15 to +20% of the door; e2e `physical`, `reload`, `turn-order` |
@@ -100,22 +93,16 @@ where the step meant to move them, named in the commit.
 | 9 | The whole: `npm run balance`, `REPLAY_FULL=1`, e2e `smoke`, `rules`, `anim` | the version bump (0.25.0) and `CHANGELOG.md` in the merge |
 
 **Playtest checklist entries** (for `docs/PLAYTEST-CHECKLIST.md`, added in step 9):
-1. A Breaker misses-and-is-missed by three melee attacks in one enemy turn: one Riposte only.
-2. The same on the area map.
-3. A Skirmisher holds Overwatch and is shot at: Duck and Roll fires and the Overwatch still fires on the next mover.
-4. Killzone with one reaction already spent this round fires once.
-5. Run and Gun: shoot, move 2 tiles past an enemy's reach (no opportunity attack), shoot (one more Pressure).
-6. A Chaplain Wards two allies, then a third: the first Ward ends.
-7. A Chaplain's Smite on a kill is not spent; the next hit Smites.
-8. A Witnessed Chaplain's first intervention keeps the patron's figure on its tile.
-9. Sanctuary against a Boss stops halving once its cap is spent.
-10. A Bulwark starts a fight with 1 Guard; a Breaker gains Momentum hitting a Shaken enemy, once a turn.
-11. Every class card and the level-up screen show the new names; an old save loads with its class.
+1. Three melee misses on a Breaker in one enemy turn: one Riposte (also on the area map). 2. A Skirmisher on Overwatch is
+shot at: Duck and Roll fires and the Overwatch still fires. 3. Killzone with one reaction left fires once. 4. Run and Gun:
+shoot, slip 2 tiles past a reach (no opportunity attack), shoot (+1 Pressure). 5. A third Ward ends the first. 6. Smite
+on a kill is kept for the next hit. 7. A Witnessed Chaplain's first intervention keeps the figure. 8. Sanctuary stops at
+its cap against a Boss. 9. A Bulwark starts with 1 Guard; a Breaker gains Momentum on a Shaken enemy, once a turn.
+10. New names everywhere; an old save loads with its class.
 
-**Built from** (this file's rules): section 1's rows are item ops in the closed lists (`resource`, `roll_mod` with
-`when` / `if` / `limit`; predicates `target_has`, `own_turn`, `hostile`, `target_sees_self`; trigger `combat_start`,
-`hit`, `attack`); costs through `data/actions.json costs` and `effects/cost.ts`; names through data only. **Needs a new
-primitive:** none beyond the two specs'.
+**Built from:** section 1 is item ops of the closed lists (`resource`, `roll_mod`; `when` `combat_start`, `hit`, `attack`;
+`if` `target_has`, `own_turn`, `hostile`, `target_sees_self`; `limit per_turn`), costs in `actions.json costs` through
+`effects/cost.ts`, names in data. **Needs a new primitive:** none beyond `chaplain-spec.md` and `reactions-spec.md`.
 
 ## 5. Open questions for Leon
 
