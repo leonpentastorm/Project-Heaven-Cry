@@ -507,6 +507,33 @@
       "adjudication": "engine"
     },
     {
+      "id": "read",
+      "name": "Read",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Whoever put this on you, and their side, see what you mean to do on your next turn (its first action and its target) until that turn ends.",
+      "effects": [
+        {
+          "op": "reveal",
+          "what": "intent",
+          "shared_with": "source_side"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "the bearer's turn ends",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "Classes 3.0 (rev4-primitives.md batch row read): Shadow's Read Intent, the Operative's Analyze, Bonds' aim read"
+    },
+    {
       "id": "braced",
       "name": "Braced",
       "kind": "state",

@@ -162,7 +162,7 @@ P('cond_family', 'words', 'the condition\'s family is one of these (body, brain,
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
 P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
-P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
+P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (tending, prayer, perk, stim…)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
 P('ap_above', 'number', 'the event\'s AP (a price, a swap) is over this', (ev, v) => (ev.ctx.ap ?? 0) > v);
 P('own_turn', 'bool', 'it is (or is not) the holder\'s own turn', (ev, v) => (ev.cb.order[ev.cb.turn] === ev.self.id && !ev.cb.window) === v);
 P('flag', 'string', 'the item\'s flag is set (the mark op sets it)', (ev, v) => !!flags(ev)[v]);
@@ -292,9 +292,14 @@ O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource
   const n = e.value === 'all' || e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c)) : e.value;
   (ev as any).gain = own ? resGain(u, e.resource, n) : resGive(ev.cb, u, e.resource, n, { by: ev.self, c: ev.h.c, why: label });
 });
-O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal\'s via; default the ambient source)', (ev, e) => {
+/** The value of op `condition` that names the condition being put on (on cond_incoming: Take the Weight's "you take it
+ * instead"; rev4-primitives.md batch row `condition: "incoming"`). */
+export const INCOMING = 'incoming';
+O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal\'s via; default the ambient source); condition "incoming" (on cond_incoming): the condition being put on, with its rounds unless rounds is given', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
-  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, e.condition, typeof e.rounds === 'number' ? e.rounds : undefined, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}) });
+  const inc = e.condition === INCOMING; if (inc && (ev.trig.hook !== 'cond_apply' || !ev.ctx.id)) return false;
+  const id = inc ? ev.ctx.id : e.condition, rounds = typeof e.rounds === 'number' ? e.rounds : inc && typeof ev.ctx.rounds === 'number' ? ev.ctx.rounds : undefined;
+  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}) });
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -309,6 +314,12 @@ O('skip_save', ['cond_incoming'], false, [], 'the condition being put on gets no
 O('cancel', ['cond_incoming', 'forced_move', 'injury', 'attack', 'spot'], false, ['why'], 'stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown)', (ev, e, label) => {
   if (ev.trig.hook === 'attack_preview') { if (!ev.ctx.fail) ev.ctx.fail = e.why ? fill(e.why, ev) : label; return; }
   ev.ctx.cancel = true; ev.ctx.why = e.why ? fill(e.why, ev) : label;
+});
+// rev4-primitives.md batch row: the damage_mult of mending. On `heal` (heal_in) and `shield` (shield_grant), before the
+// heal or shield is floored and capped; the kind of a heal or shield (tending, prayer, perk…) is read with `how`.
+// (Not on heal_given: by then the heal has landed and there is nothing left to multiply.)
+O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, prayer, perk…)', (ev, e) => {
+  const v = typeof e.value === 'number' ? e.value : 1; if (typeof ev.ctx.n === 'number') ev.ctx.n = ev.ctx.n * v;
 });
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
 O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {

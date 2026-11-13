@@ -1,0 +1,19 @@
+{
+  "about": "Classes 3.0 step 1b integration: the four closed-list batch rows the builder left (rev4-primitives.md section 1, the batch): mend_mult, condition \"incoming\", the stat intervention_keeps_witnessed and the condition row read. Test relics only (no item of the game uses them yet). Read by test/prim-batch-1b.test.ts.",
+  "relics": [
+    { "id": "test_through", "name": "Through the Bond (test)", "text": "Your tending heals and shields on an ally are x{=effects.0.value}.",
+      "effects": [
+        { "op": "mend_mult", "when": "heal", "if": { "actor": "self", "target": "ally", "how": ["tending"] }, "value": 1.2 },
+        { "op": "mend_mult", "when": "shield", "if": { "actor": "self", "target": "ally", "how": ["tending"] }, "value": 1.2 }
+      ] },
+    { "id": "test_take_weight", "name": "Take the Weight (test)", "text": "An ally would be Stunned or Shaken: you take it instead.",
+      "effects": [
+        { "op": "cancel", "when": "cond_incoming", "if": { "target": "ally", "cond": ["stunned", "shaken"] }, "why": "taken by a friend",
+          "and": [{ "op": "condition", "condition": "incoming", "skip_save": true }] }
+      ] },
+    { "id": "test_keep_witnessed", "name": "Under the Eye (test)", "text": "A patron's intervention for you does not end Witnessed.",
+      "effects": [{ "op": "stat_mod", "stat": "intervention_keeps_witnessed", "value": 1 }] },
+    { "id": "test_read_on_hit", "name": "Reading Shot (test)", "text": "A hit Reads its target: your side sees what it means to do until its turn ends.",
+      "effects": [{ "op": "condition", "when": "hit", "if": { "actor": "self", "target": "foe" }, "condition": "read", "target": "target" }] }
+  ]
+}

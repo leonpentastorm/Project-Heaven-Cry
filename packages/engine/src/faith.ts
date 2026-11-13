@@ -618,7 +618,8 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, am
   const g = G(), why = String(said || '').replace(/^[\s:·]+/, '').trim();
   if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
     ...(target ? { target: target.id, targetName: target.name } : {}), ...(target?.charId && target.charId !== c.id && target.side === f.side ? { targetChar: target.charId } : {}) });
-  if (condOn(f, 'witnessed')) { endCond(f, 'witnessed', cb); say(cb, f.name + ' is no longer Witnessed.'); }
+  // Classes 3.0 (rev4 batch row; chaplain-spec.md rule 11): stat intervention_keeps_witnessed keeps it on
+  if (condOn(f, 'witnessed') && !(statQuery({ cb, u: f, c }, 'intervention_keeps_witnessed').add > 0)) { endCond(f, 'witnessed', cb); say(cb, f.name + ' is no longer Witnessed.'); }
 }
 /** The Quartermaster (item 742): a reload of yours that cost AP gives it all back. game.ts calls this after a
  * combat/reload action that succeeded, with the AP it took. */

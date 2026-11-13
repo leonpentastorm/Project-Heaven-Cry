@@ -143,15 +143,15 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
 export interface ShieldLayer { layer: string; n: number; by: string; s: number }
 /** How a shield is given: on a layer above the base (layer), at most `holders` units carrying one giver's layer at once
  * (a new one ends the oldest), or added to what stands (stack). */
-export interface ShieldOpts { layer?: string; holders?: number; stack?: boolean }
+export interface ShieldOpts { layer?: string; holders?: number; stack?: boolean; /** the shield's kind for 'shield_grant' (tending, prayer, perk…: the `how` predicate) */ kind?: string }
 /** A unit's shield in all: the base and every layer. */
 export const shieldTotal = (t: Unit): number => (t.shield || 0) + (t.shields || []).reduce((a, l) => a + l.n, 0);
-/** Give a shield through the hooks ('shield_grant' {by, t, n, layer} may change n). Shields don't stack: the larger
+/** Give a shield through the hooks ('shield_grant' {by, t, n, layer, kind} may change n). Shields don't stack: the larger
  * stands (the base shield; on a layer, the larger of one giver's layer on a unit). A layer is spent before the base,
  * the newest first (Classes 3.0 P11). `o`: a boolean is the old `stack`. */
 export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, o: boolean | ShieldOpts = false): number {
   const so: ShieldOpts = typeof o === 'boolean' ? { stack: o } : o, stack = !!so.stack;
-  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb, ...(so.layer ? { layer: so.layer } : {}) }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
+  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb, ...(so.layer ? { layer: so.layer } : {}), ...(so.kind ? { kind: so.kind } : {}) }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
   if (so.layer) return layerShield(cb, t, Math.max(0, Math.floor(ctx.n)), by, so);
   const had = t.shield || 0, v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? had + v : Math.max(had, v);
   noteTended(cb, by, t, (t.shield || 0) - had); // rules 1.23: only what the shield really added (a smaller one over a bigger adds nothing)

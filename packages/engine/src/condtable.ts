@@ -30,6 +30,7 @@ export interface CondMods {
   /** AP added to drawing and Evoking (Left Brain Debuff +1). */ sigilAp?: number; /** × the MP of Soul spells (Right Brain Debuff 1.2). */ soulCostMult?: number;
   /** on d20s with a skill of this tag ('core:mind', 'core:soul', 'attr:expression'). */ skills?: { tag: string; value: number }[];
   /** to hit, by what it applies to. */ hit?: Partial<Record<HitContext, number>>;
+  /** its source's side sees the bearer's next action (a `reveal` of what `intent`: the row `read`; Classes 3.0). */ intent?: boolean;
   /** the reaction kinds it forbids (a `forbid` of action `reaction`, with its `kinds`; none named: 'all'). Rules 1.28. */ noReact?: string[] | 'all';
 }
 /** One condition as the engine reads its data/conditions.json row. */
@@ -57,6 +58,7 @@ function modsOf(row: any): CondMods {
     if (e.op === 'skill_mod_tag' && typeof e.value === 'number') (m.skills ||= []).push({ tag: e.tag, value: e.value });
     if (e.op === 'attack_mod' && typeof e.value === 'number' && HIT_CONTEXTS.includes(e.context || 'own_attacks')) (m.hit ||= {})[(e.context || 'own_attacks') as HitContext] = e.value;
     if (e.op === 'damage_mult' && typeof e.value === 'number' && e.context === 'next_attack') m.nextAttackMult = e.value;
+    if (e.op === 'reveal' && e.what === 'intent') m.intent = true;
     if (e.op === 'forbid' && e.action === 'reaction') m.noReact = Array.isArray(e.kinds) && e.kinds.length ? [...e.kinds] : 'all';
   }
   return m;

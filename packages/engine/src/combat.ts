@@ -197,7 +197,7 @@ export interface Unit {
    * two rounds are kept). The enemy AI reads it: the enemies go for whoever is mending the squad (healerMark). */
   tended?: { r: number; n: number }[];
   /** What a Trickster's Read showed this unit means to do on its next turn (enemyIntent; cleared when its turn ends). */
-  readIntent?: Intent & { by: string; round: number };
+  readIntent?: Intent & { by: string; round: number; /** the condition that keeps it (the row `read`), else the Read move's own */ cond?: string };
   /** Rules 1.9 drop tables (loot.ts): what this enemy drops beyond its weapon and magazines, from the campaign or the
    * Narrator (absent: the engine's default for its kind and tier). */
   drops?: import('./loot').Drops;
@@ -2745,6 +2745,18 @@ export function enemyIntent(cb: Combat, u: Unit): Intent {
   u.bank = 0; u.shotsThisTurn = 0; u.moved = false;
   try { return withAp(u, Math.max(AP_MIN, AP_BASE - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)), () => intentInner(cb, u)); } finally { u.bank = save.bank; u.shotsThisTurn = save.shots; u.moved = save.moved; }
 }
+// Classes 3.0 (rev4-primitives.md batch row `read`): a condition whose row reveals `intent` (the row `read`) shows its
+// source's side what the bearer means to do: enemyIntent read as it lands, kept on the bearer (readIntent, the same
+// field and fx the Trickster's Read uses) until the condition ends (its one round: the bearer's turn end). A player's
+// unit has no intent to read (the enemy AI reads nothing): nothing is kept.
+onHook('cond_landed', (ctx: any, cb: Combat) => {
+  const t: Unit = ctx.t, by: Unit | null = ctx.by; if (!t || !by || t.side === 'pc' || !condDef(ctx.id)?.mods.intent) return;
+  const it = enemyIntent(cb, t);
+  t.readIntent = { ...it, by: by.id, round: cb.round, cond: ctx.id };
+  emitFx(cb, 'intent', { unit: by.id, target: t.id, at: t.pos, kind: it.kind, text: it.text, ...(it.targetId ? { targetUnit: it.targetId } : {}), ...(it.to ? { to: it.to } : {}), ...(it.image ? { image: it.image } : {}) });
+  say(cb, 'Read: ' + t.name + ' means to ' + it.text + '.');
+});
+onHook('cond_end', (ctx: any) => { const u: Unit = ctx.u; if (u?.readIntent?.cond && u.readIntent.cond === ctx.id) delete u.readIntent; });
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
 /** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */

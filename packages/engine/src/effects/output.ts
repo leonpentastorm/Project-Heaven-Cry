@@ -260,7 +260,7 @@ function gatedRaw(spec: AmountSpec, by: Unit | null, ctx: AmountCtx, gate: numbe
  * multiplier and their hooks). The percent gate (mendGate) and the cap are here, once. Returns what the sink returned. */
 export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean; /** Classes 3.0 P11: a shield on this layer, at most `holders` units carrying one giver's */ layer?: string; holders?: number; /** a Miracle: past the cap */ uncapped?: boolean } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
   const gate = mendGate(spec, target), raw = gate > 0 ? gatedRaw(spec, by, ctx, gate) : amountOf(spec, by, ctx).raw;
-  if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, ctx.layer ? { layer: ctx.layer, holders: ctx.holders, stack: !!ctx.stack } : !!ctx.stack); return { amount: raw, restored: 0, revived: false, shield: v }; }
+  if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, { stack: !!ctx.stack, ...(ctx.healKind ? { kind: ctx.healKind } : {}), ...(ctx.layer ? { layer: ctx.layer, holders: ctx.holders } : {}) }); return { amount: raw, restored: 0, revived: false, shield: v }; }
   const cap = !ctx.uncapped && MEND_GATE.cap_pct != null ? Math.floor(MEND_GATE.cap_pct * target.maxHp) : undefined;
   const r = healUnit(cb, target, raw, by, ctx.healKind || 'heal', cap != null ? { cap } : {});
   return { amount: raw, restored: r.restored, revived: r.revived, shield: 0 };

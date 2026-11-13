@@ -4571,7 +4571,7 @@
       },
       "how": {
         "arg": "words",
-        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect)"
+        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (tending, prayer, perk, stim…)"
       },
       "ap_above": {
         "arg": "number",
@@ -4915,7 +4915,7 @@
           "via"
         ],
         "changes_state": true,
-        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal's via; default the ambient source)"
+        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal's via; default the ambient source); condition \"incoming\" (on cond_incoming): the condition being put on, with its rounds unless rounds is given"
       },
       "cleanse": {
         "on": [
@@ -4994,6 +4994,17 @@
         ],
         "changes_state": false,
         "about": "stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown)"
+      },
+      "mend_mult": {
+        "on": [
+          "heal",
+          "shield"
+        ],
+        "fields": [
+          "value"
+        ],
+        "changes_state": false,
+        "about": "multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, prayer, perk…)"
       },
       "floor": {
         "on": [
