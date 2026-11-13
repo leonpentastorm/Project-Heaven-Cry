@@ -43,11 +43,31 @@ export interface Trace { id: string; word: string; pos: string; side: 'pc' | 'fo
 /** Placed magic and other standing zones. Sigil 1.4: 'field' (STAY), 'trap' (WAIT; hidden from the other side until
  * spotted), 'turret' (WATCH; hp, def), 'veil' (smoke), 'light'. 'wall' is a 1.2 standing wall (read as a field).
  * Class and gadget zones (scramble, seal, sanctuary, grand…) use the same shape. */
-export interface Zone { id: string; kind: 'field' | 'trap' | 'turret' | 'wall' | 'veil' | 'light' | 'scramble'; tiles: string[]; words: string[]; by: string; side: 'pc' | 'foe'; left: number; mult: number; who: string; hit?: Record<string, number>;
+export interface Zone { id: string; kind: 'field' | 'trap' | 'turret' | 'wall' | 'veil' | 'light' | 'scramble' | DataZoneKind; tiles: string[]; words: string[]; by: string; side: 'pc' | 'foe'; left: number; mult: number; who: string; hit?: Record<string, number>;
+  /** Classes 3.0 P10: what the zone has left to give (the op that reads it spends it: a `damage_mult` with `pool` takes
+   * its prevented damage from it); at 0 the zone ends. */ pool?: number;
   /** field (item 422): the creatures it has ever affected (they take ×mult after), and its first-time multiplier. */
   ever?: Record<string, boolean>; first?: number;
   /** field: the Burst multiplier per tile; trap/turret: hidden, the sides that spotted it, triggers left, hp, def; element. */
   tileMult?: Record<string, number>; hidden?: boolean; spotted?: string[]; triggers?: number; hp?: number; def?: number; element?: string | null; kin?: boolean; dir?: [number, number]; reachMult?: number }
+// ---------- zones from data (Classes 3.0 P10) ----------
+/** The kinds of zone data may lay (op `zone`; predicates self_in_zone, target_in_zone): a closed list, one a user. */
+export const DATA_ZONE_KINDS = ['sanctuary'] as const;
+/** A kind of zone data may lay. */
+export type DataZoneKind = (typeof DATA_ZONE_KINDS)[number];
+/** THE door that lays a zone a unit owns on the fight (the op `zone`, a class move's own action): its id is the fight's
+ * next glyph serial; it runs down with the others (sigilRoundTick: `rounds`) and ends at 0 or when its pool is spent. */
+export function makeZone(cb: Combat, by: Unit, o: { kind: Zone['kind']; tiles: string[]; rounds: number; mult?: number; words?: string[]; pool?: number }): Zone {
+  const z: Zone = { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: o.kind, tiles: o.tiles, words: o.words || [String(o.kind)], by: by.id, side: by.side as 'pc' | 'foe', left: o.rounds, mult: o.mult ?? 1, who: by.name, ...(o.pool != null ? { pool: o.pool } : {}) };
+  cb.zones = [...(cb.zones || []), z];
+  return z;
+}
+/** The zones of a kind a tile lies in, by their owner's relation to a unit (self: its own; side: its side's; any). */
+export function zonesAt(cb: Combat, tile: string, kind: string, owner: 'self' | 'side' | 'any' = 'any', to?: Unit | null): Zone[] {
+  return (cb.zones || []).filter((z) => z.kind === kind && z.tiles.includes(tile) && (owner === 'any' || !to ? true : owner === 'self' ? z.by === to.id : z.side === to.side));
+}
+/** End zones (a holder's of a kind): returns how many ended. */
+export function endZones(cb: Combat, pick: (z: Zone) => boolean): number { const was = (cb.zones || []).length; cb.zones = (cb.zones || []).filter((z) => !pick(z)); return was - cb.zones.length; }
 /** A unit's magic: what it knows and carries, and its running state. */
 export interface MagicUnit {
   words: string[]; designs: OutburstDesign[]; evoker: boolean; emanator: boolean;

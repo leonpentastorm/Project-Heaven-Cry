@@ -19,9 +19,9 @@ import type { Holder, HookName } from './types';
 import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
-import { overworld, rngOf, unitsIn, type Area } from '../kit';
+import { overworld, rngOf, unitsIn, tilesAround, type Area } from '../kit';
 import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight } from '../combat';
-import { applyCond, endCond, condOn, condId, debuffsOf, withVia } from '../magic';
+import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS } from '../magic';
 import { nextToCover } from '../combat';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
 import { isStatId } from './stats';
@@ -122,9 +122,9 @@ const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.
 // ============================================================================================== the predicates
 /** The closed list of `if` keys. Each reads the event; all of an effect's keys must hold. `<who>` is self, actor or
  * target. Numbers are shares of max HP (0.5: half) or tiles. */
-export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
+export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
 /** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
-const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
+const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
   PREDICATES[name] = { about, arg, test };
   // (a function: read when asked, for a list defined in a module this one is loaded inside of: tactics.ts SIGHT_WORDS)
   if (values) Object.defineProperty(PREDICATES[name], 'values', { enumerable: true, get: typeof values === 'function' ? values : () => values });
@@ -149,6 +149,7 @@ P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev
 P('crit', 'bool', 'the attack is (or is not) a critical', (ev, v) => !!(ev.ctx.crit ?? ev.ctx.src?.crit) === v);
 P('mode', 'words', 'the attack\'s mode is one of these (shot, aimed, burst, auto, melee, thrown, paired)', (ev, v) => list(v).includes(ev.ctx.mode));
 P('damage', 'words', 'the damage is of one of these kinds (' + DMG_WORDS.join(', ') + ')', (ev, v) => list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
+P('not_damage', 'words', 'the damage is of none of these kinds (as damage; also a source type: strain, short)', (ev, v) => !list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
 P('by_hit', 'bool', 'the damage came (or did not come) from someone\'s blow, not a hazard, trap, Bleeding or Burning', (ev, v) => byHit(ev.ctx.src) === v);
 P('self_harm', 'bool', 'the damage is (or is not) the unit\'s own doing (a Mana Short, an overload, Strain, Flux)', (ev, v) => selfHarm(ev.ctx) === v);
 P('hostile', 'bool', 'the actor and the target are (or are not) on different sides', (ev, v) => (!!ev.actor && !!ev.target && ev.actor.side !== ev.target.side) === v);
@@ -168,6 +169,9 @@ P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this',
 P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);
 // Classes 3.0 step 1 (the batch rows of docs/design/rev4-primitives.md)
 P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover: every end named must be', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to']);
+// Classes 3.0 P10: zones from data. {kind, owner: self (the holder's own), side (its side's) or any}
+const zoneArg = (v: any) => (typeof v === 'string' ? { kind: v, owner: 'any' } : { kind: v?.kind, owner: v?.owner || 'any' });
+for (const who of ['self', 'target'] as Who[]) P(who + '_in_zone', 'zone', who + ' stands in a zone of this kind (a kind, or {kind, owner: self, side or any})', (ev, v) => { const u = unitOf(ev, who), a = zoneArg(v); return !!u && zonesAt(ev.cb, u.pos, a.kind, a.owner, ev.self).length > 0; }, () => [...DATA_ZONE_KINDS]);
 P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
 
 // ============================================================================================== amount sources (P3)
@@ -196,7 +200,7 @@ export function sourceOf(ev: Ev, of: string): number {
 /** The namespaces a number block's `of` may name in an item op. */
 export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target'];
 /** The numeric fields of an item op that may be number blocks. */
-const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds'];
+const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders'];
 /** An op with its number blocks read for this event (a plain op is itself). */
 function withNumbers(ev: Ev, x: any): any {
   let out = x;
@@ -213,15 +217,21 @@ function fill(s: string, ev: Ev): string {
 
 // ============================================================================================== the ops
 /** The closed list of ops a triggered effect may run, with the triggers each one understands. */
-export interface TriggerOp { on: string[]; state: boolean; about: string; fields: string[]; run: (ev: Ev, e: any, label: string) => string | void }
+export interface TriggerOp { on: string[]; state: boolean; about: string; fields: string[]; run: (ev: Ev, e: any, label: string) => string | void | false }
 /** THE OPS: filled by O(...) below, one line each (data/effect_ops.json item_ops.ops is written from it). */
 export const OPS: Record<string, TriggerOp> = {};
 const O = (name: string, on: string[], state: boolean, fields: string[], about: string, run: TriggerOp['run']) => { OPS[name] = { on, state, fields, about, run }; };
 const ANY = Object.keys(TRIGGERS);
 const pick = (ev: Ev, e: any): Unit | null => (e.target === 'actor' ? ev.actor : e.target === 'target' ? ev.target : ev.self);
 
-O('damage_mult', ['dealing', 'taking'], false, ['value'], 'multiply the amount being dealt or taken', (ev, e, label) => {
-  if (ev.trig.hook === 'damage_out') ev.ctx.mults.push({ v: e.value, label }); else ev.ctx.dmg = ev.ctx.dmg * e.value;
+O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent)', (ev, e, label) => {
+  if (ev.trig.hook === 'damage_out') { ev.ctx.mults.push({ v: e.value, label }); return; }
+  const was = ev.ctx.dmg; let now = e.round === 'up' ? Math.ceil(was * e.value) : was * e.value;
+  if (typeof e.pool === 'string' && ev.target) { // P10: a zone's pool caps what it prevents
+    const z = zonesAt(ev.cb, ev.target.pos, e.pool, 'self', ev.self).find((x) => x.pool != null);
+    if (z) { const cut = Math.min(Math.max(0, was - now), z.pool!); now = was - cut; z.pool = z.pool! - cut; if (z.pool <= 0) endZones(ev.cb, (x) => x === z); }
+  }
+  ev.ctx.dmg = now;
 });
 O('damage_mod', ['dealing', 'taking'], false, ['value', 'value_pct'], 'add to the amount (value), or change it by a percentage (value_pct)', (ev, e, label) => {
   if (ev.trig.hook === 'damage_out') { if (typeof e.value_pct === 'number') ev.ctx.mults.push({ v: 1 + e.value_pct / 100, label }); else ev.ctx.add += e.value; }
@@ -279,14 +289,19 @@ O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amou
   const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: true }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
 });
-O('mend', ANY, true, ['amount'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk)', (ev, e) => {
+O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {
   const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
-  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b) });
+  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
 });
 O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder (how: push) or pull it closer (pull)', (ev, e) => {
   const t = pick(ev, e); if (!t || t === ev.self) return;
   const how = e.how === 'pull' ? 'pull' : 'push', to = how === 'pull' ? { toward: ev.self.pos, tiles: e.tiles } : { away: ev.self.pos, tiles: e.tiles };
   return displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key }).text || '';
+});
+O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event\'s), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder\'s zones of that kind (nothing said when it had none)', (ev, e) => {
+  if (e.clear) return endZones(ev.cb, (z) => z.kind === e.kind && z.by === ev.self.id) > 0 ? undefined : false;
+  const at: string | null = e.at === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? null : (e.at === 'target' ? ev.target : ev.self)?.pos ?? null; if (!at) return false;
+  makeZone(ev.cb, ev.self, { kind: e.kind, tiles: tilesAround(at, e.within ?? 0), rounds: typeof e.rounds === 'number' ? e.rounds : 1, ...(typeof e.pool === 'number' ? { pool: e.pool } : {}) });
 });
 O('use', ANY, true, [], 'nothing but its limit: spends one use (for a limit another effect reads with peek)', () => undefined);
 O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of the item\'s own flags, for a later trigger\'s flag / no_flag', (ev, e) => {
@@ -396,7 +411,7 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   if (asReaction ? !canReact(cb, self, lim.kind, lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
   const label = e.label || h.info.name, parts: string[] = [];
   let ran = 0;
-  const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); ran++; if (typeof r === 'string' && r) parts.push(r); };
+  const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); if (r !== false) ran++; if (typeof r === 'string' && r) parts.push(r); }; // an op that returns false did nothing (a zone cleared that wasn't there)
   // P5: an op with `targets` runs once for each unit of its set, that unit as its target
   const go = () => { for (const x0 of all) { if (x0.targets) { for (const t of selectUnits(ev, x0.targets)) one({ ...ev, target: t }, { ...x0, target: 'target' }); } else one(ev, x0); } };
   if (asReaction && !ev.preview) { if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent() }, go)) return; } else go();

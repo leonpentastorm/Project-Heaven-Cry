@@ -1737,6 +1737,9 @@ def check_pred(k, v, w):
     elif a == "bool" and not isinstance(v, bool): errors.append(f"{w}: `if.{k}` must be true or false")
     elif a == "ids" and not all(isinstance(x, str) and x in known["condition"] for x in vals): errors.append(f"{w}: `if.{k}` names a condition that is not in conditions.json")
     elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
+    elif a == "zone" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("owner", "any") in ("self", "side", "any") and set(v) <= {"kind", "owner"})): errors.append(f"{w}: `if.{k}` is a zone kind ({p.get('values')}) or {{kind, owner: self, side or any}}")
+    elif a == "tie" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("as", "any") in ("from", "to", "any") and set(v) <= {"kind", "as"})): errors.append(f"{w}: `if.{k}` is a tie kind ({p.get('values')}) or {{kind, as: from or to}}")
+    elif a in ("zone", "tie"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.

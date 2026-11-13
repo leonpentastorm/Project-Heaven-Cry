@@ -231,9 +231,9 @@ export function deal(cb: Combat | null, by: Unit | null, target: Unit, spec: Dea
 }
 /** Give healing or a shield: the amount (amountOf), then the heal sink or the shield sink (which apply the receiver's
  * multiplier and their hooks). Returns what the sink returned. */
-export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
+export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean; /** Classes 3.0 P11: a shield on this layer, at most `holders` units carrying one giver's */ layer?: string; holders?: number } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
   const { raw } = amountOf(spec, by, ctx);
-  if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, !!ctx.stack); return { amount: raw, restored: 0, revived: false, shield: v }; }
+  if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, ctx.layer ? { layer: ctx.layer, holders: ctx.holders, stack: !!ctx.stack } : !!ctx.stack); return { amount: raw, restored: 0, revived: false, shield: v }; }
   const r = healUnit(cb, target, raw, by, ctx.healKind || 'heal');
   return { amount: raw, restored: r.restored, revived: r.revived, shield: 0 };
 }

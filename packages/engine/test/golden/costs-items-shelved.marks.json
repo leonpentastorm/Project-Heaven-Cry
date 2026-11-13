@@ -244,7 +244,7 @@
 "shelved/rev2/fighter/taken-low": "F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/rev2/guardian/ally-taken": "P1 ps.skill:camaraderie.3.round0>1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/rev2/guardian/guardian.drink_it_in/drink_off": "P1 faith.acted0>true faith.apMark6>9 ps.class:guardian.drink_it_in.policy0>off ps.skill:composure.5.acted0>true",
-"shelved/rev2/guardian/guardian.sanctuary/sanctuary": "P1 faith.acted0>true faith.apMark6>7 faith.seenMp600>555 mg.cast0>true ps.class:guardian.sanctuary.zone0>z1 ps.skill:composure.5.acted0>true; C1 uses.class:guardian.sanctuary#sanctuary|per_scene.n0>1 uses.class:guardian.sanctuary#sanctuary|per_scene.s0>s1",
+"shelved/rev2/guardian/guardian.sanctuary/sanctuary": "P1 faith.acted0>true faith.apMark6>7 faith.seenMp600>555 mg.cast0>true ps.skill:composure.5.acted0>true; C1 uses.class:guardian.sanctuary#sanctuary|per_scene.n0>1 uses.class:guardian.sanctuary#sanctuary|per_scene.s0>s1",
 "shelved/rev2/guardian/guardian.sanctuary/sanctuary/then-blow": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true mg.calmFight0>true ps.skill:raw_power.5.out0>true",
 "shelved/rev2/guardian/guardian.sanctuary/sanctuary/then-shot": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true mg.calmFight0>true ps.skill:raw_power.5.out0>true shotsThisTurn0>1",
 "shelved/rev2/guardian/guardian.will_shield/will_shield": "P1 faith.acted0>true faith.apMark6>7 faith.seenMp600>585 mg.calmTend0>true mg.cast0>true ps.class:guardian.drink_it_in.shields.pc-c30>true ps.class:guardian.will_shield.shields.pc-c30>true ps.skill:composure.5.acted0>true",

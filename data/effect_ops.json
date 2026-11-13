@@ -4044,6 +4044,37 @@
       ],
       "used_by": [],
       "example": null
+    },
+    {
+      "id": "zone",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P10): lay a zone the holder owns (kind, at, within, rounds, pool), or with clear: true end the holder's zones of that kind; read by the predicates self_in_zone and target_in_zone and by damage_mult's pool. Runs on a trigger (`when`).",
+      "count": 0,
+      "params": [
+        "and",
+        "at",
+        "clear",
+        "if",
+        "kind",
+        "label",
+        "limit",
+        "pool",
+        "priority",
+        "rounds",
+        "say",
+        "target",
+        "when",
+        "within"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "zone",
+        "when": "acted",
+        "kind": "sanctuary",
+        "at": "tile",
+        "within": 1,
+        "rounds": 2
+      }
     }
   ],
   "item_ops": {
@@ -4401,6 +4432,10 @@
         "arg": "words",
         "about": "the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true)"
       },
+      "not_damage": {
+        "arg": "words",
+        "about": "the damage is of none of these kinds (as damage; also a source type: strain, short)"
+      },
       "by_hit": {
         "arg": "bool",
         "about": "the damage came (or did not come) from someone's blow, not a hazard, trap, Bleeding or Burning"
@@ -4477,6 +4512,20 @@
           "to"
         ]
       },
+      "self_in_zone": {
+        "arg": "zone",
+        "about": "self stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
+        "values": [
+          "sanctuary"
+        ]
+      },
+      "target_in_zone": {
+        "arg": "zone",
+        "about": "target stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
+        "values": [
+          "sanctuary"
+        ]
+      },
       "patron": {
         "arg": "words",
         "about": "the holder is Faithful to one of these patrons (patrons.json ids)",
@@ -4499,10 +4548,12 @@
           "taking"
         ],
         "fields": [
-          "value"
+          "value",
+          "round",
+          "pool"
         ],
         "changes_state": false,
-        "about": "multiply the amount being dealt or taken"
+        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent)"
       },
       "damage_mod": {
         "on": [
@@ -4864,10 +4915,12 @@
           "spot"
         ],
         "fields": [
-          "amount"
+          "amount",
+          "layer",
+          "holders"
         ],
         "changes_state": true,
-        "about": "heal or shield by an amount block (its heal_kind is the heal's kind for heal_in: tending, prayer…; default perk)"
+        "about": "heal or shield by an amount block (its heal_kind is the heal's kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder's layer)"
       },
       "displace": {
         "on": [
@@ -4912,6 +4965,54 @@
         ],
         "changes_state": true,
         "about": "push the target away from the holder (how: push) or pull it closer (pull)"
+      },
+      "zone": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "kind",
+          "at",
+          "within",
+          "rounds",
+          "pool",
+          "clear"
+        ],
+        "changes_state": true,
+        "about": "lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event's), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder's zones of that kind (nothing said when it had none)"
       },
       "use": {
         "on": [

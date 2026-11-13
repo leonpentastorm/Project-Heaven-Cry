@@ -78,7 +78,9 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
   if (src.shield !== false && !t.downed) {
     ctx.phase = 'shield'; if (cb) emit(cb, 'damage_in', ctx);
-    if (t.shield && t.shield > 0) { const s = Math.min(t.shield, ctx.dmg); t.shield -= s; ctx.dmg -= s; res.shielded = s; }
+    // Classes 3.0 P11: the layers first, the newest first, then the base shield
+    if (t.shields?.length) { for (let i = t.shields.length - 1; i >= 0 && ctx.dmg > 0; i--) { const l = t.shields[i], s = Math.min(l.n, ctx.dmg); l.n -= s; ctx.dmg -= s; res.shielded += s; } t.shields = t.shields.filter((l) => l.n > 0); if (!t.shields.length) delete t.shields; }
+    if (t.shield && t.shield > 0) { const s = Math.min(t.shield, ctx.dmg); t.shield -= s; ctx.dmg -= s; res.shielded += s; }
   }
   res.amount = ctx.dmg;
   if (t.downed) {
@@ -135,12 +137,44 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
   if (cb && by && (restored > 0 || revived)) tendHook.f?.(cb, by, t);
   return { restored, revived, limited: false };
 }
-/** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
-export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {
-  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
+/** A shield layer (Classes 3.0 P11): its kind, what is left of it, its giver, its serial (the oldest of a giver's ends first). */
+export interface ShieldLayer { layer: string; n: number; by: string; s: number }
+/** How a shield is given: on a layer above the base (layer), at most `holders` units carrying one giver's layer at once
+ * (a new one ends the oldest), or added to what stands (stack). */
+export interface ShieldOpts { layer?: string; holders?: number; stack?: boolean }
+/** A unit's shield in all: the base and every layer. */
+export const shieldTotal = (t: Unit): number => (t.shield || 0) + (t.shields || []).reduce((a, l) => a + l.n, 0);
+/** Give a shield through the hooks ('shield_grant' {by, t, n, layer} may change n). Shields don't stack: the larger
+ * stands (the base shield; on a layer, the larger of one giver's layer on a unit). A layer is spent before the base,
+ * the newest first (Classes 3.0 P11). `o`: a boolean is the old `stack`. */
+export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, o: boolean | ShieldOpts = false): number {
+  const so: ShieldOpts = typeof o === 'boolean' ? { stack: o } : o, stack = !!so.stack;
+  const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb, ...(so.layer ? { layer: so.layer } : {}) }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
+  if (so.layer) return layerShield(cb, t, Math.max(0, Math.floor(ctx.n)), by, so);
   const had = t.shield || 0, v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? had + v : Math.max(had, v);
   noteTended(cb, by, t, (t.shield || 0) - had); // rules 1.23: only what the shield really added (a smaller one over a bigger adds nothing)
   if (cb && by && v > 0) tendHook.f?.(cb, by, t);
   return v;
 }
+/** A shield on a layer: one giver's layer on a unit is one entry (the larger stands, or it adds with stack); with
+ * `holders`, a giver's layer of this kind stands on at most that many units (a new one ends the oldest). */
+function layerShield(cb: Combat | null, t: Unit, v: number, by: Unit | null, so: ShieldOpts): number {
+  const ls = (t.shields ||= []), byId = by?.id || '', i = ls.findIndex((l) => l.layer === so.layer && l.by === byId), was = i >= 0 ? ls[i].n : 0;
+  const s = cb ? ((cb as any).shieldSeq = ((cb as any).shieldSeq || 0) + 1) : ls.length + 1;
+  const n = so.stack ? was + v : Math.max(was, v);
+  if (i >= 0) ls.splice(i, 1);
+  ls.push({ layer: so.layer!, n, by: byId, s });
+  if (cb && so.holders != null && byId) {
+    const carriers = cb.units.filter((u) => (u.shields || []).some((l) => l.layer === so.layer && l.by === byId));
+    while (carriers.length > so.holders) {
+      const old = carriers.reduce((a, u) => (lay(u, so.layer!, byId)!.s < lay(a, so.layer!, byId)!.s ? u : a));
+      old.shields = old.shields!.filter((l) => !(l.layer === so.layer && l.by === byId)); if (!old.shields.length) delete old.shields;
+      carriers.splice(carriers.indexOf(old), 1);
+    }
+  }
+  noteTended(cb, by, t, n - was);
+  if (cb && by && v > 0) tendHook.f?.(cb, by, t);
+  return v;
+}
+const lay = (u: Unit, layer: string, by: string) => (u.shields || []).find((l) => l.layer === layer && l.by === by);
 

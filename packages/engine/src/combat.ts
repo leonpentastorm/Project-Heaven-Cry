@@ -17,6 +17,7 @@ import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, cover
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard } from './effects/hooks';
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
+import type { ShieldLayer } from './effects/damage';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { itemAmount } from './effects/amounts';
@@ -102,7 +103,7 @@ export interface Unit {
   ignoreDifficult?: boolean; unarmedBonus?: number; moved?: boolean; firstShotDone?: boolean; proficiency?: number; parts?: number; baseArmour?: number; dexterity?: number; athleticsPts?: number;
   /** Magic (spec: Mana, rules 1.2): what the unit knows and carries; conditions (rounds left); a shield; the base
    * Movement and Vision a condition halved. */
-  mg?: MagicUnit; conds?: Record<string, number>; shield?: number; baseMove?: number; baseVision?: number;
+  mg?: MagicUnit; conds?: Record<string, number>; shield?: number; /** Classes 3.0 P11: shield layers above the base shield (effects/damage.ts grantShield with a layer), oldest first */ shields?: ShieldLayer[]; baseMove?: number; baseVision?: number;
   /** The effect runtime (effects/): what the unit holds (perks with tiers, traits, class and rank, advanced class), per-fight
    * item state (ps, by item key), use counters (uses), armed presets (armed), and the AP economy: AP banked for the next
    * turn, debt (after the floor), perk AP gained this turn (the +3 cap) and the turn's total (the 9 ceiling). */

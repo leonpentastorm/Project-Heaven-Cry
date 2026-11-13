@@ -78,6 +78,57 @@
           "value": 1
         }
       ]
+    },
+    {
+      "id": "test_zone_bulwark",
+      "name": "Bulwark Ground (test)",
+      "text": "At your turn start, lay a sanctuary of radius {=effects.0.within} on yourself for {=effects.0.rounds} rounds that can prevent {=effects.0.pool} damage; allies in it take half damage, out of its pool.",
+      "effects": [
+        {
+          "op": "zone",
+          "when": "turn_start",
+          "kind": "sanctuary",
+          "at": "self",
+          "within": 1,
+          "rounds": 2,
+          "pool": 10
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "value": 0.5,
+          "pool": "sanctuary",
+          "if": {
+            "target": "ally",
+            "target_in_zone": {
+              "kind": "sanctuary",
+              "owner": "self"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_layer_ward",
+      "name": "Ward Layer (test)",
+      "text": "At your turn start, every ally within {=effects.0.targets.within} tiles gains a ward of {=effects.0.amount.base} on its own layer; at most {=effects.0.holders} carry yours.",
+      "effects": [
+        {
+          "op": "mend",
+          "when": "turn_start",
+          "amount": {
+            "kind": "shield",
+            "base": 7,
+            "profile": "flat"
+          },
+          "layer": "ward",
+          "holders": 1,
+          "targets": {
+            "side": "ally",
+            "within": 4
+          }
+        }
+      ]
     }
   ],
   "conditions": [],
