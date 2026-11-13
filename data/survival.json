@@ -158,8 +158,41 @@
     { "id": "boon.deep_well", "kind": "relic", "name": "Deep Well", "pools": ["faith", "survival"], "worth": 8, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "mend_mult", "when": "heal", "if": { "actor": "self" }, "value": 1.2 },
                    { "op": "mend_mult", "when": "shield", "if": { "actor": "self" }, "value": 1.2 } ],
-      "text": "The heals and shields you give are {=effects.0.value|more}% stronger." }
+      "text": "The heals and shields you give are {=effects.0.value|more}% stronger." },
+    { "id": "boon.primed", "kind": "relic", "name": "Primed", "pools": ["war", "streets"], "worth": 8, "adjudication": "engine", "provisional": true,
+      "doors": ["durability", "raw_power", "ingenuity"],
+      "effects": [ { "op": "resource", "when": "combat_start", "if": { "self_skill": { "durability": 1 } }, "resource": "guard", "value": 2 },
+                   { "op": "resource", "when": "combat_start", "if": { "self_skill": { "raw_power": 1 } }, "resource": "momentum", "value": 1 },
+                   { "op": "resource", "when": "combat_start", "if": { "self_skill": { "ingenuity": 1 } }, "resource": "shadow", "value": 1 } ],
+      "text": "Your door's meter starts each fight a step up: Guard {=effects.0.value|signed}, Momentum {=effects.1.value|signed}, Shadow {=effects.2.value|signed}." },
+    { "id": "boon.reflexes", "kind": "relic", "name": "Quick Hands", "pools": ["streets"], "worth": 5, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "cost_mod", "when": "cost", "if": { "action": ["reload"] }, "value": -1, "min": 0, "limit": { "per": "per_turn", "n": 1, "key": "hands", "peek": true } },
+                   { "op": "use", "when": "reload", "limit": { "per": "per_turn", "n": 1, "key": "hands" } },
+                   { "op": "cost_mod", "when": "swap", "if": { "ap_above": 0 }, "value": -1, "min": 0, "limit": { "per": "per_turn", "n": 1, "key": "hands" } } ],
+      "text": "Your first reload or weapon swap each turn costs {=effects.0.value|abs} AP less (never under {=effects.0.min})." },
+    { "id": "boon.mending", "kind": "relic", "name": "Field Mending", "pools": ["faith", "survival"], "worth": 0, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "mend", "when": "combat_over", "if": { "self_alive": true }, "amount": { "kind": "heal", "base": 0, "per": [ { "of": "self:max_hp", "value": 0.2 } ], "profile": "flat", "heal_kind": "perk", "provisional": true } } ],
+      "text": "At each fight's end you heal {=effects.0.amount.per.0.value|pct}% of your max HP." },
+    { "id": "boon.bandolier", "kind": "relic", "name": "Bandolier", "pools": ["machine"], "worth": 0, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "stat_mult", "stat": "run_ammo", "value": 2 } ],
+      "text": "The ammunition pack after a fight is {=effects.0.value}x: twice the magazines, and one more core." },
+    { "id": "boon.tithe", "kind": "relic", "name": "Tithe", "pools": ["streets"], "worth": 0, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "stat_mult", "stat": "run_credits", "value": 1.5 } ],
+      "text": "{=effects.0.value|more}% more credits from every node that pays." },
+    { "id": "boon.devout", "kind": "relic", "name": "Devout", "pools": ["faith"], "worth": 0, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "resource", "when": "combat_end", "resource": "devotion_xp", "value": 1 } ],
+      "text": "{=effects.0.value|signed} Devotion XP at each fight's end (inside the session's cap)." }
   ],
+  "boon_pick": {
+    "about": "Rules 1.44 (spec rules 30, 31): after each Boss every character picks one boon of `offer`, rolled from the tile's pool (`pools`), then from every pool when the tile's runs short; a boon held, or one whose worth would pass the run's cap, is not offered: a utility boon (worth 0) takes its place.",
+    "offer": 3,
+    "provisional": true
+  },
+  "world": {
+    "about": "Rules 1.44 (spec rule 32): after the boon, `offer` tiles (at least `min`) are offered for the next stage, each a setting not yet played this run where possible, and only a setting that is ready (its Boss, its kinds and a boon pool in data).",
+    "offer": 3, "min": 2,
+    "provisional": true
+  },
   "graft": {
     "about": "Rules 1.43 (spec rule 42, the back-room graft): the graft is a relic made of a boon of the tile's pool and a cut to max HP for the run (`hp_mult`, the stat `hp`); its worth is the boon's.",
     "hp_mult": 0.9,
@@ -290,17 +323,17 @@
   ],
   "settings": [
     { "id": "ahoc", "name": "AHOC chapter outpost", "kinds": { "human": 5, "robot": 3, "drone": 2 },
-      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "discipline", "provisional": true },
+      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "discipline", "line": "A chapter outpost of the Command: bunkers, gates, crates, and a warframe kept for bad days.", "backdrop": "survival-backdrop-ahoc-a", "awaiting": [], "provisional": true },
     { "id": "city", "name": "Central City back streets", "kinds": { "human": 5, "crawler": 3, "drone": 2 },
-      "boss": { "name": "Crawler elder", "kind": "crawler", "weapon": "adamantile_greatsword", "casters": ["heart_sovereign"], "portrait": "elite-crawler" }, "pool": "streets", "provisional": true },
+      "boss": { "name": "Crawler elder", "kind": "crawler", "weapon": "adamantile_greatsword", "casters": ["heart_sovereign"], "portrait": "elite-crawler" }, "pool": "streets", "line": "The back streets under Central City: alleys, stalls, and the Crawlers who live below.", "backdrop": "survival-backdrop-city-a", "awaiting": ["its own enemies (Crawlers are human and drone stand-ins by name)"], "provisional": true },
     { "id": "field", "name": "Daggerfall-type battlefield", "kinds": { "ork": 4, "human": 3, "beast": 2, "cursed": 1 },
-      "boss": { "name": "Ork warlord", "kind": "ork", "weapon": "ork_rip_saw", "casters": [], "portrait": null }, "pool": "war", "provisional": true },
+      "boss": { "name": "Ork warlord", "kind": "ork", "weapon": "ork_rip_saw", "casters": [], "portrait": null }, "pool": "war", "line": "An old battlefield of trenches and craters, where orks and warped beasts still fight over nothing.", "backdrop": "survival-backdrop-field-a", "awaiting": ["the Boss portrait", "its own enemies (orks, beasts and the cursed are stand-ins by name)"], "provisional": true },
     { "id": "works", "name": "Machine works and drone foundry", "kinds": { "robot": 4, "machine": 3, "drone": 3 },
-      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "machine", "provisional": true },
+      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "machine", "line": "A machine works and drone foundry that never stopped building, long after anyone asked it to.", "backdrop": "survival-backdrop-works-a", "awaiting": ["its own enemies (machines are stand-ins by name)"], "provisional": true },
     { "id": "shrine", "name": "Shrine and cathedral district", "kinds": { "human": 4, "cursed": 3, "upper_realm": 2 },
-      "boss": { "name": "Upper-realm patch", "kind": "upper_realm", "weapon": "adamantile_greatsword", "casters": ["sigil_magister", "heart_sovereign"], "portrait": null }, "pool": "faith", "provisional": true },
+      "boss": { "name": "Upper-realm patch", "kind": "upper_realm", "weapon": "adamantile_greatsword", "casters": ["sigil_magister", "heart_sovereign"], "portrait": null }, "pool": "faith", "line": "A shrine and cathedral district, where the cursed pray and something from higher up answers.", "backdrop": "survival-backdrop-shrine-a", "awaiting": ["the Boss portrait", "its own enemies (the cursed and the upper realm are stand-ins by name)"], "provisional": true },
     { "id": "rim", "name": "Rim station", "kinds": { "robot": 4, "drone": 3, "machine": 2, "human": 1 },
-      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "survival", "provisional": true }
+      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "survival", "line": "A station on the rim, all bulkheads and containers, holding its air against the dark.", "backdrop": "survival-backdrop-rim-a", "awaiting": ["its own enemies (machines are stand-ins by name)"], "provisional": true }
   ],
   "map": {
     "rows": 15,

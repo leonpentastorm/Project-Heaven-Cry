@@ -292,6 +292,12 @@
       "on": "unit",
       "path": "res.ledger",
       "max": "resMax.ledger"
+    },
+    "devotion_xp": {
+      "name": "Devotion XP",
+      "on": "character",
+      "path": "devotionXp",
+      "setter": "devotion"
     }
   },
   "costs": {

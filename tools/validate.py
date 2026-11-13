@@ -855,8 +855,8 @@ if "actions" in data:
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure"):
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
@@ -2357,10 +2357,15 @@ if _sv is not None:
             if _it.get("provisional") is not True or _it.get("adjudication") != "engine": errors.append(f"{_w}: provisional, adjudication engine")
             if not _it.get("effects"): errors.append(f"{_w}: its effects (item ops)")
             for _ei, _e in enumerate(_it.get("effects") or []):
+                # rules 1.44: a boon may answer a run's stat (Bandolier's run_ammo, Tithe's run_credits; effects/stats.ts STATS)
+                if _lk == "boons" and _e.get("when") is None and _e.get("op") == "stat_mult":
+                    if _e.get("stat") not in ("run_ammo", "run_credits") or not _num(_e.get("value")): errors.append(f"{_w} effect {_ei}: a boon's stat_mult names run_ammo or run_credits and a number")
+                    continue
                 check_trigger_effect(_e, f"{_w} effect {_ei}")
                 if _lk == "relic_props" and (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_w} effect {_ei}: a property works only with its instance: if.with_this true")
             if _lk == "relic_props" and (not _it.get("fits") or not set(_it["fits"]) <= _FITS): errors.append(f"{_w}: fits names what it goes on ({sorted(_FITS)})")
             if _lk == "boons" and (not _it.get("pools") or not set(_it["pools"]) <= _POOLS | {"faith"}): errors.append(f"{_w}: pools names the settings' pools ({sorted(p for p in _POOLS if p)})")
+            if _lk == "boons" and "doors" in _it and not (isinstance(_it["doors"], list) and _it["doors"] and set(_it["doors"]) <= {k["id"] for k in data["skills"]["items"]}): errors.append(f"{_w}: doors names door skills (skills.json ids)")
     for _k, _f in (("train", ("drill", "study", "practice", "devotion")), ("training", ("drill", "study", "practice", "extra_price", "most")), ("shrine", ("token_max_worth", "tokens_per_stage")), ("forge", ("slots",)), ("graft", ("hp_mult",))):
         for _x in _f:
             if _k in _sv and (not _num(_sv[_k].get(_x)) or _sv[_k][_x] <= 0): errors.append(f"survival:{_k}.{_x}: a number above 0")
@@ -2376,7 +2381,18 @@ if _sv is not None:
             if _t.get("do") not in _DO: errors.append(f"survival:trades.{_t.get('id')}: do is one of {sorted(_DO)}")
             if not (isinstance(_t.get("text"), str) and _t["text"].strip()) or _t.get("provisional") is not True: errors.append(f"survival:trades.{_t.get('id')}: a text, provisional")
         if not _num(_tr.get("offer")) or _tr["offer"] > len(_tr.get("items") or []): errors.append("survival:trades.offer: at most the number of trades")
-    for _k in ("grade_up", "forge", "armour_fit", "boon_cap", "graft", "train", "training", "shrine", "lasting", "trades"):
+    # Rules 1.44 (build step 5): the boon pick, the next tile, the settings' cards; every pool with a boon.
+    if "boon_pick" in _sv and not (_num(_sv["boon_pick"].get("offer")) and _sv["boon_pick"]["offer"] >= 1): errors.append("survival:boon_pick.offer: a number of 1 or more")
+    if "world" in _sv:
+        _wo = _sv["world"]
+        if not (_num(_wo.get("offer")) and _num(_wo.get("min")) and 1 <= _wo["min"] <= _wo["offer"]): errors.append("survival:world: offer and min (1 <= min <= offer)")
+        for _st in _sv.get("settings") or []:
+            _w = f"survival:settings.{_st.get('id')}"
+            if not (isinstance(_st.get("line"), str) and _st["line"].strip()): errors.append(f"{_w}: a line of flavour (the tile card)")
+            if not (isinstance(_st.get("backdrop"), str) and _st["backdrop"].startswith("survival-backdrop-")): errors.append(f"{_w}: backdrop is the catalog id its tile card draws (survival-backdrop-<setting>-<a..d>)")
+            if not isinstance(_st.get("awaiting"), list): errors.append(f"{_w}: awaiting lists what it still waits for (art, its own enemies), [] when nothing")
+            if not any(_st.get("pool") in (_b.get("pools") or []) for _b in _sv.get("boons") or []): errors.append(f"{_w}: its pool {_st.get('pool')!r} has no boon")
+    for _k in ("grade_up", "forge", "armour_fit", "boon_cap", "graft", "train", "training", "shrine", "lasting", "trades", "boon_pick", "world"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).

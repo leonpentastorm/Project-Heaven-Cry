@@ -4477,6 +4477,11 @@
         "hook": "spot",
         "self": "target",
         "about": "a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: \"tn\", its TN; cancel)"
+      },
+      "combat_over": {
+        "hook": "combat_over",
+        "self": null,
+        "about": "the fight is decided, before the fighters are written back to their characters: a heal or a resource given here goes home with them (combat_end comes after)"
       }
     },
     "predicates": {
@@ -4890,7 +4895,8 @@
           "pressure",
           "vcharge",
           "shadow",
-          "ledger"
+          "ledger",
+          "devotion_xp"
         ]
       },
       "self_lacks_res": {
@@ -4910,7 +4916,8 @@
           "pressure",
           "vcharge",
           "shadow",
-          "ledger"
+          "ledger",
+          "devotion_xp"
         ]
       },
       "patron": {
@@ -5055,7 +5062,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "value",
@@ -5099,7 +5107,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "resource",
@@ -5143,7 +5152,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "condition",
@@ -5191,7 +5201,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "condition",
@@ -5291,7 +5302,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "amount",
@@ -5337,7 +5349,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "amount",
@@ -5382,7 +5395,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "tiles",
@@ -5427,7 +5441,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "kind",
@@ -5475,7 +5490,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "kind",
@@ -5519,7 +5535,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "block",
@@ -5563,7 +5580,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "refund"
@@ -5618,7 +5636,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [],
         "changes_state": true,
@@ -5659,7 +5678,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "flag",
@@ -5703,7 +5723,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "save",
@@ -5747,7 +5768,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [],
         "changes_state": true,
@@ -5788,7 +5810,8 @@
           "acted",
           "reaction",
           "to_hit",
-          "spot"
+          "spot",
+          "combat_over"
         ],
         "fields": [
           "do",

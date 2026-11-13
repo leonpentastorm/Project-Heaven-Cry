@@ -20,8 +20,8 @@ export interface RelicRow { id: string; kind: 'relic'; name: string; worth: numb
 export const BOON_CAP: number = SV.boon_cap.cap;
 /** The Relic properties (survival.json relic_props): a Relic step's choice, a picked Relic's roll. */
 export const RELIC_PROPS: RelicRow[] = SV.relic_props;
-/** The boons built so far (survival.json boons): a shrine's token and the graft roll from them (build step 5 adds the
- * Boss's pick and the rest of spec section 3.5's list). */
+/** The thirteen boons (survival.json boons, spec section 3.5): the Boss's pick (rules 1.44, run/stage.ts boonOffer), a
+ * shrine's token and the graft roll from them. */
 export const BOONS: RelicRow[] = SV.boons;
 /** The graft's id for a boon (rule 42): `graft.` and the boon's own name after `boon.`. */
 export const graftOf = (boonId: string): string => 'graft.' + boonId.replace(/^boon\./, '');

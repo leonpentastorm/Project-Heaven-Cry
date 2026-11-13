@@ -89,6 +89,8 @@ export const TRIGGERS: Record<string, Trigger> = {
   reaction: { hook: 'reaction', actor: u_, self: 'actor', about: 'the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves' },
   to_hit: { hook: 'to_hit', actor: att, target: tgt, self: 'actor', about: 'a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term' },
   spot: { hook: 'spot', actor: by, target: u_, self: 'target', about: 'a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel)' },
+  // Rules 1.44 (Survival, build step 5): what a fight's end gives its fighters goes home with them (Field Mending's heal)
+  combat_over: { hook: 'combat_over', self: null, about: 'the fight is decided, before the fighters are written back to their characters: a heal or a resource given here goes home with them (combat_end comes after)' },
 };
 
 // ============================================================================================== the event
