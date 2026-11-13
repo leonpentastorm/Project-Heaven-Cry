@@ -395,6 +395,10 @@ let VOLLEY: string | null = null;
  * events (`tech` on 'attack_preview' and 'attack_roll': the predicate `mode` reads it, rules 1.30). */
 let strikeTech: (att: Unit) => string | null = () => null;
 export function setStrikeTech(f: (att: Unit) => string | null): void { strikeTech = f; }
+/** The own price of the technique a unit is striking with (its cost with the weapon before any item; physical/core.ts
+ * registers it), for the attack's events (`techAp`: the predicate `tech_ap_at_least` reads it, rules 1.30). */
+let strikeTechAp: (att: Unit) => number | null = () => null;
+export function setStrikeTechAp(f: (att: Unit) => number | null): void { strikeTechAp = f; }
 export const currentVolley = () => VOLLEY;
 /** Run attacks as one named volley (rules 1.12: a technique's Burst or Rake), so items that read ctx.volley and the
  * round's index (ctx.vi) see them as they see the engine's own burst and full auto. */
@@ -405,7 +409,7 @@ export function asChain<T>(f: () => T): T { return chained(f); }
 /** A volley's AP through the items ('attack_preview' with the volley's mode and base AP; Southern Fist, Fire
  * Discipline: hooks gap A6/I2). */
 function volleyAp(cb: Combat, u: Unit, t: Unit | null, mode: string, base: number): number {
-  const hk: any = { att: u, tgt: t || u, mode, melee: false, ap: base, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
+  const hk: any = { att: u, tgt: t || u, mode, melee: false, ap: base, techAp: base, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
   emit(cb, 'attack_preview', hk); return priced({ cb, u }, 'attack', Math.max(0, hk.ap), undefined, { mode, tgt: t, volley: true }).ap;
 }
 
@@ -1133,7 +1137,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const baseReach = melee ? meleeReachOf(att, mode) : 0;
   // Items see the attack before it is checked: AP (ctx.ap), reach (ctx.reach), cover (ctx.ignoreCover), extra to-hit
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
-  const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, tech: strikeTech(att), preview: true, cb, mods: cb.mods || [], seeVeil: false, noLos: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
+  const hk: any = { att, tgt, mode, melee, ap: ap0, techAp: strikeTechAp(att) ?? ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, tech: strikeTech(att), preview: true, cb, mods: cb.mods || [], seeVeil: false, noLos: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
   emit(cb, 'attack_preview', hk);
   const ap = opts.free ? 0 : priced({ cb, u: att }, 'attack', Math.max(0, hk.ap), undefined, { mode, tgt }).ap; // the one `cost` hook (effects/cost.ts)
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
@@ -1309,7 +1313,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // An ambush (spec: attacks from Hidden crit on 19-20 and use the Ambush multiplier): the first attack of each Hidden entry.
   const hiddenAmbush = ambushReady(att), ambush = (hiddenAmbush || !!opts.ambush) && tgt.side !== att.side;
   if (ambush && hiddenAmbush) att.ambushUsed = att.hideEntry || 1; // only an ambush from Hidden uses the entry's
-  const rc: any = { att, tgt, mode, die: rollD20(rng).die, toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, tech: strikeTech(att), cb, rng, mods: cb.mods || [] };
+  const rc: any = { att, tgt, mode, die: rollD20(rng).die, toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, tech: strikeTech(att), techAp: strikeTechAp(att) ?? pv.ap, cb, rng, mods: cb.mods || [] };
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;

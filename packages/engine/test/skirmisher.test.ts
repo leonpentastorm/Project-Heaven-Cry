@@ -104,17 +104,32 @@ describe('Keep one for a held shot (rules 1.30 item 1802)', () => {
   });
 });
 
-describe('Fire Discipline (rules 1.30 item 1804): any weapon', () => {
-  it('the first attack of a turn costs its cut less (at least its min) with a light blade too; the second its own', () => {
-    const c = eff('class:marksman.fire_discipline', 'cost_mod', 'attack');
-    const f = fightWith([sk(1, { weapon: 'combat_knife' })], [{}]);
-    const u = f.turn(f.pc); at(f, u, '4,2'); at(f, f.foe, '5,2'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 999;
-    const own = withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), f.unit(f.foe.id), 'melee')).ap;
-    f.act({ unitId: u.id, type: 'combat/attack', targetId: f.foe.id, mode: 'melee' } as any);
-    const ap1 = f.unit(u.id).ap;
-    f.act({ unitId: u.id, type: 'combat/attack', targetId: f.foe.id, mode: 'melee' } as any);
-    const first = 6 - ap1, second = ap1 - f.unit(u.id).ap; // the second is the strike's own price
-    expect(first).toBe(Math.max(c.min, second + c.value)); expect(first).toBe(own); expect(second).toBeGreaterThan(first);
+describe('Fire Discipline (rules 1.30 item 1804, the lead\'s ruling 13 Nov 2026): a dear technique, any weapon', () => {
+  const cut = () => eff('class:marksman.fire_discipline', 'cost_mod', 'attack');
+  const spent = (f: any, u: Unit, a: any): number => { const ap0 = f.unit(u.id).ap; f.act({ unitId: u.id, targetId: f.foe.id, ...a }); return ap0 - f.unit(u.id).ap; };
+  const range = (spec: CharSpec = {}) => { const f = fightWith([sk(1, spec)], [{}]); const u = f.turn(f.pc); at(f, u, '2,2'); at(f, f.foe, '6,2'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 9999; f.unit(u.id).ap = 9; return { f, u }; };
+  it('the attacks everyone has are never cheaper: a knife\'s blow, a heavy blade\'s blow at its own dear price, a shot, an Aimed shot', () => {
+    for (const weapon of ['combat_knife', 'adamantile_greatsword']) {
+      const f = fightWith([sk(1, { weapon })], [{}]); const u = f.turn(f.pc); at(f, u, '4,2'); at(f, f.foe, '5,2'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 9999;
+      const own = withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), f.unit(f.foe.id), 'melee')).ap;
+      expect([spent(f, u, { type: 'combat/attack', mode: 'melee' }), spent(f, u, { type: 'combat/attack', mode: 'melee' })], weapon).toEqual([own, own]);
+    }
+    const { f, u } = range();
+    const a = spent(f, u, { type: 'combat/technique', id: 'shot' }), b = spent(f, u, { type: 'combat/technique', id: 'shot' });
+    expect(a).toBe(b); expect(a).toBeGreaterThanOrEqual(2);
+    const r2 = range(), aim = spent(r2.f, r2.u, { type: 'combat/technique', id: 'aimed_shot' });
+    expect(aim).toBeGreaterThanOrEqual(cut().if.tech_ap_at_least); // the Aimed shot at its own price (3)
+  });
+  it('once a turn, a technique of tech_ap_at_least AP or more costs its cut less: the first Burst, then the second at its own price; a shot and an Aimed shot before it do not spend the cut', () => {
+    const c = cut(); expect(c.if.tech_ap_at_least).toBe(3); expect(c.if.free_tech).toBe(false);
+    const { f, u } = range();
+    spent(f, u, { type: 'combat/technique', id: 'shot' });
+    const a = spent(f, u, { type: 'combat/technique', id: 'burst' }), b = spent(f, u, { type: 'combat/technique', id: 'burst' });
+    expect(b).toBeGreaterThanOrEqual(c.if.tech_ap_at_least); expect(a).toBe(Math.max(c.min, b + c.value));
+  });
+  it('Aimed attacks have +1 to hit (any weapon that aims)', () => {
+    const r = eff('class:marksman.fire_discipline', 'roll_mod', 'attack');
+    expect(r.if.mode).toEqual(['aimed']); expect(r.value).toBe(1);
   });
 });
 

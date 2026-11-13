@@ -150,8 +150,8 @@ function spendStoryRes(c: Character, id: string): boolean { const n = storyRes(c
 // Heat (the class resource) is the shared gun rule (lane 0B: bows build none; Recoil applies; jams at the limit).
 
 // ---------- Fire Discipline (rank I, passive; rules 1.30: weapon-neutral) ----------
-// Aimed attacks add no Heat (the gun's door: this handler, the data's heat_mod). The rest is item ops in its data: the
-// first attack of your own turn 1 AP less (at least 1), Aimed attacks +1 to hit, any weapon.
+// Aimed attacks add no Heat (the gun's door: this handler, the data's heat_mod). The rest is item ops in its data:
+// once a turn a weapon technique of 3 AP or more 1 AP less (the free ones never: the lead's ruling, item 1813), Aimed attacks +1 to hit, any weapon.
 register({
   id: 'marksman.fire_discipline', claims: ['heat_mod'],
   on: {

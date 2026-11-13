@@ -28,6 +28,7 @@ import { isStatId } from './stats';
 import type { ItemInfo } from './types';
 import { charOfUnit } from './hooks';
 import patronsJ from '../../../../data/patrons.json';
+import techniquesJ from '../../../../data/techniques.json';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
@@ -170,6 +171,11 @@ P('amount_share_below', 'number', 'the event\'s amount is under this share of th
 // Classes 3.0 step 1 (the batch rows of docs/design/rev4-primitives.md)
 P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover: every end named must be', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to']);
 // Classes 3.0 step 3 (rules 1.30): Run and Gun's 2-tile cap (reactions-spec.md 10), the Breaker's Momentum-priced rider
+/** The free techniques (techniques.json `free`: everyone's, whatever they have readied: Shot, Aimed Shot, Cut,
+ * Overwatch, Pull Out): rules 1.30, Fire Discipline's dear technique is any other. */
+const FREE_TECH: string[] = ((techniquesJ as any).items || []).filter((t: any) => t.free).map((t: any) => t.id);
+P('free_tech', 'bool', 'the attack is (true) or is not (false) made with a free technique, everyone\'s (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a shot, an aimed shot, a blow or a throw', (ev, v) => (ev.ctx.tech ? FREE_TECH.includes(ev.ctx.tech) : ['shot', 'aimed', 'melee', 'thrown'].includes(ev.ctx.mode)) === v);
+P('tech_ap_at_least', 'number', 'the attack\'s own price is at least this many AP: its technique\'s cost with the weapon before any item (ctx.techAp), or with no technique the attack\'s base AP', (ev, v) => typeof ev.ctx.techAp === 'number' && ev.ctx.techAp >= v);
 P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at most this many tiles', (ev, v) => typeof ev.ctx.tiles === 'number' && ev.ctx.tiles <= v);
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
 P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));

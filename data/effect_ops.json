@@ -4472,6 +4472,14 @@
           "to"
         ]
       },
+      "free_tech": {
+        "arg": "bool",
+        "about": "the attack is (true) or is not (false) made with a free technique, everyone's (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a shot, an aimed shot, a blow or a throw"
+      },
+      "tech_ap_at_least": {
+        "arg": "number",
+        "about": "the attack's own price is at least this many AP: its technique's cost with the weapon before any item (ctx.techAp), or with no technique the attack's base AP"
+      },
       "path_tiles_at_most": {
         "arg": "number",
         "about": "the move (its priced walk: ctx.tiles) is at most this many tiles"

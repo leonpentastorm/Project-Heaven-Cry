@@ -34,7 +34,7 @@ function cards(weapon: string, level = 6) {
   u.ap = 9; // the cards, not the turn: every price is affordable
   // the weapon's own prices: Fire Discipline's first attack of a turn (rules 1.30: 1 AP less) is the class's, measured on
   // the range rows; here the turn's first attack is taken as made
-  W(st.g, () => uses({ key: FD, u, c: null, cb, g: st.g } as any).take('per_turn', 1, FD + '#first'));
+  W(st.g, () => uses({ key: FD, u, c: null, cb, g: st.g } as any).take('per_turn', 1, FD + '#dear'));
   const shot = W(st.g, () => previewAttack(cb, u, t, 'shot'));
   const tech = (id: string) => { const pv = W(st.g, () => previewTechnique(cb, u, id, { targetId: t.id }, st.g)); return pv.ok ? { ap: pv.ap, rolls: pv.attacks.length, perAp: pv.attacks.reduce((n: number, a: any) => n + expected(a.pv), 0) / pv.ap } : null; };
   return { shot: { ap: shot.ap, perAp: expected(shot) / shot.ap }, burst: tech('burst'), dump: tech('mag_dump') };

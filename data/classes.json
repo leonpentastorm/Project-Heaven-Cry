@@ -1394,15 +1394,15 @@
         "name": "Fire Discipline",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Your Aimed attacks add no Heat and have +{=effects.3.value} to hit. Once a turn, your first attack costs {=effects.1.value|abs} AP less, but never less than {=effects.1.min} AP: a Burst, a shot or a strike, with any weapon.",
+        "text": "Your Aimed attacks have +{=effects.3.value} to hit, and with a weapon that has Heat they add none. Once a turn, on your turn, a weapon technique that costs {=effects.1.if.tech_ap_at_least} AP or more costs {=effects.1.value|abs} AP less (a Burst, a Mag Dump, a dear blow: any weapon). The attacks everyone has (a shot, an Aimed shot, a blow) are never cheaper.",
         "effects": [
           {
             "op": "heat_mod",
             "action": "aimed_shot",
             "value": -1
           },
-          {"op": "cost_mod", "when": "attack", "value": -1, "min": 1, "if": {"own_turn": true}, "limit": {"per": "per_turn", "n": 1, "key": "first", "peek": true}},
-          {"op": "use", "when": "attack_roll", "if": {"own_turn": true}, "limit": {"per": "per_turn", "n": 1, "key": "first"}},
+          {"op": "cost_mod", "when": "attack", "value": -1, "min": 1, "if": {"own_turn": true, "free_tech": false, "tech_ap_at_least": 3}, "limit": {"per": "per_turn", "n": 1, "key": "dear", "peek": true}},
+          {"op": "use", "when": "attack_roll", "if": {"own_turn": true, "free_tech": false, "tech_ap_at_least": 3}, "limit": {"per": "per_turn", "n": 1, "key": "dear"}},
           {"op": "roll_mod", "when": "attack", "value": 1, "if": {"mode": ["aimed"]}}
         ],
         "adjudication": "engine",
