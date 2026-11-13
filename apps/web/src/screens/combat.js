@@ -1152,40 +1152,39 @@ export class CombatLogic extends DCLogic {
     if (isMagic && mineTurn) {
       const names = (ids) => ids.map((id) => cb.units.find((x) => x.id === id)).filter(Boolean).map((x) => x.name + (x.side === 'pc' ? (x.id === cur.id ? ' (you!)' : ' (ally!)') : ''));
       const hits = (ids) => (ids.length ? ' It touches ' + names(ids).join(', ') + '.' : ' Nobody is there.');
-      const meter = 'Charge ' + mg.charge + '/' + CORE_CHARGE + ' · Flux ' + mg.flux + '/' + FLUX_MAX + ' · ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores');
-      const heart = (mg.emanator ? 'MP ' + Math.round(mg.mp) + '/' + mg.mpMax + ' · ' : 'No Emanator: Outbursts draw on the air · ') + 'Strain ' + mg.strain + '/' + mg.strainLimit;
       const simpleWhy = flow && !flow.pv.ok ? flow.pv.why : null;
       const VERB = { scuff: 'scuff out the glyphs under you', vent: 'vent ' + mg.flux + ' Flux into the air', core: 'load a fresh core', syphon: 'syphon MP from the air', crystallise: 'crystallise a mana core' };
       if (S.action === 'draw') {
         const dw = word && wordInfo[word], okd = !!(dw && dw.ok);
         sel.name = 'Draw' + (word ? ' ' + word.toUpperCase() : '') + ' · ' + (okd ? dw.cost.ap : glyphApOf(cur)) + ' AP' + (word ? ' · ' + (okd ? dw.cost.charge : SIGIL[word].charge) + ' charge' : '');
         sel.text = !word ? 'You know no Sigil words.' : !okd ? (dw ? dw.why : 'Not now.') : 'Click your own tile (' + refOf(cur.pos) + ') to draw ' + word.toUpperCase() + ': it ' + dw.effectText + '.' + (dw.fades ? ' ' + dw.fades + ' fades (your cap of glyphs on the ground).' : '') + ' ' + (SIGIL[word].text || '');
-        sel.extra = meter + (okd ? ' · ' + dw.capLeft + ' left before your cap' : '') + (okd && dw.overload ? ' · WARNING: this glyph would OVERLOAD your Evoker.' : '');
+        // one fact, one place (Leon, live 0.24.0): Charge, Flux and cores are the unit panel's rows; here only what is this draw's
+        sel.extra = [okd ? dw.capLeft + ' left before your cap' : '', okd && dw.overload ? 'WARNING: this glyph would OVERLOAD your Evoker.' : ''].filter(Boolean).join(' · ');
       } else if (S.action === 'evoke') {
         const pp = evV ? evV.pattern : hoverPanel;
         sel.name = 'Evoke · ' + (evV ? evV.ap : SPELL_AP.evoke) + ' AP' + (evV && evV.charge ? ' · ' + evV.charge + ' charge' : '');
         sel.text = (S.sgToast ? S.sgToast + ' ' : '') + (!evTile ? ((cb.glyphs || []).length ? 'Click a glyph of a Line to Evoke it. Hover one to read it.' + (pp ? ' ' + pp.text : '') : 'No glyphs on the ground: Draw first.')
           : (evV.facing && evV.stage !== 'stand' ? 'Fires ' + evV.facing + '. ' : '') + evV.hint + (evV.fizzle ? ' ' + evV.fizzleText : ''));
-        sel.extra = meter + (pp && pp.overload ? ' · ' + pp.overload : '');
+        sel.extra = pp && pp.overload ? pp.overload : '';
       } else if (S.action === 'outburst') {
         const pl = hzPlan, aura = card && card.form === 'aura';
         sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×' + STAGE_MULT[0] : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
         sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×' + STAGE_MULT[0] + '). Pump it (1 AP a stage, to ×' + STAGE_MULT[STAGE_MULT.length - 1] + ') and Release it (1 AP). Confirm to begin.' : card.beginWhy)
           : !S.aim && !aura ? (card.snapWhy || (hz.aim && hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').' + (hz.summary.length ? ' ' + hz.summary.join(' ') : ''))) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
-        sel.extra = card ? card.line + ' · ' + heart : heart;
+        sel.extra = card ? card.line : mg.emanator ? '' : 'No Emanator: Outbursts draw on the air.'; // MP and Strain: the unit panel's
       } else if (S.action === 'release') {
         const pl = hzPlan, aura = hp && hp.form === 'aura';
         sel.name = 'Release' + (heldD ? ' · ' + heldD.name : '') + (hp ? ' · stage ' + hp.stage + ' ×' + hp.mult : '') + ' · ' + (pl ? pl.ap : SPELL_AP.release) + ' AP';
         sel.text = !held ? 'Nothing held.' : !S.aim && !aura ? (hz.aim && hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Hover to preview, click a tile to aim' + (hp ? ' (' + hp.shape + ')' : '') + '.' + (hz.summary.length ? ' ' + hz.summary.join(' ') : '')) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to release.' : (pl && pl.why) || 'Not now.';
-        sel.extra = (hp && hp.rider ? hp.rider + ' · ' : '') + heart;
+        sel.extra = hp && hp.rider ? hp.rider : ''; // stage, Strain and MP: the HEART panel and the unit panel say them
       } else if (HEART_ACTS.includes(S.action)) {
         const B = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn }[S.action] : null;
         sel.name = actName + (B ? ' · ' + B.cost : '');
         sel.text = !hp ? 'You hold no Outburst: Begin one first.' : B.ok ? B.title + ' Confirm (or use the HEART panel).' : B.why;
-        sel.extra = hp ? 'Stage ' + hp.stage + ' ×' + hp.mult + ' · Strain ' + hp.strain + '/' + hp.limit + (hp.warn ? ' · ' + hp.warn : '') : heart;
+        sel.extra = hp && hp.warn ? hp.warn : ''; // the stage and Strain are the HEART panel's (one fact, one place)
       } else {
         sel.text = simpleWhy ? simpleWhy : 'Confirm to ' + VERB[S.action] + '.';
-        sel.extra = S.action === 'syphon' || S.action === 'crystallise' ? 'Mana ' + mana + ' (' + BAND_NAME[band.id] + ') · ' + heart : S.action === 'scuff' ? ((glyphAt[cur.pos] || []).length ? 'Under you: ' + glyphAt[cur.pos].map(glyphName).join(', ') + '.' : 'No glyphs under you.') : meter;
+        sel.extra = S.action === 'syphon' || S.action === 'crystallise' ? '' : S.action === 'scuff' ? ((glyphAt[cur.pos] || []).length ? 'Under you: ' + glyphAt[cur.pos].map(glyphName).join(', ') + '.' : 'No glyphs under you.') : ''; // the air: the forecast; MP, Charge, Flux: the unit panel
       }
     }
     if (pkE && mineTurn) {
@@ -1257,7 +1256,7 @@ export class CombatLogic extends DCLogic {
       // held Outburst, class resources, companions. The line under HP keeps AP, Movement, Stims and Echo.
       // one fact, one place (Leon, live 0.24.0): with the HEART panel up (the Outbursts tab, an Outburst held) Strain and the
       // held Outburst are the panel's; the unit panel doesn't repeat them
-      res: resView(resourcesOf(myU, mc, g).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))),
+      res: null, // ownRes() below, once the tab is settled
       line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims,
       // Echo has its own row under HP, as on the story sheet (UI pass 4.1): the diamonds, the count, and (?) for what it is.
       echo: { ...echoView(mc.echo), open: !!S.echoOpen, expanded: S.echoOpen ? 'true' : 'false', glyph: S.echoOpen ? '×' : '?', toggle: () => this.setState({ echoOpen: !this.state.echoOpen }) },
@@ -1396,6 +1395,14 @@ export class CombatLogic extends DCLogic {
     if (S.action !== this._tabAction) { this._tabAction = S.action; if (tabOf[S.action]) S.tab = tabOf[S.action]; if (mineTurn) this.revealAction(); }
     if (!tabIds.includes(S.tab)) S.tab = tabOf[S.action] || tabIds[0];
     if (mineTurn) tabMem(cur.charId, S.tab);
+    // Your resource rows, once the tab is settled (one fact, one place; Leon, live 0.24.0): with the HEART panel up (the
+    // Outbursts tab, an Outburst held) Strain and the held Outburst are the panel's; on the Attack tab a jammed gun's
+    // JAMMED is on its own area header, so its ammo row there doesn't repeat it (every other tab: the row says it).
+    if (mePanel) {
+      const jamHead = new Set(S.tab === 'attack' ? Object.values(headOf).filter((h) => h && h.jammed).map((h) => h.hand) : []);
+      mePanel.res = resView(resourcesOf(myU, mc, g).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))
+        .map((r) => (r.warn === 'JAMMED' && jamHead.has(r.key === 'off' ? 'off' : 'main') ? { ...r, warn: undefined, level: undefined } : r)));
+    }
     this._tabs = tabIds; this._tabOf = tabOf;
     // The two-key codes: each tab's actions in the order shown (the read-only perk rows have none).
     this._tabItems = groups.map((gr) => gr.items.filter((x) => !isPerkInfo(x.key)).map((x) => x.key));

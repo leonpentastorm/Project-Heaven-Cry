@@ -6,7 +6,7 @@ import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
 import type { StatId } from './stats';
-import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, classMoveKeys, _addRawItems, _clearRawItems } from './collect';
+import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, classMoveKeys, rawItem, _addRawItems, _clearRawItems } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
 let G: any = null;
@@ -152,11 +152,12 @@ let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
 export const setRankRule = (f: (c: Character) => number) => { rankHook = f; };
 
-/** The move that lays a Grand form (a Sigil word's `grand`; rules 1.4): the Grand Sigilist's Enlarge. */
-export const GRAND_FORM_MOVE = 'class:grand_sigilist.enlarge';
-/** Can this character lay Grand forms? Only while it holds that move, through a class that is active: while the advanced
- * classes are shelved, nobody can, so a screen shows no Grand form (Leon, live 0.24.0). */
-export const canLayGrandForms = (c: Character | null | undefined): boolean => !!c && classMoveKeys(heldOfChar(c)).some((m) => m.key === GRAND_FORM_MOVE);
+/** The effect op that lays a Grand form (a Sigil word's `grand`; rules 1.4; effect_ops.json). Which move carries it is
+ *  the data's (classes.json: today the Grand Sigilist's Enlarge), never a name typed here. */
+export const GRAND_FORM_OP = 'grand_form';
+/** Can this character lay Grand forms? Only while it holds a move whose effects lay one, through a class that is
+ *  active: while the advanced classes are shelved, nobody can, so a screen shows no Grand form (Leon, live 0.24.0). */
+export const canLayGrandForms = (c: Character | null | undefined): boolean => !!c && classMoveKeys(heldOfChar(c)).some((m) => ((rawItem(m.key)?.effects || []) as any[]).some((e) => e && e.op === GRAND_FORM_OP));
 export const heldOfUnit = (u: Unit | null | undefined): Held => (u?.held ? u.held : u?.charId && G?.characters?.[u.charId] ? heldOfChar(G.characters[u.charId]) : { perks: [], traits: [] });
 export const charOfUnit = (u: Unit | null | undefined): Character | null => (u?.charId && G?.characters?.[u.charId]) || null;
 

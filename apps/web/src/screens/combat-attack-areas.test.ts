@@ -172,10 +172,15 @@ describe('two guns: Heat once, each jam on its own gun', () => {
     const clr = tab.querySelector('button[data-act="clear"]') as HTMLButtonElement;
     expect(clr.closest('[data-area]')!.getAttribute('data-area')).toBe('both');
     expect(clr.getAttribute('aria-description') || '').toMatch(/Clears: the off-hand gun/);
-    // the unit panel: the jam is on the off-hand gun's own row, once
+    // the unit panel doesn't repeat it on the Attack tab (the header says it): the screen says JAMMED once
     const res = el.querySelector('[aria-label="Your resources"]')!;
-    expect(count(res.parentElement!.textContent || '', /JAMMED/g)).toBe(1);
-    expect(res.querySelector('[data-res="off"]')!.textContent).toMatch(/JAMMED/);
+    expect(count(res.parentElement!.textContent || '', /JAMMED/g)).toBe(0);
+    expect(count(tab.textContent || '', /JAMMED/g)).toBe(1); // (the map token's own card says it too, on hover)
+    // on another tab (no headers) the off-hand gun's own row says it, once
+    await click(el.querySelector('[role="tab"][data-tab="move"]'));
+    const res2 = el.querySelector('[aria-label="Your resources"]')!;
+    expect(count(res2.parentElement!.textContent || '', /JAMMED/g)).toBe(1);
+    expect(res2.querySelector('[data-res="off"]')!.textContent).toMatch(/JAMMED/);
     await React.act(async () => root.unmount()); el.remove();
   });
   it('both jammed: both headers marked, and the card says both', async () => {

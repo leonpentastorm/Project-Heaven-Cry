@@ -96,12 +96,15 @@ describe('a feeling says its step once', () => {
   it('the codex: a chip from the data\'s numbers, and the text without the step clause that only repeated it', () => {
     const cx = feelingCodex(c), by = (id: string) => cx.find((f) => f.id === id)!;
     expect(by('rage').step).toBe('+0.5'); expect(by('rage').effect).not.toMatch(/^\+0\.5/); expect(by('rage').effect).toMatch(/Strain/);
-    expect(by('grief').step).toBe('+0.2 / +0.5'); expect(by('spite').step).toBe('+0.2 / +0.5'); expect(by('despair').step).toBe('+0.2 to +0.6');
+    // a conditional step: the chip is the base, the text says only what raises it (each number once)
+    expect(by('grief').step).toBe('+0.2'); expect(by('grief').effect).toMatch(/^\+0\.5 if an ally has gone Down/);
+    expect(by('spite').step).toBe('+0.2'); expect(by('spite').effect).toMatch(/^\+0\.5 against whoever last hurt you/);
+    expect(by('despair').step).toBe('+0.2'); expect(by('despair').effect).toMatch(/^\+0\.1 more for every 20%/);
     expect(by('calm').step).toBe('−0.4'); expect(by('fear').effect).toMatch(/^The Release throws you/);
     for (const f of cx) {
       // no summary joined on: the chip, then the text, and the plain step is not said again at the text's start
       expect(f.step + ' · ' + f.effect, f.id).not.toMatch(/·.*·/);
-      if (!/\//.test(f.step) && !/ to /.test(f.step)) expect(f.effect.startsWith(f.step), f.id).toBe(false);
+      expect(f.effect.includes(f.step), f.id + ': ' + f.effect).toBe(false);
       // the card: name, the chip, the text once, then residue and when it is first felt
       const t = JSON.parse(f.tip);
       expect(t.chips, f.id).toEqual([f.step]);

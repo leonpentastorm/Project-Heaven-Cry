@@ -44,23 +44,26 @@ export const markIconSrc = (id: 'revert' | 'practice' | 'felt', ink = '#E7EBF3',
 
 // ---------- one feeling, said once (Leon, live 0.24.0: "Rage: +0.5 · +0.5 to the multiplier…") ----------
 const sgn = (n: number) => (n < 0 ? '−' : '+') + String(Math.abs(r2(n)));
-/** A feeling's ONE step chip, from the data's numbers: "+0.5", or "+0.2 / +0.5" when a condition raises it, or
- *  "+0.2 to +0.6" when it grows with something. */
+/** A feeling's ONE step chip, from the data's number: its base step ("+0.5", "−0.4"). What raises it (an ally down,
+ *  whoever last hurt you, HP missing, allies near) is said once, in its text, never again in the chip. */
 export function feelingStepChip(f: any): string {
-  const s = f?.step || {}, b = Number(s.base ?? PLAIN_STEP);
-  if (s.max != null) return sgn(b) + ' to ' + sgn(Number(s.max));
-  const hi = s.fallen ?? s.vs_last_hurt ?? (s.alone_extra != null ? b + Number(s.alone_extra) : null);
-  return hi != null ? sgn(b) + ' / ' + sgn(Number(hi)) : sgn(b);
+  const s = f?.step || {};
+  return sgn(Number(s.base ?? PLAIN_STEP));
 }
-/** A feeling's effect in words, once: the data's pour text without its opening step clause when that clause only
- *  repeats the chip ("+0.3. ", "+0.5 to the multiplier (a plain Pump gives +0.2). ", "−0.4: ", "+0.2, like a plain
- *  Pump. "). A conditional step ("+0.2, or +0.5 if…") is kept whole: the condition is the text. */
+/** A feeling's effect in words, once: the data's pour text without its opening step clause, which only repeats the
+ *  chip ("+0.3. ", "+0.5 to the multiplier (a plain Pump gives +0.2). ", "−0.4: ", "+0.2, like a plain Pump. ").
+ *  A conditional step keeps only its condition: "+0.2, or +0.5 if an ally has gone Down…" says "+0.5 if an ally has
+ *  gone Down…" (the +0.2 is the chip); "+0.2, and +0.1 more for every 20%…" says "+0.1 more for every 20%…". */
 export function feelingText(f: any): string {
   const t = String(f?.pour?.text || '').trim();
+  const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
+  const c = /^[+−-]\d+(?:\.\d+)?,\s+(?:or|and)\s+(\S[\s\S]*)$/.exec(t);
+  if (c) return cap(c[1]);
   const m = /^[+−-]\d+(?:\.\d+)?(?:\s+to the multiplier(?:[^.(]|\([^)]*\))*|,\s*like a plain Pump)?[.:]\s+(\S[\s\S]*)$/.exec(t);
   if (!m) return t;
-  const rest = m[1].replace(/^the multiplier goes down\.\s+In return,?\s+/i, 'The multiplier goes down. In return ');
-  return rest.charAt(0).toUpperCase() + rest.slice(1);
+  // "…it only adds its +0.3." names the chip's number again: "its step" (the chip beside it says which)
+  const rest = m[1].replace(/^the multiplier goes down\.\s+In return,?\s+/i, 'The multiplier goes down. In return ').replace(/\bits [+−-]\d+(?:\.\d+)?(?=[.,;)\s])/g, 'its step');
+  return cap(rest);
 }
 /** The residue line and the "felt first when" line of a feeling. */
 export const feelingResidue = (f: any) => (f?.residue?.kind === 'none' || !f?.residue ? 'No residue.' : 'Residue (' + f.residue.kind + '): ' + f.residue.text);
@@ -137,7 +140,8 @@ export function practiceView(c: any): PracticeView | null {
   const p = practiceOf(c), nx = nextPickAt(p), left = soulPicksLeft(c), prev = [0, 5, 15].filter((x) => x <= p).pop() ?? 0;
   const lo = picksAt(p) >= 2 ? nx - 15 : prev;
   const known: string[] = c.soulKnown?.modules || [];
-  const modules = (Object.values(MODULE) as any[]).filter((m) => !known.includes(m.id)).map((m) => {
+  // a shelved advanced class's module is not offered (it does not exist for a player yet; Leon, live 0.24.0)
+  const modules = (Object.values(MODULE) as any[]).filter((m) => !known.includes(m.id) && !moduleShelved(m.id)).map((m) => {
     const why = moduleGateError(c, m.id), g = m.gate;
     return { id: m.id, name: m.name, gate: g ? ((SKILL as any)[g.skill]?.name || g.skill) + ' ' + g.points : 'no gate', ok: !why, why: why || '', locked: !!m.locked, cls: moduleClass(m.id) };
   });
