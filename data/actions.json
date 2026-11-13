@@ -131,7 +131,7 @@
       "site": "stim_throw",
       "range": 4,
       "pick": "ally_in_sight",
-      "text": "Throw a stim to an ally within {range} tiles you can see (rules 1.33: Stim Throw is everyone's). A Downed ally is stabilised at 1 HP; anyone else heals as from a stim and stops Bleeding. Uses one stim{stims_left}.",
+      "text": "Throw a stim to an ally within {range} tiles you can see (rules 1.33: Stim Throw is everyone's). A Downed ally is stabilised; anyone else heals as from a stim and stops Bleeding. Uses one stim{stims_left}.",
       "adjudication": "engine"
     },
     {
