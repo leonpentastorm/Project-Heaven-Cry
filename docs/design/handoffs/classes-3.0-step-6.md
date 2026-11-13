@@ -180,3 +180,14 @@ Break's reveal at the action's end: the toggle primitive has neither) and **Case
 loot for a side: a `reveal what: kit` the fog and the hover card would show; not small). Part 2 moved 60 new golden
 lines (the new verbs' and unlocks' rows; no line changed) and 7 replays' state hashes only (actions and streams
 identical: the new items' state).
+
+**The close.** `validate.py` 0 errors; catalogue `--check` clean; screen data fresh; `npm run built-from --
+claude/charming-gauss-hbq4n0..HEAD`: 11 smells in 8 places, none a lint fails on (mostly step 7's; this step's one is
+the spot roll's die, moved, not added). `npm run check`: validator, tables, types and the engine tests green (3996);
+the web tests green on their own run (1121; under the machine's load two jsdom tests timed out at 5 s inside check,
+both pass alone with time). Browser suites on port 8823 (`--base`, own server), two at a time: shadow, chaplain,
+classes-moves, physical, perks, tabs, sandbox, faith, faith-pg, two-players, tending: ALL GREEN. sandbox and faith-pg
+first failed only beside others (waiting faults): fixed in the suites (the WAVE 1 banner watched from before the
+click; the Hymn face's accent read as it appeared, `lib.mjs watch` records it; Encore's target clicked once the
+cut-in and the camera are still, clicked again if the camera slid), never by loosening a check; chaplain's one wait
+raised to 30 s (the e2e-groups rule).

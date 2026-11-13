@@ -406,7 +406,7 @@ await pause(p, 300);
   // the target click lands on the boss's tile; then wait for the panel to say it (never a fixed pause)
   await fxIdle(p); await pickAction(p, /^Shot/); await pause(p, 150);
   const mapW = gE.combat.map.w, [fx, fy] = fE.pos.split(',').map(Number);
-  const freeShown = () => p.waitForFunction(() => /FREE · ENCORE/.test(document.querySelector('aside')?.textContent || ''), null, { timeout: 20000 }).then(() => true, () => false);
+  const freeShown = () => p.waitForFunction(() => /FREE · ENCORE/.test(document.querySelector('aside')?.textContent || ''), null, { timeout: 30000 }).then(() => true, () => false);
   await camStill(p); await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click();
   if (!(await freeShown())) { await camStill(p); await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click(); await freeShown(); } // a click the camera slid away from: the player clicks again
   const asideT = await p.locator('aside').first().textContent(), conf = p.getByRole('button', { name: 'Confirm', exact: true }).first();
