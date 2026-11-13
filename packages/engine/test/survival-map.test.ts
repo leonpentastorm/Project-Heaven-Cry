@@ -3,6 +3,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { MAP_DATA, NODE_KINDS, mapNodes, mapPaths, mapProblems, pathMap, referenceRoute, renderPathMap, type PathMap, type PathNode } from '../src/run/map';
 import { rngFor, next } from '../src/rng';
+declare const process: { env: Record<string, string | undefined> }; // the engine's tsconfig has no node types
+declare const console: { log(...a: unknown[]): void };
 
 const D = MAP_DATA;
 const SEEDS = 1000, STAGES = 5;

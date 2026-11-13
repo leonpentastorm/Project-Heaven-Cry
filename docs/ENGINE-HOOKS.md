@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 34 triggers, 85 predicates, 28 ops, 100 effect ops, 124 hooks, 3 never emitted, 15 profiles, 41 cost sites, 14 resources, 56 stats, 24 condition fields, 388 primitive exports, 130 fx kinds, 171 Unit fields, 58 Combat fields, 40 guards.
+Counts: 34 triggers, 85 predicates, 28 ops, 100 effect ops, 124 hooks, 3 never emitted, 15 profiles, 41 cost sites, 14 resources, 56 stats, 24 condition fields, 395 primitive exports, 130 fx kinds, 171 Unit fields, 58 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -869,6 +869,18 @@ Families: `body`, `brain`, `heart`.
 | `passFaces` | `passFaces(mod: number, tn: number): number` | How many of the 20 faces pass d20 + mod against a TN (a natural 20 passes, a natural 1 fails): the odds a card shows. |
 | `attackHits` | `attackHits(rc: { die: number; hit?: boolean; critMin: number; toHit: number; need: number }): boolean` | Does this attack roll hit, by the attack's own rule (a natural 1 misses, the critical range hits, else the total against the Defense)? For an item inside the 'attack_roll' hook, before resolveAttack settles it. |
 | `rerollAttack` | `rerollAttack(rc: { die: number; hit?: boolean; critMin: number; toHit: number; need: number }, rng: Rng, bonus = 0): number` | Reroll an attack's die inside the 'attack_roll' hook (Lucky Break, Lucky Foot): the new die replaces the old one. |
+
+#### Seeded streams (the dice of a fight, and named streams for generated content) (`rng.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `Rng` | `interface Rng { state }` | Seeded PRNG (mulberry32). |
+| `next` | `next(r: Rng): number` | The next number of a stream, in [0, 1); it advances the stream. |
+| `ROLL_TAP` | `ROLL_TAP: { f?: ((sides: number, value: number)` | A tap for tests: every die rolled, as (sides, value). |
+| `die` | `die(r: Rng, sides: number)` | A die of `sides` faces (1 to sides) from the stream; the tap above sees it. |
+| `d20` | `d20(r: Rng)` | A d20 from the stream (only rolls.ts calls it: the lint `raw_d20`). |
+| `seedFrom` | `seedFrom(s: string)` | A 32-bit seed from a string (FNV-1a): the room seed of a game, the base of every named stream. |
+| `rngFor` | `rngFor(seed: string \| number, key: string): Rng` | A named seeded stream (Survival rule 12): the same seed and key always give the same stream, and content generation (a stage's path map, a node's encounter, offers and stock) never consumes a fight's dice in `… |
 
 #### The kit: selectors, areas, tiles (`kit.ts`)
 

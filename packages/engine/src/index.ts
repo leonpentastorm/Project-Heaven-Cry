@@ -27,6 +27,7 @@ export * from './containers';
 export * from './deeds';
 export * from './gear';
 export * from './loot';
+export * from './run/map';
 export * from './feelings';
 // Physical 2.0 (rules 1.12): the technique systems. `phys` holds everything; the names the client uses are also top-level.
 export * as phys from './physical';
