@@ -73,7 +73,19 @@ spec.
 `SURVIVAL_MAP_REPORT=1 npx vitest run --root packages/engine test/survival-map.test.ts --silent=false`.
 Every map holds every rule of 1.40 (0 of 5,000 fail). "The most one path takes" is the route that seeks that kind.
 
-REPORT_TABLE
+| Kind | Spec: map (about) | Measured map: mean (5%–95%) | Spec: path | Measured path: mean (5%–95%) | Paths in the spec's range | The most one path takes: mean (5%–95%) |
+| --- | --- | --- | --- | --- | --- | --- |
+| fight | 15 | 13.84 (9–18) | 5–8 | 4.61 (2–7) | 50.7% | 8.79 (7–11) |
+| elite | 4 | 3.42 (2–5) | 1–3 | 1.76 (1–3) | 98.1% | 2.97 (2–4) |
+| boss | 1 | 1.00 (1–1) | 1–1 | 1.00 (1–1) | 100.0% | 1.00 (1–1) |
+| shop | 4 | 4.52 (3–6) | 2–3 | 1.61 (0–3) | 49.3% | 3.88 (3–5) |
+| forge | 3 | 2.90 (1–5) | 1–2 | 0.93 (0–2) | 61.6% | 2.42 (1–4) |
+| training | 2 | 3.21 (1–6) | 0–2 | 1.13 (0–3) | 92.4% | 2.72 (1–4) |
+| shrine | 2 | 2.22 (0–4) | 0–1 | 0.72 (0–2) | 84.8% | 1.91 (0–4) |
+| rest | 3 | 3.18 (2–5) | 1–2 | 1.19 (0–3) | 70.2% | 2.86 (2–4) |
+| cache | 2.5 | 3.24 (1–6) | 0–2 | 1.13 (0–3) | 92.3% | 2.73 (1–4) |
+| event | 2 | 2.82 (1–5) | 0–2 | 0.91 (0–2) | 95.9% | 2.35 (1–4) |
+| nodes | 40 | 40.36 (32–47) |  |  |  |  |
 
 Against the spec: every map count is inside the test's band (about ± 1.5; fights ± 2; nodes ± 3). Training grounds
 (3.2 against about 2), caches (3.2 against 2 to 3) and Crossroads (2.8 against 2) run about one high, fights a
@@ -82,7 +94,111 @@ guarantee depends on it; lowering those three weights is the dial if Leon wants 
 
 ## 5. Three maps (`renderPathMap`, stage 1)
 
-MAPS
+A stroke sits halfway along each link: `/` up and right, `\` up and left, `|` straight up, `X` where two cross. Into
+depth 14 every node links to both, so its strokes overlap into a row of `X`. A two-wide stretch is two nodes each
+linking to both (the one X a row of the same width needs).
+
+**PHC-0001, stage 1**
+
+```
+15                           Boss
+                            /     \
+14                     Shop        Rest
+                   /     X     X     X     \
+13         Fight    Crossroads     Fight       Forge
+                \     /     \     /     \     /
+12               Elite       Fight    Crossroads
+                   |     /     |     X     |
+11             Training      Fight      Shrine
+                   |     X     |     \     |
+10               Rest        Cache       Fight
+                   |     X     |     \     |
+ 9               Shop        Fight       Fight
+                         \     |     /
+ 8                           GATE
+                            /     \
+ 7                     Forge       Fight
+                         |     X     |
+ 6                     Fight       Cache
+                         |     X     |
+ 5                     Fight       Shop
+                         |     X     |
+ 4                     Fight       Rest
+                         |     X     |
+ 3                     Fight       Cache
+                         |     X     |
+ 2                   Training      Fight
+                         |     X     |
+ 1                     Fight       Fight
+```
+
+**PHC-0002, stage 1**
+
+```
+15                           Boss
+                            /     \
+14                     Shop        Rest
+                   /     X     X     X     \
+13       Training      Cache    Crossroads     Fight
+             |     /     |     X     |     \     |
+12        Shrine       Fight       Rest        Forge
+             |     /     |     /     |     X     |
+11         Fight       Shop        Cache    Crossroads
+                \     /     \     /     \     /
+10               Cache     Training     Shrine
+                   |     X     |     \     |
+ 9               Fight       Forge       Fight
+                         \     |     /
+ 8                           GATE
+                         /     |     \
+ 7               Shop        Fight       Shop
+                   |     X     |     \     |
+ 6               Cache       Fight     Training
+                      \     /     \     /
+ 5                     Rest        Fight
+                         |     X     |
+ 4                     Elite       Shop
+                         |     X     |
+ 3                     Rest        Fight
+                         |     X     |
+ 2                     Fight     Training
+                         |     X     |
+ 1                     Fight       Fight
+```
+
+**PHC-0003, stage 1**
+
+```
+15                           Boss
+                            /     \
+14                     Rest        Shop
+                      /     X     X     \
+13            Crossroads     Fight       Cache
+                   |     /     |     X     |
+12               Cache      Shrine       Shop
+                   |     X     |     \     |
+11               Fight       Elite       Fight
+                   |     /     |     X     |
+10               Rest        Fight       Rest
+                      \     /     \     /
+ 9                     Fight       Shop
+                            \     /
+ 8                           GATE
+                      /     /     \     \
+ 7       Training      Fight    Crossroads     Fight
+             |     /     |     X     |     \     |
+ 6      Crossroads     Forge       Fight       Elite
+                \     /     \     /     \     /
+ 5             Training      Fight       Cache
+                   |     X     |     \     |
+ 4               Fight       Shop        Fight
+                   |     /     |     X     |
+ 3               Fight       Cache    Crossroads
+                   |     /     |     X     |
+ 2               Fight     Training      Fight
+                   |     /     |     X     |
+ 1               Fight       Fight       Fight
+```
 
 ## 6. How to add a node kind
 
