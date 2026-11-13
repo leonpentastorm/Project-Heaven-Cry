@@ -505,3 +505,26 @@ rank I move (Inspire to II, Brimming to III; Field Surgery is anyone's at Empath
 turn; (4) a Channeler who also tends (about 140 against the Outburst's 135) is measured when built, not refitted on
 paper. **The Bond focus is the Attuner** (Leon: "sounds cool, keep it"): the fourth standard glove, fine filaments
 from a core on the back of the hand to each fingertip, one lit a Bond, in Insight's ink.
+
+**The healing order (Leon, 13 Nov): "Sigil and pure Outburst also have a healing school and word, so tune our
+Insight class to heal more than them; if not, what's even the point."** Ruling: **Tending is the game's best healing,
+and every other door's healing is an off-heal.** In Soldier-turns for a whole turn spent healing, all in (the
+contract's unit; rules 1.27 put every heal on 2.0):
+
+| Who heals | Line (all in) | Was (rules 1.27) | Dial |
+| --- | --- | --- | --- |
+| The Mender, Tending through Bonds | **2.0** (the ceiling; the class sits on it) | new | `output.profiles.tend` |
+| A door user with Empathy, Tending | about 1.74 (13% under the class, the frame's reading) | new | the same |
+| An Outburst of the Buff school (Channeler or anyone with the door) | **1.4** | 2.0 | `output.profiles.soul_mend` |
+| A Sigil MEND word | **1.4** | 2.0 | `output.profiles.sigil_mend` |
+| Prayer: a Whisper's heal, a turn | **1.4** | about 2.0 | `output.profiles.blessing_mend` |
+| Prayer: a Hymn's heal, the turn it is said | up to 2.0, and no more than 1.4 averaged over its wait | up to 2.5 | the same, and the wait |
+| Kits and stims (gear, anyone) | unchanged: priced by the item, not a door | as built | items |
+
+The numbers 1.4 and "70% of the Mender" are the lead's (a call made for Leon; PROVISIONAL): an off-heal keeps one
+ally standing against one Soldier with something to spare, and cannot hold a line the way a Mender does. Shields
+follow their heals (×1.2 of the heal line, as the contract has it). **This is part of Classes 3.0, not a hotfix:**
+the live game has no Tending yet, so Sigil and Outburst heals stay at 2.0 until the patch that brings the Mender;
+the patch lowers them in the same revision that adds Tending (step 7), with the golden lines re-recorded on purpose,
+and step 11 measures all five lines. A Mender's other advantages are not counted in the line and stay: range through
+Bonds, no Strain, no glyph to draw, Raise, lifting conditions.

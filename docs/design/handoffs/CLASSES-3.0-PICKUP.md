@@ -67,7 +67,7 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [ ] **4. The moves that change hands** and the small changes to Bulwark, Breaker, Sigilist.
 - [ ] **5. The Chaplain** (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
 - [ ] **6. Shadow and the Operative** (`shadow-spec.md`).
-- [ ] **7. Tending, Bonds and the Mender** (`bonds-spec.md`); the Outburst re-measured after Empathy's free Pump
+- [ ] **7. Tending, Bonds and the Mender** (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
       moves to Will Power.
 - [ ] **8. Figments, the Visualizer and the Rigger** (`figments-spec.md`): the owned-unit primitive first, with the
       drone, the beast and the twin moved onto it and their golden lines unchanged; then the forms.

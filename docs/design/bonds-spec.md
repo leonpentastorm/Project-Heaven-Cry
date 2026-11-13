@@ -296,3 +296,10 @@ An enemy face (a condition row; the number from `feelings.json given_foe`): `{"i
 3. **The Outburst-and-Tending mixed sheet** may read about 140 against `outburst_steady` 135 (section 7): recommend measuring before any change; assumed meanwhile: no change.
 
 **Settled by Leon, 13 Nov (after this rewrite):** the to-hit bonus against a Bonded enemy applies to EVERY attack roll (weapon, Sigil, Outburst), through the one roll hook built in step 1b: wherever this spec says "weapon attacks only", read "any attack roll"; the Ledger at rank I, self-healing once a turn: accepted; the Channeler who also tends is measured when built; the focus is named the Attuner.
+
+**The healing order (Leon, 13 Nov; `class-roster-rev4-proposal.md`, "The healing order"):** Tending is the best
+healing in the game. The Mender sits on the 2.0 Soldier-turn ceiling and a door user about 1.74; the Outburst's Buff
+school, a Sigil MEND word and a Whisper's heal drop to **1.4** in the same rules revision that adds Tending (the
+dials `soul_mend`, `sigil_mend`, `blessing_mend`; a Hymn's heal at most 2.0 on its turn and 1.4 averaged over its
+wait). The builder of step 7 lowers those three with Tending's own numbers, re-records the heal lines of the golden
+tables on purpose, and checks section 7's tables still hold: nothing in this spec's own numbers changes.
