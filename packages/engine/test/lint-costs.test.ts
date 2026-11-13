@@ -113,7 +113,7 @@ describe('F3: one way to price, check, pay and give AP', () => {
       expect(J.items.some((a: any) => a.id === id), 'costs.' + id + ' repeats a row of items').toBe(false);
     }
     for (const a of [...J.items, ...Object.entries(J.costs).map(([id, v]: any) => ({ id, ...v }))]) if (a.site) expect((COST_SITE_IDS as readonly string[]).includes(a.site), a.id + '.site ' + a.site).toBe(true);
-    for (const [id, r] of Object.entries(RESOURCES) as [string, any][]) { expect(['unit', 'character']).toContain(r.on); expect(r.name, id).toBeTruthy(); expect(r.path, id).toMatch(/^[a-z]+(\.[a-zA-Z]+)*$/); }
+    for (const [id, r] of Object.entries(RESOURCES) as [string, any][]) { expect(['unit', 'character']).toContain(r.on); expect(r.name, id).toBeTruthy(); expect(r.path, id).toMatch(/^[a-z][a-zA-Z]*(\.[a-zA-Z]+)*$/); } // rules 1.44: a field of the character itself may be camelCase (devotionXp)
   });
   it('a resource is spent through pay() (an action\'s declared `res`) or spend(): the hand-written ones left are counted', () => {
     // RATCHET. These are payments of MP, charge, cores, stims, spare parts and Echo still made by hand inside a run() or

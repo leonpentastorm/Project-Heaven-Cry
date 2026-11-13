@@ -34,6 +34,7 @@ export * from './run/encounter';
 export * from './run/rewards';
 export * from './run/power';
 export * from './run/progress';
+export * from './run/stage';
 export * from './credits';
 // Physical 2.0 (rules 1.12): the technique systems. `phys` holds everything; the names the client uses are also top-level.
 export * as phys from './physical';

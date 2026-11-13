@@ -60,7 +60,9 @@ import { runOwned } from './owned';
 import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, survivalRun, runSetting, runNode, runMoveProblem, leanWinner } from './run/state';
 import { MAP_DATA } from './run/map';
 import { composeEncounter, SETTING } from './run/encounter';
-import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT } from './run/rewards';
+import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult } from './run/rewards';
+import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf } from './run/stage';
+import { relicRow, worthOf, BOON_CAP } from './run/power';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
 import { earnCredits } from './credits';
 
@@ -326,6 +328,7 @@ export type Action =
   // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
+  | { type: 'run/boon'; charId: string; choice: number } | { type: 'run/tile'; tile: string } // rules 1.44 (run/stage.ts)
   | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/forge, run/fit, run/train, run/shrine, run/trade, run/take
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
   | { type: 'session/next' }
@@ -2021,6 +2024,7 @@ function runEnemies(g: GameState) {
  * to their characters, weapons left in someone dropped, companions' HP, the deaths swept, magic out, 'combat_end'. */
 function fightBack(g: GameState, cb: Combat, afterFight: boolean): boolean {
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
+  emitHook(cb, 'combat_over', { cb, won: cb.over === 'win', g }); // rules 1.44: 'combat_over' {cb, won}: before the fighters are written back, so what it gives goes home
   for (const u of cb.units) if (u.charId) unitToCharacter(g, u, afterFight);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
   for (const u of cb.units) { if (u.nailed) dropNailed(cb, u); if (u.stuck) dropStuck(cb, u); } // rules 1.12: a weapon left in someone falls where they stand when the fight ends
@@ -3122,6 +3126,7 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     case 'run/go': { // the host takes the squad at once: the node most marked, a tie to the host's own mark
       if (!isHost(g, by)) fail('Only the host sends the squad on before everyone has marked a node.');
+      if (g.run?.state === 'tile') { const w = leanWinner(g, true, (g.run.tiles || []).map((t) => t.id)); if (!w) fail('Mark a tile first.'); runTile(g, w!); return; } // rules 1.44: a tile goes like a node
       const w = leanWinner(g, true); if (!w) fail('Mark a node first.');
       const no = runMoveProblem(g, by, w!); if (no) fail(no);
       runEnter(g, w!); return;
@@ -3130,12 +3135,12 @@ function runAction(g: GameState, a: Action, by: string) {
       const r = g.run!, o = r.offers?.[a.charId], c = g.characters[a.charId];
       if (r.state !== 'reward' || !o || !c) fail('There is nothing to pick for that character now.');
       if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ' (or the host, for an away player).');
-      if (a.choice === 'credits') { earnCredits(c!, o!.instead); push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.' }); }
+      if (a.choice === 'credits') { earnCredits(c!, o!.instead); stageLog(r).credits += o!.instead; push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.' }); }
       else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
         const pack = packOf(c!).map((x) => ({ ...x }));
         for (const it of pickedItem(w!)) packAdd(pack, it);
-        for (let i = 0; i < o!.ammo; i++) for (const it of magazineWorth(w!.id)) packAdd(pack, it); // rule 23: a picked gun takes its share of the pack
+        for (let i = 0; i < Math.round(o!.ammo * ammoMult(c!)); i++) for (const it of magazineWorth(w!.id)) packAdd(pack, it); // rule 23: a picked gun takes its share of the pack (rules 1.44: Bandolier's too)
         c!.pack = pack;
         push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes the ' + (w!.rarity !== 'standard' ? w!.rarity[0].toUpperCase() + w!.rarity.slice(1) + ' ' : '') + itemName(w!.id) + '.' });
       }
@@ -3156,10 +3161,31 @@ function runAction(g: GameState, a: Action, by: string) {
       const cb = g.combat; if (g.run?.state !== 'fight' || !cb || cb.over) fail('No fight is under way.');
       cb!.over = 'win'; say(cb!, 'TEST: the fight is skipped and counts as won.'); runFightOver(g); return;
     }
+    case 'run/boon': { // rules 1.44 (spec rules 30, 31): one boon of the character's offer, a relic for the rest of the run
+      const r = g.run!, c = g.characters[a.charId], offer = r.boons?.[a.charId];
+      if (r.state !== 'boon' || !offer || !c) fail('There is no boon to pick for that character now.');
+      if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ' (or the host, for an away player).');
+      const id = offer![Number(a.choice)], no = boonProblem(c!, offer, id); if (no) fail(no);
+      c!.relics = [...(c!.relics || []), id!];
+      stageLog(r).boons = { ...stageLog(r).boons, [c!.id]: id! };
+      push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes the boon ' + (relicRow(id!)?.name || id) + ' (' + worthOf(id!) + ' of the run\'s ' + BOON_CAP + ').' });
+      const rest = { ...r.boons! }; delete rest[a.charId];
+      r.boons = Object.keys(rest).length ? rest : null;
+      if (!r.boons) openTiles(g);
+      return;
+    }
+    case 'run/tile': { // rules 1.44 (spec rule 32): a player's mark on a tile; when everyone has marked, the squad goes
+      const no = tileProblem(g.run, a.tile); if (no) fail(no);
+      if (!g.players.some((p) => p.id === by)) fail('Only a player in the room picks the way.');
+      g.run!.leans = { ...g.run!.leans, [by]: a.tile };
+      const w = leanWinner(g, false, (g.run!.tiles || []).map((t) => t.id)); if (w) runTile(g, w);
+      return;
+    }
     case 'run/retire': {
       const no = runRetireProblem(g, by); if (no) fail(no);
       const levels: Record<string, number> = {}; for (const c of Object.values(g.characters)) levels[c.id] = c.level;
-      g.run = endRun(g.run!, 'retired', levels); g.phase = 'lobby'; // rules 1.41: the room is back in its lobby, the score kept in g.run
+      closeVisit(g.run!);
+      g.run = endRun(g.run!, 'retired', levels, runScore(g)); g.phase = 'lobby'; // rules 1.41: the room is back in its lobby, the score kept in g.run
       const e = g.run.end!;
       push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad retires: ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' node' : ' nodes') + ' walked. The score is kept.' });
       return;
@@ -3175,14 +3201,42 @@ function runPicksDone(g: GameState) {
   const r = g.run!; if (r.state !== 'reward' || r.offers || r.lasting) return;
   const n = runNode(r, r.at);
   r.state = n?.kind === 'boss' ? 'boon' : 'map';
-  if (r.state === 'boon') push(g, { kind: 'system', head: 'STAGE ' + r.stage + ' CLEARED', text: 'The Boss is down. The boons and the next tile come with a later build: the host can retire the run with its score.' });
+  if (r.state !== 'boon') return;
+  // rules 1.44 (spec rules 30, 31): every character picks a boon of three from the tile's pool; then the next tile
+  const pool = SETTING[runSetting(r)]?.pool || '', boons: Record<string, string[]> = {};
+  for (const c of Object.values(g.characters)) { const o = boonOffer(c, pool, r.seed, n!.id); if (o.length) boons[c.id] = o; }
+  r.boons = Object.keys(boons).length ? boons : null;
+  push(g, { kind: 'system', head: 'STAGE ' + r.stage + ' CLEARED', text: 'The Boss is down. ' + (r.boons ? 'Each of you picks a boon for the rest of the run; then the squad picks the next tile.' : 'No boon is left to give; the squad picks the next tile.') + ' The host may retire the run here and keep the score.' });
+  if (!r.boons) openTiles(g);
 }
+/** Rules 1.44 (spec rule 32): the boons are picked: the tiles of the next stage are offered (run/stage.ts nextTiles). */
+function openTiles(g: GameState) {
+  const r = g.run!; r.state = 'tile'; r.leans = {}; r.tiles = nextTiles(r);
+  push(g, { kind: 'system', head: 'THE NEXT TILE', text: 'Pick where stage ' + (r.stage + 1) + ' is fought: ' + r.tiles.map((t) => SETTING[t.setting]?.name || t.setting).join(', ') + '.' });
+}
+/** Rules 1.44: the squad walks onto a tile: the next stage, its fresh map from the seed, a new scene. */
+function runTile(g: GameState, id: string) {
+  const r = g.run!, t = (r.tiles || []).find((x) => x.id === id); if (!t) fail('No such tile on offer.');
+  closeVisit(r);
+  g.run = enterStage(r, t!);
+  newScene(g, 'Stage ' + g.run.stage + ' · ' + (SETTING[t!.setting]?.name || t!.setting));
+  push(g, { kind: 'system', head: 'STAGE ' + g.run.stage, text: 'Stage ' + g.run.stage + ' begins on ' + (SETTING[t!.setting]?.name || t!.setting) + ': a fresh path, harder fights. Pick the first node.' });
+}
+/** Rules 1.44: a safe node's visit is over: the grade steps bought there go into the stage's log. */
+function closeVisit(r: RunState) {
+  const v = r.visit; if (!v) return;
+  stageLog(r).steps += Object.values(v.steps || {}).reduce((t, n) => t + n, 0);
+  r.visit = null;
+}
+/** Rules 1.44: the score a run keeps at its end (rules 4, 6, 35): the renown, each character's boons, the stages' log. */
+const runScore = (g: GameState) => { const chars = Object.values(g.characters); return { renown: renownOf(chars), boons: boonsOf(chars), stages: (g.run!.stages || []).map((x) => ({ ...x, boons: { ...x.boons } })) }; };
 /** The kind of pay a node gives (the gate pays as an Elite). */
 const payKindOf = (n: RunNode): PayKind => (n.gate ? 'gate' : n.kind === 'elite' || n.kind === 'boss' || n.kind === 'cache' ? n.kind : 'fight');
 /** The squad enters a node (rules 1.41; spec rules 13, 24, 29): a new scene; a fight begins, a rest heals, a cache pays,
  * the nodes still to be built say what will be there. */
 function runEnter(g: GameState, id: string) {
   const r = g.run!, n = runNode(r, id)!, word = (MAP_DATA.words as any)[n.kind] || n.kind;
+  closeVisit(r); stageLog(r).nodes++; // rules 1.44: the stage's log
   r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null; r.visit = null;
   newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The gate' : word) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows);
   if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss') { runFight(g, n); return; }
@@ -3191,7 +3245,8 @@ function runEnter(g: GameState, id: string) {
   r.visit = openVisit(g, n); // rules 1.43: what is done at a safe node, and what it rolled on entry (run/progress.ts)
   if (n.kind === 'rest') { applyRest(g, 'long'); beginSession(g); } // rule 24: the long rest and a new session; the small training is run/train
   if (n.kind === 'cache') { const k: PayKind = 'cache', xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {};
-    for (const c of Object.values(g.characters)) { giveXp(g, c, 'survival', xp, 'a cache'); earnCredits(c, cr); ammo[c.id] = runAmmo(c, packCount(k)); }
+    for (const c of Object.values(g.characters)) { giveXp(g, c, 'survival', xp, 'a cache'); const got = creditsFor(c, cr); earnCredits(c, got); stageLog(r).credits += got; ammo[c.id] = runAmmo(c, packCount(k)); }
+    r.renown = renownOf(Object.values(g.characters)); // rule 6
     r.note = { ...r.note, xp, credits: cr, ammo };
     r.lasting = Object.fromEntries(Object.values(g.characters).map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); r.state = 'reward'; } // rules 1.43 (rule 41): the cache's pick of kit
   push(g, { kind: 'system', head: (n.gate ? 'THE GATE' : word.toUpperCase()), text: text || word });
@@ -3232,9 +3287,13 @@ function runFightOver(g: GameState) {
   musicAfterFight(g);
   g.combat = { ...cb };
   const chars = Object.values(g.characters);
+  // rules 1.44: the stage's log (rule 35): the fight, and the foes it dropped
+  const kills = cb.units.filter((u) => u.side !== 'pc' && !u.companion && (u.dead || u.downed || u.surrendered)).length, lg = stageLog(r);
+  lg.fights++; if (won) lg.won++; lg.kills += kills;
+  r.stats = { ...r.stats, fights: r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, kills } : f)) };
   if (!won) {
     const levels: Record<string, number> = {}; for (const c of chars) levels[c.id] = c.level;
-    g.run = endRun(r, 'lost', levels); g.phase = 'lobby';
+    g.run = endRun(r, 'lost', levels, runScore(g)); g.phase = 'lobby';
     const e = g.run.end!;
     push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad falls at stage ' + e.stage + ', node ' + n.depth + ': ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' node' : ' nodes') + ' walked. The score is kept.' });
     return;
@@ -3244,12 +3303,13 @@ function runFightOver(g: GameState) {
   const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {}, offers: Record<string, RunOffer> = {};
   for (const c of chars) {
     giveXp(g, c, 'combat', xp, 'Survival, ' + (n.gate ? 'the gate' : n.kind));
-    earnCredits(c, cr);
+    const got = creditsFor(c, cr); earnCredits(c, got); lg.credits += got; // rules 1.44: Tithe (the stat run_credits)
     ammo[c.id] = runAmmo(c, packCount(k));
     offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
   }
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP: the squad won.' });
   push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the ammunition pack, and a weapon to pick (or credits instead).' });
+  r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'reward'; r.offers = offers;
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
   r.note = { node: n.id, kind: n.kind, xp, credits: cr, ammo, won: true, rounds: cb.round, ...(back.length ? { back } : {}) };

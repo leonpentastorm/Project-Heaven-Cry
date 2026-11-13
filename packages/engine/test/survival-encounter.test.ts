@@ -2,7 +2,7 @@
 // read from data/survival.json and data/enemies.json. SURVIVAL_ENC_REPORT=1 prints the measured budget table (the
 // hand-off's).
 import { describe, expect, it, vi } from 'vitest';
-import { composeEncounter, budgetFor, foeCost, foeLevel, tierLag, shareOf, ENC_BUDGET, TEMPLATES, SETTINGS, SETTING, type Encounter, type FightKind } from '../src/run/encounter';
+import { composeEncounter, budgetFor, foeCost, foeLevel, tierLag, shareOf, anchorDamage, ENC_BUDGET, TEMPLATES, SETTINGS, SETTING, type Encounter, type FightKind } from '../src/run/encounter';
 import { ENEMY, WEAPON, MAP_LIMITS, startGap, standable, CASTER, HEART_CASTER } from '../src';
 import enemiesJ from '../../../data/enemies.json';
 import lootJ from '../../../data/loot_tables.json';
@@ -66,8 +66,8 @@ describe('Survival encounters (rules 1.41)', () => {
     expect(e.spent.pressure).toBeLessThanOrEqual(2.5 * (1 + B.pressureBand) + 1e-9);
   });
 
-  // Stages 1 and 2 are asserted. Stage 3 (build step 5's) has one known gap, pinned below: a solo party's Elite or Boss
-  // two levels up passes the pressure cap's band by itself (its anchor is required; no rule scales its damage down).
+  // Stages 1 to 3 are asserted. Stage 3 had one gap (item 2814: a solo party's Elite or Boss two levels up passed the
+  // pressure band by itself); rules 1.44 gives it a damage scale down to the cap.
   const outOfBand = (c: typeof cases[number]) => {
     const { e } = c, why: string[] = [];
     if (Math.abs(e.spent.bulk - e.target.bulk) > e.target.bulk * B.bulkBand + 1e-9) why.push('bulk ' + e.spent.bulk.toFixed(2) + ' of ' + e.target.bulk.toFixed(2));
@@ -77,9 +77,18 @@ describe('Survival encounters (rules 1.41)', () => {
     if (!e.ok) why.push('not ok');
     return why.length ? 'N' + c.n + ' L' + c.level + ' s' + c.stage + ' ' + fk(c.node) + ' d' + c.node.depth + ' ' + e.template + ': ' + why.join(', ') : null;
   };
-  it('stage 3: the only fights out of band are a solo party\'s Elite, gate or Boss, on pressure (the gap for build step 5)', () => {
+  it('stage 3 (rules 1.44, item 2814 fixed): every fight inside its bands; a solo Elite, gate or Boss that passed the pressure band alone takes a damage scale down to the cap', () => {
     const bad = cases.filter((c) => c.stage === 3).map(outOfBand).filter(Boolean) as string[];
-    expect(bad.filter((b) => !/^N1 .* (elite|gate|boss) d\d+ \w+: pressure [\d.]+ over [\d.]+$/.test(b))).toEqual([]);
+    expect(bad).toEqual([]);
+    const scaled = cases.filter((c) => c.stage === 3 && c.n === 1 && c.e.foes.some((f) => (f.tier === 'elite' || f.tier === 'boss') && (f.scale?.damage ?? 1) < shareOf(f.tier, 1).damage - 1e-9));
+    expect(scaled.length).toBeGreaterThan(0);
+    for (const c of scaled) expect(c.e.spent.pressure).toBeCloseTo(c.e.target.pressure, 6);
+  });
+  it('anchorDamage (rules 1.44, item 2814): 1 inside the band; else the big units\' pressure brought down so the fight\'s is the cap', () => {
+    expect(anchorDamage([{ tier: 'elite', cost: { pressure: 1.0 } }], 1.2, 1.32)).toBe(1);
+    expect(anchorDamage([{ tier: 'elite', cost: { pressure: 1.76 } }], 1.2, 1.32)).toBeCloseTo(1.2 / 1.76, 9);
+    expect(anchorDamage([{ tier: 'boss', cost: { pressure: 2 } }, { tier: 'minion', cost: { pressure: 0.4 } }], 1.2, 1.32)).toBeCloseTo(0.8 / 2, 9);
+    expect(anchorDamage([{ tier: 'soldier', cost: { pressure: 2 } }], 1.2, 1.32)).toBe(1); // nothing big to scale
   });
   it(SEEDS + ' seeds x party 1 to 4 x 4 levels x every fight node of a stage (stages 1 and 2): every fight inside its bands', () => {
     const bad: string[] = [];

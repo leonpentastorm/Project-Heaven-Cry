@@ -138,6 +138,14 @@ function fill(t: EncounterTemplate, rng: Rng, L: number, n: number, depth: numbe
   return { picks, spent: sum(), stop };
 }
 
+/** The damage scale of a fight's Elites and Bosses when they pass the pressure band by themselves (rules 1.44, item
+ * 2814): their pressure brought down so the fight's is the cap (`pressure`); 1 when the band holds or nothing big is
+ * there to scale. Only required slots can pass the band (an optional foe is never added past it). */
+export function anchorDamage(picks: { tier: string; cost: { pressure: number } }[], pressure: number, capHi: number): number {
+  const all = picks.reduce((t, p) => t + p.cost.pressure, 0); if (all <= capHi + 1e-9) return 1;
+  const bigP = picks.filter((p) => big(p.tier)).reduce((t, p) => t + p.cost.pressure, 0), rest = all - bigP;
+  return bigP > 0 && rest < pressure ? (pressure - rest) / bigP : 1;
+}
 /** Compose the fight at a node (rules 15 to 22). */
 export function composeEncounter(inp: EncounterIn): Encounter {
   const rng = rngFor(inp.seed, inp.node.id + '#fight'), setting = SETTING[inp.setting] || SETTINGS[0];
@@ -145,28 +153,32 @@ export function composeEncounter(inp: EncounterIn): Encounter {
   const target = budgetFor(n, kind, inp.node.depth, inp.stage);
   const fightKind = String(rollTable(rng, { id: 'kinds', entries: Object.entries(setting.kinds).map(([k, w]) => ({ item: k, weight: w })) })?.item || 'human');
   const lo = target.bulk * (1 - ENC_BUDGET.bulkBand), hi = target.bulk * (1 + ENC_BUDGET.bulkBand), capHi = target.pressure * (1 + ENC_BUDGET.pressureBand);
-  let best: { t: EncounterTemplate; f: ReturnType<typeof fill>; err: number; scale: number } | null = null;
+  let best: { t: EncounterTemplate; f: ReturnType<typeof fill>; err: number; scale: number; dmg: number } | null = null;
   for (const t of templatesFor(rng, kind, inp.node.depth, n, setting, inp.last)) {
     const f = fill(t, rng, L, n, inp.node.depth, inp.stage, target);
+    // Rules 1.44 (item 2814): a required Elite or Boss that passes the pressure band by itself takes the rest as a damage
+    // scale down to the cap (the HP rule mirrored: damage is pressure, as HP is bulk)
+    const dmg = anchorDamage(f.picks, target.pressure, capHi);
+    if (dmg !== 1) f.spent.pressure = target.pressure;
     const over = f.spent.bulk > hi || f.spent.pressure > capHi;
     // Short of the bulk with no room for another foe (max_foes, or the pressure cap): every foe takes the rest as HP
     // (rule 19). Short because the template ran out of slots: the next template is tried first (rule 21 d).
     const short = f.spent.bulk < lo, scale = short && f.stop !== 'slots' && f.spent.bulk > 0 ? target.bulk / f.spent.bulk : 1;
     const err = over ? 1e6 + f.spent.bulk : short && scale === 1 ? (lo - f.spent.bulk) / target.bulk : 0;
-    if (!best || err < best.err) best = { t, f, err, scale };
+    if (!best || err < best.err) best = { t, f, err, scale, dmg };
     if (err === 0) break;
   }
   const b = best!, ok = b.err === 0;
   // A template that stayed short on slots alone (none fitted): scale it all the same, so the fight still lasts.
   const scaleHp = b.scale !== 1 ? b.scale : b.f.spent.bulk > 0 && b.f.spent.bulk < lo && b.err < 1e6 ? target.bulk / b.f.spent.bulk : 1;
-  const foes = b.f.picks.map((p) => armed(p, rng, setting, fightKind, n, scaleHp));
+  const foes = b.f.picks.map((p) => armed(p, rng, setting, fightKind, n, scaleHp, big(p.tier) ? b.dmg : 1));
   number(foes);
   const spent = { bulk: b.f.spent.bulk * scaleHp, pressure: b.f.spent.pressure };
   return { template: b.t.id, name: b.t.name, text: b.t.text, kind: fightKind, level: L, fightKind: kind, target, spent, scaleHp, ok: ok || scaleHp !== 1, foes, map: encounterMap(inp.node.id, n + foes.length, foes, rng) };
 }
 /** A slot's foe made whole (rule 21 e): its weapon from the setting's pool by tier and range (a caster's own; the Boss's
  * the setting's), its kind, tags, level, spawn and scale. Never a Celestial. */
-function armed(p: Pick, rng: Rng, setting: SettingDef, fightKind: string, n: number, scaleHp: number): EncounterFoe {
+function armed(p: Pick, rng: Rng, setting: SettingDef, fightKind: string, n: number, scaleHp: number, scaleDmg = 1): EncounterFoe {
   const s = p.slot, kind = s.boss ? setting.boss.kind : s.kind || fightKind, sh = shareOf(p.tier, n);
   let weapon: string, name: string, caster = p.caster;
   if (s.boss) {
@@ -180,7 +192,7 @@ function armed(p: Pick, rng: Rng, setting: SettingDef, fightKind: string, n: num
   const cd: any = caster ? CASTER[caster] || HEART_CASTER[caster] : null;
   if (cd) { weapon = cd.weapon; name = cd.name; }
   if (!WEAPON[weapon]) weapon = 'service_pistol';
-  const hp = sh.hp * scaleHp, dmg = sh.damage;
+  const hp = sh.hp * scaleHp, dmg = sh.damage * scaleDmg;
   return { name, tier: p.tier, weapon, level: p.level, kind: kind === 'celestial' ? 'human' : kind, ...(caster ? { caster } : {}), ...(s.tags?.length ? { tags: [...s.tags] } : {}), ...(s.hidden ? { hidden: true } : {}),
     ...(hp !== 1 || dmg !== 1 ? { scale: { ...(hp !== 1 ? { hp } : {}), ...(dmg !== 1 ? { damage: dmg } : {}) } } : {}), spawn: s.spawn || 'far', cost: p.cost };
 }
