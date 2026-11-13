@@ -93,7 +93,7 @@ Adjudication: every rule is `engine`, except the optional Narrator flavour (rule
 | shop | open rows; row 14 | — | 0 | — | the always-stocked counter | buying, selling, services, the grade step (rule 37) |
 | rest | open rows (not 13); row 14 | — | 0 | — | — | the long rest and a session; one training each (rule 39) |
 | cache | open rows | — | 0.25 × f(d) | 1.5 × c(d) | 1 | armour-or-item of 3, at least two lasting (rule 41) |
-| event | open rows | — | 0 | 0 (it trades) | — | one trade of two or three, or walk on (rule 42) |
+| event | open rows | none | 0 | 0 (it trades) | none | one trade of two or three, or walk on (rule 42) |
 
 ### 3.2 Templates (`templates`; slots in order; "req" first)
 
@@ -332,15 +332,215 @@ All through the engine's view: the client builds no cost, price, legality or cho
 
 **Playtest checklist entries:** a solo stage to depth 4 (fights 4 to 5 rounds, small maps); a co-op lean and tie; level 3 mid-run and its class; each of the nine classes from node 1 with its kit; a gunner on Bursts never dry; the shop says why when credits are short; a death and the return at 1 HP after a won fight; a grade step bought and felt (the to-hit on the card); a Relic property chosen; a rest training; an event's trade; the growth log after two stages; trash outgrown by level 5; the Boss at four and solo; a boon felt; stage 2 harder; Report a run reads.
 
-## 11. Open questions for Leon (each with the recommendation; built as recommended if unanswered)
+## 11. In-run progression (draft 3; Leon's ruling 7)
 
-1. **Death:** out until the next rest, the run ending only when everyone is Down; or a death ends the run. **Recommend out until a rest.**
-2. **The curve's steepness:** +25% bulk and +15% pressure a stage, Elites and Bosses up to 3 levels above: a squad of four ends in stage 3 or 4. **Recommend as written,** fitted by the simulated runs.
-3. **Selling** at 25%. **Recommend yes.**
-4. **Keeping a run's character** as a draft at its level for other rooms (a run always starts at level 1). **Recommend yes.**
-5. **A focus's rarity:** today a Fine or Masterwork focus gives durability and a mod slot, nothing to its door; for the weapon pick to tempt a caster, rarity's accuracy (+1 / +2) should add to the door's rolls (a Sigil's, an Outburst's, a Bond's save TN). **Recommend yes** (one reading of `rarity.acc`, no new number).
-6. **Boons:** the thirteen, one per Boss, cap 50% of a rifle-turn. **Recommend as written.**
-7. **Credits:** each character's own purse, each earning the full amount. **Recommend own purses.**
-8. **Solo:** a Boss at 28% HP and 40% damage alone; companions are stage 2. **Recommend the scaling.**
-9. **Difficulty settings:** one in v1; Hard later is one field. **The name:** Survival *(Leon's)*.
-10. **The lead's calls made here:** a mode, not a generated campaign; trapped caches cut; no "rest or train"; a rest is a new session; the always-stocked list (beyond Leon's ammunition floor: cores, parts, stims, kits, grenades, special rounds, restock); credits instead of a weapon at 50% of the cheapest offer; one offer always for your door; armour fitting until Equipment 2.0; no Celestial enemies; the Narrator panel collapsed, not hidden; the next tile by setting and boon theme.
+Leon: *"progression is a thing, right now we only reach 'refill to continue', nothing really progresses except for level."* He is right about draft 2: a rest only healed, a shop mostly refilled, and the only lasting gains were levels, a weapon pick and a boon a stage. This section gives a run **six axes that grow, each paid for in its own way**, so that every node leaves something that lasts and every shop visit has a decision past refilling. Every number here is **PROVISIONAL** and listed in section 11.7.
+
+| Axis | What grows | Paid with | Where |
+| --- | --- | --- | --- |
+| Level | everything the level scale gives (as today) | XP from fights | every fight |
+| Grade | a weapon's or focus's rarity: Standard, Fine, Masterwork, Relic | **credits, a lot** (Leon's ruling 7) or a chit | the shop (rules 37, 38) |
+| Kit | mods, worn armour pieces, the armour class | credits, or a pick | shop, cache, Elite (rules 40, 41) |
+| Training | drill, study, practice, Devotion | the rest itself (the heal stays free) | rest (rule 39) |
+| Trades | a grade step, drill, a relic, an Elite-rarity pick | a cost the engine can take: credits, HP now, durability, max HP | event (rule 42) |
+| Boons | a rule-changer for the run | beating a Boss | after each Boss (rules 30, 31) |
+
+### What other games do (the research behind this section)
+
+A design note (the game names are for the design discussion only; no game text names them). The research came from wikis, guides, reviews and interviews; most shop prices in it are community figures and **unverified**, so we take shapes, never numbers.
+
+| Game | What grows in a run | What we take | What we avoid |
+| --- | --- | --- | --- |
+| Slay the Spire | the deck (picks, removal), card upgrades at rests, relics, max HP | a rest that gives a lasting gain; Elites as the opt-in risk for better rewards; an escalating price on a repeated service | heal **or** upgrade: in a party a skipped heal loses the run, so our heal stays free; gold left unspent at the end |
+| Monster Train | a few units stacked with upgrades bought for gold | grading the one weapon you carry, for money: the closest precedent to Leon's ask | one carry hogging everything: our purses are per character and the step is one a visit |
+| Wildfrost | companions, charms, a per-visit climbing price (45, 65, 85, reset each visit) | a per-visit limit, so purchases spread across the run | "strictly beneficial" events with no tension: ours each have a cost |
+| Darkest Dungeon II | skill upgrades bought with a currency earned by fighting, one per skill per run | a capped, deliberate upgrade with a visible owner | one always-best spend (guides rank Mastery above trinkets) |
+| Across the Obelisk | deck, gear, boons, card upgrades for a second currency | free upgrades found on the map (our armourer's chit) | two currencies to track in a co-op room: we keep one, credits, and one rare item |
+| Into the Breach | grid power, reactor cores, weapons, pilot perks; Rep that expires per island | a forced spending moment with a clear owner per purchase | a choice with one right answer (stock Rep early, buy Power late) |
+| Fights in Tight Spaces | deck upgrades whose price doubles each buy within a visit | a ceiling per visit | rushing one big buy because later ones are dearer; ours is a flat, published ladder |
+| FTL | ship systems on a flat price ladder; reactor power caps what scrap buys | a ladder that does not inflate with depth; a cap on what money converts into | early bad luck that makes a run unwinnable: our pick always offers one for your door |
+| Hades | boons, boon levels for money with shrinking returns, Hammers | the reward shown before you commit; diminishing returns on stacking | stacking one boon without end: our cap is one budget for boons and Relic properties |
+| Risk of Rain 2 | uncapped item stacks; enemy strength and chest prices on one clock | one stage number driving difficulty and income together (`stage.bulk`, `stage.credits`) | uncapped stacking and late snowball |
+| Dead Cells | stats by scroll, gear level and quality (+, ++, S), a forge for gold | a quality step bought at the forge, locked behind the previous one | flat prices that drift out of step with income (it moved to level-scaled costs) |
+| Gordian Quest | a skill grid, gear; shrines that raise risk for reward | node rewards visible; risk as a choice | gold that only buys potions (the "refill" trap Leon names) |
+| Invisible, Inc. | augments, agents, items from a clock-limited campaign | power bought by accepting a cost (time there, HP or durability here) | repeated re-pricing of dominant items: we measure before we price |
+
+### 11.1 Credit income (per node and per stage)
+
+**Per node, stage 1** (section 3.1: a fight pays c(d) = 80 + 20 × d, an Elite and a cache 1.5 × c(d), the Boss 2 × c(d); a shop, rest or event 0):
+
+| Depth | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 15 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Fight | 100 | 120 | 140 | 160 | 180 | 200 | 220 | | 260 | 280 | 300 | 320 | 340 | |
+| Elite | | | | 240 | 270 | 300 | | 360 (gate) | | 420 | 450 | 480 | 510 | |
+| Cache | | | 210 | 240 | 270 | 300 | 330 | | 390 | 420 | 450 | 480 | 510 | |
+| Boss | | | | | | | | | | | | | | 760 |
+
+**The path priced:** section 5.4's median path with its cache at depth 11 read as the second shop rule 9 requires (5.4's path has none in rows 9 to 13; its XP loses the cache's 80, immaterial): fights at 1, 2, 3, 4, 6, 9, 12, 13 (100 + 120 + 140 + 160 + 200 + 260 + 320 + 340 = **1,640**), Elites at 8 and 10 (360 + 420 = **780**), shops at 5 and 11, rests at 7 and 14, the Boss (**760**): **3,180** a stage, plus `start_credits` 150 once. The route moves it by about −10% to −20% (two events in place of fights) or +12% (two more Elites and a cache in place of fights). The "credits instead" of a weapon pick adds a little and is not counted.
+
+**Per stage:** credits × `stage.credits` = 1 + **0.35** × (s − 1), the same slope as the fight's length (`stage.bulk`, rule 19), so a stage's income keeps pace with the fights that earn it while prices stay fixed (the flat ladder FTL keeps; prices that drift from income are Dead Cells' lesson):
+
+| Stage | × | Income (median path) | Upkeep (about) | Free for growth | Since the run began |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 1.00 | 3,180 + 150 = **3,330** | 400 | 2,930 | 3,330 |
+| 2 | 1.35 | 3,180 × 1.35 = **4,290** | 450 | 3,840 | 7,620 |
+| 3 | 1.70 | 3,180 × 1.7 = **5,410** | 500 | 4,910 | 13,030 |
+| 4 | 2.05 | 3,180 × 2.05 = **6,520** | 550 | 5,970 | 19,550 |
+| 5 | 2.40 | 3,180 × 2.4 = **7,630** | 600 | 7,030 | 27,180 |
+
+**Upkeep** is what keeps a character going past the free ammunition pack (rule 23): a gunner's two frag grenades and two stims (2 × 120 + 2 × 80 = 400), a caster's two spare cores and two stims (2 × 150 + 2 × 80 = 460), a healer's three field kits and two stims (3 × 120 + 2 × 80 = 520), a melee fighter's four stims (320); it rises a little as fights lengthen. **Refilling is about a tenth of a stage's income:** the rest is for growth, and there is more to want than to buy.
+
+### 11.2 The grade ladder (rules 37 and 38)
+
+37. **The grade step (Leon's ruling 7).** At any shop, a character may raise **one weapon or focus it carries** (hand or pack) **one rarity step**, paying `grade_up.price` for the grade it reaches; **one step per character per shop visit** (`grade_up.per_visit` 1). The item keeps its drill, mods and name; its durability rises with the grade (`RARITY.dur`) and is restored to full. Foci and mana arms are graded the same way. Armour, shields and consumables are not graded (rarity does nothing to them today).
+38. **The Relic step.** From stage 3 (`relic_from_stage`), a Masterwork weapon or focus may become a **Relic**: Masterwork's numbers and **one named property, picked from three** rolled from `relic_props` for its category or door (the Core Rules' Relic: "Masterwork, plus one named property, written per item"). The property's worth comes off the character's boon cap (rule 31); a property that would pass the cap is not offered. It works while that weapon or focus is in a hand. **Celestial is never sold** (Core Rules: not for sale).
+
+**What a grade does** is what `rules.json rarity` says today; nothing is added:
+
+| Step | Price (`grade_up.price`) | What changes (`rules.json rarity`) | Share of income |
+| --- | --- | --- | --- |
+| Standard → Fine | **1,500** | +1 accuracy, durability ×1.25 | 45% of stage 1 (1,500 ÷ 3,330) |
+| Fine → Masterwork | **3,500** | +2 accuracy in all (one more), durability ×1.5 | 82% of stage 2 (3,500 ÷ 4,290) |
+| Masterwork → Relic (from stage 3) | **9,000** | the same accuracy and durability, and one named property | 75% of stages 3 and 4 together (9,000 ÷ 11,930) |
+
+Where it counts: a weapon's grade on its main-hand attacks (`combat.ts` unit build reads `weaponState.rarity`, as today); a focus's in either hand (rule 25a). Rarity buys **no damage** (its `dmg` is 1 at every grade since rules 1.26). The Core Rules table's "+1 mod slot" is not read by the engine (`fitMod` fits one mod in each slot the weapon lists, whatever its grade); Survival keeps that (question 8).
+
+**The ladder against income:** a character that grades one item affords **about one step a stage**: Fine in stage 1 (1,500 of 2,930 free), Masterwork in stage 2 (3,500 of 3,840), the Relic step at the end of stage 4 (9,000 of 4,910 + 5,970 = 10,880). Each step is about 2.3 to 2.6 times the last, the steep, published ladder the research recommends (a clear price a party of four can plan around). **The choice:** in stage 1 the 1,500 competes with armour class 4 (1,200) and a mod (80 to 900); in stage 2 the Masterwork step takes nearly everything; a hybrid (a gun and a focus) wants four steps by stage 3 and can buy two or three. The per-visit limit and the two shops a stage (rule 9) allow at most two steps a stage; credits allow about one.
+
+**Step or buy graded:** the shop sells a Fine weapon at 3 × its price and a Masterwork at 8 × (rule 27). The step is the cheaper way when the base price is over 750 for Fine (3p − p = 2p > 1,500) or over 700 for Masterwork (8p − 3p = 5p > 3,500): rifles, foci (1,000), heavy weapons. A pistol (250) or a knife (60) is cheaper bought graded. So the decision is real: grade the weapon you have drilled, or buy a graded spare and start its drill over.
+
+**Relic properties** (`relic_props`; relic items; names *(Suggested)*; worth in % of a rifle-turn, priced as boons are, section 5.5):
+
+| Id | Name | Fits | What (one number) | Built from | Worth |
+| --- | --- | --- | --- | --- | --- |
+| prop.keen | Keen | guns | +10% damage with this weapon | `damage_mult` on `dealing`, `if: {self_holds: {slot: hand, item}}` | 10 |
+| prop.true | True | any weapon | the first attack each turn +2 to hit | `roll_mod` on `attack`, `limit: per_turn 1` | 6 |
+| prop.quick | Quick | guns with a magazine | reloading it costs 1 AP less (at least 1) | `cost_mod` on `reload`, `min` 1 | 6 |
+| prop.biting | Biting | melee | +10% damage with this weapon | `damage_mult` on `dealing`, `damage: [melee]` | 10 |
+| prop.balanced | Balanced | melee | the first swap or draw each turn costs 0 | `cost_mod` on `swap`, `limit: per_turn 1` | 4 |
+| prop.deep | Deep | foci | +1 more to its door's rolls | `roll_mod` on `to_hit` (and `roll: "tn"` on its saves), `if: {self_holds: {slot: hand, door}}` | 8 |
+| prop.gentle | Gentle | foci | +15% heals and shields you give | `mend_mult` on `heal` and `shield` | 6 |
+
+### 11.3 What every node leaves (rules 39 to 43)
+
+| Node | What lasts | Its cost |
+| --- | --- | --- |
+| Fight | XP, a weapon pick (or credits), drill for every kill (`physical/rules.ts`, as today), credits | the fight |
+| Elite | the above at Elite rarity (fine 60 / masterwork 35 / relic 5) and an armour-or-item pick with at least two lasting things in it (rule 41) | a harder fight, opted into |
+| Gate Elite | the same, and an armourer's chit among its three (rule 43) | every path passes it |
+| Cache | an armour-or-item pick, at least two lasting (rule 41); 1.5 × c(d) credits | a node not spent fighting |
+| Event | one trade (rule 42) | the trade's cost |
+| Rest | the long rest **and** a training (rule 39) | a node not spent fighting or shopping |
+| Shop | a grade step, mods, worn pieces, armour fitting; refills | credits |
+| Boss | a Boss-rarity weapon pick and a boon | the Boss |
+
+39. **Training at a rest.** Each character takes **one**: **Drill** `train.drill` **100** on a weapon it carries (`addDrill`; marks at 300, 900 and 1,800: a third of mark I; not multiplied by the martial ×3, which is the kill path's); **Study** `train.study` **3** (a Sigil user: `addStudy`; a word at 6, then every 8: about two Evokes' worth); **Practice** `train.practice` **5** (an Outburst user: `addPractice`, section 4.2 item 12; a module at 5 and 15, then every 15: about two Releases' worth); **Devotion** `train.devotion` **2** XP (a Faithful character: `shiftDevotion`; a rest begins a session, so the session cap is fresh). A door with no growth counter yet (Bonds, Figments, Shadow) takes drill or Devotion until its own exists. *Why not heal or train* (Slay the Spire's fork): in a party a skipped heal is a lost run and an unhealed friend is a lost co-op evening; the heal stays free and the training is what lasts.
+40. **Mods** are the second purchase after the grade: the shop's rolled stock (2 of its 8 slots are armour pieces or mods, rule 25), and the Elite's and cache's lasting picks (rule 41). They fit as today: one in each slot the weapon lists (`fitMod`, `mod_slots`; a rifle has up to four, a melee weapon two, a focus none). Prices 80 to 900 (`items.json`).
+41. **Lasting picks.** An Elite's and a cache's armour-or-item three hold at least `lasting_min` **2** lasting things: a mod for a slot the character's main weapon has free, or a worn piece (`items.json` armour: helmet, plates, greaves, gloves, boots) better than what it wears there; never two consumables. With no free slot and nothing better to wear, the rule falls back to the plain roll.
+42. **Events** (*Suggested* name: the node card says "Crossroads"): two or three trades rolled from `events`, each a cost and a lasting gain, both the engine's to take and give; **each character takes at most one, or walks on**. No check, no judgement, no Narrator.
+
+| Id | Name *(Suggested)* | Cost | Gain | Built from |
+| --- | --- | --- | --- | --- |
+| ev.offbooks | The off-books armourer | half the step's price (`cut_rate` 0.5: 750 or 1,750), and the item's durability falls to half its new maximum | one grade step to Fine or Masterwork, outside the per-visit limit | `payCredits`, `setGrade`, durability |
+| ev.drill_yard | A drill yard | a quarter of current HP now | 300 drill on a carried weapon | `c.hp`, `addDrill` |
+| ev.sealed_crate | A sealed crate | 300 credits | a weapon pick of three at Elite rarity (rule 26) | `payCredits`, the loot roller |
+| ev.wayside | A wayside shrine | nothing (once a stage) | Devotion 4 XP, or 5 study, or 5 practice (its door's) | `shiftDevotion`, `addStudy`, `addPractice` |
+| ev.graft | A back-room graft | max HP −10% for the run (fixed when taken) | a boon rolled from the next tile's pool, its worth on the cap | a `relic` with a `stat: hp` effect and the boon's ops; `addItems` |
+| ev.salvage | A salvage buyer | a weapon or item from the pack | 50% of its price (in place of the shop's 25%) | `priceOf`, `run/sell` |
+
+43. **The armourer's chit** (*Suggested*: in the world a chapter armourer's stamped requisition): one grade step to Fine or Masterwork with no credits (the per-visit limit still holds). From the gate Elite's pick (one of its three) and nowhere else in stage 1; an Elite from stage 2 may roll one in its pick (weight as an item). `items.json`, `stock: false`, never sold or sellable.
+
+**Boons** keep their place: one of three after each Boss, the run's rule-changers (Leon accepted them). Gear makes a character better at what it does; a boon changes what it does. One budget holds both kinds of run power: a Relic property and a graft take their worth out of the same 50% as boons (rule 31), so a character choosing a Relic property gives up a boon's room, and the cap still bounds the run.
+
+### 11.4 What a character has gained by each Boss (worked example)
+
+The median path of 11.1, each character in its own purse; upkeep as 11.1; two rests a stage (depths 7 and 14). "Output" is against a bare character of the same level (Standard gear, no boons): offense from accuracy (×1.077 a point, section 5.2) and the Relic property; boons are listed apart.
+
+**A gunner** (the soldier kit: Hellraiser service rifle 900, armour class 3):
+
+| Stage | Credits (carried + earned) | Bought | At the Boss | Trainings | Output |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 0 + 3,330 | Fine rifle 1,500; armour class 4 1,200; upkeep 400 → 230 left | Fine rifle, class 4 | drill 200 | ×1.08; hits taken −9% at level 7 |
+| 2 | 230 + 4,290 | Masterwork rifle 3,500; scope 450; upkeep 450 → 120 | Masterwork rifle, scope | drill 200 (with kills: mark I) | ×1.16 (the scope on aimed shots besides) |
+| 3 | 120 + 5,410 | compensator 250, extended magazine 300, ballistic helmet 350, trauma plate 400; upkeep 500 → 3,730 saved | three mods fitted (scope, compensator, extended magazine), two worn pieces | drill 200 | ×1.16, mods about ×1.03 |
+| 4 | 3,730 + 6,520 | the Relic step 9,000 (Keen, worth 10 of the 50); upkeep 550 → 700 | a Relic rifle | drill 200 | ×1.16 × 1.10 × 1.03 = **×1.31** |
+
+**A melee fighter** (a Breaker with a war axe, 500, standard, from node 1's pick; armour class 3):
+
+| Stage | Credits | Bought | At the Boss | Trainings | Output |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 0 + 3,330 | Fine axe 1,500; weighted edge 200; wrapped grip 80; armour class 4 1,200; upkeep 320 → 30 | Fine axe, two mods, class 4 | drill 200 | ×1.08 (+ the edge's damage) |
+| 2 | 30 + 4,290 | Masterwork axe 3,500; heavy boots 200; armoured greaves 300; upkeep 320 → 0 | Masterwork axe | drill 200 | ×1.16 |
+| 3 | 0 + 5,410 | ballistic helmet 350, trauma plate 400, combat gloves 220; upkeep 350 → 4,090 saved | worn pieces on every slot | drill 200 | ×1.16 |
+| 4 | 4,090 + 6,520 | the Relic step 9,000 (Biting); upkeep 350 → 1,260 | a Relic axe | drill 200 | ×1.16 × 1.10 = **×1.28** |
+
+**A caster** (a Sigilist: the `sigil` kit, a service pistol in the main hand and an Evoker, armour class 1):
+
+| Stage | Credits | Bought | At the Boss | Trainings | Output |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 0 + 3,330 | Fine Evoker 1,500; armour classes 2 and 3 (250 + 600); upkeep 460 → 520 | Fine Evoker (Sigil rolls +1, rule 25a), class 3 | study 6 (a word) | Sigil ×1.08 |
+| 2 | 520 + 4,290 | Masterwork Evoker 3,500; upkeep 500 → 810 | Masterwork Evoker | study 6 | ×1.16 |
+| 3 | 810 + 5,410 | ballistic helmet 350, trauma plate 400; upkeep 550 → 4,920 saved | two worn pieces | study 6 | ×1.16 |
+| 4 | 4,920 + 6,520 | the Relic step 9,000 (Deep: +1 more); upkeep 600 → 1,840 | a Relic Evoker | study 6 | ×1.16 × 1.077 = **×1.25** |
+
+**A healer** (a Mender: the `mender` kit, an Attuner and a service pistol, armour class 2 as the medic's plate):
+
+| Stage | Credits | Bought | At the Boss | Trainings | Output |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 0 + 3,330 | Fine Attuner 1,500; armour class 3 600; upkeep 520 → 710 | Fine Attuner (its Bonds' save TN +1) | Devotion 4 (or drill) | heals ×1.00 |
+| 2 | 710 + 4,290 | Masterwork Attuner 3,500; ballistic helmet 350; upkeep 520 → 630 | Masterwork Attuner (TN +2) | Devotion 4 | heals ×1.00 |
+| 3 | 630 + 5,410 | armour class 4 1,200; trauma plate 400; upkeep 550 → 3,890 saved | class 4 | Devotion 4 | heals ×1.00 |
+| 4 | 3,890 + 6,520 | the Relic step 9,000 (Gentle); upkeep 600 → 810 | a Relic Attuner | Devotion 4 | heals **×1.15** |
+
+The healer's heal is landed (no roll), so a grade buys its Bonds' TN and its durability, not more healing; its healing grows by level, the Gentle property and the Deep Well boon (+20%). That is the one class the gear grows least (question 10).
+
+### 11.5 How the simulated party spends (for section 5.6)
+
+In order, at each shop: (1) a grade step on the item its door uses most (the weapon of its most-used category, else its focus), when affordable; (2) the next armour class, if its traits and Pain Threshold allow it; (3) a mod for a free slot, cheapest first; (4) a worn piece for an empty slot; (5) from stage 3, save for the Relic step; refills (upkeep) always first, at the counter's fixed prices. Rests: the training for its door (drill for a weapon user, study for a Sigil user, practice for an Outburst user, Devotion for the Faithful otherwise). Events: the off-books step if it can't afford a step that stage, else walk on. The plan is a policy in `test/balance/policies.ts`, so a better plan found in play is one edit.
+
+### 11.6 Gear in the difficulty curve
+
+**A fully upgraded character against a bare one at the same level, under the balance contract:**
+
+1. **Grade.** Rarity buys accuracy only (`rules.json rarity`: `acc` 0 / 1 / 2 / 2 / 2, `dmg` 1 at every grade since rules 1.26). One point to hit is ×1.077 on the party's hits (section 5.2, from the settled curve), so **Masterwork is ×1.077² = ×1.16**. That is exactly the contract's step from the plain rifle all in (125) to the best gun (145): 145 ÷ 125 = 1.16; the contract names `rules.json rarity` as the best gun's dial. **A graded weapon reaches the contract's best-gun ceiling and never passes it.** A Masterwork focus (rule 25a) gives a Sigil's or an Outburst's hits the same ×1.16 over what the contract measured with a Standard focus (question 5).
+2. **Relic.** No accuracy past Masterwork; its property is run power (up to 10%), inside the boon cap.
+3. **Mods** are not held by the contract yet (its section 7); estimated up to ×1.05 (a compensator or foregrip on Bursts, a scope on aimed shots); the simulated run measures them.
+4. **Armour.** Fitting and worn pieces subtract a flat value from each hit (`ARMOUR` 5 a class, `landed` in `effects/output.ts`). Against a Soldier's hit of about 38 before armour at level 1 (23.4 landed through class 3's 15), class 4 is **−21%** taken; at level 7 (the hit ×1.1119⁶ = ×1.89, about 72) **−9%**; at level 16 (×4.9, about 189) **−3%**. Armour carries stage 1 and fades by design of a flat value against a level-scaled hit, until Equipment 2.0.
+5. **In all:** a fully upgraded character deals **×1.16 to ×1.22** a bare one's (grade and mods), **×1.28 to ×1.34** with a Relic property, and at most **×1.16 × 1.05 × 1.5 = ×1.83** with a full boon cap (Relic property inside it); draft 2 counted ×1.5 (boons alone).
+
+**The stage curve with gear in** (the party's offense at each stage's start on the median plan of 11.4, boons +10% each, against the bulk target):
+
+| Stage start | Gear | Boons (and property) | Party | Bulk at 0.25 (draft 2) | Ratio | Bulk at 0.35 (draft 3) | Ratio | Draft 2's ratio (boons only) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 1.00 | 1.0 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| 2 | 1.077 (Fine) | 1.1 | 1.18 | 1.25 | 0.95 | 1.35 | 0.88 | 0.88 |
+| 3 | 1.16 × 1.02 | 1.2 | 1.42 | 1.50 | 0.95 | 1.70 | 0.84 | 0.80 |
+| 4 | 1.16 × 1.04 | 1.3 | 1.57 | 1.75 | 0.90 | 2.05 | 0.76 | 0.74 |
+| 5 | 1.16 × 1.05 | 1.5 (4 boons + Keen) | 1.83 | 2.00 | 0.91 | 2.40 | 0.76 | 0.70 |
+
+At draft 2's 0.25 the party would hold about 0.9 of the enemy's bulk all the way to stage 5: runs would last a stage or more past the target Leon accepted. At **0.35** the ratios come back to draft 2's through stage 4, where the target ends (0.88, 0.84, 0.76 against 0.88, 0.80, 0.74). So rule 19 now reads 0.35 and the stage rows of section 5.3 are re-checked there; the pressure term (+15% a stage) is unchanged, because the only defensive gear (armour) fades with level. The simulated runs (5.6) fit the final number.
+
+### 11.7 The numbers this section adds (all PROVISIONAL; spec section 14 items when built)
+
+`stage.credits` 0.35; `stage.bulk` 0.35 (was 0.25); `grade_up.price` fine 1,500, masterwork 3,500, relic 9,000; `grade_up.per_visit` 1; `grade_up.relic_from_stage` 3; `grade_up.cut_rate` 0.5; `relic_props` worths 10, 6, 6, 10, 4, 8, 6 and their values (+10%, +2, −1 AP, +10%, free swap, +1, +15%); `train.drill` 100, `train.study` 3, `train.practice` 5, `train.devotion` 2; `lasting_min` 2; `map.kind_weights` fight 44, cache 12, event 10; the events' numbers (750 / 1,750, a quarter of HP, 300 drill, 300 credits, 4 Devotion XP, 5 study, 5 practice, −10% max HP, 50% sale); `run.dead_return_hp` 1; the upkeep estimates (400 to 600 a stage) and the mods' ×1.05 (estimates, not data).
+
+## 12. Open questions for Leon (each with the recommendation; built as recommended if unanswered)
+
+Draft 2's questions 1 to 8 are settled (the block at the top). Still open:
+
+1. **Difficulty settings:** one in v1; Hard later is one field. **The name:** Survival *(Leon's)*.
+2. **The lead's calls made here:** a mode, not a generated campaign; trapped caches cut; a rest is a new session **and a training** (draft 2's "no rest or train" reversed by section 11); the always-stocked list (beyond Leon's ammunition floor: cores, parts, stims, kits, grenades, special rounds, restock); credits instead of a weapon at 50% of the cheapest offer; one offer always for your door; armour fitting until Equipment 2.0; no Celestial enemies; the Narrator panel collapsed, not hidden; the next tile by setting and boon theme; one currency (credits) and one rare item (the chit), not two currencies.
+
+New, from draft 3:
+
+3. **The curve's dial with gear in:** `stage.bulk` 0.25 → **0.35**, so the target you accepted (four end in stage 3 or 4) still holds once grades and mods count (section 11.6). **Recommend 0.35,** fitted by the simulated runs; the alternative is runs a stage longer.
+4. **A death costs nothing past its fight:** the dead come back at 1 HP and take a full share of the won fight's rewards. **Recommend yes** (the alternative, no weapon pick for the dead, punishes the player who was focused, not the one who played badly).
+5. **A graded focus and the contract:** the Sigil and Outburst ceilings were measured with a Standard focus; your ruling 3 adds up to ×1.16 with a Masterwork one. **Recommend treating it as the gun's case:** the ceilings stay what a Standard focus reaches, the grade is gear on top (as the best gun sits on the plain rifle), and the guard gains a "best focus" row measured at Masterwork; no dial changes.
+6. **The grade ladder:** 1,500 / 3,500 / 9,000 credits, one step a character a visit, the Relic step from stage 3, Celestial never sold. **Recommend as written.**
+7. **The Relic step's property:** one of three, its worth taken from the 50% boon cap. **Recommend yes** (one run-power budget; without it a Relic stacks on a full cap).
+8. **Rarity's "+1 mod slot":** the Core Rules table lists it; the engine never read it (mods fit by the weapon's slot list). **Recommend leaving it as built** for Survival (enforcing a count would take mods off Standard weapons that carry them today); settle it with Equipment 2.0.
+9. **A respec or perk-swap service** at an escalating price (Slay the Spire's removal, the research's "thinning" lesson). No primitive exists. **Recommend later,** with the roguelike, not in v1.
+10. **The healer grows least from gear** (heals are landed, so a grade buys its Bonds' TN, not healing). **Recommend accepting it and measuring** the healer's share in the simulated runs; if it falls behind, a healer property or boon in the pools, never a new rarity effect.
+11. **Events:** six trades, each with a cost, at most one each, always "walk on"; the node named Crossroads *(Suggested)*. **Recommend as written.**
+12. **Rest trainings:** drill 100, study 3, practice 5, Devotion 2 (about two uses' worth each, a third of a drill mark). **Recommend as written.**
+13. **Income:** `stage.credits` 0.35 (income follows fight length, prices stay fixed); the armourer's chit only from the gate in stage 1. **Recommend as written.**
