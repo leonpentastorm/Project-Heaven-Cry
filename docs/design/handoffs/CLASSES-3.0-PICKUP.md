@@ -56,7 +56,7 @@ renamed (Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Chan
 
 Each step: a builder agent with the brief of section 5; then the checks; then merge.
 
-- [ ] **0. The tools:** `docs/ENGINE-HOOKS.md` generated and checked by `npm run check`; `npm run built-from`.
+- [x] **0. The tools** (merged 13 Nov; the self-check still fails `rev4-moves-and-rename.md` for having no Built-from table: give it one before step 2): `docs/ENGINE-HOOKS.md` generated and checked by `npm run check`; `npm run built-from`.
 - [ ] **1. The primitives** of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
       test, its lint baseline, the catalogue regenerated, and the bespoke handlers it replaces deleted. Golden
       tables and replay hashes unchanged (a primitive that moves a golden line is wrong).
