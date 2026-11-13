@@ -27,7 +27,7 @@ import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, core
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
-import { gearIconUri } from '../game/gearIcons';
+import { gearIconUri, GEAR_INK, magGearId, roundsGearId, torsoGearId } from '../game/gearIcons';
 import { glyphKeyNav } from '../game/glyphKeys';
 import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer, wordMasteryChips, readableAt, traceMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
@@ -524,8 +524,9 @@ export class MainLogic extends DCLogic {
     // ---------- Gear: hands as panels, the body's slots by name, the backpack; hover for details, click for actions ----------
     const RW = (r) => (r && r !== 'standard' ? r.charAt(0).toUpperCase() + r.slice(1) : 'Standard');
     const marks = (r) => '◆'.repeat(RARITY[r || 'standard']?.marks || 0);
-    // Painted art when there is some; else the item's monoline icon (weapons, armour, shields: gearIcons.ts); else a glyph.
-    const artOf = (id) => IMG['weapon-' + id] || IMG['item-' + id] || gearIconUri(id);
+    // The item's picture (gearIcons.ts, the one resolver: the painted icon, large size, when there is one; else the monoline
+    // icon); else a glyph.
+    const artOf = (id) => gearIconUri(id, GEAR_INK, { large: true });
     const glyphOf = (id) => { const wd = WEAPON[id], it = ITEM[id] || {}; if (wd) return ({ pistol: '⌐', revolver: '⌐', smg: '╤', rifle: '═', shotgun: '╦', heavy: '▬', bow: ')', light_melee: '†', heavy_melee: '⚒', unarmed: '✊', thrown: '●', mana: '✧' })[wd.category] || '⚔';
       return it.category === 'shield' ? '⛉' : it.category === 'light' ? '✦' : it.category === 'armour' ? '▣' : it.category === 'mod' ? '⚙' : '▪'; };
     const tips = {};
@@ -566,9 +567,9 @@ export class MainLogic extends DCLogic {
     const hands = c ? (mainSide === 'right' ? [handCard('main'), handCard('off')] : [handCard('off'), handCard('main')]) : [];
     const bodySlots = SLOTS.filter(([id]) => !['main', 'off', 'pack'].includes(id)).map(([id, label]) => {
       const x = worn[id], wslot = SLOT_TO_WORN[id], wid = wslot && c?.worn?.[wslot], key = 'slot-' + id;
-      tips[key] = wid ? itemTip(wid) : id === 'outer' && c && c.armourClass ? { title: x[0], sub: 'outer torso · Armour Class', glyph: '▣', img: '', lines: ['Armour ' + (ARMOUR[c.armourClass]?.value || 0) + ' against every hit.', 'Sets your Armour Class.'], lore: '' } : { title: 'Empty', sub: label.toLowerCase(), glyph: '·', img: '', lines: [id === 'veil' ? 'The Veil: a special equipment type; its rules aren\'t written yet.' : 'Wear a piece here from your backpack.'], lore: '' };
+      tips[key] = wid ? itemTip(wid) : id === 'outer' && c && c.armourClass ? { title: x[0], sub: 'outer torso · Armour Class', glyph: '▣', img: gearIconUri(torsoGearId(c.armourClass), GEAR_INK, { large: true }), lines: ['Armour ' + (ARMOUR[c.armourClass]?.value || 0) + ' against every hit.', 'Sets your Armour Class.'], lore: '' } : { title: 'Empty', sub: label.toLowerCase(), glyph: '·', img: '', lines: [id === 'veil' ? 'The Veil: a special equipment type; its rules aren\'t written yet.' : 'Wear a piece here from your backpack.'], lore: '' };
       const acts = gearLocked || !wslot ? [] : [...(wid ? [{ key: key + '-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: wslot }); this.setState({ gearMenu: null }); } }] : []), ...cand((it) => ITEM[it.item || it.id]?.slot === wslot, 'Wear', 'worn')];
-      const icon = gearIconUri(wid);
+      const icon = gearIconUri(wid || (id === 'outer' && c?.armourClass ? torsoGearId(c.armourClass) : ''));
       return { key, label, name: x ? x[0] : '—', icon, hasIcon: !!icon, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : id === 'outer' ? 'Armour Class comes from your kit for now.' : 'Nothing in the pack fits here.',
         hover2: () => this.setState({ hotSlot: id }),
         style: 'display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 5px 6px; border-radius: 6px; font-size: 12px; cursor: pointer; width: 100%; text-align: left; color: inherit; font: inherit; border: 0; background: ' + (S.hotSlot === id || S.gearMenu === key ? '#1C2536' : 'transparent'),
@@ -576,7 +577,7 @@ export class MainLogic extends DCLogic {
     });
     // (backpack rows: hover for details, click for actions)
     const rigView = rig.map((r) => { const key = 'rig-' + r.key, it = r.src || {}, id = it.item || it.id;
-      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : it.kind === 'plot' ? '◈' : '▪', img: '', lines: [r.note, r.kg].filter(Boolean), lore: '' };
+      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : it.kind === 'plot' ? '◈' : '▪', img: gearIconUri(it.mags ? magGearId(it.weapon) : it.calibre ? roundsGearId(it.calibre) : '', GEAR_INK, { large: true }), lines: [r.note, r.kg].filter(Boolean), lore: '' };
       const acts = [...r.acts.map((a) => ({ ...a, go: () => { a.go(); this.setState({ gearMenu: null }); } })), ...((it.mags || it.calibre) && canLoad && !gearLocked ? [{ key: 'load', label: 'Load magazines', go: () => { act({ type: 'gear/load', charId: c.id }); this.setState({ gearMenu: null }); } }] : [])];
       return { ...r, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : 'Nothing to do with it here yet.',
         img: tips[key].img, hasImg: !!tips[key].img, noImg: !tips[key].img, glyph: tips[key].glyph,

@@ -2494,6 +2494,49 @@
       }
     },
     {
+      "id": "katana",
+      "name": "Katana",
+      "category": "light_melee",
+      "damage": 28,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 1.4,
+      "accuracy": 0,
+      "price_credits": 500,
+      "properties": [],
+      "text": "A long single-edged blade, carried in a sheath at the hip. It lends the Draw Cut technique: draw it from the pack and strike in one action.",
+      "mastery_family": "light_blades",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "lore": "The Kemizuchi schools say a blade is drawn once; the rest is follow-through.",
+      "type": "katana",
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "edge"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "draw_cut"
+      }
+    },
+    {
       "id": "war_axe",
       "name": "War axe",
       "category": "heavy_melee",

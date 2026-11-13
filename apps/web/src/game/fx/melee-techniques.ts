@@ -17,7 +17,7 @@ import type { FxEvent, GameState } from '@engine';
 import { phys } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
-import { gearIconUri, hasGearIcon } from '../gearIcons';
+import { gearLineUri, hasGearIcon } from '../gearIcons';
 import { type Pt, after, anim, burst, centre, floatText, layerEl, put, ring, shake, shakeScreen, slow, svg, trace } from './dom';
 
 // Colour = meaning (docs/design/colour-system.md): white the cut, Strength ink force (pushes, pulls, holds, slams),
@@ -186,7 +186,7 @@ export function bracketsMarkup(p: { x: number; y: number }, s: number, k = 1): s
 }
 /** The weapon's monoline icon as an <img> in white ink (a short white bar for a weapon with none). */
 function weaponImg(weapon: string | undefined, size: number, ink = WHITE): HTMLElement {
-  if (weapon && hasGearIcon(weapon)) { const i = document.createElement('img'); i.src = gearIconUri(weapon, ink); i.alt = ''; i.style.cssText = 'width:100%;height:100%;display:block;filter:drop-shadow(0 0 1px #0A0D13) drop-shadow(0 0 1px #0A0D13) drop-shadow(0 0 4px rgba(10,13,19,.9))'; return i; }
+  if (weapon && hasGearIcon(weapon)) { const i = document.createElement('img'); i.src = gearLineUri(weapon, ink); i.alt = ''; i.style.cssText = 'width:100%;height:100%;display:block;filter:drop-shadow(0 0 1px #0A0D13) drop-shadow(0 0 1px #0A0D13) drop-shadow(0 0 4px rgba(10,13,19,.9))'; return i; }
   const d = document.createElement('div'); d.style.cssText = 'width:100%;height:' + Math.max(3, size * 0.1) + 'px;margin-top:' + size * 0.45 + 'px;background:' + ink + ';border-radius:2px;box-shadow:0 0 3px #000'; return d;
 }
 
@@ -653,7 +653,7 @@ function drawMark(n: MarkNode): boolean {
   else if (n.m.kind === 'feint') n.g.innerHTML = bracketsMarkup(a, s, 0.92);
   else if (n.m.kind === 'nailed') {
     // the weapon stuck in the token at 35°, its grip standing out of the top right (a dark outline under the white ink)
-    const z = s * 0.9, x = a.x + s * 0.2, y = a.y - s * 0.22, img = (ink: string, dx: number, dy: number) => '<image href="' + gearIconUri(n.m.weapon, ink) + '" x="' + (x - z / 2 + dx).toFixed(1) + '" y="' + (y - z / 2 + dy).toFixed(1) + '" width="' + z.toFixed(1) + '" height="' + z.toFixed(1) + '" transform="rotate(35 ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
+    const z = s * 0.9, x = a.x + s * 0.2, y = a.y - s * 0.22, img = (ink: string, dx: number, dy: number) => '<image href="' + gearLineUri(n.m.weapon, ink) + '" x="' + (x - z / 2 + dx).toFixed(1) + '" y="' + (y - z / 2 + dy).toFixed(1) + '" width="' + z.toFixed(1) + '" height="' + z.toFixed(1) + '" transform="rotate(35 ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
     n.g.innerHTML = (n.m.weapon && hasGearIcon(n.m.weapon)
       ? [[-1.5, 0], [1.5, 0], [0, -1.5], [0, 1.5], [1, 1], [-1, -1]].map(([dx, dy]) => img('#0A0D13', dx, dy)).join('') + img('#FFFFFF', 0, 0)
       : '<path d="M' + (a.x - s * 0.16) + ' ' + (a.y - s * 0.16) + ' L' + (a.x + s * 0.16) + ' ' + (a.y + s * 0.16) + ' M' + (a.x + s * 0.16) + ' ' + (a.y - s * 0.16) + ' L' + (a.x - s * 0.16) + ' ' + (a.y + s * 0.16) + '" stroke="' + FORCE + '" stroke-width="' + Math.max(2.5, s * 0.07).toFixed(1) + '" stroke-linecap="round"/>')

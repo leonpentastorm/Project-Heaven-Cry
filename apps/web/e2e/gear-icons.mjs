@@ -4,12 +4,15 @@
 //  · the Proving Ground's Equipped, Pack and Give lists;
 //  · the sheet's GEAR tab (the hands, the body slots, the backpack rows);
 //  · the backpack in a fight, the reload card, a pile's hover and the pick-up checklist.
-// An item with no icon (a magazine, rounds, a ration pack) draws nothing in the slot.
+// Since 13 Nov 2026 an item the artist painted (art/icons/gear, built as /assets/gear-<id>.webp) shows the painted icon,
+// full colour; magazines and rounds show their painted magazine and rounds; the monoline icon is the fallback, and the
+// reload card (an effect) keeps the line art.
 // Screenshots: e2e/shots/icons-*.png (1440 × 900 and 1280 × 720).
 import { chromium, player, hostAs, click, pickAction, BASE, OUT, settle, watch } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const ICON = 'img[src^="data:image/svg+xml"]';
+const ICON = 'img:is([src^="data:image/svg+xml"], [src^="/assets/gear-"])'; // painted or monoline (one selector, so a scope prefix holds)
+const PAINT = 'img[src^="/assets/gear-"]';
 
 // ---------- 1. the Kit step ----------
 {
@@ -58,16 +61,16 @@ await settle(p, 400);
 const tools = p.locator('aside[aria-label="Proving Ground tools"]').first();
 await tools.waitFor({ timeout: 30000 });
 const eq = tools.locator('section[aria-label="Equipped"]');
-ok('the Proving Ground: Equipped shows the pistol\'s, the buckler\'s and the helmet\'s icons', (await eq.locator(ICON).count()) >= 3);
+ok('the Proving Ground: Equipped shows the pistol\'s, the buckler\'s and the helmet\'s painted icons', (await eq.locator(PAINT).count()) >= 3);
 ok('…the Pack shows the Evoker glove', (await tools.locator('section[aria-label="Pack"]').getByText(/^Evoker/).first().locator('xpath=ancestor::div[1]').locator(ICON).count()) === 1);
-ok('…the Pack shows the knife\'s icon, and nothing for magazines and rounds', await (async () => {
+ok('…the Pack shows the knife\'s painted icon, and the magazines their painted magazine', await (async () => {
   const rows = tools.locator('section[aria-label="Pack"] > div > div, section[aria-label="Pack"] div[style*="flex-wrap"]');
   const knife = tools.locator('section[aria-label="Pack"]').getByText(/Combat knife/).first();
   const kRow = knife.locator('xpath=ancestor::div[1]');
   const mag = tools.locator('section[aria-label="Pack"]').getByText(/magazine/i).first().locator('xpath=ancestor::div[1]');
-  void rows; return (await kRow.locator(ICON).count()) === 1 && (await mag.locator(ICON).count()) === 0;
+  void rows; return (await kRow.locator(PAINT).count()) === 1 && (await mag.locator(PAINT).count()) === 1;
 })());
-ok('the Give list: weapons and armour carry icons, at 32 px', (await tools.locator('section[aria-label="Give"] ' + ICON).count()) >= 10
+ok('the Give list: weapons and armour carry painted icons, at 32 px', (await tools.locator('section[aria-label="Give"] ' + PAINT).count()) >= 10
   && (await tools.locator('section[aria-label="Give"] ' + ICON).first().evaluate((e) => Math.round(e.getBoundingClientRect().width))) === 32);
 await snap('pg-1440');
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 400); await snap('pg-1280');
@@ -75,7 +78,7 @@ await p.setViewportSize({ width: 1440, height: 900 }); await settle(p, 300);
 
 // ---------- 3. the sheet's GEAR tab ----------
 await p.getByRole('tab', { name: 'GEAR', exact: true }).first().click(); await settle(p, 300);
-const sheetIcons = await p.locator('img').evaluateAll((xs) => xs.filter((x) => (x.getAttribute('src') || '').startsWith('data:image/svg+xml') && x.getBoundingClientRect().left < 340 && x.getBoundingClientRect().width > 0).length);
+const sheetIcons = await p.locator('img').evaluateAll((xs) => xs.filter((x) => /^(data:image\/svg\+xml|\/assets\/gear-)/.test(x.getAttribute('src') || '') && x.getBoundingClientRect().left < 340 && x.getBoundingClientRect().width > 0).length);
 ok('the sheet\'s GEAR tab: the hands, the helmet\'s slot and the pack\'s knife have icons (' + sheetIcons + ')', sheetIcons >= 4);
 await snap('sheet-gear-1440');
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 400); await snap('sheet-gear-1280');
@@ -93,7 +96,7 @@ await settle(p, 2500); // the COMBAT banner
 await p.getByRole('button', { name: /^Open your backpack/ }).first().click().catch(async () => { await p.keyboard.press('b'); }); await settle(p, 500);
 const bp = p.locator('[data-bp-row]');
 ok('the backpack in a fight: hands, the helmet and the pack\'s knife have icons', (await p.locator('[data-bp-row="main"] ' + ICON).count()) === 1 && (await p.locator('[data-bp-row^="worn-"] ' + ICON).count()) >= 1 && (await bp.filter({ hasText: /Combat knife/ }).first().locator(ICON).count()) === 1);
-ok('…and the magazines row has none', (await p.locator('[data-bp-row="mags"] ' + ICON).count()) === 0);
+ok('…and the magazines row has the painted pistol magazine', (await p.locator('[data-bp-row="mags"] ' + PAINT).count()) === 1);
 await snap('backpack-1440');
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 400); await snap('backpack-1280');
 await p.setViewportSize({ width: 1440, height: 900 }); await settle(p, 300);
@@ -126,7 +129,7 @@ const at = mine(g).pos, [x, y] = at.split(',').map(Number), R = 'ABCDEFGHIJKLMNO
 const tok = p.locator('.phc-grid button.phc-tok[aria-label^="' + R + ' "], .phc-grid button.phc-tok[aria-label^="' + R + ':"]').first();
 await tok.hover(); await settle(p, 300);
 const tip = tok.locator('[data-pile-tip]');
-ok('a pile\'s hover lists the buckler with its icon', /Buckler/.test((await tip.textContent().catch(() => '')) || '') && (await tip.locator(ICON).count()) === 1);
+ok('a pile\'s hover lists the buckler with its icon (and the reload\'s dropped magazine with its painted one)', /Buckler/.test((await tip.textContent().catch(() => '')) || '') && (await tip.locator(ICON).count()) >= 1 && (await tip.locator(ICON).count()) === (await tip.locator('img').count()));
 await snap('pile-hover-1440');
 await p.mouse.move(1430, 890);
 await pickAction(p, /^Pick up/); await settle(p, 300);

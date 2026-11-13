@@ -36,7 +36,7 @@ import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode } from '../game/techView';
-import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
+import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState } from '../game/commands';
@@ -1463,8 +1463,8 @@ export class CombatLogic extends DCLogic {
       show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '', reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
       sections: bpV ? bpV.sections.map((sc) => ({ key: sc.key, title: sc.title, isEmpty: !sc.rows.length, empty: sc.empty,
         rows: sc.rows.map((r) => ({ key: r.key, tag: r.tag, name: r.name, sub: r.sub, hasSub: !!r.sub, note: r.note, hasNote: !!r.note, hasActs: r.acts.length > 0,
-          // the item's icon (weapons, armour, shields), muted when none of its actions can run now
-          icon: gearIconUri(r.item, r.acts.length && r.acts.every((a) => a.off) ? GEAR_INK_OFF : GEAR_INK), hasIcon: hasGearIcon(r.item),
+          // the item's icon (gearIcons.ts: painted when there is one, else the monoline one, muted when none of its actions can run now)
+          icon: gearIconUri(r.item, r.acts.length && r.acts.every((a) => a.off) ? GEAR_INK_OFF : GEAR_INK), hasIcon: !!gearIconUri(r.item),
           acts: r.acts.map((a) => ({ key: a.key, text: a.label + (a.cost ? ' · ' + a.cost : ''), off: a.off, why: a.why || a.label + (a.cost ? ' · ' + a.cost : ''),
             go: () => { if (!a.off && a.action) act(a.action); },
             style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };

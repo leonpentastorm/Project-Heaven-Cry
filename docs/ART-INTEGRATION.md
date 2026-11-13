@@ -31,6 +31,7 @@ Character and patron portraits carry `eye_line` (`{x, y}`, fractions of the 4:5 
 | Wick trait master | 1254 × 1254 PNG | RGBA, white ink with transparency | Square, preserve alpha, preview on dark UI |
 | Wick test trait/perk | 1024 × 1024 master; 256/128/64/40 px exports | RGBA, exact white ink and alpha cutouts | Review candidates; use a dark chip on light screens |
 | M813 world illustration | 1600 × 900 PNG | RGB, painted local colours | Preserve 16:9; enforce spoiler routing |
+| Painted gear icon (`catalog.gear`) | 1024 × 1024 master; 256/128/64/32 px exports | RGBA, full colour, transparent | Square, never tinted or masked; the web build ships `gear-<item id>` (64) and `-lg` (256), resolved by `apps/web/src/game/gearIcons.ts` |
 
 Treat these as colour artwork in the engine's sRGB/color-texture mode, not normal maps or linear data. Begin with ordinary filtered scaling and inspect the result at the actual UI size. Compression and mipmap choices depend on the target engine and device; avoid settings that erase brush gaps or Wick's pixel-face separations.
 

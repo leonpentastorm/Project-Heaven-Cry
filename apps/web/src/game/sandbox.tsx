@@ -22,7 +22,7 @@ import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SH
 import { moduleGroups, feelingInk, feelingIconSrc, iconStyle, feelingTip } from './feelingsView';
 import { parseStyle } from '../dc/runtime';
 import { OPT_LABEL, optValue } from './actionPickers';
-import { gearIconUri } from './gearIcons';
+import { gearIconUri, magGearId, roundsGearId } from './gearIcons';
 import { Groups, GroupList, GroupSearch, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
 import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
@@ -628,8 +628,8 @@ function equipTo(it: PackIt): ['main' | 'off' | 'worn' | 'mod', string][] {
   if (d?.slot === 'off_hand') return [['off', 'Equip · off hand']];
   return [];
 }
-/** An item's icon (weapons, armour, shields: gearIcons.ts), or nothing for an item with none. */
-const GearIcon = ({ id, size = 24 }: { id?: string | null; size?: number }) => { const src = gearIconUri(id); return src ? <img className="phc-gear-icon" src={src} alt="" width={size} height={size} style={{ flex: 'none', width: size, height: size }} /> : null; };
+/** An item's icon (gearIcons.ts: painted when there is one, else monoline), or nothing for an item with none. */
+export const GearIcon = ({ id, size = 24 }: { id?: string | null; size?: number }) => { const src = gearIconUri(id); return src ? <img className="phc-gear-icon" src={src} alt="" width={size} height={size} style={{ flex: 'none', width: size, height: size }} /> : null; };
 const nameCell: React.CSSProperties = { minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 };
 const slotRow: React.CSSProperties = { display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) auto', gap: 8, alignItems: 'center', padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, fontSize: 13 };
 /** Where a focus is (spec: Hands 2, item 630: it counts only in a hand). */
@@ -665,7 +665,7 @@ function GearTab({ c }: { c: Character }) {
     </Section>
     <Section title={'PACK (' + pack.length + ')'} aria="Pack">
       {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, flexWrap: 'wrap' }}>
-        <GearIcon id={it.mags || it.calibre ? null : it.weapon || it.item || it.id} />
+        <GearIcon id={it.mags ? magGearId(it.weapon) : it.calibre ? roundsGearId(it.calibre) : it.weapon || it.item || it.id} />
         <span style={{ flex: '1 1 140px', minWidth: 0 }}>{it.name}{it.rarity && it.rarity !== 'standard' ? ' (' + it.rarity + ')' : ''}<span style={{ color: C.muted }}>{it.mags ? ' · ' + it.mags.length + ' × [' + it.mags.join(', ') + ']' : it.qty > 1 ? ' × ' + it.qty : ''}</span></span>
         {equipTo(it).map(([to, name]) => <button key={to} type="button" style={small} aria-label={name + ': ' + it.name} onClick={() => act({ type: 'sandbox/equip', charId: c.id, idx: i, to })}>{name}</button>)}
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Drop ' + it.name} onClick={() => act({ type: 'sandbox/drop', charId: c.id, idx: i })}>✕</button>

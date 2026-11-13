@@ -20,7 +20,8 @@ describe('icons in pile lists', () => {
   });
   it('the hover: a heading, then one row an entry, with an icon only for weapons, armour and shields', () => {
     const L = pileLook(pile([{ item: 'combat_knife', name: 'Combat knife' }, { item: 'mag:service_pistol', name: 'Service pistol magazine 7/12' }, { pack: { id: 'buckler', item: 'buckler', name: 'Buckler', qty: 1, kind: 'tool' }, name: 'Buckler' }]));
-    expect(L.tipRows.map((r) => [r.text, r.hasIcon])).toEqual([['PILE AT ' + L.tip.split('\n')[0].slice(8), false], ['Combat knife', true], ['Service pistol magazine 7/12', false], ['Buckler', true]]);
+    expect(L.tipRows.map((r) => [r.text, r.hasIcon])).toEqual([['PILE AT ' + L.tip.split('\n')[0].slice(8), false], ['Combat knife', true], ['Service pistol magazine 7/12', true], ['Buckler', true]]);
+    expect(L.tipRows[2].icon).toBe(gearIconUri('mag-pistol_32')); // a magazine: the painted magazine of its gun
     expect(L.tipRows[1].icon).toBe(gearIconUri('combat_knife'));
     expect(L.tip.split('\n')).toEqual(L.tipRows.map((r) => r.text)); // the text the hover reads is unchanged
   });
@@ -32,12 +33,12 @@ describe('icons in pile lists', () => {
   it('the pick-up checklist: each row has its icon in white and, for out of reach, muted', () => {
     const rows = pileRows(pile([{ item: 'combat_knife', name: 'Combat knife' }, { item: 'rounds:rifle', name: '30 × Rifle' }]));
     expect(rows[0]).toMatchObject({ hasIcon: true, icon: gearIconUri('combat_knife'), iconOff: gearIconUri('combat_knife', GEAR_INK_OFF) });
-    expect(rows[1]).toMatchObject({ hasIcon: false, icon: '', iconOff: '' });
+    expect(rows[1]).toMatchObject({ hasIcon: true, icon: gearIconUri('rounds-rifle') }); // loose rounds: the painted rounds of their calibre
   });
 });
 
 describe('icons in the backpack', () => {
-  it('hands, armour, pack weapons and pieces carry their item; ammo rows carry none', () => {
+  it('hands, armour, pack weapons and pieces carry their item; ammo rows their derived gear id', () => {
     const s = storyWith([{ name: 'Rook', kit: 'soldier' }]);
     const c0: Character = s.g.characters[s.chars[0].id];
     c0.weapon = 'service_pistol'; c0.weaponState = {}; c0.offHand = null; c0.worn = { head_accessory: 'night_goggles' };
@@ -50,6 +51,7 @@ describe('icons in the backpack', () => {
     expect(rowsOf('hands')[1].item).toBeUndefined(); // an empty off hand
     expect(rowsOf('armour').find((r) => /goggles/i.test(r.name))!.item).toBe('night_goggles');
     expect(rowsOf('pack').map((r) => r.item)).toEqual(expect.arrayContaining(['drifter_revolver', 'field_helmet']));
-    expect(rowsOf('ammo').filter((r) => !/^thr-/.test(r.key)).every((r) => !r.item)).toBe(true);
+    // ammo rows carry the derived gear id of their painted icon: the gun's magazine, the calibre's rounds
+    expect(rowsOf('ammo').find((r) => r.key === 'mags')?.item).toBe('mag-pistol_32');
   });
 });
