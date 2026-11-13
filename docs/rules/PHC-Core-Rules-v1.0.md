@@ -4484,9 +4484,16 @@ strength. Built:
 | Plant | 7 | 2 AP, 1 Shadow | an adjacent unseen enemy is Marked by you |
 | Disable | 7 | 2 AP, 1 Shadow | an adjacent machine, robot, turret or drone is Stunned 1 round (its save) |
 | Hijack | 9 | 2 AP, 2 Shadow | an adjacent machine, robot, turret or drone is Puppeted 1 round (its save) |
+| Decoy | 3 | 1 AP, 1 Shadow | a sound on a tile within 5: every other side now places you there (its last-seen tile of you: its searchers go there). Item 1970 |
+| Close Quarters | 3 | passive | an enemy next to you while you are Hidden rolls to spot you at +4 instead of finding you outright. Item 1971 |
+| Vault | 5 | 1 AP | cross one tile of half cover, a barricade or a hole to the free tile beyond it (two tiles away, in a straight line). Item 1972 |
+| Pick | 5 | 1 AP | a door next to you, no check: locked or closed, it opens; open, it closes and locks. Item 1973 |
+| Douse | 5 | 1 AP | a lamp within 2 goes out (its HP to 0). Item 1973 |
+| Shadow Run | 7 | passive, once a turn | a move made Hidden from cover to cover (it starts and ends next to cover) costs 1 AP less, at least 1. Item 1974 |
+| Rig | 7 | 2 AP, 1 Shadow | a trap of your side on your tile or one next to it, flat 25 at level 1 (the `flat` profile); one at a time. Item 1975 |
 
-**Not built in this step** (listed in `shadow.json pending` with the reason; item 1966): Parting Cut, Decoy, Close
-Quarters, Vault, Shadow Run, Case, Pick, Douse, Rig.
+Every verb above but Lift and the two passives needs you Hidden. **Not built** (listed in `shadow.json pending` with the
+reason; item 1966): Parting Cut and Case.
 
 ### 4. The Operative (`infiltrator`; Perception)
 
@@ -7604,10 +7611,17 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1963. **Shadow's verbs (rules 1.32 section 3; `data/shadow.json`):** Lift (3; 2 AP), Read Intent (3; 1 AP, reach 8), Cut the Strap (3; 1 AP, 1 Shadow), Fade (5; 2 AP, 2 Shadow), Open Seam (5; 1 AP, 1 Shadow, reach 8), Foul the Action (5; 1 AP, 1 Shadow), Timing (7; 1 AP, 1 Shadow, reach 8, a 2-round cooldown a target), Plant (7; 2 AP, 1 Shadow), Disable (7; 2 AP, 1 Shadow, 1 round), Hijack (9; 2 AP, 2 Shadow, 1 round). Reach 8 is the spec's example number (section 10). PROVISIONAL.
 1964. **Exposed and Off Balance (rules 1.32 section 3; `conditions.json`):** Exposed Defense −2 for 1 round (a state, no save); Off Balance −1 AP on the next turn (body; Timing gives it with no save). PROVISIONAL.
 1965. **Still Breath (rules 1.32 section 3; Ingenuity 5's unlock):** spot rolls against you −2 while you stand next to cover (predicate `by_cover` gains the word `here`). PROVISIONAL.
-1966. **The verbs not built in step 6 (rules 1.32 section 3):** Parting Cut, Decoy, Close Quarters, Vault, Shadow Run, Case, Pick, Douse, Rig: each needs a primitive the step did not add (`data/shadow.json pending` names it). Leon / the lead to rule whether they come with the enemy or screen step. PROVISIONAL.
+1966. **The verbs not built in step 6 (rules 1.32 section 3):** Parting Cut and Case (`data/shadow.json pending` names what each needs: Parting Cut a toggle that rides the Break with its own points gate and a re-hide after the Break's reveal; Case a read-out of a unit's kit and loot for a side). The other seven were built at the integration (items 1970 to 1976). PROVISIONAL.
 1967. **Flag conditions in the item ops (rules 1.32):** the predicates `<who>_has` / `_lacks` and op `cleanse` see the conditions kept as unit flags (Hidden, Prone, Bleeding, Dazed: `magic.ts condHas`); before, a data item could not test Hidden. `<who>_sees_self` is false while the holder is Hidden (shadow-spec 2.1). PROVISIONAL.
 1968. **New general op rows (rules 1.32):** op `take` (Lift: a throwable, else a spare magazine, into the pile on the holder's tile; `save`, `via`); op `displace` field `to: "cover"` (Fade's step); op `condition` field `same_entry` (Hidden without a new ambush). PROVISIONAL.
 1969. **Off Balance's "never two rounds running" (rules 1.32):** read as a 2-round cooldown for each target on Timing's condition, and a target already Off Balance can't be picked. PROVISIONAL.
+1970. **Decoy (rules 1.32 section 3; `shadow.json shadow.decoy`, op `last_seen`):** 1 AP and 1 Shadow, from Hidden, a tile within 5 (reach.tile): every other side's last-seen tile of you becomes that tile (`cb.lastSeen`), where its searchers go. PROVISIONAL.
+1971. **Close Quarters (rules 1.32 section 3; Ingenuity's unlock 3, op `close_roll` value 4):** an enemy next to you while you are Hidden rolls to spot you at +4 instead of finding you outright (the spot hook carries `close`; the die is rolled only for a roll). PROVISIONAL.
+1972. **Vault (rules 1.32 section 3; reach `over` ["half", "barricade", "hole"], op `displace` `to: "tile"` with no target: the holder steps, the one primitive Guide uses):** 1 AP, from Hidden, two tiles away in a straight line across a tile holding one of those, onto a free tile. PROVISIONAL.
+1973. **Pick and Douse (rules 1.32 section 3; reach `object`, op `object` do pick / break):** Pick, 1 AP, a door next to you (locked or closed: it opens; open: it closes and locks; not while someone stands in it); Douse, 1 AP, a lamp within 2 (its HP to 0). Doors only: no container in the engine has a lock. Douse puts out lamps (a terminal's glow and a fire are not a lamp). PROVISIONAL.
+1974. **Shadow Run (rules 1.32 section 3; Ingenuity's unlock 7, `cost_mod` -1 min 1 on the move, predicates `self_has` hidden and `by_cover` here and to):** once a turn. It reads the move's start and end tiles, not whether the end is out of view (the price is known before the walk). A cut the `cost` hook makes is a discount, not a debt: the walk's bank counts its price before the cut (combat.ts moveUnit). PROVISIONAL.
+1975. **Rig (rules 1.32 section 3; reach `stand`, op `object` do lay, `amounts.rig` 25 flat):** 2 AP and 1 Shadow, from Hidden, your tile or one next to it with no trap; a trap of your side (it never springs on your side), one at a time from this verb (Sabotage's own rig is apart). PROVISIONAL.
+1976. **The general rows of the integration (rules 1.32):** ops `last_seen`, `object` (do pick, break, lay; `has`, `kind`, `amount`) and `close_roll`; reach fields `object`, `stand`, `over` (an object word: a kind id, a kind field or a cover grade: objects.ts `objectIs`); op `displace` `to: "tile"` with no target moves the holder; predicate `answer_on` (an item Answer the character's Answer list switches off: Share a Hit, rules 1.33); a unit always seen (Traced) can't be made Hidden. PROVISIONAL.
 2000. **A focus is data (rules 1.33 section 1.1):** each focus item names `focus: {door, hand, fuel}` (Evoker brain_power / core, Emanator will_power / mp, Attuner empathy / mp); `self_holds {door}` takes a skill door or the old words evoker / emanator. PROVISIONAL.
 2001. **The Attuner (rules 1.33 section 1.2):** off hand, one hand, 0.4 kg, 1000 credits; MP lives in an Emanator or an Attuner; Tending's MP is paid only with the Attuner in a hand; in the pack Bonds stay but nothing new and no passive; off your person every Bond ends at the next round's start. PROVISIONAL.
 2002. **Two gloves, no weapon (rules 1.33 section 1.3):** the intended price of mixing two Soul doors. PROVISIONAL.

@@ -98,6 +98,10 @@ const live = (o: MapObject) => o.hp == null || o.hp > 0;
 export const blocksMove = (o: MapObject) => live(o) && kindOf(o).blocks_move && !(kindOf(o).door && o.open) && !(o as any).sabotaged;
 export const blocksSight = (o: MapObject) => live(o) && kindOf(o).blocks_sight && !(kindOf(o).door && o.open);
 export const coverKind = (o: MapObject): 'half' | 'full' | null => (live(o) ? kindOf(o).cover : null);
+/** Is this a standing object of this word: its kind's id (door, lamp, barricade, hole…), a field its kind has (door,
+ * light, electronic, trap…) or its cover grade (half, full)? One reading for every data word that names an object (a
+ * verb's reach `object` and `over`, op `object`'s `has`; Shadow's Pick, Douse and Vault, rules 1.32). */
+export const objectIs = (o: MapObject, w: string): boolean => live(o) && (o.kind === w || coverKind(o) === w || (w !== 'id' && w !== 'name' && !!(kindOf(o) as any)[w]));
 export const isDifficult = (o: MapObject) => !!kindOf(o).difficult;
 export const isTrap = (o: MapObject) => !!kindOf(o).trap && !o.resolved;
 export const hazardOf = (o: MapObject) => kindOf(o).hazard || null;

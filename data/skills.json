@@ -1491,21 +1491,29 @@
           "name": "Mastery 1",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "A perk step in this skill. The Shadow verbs of this rung open: Lift, Read Intent and Cut the Strap.",
+          "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
               "choice": "tier_1"
+            },
+            {
+              "op": "close_roll",
+              "when": "spot",
+              "value": 4,
+              "label": "Close Quarters"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true,
+          "provisional": true
         },
         "5": {
           "name": "Mastery 2",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Open Seam and Foul the Action.",
+          "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
           "effects": [
             {
               "op": "roll_mod",
@@ -1525,15 +1533,41 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Plant and Disable.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Shadow Run: once a turn, a move made Hidden from cover to cover costs {=unlocks.7.effects.1.value} AP less (at least {=unlocks.7.effects.1.min}). Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Rig, Plant and Disable.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
               "choice": "perk_step"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "value": -1,
+              "min": 1,
+              "if": {
+                "action": [
+                  "move"
+                ],
+                "self_has": [
+                  "hidden"
+                ],
+                "by_cover": [
+                  "here",
+                  "to"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "run"
+              },
+              "label": "Shadow Run"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true,
+          "provisional": true
         },
         "9": {
           "name": "Mastery 4",

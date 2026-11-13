@@ -1690,7 +1690,7 @@ export const sprintTiles = (u: Unit) => Math.floor(3 * u.movement);
 /** A move as the engine would make it, before anything is paid or walked: its refusal in words, or its route and its
  * price after the items have priced it ('move_cost'). moveUnit() makes exactly this move; actions.ts moveOptions() asks
  * it for every tile, on a throwaway copy (some items count a use as they price a move), with o.preview set. */
-export interface MovePlan { ap: number; /** the move's own price, before a free step or an item changed it */ ap0: number; tiles: number; route: string[]; mc: any; P: ReturnType<typeof paths> }
+export interface MovePlan { ap: number; /** the move's own price, before a free step or an item changed it */ ap0: number; tiles: number; route: string[]; mc: any; P: ReturnType<typeof paths>; /** its price after the items on move_cost, before the `cost` hook (the bank counts this when the hook cut it) */ apPre: number }
 export type MoveOpts = { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> }; /** A step that is part of something already paid for (a technique's step, rules 1.12): 0 AP and no opportunity attacks (unless oa), told to the items before they price the move. */ free?: boolean; oa?: boolean; /** A paid walk that is a technique's own run (Charge's): priced and walked as any move, but it costs no Momentum. */ part?: boolean } & { /** a dry run (told to the items on 'move_cost') */ preview?: boolean; /** the unit's shortest paths, already worked out */ base?: ReturnType<typeof paths> };
 export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): MovePlan | string {
   const blk = moveBlock(u); if (blk) return blk;
@@ -1716,12 +1716,12 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [], ...(o.preview ? { preview: true } : {}) });
   ap = o.free ? 0 : how === 'move' ? priced({ cb, u }, 'move', Math.max(0, mc.ap), undefined, { to, tiles }).ap : Math.max(0, mc.ap); // (a Sprint and a Disengage passed the `cost` hook when they were priced above) a free step stays free whatever the ground adds (the items were told it is free before they priced it)
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/move', how } }); if (no) return no; }
-  return { ap, ap0, tiles, route, mc, P };
+  return { ap, ap0, tiles, route, mc, P, apPre: o.free ? 0 : Math.max(0, mc.ap) };
 }
 /** A unit walks to a tile on its own (move, sprint or disengage): priced, paid, step by step with every reaction, trap and hazard. */
 export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): string | null {
   const pl = movePlan(cb, u, to, how, o); if (typeof pl === 'string') return pl;
-  const { ap, ap0, tiles, route, mc, P } = pl;
+  const { ap, ap0, tiles, route, mc, P, apPre } = pl;
   const from = u.pos, bank0 = u.bank;
   pay(cb, u, ap); if (how === 'sprint') u.sprinted = true; setBraced(u, false); u.moved = true;
   if (condOn(u, 'emplaced')) endCond(u, 'emplaced', cb);
@@ -1769,7 +1769,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   const end = u.pos, walked = P.dist[end] ?? tiles;
   // The bank: tiles paid for and not walked carry over (a walk cut short keeps them).
   // A move an item made free (priced a paid move at 0 AP: Run and Gun, rules 1.30 item 1811) keeps the bank as it was.
-  if (how === 'move' && !mc.free && !(ap0 > 0 && ap === 0)) u.bank = bank0 + ap * u.movement - walked;
+  // A cut the `cost` hook made (Shadow Run, rules 1.32) is a discount, not a debt: the bank counts the walk's price before it.
+  if (how === 'move' && !mc.free && !(ap0 > 0 && ap === 0)) u.bank = bank0 + (ap > 0 && ap < apPre ? apPre : ap) * u.movement - walked;
   say(cb, u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + walked + (walked === 1 ? ' tile' : ' tiles') + (walked < tiles ? ' of ' + tiles : '') + ', ' + ap + ' AP)' + sprung + '.');
   if (u.side === 'pc' && !u.dead) { spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => say(cb, l)); spotHazards(cb, u); }
   if (!u.dead && (cb.zones || []).length) sigilSpot(cb, u);

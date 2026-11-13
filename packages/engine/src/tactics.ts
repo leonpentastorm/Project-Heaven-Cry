@@ -14,7 +14,7 @@ import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
 import { condMods } from './condtable';
-import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
+import { emit, statQuery, charOfUnit, boundGame, heldOfUnit, hookUsed } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
 import { actionAp } from './effects/core';
 import { note } from './effects/narrator';
@@ -244,10 +244,15 @@ export function spotHidden(cb: Combat, rng: Rng, by: Unit, only?: Unit | null) {
   if (!alive(by)) return;
   for (const u of cb.units) {
     if (u.side === by.side || !u.hidden || u.dead || (only && u !== only)) continue;
-    if (dist(u.pos, by.pos) <= 1) { reveal(cb, u, by.name + ' is right next to them'); continue; }
-    if (!unitSees(cb, by, u.pos)) continue;
-    const m = by.side === 'foe' ? TIER_NOTICE[by.tier || 'minion'] ?? 0 : mod(by.vigilant || 0) + (by.sk?.vigilant || 0);
-    const ctx: any = emit(cb, 'spot', { by, u, die: rollD20(rng).die, mod: m, tn: CONTEST_BASE + (u.ingMod ?? -2) + (u.stealth || 0) + (u.sk?.ingenuity || 0), cancel: false, cb, rng });
+    const m = by.side === 'foe' ? TIER_NOTICE[by.tier || 'minion'] ?? 0 : mod(by.vigilant || 0) + (by.sk?.vigilant || 0), tn0 = CONTEST_BASE + (u.ingMod ?? -2) + (u.stealth || 0) + (u.sk?.ingenuity || 0);
+    // next to it: found outright, unless an item makes it a roll (op close_roll: Shadow's Close Quarters, rules 1.32);
+    // the hook is asked only when someone listens, and the die is rolled only for a roll (an outright find rolls nothing)
+    const close = dist(u.pos, by.pos) <= 1;
+    if (!close && !unitSees(cb, by, u.pos)) continue;
+    const pre: any = !close ? null : hookUsed('spot') ? emit(cb, 'spot', { by, u, die: 0, mod: m, tn: tn0, cancel: false, close: true, outright: true, cb, rng }) : { outright: true };
+    if (pre?.outright) { reveal(cb, u, by.name + ' is right next to them'); continue; }
+    const die = pre?.cancel ? 0 : pre?.die || rollD20(rng).die; // (an item may have set the close roll's die)
+    const ctx: any = pre ? { ...pre, die } : emit(cb, 'spot', { by, u, die, mod: m, tn: tn0, cancel: false, cb, rng });
     if (ctx.cancel) continue;
     const sr = judge('roll', { die: ctx.die }, ctx.mod, ctx.tn), ok = sr.ok; rollFx(cb, sr, by, { why: 'spot' }); // the hook may have changed the die, the modifier or the TN
     say(cb, by.name + ' looks for ' + u.name + ': ' + sr.text + (ok ? ' · spotted' : ' · nothing'));

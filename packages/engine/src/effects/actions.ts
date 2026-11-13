@@ -11,7 +11,9 @@ import { say } from '../log';
 // condition, knockback, Echo) and hands the rest to the Narrator with the item's text. A lane's ActionDef replaces the
 // default for the same action id.
 import type { Combat, Unit } from '../combat';
-import { unitSees } from '../combat';
+import { unitSees, objectsAt, xy, key } from '../combat';
+import { objectIs, isTrap } from '../objects';
+import { canStand } from '../kit';
 import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
 import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp, charOfUnit } from './hooks';
@@ -50,7 +52,9 @@ const TARGETING = (e: any): ActionDef['target'] => {
 /** The words a reach's side takes (a target relation to the holder). */
 export const REACH_SIDES = ['foe', 'ally', 'side', 'any'];
 /** The fields of a grant_action's `reach`. */
-export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'tile', 'beyond'];
+export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'tile', 'beyond',
+  // Classes 3.0 step 6, integration (rules 1.32: Shadow's Pick, Douse, Rig, Vault): what a picked tile must be
+  'object', 'stand', 'over'];
 /** Rules 1.33: the surfaces a grant_action's `scope` may name (default: combat and the area map). */
 export const GRANT_SCOPES = ['combat', 'world', 'story'];
 /** The prayers a grant_action may be. */
@@ -92,6 +96,18 @@ export function tileReachWhy(h: Holder, reach: any, tile: string | null | undefi
   if (!tile) return 'Pick a tile.';
   if (typeof reach.tiles === 'number' && distK(u.pos, tile) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && !unitSees(cb, u, tile)) return 'You can\'t see that tile.';
+  // object: the tile holds a standing object of that word (objects.ts objectIs: a kind, a kind field, a cover grade)
+  if (typeof reach.object === 'string' && !objectsAt(cb, tile).some((o) => objectIs(o, reach.object))) return 'No ' + reach.object.replace(/_/g, ' ') + ' there.';
+  // stand: a free tile a unit could stand on, with no trap on it
+  if (reach.stand && (!canStand(cb, tile, u) || objectsAt(cb, tile).some((o) => isTrap(o)))) return 'No room there.';
+  // over: the tile is two away in a straight line, across a tile that holds an object of one of these words, and free to land on
+  if (Array.isArray(reach.over)) {
+    const [ux, uy] = xy(u.pos), [tx, ty] = xy(tile), dx = tx - ux, dy = ty - uy;
+    if (![-2, 0, 2].includes(dx) || ![-2, 0, 2].includes(dy) || (!dx && !dy)) return 'Two tiles away, in a straight line.';
+    const mid = key(ux + dx / 2, uy + dy / 2);
+    if (!objectsAt(cb, mid).some((o) => reach.over.some((w: string) => objectIs(o, w)))) return 'Nothing to cross there.';
+    if (!canStand(cb, tile, u)) return 'No room to land.';
+  }
   return null;
 }
 const TARGET_OF_SIDE: Record<string, ActionDef['target']> = { foe: 'enemy', ally: 'ally', side: 'ally', any: 'unit' };

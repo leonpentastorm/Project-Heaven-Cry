@@ -4204,6 +4204,77 @@
       }
     },
     {
+      "id": "last_seen",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 step 6, integration; Shadow's Decoy, rules 1.32): every other side now places the holder on the event's tile (cb.lastSeen: where its searchers go for a Hidden hostile). Runs on a trigger, or as a verb aimed at a tile.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "last_seen",
+        "when": "acted"
+      }
+    },
+    {
+      "id": "object",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 step 6, integration; Shadow's Pick, Douse and Rig, rules 1.32): work the object on the event's tile that is `has` (a kind id, a kind field or a cover grade): do pick (a door: locked or closed, it opens; open, it closes and locks), break (its HP to 0; one with no HP is put out), or lay an object of `kind` there (the holder's side's, its damage the item's amount block `amount`, one at a time). Runs on a trigger, or as a verb aimed at a tile.",
+      "count": 0,
+      "params": [
+        "amount",
+        "and",
+        "do",
+        "has",
+        "if",
+        "kind",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "object",
+        "when": "acted",
+        "do": "break",
+        "has": "lamp"
+      }
+    },
+    {
+      "id": "close_roll",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 step 6, integration; Shadow's Close Quarters, rules 1.32): on the spot hook, an enemy next to the Hidden holder rolls to spot it (value added to its modifier) instead of finding it outright.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "close_roll",
+        "when": "spot",
+        "value": 4
+      }
+    },
+    {
       "id": "mend_mult",
       "tier": "core",
       "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, prayer, perk...). Runs on the triggers heal and shield.",
@@ -5309,7 +5380,7 @@
           "to"
         ],
         "changes_state": true,
-        "about": "push the target away from the holder (how: push) or pull it closer (pull); to: \"cover\", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy's view first (Shadow's Fade, rules 1.32): no tile, nothing happens; to: \"tile\" (rules 1.33, Guide) moves it, willing, to the event's tile when that is at most `tiles` from it (how: guide)"
+        "about": "push the target away from the holder (how: push) or pull it closer (pull); to: \"cover\", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy's view first (Shadow's Fade, rules 1.32): no tile, nothing happens; to: \"tile\" (rules 1.33, Guide) moves it, willing, to the event's tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow's Vault, rules 1.32)"
       },
       "zone": {
         "on": [
@@ -5630,6 +5701,103 @@
         ],
         "changes_state": true,
         "about": "take one thing the target carries into the pile on the holder's tile: a throwable, else a spare magazine (Shadow's Lift); save: the target's save family (body, brain, heart) rolled against the holder's strength (via: by that skill), and a success keeps it"
+      },
+      "last_seen": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [],
+        "changes_state": true,
+        "about": "every other side now places the holder on the event's tile (cb.lastSeen: where its searchers go for a Hidden hostile; Shadow's Decoy)"
+      },
+      "object": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "do",
+          "has",
+          "kind",
+          "amount"
+        ],
+        "changes_state": true,
+        "about": "work the object on the event's tile that is `has` (a kind id, a kind field or a cover grade: objects.ts objectIs): do \"pick\" (a door: locked or closed, it opens; open, it closes and locks, not while someone stands in it), \"break\" (its HP to 0 through the object damage; one with no HP is put out and gone); or do \"lay\": make an object of `kind` (a trap) there, the holder's side's, its damage the item's amount block `amount`, one at a time (the holder's last one from this item goes). Nothing there: nothing happens (Shadow's Pick, Douse and Rig, rules 1.32)"
+      },
+      "close_roll": {
+        "on": [
+          "spot"
+        ],
+        "fields": [
+          "value"
+        ],
+        "changes_state": false,
+        "about": "an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow's Close Quarters, rules 1.32)"
       }
     },
     "limit_scopes": [

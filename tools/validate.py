@@ -1958,9 +1958,16 @@ if TRIG:
             if not isinstance(r, dict): errors.append(f"{w}: a grant_action's reach is an object (tiles, sight, side, self, if, tied)")
             else:
                 for k in r:
-                    if k not in ("tiles", "sight", "side", "self", "if", "tied", "tile", "beyond"): errors.append(f"{w}: unknown reach field '{k}'")
+                    if k not in ("tiles", "sight", "side", "self", "if", "tied", "tile", "beyond", "object", "stand", "over"): errors.append(f"{w}: unknown reach field '{k}'")
                 # Classes 3.0 step 5 (rules 1.31): reach.tile: the action aims at a tile (within tiles, in sight), not a unit
-                if "tile" in r and (r["tile"] is not True or any(k in r for k in ("side", "self", "tied", "if"))): errors.append(f"{w}: reach.tile is true, with only tiles and sight beside it")
+                if "tile" in r and (r["tile"] is not True or any(k in r for k in ("side", "self", "tied", "if"))): errors.append(f"{w}: reach.tile is true, with only tiles, sight, object, stand and over beside it")
+                # Classes 3.0 step 6, integration (rules 1.32: Pick, Douse, Rig, Vault): what the picked tile must be; an
+                # object word is an objects.json kind id, a field of a kind, or a cover grade (engine objects.ts objectIs)
+                if any(k in r for k in ("object", "stand", "over")) and r.get("tile") is not True: errors.append(f"{w}: reach.object, stand and over go with reach.tile")
+                _OW = {o.get("id") for o in (data.get("objects") or {}).get("items") or []} | {k for o in (data.get("objects") or {}).get("items") or [] for k in o if k not in ("id", "name", "text")} | {"half", "full"}
+                if "object" in r and r["object"] not in _OW: errors.append(f"{w}: reach.object '{r['object']}' is no object kind, kind field or cover grade")
+                if "stand" in r and r["stand"] is not True: errors.append(f"{w}: reach.stand is true")
+                if "over" in r and not (isinstance(r["over"], list) and r["over"] and all(x in _OW for x in r["over"])): errors.append(f"{w}: reach.over is a list of object kinds, kind fields or cover grades")
                 if "tiles" in r and isinstance(r["tiles"], dict): check_number_block(r["tiles"], f"{w}: reach.tiles")
                 elif "tiles" in r and not (isinstance(r["tiles"], (int, float)) and not isinstance(r["tiles"], bool)): errors.append(f"{w}: reach.tiles is a number (or a number block)")
                 if "beyond" in r: check_pred("target_tied", r["beyond"], w)

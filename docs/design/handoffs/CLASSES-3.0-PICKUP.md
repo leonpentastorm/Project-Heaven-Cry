@@ -164,9 +164,9 @@ Step 5 (`docs/design/handoffs/classes-3.0-step-5.md` section 5, rules 1.31 items
 
 Step 6 (`docs/design/handoffs/classes-3.0-step-6.md` section 5, rules 1.32 items 1950 to 1969; built on
 `worktree-agent-a240d31a3975ddb8c`, not merged back):
-1. Nine verbs not built (Parting Cut, Decoy, Close Quarters, Vault, Shadow Run, Case, Pick, Douse, Rig): each needs a
-   general primitive (a tile pick on a verb's reach, an op on the last-seen tile, a toggle riding a toggle...). **The
-   lead to rule** which step adds them (item 1966).
+1. Of the nine verbs not built, seven were built at the integration (Decoy, Close Quarters, Vault, Pick, Douse, Shadow
+   Run, Rig; items 1970 to 1976); **Parting Cut and Case stay pending** (item 1966: a toggle riding the Break; a kit
+   read-out). See the step 6 hand-off's "Integration".
 2. `<who>_has` / `_lacks` and `cleanse` see flag conditions (Hidden, Prone, Bleeding, Dazed), and `<who>_sees_self`
    is false while the holder is Hidden (item 1967): general meaning changes, no golden line outside Shadow moved.
 3. The Break's 1-Shadow floor is the toggle's `if` (`self_has_res`); the turn's attack mark is `attack_roll`; the

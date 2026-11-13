@@ -130,3 +130,53 @@ the spec's words ("An enemy sees you", "It can see you") instead of the generic 
    run when it succeeds; `say` with `{then}`). Text with `{=effects.0.ap}` placeholders.
 2. `python3 tools/validate.py data`; a test in `test/shadow-operative.test.ts`; the golden tables gain its cost rows
    (record them on purpose). It appears on the SHADOW tab by itself.
+
+## Integration (13 Nov 2026, on the worktree branch `worktree-agent-ab5abe8a0a27c4742`)
+
+Four commits on top of the builder's 17: the merge of the main line (step 5, the Chaplain), the merge of step 7
+(Tending, Bonds and the Mender: `worktree-agent-ab6c4efb0b594722e`), then part 2 (the lead's rulings on this hand-off's
+questions) and the close. Not pushed, no version bump.
+
+**The merges.** Rules 1.31, 1.32 and 1.33 all stand (section 14 items 1900s, 1950s, 2000s; this step's new ones are
+1970 to 1976). Data merged by id (a 3-way JSON merge of classes, conditions, rules and effect_ops: no conflict left);
+generated files regenerated; `lint-item-ops` re-recorded at or under every parent; the weapon-neutral PENDING list is
+empty (Called Shot and Toxin here, Verdict and Blessed Arms in step 5). Golden tables and replays were never
+hand-merged: re-recorded on the merged code after the four oracles passed, then counted against each parent:
+- with step 5: the merged tables differ from the main line by 1264 lines, every one a line this step moved except 66
+  marks lines and 2 coverage lines that both steps touched (step 5's Smite rows gain this step's door flag); from this
+  branch by 511, all step 5's (the same both-sides lines). Replays: 13 differ from the main line (exactly the 13 this
+  step moved), 12 from this branch (exactly step 5's 12).
+- with step 7: 1721 lines from step 7, all steps 5/6's but 61 both-sides lines (step 7's Mender and spray_and_pray rows
+  gain `res.shadow` and the door flag; coverage counts; Vanish's log loses "uses Vanish." by step 7's rule that an
+  all-acted grant writes no Narrator note); 4165 from steps 5+6, all step 7's but the same 58. Replays: 22 and 13, each
+  exactly the other side's.
+- No primitive was added twice under two names: step 7's op `displace` `to: "tile"` and the verb `amountHome` are the
+  one copy (this step's Vault and Rig use them; Vault with no target named moves the holder).
+
+**Interactions.** (1) Step 6's predicate changes against the Chaplain and the Skirmisher: their suites pass unchanged
+(`chaplain`, `faith-*`, `skirmisher`). (2) A Traced unit (`always_seen`, rules 1.33) could still be made Hidden by Fade
+or Vanish (the condition op): fixed in `magic.ts applyCond` and `tactics.ts hide` (a unit always seen can't hide; test
+in `shadow-operative`). (3) The lead's ruling on step 7: **Share a Hit is an Answer with a switch**: new predicate
+`answer_on` reads the character's Answer list (`phys/answers`, which now takes item Answers beside techniques); on by
+default, it spends the one protective reaction, off it never fires (test in `tending`). The Mender's guard rows are
+not added (two of three lines read outside the contract's ±12%: steps 7b and 11 refit `tend.k` and `per_bond`).
+Step 7's section 6 readings were checked against `bonds-spec.md`'s "Settled by Leon" notes: none contradicts them
+(the Bond's to-hit term is on `to_hit`, every attack roll, as Leon settled).
+
+**Part 2, the nine verbs.** Built (7), each a test in `test/shadow-verbs-more.test.ts` read from data, each on the
+SHADOW tab through the descriptors (tile-aimed, step 5's `reach.tile`), weapon-neutral:
+- **Decoy** (3): op `last_seen` (new): every other side's last-seen tile of you becomes the picked tile.
+- **Close Quarters** (3, Ingenuity's unlock 3): op `close_roll` (new) on the spot hook, which now carries `close` for an
+  enemy next to the Hidden unit (asked only when someone listens; the die rolled only for a roll: no replay moved).
+- **Vault** (5): reach `over` (new) and step 7's `displace to: "tile"`.
+- **Pick** (5) and **Douse** (5): reach `object` (new) and op `object` (new: do pick / break). Doors only (no container
+  has a lock); Douse puts out lamps only (a terminal and a fire are not lamps).
+- **Shadow Run** (7, Ingenuity's unlock 7): data only (`cost_mod` on the move, `by_cover` here and to). It can't read
+  "ending out of view" (the price is known before the walk). The move's bank now counts a `cost`-hook cut as a
+  discount, not a debt (`combat.ts moveUnit`; nothing else cuts a paid move: no golden line moved).
+- **Rig** (7): reach `stand` (new), op `object` do lay with the verb's `amounts.rig` (25 flat).
+Still pending (2): **Parting Cut** (a toggle riding the Break with its own points gate, and a re-hide after the
+Break's reveal at the action's end: the toggle primitive has neither) and **Case** (a read-out of a unit's kit and
+loot for a side: a `reveal what: kit` the fog and the hover card would show; not small). Part 2 moved 60 new golden
+lines (the new verbs' and unlocks' rows; no line changed) and 7 replays' state hashes only (actions and streams
+identical: the new items' state).

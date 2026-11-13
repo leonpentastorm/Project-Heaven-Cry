@@ -491,6 +491,228 @@
           ]
         }
       ]
+    },
+    {
+      "id": "shadow.decoy",
+      "name": "Decoy",
+      "kind": "verb",
+      "group": "slip",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: a sound on a tile within {=effects.0.reach.tiles} of you. Every enemy now thinks you are there, and its searchers go there.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "decoy",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tile": true,
+            "tiles": 5
+          },
+          "effects": [
+            {
+              "op": "last_seen",
+              "say": "{self} throws a sound: the enemy will look for them there."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.vault",
+      "name": "Vault",
+      "kind": "verb",
+      "group": "slip",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 5
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP, from Hidden: cross one tile of half cover, a barricade or a hole to the free tile beyond it.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "vault",
+          "ap": 1,
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tile": true,
+            "tiles": 2,
+            "over": [
+              "half",
+              "barricade",
+              "hole"
+            ]
+          },
+          "effects": [
+            {
+              "op": "displace",
+              "to": "tile",
+              "say": "{self} vaults over{then}.",
+              "tiles": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.pick",
+      "name": "Pick",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 5
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP, from Hidden: pick a door next to you, mid-fight, with no check: a locked or closed door opens, an open one closes and locks.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "pick",
+          "ap": 1,
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tile": true,
+            "tiles": 1,
+            "object": "door"
+          },
+          "effects": [
+            {
+              "op": "object",
+              "do": "pick",
+              "has": "door",
+              "say": "{self} works the lock{then}."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.douse",
+      "name": "Douse",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 5
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP, from Hidden: put out a lamp within {=effects.0.reach.tiles} tiles. The dark cuts sight there.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "douse",
+          "ap": 1,
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tile": true,
+            "tiles": 2,
+            "object": "lamp"
+          },
+          "effects": [
+            {
+              "op": "object",
+              "do": "break",
+              "has": "lamp",
+              "say": "{self} douses the light{then}."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shadow.rig",
+      "name": "Rig",
+      "kind": "verb",
+      "group": "work",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 7
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: rig a trap on your tile or one next to it. The next enemy to step on it takes {=amounts.rig.base} damage, more as you level, and stops there; your side never springs it. One at a time: a new one takes the old one's place.",
+      "amounts": {
+        "rig": {
+          "kind": "damage",
+          "base": 25,
+          "profile": "flat",
+          "type": "physical",
+          "provisional": true
+        }
+      },
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "rig",
+          "ap": 2,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "at_will",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tile": true,
+            "tiles": 1,
+            "stand": true
+          },
+          "effects": [
+            {
+              "op": "object",
+              "do": "lay",
+              "kind": "trap",
+              "amount": "rig",
+              "say": "{self} rigs a trap{then}."
+            }
+          ]
+        }
+      ]
     }
   ],
   "pending": [
@@ -499,63 +721,14 @@
       "name": "Parting Cut",
       "group": "break",
       "min": 9,
-      "why": "a toggle that rides on the Break (both on one attack) and a points gate on a toggle: no primitive carries either (rules 1.32 item 1966)"
-    },
-    {
-      "id": "shadow.decoy",
-      "name": "Decoy",
-      "group": "slip",
-      "min": 3,
-      "why": "no op writes an enemy's last-seen tile (cb.lastSeen) (item 1966)"
-    },
-    {
-      "id": "shadow.close_quarters",
-      "name": "Close Quarters",
-      "group": "slip",
-      "min": 3,
-      "why": "the spot hook does not carry the 'ending next to it finds it outright' case (tactics.ts spotHidden) (item 1966)"
-    },
-    {
-      "id": "shadow.vault",
-      "name": "Vault",
-      "group": "slip",
-      "min": 5,
-      "why": "a verb's reach picks units, not a tile beyond cover (item 1966)"
-    },
-    {
-      "id": "shadow.shadow_run",
-      "name": "Shadow Run",
-      "group": "slip",
-      "min": 7,
-      "why": "the cost hook does not know a move will end by cover before it is walked (item 1966)"
+      "why": "a toggle that rides on the Break (both on one attack, with its own points gate), and a re-hide after the Break's own reveal at the action's end: no primitive orders two toggles' acted effects or gates a toggle on the points it spends (rules 1.32 item 1966)"
     },
     {
       "id": "shadow.case",
       "name": "Case",
       "group": "mark",
       "min": 3,
-      "why": "no read-out of an enemy's kit and loot for a side (item 1966)"
-    },
-    {
-      "id": "shadow.pick",
-      "name": "Pick",
-      "group": "work",
-      "min": 5,
-      "why": "a verb's reach picks units, not a door tile (item 1966)"
-    },
-    {
-      "id": "shadow.douse",
-      "name": "Douse",
-      "group": "work",
-      "min": 5,
-      "why": "a verb's reach picks units, not a light object (item 1966)"
-    },
-    {
-      "id": "shadow.rig",
-      "name": "Rig",
-      "group": "work",
-      "min": 7,
-      "why": "no op lays a trap object (the Operative's Sabotage rigs through its own handler) (item 1966)"
+      "why": "no read-out of a unit's kit and rolled loot for a side (a condition row's `reveal` knows only `intent`; the fog and the hover card would need `what: kit`) (item 1966)"
     }
   ]
 }

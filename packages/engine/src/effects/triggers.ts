@@ -27,7 +27,8 @@ import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSig
 import { WEAPON } from '../data';
 import { magsOf, type PackItem } from '../character';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
-import { nextToCover } from '../combat';
+import { nextToCover, objectsAt, objectsOf, damageObject, refOf } from '../combat';
+import { objectIs, makeObject } from '../objects';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
 import { isStatId } from './stats';
 import type { ItemInfo } from './types';
@@ -370,10 +371,12 @@ O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amoun
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
   mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
 });
-O('displace', ANY, true, ['tiles', 'how', 'to'], 'push the target away from the holder (how: push) or pull it closer (pull); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens; to: "tile" (rules 1.33, Guide) moves it, willing, to the event\'s tile when that is at most `tiles` from it (how: guide)', (ev, e) => {
+O('displace', ANY, true, ['tiles', 'how', 'to'], 'push the target away from the holder (how: push) or pull it closer (pull); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens; to: "tile" (rules 1.33, Guide) moves it, willing, to the event\'s tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow\'s Vault, rules 1.32)', (ev, e) => {
   if (e.to === 'cover') return toCover(ev, pick(ev, e), e);
-  const t = pick(ev, e); if (!t || t === ev.self) return;
+  const t = pick(ev, e); if (!t) return;
+  // to: "tile" moves the target (Guide, rules 1.33) or the holder itself (Shadow's Vault, rules 1.32: the one primitive for both)
   if (e.to === 'tile') { const at: string | null = ev.ctx.tile ?? null; if (!at || at === t.pos || dist(t.pos, at) > (e.tiles ?? 1)) return false; return displace(ev.cb, rngOf(ev.h, ev.ctx), t, { tile: at }, { by: ev.self, how: 'guide', source: ev.h.key, willing: true }).text || ''; }
+  if (t === ev.self) return;
   const how = e.how === 'pull' ? 'pull' : 'push', to = how === 'pull' ? { toward: ev.self.pos, tiles: e.tiles } : { away: ev.self.pos, tiles: e.tiles };
   return displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key }).text || '';
 });
@@ -440,6 +443,35 @@ function toCover(ev: Ev, u: Unit | null, e: any): string | false {
   const r1 = displace(ev.cb, rngOf(ev.h, ev.ctx), u, { tile: k }, { by: u, how: 'teleport', source: ev.h.key, willing: true, fx: { magic: true } });
   return r1.moved ? ' · steps to cover' : '';
 }
+
+// Classes 3.0 step 6, integration (rules 1.32: Shadow's Decoy, Pick, Douse, Rig, Close Quarters): three general rows.
+O('last_seen', ANY, true, [], 'every other side now places the holder on the event\'s tile (cb.lastSeen: where its searchers go for a Hidden hostile; Shadow\'s Decoy)', (ev) => {
+  const k = ev.ctx.tile ?? null; if (!k) return false;
+  for (const side of new Set(ev.cb.units.filter((v) => v.side !== ev.self.side && !v.dead).map((v) => v.side))) ((ev.cb.lastSeen ||= {})[side] ||= {})[ev.self.id] = k;
+});
+O('object', ANY, true, ['do', 'has', 'kind', 'amount'], 'work the object on the event\'s tile that is `has` (a kind id, a kind field or a cover grade: objects.ts objectIs): do "pick" (a door: locked or closed, it opens; open, it closes and locks, not while someone stands in it), "break" (its HP to 0 through the object damage; one with no HP is put out and gone); or do "lay": make an object of `kind` (a trap) there, the holder\'s side\'s, its damage the item\'s amount block `amount`, one at a time (the holder\'s last one from this item goes). Nothing there: nothing happens (Shadow\'s Pick, Douse and Rig, rules 1.32)', (ev, e) => {
+  const cb = ev.cb, u = ev.self, k = ev.ctx.tile ?? null; if (!k) return false;
+  if (e.do === 'lay') {
+    if (objectsAt(cb, k).some((o) => objectIs(o, 'trap') && !o.resolved)) return false;
+    const b = typeof e.amount === 'string' ? blockOf(ev.h, { amount: e.amount }) : null;
+    const dmg = b ? amountOf({ ...specOf(b), round: 'floor' }, u, { who: ev.h.c || null, counts: countsOf(ev, b) }).amount : undefined;
+    cb.objects = objectsOf(cb).filter((o: any) => !(o.laidBy === ev.h.key && o.owner === u.id));
+    const id = 'laid' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
+    cb.objects.push(makeObject(id, e.kind, k, { text: 'Laid by ' + u.name + '.', owner: u.id, side: u.side, laidBy: ev.h.key, hidden: false, ...(dmg != null ? { damage: dmg } : {}) } as any));
+    emitFx(cb, 'rig', { unit: u.id, at: k, id, only: u.side });
+    return ' · ' + refOf(k) + ' is rigged';
+  }
+  const o: any = objectsAt(cb, k).find((x) => objectIs(x, e.has)); if (!o) return false;
+  const name = o.name.toLowerCase();
+  if (e.do === 'pick') { // a locked or closed door opens; an open one closes and locks (not while someone stands in it)
+    if (!o.open) { o.locked = false; o.open = true; emitFx(cb, 'door', { unit: u.id, at: k, open: true }); return ' · the ' + name + ' at ' + refOf(k) + ' opens'; }
+    if (cb.units.some((x) => !x.dead && x.pos === k)) return false;
+    o.open = false; o.locked = true; emitFx(cb, 'door', { unit: u.id, at: k, open: false }); return ' · the ' + name + ' at ' + refOf(k) + ' is shut and locked';
+  }
+  if (e.do === 'break') { if (o.hp != null) return damageObject(cb, k, o.hp, 0, u); cb.objects = objectsOf(cb).filter((x) => x !== o); emitFx(cb, 'object', { at: k, what: o.kind, broken: true }); return ' · the ' + name + ' at ' + refOf(k) + ' goes out'; }
+  return false;
+});
+O('close_roll', ['spot'], false, ['value'], 'an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow\'s Close Quarters, rules 1.32)', (ev, e) => { if (ev.ctx.close) { ev.ctx.outright = false; ev.ctx.mod += e.value || 0; } });
 
 /** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
 const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);
