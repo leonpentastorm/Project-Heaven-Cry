@@ -1493,7 +1493,7 @@ export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
  *  an action slowed after a spotlight cut-in. */
 export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1, due?: number) {
   const ev = { n: 0, ...e } as FxEvent, at = due ?? performance.now();
-  withEvent(ev.n, () => trace('ev', { k: ev.k, id: ev.id, tech: ev.tech, weapon: ev.weapon, cat: ev.cat, mode: ev.mode, hit: ev.hit, object: ev.object, thrown: ev.thrown, chain: ev.chain, dmg: ev.dmg, why: ev.why, hp: !!ev.hp }), at);
+  withEvent(ev.n, () => trace('ev', { k: ev.k, id: ev.id, tech: ev.tech, weapon: ev.weapon, cat: ev.cat, mode: ev.mode, hit: ev.hit, object: ev.object, cover: !!ev.cover, thrown: ev.thrown, chain: ev.chain, dmg: ev.dmg, why: ev.why, hp: !!ev.hp }), at);
   try { if (mineOnly(ev)) withEvent(ev.n, () => withTempo(tempo, () => H[ev.k]?.(ev)), at); } catch (err) { console.warn('fx', ev.k, err); }
   try { if (ev.k === 'object' && ev.at) releaseTile(String(ev.at)); else if (ev.k === 'explode' && ev.at) releaseCloud(ev); } catch { /* */ }
   // The turn intro (turnIntro.tsx) times enemy-turn banners on this clock instead of estimating. stream names whose
