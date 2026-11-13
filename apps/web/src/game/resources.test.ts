@@ -134,7 +134,7 @@ describe('the Soul caster: MP, Strain vs its limit, the held Outburst', () => {
 });
 
 describe('class resources, named from the data', () => {
-  it('a Fighter sees Momentum / 5 (pips, Body amber), with the moves that spend it', () => {
+  it('a Breaker (fighter) sees Momentum / 5 (pips, Body amber), with the moves that spend it', () => {
     const { u, c, g } = fight((c) => { c.classId = 'fighter'; });
     expect(u.resMax?.momentum).toBe(5);
     u.res.momentum = 3;
@@ -169,7 +169,7 @@ describe('class resources, named from the data', () => {
     const n = fight((c) => { c.classId = null; c.skills.durability = 0; });
     expect(row(resourcesOf(n.u, n.c, n.g), 'res-guard')).toBeUndefined();
   });
-  it('a Defender sees Guard; a Bard (the Medic moves, Revision 3) sees Supplies out of a fight too (they persist)', () => {
+  it('a Bulwark (defender) sees Guard; a Mender (bard; the Medic moves, Revision 3) sees Supplies out of a fight too (they persist)', () => {
     const d = fight((c) => { c.classId = 'defender'; });
     expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: '0 / 5' });
     const m = fight((c) => { c.classId = 'bard'; });

@@ -439,7 +439,7 @@ register({
     },
     turn_end: (ctx, h) => { const b = stateOf(h).boss; if (b && b[ctx.u.id]) delete b[ctx.u.id]; },
   },
-  brief: () => 'Celestials (Narrator-run) honour the −2 against anyone but the Defender.',
+  brief: () => 'Celestials (Narrator-run) honour the −2 against anyone but the Bulwark.',
 });
 
 // ---------- Reactive Plate (rank III, passive; no reaction, PROVISIONAL) ----------

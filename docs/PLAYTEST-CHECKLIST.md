@@ -50,14 +50,14 @@ to 10 character first, then a level 1 one.
 
 ## 3. Melee and techniques (rules 1.12, 1.26)
 
-- [ ] A greatsword all-in hits about 165% of a rifle; a Defender with a shield hits less but is much harder to kill.
+- [ ] A greatsword all-in hits about 165% of a rifle; a Bulwark with a shield hits less but is much harder to kill.
 - [ ] Cleave, Cut Edge, Draw Cut, Sweep and Cruelty make the target **bleed for three turns** (15 damage in all),
       not one. Check the bleeding tag counts down 3, 2, 1.
 - [ ] Shove an enemy into a wall: it is pushed or holds firm. **Shoving an enemy into a held Watch does not make the
       Watch fire any more** (a call, see list below).
 - [ ] Push an enemy onto a trap, fire, mine or hazard: it goes off for the pushed unit. Throw Down, Drag and Bash's
       heavy push do the same.
-- [ ] An Anchor Defender cannot be knocked prone by a maul, a wall or a Stop.
+- [ ] An Anchor Bulwark cannot be knocked prone by a maul, a wall or a Stop.
 - [ ] A Stop, a Shove, a Hymn's save, a minefield, a talk-down and a surrender offer all roll their save with the die
       and modifier visible in the log.
 - [ ] Opportunity attack: walk away from an adjacent enemy. The blow plays first, then the step, only if you still

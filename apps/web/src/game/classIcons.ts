@@ -81,16 +81,16 @@ export const CLASS_ICON_PATHS: Record<string, ClassIcon> = {
   warden: { frame: 'mind', paths: ['M8 17.5 V7 H10 V8.7 H11.2 V7 H12.8 V8.7 H14 V7 H16 V17.5 Z', 'M10.5 17.5 V14.5 A1.5 1.5 0 0 1 13.5 14.5 V17.5'] },
   // Scribe: a pen nib over a written line.
   scribe: { frame: 'mind', paths: ['M9.5 5.8 H14.5 V9 L12 15 L9.5 9 Z', 'M12 15 V11.5', 'M8 17.8 H16'], dots: [[12, 10.4]] },
-  // Trickster: a half-mask with slanted eye slits.
-  trickster: { frame: 'mind', paths: ['M6.5 9.5 Q12 8 17.5 9.5 Q17.6 15.2 14.6 15.2 Q12.6 15.2 12 13.3 Q11.4 15.2 9.4 15.2 Q6.4 15.2 6.5 9.5 Z', 'M8.4 11.2 L10.4 11.8 M15.6 11.2 L13.6 11.8'] },
+  // Rigger (id trickster; Classes 3.0): a wrench, its open jaw up and right, crossed by a spark.
+  trickster: { frame: 'mind', paths: ['M16.1 5.9 A2.8 2.8 0 1 0 18.1 7.9', 'M16.1 5.9 L15 7 L17 9 L18.1 7.9', 'M13.4 10.6 L7 17', 'M7 8.2 L10.8 11.6 L9.4 12.8 L13.2 16.8'] },
 
   // ── Soul ────────────────────────────────────────────────────────────────────────────────────────────────────
   // Channeler: a storm spiral rising out of a heart.
   channeler: { frame: 'soul', paths: [HEART(12, 14.6, 2.9), SPIRAL(12, 8.8, 0.3, 0.38, 1.75)] },
-  // Guardian: a dome over a kept point.
-  guardian: { frame: 'soul', paths: ['M6.3 15.5 A5.7 5.7 0 0 1 17.7 15.5', 'M9.2 15.5 A2.8 2.8 0 0 1 14.8 15.5', 'M5.5 15.5 H18.5'] },
-  // Bard: a lyre with curled horns, three strings.
-  bard: { frame: 'soul', paths: ['M9.6 17 C7.2 14.6 7 10 8.6 7.4 C9.1 6.6 8.9 5.8 8.1 5.5 M14.4 17 C16.8 14.6 17 10 15.4 7.4 C14.9 6.6 15.1 5.8 15.9 5.5', 'M8.2 9 H15.8 M9.6 17 H14.4', 'M10.8 9 V17 M13.2 9 V17'] },
+  // Chaplain (id guardian; Classes 3.0): a dome under a flame.
+  guardian: { frame: 'soul', paths: ['M12 4.8 C12.7 6 13.9 6.9 13.9 8.2 A1.9 1.9 0 0 1 10.1 8.2 C10.1 6.9 11.3 6 12 4.8 Z', 'M7 16.4 A5 5 0 0 1 17 16.4', 'M9.6 16.4 A2.4 2.4 0 0 1 14.4 16.4', 'M5.6 16.4 H18.4'] },
+  // Mender (id bard; Classes 3.0): two cupped hands around a plus.
+  bard: { frame: 'soul', paths: ['M10.8 7.8 H13.2 V9.8 H15.2 V12.2 H13.2 V14.2 H10.8 V12.2 H8.8 V9.8 H10.8 Z', 'M10 18 C7.6 17.2 6.2 15.2 6.2 12.6 C6.2 10.8 6.8 9.4 7.8 8.4', 'M14 18 C16.4 17.2 17.8 15.2 17.8 12.6 C17.8 10.8 17.2 9.4 16.2 8.4'] },
   // Hexer: an eye in an inverted triangle, cracked from the point.
   hexer: { frame: 'soul', paths: ['M6 7.2 H18 L12 17.8 Z', 'M8.9 9.8 Q12 7.2 15.1 9.8 Q12 12.4 8.9 9.8 Z', 'M12 17.8 L12.9 15.6 L11.3 14.2 L12.2 12.2'], dots: [[12, 9.8]] },
 

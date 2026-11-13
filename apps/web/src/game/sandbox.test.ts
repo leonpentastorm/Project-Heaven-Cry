@@ -49,7 +49,7 @@ describe('the Proving Ground class menu (Class Roster Revision 3)', () => {
     const o = sandboxClassOptions();
     expect(o.map((x) => x.id).sort()).toEqual(Object.keys(CLASS).sort());
     expect(o.length).toBe(9);
-    expect(o.find((x) => x.id === 'infiltrator')!.label).toBe('Infiltrator · Perception');
+    expect(o.find((x) => x.id === 'infiltrator')!.label).toBe(CLASS.infiltrator.name + ' · Perception');
     expect(o.some((x) => /gunslinger|adv:/i.test(x.id + x.label))).toBe(false);
   });
   it('the help line gives the new rank rule, never signature totals', () => {

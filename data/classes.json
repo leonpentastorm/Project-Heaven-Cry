@@ -56,7 +56,7 @@
   "base": [
     {
       "id": "defender",
-      "name": "Defender",
+      "name": "Bulwark",
       "attribute": "endurance",
       "core": "body",
       "skills": [
@@ -197,7 +197,7 @@
     },
     {
       "id": "fighter",
-      "name": "Fighter",
+      "name": "Breaker",
       "attribute": "strength",
       "core": "body",
       "skills": [
@@ -343,7 +343,7 @@
     },
     {
       "id": "marksman",
-      "name": "Marksman",
+      "name": "Skirmisher",
       "attribute": "agility",
       "core": "body",
       "skills": [
@@ -461,7 +461,7 @@
     },
     {
       "id": "infiltrator",
-      "name": "Infiltrator",
+      "name": "Operative",
       "attribute": "perception",
       "core": "mind",
       "skills": [
@@ -646,7 +646,7 @@
     },
     {
       "id": "mage",
-      "name": "Mage",
+      "name": "Sigilist",
       "attribute": "intelligence",
       "core": "mind",
       "skills": [
@@ -770,7 +770,7 @@
     },
     {
       "id": "trickster",
-      "name": "Trickster",
+      "name": "Rigger",
       "attribute": "expression",
       "core": "mind",
       "skills": [
@@ -971,7 +971,7 @@
     },
     {
       "id": "bard",
-      "name": "Bard",
+      "name": "Mender",
       "attribute": "insight",
       "core": "soul",
       "skills": [
@@ -1234,7 +1234,7 @@
     },
     {
       "id": "guardian",
-      "name": "Guardian",
+      "name": "Chaplain",
       "attribute": "virtue",
       "core": "soul",
       "skills": [
@@ -2627,7 +2627,7 @@
     "revision_2_classes": [
       {
         "id": "marksman",
-        "name": "Marksman",
+        "name": "Skirmisher",
         "core": "body",
         "signature": [
           "dexterity",
@@ -2638,7 +2638,7 @@
       },
       {
         "id": "fighter",
-        "name": "Fighter",
+        "name": "Breaker",
         "core": "body",
         "signature": [
           "athletics",
@@ -2651,7 +2651,7 @@
       },
       {
         "id": "defender",
-        "name": "Defender",
+        "name": "Bulwark",
         "core": "body",
         "signature": [
           "durability",
@@ -2691,7 +2691,7 @@
       },
       {
         "id": "mage",
-        "name": "Mage",
+        "name": "Sigilist",
         "core": "mind",
         "signature": [
           "brain_power",
@@ -2724,7 +2724,7 @@
       },
       {
         "id": "trickster",
-        "name": "Trickster",
+        "name": "Rigger",
         "core": "mind",
         "signature": [
           "analysis",
@@ -2746,7 +2746,7 @@
       },
       {
         "id": "guardian",
-        "name": "Guardian",
+        "name": "Chaplain",
         "core": "soul",
         "signature": [
           "lore_master",
@@ -2757,7 +2757,7 @@
       },
       {
         "id": "bard",
-        "name": "Bard",
+        "name": "Mender",
         "core": "soul",
         "signature": [
           "camaraderie",

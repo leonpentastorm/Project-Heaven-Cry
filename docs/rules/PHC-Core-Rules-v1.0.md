@@ -273,7 +273,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 ## Classes
 
-**Class Roster Revision 3 (accepted 8 Nov 2026; `docs/design/class-roster-rev3-proposal.md`).** Each of the 9 attributes has one base class. A class's three skills are that attribute's combat, utility and social sides (α, β, γ), and the class's fantasy is read from them. The cores line up by themselves: Body is Defender, Fighter and Marksman; Mind is Infiltrator, Mage and Trickster; Soul is Bard, Channeler and Guardian.
+**Class Roster Revision 3 (accepted 8 Nov 2026; `docs/design/class-roster-rev3-proposal.md`).** Each of the 9 attributes has one base class. A class's three skills are that attribute's combat, utility and social sides (α, β, γ), and the class's fantasy is read from them. The cores line up by themselves: Body is Bulwark, Breaker and Skirmisher; Mind is Operative, Sigilist and Rigger; Soul is Mender, Channeler and Chaplain (Classes 3.0 names, rules 1.29; the class ids are unchanged: `defender`, `fighter`, `marksman`, `infiltrator`, `mage`, `trickster`, `bard`, `channeler`, `guardian`).
 
 **Getting your class (level 3).** You get the class of your **highest attribute** (trait bonuses never count). On a tie you choose among the tied classes. If every attribute is tied, all nine are offered. Nobody is left without a class (item 551).
 
@@ -283,15 +283,15 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Core | Class | Attribute | Rank I | Rank II | Rank III |
 |---|---|---|---|---|---|
-| Body | Defender | Endurance | Brace (`defender.brace`) · Draw Fire (`defender.draw_fire`) | Unbroken (`adamantile_knight.unbroken`) · **Shrug It Off** (new) | Reactive Plate (`defender.reactive_plate`) · **Anchor** (new) |
-| Body | Fighter | Strength | Lunge (`fighter.lunge`) · **Shove** (new) | Riposte (`fighter.riposte`) · Lingering Dread (`shade.lingering_dread`) | Finisher (`fighter.finisher`) · **Unstoppable** (new) |
-| Body | Marksman | Agility | Fire Discipline (`marksman.fire_discipline`) · **Speed Loader** (new) | Special Ammo (`marksman.special_ammo`) · **Duck and Roll** (new) | Killzone (`marksman.killzone`) · Called Shot (`gunslinger.called_shot`) |
-| Mind | Infiltrator | Perception | Mark (`assassin.mark`) · **Vanish** (new) | Toxin (`assassin.toxin`) · **Field Fix** (new) | Execution (`assassin.execution`) · **Sabotage** (new) |
-| Mind | Mage | Intelligence | Barrage (`mage.barrage`) · **Core Change** (new) | Overcharge (`mage.overcharge`) · **Bleed the Flux** (new) | Payload (`mage.payload`) · Stored Spell (`scribe.stored_spell`) |
-| Mind | Trickster | Expression | **Read** (new) · **False Image** (new) | Blind and Slow (`trickster.blind_and_slow`) · **Silver Tongue** (new) | Rewrite (`trickster.rewrite`) · **Sleight** (new) |
-| Soul | Bard | Insight | Triage (`medic.triage`) · Inspire (`bard.inspire`) | Stim Throw (`medic.stim_throw`) · Mend (`bard.mend`) | Field Surgery (`medic.field_surgery`) · **Rally** (new) |
+| Body | Bulwark (was Defender) | Endurance | Brace (`defender.brace`) · Draw Fire (`defender.draw_fire`) | Unbroken (`adamantile_knight.unbroken`) · **Shrug It Off** (new) | Reactive Plate (`defender.reactive_plate`) · **Anchor** (new) |
+| Body | Breaker (was Fighter) | Strength | Lunge (`fighter.lunge`) · **Shove** (new) | Riposte (`fighter.riposte`) · Lingering Dread (`shade.lingering_dread`) | Finisher (`fighter.finisher`) · **Unstoppable** (new) |
+| Body | Skirmisher (was Marksman) | Agility | Fire Discipline (`marksman.fire_discipline`) · **Speed Loader** (new) | Special Ammo (`marksman.special_ammo`) · **Duck and Roll** (new) | Killzone (`marksman.killzone`) · Called Shot (`gunslinger.called_shot`) |
+| Mind | Operative (was Infiltrator) | Perception | Mark (`assassin.mark`) · **Vanish** (new) | Toxin (`assassin.toxin`) · **Field Fix** (new) | Execution (`assassin.execution`) · **Sabotage** (new) |
+| Mind | Sigilist (was Mage) | Intelligence | Barrage (`mage.barrage`) · **Core Change** (new) | Overcharge (`mage.overcharge`) · **Bleed the Flux** (new) | Payload (`mage.payload`) · Stored Spell (`scribe.stored_spell`) |
+| Mind | Rigger (was Trickster) | Expression | **Read** (new) · **False Image** (new) | Blind and Slow (`trickster.blind_and_slow`) · **Silver Tongue** (new) | Rewrite (`trickster.rewrite`) · **Sleight** (new) |
+| Soul | Mender (was Bard) | Insight | Triage (`medic.triage`) · Inspire (`bard.inspire`) | Stim Throw (`medic.stim_throw`) · Mend (`bard.mend`) | Field Surgery (`medic.field_surgery`) · **Rally** (new) |
 | Soul | Channeler | Determination | Shape (`channeler.shape`) · **Iron Heart** (new) | Storm Front (`channeler.storm_front`) · **Occult Library** (new) | Heart Surge (`channeler.heart_surge`) · **Eye of the Storm** (new) |
-| Soul | Guardian | Virtue | Will Shield (`guardian.will_shield`) · **Command** (new) | Under the Eye (`lumeri_templar.under_the_eye`) · Blessed Shells (`lumeri_templar.blessed_shells`) | Sanctuary (`guardian.sanctuary`) · Judgement (`lumeri_templar.judgement`) |
+| Soul | Chaplain (was Guardian) | Virtue | Will Shield (`guardian.will_shield`) · **Command** (new) | Under the Eye (`lumeri_templar.under_the_eye`) · Blessed Shells (`lumeri_templar.blessed_shells`) | Sanctuary (`guardian.sanctuary`) · Judgement (`lumeri_templar.judgement`) |
 
 The 54 moves:
 
@@ -321,16 +321,16 @@ The 54 moves:
 
 **Resources follow the moves.**
 
-- Defender: Guard.
-- Fighter: Momentum.
-- Marksman: Heat (the shared gun rule).
-- Infiltrator: Marks and toxin doses.
-- Mage and Trickster: Flux.
-- Bard: Supplies, MP and Strain.
+- Bulwark: Guard.
+- Breaker: Momentum.
+- Skirmisher: Heat (the shared gun rule).
+- Operative: Marks and toxin doses.
+- Sigilist and Rigger: Flux.
+- Mender: Supplies, MP and Strain.
 - Channeler: Strain.
-- Guardian: MP, Strain and Devotion (the patron's).
+- Chaplain: MP, Strain and Devotion (the patron's).
 
-The Guardian's Under the Eye, Blessed Shells and Judgement need a patron and prayer. Without one, a Guardian has Will Shield, Command and Sanctuary (item 555).
+The Chaplain's Under the Eye, Blessed Shells and Judgement need a patron and prayer. Without one, a Chaplain has Will Shield, Command and Sanctuary (item 555).
 
 **Shelved moves.** 11 old base moves and 57 advanced moves are on no class's list. Their data, handlers and tests stay in the engine; `docs/design/move-pool.md` lists each with a suggested future home.
 
@@ -4181,6 +4181,36 @@ and `"all"` / `"zero"` for a resource; **react()**, the one door of every reacti
 a unit's `eyes`); and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the
 resource rows (Pressure, MP). How each is written: `docs/design/handoffs/classes-3.0-step-1a.md`. Items 1750 to 1756.
 
+## Rules revision 1.29: Classes 3.0, the nine base classes renamed (Classes 3.0, steps 2 and 4)
+
+Built on 13 Nov 2026 for Class Roster Revision 4 (`docs/design/rev4-moves-and-rename.md` sections 1, 3 and 5). It
+overrides every body line that names a base class by its old name.
+
+### 1. The rename (names only; no rule changes)
+
+| Class id (unchanged) | Was (Revision 3) | Now (Classes 3.0) |
+| --- | --- | --- |
+| `defender` | Defender | **Bulwark** |
+| `fighter` | Fighter | **Breaker** |
+| `marksman` | Marksman | **Skirmisher** |
+| `infiltrator` | Infiltrator | **Operative** |
+| `mage` | Mage | **Sigilist** |
+| `trickster` | Trickster | **Rigger** |
+| `bard` | Bard | **Mender** |
+| `channeler` | Channeler | Channeler (unchanged) |
+| `guardian` | Guardian | **Chaplain** |
+
+Only the display name changes (`data/classes.json` `base[].name`, and the Revision 2 shells' names). The ids, every
+move key (`class:<origin>.<moveId>`), the saved `classId` and `classRev` (3) are as they were, so a save or a
+character made before the rename loads with the same class and the same moves, and shows the new name. Advanced
+classes keep their own names ("Circuit Mage" is an advanced class, not the Sigilist). The archetype families
+(Frontline, Shadows, Sigil casters…) are playstyles and keep their names. **Three archetype presets had a new class's
+name** (an archetype may not share a class's name: the validator's rule), so they show new names; their ids, portraits
+and points are unchanged, and an archetype is never saved: Bulwark → **Holdfast** (`bulwark`), Sigilist →
+**Glyphwright** (`sigilist`), Mender → **Empath** (`mender`) *(Suggested)*. Three emblems are redrawn (Rigger: a
+wrench crossed with a spark; Mender: two hands around a plus; Chaplain: a dome under a flame); the other six keep
+theirs. Items 1757 and 1758.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -7055,3 +7085,5 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1754. **What burns reactions without being one (rules 1.28):** Dread (all), Rewrite (one) and an Order (the ally's one) go through `loseReactions`; since Suppressed no longer zeroes a unit's reactions, Dread and Rewrite now take a Suppressed unit's reaction too (a consequence of item 1751).
 1755. **A reaction made by an item in data (rules 1.28):** an item op whose `limit` is `{reaction: 1 or 2, kind}` is a reaction (it spends that many and resolves inside `react()`); the trigger `reaction` fires as one is made (its kind for the predicate `how`). Nothing in the data uses either yet.
 1756. **The general primitives of Classes 3.0, step 1a (rules 1.28 section 2):** `acted`, number blocks and sources, `react()`, conditions as items, `targets`, the sight words and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the resource rows `pressure` and MP (`max`, `needs`). No number and no rule moved with them (the golden tables and the replays say so; the replays moved only for items 1750, 1751 and 1753's new saved field).
+1757. **The nine base classes renamed (rules 1.29; Class Roster Revision 4, `rev4-moves-and-rename.md` section 3; Bulwark and Breaker Leon's, the rest the lead's, PROVISIONAL as display names):** Bulwark (`defender`), Breaker (`fighter`), Skirmisher (`marksman`), Operative (`infiltrator`), Sigilist (`mage`), Rigger (`trickster`), Mender (`bard`), Channeler (`channeler`, unchanged), Chaplain (`guardian`). Names only: ids, move keys, `classId` and `classRev` 3 stay, so old saves load unchanged (`test/old-save.test.ts`); `migrateCharacterClass` does not run. The Chaplain's Judgement → Verdict is that class's step (`chaplain-spec.md`), not this item.
+1758. **Three archetype presets renamed for the classes (rules 1.29; a call made for Leon by the step's builder, Suggested names, PROVISIONAL):** the rename gave three classes the names of archetype presets (`rev4-moves-and-rename.md` section 3 counted presets that name a class, not presets a class name now matches), and `tools/validate.py` refuses an archetype named as a class. Display names only: Holdfast (id `bulwark`), Glyphwright (`sigilist`), Empath (`mender`); ids, portraits (`art/catalog.json` labels follow) and presets stay. The perk Bulwark (`perks.json` `bulwark`, Durability) also shares the Bulwark class's name: nothing refuses it and the keys differ (`perk:bulwark`, `class:defender.*`); left for Leon.

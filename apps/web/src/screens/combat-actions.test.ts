@@ -88,7 +88,7 @@ describe('every descriptor group renders and confirms on the one action flow', (
     expect(done).toEqual(expect.arrayContaining(['move', 'attack', 'utility', 'faith', 'calls']));
     root.unmount();
   });
-  it('Class moves (a Defender)', async () => {
+  it('Class moves (a Bulwark, id defender)', async () => {
     const { u } = fight('acts-b', 'bulwark', 'medic', (c) => { c.classId = 'defender'; c.level = 12; c.attrs.durability = 8; });
     const { el, root } = await mount();
     expect(await everyGroup(el, u.id)).toContain('class');
