@@ -35,7 +35,8 @@ await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 const drawn = () => p.evaluate(() => {
   const tiles = [...document.querySelectorAll('.phc-grid button.phc-tok')];
   const kit = {}; for (const i of document.querySelectorAll('.phc-grid img[data-kit]')) kit[i.dataset.kit] = (kit[i.dataset.kit] || 0) + 1;
-  const ground = tiles.filter((t) => /kit-ahoc-ground/.test(t.style.background)).length;
+  // the ground is the tile's floor layer (it reaches over the grid's gap: one floor, a faint line between tiles)
+  const ground = tiles.filter((t) => { const f = t.querySelector(':scope > i[data-kit-floor]'); return !!f && /kit-ahoc-ground/.test(f.style.background); }).length;
   const sprites = [...document.querySelectorAll('.phc-grid button.phc-tok > img')].map((i) => i.getAttribute('src') || '').filter((s) => /\/assets\/kit-/.test(s) && !/wall-|ground-|dress-|decal-rubble/.test(s)).length;
   return { tiles: tiles.length, kit, ground, sprites };
 });

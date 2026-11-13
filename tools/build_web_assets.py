@@ -85,6 +85,14 @@ for kid, a in C.get("kit", {}).items():
         emit_turns(kid, ROOT / a["path"], 512)
     else:
         emit(kid, ROOT / a["path"], (a["width"] // 2, a["height"] // 2), None, 88)
+# Survival's tile backdrops (rules 1.44, ART-REQUESTS S5): catalog `survival_art`, mode "backdrop", one file per setting
+# and letter (`<setting>-<a..d>-<what>.png`), emitted as `survival-backdrop-<setting>-<letter>`, the id a setting's
+# `backdrop` names in data/survival.json. The next tile's card draws it (stageView.ts); missing, it is a plain panel.
+for bid, a in C.get("survival_art", {}).items():
+    if a.get("mode") != "backdrop":
+        continue
+    setting, letter = pathlib.Path(a["path"]).stem.split("-")[:2]
+    emit(f"survival-backdrop-{setting}-{letter}", ROOT / a["path"], (800, 450), (1600, 900), 80)
 # Blessing 2.0 (docs/design/handoffs/blessing-art-brief.md): picked up from their folders as they are delivered, so the art
 # drops in with no code change (game/faithArt.ts falls back to code-drawn placeholders for anything missing):
 #   art/portraits/patrons/<id>.png -> patron-<id> (4:5 portrait)

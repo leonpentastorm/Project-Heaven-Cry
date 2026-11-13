@@ -17,6 +17,20 @@ export const kitArt = (kit: string, piece: string): string => A['kit-' + kit + '
 
 /** A ground texture covers this many tiles a side (1024 px at 256 px a tile). */
 export const GROUND_TILES = 4;
+/** The grid line between kit tiles: 1 px on the floor's left and top edge (floors overlap; a later floor is drawn over
+ * an earlier one, so each seam shows the one line of the floor right or below it), faint, so the ground reads as one floor (the line is still there to count tiles by). */
+export const KIT_LINE = 'inset 1px 1px 0 rgba(231, 235, 243, 0.08)';
+/** The fight grid's pitch in CSS px before zoom: a 46 px tile and the 2 px gap (combat.js gridStyle). */
+export const TILE_PITCH = 48;
+/** How far a kit floor reaches past its tile's border box on every side: over the grid's gap and a pixel into the next
+ * floor, so rounding under the map's zoom never opens a dark seam (the floors overlap with the same texture). */
+export const FLOOR_REACH = 2;
+/** The CSS background of one kit floor: the ground repeated every GROUND_TILES tiles in grid pixels, so it runs on
+ * unbroken across tiles and gaps, under a tint. The floor's box starts FLOOR_REACH px before its tile. */
+export function kitFloorBg(src: string, k: string, tint: string): string {
+  const [x, y] = k.split(',').map(Number), size = GROUND_TILES * TILE_PITCH, at = (n: number) => -((((n % GROUND_TILES) + GROUND_TILES) % GROUND_TILES) * TILE_PITCH) + FLOOR_REACH;
+  return 'linear-gradient(' + tint + ', ' + tint + '), url("' + src + '") ' + at(x) + 'px ' + at(y) + 'px / ' + size + 'px ' + size + 'px repeat';
+}
 /** One image laid over a tile: the asset, its quarter turns clockwise, how opaque. */
 export interface KitLayer { key: string; src: string; style: string }
 /** What a tile of a kit map draws under the tokens: its ground (a CSS background image layer, '' for none), the
@@ -41,13 +55,6 @@ export function kitGround(kit: string, ground: number, rotate: number): string {
   for (const n of [ground, 1, 2, 3]) { const src = kitArt(kit, 'ground-' + n + '-r' + (((rotate % 4) + 4) % 4)); if (src) return src; }
   return '';
 }
-/** The CSS background of one tile showing its square of the ground (the texture repeats every GROUND_TILES tiles),
- * under a tint. */
-export function kitTileBg(src: string, k: string, tint: string): string {
-  const [x, y] = k.split(',').map(Number), pos = (n: number) => ((((n % GROUND_TILES) + GROUND_TILES) % GROUND_TILES) / (GROUND_TILES - 1)) * 100;
-  return 'linear-gradient(' + tint + ', ' + tint + '), url("' + src + '") ' + pos(x) + '% ' + pos(y) + '% / ' + GROUND_TILES * 100 + '% ' + GROUND_TILES * 100 + '% no-repeat';
-}
-
 /** The wall piece for a solid tile by which of its four neighbours continue the wall (n, e, s, w), as layers drawn in
  * order: an end, a straight, a corner; a T is an end under a straight; a cross two straights. The pieces are painted
  * facing east (a straight runs left to right, an end joins the left edge, a corner joins left and bottom). Null: no

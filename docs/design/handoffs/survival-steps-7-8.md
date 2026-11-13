@@ -18,7 +18,7 @@ left to the step built beside this one. Branch: this worktree's, from `claude/ch
 | The kit catalog: section `kit` of `art/catalog.json`, one entry a piece (`kit-<setting>-<piece>`: setting, piece, kind, the object it draws, size, the delivery's id, status, `use` and why), written by `tools/art/kit_catalog.py` (four pieces held back, its `HOLD`) | `tools/art/kit_catalog.py`, `art/catalog.json` |
 | The art checks: `validate_map_kits` (ids, paths, sizes by kind, kinds, the use flag, every PNG catalogued); the ground seam check | `tools/validate_art.py`, `tools/art/kit_seams.py` |
 | Web assets: `kit-<setting>-<piece>` (pieces at 128 px, the container 192 × 128; grounds at 512 px in four quarter turns `-r0..-r3`); a held piece is not built | `tools/build_web_assets.py` |
-| The renderer: `kitLayout(map)` (once per map: per tile its ground, wall layers by neighbours, doorway or breach, decals, dressing, the door's turn), `wallLayers`, `kitSprite`, `kitGround`, `kitTileBg`, `kitArt`, `setKitAssets` (tests) | `apps/web/src/game/kitMap.ts` |
+| The renderer: `kitLayout(map)` (once per map: per tile its ground, wall layers by neighbours, doorway or breach, decals, dressing, the door's turn), `wallLayers`, `kitSprite`, `kitGround`, `kitFloorBg` (was `kitTileBg`), `kitArt`, `setKitAssets` (tests) | `apps/web/src/game/kitMap.ts` |
 | Wiring: the ground through the tile's background (the same door as a campaign's painted map, `paint`), the kit layers first in the tile (under every highlight, token and effect), dimmed with the fog; `spriteOf` falls back to the kit's sprite by kind; a broken kit piece is drawn whole; a door turns with its doorway; "ROUGH" is not written over a rubble decal | `apps/web/src/screens/combat.js`, `screens/shared.js`, `templates/combat.template.html` (one `sc-if` line) |
 | Tests: `test/survival-layout.test.ts` (engine), `src/game/kitMap.test.ts` (web), browser suite `kit-map` (group rules) | |
 | Docs: rules 1.45, the spec's rows 7 and 8 and item 6 marked built, ART-REQUESTS S7 (S4 on the branch; renumbered at the merge), the prompts file's note, `docs/ASSET-DIRECTORY.md` (a kit section, by hand: the file has no generator), `docs/ART-INTEGRATION.md`, `docs/ENGINE-HOOKS.md` regenerated, `apps/web/e2e/README.md` | |
@@ -121,3 +121,18 @@ shadow (Leon's "half a tile is ok").
 4. Two small rooms in five settings' stamp lists, so every kit's corner and T are used (item 3203).
 5. Four kit pieces held back (item 3215); a seamed ground falls back to the kit's first good ground, not to flat tiles.
 6. The browser suite is `kit-map`, not the spec's `layout` (that name is the combat panels' suite).
+
+## 9. At the merge with steps 5 and 6 (13 Nov)
+
+- `data/survival.json` settings carry step 5's `line`, `backdrop`, `awaiting` and this step's `layout`. Rules 1.45 sits
+  between 1.44 and 1.47. ART-REQUESTS: this step's S4 is now **S7** (step 5 took S4 to S6).
+- **Tile backdrops wired** (S5): `tools/build_web_assets.py` emits each `survival_art` backdrop as
+  `survival-backdrop-<setting>-<letter>` (from its file name); the next tile's card draws it, else the plain panel.
+  The `survival` suite checks each card's backdrop.
+- **The kit map polished** (section 6's points 1, 2 and 4): a kit tile's ground is a floor layer (`<i data-kit-floor>`)
+  that reaches 2 px past its tile over the grid's gap, the ground in grid pixels (`kitFloorBg`, `TILE_PITCH` 48,
+  `FLOOR_REACH` 2), so it runs on as one floor with a 1 px line at 8% (`KIT_LINE`); the tile's fill, highlight and fog
+  move onto the floor. An object the kit draws is its sprite alone (no brown tint or border; no dark square under kit
+  rubble); its HALF / FULL and HP is a small label shown on hover or focus, always once damaged. The ground beside a
+  wall piece is the floor at a light shade (`KIT_WALL_TINT`). A map with no kit art draws exactly as before (the
+  `kit-map` fallback compare is green). Screenshots: `scratchpad/kit/kit-map-merged-1..3.png`, `-hover.png`.

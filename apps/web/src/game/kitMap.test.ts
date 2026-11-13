@@ -2,7 +2,7 @@
 // wall line's gap, decals, dressing, the ground's square of texture, kit sprites by object kind, and the fallback per
 // piece (a piece the kit lacks is not drawn; a map with no skin has no kit at all).
 import { afterEach, describe, expect, it } from 'vitest';
-import { kitLayout, wallLayers, kitSprite, kitTileBg, kitGround, setKitAssets } from './kitMap';
+import { kitLayout, wallLayers, kitSprite, kitFloorBg, kitGround, setKitAssets } from './kitMap';
 
 const ALL = ['wall-straight', 'wall-corner', 'wall-end', 'wall-door', 'wall-broken', 'decal-rubble', 'decal-scorch', 'decal-toxic', 'dress-1', 'crate', 'crate-broken', 'door', 'door-open', 'ground-1-r0', 'ground-1-r2']
   .reduce((m, p) => ({ ...m, ['kit-t-' + p]: '/assets/kit-t-' + p + '.webp' }), {} as Record<string, string>);
@@ -65,6 +65,6 @@ describe('kit map drawing (rules 1.45)', () => {
     expect(kitSprite('t', { kind: 'rubble' })).toMatch(/decal-rubble/);
     expect(kitSprite('t', { kind: 'toxic' })).toMatch(/decal-toxic/);
     expect(kitGround('t', 3, 0)).toMatch(/ground-1-r0/); // ground 3 missing: the kit's first that has art
-    expect(kitTileBg('/g.webp', '5,2', 'rgba(0, 0, 0, 0.1)')).toBe('linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("/g.webp") 33.33333333333333% 66.66666666666666% / 400% 400% no-repeat');
+    expect(kitFloorBg('/g.webp', '5,2', 'rgba(0, 0, 0, 0.1)')).toBe('linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("/g.webp") -46px -94px / 192px 192px repeat');
   });
 });

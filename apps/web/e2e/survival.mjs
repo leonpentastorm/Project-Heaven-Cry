@@ -208,6 +208,8 @@ g = await G(); r = g.run;
 ok('a boon clicked: it is the character\'s relic for the run (' + offer[0] + '), and the next tile is offered', (g.characters[cid0].relics || []).includes(offer[0]) && r.tiles.length >= 2 && r.tiles.length <= 3);
 const tcards = await p.locator('[data-phc-tile]').allTextContents();
 ok('the next tile: ' + tcards.length + ' cards, each its setting, a line, its Boss and its boon theme, none the tile just played', tcards.length === r.tiles.length && tcards.every((t) => /Boss:/.test(t) && /Boons:/.test(t)) && r.tiles.every((t) => t.setting !== 'ahoc'));
+const tbg = await p.locator('[data-phc-tile]').evaluateAll((els) => els.map((e) => { const s = e.querySelector('span[aria-hidden="true"]'); return s ? getComputedStyle(s).backgroundImage : ''; }));
+ok('each tile card draws its setting\'s backdrop by catalog id (survival-backdrop-<setting>-a), not the plain panel', tbg.length === r.tiles.length && r.tiles.every((t, i) => tbg[i].includes('survival-backdrop-' + t.setting + '-a')));
 await both('survival-next-tile');
 const tile = r.tiles[0];
 await p.locator('[data-phc-tile="' + tile.id + '"]').click();
