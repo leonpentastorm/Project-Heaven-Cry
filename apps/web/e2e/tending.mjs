@@ -146,7 +146,11 @@ if (mate) {
     return { x1: +a('x1'), y1: +a('y1'), x2: +a('x2'), y2: +a('y2'), ink: a('stroke'), dash: a('stroke-dasharray') || '', w: +a('stroke-width'), op: +a('stroke-opacity'), pe: getComputedStyle(l.ownerSVGElement).pointerEvents }; }, tieSel(m.id));
   await until(() => !!document.querySelector('svg[data-tie-layer] line[data-tie-kind="bond"]'), null, 30000).catch(() => {});
   let ln = await lineOf(m.id);
-  ok('the Bond to the squadmate draws a faint solid line (' + JSON.stringify(ln) + ')', !!ln && ln.ink.toUpperCase() === '#EB95B7' && ln.dash === '' && ln.w <= 2 && ln.op <= 0.6 && ln.pe === 'none');
+  // two tokens side by side get the link mark at their shared edge instead of a few faint pixels (game/tieLayer.ts): a
+  // solid 12 px segment with a filled knot; any farther pair the faint line
+  const knot = await host.evaluate((s) => { const k = document.querySelector(s); return k ? k.getAttribute('fill') : null; }, 'svg[data-tie-layer] circle[data-tie-knot="bond:' + u.id + ':' + m.id + '"]');
+  const linkMark = !!ln && !!knot && Math.hypot(ln.x2 - ln.x1, ln.y2 - ln.y1) >= 11 && knot.toUpperCase() === '#EB95B7';
+  ok('the Bond to the squadmate draws a solid line, ' + (linkMark ? 'as the link mark (they stand side by side)' : 'faint') + ' (' + JSON.stringify(ln) + ')', !!ln && ln.ink.toUpperCase() === '#EB95B7' && ln.dash === '' && ln.pe === 'none' && (linkMark || (ln.w <= 2 && ln.op <= 0.6)));
   if (bonded) { const fl = await host.evaluate((s) => { const l = document.querySelector(s); return l ? l.getAttribute('stroke-dasharray') : null; }, tieSel(foe.id));
     ok('the Bond to the Soldier draws a dashed line (' + fl + ')', !!fl); }
   if (process.env.SHOTS_C3) { await host.mouse.move(700, 120); await settle(host, 200); await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-lines.png' }); }

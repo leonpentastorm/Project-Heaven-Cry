@@ -1,5 +1,5 @@
 // The map's tie lines (Classes 3.0 step 10, Leon: "Bond needs a faint connection line effect"): ONE overlay layer, keyed
-// by tie, inside the map's grid (so it pans and zooms with the tiles), above the tiles and under the tokens: each line
+// by tie, inside the map's grid (so it pans and zooms with the tiles), above the tiles and the tokens: each line
 // stops at the tokens' rims, never crossing a face. A persistent layer, not a played effect: it is drawn from the
 // engine's tieLines over the combat the screen holds (the player's VIEW: fog has kept its own side's ties and dropped a
 // far end it cannot see), so a line is there while the tie is and gone the render after it ends.
@@ -14,7 +14,9 @@
 // so a faint line there was invisible (Leon, 13 Nov). When the gap is shorter than TIE_MARK.min the pair gets a LINK
 // MARK at the shared edge instead: a short, thicker segment across the gap (TIE_MARK.len, drawn over the rims' edges)
 // with a knot at its middle, at a stronger opacity: solid with a filled knot to an ally, dashed with a hollow knot to an
-// enemy (shape, not colour alone). Still one layer, still no pointer, still not an effect (fx/**).
+// enemy (shape, not colour alone). Still one layer, still no pointer, still not an effect (fx/**). The layer sits ABOVE
+// the tokens (z-index 3; a token is 2) so the mark bridges the two rings instead of hiding under them; a line never
+// reaches a face (a far line stops at the rim, the mark's ends sit on the ring).
 import { tieLines, type TieLine } from '@engine';
 
 /** The grid's geometry (combat.js gridStyle): its padding, the label strip, a tile and the gap. */
@@ -25,7 +27,7 @@ export const TIE_OPACITY = { rest: 0.35, hot: 0.6 };
 export const TIE_WIDTH = 1.5;
 /** The link mark between near tokens: drawn when the rim-to-rim gap is under `min` px; a `len` px segment, `width` thick,
  *  a knot of radius `knot`, at `opacity` (rest / hot). */
-export const TIE_MARK = { min: 16, len: 16, width: 2.5, knot: 3, opacity: { rest: 0.85, hot: 1 } };
+export const TIE_MARK = { min: 16, len: 12, width: 3, knot: 4, opacity: { rest: 0.85, hot: 1 } };
 
 const centre = (i: number) => GRID_GEOM.pad + GRID_GEOM.axis + GRID_GEOM.gap + i * (GRID_GEOM.tile + GRID_GEOM.gap) + GRID_GEOM.tile / 2;
 const at = (pos: string) => pos.split(',').map(Number) as [number, number];
@@ -57,7 +59,7 @@ export function tieLayerVals(cb: any, o: { turnOf?: string | null; hotTo?: strin
         x1: Math.round(mx - ux * half), y1: Math.round(my - uy * half), x2: Math.round(mx + ux * half), y2: Math.round(my + uy * half),
         ink: t.ink, dash: t.dash, width: TIE_MARK.width, opacity: op, cls, mark: true });
       knots.push({ key: t.key, side: t.side, cx: Math.round(mx), cy: Math.round(my), r: TIE_MARK.knot,
-        fill: t.side === 'foe' ? '#0A0D13' : t.ink, stroke: t.ink, opacity: op, cls });
+        fill: t.side === 'foe' ? '#0A0D13' : t.ink, stroke: t.side === 'foe' ? t.ink : '#0A0D13', opacity: op, cls });
       continue;
     }
     lines.push({ key: t.key, kind: t.kind, side: t.side, from: t.from, to: t.to,
@@ -65,5 +67,5 @@ export function tieLayerVals(cb: any, o: { turnOf?: string | null; hotTo?: strin
       ink: t.ink, dash: t.dash, width: TIE_WIDTH, opacity: hot ? TIE_OPACITY.hot : TIE_OPACITY.rest, cls, mark: false });
   }
   return { has: lines.length > 0, w, h, box: '0 0 ' + w + ' ' + h, lines, knots,
-    style: 'position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; overflow: visible' };
+    style: 'position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; overflow: visible' };
 }
