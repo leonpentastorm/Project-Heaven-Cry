@@ -137,6 +137,7 @@ Against `claude/charming-gauss-hbq4n0`:
   Bonder as a healer; the `read` of enemies aiming at a Bonded ally (section 2 rule 8 is not built: the `read` row
   exists, the op needs `aims_at: tied:bond` on the Bonder's turn start).
 - **Balance (step 11)**: the policy for the simulator, whole-fight lines, the guard rows.
+- **Not built (rule 23, second half):** a character who first gains Empathy picking two starting feelings (the level-up screen's); today anyone with Empathy 1 feels, from the feelings its fights unlock. The client's TEND tab is step 10's.
 - **The Outburst's steady line** after the free Pump moved to Will Power: to re-measure with `REFIT_MEASURE=1
   REFIT_SYSTEMS=ob` (see section 8).
 
