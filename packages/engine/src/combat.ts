@@ -22,8 +22,8 @@ import type { Tie } from './kit';
 import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
-import { itemAmount } from './effects/amounts';
-import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf } from './effects/output';
+import { itemAmount, amountSpecOf } from './effects/amounts';
+import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, immune, forbids } from './effects/core';
@@ -688,11 +688,13 @@ export const objectsAt = (cb: Combat, k: string) => objectsOf(cb).filter((o) => 
 export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp: number; max: number; id: string; name: string }> {
   const out: Record<string, any> = {};
   for (const o of objectsOf(cb)) { const c = coverKind(o); if (c) out[o.pos] = { kind: c, hp: o.hp ?? 0, max: o.max ?? 0, id: o.id, name: o.name }; }
-  for (const u of coverUnits(cb)) if (!out[u.pos]) out[u.pos] = { kind: 'half', hp: u.hp, max: u.maxHp, id: u.id, name: u.name }; // Classes 3.0 P9: an owned unit whose block is cover
+  for (const u of coverUnits(cb)) if (!out[u.pos]) out[u.pos] = { kind: unitCover(u), hp: u.hp, max: u.maxHp, id: u.id, name: u.name }; // Classes 3.0 P9: an owned unit whose block is cover
   return out;
 }
 /** Classes 3.0 P9: the living owned units whose block is cover (half cover for those behind them; they block sight). */
 const coverUnits = (cb: Combat): Unit[] => cb.units.filter((u) => u.owned?.cover && !u.dead && !u.downed);
+/** The cover an owned unit gives: its block's `cover` "full" (rules 1.34: the Wall Figment), else half. */
+const unitCover = (u: Unit): 'half' | 'full' => ((u.owned as any)?.cover === 'full' ? 'full' : 'half');
 export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb), ...coverUnits(cb).map((u) => u.pos)]);
@@ -943,7 +945,7 @@ export function coverTileFor(cb: Combat, from: string, to: string): string | nul
     const [cx, cy] = xy(o.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) !== 1) continue;
     const e = near && near.find((q) => q.k === o.pos); if (e) e.kind = c; else (near ||= []).push({ k: o.pos, kind: c });
   }
-  for (const u of coverUnits(cb)) { const [cx, cy] = xy(u.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && !(near && near.some((q) => q.k === u.pos))) (near ||= []).push({ k: u.pos, kind: 'half' }); }
+  for (const u of coverUnits(cb)) { const [cx, cy] = xy(u.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && !(near && near.some((q) => q.k === u.pos))) (near ||= []).push({ k: u.pos, kind: unitCover(u) }); }
   if (!near) return null;
   const far = dist(from, to);
   for (const e of near) if (e.kind === 'half' && dist(from, e.k) < far) return e.k;
@@ -2136,18 +2138,45 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
   }
   return (w as any).grants ? (w as any).grants.name + ' isn\'t an action the engine runs yet: say it with Say, and the Narrator rules it after the fight.' : 'No weapon skill.';
 }
-/** Field Repair (spec): 2 AP, Proficiency 3+, one spare-parts charge; restores 10% + 5% per Proficiency point above 3. */
-export function fieldRepair(cb: Combat, u: Unit): string | null {
-  if (!u.maxDur) return 'Nothing to repair.';
-  if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
-  if (!(u.parts || 0)) return 'No spare-parts charges.';
-  if ((u.dur ?? u.maxDur) >= u.maxDur) return 'Already in full repair.';
+/** Field Repair's three ways (rules 1.34: one action, `field_repair`; the Rigger's Field Fix is a class item on it). */
+export const REPAIR_WAYS = ['clear_jam', 'restore_durability', 'repair'] as const;
+export type RepairWay = (typeof REPAIR_WAYS)[number];
+/** A machine a repair mends (rules 1.34): a robot, drone, turret or machine, a Factory Made squadmate, a Figment. */
+export const repairable = (t: Unit): boolean => ['robot', 'machine', 'turret', 'drone', 'figment'].includes(t.kind || '') || (t.held?.traits || []).includes('factory_made') || (t as any).owned?.kind === 'figment';
+/** What a repair could do for this unit now, in the order a choice defaults to. */
+export function repairWays(t: Unit): RepairWay[] {
+  return REPAIR_WAYS.filter((x) => (x === 'clear_jam' ? !!t.jammed : x === 'restore_durability' ? !!t.maxDur && (t.dur ?? t.maxDur) < t.maxDur : repairable(t) && (t.hp < t.maxHp || !!t.downed)));
+}
+/** Field Repair (rules 1.34; spec: Improvisation 3): 2 AP and one spare part, on yourself or an ally, machine or Figment
+ * next to you: clear a jam, restore weapon durability (10% + 5% a point of Improvisation above 3, at least the base), or
+ * repair a machine or Figment for the `repair` amount (profile repair, the repairer's Expression and Improvisation, its
+ * level; a repair, not a heal: no healing multipliers; a Downed machine comes back up). With no target: your own weapon's
+ * durability, as before. o (the Rigger's Field Fix): the item whose amount it is, its parts (0), its reach, no gate. */
+export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?: string | null; parts?: number; reach?: number; gate?: boolean; item?: string; label?: string } = {}): string | null {
+  const t = o.target || u, parts = o.parts ?? 1, gate = o.gate ?? true, label = o.label || 'Field Repair';
+  if (t !== u && (t.side !== u.side || t.dead)) return 'Pick one of your side.';
+  if (t !== u && dist(u.pos, t.pos) > (o.reach ?? 1)) return 'Out of reach (' + (o.reach ?? 1) + (o.reach === 1 || o.reach == null ? ' tile).' : ' tiles).');
+  const ways = repairWays(t), way = (o.way || (t === u && !o.way ? 'restore_durability' : ways[0])) as RepairWay;
+  if (t === u && way === 'restore_durability' && !u.maxDur) return 'Nothing to repair.';
+  if (gate && (u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
+  if (parts && (u.parts || 0) < parts) return 'No spare-parts charges.';
+  if (!REPAIR_WAYS.includes(way)) return 'Pick what to fix.';
+  if (!ways.includes(way)) return way === 'clear_jam' ? (t === u ? 'Your' : t.name + '\'s') + ' weapon isn\'t jammed.' : way === 'restore_durability' ? (t === u ? 'Already in full repair.' : t.name + '\'s weapon is in full repair.') : repairable(t) ? t.name + ' is undamaged.' : t.name + ' isn\'t a machine.';
   const cost = price({ cb, u }, 'field_repair').ap;
   { const no = whyNot(cb, u, cost); if (no) return no; }
-  const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
-  const add = Math.ceil(u.maxDur * ((fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
-  pay(cb, u, cost); u.parts = (u.parts || 0) - 1; u.dur = Math.min(u.maxDur, (u.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
-  say(cb, u.name + ' patches the weapon: +' + add + ' durability (' + u.dur + '/' + u.maxDur + ').'); return null;
+  pay(cb, u, cost); if (parts) u.parts = (u.parts || 0) - parts;
+  if (way === 'clear_jam') { t.jammed = false; t.heat = 0; emitFx(cb, 'clear', { unit: t.id, at: t.pos, dur: 1000, by: u.id }); say(cb, u.name + ' clears ' + (t === u ? 'the' : t.name + '\'s') + ' jam (' + label + ').'); return null; }
+  if (way === 'restore_durability') {
+    const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
+    const add = Math.ceil(t.maxDur! * Math.max(fr.repair_base ?? 0.1, (fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
+    t.dur = Math.min(t.maxDur!, (t.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, ...(t !== u ? { target: t.id } : {}), at: t.pos, dur: 1400 });
+    say(cb, u.name + (t === u ? ' patches the weapon' : ' fixes ' + t.name + '\'s weapon') + ': +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return null;
+  }
+  const n = Math.floor(amountOf(amountSpecOf(o.item || 'skill:proficiency.3', 'repair'), u, { level: u.charId ? u.level : null }).raw);
+  const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
+  emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
+  say(cb, u.name + ' repairs ' + t.name + ' (' + label + '): +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
+  return null;
 }
 /** Paired attack (spec: Hands): both weapons in one action. AP = the higher cost + 1; main −1, off −3 (better by 1 per 3 skill points, to −1). */
 export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | null, who: Character | null): string | null {
@@ -2559,7 +2588,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     const targets = enemyTargets(cb, u, mode, order, pcs);
     // Rules 1.23, the hunt: an Elite or a Boss with a gun and no shot at the squad's healer steps to where it has one.
     if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
-    if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
+    if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode, rng); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { did('clear_block'); checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     // Rules 1.32 (shadow-spec 8.1): a skulker (tag skulk: a Vermin, Minion or Soldier) with no shot goes to ground when no
     // enemy has it in view, and ambushes from there (the flat Ambush multiplier); it carries no Shadow meter.
@@ -2607,6 +2636,10 @@ const hurtShare = (t: Unit) => Math.round((10 * Math.max(0, t.hp)) / Math.max(1,
  * Under all three: its Taunter first, standing before Downed, the healer weight of rules 1.23 (the healer's place is
  * not moved by distance: an Elite hunts it across the field), the likeliest hit last. */
 export type Doctrine = 'nearest' | 'spread' | 'focus';
+/** Rules 1.34 (Figments): how much less a Figment draws this enemy's fire (enemies.json tier `owned_weight`: 0 for the
+ * Vermin and Minions, who take what is in front of them; more for the tiers that look for the real threat), plus the
+ * Figment's own `figWeight` (the Loud trait: −1, the most hurt in reach for every tier). 0 for anything else. */
+const ownedWeight = (u: Unit, t: Unit): number => ((t as any).owned?.kind === 'figment' && !(t as any).ghostOf ? (Number((!u.charId && u.tier ? (ENEMY as any)[u.tier]?.owned_weight : 0) || 0) + Number((t as any).figWeight || 0)) : 0);
 export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number } => {
   const e: any = u.charId || u.companion || !u.tier ? null : ENEMY[u.tier], id: Doctrine = e?.doctrine === 'nearest' || e?.doctrine === 'spread' ? e.doctrine : 'focus';
   return { id, spread: Math.max(0, Number(e?.fire_spread) || 0), near: Math.max(0, Number(e?.fire_near) || 0) };
@@ -2645,7 +2678,7 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.filter((x) => x.pv.ok).map((x) => x.pv.pct));
   if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
   const near0 = d.near ? Math.min(...list.filter((x) => !x.t.downed).map((x) => x.far), Infinity) : 0;
-  const key = (x: Aim) => hurtShare(x.t) + d.spread * x.fire + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  const key = (x: Aim) => hurtShare(x.t) + d.spread * x.fire + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
   list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {

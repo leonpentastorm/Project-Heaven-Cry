@@ -4779,14 +4779,16 @@
       },
       "self_holds": {
         "arg": "hold",
-        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner) or the skill it opens (brain_power, will_power, empathy)} (a focus) or {slot, item: an item id}",
+        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}",
         "values": [
           "evoker",
           "emanator",
           "attuner",
+          "visualizer",
           "brain_power",
           "will_power",
-          "empathy"
+          "empathy",
+          "visualization"
         ]
       },
       "self_lacks_gear": {
@@ -4796,9 +4798,11 @@
           "evoker",
           "emanator",
           "attuner",
+          "visualizer",
           "brain_power",
           "will_power",
-          "empathy"
+          "empathy",
+          "visualization"
         ]
       },
       "self_skill": {
@@ -4874,13 +4878,14 @@
           "cores",
           "momentum",
           "guard",
-          "shadow",
           "supplies",
           "toxins",
           "parts",
           "stims",
           "echo",
           "pressure",
+          "vcharge",
+          "shadow",
           "ledger"
         ]
       },
@@ -4893,13 +4898,14 @@
           "cores",
           "momentum",
           "guard",
-          "shadow",
           "supplies",
           "toxins",
           "parts",
           "stims",
           "echo",
           "pressure",
+          "vcharge",
+          "shadow",
           "ledger"
         ]
       },

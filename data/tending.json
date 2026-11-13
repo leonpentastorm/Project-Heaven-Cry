@@ -402,6 +402,8 @@
               "target_not_kind": [
                 "robot",
                 "machine",
+                "turret",
+                "drone",
                 "figment"
               ],
               "target_alive": true,
@@ -1159,6 +1161,8 @@
               "target_not_kind": [
                 "robot",
                 "machine",
+                "turret",
+                "drone",
                 "figment"
               ],
               "target_alive": true,

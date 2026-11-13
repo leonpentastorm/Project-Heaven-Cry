@@ -882,6 +882,8 @@ Weapon skills and lore:
 | Knuckledusters | 16 | 0.3 | 60 | |
 | Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
 | Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
+| Figment claws | 30 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
+| Figment edge | 25 | 0 | none | a Blade Figment's own weapon (rules 1.34): never carried, bought or dropped |
 
 - **Fists · Grapple:** 2 AP; the target can't move until it breaks free (its Athletics or Raw Power check against your Raw Power check). *"Everyone's first weapon."*
 - **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."*
@@ -4661,6 +4663,121 @@ you first) is the enemy step's (Classes 3.0 step 9). Item 2038.
 `balance.ceilings.tending_turn` 200 (the Mender's healing turn in Soldier-turns × 100; dial `output.profiles.tend.k`),
 `mender_offence` 70 and `mender_window` 100 (percent of a rifle-turn; dials `bond.per_bond`, the Ledger's factor).
 Measured in the step 7 hand-off, not refitted here. Items 2039 to 2041.
+## Rules revision 1.34: Figments, the Visualizer and the Rigger (Classes 3.0, step 8)
+
+Built on 13 Nov 2026 from `docs/design/figments-spec.md` (binding; its "Settled" notes override its body) and the Settled
+blocks of `docs/design/class-roster-rev4-proposal.md` section 8. It overrides every body line on Visualization (its
+per-point line, the unbuilt Afterimage, Paint the Field), on Field Repair and Field Fix, and on the Trickster's moves
+(rules 1.10's class table, rules 1.29), where they differ. The class id stays `trickster`; its display name is the
+Rigger. Every number here is PROVISIONAL (items 2100 to 2199). Data: `data/figments.json` (new), the `trickster` block of
+`classes.json`, `items.json visualizer`, `weapons.json figment_claws` and `figment_edge`, `actions.json` (the resource
+`vcharge`, the cost sites `picture`, `let_go`, `figment_strike`, `figment_pounce`, `figment_cut`, `figment_stare`),
+`conditions.json watched`, `rules.json` (profiles `figment` and `repair`, the pair `repair`, `factors.figment`,
+`balance.ceilings.figments`), `enemies.json` tiers (`owned_weight`, `double_save`), `skills.json` (Visualization's
+unlocks 1, 3, 5, 7, 9; Field Repair's `amounts.repair`).
+
+### 1. The Visualizer and Figments (Expression's door, through Visualization)
+
+1. **The Visualizer** (`items.json visualizer`, the third standard focus; Leon: a glove with a projector set in the
+   middle of the palm): off hand, holds one mana core of its own (`figments.json visualizer.charge`, 10; resource
+   `vcharge`). Picturing and acting through a Figment need it **in a hand** (`self_holds {door: visualizer}`); held
+   Figments stay while it is **carried**; its charge goes home with the character (`visCharge`). Its core is swapped by
+   the verb `visualizer_core` (the `swap_core` site, a spare core).
+2. **Picture** (verb `picture`, cost site `picture`, 2 AP; the design's charge): a Figment of a ready design or a bare
+   form opened appears on a free tile the owner's side sees within **projection range** (`visualizer.range`: 4 + 1 a
+   point of Visualization; a Rigger without the door 6, for its Double). Its charge is the form's + 1 a trait
+   (`trait_charge`) + each trait's own (Hollow −2), at least 1.
+3. **Held** (`ladder`): 1 at Visualization 1, 2 at 5, 3 at 7; the Rigger +1 (stat `ties_max:owned`), never past
+   `limits.held_most` (4). Past it Picture is refused ("Hold is full: let one go first").
+4. **Upkeep** (`upkeep`): 1 charge a held Figment at its owner's turn start (the owned unit's `upkeep`, P9); holding 3 or
+   more also costs 1 AP that turn. Short of charge, the newest unravels.
+5. **Acting through** (owned units of turn `owner`, rules 1.28 items 1768, 1769): a Figment's verbs are rows of its
+   owner's panel, priced at their cost site on the owner and paid from the owner's AP. The Visualizer in hand, not
+   Silenced, the Figment within projection range (Tethered: +4). Its attack rolls d20 + the owner's Visualization
+   modifier (Keen +2); its damage is its weapon's on the profile `figment` (k 1.5, the Level term `deal` at the owner's
+   level) times **the Figment factor** (`output.factors.figment`, 0.9).
+6. **Let go** (verb `let_go`, 0 AP): unmade; half its charge (`refund_share` 0.5, rounded down) goes back. A Figment
+   **destroyed** by damage gives nothing back and its owner **Snaps**: 1 AP less next turn (`let_go.snap_ap`; at most
+   once a turn; not from Visualization 9). A destroyed Figment releases no mana and spills no Pressure (it is no one's
+   death).
+7. **Attention breaks**: the owner Downed or Stunned: every Figment unravels, nothing back. Silenced: no Picture and no
+   acting through; they stay. A Figment that ends its owner's turn beyond projection range (Tethered: twice it)
+   unravels. The fight's end unravels every Figment and Scrap Turret.
+8. **What a Figment is**: a unit of its owner's side with HP, Defense, armour and a pace; no turn, no AP, no reactions
+   of its own; immune to every condition (the Body, Brain and Heart families, Bleeding: `figments.json unit_effects`, held
+   as the item `fig_<form>`); the Wall is immune to knockback. Its level numbers: HP × `hp_mult × damage_mult`, Defense +
+   `defense_plus`, armour × `armour_mult` at the owner's level (`figments.json level`).
+9. **Sight**: only the Eye sees for its side (`eyes`; vision 8, dark sight); the other forms see nothing.
+10. **The Blade's Hold**: the first enemy each round to enter or leave a tile next to a Blade is Cut; that spends one of
+    the owner's reactions (`react()`, kind `attack`, payer the owner); with none left it does not strike.
+11. **Designs** (`Character.figments`): a form and its traits, named, kept out of a fight: 2 ready at Visualization 3, 3
+    at 5, 4 at 8, 5 at 10 (the Rigger +1, stat `figment_designs`); one trait a design from 3, two from 7. A bare form
+    opened is always ready.
+
+### 2. The forms and the traits (`figments.json forms`, `traits`)
+
+| Form | Opens | Charge | HP / Defense / armour (level 1) | Tiles an AP | Verbs (cost site, AP) |
+| --- | --- | --- | --- | --- | --- |
+| Double | Vis 1 | 2 | 30 / the owner's / 0 | the owner's | Move; lures (section 3) |
+| Eye | Vis 3 | 2 | 15 / 15 / 0 | 4, flies | Move; Stare (`figment_stare`, 1): the target is Watched (`watched`: stat `always_seen`) for a round |
+| Wall | Vis 3 | 3 | 60 / 6 / 5 | 1 | Move; full cover, blocks sight, unpushable |
+| Beast | Vis 5 | 4 | 45 / 12 / 3 | 3 | Move; Strike (`figment_strike`, 2: `figment_claws` 30); Pounce (`figment_pounce`, 3): up to 3 tiles in a straight line, then a Strike; a hit: Prone (Body save) |
+| Blade | Vis 5 | 3 | 25 / 14 / 0 | 2 | Move; Cut (`figment_cut`, 2: `figment_edge` 25); Hold (rule 10) |
+
+Traits (+1 charge each): Armoured (HP ×1.5), Swift (+2 tiles an AP), Loud (`figWeight` −1: every tier counts it the
+most hurt), Volatile (destroyed: 20 flat, radius 1, both sides), Tethered (+4 range), Mirror (lures as a Double),
+Barbed (a melee hit on it: 10 true back), Lasting (no upkeep), Keen (+2 to hit; an Eye sees 4 further), Hollow (−2
+charge, HP ×0.5).
+
+### 3. The enemies and the Double (rules 1.25's doctrine)
+
+A Double (or a Mirror) is an image with a body (`illusion.ts FalseImage.body`). Every enemy that sees its tile when it is
+made is fooled with no save if its tier's `double_save` is none (Vermin, Minion), else makes a Brain save against 12 +
+the owner's Visualization strength with its tier's `double_save` added to its roll (Soldier 0, Elite 2, Boss 3) and 5
+more once it has found a Double out this fight (`lure.found_out_add`). An Elite saves again at each of its turn starts; a
+Boss is never fooled past its next turn start. A fooled enemy sees the owner where the Double stands (the healer hunt
+included); its attack lands on the Double and finds it out. A destroyed Double is found out by all. Every tier also
+weighs a Figment by its `owned_weight` in its choice of target (0 Vermin and Minion, 0.5 Soldier and Elite, 1 Boss:
+a character comes first at equal hurt); Loud lowers that by 1.
+
+### 4. Improvisation and Charisma
+
+**Field Repair** (Improvisation 3; `field_repair`, 2 AP and one spare part) is one action with three ways, on the
+repairer or a unit of its side next to it: clear a jam; restore weapon durability (10% + 5% a point above 3, as
+before); **repair** a robot, drone, turret, Factory Made squadmate or Figment for `amounts.repair` 15 on the profile
+`repair` (k 1.392, Expression and Improvisation, the Level term `mend`; a repair, not a heal; a Downed machine comes
+back up). Factory Made's own repair amount no longer applies to Field Repair (it is the one amount). **Charisma**: no
+number (the Call through the Double is not built: section 7).
+
+### 5. The Rigger (`classes.json trickster`)
+
+Better: one more Figment held and one more design (the class `gain` "The Rigger's Hands"); Overclock is its "one thing a
+turn cheaper"; six moves, none needing Visualization:
+
+| Rank | Key | Move | Rule |
+| --- | --- | --- | --- |
+| I | `trickster.false_image` | **Double** | 2 AP and 1 charge, the Visualizer in hand: a bare Double within projection range (6 without the door), outside the held count, no upkeep, gone at the owner's turn start 2 rounds on; one at a time |
+| I | `infiltrator.field_fix` | **Field Fix** | 2 AP: Field Repair with no part and no Improvisation gate, reach 2, its own `amounts.repair` 15 |
+| II | `trickster.salvage` | **Salvage** | 1 AP, next to you: a wreck (a destroyed machine of either side) gives 2 charge (each wreck once a fight); or one of your Figments is let go with all its charge back; or a repair of 15 |
+| II | `trickster.overclock` | **Overclock** | 1 AP, once a turn: a Figment, robot, drone or turret of your side within 8 that your side sees attacks the nearest enemy it can reach now, at no AP (an attack of up to 2 AP); it takes 5 true (the Level term `deal`). Never a character |
+| III | `trickster.sleight` | **Sleight** | 1 AP, once a scene: swap places with one of your Figments or a standing ally within 6 |
+| III | `trickster.scrap_turret` | **Scrap Turret** (was Jury-Rig) | 3 AP, once a scene, one at a time: from a wreck, a pile with a weapon or a barricade next to you, a turret (`figments.json turret`: 40 HP, Defense 10, armour 5, no move; an owned unit of turn `auto`) that at each of your turn starts for 3 rounds makes its weapon's plain attack (the wreck's or pile's weapon, else the service pistol) at the nearest enemy it can reach, d20 + your Improvisation modifier, the weapon profile at your level |
+
+Leave the class (keys kept in the move pool, shelved): Silver Tongue, Blind and Slow, Rewrite. Read goes to the Operative
+(on this step's branch it stands in the Operative's rank II where Field Fix was; the Shadow step sets that rank).
+
+### 6. The balance line
+
+`rules.json balance.ceilings.figments`: the Rigger all in **150** (two Figments), the door all in 130, at a normal share
+104; the Rigger at a normal share 120. Dial: `output.factors.figment` (0.9), then `figments.json level.hp`. Measured in
+`docs/design/handoffs/classes-3.0-step-8.md`.
+
+### 7. Not built in this revision
+
+The Call spoken through a Double (spec rule 15); NULL unmaking Figments (`sigils.json null.dispel`); a Wall's cover and
+sight-blocking for both sides as standing cover (the owned block's `cover` is half cover today); the Volatile burst's
+both-sides area on a Figment's own fall is data (`figtrait_volatile`); the Visualizer out of a fight (rule 17, a
+Narrator's check); the AI's handling beyond the Double's saves and `owned_weight` (section 8 of the spec: the enemy step).
 ## Rules revision 1.35: the katana, and the Emanator katana held back (a test of adding a weapon by data alone)
 
 Built on 13 Nov 2026 (Leon: "add as weapon, test out our add-weapon capability in this engine"); the art is in the
@@ -7690,6 +7807,35 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2039. **`tending_turn` 200** (Soldier-turns × 100, the Mender all in). PROVISIONAL.
 2040. **`mender_offence` 70** (percent of a rifle-turn). PROVISIONAL.
 2041. **`mender_window` 100** (the best three turns). PROVISIONAL.
+2100. **The Visualizer (rules 1.34; `items.json visualizer`):** the third standard focus, a glove with a projector in the palm (Leon); off hand, 1 kg, 1,000 credits (the lead's, as the Evoker); its own core of `figments.json visualizer.charge` 10 (resource `vcharge`). PROVISIONAL.
+2101. **Projection range (rules 1.34; `visualizer.range`):** 4 + 1 a point of Visualization; a Rigger without the door 6 (`no_door`). PROVISIONAL.
+2102. **Picture (rules 1.34; cost site `picture`):** 2 AP; the form's charge + 1 a trait (`trait_charge`), at least 1. PROVISIONAL.
+2103. **Held (rules 1.34; `ladder`):** 1 at Visualization 1, 2 at 5, 3 at 7; at most 4 (`limits.held_most`); the Rigger +1. PROVISIONAL.
+2104. **Upkeep (rules 1.34; `upkeep`):** 1 charge a held Figment at its owner's turn start; holding 3 or more also costs 1 AP that turn. PROVISIONAL (the spec's "measure").
+2105. **Let go (rules 1.34; `verbs.let_go`):** 0 AP; half the made charge back, rounded down (`refund_share` 0.5). PROVISIONAL.
+2106. **Snap (rules 1.34; `let_go.snap_ap`):** a Figment destroyed by damage: 1 AP less next turn, at most once a turn; not from Visualization 9. PROVISIONAL.
+2107. **The Figment factor (rules 1.34; `rules.json output.factors.figment`):** 0.9 on every attack made through a Figment; profile `figment` (k 1.5, Level `deal`, at the owner's level). PROVISIONAL.
+2108. **A Figment's level (rules 1.34; `figments.json level`):** HP × `hp_mult × damage_mult`, Defense + `defense_plus`, armour × `armour_mult` (enemies.json levels) at the owner's level. PROVISIONAL.
+2109. **The forms (rules 1.34; `forms`):** Double 2 charge, 30 HP, the owner's Defense and pace; Eye 2, 15/15/0, 4 tiles, vision 8; Wall 3, 60/6/5, 1 tile, full cover; Beast 4, 45/12/3, 3 tiles; Blade 3, 25/14/0, 2 tiles. PROVISIONAL.
+2110. **The verbs (rules 1.34; `actions.json costs`):** Strike 2 AP (`figment_claws` 30), Pounce 3 AP (3 tiles, Prone on a hit, Body save), Cut 2 AP (`figment_edge` 25), Stare 1 AP (Watched a round), Let go 0. PROVISIONAL.
+2111. **The traits (rules 1.34; `traits`):** Armoured ×1.5 HP; Swift +2 tiles; Loud −1 weight; Volatile 20 flat radius 1; Tethered +4 range; Mirror; Barbed 10 true; Lasting no upkeep; Keen +2 to hit, +4 sight; Hollow −2 charge, ×0.5 HP. PROVISIONAL.
+2112. **Designs (rules 1.34; `ladder`):** 2 ready at Visualization 3, 3 at 5, 4 at 8, 5 at 10 (the Rigger +1); one trait a design from 3, two from 7. PROVISIONAL.
+2113. **Attention breaks (rules 1.34):** the owner Downed or Stunned: every Figment unravels; Silenced: no Picture or acting through; beyond projection range at the owner's turn end (Tethered: twice it): unravels; the fight's end unravels every Figment and Scrap Turret. PROVISIONAL.
+2114. **A Figment's fall is no death (rules 1.34):** it releases no mana (`tactics.ts deathMana`) and spills no Pressure. The lead's call (the spec is silent). PROVISIONAL.
+2115. **The Blade's Hold (rules 1.34):** the first enemy each round to enter or leave a tile next to it is Cut on its owner's reaction (kind `attack`). PROVISIONAL.
+2116. **Field Repair (rules 1.34; `skills.json proficiency.unlocks.3`):** one action, three ways, on you or a unit of your side next to you; the repair `amounts.repair` 15 on the profile `repair` (k 1.392, Expression and Improvisation, Level `mend`). Factory Made's own repair amount no longer applies to it. PROVISIONAL.
+2117. **Visualization's ladder (rules 1.34):** the unlock rows 1, 3 (replaces Afterimage, never built), 5 (replaces Paint the Field), 7, 9; per point "+1 projection range; Figment accuracy" (the +5% elemental line goes). PROVISIONAL.
+2120. **The Double's lure (rules 1.34; `enemies.json double_save`):** none for Vermin and Minions (always fooled); a Brain save against 12 + the owner's Visualization strength with Soldier +0, Elite +2, Boss +3 to the save; +5 to an enemy that found a Double out this fight (`lure.found_out_add`); an Elite saves again at each turn start; a Boss is never fooled past its next turn start. PROVISIONAL.
+2121. **owned_weight (rules 1.34; `enemies.json`):** Vermin 0, Minion 0, Soldier 0.5, Elite 0.5, Boss 1.0, added to a Figment's place in the enemy's choice of target; Loud −1. PROVISIONAL.
+2130. **The Rigger's meter (rules 1.34; `classes.json trickster.gain`):** one more Figment held (with the door) and one more design. PROVISIONAL.
+2131. **Double (rules 1.34; `trickster.false_image`):** 2 AP, 1 charge, outside the held count, no upkeep, gone at the owner's turn start 2 rounds on; one at a time. PROVISIONAL.
+2132. **Field Fix (rules 1.34; `infiltrator.field_fix`, now the Rigger's):** 2 AP, no part, no gate, reach 2, repair 15 on the profile `repair` (was 20 flat). PROVISIONAL.
+2133. **Salvage (rules 1.34; `trickster.salvage`):** 1 AP; a wreck gives 2 charge (each wreck once a fight); reclaim a Figment with all its charge; or repair 15. The unit is the first next to you that fits (the lead's call: one action, no grid pick). PROVISIONAL.
+2134. **Overclock (rules 1.34; `trickster.overclock`):** 1 AP, once a turn, within 8: its attack (up to 2 AP) at the nearest enemy it can reach, at no AP; 5 true (Level `deal`). Never a character. Only an attack (the lead's call: the spec's "one of its actions" read as its attack). PROVISIONAL.
+2135. **Sleight (rules 1.34):** with one of your Figments (was your False Image) or a standing ally within 6. PROVISIONAL.
+2136. **Scrap Turret (rules 1.34; `trickster.scrap_turret`; was Jury-Rig):** 3 AP, once a scene, one at a time; `figments.json turret` 40 HP, Defense 10, armour 5; 3 rounds; d20 + Improvisation modifier; the weapon profile at the owner's level. PROVISIONAL.
+2137. **Leave the Rigger (rules 1.34):** Silver Tongue, Blind and Slow, Rewrite (shelved in the move pool); Read to the Operative. PROVISIONAL.
+2140. **The figments ceiling (rules 1.34; `rules.json balance.ceilings.figments`):** the Rigger all in 150, the door all in 130, door normal 104, Rigger normal 120 (Leon's budget reading). PROVISIONAL.
 2200. **The katana's family and damage (rules 1.35):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. Lead's numbers, Leon to confirm. PROVISIONAL.
 2201. **The katana's weight and price (rules 1.35):** 1.4 kg, 500 credits; durability 250, mod slots edge and grip, no requirement. Lead's numbers, Leon to confirm. PROVISIONAL.
 2202. **The katana lends Draw Cut (rules 1.35):** its `phys.teaches`; no weapon skill of its own; in no loot table (as the sabre). Lead's numbers, Leon to confirm. PROVISIONAL.

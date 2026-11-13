@@ -6,38 +6,8 @@ import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 12, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
 const open = (cb: Combat) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; };
 
-describe('Sleight: the image swap needs the image\'s tile free (spec item 575)', () => {
-  it('an enemy standing on the image: refused, nothing spent, nobody shares a tile', () => {
-    const f = fightWith([cls('trickster', 8, { archetype: 'sigilist', kit: 'sigil' })], [{ at: 'P11' }]);
-    open(f.cb);
-    let u = f.turn(f.pc); f.unit(u.id).pos = '2,4'; f.unit(f.foe.id).pos = '12,9';
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'class:trickster.false_image', actionId: 'false_image', tile: '4,4' } as any);
-    expect(f.cb.images?.length).toBe(1);
-    f.unit(f.foe.id).pos = '4,4'; // an enemy walked onto the image (nothing blocks it)
-    u = f.unit(u.id); u.ap = 6;
-    expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'class:trickster.sleight', actionId: 'sleight_image' } as any)).toThrow('Someone stands on your image.');
-    expect(f.unit(u.id).pos).toBe('2,4'); expect(f.unit(u.id).ap).toBe(6);
-    f.unit(f.foe.id).pos = '12,9'; // it steps off: the swap works (the use wasn't spent)
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'class:trickster.sleight', actionId: 'sleight_image' } as any);
-    expect(f.unit(u.id).pos).toBe('4,4');
-  });
-});
-
-describe('a fooled enemy never ends its walk on the False Image (spec item 573)', () => {
-  it('a melee foe closes on the image and stops next to it', () => {
-    const f = fightWith([cls('trickster', 8, { archetype: 'sigilist', kit: 'sigil' })], [{ at: 'P11', weapon: 'maul' }], { classic: true });
-    open(f.cb);
-    const u = f.turn(f.pc); f.unit(u.id).pos = '2,4'; const foe = f.unit(f.foe.id); foe.pos = '9,4'; (foe as any).sv = { body: -50, brain: -50, heart: -50 };
-    f.cb.order = [u.id, foe.id];
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'class:trickster.false_image', actionId: 'false_image', tile: '6,4' } as any);
-    expect(f.cb.images?.[0]?.fooled).toContain(foe.id);
-    f.act({ type: 'combat/end-turn', unitId: u.id } as any);
-    // It walks next to the image (G5 is the image's tile, 6,4), strikes it (it scatters), then moves on.
-    const log = f.cb.log.join('\n');
-    expect(log).toMatch(/Foe 1 moves to H4 .*\n.*passes through a False Image/);
-    expect(log).not.toMatch(/Foe 1 moves to G5/);
-  });
-});
+// Sleight's image swap and the False Image's walk (spec items 573, 575) left with the False Image: rules 1.34 made it the
+// Rigger's Double, a Figment (a unit: nobody shares its tile). Its tests: figments.test.ts and rigger.test.ts.
 
 describe('Speed Loader: the turn\'s first main-hand reload only (spec item 564)', () => {
   const setup = () => {

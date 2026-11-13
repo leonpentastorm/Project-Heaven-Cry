@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Figment claws: three cuts the bots build, flecks where they hold together -->
+  <path d="M14 52 Q26 34 22 10"/>
+  <path d="M28 56 Q40 36 36 12"/>
+  <path d="M42 54 Q54 36 50 16"/>
+  <path d="M10 30 L11 30 M18 60 L19 60 M33 6 L34 6 M56 44 L57 44 M46 8 L47 8"/>
+</svg>

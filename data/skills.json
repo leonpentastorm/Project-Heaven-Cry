@@ -2375,54 +2375,55 @@
       "attribute": "expression",
       "core": "mind",
       "slot": "alpha",
-      "summary": "Shapes thought into images and Sigils into forms.",
+      "summary": "Shapes thought into images; pictures the Figments the bots build.",
       "per_point": {
-        "text": "+5% elemental damage."
+        "text": "One more tile of projection range; Figment accuracy (the modifier).",
+        "source": "rules 1.34: the elemental line went with rules 1.26's slope; Visualization is Figments' door"
       },
       "gates": [
         "gear:projector",
         "gear:illusion"
       ],
       "unlocks": {
+        "1": {
+          "name": "Figments",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "The door, its whole loop, smaller: Picture (a Figment the bots build), the Double, one held; projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.34 (figments-spec.md section 4)"
+        },
         "3": {
-          "name": "Afterimage",
+          "name": "Eye and Wall",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "{=unlocks.3.effects.0.ap} AP: project a decoy of yourself that draws the next enemy attack.",
+          "text": "Picture the Eye and the Wall; two ready designs, one trait each (figments.json ladder).",
           "effects": [
-            {
-              "op": "grant_action",
-              "action": "afterimage",
-              "ap": 2,
-              "uses": "at_will"
-            },
             {
               "op": "perk_choice",
               "skill": "visualization",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "provisional": true
         },
         "5": {
-          "name": "Paint the Field",
-          "category": "Combat Interaction",
+          "name": "Beast and Blade",
+          "category": "Active Skill",
           "mastery": 2,
-          "text": "Once per Evoke, give a Sigil spell with no Burst word a free SPREAD or PUSH (no glyph, no charge, not counted toward 4 glyphs).",
-          "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "free_sigil_shape",
-              "value": 1
-            }
-          ],
+          "text": "Two Figments held; picture the Beast and the Blade; three ready designs (figments.json ladder).",
+          "effects": [],
           "adjudication": "engine",
-          "item": true
+          "provisional": true,
+          "source": "rules 1.34: replaces Paint the Field (nine doors 15.5: replace when Figments are built)"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "Three Figments held; two traits a design. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2435,7 +2436,7 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A destroyed Figment no longer Snaps. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
@@ -2473,9 +2474,9 @@
         "alpha",
         "core:mind",
         "attr:expression",
-        "magic:sigil",
         "offense",
-        "illusion"
+        "illusion",
+        "magic:figment"
       ],
       "number": 16,
       "voice": {
@@ -2500,7 +2501,7 @@
           "Thinking it in your head is not enough! Master Sakamoto once spent four months mixing just 200 grams of watercolour. He called it 'Thousand-Autumn Red.' And if you must know: I've watched the video of him mixing it over a thousand times, and I still can't make that colour. No one can guess what you might do with a few rose stems, glue and an egg yolk. I wonder what 'Afternoon of Blood' looked like inside his mind. But the undeniable truth is that the way he carried that thought from his head onto paper is irresistible. A beauty only he could paint."
         ],
         "intro": "Visualization is your power to picture the world: to take the shapeless thoughts in your head and express them outward as images.",
-        "effect": "+5% elemental damage.",
+        "effect": "One more tile of projection range; Figment accuracy (the modifier).",
         "high_levels": "you see the story behind every landscape and make landscapes out of every story. You risk sinking into faraway worlds and forgetting this one.",
         "good_for": "critics, painters, Projector Gear® users.",
         "bad_for": "the near-sighted, people who'd rather feel than describe.",
@@ -2524,7 +2525,7 @@
           "name": "Field Repair",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "{=unlocks.3.effects.0.ap} AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore {=unlocks.3.effects.0.repair_base|pct}% + {=unlocks.3.effects.0.repair_per_point|pct}% per Improvisation point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
+          "text": "{=unlocks.3.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=unlocks.3.effects.0.repair_base|pct}% + {=unlocks.3.effects.0.repair_per_point|pct}% per Improvisation point above 3 of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=unlocks.3.amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, 10 minutes per charge restores 50%.",
           "effects": [
             {
               "op": "grant_action",
@@ -2540,7 +2541,16 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "amounts": {
+            "repair": {
+              "kind": "heal",
+              "base": 15,
+              "profile": "repair",
+              "provisional": true
+            }
+          },
+          "provisional": true
         },
         "5": {
           "name": "Tuned",

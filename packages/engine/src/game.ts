@@ -6,8 +6,9 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
+import { setFigmentDesign, dropFigmentDesign } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
@@ -363,6 +364,8 @@ export type Action =
   | { type: 'combat/pump'; unitId: string; feeling?: string } | { type: 'combat/revert'; unitId: string } | { type: 'combat/letgo'; unitId: string } | { type: 'combat/steady'; unitId: string } | { type: 'combat/feed'; unitId: string }
   | { type: 'combat/heartwatch'; unitId: string; on?: boolean }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/pick'; charId: string; module: string; via?: string } | { type: 'magic/forget'; charId: string; designId: string }
+  /** Rules 1.34: keep (or with `drop`, forget) a Figment design out of a fight (figments.ts setFigmentDesign) */
+  | { type: 'figments/design'; charId: string; design?: FigmentDesign; drop?: string }
   // Rules 1.10 (Sigil 1.5): learn a word with a study pick (or the Mastered free word, over the cap); read a glyph or a trace (copying).
   | { type: 'sigil/learn'; charId: string; word: string; free?: boolean } | { type: 'combat/read'; unitId: string; tile: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
@@ -884,6 +887,15 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at < 0) g.seq++;
       if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
       if (at >= 0) list[at] = clean; else list.push(clean);
+      return;
+    }
+    case 'figments/design': {
+      // Rules 1.34: a Figment design (a form and its traits, named) is made out of a fight, as an Outburst's
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Design Figments out of combat.');
+      if (a.drop) { dropFigmentDesign(c!, a.drop); return; }
+      if (!a.design) fail('Name the design.');
+      const why = setFigmentDesign(c!, { ...a.design!, id: a.design!.id || 'f' + (g.seq += 1) }); if (why) fail(why);
       return;
     }
     case 'sigil/learn': {
@@ -1514,7 +1526,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/brace': err = brace(cb!, u); break;
     case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, who); break; }
     case 'combat/gift': err = runGift(g, cb!, g.rng, u, tileKey(g, a.aim)); break;
-    case 'combat/repair': err = a.targetId && a.targetId !== u.id ? repairAlly(cb!, u, cb!.units.find((x) => x.id === a.targetId)) : fieldRepair(cb!, u); break;
+    case 'combat/repair': { const t = a.targetId && a.targetId !== u.id ? cb!.units.find((x) => x.id === a.targetId) : null; if (a.targetId && a.targetId !== u.id && !t) fail('Pick one of your side.'); err = fieldRepair(cb!, u, { target: t, way: (a as any).way || null }); break; } // rules 1.34: one action, on you or a unit of your side next to you
     case 'combat/paired': { const t = cb!.units.find((x) => x.id === a.targetId), t2 = a.targetId2 ? cb!.units.find((x) => x.id === a.targetId2) || null : null; if (!anyTarget(t, u) || (t2 && !anyTarget(t2, u))) fail('Pick someone else.'); err = pairedAttack(cb!, g.rng, u, t!, t2, c); break; }
     case 'combat/overwatch': { const mode = playerMode(a.mode, ['shot', 'aimed', 'melee'] as const); if (mode !== 'melee' && isPressed(u)) fail('You are Pressed: you can\'t hold a shot.'); refuseHook(cb!, u, a); err = setOverwatch(cb!, u, mode); break; } // rules 1.12: refused before the AP is paid
     case 'combat/attack': {
@@ -2691,18 +2703,6 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
 /** Field Repair on a squadmate whose body is a machine (Factory Made; perk-runtime A10): adjacent, Proficiency 3+, one of
  * your spare-parts charges, the Field Repair AP: +10 HP per your Proficiency point (as their own self-repair; not halved
  * by Plug: it isn't healing). PROVISIONAL, spec 14. */
-function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][number] | undefined): string | null {
-  if (!t || t.side !== u.side || t.dead) return 'Pick a squadmate.';
-  if (!holdersOf({ u: t }).some((h) => h.key === 'trait:factory_made')) return t.name + ' isn\'t a machine: stim them instead.';
-  if (dist(u.pos, t.pos) > 1) return 'Walk up to them first.';
-  if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
-  if (!(u.parts || 0)) return 'No spare-parts charges.';
-  if (t.hp >= t.maxHp) return t.name + ' is already whole.';
-  const cost = price({ cb, u }, 'field_repair').ap; { const no = whyNot(cb, u, cost); if (no) return no; }
-  const was = t.hp; pay(cb, u, cost); u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) setDowned(t, false);
-  emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was });
-  say(cb, u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
-}
 /** Can this character design Outbursts? A Vessel can't (K30: the charge lives in the body). The Magic panel hides the
  * design screen when this gives a reason. */
 export function designBan(c: Character): string | null {

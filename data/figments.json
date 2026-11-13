@@ -1,0 +1,172 @@
+{
+  "$schema_version": "1.0",
+  "kind": "figments",
+  "source": "PHC Core Rules v1.0, rules 1.34: Figments, the Visualizer and the Rigger (Classes 3.0 step 8; docs/design/figments-spec.md). Every number PROVISIONAL (spec section 14, items 2100 to 2199).",
+  "adjudication": "engine",
+  "provisional": true,
+  "visualizer": {
+    "item": "visualizer",
+    "resource": "vcharge",
+    "charge": 10,
+    "door": "visualization",
+    "range": { "base": 4, "per_point": 1, "no_door": 6 },
+    "text": "The Visualizer holds one mana core of its own (charge). Making a Figment and acting through one need it in a hand; held Figments stay while it is carried. Projection range: range.base + your Visualization tiles (range.no_door for a Rigger without the door).",
+    "provisional": true
+  },
+  "level": {
+    "hp": ["hp_mult", "damage_mult"],
+    "defense": "defense_plus",
+    "armour": "armour_mult",
+    "note": "A Figment's level-1 numbers grow by the enemy table at its owner's level (enemies.json levels): HP by hp_mult x damage_mult (it soaks the same share of a Soldier-turn at every level), Defense by defense_plus, armour by armour_mult. Its damage grows only by output.level.deal (the figment profile), never by skill."
+  },
+  "limits": {
+    "bodies": 6,
+    "held_most": 4,
+    "note": "At most 4 Figments held (the Rigger at Visualization 7), plus the Rigger's Double and one Scrap Turret: 6 owned units a character."
+  },
+  "upkeep": {
+    "res": "vcharge",
+    "n": 1,
+    "ap_from": 3,
+    "ap": 1,
+    "text": "At your turn start: n charge for each Figment held; holding ap_from or more also costs ap AP that turn. Short of charge, the newest unravels for each charge missing."
+  },
+  "let_go": {
+    "snap_ap": 1,
+    "text": "Let go (verbs.let_go): unmake one; refund_share of its made charge (rounded down) goes back into the core. A Figment destroyed by damage gives nothing back and Snaps: your next turn has snap_ap AP less (at most once a turn)."
+  },
+  "ladder": [
+    { "points": 1, "held": 1, "forms": ["double"], "designs": 0, "traits": 0, "text": "The door: Picture, the Double, 1 held, range 5. The Visualizer also works out of a fight." },
+    { "points": 3, "forms": ["eye", "wall"], "designs": 2, "traits": 1, "text": "Eye and Wall; 2 ready designs, one trait each." },
+    { "points": 5, "held": 2, "forms": ["beast", "blade"], "designs": 3, "text": "2 held; Beast and Blade; 3 ready designs." },
+    { "points": 7, "held": 3, "traits": 2, "text": "3 held; two traits a design." },
+    { "points": 8, "designs": 4, "text": "4 ready designs." },
+    { "points": 9, "no_snap": true, "text": "A destroyed Figment no longer Snaps." },
+    { "points": 10, "designs": 5, "text": "5 ready designs; the Mastered perk." }
+  ],
+  "lure": {
+    "found_out_add": 5,
+    "text": "A Double lures by the fire doctrine of enemies.json (double_save): a tier with none is always fooled; the others save (Brain, against 12 + your Visualization strength, plus the tier's double_save) on first sight, an Elite and a Boss again at each of their turn starts, a Boss never two rounds running. An enemy that found a Double out gets found_out_add against your later Doubles this fight."
+  },
+  "unit_effects": {
+    "text": "What every Figment is: no saves, immune to every condition (the Body, Brain and Heart families), to Bleeding and to Hidden (it never hides: Shadow is a character's). Each form's verb item (fig_<form>, collect.ts) holds these and its own.",
+    "effects": [
+      { "op": "immunity", "to": "family:body" }, { "op": "immunity", "to": "family:brain" },
+      { "op": "immunity", "to": "family:heart" }, { "op": "immunity", "to": "bleed" },
+      { "op": "immunity", "to": "hidden" }
+    ]
+  },
+  "forms": [
+    {
+      "id": "double", "name": "Double", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
+      "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
+      "hp": 30, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
+      "actions": ["move"], "verbs": ["let_go"],
+      "upkeep": { "res": "vcharge", "n": 1 },
+      "glyph": "◐",
+      "text": "A second you the bots build: {=hp} HP, your Defense, your pace. It draws fire: Minions and Vermin always take it for you; Soldiers, Elites and Bosses make a Brain save.",
+      "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "eye", "name": "Eye", "owned_kind": "figment", "turn": "owner", "eyes": true,
+      "opens": { "skill": "visualization", "min": 3 }, "charge": 2,
+      "hp": 15, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
+      "actions": ["move"], "verbs": ["figment_stare", "let_go"],
+      "upkeep": { "res": "vcharge", "n": 1 },
+      "glyph": "◉",
+      "text": "A floating eye: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. It sees {=vision} tiles, in the dark too, for your whole side. Stare: one unit it sees stays seen by your side until your next turn, Hidden or not.",
+      "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "wall", "name": "Wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": "full",
+      "opens": { "skill": "visualization", "min": 3 }, "charge": 3,
+      "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
+      "actions": ["move"], "verbs": ["let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
+      "upkeep": { "res": "vcharge", "n": 1 },
+      "glyph": "▮",
+      "text": "Movable cover: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tile an AP. Full cover; it blocks movement and sight for both sides and nothing pushes it.",
+      "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "beast", "name": "Beast", "owned_kind": "figment", "turn": "owner", "eyes": false,
+      "opens": { "skill": "visualization", "min": 5 }, "charge": 4,
+      "hp": 45, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 3, "weapon": "figment_claws",
+      "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "let_go"],
+      "upkeep": { "res": "vcharge", "n": 1 },
+      "glyph": "◆",
+      "text": "A fast striker: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. Strike is a melee attack with its claws; Pounce runs a short straight line and strikes, and a hit knocks the target Prone unless it passes a Body save.",
+      "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "blade", "name": "Blade", "owned_kind": "figment", "turn": "owner", "eyes": false,
+      "opens": { "skill": "visualization", "min": 5 }, "charge": 3,
+      "hp": 25, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 2, "weapon": "figment_edge",
+      "actions": ["move"], "verbs": ["figment_cut", "let_go"], "hold": { "reaction": "attack" },
+      "upkeep": { "res": "vcharge", "n": 1 },
+      "glyph": "✦",
+      "text": "A floating blade: {=hp} HP, Defense {=defense}, {=movement} tiles an AP. Cut strikes an enemy next to it. Hold: the first enemy each round to enter or leave a tile next to it is Cut, and that spends one of your reactions.",
+      "adjudication": "engine", "provisional": true
+    }
+  ],
+  "turret": {
+    "id": "scrap_turret", "name": "Scrap Turret", "owned_kind": "machine", "kind": "turret", "turn": "auto", "eyes": true,
+    "hp": 40, "defense": 10, "armour": 5, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol", "rounds": 3,
+    "auto": { "verb": "shot", "target": "nearest_foe" }, "tags": ["electronic"],
+    "glyph": "⌖",
+    "text": "A turret built from scrap: {=hp} HP, Defense {=defense}, armour {=armour}, it does not move. At each of your turn starts for {=rounds} rounds it makes its weapon's plain attack at the nearest enemy it can reach.",
+    "adjudication": "engine", "provisional": true
+  },
+  "verbs": [
+    {
+      "id": "figment_strike", "name": "Strike", "site": "figment_strike", "attack": "melee", "reach": { "tiles": 1, "side": "foe" },
+      "text": "A melee attack with the Figment's own weapon.", "provisional": true
+    },
+    {
+      "id": "figment_pounce", "name": "Pounce", "site": "figment_pounce", "attack": "melee", "dash": 3, "reach": { "tiles": 4, "side": "foe" },
+      "on_hit": [{ "op": "condition", "condition": "prone", "target": "target", "via": "visualization" }],
+      "text": "Up to {=dash} tiles in a straight line, then a Strike; a hit knocks the target Prone (Body save).", "provisional": true
+    },
+    {
+      "id": "figment_cut", "name": "Cut", "site": "figment_cut", "attack": "melee", "reach": { "tiles": 1, "side": "foe" },
+      "text": "A melee attack on an enemy next to it.", "provisional": true
+    },
+    {
+      "id": "figment_stare", "name": "Stare", "site": "figment_stare", "reach": { "tiles": 8, "side": "foe", "eyes": true },
+      "effects": [{ "op": "condition", "condition": "watched", "target": "target", "skip_save": true }],
+      "text": "One unit it sees stays seen by your side until your next turn, Hidden or not.", "provisional": true
+    },
+    {
+      "id": "let_go", "name": "Let go", "site": "let_go", "unmake": true, "refund_share": 0.5,
+      "text": "Unmake it: half its made charge (rounded down) goes back into the core.", "provisional": true
+    }
+  ],
+  "traits": [
+    { "id": "armoured", "name": "Armoured", "hp_mult": 1.5, "text": "HP x{=hp_mult}.", "provisional": true },
+    { "id": "swift", "name": "Swift", "tiles": 2, "text": "+{=tiles} tiles an AP; its moves draw no opportunity attacks.", "provisional": true },
+    { "id": "loud", "name": "Loud", "weight": -1, "text": "Enemies count it as the most hurt in reach, Minions included.", "provisional": true },
+    { "id": "volatile", "name": "Volatile", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "flat", "type": "explosive", "provisional": true } }, "within": 1,
+      "effects": [{ "op": "deal", "when": "downed", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }], "text": "Destroyed (not let go): a burst of radius {=within}, {=amounts.burst.base} on everyone in it, both sides.", "provisional": true },
+    { "id": "tethered", "name": "Tethered", "range": 4, "text": "Its projection range +{=range}; it unravels only past twice that.", "provisional": true },
+    { "id": "mirror", "name": "Mirror", "lure": "pick", "text": "It lures as a Double would, in the look of any unit of your side you pick.", "provisional": true },
+    { "id": "barbed", "name": "Barbed", "amounts": { "barb": { "kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true } },
+      "effects": [{ "op": "deal", "when": "damaged", "if": { "actor": "foe", "melee": true, "by_hit": true }, "amount": "barb", "target": "actor" }], "text": "An enemy that hits it in melee takes {=amounts.barb.base}.", "provisional": true },
+    { "id": "lasting", "name": "Lasting", "upkeep": 0, "text": "No upkeep.", "provisional": true },
+    { "id": "keen", "name": "Keen", "roll": 2, "vision": 4, "text": "Its attacks +{=roll} to hit; an Eye sees {=vision} further.", "provisional": true },
+    { "id": "hollow", "name": "Hollow", "charge": -2, "hp_mult": 0.5, "text": "Costs {=charge|abs} charge less (never under one); HP x{=hp_mult}.", "provisional": true }
+  ],
+  "trait_charge": 1,
+  "items": [
+    {
+      "id": "picture", "name": "Picture", "kind": "verb", "requires": [{ "skill": "visualization", "min": 1 }],
+      "text": "Costs {=effects.0.ap} AP and the form's charge (more for each trait) from your Visualizer. A Figment of a ready design or a bare form you have opened appears on a free tile your side sees within your projection range. Needs the Visualizer in hand.",
+      "effects": [{ "op": "grant_action", "action": "picture", "ap": 2, "uses": "at_will", "pick": "forms", "pick_label": "What to picture", "reach": { "tile": true } }],
+      "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "visualizer_core", "name": "Load the Visualizer", "kind": "verb", "requires": [{ "skill": "visualization", "min": 1 }],
+      "text": "Costs {=effects.0.ap} AP and a spare core: the Visualizer's core is swapped for a fresh one, full.",
+      "effects": [{ "op": "grant_action", "action": "visualizer_core", "ap": 2, "uses": "at_will", "res": { "cores": 1 } }],
+      "adjudication": "engine", "provisional": true
+    }
+  ]
+}

@@ -174,6 +174,19 @@ Step 6 (`docs/design/handoffs/classes-3.0-step-6.md` section 5, rules 1.32 items
    Heart; Off Balance's "two rounds running" is a 2-round cooldown a target; Fade picks its own tile.
 4. **Measured, not refitted:** door all in 85 (line 109), Operative all in 101 (line 125, before Mark's squad
    value), an upper bound; the dial `rules.json shadow.per_point` is the lead's to move.
+Step 8 (`docs/design/handoffs/classes-3.0-step-8.md` section 5, rules 1.34 items 2100 to 2140; built on
+`worktree-agent-ab68f95a6fcdfab8e`; integrated, see that hand-off's "Integration"):
+1. Field Fix is a move-pool move the Rigger refs. **Settled at the integration (the lead's ruling):** the Operative's
+   ranks are step 6's (rank II Toxin and Sabotage); Read is folded into the Operative's Analyze, the branch's Read and
+   its `trickster.read` handler are gone.
+2. The held count counts Figments made by Picture only (not the drone, the Rigger's Double or the Scrap Turret).
+3. A Figment acts only on what its side sees (rule 9, literal): a Beast beside an unseen enemy can't strike it.
+4. A Figment's fall is no death: no mana, no Pressure spill.
+5. Overclock is the unit's attack only (the nearest enemy it can reach); Salvage takes the first fitting unit next to you.
+6. A Boss is fooled through one of its turns at most. Paint the Field is deleted.
+7. **Measured: the Rigger all in 159 against 150 (+6%); the door all in 158 against 130, at a normal share 155 against
+   104; the Rigger at a normal share 158 against 120.** The soak is nearly the whole worth and the same for every row:
+   the dial is `figments.json level.hp` (not refitted; the contract guard row not added).
 
 Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
 7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be

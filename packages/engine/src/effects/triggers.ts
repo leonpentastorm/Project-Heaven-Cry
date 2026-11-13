@@ -193,7 +193,7 @@ for (const who of ['actor', 'target'] as Who[]) P(who + '_tied', 'tie', who + ' 
 // Classes 3.0 section 6: what the holder holds. {slot: hand | person, door: evoker | emanator} or {slot, item: <id>}
 // (character.ts holds: the one "focus in hand" test, which hasEvoker and hasEmanator are)
 const holdsOf = (ev: Ev, v: any): boolean => { const c = ev.h.c || charOfUnit(ev.self); return !!c && holds(c, v || {}); };
-P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner) or the skill it opens (brain_power, will_power, empathy)} (a focus) or {slot, item: an item id}', (ev, v) => holdsOf(ev, v), () => FOCUS_DOORS);
+P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}', (ev, v) => holdsOf(ev, v), () => FOCUS_DOORS);
 P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev, v) => !holdsOf(ev, v), () => FOCUS_DOORS);
 // Rules 1.33 (Tending, Bonds and the Mender): a door's ladder, the holder's ties, the action's pick
 /** The holder's points in a skill (a character's sheet; a unit with none has 0). */

@@ -31,7 +31,10 @@ export function classMarks(cb: any, side: 'pc' | 'foe' = 'pc', o: ClassMarkOpts 
   const seen = (k: string) => !o.seen || o.seen.has(k);
   const units: any[] = cb.units || [];
   // ---- False Image: a decoy of its owner ----
-  for (const img of cb.images || []) {
+  for (const img0 of cb.images || []) {
+    // rules 1.34: a Double is an image with a body (a Figment unit): its mark stands where the body stands
+    const body = img0.body ? units.find((u) => u.id === img0.body) : null; if (img0.body && !body) continue;
+    const img = body ? { ...img0, pos: body.pos } : img0;
     const own = units.find((u) => u.id === img.owner) || img.look; if (!own) continue; // look: the face an unseen owner's decoy wears (the engine's fog)
     if (img.side !== side && !seen(img.pos)) continue; // another side's decoy, out of sight
     const pic = o.imgOf ? o.imgOf(own) : '', round = own.side === 'pc' ? '50%' : '4px';
@@ -41,7 +44,7 @@ export function classMarks(cb: any, side: 'pc' | 'foe' = 'pc', o: ClassMarkOpts 
       style: 'position: absolute; inset: 7%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; pointer-events: none; font-size: 11px; font-weight: 700; color: ' + SIGIL_INK + '; border-radius: ' + round + '; border: 2px dashed ' + SIGIL_INK
         + '; box-shadow: 0 0 10px ' + SIGIL_GLOW + ', inset 0 0 8px rgba(79, 200, 223, 0.45); opacity: 0.55; animation: phcDecoy 2.4s ease-in-out infinite'
         + (pic ? '; background: url("' + pic + '") center / cover no-repeat; filter: saturate(0.4) brightness(1.1) drop-shadow(0 0 4px ' + SIGIL_GLOW + ')' : '; background: rgba(79, 200, 223, 0.12)') });
-    T(img.pos).marks.push({ key: 'imgt' + img.id, text: 'IMAGE', title, style: badge(SIGIL_GLOW) + '; left: 50%; bottom: -1px; transform: translateX(-50%)' });
+    T(img.pos).marks.push({ key: 'imgt' + img.id, text: body ? 'DOUBLE' : 'IMAGE', title, style: badge(SIGIL_GLOW) + '; left: 50%; bottom: -1px; transform: translateX(-50%)' });
     note(img.pos, 'False Image of ' + own.name + (mine && fooled ? ' (' + fooled + ' fooled)' : ''));
   }
   // ---- Read: what an enemy means to do on its next turn (until that turn ends) ----

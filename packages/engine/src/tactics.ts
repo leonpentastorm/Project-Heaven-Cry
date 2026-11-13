@@ -16,7 +16,7 @@ import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, 
 import { condMods } from './condtable';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit, hookUsed } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
-import { actionAp } from './effects/core';
+import { actionAp, immuneByItem } from './effects/core';
 import { note } from './effects/narrator';
 import { sessionN, uses } from './effects/uses';
 import { makeObject } from './objects';
@@ -205,6 +205,7 @@ export const seenByFoes = (cb: Combat, u: Unit) => cb.units.some((v) => v.side !
 export function hide(cb: Combat, u: Unit, why = ''): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
   if (alwaysSeen(cb, u)) return ' · ' + u.name + ' can\'t hide: the enemy knows where they are'; // always seen (Traced, rules 1.33)
+  if (immuneByItem({ u }, 'hidden')) return ' · ' + u.name + ' can\'t hide'; // immune to Hidden (a Figment: figments.json unit_effects, rules 1.34)
   if (u.hidden) return '';
   rawHidden(cb, u, true);
   emit(cb, 'hide', { u, why, cb });
@@ -485,6 +486,7 @@ export function applyFoeTraits(u: Unit, f: FoeTraits | undefined) {
  * +3, a person +5. */
 export const deathMana = (u: Unit): number => {
   const ev = (id: string, d: number) => Number((RULES as any)?.mana?.meter?.events?.find((e: any) => e.event === id)?.delta) || d;
+  if (u.kind === 'figment') return 0; // rules 1.34: a Figment's bots were its maker's core charge, spent; its fall releases nothing more
   if (['robot', 'machine', 'turret', 'drone'].includes(u.kind || '') || /drone|robot|automaton|\bbot\b|turret/i.test(u.name)) return ev('robot_destroyed', 2);
   if (u.kind === 'beast' || u.kind === 'monster') return ev('beast_dies', 3);
   return ev('person_dies', 5);

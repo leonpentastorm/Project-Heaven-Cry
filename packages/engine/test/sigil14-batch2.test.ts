@@ -94,7 +94,7 @@ describe('gap 16: a Stack fires all around its caster, not around the Stack (ite
 describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-485)', () => {
   it('skill unlocks become items once the points reach them, and are in the coverage report', () => {
     const keys = allItems().filter((i) => i.kind === 'skill').map((i) => i.key);
-    expect([...keys].sort()).toEqual(['skill:brain_power.3', 'skill:brain_power.5', 'skill:rumination.5', 'skill:visualization.5', 'skill:will_power.3', 'skill:will_power.5', // rules 1.5: Will Power's two (items 539, 540)
+    expect([...keys].sort()).toEqual(['skill:brain_power.3', 'skill:brain_power.5', 'skill:rumination.5', 'skill:will_power.3', 'skill:will_power.5', // rules 1.5: Will Power's two (items 539, 540)
       'skill:raw_power.3', 'skill:raw_power.5', 'skill:dexterity.5', 'skill:proficiency.5', 'skill:camaraderie.1', 'skill:camaraderie.3', 'skill:composure.5', 'skill:ingenuity.1', 'skill:ingenuity.3', 'skill:ingenuity.5', 'skill:ingenuity.7'].sort()); // ingenuity: Shadow's door, Close Quarters, Still Breath and Shadow Run (rules 1.32) // rules 1.13 (perks/skeleton.ts); the list is the data's (skills.json unlocks marked `item`: Classes 3.0 P6), in its order
     const f = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3, rumination: 4, visualization: 0 } });
     const held = itemsOf(heldOfChar(f.g.characters[f.pc.charId!])).filter((i) => i.kind === 'skill').map((i) => i.key);
@@ -138,18 +138,8 @@ describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-4
     withGame(no.g, () => applyCond(no.cb, no.g.rng, no.foe, no.pc, 'confused', 1, undefined, { skipSave: true }));
     expect(withGame(no.g, () => emit(no.cb, 'cond_apply', { by: no.foe, t: no.pc, id: 'confused', fam: 'brain', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: no.cb, rng: no.g.rng })).saveAdd).toBe(0);
   });
-  it('Paint the Field: a spell with no Burst gets a free SPREAD or PUSH (no charge, no Flux); a spell with a Burst ignores it', () => {
-    const f = rig(['spark', 'seek'], ['8,5', '9,6'], { skills: { visualization: 5 } });
-    line(f, ['spark', 'seek'], L2);
-    const plain = plan(f, '3,5', '8,5'), pv = plan(f, '3,5', '8,5', { paint: 'spread' });
-    expect(plain.targets.length).toBe(1); expect(pv.targets.length).toBe(2); expect(pv.charge).toBe(plain.charge); expect(pv.spell!.spread).toBe(1);
-    const flux = f.pc.mg!.flux; evoke(f, '3,5', '8,5', { paint: 'spread' });
-    expect(500 - f.foes[0].hp).toBe(9); expect(500 - f.foes[1].hp).toBe(9); expect(f.pc.mg!.flux).toBe(flux); // SPARK 15 × SPREAD 0.6
-    expect(logHas(f.cb, /Paint the Field: a free SPREAD/)).toBe(true);
-    // A spell that has a Burst word ignores it; a caster without the unlock gets nothing.
-    const b = rig(['spark', 'condense'], ['4,6'], { skills: { visualization: 5 } }); line(b, ['spark', 'condense'], L2);
-    expect(plan(b, '3,5', b.foe.pos, { paint: 'spread' }).spell!.spread).toBe(0);
-    const n = rig(['spark', 'seek'], ['8,5', '9,6'], { skills: { visualization: 4 } }); line(n, ['spark', 'seek'], L2);
+  it('Paint the Field is gone (rules 1.34: Visualization 5 opens the Beast and the Blade): a painted Evoke adds nothing', () => {
+    const n = rig(['spark', 'seek'], ['8,5', '9,6'], { skills: { visualization: 5 } }); line(n, ['spark', 'seek'], L2);
     expect(plan(n, '3,5', '8,5', { paint: 'spread' }).targets.length).toBe(1);
   });
 });

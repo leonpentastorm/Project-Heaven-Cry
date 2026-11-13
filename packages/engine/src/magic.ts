@@ -2,11 +2,13 @@
 // the facing rule, Reach, Delivery, Burst, KIN), fired with Evoke. Outbursts are held in the heart, grow each turn and are released when
 // the caster chooses. The ambient mana meter, conditions with saves, shields and standing wall zones live here too.
 // Everything is deterministic: rolls come from the rng passed in.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
+import figmentsJ from '../../../data/figments.json';
 import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
 import {
   type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
-  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
+  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
 import { say, type Combat, type Unit, alwaysSeen, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
 import { type Rng, die } from './rng';
@@ -72,6 +74,7 @@ export function endZones(cb: Combat, pick: (z: Zone) => boolean): number { const
 export interface MagicUnit {
   words: string[]; designs: OutburstDesign[]; evoker: boolean; emanator: boolean; /** Rules 1.33: an Attuner in a hand (Bonds and Tending; MP is spent and given through it: the mp row's needs). Absent: none. */ attuner?: boolean;
   charge: number; cores: number; coresMade: number; flux: number; lockRound?: number;
+  /** rules 1.34: the Visualizer (in hand, carried), its core's charge, Visualization points */ visualizer?: boolean; vcarry?: boolean; vcharge?: number; vchargeMax?: number; vis?: number;
   mp: number; mpMax: number; strain: number; held: HeldOutburst | null;
   /** Rules 1.5: this turn the heart was worked (Begin, Pump or Feed; class casts set it too): no stillness at the turn's end. */
   cast: boolean;
@@ -104,6 +107,8 @@ export interface PumpRec { design: string; stage0: number; ap: number; free: 'fi
 export const MANA_START = 15;
 export const FLUX_MAX = 6;
 export const CORE_CHARGE = 10;
+/** rules 1.34: a Visualizer's core (figments.json visualizer.charge). */
+export const VIS_CHARGE: number = (figmentsJ as any).visualizer?.charge ?? CORE_CHARGE;
 export const SOUL_REACH = 4;
 // THE CONDITION TABLE is data/conditions.json, read by condtable.ts (engine foundations 2): names, families, saves,
 // durations and numbers. `rounds` counts the bearer's turn ends (a condition put on you during your own turn doesn't
@@ -156,7 +161,7 @@ export function noteDeaths(cb: Combat, rng?: Rng) {
 export function magicOf(c: Character): MagicUnit | undefined {
   // A focus counts only in a hand (spec: Hands 2; item 630); one in the pack keeps its charge or MP for later.
   const words = [...new Set([...(c.sigils || []), ...itemWords(c)])], designs = c.outbursts || [], evoker = hasEvoker(c), emanator = hasEmanator(c), attuner = hasAttuner(c);
-  if (!words.length && !designs.length && !carriesEvoker(c) && !carriesEmanator(c) && !carriesMpFocus(c)) return undefined;
+  if (!words.length && !designs.length && !carriesEvoker(c) && !carriesEmanator(c) && !carriesMpFocus(c) && !carriesVisualizer(c)) return undefined;
   return {
     words: [...words], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker, emanator, ...(attuner ? { attuner } : {}), feelings: [...(c.feelings || [])],
     charge: evoChargeNow(c), cores: coresCarried(c), coresMade: 0, flux: 0, mp: mpNow(c), mpMax: maxMp(c), strain: 0, held: null, cast: false, freePumps: freePumps(c), freePumpsMax: freePumps(c), freeUsed: 0, swellFree: swellFree(c),
@@ -165,6 +170,8 @@ export function magicOf(c: Character): MagicUnit | undefined {
     soulAp: soulCastAp(c), costSave: soulCostSaving(c), soulRange: soulRangeBonus(c), syphon: syphonMult(c), strainLimit: strainLimit(c),
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
     debuff: strengthTable(c),
+    // rules 1.34: the Visualizer (Figments' focus): in hand, carried, its own core's charge; the door's points
+    ...(carriesVisualizer(c) ? { visualizer: hasVisualizer(c), vcarry: true, vcharge: Math.max(0, Math.min(VIS_CHARGE, c.visCharge ?? VIS_CHARGE)), vchargeMax: VIS_CHARGE, vis: c.skills.visualization || 0 } : {}),
     ...(() => { const wc = wordCostMods(c); return Object.keys(wc).length ? { wordCost: wc } : {}; })(),
     ...(() => { const mw = masteredWords(c); return mw.length ? { inflect: mw } : {}; })(),
   };
@@ -175,6 +182,7 @@ export function magicToCharacter(c: Character, u: Unit) {
   // What the focus stores goes home with it, held or carried (a focus put away mid-fight keeps its charge and MP).
   if (m.emanator || m.attuner || carriesMpFocus(c)) c.mp = Math.max(0, Math.min(m.mpMax, Math.round(m.mp)));
   if (m.evoker || carriesEvoker(c)) c.evoCharge = m.charge;
+  if (m.vcarry) c.visCharge = m.vcharge ?? VIS_CHARGE;
   const had = coresCarried(c), want = m.cores + m.coresMade;
   if (want !== had) {
     let left = had - want; // positive: cores spent; negative: cores made

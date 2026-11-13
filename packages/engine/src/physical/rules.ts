@@ -68,7 +68,7 @@ onHook('damage_in', (ctx: any, cb) => {
 onHook('on_kill', (ctx: any, cb) => {
   const victim: Unit = ctx.victim, by: Unit = ctx.by, src = ctx.src || {}; if (!victim || !by) return;
   if (src.type === 'weapon') hitWith(victim, by.id, src.weapon || by.weapon); // the killing blow's on_hit comes after this
-  if (src.type === 'weapon' && !src.melee) for (const v of cb.units) {
+  if (src.type === 'weapon' && !src.melee && victim.kind !== 'figment') for (const v of cb.units) { // (rules 1.34: a Figment's fall is no one's death)
     if (v === victim || v.side !== victim.side || !alive(v) || dist(v.pos, victim.pos) > P().kill_spill_range || !unitSees(cb, v, victim.pos)) continue;
     addPressureTo(cb, v, P().kill_spill, by, 'saw ' + victim.name + ' fall');
   }

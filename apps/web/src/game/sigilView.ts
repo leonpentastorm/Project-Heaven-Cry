@@ -276,9 +276,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   out.hereOk = !!(here && here.ok);
   const sp: any = (() => { try { return compileSpell(pat.words); } catch { return null; } })();
   out.missilesNeeded = sp ? (sp.watch ? 1 : sp.missiles) : 1;
-  // Paint the Field: only for a holder of the skill unlock, on a spell with no Burst word.
-  const painter = (() => { try { return !!holderOf({ u, cb: c as any }, 'skill:visualization.5'); } catch { return false; } })();
-  if (painter && sp && !sp.burst) out.paints = ['spread', 'push'];
+  // (Paint the Field left Visualization 5 in rules 1.34: no chips; `paints` stays empty for the template.)
   const paint = choice.paint && out.paints.includes(choice.paint) ? choice.paint : null; out.paint = paint;
   const opts = (extraAim?: string | null) => {
     const list = [...aims]; if (extraAim && !list.includes(extraAim)) { if (list.length >= out.missilesNeeded) list[list.length - 1] = extraAim; else list.push(extraAim); }

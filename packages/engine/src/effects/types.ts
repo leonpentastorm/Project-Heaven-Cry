@@ -265,7 +265,7 @@ export interface ActionDef {
   arm?: boolean;
   /** What args.choice takes, so the client can offer it (UI chips): a fixed list, or the holder's Sigil words, squadmates,
    * Outburst designs or γ skills. pickMulti: how many it may take at once (words: space-separated). */
-  pick?: string[] | 'words' | 'squad' | 'designs' | 'gamma' | 'felt'; // felt: the holder's felt feelings (rules 1.33, Inspire)
+  pick?: string[] | 'words' | 'squad' | 'designs' | 'gamma' | 'felt' | 'forms'; // felt, forms: registered lists (effects/actions.ts registerPickList: Inspire's felt feelings, rules 1.33; Picture's forms, rules 1.34)
   pickMulti?: number;
   /** The prompt for the pick or typed detail ("Head, arm or leg", "The squadmate"). */
   pickLabel?: string;
