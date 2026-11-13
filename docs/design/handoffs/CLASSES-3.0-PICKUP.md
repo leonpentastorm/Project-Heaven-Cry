@@ -162,6 +162,19 @@ Step 5 (`docs/design/handoffs/classes-3.0-step-5.md` section 5, rules 1.31 items
    contract's whisper and hymn rows measure a classless Faith sheet (`doorFaithBuild`). Measured: the Chaplain all in
    122 / 130 / 123 / 149 (mean 131 against 125, +5%); normal share 110 against 100.
 
+Step 8 (`docs/design/handoffs/classes-3.0-step-8.md` section 5, rules 1.34 items 2100 to 2140; built on
+`worktree-agent-ab68f95a6fcdfab8e`, not merged):
+1. On the branch Field Fix is a move-pool move the Rigger refs, and Read stands in the Operative's rank II in its place:
+   the Shadow step's merge sets that rank (take theirs).
+2. The held count counts Figments made by Picture only (not the drone, the Rigger's Double or the Scrap Turret).
+3. A Figment acts only on what its side sees (rule 9, literal): a Beast beside an unseen enemy can't strike it.
+4. A Figment's fall is no death: no mana, no Pressure spill.
+5. Overclock is the unit's attack only (the nearest enemy it can reach); Salvage takes the first fitting unit next to you.
+6. A Boss is fooled through one of its turns at most. Paint the Field is deleted.
+7. **Measured: the Rigger all in 159 against 150 (+6%); the door all in 158 against 130, at a normal share 155 against
+   104; the Rigger at a normal share 158 against 120.** The soak is nearly the whole worth and the same for every row:
+   the dial is `figments.json level.hp` (not refitted; the contract guard row not added).
+
 Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
 7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be
    made as a reaction (kind `attack`), as before; a helping one is `protect` (item 1764).

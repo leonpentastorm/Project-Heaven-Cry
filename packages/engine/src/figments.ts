@@ -130,6 +130,7 @@ function setUp(owner: Unit, u: Unit, form: string, traits: string[], made: numbe
   u.attack = mod(p) + traits.reduce((s, t) => s + (FIG_TRAIT[t]?.roll || 0), 0); u.strength = u.attack;
   u.lvlDmg = Math.round(prof.k * levelFactor(prof.level, owner.level ?? 1) * RULES.output.factors.figment * 1000) / 1000;
   u.kind = 'figment'; u.tier = undefined;
+  if (f.glyph) u.short = f.glyph; // the token's fallback until the form's portrait is in the repo (ART-REQUESTS C6): its glyph
   (u as any).held = { perks: [], traits: [], verbs: ['fig_' + form, ...traits.map((t) => 'figtrait_' + t)] };
   if (f.vision) { u.vision = f.vision + traits.reduce((s, t) => s + (FIG_TRAIT[t]?.vision || 0), 0); }
   if (f.dark_sight) u.darkSight = true; if (f.flies) u.ignoreDifficult = true;
