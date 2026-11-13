@@ -4211,6 +4211,30 @@ and points are unchanged, and an archetype is never saved: Bulwark → **Holdfas
 wrench crossed with a spark; Mender: two hands around a plus; Chaplain: a dome under a flame); the other six keep
 theirs. Items 1757 and 1758.
 
+### 2. The classes that keep their mechanic, made a little better (PROVISIONAL)
+
+| Class | Change | Number |
+| --- | --- | --- |
+| **Bulwark** | A fight starts with Guard (the cap stays 5). | 1 Guard |
+| **Breaker** | Once a turn, your first hit on a **Shaken** or **Frightened** (Fear) enemy, with **any** weapon, on your own turn, gives Momentum, on top of what the hit itself gives (a melee hit's 1). The cap stays 5. Riposte is unchanged here (the reaction rule's step folds it into the Answer). | 1 Momentum, once a turn |
+| **Sigilist** | Unchanged in this step. Its one Revision 4 change (BLIND, SLOW and MUDDLE back to the common word list, MUDDLE's −1 charge gone) is the Rigger's move leaving the class: built with the Rigger. | |
+| **Channeler** | Unchanged. | |
+
+Both changes are item ops in data (`data/classes.json`): the Bulwark's on Brace (`{op: resource, when: combat_start,
+resource: guard, value: 1}`), the Breaker's on Lunge (`{op: resource, when: hit, resource: momentum, value: 1, if:
+{own_turn, hostile, target_has: [shaken, fear]}, limit: {per: per_turn, n: 1}}`). Each class gets its rank I moves at
+level 3, so the change comes with the class; it sits on a rank I move until the engine has a base class's own effects
+block (the design's "class `effects`"), then moves there unchanged. Items 1759 and 1760.
+
+### 3. Base classes are weapon-neutral (Leon, 13 Nov 2026): the guard
+
+No Bulwark, Breaker, Sigilist or Channeler move is locked to a weapon family (`docs/design/rev4-weapon-neutral-audit.md`
+sections 3.1, 3.2, 3.5, 3.8): Lunge, Riposte and Finisher ask for a melee weapon (or fists) because Momentum is
+melee's meter, and Anchor's opportunity attack is a melee blow because every opportunity attack is. The guard
+`packages/engine/test/class-weapon-neutral.test.ts` checks every base-class move's data, text and handler; the moves
+still locked (Fire Discipline, Speed Loader, Special Ammo, Killzone, Called Shot, Toxin, Judgement) are on its PENDING
+list, which the Skirmisher's, Shadow's and the Chaplain's steps empty. Item 1761.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -7087,3 +7111,6 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1756. **The general primitives of Classes 3.0, step 1a (rules 1.28 section 2):** `acted`, number blocks and sources, `react()`, conditions as items, `targets`, the sight words and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the resource rows `pressure` and MP (`max`, `needs`). No number and no rule moved with them (the golden tables and the replays say so; the replays moved only for items 1750, 1751 and 1753's new saved field).
 1757. **The nine base classes renamed (rules 1.29; Class Roster Revision 4, `rev4-moves-and-rename.md` section 3; Bulwark and Breaker Leon's, the rest the lead's, PROVISIONAL as display names):** Bulwark (`defender`), Breaker (`fighter`), Skirmisher (`marksman`), Operative (`infiltrator`), Sigilist (`mage`), Rigger (`trickster`), Mender (`bard`), Channeler (`channeler`, unchanged), Chaplain (`guardian`). Names only: ids, move keys, `classId` and `classRev` 3 stay, so old saves load unchanged (`test/old-save.test.ts`); `migrateCharacterClass` does not run. The Chaplain's Judgement → Verdict is that class's step (`chaplain-spec.md`), not this item.
 1758. **Three archetype presets renamed for the classes (rules 1.29; a call made for Leon by the step's builder, Suggested names, PROVISIONAL):** the rename gave three classes the names of archetype presets (`rev4-moves-and-rename.md` section 3 counted presets that name a class, not presets a class name now matches), and `tools/validate.py` refuses an archetype named as a class. Display names only: Holdfast (id `bulwark`), Glyphwright (`sigilist`), Empath (`mender`); ids, portraits (`art/catalog.json` labels follow) and presets stay. The perk Bulwark (`perks.json` `bulwark`, Durability) also shares the Bulwark class's name: nothing refuses it and the keys differ (`perk:bulwark`, `class:defender.*`); left for Leon.
+1759. **The Bulwark starts a fight with 1 Guard (rules 1.29 section 2; `rev4-moves-and-rename.md` section 1, PROVISIONAL):** an item op on Brace (`combat_start`, `resource` guard 1); the Guard cap stays 5. Priced at 0.54 / 0.41 / 0.29 / 0.17 of a Soldier-turn at levels 1 / 5 / 10 / 20 (one soak of 10); the Tank sits under melee's 165. Where the data sits is the builder's call: on the class's rank I move until a base class's own effects block exists (no primitive for it yet), then moved there unchanged.
+1760. **The Breaker's Momentum on a Shaken or Frightened enemy (rules 1.29 section 2; `rev4-moves-and-rename.md` section 1, PROVISIONAL):** once a turn (`limit per_turn 1`), on its own turn, the first hit on a hostile with `shaken` or `fear` gives 1 Momentum, with any weapon (no `melee` predicate: a gun Breaker banks Momentum for Lunge and Finisher; audit 3.2), on top of a melee hit's own 1; cap 5. An item op on Lunge (same note as item 1759). Estimated about +5% on a fight; the level 20 measurement the design asks for (before 176 → after) is left to the balance step.
+1761. **The weapon-neutral guard (rules 1.29 section 3; `rev4-weapon-neutral-audit.md` section 5):** `test/class-weapon-neutral.test.ts` walks the 54 base-class moves (data predicates, text words, handler reads with the one-line helpers they call; a ratchet). Allowed for good (DOOR): Lunge, Riposte, Finisher (Momentum's door), Anchor (the opportunity blow), Brace and Duck and Roll (the incoming attack), Field Fix (a jam). PENDING, to reach empty before Classes 3.0 ships: Fire Discipline, Speed Loader, Special Ammo, Killzone, Called Shot, Toxin, Judgement. A "round" of time is not ammunition (the word test takes "1 round", "each round" out).

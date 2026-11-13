@@ -268,7 +268,7 @@ function lungeTile(cb: Combat, u: Unit, t: Unit): string | null {
 }
 let lunging: Unit | null = null;
 register({
-  id: 'fighter.lunge', claims: 'all',
+  id: 'fighter.lunge', claims: (e: any) => e?.when !== 'hit', // Momentum on a Shaken or Frightened enemy (Classes 3.0) is an item op: the runner runs it
   actions: [{
     id: 'lunge', label: 'Lunge', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
     text: 'Costs 1 Momentum and the AP of a strike. Move up to 2 tiles and strike, as one action. The move draws no opportunity attacks.',
@@ -362,7 +362,7 @@ let interposing = false;
 /** The ally an Interpose just covered (the same attack's injury follows the hit to the Defender). */
 let interposed: { t: string; me: string } | null = null;
 register({
-  id: 'defender.brace', claims: 'all',
+  id: 'defender.brace', claims: (e: any) => e?.when !== 'combat_start', // the fight's starting Guard (Classes 3.0) is an item op: the runner runs it
   actions: [
     {
       id: 'brace', label: 'Brace (Hold the Line)', scope: ['combat'], target: 'none', ap: 'data',

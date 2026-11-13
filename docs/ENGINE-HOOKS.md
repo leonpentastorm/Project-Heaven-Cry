@@ -15,7 +15,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 
 | trigger | hook (phase) | whose event | what for | example item |
 | --- | --- | --- | --- | --- |
-| `combat_start` | `combat_start` | anyone | the fight begins | none yet |
+| `combat_start` | `combat_start` | anyone | the fight begins | `brace` (classes.json) |
 | `combat_end` | `combat_end` | anyone | the fight ends | none yet |
 | `round_start` | `round_start` | anyone | a new round begins | none yet |
 | `turn_ap` | `turn_start_pre` | actor | a unit's turn is about to begin: its AP are being counted (grant_ap adds to or takes from this turn) | `last_wall` (perks.json) |
@@ -23,7 +23,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `turn_end` | `turn_end` | actor | a unit's turn ends | none yet |
 | `attack` | `attack_preview` | actor | an attack is being sized up (to-hit terms, its AP, a refusal); also every preview | `heavyworlder` (traits.json) |
 | `attack_roll` | `attack_roll` | actor | an attack's d20 is rolled | none yet |
-| `hit` | `on_hit` | actor | an attack hit | none yet |
+| `hit` | `on_hit` | actor | an attack hit | `lunge` (classes.json) |
 | `miss` | `on_miss` | actor | an attack missed | none yet |
 | `dealing` | `damage_out` | actor | an amount of damage is being made (before armour) | `pain_eater` (traits.json) |
 | `taking` | `damage_in` (reduce) | target | damage is about to land (after armour, before the shield) | `used_to_the_pain` (perks.json) |
@@ -80,7 +80,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `target_hp_below` | number | target's HP is under this share of its max | none yet |
 | `target_hp_above` | number | target's HP is over this share of its max | none yet |
 | `target_hp_at_most` | number | target's HP is at most this share of its max | none yet |
-| `target_has` | ids | target has one of these conditions | none yet |
+| `target_has` | ids | target has one of these conditions | `lunge` (classes.json) |
 | `target_lacks` | ids | target has none of these conditions | none yet |
 | `target_tier` | words | target's tier is one of these (vermin, minion, soldier, elite, boss) | none yet |
 | `target_not_tier` | words | target's tier is none of these | none yet |
@@ -95,7 +95,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `damage` | words | the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true) | none yet |
 | `by_hit` | bool | the damage came (or did not come) from someone's blow, not a hazard, trap, Bleeding or Burning | `used_to_the_pain` (perks.json) |
 | `self_harm` | bool | the damage is (or is not) the unit's own doing (a Mana Short, an overload, Strain, Flux) | `last_wall` (perks.json) |
-| `hostile` | bool | the actor and the target are (or are not) on different sides | none yet |
+| `hostile` | bool | the actor and the target are (or are not) on different sides | `lunge` (classes.json) |
 | `cond` | ids | the condition is one of these | `iron_stomach` (perks.json) |
 | `cond_family` | words | the condition's family is one of these (body, brain, heart) | none yet |
 | `action` | words | the priced action (its cost site) is one of these | `speed_loader` (classes.json) |
@@ -103,7 +103,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `hand` | words | the hand is one of these (main, off, both) | `speed_loader` (classes.json) |
 | `how` | words | the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect) | none yet |
 | `ap_above` | number | the event's AP (a price, a swap) is over this | `hot_swap` (perks.json) |
-| `own_turn` | bool | it is (or is not) the holder's own turn | `central_city_kid` (traits.json) |
+| `own_turn` | bool | it is (or is not) the holder's own turn | `lunge` (classes.json) |
 | `flag` | string | the item's flag is set (the mark op sets it) | `used_to_the_pain` (perks.json) |
 | `no_flag` | string | the item's flag is not set | `used_to_the_pain` (perks.json) |
 | `self_alive` | bool | the holder is (or is not) up: not Downed, dead or surrendered | `walking_wounded` (perks.json) |
@@ -123,7 +123,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `roll_mod` | `attack`, `cond_incoming`, `save`, `spot` | `value`, `roll` | no | a to-hit term on an attack; on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN | `heavyworlder` (traits.json) |
 | `cost_mod` | `cost`, `swap`, `reload`, `attack`, `glyph_cost` | `value`, `set`, `min`, `at_least`, `res` | no | change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that | `speed_loader` (classes.json) |
 | `grant_ap` | any trigger | `value`, `bank` | yes | AP: at turn_ap, to this turn (a negative value takes); elsewhere perk AP now (bank: true, next turn) | `central_city_kid` (traits.json) |
-| `resource` | any trigger | `resource`, `value` | yes | give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value "all" spends and "zero" loses all of it | `unbroken` (classes.json) |
+| `resource` | any trigger | `resource`, `value` | yes | give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value "all" spends and "zero" loses all of it | `lunge` (classes.json) |
 | `condition` | any trigger | `condition`, `rounds`, `skip_save` | yes | put a condition on the self, the actor or the target (target:), with its save unless skip_save | none yet |
 | `cleanse` | any trigger | `condition`, `family`, `count` | yes | end conditions: the ones named, or a family's debuffs, or any debuff (count: how many) | `nothing_left_to_fear` (perks.json) |
 | `cond_rounds` | `cond_incoming` | `max`, `add` | no | change the rounds of the condition being put on: at most max, or add | `iron_stomach` (perks.json) |
