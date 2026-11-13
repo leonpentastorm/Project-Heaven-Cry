@@ -73,7 +73,7 @@ export const actionName = (action: string): string => VERBS[action]?.site || act
 
 interface ResDef { name: string; on: 'unit' | 'character'; path: string; whole?: boolean;
   /** Its most, a path on the same holder (MP: mg.mpMax): a gain stops there. */ max?: string;
-  /** A path on the holder that must be set for it to be given at all (MP: mg.emanator, an Emanator in hand). */ needs?: string;
+  /** A path on the holder that must be set for it to be given at all, or a list of paths of which one must be (MP: mg.emanator or mg.attuner, an MP focus in hand: rules 1.33). */ needs?: string | string[];
   /** A named setter (registered with setResSetter) that gives it instead of the plain path: Pressure's addPressureTo. */ setter?: string }
 /** Every resource an action can cost (data/actions.json `resources`). */
 export const RESOURCES: Record<string, ResDef> = (actionsJ as any).resources;
@@ -105,7 +105,7 @@ export function setResSetter(name: string, fn: ResSetter): void { SETTERS[name] 
 export function resGive(cb: Combat | null | undefined, u: Unit, id: string, n: number, o: { by?: Unit | null; c?: Character | null; why?: string } = {}): number {
   const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
   const root = holderOfRes(d, u, o.c);
-  if (d.needs) { const x = cell({ ...d, path: d.needs }, root); if (!x || !x.o[x.k]) return 0; }
+  if (d.needs && !(Array.isArray(d.needs) ? d.needs : [d.needs]).some((p) => { const x = cell({ ...d, path: p }, root); return !!x && !!x.o[x.k]; })) return 0;
   if (d.setter) { const f = SETTERS[d.setter]; if (!f) throw new Error('No setter "' + d.setter + '" for the resource ' + id + '.'); return f(cb, u, n, o.by ?? null, o.why || ''); }
   const x = cell(d, root); if (!x) return 0;
   const was = Number(x.o[x.k]) || 0, mx = d.max ? cell({ ...d, path: d.max }, root) : null, top = mx ? Number(mx.o[mx.k]) : Infinity;

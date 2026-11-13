@@ -1,3 +1,4 @@
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { say } from '../log';
 // Active items become actions (plan 2.7). One action type per surface:
 //   combat/perk {unitId, id, actionId?, targetId?, targetIds?, tile?, choice?, text?, arm?}   (combat Perks and Class tabs)
@@ -10,16 +11,21 @@ import { say } from '../log';
 // condition, knockback, Echo) and hands the rest to the Narrator with the item's text. A lane's ActionDef replaces the
 // default for the same action id.
 import type { Combat, Unit } from '../combat';
-import { unitSees } from '../combat';
+import { unitSees, objectsAt, xy, key } from '../combat';
+import { objectIs, isTrap } from '../objects';
+import { canStand } from '../kit';
 import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
-import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp } from './hooks';
+import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp, charOfUnit } from './hooks';
+import feelingsJ from '../../../../data/feelings.json';
+const FEEL_NAME: Record<string, string> = Object.fromEntries(((feelingsJ as any).items || []).map((f: any) => [f.id, f.name])); // (the data, not feelings.ts: its load order)
 import { keyOf, rawItem } from './collect';
 import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
-import { price, whyNot, pay, setAp, resWhyNot, resPay, type Priced } from './cost';
+import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, type Priced } from './cost';
+import { isNumberBlock, numberOf } from './amounts';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -46,13 +52,25 @@ const TARGETING = (e: any): ActionDef['target'] => {
 /** The words a reach's side takes (a target relation to the holder). */
 export const REACH_SIDES = ['foe', 'ally', 'side', 'any'];
 /** The fields of a grant_action's `reach`. */
-export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'tile'];
+export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'tile', 'beyond',
+  // Classes 3.0 step 6, integration (rules 1.32: Shadow's Pick, Douse, Rig, Vault): what a picked tile must be
+  'object', 'stand', 'over'];
+/** Rules 1.33: the surfaces a grant_action's `scope` may name (default: combat and the area map). */
+export const GRANT_SCOPES = ['combat', 'world', 'story'];
 /** The prayers a grant_action may be. */
 export const PRAYER_KINDS = ['whisper', 'hymn'];
 /** faith.ts registers the prayer door here as it loads (this file can't import it: its load order places its hooks). */
 let PRAYER: { why(cb: Combat, u: Unit, kind: 'whisper' | 'hymn'): string | null; pray(cb: Combat, rng: { state: number }, u: Unit, kind: 'whisper' | 'hymn', name: string, tier?: number): boolean } | null = null;
 /** faith.ts's prayer door for a verb that is a prayer (verbPrayerWhy, verbPray). */
 export const setPrayerDoor = (p: typeof PRAYER) => { PRAYER = p; };
+/** A number of an action's shape for this holder (rules 1.33: a number block's `skill:<id>` and `res:<id>` read the
+ * holder: a door's ladder, as Bond's reach 6, 9 from Empathy 6). A plain number is itself; anything else is null. */
+export function holderNumber(h: Holder, x: unknown): number | null {
+  if (typeof x === 'number') return x;
+  if (!isNumberBlock(x)) return null;
+  const c = h.c || charOfUnit(h.u);
+  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c) : 0; });
+}
 /** Why this holder can't aim its action at this unit by its `reach` (null: it can). */
 export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): string | null {
   const u = h.u, cb = h.cb; if (!reach || !u || !cb) return null;
@@ -61,7 +79,11 @@ export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): str
   const side = reach.side || 'any';
   if (side === 'foe' && t.side === u.side) return 'Pick an enemy.';
   if ((side === 'ally' || side === 'side') && t.side !== u.side) return 'Pick an ally.';
-  if (typeof reach.tiles === 'number' && distK(u.pos, t.pos) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
+  // rules 1.33: reach.beyond (a tie kind): a unit tied to the holder by it is in reach at any range the holder itself sees
+  const far = !!reach.beyond && !ifFails(h, { target_tied: reach.beyond }, t);
+  if (far && !unitSees(cb, u, t.pos)) return 'Not in sight: a Bond carries it only where you can see.';
+  const tiles = holderNumber(h, reach.tiles);
+  if (!far && tiles != null && distK(u.pos, t.pos) > tiles) return 'Out of range (' + tiles + (tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && t.side !== u.side && ifFails(h, { target_sight: ['seen'] }, t)) return 'You can\'t see them.'; // the holder's side sees it (P7)
   if (reach.tied && ifFails(h, { target_tied: reach.tied }, t)) return t.name + ' isn\'t tied to you.'; // P8
   if (reach.if) { const k = ifFails(h, reach.if, t); if (k) return 'Not on ' + t.name + ' (' + human(k) + ').'; }
@@ -74,6 +96,18 @@ export function tileReachWhy(h: Holder, reach: any, tile: string | null | undefi
   if (!tile) return 'Pick a tile.';
   if (typeof reach.tiles === 'number' && distK(u.pos, tile) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && !unitSees(cb, u, tile)) return 'You can\'t see that tile.';
+  // object: the tile holds a standing object of that word (objects.ts objectIs: a kind, a kind field, a cover grade)
+  if (typeof reach.object === 'string' && !objectsAt(cb, tile).some((o) => objectIs(o, reach.object))) return 'No ' + reach.object.replace(/_/g, ' ') + ' there.';
+  // stand: a free tile a unit could stand on, with no trap on it
+  if (reach.stand && (!canStand(cb, tile, u) || objectsAt(cb, tile).some((o) => isTrap(o)))) return 'No room there.';
+  // over: the tile is two away in a straight line, across a tile that holds an object of one of these words, and free to land on
+  if (Array.isArray(reach.over)) {
+    const [ux, uy] = xy(u.pos), [tx, ty] = xy(tile), dx = tx - ux, dy = ty - uy;
+    if (![-2, 0, 2].includes(dx) || ![-2, 0, 2].includes(dy) || (!dx && !dy)) return 'Two tiles away, in a straight line.';
+    const mid = key(ux + dx / 2, uy + dy / 2);
+    if (!objectsAt(cb, mid).some((o) => reach.over.some((w: string) => objectIs(o, w)))) return 'Nothing to cross there.';
+    if (!canStand(cb, tile, u)) return 'No room to land.';
+  }
   return null;
 }
 const TARGET_OF_SIDE: Record<string, ActionDef['target']> = { foe: 'enemy', ally: 'ally', side: 'ally', any: 'unit' };
@@ -91,19 +125,21 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     // patron answers, and the item's triggered effects (its `when`) stay with their triggers.
     const ops = verb || !!g.prayer;
     const mine = ops ? effs.filter((e) => isItemOp(e) && !(g.prayer && !verb && e.when)) : [], rest = ops ? effs.filter((e) => !isItemOp(e)) : effs;
+    const acts = !verb && (g.effects || []).some((e: any) => e?.when === 'acted'); // its ops are lifted onto the item (collect.ts liftActed) and run on the trigger acted
     const d: ActionDef = {
-      id, label, scope: per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
+      id, label, scope: Array.isArray(g.scope) ? g.scope.filter((x: string) => GRANT_SCOPES.includes(x)) : per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
       run: (h, args, rng) => {
         if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
-        if (rest.length || !mine.length) defaultRun(h, rest, args, rng);
-        if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null });
+        if (rest.length || (!mine.length && !acts)) defaultRun(h, rest, args, rng); // rules 1.33: a grant whose effects are all `when: acted` (lifted onto the item) is the engine's: no Narrator note
+        if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}) });
         return null;
       },
     };
-    if (g.res) d.res = { ...g.res };
-    if (typeof reach?.tiles === 'number') d.range = reach.tiles;
+    if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend 2 MP cheaper from Empathy 9)
+    if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
+    if (typeof g.site === 'string') d.site = g.site;
     if (g.if || g.prayer) d.available = (h) => {
       if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return 'Not now (' + human(k) + ').'; }
       if (g.prayer && h.u && h.cb && PRAYER) return PRAYER.why(h.cb, h.u, g.prayer) || true;
@@ -141,6 +177,7 @@ function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: numb
 /** An item's actions: a lane's, when it registered any (they replace the data defaults), else the defaults. */
 export function actionDefs(info: ItemInfo): ActionDef[] {
   const hd = handlerOf(info.key), lane = hd?.actions || [];
+  if (lane.length && hd?.dataActions) return [...lane, ...defaultActions(info).filter((d) => !lane.some((l) => l.id === d.id))]; // rules 1.33: a lane that keeps only a story half beside the data's actions
   return lane.length ? lane : hd?.noDefaultActions ? [] : defaultActions(info);
 }
 
@@ -158,8 +195,13 @@ export function dataAp(info: ItemInfo, actionId: string): number | string {
  * one price (effects/cost.ts: the `cost` hook sees it as '<item key>#<action id>'). */
 function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
   const ap = typeof d.ap === 'function' ? d.ap(h, args) : d.ap === 'data' ? apFromData(dataAp(h.info, d.id), h.u) : d.ap, res = typeof d.res === 'function' ? d.res(h, args) : d.res;
-  return price({ cb: h.cb, u: h.u, c: h.c }, h.key + '#' + d.id, { ap, res: res || undefined }, { item: h.key });
+  const site = d.site ?? h.key + '#' + d.id; // rules 1.33: a data action may name its cost site (Triage's 'triage': what items answer as ap_cost:triage)
+  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key });
 }
+/** The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`:
+ * Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. */
+export type ItemTab = 'perks' | 'class' | 'shadow';
+const tabOf = (h: Holder): ItemTab => (h.kind === 'class' ? 'class' : h.kind === 'verb' && rawItem(h.key)?.tab === 'shadow' ? 'shadow' : 'perks');
 /** One action as the UI shows it. */
 export interface PerkActionEntry {
   /** What combat/perk, world/act perk and story/perk take as id (item key), plus actionId when an item has several. */
@@ -171,7 +213,7 @@ export interface PerkActionEntry {
   /** The engine runs it all (else part or all goes to the Narrator). */
   engine: boolean;
   /** Which tab: perks (perks and traits) or class (class moves). cls: the class id, for its emblem. */
-  tab: 'perks' | 'class'; cls?: string; arm?: boolean; armed?: any;
+  tab: ItemTab; cls?: string; arm?: boolean; armed?: any;
   tier: string;
   /** What the action's choice takes (chips in the client), how many at once, and the prompt for a pick or typed detail. */
   options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
@@ -190,7 +232,7 @@ export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
  *  attack: its toggles) or by itself (a hook). The Perks tab lists these to read, with no button of their own (Leon,
  *  9 Nov 2026: "keep these in the perk tab so you can read that you have the skill and what it does, but remove the
  *  confirm button if the skill already has a use button in its perspective action"). via: where it is used. */
-export interface PerkInfoEntry { id: string; itemId: string; kind: string; label: string; text: string; tab: 'perks' | 'class'; tier: string; via: string; uses: { per: UseScope; n: number; left: number; label: string } }
+export interface PerkInfoEntry { id: string; itemId: string; kind: string; label: string; text: string; tab: ItemTab; tier: string; via: string; uses: { per: UseScope; n: number; left: number; label: string } }
 const VIA: Record<string, string> = { 'combat/pump': 'Pump', 'combat/outburst': 'Begin', 'combat/release': 'Release', 'combat/attack': 'an attack', 'combat/move': 'a move', 'combat/evoke': 'Evoke', 'combat/pray': 'a prayer', 'combat/perk': 'a perk action', 'check/roll': 'a check', 'story/speak': 'speaking' };
 /** The read-only Perks-tab entries of a holder's items on this surface (see PerkInfoEntry). Listed: an item with no
  *  button here (none of its actions has this scope) that the data makes an action here, or whose toggles ride an
@@ -206,7 +248,7 @@ export function perkInfoFor(x: Who, scope: ActionScope): PerkInfoEntry[] {
     // Uses: the data action's, when it has one; a toggle-only item counts its own (at will unless a lane says so).
     const per: UseScope = d?.uses?.per || 'at_will', n = d?.uses?.n ?? 1;
     const left = d ? uses({ ...h, g: x.g ?? boundGame() }).left(per, n) : n;
-    out.push({ id: h.key, itemId: h.itemId, kind: h.kind, label: h.info.name, text: h.info.text, tab: h.kind === 'class' ? 'class' : 'perks', tier: h.tier,
+    out.push({ id: h.key, itemId: h.itemId, kind: h.kind, label: h.info.name, text: h.info.text, tab: tabOf(h), tier: h.tier,
       via: on.length ? 'Used from ' + [...new Set(on.map((o) => VIA[o] || o))].join(' or ') : 'Automatic',
       uses: { per, n, left, label: d ? usesLabel(per, n, Math.min(n, left)) : '' } });
   }
@@ -230,7 +272,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   else if (!why) why = resWhyNot(cost.res, null, h.c); // no unit pays here (a story action): what the character holds (stims, Echo) is still asked for
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
-    target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: h.kind === 'class' ? 'class' : 'perks', cls: h.info.classId,
+    target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h), cls: h.info.classId,
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
     ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}) };
 }
@@ -241,13 +283,14 @@ function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
   if (p === 'words') { const w = h.u?.mg?.words || [...new Set([...(c?.sigils || [])])]; return w.map((x: string) => ({ id: x, label: x.toUpperCase() })); }
   if (p === 'designs') return (c?.outbursts || []).map((x) => ({ id: x.id, label: x.name }));
   if (p === 'gamma') return SKILLS.filter((s: any) => s.slot === 'gamma').map((s) => ({ id: s.id, label: s.name }));
+  if (p === 'felt') return ((c || charOfUnit(h.u))?.feelings || []).filter((x: string) => FEEL_NAME[x]).map((x: string) => ({ id: x, label: FEEL_NAME[x] })); // rules 1.33: Inspire's felt feelings
   if (p === 'squad') { const g = h.g ?? boundGame(); return (Object.values(g?.characters || {}) as Character[]).filter((x) => x.id !== c?.id && !x.dead).map((x) => ({ id: x.id, label: x.name })); }
   return [];
 }
 function defaultEngine(info: ItemInfo, d: ActionDef): boolean {
   void d; const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
   const nested = info.effects.filter((e) => e?.op === 'grant_action').flatMap((e) => (e.effects || []).filter((x: any) => x?.when !== 'acted'));
-  const all = [...own, ...nested]; if (!all.length) return false;
+  const all = [...own, ...nested]; if (!all.length) return info.effects.some((e) => e?.op === 'grant_action' && (e.effects || []).some((x: any) => x?.when === 'acted')); // rules 1.33: all lifted to acted: the engine's
   return all.every((e) => { const g = genericOf(e?.op); return !!(g?.runs && g.runs(e, info)); });
 }
 

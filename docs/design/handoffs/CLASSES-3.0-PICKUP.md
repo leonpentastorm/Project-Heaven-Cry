@@ -162,6 +162,19 @@ Step 5 (`docs/design/handoffs/classes-3.0-step-5.md` section 5, rules 1.31 items
    contract's whisper and hymn rows measure a classless Faith sheet (`doorFaithBuild`). Measured: the Chaplain all in
    122 / 130 / 123 / 149 (mean 131 against 125, +5%); normal share 110 against 100.
 
+Step 6 (`docs/design/handoffs/classes-3.0-step-6.md` section 5, rules 1.32 items 1950 to 1969; built on
+`worktree-agent-a240d31a3975ddb8c`, not merged back):
+1. Of the nine verbs not built, seven were built at the integration (Decoy, Close Quarters, Vault, Pick, Douse, Shadow
+   Run, Rig; items 1970 to 1976); **Parting Cut and Case stay pending** (item 1966: a toggle riding the Break; a kit
+   read-out). See the step 6 hand-off's "Integration".
+2. `<who>_has` / `_lacks` and `cleanse` see flag conditions (Hidden, Prone, Bleeding, Dazed), and `<who>_sees_self`
+   is false while the holder is Hidden (item 1967): general meaning changes, no golden line outside Shadow moved.
+3. The Break's 1-Shadow floor is the toggle's `if` (`self_has_res`); the turn's attack mark is `attack_roll`; the
+   MARK verbs' reach is 8 (the spec's example); machine saves by Ingenuity only; Foul's save is the `lowered` row's
+   Heart; Off Balance's "two rounds running" is a 2-round cooldown a target; Fade picks its own tile.
+4. **Measured, not refitted:** door all in 85 (line 109), Operative all in 101 (line 125, before Mark's squad
+   value), an upper bound; the dial `rules.json shadow.per_point` is the lead's to move.
+
 Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
 7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be
    made as a reaction (kind `attack`), as before; a helping one is `protect` (item 1764).
@@ -176,6 +189,22 @@ Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 ite
 or hinders an enemy is never a reaction (item 1764 amended). 8: one tie kind `owned` for both; the unit's record `kind`
 tells a Figment from a drone. 9: accepted. 10 built: a `turn: owner` unit's verbs are its owner's actions
 (`combat/owned`, paid by the owner); a `turn: auto` unit acts at its owner's turn start (items 1768, 1769).
+
+Step 7 (`docs/design/handoffs/classes-3.0-step-7.md` section 6, rules 1.33 items 2000 to 2041; built on
+`worktree-agent-ab6c4efb0b594722e`, not merged):
+1. The echo is 0.20 (Leon); a Bond past the cap is refused (Let Go first); every Bonded unit bears `bonded` (the tie's
+   mark); a Boss Bond lasts 3 of its turns, then 4 rounds from the Bond before you can Bond it again.
+2. The share skips damage you do to yourself; per-Bond counts the ties you hold at either end.
+3. Brimming leaves half the overheal as a shield; Take the Weight's condition is taken with no save.
+4. Given feelings: "next attack" boons end with the next damage; the edge +2 with a weapon hit or miss; an enemy given a
+   feeling with no enemy face gets nothing for the AP and MP (the screen should grey it).
+5. **Share a Hit fires automatically for everyone with Camaraderie 1**: it changes every squad fight. Leon may prefer a
+   toggle. The item tables' squad does not share (`harness.ts noShare`).
+6. Field Surgery needs a field kit carried (not used up) and 15 MP; Triage is not offered on the area map (the story
+   Triage, ×3, stays).
+7. **Measured, not refitted:** the Mender's healing turn 175 against 200 (−12%), the door's 164 against 174; the Mender's
+   offence 79 (solo) / 83 (squad) against 70 (+13% / +19%). The balance guard was not given the three new rows (it would
+   fail); the dials are `output.profiles.tend.k` and `tending.json bond.per_bond`.
 
 ## 7. State when this was last touched
 

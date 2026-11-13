@@ -59,7 +59,16 @@
         "when": "turn"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_rage).",
+        "condition": "given_rage"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_rage (a Heart save against the giver's Empathy).",
+        "condition": "foe_rage",
+        "save": true
+      }
     },
     {
       "id": "grief",
@@ -99,7 +108,16 @@
         "when": "turn"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_grief).",
+        "condition": "given_grief"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_grief (a Heart save against the giver's Empathy).",
+        "condition": "foe_grief",
+        "save": true
+      }
     },
     {
       "id": "fear",
@@ -139,11 +157,31 @@
         "when": "entry"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_fear).",
+        "condition": "given_fear"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_fear (a Heart save against the giver's Empathy).",
+        "condition": "foe_fear",
+        "save": true
+      }
     },
     {
       "id": "love",
-      "amounts": {"heal": {"kind": "heal", "base": 0, "profile": "mend", "mults": {"along_the_chain": 0.5}, "text": "Love's heal along a chain, as a share of Love's heal", "provisional": true}},
+      "amounts": {
+        "heal": {
+          "kind": "heal",
+          "base": 0,
+          "profile": "mend",
+          "mults": {
+            "along_the_chain": 0.5
+          },
+          "text": "Love's heal along a chain, as a share of Love's heal",
+          "provisional": true
+        }
+      },
       "name": "Love",
       "n": 4,
       "family": "warm",
@@ -179,7 +217,12 @@
         "when": "turn"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_love).",
+        "condition": "given_love"
+      },
+      "given_foe": null
     },
     {
       "id": "joy",
@@ -217,7 +260,12 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_joy).",
+        "condition": "given_joy"
+      },
+      "given_foe": null
     },
     {
       "id": "calm",
@@ -256,7 +304,12 @@
         "when": "entry"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_calm).",
+        "condition": "given_calm"
+      },
+      "given_foe": null
     },
     {
       "id": "spite",
@@ -295,7 +348,16 @@
         "only": "last_hurt"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_spite).",
+        "condition": "given_spite"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_spite (no save).",
+        "condition": "foe_spite",
+        "save": false
+      }
     },
     {
       "id": "shame",
@@ -334,7 +396,16 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_shame).",
+        "condition": "given_shame"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_shame (no save).",
+        "condition": "foe_shame",
+        "save": false
+      }
     },
     {
       "id": "pride",
@@ -364,7 +435,12 @@
         "text": ""
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_pride).",
+        "condition": "given_pride"
+      },
+      "given_foe": null
     },
     {
       "id": "despair",
@@ -405,7 +481,16 @@
         "when": "turn"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_despair).",
+        "condition": "given_despair"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_despair (a Heart save against the giver's Empathy).",
+        "condition": "foe_despair",
+        "save": true
+      }
     },
     {
       "id": "hope",
@@ -443,7 +528,12 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_hope).",
+        "condition": "given_hope"
+      },
+      "given_foe": null
     },
     {
       "id": "mercy",
@@ -482,7 +572,16 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_mercy).",
+        "condition": "given_mercy"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_mercy (a Heart save against the giver's Empathy).",
+        "condition": "foe_mercy",
+        "save": true
+      }
     },
     {
       "id": "cruelty",
@@ -523,7 +622,16 @@
         "when": "turn_entry"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_cruelty).",
+        "condition": "given_cruelty"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_cruelty (a Heart save against the giver's Empathy).",
+        "condition": "foe_cruelty",
+        "save": true
+      }
     },
     {
       "id": "loneliness",
@@ -554,7 +662,16 @@
         "text": ""
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_loneliness).",
+        "condition": "given_loneliness"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_loneliness (no save).",
+        "condition": "foe_loneliness",
+        "save": false
+      }
     },
     {
       "id": "belonging",
@@ -595,7 +712,12 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_belonging).",
+        "condition": "given_belonging"
+      },
+      "given_foe": null
     },
     {
       "id": "dread",
@@ -633,7 +755,16 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_dread).",
+        "condition": "given_dread"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_dread (a Heart save against the giver's Empathy).",
+        "condition": "foe_dread",
+        "save": true
+      }
     },
     {
       "id": "awe",
@@ -663,7 +794,16 @@
         "text": ""
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_awe).",
+        "condition": "given_awe"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_awe (a Heart save against the giver's Empathy).",
+        "condition": "foe_awe",
+        "save": true
+      }
     },
     {
       "id": "longing",
@@ -693,7 +833,16 @@
         "text": ""
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_longing).",
+        "condition": "given_longing"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_longing (no save).",
+        "condition": "foe_longing",
+        "save": false
+      }
     },
     {
       "id": "relief",
@@ -731,7 +880,12 @@
         "when": "entry"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_relief).",
+        "condition": "given_relief"
+      },
+      "given_foe": null
     },
     {
       "id": "contempt",
@@ -770,7 +924,16 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_contempt).",
+        "condition": "given_contempt"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_contempt (no save).",
+        "condition": "foe_contempt",
+        "save": false
+      }
     },
     {
       "id": "guilt",
@@ -810,7 +973,16 @@
         "when": "turn"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_guilt).",
+        "condition": "given_guilt"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_guilt (a Heart save against the giver's Empathy).",
+        "condition": "foe_guilt",
+        "save": true
+      }
     },
     {
       "id": "jealousy",
@@ -840,7 +1012,12 @@
         "text": ""
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_jealousy).",
+        "condition": "given_jealousy"
+      },
+      "given_foe": null
     },
     {
       "id": "wonder",
@@ -878,7 +1055,16 @@
         "when": "turn"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_wonder).",
+        "condition": "given_wonder"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_wonder (no save).",
+        "condition": "foe_wonder",
+        "save": false
+      }
     },
     {
       "id": "defiance",
@@ -917,7 +1103,12 @@
         "when": "stand"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_defiance).",
+        "condition": "given_defiance"
+      },
+      "given_foe": null
     },
     {
       "id": "abandon",
@@ -963,7 +1154,16 @@
         "when": "entry"
       },
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "given": {
+        "text": "Given to an ally through a Bond: a bonus on its next roll to hit, and its boon (condition given_abandon).",
+        "condition": "given_abandon"
+      },
+      "given_foe": {
+        "text": "Given to an enemy through a Bond: condition foe_abandon (a Heart save against the giver's Empathy).",
+        "condition": "foe_abandon",
+        "save": true
+      }
     }
   ],
   "price": {

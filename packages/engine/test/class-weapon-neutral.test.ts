@@ -33,8 +33,10 @@ const DOOR: Record<string, Allow> = {
   'class:marksman.fire_discipline': { modes: ['aimed'], why: 'the lead\'s ruling (13 Nov 2026): Aimed is the technique\'s own mode (+1 to hit); the 3-AP discount is any family\'s; Heat (the gun\'s door) is read from the weapon\'s heat_limit, not its family' },
   'class:marksman.special_ammo': { words: ['magazine', 'quiver'], code: 1, why: 'any weapon takes a load; the text says the form it takes (a magazine, a quiver, else a load of attacks); the one code read is the reload effect\'s art (fx cat)' },
   'class:marksman.killzone': { code: 2, why: 'any weapon holds: a melee weapon holds strikes at its reach (a branch, not a refusal); an aimed hold needs a weapon that aims (the Aimed technique)' },
+  'class:gunslinger.called_shot': { code: 2, why: 'any weapon (rules 1.32): it reads the family only to make the weapon\'s plain attack (a strike in reach, a throw, else a shot): a branch, never a refusal' },
   'class:marksman.duck_and_roll': { words: ['ranged'], code: 1, why: 'it answers an enemy\'s ranged attack at you (the incoming attack)' },
-  'class:infiltrator.field_fix': { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' },
+  // Field Fix left the Operative (rules 1.32): its entry comes back with the Rigger's step (8), worded as it was:
+  // { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' }
   // The Chaplain's step (rules 1.31): Verdict takes any weapon; the one family read left picks the weapon's plain attack
   // (a strike with a melee weapon, a throw with a thrown one, else a shot): a branch, never a lock.
   'class:lumeri_templar.blessed_shells': { words: ['round', 'arrow', 'edge', 'thrown', 'blade'], why: 'Blessed Arms (rules 1.31): the text names every form a weapon takes (a round, an arrow, an edge, a thrown blade) so it reads as any weapon, as the audit 4.7 asks' },
@@ -42,9 +44,8 @@ const DOOR: Record<string, Allow> = {
 };
 /** Locked today; fixed by another Classes 3.0 step. MUST shrink to empty before the patch ships. */
 const PENDING: Record<string, Allow> = {
-  // Called Shot (`gunslinger.called_shot`) left the Skirmisher (rules 1.30) and is shelved until the Shadow step puts it
-  // in the Operative: that step adds it back here if it is still locked (audit: a shot, a throw or a strike).
-  'class:assassin.toxin': { words: ['gun', 'blade', 'dart', 'arrow', 'arrows', 'blades', 'darts', 'melee', 'thrown'], code: 3, why: 'Shadow step: coat any weapon; its family reads include the helper coatable (i.ts), which goes with the handler (P4)' },
+  // The Shadow step (rules 1.32) put Called Shot in the Operative and made Toxin coat any weapon; the Chaplain's step
+  // (rules 1.31) made Verdict and Blessed Arms any weapon: all four left this list.
 };
 const ALLOW = (key: string): Allow | undefined => DOOR[key] || PENDING[key];
 

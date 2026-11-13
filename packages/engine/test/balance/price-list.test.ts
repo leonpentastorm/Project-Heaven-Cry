@@ -828,7 +828,7 @@ function apSources(): Source[] {
   rule('Any Call at ' + CR.free_at + ' points', 'discount', 'the first Call of each turn costs 0 AP', 'a Mastered gamma skill', 'once a turn', CR.cheap_ap, K.ROUNDS);
   rule('Any Call at ' + CR.reaction_at + ' points', 'an extra action', 'a Call as a reaction, 0 AP', 'your reaction', 'once a round', CR.cheap_ap, K.ROUNDS);
   if (A.SIGIL.quicken) rule('QUICKEN [Sigil word]', 'AP given to an ally', '+' + (A.SIGIL.quicken.ap ?? 2) + ' AP on their next turn', 'a Line with QUICKEN (' + A.SIGIL.quicken.charge + ' charge for the word); never on the caster', 'each target once a round', A.SIGIL.quicken.ap ?? 2, K.ROUNDS - 1);
-  for (const fp of SOUL.cycle.free_pumps || []) rule('Free Pumps from Empathy ' + fp.empathy, 'discount', fp.pumps + ' Pump' + (fp.pumps > 1 ? 's' : '') + ' a round cost 0 AP', 'holding an Outburst', 'every round', fp.pumps, K.ROUNDS);
+  for (const fp of SOUL.cycle.free_pumps || []) rule('Free Pumps from Will Power ' + fp.will_power, 'discount', fp.pumps + ' Pump' + (fp.pumps > 1 ? 's' : '') + ' a round cost 0 AP', 'holding an Outburst', 'every round', fp.pumps, K.ROUNDS);
   if (SOUL.cycle.first_pump_free) rule('The first Pump of a fight', 'discount', '1 Pump for 0 AP', 'every Soul caster', 'once a fight', 1, 1);
   rule('A held Outburst swelling', 'a free Pump', '+1 stage at the start of each turn you hold it', '+' + SOUL.cycle.swell_strain + ' Strain a turn', 'every turn held', 1, K.ROUNDS - 1);
   { const d = A.TECHNIQUE.draw_cut, l = A.TECHNIQUE.last_round;

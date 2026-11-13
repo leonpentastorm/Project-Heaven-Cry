@@ -27,7 +27,7 @@ describe('P12: data toggles', () => {
   });
   it('togglesFor lists it on its action type, with its `if`', () => {
     const g = opsFight({ relics: ['test_toggle_heavy'] }), cb = g.combat, u = pcs(g)[0];
-    const list = () => W(g, () => togglesFor({ u, cb, g }, T.on[0], {}, []));
+    const list = () => W(g, () => togglesFor({ u, cb, g }, T.on[0], {}, [])).filter((t) => t.itemKey === KEY); // (Shadow's Break rides combat/attack too: rules 1.32)
     expect(list()).toEqual([{ id: KEY + '#' + T.id, itemKey: KEY, label: T.name, why: null, on: false, preview: null, defaultOn: false }]);
     expect(W(g, () => togglesFor({ u, cb, g }, 'combat/move', {}, []))).toEqual([]);
     W(g, () => A.applyCond(cb, g.rng, foes(g)[0], u, 'marked', 2, undefined, { skipSave: true }));

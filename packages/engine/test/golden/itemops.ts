@@ -14,7 +14,7 @@
 //
 //   GOLDEN_RECORD=1 npx vitest run --root packages/engine test/golden-itemops      both files, ON PURPOSE ONLY
 //   GOLDEN_RECORD=log ...                                                           the words only
-import { A, W, copy, dice, HIT, CRIT, fightSpec, place, turn, units, pcs, foes, charOf } from './harness';
+import { A, W, copy, dice, HIT, CRIT, fightSpec, place, noShare, turn, units, pcs, foes, charOf } from './harness';
 import { EVEN, tiersOf } from './record';
 
 const FLAGS = ['prone', 'hidden', 'downed', 'dead', 'surrendered', 'braced'];
@@ -140,7 +140,7 @@ export const SITUATIONS: [string, (g: any, cb: any) => any, any?][] = [
 export function opsFight(spec: any) {
   const g = fightSpec([{ ...EVEN(), ...spec }, { name: 'Squadmate', ...EVEN() }], [{ tier: 'soldier', name: 'Soldier' }, { tier: 'soldier', name: 'Far soldier' }, { tier: 'elite', name: 'Elite' }], { level: 6, seed: 'item' });
   const [u, al] = pcs(g), [f, far, el] = foes(g);
-  place(g, [[u, '3,6'], [f, '4,6'], [al, '2,6'], [far, '7,6'], [el, '7,9']]); turn(g, u, 9);
+  noShare(g); place(g, [[u, '3,6'], [f, '4,6'], [al, '2,6'], [far, '7,6'], [el, '7,9']]); turn(g, u, 9);
   al.hp = Math.ceil(al.maxHp * 0.4); u.hp = Math.ceil(u.maxHp * 0.6);
   return g;
 }

@@ -1298,71 +1298,281 @@
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "per_point": {
-        "text": "+{=per_point.ambush_per_point|pct}% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
-        "ambush_per_point": 0.05
+        "text": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons, and what you do unseen, are harder to save against."
       },
       "gates": [
         "gear:stealth"
       ],
       "unlocks": {
-        "3": {
-          "name": "Lift",
-          "category": "Combat Interaction",
-          "mastery": 1,
-          "text": "{=unlocks.3.effects.0.ap} AP: steal one item or magazine from an adjacent enemy.",
+        "1": {
+          "name": "Shadow",
+          "category": "Active Skill",
+          "mastery": 0,
+          "item": true,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "lift",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "turn_end",
+              "if": {
+                "self_has": [
+                  "hidden"
+                ],
+                "no_flag": "struck"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "gain"
+              },
+              "say": "{self} stays unseen: Shadow {res:shadow}."
             },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "moved",
+              "if": {
+                "how": [
+                  "move",
+                  "sprint"
+                ],
+                "self_has": [
+                  "hidden"
+                ],
+                "by_cover": [
+                  "from",
+                  "to"
+                ],
+                "self_sight": [
+                  "out_of_view"
+                ],
+                "no_flag": "cover"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "gain"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "cover"
+                }
+              ],
+              "say": "{self} slips from cover to cover: Shadow {res:shadow}."
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "hit",
+              "if": {
+                "hostile": true,
+                "target_alive": false,
+                "self_sight": [
+                  "unseen"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "gain"
+              },
+              "say": "{self} kills unseen: Shadow {res:shadow}."
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": -1,
+              "when": "turn_start",
+              "if": {
+                "self_sight": [
+                  "seen"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "say": "{self} is seen: Shadow {res:shadow}."
+            },
+            {
+              "op": "mark",
+              "flag": "struck",
+              "when": "attack_roll"
+            },
+            {
+              "op": "mark",
+              "flag": "struck",
+              "clear": true,
+              "when": "turn_start",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "cover",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": "zero",
+              "when": "downed"
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": "zero",
+              "when": "combat_end"
+            }
+          ],
+          "toggles": [
+            {
+              "id": "shadow.break",
+              "name": "Break",
+              "on": [
+                "combat/attack"
+              ],
+              "if": {
+                "self_has": [
+                  "hidden"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "effects": [
+                {
+                  "op": "damage_mult",
+                  "when": "dealing",
+                  "label": "shadow",
+                  "replaces": "ambush",
+                  "value": {
+                    "base": 1,
+                    "per": [
+                      {
+                        "of": "res:shadow",
+                        "value": 0.15
+                      },
+                      {
+                        "of": "event:ambush",
+                        "value": 0.5
+                      },
+                      {
+                        "of": "target:marked",
+                        "value": 0.15
+                      }
+                    ]
+                  }
+                },
+                {
+                  "op": "resource",
+                  "resource": "shadow",
+                  "value": "all",
+                  "when": "acted",
+                  "and": [
+                    {
+                      "op": "cleanse",
+                      "condition": "hidden"
+                    }
+                  ],
+                  "say": "{self} breaks from the shadows and is revealed."
+                }
+              ]
+            }
+          ]
+        },
+        "3": {
+          "name": "Mastery 1",
+          "category": "Combat Interaction",
+          "mastery": 1,
+          "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
+          "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
               "choice": "tier_1"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "5": {
-          "name": "Vanish",
-          "category": "Active Skill",
-          "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP: become Hidden even while watched, if there's cover within one Move.",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "vanish",
-              "ap": 3,
-              "uses": "at_will"
             },
             {
-              "op": "condition",
-              "condition": "hidden",
-              "target": "self",
-              "when": "on_vanish"
+              "op": "close_roll",
+              "when": "spot",
+              "value": 4,
+              "label": "Close Quarters"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true,
+          "provisional": true
+        },
+        "5": {
+          "name": "Mastery 2",
+          "category": "Active Skill",
+          "mastery": 2,
+          "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "spot",
+              "value": -2,
+              "if": {
+                "by_cover": [
+                  "here"
+                ]
+              },
+              "label": "Still Breath"
+            }
+          ],
+          "adjudication": "engine",
+          "item": true
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Shadow Run: once a turn, a move made Hidden from cover to cover costs {=unlocks.7.effects.1.value} AP less (at least {=unlocks.7.effects.1.min}). Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Rig, Plant and Disable.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
               "choice": "perk_step"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "value": -1,
+              "min": 1,
+              "if": {
+                "action": [
+                  "move"
+                ],
+                "self_has": [
+                  "hidden"
+                ],
+                "by_cover": [
+                  "here",
+                  "to"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "run"
+              },
+              "label": "Shadow Run"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "item": true,
+          "provisional": true
         },
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verbs of this rung open: Parting Cut and Hijack.",
           "effects": [],
           "adjudication": "engine"
         },
@@ -1432,7 +1642,7 @@
           "A thousand gold for two rocks. The number of people still paying in gold coins outside Central City is baffling. Back when I worked the city, I'd swipe a bank card out of some guy's pocket and that was dinner sorted. Back then I still had Travis to crack the cards... People call it petty theft, but the trade takes real skill. First you learn to walk in step with the crowd and spot which pocket bulges most. Then you work out how much weight to slip back in so they don't notice the coins have flown. If you don't know how, don't mess around. The old men at the guard post started carrying shock batons last week, and it hurts like you wouldn't believe."
         ],
         "intro": "Ingenuity is the finesse in everything you do: staying unseen while sneaking, picking pockets, that sort of thing.",
-        "effect": "+5% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
+        "effect": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons, and what you do unseen, are harder to save against.",
         "high_levels": "you turn into a cosplayer of the sneaking-soldier legend, flickering in and out of the shadows. But all that shifty behaviour makes it hard to look a cop in the eye.",
         "good_for": "rogues, scouts, bandits, gamblers.",
         "bad_for": "model citizens, uniformed (not undercover) cops, anyone trying to romance a uniformed (not undercover) cop.",
@@ -2585,10 +2795,10 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "per_point": {
-        "text": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain."
+        "text": "Healing given grows with every point. With an Attuner in hand it opens Bonds and Tending: more Bonds held, and more verbs, as it grows."
       },
       "gates": [
-        "focus:emanator_foci"
+        "focus:attuner"
       ],
       "unlocks": {
         "3": {
@@ -2710,7 +2920,7 @@
           "I saw. Horror... horror and pain, grief and helplessness. Oh, I'd give my whole fortune to forget, you understand? Forget the horror in their eyes, the horror I still feel in my chest, the horror no words can describe. The horror of an empty face hanging above an iron stake."
         ],
         "intro": "Empathy is the bridge between one person and another: feeling what someone else is going through, putting yourself where they stand, and understanding at least partly why they do what they do.",
-        "effect": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain.",
+        "effect": "Healing given grows with every point. With an Attuner in hand it opens Bonds and Tending: more Bonds held, and more verbs, as it grows.",
         "high_levels": "you become one with humanity. You understand everyone's circumstances, and everyone's story gets into you. You cry other people's tears and stick your nose into business that isn't yours.",
         "good_for": "therapists, human lie detectors, good alignments.",
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
@@ -2726,10 +2936,79 @@
       "slot": "beta",
       "summary": "The squad is a world of its own.",
       "per_point": {
-        "text": "+10% healing received."
+        "text": "+10% healing received. Share a Hit, a protective reaction, from the first point."
       },
       "gates": [],
       "unlocks": {
+        "1": {
+          "name": "Share a Hit",
+          "category": "Reaction",
+          "mastery": 0,
+          "text": "Your reaction, when an ally next to you is hit (from {=unlocks.1.effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=unlocks.1.effects.0.share.base|pct}% of the damage instead, +{=unlocks.1.effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=unlocks.1.effects.0.share.max|pct}%). It needs no focus. An Answer: on until you switch it off, like every Answer.",
+          "effects": [
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_within": 1,
+                "by_hit": true,
+                "actor": "foe",
+                "answer_on": "share_a_hit"
+              },
+              "share": {
+                "base": 0.25,
+                "per": [
+                  {
+                    "of": "skill:camaraderie",
+                    "value": 0.05
+                  }
+                ],
+                "max": 0.5
+              },
+              "limit": {
+                "reaction": 1,
+                "kind": "protect"
+              },
+              "say": "{self} shares the hit on {target}."
+            },
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_tied": "bond",
+                "self_skill": {
+                  "camaraderie": 5
+                },
+                "target_sight": [
+                  "seen"
+                ],
+                "by_hit": true,
+                "actor": "foe",
+                "answer_on": "share_a_hit"
+              },
+              "share": {
+                "base": 0.25,
+                "per": [
+                  {
+                    "of": "skill:camaraderie",
+                    "value": 0.05
+                  }
+                ],
+                "max": 0.5
+              },
+              "limit": {
+                "reaction": 1,
+                "kind": "protect"
+              },
+              "say": "{self} shares the hit on {target} through the Bond."
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "item": true
+        },
         "3": {
           "name": "Hand-Off",
           "category": "Passive",
@@ -2854,7 +3133,7 @@
           "If you don't want to get brainwashed, I'd stay away from that Souji. 'The power of friendship,' then 'the bond of hearts'; he says that stuff without a shred of embarrassment. He wants to befriend everyone he meets and goes around calling people 'comrade' before he's even graduated. Go into a fight with him and before you know it half the enemy team are on our side. Last week he talked that platinum-haired girl from the rival school onto our team, just like that. Is that insane or what? Jealous? Why on earth would I be jealous? Completely ridiculous!"
         ],
         "intro": "Camaraderie is your teamwork and your solidarity with your squad, plus your knack for making friends and building factions.",
-        "effect": "+10% healing received.",
+        "effect": "+10% healing received. Share a Hit, a protective reaction, from the first point.",
         "high_levels": "you become the heart of any team you join. You start seeing the team as its own little world and judge outsiders harder than you mean to.",
         "good_for": "captains, team players.",
         "bad_for": "lone wolves, edgelords, murder hobos.",
@@ -3006,7 +3285,7 @@
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "per_point": {
-        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against."
+        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain."
       },
       "gates": [
         "focus:emanator"
@@ -3141,7 +3420,7 @@
           "Yes, your heart can shatter like silken tofu. Connecting to the twin world is no joke. Pulling a few little sparks over ten minutes, anyone with a cheap Emanator can do that. A bolt over ten thousand volts in two seconds? Try it and you'll learn what a Mana Short is. There was a Linker once who didn't just bleed internally; he shorted so hard his heart burst on the spot and left a hole in his chest. Outburst craft needs a pure heart, the strength to resist temptation, and the understanding to hold the connection. Now breathe deep and meditate until your doubts fall away!"
         ],
         "intro": "Will Power is the strength of your heart: generosity and spiritual sharpness. A person's soul lives in the heart, and Will Power measures both your mental strength and the strength of the soul inside you. Essential for Outbursts and Emanators.",
-        "effect": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against.",
+        "effect": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain.",
         "high_levels": "your heart and soul turn hard and strong. You connect easily with the supernatural, but you slip easily into delusion, because the link to your upper-realm soul is so strong you can't tell this world from that one.",
         "good_for": "Emanator users, monks, crusaders, Bonders.",
         "bad_for": "Evoker users, scientists, melee users.",

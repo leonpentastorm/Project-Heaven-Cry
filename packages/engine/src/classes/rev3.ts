@@ -12,13 +12,14 @@
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { itemAmount } from '../effects/amounts';
+import { num } from '../effects/num';
 import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, stepsFrom, moveUnit,
   previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits,
-  attackEvent, stepEvent,
+  attackEvent, stepEvent, damageObject,
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
@@ -276,21 +277,9 @@ register({
 });
 
 // ======================================================================================================== INFILTRATOR
-// ---------- Vanish (rank I, 1 AP, once a turn) ----------
-// If no enemy can see you right now (fog, smoke, full cover, the dark), become Hidden (the shared Hidden: each entry
-// gives one ambush). Not while Marked. Combat only (the area map keeps its own stay-hidden rules).
-register({
-  id: 'infiltrator.vanish', claims: 'all',
-  actions: [{
-    id: 'vanish', label: 'Vanish', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_turn', n: 1 },
-    text: 'Once a turn: if no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden. You can\'t Vanish while you are Marked.',
-    available: (h) => { const u = h.u; if (!u || !h.cb) return false; if (u.hidden) return 'Already Hidden.'; if (condOn(u, 'marked')) return 'Marked: you can\'t hide.'; if (seenByFoes(h.cb, u)) return 'An enemy can see you. Get out of sight first.'; return true; },
-    run: (h) => { const u = h.u!, cb = h.cb!; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' }); say(cb, u.name + ' vanishes' + hide(cb, u, 'Vanish') + '.'); },
-  }],
-  brief: () => null,
-});
+// ---------- Vanish (rank I, 1 AP, once a turn): data only (classes.json; rules 1.32, its grant_action's nested acted effect) ----------
 
-// ---------- Field Fix (rank II, 2 AP) ----------
+// ---------- Field Fix (2 AP; rules 1.32: it left the Operative's ranks, its key stays for the Rigger, step 8) ----------
 // An adjacent squadmate (not you: your own jam is Clear Jam): clear their jammed weapon (the Heat goes too, as a clear),
 // restore their weapon's durability (the base Field Repair's amount, at least 10% of its maximum, with no spare parts),
 // or repair a robot, drone, turret or machine (a Factory Made squadmate too) for exactly 20 (a repair, as Field Repair:
@@ -328,43 +317,46 @@ register({
   brief: () => null,
 });
 
-// ---------- Sabotage (rank III, 2 AP) ----------
-// Either: an adjacent enemy machine, turret or drone is disabled for 2 rounds (Stunned for 2 of its turns: no actions,
-// no reactions), or an adjacent barricade stops blocking the way for 2 rounds, or an adjacent emplaced turret object is
-// disabled for 2 rounds (the Narrator runs those: a note says so). Or rig your own tile: the next enemy to step onto it
+// ---------- Sabotage (rank II since rules 1.32, 2 AP; its rounds are the data's numbers.rounds, 1) ----------
+// Either: an adjacent enemy machine, turret or drone is disabled for R rounds (Stunned: no actions, no reactions; no
+// save, no Shadow spent), or an adjacent barricade breaks (its hp to 0, rules 1.32), or an adjacent emplaced turret
+// object is disabled for R rounds (the Narrator runs those: a note says so). R is the data's numbers.rounds (1). Or rig your own tile: the next enemy to step onto it
 // takes 30 (armour applies) and its walk stops; it makes a Body save against 12 + your Ingenuity strength or is
 // Pinned. Your side never springs it and its walks avoid it; the other side can't see it. One rigged tile at a time
 // (a new one replaces the old). Combat only.
+/** Sabotage's rounds (the data's numbers.rounds; rules 1.32: 1). */
+const sabRounds = (h: Holder): number => num(h, 'rounds');
 register({
   id: 'infiltrator.sabotage', claims: 'all',
   // Three actions, one for each way (each its own grid pick): a machine token, a barricade or turret tile, your tile.
   actions: [
     {
       id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 'data', range: 1,
-      text: 'Disable an enemy machine, turret or drone next to you for 2 rounds. It takes no turns and no reactions.',
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for 2 rounds.'] }; },
+      text: 'Disable an enemy machine, turret or drone next to you. It is Stunned: no turns and no reactions.',
+      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for ' + sabRounds(h) + ' round' + (sabRounds(h) === 1 ? '' : 's') + '.'] }; },
       run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-        const line = applyCond(cb, rng as Rng, u, t, 'stunned', 2, undefined, { skipSave: true, via: 'ingenuity' });
-        emitFx(cb, 'sabotage', { unit: u.id, target: t.id, at: t.pos, rounds: 2, what: 'machine' });
-        say(cb, u.name + ' sabotages ' + t.name + ': disabled for 2 rounds' + line + '.');
+        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = sabRounds(h);
+        const line = applyCond(cb, rng as Rng, u, t, 'stunned', n, undefined, { skipSave: true, via: 'ingenuity' });
+        emitFx(cb, 'sabotage', { unit: u.id, target: t.id, at: t.pos, rounds: n, what: 'machine' });
+        say(cb, u.name + ' sabotages ' + t.name + ': disabled for ' + n + ' round' + (n === 1 ? '' : 's') + line + '.');
       },
     },
     {
       id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 'data',
-      text: 'Pick a barricade or an emplaced turret next to you. For 2 rounds, the barricade stops blocking the way, or the turret is disabled.',
+      text: 'Pick a barricade or an emplaced turret next to you. The barricade breaks, or the turret is disabled for a round.',
       preview: (h, args) => {
         const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
         const o = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret'); if (!o) return { ok: false, why: 'No barricade or turret there.' };
         if (dist(u.pos, k) > 1) return { ok: false, why: 'Get next to it first.' };
-        return { tiles: [k], lines: ['Disable the ' + o.name.toLowerCase() + ' for 2 rounds.'] };
+        return { tiles: [k], lines: [o.kind === 'barricade' ? 'Break the ' + o.name.toLowerCase() + '.' : 'Disable the ' + o.name.toLowerCase() + ' for ' + sabRounds(h) + ' round' + (sabRounds(h) === 1 ? '' : 's') + '.'] };
       },
       run: (h, args) => {
-        const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, o: any = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret')!;
-        if (o.kind === 'barricade') o.sabotaged = cb.round + 2; else { o.disabled = true; o.disabledUntil = cb.round + 2; note(h, 'The emplaced turret at ' + refOf(k) + ' is disabled until round ' + (cb.round + 2) + ': it takes no action.'); }
+        const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, o: any = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret')!, n = sabRounds(h);
+        emitFx(cb, 'sabotage', { unit: u.id, at: k, rounds: n, what: o.kind });
+        if (o.kind === 'barricade') { say(cb, u.name + ' sabotages the ' + o.name.toLowerCase() + ' at ' + refOf(k) + ': it breaks' + damageObject(cb, k, Math.max(1, o.hp ?? 1), 0, u) + '.'); return; } // rules 1.32: its hp to 0
+        o.disabled = true; o.disabledUntil = cb.round + n; note(h, 'The emplaced turret at ' + refOf(k) + ' is disabled until round ' + (cb.round + n) + ': it takes no action.');
         (stateOf(h).objs ||= []).push(o.id);
-        emitFx(cb, 'sabotage', { unit: u.id, at: k, rounds: 2, what: o.kind });
-        say(cb, u.name + ' sabotages the ' + o.name.toLowerCase() + ' at ' + refOf(k) + ': ' + (o.kind === 'barricade' ? 'it no longer blocks the way' : 'disabled') + ' for 2 rounds.');
+        say(cb, u.name + ' sabotages the ' + o.name.toLowerCase() + ' at ' + refOf(k) + ': disabled for ' + n + ' round' + (n === 1 ? '' : 's') + '.');
       },
     },
     {
@@ -556,33 +548,8 @@ register({
 });
 
 // ======================================================================================================== BARD
-// ---------- Rally (rank III, 2 AP, once a scene) ----------
-// Every squadmate within 4 tiles (not you; Downed ones aren't standing to rally) heals 6 × your Healing given × the
-// level factor (rules 1.23; it was 20 × Healing given) (×
-// their Healing received) and loses Fear and Shaken. Tending others calms your heart once a turn (rules 1.5). No
-// Emanator or Supplies needed. Refused with nobody in reach. Combat only.
-const rallied = (cb: Combat, u: Unit) => cb.units.filter((t) => t !== u && t.side === u.side && alive(t) && dist(t.pos, u.pos) <= 4);
-register({
-  id: 'bard.rally', claims: 'all',
-  actions: [{
-    id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
-    text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
-    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(kitHeal(RALLY_HEAL, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u))) + ' HP each, and their Fear and Shaken end.'] }; },
-    run: (h) => {
-      const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
-      emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });
-      for (const t of ts) {
-        const r = healUnit(cb, t, kitHeal(RALLY_HEAL, mult, mendFactorOf(u)), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
-        for (const id of gone) endCond(t, id, cb);
-        if (gone.length && !r.restored) tendHook.f?.(cb, u, t);
-        emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });
-        parts.push(t.name + ' +' + r.restored + ' HP' + (gone.length ? ', no longer ' + gone.join(' or ') : ''));
-      }
-      say(cb, u.name + ' rallies the squad: ' + parts.join(' · ') + '.');
-    },
-  }],
-  brief: () => null,
-});
+// Rules 1.33: Rally is data (classes.json bard rally: a grant_action and its `when: acted` ops on every Bonded ally and
+// every ally within 4).
 
 // ======================================================================================================== CHANNELER
 // ---------- Iron Heart (rank I, passive) ----------

@@ -164,8 +164,8 @@ const SPECIAL: Record<string, Maker> = {
   // ---- the party ----
   'perk:field_surgeon#patch': (e, x) => ({ head: 'Who you patch up', hint: e.text, fields: [squadF(x)] }),
   'class:medic.triage#triage_story': (e, x) => ({ head: 'Who you triage', hint: 'Pick an ally, or none for the most hurt.', fields: [squadF(x, 'The ally', false, true)] }),
-  'class:medic.field_surgery#injury': (e, x) => ({ head: 'Who you operate on', hint: 'Pick who, or none for yourself.', fields: [squadF(x, 'Who', true, true)] }),
-  'class:medic.field_surgery#conditions': (e, x) => ({ head: 'Who you treat', hint: 'Pick who, or none for yourself.', fields: [squadF(x, 'Who', true, true)] }),
+  'verb:tend.field_surgery#injury': (e, x) => ({ head: 'Who you operate on', hint: 'Pick who, or none for yourself.', fields: [squadF(x, 'Who', true, true)] }),
+  'verb:tend.field_surgery#conditions': (e, x) => ({ head: 'Who you treat', hint: 'Pick who, or none for yourself.', fields: [squadF(x, 'Who', true, true)] }),
   'class:scribe.inscribe_gear#weapon_story': (e, x) => ({ head: 'Whose weapon', hint: e.text + ' Pick whose, or none for your own.', fields: [squadF(x, 'Whose', true, true)] }),
   'class:scribe.inscribe_gear#armour_story': (e, x) => ({ head: 'Whose armour', hint: 'Pick whose, or none for your own.', fields: [squadF(x, 'Whose', true, true)] }),
   'class:bard.inspire#inspire_story': (e, x) => ({ head: 'Who you inspire', hint: e.text.replace(/\s*\(named[^)]*\)/, ''), fields: [squadF(x)] }),

@@ -4,6 +4,8 @@
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL } from '../data';
 import classesJ from '../../../../data/classes.json';
+import shadowJ from '../../../../data/shadow.json';
+import tendingJ from '../../../../data/tending.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
 const TRAIT: Record<string, any> = Object.fromEntries(TRAITS.map((t) => [t.id, t]));
@@ -19,7 +21,7 @@ export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: a
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
-const DATA_VERBS: Record<string, any> = Object.fromEntries(([] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
+const DATA_VERBS: Record<string, any> = Object.fromEntries(([...((shadowJ as any).items || []).map((x: any) => ({ ...x, tab: 'shadow' })), ...((tendingJ as any).items || [])] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x])); // a system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33)
 const verbData = (id: string): any => DATA_VERBS[id] || EXTRA.verb[id];
 const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
 const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];
@@ -112,7 +114,7 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
     // grant_action is the action (ap, res, if, reach, pick, prayer, limit, nested effects: effects/actions.ts).
     const x = verbData(id); if (!x) return null;
     const effects = [...(x.effects || [])], g = effects.find((e: any) => e?.op === 'grant_action');
-    return { key, kind, id, name: x.name, tier: 'I', effects, effTier: effects.map(() => 'I'), text: x.text || '', adjudication: x.adjudication || 'engine', active: true, bound: true, ap: g?.ap ?? x.ap_cost ?? null, uses: g?.uses || x.uses || 'at_will', provisional: !!x.provisional };
+    return { key, kind, id, name: x.name, tier: 'I', effects, effTier: effects.map(() => 'I'), text: x.text || '', adjudication: x.adjudication || 'engine', active: !!g, bound: !!g, ap: g?.ap ?? x.ap_cost ?? null, /* rules 1.33: a passive verb (no grant_action: Threads, the ladder) answers stats like any item */ uses: g?.uses || x.uses || 'at_will', provisional: !!x.provisional };
   }
   if (kind === 'relic') {
     const x = EXTRA.relic[id]; if (!x) return null;

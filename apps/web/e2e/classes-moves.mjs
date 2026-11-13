@@ -1,7 +1,7 @@
 // Class Roster Revision 3's new moves in play (Proving Ground with a friend: the host acts, the guest is the squadmate):
 //  · Fighter: Shove (the "Knock Prone" chip) and Unstoppable (+2 Momentum);
 //  · Chaplain (was Guardian; rules 1.31): Ward (click the squadmate: a shield on its own layer, the turn's Whisper);
-//  · Infiltrator: Vanish (out of every enemy's sight), Field Fix (the "Clear the jam" chip on a jammed squadmate),
+//  · Infiltrator (the Operative): Vanish (out of every enemy's sight),
 //    Sabotage on a drone, and Rig (the rigged tile marked on the grid);
 //  · Trickster: Read (Analyze names the enemy's next move: a marker on the enemy and its target), False Image (a
 //    translucent copy of the caster on the grid), Silver Tongue, Sleight (swap with the squadmate);
@@ -172,7 +172,7 @@ m = await mate(); u = await me();
 ok('Ward at Faith 1: ' + (r || 'confirmed') + '; the squadmate carries a Ward (' + JSON.stringify(m.shields || []) + ')', !r && (m.shields || []).some((l) => l.layer === 'ward' && l.by === u.id && l.n > 0));
 ok('Ward was the turn\'s Whisper (its slot is spent: ' + JSON.stringify(Object.keys(u.uses || {}).filter((k) => k.startsWith('faith#'))) + ')', Object.keys(u.uses || {}).some((k) => k.startsWith('faith#whisper')));
 
-// ---------- 3. Infiltrator: Vanish, Field Fix, Rig, Sabotage ----------
+// ---------- 3. Infiltrator: Vanish, Rig, Sabotage (rank II since rules 1.32) ----------
 await setClass('infiltrator', 3);
 ok('host turn', await newTurn());
 // Vanish: no enemy on the field (a cleared field) sees anyone.
@@ -181,18 +181,7 @@ r = await useMove(/^Vanish/);
 u = await me();
 ok('Vanish: Hidden (' + (r || 'confirmed') + ')', !r && !!u.hidden);
 ok('next to the squadmate', await mateNear(1));
-// Field Fix: the squadmate's gun jams (set up by hand), the chip clears it.
-await host.evaluate((id) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.charId === id); x.jammed = true; }, maiChar);
-m = await mate();
-await dismissCut(); await pickClass(/^Field Fix/); await tok(m.pos).click(); await settle(host, 200);
-const chips = await host.locator('.phc-cb-pick button').allTextContents();
-ok('Field Fix offers its three jobs, the ones that don\'t apply greyed with a reason: ' + chips.join(' | '), chips.length === 3 && /Restore durability · /.test(chips.join('|')) && !/Clear the jam ·/.test(chips.join('|')));
-const greyed = await host.locator('.phc-cb-pick button[disabled]').count();
-ok('the greyed chips are disabled (' + greyed + ')', greyed >= 1);
-await snap('04-field-fix-picker');
-r = await useMove(/^Field Fix/, { target: m.pos, chip: /^Clear the jam/ });
-m = await mate();
-ok('Field Fix cleared the jam: ' + (r || 'confirmed'), !r && !m.jammed);
+// (Field Fix left the Operative in rules 1.32: the Rigger's step (8) brings its picker check back.)
 ok('host turn', await newTurn());
 n0 = await fxN();
 r = await useMove(/^Sabotage: rig your tile/);
@@ -257,6 +246,7 @@ await settle(host, 300); await snap('08-sleight');
 // ---------- 5. Bard: Rally ----------
 await act(host, { type: 'sandbox/clear' });
 await setClass('bard', 3);
+await act(host, { type: 'sandbox/give', charId: hostChar, item: 'attuner', equip: true }); // rules 1.33: Rally is Tending, through the Attuner
 ok('host turn', await newTurn());
 ok('squadmate within 4', await mateNear(3));
 n0 = await fxN();

@@ -181,11 +181,12 @@ export async function pause(page, ms) {
 export const watch = (page, name, sel) => page.evaluate(({ name, sel }) => {
   const W = (window.__e2eWatch ||= {}); if (W[name]) W[name].mo.disconnect();
   const w = (W[name] = { up: null, down: null, mo: null });
-  const look = () => { const on = !!document.querySelector(sel), now = performance.now(); if (on && w.up == null) w.up = now; else if (!on && w.up != null && w.down == null) w.down = now; };
+  // (border: the element's border colour when it first showed, for a check that reads it after a short-lived effect has gone)
+  const look = () => { const el = document.querySelector(sel), on = !!el, now = performance.now(); if (on && w.up == null) { w.up = now; w.border = getComputedStyle(el).borderTopColor; } else if (!on && w.up != null && w.down == null) w.down = now; };
   w.mo = new MutationObserver(look); w.mo.observe(document.documentElement, { childList: true, subtree: true, attributes: true }); look();
 }, { name, sel });
 /** What watch() saw: { up, down, ms (how long it was on the page; null while it still is, or never was), now }. */
-export const watched = (page, name) => page.evaluate((name) => { const w = window.__e2eWatch?.[name]; return w ? { up: w.up, down: w.down, now: performance.now(), ms: w.up != null && w.down != null ? Math.round(w.down - w.up) : null } : null; }, name);
+export const watched = (page, name) => page.evaluate((name) => { const w = window.__e2eWatch?.[name]; return w ? { up: w.up, down: w.down, border: w.border, now: performance.now(), ms: w.up != null && w.down != null ? Math.round(w.down - w.up) : null } : null; }, name);
 /** Wait until what watch() watches has come and gone (or `timeout`), and return watched(). */
 export async function watchedGone(page, name, timeout = 30000) { await page.waitForFunction((name) => { const w = window.__e2eWatch?.[name]; return !!w && w.down != null; }, name, { timeout }).catch(() => {}); return watched(page, name); }
 /** Start recording the effects layer's own trace (apps/web/src/game/fx/dom.ts trace()): what was drawn and heard, with

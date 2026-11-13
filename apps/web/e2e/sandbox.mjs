@@ -3,7 +3,7 @@
 // tools, gear up between waves, cast a Sigil, lose on purpose and Retry, then leave back to the room (not the title),
 // and never call a Narrator (no provider host is contacted, the Narrator is never busy).
 // Screenshots land in e2e/shots/sandbox-*.png.
-import { chromium, player, click, pickAction, BASE, OUT, autoConfirm, settle, tipOf } from './lib.mjs';
+import { chromium, player, click, pickAction, BASE, OUT, autoConfirm, settle, tipOf, watch } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -101,10 +101,14 @@ await settle(p, 200);
 // 3. Start the fight by clicking a drill unit on the mini map
 g = await G();
 const target = g.story.npcs[0];
+// the WAVE 1 banner is short-lived: watch for it from before the click (a loaded machine may show and clear it while
+// the screen changes), then judge what the watcher saw
+await watch(p, 'wave1', 'div[aria-live="polite"]');
+await p.evaluate(() => { const W = window.__e2eWatch.wave1; W.mo.disconnect(); const look = () => { const el = [...document.querySelectorAll('div[aria-live="polite"]')].find((d) => /WAVE\s*1/.test(d.textContent || '')); if (el && W.up == null) W.up = performance.now(); }; W.up = null; W.mo = new MutationObserver(look); W.mo.observe(document.documentElement, { childList: true, subtree: true, characterData: true }); look(); });
 await p.locator('.phc-mini button.phc-tok[aria-label^="' + ref(target.pos) + ': "]').first().click();
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 }).then(() => ok('a click on a drill unit starts the fight', true), () => ok('a click on a drill unit starts the fight', false));
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
-await p.waitForSelector('div[aria-live="polite"] >> text=/WAVE\\s*1/', { timeout: 30000 }).then(() => ok('the WAVE 1 banner', true), () => ok('the WAVE 1 banner', false));
+await p.waitForFunction(() => window.__e2eWatch?.wave1?.up != null, null, { timeout: 30000 }).then(() => ok('the WAVE 1 banner', true), () => ok('the WAVE 1 banner', false));
 g = await G();
 ok('wave 1 is on: ' + (await p.evaluate(() => window.__phc.truth().combat.units.filter((u) => u.side === 'foe').length)) + ' drill units, ' + g.combat.name, g.sandbox.state === 'fighting' && g.combat.name === 'Proving Ground · Wave 1');
 ok('the gear came into the fight: ' + g.combat.units.find((u) => u.charId === me.id).weapon, g.combat.units.find((u) => u.charId === me.id).weapon === 'drifter_revolver');

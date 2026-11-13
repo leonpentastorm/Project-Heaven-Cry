@@ -120,25 +120,31 @@ register({
 });
 
 // ---------- Called Shot ----------
-// 3 AP, at will: a single shot at −2 with any gun or bow (PROVISIONAL, audit 4-5: not melee or thrown; not an Aimed
-// shot). choice: head, arm (left/right: 'arm' hits the target's main hand, or 'arm:left') or leg. On a hit the named
+// 3 AP, at will (the Operative's rank III since rules 1.32): with any weapon (weapon-neutral): a shot with a gun or a
+// bow, a throw with a thrown weapon, a strike in reach with a melee weapon (its plain mode); never an Aimed shot.
+// choice: head, arm (left/right: 'arm' hits the target's main hand, or 'arm:left') or leg. −2 to hit (the data's
+// attack_mod), and none while the target can't see you (it can't see your tile, or you are Hidden). On a hit the named
 // injury applies without a critical, but the target's Injury resistance still rolls (PROVISIONAL, audit 2). Story: a
 // disabling shot in a standoff is the Narrator's to call; the engine rolls it.
+/** The plain mode of the weapon in hand: a strike with a melee weapon, a throw with a thrown one, else a shot. */
+const plainMode = (u: Unit): 'melee' | 'thrown' | 'shot' => { const w = W(u); return !w ? 'melee' : isMelee(w) ? 'melee' : w.category === 'thrown' ? 'thrown' : 'shot'; };
+/** Called Shot's step to hit: the data's (−2), none while the target can't see you (rules 1.32). */
+const calledStep = (h: Holder, u: Unit, t: Unit): number => (u.hidden || !unitSees(h.cb!, t, u.pos) ? 0 : (((h.info.effects || []).find((e: any) => e?.op === 'attack_mod' && e.context === 'called_shot') as any)?.value ?? -2));
 register({
   id: 'gunslinger.called_shot', claims: 'all',
   actions: [
     { id: 'called_shot', label: 'Called Shot', pick: ['head', 'arm', 'leg'], pickLabel: 'Head, arm or leg', scope: ['combat', 'world'], ap: 'data', target: 'enemy',
-      text: 'Name the head, an arm or a leg and shoot at −2 to hit. A head hit leaves the target Dazed, an arm hit gives −2 to attacks with that arm, and a leg hit halves its Movement. The target still rolls to resist the injury.',
-      available: (h) => (!h.u ? false : !isRanged(h.u) ? 'Needs a gun or a bow.' : true),
+      text: 'With any weapon, name the head, an arm or a leg and attack at −2 to hit (no −2 while the target can\'t see you). A head hit leaves the target Dazed, an arm hit gives −2 to attacks with that arm, and a leg hit halves its Movement. The target still rolls to resist the injury.',
+      available: (h) => (!h.u ? false : true),
       preview: (h, a) => {
         const loc = String(a.choice || '').split(':')[0]; if (!['head', 'arm', 'leg'].includes(loc)) return { ok: false, why: 'Name head, arm or leg.' };
         const t = unitById(h.cb!, a.targetId); if (!t) return {};
-        const pv = withTerm(h.u!, -2, 'Called Shot', () => previewAttack(h.cb!, h.u!, t, 'shot', { free: true }));
-        return pv.ok ? { lines: ['Called shot at the ' + loc + ': ' + pv.pct + '% to hit.'] } : { ok: false, why: pv.why };
+        const pv = withTerm(h.u!, calledStep(h, h.u!, t), 'Called Shot', () => previewAttack(h.cb!, h.u!, t, plainMode(h.u!), { free: true }));
+        return pv.ok ? { lines: ['Called ' + (plainMode(h.u!) === 'melee' ? 'strike' : plainMode(h.u!) === 'thrown' ? 'throw' : 'shot') + ' at the ' + loc + ': ' + pv.pct + '% to hit.'] } : { ok: false, why: pv.why };
       },
       run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, [loc, side] = String(a.choice).split(':');
-        const r = withTerm(u, -2, 'Called Shot', () => resolveAttack(cb, rng, u, t, 'shot', null, { free: true, fx: { move: 'gunslinger.called_shot' } }));
+        const r = withTerm(u, calledStep(h, u, t), 'Called Shot', () => resolveAttack(cb, rng, u, t, plainMode(u), null, { free: true, fx: { move: 'gunslinger.called_shot' } }));
         if (r.refused) return r.refused;
         if (r.hit && !t.dead && !t.surrendered) say(cb, t.name + rollInjury(rng, t, cb, u, { loc: loc === 'head' || loc === 'arm' ? loc : 'leg', side }) + '.'); // the one injury table (combat.ts), with the place named
         checkOver(cb); return null;

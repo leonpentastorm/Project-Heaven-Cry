@@ -54,7 +54,8 @@ const now = () => {
 /** The items written in data only by engine foundations 3 (no handler; the runner owns every effect). */
 export const DATA_ONLY = ['trait:pain_eater', 'trait:right_of_way', 'perk:siege_engine', 'perk:hot_swap', 'perk:last_wall', 'perk:used_to_the_pain',
   'class:adamantile_knight.unbroken', 'class:mage.core_change', 'class:marksman.speed_loader', 'class:mage.barrage', 'class:trickster.blind_and_slow',
-  'class:marksman.run_and_gun', 'class:marksman.reflex', 'class:fighter.riposte']; // rules 1.30
+  'class:marksman.run_and_gun', 'class:marksman.reflex', 'class:fighter.riposte', // rules 1.30
+  'class:infiltrator.tradecraft']; // rules 1.32 (Shadow; Vanish is a data action, its grant_action owned by the action door)
 
 describe('item ops: the ratchet on lane handlers', () => {
   const cur = now();

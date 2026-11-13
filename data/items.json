@@ -79,7 +79,12 @@
       "provisional": true,
       "text": "Holds one mana core; the focus for Sigil magic.",
       "slot": "off_hand",
-      "price_credits": 1000
+      "price_credits": 1000,
+      "focus": {
+        "door": "brain_power",
+        "hand": "one",
+        "fuel": "core"
+      }
     },
     {
       "id": "standard_core",
@@ -130,7 +135,29 @@
       "provisional": true,
       "text": "The heart link; the focus for Soul magic.",
       "slot": "off_hand",
-      "price_credits": 1000
+      "price_credits": 1000,
+      "focus": {
+        "door": "will_power",
+        "hand": "one",
+        "fuel": "mp"
+      }
+    },
+    {
+      "id": "attuner",
+      "name": "Attuner",
+      "category": "focus",
+      "slot": "off_hand",
+      "hands": "1H",
+      "focus": {
+        "door": "empathy",
+        "hand": "one",
+        "fuel": "mp"
+      },
+      "weight_kg": 0.4,
+      "price_credits": 1000,
+      "text": "The standard glove for Bonds and Tending: a heart that threads you to the people around you.",
+      "adjudication": "engine",
+      "provisional": true
     },
     {
       "id": "prayer_beads",

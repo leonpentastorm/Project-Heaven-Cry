@@ -41,12 +41,7 @@ describe('pickers for the new moves (buttons only)', () => {
     expect(P.fields[0].kind).toBe('chips'); expect((P.fields[0] as any).options.map((o: any) => o.label)).toEqual(['Push 1 tile', 'Knock Prone']);
     expect(buildArgs(P, {}, ctx(f, u))).toMatch(/^Pick push it back/);
     expect(buildArgs(P, { choice: ['prone'] }, ctx(f, u))).toEqual({ choice: 'prone' });
-    const g = fightWith([cls('infiltrator', 5), {}], [{}]);
-    const w = g.turn(g.pcs[0]), ff = entries(g, w).find((x) => x.actionId === 'field_fix')!;
-    const F = pickerFor(ff, ctx(g, w))!;
-    expect((F.fields[0] as any).options.map((o: any) => o.id)).toEqual(['clear_jam', 'restore_durability', 'repair_machine']);
-    expect(buildArgs(F, {}, ctx(g, w))).toEqual({});
-    expect(buildArgs(F, { choice: ['clear_jam'] }, ctx(g, w))).toEqual({ choice: 'clear_jam' });
+    // Field Fix left the Operative (rules 1.32): its picker check comes back with the Rigger's step (8)
   });
   it('Sabotage, False Image, Sleight, Silver Tongue, Rally, Vanish, Unstoppable, Eye of the Storm and the toggles: the grid target or a plain button', () => {
     const plain = ['sabotage', 'sabotage_object', 'rig', 'false_image', 'sleight', 'sleight_image', 'silver_tongue', 'rally', 'vanish', 'unstoppable', 'eye_of_the_storm', 'shrug_on', 'shrug_off', 'duck_on', 'duck_off'];

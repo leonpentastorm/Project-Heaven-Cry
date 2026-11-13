@@ -6,9 +6,9 @@ import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, W
 import {
   type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
-  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
+  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { say, type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
+import { say, type Combat, type Unit, alwaysSeen, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
@@ -70,7 +70,7 @@ export function zonesAt(cb: Combat, tile: string, kind: string, owner: 'self' | 
 export function endZones(cb: Combat, pick: (z: Zone) => boolean): number { const was = (cb.zones || []).length; cb.zones = (cb.zones || []).filter((z) => !pick(z)); return was - cb.zones.length; }
 /** A unit's magic: what it knows and carries, and its running state. */
 export interface MagicUnit {
-  words: string[]; designs: OutburstDesign[]; evoker: boolean; emanator: boolean;
+  words: string[]; designs: OutburstDesign[]; evoker: boolean; emanator: boolean; /** Rules 1.33: an Attuner in a hand (Bonds and Tending; MP is spent and given through it: the mp row's needs). Absent: none. */ attuner?: boolean;
   charge: number; cores: number; coresMade: number; flux: number; lockRound?: number;
   mp: number; mpMax: number; strain: number; held: HeldOutburst | null;
   /** Rules 1.5: this turn the heart was worked (Begin, Pump or Feed; class casts set it too): no stillness at the turn's end. */
@@ -155,10 +155,10 @@ export function noteDeaths(cb: Combat, rng?: Rng) {
 // ---------- units ----------
 export function magicOf(c: Character): MagicUnit | undefined {
   // A focus counts only in a hand (spec: Hands 2; item 630); one in the pack keeps its charge or MP for later.
-  const words = [...new Set([...(c.sigils || []), ...itemWords(c)])], designs = c.outbursts || [], evoker = hasEvoker(c), emanator = hasEmanator(c);
-  if (!words.length && !designs.length && !carriesEvoker(c) && !carriesEmanator(c)) return undefined;
+  const words = [...new Set([...(c.sigils || []), ...itemWords(c)])], designs = c.outbursts || [], evoker = hasEvoker(c), emanator = hasEmanator(c), attuner = hasAttuner(c);
+  if (!words.length && !designs.length && !carriesEvoker(c) && !carriesEmanator(c) && !carriesMpFocus(c)) return undefined;
   return {
-    words: [...words], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker, emanator, feelings: [...(c.feelings || [])],
+    words: [...words], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker, emanator, ...(attuner ? { attuner } : {}), feelings: [...(c.feelings || [])],
     charge: evoChargeNow(c), cores: coresCarried(c), coresMade: 0, flux: 0, mp: mpNow(c), mpMax: maxMp(c), strain: 0, held: null, cast: false, freePumps: freePumps(c), freePumpsMax: freePumps(c), freeUsed: 0, swellFree: swellFree(c),
     brain: mod(c.skills.brain_power || 0), will: mod(c.skills.will_power || 0), sigilMult: sigilMult(c), soulMult: soulMult(c), sigilBoon: statOf('sigil_mend', c), soulBoon: statOf('soul_mend', c), soulBase: SOUL_DAMAGE, mend: mendFactor(c.level), deal: levelFactor('deal', c.level), elemMult: elementalMult(c), healMult: healingMult(c),
     maxWords: maxSigilWords(c), glyphAp: glyphAp(c), coreSave: sigilCoreSaving(c), rangeBonus: sigilRangeBonus(c), durBonus: sigilDurationBonus(c),
@@ -173,7 +173,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
 export function magicToCharacter(c: Character, u: Unit) {
   const m = u.mg; if (!m) return;
   // What the focus stores goes home with it, held or carried (a focus put away mid-fight keeps its charge and MP).
-  if (m.emanator || carriesEmanator(c)) c.mp = Math.max(0, Math.min(m.mpMax, Math.round(m.mp)));
+  if (m.emanator || m.attuner || carriesMpFocus(c)) c.mp = Math.max(0, Math.min(m.mpMax, Math.round(m.mp)));
   if (m.evoker || carriesEvoker(c)) c.evoCharge = m.charge;
   const had = coresCarried(c), want = m.cores + m.coresMade;
   if (want !== had) {
@@ -257,6 +257,14 @@ export function saveAgainst(cb: Combat, rng: Rng, by: Unit | null, target: Unit,
 }
 /** Does the unit have this condition now? */
 export const condOn = (u: Unit, id: string) => !!(u.conds && u.conds[condId(id)] > 0);
+/** Has the unit this condition, a flag one included (Hidden is u.hidden, Prone u.prone, Bleeding u.bleed, Dazed
+ * u.dazedNext: they are kept on the unit, not in u.conds)? The item ops' predicates `<who>_has` / `_lacks` and op
+ * `cleanse` ask this (rules 1.32: Shadow's "from Hidden"). */
+export const condHas = (u: Unit, id: string): boolean => {
+  const k = condId(id);
+  if (k === 'hidden') return !!u.hidden; if (k === 'prone') return !!u.prone; if (k === 'bleeding') return (u.bleed || 0) > 0; if (k === 'dazed') return (u.dazedNext || 0) > 0;
+  return condOn(u, k);
+};
 /** Who put a condition on a unit (its unit id), if anyone. */
 export const condSource = (u: Unit, id: string): string | null => (condOn(u, id) && u.condBy?.[condId(id)]) || null;
 /** The order or variant a condition carries (Commanded's order). */
@@ -377,7 +385,7 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, def: CondDef, 
   if (id === 'dazed') { rawDazed(t, 1); landed(cb, opts, { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
   if (id === 'prone') { rawProne(t, true); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
   if (id === 'bleeding') { rawBleed(t, Math.max(t.bleed || 0, ca.rounds || def.rounds)); if (by) t.lastHitBy = by.id; landed(cb, opts, { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
-  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; if (t.hidden) return ''; rawHidden(cb, t, true, { entry: !opts.sameEntry }); (cb.sightWhy ||= {})[t.id] = 'hide'; landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is Hidden'; }
+  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; if (alwaysSeen(cb, t)) return ' · ' + t.name + ' can\'t hide: the enemy knows where they are'; if (t.hidden) return ''; rawHidden(cb, t, true, { entry: !opts.sameEntry }); (cb.sightWhy ||= {})[t.id] = 'hide'; landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is Hidden'; }
   if (id === 'injured') { const inj = rollInjury(rng, t, cb, by); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return inj; }
   return '';
 }
@@ -1048,7 +1056,7 @@ export function pumpOutburst(cb: Combat, rng: Rng, u: Unit, feeling?: string | n
   if (paid > 0) { m.mp -= paid; rec.mp = paid; h.pumpMp = (h.pumpMp || 0) + paid; }
   const f = feeling ? FEELING[feeling] : null, mult = heldMult(cb, u, h);
   emitFx(cb, 'pump', { unit: u.id, at: u.pos, stage: h.stage, mult, free: pv.free, max: h.stage >= MAX_STAGE, tone: h.tone || 'raw', ...(paid ? { mp: paid } : {}), ...(f ? { feeling: f.id, family: f.family, step: pv.step, does: feelingWord(d, f.id) } : {}) });
-  say(cb, u.name + ' pumps the heart' + (f ? ' with ' + f.name : '') + ': ' + d.name + ' at stage ' + h.stage + ' (×' + mult + ')' + (pv.freeKind === 'first' ? ', the fight\'s free first Pump' : pv.freeKind === 'empathy' ? ', a free Pump (Empathy)' : pv.free ? ', a free Pump' : '') + (paid ? ', ' + paid + ' MP' : '') + '.');
+  say(cb, u.name + ' pumps the heart' + (f ? ' with ' + f.name : '') + ': ' + d.name + ' at stage ' + h.stage + ' (×' + mult + ')' + (pv.freeKind === 'first' ? ', the fight\'s free first Pump' : pv.freeKind === 'empathy' ? ', a free Pump (Will Power)' : pv.free ? ', a free Pump' : '') + (paid ? ', ' + paid + ' MP' : '') + '.');
   (m.pumps ||= []).push(rec);
   // A feeling's own Strain (Rage +1, Abandon +2), with the hold's (Quiet halves it).
   const fs = Number((f?.pour as any)?.strain || 0);
@@ -1639,7 +1647,7 @@ function heartTurnStart(cb: Combat, rng: Rng, u: Unit) {
   else {
     if (h.stage < MAX_STAGE) { h.stage++; emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: h.stage, mult: stageMult(h.stage), tone: h.tone || 'raw' }); say(cb, u.name + "'s held Outburst swells to stage " + h.stage + ' (×' + stageMult(h.stage) + ').'); }
     // 'outburst_hold' {u, strain} (mutable): the Strain of holding one more turn (hooks gap D7).
-    // Rules 1.19: from Empathy 7 a swell adds no Strain.
+    // Rules 1.19: from Will Power 7 a swell adds no Strain (rules 1.33; it was Empathy's).
     const oh: any = emit(cb, 'outburst_hold', { u, strain: m.swellFree ? 0 : flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.swell_strain ?? 1, cb });
     if (oh.strain > 0) { const r = holdStrain(cb, rng, u, oh.strain, 'holding'); if (h.paid != null) h.paid += r.added; }
   }
