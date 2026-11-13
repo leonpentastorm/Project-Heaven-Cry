@@ -52,6 +52,8 @@ renamed (Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Chan
    it for the three new systems or the reaction rule. If a spec is wrong or silent, do not invent: take the
    conservative reading, write it under "Calls made for Leon" in section 6, and go on.
 
+**The watchdog (Leon, 13 Nov: "set up checkers to make sure they push their WIP branch and don't time out without us knowing").** While builders run, keep `tools/agent_watch.sh` running in the background: every five minutes it pushes each unmerged worktree branch to `wip/<branch>` on the remote, and it EXITS with a line (which wakes the session) when a worktree has shown no commit, no changed file and no test log for 40 minutes, or disk falls under 7 GB. On a STALL line: look at that worktree (`git -C <path> status`, its last commit, `ps` for its tests); if its agent is dead, its work is on `wip/`: start a new builder that fast-forwards to that branch and finishes the step (as was done for the hover-card work on 13 Nov). It runs just under two hours: re-arm it. Leon's instruction for the build: about three builders in parallel, the whole patch ready before he tests, target six hours from 13 Nov afternoon.
+
 ## 4. The build, in order (tick as you go)
 
 Each step: a builder agent with the brief of section 5; then the checks; then merge.
