@@ -14,7 +14,7 @@ import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {
   CLASS, CLASS_MOVE_POOL, WHISPER, FAITH_PATRON, ATHEIST_TN, HYMN_FAITH, WHISPER_FAITH, condOn, condSource, applyDamage, resolveAttack, d20, hymnWait,
-  setDevotionXp, devotionThreshold, blessingPower, itemInfo, statQuery, previewPrayer, amountBlock, profileOf, mendFactorOf, zonesAt, perkActionsFor,
+  setDevotionXp, devotionThreshold, blessingPower, itemInfo, statQuery, previewPrayer, amountBlock, profileOf, mendFactorOf, zonesAt, perkActionsFor, prayerAnswered,
   type Unit, type Character, type Action,
 } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -30,7 +30,7 @@ type Opt = { patron?: string | null; faith?: number; virtue?: number; devotion?:
 /** A Chaplain (Virtue 8: rank III; Faith 6) and two allies against two soldiers, on the Chaplain's turn. */
 function chap(o: Opt = {}) {
   const spec: CharSpec = { name: 'Chaplain', skills: { faith: o.faith ?? 6 }, attrs: { virtue: o.virtue ?? 8 }, level: o.level ?? 12, ...(o.cls === false ? {} : { classId: 'guardian' }), ...(o.weapon ? { weapon: o.weapon } : {}) };
-  const f = fightWith([spec, { name: 'Medic' }, { name: 'Gunner' }], [{ at: 'F6' }, { at: 'G6' }]);
+  const f = fightWith([spec, { name: 'Medic' }, { name: 'Gunner' }], [{ at: 'F6' }, { at: 'G6' }], { level: o.level ?? 12 });
   const c = f.g.characters[f.pc.charId!];
   if (o.patron === null) { c.belief = { kind: 'atheist' }; c.patron = null; c.devotion = 0; }
   else { const p = o.patron || 'old_overcast'; c.belief = { kind: 'faithful', patron: p }; c.patron = p; setDevotionXp(c, devotionThreshold(o.devotion ?? 6)); c.devotion = o.devotion ?? 6; }
@@ -142,7 +142,7 @@ describe('rule 5: Sanctuary', () => {
   it('its cap: 11 × Blessing power (heal dial, level) prevented in all, then it ends', () => {
     const h = chap(); sanct(h, '2,5'); const z = zonesAt(h.cb, '2,6', 'sanctuary', 'any')[0], cap = z.pool!;
     const b = amountBlock('class:guardian.sanctuary', 'sanctuary_cap'); expect(b.base).toBe(SANCT.amounts.sanctuary_cap.base);
-    expect(cap).toBe(Math.round(b.base * profileOf('blessing_mend').k / profileOf('blessing').k * power(h) * mendFactorOf(h.me)) || cap);
+    expect(Math.abs(cap - b.base * profileOf('blessing_mend').k / profileOf('blessing').k * power(h) * mendFactorOf(h.me))).toBeLessThanOrEqual(0.5);
     h.bound(() => applyDamage(h.cb, h.a1, 4 * cap, { by: h.foe, type: 'weapon', shield: true, credit: 'hp' } as any));
     expect(zonesAt(h.cb, '2,6', 'sanctuary', 'any').length).toBe(0);
   });
@@ -174,12 +174,16 @@ describe('rules 6, 7 and 9: Smite and Judged', () => {
   });
   it('Old Overcast\'s Smite is lightning (the storm tag); the Toll-Keeper\'s never takes the last HP', () => {
     const h = chap({ patron: 'old_overcast' }); h.seed(15, 15); h.shoot(h.foe); expect(h.c.devotionXp).toBeGreaterThan(devotionThreshold(6)); // storm, a liked tag
-    const t = chap({ patron: 'toll_keeper' }); t.foe.hp = 2; t.seed(15, 15); t.shoot(t.foe);
-    expect(t.foe.dead).toBeFalsy();
+    // the Toll-Keeper's: the shot leaves 1 HP (armour stops all but 1), the Smite that would kill subdues instead
+    const t = chap({ patron: 'toll_keeper' }); t.foe.hp = 2; t.foe.armour = 999; t.seed(15, 15); t.shoot(t.foe);
+    expect(t.cb.log.some((l) => /Smite/.test(l))).toBe(true); expect(t.foe.dead).toBeFalsy(); expect(t.foe.surrendered).toBe(true);
   });
-  it('an Atheist rolls the Whisper TN for it: a miss leaves it for a later hit', () => {
-    const h = chap({ patron: null }); h.seed(15, 15, 1, 15, 15, 20); h.shoot(h.foe);
+  it('an Atheist rolls the Whisper TN for it (prayerAnswered): a miss says so and leaves it unspent', () => {
+    const h = chap({ patron: null });
+    h.bound(() => { h.g.rng.state = rngFor(1); expect(prayerAnswered(h.cb, h.g.rng, h.me, false)).toBe(false); h.g.rng.state = rngFor(20); expect(prayerAnswered(h.cb, h.g.rng, h.me, false)).toBe(true); });
     expect(h.cb.log.some((l) => /no answer/.test(l))).toBe(true);
+    const z = chap({ faith: 0 }); expect(z.bound(() => prayerAnswered(z.cb, z.g.rng, z.me, false))).toBe(false); // the prayer door shut: Faith 0
+    const s = chap(); s.me.conds = { silenced: 2 } as any; expect(s.bound(() => prayerAnswered(s.cb, s.g.rng, s.me, false))).toBe(false); // Silenced
   });
 });
 

@@ -121,6 +121,7 @@ const byHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].in
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 /** The patron ids (data/patrons.json): the words predicate `patron` takes. */
 const PATRON_IDS: string[] = ((patronsJ as any).items || []).map((p: any) => p.id);
+const PATRON_NAME: Record<string, string> = Object.fromEntries(((patronsJ as any).items || []).map((p: any) => [p.id, p.name]));
 const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.flags || {};
 
 // ============================================================================================== the predicates
@@ -248,6 +249,7 @@ function withNumbers(ev: Ev, x: any): any {
  * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
 function fill(s: string, ev: Ev): string {
   return s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '').replace(/\{source\}/g, () => ev.h.source?.name || '')
+  .replace(/\{patron\}/g, () => PATRON_NAME[patronIdOf(ev.h.c || charOfUnit(ev.self)) || ''] || 'the patron') // rules 1.31: the holder's patron (Smite's line)
   .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
 }
 
@@ -333,8 +335,10 @@ O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this m
 O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
   const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: b.element || type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
-  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
+  let sent = 0;
+  const go = () => { sent = deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }).sent; };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
+  return ': ' + sent; // what reached the target, for a `say` with {then}
 });
 O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
@@ -350,7 +354,7 @@ O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a
   const at: string | null = e.at === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? null : (e.at === 'target' ? ev.target : ev.self)?.pos ?? null; if (!at) return false;
   // pool: a number, or (Classes 3.0 step 5, rules 1.31: Sanctuary's cap) the name of the item's amount block, worked out now
   const pb = typeof e.pool === 'string' ? blockOf(ev.h, { amount: e.pool }) : null;
-  const pool = typeof e.pool === 'number' ? e.pool : pb ? amountOf(specOf(pb), ev.self, { who: ev.h.c || null, counts: countsOf(ev, pb) }).amount : null;
+  const pool = typeof e.pool === 'number' ? e.pool : pb ? amountOf({ ...specOf(pb), round: 'round' }, ev.self, { who: ev.h.c || null, counts: countsOf(ev, pb) }).amount : null;
   makeZone(ev.cb, ev.self, { kind: e.kind, tiles: tilesAround(at, e.within ?? 0), rounds: typeof e.rounds === 'number' ? e.rounds : 1, ...(pool != null ? { pool } : {}) });
 });
 O('tie', ANY, true, ['kind', 'clear'], 'tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder\'s cap: nothing said); clear: "target" ends the holder\'s ties of that kind to the target, "all" every one of that kind it holds', (ev, e) => {

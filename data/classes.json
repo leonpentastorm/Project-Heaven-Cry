@@ -1390,7 +1390,7 @@
                   "provisional": true
                 }
               },
-              "text": "Once a turn, on your turn, when an attack with your weapon hits an enemy that still stands (a shot, a strike, a throw, two weapons at once, a focus's own attack), your patron strikes it too: {=amounts.smite.base} × your Blessing power Soul damage, with no roll, through armour (Old Overcast's is lightning). The attack's technique, a critical, Verdict and ammunition don't multiply it. A hit that kills leaves it for a later hit that turn; it never rides a reaction or an opportunity attack. It counts as a prayer for what your patron likes and for your vows, but it is not a Whisper. For the Toll-Keeper and the Matchmaker it never takes a target's last HP. An Atheist rolls the Whisper's TN for it on each hit, and a miss leaves it for a later hit. The enemy your weapon hits on your turn is Judged until its next turn ends.",
+              "text": "Once a turn, on your turn, when an attack with your weapon hits an enemy that still stands (a shot, a strike, a throw, two weapons at once, a focus's own attack), your patron strikes it too: {=amounts.smite.base} × your Blessing power Soul damage, with no roll, through armour (Old Overcast's is lightning). The attack's technique, a critical, Verdict and ammunition don't multiply it. A hit that kills leaves it for a later hit that turn; it never rides a reaction or an opportunity attack. It counts as a prayer for what your patron likes and for your vows, but it is not a Whisper. For the Toll-Keeper and the Matchmaker it never kills: a Smite that would take the last HP subdues instead. An Atheist rolls the Whisper's TN for it on each hit, and a miss leaves it for a later hit. The enemy your weapon hits on your turn is Judged until its next turn ends.",
               "effects": [
                 {
                   "op": "deal",
@@ -1414,7 +1414,8 @@
                     "per": "per_turn",
                     "n": 1,
                     "key": "smite"
-                  }
+                  },
+                  "say": "{patron} smites {target} (Smite){then}."
                 },
                 {
                   "op": "deal",
@@ -1438,7 +1439,8 @@
                     "per": "per_turn",
                     "n": 1,
                     "key": "smite"
-                  }
+                  },
+                  "say": "{patron} smites {target} (Smite){then}."
                 },
                 {
                   "op": "deal",
@@ -1460,7 +1462,8 @@
                     "per": "per_turn",
                     "n": 1,
                     "key": "smite"
-                  }
+                  },
+                  "say": "{patron} smites {target} (Smite){then}."
                 },
                 {
                   "op": "condition",
