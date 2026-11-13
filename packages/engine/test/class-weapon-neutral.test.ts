@@ -35,16 +35,16 @@ const DOOR: Record<string, Allow> = {
   'class:marksman.killzone': { code: 2, why: 'any weapon holds: a melee weapon holds strikes at its reach (a branch, not a refusal); an aimed hold needs a weapon that aims (the Aimed technique)' },
   'class:marksman.duck_and_roll': { words: ['ranged'], code: 1, why: 'it answers an enemy\'s ranged attack at you (the incoming attack)' },
   'class:infiltrator.field_fix': { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' },
+  // The Chaplain's step (rules 1.31): Verdict takes any weapon; the one family read left picks the weapon's plain attack
+  // (a strike with a melee weapon, a throw with a thrown one, else a shot): a branch, never a lock.
+  'class:lumeri_templar.blessed_shells': { words: ['round', 'arrow', 'edge', 'thrown', 'blade'], why: 'Blessed Arms (rules 1.31): the text names every form a weapon takes (a round, an arrow, an edge, a thrown blade) so it reads as any weapon, as the audit 4.7 asks' },
+  'class:lumeri_templar.judgement': { code: 2, why: 'Verdict (rules 1.31): plainMode picks the weapon\'s own plain attack (isMelee, category thrown); every weapon may pass a Verdict' },
 };
 /** Locked today; fixed by another Classes 3.0 step. MUST shrink to empty before the patch ships. */
 const PENDING: Record<string, Allow> = {
   // Called Shot (`gunslinger.called_shot`) left the Skirmisher (rules 1.30) and is shelved until the Shadow step puts it
   // in the Operative: that step adds it back here if it is still locked (audit: a shot, a throw or a strike).
   'class:assassin.toxin': { words: ['gun', 'blade', 'dart', 'arrow', 'arrows', 'blades', 'darts', 'melee', 'thrown'], code: 3, why: 'Shadow step: coat any weapon; its family reads include the helper coatable (i.ts), which goes with the handler (P4)' },
-  // The Chaplain's step (chaplain-spec.md, audit 4.7)
-  'class:lumeri_templar.judgement': { words: ['melee', 'scattergun', 'shotgun'], code: 5, why: 'Chaplain step: Verdict, one attack with any weapon; the shotgun gate goes' },
-  // Blessed Shells is neutral in rule, text and code (any weapon hit releases it); its name, tag `guns` and story action
-  // say guns: the Chaplain step renames them (Blessed Arms, tag weapon). Nothing here guards a name or a tag.
 };
 const ALLOW = (key: string): Allow | undefined => DOOR[key] || PENDING[key];
 

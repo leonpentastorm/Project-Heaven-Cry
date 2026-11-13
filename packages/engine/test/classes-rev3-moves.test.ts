@@ -397,21 +397,6 @@ describe('Channeler', () => {
   });
 });
 
-// ======================================================================================================== GUARDIAN
-describe('Guardian', () => {
-  it('Command: a squadmate within 6 walks up to 2 tiles for no AP of theirs; Authority 0 or 3 tiles is refused', () => {
-    const f = fightWith([cls('guardian', 3, { skills: { authority: 1 } }), {}], [{ at: 'P11' }]);
-    const [g, a] = f.pcs; at(f, g, '2,2'); at(f, a, '4,2');
-    const ap0 = f.unit(a.id).ap; f.turn(g);
-    perk(f, f.unit(g.id), 'class:guardian.command', { targetId: a.id, tile: '6,2' });
-    expect(f.unit(a.id).pos).toBe('6,2'); expect(f.unit(a.id).ap).toBe(ap0); expect(f.unit(g.id).ap).toBe(5);
-    expect(fx(f, 'command_move').length).toBe(1);
-    f.turn(g);
-    expect(() => perk(f, f.unit(g.id), 'class:guardian.command', { targetId: a.id, tile: '9,2' })).toThrow(/They can move 2 tiles at most/);
-    const h = fightWith([cls('guardian', 3, { skills: { authority: 0 } }), {}], [{ at: 'P11' }]);
-    const [g2, a2] = h.pcs; at(h, a2, '4,2'); h.turn(g2);
-    expect(() => perk(h, h.unit(g2.id), 'class:guardian.command', { targetId: a2.id, tile: '5,2' })).toThrow(/Needs 1 point of Authority/);
-  });
-});
+// (the Guardian's Command left in rules 1.31: an order is Authority's Call; the Chaplain is test/chaplain.test.ts)
 
 void beginTurn;

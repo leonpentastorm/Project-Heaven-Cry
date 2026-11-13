@@ -130,6 +130,7 @@ const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.
 export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
 /** faith.ts lends the predicate `answered` its prayer door as it loads (this file can't import it: load order). */
 let ANSWERED: ((cb: Combat, rng: { state: number } | null, u: Unit, preview: boolean) => boolean) | null = null;
+/** faith.ts sets the door the predicate `answered` asks (prayerAnswered: Classes 3.0 step 5, the Chaplain). */
 export const setAnsweredDoor = (f: typeof ANSWERED) => { ANSWERED = f; };
 /** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
 const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {

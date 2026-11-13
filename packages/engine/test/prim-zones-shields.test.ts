@@ -36,7 +36,7 @@ describe('P10: zones from data', () => {
     });
   });
   it('Sanctuary is data now: its halving (rounded up), your own burn not halved, its end at your turn', () => {
-    expect(sanctuary.effects.map((x: any) => x.op)).toEqual(['damage_mult', 'damage_mult', 'zone']);
+    expect(sanctuary.effects.map((x: any) => x.op).filter((op: string) => op !== 'grant_action')).toEqual(['damage_mult', 'damage_mult', 'zone']); // (rules 1.31: laid by its Hymn, a grant's own effect)
     const g = opsFight({}), cb = g.combat, [u, al] = pcs(g), f = foes(g)[0];
     u.held = { perks: [], traits: [], cls: 'guardian', rank: 3, relics: [] }; // (the holder, as the reducer builds it)
     W(g, () => {

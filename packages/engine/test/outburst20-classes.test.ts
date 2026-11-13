@@ -3,7 +3,7 @@
 // combat/perk, combat/attack, combat/end-turn); enemy-side harm through the engine calls their turns use.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import { d20, designCost, manaOf, applyDamage, condOn, beginTurn, CLASS, stageMult, type Combat, type Unit, type OutburstDesign } from '../src';
+import { d20, grantShield, designCost, manaOf, applyDamage, condOn, beginTurn, CLASS, stageMult, type Combat, type Unit, type OutburstDesign } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
@@ -73,20 +73,11 @@ describe('Channeler: Heart Surge on a stage-4 heart and a snap (item 524)', () =
 
 // =================================================================================================== Guardian, Bard
 describe('Guardian and Bard under 1.5', () => {
-  it('Sanctuary: your own heart\'s burn isn\'t halved (item 525); another\'s harm is', () => {
-    const f = fightWith([cls('guardian', 3), {}], [{ at: 'P15' }]); clean(f);
-    const [gd, ally] = f.pcs; place(f, gd, '3,2'); place(f, ally, '4,2'); const u = f.turn(gd); u.ap = 9;
-    perk(f, f.unit(u.id), 'class:guardian.sanctuary', { tile: '3,2' });
-    const me = f.unit(gd.id); const hp = me.hp;
-    withGame(f.g, () => applyDamage(f.cb, me, 16, { type: 'strain', dmgType: 'true', shield: false, credit: 'none', nonlethal: true } as any));
-    expect(hp - f.unit(gd.id).hp).toBe(16);
-    const ah = f.unit(ally.id).hp; withGame(f.g, () => applyDamage(f.cb, f.unit(ally.id), 30, { by: f.foe, type: 'weapon', shield: true }));
-    expect(ah - f.unit(ally.id).hp).toBe(15);
-  });
+  // (Sanctuary is the Chaplain's Hymn since rules 1.31: its halving and the burn's exception are pinned in test/prim-zones-shields.test.ts and test/chaplain.test.ts)
   it('Drink It In: an elemental Outburst on your shield feeds its real MP price (not 10 a Sigil word)', () => {
     const f = fightWith([cls('guardian', 2), {}, SOUL], [{ at: 'P15' }]); clean(f);
     const [gd, ally, rogue] = f.pcs; place(f, gd, '3,3'); place(f, ally, '5,3'); place(f, rogue, '8,3');
-    const u = f.turn(gd); perk(f, f.unit(u.id), 'class:guardian.will_shield', { actionId: 'will_shield', targetId: ally.id });
+    const u = f.turn(gd); withGame(f.g, () => grantShield(f.cb, f.unit(ally.id), 30, f.unit(u.id))); // a shield the Guardian made (Will Shield left in rules 1.31)
     f.unit(ally.id).shield = 500; f.unit(gd.id).mg!.mp = 10; f.unit(rogue.id).side = 'foe';
     const r = f.turn(rogue); r.ap = 9; const d = give(f.unit(r.id), { tone: 'fire', modules: ['at_once'] }), cost = designCost(f.unit(r.id).mg!, f.unit(r.id).mg!.designs.find((x) => x.id === d)!, manaOf(f.cb));
     f.act({ type: 'combat/outburst', unitId: r.id, design: d, aim: '5,3' } as any, f.g.characters[rogue.charId!].owner);
