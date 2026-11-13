@@ -1,0 +1,146 @@
+[
+  {
+    "id": "M001",
+    "path": "art/maps/survival/ahoc-1.png",
+    "subject": "The outpost yard and gatehouse: walled compound seen from above; a gate in the south wall, a loading yard of packed gravel with crates and drums in two stacks (cover), a gatehouse and a guard shed on the left, a watchtower base on the right, a long barracks block across the north with two doors; lanes run left and right of a central parked cargo hauler.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M002",
+    "path": "art/maps/survival/ahoc-2.png",
+    "subject": "The corridor grid: a plan of ceramic-grey panelled corridors, four rooms around a central junction hall; each room has a door onto the hall and one back door; pipe runs and filing racks as cover inside the rooms, a bare 4 tile central hall with two pillars.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M003",
+    "path": "art/maps/survival/ahoc-3.png",
+    "subject": "The records vault: a large circular hall with a ring of dark machine banks and cabinets as cover around a bare central floor, four entrances at the compass points, a raised catwalk platform in the north, and two side alcoves.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M004",
+    "path": "art/maps/survival/city-1.png",
+    "subject": "A crossing of alleys: two alleys crossing in the middle between building roofs (roofs are solid), market stalls and crates along one alley, a dry fountain bay at the crossing, three alley mouths and a locked yard in the corner.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M005",
+    "path": "art/maps/survival/city-2.png",
+    "subject": "The rooftop terrace: several rooftops of different heights joined by plank bridges (shown as narrow walkable bands), water tanks, stair housings and chimney stacks as cover, an open central gravel roof, a roof edge (void) on two sides.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M006",
+    "path": "art/maps/survival/city-3.png",
+    "subject": "The plaza: a small square with a stopped clock-tower base on the north side, a dry fountain in the centre as cover, shuttered cafe fronts on three sides with doors, and four streets entering at the corners.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M007",
+    "path": "art/maps/survival/field-1.png",
+    "subject": "The trench line: two parallel trench systems (dark cut bands with sandbag edges) crossed by two spurs, a no-man's-land of craters between them, a wrecked field gun at the east end as cover; open lanes along the north and south edges.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M008",
+    "path": "art/maps/survival/field-2.png",
+    "subject": "The crater field: open cracked mud broken by about a dozen craters of different sizes (low cover), two wrecked tank hulls, a line of burnt stumps; no walls; entry from the west, a dry gully along the east.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M009",
+    "path": "art/maps/survival/field-3.png",
+    "subject": "The crashed hull: the broken ribs of a huge fallen war machine lying diagonally across the map as large solid cover, a ring of open ash ground around it, scattered plates, two lanes passing either end.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M010",
+    "path": "art/maps/survival/works-1.png",
+    "subject": "The assembly hall: two long parallel conveyor lines (solid, crossable at three bridges), unfinished shells on the lines as cover, a clear walkway down the middle, a loading door at each end.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M011",
+    "path": "art/maps/survival/works-2.png",
+    "subject": "The scrap yard: a fenced yard of heaps of broken parts (cover), a gantry crane's rails along the edges, a magnet pad in the centre, a gate in the south fence and a hole in the west fence.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M012",
+    "path": "art/maps/survival/works-3.png",
+    "subject": "The casting hall: a furnace mouth in the north wall, slag channels cutting the floor into three lanes (with plank crossings), pillars in two rows, catwalk supports at the edges, a bare dark iron plate centre.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M013",
+    "path": "art/maps/survival/shrine-1.png",
+    "subject": "The nave: a long hall seen from above, a bare central aisle of flagstones, two rows of pillars and pushed-back pews as cover, a chancel step at the north end and a west door; side chapels as alcoves.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M014",
+    "path": "art/maps/survival/shrine-2.png",
+    "subject": "The cloister: an arcaded square walkway (pillars along the inner edge) around an open courtyard garden with a covered well as central cover, four doors at the compass points.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M015",
+    "path": "art/maps/survival/shrine-3.png",
+    "subject": "The altar apse: a semicircular apse with a raised bare dais, a ring of candle stands as cover, two stairs, a round gold floor pool of light (a lighter painted patch, walkable), and two side vestries.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M016",
+    "path": "art/maps/survival/rim-1.png",
+    "subject": "The hangar bay: an open painted bay floor with gantry feet and empty cradles as cover, a gutted shuttle in the east, a large airlock door in the south and a small door in each corner.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M017",
+    "path": "art/maps/survival/rim-2.png",
+    "subject": "The rear landing pad: an open circular pad with a scorch ring, loose crates and a mast base as cover, a low parapet around the edge (solid), two ramps in the south and a sealed hatch in the north.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M018",
+    "path": "art/maps/survival/rim-3.png",
+    "subject": "The power core chamber: a ring of resonant conduits (solid) around a dim central well (void), catwalk rails and four bridge crossings, two generators in the corners as cover, entrances at north and south.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  }
+]

@@ -90,6 +90,12 @@ for (let i = 0; i < 400; i++) {
   await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
   await p.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, D18); // rules 1.46: node 1 cannot lose (every shot an 18)
   const conf = p.getByRole('button', { name: 'Confirm', exact: true });
+  // rules 1.45: a generated map has walls and cover, so the target the Shot starts on may be out of sight; aim at each
+  // standing hostile in turn (by clicking its tile, as a player does) until the Shot can be confirmed
+  if (!(await conf.isEnabled().catch(() => false))) {
+    const foes = await p.evaluate(() => window.__phc.getState().game.combat.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => { const [x, y] = u.pos.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); }));
+    for (const r of foes) { const t = p.locator('button.phc-tok[aria-label^="' + r + ' · "]').first(); if (!(await t.count())) continue; await t.click({ timeout: 5000 }).catch(() => {}); await settle(p, 60); if (await conf.isEnabled().catch(() => false)) break; }
+  }
   try { if (await conf.isEnabled({ timeout: 30000 })) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); } catch { /* the turn moved on under us */ }
   await settle(p, 60);
 }
@@ -348,6 +354,8 @@ g = await G(); r = g.run;
 ok('a boon clicked: it is the character\'s relic for the run (' + offer[0] + '), and the next tile is offered', (g.characters[cid0].relics || []).includes(offer[0]) && r.tiles.length >= 2 && r.tiles.length <= 3);
 const tcards = await p.locator('[data-phc-tile]').allTextContents();
 ok('the next tile: ' + tcards.length + ' cards, each its setting, a line, its Boss and its boon theme, none the tile just played', tcards.length === r.tiles.length && tcards.every((t) => /Boss:/.test(t) && /Boons:/.test(t)) && r.tiles.every((t) => t.setting !== 'ahoc'));
+const tbg = await p.locator('[data-phc-tile]').evaluateAll((els) => els.map((e) => { const s = e.querySelector('span[aria-hidden="true"]'); return s ? getComputedStyle(s).backgroundImage : ''; }));
+ok('each tile card draws its setting\'s backdrop by catalog id (survival-backdrop-<setting>-a), not the plain panel', tbg.length === r.tiles.length && r.tiles.every((t, i) => tbg[i].includes('survival-backdrop-' + t.setting + '-a')));
 await both('survival-next-tile');
 const tile = r.tiles[0];
 await p.locator('[data-phc-tile="' + tile.id + '"]').click();

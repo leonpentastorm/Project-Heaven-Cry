@@ -1,0 +1,13 @@
+{
+  "id": "K009",
+  "number": 9,
+  "filename": "wall-end.png",
+  "path": "art/sprites/kit/ahoc/wall-end.png",
+  "mode": "wall",
+  "prompt": "Paint the SOLID GREY FOOTPRINT of the attached geometry reference as the TOP CAP of an overhead wall in a tactical game. Maintain its exact silhouette, position, thickness, edge contacts and transparent empty space. This is a PLAN VIEW viewed VERTICALLY DOWN FROM DIRECTLY ABOVE, not elevation. Only a flat horizontal cap surface is visible. NEVER a vertical wall facade, railings, wall-mounted lanterns, doors seen front-on or a 3D extrusion. Painted warm grey ceramic cap, simple dark rim INSIDE silhouette, sparse recessed rivet dots, subtle dry-brush gouache wear, tiny faded rust-red stripe runs along length. Quiet broad planes, readable at64px. Heavenprint opaque gouache and restrained ink, no photo or3D gloss. Flat even light. No ground, no cast shadow, no contact shadow. No perspective, no UI or text. Transparent PNG square; reference supplies geometry only, repaint its grey area but keep all transparent areas empty. Where a band exits an image edge it must reach that exact edge, flat cut, with no inset.  Target 256x256 game cell, half-tile 128px cap thickness. Do not add new shape outside the given reference.",
+  "references": [
+    "/workspace/phc-survival-2026-11-13/geometry-guides/wall-9.png"
+  ],
+  "transparent": true,
+  "source": "/workspace/generated_images/exec-bd1bcc4d-2ce4-447c-9664-60f08676f16b.png"
+}

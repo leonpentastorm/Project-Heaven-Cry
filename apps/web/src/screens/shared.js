@@ -9,6 +9,7 @@ import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
 import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION } from '@engine';
+import { kitSprite } from '../game/kitMap';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
@@ -43,8 +44,9 @@ export const ART_BIG = (n) => ASSETS[n + '-lg'] || ART(n);
 export const faceOf = (u) => (u && u.img ? ART(u.img) : '');
 /** The campaign zone a state is in (the fight's map during a fight). */
 export const zoneOf = (g) => g?.campaign?.zones?.find((z) => z.id === (g.phase === 'combat' && g.combat ? g.combat.map.id : g.story.zone)) || null;
-/** An object's sprite: its own, else the campaign's for its kind (an open door has its own). */
-export const spriteOf = (g, o) => { const S = g?.campaign?.sprites || {}; return ART(o.sprite || (o.kind === 'door' && o.open && S['door:open']) || S[o.kind]); };
+/** An object's sprite: its own, else the campaign's for its kind (an open door has its own), else (rules 1.45) the fight
+ *  map's kit piece for its kind (game/kitMap.ts); '' when none: the object draws its glyph. */
+export const spriteOf = (g, o) => { const S = g?.campaign?.sprites || {}; return ART(o.sprite || (o.kind === 'door' && o.open && S['door:open']) || S[o.kind]) || kitSprite(g?.combat?.map?.skin?.setting, o); };
 /** CSS for one tile showing its slice of the map painting, under a tint (the painting is the whole grid, w × h tiles). */
 export const tileBg = (url, k, w, h, tint) => { const [x, y] = k.split(',').map(Number);
   return 'linear-gradient(' + tint + ', ' + tint + '), url("' + url + '") ' + (w > 1 ? (x / (w - 1)) * 100 : 0) + '% ' + (h > 1 ? (y / (h - 1)) * 100 : 0) + '% / ' + w * 100 + '% ' + h * 100 + '% no-repeat'; };

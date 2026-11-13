@@ -1,0 +1,144 @@
+{
+  "K003": {
+    "prompt": "Paint one damaged AHOC tactical floor repeat texture, K003, for Project Heaven Cry. Square opaque 1024×1024, exact overhead orthographic view. This is the third ground, visibly more characterful than plain gravel or the clean ceramic plates. Broad hand-painted Heavenprint gouache planes of cracked warm charcoal concrete and slate-grey ceramic floor plates, restrained ink in hairline fractures, chipped edges, dry brush wear, a few low-contrast oil-dark stains and a peeling ghost of an oxide-red and old ivory safety stripe. An old working containment facility. Match refs 1 and 2 for materials and brushwork only, and ref 3 for the quiet game scale and wrap logic. Show variety in the surface and paint strokes, enough to read at 64 px, while keeping the tactical center legible. Do not put one large patch or motif in the middle. Distribute smaller patches and broken paint marks around the repeat. The left and right edges and top and bottom edges must join seamlessly; outer edges cross ordinary mid-tone plate surfaces, and any continuous thin seam that crosses an edge should resume at exactly the same location, tone and thickness. Uniform top light, no vignette, bevel, shadow, glow, figures, loose debris objects, text, frame or border. Return a single edge-to-edge repeat unit.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/illustrations/survival/backdrops/ahoc-b-corridor.png",
+      "art/sprites/kit/ahoc/ground-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K006": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nDECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a soot-black blast patch fading to nothing at the rim.\nSoft fading soot alpha with a quiet irregular perimeter. The ash itself has dark dry-brush marks. No crater or colored underlay.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/decal-rubble.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K013": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nCRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.\nKeep the identifiable torn red corner brackets and fragments of the original ceramic lid.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K016": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nPILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.\nShow broken chalky cross-sections and a scrap of stripe collar.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/pillar.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K018": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nBARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.\nA few burst sandbags, chipped ceramic plate and folds of torn cloth.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/barricade.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K022": {
+    "prompt": "Paint a single fictional tripwire hazard map icon for Project Heaven Cry, isolated on true transparent alpha. Its entire silhouette is TWO tiny grey-brown stake heads connected by ONE thin straight muted wire, with one small closed ceramic-grey warning puck beside one stake. Two stakes at left and right, 2D diagram-like top-down view from directly above; decorative fictional visual only. Understated gouache and ink brushwork with worn ivory edges. No terrain, floor, rock, rubble, crate, debris, ground shadow, instructions, text, numbers, technical construction details, backdrop or border. Horizontal compact silhouette, readable at 64px, clean alpha between the stakes and around the wire. The backdrop reference is for palette only.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nTRAP (`trap`): a tripwire trap: two small stakes with a thin wire and a hidden charge, grey-brown; deliberately subtle but readable at 64 px.\nStylized invented visual icon, no technical diagram, labels or wiring detail.",
+      "references": [
+        "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+        "art/sprites/kit/ahoc/decal-rubble.png"
+      ],
+      "path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/generation-attempts/K022.png"
+    }
+  },
+  "K028": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nTURRET (`turret`, half cover): an emplaced automatic turret on a low ring mount, grey housing, twin barrels (waist-high cover); fits one tile, a single clear barrel direction (up).\nPurely fictional sci-fi game prop. Mount and aim read as a simple silhouette viewed from above; upper edge is north.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/terminal.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K029": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nCAMERA (`camera`): a small pole-mounted camera dome as seen from above, grey, red status dot; small, about a third of a tile, centred.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/lamp.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K030": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nALARM (`alarm`): a wall alarm panel box, grey with a red lens, flat; small, about a third of a tile, centred.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/terminal.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K031": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nCACHE (`cache`, loot): a locked steel ration-and-ammo cache box, grey with a red seal strap; about a metre, waist-high look.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K032": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nEXIT (`exit`, the way out): a floor hatch with ivory chevrons painted toward it, \"way out\", no letters; fits one tile, reads as a place to leave by.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/hole.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K033": {
+    "prompt": "Paint one isolated small bundle of three loose black and muted amber electrical cables for AHOC in Project Heaven Cry. True overhead gouache plan view. Snake the separate cables in a slim shallow S, tied once; small dark connectors. The cables are the ONLY foreground pixels. Leave genuinely transparent alpha in the loops and between strands. No surface or floor patch at all, no backdrop, panel, tiles, square plate, borders, glow or shadow. The footprint is a narrow oblong, about 75 percent of a square cell, readable at 64 px. Reference is a palette and paint anchor only.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Cables: a loose bundle of black and amber cables snaking across the floor. Low, flat, nothing taller than a few centimetres.\n",
+      "references": [
+        "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+        "art/sprites/kit/ahoc/ground-2.png"
+      ],
+      "path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/generation-attempts/K033.png"
+    }
+  },
+  "K034": {
+    "prompt": "Paint one worn old ivory arrow inside a broken rectangular parking/wayfinding outline, AHOC Project Heaven Cry. A faint hand-painted flat ink and gouache floor stencil, seen overhead, with ragged flecked edges, missing islands and very low contrast worn pigment. A sparse stencil, not signage. Make the original paint mostly faded and scuffed away. No orange, saturated red, bright whites, no raised material, shading, or reflections. True alpha for everything except the old ivory pigment. No floor texture behind it. Square game decal visible at 64 px. Reference is for wear and pigments only.",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Stencilled floor marking: a faded ivory arrow and boxed zone lines, no letters. Low, flat, nothing taller than a few centimetres.\nThe arrow and enclosing broken lines alone are painted pigment, transparent everywhere else.",
+      "references": [
+        "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+        "art/sprites/kit/ahoc/ground-2.png"
+      ],
+      "path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/generation-attempts/K034.png"
+    }
+  },
+  "K035": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Pipe run: a short run of lagged pipe lying along the floor edge with brackets. Low, flat, nothing taller than a few centimetres.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/low_wall.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K036": {
+    "prompt": "Make one isolated overhead 2D tactical-game asset for the AHOC containment outpost in Project Heaven Cry. The camera looks absolutely vertically down in plan view. Only overhead surfaces with a small rim where needed. Heavenprint opaque gouache and restrained ink, broad angular brush marks, gentle dry brush wear, sparse ivory highlights. Ceramic-grey panels, riveted plate, poured concrete, muted oxide-red accents and old ivory, matching the AHOC gate backdrop. True alpha around the object, no ground, perspective, cast shadow, halo, glow, figures, labels, border or UI. Uniform top light with very subtle upper-left edge highlights. Export target 256×256 with bold silhouette at 64 px, one 1.5 m tile; keep solid objects centered in an 80% safe box. One image, one piece. First reference is setting and paint. Second is sprite scale and materials, and is the intact object identity where applicable.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A dropped helmet-less ration tin and a scatter of bolts, nothing readable. Low, flat, nothing taller than a few centimetres.\n",
+    "references": [
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  }
+}

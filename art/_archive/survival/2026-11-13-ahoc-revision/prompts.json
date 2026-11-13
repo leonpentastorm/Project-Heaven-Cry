@@ -1,0 +1,158 @@
+{
+  "K002": {
+    "prompt": "Paint one opaque square 1024×1024 repeatable tactical-map floor texture for Project Heaven Cry, AHOC K002. Image 1 is the previous candidate; take its ceramic-grey material and Heavenprint brushwork, repaint the floor with much quieter values and correct the repeat. Images 2 and 3 are the AHOC corridor and gate; use them only for palette and paint. Exact straight overhead orthographic view, flat uniform light, no perspective, shadow, gradient, vignette, border or objects. Two by two equal square scuffed ceramic-grey floor plates with thin shallow bolted seams every half tile, faint low-contrast worn walking lanes. The repeat must align on both axes. Put the two vertical panel seam centerlines at one-quarter and three-quarters of the canvas width and the two horizontal centerlines at one-quarter and three-quarters of its height, so every outer edge goes through the middle of a plate and ordinary plate surface continues across the edges. At the outer edges where the interior seams cross, the outgoing seam must match the incoming seam position and tone. Treat the left/right and top/bottom as connected on a torus. Small recessed bolts adjacent to interior seam crossings only; keep texture, pigment and scuff intensity almost constant at the wrap edges. Matte mid-dark slate ceramic, gentle warm grey broken gouache scumbling, sparse restrained ink, tiny worn rust-red flecks, no vivid stripe. Quiet enough for a tactical grid. Paint only one edge-to-edge square repeat unit. No sample grid, annotations, lettering or figures.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/ground-2.png",
+      "art/illustrations/survival/backdrops/ahoc-b-corridor.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Lanczos resize to 1024 square, RGB."
+  },
+  "K008": {
+    "prompt": "Repaint this one AHOC overhead wall corner. Match the gray L footprint from image 1. Image 2 is the newly painted corner candidate, use exactly its top-down cap material and silhouette, with one correction: its narrow faint rust-red stripe should enter horizontally from the left center of the arm, turn at a clean right angle at the center of the cell, and exit vertically at the bottom center of the other arm, like an L-shaped centerline. The top and right edges do not connect. Left and bottom connections must run flush past the canvas edge; no end border or cap line at either connection. Flat exact overhead orthographic projection, matte gouache and ink, sparse inset bolts, true alpha outside the silhouette, no shadows, no extra decoration. A square 256 cell master will use the middle 128 pixels of the left and bottom edges as connections. Image 3 is the existing straight wall for stripe thickness, paint and continuity.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+      "art/_archive/survival/2026-11-13-ahoc-revision/superseded/generation-attempts/K008-first.png",
+      "art/sprites/kit/ahoc/wall-straight.png"
+    ],
+    "export": "Register painted cap to the guide with piecewise crop and resize. Align stripe at the lower exit and solidify the flat edge cuts."
+  },
+  "K010": {
+    "prompt": "One overhead AHOC ceramic-grey wall doorway tile for Project Heaven Cry, square with alpha. Match first attached geometry-guide exactly: a horizontal left-to-right band from y=25% to 75% of canvas. Left stub fills x=0–25%, right stub x=75–100%, middle half entirely open. Top and bottom quarters transparent. Only horizontal top caps seen from vertically above; no upright sides, arch, shadows, or ground. Match second reference, the existing straight wall, for faded ink and warm grey gouache. A very thin, muted rust-red stripe runs horizontally straight along the midpoint of each stub from the outer frame edge toward the opening; the two stubs must look like the existing straight wall cut with a central doorway. Do not run stripe north-south. Add a thin square jamb line only on each edge facing the empty opening. At the two outside edges there must be no rim perpendicular to the join. Keep gray values low contrast and paint entirely within the two rectangular footprints. No text, props, lights or perspective.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Crop the painted jamb caps, fit to 64x128 on each edge. Exact 128px transparent center gap."
+  },
+  "K011": {
+    "prompt": "Paint the SOLID GREY FOOTPRINT of the attached geometry reference as the TOP CAP of an overhead wall in a tactical game. Maintain its exact silhouette, position, thickness, edge contacts and transparent empty space. This is a PLAN VIEW viewed VERTICALLY DOWN FROM DIRECTLY ABOVE, not elevation. Only a flat horizontal cap surface is visible. NEVER a vertical wall facade, railings, wall-mounted lanterns, doors seen front-on or a 3D extrusion. Painted warm grey ceramic cap, simple dark rim INSIDE silhouette, sparse recessed rivet dots, subtle dry-brush gouache wear, tiny faded rust-red stripe runs along length. Quiet broad planes, readable at64px. Heavenprint opaque gouache and restrained ink, no photo or3D gloss. Flat even light. No ground, no cast shadow, no contact shadow. No perspective, no UI or text. Transparent PNG square; reference supplies geometry only, repaint its grey area but keep all transparent areas empty. Where a band exits an image edge it must reach that exact edge, flat cut, with no inset. In the middle gap create a small irregular fracture along internal breach edges, leaving external connecting edges exactly flat. Target 256x256 game cell, half-tile 128px cap thickness. Do not add new shape outside the given reference. The left and right sides both extend past the frame edge and have the same 128px band centered vertically. A roughly half-cell gap separates the two stubs, with only tiny shards at the jagged inner edges. Reference 1 is the exact footprint. Reference 2 is the existing straight cap and controls the subdued color, quiet cap surface, faint centered rust red stripe and sparse bolts. Reference 3 shows the setting's painted material. Use true alpha. Make the cut at each connecting edge look like a continuation of the straight piece, without an end rim. Keep the light and wear evenly distributed.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit vertical band to 128px, preserving the ragged painted breach; solidify flat edge cuts."
+  },
+  "K014": {
+    "prompt": "Paint one AHOC game sprite in Heavenprint. The camera is exactly vertically above a low barrier; this is a plan view. The sprite consists of a single slim flat horizontal top cap. Its projected outline is a long rectangle with tiny chamfered corners, about five times as wide as deep. NOTHING extends in front of the cap. Only its flat chalky ceramic top surface is visible, with a narrow muted rusty stripe and three small inset bolts. No visible side, extruded thickness, ledges, handles, background, shadow or glow. It occupies 80 percent of the width, centered in the canvas with true transparent alpha. Flat light, gouache wear, quiet warm grey and rust. First reference supplies the flat camera and palette, not its wall length. Second supplies the setting's brushwork.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit top cap to the 80% safe box."
+  },
+  "K017": {
+    "prompt": "Repaint the barricade.png sprite for Project Heaven Cry's AHOC overhead tactical kit. An invented full-height rectangular barricade, seen from directly overhead. Horizontal row of tightly packed top-view khaki sandbags under a small patch of torn rust cloth, behind the narrow top edge of a ceramic-grey shield plate. Give the rectangular footprint a strong dark edge and visually substantial mass. No vertical broad shield face, frontal tiered stack, or big hazard sign. True orthographic vertical camera with flat even top light and a small upper-left pigment highlight. No perspective or substantial side face, no cast/contact/drop shadow, no ground, haze or bloom. Isolated on genuinely transparent alpha, centered in a square game cell designed for a 256 pixel export and readable at 64 pixels. One tile is 1.5m. Heavenprint opaque gouache and ink, large broken brush shapes, restrained dry brush, chalky ceramic-grey planes with dark charcoal outlines and subtle oxide red and worn ivory. No photorealism, digital gloss or words. First image is the source candidate, keep its materials and part identity while correcting the camera and silhouette. Second is the AHOC outpost gate for palette and gouache only.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/barricade.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit to 80% safe box."
+  },
+  "K019": {
+    "prompt": "Repaint the door.png sprite for Project Heaven Cry's AHOC overhead tactical kit. The CLOSED state of a horizontal sliding door, seen as its flat narrow top profile in a wall plan. Two square ceramic-grey left/right jambs hug the 25% and 75% x positions, muted rust red stripe across the slim closed slab. The slab spans the central half of the cell left to right, and its north-south depth is roughly 18% of the canvas. Only paint the central insert which overlays the separate wall doorway stubs. No vertical face or arch, lights, surrounding wall or floor. True orthographic vertical camera with flat even top light and a small upper-left pigment highlight. No perspective or substantial side face, no cast/contact/drop shadow, no ground, haze or bloom. Isolated on genuinely transparent alpha, centered in a square game cell designed for a 256 pixel export and readable at 64 pixels. One tile is 1.5m. Heavenprint opaque gouache and ink, large broken brush shapes, restrained dry brush, chalky ceramic-grey planes with dark charcoal outlines and subtle oxide red and worn ivory. No photorealism, digital gloss or words. First image is the source candidate, keep its materials and part identity while correcting the camera and silhouette. Second is the AHOC outpost gate for palette and gouache only.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/door.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Center and scale jambs to sit at the wall opening boundaries."
+  },
+  "K020": {
+    "prompt": "Same AHOC sliding door as image 1, now OPEN. Preserve the exact placement, shapes, size and finish of the two square side jambs from the closed door reference. Remove the striped slab completely from the central passage; it has slid into the right jamb. The center between the jambs is entirely empty true transparent alpha, with no threshold painted across it and no enclosing frame. The two jambs stay as disjoint painted components; show a tiny dark recess inside the right jamb. Same strictly vertical orthographic camera, flush ceramic top surfaces, no vertical face, no shadows or glow. Square transparent tactical sprite for Project Heaven Cry. Image 2 is material reference.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K019.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Center and scale both painted jambs to fit the same opening as the closed state."
+  },
+  "K026": {
+    "prompt": "Repaint the terminal.png sprite for Project Heaven Cry's AHOC overhead tactical kit. A small rectangular wall-less standing field terminal, its top-down console glass shows three simple muted amber bars. Top glass dominates and sits flush in a ceramic-grey protective chassis. No front bezel with controls, illuminated outline, bright reflection or external glow. True orthographic vertical camera with flat even top light and a small upper-left pigment highlight. No perspective or substantial side face, no cast/contact/drop shadow, no ground, haze or bloom. Isolated on genuinely transparent alpha, centered in a square game cell designed for a 256 pixel export and readable at 64 pixels. One tile is 1.5m. Heavenprint opaque gouache and ink, large broken brush shapes, restrained dry brush, chalky ceramic-grey planes with dark charcoal outlines and subtle oxide red and worn ivory. No photorealism, digital gloss or words. First image is the source candidate, keep its materials and part identity while correcting the camera and silhouette. Second is the AHOC outpost gate for palette and gouache only.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/terminal.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit footprint at original prop scale."
+  },
+  "K027": {
+    "prompt": "Repaint the lamp.png sprite for Project Heaven Cry's AHOC overhead tactical kit. A tall industrial tripod work lamp seen absolutely vertically from above. Small subdued amber glass lens at top, near center over its stem, three equally spaced radial feet visible from the top behind it, one foot points toward the bottom edge. Short simple bold silhouette, with no broad frontal lamp face, no bright light rays, glow or cast shadows. True orthographic vertical camera with flat even top light and a small upper-left pigment highlight. No perspective or substantial side face, no cast/contact/drop shadow, no ground, haze or bloom. Isolated on genuinely transparent alpha, centered in a square game cell designed for a 256 pixel export and readable at 64 pixels. One tile is 1.5m. Heavenprint opaque gouache and ink, large broken brush shapes, restrained dry brush, chalky ceramic-grey planes with dark charcoal outlines and subtle oxide red and worn ivory. No photorealism, digital gloss or words. First image is the source candidate, keep its materials and part identity while correcting the camera and silhouette. Second is the AHOC outpost gate for palette and gouache only.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/lamp.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit footprint at original prop scale."
+  },
+  "K009": {
+    "prompt": "Paint an exactly overhead AHOC ceramic-grey wall end cap. The first reference is the exact alpha geometry, occupying the left half and the middle half vertically. The entire right half is transparent. A narrow faint rust-red stripe is horizontal at the precise mid-height and enters flush from the left frame edge. A small square finished rim caps the right end. The left edge continues past the frame so it has no dark perpendicular rim. Match the second image's warm slate gray gouache and sparse inset bolts. No projection, no vertical face, no ground or shadow. Output transparent.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit the painted cap to its left half-cell footprint and align the flat-cut edge."
+  },
+  "K012": {
+    "prompt": "Strictly overhead square AHOC supply crate top, a ceramic-grey sealed lid roughly one metre across in a 1.5m cell. Four dull rust-red corner brackets, broad matte panels, small recessed fasteners, minimal hardware. Keep the top-face proportions and restrained gouache texture. No frontal side surface or cast shadows. Transparent square game sprite centered, designed for bold silhouette at 64 pixels.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/crate.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit the crate to the brief's one-metre footprint (170px)."
+  },
+  "K025": {
+    "prompt": "Strictly overhead cargo container lid in the worn ceramic-grey Project Heaven Cry AHOC setting. One-and-a-half-tile long, horizontal rectangle, top face entirely visible from straight overhead. A clear transverse latch bar and faint diagonal rust-red and worn ivory stencilled bands. Simple quiet mass, readable when the cell is 64 pixels. No frontal face, perspective, shadow, glow, ground or text. Real transparency outside the container.",
+    "imagegen": "built-in",
+    "selected": true,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/container.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "Fit the container to an 80% safe width in its 384x256 master."
+  },
+  "K008-first": {
+    "prompt": "Paint the SOLID GREY FOOTPRINT of the attached geometry reference as the TOP CAP of an overhead wall in a tactical game. Maintain its exact silhouette, position, thickness, edge contacts and transparent empty space. This is a PLAN VIEW viewed VERTICALLY DOWN FROM DIRECTLY ABOVE, not elevation. Only a flat horizontal cap surface is visible. NEVER a vertical wall facade, railings, wall-mounted lanterns, doors seen front-on or a 3D extrusion. Painted warm grey ceramic cap, simple dark rim INSIDE silhouette, sparse recessed rivet dots, subtle dry-brush gouache wear, tiny faded rust-red stripe runs along length. Quiet broad planes, readable at64px. Heavenprint opaque gouache and restrained ink, no photo or3D gloss. Flat even light. No ground, no cast shadow, no contact shadow. No perspective, no UI or text. Transparent PNG square; reference supplies geometry only, repaint its grey area but keep all transparent areas empty. Where a band exits an image edge it must reach that exact edge, flat cut, with no inset.  Target 256x256 game cell, half-tile 128px cap thickness. Do not add new shape outside the given reference. The two connections are the left and bottom edges. The outside corner is square. Both arms are exactly half the cell width. Reference 1 is the exact footprint. Reference 2 is the existing straight cap and controls the subdued color, quiet cap surface, faint centered rust red stripe and sparse bolts. Reference 3 shows the setting's painted material. Use true alpha. Make the cut at each connecting edge look like a continuation of the straight piece, without an end rim. Keep the light and wear evenly distributed.",
+    "imagegen": "built-in",
+    "selected": false,
+    "reference_paths": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "The stripe failed to turn with the cap."
+  },
+  "K014-first": {
+    "prompt": "Repaint the low_wall.png sprite for Project Heaven Cry's AHOC overhead tactical kit. A waist-high ceramic barrier, a narrow horizontal rectangle whose flat top cap dominates. The end-to-end width should occupy ~80% of the canvas. One faded rust-red stripe along the cap, a few recessed panel lines. An absolutely tiny dark rim is enough to suggest thickness. True orthographic vertical camera with flat even top light and a small upper-left pigment highlight. No perspective or substantial side face, no cast/contact/drop shadow, no ground, haze or bloom. Isolated on genuinely transparent alpha, centered in a square game cell designed for a 256 pixel export and readable at 64 pixels. One tile is 1.5m. Heavenprint opaque gouache and ink, large broken brush shapes, restrained dry brush, chalky ceramic-grey planes with dark charcoal outlines and subtle oxide red and worn ivory. No photorealism, digital gloss or words. First image is the source candidate, keep its materials and part identity while correcting the camera and silhouette. Second is the AHOC outpost gate for palette and gouache only.",
+    "imagegen": "built-in",
+    "selected": false,
+    "reference_paths": [
+      "art/sprites/kit/ahoc/low_wall.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "export": "The render kept too much of the vertical face."
+  }
+}

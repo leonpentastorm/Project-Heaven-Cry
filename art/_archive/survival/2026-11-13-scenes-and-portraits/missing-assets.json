@@ -1,0 +1,237 @@
+[
+  {
+    "id": "P045",
+    "path": "art/icons/gear/mag-pistol_32.png",
+    "subject": "(-v2) Pistol magazine (.32 Decrkm): a **single, fat, slightly curved stick** with a visible bright brass round at the top, a heavy base plate; 25% wider than before. **At 32 px:** a short fat curve, not a thin sliver.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P046",
+    "path": "art/icons/gear/mag-smg_32.png",
+    "subject": "(-v2) SMG magazine (.32 Decrkm): a **long straight stick, very tall, with a clearly stepped ribbed body and a bright base plate**; twice the height of the pistol one. **At 32 px:** tall and ribbed.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P047",
+    "path": "art/icons/gear/mag-rifle.png",
+    "subject": "(-v2) Rifle magazine: a **broad, strongly curved banana box with three rounds showing at the lip**, a wide bright base plate; the curve is the tell. **At 32 px:** one big banana curve.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P048",
+    "path": "art/icons/gear/mod-extended_mag.png",
+    "subject": "(-v2) Extended magazine: a **very long curved box with a clear step** where the standard mag ends and the extension begins, an amber round at the top, ridged; visibly longer than the pistol, SMG and rifle magazines. **At 32 px:** the longest, with the step visible; amber accent kept.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P049",
+    "path": "art/icons/gear/weapon-service_pistol.png",
+    "subject": "(-v2) Service pistol: the same design (squared slab slide, forward grip cut, open ejection port, stick magazine at the grip base, one faded blue-grey grip panel), **lighter metal**: pale gunmetal slide with bright ivory edge highlights and a mid-grey frame, not charcoal. **At 32 px:** a light slab on the dark panel.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P050",
+    "path": "art/icons/gear/mag-magistrate.png",
+    "subject": "(new) Magistrate heavy-pistol magazine (for `weapon-magistrate_pistol.png`): a **short, thick, heavy single-stack box** with a flat base plate and two large rounds showing; heavy calibre, a plain dark steel body with bright edges; a thin clean-ivory band. **At 32 px:** short and fat, fatter than the pistol magazine.",
+    "group": "gear-followups",
+    "operation": "new"
+  },
+  {
+    "id": "P051",
+    "path": "art/icons/gear/mag-brigade_shotgun.png",
+    "subject": "(new) Brigade auto-shotgun magazine (for `weapon-brigade_auto_shotgun.png`): a **wide flat box magazine with a pale steel plate and a gilt and brass-orange `#F68A38` top rim**, three fat shotgun shells showing at the top with brass bases; Adamantile plate shapes. **At 32 px:** wide and flat, with the orange rim.",
+    "group": "gear-followups",
+    "operation": "new"
+  },
+  {
+    "id": "P052",
+    "path": "art/icons/gear/mag-repeating_crossbow.png",
+    "subject": "(new) Repeating crossbow magazine (for `weapon-repeating_crossbow.png`): a **tall slab-sided wooden-and-iron bolt hopper** with a hinged lid, four short bolts with violet-stained inlay lines showing at the top (Arkvelton), no gun parts. **At 32 px:** a tall box with bolts sticking up.",
+    "group": "gear-followups",
+    "operation": "new"
+  },
+  {
+    "id": "P053",
+    "path": "art/icons/gear/weapon-long_rifle.png",
+    "subject": "(-v2) Long rifle: same design, **thicker silhouette**: a **very long barrel with a clearly oversized scope on top and a heavy bipod folded under the muzzle**; the barrel at least 40% thicker than before. **At 32 px:** the oversized scope and the bipod tell it from the marksman rifle.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P054",
+    "path": "art/icons/gear/weapon-ccec_marksman_rifle.png",
+    "subject": "(-v2) CCEC marksman rifle: same design, **thicker silhouette**: a **stocky semi-auto with a cheek-riser stock, a short thick suppressor-like muzzle and a thin low-profile scope**; shorter and heavier than the long rifle. **At 32 px:** short, thick muzzle and a pale cheek-riser.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P055",
+    "path": "art/icons/gear/weapon-blackpoint_700.png",
+    "subject": "(-v2) The .700 Blackpoint: same design, **much thicker silhouette**: an **absurdly large bore (a huge round muzzle), a short heavy barrel and a massive slab frame** about 60% thicker than the rifles; a visible oversized brass round at the breech. **At 32 px:** the huge round muzzle.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P056",
+    "path": "art/icons/gear/weapon-katana.png",
+    "subject": "(-v2) Katana: a **long slim curved single-edged blade on the diagonal with a plain round guard (tsuba-like, but invented) and a dark wrapped hilt**, a single bright edge highlight along the blade. **At 32 px:** a slim bright curved line, **no ring on the guard larger than a small disc, no gem**; the plain one of the pair.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "P057",
+    "path": "art/icons/gear/weapon-emanator_katana.png",
+    "subject": "(-v2) Emanator katana: the same blade shape but with a **large ornate ring guard (a wide circle around the hilt, about 25% of the blade length) and a big violet `#9D7ADC` gem in the guard**, more rounded forms (the Soul line), a violet etched line in the blade. **At 32 px:** the big ring and the bright violet gem; tells it from the plain katana at a glance.",
+    "group": "gear-followups",
+    "operation": "replace existing"
+  },
+  {
+    "id": "M001",
+    "path": "art/maps/survival/ahoc-1.png",
+    "subject": "The outpost yard and gatehouse: walled compound seen from above; a gate in the south wall, a loading yard of packed gravel with crates and drums in two stacks (cover), a gatehouse and a guard shed on the left, a watchtower base on the right, a long barracks block across the north with two doors; lanes run left and right of a central parked cargo hauler.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M002",
+    "path": "art/maps/survival/ahoc-2.png",
+    "subject": "The corridor grid: a plan of ceramic-grey panelled corridors, four rooms around a central junction hall; each room has a door onto the hall and one back door; pipe runs and filing racks as cover inside the rooms, a bare 4 tile central hall with two pillars.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M003",
+    "path": "art/maps/survival/ahoc-3.png",
+    "subject": "The records vault: a large circular hall with a ring of dark machine banks and cabinets as cover around a bare central floor, four entrances at the compass points, a raised catwalk platform in the north, and two side alcoves.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M004",
+    "path": "art/maps/survival/city-1.png",
+    "subject": "A crossing of alleys: two alleys crossing in the middle between building roofs (roofs are solid), market stalls and crates along one alley, a dry fountain bay at the crossing, three alley mouths and a locked yard in the corner.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M005",
+    "path": "art/maps/survival/city-2.png",
+    "subject": "The rooftop terrace: several rooftops of different heights joined by plank bridges (shown as narrow walkable bands), water tanks, stair housings and chimney stacks as cover, an open central gravel roof, a roof edge (void) on two sides.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M006",
+    "path": "art/maps/survival/city-3.png",
+    "subject": "The plaza: a small square with a stopped clock-tower base on the north side, a dry fountain in the centre as cover, shuttered cafe fronts on three sides with doors, and four streets entering at the corners.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M007",
+    "path": "art/maps/survival/field-1.png",
+    "subject": "The trench line: two parallel trench systems (dark cut bands with sandbag edges) crossed by two spurs, a no-man's-land of craters between them, a wrecked field gun at the east end as cover; open lanes along the north and south edges.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M008",
+    "path": "art/maps/survival/field-2.png",
+    "subject": "The crater field: open cracked mud broken by about a dozen craters of different sizes (low cover), two wrecked tank hulls, a line of burnt stumps; no walls; entry from the west, a dry gully along the east.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M009",
+    "path": "art/maps/survival/field-3.png",
+    "subject": "The crashed hull: the broken ribs of a huge fallen war machine lying diagonally across the map as large solid cover, a ring of open ash ground around it, scattered plates, two lanes passing either end.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M010",
+    "path": "art/maps/survival/works-1.png",
+    "subject": "The assembly hall: two long parallel conveyor lines (solid, crossable at three bridges), unfinished shells on the lines as cover, a clear walkway down the middle, a loading door at each end.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M011",
+    "path": "art/maps/survival/works-2.png",
+    "subject": "The scrap yard: a fenced yard of heaps of broken parts (cover), a gantry crane's rails along the edges, a magnet pad in the centre, a gate in the south fence and a hole in the west fence.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M012",
+    "path": "art/maps/survival/works-3.png",
+    "subject": "The casting hall: a furnace mouth in the north wall, slag channels cutting the floor into three lanes (with plank crossings), pillars in two rows, catwalk supports at the edges, a bare dark iron plate centre.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M013",
+    "path": "art/maps/survival/shrine-1.png",
+    "subject": "The nave: a long hall seen from above, a bare central aisle of flagstones, two rows of pillars and pushed-back pews as cover, a chancel step at the north end and a west door; side chapels as alcoves.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M014",
+    "path": "art/maps/survival/shrine-2.png",
+    "subject": "The cloister: an arcaded square walkway (pillars along the inner edge) around an open courtyard garden with a covered well as central cover, four doors at the compass points.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M015",
+    "path": "art/maps/survival/shrine-3.png",
+    "subject": "The altar apse: a semicircular apse with a raised bare dais, a ring of candle stands as cover, two stairs, a round gold floor pool of light (a lighter painted patch, walkable), and two side vestries.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M016",
+    "path": "art/maps/survival/rim-1.png",
+    "subject": "The hangar bay: an open painted bay floor with gantry feet and empty cradles as cover, a gutted shuttle in the east, a large airlock door in the south and a small door in each corner.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M017",
+    "path": "art/maps/survival/rim-2.png",
+    "subject": "The rear landing pad: an open circular pad with a scorch ring, loose crates and a mast base as cover, a low parapet around the edge (solid), two ramps in the south and a sealed hatch in the north.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  },
+  {
+    "id": "M018",
+    "path": "art/maps/survival/rim-3.png",
+    "subject": "The power core chamber: a ring of resonant conduits (solid) around a dim central well (void), catwalk rails and four bridge crossings, two generators in the corners as cover, entrances at north and south.",
+    "group": "painted-maps",
+    "operation": "new",
+    "core": false
+  }
+]

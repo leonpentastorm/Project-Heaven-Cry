@@ -1,0 +1,16 @@
+{
+  "id": "K026",
+  "number": 26,
+  "filename": "terminal.png",
+  "path": "art/sprites/kit/ahoc/terminal.png",
+  "mode": "sprite",
+  "prompt": "Paint one game-map kit piece in Heavenprint: hand-painted gouache and ink with broken, directional brush strokes,\nselective dry-brush scumbling, restrained hatching and warm ivory accents, the same hand as the attached backdrops and\nsprites, but **simplified and bold so it reads at 64 px**. **Straight overhead view, no perspective tilt, no horizon.**\n**Flat, even top light with one consistent soft highlight from the upper left on edges and tops across the whole kit;\nNO cast shadow, NO drop shadow, NO ground contact shadow, NO glow or bloom, NO lens effects.** Scale: **one tile = 1.5 m =\n256 px**; a crate is about a metre, a standing person's footprint about a third of a tile. **No text, no letters, no\nnumbers, no signs with writing (abstract marks only), no logos, no figures, no creatures, no UI, no frame, no border, no\nwatermark.** Everything is invented: nothing recognisable from real-world works, brands, buildings or places.\n**For a SPRITE, overlay or wall piece:** a **transparent background (PNG with alpha)**, the object centred inside an 80%\nsafe box in a **256 x 256 px** canvas (or the size stated), crisp clean edges, no halo, nothing touching the canvas edge.\n**For a GROUND texture, exactly this (it is how to ask an image generator for a seamless tile):** \"a seamless tileable\nsquare texture, **1024 x 1024 px**, straight top-down, **tileable, the left and right edges match and the top and bottom\nedges match when the image is repeated**, flat even lighting with no directional light and no cast shadows, no vignette,\nno border, no frame, no large single feature or landmark that would show as a repeat, no objects on it, even mid-dark\nvalue with gentle low-contrast variation.\" The game repeats it across the map, can rotate it by 90 degrees, and darkens it\nunder a grid, so keep it calm.\n\nAHOC: ceramic-grey riveted panels, packed grey gravel, poured concrete, faded rust-red and ivory bands without letters, restrained amber lamp glass. Tired, well-kept containment base, squared and bolted, not medieval stone. Same materials as AHOC backdrop reference.\nSUBJECT: TERMINAL (`terminal`): a wall-less standing field terminal, dark screen glass showing only abstract amber bars, no text; fits one tile.\nSPRITE OVERRIDE: view vertically straight down, no perspective or vertical front faces, no cast/contact shadow, fully transparent outside object. Simple bold shape that reads at 64px. Object within central80% except doors designed for wall gap. Container canvas384x256; all other sprites256square.",
+  "references": [
+    "/workspace/phc-survival-2026-11-13/native-renders/B01.png",
+    "/workspace/phc-gear-publish/art/sprites/objects/platinum-crates.png",
+    "/workspace/phc-gear-publish/art/sprites/objects/door-open.png",
+    "/workspace/phc-gear-publish/art/sprites/objects/field-lamp.png"
+  ],
+  "transparent": true,
+  "source": "/workspace/generated_images/exec-22ca58c4-41bc-4b0c-b84b-6d64f56b199f.png"
+}

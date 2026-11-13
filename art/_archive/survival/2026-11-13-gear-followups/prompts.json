@@ -1,0 +1,106 @@
+{
+  "P045": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) Pistol magazine (.32 Decrkm): a **single, fat, slightly curved stick** with a visible bright brass round at the top, a heavy base plate; 25% wider than before. **At 32 px:** a short fat curve, not a thin sliver.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/mag-pistol_32.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P046": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) SMG magazine (.32 Decrkm): a **long straight stick, very tall, with a clearly stepped ribbed body and a bright base plate**; twice the height of the pistol one. **At 32 px:** tall and ribbed.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/mag-smg_32.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P047": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) Rifle magazine: a **broad, strongly curved banana box with three rounds showing at the lip**, a wide bright base plate; the curve is the tell. **At 32 px:** one big banana curve.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/mag-rifle.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P048": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) Extended magazine: a **very long curved box with a clear step** where the standard mag ends and the extension begins, an amber round at the top, ridged; visibly longer than the pistol, SMG and rifle magazines. **At 32 px:** the longest, with the step visible; amber accent kept.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/mod-extended_mag.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P049": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) Service pistol: the same design (squared slab slide, forward grip cut, open ejection port, stick magazine at the grip base, one faded blue-grey grip panel), **lighter metal**: pale gunmetal slide with bright ivory edge highlights and a mid-grey frame, not charcoal. **At 32 px:** a light slab on the dark panel.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P050": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(new) Magistrate heavy-pistol magazine (for `weapon-magistrate_pistol.png`): a **short, thick, heavy single-stack box** with a flat base plate and two large rounds showing; heavy calibre, a plain dark steel body with bright edges; a thin clean-ivory band. **At 32 px:** short and fat, fatter than the pistol magazine.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-magistrate_pistol.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P051": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(new) Brigade auto-shotgun magazine (for `weapon-brigade_auto_shotgun.png`): a **wide flat box magazine with a pale steel plate and a gilt and brass-orange `#F68A38` top rim**, three fat shotgun shells showing at the top with brass bases; Adamantile plate shapes. **At 32 px:** wide and flat, with the orange rim.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-brigade_auto_shotgun.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P052": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(new) Repeating crossbow magazine (for `weapon-repeating_crossbow.png`): a **tall slab-sided wooden-and-iron bolt hopper** with a hinged lid, four short bolts with violet-stained inlay lines showing at the top (Arkvelton), no gun parts. **At 32 px:** a tall box with bolts sticking up.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-repeating_crossbow.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P053": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) Long rifle: same design, **thicker silhouette**: a **very long barrel with a clearly oversized scope on top and a heavy bipod folded under the muzzle**; the barrel at least 40% thicker than before. **At 32 px:** the oversized scope and the bipod tell it from the marksman rifle.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-long_rifle.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P054": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) CCEC marksman rifle: same design, **thicker silhouette**: a **stocky semi-auto with a cheek-riser stock, a short thick suppressor-like muzzle and a thin low-profile scope**; shorter and heavier than the long rifle. **At 32 px:** short, thick muzzle and a pale cheek-riser.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-ccec_marksman_rifle.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P055": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) The .700 Blackpoint: same design, **much thicker silhouette**: an **absurdly large bore (a huge round muzzle), a short heavy barrel and a massive slab frame** about 60% thicker than the rifles; a visible oversized brass round at the breech. **At 32 px:** the huge round muzzle.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-blackpoint_700.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P056": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) Katana: a **long slim curved single-edged blade on the diagonal with a plain round guard (tsuba-like, but invented) and a dark wrapped hilt**, a single bright edge highlight along the blade. **At 32 px:** a slim bright curved line, **no ring on the guard larger than a small disc, no gem**; the plain one of the pair.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-katana.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P057": {
+    "prompt": "Paint one fictional inventory gear icon for Project Heaven Cry. One object isolated on true transparent PNG alpha with no floor, shadow, glow, frame, text or UI. Heavenprint hand-painted matte gouache and ink with bold silhouette, crisp charcoal edge and small controlled ivory or brass highlights. Inventory side or gentle three-quarter view, not a technical diagram. Keep existing item's identity if replacing. Let one large silhouette clue distinguish the object at 32px. Use large brush shapes and simplify tiny features. Reference image 1 is existing art for material and scale. Reference image 2 shows the icon family only.\n(-v2) Emanator katana: the same blade shape but with a **large ornate ring guard (a wide circle around the hilt, about 25% of the blade length) and a big violet `#9D7ADC` gem in the guard**, more rounded forms (the Soul line), a violet etched line in the blade. **At 32 px:** the big ring and the bright violet gem; tells it from the plain katana at a glance.\nThis is a painted fictional video-game illustration only. Frame the item diagonally where needed, with a single strong silhouette and clear margins.",
+    "references": [
+      "art/icons/gear/weapon-emanator_katana.png",
+      "art/icons/gear/mag-rifle.png"
+    ],
+    "imagegen": "built-in"
+  }
+}

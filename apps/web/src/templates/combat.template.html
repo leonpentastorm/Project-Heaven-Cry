@@ -40,6 +40,8 @@
 <div class="phc-cam"><div class="phc-grid-scroll phc-cam-scroll" role="group" aria-label="{{camLabel}}" style="{{camStyle}}"><div class="phc-grid" style="{{gridStyle}}" onMouseLeave="{{gridLeave}}">
 <sc-for list="{{tiles}}" as="t" memo hint-placeholder-count="176">
 <sc-if value="{{t.isLabel}}"><span aria-hidden="true" class="phc-axis" onMouseEnter="{{t.hover}}" style="{{t.style}}">{{t.text}}</span></sc-if><sc-if value="{{t.isTile}}"><button type="button" class="phc-tok" onClick="{{t.click}}" onMouseEnter="{{t.hover}}" aria-label="{{t.label}}" tip="{{t.title}}" data-sfx="{{t.sfx}}" style="{{t.style}}">
+<sc-if value="{{t.hasFloor}}" hint-placeholder-val="{{false}}"><i aria-hidden="true" data-kit-floor="1" style="{{t.floorStyle}}"></i></sc-if>
+<sc-if value="{{t.hasKit}}" hint-placeholder-val="{{false}}"><sc-for list="{{t.kit}}" as="kp"><img src="{{kp.src}}" alt="" aria-hidden="true" data-kit="{{kp.key}}" style="{{kp.style}}"></sc-for></sc-if>
 <sc-if value="{{t.hasZone}}"><span aria-hidden="true" style="{{t.zoneStyle}}"></span></sc-if>
 <sc-if value="{{t.hasPlan}}"><span aria-hidden="true" class="phc-plan" style="{{t.planStyle}}"></span></sc-if>
 <sc-if value="{{t.hasWatchT}}"><span aria-hidden="true" data-watch-tile="1" tip="{{t.watchTTitle}}" style="{{t.watchTStyle}}"></span></sc-if>
@@ -53,7 +55,7 @@
 <sc-if value="{{t.hasRing}}"><span aria-hidden="true" class="{{t.ringCls}}" style="{{t.ringStyle}}"></span></sc-if>
 <sc-if value="{{t.hasTgtRing}}"><span aria-hidden="true" class="phc-tgt-ring" style="{{t.tgtRingStyle}}"></span></sc-if>
 <sc-if value="{{t.hasShield}}"><span aria-hidden="true" data-token-shield style="{{t.shieldBox}}"><span style="{{t.shieldFill}}"></span></span></sc-if><sc-if value="{{t.hasGuard}}"><span aria-hidden="true" data-token-guard style="{{t.guardBox}}"><sc-for list="{{t.guardPips}}" as="g"><span style="{{g.style}}"></span></sc-for></span></sc-if><sc-if value="{{t.hasHp}}"><span aria-hidden="true" style="{{t.hpBox}}"><span class="phc-hp-chip" style="{{t.hpChip}}"></span><span class="phc-hp-fill" style="{{t.hpFill}}"></span></span></sc-if>
-<sc-if value="{{t.hasText}}" hint-placeholder-val="{{false}}"><span style="position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 9px; letter-spacing: 0.06em; color: #A3AEC2">{{t.text}}</span></sc-if>
+<sc-if value="{{t.hasText}}" hint-placeholder-val="{{false}}"><span class="{{t.textCls}}" style="{{t.textStyle}}">{{t.text}}</span></sc-if>
 <sc-if value="{{t.hasArrow}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; font-weight: 700; color: #FFFFFF">{{t.arrow}}</span></sc-if>
 <sc-if value="{{t.sensed}}"><span aria-hidden="true" tip="Sensed, not seen" style="position: absolute; inset: 6px; display: grid; place-items: center; border-radius: 50%; border: 2px dashed #F65157; color: #F65157; font-size: 18px; font-weight: 700">?</span></sc-if>
 <sc-if value="{{t.hasObj}}"><span aria-hidden="true" style="{{t.objStyle}}">{{t.objGlyph}}</span></sc-if>

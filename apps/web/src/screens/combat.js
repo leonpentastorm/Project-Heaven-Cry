@@ -25,6 +25,7 @@ const act = (a) => {
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { CameraView, CAMERA_CSS } from '../game/cameraView';
 import { hoverFor, hoverMemo } from '../game/mapHover';
+import { kitLayout, kitFloorBg, kitArt, kitSprite, KIT_LINE, FLOOR_REACH } from '../game/kitMap';
 import { usualScale, overviewScale, naturalSize, fitsWhole, panKey, REF_W } from '../game/camera';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { forecastVals } from '../game/manaForecast';
@@ -150,6 +151,8 @@ const COMBAT_CSS = [
   '@keyframes phcPipDrain{0%{background:#FFFFFF;transform:scaleY(1.7);box-shadow:0 0 12px rgba(255,255,255,.9)}35%{background:#FFFFFF;transform:scaleY(1.2)}100%{transform:none;box-shadow:none}}.phc-pips>span.phc-pip-drain{animation:phcPipDrain calc(.55s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both;animation-delay:0s}',
   '@keyframes phcPipCost{0%,100%{opacity:.3}50%{opacity:.75}}.phc-pip-cost{animation:phcPipCost calc(1.1s * var(--phc-k, 1)) ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pip-cost{animation:none}}',
   '@keyframes phcWaitDot{0%,80%,100%{opacity:.25}40%{opacity:1}}.phc-wait-dots>span{animation:phcWaitDot 1.2s ease-in-out infinite}.phc-wait-dots>span:nth-child(2){animation-delay:.2s}.phc-wait-dots>span:nth-child(3){animation-delay:.4s}',
+  // a kit map's object label (HALF 30): shown on the tile's hover or focus (always once the object is damaged)
+  '.phc-tok .phc-kitlbl{opacity:0}.phc-tok:hover .phc-kitlbl,.phc-tok:focus-visible .phc-kitlbl{opacity:1}',
   '.phc-reduce .phc-yt,.phc-reduce .phc-plan,.phc-reduce .phc-pips>span.phc-pip-drain{animation:phcPlanIn .15s ease-out both}.phc-reduce .phc-yt::after{display:none}',
   '.phc-reduce .phc-cur-ring,.phc-reduce .phc-tgt-ring,.phc-reduce .phc-wait-dots>span{animation:none}.phc-reduce .phc-cb-act{transition:none}.phc-reduce .phc-hp-chip,.phc-reduce .phc-hp-fill{transition:none}',
   // The pinned action column: tabs, a tab panel that scrolls on its own, a footer that never scrolls away.
@@ -204,6 +207,11 @@ const CHORD_MS = 1000;
  *  1 to 5, its chips and hover card 30 (main.tsx: a hovered tile is raised to 20 over its neighbours); the row and
  *  column labels sit over all of them, the corner over both label strips. */
 const GRID_LAYER = { axis: 40, corner: 41 };
+/** A tile's word under it (ROUGH, RUBBLE, HALF 30); on a kit map an object's word is quieter (KIT_LABEL). */
+/** The ground beside a kit wall piece (half a tile thick) is the floor in the wall's light shade, not a dark fill. */
+const KIT_WALL_TINT = 'rgba(10, 13, 19, 0.28)';
+const TEXT_STYLE = 'position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 9px; letter-spacing: 0.06em; color: #A3AEC2';
+const KIT_LABEL = 'position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); z-index: 1; padding: 0 3px; border-radius: 3px; white-space: nowrap; font-size: 8px; line-height: 11px; letter-spacing: 0.04em; color: rgba(231, 235, 243, 0.8); background: rgba(5, 7, 11, 0.62); pointer-events: none; transition: opacity .12s';
 const MINI_SLACK = 172;
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
@@ -962,7 +970,17 @@ export class CombatLogic extends DCLogic {
     };
     // The zone's map painting under the grid (spec: Campaigns, art): each tile shows its slice, colours become tints.
     const mapArt = ART(zoneOf(g)?.art?.map), TINT = { '#0D1119': 'rgba(10, 13, 19, 0.1)', '#1C2536': 'rgba(10, 13, 19, 0.55)', '#4A3A20': 'rgba(140, 111, 58, 0.22)', '#2A2113': 'rgba(140, 111, 58, 0.12)', '#3A2E1A': 'rgba(58, 46, 26, 0.3)', '#161C28': 'rgba(22, 28, 40, 0.3)' };
-    const paint = (k, col) => (mapArt && !String(col).startsWith('rgba(255') ? tileBg(mapArt, k, cb.map.w, cb.map.h, TINT[col] || (String(col).startsWith('rgba') ? col : 'rgba(10, 13, 19, 0.1)')) : col);
+    // Rules 1.45 (game/kitMap.ts): a generated map with a skin is drawn from its setting's kit: the ground under every tile
+    // (a solid tile only when its wall piece is drawn: else its flat fill, as before), wall, doorway, decal and dressing
+    // layers under everything else. Static per map (worked out once), so a hover re-renders no tile for it.
+    const KL = !mapArt ? kitLayout(cb.map) : null, kitKey = cb.map.skin && cb.map.skin.setting;
+    const tintOf = (col) => TINT[col] || (String(col).startsWith('rgba') ? col : 'rgba(10, 13, 19, 0.1)');
+    const paint = (k, col) => { if (String(col).startsWith('rgba(255')) return col; if (mapArt) return tileBg(mapArt, k, cb.map.w, cb.map.h, tintOf(col));
+      return col; };
+    // A kit tile's floor (rules 1.45, the merge's polish): the ground is one layer under the tile reaching over the grid's
+    // gap, so the ground reads as one floor with a faint 1 px line between tiles; the tile's own fill, highlight border
+    // and fog move onto it (a child paints above its tile's background). A map with no kit art draws no floor: as before.
+    const floorOf = (k) => { const kt = KL && KL.get(k); return kt && kt.ground && (!solid.has(k) || kt.wall) ? kt.ground : ''; };
     // The glyph layer: glyphs and standing zones by tile. Hostile glyphs show only where you can see, and only as words
     // your side can read (the rest are scratches).
     // Glyphs follow the effects too (fx/play.ts fxShownGlyphs): a Line drawn and Evoked in one step (a hostile caster's
@@ -1020,11 +1038,13 @@ export class CombatLogic extends DCLogic {
       let bg = '#0D1119', border = '1px solid #151C29';
       if (solid.has(k)) { bg = '#1C2536'; border = '1px solid #232D3F'; }
       const cv = covers[k], ob = allObjs.find((o) => o.pos === k && !(cv && (o.kind === 'crate' || o.kind === 'pillar')) && o.kind !== 'rubble' && o.kind !== 'pile');
-      if (cv) { bg = cv.kind === 'full' ? '#4A3A20' : '#2A2113'; border = (cv.kind === 'full' ? '2px solid #8C6F3A' : '1px solid #4A3A20'); }
       const spr = allObjs.filter((o) => o.pos === k && spriteOf(g, o)).sort((a, b) => (a.kind === 'rubble') - (b.kind === 'rubble'))[0];
+      // on a kit floor, an object the kit draws is its sprite alone: no tinted, bordered tile behind it
+      const floor = floorOf(k), kitObj = !!(floor && spr && kitSprite(kitKey, spr) && spriteOf(g, spr) === kitSprite(kitKey, spr));
+      if (cv && !kitObj) { bg = cv.kind === 'full' ? '#4A3A20' : '#2A2113'; border = (cv.kind === 'full' ? '2px solid #8C6F3A' : '1px solid #4A3A20'); }
       if ((flow && flow.picks.tile === k && (S.action === 'cover' || S.action === 'door')) || k === pickSel || (pickPile && k === pickPile.pos)) border = '2px solid #FFFFFF';
-      if (ob && kindOf(ob).door && !ob.open) { bg = '#3A2E1A'; }
-      if (diff.has(k) && !u) { bg = '#161C28'; }
+      if (ob && kindOf(ob).door && !ob.open && !kitObj) { bg = '#3A2E1A'; }
+      if (diff.has(k) && !u && !(floor && ((KL.get(k) || {}).decal || kitObj))) { bg = '#161C28'; } // (a kit's rubble says it: no dark square)
       const aTag = u ? atkTag(k, u) : null;
       // The Chaplain's patron at its side while Witnessed (rules 1.31, chaplain-spec.md section 9): the engine's presenceOf
       // says it stands; the patron's portrait, a standing figure at 40% behind the token, in the patron's accent.
@@ -1090,13 +1110,24 @@ export class CombatLogic extends DCLogic {
         hasHz: !!(u && hz.marks.has(u.id)), hzText: u && hz.marks.has(u.id) ? markChipText(hz.marks.get(u.id)) : '', hzStyle: u && hz.marks.has(u.id) ? markChipStyle(hz.marks.get(u.id)) : '', hzTitle: u && hz.marks.has(u.id) ? hz.marks.get(u.id).title : '',
         hasHeart: !!(u && u.mg && u.mg.held), heart: u && u.mg && u.mg.held ? heartUri(u.mg.held.stage) : '', heartTitle: u && u.mg && u.mg.held ? u.name + ' is holding an Outburst: stage ' + u.mg.held.stage + ' (×' + stageMult(u.mg.held.stage) + ')' : '',
         sfx: isMagic && S.action === 'draw' && drawReach.has(k) ? 'none' : undefined,
-        hasSprite: !!spr, sprite: spr ? spriteOf(g, spr) : '', spriteStyle: spr ? spriteStyle(spr) : '',
+        hasSprite: !!spr, sprite: spr ? spriteOf(g, spr) : '',
+        // a kit's broken piece is drawn whole (not faded); a door's sprite turns with its doorway (kitMap.ts)
+        spriteStyle: spr ? spriteStyle(kitKey && spr.hp != null && spr.hp <= 0 && kitArt(kitKey, spr.kind + '-broken') ? { ...spr, hp: 1 } : spr) + (KL && spr.kind === 'door' && (KL.get(k) || {}).doorTurn ? '; transform: rotate(90deg)' : '') : '',
+        // the fog and the dark stay above the kit: a tile out of sight (or unlit) dims its kit layers as its own shade does
+        hasKit: !!(KL && KL.get(k) && KL.get(k).layers.length), kit: KL && KL.get(k) ? ((dim) => (dim ? KL.get(k).layers.map((l) => ({ ...l, style: l.style + '; filter: brightness(' + dim + ')' })) : KL.get(k).layers))(!vis.tiles.has(k) ? (cb.map.dark && !litAt(cb, k) ? 0.28 : 0.5) : cb.map.dark && !litAt(cb, k) ? 0.75 : 0) : [],
         hasImg: !!faceOf(u), img: faceOf(u),
         imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : ''), // tokenFade.ts: held, Downed, Hidden, in that order
         hasBadge: !!(u && !faceOf(u)), badge: u ? u.short : '',
         badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld }),
-        hasText: ((diff.has(k) && !mapArt) || !!cv) && !u, text: cv ? (ob ? fmtNum(cv.hp) : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + fmtNum(cv.hp)) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',
-        style: 'position: relative; display: grid; place-items: center; padding: 0; border-radius: 4px; cursor: pointer; background: ' + (k === hv ? 'rgba(255, 255, 255, 0.28)' : route[k] && k !== (cur && cur.pos) ? 'rgba(255, 255, 255, 0.18)' : paint(k, bg)) + '; border: ' + (k === hv ? '2px solid #FFFFFF' : border) + (!vis.tiles.has(k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, ' + (cb.map.dark && !litAt(cb, k) ? '0.72' : '0.5') + ')' : cb.map.dark && !litAt(cb, k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, 0.25)' : ''),
+        hasText: ((diff.has(k) && !mapArt && !(KL && (KL.get(k) || {}).decal)) || !!cv) && !u,
+        // a kit object's HALF / FULL and HP: a small quiet label, shown on hover (CSS) or always once it is damaged
+        textCls: kitObj && cv && cv.hp >= cv.max ? 'phc-kitlbl' : '', textStyle: kitObj ? KIT_LABEL : TEXT_STYLE, text: cv ? (ob ? fmtNum(cv.hp) : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + fmtNum(cv.hp)) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',
+        ...(() => { const lift = k === hv ? 'rgba(255, 255, 255, 0.28)' : route[k] && k !== (cur && cur.pos) ? 'rgba(255, 255, 255, 0.18)' : '', edge = k === hv ? '2px solid #FFFFFF' : border;
+          const shade = !vis.tiles.has(k) ? 'rgba(5, 7, 11, ' + (cb.map.dark && !litAt(cb, k) ? '0.72' : '0.5') + ')' : cb.map.dark && !litAt(cb, k) ? 'rgba(5, 7, 11, 0.25)' : '';
+          if (floor) { const coat = (c) => (c ? 'linear-gradient(' + c + ', ' + c + '), ' : ''), hi = edge.startsWith('2px solid #FFFFFF');
+            return { hasFloor: true, floorStyle: 'position: absolute; inset: -' + (1 + FLOOR_REACH) + 'px; pointer-events: none; background: ' + coat(lift) + coat(shade) + kitFloorBg(floor, k, solid.has(k) ? KIT_WALL_TINT : tintOf(bg)) + '; box-shadow: ' + (hi ? 'inset 0 0 0 2px #FFFFFF' : KIT_LINE),
+              style: 'position: relative; display: grid; place-items: center; padding: 0; border-radius: 0; cursor: pointer; background: transparent; border: 1px solid transparent' }; }
+          return { hasFloor: false, floorStyle: '', style: 'position: relative; display: grid; place-items: center; padding: 0; border-radius: 4px; cursor: pointer; background: ' + (lift || paint(k, bg)) + '; border: ' + edge + (shade ? '; box-shadow: inset 0 0 0 46px ' + shade : '') }; })(),
       });
     }
     for (const t of tiles) if (t.worldNote) t.label += t.worldNote;
