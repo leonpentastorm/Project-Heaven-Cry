@@ -360,7 +360,7 @@ const blockOf = (h: Holder, e: any): AmountBlock | null => {
 };
 /** P3: an amount block's per-point parts that name a source (res:, event:, self:, target:) are counted from the event. */
 const countsOf = (ev: Ev, b: AmountBlock): Record<string, number> => Object.fromEntries((b.per || []).filter((p) => p.of.includes(':')).map((p) => [p.of, sourceOf(ev, p.of)]));
-const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' });
+const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), ...(b.min_pct != null ? { min_pct: b.min_pct } : {}), ...(b.gate_hp !== undefined ? { gate_hp: b.gate_hp } : {}), round: 'none' });
 
 // ============================================================================================== the unit set (P5)
 /** `targets` on any op (Classes 3.0 P5): the op runs once for each unit of the set, as its target, in the fight's order

@@ -1535,7 +1535,7 @@ if isinstance(tq, dict):
 #      that kind (a base, no per-point part), they are the same number.
 AMOUNT_KINDS = {"damage", "heal", "shield"}
 AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
-AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind", "min_pct", "gate_hp"}
 out_rules = (data.get("rules") or {}).get("output") or {}
 PROFILES = set(k for k, v in (out_rules.get("profiles") or {}).items() if isinstance(v, dict))
 num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
@@ -1556,6 +1556,11 @@ def check_block(b, where):
         errors.append(f"{where}: unknown damage type '{b['type']}'")
     if "armour" in b and b["armour"] not in ("full", "half", "none"):
         errors.append(f"{where}: armour is full, half or none")
+    # Classes 3.0 (heal-shield-percent-spec.md section 4): the percent gate, on a heal or shield block only
+    if "min_pct" in b and (b.get("kind") not in ("heal", "shield") or not (isinstance(b["min_pct"], (int, float)) and 0 <= b["min_pct"] <= 1)):
+        errors.append(f"{where}: min_pct (the percent gate) is a share 0 to 1, on a heal or shield block only")
+    if "gate_hp" in b and (b.get("kind") not in ("heal", "shield") or not (b["gate_hp"] is None or (isinstance(b["gate_hp"], (int, float)) and b["gate_hp"] > 0))):
+        errors.append(f"{where}: gate_hp (the max HP the gate counts up to) is a number or null, on a heal or shield block only")
     if "heal_kind" in b and (b.get("kind") not in ("heal", "shield") or not isinstance(b["heal_kind"], str) or not b["heal_kind"]):
         errors.append(f"{where}: heal_kind (the heal's kind for heal_in) is a word, on a heal or shield block only")
     if "mults" in b and not (isinstance(b["mults"], dict) and all(num(v) for v in b["mults"].values())):

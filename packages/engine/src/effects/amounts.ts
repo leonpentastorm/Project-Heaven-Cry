@@ -40,6 +40,7 @@ export interface AmountBlock {
   kind: 'damage' | 'heal' | 'shield'; base: number; per?: { of: string; value: number }[]; profile?: string;
   type?: string; armour?: 'full' | 'half' | 'none'; mults?: Record<string, number>; provisional?: boolean; text?: string;
   /** The heal's kind for heal_in (tending, prayer…), passed by the item op mend (Classes 3.0 batch row). */ heal_kind?: string;
+  /** The percent gate (heal and shield: effects/output.ts mendGate): at least this share of the target's max HP; gate_hp: the max HP it counts up to (null: all of it). */ min_pct?: number; gate_hp?: number | null;
 }
 const TRAIT_BY: Record<string, any> = Object.fromEntries((TRAITS as any[]).map((t) => [t.id, t]));
 const COND_BY: Record<string, any> = Object.fromEntries(CONDITION_ROWS.map((c) => [c.id, c]));

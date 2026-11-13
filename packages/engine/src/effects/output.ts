@@ -55,13 +55,15 @@ export interface Profile {
   /** The pair it reads by default (output.pairs). */ pair?: string;
   /** Rules 1.27 (the heal re-fit): the floor of a landed heal or shield profile: its Stat term is never under this share
    * of what a normal share (output.floor_reference: 4 in each Attribute and Skill of the pair) gets. Absent: no floor. */ floor?: number;
+  /** Classes 3.0 (heal-shield-percent-spec.md section 4): the percent gate of a heal or shield of this profile: at least
+   * this share of the target's max HP (counted up to mending.gate.hp). Absent or 0: no gate. */ min_pct?: number;
 }
 /** The Attributes and Skills a Stat term reads (data/rules.json output.pairs). */
 export interface Pair { attrs: string[]; skills: string[] }
 const OUT: any = (RULES as any).output || {};
 /** The profiles (data/rules.json output.profiles). Today's slopes, one per system; `level` null everywhere but `mend`. */
 export const PROFILES: Record<string, Profile> = Object.fromEntries(Object.entries(OUT.profiles || {}).filter(([, p]) => p && typeof p === 'object').map(([id, p]: [string, any]) =>
-  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: p.level === 'deal' || p.level === 'mend' ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}) }]));
+  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: p.level === 'deal' || p.level === 'mend' ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}), ...(Number.isFinite(p.min_pct) ? { min_pct: Number(p.min_pct) } : {}) }]));
 /** Rules 1.27: the normal share a landed profile's floor is a share of (data/rules.json output.floor_reference). */
 const FLOOR_REF: { attribute: number; skill: number } = { attribute: Number(OUT.floor_reference?.attribute) || 4, skill: Number(OUT.floor_reference?.skill) || 4 };
 /** The pairs (data/rules.json output.pairs): which Attributes and Skills a Stat term reads. A weapon's own pair comes
@@ -138,6 +140,9 @@ export interface AmountSpec {
    * (the caller goes on with the raw number: an Outburst adds its critical and its tone's riders before harm floors it). */
   round?: 'floor' | 'round' | 'none';
   /** Marked for spec section 14. */ provisional?: boolean;
+  /** The percent gate (heal and shield; heal-shield-percent-spec.md section 4): at least this share of the target's max
+   * HP, before the own multipliers. Absent: the profile's (output.profiles[].min_pct); 0: none. */ min_pct?: number;
+  /** The max HP the gate counts up to (null: the target's whole bar; absent: data/rules.json mending.gate.hp, else none). */ gate_hp?: number | null;
 }
 /** Who makes an amount and how: the dealer's sheet or Stat term, level, armour rule, and whether the damage_out hook fires. */
 export interface AmountCtx {
@@ -229,11 +234,34 @@ export function deal(cb: Combat | null, by: Unit | null, target: Unit, spec: Dea
   const r = applyDamage(cb, target, sent, { ...ctx.src, by: by || null });
   return { ...r, produced: c.amount, armour, sent };
 }
+// ---------------------------------------------------------------------------------------------- the percent gate and the cap
+// heal-shield-percent-spec.md section 4 (Classes 3.0 step 1b builds the mechanism; step 7b sets its numbers):
+//   amount = max( (base + flat) × Stat × Level , min_pct × min(target max HP, gate_hp) ) × own multipliers
+// then (heals) the sink's received bonuses, then no more than cap_pct × the target's max HP (mending.cap_pct; a Miracle
+// is exempt). ONE place: mend below. min_pct: the amount block's, else its profile's; every profile's is absent today,
+// mending.gate and mending.cap_pct are absent: no heal or shield moves.
+const MEND_RULES: any = (RULES as any).mending || {};
+/** The data's gate and cap (data/rules.json mending.gate.hp, mending.cap_pct; absent: none). */
+export const MEND_GATE: { hp: number | null; cap_pct: number | null } = { hp: Number.isFinite(MEND_RULES.gate?.hp) ? Number(MEND_RULES.gate.hp) : null, cap_pct: Number.isFinite(MEND_RULES.cap_pct) ? Number(MEND_RULES.cap_pct) : null };
+/** The gate of a heal or shield on this target: its least amount before the own multipliers (0: no gate). */
+export function mendGate(spec: AmountSpec, target: Unit): number {
+  const pct = spec.min_pct ?? profileOf(spec.profile).min_pct ?? 0; if (!(pct > 0)) return 0;
+  const counted = spec.gate_hp === null ? target.maxHp : Math.min(target.maxHp, spec.gate_hp ?? MEND_GATE.hp ?? Infinity);
+  return Math.ceil(pct * counted); // the gate rounds up
+}
+/** An amount with the gate applied after its Stat × Level product, before the own multipliers (and the plus). */
+function gatedRaw(spec: AmountSpec, by: Unit | null, ctx: AmountCtx, gate: number): number {
+  const a = openAmount(spec, by, ctx), own = (ctx.stat || (spec.profile && ctx.who) ? 1 : 0) + (spec.profile ? 1 : 0);
+  const head = a.mults.slice(0, own).reduce((x, m) => x * m.v, Math.max(0, a.base + a.add));
+  if (head >= gate) return closeAmount(a).raw;
+  return closeAmount({ ...a, base: gate, add: 0, mults: a.mults.slice(own), plusAt: a.plus != null ? Math.max(0, (a.plusAt ?? a.mults.length) - own) : undefined }).raw;
+}
 /** Give healing or a shield: the amount (amountOf), then the heal sink or the shield sink (which apply the receiver's
- * multiplier and their hooks). Returns what the sink returned. */
-export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean; /** Classes 3.0 P11: a shield on this layer, at most `holders` units carrying one giver's */ layer?: string; holders?: number } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
-  const { raw } = amountOf(spec, by, ctx);
+ * multiplier and their hooks). The percent gate (mendGate) and the cap are here, once. Returns what the sink returned. */
+export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean; /** Classes 3.0 P11: a shield on this layer, at most `holders` units carrying one giver's */ layer?: string; holders?: number; /** a Miracle: past the cap */ uncapped?: boolean } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
+  const gate = mendGate(spec, target), raw = gate > 0 ? gatedRaw(spec, by, ctx, gate) : amountOf(spec, by, ctx).raw;
   if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, ctx.layer ? { layer: ctx.layer, holders: ctx.holders, stack: !!ctx.stack } : !!ctx.stack); return { amount: raw, restored: 0, revived: false, shield: v }; }
-  const r = healUnit(cb, target, raw, by, ctx.healKind || 'heal');
+  const cap = !ctx.uncapped && MEND_GATE.cap_pct != null ? Math.floor(MEND_GATE.cap_pct * target.maxHp) : undefined;
+  const r = healUnit(cb, target, raw, by, ctx.healKind || 'heal', cap != null ? { cap } : {});
   return { amount: raw, restored: r.restored, revived: r.revived, shield: 0 };
 }

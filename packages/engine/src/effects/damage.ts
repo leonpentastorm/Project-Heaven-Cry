@@ -123,11 +123,12 @@ function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, 
 
 /** Healing a unit through the hooks: 'heal_in' {t, by, n, kind} may change n, then HP; 'heal_given' after. Returns HP
  * actually restored (a Downed unit is brought back up at max(1, n)). */
-export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string, _o: { /** (rules 1.20's round limit is withdrawn, rules 1.23: nothing reads this) */ noLimit?: boolean } = {}): { restored: number; revived: boolean; /** always false since rules 1.23 (there is no round limit) */ limited?: boolean } {
+export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string, _o: { /** (rules 1.20's round limit is withdrawn, rules 1.23: nothing reads this) */ noLimit?: boolean; /** the most one heal restores (effects/output.ts mend: the percent cap), after the received bonuses */ cap?: number } = {}): { restored: number; revived: boolean; /** always false since rules 1.23 (there is no round limit) */ limited?: boolean } {
   if (t.dead) return { restored: 0, revived: false };
   // Healing received: +10% × Camaraderie (rules 1.13).
   const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), kind, cb };
   if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }
+  if (_o.cap != null) ctx.n = Math.min(ctx.n, _o.cap);
   // (Rules 1.20 held spells and prayers to half of a creature's max HP a round here. Withdrawn by rules 1.23: healing
   // is priced in AP, and the enemies go for whoever mends the most: noteTended below is what they read.)
   let restored = 0, revived = false;

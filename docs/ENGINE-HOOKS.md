@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 34 triggers, 67 predicates, 23 ops, 95 effect ops, 124 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 52 stats, 24 condition fields, 375 primitive exports, 132 fx kinds, 169 Unit fields, 58 Combat fields, 40 guards.
+Counts: 34 triggers, 67 predicates, 23 ops, 95 effect ops, 124 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 52 stats, 24 condition fields, 377 primitive exports, 132 fx kinds, 169 Unit fields, 58 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -304,7 +304,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `displaced` | a unit was moved by someone else, after it landed (where it ended, what stopped it) | `u`, `by`, `from`, `to`, `path`, `how`, `kind`, `stoppedBy`, `blockedAt` | combat.ts:1991 | perks/skeleton.ts:58 |  |
 | `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived`, `over` | combat.ts:2465 (+1) | classes/k.ts:1247 (+8) | `heal_given` |
 | `heal_in` | a unit is about to be healed (the amount may change) | `t`, `by`, `n`, `kind` | effects/damage.ts:130 | classes/i.ts:1468 (+7) | `heal` |
-| `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n`, `layer` | effects/damage.ts:153 | classes/i.ts:1355 (+7) | `shield` |
+| `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n`, `layer` | effects/damage.ts:154 | classes/i.ts:1355 (+7) | `shield` |
 | `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `cancel`, `at` | tactics.ts:132 | classes/i.ts:238 (+5) |  |
 | `reaction` | a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves | `u`, `kind`, `event`, `payer` | tactics.ts:136 | none | `reaction` |
 | `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2502 | calls/rules.ts:81 (+6) |  |
@@ -566,7 +566,7 @@ Families: `body`, `brain`, `heart`.
 | name | signature or shape | what for |
 | --- | --- | --- |
 | `Term` | `interface Term { v, label }` | ---------------------------------------------------------------------------------------------- the data |
-| `Profile` | `interface Profile { k, attr, skill, level, pair, floor }` | A damage, heal or shield profile (data/rules.json output.profiles): the slopes of its Stat term and the Level column it reads. |
+| `Profile` | `interface Profile { k, attr, skill, level, pair, floor, min_pct }` | A damage, heal or shield profile (data/rules.json output.profiles): the slopes of its Stat term and the Level column it reads. |
 | `Pair` | `interface Pair { attrs, skills }` | The Attributes and Skills a Stat term reads (data/rules.json output.pairs). |
 | `PROFILES` | `PROFILES: Record<string, Profile>` | The profiles (data/rules.json output.profiles). |
 | `PAIRS` | `PAIRS: Record<string, Pair>` | The pairs (data/rules.json output.pairs): which Attributes and Skills a Stat term reads. |
@@ -582,7 +582,7 @@ Families: `body`, `brain`, `heart`.
 | `stackDamage` | `stackDamage(mults: Term[], vs: Term[]): { mult: number; vsMult: number; total: number }` | The one stacking rule: own multipliers multiply; target bonuses add, are held between −90% and +100%, and multiply once. |
 | `AmountKind` | `type AmountKind = 'damage' \| 'heal' \| 'shield'` | ---------------------------------------------------------------------------------------------- the amount |
 | `ArmourKind` | `type ArmourKind = 'full' \| 'half' \| 'none'` | How a source meets armour: in full, at half (rounded down), or not at all. |
-| `AmountSpec` | `interface AmountSpec { kind, base, per, profile, pair, plus, round, provisional }` | One amount before the formula: its kind, base, per-point parts, profile and rounding (an item's `amounts` block becomes one). |
+| `AmountSpec` | `interface AmountSpec { kind, base, per, profile, pair, plus, round, provisional, min_pct, gate_hp }` | One amount before the formula: its kind, base, per-point parts, profile and rounding (an item's `amounts` block becomes one). |
 | `AmountCtx` | `interface AmountCtx { who, stat, level, counts, flat, mults, vs }` | Who makes an amount and how: the dealer's sheet or Stat term, level, armour rule, and whether the damage_out hook fires. |
 | `Amount` | `interface Amount { spec, base, add, mults, vs, plus, plusAt }` | An amount being built: the Stat and Level terms are already in `mults` (first), a hook may add to add, mults and vs. |
 | `term` | `term(v: number, label: string): Term` | A named multiplier for an amount's `mults` (a term of exactly ×1 is dropped when the amount is opened). |
@@ -595,6 +595,8 @@ Families: `body`, `brain`, `heart`.
 | `DealCtx` | `interface DealCtx { src, hookCtx, pierce, ignoreArmour, armourMult }` | What deal() is told besides the amount: the source for the sink, the hook's context, armour piercing. |
 | `DealResult` | `interface DealResult { produced, armour, sent }` | What deal() did: the amount made, the armour it met, what reached the sink, and the sink's own result. |
 | `deal` | `deal(cb: Combat \| null, by: Unit \| null, target: Unit, spec: DealSpec, ctx: DealCtx): DealResult` | Deal damage: the amount (amountOf, with the 'damage_out' hook between its two halves when spec.hook), the armour (armourAgainst), the sink (applyDamage). |
+| `MEND_GATE` | `MEND_GATE: { hp: number \| null; cap_pct: number \| null }` | The data's gate and cap (data/rules.json mending.gate.hp, mending.cap_pct; absent: none). |
+| `mendGate` | `mendGate(spec: AmountSpec, target: Unit): number` | The gate of a heal or shield on this target: its least amount before the own multipliers (0: no gate). |
 | `mend` | `mend(cb: Combat \| null, by: Unit \| null, target: Unit, spec: AmountSpec & { kind: 'heal' \| 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil,…` | Give healing or a shield: the amount (amountOf), then the heal sink or the shield sink (which apply the receiver's multiplier and their hooks). |
 
 #### The damage, heal and shield sinks (called by deal and mend) (`effects/damage.ts`)
@@ -613,7 +615,7 @@ Families: `body`, `brain`, `heart`.
 
 | name | signature or shape | what for |
 | --- | --- | --- |
-| `AmountBlock` | `interface AmountBlock { kind, base, per, profile, type, armour, mults, provisional, text, heal_kind }` | An item's `amounts` block as data writes it (data/CONVENTIONS.md "Amount blocks"): kind, base, per, profile, type, armour, mults. |
+| `AmountBlock` | `interface AmountBlock { kind, base, per, profile, type, armour, mults, provisional, text, heal_kind, min_pct, gate_hp }` | An item's `amounts` block as data writes it (data/CONVENTIONS.md "Amount blocks"): kind, base, per, profile, type, armour, mults. |
 | `amountHome` | `amountHome(key: string): any \| null` | The data object a key names (see the head of this file), or null. |
 | `amountBlock` | `amountBlock(key: string, name: string): AmountBlock` | An item's amount block by name. |
 | `amountSpecOf` | `amountSpecOf(key: string, name: string): AmountSpec` | The block as the formula's spec (chain order; left raw: the sink floors it, as these sites always did). |
