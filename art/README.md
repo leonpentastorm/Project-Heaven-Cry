@@ -84,6 +84,10 @@ Byte-identical duplicates were removed and every reference pointed at the copy t
 - **Patrons (Blessing 2.0):** eight portraits, eight marks and 39 prayer icons; review candidates.
 - **Title screen:** three layers and the PSD (Part A); the Wick menu clips are review candidates.
 
+## Survival's path map backdrops (rules 1.48; the art contract)
+
+One painting a setting, catalogued under `illustrations` as **`survival-map-<setting>`** (`ahoc`, `city`, `field`, `works`, `shrine`, `rim`), file `illustrations/survival/maps/<setting>.png`, **2560 × 1440**: an overhead Heavenprint field chart of the setting's ground, the middle band (about the middle 60% of the height) calm and mid-toned so white ink reads on it, a camp at the left edge and the Boss's lair at the right; **no drawn paths, no icons, no text, no border** (the game draws the trails, markers and legend). `tools/build_web_assets.py` emits it at 1600 × 900 and 2560 × 1440; `apps/web/src/game/PathMap.tsx` draws it, or a field chart in code while it is missing. Spec: `docs/design/survival-spec.md` section 4.3; prompts: `briefs/GPT-PROMPTS-2026-11-13-survival.md`, batch 7.
+
 ## Painted gear delivery — 13 November 2026
 
 151 Heavenprint gear icons are registered in `catalog.json` under `gear`: 149 brief items and two katana concepts. Masters are in `icons/gear/`; 256/128/64/32 px PNG exports are in `icons/gear/exports/`. See the [implementation handoff](_archive/gear/2026-11-13-complete/HANDOFF.md) for review sheets, provenance and the remaining web-build integration. Individual assets remain review candidates.

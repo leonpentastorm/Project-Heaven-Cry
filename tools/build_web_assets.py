@@ -57,6 +57,11 @@ emit("wick-narrator-placeholder", ROOT / "art/style-guide/references/wick-model-
 for iid, a in C.get("illustrations", {}).items():
     if a.get("campaign_id"):
         emit("ill-" + iid, ROOT / a["path"], (1400, 788), (1600, 900))
+# Rules 1.48 (survival-spec 4.3, the art contract): the path map's overland backdrop of each setting, catalogued under
+# illustrations as `survival-map-<setting>` (2560 x 1440); PathMap.tsx draws it, else its field chart.
+for iid, a in C.get("illustrations", {}).items():
+    if iid.startswith("survival-map-"):
+        emit(iid, ROOT / a["path"], (1600, 900), (2560, 1440))
 for mid, a in C.get("maps", {}).items():
     emit(mid, ROOT / a["path"], (1600, 1100), None, 80)
 for sid, a in C.get("sprites", {}).items():
