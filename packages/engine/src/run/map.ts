@@ -3,6 +3,7 @@
 // reducer stores what it returns and reads it. The order of the work is fixed (shape, links, kinds rolled under the
 // placement rules, then the guarantees repaired deterministically, never rerolled), so the same seed and stage always
 // give the same map.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import survivalJ from '../../../../data/survival.json';
 import { next, rngFor, type Rng } from '../rng';
 import { rollTable } from '../loot';

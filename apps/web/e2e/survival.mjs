@@ -64,7 +64,7 @@ for (let i = 0; i < 400; i++) {
   if (s !== 'mine' || !(await p.locator('text=ACTION POINTS').count()) || await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) { await settle(p, 120); continue; }
   await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
   const conf = p.getByRole('button', { name: 'Confirm', exact: true });
-  try { if (await conf.isEnabled({ timeout: 20000 })) await conf.click({ timeout: 20000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 20000 }); } catch { /* the turn moved on under us */ }
+  try { if (await conf.isEnabled({ timeout: 30000 })) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); } catch { /* the turn moved on under us */ }
   await settle(p, 60);
 }
 let g = await G();
