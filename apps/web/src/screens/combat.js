@@ -23,6 +23,7 @@ const act = (a) => {
 };
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { CameraView, CAMERA_CSS } from '../game/cameraView';
+import { hoverFor, hoverMemo } from '../game/mapHover';
 import { usualScale, overviewScale, naturalSize, fitsWhole, panKey, REF_W } from '../game/camera';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { forecastVals } from '../game/manaForecast';
@@ -756,7 +757,7 @@ export class CombatLogic extends DCLogic {
     // Rules 1.9 (item 683): the route a click takes goes around revealed hazards when it can (the engine's movePaths), and
     // the preview marks every revealed hazard tile it still crosses ("Path crosses: …").
     const arrowsOf = (rr, from) => { rr.forEach((k, i) => { const p = i ? rr[i - 1] : from, [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; }); };
-    const hvRoute = hv && mineTurn ? routeHazards(cb, cur, hv, S.action) : null, hvTiles = hv ? MO.tiles[hv].tiles : 0;
+    const hvRoute = hv && mineTurn ? hoverMemo(this).get(g, ['route', cur.id, hv, S.action], () => routeHazards(cb, cur, hv, S.action)) : null, hvTiles = hv ? MO.tiles[hv].tiles : 0;
     let crossing = hvRoute ? hvRoute.crosses : [];
     if (hv) { moveAp = moveCost(hv); if (hvRoute) arrowsOf(hvRoute.route, cur.pos); else { let k = hv; while (P.prev[k]) { const p = P.prev[k]; const [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } } }
     const foes = cb.units.filter((u) => u.side === 'foe' && !u.dead);
@@ -984,7 +985,7 @@ export class CombatLogic extends DCLogic {
     // layer of the map (GRID_LAYER): a tile scrolled under them, its hover and its chips stay beneath, and the pointer
     // over them (their gaps included: .phc-axis) is theirs, so a tile under the header never reacts (Leon, live 0.23.0).
     const AXIS = 'display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ';
-    const clearHover = () => { if (this.state.hover) this.setState({ hover: null }); };
+    const clearHover = (e) => hoverFor(this).enter(null, e); // (game/mapHover.ts: at most once a frame, never while the map moves)
     const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text, hover: clearHover, style: AXIS + (key === 'h-' ? 'top: 0; left: 0; z-index: ' + GRID_LAYER.corner : key[0] === 'h' ? 'top: 0; z-index: ' + GRID_LAYER.axis : 'left: 0; z-index: ' + GRID_LAYER.axis) });
     // Tooltips near an edge turn inward: the edge is the camera's window, not the map's (vx, vy: a tile's place in it).
     const VT = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 }, vW = Math.max(1, VT.x1 - VT.x0 + 1), vH = Math.max(1, VT.y1 - VT.y0 + 1);
@@ -1031,8 +1032,8 @@ export class CombatLogic extends DCLogic {
         hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',
         hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines }) : null, hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
-        click: () => this.tileClick(k), hover: () => { if (this.state.hover !== k) this.setState({ hover: k }); },
-        hasArrow: !!route[k] && k !== (cur && cur.pos), arrow: route[k] || '', hasCost: k === hv || !!mTag || !!aTag, cost: mTag || (aTag ? aTag.text : (moveAp ? '−' + moveAp + ' AP' : 'Paid') + ' · ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') + (crossing.length ? ' · ⚠ HAZARD' : '')),
+        click: () => this.tileClick(k), hover: (e) => hoverFor(this).enter(k, e),
+        hasArrow: !!route[k] && k !== (cur && cur.pos), arrow: route[k] || '', hasCost: k === hv || !!mTag || !!aTag, cost: !(k === hv || mTag || aTag) ? '' : mTag || (aTag ? aTag.text : (moveAp ? '−' + moveAp + ' AP' : 'Paid') + ' · ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') + (crossing.length ? ' · ⚠ HAZARD' : '')),
         // The chip over the hovered tile: kept whole inside the map (it was cut off at the map's edge when the reason was
         // long, Leon 10 Nov 2026): a long reason wraps, and near an edge the chip slides inward; on the top row it sits
         // under the tile. It is drawn over every token and overlay of the grid.
@@ -1506,7 +1507,7 @@ export class CombatLogic extends DCLogic {
     const turnPanels = this.panels(mineTurn ? 'mine:' + cur.id + ':' + cb.round + ':' + cb.turn : 'wait:' + (cb.over ? 'over' : cur ? cur.id + ':' + cb.round + ':' + cb.turn : 'none'), T);
     return {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend, turnPanels,
-      gridLeave: () => { if (this.state.hover != null) this.setState({ hover: null }); }, // the stroke tip and lit stroke go with the cursor
+      gridLeave: () => hoverFor(this).leave(), // the stroke tip and lit stroke go with the cursor
       // isolation: the map is one stacking layer, so nothing in it (a hovered tile, a chip, a token's card) rises above the
       // small map, the camera's arrows or any panel; inside it the axis labels are on top (GRID_LAYER).
       gridStyle: 'display: grid; isolation: isolate; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
