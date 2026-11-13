@@ -1875,6 +1875,28 @@ def _walk_react(o, w):
 for _n in ("perks", "traits"):
     for _x in items(_n): _walk_react(_x, f"{_n}:{_x.get('id')}")
 for _x in base + adv + pool: _walk_react(_x, f"classes:{_x.get('id')}")
+# rules 1.30 (reactions-spec.md section 10): more reactions only from the Skirmisher (its class gain) and items that say
+# so in their text; the suppressed row forbids attacking and moving reactions only (never protective ones).
+def _reaction_mods(o, w, text):
+    if isinstance(o, dict):
+        if o.get("op") == "stat_mod" and o.get("stat") == "reactions" and "reaction" not in (text or "").lower():
+            errors.append(f"{w}: gives reactions (stat_mod reactions) but its text never says so")
+        for k, v in o.items():
+            if k != "text": _reaction_mods(v, w, text)
+    elif isinstance(o, list):
+        for v in o: _reaction_mods(v, w, text)
+for _n in ("perks", "traits"):
+    for _x in items(_n): _reaction_mods(_x, f"{_n}:{_x.get('id')}", json.dumps(_x))
+for _b in base:
+    for _m in _b.get("gain") or []:
+        if _b.get("id") != "marksman" and any(e.get("stat") == "reactions" for e in _m.get("effects") or [] if isinstance(e, dict)):
+            errors.append(f"classes:{_b.get('id')}.{_m.get('id')}: only the Skirmisher's class gain gives a reaction (rules 1.30)")
+        _reaction_mods(_m, f"classes:{_b.get('id')}.{_m.get('id')}", _m.get("text"))
+for _c in items("conditions"):
+    if _c.get("id") == "suppressed":
+        _fb = [e for e in _c.get("effects") or [] if isinstance(e, dict) and e.get("op") == "forbid" and e.get("action") == "reaction"]
+        if not _fb or sorted(_fb[0].get("kinds") or []) != ["attack", "move"]:
+            errors.append("conditions:suppressed: its reaction `forbid` names kinds attack and move only (rules 1.28, 1.30)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:
