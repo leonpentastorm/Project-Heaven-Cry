@@ -123,4 +123,24 @@ page that hosts, and keeps testing what it tested. None was deleted or weakened.
 
 ## 6. The close
 
-(see the commit "Classes 3.0 step 10: the close" for the run's numbers)
+- `python3 tools/validate.py data`: 0 errors. `python3 design/canvas-build/build.py --web --check`: fresh.
+  `docs/ENGINE-HOOKS.md` regenerated.
+- `npm run built-from -- claude/charming-gauss-hbq4n0..HEAD`: 3 smells in 2 places, 0 a lint fails on: the generated
+  `protodata.json`, and `resources.ts`' MP-row hints, whose "1 AP" and "+2 Strain" were there before (the lines moved).
+- `npm run check`: validator, tables, screen data, hooks, both type checks and the engine tests (4005) green. The web
+  tests: 1112 green in the run; `combat-screen.test.ts` and `combat-actions.test.ts` timed out under the machine's load
+  (load average 26: two other builders) and pass alone (15 / 15 twice, 6 / 6 with `--testTimeout 300000`).
+- **Golden tables and replays moved on purpose:** `costs-credit.json` 195 lines, only refusal words ("Not now (Self
+  has)." → "An enemy sees you: this needs you Hidden.", the Attuner's and the Bond cap's); `replays.json` 5 replays that
+  play M813, state hashes only (actions and streams the same: the saved campaign copy carries `listed: false`).
+- Browser suites on port 8841 (own server, `--base`): shadow, tending, chaplain, reactions, tabs, playscreen, slate,
+  two-players, faith, faith-pg, classes-moves, sandbox, old-save, title, missions, reconnect: green (reactions after
+  its fix: the Answer list is set out of a fight; tending's MP check reads the full row, not the urgent mini row;
+  chaplain's shot loops bounded after one timed out beside the others).
+- Not run here: coop-stall, cutins, magic, perks, playtest-tools, right-panels, rules114, shell-guest, ui-shell, vote
+  (each only gained the M813 hook on its hosting page).
+- Found and fixed on the way: shadow.json's texts were never number-filled (`datatext.ts`): the hover cards showed
+  `{=effects.0.ap}`.
+- Screenshots (deviceScaleFactor 2): the Mender's TEND tab with the Bond strip, the Operative's Shadow row and the Break
+  toggle, the Chaplain Witnessed with Old Overcast standing on the tile, the Skirmisher's two reaction pips, the title
+  with the Proving Ground first, and NEW GAME's room on the Narrator's own start.
