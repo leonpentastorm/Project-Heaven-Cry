@@ -18,6 +18,7 @@ import type { Fam } from './rolls';
 
 /** "Until something ends it", in rounds (a table condition with this many never ticks). */
 export const UNTIL = 99;
+/** How a condition is run: by its table row, as a flag only, or as a unit state (unitstate.ts). */
 export type CondEngine = 'table' | 'flag' | 'state';
 /** What a to-hit change applies to (the `context` of an `attack_mod` effect). */
 export type HitContext = 'own_attacks' | 'next_attack' | 'not_vs_source' | 'vs_source' | 'marker_squad_vs_self' | 'melee_vs_self' | 'ranged_vs_self';
@@ -30,6 +31,7 @@ export interface CondMods {
   /** on d20s with a skill of this tag ('core:mind', 'core:soul', 'attr:expression'). */ skills?: { tag: string; value: number }[];
   /** to hit, by what it applies to. */ hit?: Partial<Record<HitContext, number>>;
 }
+/** One condition as the engine reads its data/conditions.json row. */
 export interface CondDef {
   /** the data's id */ id: string; /** the name it is stored under (u.conds[key]; the id unless the row says otherwise) */ key: string;
   /** the word in "X is <name>" (the row's label, else its name) */ name: string; /** the row's own name */ title: string; text: string;
@@ -80,4 +82,5 @@ export const condMods = (id: string): CondMods => CONDS[condId(id)]?.mods || {};
 export const CONDITION_NAMES: string[] = [...new Set([...Object.keys(CONDS), ...Object.keys(ALIAS)])];
 /** The conditions kept as unit flags, and the unit states. */
 export const FLAG_CONDS = new Set(Object.values(CONDS).filter((d) => d.engine === 'flag').map((d) => d.key));
+/** The conditions that are unit states (set through unitstate.ts, never written by hand). */
 export const STATE_CONDS = new Set(Object.values(CONDS).filter((d) => d.engine === 'state').map((d) => d.key));

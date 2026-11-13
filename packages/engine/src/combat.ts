@@ -10,7 +10,7 @@ import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HAND
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
-import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
+import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, heldShotPaid, spendPaidShot, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
@@ -31,7 +31,7 @@ import { windowStep } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
 import { canStand, standBlocker, unitsIn, inBounds, work } from './kit';
-import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed } from './unitstate';
+import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed, setSideSees } from './unitstate';
 import { setProne, bleedTick, dazeSpent } from './magic';
 import { condMods, condDef } from './condtable';
 
@@ -154,6 +154,9 @@ export interface Unit {
   offMags?: number[]; offMagTypes?: (string | null)[]; offAmmoType?: string | null; offLoose?: number;
   /** The off-hand gun is jammed (its own jam: a fumble with it jams it, not the main gun; Clear jam with the off hand clears it). */
   offJammed?: boolean;
+  /** Set only while the off-hand weapon is swapped into u.weapon (a paired attack, an off-hand technique): the main hand's
+   * weapon, so the Heat limit both guns pool is still main + off (Leon's ruling, 13 Nov 2026: the jam lands on the gun that fired). */
+  swapMain?: string;
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
   ctrl?: string; companion?: string;
   /** The only actions this unit has (action ids as the action list names them: 'move', 'shot'…), besides ending its
@@ -245,8 +248,12 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Rules 1.25, the fire doctrine: who of each side's AI has attacked whom this round (target id -> attacker ids), and
    * the doctrine lines the log has already said this fight. */
   fire?: { round: number; on: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
-  /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id. */
+  /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id: the tile it was on
+   * when this side last saw it (seenAt), or a known position an item gave. The enemy AI searches there (enemySearchTile). */
   lastSeen?: Record<string, Record<string, string>>;
+  /** Rules (13 Nov 2026): where each side last SAW each hostile, by unit id (noteSeenAt; a walk notes each step). Read
+   * only when the hostile hides (rawHidden copies it to lastSeen). Not in a player's view (fog.ts). Old saves: absent. */
+  seenAt?: Record<string, Record<string, string>>;
   /** Who each log line is about, as each side saw it when it was written (say(); fog.ts reads it): logSee[i] is line i's
    * mark, 0 (or past the end: an old save, a line naming nobody) is a line every side may read. Trailing 0s are not kept. */
   logSee?: LogMark[];
@@ -360,6 +367,7 @@ export const FX_CAP = 40;
 let fxChain = 0;
 /** Keep the last FX_CAP effects of earlier actions (called before a new action runs). */
 export function trimFx(cb: Combat) { const list = cb.fx; if (list && list.length > FX_CAP) list.splice(0, list.length - FX_CAP); }
+/** Put one effect event on the fight's stream (the client animates it; fxTaps in fxtap.ts may watch it). */
 export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): FxEvent {
   // A turn's ring and a stance's word show only to a side that sees the unit as it happens (not at the batch's end: it
   // may walk into the fog or fall later in the same batch): seen {pc, foe}, 1 or 0, stamped now.
@@ -458,6 +466,7 @@ export function walkable(map: MapDef, objs: MapObject[], from: string, to: strin
 /** Tiles a character may stand on outside a fight. */
 export const standable = (map: MapDef, k: string) => { const [x, y] = k.split(',').map(Number); return x >= 0 && y >= 0 && x < map.w && y < map.h && !map.solid.includes(k) && !map.cover.includes(k) && !(map.full || []).includes(k); };
 
+/** Tiles between two tiles on the grid (diagonals count 1). */
 export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by] = xy(b); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
 
 /** A character's Vision in tiles (spec: Vision): 12 + 2 per Perception above 1 + Vigilant + items. */
@@ -591,6 +600,11 @@ export function bossGuards(t: Unit, src: any, cb?: Combat | null): boolean {
   if (NOT_AN_ACTION.has(src.type) || src.faithShare) return false;
   return levelGap(by, t, cb) <= 0;
 }
+/** Did the guard find this enemy at full HP in the action `by` is taking now (so it holds it for the whole action)? An
+ * execution must not finish what the guard held, nor in the same action (Execution, classes/i.ts; bug, 13 Nov 2026). */
+export function guardHeld(t: Unit, by: Unit | null | undefined): boolean {
+  const m = GUARD_MARK.get(t); return !!m && !!by && m.seq === GUARD_SEQ && m.by === by.id;
+}
 onHook('damage_in', (ctx: any) => {
   const t: Unit = ctx.t, src = ctx.src;
   if (ctx.phase === 'reduce') { if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
@@ -651,9 +665,9 @@ export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...obje
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
 
-/** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
 /** What hurtUnit deals that an item may speak about when someone made it (its `damage_kinds`). */
 export const BLAST_KINDS = ['explosion', 'trap', 'thrown'];
+/** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
 export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat, why = 'hazard', by?: Unit | null): string {
   if (u.dead) return '';
   // The one way in (effects/output.ts deal): the number as given (no Stat or Level term yet, no 'damage_out' hook:
@@ -950,6 +964,7 @@ export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly 
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
+setSideSees(sideSeesUnit); // rawHidden (unitstate.ts) keeps where a side last saw a unit that hides
 /** A walk's sight, per side: '1' at each path tile where that side sees the mover, '0' where it doesn't (presentation
  * only: the client walks a hostile in from the fog edge and out into it, and never draws it where it was unseen). */
 export function pathSight(cb: Combat, u: Unit, path: string[]): { pc: string; foe: string } {
@@ -1021,6 +1036,16 @@ export function noteSighted(cb: Combat) {
   // (onMapOnly: a hostile standing off the map is not sighted, as visibility() has it; test/sight-order.test.ts)
   const seen = seenIds(cb, 'pc', true), had = cb.sighted || [], add = seen.filter((id) => !had.includes(id));
   if (add.length || !cb.sighted) cb.sighted = [...had, ...add];
+}
+/** Note where each side sees each hostile now (cb.seenAt): what a side last saw is what it can search for when that
+ * hostile hides (rawHidden). Called after every step of the game and before and after each enemy's turn; a walk notes
+ * its own steps (moveUnit). No dice, no rule read; the same order as seenIds. */
+export function noteSeenAt(cb: Combat) {
+  if (cb.over) return;
+  for (const side of ['pc', 'foe'] as const) for (const id of seenIds(cb, side)) { const t = cb.units.find((x) => x.id === id)!; noteSeen(cb, side, id, t.pos); }
+}
+function noteSeen(cb: Combat, side: string, id: string, at: string) {
+  const m = cb.seenAt?.[side]; if (!m || m[id] !== at) cb.seenAt = { ...cb.seenAt, [side]: { ...m, [id]: at } }; // replaced, never written into (a copied fight shares it)
 }
 /** Does anyone on the attacker's side see the target? */
 export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
@@ -1357,8 +1382,8 @@ function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): 
 /** A gun's Heat limit for this unit: the weapon's, + items (stat 'heat_limit'; Belt Discipline: hooks gap J1). */
 /** Two guns that build Heat share one pool (Leon, 10 Nov 2026): one bar, its limit the two limits added, so there is
  * one number to watch. Either gun's shot adds to it; it cools 2 a turn for each of the two. */
-const heatPair = (u: Unit): WeaponDef | null => { const m = WEAPON[u.weapon], o = u.offWeapon ? WEAPON[u.offWeapon] : null; return m && o && m.heat_limit && o.heat_limit ? o : null; };
-export const heatLimit = (u: Unit, w: WeaponDef) => { const o = heatPair(u), m = WEAPON[u.weapon]; return (o && (w === m || w === o) ? (m.heat_limit || 0) + (o.heat_limit || 0) : w.heat_limit || 0) + (u.charId || u.held ? statQuery({ u }, 'heat_limit').add : 0); };
+const heatPair = (u: Unit): WeaponDef | null => { const m = WEAPON[u.swapMain || u.weapon], o = u.offWeapon ? WEAPON[u.offWeapon] : null; return m && o && m.heat_limit && o.heat_limit ? o : null; };
+export const heatLimit = (u: Unit, w: WeaponDef) => { const o = heatPair(u), m = WEAPON[u.swapMain || u.weapon]; return (o && (w === m || w === o) ? (m.heat_limit || 0) + (o.heat_limit || 0) : w.heat_limit || 0) + (u.charId || u.held ? statQuery({ u }, 'heat_limit').add : 0); };
 /** After a critical: Injury resistance (d100), then a d6 for the location (spec: Injuries). Returns the log suffix.
  * 'injury' {t, d, loc, side, cancel, noDaze, noHalve} fires before it lands (cb given; hooks gap A9): cancel stops
  * it, noDaze/noHalve keep the injury but not its AP or Movement cost. */
@@ -1629,6 +1654,7 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/move', how } }); if (no) return no; }
   return { ap, ap0, tiles, route, mc, P };
 }
+/** A unit walks to a tile on its own (move, sprint or disengage): priced, paid, step by step with every reaction, trap and hazard. */
 export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): string | null {
   const pl = movePlan(cb, u, to, how, o); if (typeof pl === 'string') return pl;
   const { ap, ap0, tiles, route, mc, P } = pl;
@@ -1647,6 +1673,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   for (let i = 0; i < route.length; i++) {
     const k = route[i], was = u.pos;
     u.pos = k; seg.push(k); tileSight.push(sightHere(cb, u)); eyes.steps.push({ at: k, ids: new Set(seenIds(cb, u.side as 'pc' | 'foe')) });
+    { const sh = tileSight[tileSight.length - 1], other = u.side === 'pc' ? 'foe' : 'pc'; if (sh[other === 'pc' ? 0 : 1] === '1') noteSeen(cb, other, u.id, k); // the other side saw it step here
+      for (const id of eyes.steps[eyes.steps.length - 1].ids) { const t = cb.units.find((x) => x.id === id); if (t) noteSeen(cb, u.side, id, t.pos); } } // and what the walker's side sees from here
     { const en = enterTile(cb, rng, u, k, flush); if (en.sprung) sprung = en.sprung; if (en.stopped) stopped = en.stopped; } // what the tile does to whoever enters it (a trap, a field, a hazard)
     const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, ...(mc.noWatch ? { noWatch: true } : {}), flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first; noWatch (set on move_cost): no held Watch hears the step (Shift)
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
@@ -1718,10 +1746,11 @@ function react(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode) {
 export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string[], walked?: string[]) {
   for (const h of cb.units) if (h.overwatch && h.side !== mover.side && alive(h) && !mover.dead && !mover.downed && !mover.hidden && unitSees(cb, h, mover.pos)) {
     const pv = previewAttack(cb, h, mover, h.overwatch, { free: true }); if (!pv.ok) continue;
-    if (!canReact(cb, h)) continue;
+    const paid = heldShotPaid(cb, h); // Killzone's second shot: the reaction its first shot spent covers it
+    if (!paid && !canReact(cb, h)) continue;
     const rw: any = emit(cb, 'reaction_window', { reactor: h, mover, kind: 'overwatch', cancel: false, at: mover.pos, cb, rng }); if (rw.cancel) continue;
     if (seg && seg.length > 1) { moveFx(cb, mover, seg, 'move', walked); seg.splice(0, seg.length - 1); walked?.splice(0, walked.length - 1); }
-    useReaction(cb, h); const mode = h.overwatch, shots = Math.max(1, h.owShots || 1); h.overwatch = null; h.owShots = 0;
+    if (paid) spendPaidShot(cb, h); else useReaction(cb, h); const mode = h.overwatch, shots = Math.max(1, h.owShots || 1); h.overwatch = null; h.owShots = 0;
     // Presentation: the held shot is sprung here (the client stops the mover's walk on this tile for it).
     emitFx(cb, 'overwatch', { unit: h.id, target: mover.id, from: h.pos, at: mover.pos, mode });
     say(cb, h.name + ' fires from overwatch.');
@@ -2065,9 +2094,9 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   // swap the off-hand weapon in for its own swing or shot
   const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
   const skillPts = u.dexterity || 0; // rules 1.12 (item 953): an off-hand gun or light blade hits with Dexterity
-  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
+  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
   if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else say(cb, '(off hand: ' + p2.why + ')'); }
-  u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep);
+  u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); delete u.swapMain;
   } finally { fxChain--; VOLLEY = wasV; }
   emit(cb, 'volley_end', { u, mode: 'paired', target: t, cb, rng }); checkOver(cb); return null;
 }
@@ -2283,10 +2312,10 @@ export const setOffJam = (u: Unit, jam: boolean) => { if (jam) u.offJammed = tru
 export function withOffHand<T>(u: Unit, fn: () => T): T {
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow) return fn();
   const keep = { weapon: u.weapon, ammo: u.ammo, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
-  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
-  try { return fn(); } finally { u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); }
+  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
+  try { return fn(); } finally { u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); delete u.swapMain; }
 }
-/** Shoot an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
+/** Attack an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
 export const coverOffAp = (u: Unit, cb?: Combat | null): number => { const w = u.offWeapon ? WEAPON[u.offWeapon] : null; return w ? Math.max(1, price({ cb, u }, 'break', attackApCost(w, isMelee(w) ? 'melee' : 'shot'), { hand: 'off' }).ap) : 2; };
 /** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. hand 'off':
  * the off-hand weapon's (its own rounds, jam, range and damage). */
@@ -2328,8 +2357,30 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }
-/** Clear a jam (2 AP, then items; it resets Heat). hand 'off': the off-hand gun's own jam, at the same price. */
+/** Two guns that can jam, one in each hand: then there is ONE Clear jam (Leon's ruling, 13 Nov 2026; Hands 5d). */
+export function twoJammingGuns(u: Unit): boolean {
+  const mw = WEAPON[u.weapon], ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
+  const jams = (w: WeaponDef | null | undefined) => !!w && !isMelee(w) && (canJam(w) || ((w as any).handling?.grant || []).includes('clear'));
+  return jams(mw) && jams(ow);
+}
+/** Is any gun this unit holds jammed (with two guns, either)? */
+export const anyJammed = (u: Unit): boolean => !!u.jammed || (twoJammingGuns(u) && !!u.offJammed);
+/** Clear a jam (2 AP, then items; it resets Heat). With two guns that can jam (twoJammingGuns) it is ONE action whatever
+ * `hand` says: it clears every jammed gun you hold for the main hand's price, once, and resets the Heat they pool
+ * (Leon's ruling, 13 Nov 2026; Hands 5d: the guns still jam apart, and a jammed one never stops the other firing).
+ * hand 'off' with a single off-hand gun (a melee weapon in the main hand): that gun's own jam, at the same price. */
 export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): string | null {
+  if (twoJammingGuns(u)) {
+    const main = !!u.jammed, off = !!u.offJammed;
+    if (!main && !off) return 'Not jammed.';
+    const cost = price({ cb, u }, 'clear_jam').ap;
+    { const no = whyNot(cb, u, cost); if (no) return no; }
+    const jc: any = emit(cb, 'jam_clear', { u, ap: cost, keepHeat: false, cb, hand: main && off ? 'both' : main ? 'main' : 'off' });
+    pay(cb, u, cost); u.jammed = false; setOffJam(u, false); if (!jc.keepHeat) u.heat = 0;
+    emitFx(cb, 'clear', { unit: u.id, at: u.pos, dur: 1000, ...(main && off ? { hand: 'both' } : off ? { hand: 'off' } : {}) });
+    say(cb, u.name + (main && off ? ' clears both guns\' jams.' : off ? ' clears the off-hand gun\'s jam.' : ' clears the jam.'));
+    return null;
+  }
   if (hand === 'off') {
     const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow || isMelee(ow)) return 'Your off hand holds no gun.';
     if (!u.offJammed) return 'Not jammed.';
@@ -2423,7 +2474,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
-    if (!pcs.length) break;
+    if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; continue; } // nobody it perceives: it searches where its side last saw one
     const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);
     if (!best || moveUnit(cb, u, best.tile, rng)) break;
   }
@@ -2592,6 +2643,27 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   const b = best;
   return { tile: b, near: [...pcs].sort((a, c) => dist(b, a.pos) - dist(b, c.pos))[0] || null };
 }
+/** An enemy that perceives nobody (every hostile Hidden, or out of the fight) heads for where its side last saw one
+ * (cb.lastSeen[its side]: the tile a hostile was on when this side saw it hide, or a known position an item gave),
+ * never where that hostile really is now: the nearest such tile (fewest tiles of walk; ties by the order of cb.units),
+ * one turn's walk at a time. Nothing known, or nothing nearer within its AP: null (it holds or takes cover, as before;
+ * an old save has no record). Bug, 13 Nov 2026: it used to stand still. Deterministic; no dice. */
+export function enemySearchTile(cb: Combat, u: Unit, stood?: Set<string>): { tile: string; goal: string } | null {
+  const known = cb.lastSeen?.[u.side]; if (!known) return null;
+  const P = paths(cb, u.pos, u.id);
+  let goal: string | null = null, gd = Infinity;
+  for (const t of cb.units) {
+    const at = known[t.id]; if (!at || t.side === u.side || t.dead || t.surrendered || at === u.pos) continue;
+    const d = P.dist[at] ?? dist(u.pos, at); if (d < gd) { gd = d; goal = at; }
+  }
+  if (!goal) return null;
+  const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity, best: string | null = null;
+  for (const [k, tiles] of Object.entries(P.dist)) {
+    if (k === u.pos || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue;
+    const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; }
+  }
+  return best ? { tile: best, goal } : null;
+}
 /** What an enemy means to do on its next turn (the Trickster's Read): the first thing enemyTurn would do, read with a
  * fresh turn's AP and nothing rolled or changed. Sigil and Soul casters are named as weighing a spell (their planners
  * keep per-turn state), with the weapon choice that follows if they don't cast. */
@@ -2631,7 +2703,8 @@ function intentInner(cb: Combat, u: Unit): Intent {
   else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
     out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name) + (targets[0].why ? AIM_WHY[targets[0].why] : ''), targetId: owner!.id, ...(ghost ? { image: t.id } : {}), ...(targets[0].why ? { why: targets[0].why } : {}) };
-  } else if (moveBlock(u) || !pcs.length) out = { kind: 'wait', text: 'hold where it is' };
+  } else if (moveBlock(u)) out = { kind: 'wait', text: 'hold where it is' };
+  else if (!pcs.length) { const go = enemySearchTile(cb, u); out = go ? { kind: 'move', text: 'move to ' + refOf(go.tile) + ', toward where it last saw someone (' + refOf(go.goal) + ')', to: go.tile } : { kind: 'wait', text: 'hold where it is' }; }
   else {
     const best = enemyCloseTile(cb, u, mode, order, pcs);
     out = best ? { kind: 'move', text: 'move to ' + refOf(best.tile) + (best.near ? ' toward ' + (isGhost(best.near) ? 'the False Image of ' + (cb.units.find((x) => x.id === (best.near as any).ghostOf)?.name || 'someone') : best.near.name) : ''), to: best.tile, ...(best.near ? { targetId: (best.near as any).ghostOf || best.near.id } : {}) } : { kind: 'wait', text: 'hold where it is' };
@@ -2686,7 +2759,7 @@ export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
     const lAp = price({ cb, u }, 'load').ap, why = !open.length ? 'Every spare ' + unit + ' is full.' : !u.loose ? 'No loose rounds to load.' : need(lAp);
     add({ id: 'load', label: unit === 'magazine' ? 'Load a magazine' : 'Fill a ' + unit, ap: lAp, why, text: 'Load loose rounds into your fullest part-empty ' + unit + ', 1 AP per ' + ROUNDS_PER_AP + ' rounds.' });
   }
-  if (canJam(w) || grant.has('clear')) { const c = price({ cb, u }, 'clear_jam').ap; add({ id: 'clear', label: 'Clear jam', ap: c, why: !u.jammed ? 'Not jammed.' : need(c), text: 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
+  if (canJam(w) || grant.has('clear')) { const c = price({ cb, u }, 'clear_jam').ap, two = twoJammingGuns(u); add({ id: 'clear', label: 'Clear jam', ap: c, why: !anyJammed(u) ? 'Not jammed.' : need(c), text: two ? 'Clears every jammed gun you hold, for this one price. A jammed gun can\'t fire until cleared; the other still fires. Clearing resets Heat.' + (u.jammed && u.offJammed ? ' Clears: both guns.' : u.offJammed ? ' Clears: the off-hand gun.' : u.jammed ? ' Clears: the main-hand gun.' : '') : 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
   const braces = weaponBraces(u);
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;

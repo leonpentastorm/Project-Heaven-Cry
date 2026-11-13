@@ -7,6 +7,9 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
 import ACTIONS_JSON from '../../../data/actions.json';
+import LINT_PATTERNS from './lint-patterns.json';
+/** A pattern shared with tools/built_from.py (test/lint-patterns.json): one list, read by both. */
+const PAT = (id: string) => (LINT_PATTERNS as any).patterns[id];
 import { COST_SITE_IDS, RESOURCES, costOf, hasCost, registered, handlerOf, itemInfo, dataAp, PERK } from '../src';
 
 const SRC = fileURLToPath(new URL('../src', import.meta.url));
@@ -43,9 +46,9 @@ describe('F3: one way to price, check, pay and give AP', () => {
     // what is left are not units: a hook's context (ctx), a preview (pv, out), a cost being built (c), the area map's round
     // pool (g.story.ap, one door of its own: game.ts apLeft / spendAp), a fight ruling's record (fr)
     // (condtable.ts `m`: a condition's modifiers, read from its data row)
-    const NOT_A_UNIT = new Set(['ctx', 'g.story', 't.pv', 'out', 'fr', 'c', 'm']);
+    const NOT_A_UNIT = new Set<string>(PAT('ap_write').not_a_unit);
     const bad: string[] = [];
-    for (const f of FILES) { if (AP(f.rel)) continue; for (const m of f.code.matchAll(/([A-Za-z_][\w.!\]\)]*)\.ap\s*(\+=|-=|\*=|\/=|\+\+|--|=(?!=))/g)) if (!NOT_A_UNIT.has(m[1])) bad.push(f.rel + ': ' + m[0]); }
+    for (const f of FILES) { if (AP(f.rel)) continue; for (const m of f.code.matchAll(new RegExp(PAT('ap_write').re, 'g'))) if (!NOT_A_UNIT.has(m[1])) bad.push(f.rel + ': ' + m[0]); }
     expect(bad).toEqual([]);
     // the same write spelled another way (review): `--u.ap`, `Object.assign(u, { ap: … })`
     expect(hits(/(\+\+|--)\s*[A-Za-z_][\w.!]*\.ap\b/, AP)).toEqual([]);
@@ -172,7 +175,7 @@ describe('F8: every limit and cooldown goes through uses() (effects/uses.ts)', (
       'effects/mending.ts': 1, 'faith.ts': 4, 'feelings.ts': 1, 'fighttalk.ts': 1, 'game.ts': 2, 'magic.ts': 2, 'perks/b.ts': 1, 'perks/c.ts': 1, 'perks/d.ts': 3, 'perks/e.ts': 4, 'perks/g.ts': 2, 'perks/skeleton.ts': 1, 'physical/core.ts': 2,
       'physical/ranged/press.ts': 2, 'sigil.ts': 3, 'tactics.ts': 2 };
     const got: Record<string, number> = {};
-    for (const f of FILES) { const n = [...f.code.matchAll(/[!=]== ?(cb|ctx\.cb|h\.cb!?|t\.cb|c)\.round\b|\b(cb|ctx\.cb|h\.cb!?|t\.cb)\.round ?[!=]==/g)].length; if (n) got[f.rel] = n; }
+    for (const f of FILES) { const n = [...f.code.matchAll(new RegExp(PAT('round_compare').re, 'g'))].length; if (n) got[f.rel] = n; }
     expect(got).toEqual(LEFT);
   });
   it('RATCHET: a cooldown or a per-turn stamp kept by hand (the review\'s spellings; never raise a number)', () => {

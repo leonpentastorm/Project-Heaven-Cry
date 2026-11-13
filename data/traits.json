@@ -379,19 +379,20 @@
       "cost": null,
       "flavour": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.",
       "upsides": [
-        "One Blade: outside a fight, name one weapon as yours. It can't be Disarmed and has one extra mod slot, and your weapon mastery with it grows {=effects.0.value_pct}% faster."
+        "One Blade: outside a fight, name one weapon as yours. It can't be Disarmed and has one extra mod slot."
       ],
       "downsides": [
         "Rusty Manners: {=effects.2.value} Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length; the Narrator holds you to it."
       ],
       "notes": [],
       "narrator_hook": "the negotiation where someone compliments the sword.",
-      "text": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.\n+ One Blade: outside a fight, name one weapon as yours. It can't be Disarmed and has one extra mod slot, and your weapon mastery with it grows {=effects.0.value_pct}% faster.\n− Rusty Manners: {=effects.2.value} Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length; the Narrator holds you to it.",
+      "text": "While your cohort at the academy drank and courted, you trained alone with one blade. Now the world is ending, and suddenly everyone wants to know you.\n+ One Blade: outside a fight, name one weapon as yours. It can't be Disarmed and has one extra mod slot.\n− Rusty Manners: {=effects.2.value} Charisma, Insinuation and Authority. If anyone asks about your weapon, you tell them, at length; the Narrator holds you to it.",
       "effects": [
         {
           "op": "weapon_mastery_rate",
           "value_pct": 25,
-          "context": "named_weapon_family"
+          "context": "named_weapon_family",
+          "retired": "Rules 1.12 (item 947): weapon mastery is retired and drill took its place; nothing reads this, and the text no longer promises it (13 Nov 2026)."
         },
         {
           "op": "narrator",

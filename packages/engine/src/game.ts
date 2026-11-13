@@ -11,7 +11,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -512,6 +512,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   if (g.sandbox?.fx) fxRoomAfter(g);
   if (g.sandbox) { const was2 = bindGame(g); try { sandboxAfter(g, action, by); } finally { bindGame(was2); } } // the Proving Ground's roster (multiplayer)
   if (g.combat && g.phase === 'combat') noteSighted(g.combat); // what the party has seen so far (the fight music reads it)
+  if (g.combat && g.phase === 'combat') noteSeenAt(g.combat); // where each side last saw each hostile (the AI searches there when it hides)
   // The fight's song (spec: Music): picked once when the fight begins. A fight that was already under way without one
   // (a save from before the song pool) keeps Gunline. "The same fight": no fight began in this action (every path
   // that starts one bumps music.fight or the Proving Ground's fights), so a retry or a new wave on an old save picks.
@@ -1921,9 +1922,11 @@ function runEnemies(g: GameState) {
     if (u.charId) break; // a player's fighter on the foe side (the Proving Ground's team fight): its player acts
     if (puppeteerOf(g, cb, u)) break; // a Puppeted enemy's turn is run by its puppeteer's player (rules 1.3)
     markAction(cb); // spotlight.ts: an enemy's turn is its own action (an intervention in it slows its playback)
+    noteSeenAt(cb); // where each side sees each hostile as this turn begins
     if (!g.sandbox || (g.sandbox.ai && !g.sandbox.fx)) enemyTurn(cb, g.rng); // the Proving Ground can switch the enemies off
     critMoment(g); // a party reaction's crit in the enemy's turn (decision 113)
     noteSighted(cb); // a hostile that walks into sight on its own turn counts as seen, even if it steps back out
+    noteSeenAt(cb);
     sightFx(cb); // presentation: what came into sight in its turn (its walks carry their own)
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
@@ -4029,6 +4032,7 @@ function sandboxView(g: GameState, v: GameState, playerId: string) {
     fx: cb.fx?.map((e) => { const f = flip(e as { side?: any; only?: any; sight?: any; seen?: any }); const o = (f.only ? { ...f, only: other(f.only) } : f) as any; return { ...o, ...(o.sight ? { sight: { pc: o.sight.foe, foe: o.sight.pc } } : {}), ...(o.seen ? { seen: { pc: o.seen.foe, foe: o.seen.pc } } : {}) } as typeof e; }),
     over: cb.over === 'win' ? 'loss' : cb.over === 'loss' ? 'win' : cb.over,
     ...(cb.lastSeen ? { lastSeen: { pc: cb.lastSeen.foe, foe: cb.lastSeen.pc } as any } : {}),
+    ...(cb.seenAt ? { seenAt: { pc: cb.seenAt.foe, foe: cb.seenAt.pc } as any } : {}),
     ...(cb.sightWas ? { sightWas: { pc: cb.sightWas.foe, foe: cb.sightWas.pc } as any } : {}) };
 }
 

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, moveUnit, resolveAttack, previewAttack, attackDamage, throwItem, applyDamage, applyCond, makeObject, d20, packOf, emitStory, condOn, refOf, positionsOf, endTurn, critMult,
-  type Unit, type Combat, type Character,
+  type Unit, type Combat, type Character, TRAITS, perkActionsFor,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -418,6 +418,13 @@ describe('Blade Recluse', () => {
     s.g.rng.state = rngFor(15).state;
     s.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' } as any);
     expect(s.g.characters[c.id].weaponKills.rifles).toBe(1.25);
+  });
+  it('promises no weapon mastery: it is retired by rules 1.12 (item 947) and nothing applies it (13 Nov 2026)', () => {
+    const t: any = TRAITS.find((x) => x.id === 'blade_recluse');
+    expect([t.text, ...t.upsides].join(' ')).not.toMatch(/mastery/i);
+    const s = storyWith([{ traits: ['blade_recluse'] }]);
+    const name = withGame(s.g, () => perkActionsFor({ c: s.chars[0], g: s.g }, 'story')).find((e) => e.actionId === 'name_blade')!;
+    expect(name.text).not.toMatch(/mastery|kills/i);
   });
 });
 

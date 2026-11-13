@@ -134,6 +134,21 @@ describe('review fixes (9 Nov 2026): what still ran at the old speed', () => {
     vi.advanceTimersByTime(20); expect(document.querySelector('[data-felt-card]')).toBeNull();
     delete (Element.prototype as any).animate;
   });
+  it('feelings felt together make ONE card, never a stack (Leon, live 0.24.0); one felt while it fades starts a fresh one', () => {
+    (Element.prototype as any).animate = () => ({ cancel() {}, finished: Promise.resolve() });
+    setCombatSpeed('fast');
+    for (const f of ['rage', 'grief', 'fear', 'love', 'joy']) feltCard(f);
+    const cards = document.querySelectorAll('[data-felt-card]');
+    expect(cards.length).toBe(1);
+    expect(cards[0].textContent).toMatch(/5 NEW FEELINGS/);
+    expect(cards[0].textContent).toMatch(/You have felt Rage, Grief, Fear and 2 more\./);
+    vi.advanceTimersByTime(3250); // fading now
+    feltCard('calm');
+    expect(document.querySelectorAll('[data-felt-card]').length).toBe(1);
+    expect(document.querySelector('[data-felt-card]')!.getAttribute('data-felt-card')).toBe('calm');
+    vi.advanceTimersByTime(4000); expect(document.querySelector('[data-felt-card]')).toBeNull();
+    delete (Element.prototype as any).animate;
+  });
   it('the safety cap is per cut-in: 1700 ms as before, 2400 only for a crit\'s short one (which holds its words)', () => {
     expect(cutInCap(false)).toBe(1700); expect(cutInCap(true)).toBe(2400);
     expect(cutInCap(false)).toBeGreaterThan(CUTIN_MS(4, true)); expect(cutInCap(true)).toBeGreaterThan(CUTIN_MS(1, false, false, true));

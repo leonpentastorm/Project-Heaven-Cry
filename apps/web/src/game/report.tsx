@@ -9,6 +9,7 @@ import { usePresence, presenceCls } from './presence';
 import { callEstimate, COST_CEILING_USD, MODELS } from '../narrator/anthropic';
 import { isPriced, providerInfo } from '../narrator/providers';
 import { GAME_VERSION } from '../version';
+import { tipProps } from './actionTip';
 
 // ---------- open from anywhere (the screens' buttons) ----------
 let which: 'report' | 'spend' | null = null;
@@ -114,8 +115,8 @@ function SpendDialog({ close }: { close: () => void }) {
         {row('READ FROM CACHE', cacheShare + '%', 'of input; cached input costs 1/' + Math.round(model.input / model.cacheRead) + ' as much on ' + model.label)}
         {!!u.rewrites && row('REWORDINGS', String(u.rewrites), 'in the total, not in the turns')}
         <div aria-label="The last 20 calls" style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 70, padding: '6px 0', borderBottom: '1px solid ' + ink.line, position: 'relative' }}>
-          <span style={{ position: 'absolute', left: 0, right: 0, bottom: (COST_CEILING_USD / peak) * 64 + 6, borderTop: '1px dashed #F65157' }} title={'Ceiling ' + money(COST_CEILING_USD)} />
-          {recent.map((c, i) => <span key={i} title={money(c)} style={{ flex: 1, maxWidth: 22, height: Math.max(2, (c / peak) * 64), background: c > COST_CEILING_USD * 0.8 ? '#F65157' : '#5C9EFF', borderRadius: 2 }} />)}
+          <span style={{ position: 'absolute', left: 0, right: 0, bottom: (COST_CEILING_USD / peak) * 64 + 6, borderTop: '1px dashed #F65157' }} {...tipProps('Ceiling ' + money(COST_CEILING_USD))} />
+          {recent.map((c, i) => <span key={i} {...tipProps(money(c))} style={{ flex: 1, maxWidth: 22, height: Math.max(2, (c / peak) * 64), background: c > COST_CEILING_USD * 0.8 ? '#F65157' : '#5C9EFF', borderRadius: 2 }} />)}
         </div>
         <span style={{ fontSize: 11, color: ink.muted }}>The last {recent.length === 1 ? 'call' : recent.length + ' calls'} · dashed line: the {money(COST_CEILING_USD)} ceiling</span>
       </>}

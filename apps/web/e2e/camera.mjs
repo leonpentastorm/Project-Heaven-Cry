@@ -75,7 +75,10 @@ const near = (mx + 1) + ',' + my;
 let nb = await tileBox(near);
 for (let i = 0; i < 20; i++) { await pause(p, 100); const b2 = await tileBox(near); const same = !!nb && !!b2 && Math.abs(b2.x - nb.x) < 1 && Math.abs(b2.y - nb.y) < 1; nb = b2; if (same && !(await cam())?.gliding) break; }
 const panelAt = await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'), t = document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]'); const mv = document.querySelector('[role="tabpanel"] button[data-act="move"]'); return (d && d.getAttribute('data-lock') ? 'locked: ' + d.getAttribute('data-lock') : 'open') + ', tab ' + (t ? (t.textContent || '').trim() : '?') + ', Move ' + (mv ? 'pressed: ' + mv.getAttribute('aria-pressed') : 'not on the panel'); });
-await p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
+// (the click through the tile's own locator: Playwright reads its place at the moment of the click and waits for it to
+// hold still, so a view that moves between the read above and the click can't send it to the tile beside it; a click at
+// coordinates read earlier went astray beside other suites, the 13 Nov full run)
+await p.locator('.phc-grid button.phc-tok[aria-label^="' + ref(near) + ' ·"]').first().click({ timeout: 15000 }).catch(() => p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2));
 const confirm = p.getByRole('button', { name: 'Confirm', exact: true }).first();
 // (until the click has done its work: the unit is there already, or Confirm has lit up for the picked tile. A look at
 // Confirm a quarter of a second after the click found it still grey on a busy machine, and nothing was pressed.)

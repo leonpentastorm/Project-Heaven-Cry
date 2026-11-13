@@ -13,7 +13,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   key, xy, dist, alive, refOf, keyOf as refKey, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, reload, clearJam,
-  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
+  weaponActions, anyJammed, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { factorOf } from '../effects/output';
@@ -54,7 +54,7 @@ const unitMod = (u: Unit, skill: 'proficiency' | 'dexterity' | 'analysis') => mo
 const RR_RELOAD = '#reload', RR_CLEAR = '#clear';
 const reloadEntry = (u: Unit) => weaponActions(u).find((x) => x.id === 'reload');
 const canReloadNow = (u: Unit) => { const a = reloadEntry(u); return !!a && (a.why == null || /^Needs/.test(a.why)); };
-const canClearNow = (u: Unit) => !!u.jammed && weaponActions(u).some((x) => x.id === 'clear');
+const canClearNow = (u: Unit) => anyJammed(u) && weaponActions(u).some((x) => x.id === 'clear');
 function runningReload(h: Holder, u: Unit, cb: Combat, wantReload: boolean, wantClear: boolean): string {
   const did: string[] = [];
   if (wantClear && tierII(h) && canClearNow(u) && uses(h).take('per_turn', 1, h.key + RR_CLEAR)) {
@@ -778,14 +778,15 @@ register({
 
 // ---------- Blade Recluse ----------
 // One Blade: name one weapon ("Name your weapon", out of combat; renaming is free, PROVISIONAL). Kills with that weapon's
-// mastery family count 1.25 (spec item 46). The named weapon can't be Disarmed (nor knocked aside: Lowered) and gets +1
+// mastery family count 1.25 (spec item 46), kept as a record only: weapon mastery is retired (rules 1.12, item 947), so
+// nothing reads it and no text promises it (13 Nov 2026). The named weapon can't be Disarmed (nor knocked aside: Lowered) and gets +1
 // mod slot (a second slot of a type it has, plan 6b). Rusty Manners: −1 Charisma, Implication and Authority (the data's
 // skill_mods: checks, passives and saves). Telling anyone who asks about the weapon, at length, is the Narrator's.
 register({
   id: 'blade_recluse', claims: [0],
   actions: [
     { id: 'name_blade', label: 'Name your weapon', scope: ['story', 'world'], ap: 0, target: 'none',
-      text: 'The weapon in your hand becomes your One Blade. Each kill with it counts as 1.25 kills towards its weapon mastery, it can\'t be Disarmed, and it gains an extra mod slot.',
+      text: 'The weapon in your hand becomes your One Blade: it can\'t be Disarmed, and it gains an extra mod slot.',
       available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon] || c.weapon === 'fists') return false; return cs(c).oneBlade?.weapon === c.weapon ? 'Already your One Blade.' : true; },
       run: (h) => { const c = h.c!, w: any = WEAPON[c.weapon]; charState(c).oneBlade = { weapon: c.weapon, fam: w.mastery_family || null }; say(h.cb, c.name + ' names the ' + w.name + ' the One Blade.'); note(h, c.name + ' named the ' + w.name + ' as the One Blade'); return null; } },
     extraModAction('Fit a second mod (One Blade)', (h) => (cs(h.c).oneBlade?.weapon === h.c!.weapon ? (extraUsed(h.c!) < extraSlots(h.c!) ? true : 'No extra slot free.') : 'Only on your named weapon.')),

@@ -62,9 +62,9 @@ const click = (b: Element) => React.act(async () => { (b as HTMLElement).click()
 describe('the Say row in a fight (rules 1.14)', () => {
   it('has one input, Say (free) and Attempt · 1 AP', async () => {
     fight(); const { el, done } = await mount();
-    expect(sayBtn(el).textContent).toBe('Say'); expect(sayBtn(el).title).toMatch(/^Free\./);
+    expect(sayBtn(el).textContent).toBe('Say'); expect(sayBtn(el).getAttribute('data-tip-text')).toMatch(/^Free\./);
     expect(attemptBtn(el).textContent).toBe('Attempt · 1 AP'); expect(attemptBtn(el).disabled).toBe(false);
-    expect(attemptBtn(el).title).toMatch(/Costs 1 AP, once a turn\. The Narrator answers at once/);
+    expect(attemptBtn(el).getAttribute('data-tip-text')).toMatch(/Costs 1 AP, once a turn\. The Narrator answers at once/);
     await done();
   });
   it('Say is free: the words go in the log and nothing waits', async () => {
@@ -79,7 +79,7 @@ describe('the Say row in a fight (rules 1.14)', () => {
     await type(el, 'Drop it, Keel.'); await click(attemptBtn(el)); await settle();
     expect(pc().ap).toBe(5); expect(fightRulingOf(G.combat)!.text).toBe('Drop it, Keel.');
     const talk = q(el, '[data-fight-ruling]')[0]; expect(talk.textContent).toContain('The Narrator is deciding…'); expect(talk.textContent).toContain('MPAT attempts: “Drop it, Keel.”');
-    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).title).toBe('The Narrator is deciding.');
+    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).getAttribute('data-tip-text')).toBe('The Narrator is deciding.');
     expect(q(el, '.phc-cb-dock')[0].getAttribute('data-lock')).toBe('wait'); expect(q(el, '.phc-cb-lockmsg')[0].textContent).toBe('The Narrator is deciding…');
     expect(sayBtn(el).disabled).toBe(false); // you can still talk
     await done();
@@ -93,31 +93,31 @@ describe('the Say row in a fight (rules 1.14)', () => {
     expect(el.textContent).toContain('Narrator: Keel\'s eyes flick to the ramp.');
     expect(el.textContent).toMatch(/MPAT · INTIMIDATION CHECK · d20 \d+ [+−] \d+ = -?\d+ vs 12 · [✓✕]/);
     expect(q(el, '[data-fight-ruling]').length).toBe(0); expect(q(el, '.phc-cb-dock')[0].getAttribute('data-lock')).toBe('');
-    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).title).toBe('You already made an attempt this turn.');
+    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).getAttribute('data-tip-text')).toBe('You already made an attempt this turn.');
     await type(el, 'And another thing.'); expect(q(el, '[data-say="why"]')[0].textContent).toBe('✕ Attempt: You already made an attempt this turn.');
     await done();
   });
   it('Attempt is off with its reason: under 1 AP', async () => {
     fight(); pc().ap = 0.5; refresh(); const { el, done } = await mount();
-    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).title).toBe('Needs 1 AP.');
+    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).getAttribute('data-tip-text')).toBe('Needs 1 AP.');
     await done();
   });
   it('Attempt is off with its reason: no Narrator connected (Say still works)', async () => {
     fight(); doAct({ type: 'narrator/ready', ready: false }); const { el, done } = await mount();
-    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).title).toBe('No Narrator is connected.');
+    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).getAttribute('data-tip-text')).toBe('No Narrator is connected.');
     await type(el, 'Hello?'); await click(sayBtn(el)); expect(G.combat!.log.at(-1)).toBe('MPAT: "Hello?"');
     await done();
   });
   it('Attempt is off with its reason: it isn\'t your turn', async () => {
     fight(); const foe = G.combat!.units.find((u) => u.side === 'foe')!; G.combat!.turn = G.combat!.order.indexOf(foe.id); refresh();
     const { el, done } = await mount();
-    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).title).toBe('Only on your own turn.');
+    expect(attemptBtn(el).disabled).toBe(true); expect(attemptBtn(el).getAttribute('data-tip-text')).toBe('Only on your own turn.');
     await done();
   });
   it('the host can end the wait: the AP comes back; a guest has no such button', async () => {
     fight(); const { el, done } = await mount();
     await type(el, 'Anyone?'); await click(attemptBtn(el)); await settle();
-    const skip = q<HTMLButtonElement>(el, '[data-fight-skip]')[0]; expect(skip.textContent).toBe('Skip and give it back'); expect(skip.title).toMatch(/MPAT gets back what this cost \(1 AP\) and may try again/);
+    const skip = q<HTMLButtonElement>(el, '[data-fight-skip]')[0]; expect(skip.textContent).toBe('Skip and give it back'); expect(skip.getAttribute('data-tip-text')).toMatch(/MPAT gets back what this cost \(1 AP\) and may try again/);
     await click(skip); await settle();
     expect(pc().ap).toBe(6); expect(fightRulingOf(G.combat)).toBeNull(); expect(el.textContent).toContain('The host ended the wait. MPAT gets 1 AP back.');
     await done();
@@ -166,7 +166,7 @@ describe('a human Narrator answers on the fight screen (rules 1.14, point 7)', (
   });
   it('a surrender: off with its reason on a healthy enemy, on for a beaten one', async () => {
     const { el, done } = await waiting(); const foe = G.combat!.units.find((u) => u.side === 'foe')!;
-    expect(answer(el, 'surrender').disabled).toBe(true); expect(answer(el, 'surrender').title).toMatch(/is above half HP: it gives up only after a successful check/);
+    expect(answer(el, 'surrender').disabled).toBe(true); expect(answer(el, 'surrender').getAttribute('data-tip-text')).toMatch(/is above half HP: it gives up only after a successful check/);
     foe.hp = 1; await React.act(async () => { refresh(); });
     expect(answer(el, 'surrender').disabled).toBe(false); await click(answer(el, 'surrender'));
     expect(G.combat!.units.find((u) => u.id === foe.id)!.surrendered).toBe(true);

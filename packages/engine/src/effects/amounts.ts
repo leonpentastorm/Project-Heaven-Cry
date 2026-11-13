@@ -35,6 +35,7 @@ import patronsJ from '../../../../data/patrons.json';
 import { classMove } from './collect';
 import { amountOf, type AmountSpec, type Term } from './output';
 
+/** An item's `amounts` block as data writes it (data/CONVENTIONS.md "Amount blocks"): kind, base, per, profile, type, armour, mults. */
 export interface AmountBlock {
   kind: 'damage' | 'heal' | 'shield'; base: number; per?: { of: string; value: number }[]; profile?: string;
   type?: string; armour?: 'full' | 'half' | 'none'; mults?: Record<string, number>; provisional?: boolean; text?: string;

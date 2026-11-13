@@ -15,6 +15,11 @@
 //   else calls applyCond(cb, rng, by, target, 'bleeding' | 'dazed' | 'prone' | 'hidden') and endCond(target, id, cb).
 //     rawBleed(u, rounds)  rawDazed(u, n)  rawProne(u, on, endBrace?)  rawHidden(cb, u, on)
 import type { Combat, Unit } from './combat';
+/** Does a side see this unit now (combat.ts sideSeesUnit)? Set by combat.ts when it loads: importing it here would
+ * close a module cycle and change the load order (13 Nov 2026). */
+let sideSeesUnit: (cb: Combat, side: 'pc' | 'foe', u: Unit) => boolean = () => false;
+/** Wires in the sight test (does a side see a unit) that combat.ts owns; called once when the engine loads. */
+export const setSideSees = (f: typeof sideSeesUnit) => { sideSeesUnit = f; };
 
 // ---------- unit states ----------
 /** Braced: on (a Brace, a class move's stance) or off (it moved, was pushed, went Prone, changed weapon). */
@@ -26,6 +31,7 @@ export function setBraced(u: Unit, on: boolean, guard?: boolean): void {
 export function bracedAs(u: Unit, was: boolean | undefined): void { if (was === undefined) delete u.braced; else u.braced = was; }
 /** Staggered: this unit loses AP at its next turn (the turn's AP reads it and clears it). The larger of two stands. */
 export function stagger(u: Unit, n = 1): void { u.stunnedNext = Math.max(u.stunnedNext || 0, n); }
+/** Take a pending stagger off a unit. */
 export function clearStagger(u: Unit): void { u.stunnedNext = 0; }
 /** Downed on or off. Up again: the death saves start over. */
 export function setDowned(u: Unit, on: boolean): void {
@@ -50,12 +56,18 @@ export function rawDazed(u: Unit, n: number): void { u.dazedNext = n; }
  * "while braced (or prone)") keeps a weapon set. */
 export function rawProne(u: Unit, on: boolean, endBrace = true): void { u.prone = on; if (on && endBrace) u.braced = false; }
 /** Hidden on or off, with its book-keeping: an entry gives one ambush (`entry: false`: the same entry, kept), and
- * each other side remembers where it last saw the unit until it is seen again. */
+ * each other side remembers where it LAST SAW the unit (its tile if it sees it hide, else cb.seenAt) until it is seen
+ * again (cb.lastSeen; the enemy AI searches there: combat.ts enemySearchTile). A side that never saw it learns nothing
+ * (13 Nov 2026: every side used to be told the tile it hid on, seen or not). */
 export function rawHidden(cb: Combat | null | undefined, u: Unit, on: boolean, o: { entry?: boolean } = {}): void {
   if (on) {
     if (o.entry !== false) u.hideEntry = (u.hideEntry || 0) + 1;
+    if (cb && !u.hidden) for (const side of ['pc', 'foe'] as const) {
+      if (side === u.side) continue;
+      const at = sideSeesUnit(cb, side, u) ? u.pos : cb.seenAt?.[side]?.[u.id]; // seen hiding: here; else where this side last saw it (combat.ts noteSeenAt)
+      if (at) cb.lastSeen = { ...cb.lastSeen, [side]: { ...cb.lastSeen?.[side], [u.id]: at } };
+    }
     u.hidden = true;
-    if (cb) for (const side of ['pc', 'foe']) if (side !== u.side) ((cb.lastSeen ||= {})[side] ||= {})[u.id] = u.pos;
   } else {
     u.hidden = false;
     if (cb) for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id];

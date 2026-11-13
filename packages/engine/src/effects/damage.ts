@@ -19,6 +19,7 @@ import { rawHidden, setDowned } from '../unitstate';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
+/** Where a blow comes from: who, its type and damage type, whether it meets shields, who gets the kill credit. */
 export interface DamageSrc {
   /** Who did it (null: a hazard, a trap, bleeding, burning). */
   by?: Unit | null;
@@ -42,20 +43,23 @@ export interface DamageSrc {
 }
 /** Damage types that count as Elemental for 'Elemental damage taken' (spec: Derived stats). */
 export const ELEMENTAL_TYPES = new Set(['elemental', 'fire', 'lightning', 'frost', 'cold']);
+/** What applyDamage did: HP dealt, the shield's share, a kill, a Down, prevented, the amount the log reports. */
 export interface DamageResult { dealt: number; shielded: number; killed: boolean; downedHit: boolean; prevented: boolean;
   /** The damage after reductions and the shield (it may be more than the HP it took): what the log reports. */
   amount: number }
 
 /** Read Them: the share of its damage an analysed enemy loses against the other side. */
 export const READ_THEM = 0.15;
+/** Is the damage from someone on the other side of the unit it hits? */
 export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !== t.side;
 
-/** Take damage (already past armour) off a unit's HP. */
 /** The damage a shield does not stop (the spec's Shields paragraph; Leon, 12 Nov 2026): damage over time (Bleeding,
  * Burning, Corroded, a heart's Strain burn) and true damage. Everything else meets the shield first: a bullet, a
  * blade, a spell, an Outburst, a prayer, a blast, a trap, a hazard. One rule, read here for every source. */
 export const PAST_SHIELDS = new Set(['true', 'bleed', 'burn', 'burning', 'corrode', 'corroded', 'poison', 'strain', 'dot']);
+/** Does this source go past shields (pastShields: true damage and damage over time)? */
 export const pastShields = (src: { type?: string; dmgType?: string }): boolean => PAST_SHIELDS.has(src.type || '') || src.dmgType === 'true';
+/** Take damage (already past armour) off a unit's HP. */
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
   if (t.dead) return res;

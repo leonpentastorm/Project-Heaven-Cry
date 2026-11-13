@@ -1,0 +1,5 @@
+diff --git a/packages/engine/src/tactics.ts b/packages/engine/src/tactics.ts
+--- a/packages/engine/src/tactics.ts
++++ b/packages/engine/src/tactics.ts
+@@ -10,0 +11,1 @@
++  const r = d20(rng) + mod;

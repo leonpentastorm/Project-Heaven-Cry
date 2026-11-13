@@ -7,7 +7,7 @@ brief) are done and live in the hand-offs listed in `README.md`.
 
 ## 1. What is live
 
-**0.23.0, deployed 12 Nov 2026 on Leon's word** (Worker version 7a7fe53c; `backup/live-0.23.0` and `backup/live-0.22.0` on the remote). Anything below that still says 0.22.0 is live, or that 0.23.0 waits for his word, was written before the deploy.
+**0.24.0, deployed 12 Nov 2026 on Leon's word** ("push all to live when done"; Worker version 9056a26f; `backup/live-0.24.0`). Before it: **0.23.0, deployed 12 Nov 2026 on Leon's word** (Worker version 7a7fe53c; `backup/live-0.23.0` and `backup/live-0.22.0` on the remote). Anything below that still says 0.22.0 is live, or that 0.23.0 waits for his word, was written before the deploy.
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music
 expansion). Leon decides every deploy; say what is ready and wait for his word. The release steps are at the end of

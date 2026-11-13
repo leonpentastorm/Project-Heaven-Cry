@@ -251,6 +251,34 @@ describe('Assassin', () => {
     act(f, f.unit(u.id), { type: 'combat/attack', targetId: boss.id, mode: 'melee' });
     expect(f.unit(boss.id).dead).toBe(false);
   });
+  it('Execution never finishes what the Elite and Boss guard held: a full-HP Elite of your level is left on 1 HP; the next action may execute it (bug, 13 Nov)', () => {
+    const f = fightWith([cls('assassin', 3, { weapon: 'combat_knife' })], [{ tier: 'elite', level: 5 }]);
+    const u = f.turn(f.pc), e = f.foe; line(f, [e, 3], [u, 4]);
+    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(u.id), f.unit(e.id), 'marked'));
+    const E = f.unit(e.id); E.armour = 0; E.def = 1; expect(E.hp).toBe(E.maxHp);
+    const U = f.unit(u.id); sure(U); U.dmgMult = 500;
+    act(f, U, { type: 'combat/attack', targetId: e.id, mode: 'melee' });
+    expect(f.unit(e.id).hp).toBe(1); expect(f.unit(e.id).dead).toBeFalsy();
+    expect(logHas(f.cb, /EXECUTION/)).toBe(false);
+    // a new action: the guard no longer holds it, and a Marked Elite at a quarter or less is executed
+    const U2 = f.unit(u.id); U2.ap = 6; sure(U2); U2.dmgMult = 0.01; f.unit(e.id).hp = Math.floor(f.unit(e.id).maxHp / 5);
+    act(f, U2, { type: 'combat/attack', targetId: e.id, mode: 'melee' });
+    expect(f.unit(e.id).dead).toBe(true); expect(logHas(f.cb, /EXECUTION/)).toBe(true);
+  });
+  it('Execution refuses a Boss and a Celestial even at a quarter of their HP or less after the hit', () => {
+    for (const foe of [{ tier: 'boss', level: 9 }, { kind: 'celestial', level: 9 }] as any[]) {
+      const f = fightWith([cls('assassin', 3, { weapon: 'combat_knife' })], [{ tier: foe.tier, level: foe.level }]);
+      if (foe.kind) (f.foe as any).kind = foe.kind; // the fixture names no kind: a Celestial is set on the unit
+      const u = f.turn(f.pc), b = f.foe; line(f, [b, 3], [u, 4]);
+      withGame(f.g, () => applyCond(f.cb, rng(), f.unit(u.id), f.unit(b.id), 'marked'));
+      const B = f.unit(b.id); B.armour = 0; B.def = 1; B.hp = Math.floor(B.maxHp / 5);
+      const U = f.unit(u.id); sure(U); U.dmgMult = 0.01;
+      act(f, U, { type: 'combat/attack', targetId: b.id, mode: 'melee' });
+      const after = f.unit(b.id); if (foe.kind) expect(after.kind).toBe('celestial');
+      expect(after.hp, JSON.stringify(foe)).toBeGreaterThan(0); expect(after.hp).toBeLessThanOrEqual(after.maxHp / 4);
+      expect(after.dead).toBeFalsy(); expect(logHas(f.cb, /EXECUTION/)).toBe(false);
+    }
+  });
 });
 
 // ======================================================================================================== MAGE

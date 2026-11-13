@@ -190,3 +190,101 @@ suites was checked: it points at an element that still has one (tiles, plan chip
 | melee-fx (alone only, the re-run) | suite's dice | Parry needs a melee HIT; at Defense 19 the drill elite hits 3 in 10, so 8 rounds without one came about 1 run in 17 | Athletics 1 (Defense 10) for the Parry case; the note now prints the round's log |
 
 Proof: magic, playscreen, melee-fx and camera each three times beside two others, green; then the full run.
+
+## Riposte fired four times (Leon, 13 Nov)
+
+Leon, from play: "a turn where my character Riposted 4 times and downed [an enemy] while they missed me 3 times."
+The rule: one reaction a round, counted, for everyone (spec item 89; an Answer is a reaction; Riposte "uses your
+reaction"; the Fighter's Riposte is "reaction, 1 Momentum").
+
+**Cause: not reproduced in the engine.** Every reaction path asks the one counter (`tactics.ts` `canReact` /
+`useReaction`, `u.reactUsed` stamped with `cb.round`), and the counter held in every test: four foes missing in one
+round through the real enemy AI give one Riposte (technique); the Fighter's class Riposte and the technique on the same
+misses share the one reaction; a seeded run of 60 fights (sabre and 14 other melee weapons, boss/elite/soldier foes
+that Riposte back, the Fighter class on and off, one and two PCs, the PC attacking on its own turn) made 3,314
+reactions and never two by one unit in one round. No perk or trait raises the count except Before the Blink (2). What
+can look like "several Ripostes in one turn": the enemy phase between two of your turns is two rounds when you are not
+first in the initiative (one Riposte in each), and your own turn is in a round too (an enemy's Riposte that misses you
+is answered). That is at most two between two of your turns, not four. **Needed from Leon:** the Report a problem
+bundle (or the fight log) of that turn, to replay it.
+
+**Found on the way, and fixed: Killzone.** "The two shots use one reaction between them": the first shot spent the
+reaction and then gave it back (`refundReaction`), so between the two shots the Marksman had a whole reaction for
+anything else (Dance of Iron, Parry, a Call as a reaction): two reactions in a round. Now the first shot keeps the
+reaction spent and marks the second shot paid (one cell in `effects/uses.ts`, scope `reaction`: `payHeldShot`,
+`heldShotPaid`, `spendPaidShot` in tactics.ts); the held shot (`triggerOverwatch`) fires on that mark. A second shot
+in the next round spends that round's reaction, as before. Proof: `reactions-once-a-round.test.ts` (fails without the
+fix). Golden tables and replay hashes: unchanged (the engine suite passes as recorded).
+
+| Reaction | Spends the one reaction? | Spec / text |
+| --- | --- | --- |
+| Opportunity attack (`combat.ts` moveUnit) | yes | reaction |
+| Overwatch, old held shot (`triggerOverwatch`; several shots `owShots`) | yes, all shots on one | item 89 |
+| Killzone (Marksman) | **was: first shot given back (2 a round possible); now one for both** | "use one reaction between them" |
+| Watches: Overwatch, Deny, Cover Me, Dead to Rights (`fireWatch`) | yes | "uses your reaction" |
+| Answers: Riposte, Parry, Keep Back, Interpose, Shield Wall (`answer()`) | yes | "uses your reaction" |
+| Fighter Riposte (class) | yes (and 1 Momentum) | "reaction, 1 Momentum" |
+| Defender Interpose (Brace), Shrug It Off, Anchor; Duck and Roll; Drink It In; Share; Dive | yes | "your reaction" |
+| Reactive Plate (Defender) | no | "passive; no reaction" (PROVISIONAL) |
+| Heart Overwatch (`magic.ts`) | yes | reaction |
+| Catch, Dance of Iron (perks) | yes | "uses your reaction" |
+| Calls as a reaction; Order (the ally's) | yes (+ its own one-a-round cell) | rules 1.13 |
+| Rewrite, Dread | take the target's | — |
+| Cue | +1 until the speaker's next turn | rules 1.13 |
+| Many Hands | an ally may spend the holder's | perk text |
+| Before the Blink | 2 a round | perk text |
+| Between Heartbeats | no (its own once a fight) | "doesn't use your reaction" |
+| Last Word (weapon mastery) | not in the engine (weapon_mastery.json is not loaded) | "use your reaction" |
+
+Uncounted before the fix: one (Killzone's gap). None uncounted now.
+
+Open questions (behaviour unchanged, the spec is silent):
+1. Can a reaction trigger a reaction? Today yes: your Riposte that misses can be Riposted by the enemy (its own
+   reaction), an opportunity attack can be Parried or Riposted. Only the Fighter's class Riposte has "a riposte never
+   triggers a riposte (PROVISIONAL)", and its guard is one global flag, so it also stops anyone else's class Riposte
+   during a class Riposte; the technique has no such guard.
+2. The counter is `u.reactUsed` with a round compared by hand, not a `uses.ts` cell (the F8 rule). It works; moving it
+   into the primitive is a refactor for the engine review, not a fix.
+
+## Found by the Revision 4 spec writers (13 Nov)
+
+Four live bugs from `docs/design/rev4-primitives.md` section 4, fixed on one branch, each with a failing test first.
+
+| Bug | Cause | Fix | Test |
+| --- | --- | --- | --- |
+| Execution killed an Elite or Boss the guard had just left on 1 HP | The guard (rules 1.15 point 4) floors a full-HP Elite to 1 HP; Execution (`classes/i.ts`) fires `on_hit` after the damage, sees 1 HP at or under a quarter, and its damage type `execution` is exempt from the guard | `guardHeld(t, by)` in `combat.ts` reads the guard's mark (this action, this attacker); Execution skips a target the guard held in this action. Bosses and units of kind `celestial` were already refused (`isBoss`): tested now. Spec items 281, 1385 | `classes-i.test.ts` "Execution never finishes what the Elite and Boss guard held", "Execution refuses a Boss and a Celestial" |
+| An enemy with no perceived target stood still | `enemyTurn` ended the turn on `if (!pcs.length) break;` (`pcs` is everyone not Hidden) | `enemySearchTile`: it walks toward the nearest tile in `cb.lastSeen[its side]`, a turn at a time; `enemyIntent` says so. Each side now notes where it last SAW each hostile (`cb.seenAt`: after every step, around each enemy turn, at each walk step); `rawHidden` keeps that tile (its tile now if the side saw the hide) and no longer tells a side that never saw the unit. Not in a player's view (`fog.ts`); flipped in the teams sandbox. Old saves: no record, it holds. Spec: "Hidden in a fight" (Searching), item 1744 | `ai-last-seen.test.ts` (walks to the hide tile, not to the character; a walk behind a wall then a hide; an unseen hide tells nothing; an old save holds) |
+| Acuity and Improvisation had their `attr:` tags swapped | Data typo in `skills.json` | Tags swapped back; `tools/validate.py`: a skill's `attr:` tag must be exactly its attribute | `skill-attr-tags.test.ts`; the validator |
+| `weapon_mastery.json` shown but never loaded (Last Word) | Retired on purpose by rules 1.12 (item 947: drill took its place); only the paused UI canvas draws its cards. One live promise left: Blade Recluse ("weapon mastery grows 25% faster"; Name your weapon: "1.25 kills towards its weapon mastery") | Not built. The two promises are out of the texts (`traits.json`, `perks/c.ts`), the effect row is marked `retired`; screen data rebuilt. Spec items 46, 160, 1743 | `perks-c.test.ts` "promises no weapon mastery" |
+
+**What reading the swapped tags did in play: nothing found.** Readers of `attr:`: `effects/core.ts` `skillHasTag` (item `skill_mod_tag`; no item names an `attr:` tag), `magic.ts` `condSkillMod` (conditions; matches the attribute, not the tags, so Right Brain Debuff already hit Improvisation and not Acuity), `music.ts` `songMod` (music traits use `core:` tags only). No gear gate, perk or colour reads the tag; the client colours by `attribute`.
+
+**Hashes and tables.** Golden tables: none moved. Replays (`test/golden/replays.json`, recorded with `REPLAY_FULL=1`): all 24 games moved in `state` only (the new `seenAt` field; two of them first from `rawHidden` no longer recording an unseen hide); no `stream` moved (no replay has an enemy with no target). Oracles `paths-order`, `sight-order`, `shared-state` pass unchanged.
+
+**Still true after the fix (not a bug, a limit):** the AI still knows where every hostile who is not Hidden stands, seen or not (`perceivedFoes` reads every unit that is not Hidden). Only Hidden is unknown to it, so only a Hidden character makes an enemy search. Making line of sight alone hide a character from the AI is a design change for the AI pass.
+
+**What bringing weapon perks back would take** (not built; Leon's order is the system after the balance pass, Last Word on P1): (1) a ruling on what grants them now that kills no longer level anything: drill marks (rules 1.12, section "Knowing, readying and drill") are the natural door, e.g. a family's perk at a weapon's mark II or III, or as a technique pick; (2) spec text for each of the 33 perks in today's terms (several read the retired attack bonus or a weapon category the Weapons v2 families changed), each with an `amounts` block where it deals damage, priced by the budget rule; (3) data: the perks into an item file the engine loads (or `techniques.json`), ops from `effect_ops.json` item ops, Last Word through the P1 `react()` primitive (it is a reaction); (4) a grant in `drill` (the engine already owns the bar), a card on the weapon screen through the one hover card; (5) balance: each perk measured against the ceiling (`rules.json balance`), `golden-damage-perks` lines added. One Blade would then need its own successor (e.g. drill 25% faster on the named weapon), a design call.
+## Found by Leon on live 0.24.0 (13 Nov)
+
+Six reports after playing 0.24.0. Fixed on the branch; the details, the inventory and how to add a hover text are in
+`docs/design/handoffs/hover-card.md`.
+
+| What Leon saw | Cause | Fix and proof |
+| --- | --- | --- |
+| "we have this nice hover panel why not use it everywhere?" | 298 native `title`s across the templates and React | every one goes through the game's card (`tip=`, `tipProps`, `setTip`; one at a time, hover and keyboard focus, inside the window); 0 kept; `boundary.test.ts` fails on a new `title`; suites read words through `tipOf()` |
+| Feeling popups stacked on each other (HEART panel, Magic tab) | the combat HEART panel's container had a native title, shown with every feeling row's card; the Magic tab's rows were native paragraph titles; the unlock card was a new element per feeling at one spot | no titles; one card; one unlock card that feelings join (`combatSpeed.test.ts`); browser sweep: at most 1 card |
+| Feelings printed their step twice ("Rage: +0.5 · +0.5 to the multiplier…", Grief, Spite) | a summary from `step.text` joined to the pour text that starts with the same step | one chip (the base step), the text once with only what raises the step (`feelingsView.test.ts`) |
+| Momentum's rule three times; Heat, rounds, Strain, Flux, MP, conditions, JAMMED twice in one view | each panel printed its own copy | one place each (unit panel, HEART panel, the gun's header); the detail line under the tabs says only the action's own facts (`combat-attack-areas.test.ts`, `combat-heart.test.ts`) |
+| A Sigil word card offered "Grand form (Grand Sigilist): …", a shelved class | the card printed `grand` for everyone | shown only when a held, active class move carries the `grand_form` op (data); shelved advanced modules hidden from the Codex and the practice picker (`grand-forms-shelved.test.ts`) |
+| Two guns: one Clear jam cleared both, the other did nothing useful; "Shoot an object" | the screen read only the main gun's jam and clearing either reset the shared Heat, so the off-hand jam was invisible | Leon's ruling (Hands 5d, item 1742): one Clear jam in BOTH, clears every jammed gun for one price; JAMMED on each gun's header; "Attack an object" (`dual-jam.test.ts`, `combat-attack-areas.test.ts`) |
+
+Question for Leon (no rule changed): with pooled Heat, an off-hand technique's Heat jam lands on the main gun (the
+paired attack jams the gun that fires). Should a Heat jam always land on the gun that fired?
+Answered (Leon, 13 Nov 2026: yes): a Heat jam now lands on the gun that fired (item 1745, Hands 5d); off-hand no-roll rounds
+and Press Heat jam the off-hand gun, and the pooled limit no longer reads off + off with the off-hand gun swapped in (`dual-jam.test.ts`).
+
+Suites fixed on the way (the full run must pass with nothing failing alone): `feelings40` (no shelved module group now),
+`resources` (reads Strain on the Move tab, waits for each tab and each H, dismisses the held Outburst's turn cut-in),
+`magic` (a raider's crit on a leg halved Movement and the one-turn Line no longer fit: the leg is healed first),
+`sigil14` (waits for the first effect node; presses End turn again only while the turn is still its own), `camera`
+(clicks the tile through its locator). Final: `npm run e2e -- all` ALL GREEN, 61 suites, no retries.

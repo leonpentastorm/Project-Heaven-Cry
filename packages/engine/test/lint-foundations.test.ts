@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
 import { STATS, STAT_FAMILIES, COST_SITE_IDS, COST_SITES, IMMUNE_IDS, isStatId, isCondition } from '../src';
 import ACTIONS_JSON from '../../../data/actions.json';
+import LINT_PATTERNS from './lint-patterns.json';
+/** A pattern shared with tools/built_from.py (test/lint-patterns.json): one list, read by both. */
+const RE = (id: string) => new RegExp((LINT_PATTERNS as any).patterns[id].re);
 
 const SRC = fileURLToPath(new URL('../src', import.meta.url));
 function walk(dir: string): string[] { return readdirSync(dir).flatMap((f) => { const p = join(dir, f); return statSync(p).isDirectory() ? walk(p) : p.endsWith('.ts') ? [p] : []; }); }
@@ -105,7 +108,7 @@ describe('F6: the kit is the only home of the lane helpers (src/kit.ts)', () => 
 describe('F1: every d20 goes through src/rolls.ts', () => {
   const rolls = (rel: string) => rel === 'rolls.ts' || rel === 'rng.ts';
   it('no raw d20( outside rolls.ts: roll a save with saveAgainst / rollSave, anything else with rollVs or contest', () => {
-    expect(hits(/\bd20\(/, rolls)).toEqual([]);
+    expect(hits(RE('raw_d20'), rolls)).toEqual([]);
   });
   it('the bare die (rollD20) is only for the rolls that are not "d20 + modifier against a number": each use is counted here', () => {
     // combat.ts: initiative ×2, the weapon attack (its own hooks: attack_roll), the death save (a hook sees the die first)
@@ -114,7 +117,7 @@ describe('F1: every d20 goes through src/rolls.ts', () => {
     // classes/k.ts: the Stitch (a bare d20 read off a table) and its reroll; classes/i.ts: story Puppet (the Narrator adds the target's modifier)
     // perks/b.ts: a night's Vigilance (the modifier is gathered after the die, as it always was)
     const allowed: Record<string, number> = { 'combat.ts': 4, 'game.ts': 3, 'tactics.ts': 1, 'sigil.ts': 1, 'magic.ts': 1, 'classes/k.ts': 2, 'classes/i.ts': 1, 'perks/b.ts': 1 };
-    const found: Record<string, number> = {}; for (const h of hits(/\brollD20\(/, rolls)) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
+    const found: Record<string, number> = {}; for (const h of hits(RE('bare_die'), rolls)) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
     expect(found, 'a new rollD20(): if it is d20 + a modifier against a number, call rollVs / saveAgainst instead; if it truly is a bare die, add it to this table with the reason').toEqual(allowed);
   });
   it('no hand-written pass / fail: "die === 20 || (die !== 1 && …)" is judge() in rolls.ts', () => {
@@ -142,7 +145,7 @@ describe('F2: a unit changes tile by moveUnit (it walks) or displace / swapUnits
     //   not a unit     a glyph, an object, a False Image: classes/k.ts 1, perks/c.ts 1, classes/rev3.ts 1
     const allowed: Record<string, number> = { 'combat.ts': 11, 'game.ts': 2, 'sigil.ts': 2, 'ai-sigil.ts': 2, 'ai-soul.ts': 2, 'calls/rules.ts': 2, 'physical/core.ts': 2, 'physical/ranged/takes.ts': 1, 'physical/ranged/sets.ts': 2,
       'physical/melee/links.ts': 1, 'classes/i.ts': 2, 'classes/k.ts': 4, 'classes/rev3.ts': 5, 'perks/d.ts': 1, 'perks/c.ts': 1 };
-    const found: Record<string, number> = {}; for (const h of hits(/\.pos = /)) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
+    const found: Record<string, number> = {}; for (const h of hits(RE('pos_write'))) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
     expect(found, 'a new `.pos = `: move the unit with displace() or swapUnits() (combat.ts), or moveUnit() if it walks. If it truly is not a move (a scratch tile put back, an object), add it to this table and say what it is').toEqual(allowed);
   });
   it('nothing fires the forced_move hook but displace and swapUnits', () => {
@@ -159,7 +162,7 @@ describe('F2: a unit changes tile by moveUnit (it walks) or displace / swapUnits
 // unshift or splice on a log writes a line every player reads, whatever it names, and shifts the marks off their lines.
 describe('the fight log is written through say()', () => {
   it('no raw push, unshift or splice on a log outside the primitive (memory.ts\'s thread logs are not a fight\'s): call say(cb, line)', () => {
-    const raw = hits(/\.log\.(?:push|unshift|splice)\(/, (rel) => rel === 'memory.ts');
+    const raw = hits(RE('log_raw'), (rel) => rel === 'memory.ts');
     expect(raw.map((h) => h.replace(/:\d+ /, ' '))).toEqual([
       'log.ts  .log.push(', 'log.ts  .log.push(', 'log.ts  .log.splice(', 'log.ts  .log.splice(', // say, sayOf, sayAt, unsay
     ]);

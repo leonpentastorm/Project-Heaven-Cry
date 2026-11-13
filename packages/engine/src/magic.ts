@@ -235,6 +235,7 @@ export const saveTn = (by: Unit | null | undefined, via?: string | null, str?: n
 export function saveAgainst(cb: Combat, rng: Rng, by: Unit | null, target: Unit, fam: Fam, id: string, o: { via?: string | null; str?: number; tn?: number; tnAdd?: number; adv?: boolean; fx?: boolean } = {}): RollResult {
   return rollSave(cb, rng, { by, target, fam, id, via: viaOf(by, o.via), tn: o.tn ?? saveTn(by, o.via, o.str), mod: unitSave(target, fam), ...(o.tnAdd ? { tnAdd: o.tnAdd } : {}), ...(o.adv ? { adv: true } : {}), ...(o.fx === false ? { fx: false } : {}) });
 }
+/** Does the unit have this condition now? */
 export const condOn = (u: Unit, id: string) => !!(u.conds && u.conds[condId(id)] > 0);
 /** Who put a condition on a unit (its unit id), if anyone. */
 export const condSource = (u: Unit, id: string): string | null => (condOn(u, id) && u.condBy?.[condId(id)]) || null;

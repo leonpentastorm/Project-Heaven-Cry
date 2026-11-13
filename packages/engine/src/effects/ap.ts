@@ -10,12 +10,18 @@ import { emit } from './hooks';
 import { condMods } from '../condtable';
 
 const CEIL = (perksJ as any).rules?.ap_ceiling || {};
+/** The AP a turn starts from before items and conditions. */
 export const AP_BASE = 6;
+/** The most AP a turn may have (data/perks.json rules.ap_ceiling.turn_max). */
 export const AP_MAX: number = CEIL.turn_max ?? 9;
+/** The fewest AP a turn may have (data/perks.json rules.ap_ceiling.turn_min). */
 export const AP_MIN: number = CEIL.turn_min ?? 2;
+/** The most AP perks may add to one turn (data/perks.json rules.ap_ceiling.perk_gain_max_per_turn). */
 export const PERK_AP_CAP: number = CEIL.perk_gain_max_per_turn ?? 3;
+/** The most AP a unit may owe its next turn. */
 export const AP_DEBT_CAP = 4;
 
+/** One grant or penalty to a turn's AP, with the reason shown. */
 export interface ApLine { n: number; why: string }
 /** The AP a unit starts its turn with. grants and penalties come from the turn_start_pre hook; banked AP (bankAp) and
  * debt are read off the unit and cleared. Returns the number and the log lines. */

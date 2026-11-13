@@ -16,6 +16,7 @@ import { SettingsBody } from '../game/settings';
 import { CREDITS, licenceUrl } from '../game/credits';
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
 import { LAYERS, clamp, layerShift, titleGeometry } from './geometry';
+import { tipProps } from '../game/actionTip';
 
 type Panel = null | 'name' | 'join' | 'proving' | 'characters' | 'saved' | 'settings' | 'credits';
 type Item = { id: string; label: string; sub?: string; start?: boolean; bubble: string; run: () => void };
@@ -377,7 +378,7 @@ export function Title() {
         <button type="button" onClick={openReport} style={{ padding: 0, border: 0, background: 'none', color: ink.dim, fontFamily: 'inherit', fontSize: 12, textDecoration: 'underline', cursor: 'pointer' }}>⚑ Report a problem</button>
         <span>Your API key stays in your browser and goes only to the AI service you pick.</span>
       </footer>
-      <div className="phc-version" title="Game version (CHANGELOG.md)" style={{ position: 'absolute', right: 16, bottom: 16, fontSize: 11, letterSpacing: '0.08em', color: ink.dim, pointerEvents: 'none' }}>v{GAME_VERSION}</div>
+      <div className="phc-version" {...tipProps("Game version (CHANGELOG.md)")} style={{ position: 'absolute', right: 16, bottom: 16, fontSize: 11, letterSpacing: '0.08em', color: ink.dim, pointerEvents: 'none' }}>v{GAME_VERSION}</div>
     </div>
   );
 }
@@ -470,7 +471,7 @@ function CharactersPanel() {
   return <>
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
       <h2 style={{ ...h2, marginRight: 'auto' }}>Your characters · {st.library.length}</h2>
-      <button type="button" style={btn} onClick={() => importCharacter()} title="Add a character file (.phc.zip) a friend sent you">Import</button>
+      <button type="button" style={btn} onClick={() => importCharacter()} {...tipProps("Add a character file (.phc.zip) a friend sent you")}>Import</button>
       <button type="button" style={primary} onClick={() => toCreate(null)}>Make a character</button>
     </div>
     {!st.library.length && <p style={{ margin: 0, color: ink.muted, lineHeight: 1.5 }}>None yet. Characters you lock in are kept in this browser and can be brought into any room. ⬇ downloads one as a file you can keep or send to a friend; Import adds one.</p>}
@@ -480,7 +481,7 @@ function CharactersPanel() {
           <img src={ART(c.portrait) || c.portrait} alt="" style={{ width: 56, height: 70, objectFit: 'cover', borderRadius: 8, background: '#000' }} />
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontWeight: 700 }}>{c.name}{(c as any).draft ? ' (draft)' : ''}</span><span style={{ fontSize: 12, color: ink.muted }}>{c.origin || 'no origin'} · Classless</span></div>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} onClick={() => toCreate(c)}>Open</button>
-          <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} aria-label={'Download ' + c.name + ' as a file'} title="Download as a file to keep or send to a friend" onClick={() => exportCharacter(c)}>⬇</button>
+          <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} aria-label={'Download ' + c.name + ' as a file'} {...tipProps("Download as a file to keep or send to a friend")} onClick={() => exportCharacter(c)}>⬇</button>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px', color: ink.muted }} aria-label={'Delete ' + c.name} onClick={() => { askConfirm({ title: 'Delete ' + c.name + '?', body: 'The character is removed from this browser. Export it first if you want to keep a copy.', confirm: 'Delete', danger: true }).then((ok) => { if (ok) removeFromLibrary(c.name); }); }}>✕</button>
         </div>
       ))}

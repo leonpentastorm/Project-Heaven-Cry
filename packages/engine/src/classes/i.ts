@@ -15,7 +15,7 @@ import { strikeFromWorld, apLeft } from '../game';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, sideSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, paths, moveUnit,
-  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury,
+  resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury, guardHeld,
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
@@ -35,7 +35,7 @@ import {
 import { soulStrike, designRolls } from './soul';
 import { die, type Rng } from '../rng';
 import { rollVs, rollD20, SAVE_TN } from '../rolls';
-import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal , dropHeldShot } from '../tactics';
+import { resOf, resGain, resSpend, canReact, useReaction, payHeldShot, reveal , dropHeldShot } from '../tactics';
 import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround } from '../kit';
@@ -240,11 +240,12 @@ register({
       kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; h.u!.owShots = 1;
     },
     attack_preview: (ctx, h) => { const kz = kzOf(h); if (kz?.firing && ctx.att === h.u && ctx.tgt?.id === kz.firing) ctx.terms.push({ v: 2, label: 'Killzone' }); },
-    // The shot is rolled: the second one stays held for the next enemy (the reaction it took is given back once).
+    // The shot is rolled: the second one stays held for the next enemy, already paid for by the reaction the first one
+    // spent ("the two shots use one reaction between them"): nothing else may use a reaction in between.
     attack_roll: (ctx, h) => {
       const kz = kzOf(h); if (!kz?.firing || ctx.att !== h.u) return;
       kz.firing = null;
-      if (kz.left > 0) { h.u!.overwatch = kz.mode; h.u!.owShots = 1; if (kz.left === 1 && h.cb) refundReaction(h.cb, h.u!); }
+      if (kz.left > 0) { h.u!.overwatch = kz.mode; h.u!.owShots = 1; if (kz.left === 1 && h.cb) payHeldShot(h.cb, h.u!); }
     },
   },
   brief: () => null,
@@ -634,14 +635,15 @@ register({
 
 // ---------- Execution (rank III, passive) ----------
 // Your hit on a Marked enemy (any of your squad's Marks, PROVISIONAL) that leaves it at or below a quarter of its max HP
-// (after the hit's damage, PROVISIONAL) kills it outright. Bosses and Celestials are immune.
+// (after the hit's damage, PROVISIONAL) kills it outright. Bosses and Celestials are immune. Never in an action in
+// which the Elite and Boss guard held the target (rules 1.17; bug, 13 Nov 2026).
 register({
   id: 'assassin.execution', claims: 'all',
   on: {
     on_hit: (ctx, h) => {
       const u = h.u!, t: Unit = ctx.tgt, cb = h.cb!; if (ctx.att !== u || t.dead || t.side === u.side || !condOn(t, 'marked') || isBoss(t)) return;
       const by = unitById(cb, condSource(t, 'marked')); if (by && by.side !== u.side) return;
-      if (t.hp > t.maxHp / 4) return;
+      if (t.hp > t.maxHp / 4 || guardHeld(t, u)) return; // the Elite and Boss guard held it this action: not executed in it
       t.shield = 0; const r = applyDamage(cb, t, Math.max(1, t.hp), { by: u, type: 'execution', shield: false, credit: 'all' });
       if (t.dead || r.killed) { fxFell(cb, t); say(cb, 'EXECUTION: ' + u.name + ' finishes ' + t.name + '.'); }
     },

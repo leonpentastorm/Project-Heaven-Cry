@@ -13,6 +13,8 @@ Two rulings from Leon on 10 Nov 2026:
 | Hellraiser service rifle (`hellraiser_service_rifle`) | [`../icons/weapons/hellraiser_service_rifle.svg`](../icons/weapons/hellraiser_service_rifle.svg) |
 | Lumeri censer gun (`lumeri_censer_gun`) | [`../icons/weapons/lumeri_censer_gun.svg`](../icons/weapons/lumeri_censer_gun.svg) |
 
+**Painted gear icons (13 Nov 2026):** these monoline icons are now placeholders for inventory and shop use; the painted Heavenprint icons are specified in [`gear-icons.md`](gear-icons.md). The shapes and faction signatures below still apply to them.
+
 ## The set
 
 Every weapon in `data/weapons.json` (60) and every armour piece and shield in `data/items.json` (19) has an icon:

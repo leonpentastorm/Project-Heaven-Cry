@@ -214,6 +214,11 @@ const key = async (w) => { const b = host.locator('div[aria-label="Glyph keyboar
 // so the raider sits on the ray out of the Line's far end (rules 1.4: a Line fires along itself from its end).
 // The area map's Line spent most of the core: load a fresh one first (2 AP), then take a fresh turn if that left too
 // little to step, draw, step, draw and Evoke in one go (the raider must not walk out of the Line's area in between).
+// A raider's critical hit can injure a leg (half Movement): a step then costs 2 AP, and the step, two draws and the
+// Evoke no longer fit in one turn (the run failed so, AP 0.4 left at the Evoke). This suite is about the Line, not
+// injuries: the leg is healed in the host's truth before the plan (the dice decide it, not a waiting fault).
+await host.evaluate((id) => { const t = window.__phc.truth(); const v = t && t.combat && t.combat.units.find((x) => x.charId === id);
+  if (v && (v.injuries || []).some((i) => i.loc === 'leg')) { v.injuries = v.injuries.filter((i) => i.loc !== 'leg'); v.movement = v.movement * 2; } }, me);
 if ((u.mg?.charge || 0) < 6) { await act({ type: 'combat/core', unitId: u.id }); await pause(host, 250); ({ cb, u } = await CB()); }
 if (u.ap < 5) { await host.getByRole('button', { name: 'End turn', exact: true }).click(); await pause(host, 300); await waitMine(); ({ cb, u } = await CB()); }
 await idleOn(host); // the other turns finish playing first (a player can't click the grid until then; longer at Normal speed)

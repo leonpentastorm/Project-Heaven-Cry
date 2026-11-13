@@ -44,7 +44,7 @@
 </div>
 <div class="phc-cc-grid" style="--n: 3; --min: 180px; --h: 70px; --gap: 8px">
 <sc-for list="{{originCards}}" as="o" hint-placeholder-count="14">
-<button type="button" data-origin="{{o.num}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" title="{{o.name}}: {{o.home}}" style="{{o.style}}">
+<button type="button" data-origin="{{o.num}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" tip="{{o.name}}: {{o.home}}" style="{{o.style}}">
 <span style="font-size: 10px; letter-spacing: 0.14em; color: #A3AEC2">{{o.num}}</span>
 <span class="phc-cc-clamp2" style="font-size: 14px; font-weight: 700; line-height: 1.25">{{o.name}}</span>
 </button>
@@ -133,7 +133,7 @@
 <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%"><span style="font-size: 21px; font-weight: 700">{{a.name}}</span><span style="font-size: 11px; letter-spacing: 0.1em; color: #A3AEC2; text-align: right">{{a.role}}</span></span>
 <span class="phc-cc-scroll" style="font-family: 'Spectral', serif; font-size: 16px; line-height: 1.45; color: #C9D3E3">{{a.blurb}}</span>
 <span style="flex: none; display: flex; gap: 10px; align-items: flex-end">
-<span class="phc-arch-attrs" role="img" aria-label="Its nine attributes" style="flex: none; display: grid; grid-template-columns: repeat(3, 58px); gap: 3px"><sc-for list="{{a.grid}}" as="c" hint-placeholder-count="9"><span data-attr="{{c.key}}" data-top="{{c.top}}" title="{{c.title}}" style="{{c.style}}"><span>{{c.abbr}}</span><span>{{c.val}}</span></span></sc-for></span>
+<span class="phc-arch-attrs" role="img" aria-label="Its nine attributes" style="flex: none; display: grid; grid-template-columns: repeat(3, 58px); gap: 3px"><sc-for list="{{a.grid}}" as="c" hint-placeholder-count="9"><span data-attr="{{c.key}}" data-top="{{c.top}}" tip="{{c.title}}" style="{{c.style}}"><span>{{c.abbr}}</span><span>{{c.val}}</span></span></sc-for></span>
 <span class="phc-arch-leads" style="min-width: 0; font-size: 12px; line-height: 1.35; color: #C9D3E3">{{a.leads}}</span>
 </span>
 </span>
@@ -149,7 +149,7 @@
 <div class="phc-arch-pv-attrs" aria-label="Its nine attributes" style="display: flex; flex-direction: column; gap: 8px">
 <sc-for list="{{pv.attrFams}}" as="f" hint-placeholder-count="3"><div data-family="{{f.key}}" style="display: flex; flex-direction: column; gap: 3px">
 <span style="{{f.nameStyle}}">{{f.name}}</span>
-<sc-for list="{{f.rows}}" as="r" hint-placeholder-count="3"><div data-attr="{{r.key}}" title="Each point: {{r.gives}}" style="display: grid; grid-template-columns: 124px 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 22px">
+<sc-for list="{{f.rows}}" as="r" hint-placeholder-count="3"><div data-attr="{{r.key}}" tip="Each point: {{r.gives}}" style="display: grid; grid-template-columns: 124px 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 22px">
 <button type="button" class="phc-arch-attrname" onClick="{{r.open}}" aria-label="{{r.openLabel}}" style="{{r.nameStyle}}">{{r.name}}</button>
 <span style="{{r.valStyle}}">{{r.val}}</span>
 <span aria-hidden="true" style="display: flex; gap: 4px"><sc-for list="{{r.dia}}" as="d" hint-placeholder-count="7"><span style="{{d.style}}"></span></sc-for></span>
@@ -185,7 +185,7 @@
 </sc-for>
 <span data-points-todo="" style="{{points.todoStyle}}; flex: 1 1 220px; min-width: 0">{{points.todo}}</span>
 <div style="display: flex; gap: 8px; margin-left: auto">
-<button type="button" class="phc-pt-btn" data-points-undo="" onClick="{{points.undo}}" disabled="{{points.noUndo}}" aria-label="{{points.undoAria}}" title="{{points.undoAria}}" style="min-height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">↶ Undo</button>
+<button type="button" class="phc-pt-btn" data-points-undo="" onClick="{{points.undo}}" disabled="{{points.noUndo}}" aria-label="{{points.undoAria}}" tip="{{points.undoAria}}" style="min-height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">↶ Undo</button>
 <button type="button" class="phc-pt-btn" data-points-reset="" onClick="{{points.resetAll}}" aria-label="Reset everything: every skill back to 0 and every attribute back to 1" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Reset all</button>
 </div>
 </div>
@@ -194,27 +194,27 @@
 <div class="phc-pt-grid">
 <sc-for list="{{families}}" as="c" hint-placeholder-count="3">
 <section class="phc-pt-fam" data-family="{{c.key}}" aria-label="{{c.name}}">
-<div style="{{c.headStyle}}"><h2 style="margin: 0; {{c.nameStyle}}">{{c.name}}</h2><span style="font-size: 12px; color: #A3AEC2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" title="{{c.about}}">{{c.about}}</span></div>
+<div style="{{c.headStyle}}"><h2 style="margin: 0; {{c.nameStyle}}">{{c.name}}</h2><span style="font-size: 12px; color: #A3AEC2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" tip="{{c.about}}">{{c.about}}</span></div>
 <div class="phc-pt-attrs">
 <sc-for list="{{c.attrs}}" as="a" hint-placeholder-count="3">
 <div data-attr="{{a.key}}" role="group" aria-label="{{a.name}} and its three skills" style="{{a.boxStyle}}">
 <div class="phc-pt-row">
-<button type="button" class="phc-pt-name phc-pt-attrname" data-attr-page="{{a.key}}" onClick="{{a.open}}" aria-label="{{a.openLabel}}" title="{{a.openLabel}}" style="{{a.nameStyle}}">{{a.name}}</button>
-<span class="phc-pt-pips" aria-hidden="true"><sc-for list="{{a.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" title="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span>
-<span class="phc-pt-stepper" onKeyDown="{{a.keys}}"><button type="button" class="phc-pt-step" data-attr-down="{{a.key}}" aria-label="{{a.downAria}}" aria-disabled="{{a.downOff}}" title="{{a.downTitle}}" onClick="{{a.down}}">‹</button><span class="phc-pt-val" data-attr-val="{{a.key}}" style="{{a.valStyle}}">{{a.val}}</span><button type="button" class="phc-pt-step" data-attr-up="{{a.key}}" aria-label="{{a.upAria}}" aria-disabled="{{a.upOff}}" title="{{a.upTitle}}" onClick="{{a.up}}">›</button></span>
-<button type="button" class="phc-pt-side phc-pt-step" data-attr-reset="{{a.key}}" aria-label="{{a.resetAria}}" aria-disabled="{{a.resetOff}}" title="{{a.resetAria}}" onClick="{{a.reset}}" style="font-size: 14px">↺</button>
+<button type="button" class="phc-pt-name phc-pt-attrname" data-attr-page="{{a.key}}" onClick="{{a.open}}" aria-label="{{a.openLabel}}" tip="{{a.openLabel}}" style="{{a.nameStyle}}">{{a.name}}</button>
+<span class="phc-pt-pips" aria-hidden="true"><sc-for list="{{a.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" tip="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span>
+<span class="phc-pt-stepper" onKeyDown="{{a.keys}}"><button type="button" class="phc-pt-step" data-attr-down="{{a.key}}" aria-label="{{a.downAria}}" aria-disabled="{{a.downOff}}" tip="{{a.downTitle}}" onClick="{{a.down}}">‹</button><span class="phc-pt-val" data-attr-val="{{a.key}}" style="{{a.valStyle}}">{{a.val}}</span><button type="button" class="phc-pt-step" data-attr-up="{{a.key}}" aria-label="{{a.upAria}}" aria-disabled="{{a.upOff}}" tip="{{a.upTitle}}" onClick="{{a.up}}">›</button></span>
+<button type="button" class="phc-pt-side phc-pt-step" data-attr-reset="{{a.key}}" aria-label="{{a.resetAria}}" aria-disabled="{{a.resetOff}}" tip="{{a.resetAria}}" onClick="{{a.reset}}" style="font-size: 14px">↺</button>
 </div>
 <span data-attr-next="{{a.key}}" style="font-size: 12px; line-height: 16px; color: #C9D3E3">{{a.next}}</span>
 <div style="{{a.railStyle}}">
 <sc-for list="{{a.cards}}" as="k" hint-placeholder-count="3">
 <div class="phc-card" data-skill="{{k.key}}" onMouseEnter="{{k.hover}}" onFocus="{{k.hover}}" style="{{k.style}}">
 <div class="phc-pt-row">
-<span class="phc-pt-name" title="{{k.lineTitle}}" style="{{k.nameStyle}}">{{k.name}}</span>
-<span class="phc-pt-pips" aria-hidden="true"><sc-for list="{{k.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" title="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span>
-<span class="phc-pt-stepper" onKeyDown="{{k.keys}}"><button type="button" class="phc-pt-step" data-skill-down="{{k.key}}" aria-label="{{k.decAria}}" aria-disabled="{{k.decOff}}" title="{{k.decTitle}}" onClick="{{k.dec}}">‹</button><span class="phc-pt-val" data-skill-val="{{k.key}}">{{k.pts}}</span><button type="button" class="phc-pt-step" data-skill-up="{{k.key}}" aria-label="{{k.incAria}}" aria-disabled="{{k.incOff}}" title="{{k.incTitle}}" onClick="{{k.inc}}">›</button></span>
-<button type="button" class="phc-help phc-pt-side" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" title="Read the EPCCG entry" style="{{k.helpStyle}}">?</button>
+<span class="phc-pt-name" tip="{{k.lineTitle}}" style="{{k.nameStyle}}">{{k.name}}</span>
+<span class="phc-pt-pips" aria-hidden="true"><sc-for list="{{k.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" tip="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span>
+<span class="phc-pt-stepper" onKeyDown="{{k.keys}}"><button type="button" class="phc-pt-step" data-skill-down="{{k.key}}" aria-label="{{k.decAria}}" aria-disabled="{{k.decOff}}" tip="{{k.decTitle}}" onClick="{{k.dec}}">‹</button><span class="phc-pt-val" data-skill-val="{{k.key}}">{{k.pts}}</span><button type="button" class="phc-pt-step" data-skill-up="{{k.key}}" aria-label="{{k.incAria}}" aria-disabled="{{k.incOff}}" tip="{{k.incTitle}}" onClick="{{k.inc}}">›</button></span>
+<button type="button" class="phc-help phc-pt-side" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" tip="Read the EPCCG entry" style="{{k.helpStyle}}">?</button>
 </div>
-<span class="phc-pt-line" title="{{k.lineTitle}}"><span style="{{k.tagStyle}}; margin-right: 5px">{{k.tag}}</span><sc-if value="{{k.hasNeed}}" hint-placeholder-val="{{false}}"><span data-skill-need="{{k.key}}" style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #FFFFFF; margin-right: 5px">· {{k.need}}</span></sc-if>· {{k.line}}</span>
+<span class="phc-pt-line" tip="{{k.lineTitle}}"><span style="{{k.tagStyle}}; margin-right: 5px">{{k.tag}}</span><sc-if value="{{k.hasNeed}}" hint-placeholder-val="{{false}}"><span data-skill-need="{{k.key}}" style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #FFFFFF; margin-right: 5px">· {{k.need}}</span></sc-if>· {{k.line}}</span>
 </div>
 </sc-for>
 </div>
@@ -284,7 +284,7 @@
 </div>
 <sc-if value="{{showPatrons}}" hint-placeholder-val="{{false}}"><div role="radiogroup" aria-label="Patrons" class="phc-cc-grid" data-patron-grid="" style="--n: 2; --min: 500px; --h: 430px; --gap: 14px">
 <sc-for list="{{patronCards}}" as="p" hint-placeholder-count="8"><article data-patron="{{p.key}}" style="{{p.style}}">
-<button type="button" class="phc-cc-art" data-patron-art="{{p.key}}" onClick="{{p.zoom}}" aria-label="View the art of {{p.name}}" title="View {{p.name}}" style="{{p.artStyle}}"><img src="{{p.portrait}}" alt="{{p.name}}, {{p.archetype}}" style="{{p.imgStyle}}"><span class="phc-cc-zoom" aria-hidden="true">⤢ VIEW</span></button>
+<button type="button" class="phc-cc-art" data-patron-art="{{p.key}}" onClick="{{p.zoom}}" aria-label="View the art of {{p.name}}" tip="View {{p.name}}" style="{{p.artStyle}}"><img src="{{p.portrait}}" alt="{{p.name}}, {{p.archetype}}" style="{{p.imgStyle}}"><span class="phc-cc-zoom" aria-hidden="true">⤢ VIEW</span></button>
 <div style="flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; gap: 10px">
 <div style="flex: none; display: flex; flex-direction: column; gap: 4px; min-width: 0"><span style="display: flex; gap: 8px; align-items: center"><img src="{{p.mark}}" alt="" style="width: 26px; height: 26px; flex: none"><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600; line-height: 1.15">{{p.name}}</span></span><span style="font-size: 13px; color: #A3AEC2">{{p.archetype}}</span><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #D36A90">{{p.rule}}</span></div>
 <div class="phc-cc-scroll" style="display: flex; flex-direction: column; gap: 10px; padding-right: 4px">
@@ -308,7 +308,7 @@
 <sc-for list="{{kitCards}}" as="k" hint-placeholder-count="4">
 <button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}">
 <span style="flex: none; font-size: 21px; font-weight: 700">{{k.name}}</span>
-<sc-if value="{{k.hasIcons}}" hint-placeholder-val="{{true}}"><span data-kit-icons="1" style="position: absolute; top: 14px; right: 14px; display: flex; gap: 8px"><sc-for list="{{k.icons}}" as="ki"><img class="phc-gear-icon" src="{{ki.src}}" alt="" title="{{ki.name}}" width="48" height="48" style="flex: none; width: 48px; height: 48px"></sc-for></span></sc-if>
+<sc-if value="{{k.hasIcons}}" hint-placeholder-val="{{true}}"><span data-kit-icons="1" style="position: absolute; top: 14px; right: 14px; display: flex; gap: 8px"><sc-for list="{{k.icons}}" as="ki"><img class="phc-gear-icon" src="{{ki.src}}" alt="" tip="{{ki.name}}" width="48" height="48" style="flex: none; width: 48px; height: 48px"></sc-for></span></sc-if>
 <span class="phc-cc-scroll" style="width: 100%; display: flex; flex-direction: column; gap: 6px"><sc-for list="{{k.items}}" as="i" hint-placeholder-count="4"><span style="font-size: 15px; color: #C9D3E3">{{i.text}}</span></sc-for></span>
 </button>
 </sc-for>
@@ -319,7 +319,7 @@
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">Your build fights with its body. Two techniques are already picked for each kind it can use; change them if you like. You learn more by drilling weapons after creation.</p>
 <sc-for list="{{techSys}}" as="ts"><div data-start-tech="{{ts.key}}" style="{{ts.cardStyle}}">
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><span style="{{ts.titleStyle}}">{{ts.title}}</span><button type="button" onClick="{{ts.reset}}" style="margin-left: auto; min-height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{ts.resetLabel}}</button></div>
-<sc-for list="{{ts.groups}}" as="tg"><div role="group" aria-label="{{tg.label}}" style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">{{tg.label}}</span><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{tg.chips}}" as="tc"><button type="button" data-tech="{{tc.key}}" aria-pressed="{{tc.pressed}}" title="{{tc.title}}" onClick="{{tc.pick}}" style="{{tc.style}}">{{tc.label}}</button></sc-for></div></div></sc-for>
+<sc-for list="{{ts.groups}}" as="tg"><div role="group" aria-label="{{tg.label}}" style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2">{{tg.label}}</span><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{tg.chips}}" as="tc"><button type="button" data-tech="{{tc.key}}" aria-pressed="{{tc.pressed}}" tip="{{tc.title}}" onClick="{{tc.pick}}" style="{{tc.style}}">{{tc.label}}</button></sc-for></div></div></sc-for>
 <span style="font-size: 13px; color: #C9D3E3">Picked: <b style="color: #FFFFFF">{{ts.picked}}</b></span>
 </div></sc-for>
 <span role="status" style="{{techVerdictStyle}}">{{techVerdict}}</span>
@@ -342,7 +342,7 @@
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{g.label}}</span>
 <div class="phc-cc-grid" style="--n: 4; --min: 220px; --h: 112px; --gap: 8px">
 <sc-for list="{{g.words}}" as="w" hint-placeholder-count="6">
-<button type="button" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" disabled="{{w.disabled}}" title="{{w.title}}" style="{{w.style}}">
+<button type="button" onClick="{{w.pick}}" aria-pressed="{{w.pressed}}" disabled="{{w.disabled}}" tip="{{w.title}}" style="{{w.style}}">
 <img src="{{w.img}}" alt="" style="width: 36px; height: 36px; flex: none; padding: 4px; border-radius: 8px; background: #0A0D13">
 <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0; height: 100%"><span style="flex: none; display: flex; gap: 8px; align-items: baseline"><span style="font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: #8BDEEE">{{w.word}}</span><span style="font-size: 10px; letter-spacing: 0.12em; color: #A3AEC2">{{w.charge}}</span></span><span class="phc-cc-scroll" style="font-size: 12.5px; line-height: 1.35; color: #C9D3E3">{{w.text}}</span></span>
 </button>
@@ -377,10 +377,10 @@
 <div style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{obOpts}}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">{{o.name}}</button></sc-for></div>
 </sc-if>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">TONE</span>
-<div role="group" aria-label="Tone" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{obTones}}" as="o" hint-placeholder-count="7"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" title="{{o.title}}" style="{{o.style}}">{{o.name}}</button></sc-for></div>
+<div role="group" aria-label="Tone" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{obTones}}" as="o" hint-placeholder-count="7"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" tip="{{o.title}}" style="{{o.style}}">{{o.name}}</button></sc-for></div>
 <span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{obToneHint}}</span>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">FEELINGS · PICK 2</span>
-<div role="group" aria-label="Starting feelings" data-feelings-pick="1" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{feelChips}}" as="o" hint-placeholder-count="25"><button type="button" data-feeling="{{o.key}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" title="{{o.title}}" style="{{o.style}}"><span aria-hidden="true" style="{{o.iconStyle}}; width: 18px; height: 18px"></span>{{o.name}}</button></sc-for></div>
+<div role="group" aria-label="Starting feelings" data-feelings-pick="1" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{feelChips}}" as="o" hint-placeholder-count="25"><button type="button" data-feeling="{{o.key}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" data-tip="{{o.tip}}" aria-description="{{o.tipText}}" style="{{o.style}}"><span aria-hidden="true" style="{{o.iconStyle}}; width: 18px; height: 18px"></span>{{o.name}}</button></sc-for></div>
 <span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{feelHint}}</span>
 <sc-for list="{{modGroups}}" as="g" hint-placeholder-count="3">
 <div style="display: flex; flex-direction: column; gap: 6px">
@@ -486,7 +486,7 @@
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid #4FC8DF">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #8BDEEE">SIGIL WORDS · MIND</span>
 <div style="display: flex; flex-wrap: wrap; gap: 14px">
-<sc-for list="{{magicSigils}}" as="w" hint-placeholder-count="2"><div title="{{w.text}}" style="display: flex; align-items: center; gap: 8px"><img src="{{w.img}}" alt="" style="width: 34px; height: 34px; padding: 4px; border-radius: 8px; background: #0A0D13"><span style="font-size: 15px; font-weight: 700; letter-spacing: 0.12em; color: #8BDEEE">{{w.word}}</span></div></sc-for>
+<sc-for list="{{magicSigils}}" as="w" hint-placeholder-count="2"><div tip="{{w.text}}" style="display: flex; align-items: center; gap: 8px"><img src="{{w.img}}" alt="" style="width: 34px; height: 34px; padding: 4px; border-radius: 8px; background: #0A0D13"><span style="font-size: 15px; font-weight: 700; letter-spacing: 0.12em; color: #8BDEEE">{{w.word}}</span></div></sc-for>
 </div>
 <sc-if value="{{hasMagicLine}}" hint-placeholder-val="{{true}}"><span style="font-size: 13px; line-height: 1.45; color: #C9D3E3">{{magicLine}}</span></sc-if>
 </div>
