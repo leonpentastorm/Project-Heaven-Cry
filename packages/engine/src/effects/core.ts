@@ -123,8 +123,14 @@ function immuneMatch(words: string[], what: string, fam?: string): boolean {
 }
 /** Is this unit (or character) immune to a thing: a condition id (with its family), 'shove', 'knockback', 'bleed',
  * 'opportunity_attack'? Returns the item's name, or null. */
-export function immune(x: { u?: Unit | null; c?: Character | null }, what: string, fam?: string): string | null {
+/** The immunity an item op gives (an `immunity` effect the holder carries), without the stat door: a unit's own nature
+ * (a Figment's unit_effects, rules 1.34), asked where a stat answer must not reach (tactics.ts hide). */
+export function immuneByItem(x: { u?: Unit | null; c?: Character | null }, what: string, fam?: string): string | null {
   for (const { e, info } of genericEffects(x, 'immunity')) if (immuneMatch(immWords(e), what, fam ?? (isCondition(what) ? condFamily(what) : undefined))) return info.name;
+  return null;
+}
+export function immune(x: { u?: Unit | null; c?: Character | null }, what: string, fam?: string): string | null {
+  const byItem = immuneByItem(x, what, fam); if (byItem) return byItem;
   const q = statQuery(x, `immune:${what}`); return q.add ? 'perk' : null;
 }
 
