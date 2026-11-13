@@ -24,7 +24,7 @@ const ICON = 'img[src^="data:image/svg+xml"]';
     if (w === 1440) {
       const per = await p.locator('[data-kit-icons]').evaluateAll((xs) => xs.map((x) => x.querySelectorAll('img').length));
       ok('the Kit step: every kit card shows its weapons as icons (' + per.join(', ') + ')', per.length >= 4 && per.every((n) => n >= 1));
-      ok('…the Sigil student shows the Evoker glove and the Soul initiate the Emanator glove', (await p.locator('[data-kit-icons] img[title="Evoker"]').count()) === 1 && (await p.locator('[data-kit-icons] img[title="Emanator"]').count()) === 1);
+      ok('…the Sigil student shows the Evoker glove and the Soul initiate the Emanator glove', (await p.locator('[data-kit-icons] img[data-tip-text="Evoker"]').count()) === 1 && (await p.locator('[data-kit-icons] img[data-tip-text="Emanator"]').count()) === 1);
       ok('…at 48 px', (await p.locator('[data-kit-icons] img').first().evaluate((e) => Math.round(e.getBoundingClientRect().width))) === 48);
     }
     await p.screenshot({ path: OUT + 'icons-kit-' + w + '.png' });

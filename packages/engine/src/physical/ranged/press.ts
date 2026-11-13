@@ -1,7 +1,7 @@
 // Physical 2.0, ranged Press: Pressure with little or no damage (+1 Heat on top of what it fires: the core adds it).
 // Suppress is the lead's reference; the ranged lane builds Rake, Warning Shot, Flush, Mag Dump and Crossfire here.
 import { technique, strike, canStrike, spendRounds, addPressure, addPressureTo, onHook, save, hitByAlly, ownSideOnly, stepsWithin, stepUser, standingAt, turnStamp, atCover, flanksCover, hitPressure, pressureOf, isPressed, type Tech, type StrikeResult } from './shared';
-import { say, alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, attackApCost, refOf, type Combat, type Unit } from '../../combat';
+import { say, alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, setOffJam, attackApCost, refOf, type Combat, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { applyDamage } from '../../effects/damage';
 import { landed } from '../../effects/output';
@@ -87,8 +87,8 @@ function dropFx(cb: Combat, ev: FxEvent | null): void { if (!ev || !cb.fx) retur
 /** The weapon in the technique's hand, for engine code that reads u.weapon (the off hand is swapped in, then back). */
 function inWeapon<T>(t: Tech, fn: () => T): T {
   const u = t.u; if (t.hand !== 'off') return fn();
-  const w0 = u.weapon, a0 = u.ammoType; u.weapon = t.weaponId; u.ammoType = (u as any).offAmmoType ?? null;
-  try { return fn(); } finally { u.weapon = w0; u.ammoType = a0; }
+  const w0 = u.weapon, a0 = u.ammoType; u.swapMain = w0; u.weapon = t.weaponId; u.ammoType = (u as any).offAmmoType ?? null;
+  try { return fn(); } finally { u.weapon = w0; u.ammoType = a0; delete u.swapMain; }
 }
 /** A round that goes out with no attack roll (Warning Shot, Flush; Rout, takes.ts; Cover Me's covering round,
  * watches.ts). spendRounds paid the round; this is the rest of
@@ -97,10 +97,11 @@ function inWeapon<T>(t: Tech, fn: () => T): T {
 export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): void {
   if (t.preview) return;
   const u = t.u, w = t.w;
-  if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, w)) { u.jammed = true; say(t.cb, u.name + '\'s weapon jams (Heat).'); } }
+  // the jam lands on the gun that fired (Leon's ruling, 13 Nov 2026): an off-hand round jams the off-hand gun
+  if (heatsUp(t)) { u.heat += 1; if ((t.hand === 'main' || (t.hand === 'off' && !!u.offWeapon)) && canJam(w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, w)) { if (t.hand === 'off') setOffJam(u, true); else u.jammed = true; say(t.cb, u.name + '\'s weapon jams (Heat).'); } }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   if (t.hand === 'main' && u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);
-  emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...(u.jammed && t.hand === 'main' ? { jam: true } : {}), tech: t.def.id, vi: 0, ...fx });
+  emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...((t.hand === 'off' ? u.offJammed : u.jammed) ? { jam: true } : {}), tech: t.def.id, vi: 0, ...fx });
   if (u.hidden && !t.holds('silent') && !(u.mods || []).includes('mod_suppressor')) reveal(t.cb, u, 'fired');
 }
 /** Damage with no roll (Flush's Arc line): the weapon's damage as a hit would do it, times mult, less armour, credited

@@ -2,6 +2,8 @@ import './game/debug'; // first, so it hears every error
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { mountActionTips } from './game/actionTip';
+mountActionTips(); // the one hover card of the game (every [data-tip] / [data-tip-text] element)
 import PD from './game/protodata.json';
 import ASSETS from './game/assets.json';
 

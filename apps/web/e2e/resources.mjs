@@ -5,7 +5,7 @@
 // The Proving Ground starts each build with real actions (class, kit, gear); the state a test needs (ammo, charge,
 // Flux, Strain…) is written into the host's own save and the page reloads it, as a returning host would.
 // Screenshots: e2e/shots/resources-*.png (deviceScaleFactor 1, 1440×900 and 1280×720).
-import { chromium, click, BASE, OUT, pause } from './lib.mjs';
+import { chromium, click, BASE, OUT, pause, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 await ctx.addInitScript(() => { try { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } });
@@ -96,7 +96,8 @@ await snap('gunner-1440');
 // Hover shows the hint.
 await youCard().locator('[data-res="ammo"]').first().hover();
 await pause(p, 200);
-ok('hovering a row shows its hint (what to do)', await youCard().locator('[data-res="ammo"] .phc-res-hint').first().isVisible());
+await youCard().locator('[data-res="ammo"]').first().hover(); await pause(p, 500);
+ok('hovering a row shows its hint (what to do) in the one card', (await p.locator('.phc-atip').count()) === 1 && /\S/.test(await tipOf(youCard().locator('[data-res="ammo"]'))));
 await snap('gunner-hover-1440');
 // 1280×720: the full card steps aside; the 2–3 most urgent rows sit under the bar.
 await p.setViewportSize(SMALL); await settle();
@@ -104,11 +105,15 @@ const urg = p.locator('.phc-me-urgent');
 ok('1280×720: the urgent rows show in the mini-bar: ' + ((await urg.textContent()) || '').replace(/\s+/g, ' ').slice(0, 80), (await urg.isVisible()) && /RELOAD/.test((await urg.textContent()) || ''));
 await snap('gunner-1280');
 // The collapsed panel's mini card.
-await p.keyboard.press('h'); await pause(p, 400);
+// (each 'h' waits for the panel to change: beside other suites a press sent at once was sometimes lost, and the
+// panel stayed collapsed for the rest of the suite)
+const panelOpen = async () => !(await p.locator('button.phc-cb-show').count()); // hidden: the Show-the-panel button stands in
+const toggleH = async (open) => { for (let i = 0; i < 3 && (await panelOpen()) !== open; i++) { await p.keyboard.press('h'); await p.waitForFunction((open) => !document.querySelector('button.phc-cb-show') === open, open, { timeout: 10000 }).catch(() => {}); } };
+await toggleH(false);
 const mini = p.locator('.phc-cb-mini');
 ok('collapsed panel: the mini card carries the urgent rows', (await mini.count()) > 0 && /RELOAD/.test((await mini.textContent()) || ''));
 await snap('gunner-collapsed-1280');
-await p.keyboard.press('h'); await pause(p, 300);
+await toggleH(true);
 await p.setViewportSize(BIG);
 
 // 2. The Sigil caster: an empty core with spares → RELOAD CORE, Flux 5 → OVERLOAD SOON.
@@ -118,8 +123,7 @@ t = await rowText('charge');
 ok('Sigil: Evoker charge / 10 and spare cores, RELOAD CORE: ' + t, /EVOKER CHARGE/.test(t) && /0 \/ 10/.test(t) && /2 spare cores/.test(t) && /RELOAD CORE/.test(t));
 t = await rowText('flux');
 ok('Sigil: Flux 5 / 6 OVERLOAD SOON: ' + t, /FLUX/.test(t) && /5 \/ 6/.test(t) && /OVERLOAD SOON/.test(t));
-await youCard().locator('[data-res="charge"]').first().hover(); await pause(p, 150);
-ok('Sigil: the hint says swap core (2 AP)', /Swap core \(2 AP\)/i.test((await youCard().locator('[data-res="charge"] .phc-res-hint').first().textContent()) || ''));
+ok('Sigil: the hint says swap core (2 AP)', /Swap core \(2 AP\)/i.test(await tipOf(youCard().locator('[data-res="charge"]'))));
 await p.mouse.move(5, 5);
 await snap('sigil-1440');
 await snap('sigil-1280', SMALL); await p.setViewportSize(BIG);
@@ -127,6 +131,25 @@ await snap('sigil-1280', SMALL); await p.setViewportSize(BIG);
 // 3. The Soul caster: Strain one below the limit, holding an Outburst at stage 2.
 await build([{ type: 'sandbox/unequip', slot: 'main' }, { type: 'sandbox/kit', kind: 'soul' }]);
 await patch('const d = (u.mg.designs || [])[0]; u.mg.strain = Math.max(1, (u.mg.strainLimit || 3) - 1); if (d) u.mg.held = { design: d.id, stage: 2, cost: 40 };');
+// One fact, one place (Leon, live 0.24.0): on the Outbursts tab the HEART panel says the Strain and the held Outburst,
+// so the unit panel doesn't; on any other tab the unit panel does.
+// (after a reload the turn card comes up when the room has resumed and the turn's intro has played: wait for the tab,
+// then for it to be the selected one, never a fixed pause)
+const onTab = async (id) => {
+  const tab = p.locator('[role="tab"][data-tab="' + id + '"]').first();
+  await tab.waitFor({ state: 'visible', timeout: 120000 });
+  // a held Outburst opens the turn on a cut-in ("Your turn", with Pump on it) that covers the tabs: dismiss it, as
+  // often as it comes back, until the click lands (up to two minutes on a loaded machine)
+  for (let t0 = Date.now(), done = false; !done;) {
+    await dismissCut();
+    done = (await tab.click({ timeout: 5000 }).catch(() => 'missed')) !== 'missed';
+    if (!done && Date.now() - t0 > 120000) await tab.click({ timeout: 30000 }); // the last try throws with its reason
+  }
+  await p.waitForFunction((id) => document.querySelector('[role="tab"][data-tab="' + id + '"]')?.getAttribute('aria-selected') === 'true', id, { timeout: 30000 });
+};
+await onTab('outbursts');
+ok('Soul: with the HEART panel up, Strain and the held Outburst are said there, not again in the unit panel', !(await youCard().locator('[data-res="strain"], [data-res="held"]').count()) && (await p.locator('.phc-heart-panel').count()) > 0);
+await onTab('move');
 t = await rowText('strain');
 ok('Soul: Strain vs its limit, NEAR THE LIMIT: ' + t, /STRAIN/.test(t) && /\d+ \/ \d+/.test(t) && /NEAR THE LIMIT/.test(t));
 ok('Soul: MP in the block: ' + (await rowText('mp')), /MP/.test(await rowText('mp')));
@@ -134,6 +157,7 @@ t = await rowText('held');
 ok('Soul: the held Outburst (design, stage, tone): ' + t, /HOLDING/.test(t) && /stage 2/.test(t));
 await snap('soul-1440');
 await patch('u.mg.strain = (u.mg.strainLimit || 3) + 1;');
+await onTab('move');
 t = await rowText('strain');
 ok('Soul: over the limit says OVER THE LIMIT: ' + t, /OVER THE LIMIT/.test(t));
 await snap('soul-over-1440');

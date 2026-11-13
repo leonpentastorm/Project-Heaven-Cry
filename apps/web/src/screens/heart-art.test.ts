@@ -22,7 +22,7 @@ describe('painted feelings, modules and UI marks', () => {
     const el = mount([...fs.map((f) => f.icon), ...ms.map((m) => m.icon)]);
     expect(el.querySelectorAll('img[src^="/assets/feeling-"]').length).toBe(25);
     for (const m of ms) { const key = ['module-' + m.id, 'module-' + m.id.replace(/_/g, '-')].find((k) => A[k]); if (key) expect(m.icon, m.id).toBe(A[key]); else expect(m.icon, m.id).toMatch(/^data:image\/svg\+xml/); }
-    expect(ms.filter((m) => m.icon.startsWith('/assets/module-')).length).toBe(38);
+    expect(ms.filter((m) => m.icon.startsWith('/assets/module-')).length).toBe(28); // the codex's modules (the shelved advanced classes' own are hidden: 10 more painted)
   });
   it('an item with no painted file keeps its drawn icon; the UI marks use heart-ui-<mark>', () => {
     setHeartArt({});

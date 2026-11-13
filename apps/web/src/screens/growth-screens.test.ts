@@ -104,7 +104,7 @@ describe('the shared workshop: collapsible and grouped (spec 7)', () => {
     const gates = r.mg.soul.ws.groups.find((g: any) => g.key === 'modules');
     expect(gates.open).toBe(false); gates.toggle(); r = L.renderVals();
     const mods = r.mg.soul.ws.groups.find((g: any) => g.key === 'modules').items[0].gates;
-    expect(mods.groups[0].key).toBe('lore_master'); expect(mods.groups.at(-1).key).toBe('advanced');
+    expect(mods.groups[0].key).toBe('lore_master'); expect(mods.groups.at(-1).key).toBe('composure'); // no 'advanced' group while those classes are shelved
     mods.groups[0].toggle(); r = L.renderVals();
     expect(r.mg.soul.ws.groups.find((g: any) => g.key === 'modules').items[0].gates.groups[0].hasItems).toBe(true);
     r.mg.soul.ws.toggle(); r = L.renderVals();

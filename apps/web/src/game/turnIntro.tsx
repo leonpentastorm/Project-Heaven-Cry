@@ -38,6 +38,7 @@ import { CommandsDialog } from './commandsDialog';
 import { resourcesOf, resRowView, type ResRow } from './resources';
 import { cutInActive, EV_CUTIN_END, CUTIN_MS, CUTIN_MAX_MS } from './spotlight';
 import { fightPace } from './combatSpeed';
+import { tipProps } from './actionTip';
 
 export const EV_ACTION = 'phc:combat-action', EV_FOCUS = 'phc:focus-tile', EV_TURN = 'phc:turn-shown', EV_FX_AT = 'phc:fx-at';
 
@@ -378,7 +379,7 @@ const css = (st: string) => Object.fromEntries(st.split(';').map((x) => x.trim()
 function ResLine({ r }: { r: ResRow }) {
   const v = resRowView(r);
   return (
-    <div role="listitem" data-res={r.key} title={r.hint} aria-label={v.aria} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <div role="listitem" data-res={r.key} {...tipProps(r.hint)} aria-label={v.aria} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
         <span style={css(v.labelStyle)}>{v.label}</span>
         <span style={{ ...css(v.valueStyle), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v.value}</span>
@@ -425,7 +426,7 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           <span style={{ fontSize: 12, color: '#A3AEC2' }}>{c.weapon}</span>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginTop: 4 }}>
             {c.cmds.map((cmd, i) => (
-              <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click" data-act={cmd.action} title={cmd.off ? cmd.label + ': ' + cmd.sub : undefined}
+              <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click" data-act={cmd.action} {...tipProps(cmd.off ? cmd.label + ': ' + cmd.sub : undefined)}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 50, padding: '6px 10px', borderTop: '1px solid #3B475D', borderRight: '1px solid #3B475D', borderBottom: '1px solid #3B475D', borderLeft: '4px solid ' + (cmd.off ? '#3B475D' : i === 0 ? '#F65157' : c.color), background: '#10151F', color: cmd.off ? '#7F8BA1' : '#E7EBF3', opacity: cmd.off ? 0.7 : 1, fontFamily: 'inherit', textAlign: 'left', cursor: cmd.off ? 'default' : 'pointer', animation: rm ? undefined : 'phcCmdIn' + sfx2 + ' ' + T(300) + ' cubic-bezier(.2,.8,.2,1) ' + T(260 + i * 60) + ' both' }}>
                 <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 11, fontWeight: 700 }}>{cmd.key}</span>
                 <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
@@ -437,7 +438,7 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           </div>
           <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 10, letterSpacing: '0.14em', color: '#7F8BA1' }}>PRESS 1–4 · ANY OTHER KEY OR CLICK TO PLAY ON</span>
-            <button type="button" data-phc-customise="" onClick={() => onCustomise(c)} aria-keyshortcuts="C" aria-haspopup="dialog" title="Choose which four commands this card offers"
+            <button type="button" data-phc-customise="" onClick={() => onCustomise(c)} aria-keyshortcuts="C" aria-haspopup="dialog" {...tipProps("Choose which four commands this card offers")}
               style={{ marginLeft: 'auto', padding: '2px 8px', border: '1px solid #3B475D', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', cursor: 'pointer' }}>⚙ CUSTOMISE (C)</button>
           </span>
         </div>

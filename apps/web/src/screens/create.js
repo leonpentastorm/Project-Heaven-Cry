@@ -5,7 +5,7 @@ import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIV
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
 import { gearIconUri } from '../game/gearIcons';
 import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, KITS, WEAPON, ITEM, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL } from '@engine';
-import { feelingInk, feelingIconSrc, iconStyle } from '../game/feelingsView';
+import { feelingInk, feelingIconSrc, iconStyle, feelingTip } from '../game/feelingsView';
 const FEELING_START = ['rage', 'love'];
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
@@ -518,7 +518,7 @@ export class CreateLogic extends DCLogic {
     // Rules 1.8: two starting feelings (default Rage and Love); the rest are felt in play.
     const feels = S.feelings && S.feelings.length ? S.feelings : FEELING_START;
     const feelChips = FEELINGS.map((f) => { const on = feels.includes(f.id), ink = feelingInk(f.id);
-      return { key: f.id, name: f.name, icon: feelingIconSrc(f.id, on ? ink : '#7F8BA1'), iconStyle: iconStyle(feelingIconSrc(f.id, on ? ink : '#7F8BA1'), on ? ink : '#7F8BA1'), pressed: on ? 'true' : 'false', title: f.name + ': ' + f.pour.text + ' Felt first when: ' + f.trigger.text,
+      return { key: f.id, name: f.name, icon: feelingIconSrc(f.id, on ? ink : '#7F8BA1'), iconStyle: iconStyle(feelingIconSrc(f.id, on ? ink : '#7F8BA1'), on ? ink : '#7F8BA1'), pressed: on ? 'true' : 'false', ...feelingTip(f),
         // Always two: picking a third swaps out the older pick (a picked one stays until another replaces it).
         pick: () => { if (on) return; const cur = this.state.feelings && this.state.feelings.length === 2 ? this.state.feelings : FEELING_START; this.setState({ feelings: [...cur, f.id].slice(-2) }); },
         style: btn(on, ink) + '; display: inline-flex; align-items: center; gap: 6px' }; });

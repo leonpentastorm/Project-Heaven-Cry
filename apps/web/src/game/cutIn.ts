@@ -22,6 +22,7 @@ import { anim as domAnim, centre, floatText, burst, tileEl, withTempo, fxPace, t
 const anim = (el: Element, f: Keyframe[], o: KeyframeAnimationOptions) => withTempo(1, () => domAnim(el, f, o));
 import { FAITH_GOLD, FAITH_INK, accentOf, patronMarkUri, patronPortrait } from './faithArt';
 import { takeStage, stageBox } from './stage';
+import { setTip } from './actionTip';
 
 export type CutInSize = 'full' | 'small';
 /** The box that says what happened (name, text, what it did). */
@@ -263,7 +264,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
       if (boxUp) boxUp.shut(); // one box at a time: a new one takes the place of the last, kept or not
       const b = el('div', boxPlace(o.focus) + 'border-left-color:' + o.accent);
       b.dataset.phcCutBox = o.id || ''; b.setAttribute('role', 'status'); b.setAttribute('aria-live', 'polite');
-      const x = el('button', '', '×') as HTMLButtonElement; x.type = 'button'; x.className = 'c'; x.setAttribute('aria-label', 'Close'); x.title = 'Close'; b.appendChild(x);
+      const x = el('button', '', '×') as HTMLButtonElement; x.type = 'button'; x.className = 'c'; x.setAttribute('aria-label', 'Close'); setTip(x, 'Close'); b.appendChild(x);
       if (o.box!.kicker) b.appendChild(el('div', '', o.box!.kicker)).className = 'k';
       b.appendChild(el('div', '', o.box!.title)).className = 't';
       if (o.box!.text) b.appendChild(el('div', '', o.box!.text)).className = 'x';
@@ -272,7 +273,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
       // player closes it with ×.
       const readMs = CUT_BOX_READ_MS[size], foot = el('div', ''); foot.className = 'f';
       const note = el('span', '', 'Closes by itself in ' + Math.round(readMs / 1000) + ' seconds'); foot.appendChild(note);
-      const keep = el('button', '', 'KEEP OPEN') as HTMLButtonElement; keep.type = 'button'; keep.className = 'p'; keep.setAttribute('aria-pressed', 'false'); keep.title = 'Keep this open until you close it'; foot.appendChild(keep);
+      const keep = el('button', '', 'KEEP OPEN') as HTMLButtonElement; keep.type = 'button'; keep.className = 'p'; keep.setAttribute('aria-pressed', 'false'); setTip(keep, 'Keep this open until you close it'); foot.appendChild(keep);
       b.appendChild(foot);
       const bar = el('div', ''); bar.className = 'bar'; b.appendChild(bar);
       document.body.appendChild(b); // not one of the cut-in's own nodes: the box outlives the cut-in that brought it
@@ -300,7 +301,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
       keep.addEventListener('click', () => {
         if (gone) return; me.kept = !me.kept;
         keep.setAttribute('aria-pressed', me.kept ? 'true' : 'false'); keep.textContent = me.kept ? '✓ KEPT OPEN' : 'KEEP OPEN';
-        keep.title = me.kept ? 'Let it close by itself again' : 'Keep this open until you close it';
+        setTip(keep, me.kept ? 'Let it close by itself again' : 'Keep this open until you close it');
         note.textContent = me.kept ? 'Stays until you close it (×)' : 'Closes by itself in ' + Math.round(readMs / 1000) + ' seconds';
         if (me.kept) { b.dataset.kept = '1'; hold(); } else { delete b.dataset.kept; start(); }
       });
