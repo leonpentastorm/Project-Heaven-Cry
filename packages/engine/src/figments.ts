@@ -253,7 +253,8 @@ onHook('turn_start_pre', (ctx: any, cb: Combat) => {
 onHook('turn_start', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.u; if (!u || !cb.ties?.length) return;
   // a Figment with a lifetime (the Rigger's Double) fades at its owner's turn start in its last round
-  for (const f of figmentsOf(cb, u)) { const until = (f as any).owned?.until; if (until != null && cb.round >= until) unravel(cb, f, 'it fades'); }
+  // (and a Scrap Turret after its rounds: any owned unit with a lifetime; an auto unit has acted first, owned.ts)
+  for (const f of ownedBy(cb, u)) { const until = (f as any).owned?.until; if (until == null || cb.round < until || !cb.units.includes(f)) continue; if (isFigment(f)) unravel(cb, f, 'it fades'); else { unmakeOwned(cb, f, { quiet: true }); say(cb, f.name + ' falls apart.'); } }
   // an Elite or a Boss tests a Double again at each of its turn starts; a Boss is never fooled two rounds running
   if (u.side === 'foe' && cb.images?.length) for (const img of imagesOf(cb).filter((i) => i.body && i.fooled.includes(u.id))) {
     const tier: any = u.tier ? (ENEMY as any)[u.tier] : null, owner = cb.units.find((x) => x.id === img.owner);

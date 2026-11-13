@@ -556,7 +556,7 @@ function overclockVerb(t: Unit): string | null {
 register({
   id: 'trickster.overclock', claims: 'all',
   actions: [{
-    id: 'overclock', label: 'Overclock', scope: ['combat'], target: 'ally', ap: 'data', range: num({ key: 'class:trickster.overclock' }, 'range'),
+    id: 'overclock', label: 'Overclock', scope: ['combat'], target: 'ally', ap: 'data', uses: { per: 'per_turn', n: 1 }, range: num({ key: 'class:trickster.overclock' }, 'range'),
     text: 'A Figment or machine of your side in range acts now, at no AP: its attack at the nearest enemy it can reach. It takes strain damage.',
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
@@ -598,7 +598,7 @@ function scrapWeapon(cb: Combat, tile: string): string | null | undefined {
 register({
   id: 'trickster.scrap_turret', claims: 'all',
   actions: [{
-    id: 'scrap_turret', label: 'Scrap Turret', scope: ['combat'], target: 'tile', ap: 'data',
+    id: 'scrap_turret', label: 'Scrap Turret', scope: ['combat'], target: 'tile', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'From a wreck, a pile with a weapon, or a barricade next to you: a turret that attacks at your turn starts for a few rounds.',
     available: (h) => (h.cb && h.u && h.cb.units.some((x) => (x as any).owned?.kind === 'machine' && !x.dead && ownerOfUnit(h.cb!, x) === h.u) ? 'One turret at a time.' : true),
     preview: (h, args) => {
