@@ -32,7 +32,10 @@ const within = (x: number, lo: number, hi: number, what: string) => { expect(x, 
 
 // The bands (the hand-off, section 1.2), pinned on the engine's own numbers for the reference casters at levels 1, 6
 // and 20. They are a little wider than the report's, so that a later change that keeps a band does not break a test.
-describe('the heal and shield bands hold (rules 1.20)', () => {
+// Rules 1.36 supersedes these bands (heals and shields in percent of the reference HP, not Soldier-turns, a gate and a cap): the new lines are held by
+// balance-contract.test.ts (the off-heal line), heal-pct.test.ts (the gate, the cap, the Recruit, the stim, the shield order) and the Tending measure.
+// The rules 1.20 bands stay here, skipped, as the record of what they were.
+describe.skip('the heal and shield bands hold (rules 1.20; superseded by rules 1.36)', () => {
   it('the yardstick: a Soldier-turn is about 13% of the rifleman\'s HP at every level, and the level factor follows it', () => {
     for (const lv of H_LEVELS) { const sh = SOLDIER_TURN[lv] / RIFLEMAN_HP[lv]; expect(sh, 'level ' + lv).toBeGreaterThan(0.12); expect(sh).toBeLessThan(0.145); }
     expect([1, 6, 12, 20].map(mendFactor)).toEqual([1, 1.13, 1.38, 1.82]);
@@ -87,6 +90,8 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
     }
     expect(BUFF_HEAL).toBe(7);
   });
+});
+describe('a healer under fire (rules 1.20; still held under rules 1.36)', () => {
   it('under fire (level 6, 3 fights a row): a healer keeps a pair up longer under two Soldiers, and nothing keeps it up under four', () => {
     const idle2 = underFire('idle', idleOf(SUPPORT.heal), 6, 2, 3), heal2 = underFire('heal', SUPPORT.heal, 6, 2, 3), heal4 = underFire('heal', SUPPORT.heal, 6, 4, 3);
     const both4 = underFire('heal and shield', [SUPPORT.heal, SUPPORT.shield], 6, 4, 3);

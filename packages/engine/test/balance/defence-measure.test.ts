@@ -35,7 +35,9 @@ const list = (k: string, d: string) => (process.env[k] || d).split(',').filter(B
 const LV = list('DEFENCE_LEVELS', '').map(Number), PARTS = list('DEFENCE_PARTS', 'medic,yard,fights,fire');
 const say = (s: string) => { console.log(s); if (process.env.DEFENCE_OUT) appendFileSync(process.env.DEFENCE_OUT, s + '\n'); };
 
-describe('the defence step: the medic\'s kit against the yardstick (rules 1.23)', () => {
+// Rules 1.36 supersedes the kit's bands: a stim is 20% of its target's max HP (the gate alone; heal-pct.test.ts) and Triage
+// is the Mender's Tending (the Tending measure, balance.ceilings.tending_turn). Kept, skipped, as the record.
+describe.skip('the defence step: the medic\'s kit against the yardstick (rules 1.23; superseded by rules 1.36)', () => {
   it('Triage in the medic\'s hands is 20 to 40% of a Soldier-turn for 2 AP, ×1.6 since rules 1.27 (a normal share; the healer\'s turn is 2.0 Soldier-turns all in, 1.6 at a normal share): a bit under the same character\'s magic, per AP', () => {
     for (const lv of D_LEVELS) { const r = medicRow('medic', 'mender', 'normal', lv);
       expect(r.triagePct, 'Triage, level ' + lv).toBeGreaterThanOrEqual(20 * R); expect(r.triagePct).toBeLessThanOrEqual(40 * R);
