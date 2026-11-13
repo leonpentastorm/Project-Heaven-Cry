@@ -273,3 +273,37 @@ is sold.
 - Races (after origin, in character creation).
 - Sectors beyond Earth.
 - Bring the UI design canvas back in line with the game after v1.0.
+
+## The roguelike: Leon's scope (13 Nov 2026; after Classes 3.0)
+
+Recorded as he gave it; nothing is designed or built. Decision 115 has the mode's place in the product.
+
+**Stage 1**
+1. **About five map types** (five dungeons).
+2. **200 to 300 designed rooms**: each a pattern of what is in the room (what must be done there, which NPC, what is
+   gained, a treasure chest and so on), so any room can appear in any dungeon.
+3. **A shop NPC system:** an NPC that sells items the engine recognises, with rarity and a randomiser.
+4. **Random encounters in a dungeon:** a combat encounter generator in the engine that spawns objects that make
+   sense and enemies to fight.
+5. **A world map:** a big map with a random encounter at every step, like old RPGs, and points of interest that
+   lead into one of the designed rooms. The roguelike uses it to do missions for the shop NPCs and to enter the
+   five dungeons.
+6. **Meta progression:** more is unlocked each run, tracked separately for each player.
+
+**Stage 2**
+1. A companion system with dialogue trees.
+2. Account progression that gives cosmetic rewards, such as dice skins.
+
+**Art (Leon, 13 Nov):** a batch of new art is made for the roguelike with the image generator, and combined with
+the project's own LoRAs (`art/briefs/FORGE-PHC.md`) to make new settings. The four archived map paintings may be
+used as style reference in training; **painted maps do not come back** (maps stay drawn from tiles): the scenes
+LoRA is for backgrounds and illustrations only.
+
+**The lead's notes for when this is designed** (not rulings): (a) "tracked separately for each player" needs a
+player identity that outlives a room, which the game does not have today (characters are files and drafts): some
+account or profile is a stage 1 need, not only stage 2's; (b) 200 to 300 rooms is content, not code: the first
+thing to design is the room FORMAT (a data template the encounter generator, the shop and the loot tables fill),
+proven with twenty or thirty rooms before the rest are written; (c) the encounter generator needs a budget to
+spend: the balance contract and the enemy table by tier and level are that budget; (d) the shop needs prices and
+rarity for every item, which today exist only in part; (e) measure the map's rendering (a full map, many units)
+before this mode, as the performance notes say.
