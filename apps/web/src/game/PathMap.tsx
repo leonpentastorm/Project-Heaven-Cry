@@ -133,7 +133,7 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
   );
   return (
     <div style={{ flex: 1, minHeight: 380, display: 'flex', flexDirection: 'column', gap: 8 }}>
-    <div data-phc-pathmap="" style={{ position: 'relative', flex: 1, minHeight: 0, display: 'grid', placeItems: 'center', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', overflow: 'hidden' }}>
+    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', flex: 1, minHeight: 0, display: 'grid', placeItems: 'center', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', overflow: 'hidden' }}>
       <style>{'@keyframes phc-pm-dash{to{stroke-dashoffset:-26}}.phc-pm-lit{animation:phc-pm-dash 1.2s linear infinite}@keyframes phc-pm-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:.25}}.phc-pm-here{animation:phc-pm-pulse 2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pm-lit,.phc-pm-here{animation:none}}'}</style>
       <div data-phc-pathmap-box="" style={{ position: 'relative', width: '100%', maxHeight: '100%', aspectRatio: '16 / 9' }}>
         {art ? <img src={art} alt="" data-phc-pathmap-art="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : <FieldChart setting={v.settingId} />}

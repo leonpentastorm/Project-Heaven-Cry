@@ -5195,6 +5195,71 @@ The shop, the Forge, the training ground, the shrine and the Crossroads exist on
 14. **Tests only:** `run/skip` wins the fight under way at once, and is refused unless the room is a test room
    (`settings.test`, set in the lobby by the browser suites' hook `phc.testRoom`) and by anyone but the host.
 
+## Rules revision 1.42: prices, the shop, the faces and the gear preview (Survival, build step 4)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-4.md`) from `docs/design/survival-spec.md` (draft 4) rules
+11, 25 to 27, sections 3.4, 4.2 (items 4 and 14) and 8.3, and section 10 step 4. Every number is in data and is
+PROVISIONAL (items 2900 to 2918): `data/survival.json` (`shop`, `sell_rate`, `faces`), `data/rules.json`
+(`weapons_rules.magazine_prices`, `weapons_rules.special_round_price`, `gear_preview`). Code: `credits.ts` (`priceOf`),
+`gearpreview.ts`, `run/shop.ts` (the shop's half of the run reducer), `run/shopview.ts` (what the screen draws). The
+grade step, the Forge's rules and gives are build steps 4a and 4b; this revision leaves their seams.
+
+1. **One price for everything** (spec rule 27, item 4): `priceOf(id, rarity, mods)` = the item's or weapon's
+   `price_credits` x `rules.json rarity.<r>.price`, plus each fitted mod at its own price; null for a plot item, an
+   unpriced thing or `stock: false`. It also prices the counter's shapes: **a round** (`rounds:<calibre>`) at the
+   calibre's price per round (the Core Rules' table, `weapons_rules.calibres[].price_credits`, unchanged: .32 Decrkm 1,
+   rifle 2, revolver 2, shell 3, arrow 3, bolt 4, .50 Frontier 4, .700 40, 40 mm grenade 60, fuel canister 50, rocket
+   400, core charge 15); **a full magazine** (`mag:<weapon>`) at the empty magazine's price (the Core Rules' 30 for a
+   pistol calibre, 40 for a rifle, 25 for a speedloader, 60 for a drum, belt or heavy box: `magazine_prices`) plus its
+   rounds; **a special round** at its `price_mult` x the reference calibre's round (`special_round_price.calibre`:
+   rifle, so armour-piercing 6, hollow-point 4, incendiary 6; enhanced keeps its own 15).
+2. **A shop node opens the shop at once** (spec 8.3): no node card; the run stands in the shop (`g.run.state`
+   `shop`, `g.run.shop`) and no node can be taken until the party leaves. Its **face** is the setting's shopkeeper
+   (`faces`), who greets with a line from data (each new line is the next from the visit's own stream).
+3. **The counter: always stocked, never sold out** (spec rule 25): every calibre the engine knows (twelve), the four
+   special rounds, the thrown (frag, smoke, flashbang and incendiary grenades, throwing knives), standard cores, spare
+   parts, stims, field kits and ration packs, and, first, a magazine (or a magazine's worth of loose rounds) for every
+   gun anyone in the party carries; one purchase gives the line's `per` (a stack of rounds), 1 to `max_qty` 10 at a
+   time. **Restock**: a point of a persistent class resource at `restock_price` 40, up to its maximum (`run/restock`).
+4. **Today's gear** (spec rules 25, 26): rolled once a visit from `rngFor(seed, node + '#shop')`: `stock.weapons` 3
+   weapons and foci and `stock.items` 2 items within the depth's price band (rules 1.41 item 2824: 300 + 150 x depth +
+   1,000 x (stage - 1) on the standard price), and `stock.rare` 1 rarer piece in the band x `rare_band` 1.5 at Fine 60
+   / Masterwork 40; rarity by stage (`stock.rarity`: from stage 1 standard 70 / fine 25 / masterwork 5, from stage 2
+   50 / 35 / 15, from stage 4 45 / 35 / 15 / relic 5), **every roll capped by the stage's ceiling** (Fine in stage 1,
+   Masterwork in stage 2; a Relic is offered as Masterwork until its properties exist, item 2825). The face's `bias`
+   weights the picks by tag and its `price` multiplies their prices (the counter's are the same everywhere). Mods and
+   armour pieces are the Forge's (spec rule 44) and are not rolled here.
+5. **Buying** (`run/buy {charId, key, qty}`): only the character's own player buys for it, from **its own purse**; a
+   rolled piece goes to **the first buyer** and every other player sees "Sold to <name>." A stim and an Essence join
+   their counts, everything else the pack (a picked focus as a focus, at its rarity). Refused in words: "No shop is
+   open here.", "No such character.", "Only <name>'s player spends <name>'s credits.", "Buy 1 to 10 at a time.",
+   "One of a kind: buy it once.", "The shop doesn't sell that.", "Short N credits." (and the keeper says a
+   `cant_afford` line), a restock with no room.
+6. **Selling** (`run/sell {charId, idx, qty}`; Leon, 13 Nov): `sell_rate.rate` **0.25** of `priceOf` at the item's
+   own rarity **with its fitted mods**; loose rounds and magazines at the counter's prices; a stack by quantity, a
+   magazine entry one magazine at a time. A plot item or an unpriced one: "<name> can't be sold." A graded item or one
+   with mods asks once on the screen ("Sell the Fine ... and its 2 mods for ...?").
+7. **Leaving** (spec rule 11): `run/leave` marks the player ready; the party returns to the map when every connected
+   player is ready; the host may close it for everyone at once (`run/leave {close: true}`), a guest may not.
+8. **The faces** (spec 3.4): one shopkeeper per setting (`quartermaster` AHOC, `dealer` city, `sutler` field,
+   `trader` works, `reliquary` shrine, `chandler` rim), one armourer, drill sergeant and medic for every setting, and
+   the shrine's patron; each a name, a role, a portrait and a backdrop by catalog id (marked pending until the artist
+   delivers), a **fallback portrait** from the world pool and an optional fallback backdrop, a stock bias, a price and
+   its lines (greet, bought, can't afford, sold, sold to, gave, leave).
+9. **The gear preview** (spec item 14): `gearPreview(c, {id, rarity, mods})` gives the numbers a card shows from the
+   fight's own unit build: a scratch fight of two (a copy of the character holding the instance, and the reference foe
+   of `gear_preview`, a Soldier with the service rifle at the character's level, 5 tiles away, adjacent for a melee
+   weapon) and the attack preview every fight uses: **to hit (%)**, **damage per hit**, the AP of a shot, a Burst or a
+   strike, magazine, range, traits; a focus its door and the door skill's modifier; armour and shields what Defense,
+   armour and injury resistance become; ammunition and items their data. `compareGear` sets it against what the
+   character holds in its place (the main hand, the focus of the same door, the same worn slot), a word per row
+   (better, worse, same). The shop's cards, the compare panel and the reward pick show these numbers; the client
+   computes none.
+10. **The services shelf** (the seam for build step 4a): `registerShopService({id, tab, kinds, cards})`; the shop's
+   Upgrade tab and the Forge's list the cards of every service registered for their node kind.
+11. **Fixed on the way** (rules 1.41's weapon pick): a picked blade or thrown weapon no longer takes a "magazine's
+   worth" (it gave a stray plot item named after the weapon); only guns do.
+
 ## Rules revision 1.43: in-run progression: the grade ladder, the Forge, trainings, the shrine, the Crossroads (Survival, build step 4a)
 
 Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-4a.md`) from `docs/design/survival-spec.md` (draft 4)
@@ -5338,6 +5403,45 @@ shop) and 1.45 (the fight map's layout) are built beside it.
 8. **A solo Elite or Boss over the pressure band** (item 2814 settled): a required Elite or Boss that passes the
    pressure band by itself takes a damage scale down to the cap (`anchorDamage`: the HP rule mirrored, damage is
    pressure as HP is bulk), so every fight of stages 1 to 3 composes inside both bands.
+
+## Rules revision 1.46: gives, the shop's grade step, every safe node full screen (Survival, build step 4b)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-4b.md`) from `docs/design/survival-spec.md` (draft 4) rule 47,
+section 4.2 primitive 13, section 8.3 and section 10 rows 4, 4a and 4b where they meet (Leon: "loot are separated for
+each player so at the shop ... they can trade money and items"). Every number is in `data/survival.json` (`give`, the
+face `broker`) and is PROVISIONAL (items 3300 to 3312). Code: `give.ts` (the one give door), `run/placeview.ts` (the
+safe nodes' full-screen view), the grade step registered on the shop's services shelf (`run/progress.ts gradeCards`),
+the focus's grade on its card (`gearpreview.ts`). Revisions 1.44 (stages and boons) and 1.45 (the fight map's layout)
+are built beside it.
+
+1. **Gives** (spec rule 47, primitive 13): `gear/give` hands another character of the room **credits** (`credits`, any
+   amount up to the purse) or **any pack entry** (`idx`, a stack's `qty` or that many of its magazines): a weapon or
+   focus with its grade, durability, mods and named property; armour; a mod not fitted; ammunition and cores; items;
+   the armourer's chit; a plot item. A plain give: the receiver is not asked; the log says who gave what to whom
+   (`A GIVE`), the shop's or the visit's log too, and a shopkeeper says its `gave` line. The entry arrives whole and is
+   never merged into another instance (loose rounds, magazines and plain stacks merge as a pickup merges them).
+2. **Where** (`giveProblem`, the spec's `canGive`): out of a fight; in a Survival run at a node of `give.where` (the
+   seven kinds with no fight) and before the first node (`give.at_start`), never at a fight node after its fight; in a
+   campaign anywhere out of a fight (it was plot items only).
+3. **Never given, refused in words:** a boon, a token or the graft (`c.relics`), a training (drill, study, practice,
+   Devotion), the fitted armour class, anything in a fight; a Relic whose property would take the receiver past the
+   run's cap (`boon_cap.cap`); more credits than the purse; a character not yours; solo: "There is nobody to give to".
+   What is in a hand or worn is put in the pack first (`gear/unequip`; the Give tab offers it).
+4. **The shop's Upgrade tab is rules 1.43's grade step:** the services shelf (rules 1.42 item 10) lists a card per
+   carried weapon or focus (`gradeCards`): the step at the full price here and the Forge's beside it, the numbers
+   before and after (the gear preview), the chit's card, the engine's reason in words (the stage's ceiling, one step a
+   visit, the Relic step is the Forge's); its action is `run/upgrade {place: 'shop'}`. A shop opens a 1.43 visit too, so
+   the one-step-a-visit count holds there.
+5. **A focus's card shows its grade on its door's rolls** (`door_acc`, read through rules 1.43's `focusAccTerm`):
+   Standard +0, Fine +1, Masterwork +2 (`rarity.acc`).
+6. **Every safe node is a full-screen place** (spec 8.3 "The Forge uses this frame"): the Forge (the armourer:
+   Upgrade, Mods and pieces, Armour fitting, Give), a training ground (the drill sergeant), a shrine (its rolled
+   patron's portrait), a crossroads (the broker, new face `broker`), a rest (the medic): the face and its greet line on
+   the left, large choice cards (each `runOptions` row: what you gain, what it costs, the reason it can't), your
+   character on the right, the visit's log (`RunVisit.log`) along the bottom. "To the path map" walks out of it on that
+   screen only; the map's panel opens it again. A cache stays a pick on the map (its kit is a reward).
+7. **The path map's hover card** sits beside its node, flipped near an edge, and never over a reachable node
+   (`placeTip`'s `avoid`, a container's `data-tip-avoid`).
 
 ## Rules revision 1.47: the fight tally and Report a run (Survival, build step 6)
 
@@ -8531,6 +8635,25 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2830. **The panels' and hover cards' words (rules 1.41 item 12; `nodes`, `tips`).** PROVISIONAL.
 2831. **After the Boss (rules 1.41 item 13):** the run stands at `boon` with no boon offered until build step 5; `run/retire` returns the room to its lobby. PROVISIONAL.
 2832. **Items 2800 to 2832 are rules 1.41's.**
+2900. **`priceOf(id, rarity, mods)` (rules 1.42 item 1):** one door for every price: an item's or weapon's `price_credits` x the rarity's price multiplier, plus each fitted mod at its own standard price; rounds, full magazines and special rounds through the same door. PROVISIONAL.
+2901. **The calibre round prices are the Core Rules' (rules 1.42 item 1):** the spec's section 7 proposed a second table (.700 15, rocket 200, fuel canister 40, core charge 20, arrow 2, bolt 3); the Core Rules' table (Ammo and calibres) already in data is the source of truth and is kept. Leon to confirm. PROVISIONAL.
+2902. **A full magazine's price (rules 1.42 item 1; `weapons_rules.magazine_prices`):** the Core Rules' empty magazine (pistol calibres 30, rifle 40, speedloader 25, drum, belt or heavy box 60) plus its rounds (the service rifle's: 40 + 24 x 2 = 88). The spec's rule 27 said "its rounds' + 10"; the Core Rules' empty-magazine prices are kept. PROVISIONAL.
+2903. **Special rounds (rules 1.42 item 1; `weapons_rules.special_round_price.calibre` rifle):** `price_mult` x a rifle round: armour-piercing 6, hollow-point 4, incendiary 6 a round; enhanced 15 (its own). They fit any gun, so one reference calibre prices them. PROVISIONAL.
+2904. **The counter (rules 1.42 item 3; `shop.always`):** the shelves guns, calibres (all twelve), special, thrown, cores, supplies, restock; `per` a purchase (pistol and rifle rounds 20, revolver and shell 12, .50, arrow, bolt and special rounds 10, .700 3, core charge 10, the rest 1); `max_qty` 10. PROVISIONAL.
+2905. **Throwing knives on the counter (rules 1.42 item 3):** `throwing_knives` (a light melee weapon in data, priced 80) stands for the spec's "throwing knives"; each purchase is one entry. PROVISIONAL.
+2906. **Restock (rules 1.42 item 3; `shop.restock_price` 40):** a point of a persistent class resource (`classResources`, `persist`), up to its maximum. PROVISIONAL.
+2907. **Today's gear (rules 1.42 item 4; `shop.stock`):** 3 weapons and foci, 2 items, 1 rarer piece (band x 1.5, Fine 60 / Masterwork 40); the rarity rows by stage; every roll capped by `rewards.ceiling`. PROVISIONAL.
+2908. **The items a shop rolls (rules 1.42 item 4; `stock.item_categories`):** consumable, tool, light, shield, food; never one the counter sells; mods and armour are the Forge's (the validator refuses them here). PROVISIONAL.
+2909. **The faces' biases and prices (rules 1.42 item 4; `faces`):** quartermaster weapons x1.5 at x1.0; dealer items x1.5 at x0.9; sutler melee and thrown x1.5 at x0.95; trader foci and mana arms x2 at x1.15; reliquary foci x1.5 at x1.1; chandler items and cores x1.5 at x1.0 (spec 3.4). Bias weights the pick by tag; the price touches only the rolled stock. PROVISIONAL.
+2910. **Buying from one's own purse (rules 1.42 item 5):** only the character's own player buys for it; the host does not buy for an away player (it would spend another's purse). PROVISIONAL.
+2911. **Shared stock, first buyer (rules 1.42 item 5):** a sold piece stays on every screen, dimmed, "Sold to <name>." PROVISIONAL.
+2912. **Selling at 25% with the mods (rules 1.42 item 6; `sell_rate.rate` 0.25; Leon, 13 Nov):** a graded weapon sells for its grade, and its fitted mods count at their own price (the spec's example "675" left them out; the lead's brief asked `priceOf` to read the mods). Leon to confirm. PROVISIONAL.
+2913. **Leaving together (rules 1.42 item 7):** every connected player's Ready, or the host's close; the leave line is said in the room's log. PROVISIONAL.
+2914. **The faces' names (rules 1.42 item 8; Suggested):** Ledda Kroll (quartermaster), Sefa Mire (dealer), Brann Okoye (sutler), Ivo Smetanin (trader), Sister Amaun (reliquary), Corra Vell (chandler), Hesk Varro (armourer), Nara Dusk (drill sergeant), Mallow (medic). Fallback portraits from the world pool until the artist delivers (`art/briefs/ART-REQUESTS.md`). Leon to rename freely.
+2915. **The gear preview's reference (rules 1.42 item 9; `rules.json gear_preview`):** a Soldier with the Hellraiser service rifle at the holder's level, 5 tiles away (or the weapon's effective range when shorter; adjacent for melee). PROVISIONAL.
+2916. **A focus's card (rules 1.42 item 9):** its door and the door skill's modifier; the rarity's accuracy on the door (spec rule 25a, step 4a) is not shown until it is built. PROVISIONAL. Superseded by rules 1.46 item 5 (shown since step 4b).
+2917. **The services seam (rules 1.42 item 10):** `registerShopService`; the grade step of build step 4a registers there. PROVISIONAL.
+2918. **Items 2900 to 2918 are rules 1.42's.**
 3000. **A focus's rarity on its door (rules 1.43 item 1; spec rule 25a, Leon "for now"):** `rarity.acc` of the focus of the door in a hand, added to the door's roll to hit (`toHitTerms`, type sigil or soul) and to the TN of a save forced through the door skill (`rollSave`, by `via`); one reading, `rolls.ts focusAccTerm`. PROVISIONAL (it reads no new number).
 3001. **The Visualizer's door roll (rules 1.43 item 1):** the saves its Figments force through Visualization (the Double's); a Figment's own attack is its own unit's roll and takes nothing from the glove. A reading of the spec's silence. PROVISIONAL.
 3002. **Saves forced through a door skill by anything (rules 1.43 item 1):** the reading counts every save whose `via` is a door skill while that door's focus is in hand (a Bond's, a Control push's, a perk's through Empathy), not only a class verb's. A call made for Leon: the alternative is a tag on the verbs. PROVISIONAL.
@@ -8585,6 +8708,19 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3119. **The kept draft (rules 1.44 item 7):** saved to the player's library only (the browser); **no room takes a levelled character yet** (`char/add` builds a level 1 character from a sheet, and Survival refuses above level 1): open, for Leon. PROVISIONAL.
 3120. **Item 2814's damage scale (rules 1.44 item 8):** the big units' damage x (cap - the rest's pressure) / their pressure, only when the band is passed by required units. PROVISIONAL.
 3121. **Items 3100 to 3121 are rules 1.44's.**
+3300. **`gear/give` widened (rules 1.46 item 1; spec primitive 13):** credits and any pack entry; the plot item's merge by id kept; a magazine entry gives that many of its magazines. PROVISIONAL.
+3301. **A give needs no confirm from the receiver (rules 1.46 item 1; Leon's ruling 6, spec rule 47).** PROVISIONAL.
+3302. **Where gives are made (rules 1.46 item 2; `give.where`: shop, forge, training, shrine, rest, cache, event; `give.at_start` true):** not at a fight node after its fight (the spec's "every node with no fight" read strictly). PROVISIONAL.
+3303. **Campaign gives widened (rules 1.46 item 2):** any pack entry or credits out of a fight, where it was plot items only; `gear/drop` stays plot items only. PROVISIONAL.
+3304. **Only a character's own player gives (rules 1.46 item 3):** the host does not give for an away player (it would spend another's purse, as rules 1.42 item 2910). PROVISIONAL.
+3305. **The cap on a give (rules 1.46 item 3):** a Relic's property counts on the receiver's cap (`runWorth` + its worth over `boon_cap.cap` is refused); the giver's cap frees. PROVISIONAL.
+3306. **Never given is named in the action (rules 1.46 item 3):** `relic`, `train`, `armour` on `gear/give` exist only to be refused in words (the Give tab lists them greyed). PROVISIONAL.
+3307. **The shop's grade step card (rules 1.46 item 4):** only the numbers that change are listed (before and after); the price is the step's at the shop with "at a Forge: N" beside it. PROVISIONAL.
+3308. **A focus's grade on its card (rules 1.46 item 5; `door_acc`):** the bonus `focusAccTerm` reads for the focus held in the main hand of a scratch copy. PROVISIONAL.
+3309. **The crossroads broker (rules 1.46 item 6; face `broker`, Teo Vant, Suggested; portrait `event-broker` and backdrop `crossroads` pending; fallback `veyra-salt`).** PROVISIONAL.
+3310. **Walking out of a place is per screen (rules 1.46 item 6):** "To the path map" is the client's, not an action; the squad's next node is marked on the map as before. PROVISIONAL.
+3311. **The cache is not a place (rules 1.46 item 6):** its pick of kit is a reward and shows on the map's panel, as a fight's pick does. PROVISIONAL.
+3312. **Items 3300 to 3312 are rules 1.46's.**
 3400. **The fight tally (rules 1.47 item 1):** per character, per fight: dealt, taken, healed, soaked, kills, Downs, deaths, shots, hits, from the effects stream by `fightTally`; kept on `RunFight.tally`; summed by `sumTallies`. No number is a rule: it is a record. PROVISIONAL.
 3401. **Attribution (rules 1.47 item 2):** a `hurt` or `heal` is the actor's (the unit whose `turn` is open); off a squad member's turn it is `other`. A kill is the last character to damage the foe. PROVISIONAL.
 3402. **Not counted (rules 1.47 item 3):** shields given, heals no effect reports, damage by system. The events missing are listed in the build step 6 hand-off. PROVISIONAL.

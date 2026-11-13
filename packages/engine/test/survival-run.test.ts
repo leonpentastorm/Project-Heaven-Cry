@@ -123,7 +123,7 @@ describe('Survival, one stage (rules 1.41)', () => {
     const cache = firstOf(g, 'cache'), c0 = standOn(g, before(g, cache).id), cg = take(c0, cache, 2);
     expect(cg.characters.c1.xp).toBe(nodeXp('cache', cache.depth, 1)); expect(creditsOf(cg.characters.c1)).toBe(SV.run.start_credits + nodeCredits('cache', cache.depth, 1));
     expect(cg.run!.note!.ammo!.c1.length).toBeGreaterThan(0);
-    for (const k of ['shop', 'forge', 'training', 'shrine', 'event']) {
+    for (const k of ['forge', 'training', 'shrine', 'event']) { // the shop opens full screen (rules 1.42: survival-shop.test.ts)
       const n = g.run!.nodes.find((x) => x.kind === k); if (!n) continue;
       const t = take(standOn(g, before(g, n).id), n, 2);
       expect(t.run!.note!.text).toBe(NODE_TEXT[k]); expect(t.run!.state).toBe('map'); expect(reachable(t.run!).length).toBeGreaterThan(0);
