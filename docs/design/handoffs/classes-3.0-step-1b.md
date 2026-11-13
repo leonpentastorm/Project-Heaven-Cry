@@ -238,3 +238,82 @@ One row of each is written and run in `test/fixtures/classes-3.0-specs-1b.json` 
 4. The engine suite's time moved with the machine's load (168 s to 295 s across runs, 187 s at the close); one file
    timed against the base branch (`replay-hash` 16.6 s now, 17.5 s on the base) shows no slowdown. `statHeard` and the
    standing aura ask nothing while no data item can answer them.
+
+## 7. Integration and review (13 Nov 2026, on the branch `worktree-agent-a3d1e2ce341d47880`)
+
+The lead's integrator took the builder's branch in (fast-forward), merged the main line (`claude/charming-gauss-hbq4n0`:
+steps 2, 3 and 4, rules 1.29 and 1.30), built what the builder left and the lead's rulings, and reviewed the diff
+against `rev4-primitives.md`. Four commits: the merge, part 2, part 3, part 4.
+
+**The merge.** The main line's rule changes run through this branch's primitives: Killzone's two-reaction spend is a
+`react()` with the one step key (`stepEvent`); a data `stat_mod` answers every declared stat family through the main
+line's `statOfMod` (the builder's `PASS_STAT` for `ties_max:` folded in). This branch's section 14 items were renumbered
+**1757-1762 → 1762-1767** (1757-1761 are rules 1.29's). `data/effect_ops.json item_ops`, `docs/ENGINE-HOOKS.md` and the
+`lint-item-ops` baseline were regenerated (every count ≤ both parents'). Golden tables and replays: the main line's,
+re-recorded on the merged code after the four oracles passed: **2 lines differ from the main line** (the two
+Sanctuary marks lines of sub-step 3) and **534 changed lines from this branch, exactly the 534 the main line changed
+on purpose**. Part 2's `read` row adds 36 NEW lines to the conditions table (no line changed); nothing else moved.
+
+**Built (part 2): the four batch rows.** `mend_mult` (on `heal` and `shield`, before the heal is floored and capped;
+the kind read with `how`; `shield_grant` carries `kind` now. Not on `heal_given`: the heal has landed). Op
+`condition`'s value `"incoming"` (on `cond_incoming`: the condition being put on, its rounds). Stat
+`intervention_keeps_witnessed` (asked in `faith.ts intervene`). The condition row **`read`** (`conditions.json`, one
+round: the bearer's turn end; effect `reveal` `what: intent`): `enemyIntent` is kept on the bearer as `readIntent` (the
+Read move's own field and fx) for its source's side. `trickster.read` is not moved onto it (its log line and golden
+marks; the Operative's step moves it). Tests: `prim-batch-1b`.
+
+**Built (part 3): the lead's rulings.** (a) **The `owned` action system**: a `turn: owner` unit never enters
+`cb.order`; its verbs (`owned.ts OWNED_VERBS`: move, shot, aimed, melee; the block's `actions` picks) are rows of the
+owner's Utility tab (`descriptors.ts` system OWNED, ids `ow:<unit>:<verb>`), sent as `combat/owned {unitId: owner,
+owned, verb, targetId?, tile?}` and run by `runOwned` with the owned unit as the actor on its owner's AP, priced on it
+and paid by its owner (`pay` with `payer`). A `turn: auto` unit acts once at its owner's turn start through the same
+door (block `auto {verb: shot | aimed | melee, target: nearest_foe | weakest_foe}`); an auto move is not built (no rule
+names one). The jsdom harness shows a fixture puppet's rows in the owner's panel with no client change. (b) **One tie
+kind `owned`**; the record's `kind` (block `owned_kind`, default companion) tells a Figment from a drone. (c) **A Call
+that harms or hinders an enemy is never a reaction** (`calls/core.ts callReactWhy`; rules 1.28 section 3 and item 1764
+amended; `calls.json` text). (d) Bonds' focus check in the `self_holds` shape: accepted. Rules 1.28 section 5, items
+1768 and 1769.
+
+**Fixed (part 4), each with a test that failed first.**
+1. **`delay` changed the item's own data.** `queueDelayed` deleted `when`, `if`, `delay`, `targets`… from the object
+   `withNumbers` hands back, which is the item's own effect when it has no number block: after an item's first delayed
+   op its trigger never fired again in that process (the Bonds echo escaped only because a `targets` op is copied). It
+   copies now. The builder's addendum test passed only because of it (its second queue never happened): corrected.
+2. **An echo never echoes itself**: what a delayed op does queues nothing more of the same item (a delayed heal's own
+   `heal_given` would queue the next, turn after turn). Queued ops whose holder or target is dead are dropped at the
+   next turn start (a dead unit has no turn start of its own, so they stayed in the save).
+3. **The fog**: another side's unit no longer shows its `owned` record (a Double's `lure` would give it away) nor a
+   read its own side made; `cb.delayed` keeps a side's own ops only (it went out whole).
+4. P6's predicates **`actor_alive` / `target_alive`** (listed in rev4, not built).
+
+**Review, per primitive** (the binding shapes of `rev4-primitives.md` sections 1, 5, 6):
+- **P6 door verbs**: matches (`requires`, `reach`, `prayer`, `limit`, nested effects). Not built: `pick`'s `felt` and
+  `forms` (each system's own list: Bonds, Figments add them with their data).
+- **P8 ties**: matches; the cap refuses (rev4 silent). `ties:any` not built (rev4's addendum names `ties:<kind>`).
+- **P9 owned**: matches with part 3. `lure` is still read by nothing (the Double's system). The drone and beast keep
+  `turn: own` and stay when their owner falls; a Figment that must be unmade with its owner reads the record's `kind`.
+- **P10 zones**: matches but for **`shape`**: the op lays a square (`within`); a Sigil field's or the Seal's shape needs
+  `shape` added when its first user comes.
+- **P11 layers, P12 toggles**: match.
+- **Addendum** (`delay`, `ties:`, `self_holds`, `redirect split`): match, with fixes 1 and 2.
+- **The one roll hook** (`to_hit`): weapon, Sigil and Outburst rolls ask it; a sum of terms only (a reroll is not part).
+- **The inert percent gate**: inert (no number in data); `mend` applies it once.
+- **Building beside the engine**: `npm run built-from` on the branch: 10 smells in 6 places, none a lint fails on.
+  All are lines that existed before, moved into a `react()` callback or beside a new call (Drink It In's MP and the
+  Knight's plate in `classes/i.ts` and `j.ts`, the Outburst roll in `classes/soul.ts`, the opportunity attack's walk
+  replay in `combat.ts`), and `redirect`'s share (the op itself, as `damage_mult`). Accepted: each goes with the step
+  that rewrites its item.
+- **Saves**: new fields (`cb.ties`, `cb.delayed`, `u.owned`, `u.shields`, `Zone.pool`, the sequence counters) are
+  absent until used; `old-save` loads the pre-P9 fight and plays on. Iteration is in `cb.units` / list order throughout.
+- **Lint baselines**: none grew, no allow-list widened (`lint-item-ops` shrank by `shade.lingering_dread`).
+
+**The five system specs: can every "Built from" row be written in data now?** (One row each was written by the builder;
+one harder row each is in `test/prim-specs-1b-harder.test.ts`.)
+
+| Spec | Every row in data? | What is still not |
+| --- | --- | --- |
+| `bonds-spec.md` | **No, nearly** | the `pick` list `felt` (given feelings), `ties:any`, and the system's own data: `tending.json`, the Attuner naming its door (`self_holds {door}`), resources `ledger` and `mp` with the Attuner's `needs`. Every primitive row (share split, echo, ×1.2 through, Take the Weight, the aim read with `read`) can be written |
+| `figments-spec.md` | **No, nearly** | the forms' own verbs beyond move and the plain attacks (Pounce, Stare, Hold, Overclock's `owned_act` site) need the system's verbs on `runOwned` (one case each, or a data verb run with the owned unit as actor); `pick` `forms`; `lure` read by nothing; `owned_weight` (step 9); resources `vcharge`, `durability` |
+| `chaplain-spec.md` | **Yes** | (the class's own data: patron words, the numbers) |
+| `shadow-spec.md` | **Yes, with its resource** | the `shadow` resource row is the system's data (a Break reads it through `res:shadow`, proved with a stand-in) |
+| `reactions-spec.md` | **Yes** | (built in step 3) |

@@ -158,6 +158,10 @@ Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 ite
    focus names its door in data (the Attuner).
 10. P9's action system `owned` (a `turn: owner` unit's verbs, a `turn: auto` unit's driver) is not built: rev4 does not say
     how the reducer takes an action of a unit with no turn; it is Figments' to design (step 8).
+**Ruled by the lead at step 1b's integration (13 Nov; `classes-3.0-step-1b.md` section 7):** 7 reversed: a Call that harms
+or hinders an enemy is never a reaction (item 1764 amended). 8: one tie kind `owned` for both; the unit's record `kind`
+tells a Figment from a drone. 9: accepted. 10 built: a `turn: owner` unit's verbs are its owner's actions
+(`combat/owned`, paid by the owner); a `turn: auto` unit acts at its owner's turn start (items 1768, 1769).
 
 ## 7. State when this was last touched
 
