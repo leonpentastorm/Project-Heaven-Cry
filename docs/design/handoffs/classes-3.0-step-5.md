@@ -140,6 +140,14 @@ sheet with no class), since the Faith build is now the Chaplain.
 10. **Judged's length**: "1 round" ends at the enemy's own turn end; the worked example's turn-2 kill had no Judged
     target left (the lightning goes to the nearest). As written.
 
+11. **The one red line of `npm run check`: `balance-contract.test.ts`, the door's Whisper turn at level 20: 113% against
+    its top of 112 (80 × `level_hi` 1.4).** Its row now measures the classless Faith sheet (`doorFaithBuild`: the Faith
+    build earns the Chaplain, whose Smite is its own row): the contract's run reads L1 91 / L5 81 / L10 66 / L20 113,
+    mean 88 (inside 80 ± 12%); the Chaplain row 113 / 133 / 126 / 149 (mean 130, inside 125 ± 12%). Not refitted (the
+    brief). The lead's call: `whisper_turn.level_hi` 1.4 → 1.42, or measure the door on another sheet (item 9).
+    Everything else in `npm run check` is green (combat-actions and perk-audit timed out under the machine's load and
+    pass alone). Browser suites on port 8797: chaplain, faith, faith-pg, classes-moves, pg-levelup, creation-points green.
+
 ## 6. Left for the enemy step and the screen step
 
 - **Enemy (step 9):** the AI does not yet read a Sanctuary (shoot outside it or wait), a Ward layer (a worse target) or
