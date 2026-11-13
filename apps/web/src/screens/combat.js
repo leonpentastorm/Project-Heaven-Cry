@@ -47,7 +47,7 @@ import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, re
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
-import { areaOrder, areaHead, subHead } from '../game/attackAreas';
+import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
@@ -1416,7 +1416,10 @@ export class CombatLogic extends DCLogic {
     // Faith, Slip, Mark, Work and Break on Shadow, Bond, Heal and Help on Tend); a 1 px line between groups.
     groups.filter((gr) => gr.id !== 'attack' && gr.items.some((a) => a.sub)).forEach((gr) => {
       const subs = [...new Set(gr.items.filter((a) => !isPerkInfo(a.key)).map((a) => a.sub))];
-      subs.forEach((sb, i) => { const first = gr.items.find((a) => a.sub === sb && !isPerkInfo(a.key)); if (!first || !sb) return; if (i > 0) sepOf[first.key] = true; headOf[first.key] = subHead(sb); });
+      subs.forEach((sb, i) => { const first = gr.items.find((a) => a.sub === sb && !isPerkInfo(a.key)); if (!first || !sb) return; if (i > 0) sepOf[first.key] = true;
+        // a held Figment's group (its rows are `ow:<unit id>:<verb>`): headed by its face as its token shows it
+        const fu = gr.id === 'figments' && first.key.startsWith('ow:') ? cb.units.find((x) => x.id === first.key.split(':')[1]) : null;
+        headOf[first.key] = fu ? figmentHead(sb, { unit: fu.id, img: faceOf(fu), short: fu.short || fu.name.slice(0, 2).toUpperCase(), ink: ring(fu) }) : subHead(sb); });
     });
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move

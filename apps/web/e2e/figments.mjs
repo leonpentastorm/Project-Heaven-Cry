@@ -4,7 +4,7 @@
 // descriptor sends it); the meter line reads FIGMENTS 2/2 and the Visualizer's charge; the Hound's verbs are rows of the
 // owner's Utility tab (Move, Strike, Pounce, Let go) priced at their sites; a third Picture is refused in words ("Hold is
 // full"); Let go gives charge back; the fight's end unravels what is left. The rows are the engine's descriptors.
-import { chromium, BASE, pause, settle, click } from './lib.mjs';
+import { chromium, BASE, OUT, pause, settle, click } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
@@ -73,6 +73,13 @@ ok('the Hound\'s rows on the FIGMENTS tab: ' + rows.map((r) => r.split(':').pop(
 const tabText = ((await p.locator('body').textContent()) || '').toUpperCase();
 const head = (x) => (x.name + ' · HP ' + Math.max(0, Math.round(x.hp)) + '/' + x.maxHp).toUpperCase();
 ok('the groups: PICTURE, ' + head(hound) + ', ' + head(wall), tabText.includes('PICTURE') && tabText.includes(head(hound)) && tabText.includes(head(wall)));
+// each held Figment's header wears its face as its map token does: the portrait when the catalog has one, else the
+// token's own badge (its short name in its owner's ring colour); no Figment portrait is painted yet (ART-REQUESTS C6)
+const faces = await p.locator('[role="tabpanel"] [data-fig-face]').evaluateAll((els) => els.map((e) => ({ unit: e.getAttribute('data-fig-face'), text: e.textContent.trim(), img: !!e.querySelector('img') })));
+await p.locator('[role="tabpanel"]').screenshot({ path: OUT + 'figments-tab.png' }).catch(() => {});
+const shorts = await p.evaluate(() => Object.fromEntries(window.__phc.getState().game.combat.units.map((v) => [v.id, v.short || ''])));
+ok('each Figment\'s header shows its face (' + faces.map((f) => f.unit + ':' + (f.img ? 'portrait' : f.text)).join(', ') + ')',
+  faces.length === 2 && [hound.id, wall.id].every((id) => faces.some((f) => f.unit === id && (f.img || (!!f.text && f.text === shorts[id])))));
 // the Visualizer named as the door's focus on its row; a Figment's token names its owner
 const meName = (await me()).name;
 const vRow = (((await p.locator('body').textContent()) || '').match(/Visualizer · (off hand|main hand|in the pack)/) || [])[0] || '';
