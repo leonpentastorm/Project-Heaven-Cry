@@ -84,9 +84,9 @@ kit's first ground that has art.
   unchanged), `test/survival-run.test.ts`, `test/run-state.test.ts`, `test/old-save.test.ts`.
 - Web: `src/game/kitMap.test.ts` (4 tests: walls by neighbours, doorway and breach, decals, dressing, the ground, the
   fallback per piece).
-- Browser (port 8991): `kit-map` (20 checks: three AHOC fights; the ground, wall and doorway pieces, kit sprites, tokens
+- Browser (port 8991, `python3 tools/e2e.py --base http://127.0.0.1:8991`): `kit-map` 20 of 20 ( three AHOC fights; the ground, wall and doorway pieces, kit sprites, tokens
   above, a hover leaves the kit alone; **the fallback pixel compare**: the map with a kit that has no art is byte for byte
-  the map with no skin, 52,552 bytes each), `survival` (see the final report for its count).
+  the map with no skin, the pictures taken once the grid is still), `survival` 26 of 26. **`survival.mjs` changed:** its hand-fought node 1 lost (33 and 90 rounds) because the Shot's first target stood behind a wall of the generated map and the loop only ended turns; it now aims at each standing hostile by clicking its tile until Confirm is enabled, as a player does (no check weakened).
 - `tools/validate_art.py` clean (map kits: 216 pieces, 6 settings, 4 held back); validator 0 errors.
 - Screenshots (1280 × 720, deviceScaleFactor 2, the grid alone):
   `/tmp/claude-0/-home-user-Project-Heaven-Cry/40abf8cd-77d7-5315-b669-cee39d0cd8b9/scratchpad/kit/kit-map-1.png`,

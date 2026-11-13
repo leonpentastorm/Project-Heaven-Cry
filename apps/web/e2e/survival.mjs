@@ -69,6 +69,12 @@ for (let i = 0; i < 400; i++) {
   if (s !== 'mine' || !(await p.locator('text=ACTION POINTS').count()) || await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) { await settle(p, 120); continue; }
   await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
   const conf = p.getByRole('button', { name: 'Confirm', exact: true });
+  // rules 1.45: a generated map has walls and cover, so the target the Shot starts on may be out of sight; aim at each
+  // standing hostile in turn (by clicking its tile, as a player does) until the Shot can be confirmed
+  if (!(await conf.isEnabled().catch(() => false))) {
+    const foes = await p.evaluate(() => window.__phc.getState().game.combat.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => { const [x, y] = u.pos.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); }));
+    for (const r of foes) { const t = p.locator('button.phc-tok[aria-label^="' + r + ' · "]').first(); if (!(await t.count())) continue; await t.click({ timeout: 5000 }).catch(() => {}); await settle(p, 60); if (await conf.isEnabled().catch(() => false)) break; }
+  }
   try { if (await conf.isEnabled({ timeout: 30000 })) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); } catch { /* the turn moved on under us */ }
   await settle(p, 60);
 }

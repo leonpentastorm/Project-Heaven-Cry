@@ -73,7 +73,10 @@ for (let step = 0; step < 40 && fights < 3; step++) {
       ok('a hover leaves the kit as it was (static layers: ' + JSON.stringify(before.kit) + ')', JSON.stringify((await drawn()).kit) === JSON.stringify(before.kit));
       await p.mouse.move(5, 5); await settle(p, 400);
       // THE FALLBACK: a kit with no art draws as a map with no skin (today's flat tiles), pixel for pixel
-      const shot = async (name) => { await p.mouse.move(5, 5); await settle(p, 500); const o = { animations: 'disabled', mask: [p.locator('[data-phc-float]')] }, b = await grid.screenshot(o); if (process.env.SHOTS) await grid.screenshot({ ...o, path: OUT + name + '.png' }); return b; };
+      // a picture is taken when the grid is still: two shots in a row the same (a late effect or fade settles first)
+      const shot = async (name) => { await p.mouse.move(5, 5); await settle(p, 500); const o = { animations: 'disabled', mask: [p.locator('[data-phc-float]')] };
+        let b = await grid.screenshot(o); for (let i = 0; i < 8; i++) { await settle(p, 250); const c = await grid.screenshot(o); if (Buffer.compare(b, c) === 0) break; b = c; }
+        if (process.env.SHOTS) (await import('node:fs')).writeFileSync(OUT + name + '.png', b); return b; };
       const kitShot = await shot('kit-map-with-kit');
       await p.evaluate(() => { const g = window.__phc.getState().game; g.combat.map.skin = { ...g.combat.map.skin, setting: 'no-such-kit' }; window.__phc.go('combat'); });
       await settle(p, 600);
