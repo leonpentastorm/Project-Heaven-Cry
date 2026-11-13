@@ -280,6 +280,8 @@ Six reports after playing 0.24.0. Fixed on the branch; the details, the inventor
 
 Question for Leon (no rule changed): with pooled Heat, an off-hand technique's Heat jam lands on the main gun (the
 paired attack jams the gun that fires). Should a Heat jam always land on the gun that fired?
+Answered (Leon, 13 Nov 2026: yes): a Heat jam now lands on the gun that fired (item 1745, Hands 5d); off-hand no-roll rounds
+and Press Heat jam the off-hand gun, and the pooled limit no longer reads off + off with the off-hand gun swapped in (`dual-jam.test.ts`).
 
 Suites fixed on the way (the full run must pass with nothing failing alone): `feelings40` (no shelved module group now),
 `resources` (reads Strain on the Move tab, waits for each tab and each H, dismisses the held Outburst's turn cut-in),
