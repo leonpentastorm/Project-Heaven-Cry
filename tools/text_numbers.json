@@ -1,6 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
- "ceiling": 1393,
+ "ceiling": 1392,
  "allow": {
   "actions:extinguish:text:10": "Burning's 10 a turn: conditions.json burning (an amounts block the engine reads); a placeholder reads only its own item",
   "actions:hide:text:19": "the ambush's critical range 19-20 (the engine's Hidden ambush, a rule of combat with no field on this action)",
@@ -77,7 +77,7 @@
   "classes:grand_sigilist/enlarge:text:1": 1,
   "classes:grand_sigilist/enlarge:text:2": 1,
   "classes:guardian/command:text:1": 2,
-  "classes:gunslinger/called_shot:text:2": 2,
+  "classes:gunslinger/called_shot:text:2": 1,
   "classes:gunslinger/six_for_six:text:4": 1,
   "classes:gunslinger/the_draw:text:0": 1,
   "classes:heart_surge:text:4": 1,
