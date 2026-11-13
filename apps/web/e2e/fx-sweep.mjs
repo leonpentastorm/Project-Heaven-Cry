@@ -254,6 +254,13 @@ const summary = (tr) => tr.filter((e) => e.w === 'ev').map((e) => e.k + (e.id ? 
 
 // ---------- the judge ----------
 const GUN_SOUND = /^(gun_|auto_|burst_)/;
+const WEAPON = new Map(WEAPONS.map((w) => [w.id, w]));
+/** The mark a weapon's round leaves where it hits, from its ammunition in the data (Leon, 13 Nov 2026: a bullet hole
+ *  for a shot, and a shotgun is not a rifle): a shell's pellets, an arrow's or a bolt's shaft, nothing for a grenade, a
+ *  rocket, fuel or a thrown weapon, a hole for any other cartridge. */
+const markOf = (w) => (!w || w.category === 'thrown' || !w.ammo ? null : w.ammo === 'shell' ? 'pellets' : ['arrow', 'bolt'].includes(w.ammo) ? 'shaft' : ['40 mm grenade', 'rocket', 'fuel canister'].includes(w.ammo) ? null : 'hole');
+/** The rounds fired to miss on purpose (no roll): they leave no mark. */
+const NO_ROLL = new Set(['warning_shot', 'flush', 'rout', 'cover_me']);
 /** What is wrong with a case's trace (an empty list: nothing). tol: ms of slack on this page's clock; k: its pace. */
 function judge(c, w, tr0, { tol, k, clock }) {
   // the table judges the plan (t: the same on any machine); the real-speed part judges the clock (rt: what was seen)
@@ -305,6 +312,18 @@ function judge(c, w, tr0, { tol, k, clock }) {
         const f = evs[j]; if (!/^(hurt|explode|object|down)$/.test(f.k)) continue;
         if (f.t < arrives - tol) say('the ' + f.k + ' after it ' + ms(arrives - f.t) + ' before the ' + first.look + ' lands');
       }
+    }
+    // 4. the mark (no tracer lines, no miss marks: Leon, 13 Nov 2026): a round that hits leaves its weapon's family's
+    //    mark, never before it lands; a miss leaves none (unless the cover in the way took it); a swing leaves no hole
+    const marks = of(s.n, 'hole');
+    if (s.k === 'melee' && marks.length) say('a swing left a ' + marks[0].kind);
+    if (s.k === 'shot') {
+      const want = s.thrown || NO_ROLL.has(s.tech) ? null : markOf(WEAPON.get(s.weapon));
+      const wrong = marks.find((m) => m.kind !== want);
+      if (wrong) say('a ' + wrong.kind + ' from ' + s.weapon + (want ? ' (its family\'s mark is a ' + want + ')' : ' (it leaves none)'));
+      if (want && s.hit && !s.object && !marks.length) say('a hit with ' + s.weapon + ' left no ' + want);
+      if (!s.hit && !s.cover && marks.length) say('a miss left a ' + marks[0].kind);
+      if (arrives != null && marks.length && marks[0].t < arrives - tol) say('its ' + marks[0].kind + ' ' + ms(arrives - marks[0].t) + ' before the ' + first.look + ' lands');
     }
     // the wounds that follow never come before the shot or swing is seen
     if (launch) for (let j = i + 1; j < evs.length && !starts.test(evs[j].k); j++) if (evs[j].k === 'hurt' && evs[j].t < launch.t - Math.min(1, tol)) say('a wound ' + ms(launch.t - evs[j].t) + ' before the ' + (s.k === 'melee' ? 'swing' : 'shot'));

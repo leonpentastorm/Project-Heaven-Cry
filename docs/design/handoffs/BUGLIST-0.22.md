@@ -315,3 +315,22 @@ browser on the Proving Ground's 26 × 26 map with 12 enemy units; the whole writ
 Left for a later pass (measured, not fixed): the screen's whole `renderVals` on every render during a walk or an enemy
 turn (the action panel's groups and weapon blocks, not cached by game state), the browser's own paint of the page, and
 the camera's scroll updates. DOM or canvas: keep the DOM grid (units do not move the cost; re-measure on a GPU laptop).
+
+## Found by Leon on live 0.25.0 (13 Nov)
+
+Effects only (`apps/web/src/game/fx/`); nothing in `packages/engine/` or `data/` changed. Each was found in a browser
+first (the Proving Ground, synthetic shots and swings through `__phcFx.queueFx`, frames at deviceScaleFactor 1 and 2).
+The full account, part by part: `docs/design/handoffs/technique-fx.md` ("What Leon took out on live 0.25.0").
+
+| The report | The cause | The fix |
+| --- | --- | --- |
+| "Please disable the yellow lines effect when shooting" | Two things drew a line per round from the muzzle: the `tracer` part (a stroke in the technique's ink, Agility yellow for every Dexterity gun, held for its whole beat) and the bullet's drawn flight (`projectile`, a pale glowing streak); `aim`, `heavy` and `cone` were also lines from the shooter | `tracer` deleted from the parts and every row; a bullet's and pellets' flight is traced and timed but not drawn; `aim` is now a sight closing on the target, `heavy` the round leaving the target's far side, `cone` only its far band over the target; Flush Arc's drop only over the last tile and a half |
+| "the half circle effect when meleeing" | The `slash` part (an arc swept across the target's front on every Cut, Draw Cut, Flurry, Hamstring, Riposte, Cleave) and a bright arc sprite in front of every swinging attacker (`play.ts` melee) | both deleted; the swing is the attacker's lunge; the cut on a hit (`cross`) is unchanged |
+| "the miss shot effect and the melee miss effect" | every row's `miss` result: `wide` (a tick past the target and dust), `whiff` (the stroke passing wide), `deflect` (a bounce tick), muted rings, stamps and pips; and the dust kicked up where a missed bullet went | the parts and the `miss` column are gone; a miss shows the word MISS and nothing else |
+| "change the effect for shots to a bullet hole" | (new) | `hole`: a small dark puncture, ragged pale edge, a few cracks, on the lower half of the token clear of the number, put down as its round lands, one a round that hit (a Burst's three one after another), gone in about a second; on an object or the cover that stopped the round too. The rule is now **bullet holes drawn = rounds that hit; casings = rounds spent** (`rounds.test.ts`, every gun × every shooting technique through the engine) |
+| "Rake and Mag Dump on a shotgun also use the shoot effect even though it says right on the card: double barrel" | The technique rows chose the look by technique only: Rake's and Mag Dump's rows drew the rifle's tracer and cross, and a shotgun's shot was five bullet streaks, whatever the weapon. The engine's events carry what was needed (the weapon id, its category, `loose` for the second barrel: Mag Dump's Spread line "both barrels, one roll" and the coach gun's Both Barrels spend the second shell as a loose round on the roll) | A shot's mark is the weapon family's, read from the weapon's `ammo` in the data (`techniqueFx.ts` `shotMarkOf` / `AMMO_MARK`): a shell a tight pellet cluster, an arrow or a bolt a shaft stuck in, a grenade, a rocket, fuel or a thrown weapon nothing (their landing is a blast, a flame or the thrown thing), any other cartridge and a core rifle's charge a hole. A shotgun fires a short, wide muzzle blast. Both barrels: two blasts one-two (LOOSE_GAP) and two clusters on a hit. `techniqueFx.test.ts` walks every gun family × every shooting technique it can use and asserts the family's mark; `fx-sweep` judges every case's marks in the browser |
+
+Suites changed: `brass` (a Burst's three hits leave three holes in rhythm; three casings), `melee-fx` (a sword hit draws
+the cut and no arc; a miss draws nothing but MISS), `fx-room` (the six attacks: a mark for each shot that hit, none
+for a miss), `fx-sweep` (a fourth judgement: the family's mark, never before its round lands, none for a miss or a
+swing). None was deleted or weakened.

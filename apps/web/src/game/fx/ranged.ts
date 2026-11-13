@@ -31,9 +31,10 @@ import { tagChip } from './sight';
 import { DRAW_MS, brassOf, ejectShell, whoOf } from './brass';
 import { physBeat, NAME_DY, NAME_RISE } from './physical';
 import * as P from './rangedParts';
+import { shotMarkOf } from './techniqueFx';
+import { playPart } from './techniqueParts';
 
 const { WHITE, HP, MUTED } = P;
-const HOT = '#FFF3C4';
 type XY = { x: number; y: number };
 type Handler = (e: FxEvent) => void;
 
@@ -44,7 +45,7 @@ export interface RangedKit {
   posOf(id: string | null | undefined): string | undefined;
   play(s: Sfx, p: Pt | null, o?: { rate?: number; gain?: number; delay?: number; lowpass?: number }): void;
   gunOf(id: string, cat: string): { sound: Sfx | null; rate?: number; look: string; color?: string; blast?: string };
-  muzzle(from: Pt, to: Pt, color?: string): XY;
+  muzzle(from: Pt, to: Pt, color?: string, wide?: boolean): XY;
   projectile(a: XY, b: XY, ms: number, look: any, s: number, color?: string): void;
   missPoint(from: Pt, to: Pt): XY;
   dust(p: XY, s: number, color?: string): void;
@@ -445,7 +446,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     if (g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jit(0.04) });
     if (!toP) return;
     const shooter = from ? tokOf(e.unit, e.from) : null;
-    const mp = from && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' ? K.muzzle(from, toP, g.color) : null;
+    const mp = from && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' ? K.muzzle(from, toP, g.color, g.look === 'pellets') : null;
     const ang = from ? angle(from, toP) : -Math.PI / 2, s = toP.s;
     if (from && shooter) { lunge(shooter, -Math.cos(ang) * 3, -Math.sin(ang) * 3, 120); const br = brassOf(e.weapon || '', e.cat || ''); if (br.when === 'shot') ejectShell(whoOf(shooter), br.shell, ang, { delay: br.cycle }); }
     const start: XY = mp || (from ? { x: from.x, y: from.y } : { x: toP.x - Math.cos(ang) * s * 3, y: toP.y - Math.sin(ang) * s * 3 });
@@ -483,7 +484,10 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     if (kind === 'arc') {
       // Flush Arc: the round drops over the cover onto the target (the hurt that follows says half damage)
       const ft = tracer ? Math.min(420, flight(start, toP, 'bullet') * 1.6) : flight(start, toP, look);
-      P.arcPath(start, toP, Math.max(18, s * 0.6), { color: HOT, ms: ft + 160, dash: '3 3', width: 2 });
+      // its drop over the cover, drawn over the last tile and a half only (never a line back to the shooter: Leon,
+      // 13 Nov 2026, live 0.25.0), in white as a Lob's arc is
+      const top = { x: toP.x - Math.cos(ang) * s * 1.5, y: toP.y - Math.sin(ang) * s * 1.5 };
+      after(() => P.arcPath(top, toP, Math.max(18, s * 0.6), { color: WHITE, ms: 160 + ft * 0.5, dash: '3 3', width: 2 }), ft * 0.5);
       fly(g, start, toP, ft, tracer ? s * 0.8 : s);
       after(() => K.dust(toP, s * 0.6), ft);
       return;
@@ -656,7 +660,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
             trace('round', { unit: e.unit, loose: true });
             if (shooter && sbr.when === 'shot') ejectShell(whoOf(shooter), sbr.shell, a); // a casing for each round
             const end = { x: toP.x + Math.cos(a) * s * 0.9 - Math.sin(a) * side * s * 0.42, y: toP.y + Math.sin(a) * s * 0.9 + Math.cos(a) * side * s * 0.42 };
-            const start: XY = lead ? K.muzzle(from, toP, g.color) : from, ft = flight(start, end, own);
+            const start: XY = lead ? K.muzzle(from, toP, g.color, g.look === 'pellets') : from, ft = flight(start, end, own);
             if (!rattles(e) && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // no recording covers them: each round bangs
             fly(g, start, end, ft, own === 'bullet' ? s * 0.8 : s);
             if (own === 'bullet' || own === 'arrow') play(own === 'arrow' ? 'swish' : 'whiz', toP, { delay: ft * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
@@ -880,7 +884,13 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         drawn.add(r);
         const a = posAt(r.target), b = at(e.at);
         const g = gunFor(r.unit), ft = ownLook(g) === 'bullet' ? 110 : flight(a, b, ownLook(g));
-        if (a && b) { fly(g, a, b, ft, b.s * 0.8); after(() => base(e), ft - 10); return; }
+        if (a && b) {
+          fly(g, a, b, ft, b.s * 0.8);
+          // and leaves its mark in the next one as it lands (a bullet's hole: fx/techniqueFx.ts shotMarkOf)
+          const s0: any = r.shots[r.shots.length - 1], f = s0?.weapon ? s0 : fired.get(String(r.unit)), mark = f ? shotMarkOf(f.weapon, f.cat) : null, d = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+          after(() => { base(e); if (mark) playPart('round', { a, b, dir: { x: (b.x - a.x) / d, y: (b.y - a.y) / d }, s: b.s, ink: WHITE, scale: 1, delay: 0, outcome: 'hit', mark }); }, ft - 10);
+          return;
+        }
       }
       base(e);
     },

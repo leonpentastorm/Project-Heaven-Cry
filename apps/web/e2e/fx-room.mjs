@@ -43,11 +43,21 @@ await pause(p, 400);
 const pips = await p.evaluate(() => ({ cost: document.querySelectorAll('.phc-pips .phc-pip-cost').length, all: document.querySelectorAll('.phc-pips > span').length }));
 ok('picked ' + costAct + ': ' + pips.cost + ' of ' + pips.all + ' AP pips pulse as its cost', !!costAct && pips.cost > 0);
 
-// 4. Attacks: the dummy takes them and never dies; AP comes back
+// 4. Attacks: the dummy takes them and never dies; AP comes back. What they leave (Leon, 13 Nov 2026: no tracer lines,
+//    no miss marks, a bullet hole for a shot): a mark on the dummy for each round that hit, none for a miss.
+const n0 = (await G()).combat.fxSeq || 0;
+await p.evaluate(() => { window.__phcFxTrace = []; });
 for (let i = 0; i < 6; i++) { const e = await act({ type: 'combat/attack', unitId: me.id, targetId: dummy.id }); if (e) await act({ type: /jam/.test(e) ? 'combat/clear' : 'combat/reload', unitId: me.id }); }
 g = await G();
 ok('after six actions: AP ' + g.combat.units.find((u) => u.id === me.id).ap + ', the dummy alive, the fight on', g.combat.units.find((u) => u.id === me.id).ap === 9 && !g.combat.units.find((u) => u.id === dummy.id).dead && !g.combat.over);
 await pause(p, 2500);
+{
+  const T = await p.evaluate(() => { const t = window.__phcFxTrace || []; window.__phcFxTrace = undefined; return t; });
+  const sh = (g.combat.fx || []).filter((e) => e.n > n0 && (e.k === 'shot' || e.k === 'melee') && !e.thrown && !e.object);
+  const marksOf = (e) => T.filter((x) => x.w === 'hole' && x.n === e.n).length;
+  const hitsMarked = sh.filter((e) => e.k === 'shot' && e.hit).every((e) => marksOf(e) >= 1), missesClean = sh.filter((e) => !e.hit && !e.cover).every((e) => marksOf(e) === 0), swingsClean = sh.filter((e) => e.k === 'melee').every((e) => marksOf(e) === 0);
+  ok('the six attacks (' + sh.map((e) => e.k + (e.hit ? ' hit' : ' miss')).join(', ') + ') leave a mark for each shot that hit, nothing for a miss or a swing (' + T.filter((x) => x.w === 'hole').map((x) => x.kind).join(',') + ')', sh.length > 0 && hitsMarked && missesClean && swingsClean);
+}
 await act({ type: 'sandbox/stop' }); await pause(p, 600); g = await G();
 ok('Stop the fight leaves the room (phase ' + g.phase + ', no dummy left)', g.phase === 'story' && !g.sandbox.fx && !(g.story.npcs || []).some((n) => n.name === 'Target dummy'));
 

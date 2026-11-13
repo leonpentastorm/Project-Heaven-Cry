@@ -225,6 +225,36 @@ if (!ONLY || ONLY.includes('keep_back')) await answerCase('Keep Back', 'halt', 3
 // swing hits about 3 times in 4, so the beat is under test and not the dice.
 if (!ONLY || ONLY.includes('parry')) { await act({ type: 'sandbox/skill', charId: cid, skill: 'athletics', points: 1 }); await answerCase('Parry', 'parry', 1, 8); }
 
+// ---------- a plain swing (Leon, 13 Nov 2026, live 0.25.0) ----------
+// "Please disable … the half circle effect when meleeing … and the melee miss effect … Just keep the slash effect on
+// hit": a hit draws the cut on the target (Cut's mark, data-tech-fx="cross") as it lands and no arc swept with the
+// swing (no slash sprite, no slash part); a miss draws nothing on the layer but the word MISS.
+if (!ONLY || ONLY.includes('swing')) {
+  const gg = await freshTurn(), u = await me(), d = adj(gg, u, [[1, 0]]);
+  const foe = d ? await spawnAt(d.tiles[0], 'elite') : null;
+  if (!foe) note('swing: no room for the set-up here'); else {
+    await idle(); await pause(p, 400);
+    const swing = (hit) => p.evaluate(async ({ me, foe, hit }) => {
+      const n = 990000 + Math.floor(Math.random() * 1000), seen = new Set(), arcs = new Set(), words = new Set();
+      window.__phcFx.queueFx([{ k: 'melee', n, unit: me.id, target: foe.id, from: me.pos, to: foe.pos, weapon: 'sabre', cat: 'light_melee', mode: 'melee', hit, crit: false, fumble: false, dmg: hit ? 5 : 0, killed: false }], 'e2e-swing-' + n);
+      const t0 = performance.now(); let crossAt = null;
+      while (performance.now() - t0 < 900) {
+        for (const e of document.querySelectorAll('[data-tech-fx]')) { const k = e.getAttribute('data-tech-fx'); seen.add(k); if (k === 'cross' && crossAt == null) crossAt = Math.round(performance.now() - t0); }
+        for (const e of document.querySelectorAll('[data-fx-piece] img, img')) if (/slash/.test(e.getAttribute('src') || '')) arcs.add(e.getAttribute('src'));
+        for (const e of document.querySelectorAll('span')) if (/^(MISS|−5)$/.test(e.textContent || '')) words.add(e.textContent);
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+      return { seen: [...seen], arcs: [...arcs], words: [...words], crossAt };
+    }, { me: u, foe, hit });
+    const h = await swing(true);
+    ok('a sword hit draws the cut on the target (' + h.seen.join(',') + ', at ' + h.crossAt + ' ms) and no arc with the swing (' + h.arcs.length + ' slash sprites)', h.seen.join() === 'cross' && h.arcs.length === 0 && h.crossAt >= 100);
+    await pause(p, 1200);
+    const m = await swing(false);
+    ok('a sword miss draws nothing but its word (' + (m.seen.join(',') || 'no pieces') + '; ' + m.words.join(',') + ')', m.seen.length === 0 && m.arcs.length === 0 && m.words.includes('MISS'));
+    await pause(p, 1200);
+  }
+}
+
 // ---------- the hook and the budget ----------
 const recs = await records();
 ok('the test hook recorded every beat it played (' + new Set(recs.map((r) => r.kind)).size + ' kinds)', recs.length > 0 && recs.every((r) => typeof r.at === 'number' && r.id && r.kind));

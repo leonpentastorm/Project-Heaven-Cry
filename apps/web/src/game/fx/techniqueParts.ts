@@ -1,7 +1,10 @@
 // The composable SVG parts every physical technique's animation is built from (fx/techniqueFx.ts: the table of which
-// parts each technique plays, and with what parameters). Leon, 12 Nov 2026: "an attack effect and a result effect so
-// you feel something if it misses": every technique plays an ATTACK part (the stroke or shot itself, whether or not it
-// lands) and a RESULT part on the target (a hit, a miss and a crit each look different).
+// parts each technique plays, and with what parameters). A technique may play ATTACK parts (its own gesture: a thrust,
+// a chop, the sight settling, a cone of fire arriving) and plays RESULT parts on the target on a hit and a crit.
+// Leon, 13 Nov 2026, on live 0.25.0: the tracer lines from shooter to target, the half circle swept on every melee
+// attack and the miss effects (a tracer going wide, a whiff, a deflect tick) "look SO BAD": they are gone. A miss shows
+// the word MISS and nothing else; a shot that hits leaves the weapon's mark (`round`: a bullet hole, a shotgun's pellet
+// cluster, an arrow's shaft), one a round that hit.
 //
 // The asset rule (CLAUDE.md): everything here is a line, an arc, a ring, a tick, a chevron, a glyph or a tint, drawn as
 // SVG in viewport pixels; nothing here needs texture, so nothing new is sourced. The weapon part shows the weapon's own
@@ -12,9 +15,9 @@
 // draws on; each part shows its end state and fades.
 import { reducedMotion } from '../sfx';
 import { gearLineUri, hasGearIcon } from '../gearIcons';
-import { type Pt, anim, put, svg } from './dom';
+import { type Pt, anim, put, svg, trace } from './dom';
 
-export const INK_DARK = '#0A0D13', WHITE = '#FFFFFF', MUTED = '#A3AEC2', HP = '#F65157';
+export const INK_DARK = '#0A0D13', WHITE = '#FFFFFF', HP = '#F65157';
 type XY = { x: number; y: number };
 
 /** What every part is given: the attacker (null when unseen), the target point, the direction attacker → target, the
@@ -23,6 +26,8 @@ export interface PartCtx {
   a: Pt | null; b: Pt; dir: XY; s: number; ink: string; scale: number; delay: number;
   outcome: 'hit' | 'miss' | 'crit' | 'use';
   weapon?: string; strikes?: number;
+  /** the round's index in its volley (where its hole goes), and the mark the weapon's rounds leave (shotMarkOf) */
+  round?: number; mark?: string | null;
 }
 export type PartParams = Record<string, number | string | boolean | undefined>;
 export type PartFn = (c: PartCtx, o: PartParams) => void;
@@ -76,24 +81,32 @@ const angOf = (v: XY) => Math.atan2(v.y, v.x);
 /** The point where a stroke from the attacker meets the target's near side. */
 const nearSide = (c: PartCtx, k = 0.42) => add(c.b, c.dir, -c.s * k);
 
+/** How long a hole stays (ms at Fast; about a second at Normal). */
+export const HOLE_MS = 900;
+const SHAFT = '#C9B79C';
+/** Where round i of a volley lands on the target: spots on the lower half of the token, clear of the rising number. */
+const SPOTS: XY[] = [{ x: -0.1, y: 0.12 }, { x: 0.15, y: 0.22 }, { x: -0.2, y: 0.28 }, { x: 0.05, y: 0.32 }, { x: 0.24, y: 0.06 }, { x: -0.26, y: 0.08 }];
+const holeSpot = (c: PartCtx, i: number, wide = false): XY => { const q = SPOTS[i % SPOTS.length], k = wide ? 1.25 : 1; return { x: c.b.x + q.x * c.s * k, y: c.b.y + q.y * c.s * k }; };
+/** A puncture at p, radius r: a ragged dark hole with a pale torn edge and `cracks` short cracks (seeded by k). */
+function puncture(s: SVGSVGElement, p: XY, r: number, k: number, cracks = 4) {
+  const rnd = (j: number) => { const v = Math.sin((k + 1) * 12.9898 + j * 78.233) * 43758.5453; return v - Math.floor(v); };
+  const edge: XY[] = Array.from({ length: 9 }, (_, j) => { const a = (j / 9) * Math.PI * 2, d = r * (0.78 + rnd(j) * 0.4); return { x: p.x + Math.cos(a) * d, y: p.y + Math.sin(a) * d }; });
+  for (let j = 0; j < cracks; j++) {
+    const a = (j / cracks) * Math.PI * 2 + rnd(20 + j) * 1.2, d0 = r * 0.9, d1 = r * (1.9 + rnd(30 + j) * 0.9), bend = (rnd(40 + j) - 0.5) * 0.6;
+    stroke(s, [{ x: p.x + Math.cos(a) * d0, y: p.y + Math.sin(a) * d0 }, { x: p.x + Math.cos(a + bend * 0.5) * (d0 + d1) / 2, y: p.y + Math.sin(a + bend * 0.5) * (d0 + d1) / 2 }, { x: p.x + Math.cos(a + bend) * d1, y: p.y + Math.sin(a + bend) * d1 }], '#E7EBF3', Math.max(0.9, r * 0.24), { opacity: 0.85 });
+  }
+  s.appendChild(el('path', { d: pathD(edge) + ' Z', fill: INK_DARK, stroke: '#E7EBF3', 'stroke-width': f1(Math.max(0.8, r * 0.22)), 'stroke-opacity': 0.75, 'stroke-linejoin': 'round' }));
+  s.appendChild(el('circle', { cx: f1(p.x), cy: f1(p.y), r: f1(r * 0.45), fill: '#000' }));
+}
+/** A mark punched in (a short pop), held, then faded. */
+function holeLife(box: HTMLElement, delay: number) {
+  anim(box, rm() ? [{ opacity: 1 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }]
+    : [{ transform: 'scale(1.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1, offset: 0.06 }, { opacity: 1, offset: 0.72 }, { opacity: 0 }], { duration: HOLE_MS, delay, easing: 'ease-out', fill: 'both' });
+}
+
 // ---------------------------------------------------------------------------------------------------------- the parts
 export const PARTS: Record<string, PartFn> = {
   // ===== attack strokes (the stroke itself: played hit or miss) =====
-  /** A curved cut across the target's front. arc: degrees swept; turn: ±1 the way it goes; r: radius in tiles; w: width
-   *  in tiles; count: cuts, each gap ms apart, alternating; off: tiles the centre sits short of the target. */
-  slash(c, o) {
-    const n = Math.max(1, num(o, 'count', 1)), gap = num(o, 'gap', 70), r = c.s * num(o, 'r', 0.55) * c.scale, w = Math.max(2.5, c.s * num(o, 'w', 0.12) * c.scale);
-    const centre = add(add(c.b, c.dir, -c.s * num(o, 'off', 0.1)), { x: 0, y: c.s * num(o, 'low', 0) }), half = (num(o, 'arc', 110) * Math.PI) / 360, tilt = (num(o, 'tilt', 0) * Math.PI) / 180;
-    for (let i = 0; i < n; i++) {
-      const turn = (num(o, 'turn', 1) * (i % 2 ? -1 : 1)), base = angOf(c.dir) + Math.PI + tilt + (i % 2 ? 0.5 : 0) * (n > 1 ? 1 : 0);
-      // the arc faces the attacker: centred behind the target, sweeping across its front
-      const pts = arcPts(add(centre, c.dir, r * 0.55), r, base - half * turn, base + half * turn, 18);
-      const { s } = stage(pts, w + 4, 520 + i * gap + c.delay, 'slash');
-      const ln = stroke(s, pts, str(o, 'color', '') || c.ink, w);
-      drawOn(ln, lenOf(pts), num(o, 'draw', 110), 70, 260, c.delay + i * gap);
-      if (o.echo) { const e2 = stroke(s, pts.map((p) => add(p, c.dir, -w * 0.9)), WHITE, Math.max(1.5, w * 0.35), { opacity: 0.8 }); drawOn(e2, lenOf(pts), num(o, 'draw', 110), 40, 220, c.delay + i * gap + 30); }
-    }
-  },
   /** A straight drive from the attacker into (and through) the target, with a point. len: tiles past the target;
    *  count: thrusts gap ms apart, fanned by spread degrees; w: width in tiles. */
   thrust(c, o) {
@@ -168,41 +181,34 @@ export const PARTS: Record<string, PartFn> = {
       drawOn(stroke(s, [from, end], str(o, 'color', '') || c.ink, Math.max(3, c.s * 0.1 * c.scale)), c.s * 0.5, 50, 60, 160, c.delay + i * gap);
     }
   },
-  /** A thin line of aim from the attacker to the target, drawn first (an Aimed or Called Shot, a held bead). */
+  /** The sight settling on the target: a thin ring closing in with four ticks (an Aimed or Called Shot, a held bead).
+   *  dash: the ring's dash; size: its radius in tiles. Drawn on the target, never as a line from the shooter (Leon,
+   *  13 Nov 2026: the lines from shooter to target are gone). */
   aim(c, o) {
-    if (!c.a) return;
-    const from = add(c.a, c.dir, c.s * 0.4), end = nearSide(c, num(o, 'short', 0.5));
-    const { s } = stage([from, end], 6, 420 + c.delay, 'aim');
-    const n = stroke(s, [from, end], str(o, 'color', '') || c.ink, Math.max(1.2, c.s * 0.03), { dash: str(o, 'dash', '') || undefined });
-    if (o.dash) { anim(n, [{ opacity: 0 }, { opacity: 0.9, offset: 0.2 }, { opacity: 0.9, offset: 0.7 }, { opacity: 0 }], { duration: 420, delay: c.delay, fill: 'both' }); } else drawOn(n, lenOf([from, end]), 120, 160, 140, c.delay);
+    const r = c.s * num(o, 'size', 0.56), ink = str(o, 'color', '') || c.ink, w = Math.max(1.2, c.s * 0.03), dash = str(o, 'dash', '');
+    const { s, box } = stage([{ x: c.b.x - r * 1.3, y: c.b.y - r * 1.3 }, { x: c.b.x + r * 1.3, y: c.b.y + r * 1.3 }], 4, 460 + c.delay, 'aim');
+    s.appendChild(el('circle', { cx: f1(c.b.x), cy: f1(c.b.y), r: f1(r), fill: 'none', stroke: ink, 'stroke-width': f1(w), ...(dash ? { 'stroke-dasharray': dash } : {}) }));
+    for (const a of [0, 0.5, 1, 1.5]) { const d = { x: Math.cos(a * Math.PI), y: Math.sin(a * Math.PI) }; stroke(s, [add(c.b, d, r * 0.82), add(c.b, d, r * 1.25)], ink, w); }
+    popBox(box, 440, c.delay, 1.6, 1);
   },
-  /** The round's trail in the technique's ink, from the muzzle along the shot (onto the target, or past it on a miss;
-   *  over: lifted over its head by that many tiles, a shot meant to miss). w: width in tiles; draw: ms. */
-  tracer(c, o) {
-    if (!c.a) return;
-    const nn = nrm(c.dir), from = add(c.a, c.dir, c.s * 0.45), lift = num(o, 'over', 0) * c.s;
-    const end = c.outcome === 'miss' ? add(add(c.b, c.dir, c.s * 0.8), nn, c.s * 0.5 * num(o, 'side', 1)) : lift ? add({ x: c.b.x, y: c.b.y - lift }, c.dir, c.s * 0.9) : nearSide(c, 0.3);
-    const { s } = stage([from, end], 6, 300 + num(o, 'hold', 60), 'tracer');
-    drawOn(stroke(s, [from, end], str(o, 'color', '') || c.ink, Math.max(1.5, c.s * num(o, 'w', 0.03)), { opacity: 0.85 }), lenOf([from, end]), num(o, 'draw', 70), num(o, 'hold', 60), 200, c.delay);
-  },
-  /** A heavy line: a thick white core in the ink, from the muzzle through the target (a bolt, a heavy round). */
+  /** A heavy round driven through: a thick streak in the ink with a white core, out of the target's far side (a bolt, a
+   *  heavy round, armour-breaking). past: tiles beyond the target; w: width in tiles. Played with the hit. */
   heavy(c, o) {
-    const from = c.a ? add(c.a, c.dir, c.s * 0.45) : add(c.b, c.dir, -c.s * 2), end = add(c.b, c.dir, c.s * num(o, 'past', 0.6));
+    const from = add(c.b, c.dir, -c.s * 0.1), end = add(c.b, c.dir, c.s * num(o, 'past', 0.6));
     const { s } = stage([from, end], c.s * 0.2, 440 + c.delay, 'heavy');
     const w = c.s * num(o, 'w', 0.16) * c.scale;
     drawOn(stroke(s, [from, end], str(o, 'color', '') || c.ink, w, { opacity: 0.55 }), lenOf([from, end]), num(o, 'draw', 70), 80, 240, c.delay);
     drawOn(stroke(s, [from, end], WHITE, Math.max(1.5, w * 0.3)), lenOf([from, end]), num(o, 'draw', 70), 80, 240, c.delay);
   },
-  /** A cone from the attacker opening toward the target (a scattering, a sweep of fire). span: degrees; len: tiles past. */
+  /** The spread of fire arriving: the far end of a cone over the target, a band a tile deep between its outer edge and
+   *  a fainter dashed inner one (a scattering, a sweep of fire). span: degrees; len: tiles past the target. Never drawn back to the shooter. */
   cone(c, o) {
-    if (!c.a) return;
-    const half = (num(o, 'span', 36) * Math.PI) / 360, d = Math.hypot(c.b.x - c.a.x, c.b.y - c.a.y) + c.s * num(o, 'len', 0.6);
-    const o0 = add(c.a, c.dir, c.s * 0.35), l = add(c.a, rot(c.dir, -half), d), r = add(c.a, rot(c.dir, half), d);
-    const { s } = stage([o0, l, r], 6, 520 + c.delay, 'cone');
+    const at = c.a || add(c.b, c.dir, -c.s * 2), half = (num(o, 'span', 36) * Math.PI) / 360, d = Math.hypot(c.b.x - at.x, c.b.y - at.y) + c.s * num(o, 'len', 0.6), d0 = Math.max(c.s * 0.4, d - c.s * 1.1);
+    const outer = arcPts(at, d, angOf(c.dir) - half, angOf(c.dir) + half, 10), inner = arcPts(at, d0, angOf(c.dir) + half, angOf(c.dir) - half, 10);
+    const { s } = stage([...outer, ...inner], 6, 520 + c.delay, 'cone');
     const ink = str(o, 'color', '') || c.ink;
-    drawOn(stroke(s, [l, o0, r], ink, Math.max(1.5, c.s * 0.04), { opacity: 0.9 }), lenOf([l, o0, r]), 140, 120, 240, c.delay);
-    const fill = el('path', { d: pathD([o0, l, ...arcPts(c.a, d, angOf(c.dir) - half, angOf(c.dir) + half, 8), r]) + ' Z', fill: ink, opacity: 0 }); s.appendChild(fill);
-    anim(fill, [{ opacity: 0 }, { opacity: 0.18, offset: 0.3 }, { opacity: 0 }], { duration: 420, delay: c.delay, fill: 'both' });
+    drawOn(stroke(s, outer, ink, Math.max(1.5, c.s * 0.045), { opacity: 0.9 }), lenOf(outer), 140, 120, 240, c.delay);
+    drawOn(stroke(s, inner, ink, Math.max(1, c.s * 0.025), { opacity: 0.5, dash: '3 4' }), lenOf(inner), 140, 80, 220, c.delay + 40);
   },
   /** Short radial ticks around the target, one after another (suppressing fire cracking past). n: ticks; r: tiles. */
   ticks(c, o) {
@@ -319,36 +325,47 @@ export const PARTS: Record<string, PartFn> = {
     for (const p of pts) stroke(s, p, str(o, 'color', '') || WHITE, Math.max(2, c.s * 0.045));
     popBox(box, 420, c.delay, 0.5, 1.15);
   },
-  /** A miss in melee: the stroke carries on past the target, muted and dashed, with a swish tick beyond it. */
-  whiff(c, o) {
-    const nn = nrm(c.dir), side = num(o, 'side', 1) * c.s * 0.48, from = add(add(c.b, c.dir, -c.s * 0.5), nn, side), end = add(add(c.b, c.dir, c.s * 0.7), nn, side * 1.25);
-    const ctl = add(c.b, nn, side * 0.7);
-    const pts = [from, add(ctl, c.dir, -c.s * 0.1), ctl, end];
-    const { s } = stage(pts, 8, 480 + c.delay, 'whiff');
-    drawOn(stroke(s, pts, MUTED, Math.max(2, c.s * 0.06), { dash: '5 4' }), lenOf(pts), 110, 80, 220, c.delay);
-    for (let i = 0; i < 2; i++) { const t0 = add(end, nn, (i ? 1 : -1) * c.s * 0.06), t1 = add(t0, c.dir, c.s * 0.22); drawOn(stroke(s, [t0, t1], MUTED, 2), c.s * 0.22, 50, 60, 160, c.delay + 110 + i * 30); }
+  /** A bullet hole on what the round hit: a small dark puncture with a ragged pale edge and a few short cracks, on the
+   *  lower half of the token (the damage number rises from the top), put down with its round and gone in about a second
+   *  at Normal speed. c.round: the round's index in its volley (each lands on its own spot). */
+  hole(c, o) {
+    const i = Math.max(0, c.round || 0), p = holeSpot(c, i), r = Math.max(3.2, c.s * num(o, 'r', 0.11) * c.scale);
+    trace('hole', { kind: 'hole', i });
+    const { s, box } = stage([{ x: p.x - r * 3, y: p.y - r * 3 }, { x: p.x + r * 3, y: p.y + r * 3 }], 2, HOLE_MS + c.delay, 'hole');
+    puncture(s, p, r, i);
+    holeLife(box, c.delay);
   },
-  /** A miss turned aside: a short bounce tick off the target's near side and two sparks of line (a block, a dodge). */
-  deflect(c, o) {
-    const nn = nrm(c.dir), p = nearSide(c, 0.42), k = num(o, 'side', 1);
-    const out = add(add(p, c.dir, -c.s * 0.25), nn, k * c.s * 0.35);
-    const { s } = stage([p, out, add(p, nn, -k * c.s * 0.2)], 8, 440 + c.delay, 'deflect');
-    drawOn(stroke(s, [p, out], MUTED, Math.max(2, c.s * 0.06)), c.s * 0.45, 70, 90, 200, c.delay);
-    for (const g of [-0.6, 0.6]) { const d = rot(nn, g), q = add(p, d, -k * c.s * 0.18); drawOn(stroke(s, [p, q], WHITE, 1.6), c.s * 0.18, 40, 60, 160, c.delay + 30); }
+  /** A shotgun's pellets on what they hit: a tight cluster of small holes (one cluster a shell that hit). n: pellets. */
+  pellets(c, o) {
+    const i = Math.max(0, c.round || 0), p = holeSpot(c, i, true), n = Math.max(3, num(o, 'n', 6)), r = Math.max(1.8, c.s * 0.04 * c.scale), spread = c.s * 0.15;
+    trace('hole', { kind: 'pellets', i });
+    const pts = Array.from({ length: n }, (_, k) => { const a = k * 2.399 + i * 1.3, d = spread * Math.sqrt((k + 0.5) / n); return { x: p.x + Math.cos(a) * d, y: p.y + Math.sin(a) * d * 0.8 }; });
+    const { s, box } = stage(pts, r * 3 + 2, HOLE_MS + c.delay, 'pellets');
+    pts.forEach((q, k) => puncture(s, q, r * (k % 3 ? 0.85 : 1.1), i * 7 + k, k % 2 ? 1 : 2));
+    holeLife(box, c.delay);
   },
-  /** A miss at range: a muted tick where the round went past and a short dash of dust behind the target. */
-  wide(c, o) {
-    const nn = nrm(c.dir), side = num(o, 'side', 1) * c.s * 0.55, p = add(add(c.b, c.dir, c.s * 0.75), nn, side);
-    const { s } = stage([add(p, c.dir, -c.s * 0.3), add(p, c.dir, c.s * 0.25)], 8, 420 + c.delay, 'wide');
-    drawOn(stroke(s, [add(p, c.dir, -c.s * 0.3), add(p, c.dir, c.s * 0.2)], MUTED, 2, { dash: '4 3' }), c.s * 0.5, 80, 80, 200, c.delay);
-    const q = add(p, c.dir, c.s * 0.25); drawOn(stroke(s, [add(q, nn, -c.s * 0.1), add(q, nn, c.s * 0.1)], MUTED, Math.max(2, c.s * 0.06)), c.s * 0.2, 40, 120, 200, c.delay + 70);
+  /** An arrow or a bolt stuck in what it hit: a short shaft standing out toward the shooter, fletched at its tail. */
+  shaft(c, o) {
+    const i = Math.max(0, c.round || 0), p = holeSpot(c, i), len = c.s * num(o, 'len', 0.42), back = rot({ x: -c.dir.x, y: -c.dir.y }, (i % 2 ? 1 : -1) * 0.25);
+    trace('hole', { kind: 'shaft', i });
+    const tail = add(p, back, len), nn = nrm(back), f = c.s * 0.09;
+    const { s, box } = stage([p, tail, add(tail, nn, f), add(tail, nn, -f)], 4, HOLE_MS + c.delay, 'shaft');
+    s.appendChild(el('circle', { cx: f1(p.x), cy: f1(p.y), r: f1(Math.max(1.6, c.s * 0.04)), fill: INK_DARK }));
+    stroke(s, [p, tail], SHAFT, Math.max(1.8, c.s * 0.045));
+    for (const k of [0, 0.35]) { const at = add(tail, back, -len * k * 0.4); stroke(s, [add(add(at, back, f), nn, f), at, add(add(at, back, f), nn, -f)], WHITE, Math.max(1.2, c.s * 0.03)); }
+    holeLife(box, c.delay);
+  },
+  /** What the weapon's round leaves where it hit: the row names `round`, and the weapon's family (fx/techniqueFx.ts
+   *  shotMarkOf: a bullet's hole, a shotgun's pellet cluster, an arrow's shaft; nothing for a blast or a flame) picks it. */
+  round(c, o) {
+    const m = c.mark; if (m && m !== 'round' && PARTS[m]) PARTS[m](c, o);
   },
   /** Pips over the target, lit one by one in time with each strike (a multi-hit's count). */
   pips(c, o) {
     const n = Math.max(1, Math.min(6, Number(c.strikes) || num(o, 'n', 2))), gap = num(o, 'gap', 70), z = c.s * 0.07, y = c.b.y - c.s * 0.78;
     const xs = Array.from({ length: n }, (_, i) => c.b.x + (i - (n - 1) / 2) * z * 3);
     const { s } = stage(xs.map((x) => ({ x, y })), z * 2 + 4, 520 + c.delay + n * gap, 'pips');
-    xs.forEach((x, i) => { const d = el('circle', { cx: f1(x), cy: f1(y), r: f1(z), fill: c.outcome === 'miss' ? MUTED : str(o, 'color', '') || c.ink, opacity: 0 }); s.appendChild(d); anim(d, [{ opacity: 0 }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }], { duration: 480, delay: c.delay + i * gap, fill: 'both' }); });
+    xs.forEach((x, i) => { const d = el('circle', { cx: f1(x), cy: f1(y), r: f1(z), fill: str(o, 'color', '') || c.ink, opacity: 0 }); s.appendChild(d); anim(d, [{ opacity: 0 }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }], { duration: 480, delay: c.delay + i * gap, fill: 'both' }); });
   },
   /** Corner brackets closing on the target (a lock, a set-up, a held target). */
   bracket(c, o) {
