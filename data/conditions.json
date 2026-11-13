@@ -5,7 +5,15 @@
   "items": [
     {
       "id": "bleeding",
-      "amounts": {"tick": {"kind": "damage", "base": 5, "profile": "flat", "type": "true", "provisional": true}},
+      "amounts": {
+        "tick": {
+          "kind": "damage",
+          "base": 5,
+          "profile": "flat",
+          "type": "true",
+          "provisional": true
+        }
+      },
       "name": "Bleeding",
       "kind": "debuff",
       "family": "body",
@@ -32,7 +40,15 @@
     },
     {
       "id": "burning",
-      "amounts": {"tick": {"kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true}},
+      "amounts": {
+        "tick": {
+          "kind": "damage",
+          "base": 10,
+          "profile": "flat",
+          "type": "true",
+          "provisional": true
+        }
+      },
       "name": "Burning",
       "kind": "debuff",
       "family": "body",
@@ -974,7 +990,15 @@
     },
     {
       "id": "corroded",
-      "amounts": {"tick": {"kind": "damage", "base": 5, "profile": "flat", "type": "true", "provisional": true}},
+      "amounts": {
+        "tick": {
+          "kind": "damage",
+          "base": 5,
+          "profile": "flat",
+          "type": "true",
+          "provisional": true
+        }
+      },
       "name": "Corroded",
       "kind": "debuff",
       "family": "body",
@@ -1215,8 +1239,16 @@
       "boon": true,
       "text": "Your move draws no opportunity attack. It ends when the move does.",
       "effects": [
-        {"op": "stat_mod", "stat": "immune:opportunity_attack", "value": 1},
-        {"op": "cleanse", "when": "moved", "condition": "slipping"}
+        {
+          "op": "stat_mod",
+          "stat": "immune:opportunity_attack",
+          "value": 1
+        },
+        {
+          "op": "cleanse",
+          "when": "moved",
+          "condition": "slipping"
+        }
       ],
       "duration": {
         "rounds": 1
@@ -1228,6 +1260,1736 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "Classes 3.0 step 3, Run and Gun (rules 1.30, item 1808)"
+    },
+    {
+      "id": "bonded",
+      "name": "Bonded",
+      "kind": "state",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "Tied by a Bond to whoever made it (an enemy saves against it with Heart, against the Bonder's Empathy). It lasts while the Bond does, and the Bond ends with it; on a Boss it lasts {=duration.boss_rounds} of its turns.",
+      "effects": [],
+      "duration": {
+        "rounds": 99,
+        "boss_rounds": 3
+      },
+      "ends_on": [
+        "the last Bond on you ends",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 2.1 (the tie kind bond's mark)"
+    },
+    {
+      "id": "traced",
+      "name": "Traced",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Your Bond gives you away: you can't be Hidden and your enemies know where you are. Lasts {=duration.rounds} rounds; renewed while you tend through a Bond or hold an enemy Bond.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "always_seen",
+          "value": 1
+        },
+        {
+          "op": "forbid",
+          "action": "hide"
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 2.11"
+    },
+    {
+      "id": "settled",
+      "name": "Settled",
+      "label": "Settled (+2 saves)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have +{=effects.0.value} on every save. Lasts {=duration.rounds} round.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "save",
+          "value": 2
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 3 (Settle)"
+    },
+    {
+      "id": "given_mark",
+      "name": "Felt",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "A feeling was given to you through a Bond this round: no other can be given to you until it ends ({=duration.rounds} round on an ally, two on an enemy).",
+      "effects": [],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (Inspire's limits)"
+    },
+    {
+      "id": "given_edge",
+      "name": "Given Edge",
+      "label": "Given (+2 to hit)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have +{=effects.0.value} on your next roll to hit. Lasts until that roll lands or misses, or the end of your next turn.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": 2
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_edge"
+          ]
+        },
+        {
+          "op": "cleanse",
+          "when": "miss",
+          "condition": [
+            "given_edge"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "your next attack",
+        "the end of your next turn"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6"
+    },
+    {
+      "id": "given_rage",
+      "name": "Given Rage",
+      "label": "Rage (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next attack deals ×{=effects.0.value} damage; you have {=effects.2.value} Defense until it lands or your next turn ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "value": 1.2
+        },
+        {
+          "op": "cleanse",
+          "when": "dealing",
+          "condition": [
+            "given_rage"
+          ]
+        },
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": -2
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_rage",
+      "name": "Rage (given)",
+      "label": "Rage (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it has {=effects.0.value} Defense for {=duration.rounds} round.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": -2
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_grief",
+      "name": "Given Grief",
+      "label": "Grief (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next hit Slows its target for {=effects.0.rounds} round, no save. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "hit",
+          "condition": "slowed",
+          "target": "target",
+          "rounds": 1,
+          "skip_save": true
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_grief"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_grief",
+      "name": "Grief (given)",
+      "label": "Grief (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it is Slowed for a round.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "slowed",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 1,
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "foe_grief"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_fear",
+      "name": "Given Fear",
+      "label": "Fear (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: you have +{=effects.0.value} Defense and {=effects.1.value} to hit until your next turn ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": 3
+        },
+        {
+          "op": "attack_mod",
+          "value": -2,
+          "context": "own_attacks"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_fear",
+      "name": "Fear (given)",
+      "label": "Fear (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it is Afraid of whoever gave it, for a round.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "fear",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 1,
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "foe_fear"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_love",
+      "name": "Given Love",
+      "label": "Love (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: you are healed by whoever gave it (its Healing given, more as it levels). Lasts until the end of your next turn.",
+      "effects": [],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_joy",
+      "name": "Given Joy",
+      "label": "Joy (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next attack has +{=effects.0.value} to hit and deals ×{=effects.1.value} damage. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": 1
+        },
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "value": 1.15
+        },
+        {
+          "op": "cleanse",
+          "when": "dealing",
+          "condition": [
+            "given_joy"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_calm",
+      "name": "Given Calm",
+      "label": "Calm (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: you have +{=effects.0.value} on every save until your next turn ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "save",
+          "value": 2
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_spite",
+      "name": "Given Spite",
+      "label": "Spite (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: the next enemy whose hit hurts you takes {=amounts.spite.base} damage back (more as you level). Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "damaged",
+          "if": {
+            "actor": "foe",
+            "by_hit": true
+          },
+          "target": "actor",
+          "amount": "spite"
+        },
+        {
+          "op": "cleanse",
+          "when": "damaged",
+          "if": {
+            "actor": "foe",
+            "by_hit": true
+          },
+          "condition": [
+            "given_spite"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)",
+      "amounts": {
+        "spite": {
+          "kind": "damage",
+          "base": 6,
+          "profile": "flat",
+          "type": "soul",
+          "provisional": true
+        }
+      }
+    },
+    {
+      "id": "foe_spite",
+      "name": "Spite (given)",
+      "label": "Spite (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": false,
+      "engine": "table",
+      "text": "A feeling given through a Bond: its next hit on its enemies costs it {=amounts.spite.base} Soul damage (more as the giver levels), no save.",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "hit",
+          "if": {
+            "target": "foe"
+          },
+          "target": "self",
+          "amount": "spite",
+          "by": "source"
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "if": {
+            "target": "foe"
+          },
+          "condition": [
+            "foe_spite"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)",
+      "amounts": {
+        "spite": {
+          "kind": "damage",
+          "base": 6,
+          "profile": "flat",
+          "type": "soul",
+          "provisional": true
+        }
+      }
+    },
+    {
+      "id": "given_shame",
+      "name": "Given Shame",
+      "label": "Shame (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next attack deals ×{=effects.0.value} damage; you lose {=amounts.shame.base} HP now (more as you level). Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "value": 1.3
+        },
+        {
+          "op": "deal",
+          "amount": "shame",
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "given_shame"
+            ]
+          },
+          "target": "self"
+        },
+        {
+          "op": "cleanse",
+          "when": "dealing",
+          "condition": [
+            "given_shame"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)",
+      "amounts": {
+        "shame": {
+          "kind": "damage",
+          "base": 8,
+          "profile": "flat",
+          "type": "soul",
+          "provisional": true
+        }
+      }
+    },
+    {
+      "id": "foe_shame",
+      "name": "Shame (given)",
+      "label": "Shame (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": false,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it loses {=amounts.shame.base} HP now, as Soul damage (more as the giver levels), no save.",
+      "effects": [
+        {
+          "op": "deal",
+          "amount": "shame",
+          "by": "source",
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "foe_shame"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)",
+      "amounts": {
+        "shame": {
+          "kind": "damage",
+          "base": 8,
+          "profile": "flat",
+          "type": "soul",
+          "provisional": true
+        }
+      }
+    },
+    {
+      "id": "given_pride",
+      "name": "Given Pride",
+      "label": "Pride (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: if your next attack drops its target, you bank {=effects.0.value} AP for your next turn. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "grant_ap",
+          "when": "kill",
+          "value": 1,
+          "bank": true
+        },
+        {
+          "op": "cleanse",
+          "when": "kill",
+          "condition": [
+            "given_pride"
+          ]
+        },
+        {
+          "op": "cleanse",
+          "when": "dealing",
+          "condition": [
+            "given_pride"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_despair",
+      "name": "Given Despair",
+      "label": "Despair (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next attack deals ×{=effects.0.value} damage while you are under half your HP. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "self_hp_below": 0.5
+          },
+          "value": 1.3
+        },
+        {
+          "op": "cleanse",
+          "when": "dealing",
+          "condition": [
+            "given_despair"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_despair",
+      "name": "Despair (given)",
+      "label": "Despair (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: under half its HP it is Weakened for a round.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "weakened",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 1,
+          "if": {
+            "cond": [
+              "foe_despair"
+            ],
+            "self_hp_below": 0.5
+          },
+          "when": "cond_landed",
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_hope",
+      "name": "Given Hope",
+      "label": "Hope (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your newest harmful condition ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "cleanse",
+          "count": 1,
+          "newest": true,
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "given_hope"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_mercy",
+      "name": "Given Mercy",
+      "label": "Mercy (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next hit on a target at a quarter of its HP or less Commands it to hold for a round. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "hit",
+          "condition": "commanded",
+          "target": "target",
+          "rounds": 1,
+          "if": {
+            "target_hp_at_most": 0.25
+          }
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_mercy"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_mercy",
+      "name": "Mercy (given)",
+      "label": "Mercy (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: at a quarter of its HP or less it is Commanded to hold for a round (never a Boss).",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "commanded",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 1,
+          "if": {
+            "cond": [
+              "foe_mercy"
+            ],
+            "self_hp_at_most": 0.25,
+            "self_not_tier": [
+              "boss"
+            ]
+          },
+          "when": "cond_landed",
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_cruelty",
+      "name": "Given Cruelty",
+      "label": "Cruelty (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next hit starts Bleeding, no save. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "hit",
+          "condition": "bleeding",
+          "target": "target",
+          "skip_save": true
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_cruelty"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_cruelty",
+      "name": "Cruelty (given)",
+      "label": "Cruelty (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it starts Bleeding.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "bleeding",
+          "skip_save": true,
+          "by": "source",
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "foe_cruelty"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_loneliness",
+      "name": "Given Loneliness",
+      "label": "Loneliness (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: you have +{=effects.0.value} Defense until your next turn ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": 2
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_loneliness",
+      "name": "Loneliness (given)",
+      "label": "Loneliness (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": false,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it has {=effects.0.value} to hit for a round, no save.",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": -2,
+          "context": "own_attacks"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_belonging",
+      "name": "Given Belonging",
+      "label": "Belonging (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: you have +{=effects.0.value} Defense and +{=effects.1.value} to hit until your next turn ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": 1
+        },
+        {
+          "op": "attack_mod",
+          "value": 1,
+          "context": "own_attacks"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_dread",
+      "name": "Given Dread",
+      "label": "Dread (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next hit Suppresses its target for {=effects.0.rounds} round (a Body save). Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "hit",
+          "condition": "suppressed",
+          "target": "target",
+          "rounds": 1
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_dread"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_dread",
+      "name": "Dread (given)",
+      "label": "Dread (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it is Suppressed for a round.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "suppressed",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 1,
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "foe_dread"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_awe",
+      "name": "Given Awe",
+      "label": "Awe (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next hit gives its target Nausea for {=effects.0.rounds} round, no save. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "hit",
+          "condition": "nausea",
+          "target": "target",
+          "rounds": 1,
+          "skip_save": true
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_awe"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_awe",
+      "name": "Awe (given)",
+      "label": "Awe (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it has Nausea for a round.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "nausea",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 1,
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "foe_awe"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_longing",
+      "name": "Given Longing",
+      "label": "Longing (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next move costs {=effects.0.value|abs} AP less. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "move"
+            ]
+          },
+          "value": -1,
+          "min": 0
+        },
+        {
+          "op": "cleanse",
+          "when": "moved",
+          "condition": [
+            "given_longing"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_longing",
+      "name": "Longing (given)",
+      "label": "Longing (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": false,
+      "engine": "table",
+      "text": "A feeling given through a Bond: its next move costs {=effects.0.value} AP more, no save.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "move"
+            ]
+          },
+          "value": 1
+        },
+        {
+          "op": "cleanse",
+          "when": "moved",
+          "condition": [
+            "foe_longing"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_relief",
+      "name": "Given Relief",
+      "label": "Relief (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your Bleeding and Burning end. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "cleanse",
+          "condition": [
+            "bleeding",
+            "burning"
+          ],
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "given_relief"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_contempt",
+      "name": "Given Contempt",
+      "label": "Contempt (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: the next enemy you hit is Scorned by you for {=effects.0.rounds} rounds, no save. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "hit",
+          "condition": "scorned",
+          "target": "target",
+          "rounds": 2,
+          "skip_save": true
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_contempt"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_contempt",
+      "name": "Contempt (given)",
+      "label": "Contempt (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": false,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it is Scorned by whoever gave it (−2 to hit them) for two rounds, no save.",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "scorned",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 2,
+          "when": "cond_landed",
+          "if": {
+            "cond": [
+              "foe_contempt"
+            ]
+          },
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_guilt",
+      "name": "Given Guilt",
+      "label": "Guilt (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: the next enemy you hit is Taunted by you (a Heart save). Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "hit",
+          "condition": "taunted",
+          "target": "target"
+        },
+        {
+          "op": "cleanse",
+          "when": "hit",
+          "condition": [
+            "given_guilt"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_guilt",
+      "name": "Guilt (given)",
+      "label": "Guilt (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it is Taunted by whoever gave it for a round (never a Boss).",
+      "effects": [
+        {
+          "op": "condition",
+          "condition": "taunted",
+          "skip_save": true,
+          "by": "source",
+          "rounds": 1,
+          "if": {
+            "cond": [
+              "foe_guilt"
+            ],
+            "self_not_tier": [
+              "boss"
+            ]
+          },
+          "when": "cond_landed",
+          "target": "self"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_jealousy",
+      "name": "Given Jealousy",
+      "label": "Jealousy (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next attack deals ×{=effects.0.value} damage to a target with a boon on it. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "target_has": [
+              "guarded",
+              "inspired",
+              "hopeful",
+              "quickened",
+              "sharpened",
+              "settled",
+              "given_edge"
+            ]
+          },
+          "value": 1.2
+        },
+        {
+          "op": "cleanse",
+          "when": "dealing",
+          "condition": [
+            "given_jealousy"
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_wonder",
+      "name": "Given Wonder",
+      "label": "Wonder (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: you have +{=effects.0.value} to spot the Hidden until your next turn ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "spot",
+          "if": {
+            "target": "foe",
+            "actor": "self"
+          },
+          "value": 3
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_wonder",
+      "name": "Wonder (given)",
+      "label": "Wonder (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": false,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it has {=effects.0.value} to spot the Hidden for a round, no save.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "spot",
+          "if": {
+            "target": "foe",
+            "actor": "self"
+          },
+          "value": -3
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_defiance",
+      "name": "Given Defiance",
+      "label": "Defiance (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: you have +{=effects.0.value} on your next save. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "save",
+          "value": 5,
+          "and": [
+            {
+              "op": "cleanse",
+              "condition": [
+                "given_defiance"
+              ]
+            }
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "given_abandon",
+      "name": "Given Abandon",
+      "label": "Abandon (given)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A feeling given through a Bond: your next attack deals ×{=effects.0.value} damage; you have {=effects.2.value} Defense until it lands or your next turn ends. Lasts until the end of your next turn.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "value": 1.4
+        },
+        {
+          "op": "cleanse",
+          "when": "dealing",
+          "condition": [
+            "given_abandon"
+          ]
+        },
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": -3
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
+    },
+    {
+      "id": "foe_abandon",
+      "name": "Abandon (given)",
+      "label": "Abandon (given)",
+      "kind": "debuff",
+      "family": "heart",
+      "save": true,
+      "engine": "table",
+      "text": "A feeling given through a Bond: it has {=effects.0.value} Defense for {=duration.rounds} round.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": -3
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "set_by": "class:bard.inspire",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"
     }
   ],
   "families": {

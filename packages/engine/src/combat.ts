@@ -1904,11 +1904,11 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
 //   4. WHO REACTS. Nobody (`reactions: false` for every kind). A held Watch, Overwatch and opportunity attacks answer a
 //      unit that CHOSE to move. The flag is read: set true for a kind, held Watches and Overwatch answer each tile of it.
 //   5. It ends Braced.
-export type DisplaceHow = 'push' | 'pull' | 'throw' | 'teleport' | 'swap';
+export type DisplaceHow = 'push' | 'pull' | 'throw' | 'teleport' | 'swap' | 'guide'; // guide: rules 1.33 (Tending's Guide: an ally steps, willing, to a tile its Bonder picks)
 interface ForcedRule { tiles: 'each' | 'landing'; traps: boolean; fields: boolean; hazards: boolean; immunity: boolean; reactions: boolean }
 const FORCED: Record<DisplaceHow, ForcedRule> = (() => {
   const d: any = (RULES as any).forced_movement || {}, base = (tiles: 'each' | 'landing'): ForcedRule => ({ tiles, traps: true, fields: true, hazards: true, immunity: true, reactions: false });
-  return { push: { ...base('each'), ...d.push }, pull: { ...base('each'), ...d.pull }, throw: { ...base('landing'), ...d.throw }, teleport: { ...base('landing'), ...d.teleport }, swap: { ...base('landing'), ...d.swap } };
+  return { push: { ...base('each'), ...d.push }, pull: { ...base('each'), ...d.pull }, throw: { ...base('landing'), ...d.throw }, teleport: { ...base('landing'), ...d.teleport }, swap: { ...base('landing'), ...d.swap }, guide: { ...base('landing'), ...d.guide } };
 })();
 /** The trigger table of forced movement (data/rules.json forced_movement), by kind of move. */
 export const forcedRule = (how: DisplaceHow): ForcedRule => FORCED[how];

@@ -95,12 +95,13 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     const target = reach ? TARGET_OF_SIDE[reach.side || 'any'] || 'unit' : effs.map(TARGETING).find((t) => t !== 'none') || 'none';
     // a door verb's nested item ops are its own effects, run once it succeeds; the rest run by the generic runners
     const mine = verb ? effs.filter((e) => isItemOp(e)) : [], rest = verb ? effs.filter((e) => !isItemOp(e)) : effs;
+    const acts = !verb && (g.effects || []).some((e: any) => e?.when === 'acted'); // its ops are lifted onto the item (collect.ts liftActed) and run on the trigger acted
     const d: ActionDef = {
       id, label, scope: Array.isArray(g.scope) ? g.scope.filter((x: string) => GRANT_SCOPES.includes(x)) : per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
       run: (h, args, rng) => {
         if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
-        if (rest.length || !mine.length) defaultRun(h, rest, args, rng);
+        if (rest.length || (!mine.length && !acts)) defaultRun(h, rest, args, rng); // rules 1.33: a grant whose effects are all `when: acted` (lifted onto the item) is the engine's: no Narrator note
         if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}) });
         return null;
       },
@@ -143,6 +144,7 @@ function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: numb
 /** An item's actions: a lane's, when it registered any (they replace the data defaults), else the defaults. */
 export function actionDefs(info: ItemInfo): ActionDef[] {
   const hd = handlerOf(info.key), lane = hd?.actions || [];
+  if (lane.length && hd?.dataActions) return [...lane, ...defaultActions(info).filter((d) => !lane.some((l) => l.id === d.id))]; // rules 1.33: a lane that keeps only a story half beside the data's actions
   return lane.length ? lane : hd?.noDefaultActions ? [] : defaultActions(info);
 }
 
@@ -250,7 +252,7 @@ function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
 function defaultEngine(info: ItemInfo, d: ActionDef): boolean {
   void d; const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
   const nested = info.effects.filter((e) => e?.op === 'grant_action').flatMap((e) => (e.effects || []).filter((x: any) => x?.when !== 'acted'));
-  const all = [...own, ...nested]; if (!all.length) return false;
+  const all = [...own, ...nested]; if (!all.length) return info.effects.some((e) => e?.op === 'grant_action' && (e.effects || []).some((x: any) => x?.when === 'acted')); // rules 1.33: all lifted to acted: the engine's
   return all.every((e) => { const g = genericOf(e?.op); return !!(g?.runs && g.runs(e, info)); });
 }
 

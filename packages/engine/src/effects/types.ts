@@ -303,6 +303,8 @@ export interface ItemHandler {
   actions?: ActionDef[];
   /** The data's grant_action is run another way (an automatic shot, a toggle): no default action button for it. */
   noDefaultActions?: boolean;
+  /** Rules 1.33: keep the data's default actions beside this lane's (their ids differ): a lane that adds only a story half (Triage out of a fight). */
+  dataActions?: boolean;
   toggles?: ToggleDef[];
   /** The Narrator-ruled remainder in about 15 words, or null when the engine runs all of it. */
   brief?(h: Holder): string | null;

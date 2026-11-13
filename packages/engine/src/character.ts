@@ -11,7 +11,7 @@ import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
-import { statOf } from './effects/output';
+import { statOf, levelFactor } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
@@ -1174,6 +1174,12 @@ export const magazineSize = (weaponId: string, mods?: string[]) => { const m = W
  * rest) or starts each fight at 0 (Momentum, Guard, Marks, Charges). Heat, Flux and Strain are shared rules that
  * every gun, Evoker or Emanator user already runs; they aren't listed here. */
 export interface ClassResource { id: string; max: number; persist: boolean }
+/** Rules 1.33: the Ledger's cap, from the move's own amount block (classes.json bard ledger `amounts.cap`: base × the
+ * block's profile Stat (tend: Healing given) × its Level term (mend)); 0 when the data has none. */
+export function ledgerCap(c: Character): number {
+  const b: any = rawItem('class:bard.ledger')?.amounts?.cap; if (!b || typeof b.base !== 'number') return 0;
+  return Math.floor(b.base * (b.profile ? statOf(b.profile, c) * levelFactor((RULES as any).output?.profiles?.[b.profile]?.level ?? null, c.level) : 1));
+}
 const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   momentum: () => ({ id: 'momentum', max: 5, persist: false }),
   guard: () => ({ id: 'guard', max: GUARD_RULES.max ?? 5, persist: false }),
@@ -1181,6 +1187,8 @@ const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
   charges: () => ({ id: 'charges', max: 3, persist: false }),
+  // rules 1.33: the Mender's Ledger, at most its move's amount block `cap` (classes.json bard.ledger: base × the tend Stat × the mend level factor)
+  ledger: (c) => ({ id: 'ledger', max: ledgerCap(c), persist: false }),
 };
 /** Which resources a class brings. Base classes: their classes.json `resources` (Revision 3: the resources follow the
  * moves; Heat, MP, Strain and Devotion are shared rules, so only the ones in RES_RULES count here). Advanced classes

@@ -207,7 +207,10 @@
       "on": "unit",
       "path": "mg.mp",
       "max": "mg.mpMax",
-      "needs": "mg.emanator"
+      "needs": [
+        "mg.emanator",
+        "mg.attuner"
+      ]
     },
     "charge": {
       "name": "charge",
