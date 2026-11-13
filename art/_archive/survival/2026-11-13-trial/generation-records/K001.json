@@ -1,0 +1,11 @@
+{
+  "id": "K001",
+  "number": 1,
+  "filename": "ground-1.png",
+  "path": "art/sprites/kit/ahoc/ground-1.png",
+  "mode": "ground",
+  "prompt": "Create a seamless tileable square GROUND TEXTURE for Project Heaven Cry, Heavenprint painted gouache material. Packed fine GREY GRAVEL blended into poured CONCRETE yard apron. NO metal plates, NO panels, NO rivets, NO paint stripes, NO tiles, NO architectural objects. Edge-to-edge tiny pale aggregate and a few faint hairline cracks, evenly distributed low-contrast brush texture in warm charcoal-grey. Straight overhead orthographic, flat even non-directional lighting, no gradient, no shadow, no vignette. Opaque square 1024x1024. Tileable seamlessly in both axes; left/right edges match and top/bottom match when repeated. No isolated focal feature, no large repeating shape. One close material surface, not a scene or an icon. Selective tiny square dry-brush marks, restrained ink-like grain, opaque warm-grey gouache; quiet and calm to support a tactical UI. No text, no labels, no frame.",
+  "references": [],
+  "transparent": false,
+  "source": "/workspace/generated_images/exec-5000ded1-d288-4ef8-a4b9-fd5bb191668c.png"
+}

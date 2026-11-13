@@ -1,0 +1,11 @@
+{
+  "images": 45,
+  "backdrops": 24,
+  "AHOC_core_pieces": 21,
+  "file_checks": "PNG decode, dimensions, colour mode and manifest SHA-256 verified for all 45 selected files",
+  "seamless_status": "Not accepted: plate ground seam visible; gravel continuity improved but not certified",
+  "wall_status": "Not accepted as a complete family: corner and broken wall unresolved",
+  "native_minimum_backdrop_requirement_met": false,
+  "review_candidate_only": true,
+  "generation_blocked": true
+}
