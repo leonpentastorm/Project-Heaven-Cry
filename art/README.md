@@ -83,3 +83,7 @@ Byte-identical duplicates were removed and every reference pointed at the copy t
 - **Archetype cards:** 46 portraits (`pool: player-card` in the catalog); review candidates.
 - **Patrons (Blessing 2.0):** eight portraits, eight marks and 39 prayer icons; review candidates.
 - **Title screen:** three layers and the PSD (Part A); the Wick menu clips are review candidates.
+
+## Painted gear delivery — 13 November 2026
+
+151 Heavenprint gear icons are registered in `catalog.json` under `gear`: 149 brief items and two katana concepts. Masters are in `icons/gear/`; 256/128/64/32 px PNG exports are in `icons/gear/exports/`. See the [implementation handoff](_archive/gear/2026-11-13-complete/HANDOFF.md) for review sheets, provenance and the remaining web-build integration. Individual assets remain review candidates.
