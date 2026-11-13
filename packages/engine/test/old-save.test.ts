@@ -206,7 +206,7 @@ describe('rules 1.39: an old save loads as a campaign', () => {
   it('every old save (written before modes) loads as a campaign and keeps playing its story', () => {
     for (const name of ['save-live-0.22.0-long-mid-fight', 'save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-1b-pre-owned-companion-mid-fight', 'save-pre-modes-lobby']) {
       const g = fixture(name);
-      expect(g.settings.play, name).toBe('campaign'); expect(playOf(g), name).toBe('campaign'); expect(g.run, name).toBeFalsy();
+      expect(g.settings.play, name).toBeUndefined(); expect(playOf(g), name).toBe('campaign'); expect(g.run, name).toBeFalsy();
       expect(() => viewFor(g, g.hostId), name).not.toThrow();
     }
   });

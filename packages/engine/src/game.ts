@@ -57,7 +57,7 @@ import { setBraced, setDowned, stagger, startHidden } from './unitstate';
 import { clearConds, restoreConds } from './magic';
 import { condMods } from './condtable';
 import { runOwned } from './owned';
-import { type PlayMode, type RunState, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, OLD_SAVE_PLAY } from './run/state';
+import { type PlayMode, type RunState, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf } from './run/state';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -485,8 +485,8 @@ function migrateFloor(g: GameState) {
  * settled on every sheet (the other migrations wait for the first action, as before). */
 export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
-  // rules 1.39: a save from before modes played a campaign (the only thing it could be); it says so from now on
-  try { const st = (g as any)?.settings; if (st && !st.play) st.play = OLD_SAVE_PLAY; } catch { /* no settings: nothing to read */ }
+  // rules 1.39: a save from before modes played a campaign; playOf reads the missing field so, and nothing is written
+  // here (a load must leave the state as it was: the replay guard's save-and-load case)
   return g;
 }
 // ---------- what apply() shares with the state it was given (it copies everything else) ----------
