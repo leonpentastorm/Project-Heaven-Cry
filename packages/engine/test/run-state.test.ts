@@ -2,8 +2,6 @@
 // plays (settings.play, data/modes.json), the run's state g.run, run/start and run/retire through the one reducer with
 // their refusals in words, and an old save reading as a campaign.
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { type Action, type GameState, newGame, apply, RuleError, viewFor, migrateLoaded, MODES, DEFAULT_PLAY, OLD_SAVE_PLAY, modeOf, playOf, runSeed } from '../src';
 import { sheetOf } from './helpers/perkfight';
 import modesJ from '../../../data/modes.json';
@@ -127,22 +125,7 @@ describe('run/retire', () => {
   });
 });
 
-describe('saves', () => {
-  const fixture = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
-  it('every old save (written before modes) loads as a campaign and keeps playing its story', () => {
-    for (const name of ['save-live-0.22.0-long-mid-fight', 'save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-1b-pre-owned-companion-mid-fight', 'save-pre-modes-lobby']) {
-      const g = fixture(name);
-      expect(g.settings.play, name).toBe('campaign'); expect(playOf(g), name).toBe('campaign'); expect(g.run, name).toBeFalsy();
-      expect(() => viewFor(g, g.hostId), name).not.toThrow();
-    }
-  });
-  it('a lobby saved before modes (save-pre-modes-lobby) starts its story as before, and can switch to Survival and run', () => {
-    const g = fixture('save-pre-modes-lobby');
-    expect(g.phase).toBe('lobby');
-    expect(apply(g, { type: 'session/start' }, g.hostId).phase).toBe('story');
-    const s = apply(g, { type: 'settings', patch: { play: 'survival' } }, g.hostId);
-    expect(start(s, 'PHC-0002').run!.state).toBe('map');
-  });
+describe('saves (the old saves reading as a campaign: old-save.test.ts)', () => {
   it('a run survives a save and a load (JSON), and a reload resumes in its mode', () => {
     const g = start(squad(), 'PHC-0003'), back = migrateLoaded(JSON.parse(JSON.stringify(g)));
     expect(back.settings.play).toBe('survival'); expect(back.run).toEqual(g.run);

@@ -12,6 +12,7 @@
       "name": "Survival",
       "line": "Fight from tile to tile: shops, rests, a Boss each stage. Solo or co-op, no Narrator needed.",
       "art": "survival-card-title",
+      "art_pending": true,
       "available": true,
       "narrator": "optional",
       "start": "run",

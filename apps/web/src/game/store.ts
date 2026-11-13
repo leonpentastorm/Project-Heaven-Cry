@@ -3,6 +3,7 @@
 // Guests send actions to the host and render the view they get back.
 import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded, fightRulingOf } from '@engine';
 import { FIGHT_TIMEOUT_MS } from '../narrator/fight';
+import { newRoomPlay } from './modes';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, type Conn } from './net';
@@ -90,6 +91,9 @@ export function hostRoom(code = roomCode()) {
   // Classes 3.0 step 10b: a new room starts on the menu's first start, never on a hidden campaign (game/starts.ts, the
   // campaign's `listed`); a saved room keeps the start it was played with.
   if (!saved && !shownStart(hostState, hostState.settings.start)) hostState.settings.start = DEFAULT_START;
+  // Rules 1.39: a new room selects its mode (data/modes.json default: Survival; a browser suite's page: its test hook,
+  // game/modes.ts); a saved room keeps its own (one from before modes reads as a campaign: migrateLoaded).
+  if (!saved) hostState.settings.play = newRoomPlay();
   befores = {}; loadBefores(code);
   // The full save (with the archive) comes back from IndexedDB a moment later.
   idbGet(code).then((full) => {
@@ -203,7 +207,7 @@ function provingClosed(prev: GameState | null, g: GameState) {
   else toast('The host closed the Proving Ground: back to the room.');
 }
 /** Where a player should be, given the game: combat follows the fight, story otherwise. */
-function screenFor(g: GameState): Screen { return g.phase === 'lobby' ? 'room' : g.phase === 'combat' ? 'combat' : 'main'; }
+function screenFor(g: GameState): Screen { return g.phase === 'lobby' ? 'room' : g.phase === 'combat' ? 'combat' : g.run ? 'room' : 'main'; } // a Survival run between fights: the room shows it until the path map lands (survival step 2)
 function followPhase(prev: GameState | null, g: GameState) {
   if (S.screen === 'create' || S.screen === 'levelup' || S.screen === 'ultimate') return;
   // A finished fight keeps its players on the grid until they click "Back to the story".

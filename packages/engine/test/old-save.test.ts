@@ -24,7 +24,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar } from '../src';
+import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, playOf } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
 const load = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
@@ -176,5 +176,26 @@ describe('Classes 3.0 renamed the base classes: an old save keeps its class, its
       for (const k of keys) expect(k).toMatch(/^class:[a-z_]+\.[a-z_]+$/); // keys are ids, never display names
     }
     if (f.startsWith('save-develop')) expect(classed).toBeGreaterThan(0);
+  });
+});
+
+// Rules 1.39 (Survival step 1): a save from before modes has no settings.play; it reads as a campaign (data/modes.json
+// old_save) and plays its story on; a lobby saved then can still switch to Survival and start a run.
+describe('rules 1.39: an old save loads as a campaign', () => {
+  const start = (g: any, seed: string) => apply(g, { type: 'run/start', seed }, g.hostId);
+  const fixture = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
+  it('every old save (written before modes) loads as a campaign and keeps playing its story', () => {
+    for (const name of ['save-live-0.22.0-long-mid-fight', 'save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-1b-pre-owned-companion-mid-fight', 'save-pre-modes-lobby']) {
+      const g = fixture(name);
+      expect(g.settings.play, name).toBe('campaign'); expect(playOf(g), name).toBe('campaign'); expect(g.run, name).toBeFalsy();
+      expect(() => viewFor(g, g.hostId), name).not.toThrow();
+    }
+  });
+  it('a lobby saved before modes (save-pre-modes-lobby) starts its story as before, and can switch to Survival and run', () => {
+    const g = fixture('save-pre-modes-lobby');
+    expect(g.phase).toBe('lobby');
+    expect(apply(g, { type: 'session/start' }, g.hostId).phase).toBe('story');
+    const s = apply(g, { type: 'settings', patch: { play: 'survival' } }, g.hostId);
+    expect(start(s, 'PHC-0002').run!.state).toBe('map');
   });
 });

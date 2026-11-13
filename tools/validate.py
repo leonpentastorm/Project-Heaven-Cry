@@ -2157,6 +2157,33 @@ for _c in items("conditions"):
         if not _fb or sorted(_fb[0].get("kinds") or []) != ["attack", "move"]:
             errors.append("conditions:suppressed: its reaction `forbid` names kinds attack and move only (rules 1.28, 1.30)")
 
+# Modes (rules 1.39, survival-spec section 8.1): the lobby's three cards. The ids are the engine's PlayMode
+# (run/state.ts); the lock is `available`; a locked card says why (`coming`); its art is a web asset id (art/catalog.json,
+# built into apps/web/src/game/assets.json) or marked `art_pending` until it lands (the card shows a plain panel).
+_modes = data.get("modes")
+if _modes is not None:
+    _mi = _modes.get("items") or []
+    _ids = [m.get("id") for m in _mi]
+    if _ids != ["survival", "roguelike", "campaign"]: errors.append(f"modes: ids {_ids} are not the engine's PlayMode, in the picker's order (survival, roguelike, campaign)")
+    _by = {m.get("id"): m for m in _mi}
+    if not (_by.get(_modes.get("default")) or {}).get("available"): errors.append(f"modes: default {_modes.get('default')!r} is not an open mode")
+    if _modes.get("old_save") not in _by: errors.append(f"modes: old_save {_modes.get('old_save')!r} is not a mode")
+    _assets_p = root.parent / "apps/web/src/game/assets.json"
+    _assets = set(json.loads(_assets_p.read_text()).keys()) if _assets_p.exists() else None
+    for m in _mi:
+        w = f"modes:{m.get('id')}"
+        for k in ("name", "line"):
+            if not isinstance(m.get(k), str) or not m.get(k).strip(): errors.append(f"{w}: {k} must be a text")
+        if not isinstance(m.get("available"), bool): errors.append(f"{w}: available must be true or false")
+        if m.get("narrator") not in ("optional", "required"): errors.append(f"{w}: narrator is optional or required")
+        if m.get("start") not in ("run", "session"): errors.append(f"{w}: start is run (run/start) or session (session/start)")
+        if m.get("available") is False and not (isinstance(m.get("coming"), str) and m.get("coming").strip()): errors.append(f"{w}: a locked mode says why (coming)")
+        if m.get("available") is True and m.get("coming") is not None: errors.append(f"{w}: an open mode has no coming text (null)")
+        a = m.get("art")
+        if a is not None and _assets is not None:
+            if not m.get("art_pending") and a not in _assets: errors.append(f"{w}: art {a!r} is not a web asset (art/catalog.json, npm run assets); mark it art_pending until it lands")
+            if m.get("art_pending") and a in _assets: errors.append(f"{w}: art {a!r} has landed: drop art_pending")
+
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:
     _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}

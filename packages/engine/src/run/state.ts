@@ -13,7 +13,7 @@ import { seedFrom } from '../rng';
 /** A mode a room can play (data/modes.json ids). */
 export type PlayMode = 'survival' | 'roguelike' | 'campaign';
 /** One row of data/modes.json: a card of the lobby's mode picker. `available: false` locks it, and `coming` says why. */
-export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null }
+export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; art_pending?: boolean; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null }
 /** The three modes in the picker's order (data/modes.json items). */
 export const MODES: ModeDef[] = (modesJ as any).items;
 /** The mode a new room selects (data/modes.json default: Survival). */

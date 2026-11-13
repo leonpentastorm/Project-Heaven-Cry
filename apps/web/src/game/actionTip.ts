@@ -200,6 +200,11 @@ export function placeTip(r: Rect, b: { width: number; height: number }, W: numbe
 /** Every element that carries a hover card: a structured one (data-tip) or a prose one (data-tip-text). */
 export const TIP_SELECTOR = '[data-tip],[data-tip-text]';
 let mounted: Document | null = null;
+let showNow: ((el: HTMLElement) => void) | null = null;
+/** Open an element's own card now, as if hovered (a click on a locked control says why through the one card, never a
+ *  toast or a native title). The press that clicked closes cards first, so this shows it after that. No-op outside a
+ *  browser or before mountActionTips. */
+export function openTipOn(el: Element | null | undefined): void { const f = showNow; if (f && el && typeof (el as any).closest === 'function') setTimeout(() => { const t = (el as any).closest(TIP_SELECTOR); if (t) f(t); }, 0); }
 /** The one floating card of the document: any [data-tip] / [data-tip-text] element under the pointer, under keyboard
  *  focus or long-pressed on a touch screen shows its card, after a short delay (a pointer swept down a list does not
  *  strobe). One card at a time, by construction: there is one box, and showing a card first removes every other one.
@@ -229,6 +234,7 @@ export function mountActionTips(doc: Document | null = typeof document !== 'unde
     if (el === cur) return; hide(); if (!el) return;
     cur = el; timer = setTimeout(() => { if (cur === el) show(el); }, delay);
   };
+  showNow = (el) => { hide(); cur = el; show(el); };
   const tipOf = (n: any): HTMLElement | null => (n && typeof n.closest === 'function' ? n.closest(TIP_SELECTOR) : null);
   doc.addEventListener('pointerover', (e: any) => { if (e.pointerType === 'touch') return; enter(tipOf(e.target), 350); }, true);
   doc.addEventListener('pointerout', (e: any) => {

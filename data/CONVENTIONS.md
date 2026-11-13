@@ -127,6 +127,13 @@ Every rule-bearing item carries both:
 - Each weapon in `weapons.json` has `phys`: `system`, `props` (melee: edge point blunt hook reach heavy light bare thrown; ranged: quick auto precise spread heavy blast arc silent loud drawn thrown), `hits_with` (a skill), `scales_with` and `also_scales` (attributes or skills), and `teaches` (the technique it lends while held and teaches at drill mark I).
 - Enemy tiers in `enemies.json` list the techniques they have ready: `techniques: { melee: [...], ranged: [...] }`.
 
+## Modes (modes.json, rules 1.39)
+
+- The mode a room plays, picked by the host in the lobby (`settings.play`, the `settings` action; the engine refuses a locked mode with its `coming` words). The ids are the engine's `PlayMode` (`packages/engine/src/run/state.ts`) in the picker's order: `survival`, `roguelike`, `campaign`. A new mode is a new id there and here, and a start of its own in the reducer.
+- Each item: `name` (the card's title, shown in caps), `line` (one sentence under it), `art` (a web asset id from `art/catalog.json`, or `null`; `art_pending: true` until the file lands, and the card shows a plain panel with the AHOC seal), `available` (the lock: `false` dims the card with a lock mark and the word "Coming"; unlocking is this one edit), `coming` (what a locked card says on hover and click; `null` on an open one), `narrator` (`optional`: the Narrator panel is collapsed, Start needs no key; `required`), `start` (`run`: Start sends `run/start`; `session`: `session/start`).
+- `default`: the mode a new room selects (an open one). `old_save`: what a save written before modes reads (`campaign`).
+- The validator checks the ids and order, the default is open, every locked mode says why, and every `art` is a web asset or `art_pending`.
+
 ## Calls (calls.json, rules 1.13)
 
 - Nine entries, one per gamma skill. Ids are prefixed `call.` (`call.rally`, `call.spot`): the bare names are taken by techniques, class moves and unlocks.
