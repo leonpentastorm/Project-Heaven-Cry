@@ -1,3 +1,4 @@
+// @ts-nocheck (it reads the engine's own source files: node's fs, which the engine's tsconfig does not know)
 // Base classes are weapon-neutral (Leon, 13 Nov 2026; docs/design/rev4-weapon-neutral-audit.md section 5,
 // docs/design/rev4-moves-and-rename.md section 5). Every move a base class lists in its ranks, and every class-level
 // `effects` block, must work with whatever the character attacks with: a gun, a bow, a blade, a fist or a thrown weapon.

@@ -74,6 +74,8 @@ describe('the Narrator and faith', () => {
     // fight, about 0.07k: the cap moves to 25.5k on purpose.
     // Enemy levels (rules 1.15): the Vermin tier, the level_shift field and its line, about 0.05k after cutting the
     // tier line: the cap moves to 25.6k on purpose.
-    expect(e.stable).toBeLessThan(25600);
+    // Classes 3.0 (rules 1.29): the longer class names in the class line and the Bulwark's and Breaker's sentences on
+    // Brace and Lunge, a few tokens: the cap moves to 25.7k on purpose.
+    expect(e.stable).toBeLessThan(25700);
   });
 });

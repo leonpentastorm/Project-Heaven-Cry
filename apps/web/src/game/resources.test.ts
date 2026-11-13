@@ -1,7 +1,7 @@
 // The RESOURCES block (game/resources.ts): each class archetype sees its own rows, in words, with the warnings that
 // testers missed in the old 10 px line (RELOAD, RELOAD CORE, OVERLOAD SOON, OVER THE LIMIT…).
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, ADVANCED, type Sheet, newCharacter, startCombat } from '@engine';
+import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat } from '@engine';
 import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule } from './resources';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
@@ -171,7 +171,7 @@ describe('class resources, named from the data', () => {
   });
   it('a Bulwark (defender) sees Guard; a Mender (bard; the Medic moves, Revision 3) sees Supplies out of a fight too (they persist)', () => {
     const d = fight((c) => { c.classId = 'defender'; });
-    expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: '0 / 5' });
+    expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: ((CLASS_MOVE_POOL['defender.brace'].effects as any[]).find((e) => e.when === 'combat_start')?.value ?? 0) + ' / 5' }); // Classes 3.0: a fight starts with the Bulwark's Guard
     const m = fight((c) => { c.classId = 'bard'; });
     const story = resourcesOf(null, m.c, { phase: 'story', story: { magic: {} } });
     expect(row(story, 'res-supplies')?.label).toBe('Supplies');
