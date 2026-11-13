@@ -1422,6 +1422,7 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 | Disarmed | Heart | your weapon is down: you strike with your fists until you recover it (2 AP) or draw another (rules 1.9, item 687: the downed one stays in the pile). **Weapon lowered** is the light version: 1 AP to raise it | until recovered |
 | Augment Offline | Body | one augment, prosthetic or implant gives nothing and its actions are unavailable | until repaired |
 | Corroded | Body | 5 damage at the start of each turn; Defense −2. Set by ACID with no save to land it; a Body save at the end of each of your turns ends it early (rules 1.4, provisional) | 3 rounds |
+| Off Balance | Body | −1 AP on your next turn. Set by Shadow's Timing with no save (rules 1.32, provisional) | 1 turn |
 
 **Helpful states**
 
