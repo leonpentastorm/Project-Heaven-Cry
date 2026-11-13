@@ -3166,7 +3166,7 @@ function runAction(g: GameState, a: Action, by: string) {
       if (r.state !== 'boon' || !offer || !c) fail('There is no boon to pick for that character now.');
       if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ' (or the host, for an away player).');
       const id = offer![Number(a.choice)], no = boonProblem(c!, offer, id); if (no) fail(no);
-      c!.relics = [...(c!.relics || []), id!]; c!.hp = Math.min(c!.hp, maxHp(c!));
+      c!.relics = [...(c!.relics || []), id!];
       stageLog(r).boons = { ...stageLog(r).boons, [c!.id]: id! };
       push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes the boon ' + (relicRow(id!)?.name || id) + ' (' + worthOf(id!) + ' of the run\'s ' + BOON_CAP + ').' });
       const rest = { ...r.boons! }; delete rest[a.charId];

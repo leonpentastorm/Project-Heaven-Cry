@@ -52,7 +52,7 @@ function TileCard({ t, mine }: { t: TileCardV; mine: boolean }) {
         {t.awaiting.length ? <span style={{ fontSize: 12, color: ink.muted }}>Placeholder: {t.awaiting.join('; ')}.</span> : null}
         <span style={{ display: 'flex', gap: 6, alignItems: 'center', minHeight: 22 }}>
           {mine ? <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>✓ YOUR MARK</span> : null}
-          {t.leans.map((l) => <span key={l.initials} title={l.name} style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 10, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}
+          {t.leans.map((l) => <span key={l.initials} aria-label={l.name} style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 10, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}
         </span>
       </span>
     </button>
