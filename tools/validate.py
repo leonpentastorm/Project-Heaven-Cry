@@ -426,6 +426,13 @@ slots = data.get("rules", {}).get("equipment_slots", {})
 if slots and slots.get("armour_class_from") not in slots.get("slots", []):
     errors.append("rules.equipment_slots: armour_class_from is not a slot")
 
+# a perk may not share a class's display name (rules 1.30: the perk Bulwark became Stonewall when the Defender became
+# the Bulwark): a card, a log line or the preview's damage chain would name two different things the same
+_class_names = {c.get("name", "").lower() for c in base + adv if isinstance(c, dict) and c.get("name")}
+for _p in items("perks"):
+    if isinstance(_p, dict) and _p.get("name", "").lower() in _class_names:
+        errors.append(f"perk {_p.get('id')}: name {_p.get('name')!r} collides with a class name")
+
 # archetypes: creation presets (guidance only)
 arch = data.get("archetypes")
 if isinstance(arch, dict):

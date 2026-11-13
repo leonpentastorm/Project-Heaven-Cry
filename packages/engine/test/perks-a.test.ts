@@ -24,7 +24,7 @@ function storyCheck(s: ReturnType<typeof storyWith>, charId: string, skills: str
   return { ck, roll: () => { s.act({ type: 'check/roll', checkId: ck.id }); return s.g.story.entries.filter((e) => e.kind === 'check').at(-1)!.head!; } };
 }
 
-describe('Bulwark', () => {
+describe('Stonewall', () => {
   it('geometry: the ray from the attacker through the guard, 1 (I) or 2 (II) tiles on', () => {
     expect(behindLine('2,5', '5,5', '6,5', 1)).toBe(true);
     expect(behindLine('2,5', '5,5', '7,5', 1)).toBe(false);
@@ -38,7 +38,7 @@ describe('Bulwark', () => {
     at(f, foe, '2,5'); at(f, guard, '5,5'); at(f, ally, tier === 'I' ? '6,5' : '7,5');
     const shot = (seed: number) => withGame(f.g, () => { f.g.rng.state = seed; const hp = ally.hp; resolveAttack(f.cb, f.g.rng, foe, ally, 'shot', null, { noAp: true }); const d = hp - ally.hp; ally.hp = ally.maxHp; return d; });
     const covered = shot(11);
-    expect(logHas(f.cb, /Bulwark/)).toBe(true);
+    expect(logHas(f.cb, /Stonewall/)).toBe(true);
     at(f, guard, '5,8'); // off the line
     const open = shot(11);
     expect(open).toBeGreaterThan(0);

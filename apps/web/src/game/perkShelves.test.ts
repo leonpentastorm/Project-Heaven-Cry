@@ -246,7 +246,7 @@ describe('the live line of Always on', () => {
     for (const banned of ['handlerOf', 'genericOf', 'actionDefs', 'holdersOf', 'bindGame', 'RegExp(', '.exec(', 'TRIGGER']) expect(src.includes(banned), banned).toBe(false);
   });
   it('a card that names no trigger never guesses one: it says "Active all fight"', () => {
-    // Bulwark listens when damage is dealt, but "Waiting: you deal damage" would be wrong: it guards allies behind you.
+    // Stonewall listens when damage is dealt, but "Waiting: you deal damage" would be wrong: it guards allies behind you.
     expect(row(shelves(perk('bulwark')).sh, 'perk:bulwark')).toMatchObject({ state: 'active', line: 'Active all fight' });
     expect(row(shelves(charWith({ traits: ['spray_and_pray'] })).sh, 'trait:spray_and_pray').line).toBe('Active all fight');
   });

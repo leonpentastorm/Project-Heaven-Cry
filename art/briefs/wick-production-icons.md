@@ -151,7 +151,7 @@ Acquired perks come two per skill (one perk step at each of 3, 5, 7 and 9 points
 
 | Perk (id) | Skill(s) | Status | Mood | Action | Screen | One prop |
 |---|---|---|---|---|---|---|
-| **Bulwark** (`bulwark`) | Durability | new | Heroic, Proud | Wick braces a tall riot shield in a low side-on lunge, bullets bouncing off its front, a tiny Wick silhouette crouched safe behind it. | Determined, sloping brows | Riot shield |
+| **Stonewall** (`bulwark`; was Bulwark) | Durability | new | Heroic, Proud | Wick braces a tall riot shield in a low side-on lunge, bullets bouncing off its front, a tiny Wick silhouette crouched safe behind it. | Determined, sloping brows | Riot shield |
 | **Shrug It Off** (`shrug_it_off`) | Durability | new | Comic | Wick, half-hunched, straightens with one big shoulder shrug that flings a heavy iron shackle off its back to clang away. | Unimpressed flat bars | Iron shackle |
 | **Used to the Pain** (`used_to_the_pain`) | Pain Threshold | new | Comic, Proud | Knocked to one knee by a big brick that just bounced off its head, Wick is already springing up, fists raised. | Charging bar filling up | Bouncing brick |
 | **Scar Tissue** (`scar_tissue`) | Pain Threshold | new | Grim, Calm | Wick sits calmly and holds its riveted, patch-plated arm straight into a big tongue of fire, as if warming it. | Content small smile | Tongue of fire |
