@@ -317,3 +317,8 @@ one harder row each is in `test/prim-specs-1b-harder.test.ts`.)
 | `chaplain-spec.md` | **Yes** | (the class's own data: patron words, the numbers) |
 | `shadow-spec.md` | **Yes, with its resource** | the `shadow` resource row is the system's data (a Break reads it through `res:shadow`, proved with a stand-in) |
 | `reactions-spec.md` | **Yes** | (built in step 3) |
+
+**The close.** `python3 tools/validate.py data` 0 errors; `tools/engine_catalog.py --check` clean; `npm run check` ALL
+GREEN (engine 3912 passed, web 1119 passed); `npm run e2e -- all` green but for `clarity`, which failed once beside the
+others ("no drill unit walked into the shot this time": the drill AI's path under load) and passed alone twice; it is
+flagged as a suite that cannot share the machine, not a defect of this branch.
