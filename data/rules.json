@@ -1239,9 +1239,9 @@
   },
   "mending": {
     "provisional": true,
-    "rules": "1.20",
+    "rules": "1.20, 1.23, 1.36",
     "level_factor": {
-      "from": "enemies.json levels.table damage_mult, at the caster's level",
+      "from": "rules.json output.level.mend (rules 1.36: its own column, M(L) x scale(L)), at the giver's level",
       "who": "characters and the units that fight for them; an enemy caster's healing and shields grow through its own multipliers (rules 1.15)",
       "applies_to": [
         "sigil heal",
@@ -1262,10 +1262,11 @@
       "level_factor": true,
       "triage": 5,
       "triage_out_of_fight_mult": 3,
-      "stim": 6,
+      "stim": 0,
       "rally": 6,
       "field_repair_per_point": 3,
-      "note": "The medic's kit, each × Healing given × the level factor of the giver's level. Triage: 2 AP, next to you, once an ally a turn, no supplies (out of a fight, with time to work: × triage_out_of_fight_mult, once an ally a scene). A stim and Stim Throw: 1 AP and a dose (a stim, or a Supply). Rally: 2 AP, every ally within 4 tiles, once a scene. A Field Repair on an ally: 2 AP and a spare-parts charge, per point of Improvisation."
+      "note": "The medic's kit, each × Healing given × the level factor of the giver's level. Triage: 2 AP, next to you, once an ally a turn, no supplies (out of a fight, with time to work: × triage_out_of_fight_mult, once an ally a scene). A stim and Stim Throw: 1 AP and a dose (a stim, or a Supply). Rally: 2 AP, every ally within 4 tiles, once a scene. A Field Repair on an ally: 2 AP and a spare-parts charge, per point of Improvisation. Rules 1.36: a stim is the gate alone: stim_pct of its target's max HP at every level (gear, priced in credits).",
+      "stim_pct": 0.2
     },
     "tending": {
       "rules": "1.23",
@@ -1276,7 +1277,17 @@
     },
     "shield_over_heal": 1.2,
     "area_share": 0.4,
-    "text": "Healing and shields from Sigil magic, Outbursts, prayers and the medic's kit grow with the giver's level, by the same factor that raises what enemies deal (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). Nothing limits how much a creature can be healed in a round. Enemies notice who is mending the squad and turn on them: Soldiers lean that way, Elites and Bosses go for the healer first. In an area shape a healing or shielding Outburst gives each ally ×0.4."
+    "text": "Healing and shields from Sigil magic, Outbursts, prayers and the medic's kit grow with the giver's level, by the same factor that raises what enemies deal (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). Nothing limits how much a creature can be healed in a round. Enemies notice who is mending the squad and turn on them: Soldiers lean that way, Elites and Bosses go for the healer first. In an area shape a healing or shielding Outburst gives each ally ×0.4.",
+    "gate": {
+      "hp": 145,
+      "whisper": 0.1333,
+      "hymn": 0.3333,
+      "intervention": 0.3333,
+      "provisional": true,
+      "note": "Rules 1.36 (heal-shield-percent-spec.md section 4, Leon's 20%): every heal and shield action is at least a share of its target's max HP, counted up to hp x scale at the giver's level (the level 1 reference HP): 20% for a 2-AP action (the profiles' min_pct: mend, sigil_mend, soul_mend, tend), 13.3% for a Whisper and a 1-AP Raise, 33.3% for a Hymn and an intervention, times the action's own multipliers (stage, shape, Line, a heal in an area shape x0.4). It rounds up."
+    },
+    "cap_pct": 0.5,
+    "cap_note": "Rules 1.36: no single heal restores more than this share of its target's max HP (a Miracle is exempt; shields have no cap: one stands per layer)."
   },
   "rarity": {
     "rules": "rules 1.26 (the re-fit): Weapons v2, Rarity, moved from code into data. Rarity buys accuracy, durability and a mod slot; since the re-fit it adds no damage (Masterwork's +10% was the gun premium the all-in ceiling could not hold: PROVISIONAL, spec item 1701)",
@@ -1535,8 +1546,51 @@
         4.2159,
         4.6875
       ],
-      "mend": "enemies.levels.table.damage_mult",
-      "note": "One row a level, 1 to 20. Rules 1.36 (the level scale, Leon 13 Nov 2026): a plain rifle hit is 40 at level 1 and about 300 at level 20 (x7.5, geometric: 7.5^(1/19) a level). deal: what a character's level multiplies its damage by: 7.5^((level - 1)/19). scale: what everything measured in HP is multiplied by at that level: the new deal over the old (rules 1.26's 1, 1.067 ... 1.6): players' max HP and armour, enemies' HP, armour and damage (enemies.json levels.table), Guard's soak, Strain's burn, a feeling's HP price, objects and cover, the profiles with no column of their own (physical, elemental, healing, blessing). Every ratio stays: to-hit, Defense, percents, MP. mend: what it multiplies healing and shields by (rules 1.20: the enemy table's damage column, which carries scale)."
+      "mend": [
+        1.0,
+        1.1018,
+        1.188,
+        1.3102,
+        1.5054,
+        1.5858,
+        1.8269,
+        2.0568,
+        2.2425,
+        2.5322,
+        2.9263,
+        3.312,
+        3.8289,
+        4.5177,
+        5.3265,
+        6.272,
+        7.3831,
+        8.6792,
+        10.1983,
+        11.9672
+      ],
+      "note": "One row a level, 1 to 20. Rules 1.36 (the level scale, Leon 13 Nov 2026): a plain rifle hit is 40 at level 1 and about 300 at level 20 (x7.5, geometric: 7.5^(1/19) a level). deal: what a character's level multiplies its damage by: 7.5^((level - 1)/19). scale: what everything measured in HP is multiplied by at that level: the new deal over the old (rules 1.26's 1, 1.067 ... 1.6): players' max HP and armour, enemies' HP, armour and damage (enemies.json levels.table), Guard's soak, Strain's burn, a feeling's HP price, objects and cover, the profiles with no column of their own (physical, elemental, healing, blessing). Every ratio stays: to-hit, Defense, percents, MP. mend (rules 1.36, heals and shields in percent of HP): what it multiplies healing and shields by: M(L) x scale(L), M = R(L)/R(1) x S_all(1)/S_all(L) held non-decreasing (heal-shield-percent-spec.md section 1), so an all-in heal turn is the same percent of the reference character's HP at every level. reference_hp: the reference character's max HP (the normal-share plain rifleman, smoothed: 145 at level 1, 2,086 at 20), the unit heals and shields are balanced in.",
+      "reference_hp": [
+        145,
+        159,
+        182,
+        203,
+        233,
+        260,
+        301,
+        338,
+        390,
+        441,
+        510,
+        578,
+        667,
+        786,
+        930,
+        1095,
+        1286,
+        1513,
+        1779,
+        2086
+      ]
     },
     "profiles": {
       "physical": {
@@ -1602,16 +1656,18 @@
         "level": "mend",
         "pair": "healing",
         "shape": "landed",
-        "floor": 0.5
+        "floor": 0.5,
+        "min_pct": 0.2
       },
       "sigil_mend": {
-        "k": 1.17,
+        "k": 1.629,
         "attr": 0.06,
         "skill": 0.06,
         "level": "mend",
         "pair": "sigil",
         "shape": "landed",
-        "floor": 0.5
+        "floor": 0.5,
+        "min_pct": 0.2
       },
       "soul_mend": {
         "k": 1.296,
@@ -1620,7 +1676,8 @@
         "level": "mend",
         "pair": "soul",
         "shape": "landed",
-        "floor": 0.5
+        "floor": 0.5,
+        "min_pct": 0.2
       },
       "blessing_mend": {
         "k": 1.44,
@@ -1629,7 +1686,8 @@
         "level": "mend",
         "pair": "blessing",
         "shape": "landed",
-        "floor": 0.5
+        "floor": 0.5,
+        "min_pct": 0.1333
       },
       "flat": {
         "k": 1,
@@ -1661,13 +1719,14 @@
       },
       "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). Rules 1.26 (the re-fit; Leon: no damage slope on rolled attacks, skill buys accuracy, level buys damage): every profile has one of three shapes. AIMED (an action that rolls to hit: a weapon, a Sigil Line, an Outburst): no slope, k a constant, the Level term deal. LANDED (an action that always lands: a prayer, a heal, a shield): 0.06 a point of Attribute over 1 and 0.06 a point of Skill (all in at 7/7 is 1.25 times a normal share at 4/4), k a constant. FLAT (what has no dealer's skill: a grenade, a tick, a trap a character sets): k 1, the Level term deal. Each k re-pins its system so that the normal share at level 1 is where it was (weapon 1.5, sigil 1.7, soul 1.55, healing 1.18, blessing 0.956). Rules 1.27 (the heal re-fit, Leon 12 Nov 2026): a healer's turn all in is 2.0 Soldier-turns (was 1.25), so the heal and shield profiles were scaled by 1.6 and trimmed to that ceiling: healing and mend, soul_mend (the Soul shields) and the Sigil boon's sigil_mend (a Sigil boon also multiplies by Healing given, so most of its rise came through healing); blessing_mend is the heal dial of a prayer (Blessing power times blessing_mend.k over blessing.k), capped where a Hymn turn heals 2.5 Soldier-turns at level 1. Each heal and shield profile has a floor: never under that share of a normal share's Stat term (output.floor_reference).",
       "tend": {
-        "k": 1.573,
+        "k": 3.74,
         "attr": 0.06,
         "skill": 0.06,
         "level": "mend",
         "pair": "healing",
         "shape": "landed",
-        "floor": 0.5
+        "floor": 0.5,
+        "min_pct": 0.2
       }
     },
     "floor_reference": {

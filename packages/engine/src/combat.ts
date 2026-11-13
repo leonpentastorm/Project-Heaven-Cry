@@ -23,8 +23,8 @@ import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { itemAmount, amountSpecOf } from './effects/amounts';
-import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf, scaleOf } from './effects/output';
-import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
+import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf, scaleOf, mend } from './effects/output';
+import { tendedLately, TEND_NOTICE, STIM_HEAL, STIM_PCT, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, immune, forbids } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, setAp, withAp, freely, apFor, creditFor } from './effects/cost';
@@ -2521,6 +2521,9 @@ export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): st
 /** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
  * Else heal 6 × Healing given × the level factor (rules 1.23: it was 30 × Healing given at every level). */
 export const stimHeal = (u: Unit, who: Character) => kitHeal(STIM_HEAL, healingMult(who), mendFactorOf(u));
+/** Rules 1.36 (heal-shield-percent-spec.md section 4): a stim is the gate alone: mending.medic.stim_pct of its target's
+ * max HP at every level (the whole bar counted), plus what the kit's base gives (0 since rules 1.36). */
+export const stimOn = (cb: Combat | null, u: Unit, t: Unit, who: Character) => mend(cb, u, t, { kind: 'heal', base: stimHeal(u, who), round: 'none', min_pct: STIM_PCT, gate_hp: null }, { healKind: 'stim' });
 export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean, o: { thrown?: boolean } = {}): string | null {
   if (who.stims <= 0) return 'No stims left.';
   // rules 1.33: Stim Throw is everyone's gear action: an ally within the row's range that you see, at its own price
@@ -2536,7 +2539,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   const hpWas = t.hp, wasDown = t.downed;
   if (t.bleed) { endCond(t, 'bleeding', cb); say(cb, 'The stim stops ' + t.name + '\'s bleeding.'); }
   if (t.downed) { setDowned(t, false); t.hp = 1; say(cb, u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); calmTend(cb, u, t); }
-  else { const r = healUnit(cb, t, stimHeal(u, who), u, 'stim'); say(cb, u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
+  else { const r = stimOn(cb, u, t, who); say(cb, u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
   emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: t.hp - (wasDown ? 0 : hpWas), revive: wasDown });
   return null;
 }

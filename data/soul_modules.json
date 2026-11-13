@@ -210,7 +210,7 @@
         "heal_30"
       ],
       "duration_rounds": 2,
-      "heal": 7,
+      "heal": 14,
       "hit": "auto",
       "provisional": true,
       "identity": "The school that keeps your side standing.",
@@ -818,7 +818,7 @@
         "skill": "camaraderie",
         "points": 2
       },
-      "shield": 10,
+      "shield": 7,
       "shield_mult_enemy": 0.7
     },
     {

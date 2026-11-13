@@ -62,6 +62,8 @@ export const TRIAGE_HEAL: number = MEDIC.triage ?? 5;
 /** Out of a fight, with time to work (once an ally a scene): Triage × this. */
 export const TRIAGE_REST_MULT: number = MEDIC.triage_out_of_fight_mult ?? 3;
 export const STIM_HEAL: number = MEDIC.stim ?? 6;
+/** Rules 1.36: a stim heals this share of its target's max HP (the gate alone). */
+export const STIM_PCT: number = MEDIC.stim_pct ?? 0;
 export const RALLY_HEAL: number = MEDIC.rally ?? 6;
 export const FIELD_REPAIR_HEAL: number = MEDIC.field_repair_per_point ?? 3;
 

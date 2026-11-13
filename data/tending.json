@@ -1049,7 +1049,8 @@
           "base": 1.9,
           "profile": "tend",
           "heal_kind": "tending",
-          "provisional": true
+          "provisional": true,
+          "min_pct": 0.1333
         }
       },
       "adjudication": "engine",

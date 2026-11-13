@@ -251,10 +251,14 @@ export function deal(cb: Combat | null, by: Unit | null, target: Unit, spec: Dea
 const MEND_RULES: any = (RULES as any).mending || {};
 /** The data's gate and cap (data/rules.json mending.gate.hp, mending.cap_pct; absent: none). */
 export const MEND_GATE: { hp: number | null; cap_pct: number | null } = { hp: Number.isFinite(MEND_RULES.gate?.hp) ? Number(MEND_RULES.gate.hp) : null, cap_pct: Number.isFinite(MEND_RULES.cap_pct) ? Number(MEND_RULES.cap_pct) : null };
-/** The gate of a heal or shield on this target: its least amount before the own multipliers (0: no gate). */
-export function mendGate(spec: AmountSpec, target: Unit): number {
+/** The gate's share for a kind of heal or shield action that is not an amount block's (data/rules.json mending.gate:
+ * `whisper`, `hymn`, `intervention`…), or a profile's (output.profiles[].min_pct); 0 when the data has none. */
+export function gatePct(of: string): number { const v = Number(MEND_RULES.gate?.[of]); return Number.isFinite(v) ? v : profileOf(of).min_pct ?? 0; }
+/** The gate of a heal or shield on this target: its least amount before the own multipliers (0: no gate). The HP it
+ * counts up to (mending.gate.hp, a level 1 number) is × scale at the giver's level (rules 1.36). */
+export function mendGate(spec: AmountSpec, target: Unit, by: Unit | null = null): number {
   const pct = spec.min_pct ?? profileOf(spec.profile).min_pct ?? 0; if (!(pct > 0)) return 0;
-  const counted = spec.gate_hp === null ? target.maxHp : Math.min(target.maxHp, spec.gate_hp ?? MEND_GATE.hp ?? Infinity);
+  const counted = spec.gate_hp === null ? target.maxHp : Math.min(target.maxHp, spec.gate_hp ?? (MEND_GATE.hp != null ? MEND_GATE.hp * scaleOf(by?.level ?? target.level) : Infinity));
   return Math.ceil(pct * counted); // the gate rounds up
 }
 /** An amount with the gate applied after its Stat × Level product, before the own multipliers (and the plus). */
@@ -267,9 +271,26 @@ function gatedRaw(spec: AmountSpec, by: Unit | null, ctx: AmountCtx, gate: numbe
 /** Give healing or a shield: the amount (amountOf), then the heal sink or the shield sink (which apply the receiver's
  * multiplier and their hooks). The percent gate (mendGate) and the cap are here, once. Returns what the sink returned. */
 export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean; /** Classes 3.0 P11: a shield on this layer, at most `holders` units carrying one giver's */ layer?: string; holders?: number; /** a Miracle: past the cap */ uncapped?: boolean } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
-  const gate = mendGate(spec, target), raw = gate > 0 ? gatedRaw(spec, by, ctx, gate) : amountOf(spec, by, ctx).raw;
+  const gate = mendGate(spec, target, by), raw = gate > 0 ? gatedRaw(spec, by, ctx, gate) : amountOf(spec, by, ctx).raw;
   if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, { stack: !!ctx.stack, ...(ctx.healKind ? { kind: ctx.healKind } : {}), ...(ctx.layer ? { layer: ctx.layer, holders: ctx.holders } : {}) }); return { amount: raw, restored: 0, revived: false, shield: v }; }
   const cap = !ctx.uncapped && MEND_GATE.cap_pct != null ? Math.floor(MEND_GATE.cap_pct * target.maxHp) : undefined;
   const r = healUnit(cb, target, raw, by, ctx.healKind || 'heal', cap != null ? { cap } : {});
   return { amount: raw, restored: r.restored, revived: r.revived, shield: 0 };
+}
+/** What mendSized would give before the sink (a preview, or a number a source hands on): the gate (and, for a heal, the
+ * cap) applied to a number already sized. The same arithmetic as mend: the gate rounds up, the cap floors. */
+export function gatedAmount(kind: 'heal' | 'shield', n: number, gate: { of: string; own?: number } | null, target: Unit | null | undefined, by: Unit | null = null): number {
+  if (!target || !(n > 0)) return n; // nothing to gate: a word that heals nothing stays nothing
+  const pct = gate ? gatePct(gate.of) * (gate.own ?? 1) : 0;
+  let v = Math.max(n, pct > 0 ? mendGate({ kind, base: 0, min_pct: pct }, target, by) : 0);
+  if (kind === 'heal' && MEND_GATE.cap_pct != null) v = Math.min(v, Math.floor(MEND_GATE.cap_pct * target.maxHp));
+  return v;
+}
+/** A heal or shield a source has already sized (its base × Stat × Level × own multipliers), given through the one gate
+ * and the cap (heal-shield-percent-spec.md section 4): `gate` names the gate's share (gatePct: a profile, or a kind of
+ * prayer) and the product of the source's own multipliers (stage, shape, Line), which the gate takes as well, so the
+ * least amount is share × min(target max HP, the gate's HP) × own. No gate: null. */
+export function mendSized(cb: Combat | null, by: Unit | null, target: Unit, kind: 'heal' | 'shield', n: number, gate: { of: string; own?: number } | null, ctx: Parameters<typeof mend>[4] = {}): ReturnType<typeof mend> {
+  const pct = gate ? gatePct(gate.of) * (gate.own ?? 1) : 0;
+  return mend(cb, by, target, { kind, base: Math.max(0, n), round: 'none', min_pct: pct > 0 ? pct : 0 }, ctx);
 }

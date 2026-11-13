@@ -25,7 +25,7 @@ import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { itemAmount } from './effects/amounts';
 import { mendFactorOf, flatLevelOf } from './effects/mending';
-import { armourAgainst, landed, amountOf, term, type AmountSpec } from './effects/output';
+import { armourAgainst, landed, amountOf, term, gatedAmount, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
@@ -458,7 +458,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: saveTn(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: saveTn(caster, 'brain_power') });
-  return { dmg: E + S, dmgAfterArmour: arm, heal: sigilBoon('heal', hl, m, mg?.sigilBoon ?? sm, hm, lf, hook('heal')), shield: sigilBoon('shield', sh, m, mg?.sigilBoon ?? sm, hm, lf, hook('shield')),
+  return { dmg: E + S, dmgAfterArmour: arm, heal: gatedAmount('heal', sigilBoon('heal', hl, m, mg?.sigilBoon ?? sm, 1, lf, hook('heal')), { of: 'sigil_mend', own: m }, t, caster), shield: gatedAmount('shield', sigilBoon('shield', sh, m, mg?.sigilBoon ?? sm, 1, lf, hook('shield')), { of: 'sigil_mend', own: m }, t, caster), // the percent spec: the boon is Brain Power's alone (sigil_mend.k carries what Healing given did), through the gate and the cap
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
 /** Who a spell affects on a set of tiles, with every one it spares or skips flagged (spec: Filter KIN; Grammar 9). */
