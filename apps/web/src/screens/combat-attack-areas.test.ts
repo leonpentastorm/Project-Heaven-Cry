@@ -21,10 +21,10 @@ const tpl = (await import('../templates/combat.template.html?raw')).default;
 const Screen = makeScreen(expand(tpl), CombatLogic as any);
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
-function fight(twoGuns: boolean) {
+function fight(twoGuns: boolean, belief?: any) {
   snap = null; sent.length = 0; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'AREAS1');
   const a = ARCHETYPES.find((x) => x.id === 'deadeye')!;
-  doAct({ type: 'char/add', sheet: { name: 'Vale', portrait: '', origin: 'Thousand-Planet frontier', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as Sheet });
+  doAct({ type: 'char/add', sheet: { name: 'Vale', portrait: '', origin: 'Thousand-Planet frontier', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, ...(belief ? { belief } : {}) } as Sheet });
   doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
   const c: any = Object.values(G.characters)[0]; c.weapon = 'service_pistol'; c.loaded = undefined;
   doAct({ type: 'narrator/turn', turn: { narration: 'Go.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }] } } });
@@ -55,7 +55,7 @@ function areas(el: HTMLElement) {
 const toAttack = async (el: HTMLElement) => click(el.querySelector('[role="tab"][data-tab="attack"]'));
 
 describe('the Attack tab in areas', () => {
-  it('one weapon: one weapon area (its shots, reload and shooting an object), no Both, then what is no weapon\'s', async () => {
+  it('one weapon: one weapon area (its shots, reload and Attack an object), no Both, then what is no weapon\'s', async () => {
     fight(false); const { el, root } = await mount(); await toAttack(el);
     const a = areas(el);
     expect(a.map((x) => x.area)).toEqual(['main', 'other']);
@@ -188,6 +188,13 @@ describe('two guns: Heat once, each jam on its own gun', () => {
     const tab = el.querySelector('[role="tabpanel"]')!;
     expect(Array.from(tab.querySelectorAll('[data-jammed]')).map((x) => x.getAttribute('data-jammed'))).toEqual(['main', 'off']);
     expect((tab.querySelector('button[data-act="clear"]') as HTMLElement).getAttribute('aria-description') || '').toMatch(/Clears: both guns/);
+    await React.act(async () => root.unmount()); el.remove();
+  });
+  it('Witnessed on your unit is said once in your panel (its resource row, not a chip as well)', async () => {
+    const { u } = fight(false, { kind: 'faithful', patron: 'old_overcast' }); (u as any).conds = { ...(u.conds || {}), witnessed: 99 }; snap = view(); const { el, root } = await mount();
+    const res = el.querySelector('[aria-label="Your resources"]')!;
+    expect(res.querySelector('[data-res="witnessed"]')).toBeTruthy();
+    expect(count(res.parentElement!.textContent || '', /WITNESSED/gi)).toBe(1);
     await React.act(async () => root.unmount()); el.remove();
   });
   it('a condition on your unit is said once in your panel', async () => {

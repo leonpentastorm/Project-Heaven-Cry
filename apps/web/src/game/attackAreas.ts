@@ -1,5 +1,5 @@
 // The Attack tab in areas (Leon, live 0.23.0, 12 Nov 2026): each weapon's own actions in that weapon's area (its shots
-// and techniques, its reload, its unjam, shooting an object with it). With two weapons: main hand, off hand, then Both
+// and techniques, its reload, its unjam, attacking an object with it). With two weapons: main hand, off hand, then Both
 // (what uses both hands, Reload both among them); with one weapon, one area and no Both. What belongs to no one weapon
 // (Shove, Brace, Hold a shot) comes last. The area is the engine descriptor's `hand` (descriptors.ts), never a name.
 import type { ActionItem } from './commands';

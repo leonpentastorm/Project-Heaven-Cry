@@ -1373,7 +1373,7 @@ export class CombatLogic extends DCLogic {
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));
     if (rowSel !== S.action && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
     // The Attack tab in areas (Leon, live 0.23.0): each weapon's own actions under its header (its shots and techniques,
-    // its reload, its unjam, shooting an object with it), main hand, then off hand, then Both (what uses both hands,
+    // its reload, its unjam, attacking an object with it), main hand, then off hand, then Both (what uses both hands,
     // Reload both among them), then what belongs to no one weapon. The area is the descriptor's `hand`, never a name.
     // An area's header (on its first row): the weapon's icon and name, and its meter; a 1 px line between areas.
     const headOf = {}, sepOf = {};

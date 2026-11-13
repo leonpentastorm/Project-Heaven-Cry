@@ -243,7 +243,7 @@ export function reachOf(cb: Combat | null, u: Unit, what: ReachWhat, o: { step?:
     const reach = o.fists ? 1 : meleeReachOf(u, 'melee');
     return { max: reach + Math.max(0, o.step || 0), band: 0, los: false, melee: true };
   }
-  // Optics only help against units; shooting an object (shootCover) has no optic term.
+  // Optics only help against units; attacking an object (shootCover) has no optic term.
   const eff = effectiveRange(w), bands = MAX_RANGE_BANDS + (what === 'cover' ? 0 : opticBands(u, mode));
   return { max: eff * bands, band: eff, los: true, melee: false };
 }

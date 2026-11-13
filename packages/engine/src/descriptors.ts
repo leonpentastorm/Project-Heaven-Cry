@@ -92,7 +92,7 @@ export interface ActionDescriptor {
   /** Who adjudicates it: the engine runs it all, or part goes to the Narrator. */
   engine?: boolean;
   /** The weapon hand this action belongs to (the Attack tab's areas: a weapon's shots and techniques, its reload, its
-   * unjam, shooting an object with it): 'main', 'off', or 'both' for what uses both hands (the paired attack, Reload
+   * unjam, attacking an object with it): 'main', 'off', or 'both' for what uses both hands (the paired attack, Reload
    * both). Absent: no one weapon (Shove, Brace, Hold a shot). */
   hand?: 'main' | 'off' | 'both';
   /** A technique's text in parts (techParts), for a hover card that lays it out a line each. */

@@ -190,3 +190,20 @@ suites was checked: it points at an element that still has one (tiles, plan chip
 | melee-fx (alone only, the re-run) | suite's dice | Parry needs a melee HIT; at Defense 19 the drill elite hits 3 in 10, so 8 rounds without one came about 1 run in 17 | Athletics 1 (Defense 10) for the Parry case; the note now prints the round's log |
 
 Proof: magic, playscreen, melee-fx and camera each three times beside two others, green; then the full run.
+
+## Found by Leon on live 0.24.0 (13 Nov)
+
+Six reports after playing 0.24.0. Fixed on the branch; the details, the inventory and how to add a hover text are in
+`docs/design/handoffs/hover-card.md`.
+
+| What Leon saw | Cause | Fix and proof |
+| --- | --- | --- |
+| "we have this nice hover panel why not use it everywhere?" | 298 native `title`s across the templates and React | every one goes through the game's card (`tip=`, `tipProps`, `setTip`; one at a time, hover and keyboard focus, inside the window); 0 kept; `boundary.test.ts` fails on a new `title`; suites read words through `tipOf()` |
+| Feeling popups stacked on each other (HEART panel, Magic tab) | the combat HEART panel's container had a native title, shown with every feeling row's card; the Magic tab's rows were native paragraph titles; the unlock card was a new element per feeling at one spot | no titles; one card; one unlock card that feelings join (`combatSpeed.test.ts`); browser sweep: at most 1 card |
+| Feelings printed their step twice ("Rage: +0.5 · +0.5 to the multiplier…", Grief, Spite) | a summary from `step.text` joined to the pour text that starts with the same step | one chip (the base step), the text once with only what raises the step (`feelingsView.test.ts`) |
+| Momentum's rule three times; Heat, rounds, Strain, Flux, MP, conditions, JAMMED twice in one view | each panel printed its own copy | one place each (unit panel, HEART panel, the gun's header); the detail line under the tabs says only the action's own facts (`combat-attack-areas.test.ts`, `combat-heart.test.ts`) |
+| A Sigil word card offered "Grand form (Grand Sigilist): …", a shelved class | the card printed `grand` for everyone | shown only when a held, active class move carries the `grand_form` op (data); shelved advanced modules hidden from the Codex and the practice picker (`grand-forms-shelved.test.ts`) |
+| Two guns: one Clear jam cleared both, the other did nothing useful; "Shoot an object" | the screen read only the main gun's jam and clearing either reset the shared Heat, so the off-hand jam was invisible | Leon's ruling (Hands 5d, item 1742): one Clear jam in BOTH, clears every jammed gun for one price; JAMMED on each gun's header; "Attack an object" (`dual-jam.test.ts`, `combat-attack-areas.test.ts`) |
+
+Question for Leon (no rule changed): with pooled Heat, an off-hand technique's Heat jam lands on the main gun (the
+paired attack jams the gun that fires). Should a Heat jam always land on the gun that fired?
