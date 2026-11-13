@@ -142,8 +142,8 @@ const onTab = async (id) => {
   // often as it comes back, until the click lands (up to two minutes on a loaded machine)
   for (let t0 = Date.now(), done = false; !done;) {
     await dismissCut();
-    done = await tab.click({ timeout: 5000 }).then(() => true, () => false);
-    if (!done && Date.now() - t0 > 120000) await tab.click({ timeout: 5000 }); // the last try throws with its reason
+    done = (await tab.click({ timeout: 5000 }).catch(() => 'missed')) !== 'missed';
+    if (!done && Date.now() - t0 > 120000) await tab.click({ timeout: 30000 }); // the last try throws with its reason
   }
   await p.waitForFunction((id) => document.querySelector('[role="tab"][data-tab="' + id + '"]')?.getAttribute('aria-selected') === 'true', id, { timeout: 30000 });
 };

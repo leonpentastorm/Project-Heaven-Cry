@@ -36,7 +36,7 @@ async function newRound() {
   for (let i = 0; i < 6; i++) {
     const still = await p.evaluate((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round === r0 && !!u && u.side === 'pc'; }, r0);
     if (still) { await idleOn(p); await dismissCut(); await p.getByRole('button', { name: 'End turn', exact: true }).click(); }
-    if (await p.waitForFunction(fresh, r0, { timeout: 15000 }).then(() => true, () => false)) break;
+    if ((await p.waitForFunction(fresh, r0, { timeout: 15000 }).catch(() => 'not yet')) !== 'not yet') break;
   }
   await p.waitForFunction(fresh, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);

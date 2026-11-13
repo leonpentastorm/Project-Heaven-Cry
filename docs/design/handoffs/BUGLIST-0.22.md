@@ -207,3 +207,9 @@ Six reports after playing 0.24.0. Fixed on the branch; the details, the inventor
 
 Question for Leon (no rule changed): with pooled Heat, an off-hand technique's Heat jam lands on the main gun (the
 paired attack jams the gun that fires). Should a Heat jam always land on the gun that fired?
+
+Suites fixed on the way (the full run must pass with nothing failing alone): `feelings40` (no shelved module group now),
+`resources` (reads Strain on the Move tab, waits for each tab and each H, dismisses the held Outburst's turn cut-in),
+`magic` (a raider's crit on a leg halved Movement and the one-turn Line no longer fit: the leg is healed first),
+`sigil14` (waits for the first effect node; presses End turn again only while the turn is still its own), `camera`
+(clicks the tile through its locator). Final: `npm run e2e -- all` ALL GREEN, 61 suites, no retries.
