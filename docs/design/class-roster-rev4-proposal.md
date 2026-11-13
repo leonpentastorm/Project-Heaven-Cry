@@ -536,3 +536,14 @@ turn; then try scaling down. If a level 1 character has 125 HP and they heal for
 shot, you fucked up." The method, the ceilings for every source and the floors are in
 `docs/design/heal-shield-percent-spec.md` (being written); until it is accepted, read every Soldier-turn heal number
 in the Revision 4 documents as a ratio between sources only (the Mender first; other doors at about 70% of it).
+
+**The growth ruling (Leon, 13 Nov, on seeing class lines quoted as "122 at level 1, 149 at level 20"):** those lines
+are a class against a plain rifleman OF THE SAME LEVEL, not growth; but the growth itself was too flat (damage from
+level ×1.6 over twenty levels, enemy HP ×1.81). Leon: **both** of the lead's options. **(A) You outgrow things:**
+in Survival mode and campaigns ordinary enemies lag behind the party's level; only Elites and Bosses keep pace
+(recorded for the Survival spec). **(B) The numbers climb:** "going in at level one players are used to about 20
+damage per hit, then late game they do about 300 per hit, even more with crits and ultimates and such": so a hit
+grows about ×15 from level 1 to level 20, and everything measured in HP grows with it (players' and enemies' HP,
+heals, shields, armour, Guard's soak, flat effects), while everything that is a percent or a ratio (the contract's
+lines, to-hit, the percent gate) stays. The spec is `docs/design/level-scale-spec.md`; it is built inside Classes
+3.0 together with step 7b (healing and shields in percent of HP), since both re-derive the same curves.

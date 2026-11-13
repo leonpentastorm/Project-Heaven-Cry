@@ -333,3 +333,7 @@ missions, per-player unlocks, companions.
 **M813 is hidden for now** (Leon, 13 Nov: "hide it for now, it wastes tokens and is broken"): the campaign is taken
 off the menu (not deleted: `data/campaigns/m813.json` and its tests stay) in the Classes 3.0 patch, until it is
 rewritten.
+
+**Survival, added 13 Nov (Leon): you outgrow things.** Ordinary enemies (Vermin, Minions, Soldiers) are generated
+below the party's level as a run goes on; Elites and Bosses keep pace. The same rule is for campaigns. With the
+level scale of Classes 3.0 (a hit grows about ×15 from level 1 to 20) this is what makes a level feel like power.
