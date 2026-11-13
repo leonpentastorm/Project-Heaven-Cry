@@ -20,7 +20,7 @@ What Leon found playing 0.24.0, the bugs the Classes 3.0 spec writers found, and
 - **For whoever builds next:** `docs/ENGINE-HOOKS.md`, a catalogue of every hook, trigger, condition, op, formula profile, cost site and scope, generated from the code and checked by `npm run check`; `npm run built-from`, which tells a spec or a diff when it is building beside the engine; "Stop: before you build" at the top of `docs/ENGINE-GUIDE.md`.
 - **Designed, not built:** Classes 3.0 (Class Roster Revision 4): `docs/design/handoffs/CLASSES-3.0-PICKUP.md`.
 - **Not reproduced:** four Ripostes in one round (the engine counts one reaction a round on every path tested). If it happens again, use Report a problem at once.
-- **Waiting on Leon:** an off-hand technique's Heat jam lands on the main gun: should it land on the gun that fired?
+- **An off-hand shot that overheats jams the off-hand gun** (Leon's ruling; the shared Heat limit was read wrongly while the off gun fired, so it jammed late and the next main-hand shot jammed the main gun).
 
 ## 0.24.0 — 12 November 2026
 
