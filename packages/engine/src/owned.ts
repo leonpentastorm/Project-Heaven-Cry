@@ -227,7 +227,7 @@ onHook('tie_end', (ctx: any, cb: Combat) => { if (!ctx.unmake) return; const u =
 onHook('turn_start', (ctx: any, cb: Combat) => {
   const owner: Unit = ctx.u; if (!owner || !cb.ties?.length) return;
   for (const u of ownedBy(cb, owner)) {
-    const up = (u as any).owned?.upkeep as OwnedBlock['upkeep']; if (!up) continue;
+    const up = (u as any).owned?.upkeep as OwnedBlock['upkeep']; if (!up || u.dead) continue; // (a destroyed one pays nothing: rules 1.34)
     const c = charOfUnit(owner);
     if (resLeft(owner, up.res, c) >= up.n) resGive(cb, owner, up.res, -up.n, { c, why: 'upkeep' }); else unmakeOwned(cb, u);
   }

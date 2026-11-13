@@ -121,7 +121,8 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
     // grant_action is the action (ap, res, if, reach, pick, prayer, limit, nested effects: effects/actions.ts).
     const x = verbData(id); if (!x) return null;
     const effects = [...(x.effects || [])], g = effects.find((e: any) => e?.op === 'grant_action');
-    return { key, kind, id, name: x.name, tier: 'I', effects, effTier: effects.map(() => 'I'), text: x.text || '', adjudication: x.adjudication || 'engine', active: true, bound: true, ap: g?.ap ?? x.ap_cost ?? null, uses: g?.uses || x.uses || 'at_will', provisional: !!x.provisional };
+    // (a verb item with no grant_action is not an action: its effects stand, as a Figment's form and traits do: rules 1.34)
+    return { key, kind, id, name: x.name, tier: 'I', effects, effTier: effects.map(() => 'I'), text: x.text || '', adjudication: x.adjudication || 'engine', active: !!g, bound: !!g, ap: g?.ap ?? x.ap_cost ?? null, uses: g?.uses || x.uses || 'at_will', provisional: !!x.provisional };
   }
   if (kind === 'relic') {
     const x = EXTRA.relic[id]; if (!x) return null;
