@@ -289,3 +289,14 @@ saves keep their HP fraction; the lag by tier (Survival spec, section 6).
 7. **The lag** (section 6): Vermin and Minions −3, Soldiers −1 (−2 from level 10), Elites and Bosses at level.
    **As written**, for the Survival spec to adopt and measure.
 8. **The 1-damage floor stays 1** (a Vermin's bite on plate). **Stays.**
+
+## Settled by Leon, 13 Nov (overrides the text above where they differ)
+
+1. **The scale is ×7.5 at level 20, not ×15:** a plain rifle hit is 40 at level 1 (as today) and about **300** at
+   level 20. Geometric by level, as chosen above: the factor a level is 7.5^(1/19) ≈ **1.1119**, so `scale` runs
+   1 (level 1), about 1.53 (5), 2.60 (10), 7.5 (20): the builder computes all twenty values from that formula and
+   puts them in the column; every table in this spec is re-derived on it (a normal build's HP at level 20 is about
+   half the ×15 figure; a Boss stays in four digits). Level 1 unchanged to the digit, as before.
+2. **Taken at this spec's recommendation, no answer from Leon (the lead's calls; he can reverse any):** MP does not
+   scale; armour stays a flat reduction and scales with the column; cover and object HP scale with the column, so a
+   barricade takes the same number of hits to break at every level.
