@@ -1571,6 +1571,28 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; 
   }
   queuePlain(evs, stream, opts);
 }
+/** The events that begin an action (or a beat of its own) in a batch: a feeling's unlock card never jumps past one. */
+const ACTION_START = /^(shot|melee|technique|volley|move|turn|overwatch|watch_fire|spotlight|reaction)$/;
+/** A feeling felt for the first time in the middle of an attack (the engine logs the unlock after the volley and before
+ *  its rolls: a Burst, a Suppress) is shown after the attack, not inside it. Its card is a beat of its own (900 ms), so
+ *  played where it was logged the volley's rattle was heard a second before the first muzzle flash it belongs to (the
+ *  fx-sweep's "report 1165 ms before the muzzle flash", Classes 3.0 close). Only a `felt` that comes right after a
+ *  volley or a technique and right before that attack's shots or swings moves: past them and what follows them (their
+ *  wounds, a fall), to just before the next action. Pure (tests). */
+export function feltAfterAttack(evs: FxEvent[]): FxEvent[] {
+  if (!evs.some((e) => e.k === 'felt')) return evs;
+  const out = evs.slice();
+  for (let i = 0; i < out.length; i++) {
+    if (out[i].k !== 'felt') continue;
+    let p = i - 1; while (p >= 0 && out[p].k === 'felt') p--;
+    if (p < 0 || (out[p].k !== 'volley' && out[p].k !== 'technique')) continue;
+    let j = i + 1; while (j < out.length && out[j].k === 'felt') j++;
+    if (j >= out.length || (out[j].k !== 'shot' && out[j].k !== 'melee')) continue;
+    while (j < out.length && (out[j].k === 'shot' || out[j].k === 'melee' || out[j].k === 'felt' || !ACTION_START.test(String(out[j].k)))) j++;
+    const [f] = out.splice(i, 1); out.splice(j - 1, 0, f); i--;
+  }
+  return out;
+}
 /** Is this spotlight moment from the same action as the event x (its from ≤ x.n ≤ its n)? Pure (tests). */
 export const sameAction = (sp: FxEvent, x: FxEvent) => { const f = Number.isFinite(sp.from) ? Number(sp.from) : sp.n; return x.n >= f && x.n <= sp.n; };
 /** queueFx for a batch with no Miracle in it. from: count the backlog from this time (after a Miracle's hold). */
@@ -1578,6 +1600,7 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
   if (!evs.length) return;
   evs = meleePrepass(evs); // the melee techniques' movement beats over their moves, quick later strikes, Thrown Flurry flights
   evs = techPrepass(evs, streamsOwn); // a volley's rounds beyond its rolls on its last roll; a use technique's outcome (fx/techniqueFx.ts)
+  evs = feltAfterAttack(evs); // a feeling's unlock card after the attack it was felt in, never between its rattle and its rounds
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
   // A fight plays every effect, in order, at the speed the player chose (Leon, 11 Nov 2026: "the animation must be

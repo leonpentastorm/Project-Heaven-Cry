@@ -2,7 +2,7 @@
 // The effects queue (fx/play.ts planQueue): a backlog plays at most a little faster, then skips its oldest effects, and
 // a decided fight plays only its last few ("the battle keeps going in super speed after you've died").
 import { describe, expect, it, vi } from 'vitest';
-import { planQueue, MAX_SPEEDUP, queueFx, clearFx, turnsBusyUntil, TURNS_HOLD_MAX, FX_EVENT } from './play';
+import { planQueue, MAX_SPEEDUP, queueFx, clearFx, turnsBusyUntil, TURNS_HOLD_MAX, FX_EVENT, feltAfterAttack } from './play';
 import { faithBeat } from './faith';
 
 describe('the effects queue', () => {
@@ -84,5 +84,25 @@ describe('a Miracle in the queue (Faith 2.2, Leon: "zoom to the map, then the mi
     expect([...at.keys()].some((n) => n < 50)).toBe(false); expect(at.get(50)).toBe(0);
     expect([...at.keys()].filter((n) => n > 50).length).toBe(8); // not trimmed to the last 6
     for (const [n, t] of at) if (n > 50) expect(t).toBeGreaterThanOrEqual(land);
+  });
+});
+
+// A feeling felt for the first time inside an attack (fx-sweep, Classes 3.0 close: a Burst's or a Suppress's rattle heard
+// a second before its first muzzle flash, because the unlock card's beat sat between the volley and its rolls).
+describe('a feeling\'s unlock card inside an attack', () => {
+  const ks = (evs: any[]) => evs.map((e) => e.k + (e.k === 'felt' ? '' : ':' + e.n)).join(' ');
+  it('is shown after the attack (its rounds and their wounds), never between the rattle and the first round', () => {
+    const burst = [{ n: 16, k: 'volley', unit: 'p1' }, { n: 17, k: 'felt', feeling: 'thrill' }, { n: 18, k: 'shot', unit: 'p1' }, { n: 19, k: 'shot', unit: 'p1' }, { n: 20, k: 'hurt', unit: 'f1' }, { n: 21, k: 'spotlight' }] as any[];
+    expect(ks(feltAfterAttack(burst))).toBe('volley:16 shot:18 shot:19 hurt:20 felt spotlight:21');
+    const suppress = [{ n: 23, k: 'technique', id: 'suppress' }, { n: 24, k: 'volley' }, { n: 25, k: 'felt' }, { n: 26, k: 'shot' }] as any[];
+    expect(ks(feltAfterAttack(suppress))).toBe('technique:23 volley:24 shot:26 felt');
+    const two = [{ n: 1, k: 'volley' }, { n: 2, k: 'felt', feeling: 'a' }, { n: 3, k: 'felt', feeling: 'b' }, { n: 4, k: 'shot' }, { n: 5, k: 'move' }] as any[];
+    expect(feltAfterAttack(two).map((e: any) => e.feeling || e.k)).toEqual(['volley', 'shot', 'a', 'b', 'move']);
+  });
+  it('anywhere else stays where the engine logged it', () => {
+    const own = [{ n: 1, k: 'shot' }, { n: 2, k: 'hurt' }, { n: 3, k: 'felt' }, { n: 4, k: 'move' }] as any[];
+    expect(feltAfterAttack(own)).toEqual(own);
+    const lone = [{ n: 1, k: 'volley' }, { n: 2, k: 'felt' }, { n: 3, k: 'move' }] as any[];
+    expect(feltAfterAttack(lone)).toEqual(lone);
   });
 });
