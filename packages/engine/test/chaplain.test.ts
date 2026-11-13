@@ -214,6 +214,22 @@ describe('rules 10 to 12: the patron at its side', () => {
     const m = chap({ patron: 'the_matchmaker' }); m.me.conds = { witnessed: 99 } as any; m.a1.pos = '2,7'; const hp = m.me.hp;
     m.bound(() => applyDamage(m.cb, m.a1, 20, { by: m.foe, type: 'weapon', shield: true, credit: 'hp' } as any)); expect(m.me.hp).toBeLessThan(hp);
   });
+  it('Nerukhan: a Judged enemy of the Chaplain\'s that brings an ally to a quarter or less takes the Devotion-scaled Soul damage', () => {
+    const run = (judged: boolean) => {
+      const h = chap({ patron: 'nerukhan' }); h.me.conds = { witnessed: 99 } as any;
+      if (judged) { h.foe.conds = { judged: 1 } as any; (h.foe as any).condBy = { judged: h.me.id }; }
+      const hp = h.foe.hp; h.bound(() => applyDamage(h.cb, h.a1, h.a1.hp - Math.floor(h.a1.maxHp * 0.2), { by: h.foe, type: 'weapon', shield: true, credit: 'hp' } as any));
+      return hp - h.foe.hp;
+    };
+    expect(FAITH_PATRON.nerukhan.intervention.presence.judged_harms_below).toBe(0.25);
+    expect(run(true)).toBeGreaterThan(0); expect(run(false)).toBe(0);
+  });
+  it('the Laughing Mask: an enemy that misses an ally next to the Chaplain falls Prone', () => {
+    const h = chap({ patron: 'the_laughing_mask' }); h.me.conds = { witnessed: 99 } as any; h.a1.def = 99;
+    h.f.turn(h.foe); h.seed(1, 1, 1);
+    h.bound(() => resolveAttack(h.cb, h.g.rng, h.foe, h.a1, 'shot', null, { noAp: true } as any));
+    expect(!!(h.foe.prone || condOn(h.foe, 'prone')), h.cb.log.slice(-4).join(' / ')).toBe(true);
+  });
   it('the Toll-Keeper: the ally kept standing also gains your Ward', () => {
     const h = chap({ patron: 'toll_keeper' }); h.me.conds = { witnessed: 99 } as any; h.a1.hp = 3;
     h.bound(() => applyDamage(h.cb, h.a1, 50, { by: h.foe, type: 'weapon', shield: true, credit: 'hp' } as any));
