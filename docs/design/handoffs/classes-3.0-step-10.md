@@ -144,3 +144,65 @@ page that hosts, and keeps testing what it tested. None was deleted or weakened.
 - Screenshots (deviceScaleFactor 2): the Mender's TEND tab with the Bond strip, the Operative's Shadow row and the Break
   toggle, the Chaplain Witnessed with Old Overcast standing on the tile, the Skirmisher's two reaction pips, the title
   with the Proving Ground first, and NEW GAME's room on the Narrator's own start.
+
+## Integration (13 Nov 2026, on the worktree branch `worktree-agent-ae4b686cb852265a3`)
+
+On top of the builder's branch (fast-forwarded): the merge of the main line (`claude/charming-gauss-hbq4n0`: step 8
+integrated, Figments, the Visualizer and the Rigger; the painted gear icons; the katana), then Figments' screen, then
+Leon's two asks (the Bond line, the Hidden token). Not pushed, no version bump.
+
+**The merge.** `datatext.ts` fills both figments.json and shadow.json. `effects/collect.ts`: one `systemVerbs` (a file's
+`tab`, `groups`, an item's `group`) for Shadow, Tending and Figments, beside Figments' held verbs. `effects/actions.ts`:
+ONE pick-list route: Inspire's `felt` (every feeling, felt first, the unfelt with `off: UNFELT`) is registered through
+`registerPickList` beside `forms`; the registry's options carry `off`, so a greyed pick is refused by
+`previewPerkAction` for any list. `apps/web/e2e/README.md`: both sides' rows (classes-moves with Field Fix, figments,
+and this branch's shadow / chaplain / tending / reactions). `ENGINE-HOOKS.md` regenerated.
+**Golden tables, re-recorded on the merged code after `paths-order`, `sight-order`, `shared-state`, `old-save` passed:**
+`costs-credit.json` against the main line +195 −195 (this branch's refusal words), against this branch +30 (step 8's
+door verbs); no line is new to both parents and none both had is gone. `replays.json`: 16 games differ from the main
+line (state and marks only; actions and streams equal), exactly the 16 this branch moved from its base (the hand-off's
+"5" counted the M813 sessions; every replay's saved campaign copy carries `listed: false`); 10 differ from this branch,
+exactly the 10 the main line moved. Only `credit` moved among the costs tables.
+
+**Figments' screen (figments-spec.md section 9), through the descriptors:**
+- figments.json `tab: "figments"`, `groups: {picture: "Picture"}`; Picture and Load the Visualizer in it. `DescGroup`
+  / `GROUP_ORDER` / `ItemTab` / `VERB_TABS` gain `figments` (after `tend`). The client's tab list
+  (`game/commands.ts descriptorGroups`, which the section 5 note above missed), `TAB_NAME`, `TAB_INK` (Expression).
+- The owned-unit rows: a Figment's (`owned.kind === 'figment'`) go on the FIGMENTS tab, one group per held Figment
+  headed by its name and HP (`HOUND · HP 45/45`; a second of a name numbered); other owned units stay on Utility.
+- `ownedView(cb, u)` (screenViews.ts): owner, kind, turnless, the token's line ("Recruit's Figment: Recruit acts
+  through it (no turn of its own)"), in the tile's label and card.
+- The Visualizer row names the focus's hand (`Visualizer · off hand`, the engine's `focusHand`) as the Attuner's does;
+  the meter's values no longer repeat their labels (it read "FIGMENTS FIGMENTS 2/3"); a Figment is no longer listed
+  again as a "Companion" HP row (its group has the HP; the hint there said it acts on its own turn, which is wrong).
+- Painted gear icons: `gear-visualizer` and `gear-attuner` resolve through `gearIconUri` by item id; there is **no
+  toxin vial item** in data (the art `consumable-toxin_vial` waits for one).
+- Tests: `screen-step10.test.ts` "screen: Figments"; `figments.mjs` reads the tab, its groups, the focus and the owner.
+
+**Leon's two asks.**
+1. **A Bond's faint line.** Data: `rules.json ties.kinds[].line {ink, foe_dash}` (bond: `#EB95B7`, `5 4`); a kind
+   without `line` draws nothing (the owned tie could use it later). Engine: `tieLines(cb)` (screenViews.ts) over the
+   combat the screen holds, which is the player's view (fog keeps its own side's ties; a far end it can't see is
+   UNSEEN and draws nothing). Client: `game/tieLayer.ts`, one `<svg data-tie-layer>` inside `.phc-grid` (it pans and
+   zooms with the tiles; the grid is now `position: relative`), z-index 1 over the tiles, each line stopping at the
+   tokens' rims; 1.5 px, 35% (60% on the Bonder's turn or while its chip in the Bond strip is hovered), dashed to an
+   enemy, a slow pulse (`phc-tie-pulse`) off under reduced motion, `pointer-events: none`. Not in `fx/**`, not in the
+   grid's hover code. A line between adjacent tokens is a few pixels (their rims nearly touch). Hovering a line's end
+   does not light its chip (the layer takes no pointer). Tests: `game/tieLayer.test.ts` (jsdom, the template's own
+   layer: two lines, the right inks and dashes; none without the tie); `tending.mjs` now plays with a friend (the
+   Mender's squadmate was never there in a solo Proving Ground, so its whole squadmate block had been skipped): the
+   line after a Bond, dashed to the Soldier, moving with the Mender's step, gone after Let Go.
+2. **A Hidden token at 60%.** `game/tokenFade.ts`, the one opacity for the map token and the turn bar's portrait:
+   held 0, Downed 0.5 (Downed wins), Hidden 0.6, else 1; read from the unit as the view holds it (an unseen Hidden
+   enemy is not in the view). The HIDDEN chip and the label's word stay. Tests: `tieLayer.test.ts`; `shadow.mjs` (0.6
+   after Vanish, 1 after the Break reveals). Side effect: a Downed unit's turn-bar portrait is now at 0.5 too.
+
+**Still missing on screen, by system:** Figments: the portrait in each Figment's group header, a Picture refused
+"Out of projection range" shown on the tile, the bots' stream/scatter VFX and sounds (art and sourced assets); the hover
+card's "range left"; the fooled enemy's "believes the Double is you". The tab bar wraps to a second row with six or
+more tabs (a Rigger: Move, Attack, Utility, Class, Figments, Calls), leaving one tab alone on the row. The rest as
+section 1's "still missing" (Bonds' aim marks and save record; Shadow's ring fx; Smite's chip; Sanctuary's outline;
+Run and Gun's chip).
+
+**Found on the way:** `npm run assets` run before a merge that brings art leaves the painted icons out of
+`public/assets` (the game shows broken images); run it again after the merge.
