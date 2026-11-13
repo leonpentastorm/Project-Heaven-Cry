@@ -21,7 +21,7 @@
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const SEED = 'PHC-0001';
+const SEED = 'PHC-0014'; // rules 1.48: a seed whose stage 1 has a lane route through a training ground, a shrine, a Forge, a crossroads and a rest
 const p = await player(browser, 'host', { play: 'survival' });
 await p.context().addInitScript((seed) => { try { localStorage.setItem('phc.testRoom', '1'); localStorage.setItem('phc.testSeed', seed); } catch { /* */ } }, SEED);
 await p.setViewportSize({ width: 1280, height: 720 });
@@ -53,7 +53,7 @@ ok('Start the run opens the path map, seed ' + r.seed + ', stage 1', r.seed === 
 const drawn = await p.locator('[data-phc-node]').count();
 ok('every node of the stage is drawn (' + drawn + ' of ' + r.nodes.length + '), each with its word and its icon', drawn === r.nodes.length
   && await p.locator('[data-phc-node] svg').count() === r.nodes.length
-  && (await p.locator('[data-phc-node]').allTextContents()).every((t) => /Fight|Elite|Boss|Shop|Forge|Training|Shrine|Rest|Cache|Crossroads|Gate/.test(t)));
+  && (await p.locator('[data-phc-node]').allTextContents()).every((t) => /Fight|Elite|Boss|Shop|Forge|Training|Shrine|Rest|Cache|Crossroads|Gate|Vault/.test(t)));
 const lit = await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
 const first = r.nodes.filter((n) => n.depth === 1).map((n) => n.id);
 ok('the first row is lit, nothing else (' + lit.join(', ') + ')', JSON.stringify(lit.sort()) === JSON.stringify(first.sort()));
@@ -131,7 +131,7 @@ while (guard++ < 40) {
   if (r.state === 'map') {
     const ids = await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
     const kinds = Object.fromEntries(r.nodes.map((n) => [n.id, n.kind]));
-    const next = ids.find((id) => route.includes(id)) || ids.find((id) => !['fight', 'elite', 'boss'].includes(kinds[id])) || ids[0];
+    const next = ids.find((id) => route.includes(id)) || ids.find((id) => !['fight', 'elite', 'boss', 'vault_guard', 'vault'].includes(kinds[id])) || ids.find((id) => kinds[id] !== 'vault_guard') || ids[0]; // stage 1 leaves the vault (stage 2 takes it)
     await p.locator('[data-phc-node="' + next + '"]').click();
     await p.waitForFunction((id) => window.__phc.getState().game.run.at === id, next, { timeout: 30000 });
     if (kinds[next] === 'shop') { await p.waitForSelector('[data-phc-note]'); if (/will stand here/.test(await p.locator('[data-phc-note]').textContent())) sawPanel++; }
@@ -211,16 +211,45 @@ r = await run();
 ok('stage 2 on the tile picked (' + tile.setting + '): a fresh map of its own, the first row lit, "Stage 2" on the header', r.state === 'map' && r.world.at(-1).setting === tile.setting && r.nodes.every((n) => n.id.startsWith('s2.'))
   && /Stage 2/.test(await p.locator('[data-phc-run-where]').textContent()) && await p.locator('[data-phc-node][data-phc-state="reachable"]').count() === r.nodes.filter((n) => n.depth === 1).length);
 await shot('survival-stage-2-map');
-// stage 2 by the engine's own actions (fights won by the tests-only run/skip), straight to its Boss
-for (let i = 0; i < 120; i++) {
+// ---------- rules 1.48: stage 2 walked along its lanes by clicking the map: a lane, a junction, the vault and back ----------
+// (fights won by the tests-only run/skip, picks taken by the engine's actions; every move is a click on a lit marker)
+const s2 = r, s2by = Object.fromEntries(s2.nodes.map((n) => [n.id, n])), vg = s2.nodes.find((n) => n.kind === 'vault_guard'), vc = s2.nodes.find((n) => n.kind === 'vault'), fork = s2by[vg.from];
+const s2route = []; for (let id = fork.id; id; id = s2.nodes.find((n) => n.links.includes(id) && !n.spur)?.id) s2route.unshift(id);
+const litNow = () => p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
+const seen = { lane: false, junction: false, fork: false, guard: false, chest: false, back: false };
+const toMap = async () => { await p.evaluate(() => { const s = window.__phc.getState(); if (s.screen !== 'run') window.__phc.go?.('run'); }).catch(() => {}); await p.waitForSelector('[data-phc-run-screen]', { timeout: 30000 }); await settle(p, 60); };
+for (let i = 0; i < 160; i++) {
   r = await run(); if (r.state === 'boon' || r.state === 'over') break;
   let e = null;
-  if (r.state === 'map') { const here = r.nodes.find((n) => n.id === r.at), next = here ? here.links[0] : r.nodes.find((n) => n.depth === 1).id; e = await act({ type: 'run/move', node: next }); }
-  else if (r.state === 'fight') e = await act({ type: 'run/skip' });
-  else if (r.state === 'reward') { for (const id of Object.keys(r.offers || {})) e = e || await act({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(r.lasting || {})) e = e || await act({ type: 'run/take', charId: id, choice: 0 }); }
+  if (r.state === 'map') {
+    await toMap();
+    const here = r.at ? s2by[r.at] : null, ids = await litNow();
+    if (here && here.lane != null && !seen.lane && here.id !== fork.id && !here.spur) { seen.lane = ids.length === 1 && ids[0] === here.links[0]; ok('stage 2, on a lane (' + here.id + '): one way on, one lit marker', seen.lane); }
+    if (here && here.junction && !here.gate && !seen.junction) { seen.junction = ids.length === here.links.length && ids.length >= 2 && await p.locator('[data-phc-node="' + here.id + '"][data-phc-junction]').count() === 1; ok('stage 2, at a junction (' + here.id + '): its ' + ids.length + ' trails lit, drawn as a meeting of trails', seen.junction); }
+    if (here && here.id === fork.id && !seen.fork) {
+      const tip = await p.locator('[data-phc-node="' + vg.id + '"]').getAttribute('data-tip-text');
+      seen.fork = ids.includes(vg.id) && ids.length === 2 && /trail forks: a guarded vault/.test(tip || '');
+      ok('the vault\'s fork: the lane and the guarded vault both lit, its card says so ("' + (tip || '').slice(0, 70) + '")', seen.fork);
+      await both('survival-vault-fork');
+    }
+    if (here && here.id === vc.id && !seen.back) { seen.back = JSON.stringify(ids) === JSON.stringify(fork.links.filter((l) => l !== vg.id)); ok('after the chest the squad is back on its lane: the fork\'s next node lit (' + ids.join(', ') + ')', seen.back); }
+    const next = !here ? s2route[0] : s2route.includes(here.id) && here.id !== fork.id ? (here.links.find((l) => s2route.includes(l)) || here.links[0]) : here.id === fork.id ? vg.id : here.id === vg.id ? vc.id : here.links.filter((l) => l !== vg.id)[0];
+    await p.locator('[data-phc-node="' + next + '"]').click();
+    await p.waitForFunction((id) => window.__phc.getState().game.run.at === id, next, { timeout: 30000 }).catch(() => {});
+    if ((await run()).at !== next) { ok('stage 2: the click on ' + next + ' moved the squad', false); break; }
+  } else if (r.state === 'fight') {
+    e = await act({ type: 'run/skip' });
+    if (!e && s2by[r.at]?.kind === 'vault_guard' && !seen.guard) { const f = (await run()).stats.fights.at(-1), name = (await G()).run && f.foes.map((x) => x.name);
+      seen.guard = f.kind === 'vault_guard' && f.template === 'vault_watch' && f.foes.some((x) => x.tier === 'elite'); ok('the vault\'s guard: a fight of its own (' + f.template + ': ' + name.join(', ') + '), harder than an Elite\'s', seen.guard); }
+  } else if (r.state === 'reward') {
+    if (s2by[r.at]?.kind === 'vault' && !seen.chest) { const o = Object.values(r.offers)[0]; seen.chest = o.weapons.length === 3 && o.weapons.every((w) => w.rarity === 'relic' || w.rarity === 'masterwork') && (r.note.credits || 0) > 0;
+      ok('the vault\'s chest: credits (' + r.note.credits + ') and three weapons a grade above stage 2\'s picks (' + o.weapons.map((w) => w.rarity).join(', ') + ')', seen.chest); await both('survival-vault-chest'); }
+    for (const id of Object.keys(r.offers || {})) e = e || await act({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(r.lasting || {})) e = e || await act({ type: 'run/take', charId: id, choice: 0 });
+  }
   if (e) { ok('stage 2 walked: ' + e, false); break; }
   await settle(p, 40);
 }
+ok('rules 1.48: stage 2 walked a lane, a junction and the vault and back (' + JSON.stringify(seen) + ')', Object.values(seen).every(Boolean));
 await p.evaluate(() => window.__phc.go && window.__phc.go('run')).catch(() => {});
 await p.waitForSelector('[data-phc-stage-screen="boon"]', { timeout: 60000 }).catch(() => {});
 r = await run();
@@ -229,8 +258,8 @@ await p.locator('[data-phc-retire]').click();
 await p.waitForSelector('[data-phc-summary="retired"]', { timeout: 30000 });
 g = await G();
 const sum = (await p.locator('[data-phc-summary]').textContent()).replace(/\s+/g, ' ');
-ok('retire: the summary (' + sum.slice(0, 110) + '): 2 stages cleared, 30 nodes, a row a stage with its fights, foes, credits, grade steps and boons', g.run.end.how === 'retired' && g.run.end.cleared === 2
-  && /2 stages cleared/.test(sum) && /30 nodes walked/.test(sum) && await p.locator('[data-phc-stage-row]').count() === 2 && sum.includes(g.run.end.stages[0].boons[cid0] ? 'Kade: ' : 'Boons'));
+ok('retire: the summary (' + sum.slice(0, 110) + '): 2 stages cleared, 32 nodes (stage 2 took the vault\'s two), a row a stage with its fights, foes, credits, grade steps and boons', g.run.end.how === 'retired' && g.run.end.cleared === 2
+  && /2 stages cleared/.test(sum) && /32 nodes walked/.test(sum) && await p.locator('[data-phc-stage-row]').count() === 2 && sum.includes(g.run.end.stages[0].boons[cid0] ? 'Kade: ' : 'Boons'));
 await both('survival-summary');
 // ---------- rules 1.47 (build step 6): the summary's tallies and Report a run ----------
 {
@@ -249,6 +278,6 @@ ok('keep this character as a draft: in the library at its level (' + (lib && lib
 await p.locator('[data-phc-to-room]').click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'room', null, { timeout: 30000 });
 const last = await p.locator('[data-phc-run]').textContent().catch(() => '');
-ok('back in the room: the lobby with the last run\'s score and a way back to its summary ("' + last.replace(/\s+/g, ' ').slice(0, 120) + '")', /The last run/.test(last) && /retired after 2 stages cleared and 30 nodes walked/.test(last) && await p.locator('[role="radiogroup"]').count() === 1 && await p.locator('[data-phc-to-summary]').count() === 1);
+ok('back in the room: the lobby with the last run\'s score and a way back to its summary ("' + last.replace(/\s+/g, ' ').slice(0, 120) + '")', /The last run/.test(last) && /retired after 2 stages cleared and 32 nodes walked/.test(last) && await p.locator('[role="radiogroup"]').count() === 1 && await p.locator('[data-phc-to-summary]').count() === 1);
 ok('no page errors (' + p.errors.slice(0, 3).join(' | ') + ')', !p.errors.length);
 await browser.close();
