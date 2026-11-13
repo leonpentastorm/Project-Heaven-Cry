@@ -1,6 +1,6 @@
 # Prompts for the artist (image generation): Heavenprint gear icons, 13 Nov 2026
 
-One painted icon for every weapon and item the engine recognises today, plus the Visualizer (coming in Classes 3.0).
+One painted icon for every weapon and item the engine recognises today, plus the Visualizer and the Attuner (the two new gloves of Classes 3.0) and the Toxin vial (13 Nov 2026: the Classes 3.0 additions are numbers 148 and 149).
 The artist is an image generator (GPT): **one image a prompt**. For each image paste **the style block (section 1), then
 the family paragraph (section 2) for that batch, then the numbered line (section 3)**. Attach, once per session, two or
 three of the existing Heavenprint object references named in section 1.
@@ -19,17 +19,17 @@ catalog and runs the checks.
 | Weapons | 60 | `data/weapons.json` (59 roster types and the beast's bite) |
 | Armour (head, body, hands, feet) | 16 | `data/items.json` category `armour` |
 | Shields | 3 | `shield` |
-| Focuses | 3 | `focus`: Evoker, Emanator, and the Visualizer (planned) |
+| Focuses | 4 | `focus`: Evoker, Emanator, and the Visualizer and the Attuner (planned, Classes 3.0) |
 | Weapon mods | 13 | `mod` |
 | Tools | 7 | `tool` |
-| Consumables (stim, cores, plates, essence) | 5 | `consumable` |
+| Consumables (stim, cores, plates, essence, toxin vial) | 6 | `consumable` (the toxin vial is planned, Classes 3.0) |
 | Special ammunition | 4 | `ammo` |
 | Food | 3 | `food` |
 | Lights | 2 | `light` |
 | Documents | 2 | `document` |
 | Augment, loot, companion | 3 | `augment`, `loot`, `companion` (one each) |
 | Torso armour classes, loose rounds, magazines, personal effects | 26 | not in `items.json`: the engine's armour classes 1 to 5 (`rules.json` armor; kits name three of them), the 12 calibres (`rules.json` calibres), magazine families (`character.ts` `magsOf`) and the loot table's `personal` effects |
-| **Total prompts** | **147** | one file each |
+| **Total prompts** | **149** | one file each (147 on 13 Nov morning; the Attuner and the Toxin vial added the same day) |
 
 Left out on purpose: map objects (`data/objects.json`: crate, barrel, terminal, cache and the rest) are map pieces with
 their own sprites, not gear; the loot table's piles use the item icons; Wick, perks, traits and prayers have their own
@@ -65,8 +65,8 @@ Hellraiser Divisions oxide red `#CC2435`; Lumeri Church gold `#F2C46A` with ivor
 gilt and brass-orange `#F68A38`; Science Team and Sigil arms cyan `#4FC8DF` in core windows only; Thousand World Legion
 none (anonymous olive-grey); Orks dirty ochre daubs and rust; Central City clean ivory with blue-grey `#5394AC`;
 Kemizuchi lacquer black with crimson `#86234E`; Smetanita and Mandestra lacquer black with brass; Frontier and
-unbranded: no accent, bare steel, walnut, leather. The three focus gloves: Evoker Intelligence `#8BDEEE`, Emanator
-Determination `#9D7ADC`, Visualizer Expression `#5394AC`.
+unbranded: no accent, bare steel, walnut, leather. The four focus gloves: Evoker Intelligence `#8BDEEE`, Emanator
+Determination `#9D7ADC`, Visualizer Expression `#5394AC`, Attuner Insight `#EB95B7`.
 
 ## 2. Family sheets (paste the one for the batch after the style block)
 
@@ -98,7 +98,7 @@ Determination `#9D7ADC`, Visualizer Expression `#5394AC`.
 
 **Armour by weight, and clothing** (armour). Each piece shown on its own, floating, front or three-quarter view, as if laid out for sale (pairs shown side by side as one object): helmets upright in three-quarter view; torso armour as a front view with the body shape hinted by the form, no wearer. Light armour is cloth, wax and leather; Medium adds ceramic plates; Heavy adds steel plates; Assault and Juggernaut are pale Brigade plate with gilt and crests. Weight must show in the thickness. Civilian clothing stays plain and worn.
 
-**Focuses: the three gloves** (focus). Evoker, Emanator and Visualizer are one family: a single glove, no hand inside, empty but with the shape of a hand, worn on the hand and read at 32 px as a hand. Each has a different heart: the Evoker is angular with a hexagonal core window on the back of the hand and a stylus-point index finger (Intelligence cyan #8BDEEE); the Emanator is rounded on a long bracer with a round emitter lens in the palm and a heart-link line to the cuff (Determination violet #9D7ADC); the Visualizer is palm toward the viewer with a projector lens set in the middle of the palm (Expression #5394AC). The same leather, stitching and wear level on all three, the same scale (the glove fills about 85% of the canvas height). Only the glow differs, and only inside the lens or window.
+**Focuses: the four gloves** (focus). Evoker, Emanator, Visualizer and Attuner are one family (the standard gloves of the gear companies' line): a single glove, no hand inside, empty but with the shape of a hand, worn on the hand and read at 32 px as a hand. Each has a different heart: the Evoker is angular with a hexagonal core window on the back of the hand and a stylus-point index finger (Intelligence cyan #8BDEEE); the Emanator is rounded on a long bracer with a round emitter lens in the palm and a heart-link line to the cuff (Determination violet #9D7ADC); the Visualizer is palm toward the viewer with a projector lens set in the middle of the palm (Expression #5394AC); the Attuner is back of the hand toward the viewer with a small round core on the back of the hand and fine filaments running from it to each fingertip, one filament lit (Insight rose #EB95B7). The same leather, stitching and wear level on all four, the same scale (the glove fills about 85% of the canvas height). Only the glow differs, and only inside the lens or window.
 
 **Consumables, tools, lights, food, documents, loot** (misc). Small objects drawn large: fill about 75% of the canvas, one object (or one tidy group), three-quarter view. Packaging and containers are blank (no labels, no text). Mana containers (cores, essence, plates) glow softly from inside, never as a bloom. Medical goods use a small plain stitched plus mark, never a real-world cross emblem or logo.
 
@@ -140,7 +140,7 @@ Family paragraph: **Starting kit, mixed**. The first-use order inside this batch
 > **Subject:** Everyone's first weapon: a pair of gloves or bare fists. Draw a pair of wrapped leather hand-wraps with taped knuckles (nothing weapon-like). **Silhouette feature:** a pair of leather-wrapped hands shapes (empty wraps, no hands inside) with taped knuckle bars. **Materials and accent:** worn cloth and leather wraps; accent: faded grey tape; no hands, no skin.
 
 **7. `focus-evoker.png`** | Evoker | Science Team / Sigil arms
-> **Subject:** The Sigil focus (Mind, Intelligence): a hand-worn glove that holds one mana core (1.2 kg). Back of the hand toward the viewer. One of the three focus gloves, with a different heart. **Silhouette feature:** angular squared chamfered fingers, a stylus-point index fingertip and a hexagonal core window on the back of the hand (the heart is the core). **Materials and accent:** dark steel plates over grey leather, a cuff seam; accent: Intelligence #8BDEEE glow in the core window only. **At 32 px:** Against the other two foci: angular and back-of-hand, core window on the back; the Emanator is round with a palm lens, the Visualizer shows its palm projector.
+> **Subject:** The Sigil focus (Mind, Intelligence): a hand-worn glove that holds one mana core (1.2 kg). Back of the hand toward the viewer. One of the three focus gloves, with a different heart. **Silhouette feature:** angular squared chamfered fingers, a stylus-point index fingertip and a hexagonal core window on the back of the hand (the heart is the core). **Materials and accent:** dark steel plates over grey leather, a cuff seam; accent: Intelligence #8BDEEE glow in the core window only. **At 32 px:** Against the other foci: angular and back-of-hand, core window on the back; the Emanator is round with a palm lens, the Visualizer shows its palm projector, the Attuner a fan of fine lines.
 
 **8. `focus-emanator.png`** | Emanator | Soul arms
 > **Subject:** The Soul focus (Soul, Determination): a hand-worn glove on a long bracer; the heart link runs from the palm lens to the cuff (0.4 kg). Same glove family as the Evoker, with a different heart. **Silhouette feature:** rounded fingers, a round emitter lens in the palm (three-quarter view so the palm shows) and one line from the lens down the wrist to the cuff. **Materials and accent:** soft pale leather over rounded dark metal; accent: Determination #9D7ADC in the lens and the line only. **At 32 px:** Against the Evoker: rounded and soft with a long bracer; the Visualizer is the palm-out glove with the projector.
@@ -470,13 +470,16 @@ Family paragraph: **Armour by weight, and clothing**.
 **99. `armour-torso_class5_juggernaut.png`** | armour-torso_class5_juggernaut | Adamantile Brigade (ceremonial heavy)
 > **Subject:** Torso armour class 5 (Juggernaut, 28 kg). **Silhouette feature:** massive layered plates with a high gorget, pauldrons like slabs, and a crest. **Materials and accent:** pale steel and gilt, heavy rivets; accent: Brigade gilt and brass-orange #F68A38. **At 32 px:** Against class 4: layered and massive, with a huge collar.
 
-### Batch 15: the third focus
+### Batch 15: the third and fourth focus (the Visualizer, the Attuner)
 
-Family paragraph: **Focuses: the three gloves**.
+Family paragraph: **Focuses: the four gloves**.
 
 **100. `focus-visualizer.png`** | Visualizer | Expression arms (coming in Classes 3.0)
 > **Subject:** The Expression focus, an Evoker for artists, coming in Classes 3.0 (not yet in items.json; see docs/design/figments-spec.md). A hand-worn glove, palm held out: nanobots build what is pictured in the light of the projector set in the middle of the palm. Holds one mana core of its own (10 charge). **Silhouette feature:** a single glove, palm toward the viewer, with a projector lens set in the middle of the palm as the silhouette feature, ringed by a small emitter bezel, fingers slightly spread. **Materials and accent:** pale ceramic and dark grey leather, in the same glove family as the other two; accent: Expression #5394AC glow from the palm lens, contained, no bloom. **At 32 px:** Against the Evoker and Emanator: palm out, a big central projector bezel and spread fingers.
 
+
+**148. `focus-attuner.png`** | Attuner | Insight arms (coming in Classes 3.0; added 13 Nov)
+> **Subject:** The Insight focus, the fourth standard glove of the gear companies' line, coming in Classes 3.0 (not yet in items.json; see docs/design/bonds-spec.md, 0.4 kg, off hand, one hand). Its wearer feels the people around them, friend or foe: fine threads run from the glove to whoever is Bonded. A hand-worn glove, back of the hand toward the viewer, no hand inside. **Silhouette feature:** a small round core set on the back of the hand, and from it a fan of very fine filaments laid along the back of the hand and each finger to its fingertip (five thin lines, one to each tip, like the veins of a leaf), with one of the five filaments lit; fingers slightly curled as if just closed on a thread. The cuff is plain. **Materials and accent:** the same pale ceramic and dark grey leather as the Visualizer, thin brass-grey wire for the filaments; accent: Insight rose #EB95B7, only in the small core and in the one lit filament, contained, no bloom. **At 32 px:** Against the Evoker (angular, one hexagonal window) and the Visualizer (palm out, big lens): the Attuner is back-of-hand with a round dot and a fan of thin lines to the fingertips, one of them rose.
 ### Batch 16: consumables, tools, lights, food, documents, loot, augment, companion
 
 Family paragraph: **Consumables, tools, lights, food, documents, loot**.
@@ -529,6 +532,9 @@ Family paragraph: **Consumables, tools, lights, food, documents, loot**.
 **116. `companion-drone_frame.png`** | Drone frame | Science Team
 > **Subject:** A folding combat drone (4 kg). **Silhouette feature:** a folded quad-rotor frame with four arms, a belly gun mount and a single sensor eye. **Materials and accent:** matte grey frame, dark rotors; accent: Mind cyan #4FC8DF in the sensor lens.
 
+
+**149. `consumable-toxin_vial.png`** | Toxin vial | Underworld / Operatives (coming in Classes 3.0; added 13 Nov)
+> **Subject:** One dose of toxin: the Operative coats a weapon with it (a blade's edge, an arrow, a thrown weapon, a gun's next rounds) and the hit leaves its target Weakened, Slowed or Bleeding. A pack item, used up. Not in items.json yet (see docs/design/rev4-primitives.md section 3.7). **Silhouette feature:** a slim, flat-sided glass phial with a wax-sealed neck and a small dropper cap, laid at a slight diagonal, a leather loop around its neck, and two pale hatch bars painted across the glass as a plain warning band (no symbol, no skull, no text). **Materials and accent:** dark glass, brass dropper cap, oilcloth tie; accent: Perception sea-teal #40BAA0 liquid, a muted tint inside the glass only. **At 32 px:** Against the stim injector (a white pen) and the Essence of Experience (a round ampoule with a cork collar, gold-white): a thin dark phial with a teal fill and a dropper cap.
 ### Batch 17: weapon mods
 
 Family paragraph: **Weapon mods**.
@@ -794,6 +800,8 @@ instances: `hellraiser_service_rifle` and `legion_pdw` (fine), `adamantile_battl
 | `ammo-incendiary.png` | ammo_incendiary | Incendiary rounds | ammo | Special ammunition | Incendiary rounds for any gun. Load them outside a fight to fill the magazine in the gun. A hit sets the target Burning, and they deal 10% less damage. | no |
 | `ammo-enhanced.png` | ammo_enhanced | Enhanced rounds | ammo | Special ammunition (mana) | Enhanced rounds for any gun. Load them outside a fight to fill the magazine in the gun. They ignore armour, deal Elemental damage, and each hit raises the mana meter by 1. | no |
 | `focus-visualizer.png` | visualizer (planned) | Visualizer | focus / off_hand | Expression arms | Coming in Classes 3.0 (docs/design/figments-spec.md): a glove with a palm projector; Figments. | no |
+| `focus-attuner.png` | attuner (planned) | Attuner | focus / off_hand | Insight arms | Coming in Classes 3.0 (docs/design/bonds-spec.md): the Bond focus, a glove with a core on the back of the hand and filaments to the fingertips; Bonds and Tending. | no |
+| `consumable-toxin_vial.png` | toxin_vial (planned) | Toxin vial | consumable | Underworld / Operatives | Coming in Classes 3.0 (docs/design/shadow-spec.md, rev4-primitives.md 3.7): one dose the Operative's Toxin coats a weapon with. Not in items.json yet. | no |
 | `armour-torso_class1_light.png` | torso_class1_light | armour-torso_class1_light | derived |  | Torso armour class 1 (Light, 4 kg): the starting Padded coat. | no |
 | `armour-torso_class2_medium.png` | torso_class2_medium | armour-torso_class2_medium | derived |  | Torso armour class 2 (Medium, 8 kg): the starting Medic plate. | no |
 | `armour-torso_class3_heavy.png` | torso_class3_heavy | armour-torso_class3_heavy | derived |  | Torso armour class 3 (Heavy, 12 kg): the soldier's Flak vest. | no |

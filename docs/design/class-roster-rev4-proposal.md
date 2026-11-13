@@ -528,3 +528,11 @@ the live game has no Tending yet, so Sigil and Outburst heals stay at 2.0 until 
 the patch lowers them in the same revision that adds Tending (step 7), with the golden lines re-recorded on purpose,
 and step 11 measures all five lines. A Mender's other advantages are not counted in the line and stay: range through
 Bonds, no Strain, no glyph to draw, Raise, lifting conditions.
+
+**Healing and shields are balanced in percent of a character's HP (Leon, 13 Nov; this supersedes the Soldier-turn
+numbers in "The healing order" above; its ORDER stands).** "Balance the whole heal and shield system with a late-game
+full-HP character: the ceiling for each heal and shield source is the % of health they can heal or shield them in one
+turn; then try scaling down. If a level 1 character has 125 HP and they heal for 9, not even enough to tank one arrow
+shot, you fucked up." The method, the ceilings for every source and the floors are in
+`docs/design/heal-shield-percent-spec.md` (being written); until it is accepted, read every Soldier-turn heal number
+in the Revision 4 documents as a ratio between sources only (the Mender first; other doors at about 70% of it).
