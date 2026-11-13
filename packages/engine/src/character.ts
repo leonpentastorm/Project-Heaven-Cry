@@ -55,6 +55,8 @@ export interface Vow { id: string; allyId?: string; state: 'sworn' | 'kept' | 'b
 export interface Character extends Sheet {
   id: string; owner: string;
   level: number; xp: number; xpBySource: Record<string, number>;
+  /** Rules 1.41: the credits in this character's own purse (credits.ts: earnCredits, payCredits). Absent: none. */
+  credits?: number;
   /** Physical 2.0 (rules 1.12): techniques known and ready, drill per weapon, picks taken, quivers (physical/data.ts). */
   phys?: import('./physical/data').CharPhys;
   hp: number; echo: number; classId: string | null;

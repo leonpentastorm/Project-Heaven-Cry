@@ -69,10 +69,15 @@ export const MAPS: Record<string, MapDef> = {
   },
   // Open ground (rules 1.16): the full 26 × 26, laid out in data/maps.json (layouts.open_ground) and shared with the
   // Narrator's Own Start. Its half cover and full cover are the map's cover lists (crates and pillars in a fight).
-  yard: (() => { const L = MAP_LAYOUTS.open_ground, p = readLayout(L.rows, L.w, L.h, L.legend), ks = (rs: string[]) => rs.map((r) => keyOfRef(r));
-    const at = (kind: string) => ks(p.objects.filter((o) => o.kind === kind).map((o) => o.at));
-    return { id: 'yard', name: L.name, w: L.w, h: L.h, solid: ks(p.solid), cover: at('crate'), full: at('pillar'), difficult: ks(p.difficult), pcStart: ks(p.start), foeStart: ks(p.enemyStart), notes: L.notes || [] } as MapDef; })(),
+  yard: layoutMap('yard', MAP_LAYOUTS.open_ground),
 };
+/** A map from a layout picture (data/maps.json's shape: rows, w, h, legend, notes): its solid and difficult ground, its
+ * crates as half cover and pillars as full, its start tiles. The open ground's yard, and Survival's cropped fights. */
+export function layoutMap(id: string, L: { name: string; w: number; h: number; rows: string[]; legend?: Record<string, any>; notes?: { at: string; text: string }[] }): MapDef {
+  const p = readLayout(L.rows, L.w, L.h, L.legend), ks = (rs: string[]) => rs.map((r) => keyOfRef(r));
+  const at = (kind: string) => ks(p.objects.filter((o) => o.kind === kind).map((o) => o.at));
+  return { id, name: L.name, w: L.w, h: L.h, solid: ks(p.solid), cover: at('crate'), full: at('pillar'), difficult: ks(p.difficult), pcStart: ks(p.start), foeStart: ks(p.enemyStart), notes: L.notes || [] } as MapDef;
+}
 
 export interface Unit {
   id: string; side: 'pc' | 'foe'; name: string; short: string; charId?: string; img?: string; tier?: string;
@@ -574,6 +579,13 @@ export function levelCompanion(u: Unit, block: { hp: number; defense: number; at
   if (u.companion === 'twin' || (u as any).twinOf) { u.level = n.level; delete u.lvlDmg; return u; }
   Object.assign(u, { level: n.level, lvlDmg: n.damage, maxHp: n.hp, hp: Math.min(n.hp, hpNow ?? n.hp), def: n.defense, armour: n.armour, attack: n.attack_bonus, strength: n.attack_bonus });
   return u;
+}
+/** Rules 1.41 (survival-spec rule 20): a spawn scale on a foe: HP and max HP x hp (at least 1), its damage factor
+ * (`lvlDmg`, which its weapon and, through levelFoeMagic, its spells read) x damage. Positive finite numbers only. */
+export function foeScale(u: Unit, sc: { hp?: number; damage?: number }) {
+  const h = Number(sc.hp), d = Number(sc.damage);
+  if (Number.isFinite(h) && h > 0 && h !== 1) { u.maxHp = Math.max(1, Math.round(u.maxHp * h)); u.hp = u.maxHp; }
+  if (Number.isFinite(d) && d > 0 && d !== 1) u.lvlDmg = (u.lvlDmg ?? 1) * d;
 }
 /** Rules 1.15: an enemy caster's spells grow by its damage factor, as its weapon's damage does (after armFoe / armHeart). */
 export function levelFoeMagic(u: Unit) {
@@ -1503,6 +1515,9 @@ export interface FoeSpec extends FoeTraits { name: string; tier: string; weapon:
   /** A caster archetype from enemies.json `casters` (its words and spell bias; sigils, if given, wins). Rules 1.4, ai-sigil.ts. */ caster?: string;
   /** Rules 1.9: what it drops when it dies (loot.ts; already cleaned by the caller). */ drops?: import('./loot').Drops;
   /** Rules 1.15: this enemy's own level (1 to 20); without it, the fight's. */ level?: number;
+  /** Rules 1.41 (survival-spec 4.2 item 2): a spawn scale after the level row: its HP and max HP x hp, and everything it
+   * deals (weapon and spells: the level's damage factor) x damage. A generated encounter's party size and stage term. */
+  scale?: { hp?: number; damage?: number };
   /** Numbers pinned by hand (tests and tools: the engine's own fights never set it): the unit takes these, has no level,
    * deals plain weapon damage and stands outside the level gap, as a unit from a fight saved before rules 1.15 does. */
   fixed?: { hp: number; defense: number; attack_bonus: number; armour: number } }
@@ -1529,6 +1544,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   foes.slice(0, Math.max(map.foeStart.length, 8)).forEach((f, i) => {
     const u = unitFromEnemy('foe-' + i, f.name, f.tier, f.weapon, place(f.at ? keyOf(f.at, map) : null, map.foeStart), rng, levelGiven(f.level) ?? level);
     if (f.fixed && ['hp', 'defense', 'attack_bonus', 'armour'].every((k) => Number.isFinite((f.fixed as any)[k])) && f.fixed.hp > 0) { u.init += f.fixed.attack_bonus - u.attack; Object.assign(u, { hp: f.fixed.hp, maxHp: f.fixed.hp, def: f.fixed.defense, armour: f.fixed.armour, attack: f.fixed.attack_bonus, strength: f.fixed.attack_bonus }); delete u.level; delete u.lvlDmg; }
+    if (f.scale) foeScale(u, f.scale); // rules 1.41: a generated encounter's spawn scale (before its magic is levelled)
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
     armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)

@@ -64,6 +64,9 @@ export class Rec {
   checkReads = false; reads = 0; bagsMade = 0;
   /** The policies read the recorded game itself, not a copy (as a screen reads the host's state): only to compare. */
   readInPlace = false;
+  /** Who sends a unit's actions in fight(): its character's owner (a room with one player a character: Survival), else
+   * the host, as every scenario recorded so far. */
+  byOf(u: any): string { return (u?.charId && this.g.characters?.[u.charId]?.owner) || 'host'; }
   private h = createHash('sha256'); private epoch = ''; private fxN = 0; private logN = 0; private entN = 0; private sfxN = 0; private lastEnt = '';
   /** `reload`: at these action numbers the state is saved and loaded (serialised, parsed, migrateLoaded) before going on. */
   constructor(g: any, public pcs: Pc[], public reload: number[] = []) { this.g = g; }
@@ -124,9 +127,9 @@ export class Rec {
       const cb = this.g.combat; if (!cb || cb.over || this.g.phase !== 'combat') break;
       if (cb.round - round0 >= maxRounds) break;
       const uid = cur(cb), u = cb.units.find((q: any) => q.id === uid); if (!u) break;
-      if (cb.window) { if (this.act({ type: 'combat/decline', unitId: u.id }) && this.act({ type: 'combat/end-turn', unitId: u.id })) { this.errors.push('stuck in a window'); break; } continue; }
+      if (cb.window) { if (this.act({ type: 'combat/decline', unitId: u.id }, this.byOf(u)) && this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('stuck in a window'); break; } continue; }
       const sp = spec(u);
-      if (!sp) { if (this.act({ type: 'combat/end-turn', unitId: u.id })) { this.errors.push('stuck on ' + u.name); break; } continue; }
+      if (!sp) { if (this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('stuck on ' + u.name); break; } continue; }
       const pol = POLICIES[BUILD[sp.build].policy], banned = new Set<string>(); let fails = 0; memo[u.id] ||= {};
       const scripted = script ? script(this, u.id, u.charId, (turns[u.id] = (turns[u.id] || 0) + 1)) : undefined;
       for (let k = 0; k < 30 && scripted !== 'done'; k++) {
@@ -142,12 +145,12 @@ export class Rec {
           if (withoutPs(v) !== before) this.errors.push('a read wrote outside the items\' bags (after action ' + this.n + ', ' + u.name + '): ' + whereDiffer(JSON.parse(before), JSON.parse(withoutPs(v))).join('; '));
           else if (JSON.stringify({ ...v, campaign: null }) !== JSON.stringify({ ...this.g, campaign: null })) this.bagsMade++; }
         if (!step) break;
-        const err = this.act({ unitId: u.id, ...step.action });
+        const err = this.act({ unitId: u.id, ...step.action }, this.byOf(u));
         if (pol === POLICIES.sigil) { const v3 = this.view(), c3 = v3.combat; if (c3) sigilAfter({ ...x, g: v3, cb: c3, u: c3.units.find((q: any) => q.id === u.id) }, step, !err); }
         if (err) { banned.add(JSON.stringify(step.action)); if (++fails > 6) break; }
       }
       const c4 = this.g.combat;
-      if (c4 && !c4.over && this.g.phase === 'combat' && !c4.window && c4.order[c4.turn] === u.id) { if (this.act({ type: 'combat/end-turn', unitId: u.id })) { this.errors.push('could not end the turn of ' + u.name); break; } }
+      if (c4 && !c4.over && this.g.phase === 'combat' && !c4.window && c4.order[c4.turn] === u.id) { if (this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('could not end the turn of ' + u.name); break; } }
     }
   }
 }
