@@ -69,6 +69,7 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [ ] **6. Shadow and the Operative** (`shadow-spec.md`).
 - [ ] **7. Tending, Bonds and the Mender** (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
       moves to Will Power.
+- [ ] **7b. Healing and shields in percent of HP** (`docs/design/heal-shield-percent-spec.md`; Leon, 13 Nov: the top heal is 65% of HP a turn, the strongest shield soaks about two turns of a full assault, balanced by cost, a percent gate on every heal and shield). **Leon: built inside Classes 3.0, not as a hotfix before it** ("just implement it to Classes 3.0"). It sets the numbers of step 7 and re-fits every existing heal and shield; do it right after step 7's systems exist, before step 8.
 - [ ] **8. Figments, the Visualizer and the Rigger** (`figments-spec.md`): the owned-unit primitive first, with the
       drone, the beast and the twin moved onto it and their golden lines unchanged; then the forms.
 - [ ] **9. The enemy side:** what each spec's section 8 asks of the AI, in one piece, after all systems exist.
@@ -97,6 +98,8 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 > part, say exactly why, and go on. Final report under 200 words.
 
 ## 6. Calls made for Leon during the build (he can reverse any)
+
+**Standing instruction (Leon, 13 Nov): the lead's top-tier usage is at 50%. Everything that can go to Opus goes to Opus; the lead only merges, rules where a spec is wrong, and asks Leon what it needs in short numbered questions.** Design on Revision 4 is closed unless he reopens it.
 
 *(none yet; the design's own calls are in `class-roster-rev4-proposal.md` section 8)*
 
