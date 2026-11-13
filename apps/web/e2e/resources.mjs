@@ -128,6 +128,12 @@ await snap('sigil-1280', SMALL); await p.setViewportSize(BIG);
 // 3. The Soul caster: Strain one below the limit, holding an Outburst at stage 2.
 await build([{ type: 'sandbox/unequip', slot: 'main' }, { type: 'sandbox/kit', kind: 'soul' }]);
 await patch('const d = (u.mg.designs || [])[0]; u.mg.strain = Math.max(1, (u.mg.strainLimit || 3) - 1); if (d) u.mg.held = { design: d.id, stage: 2, cost: 40 };');
+// One fact, one place (Leon, live 0.24.0): on the Outbursts tab the HEART panel says the Strain and the held Outburst,
+// so the unit panel doesn't; on any other tab the unit panel does.
+const onTab = async (id) => { await p.locator('[role="tab"][data-tab="' + id + '"]').first().click(); await pause(p, 250); };
+await onTab('outbursts');
+ok('Soul: with the HEART panel up, Strain and the held Outburst are said there, not again in the unit panel', !(await youCard().locator('[data-res="strain"], [data-res="held"]').count()) && (await p.locator('.phc-heart-panel').count()) > 0);
+await onTab('move');
 t = await rowText('strain');
 ok('Soul: Strain vs its limit, NEAR THE LIMIT: ' + t, /STRAIN/.test(t) && /\d+ \/ \d+/.test(t) && /NEAR THE LIMIT/.test(t));
 ok('Soul: MP in the block: ' + (await rowText('mp')), /MP/.test(await rowText('mp')));
@@ -135,6 +141,7 @@ t = await rowText('held');
 ok('Soul: the held Outburst (design, stage, tone): ' + t, /HOLDING/.test(t) && /stage 2/.test(t));
 await snap('soul-1440');
 await patch('u.mg.strain = (u.mg.strainLimit || 3) + 1;');
+await onTab('move');
 t = await rowText('strain');
 ok('Soul: over the limit says OVER THE LIMIT: ' + t, /OVER THE LIMIT/.test(t));
 await snap('soul-over-1440');

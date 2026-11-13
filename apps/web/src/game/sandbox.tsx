@@ -817,7 +817,7 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
   const give = (item: string) => act({ type: 'sandbox/give', charId: c.id, item });
   const optsOf = (sc: string) => ((SCHOOL as any)[sc]?.options || []) as string[];
   const chip = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 26, fontSize: 11, padding: '0 6px', border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
-  const others = MODULES.filter((m) => !isShape(m.id));
+  const others = MODULES.filter((m) => !isShape(m.id) && !moduleShelved(m.id)); // a shelved advanced class's module is not offered (it could not be built)
   const kb = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 28, fontSize: 12, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
   const draft: any = { id: '', name: name || (SCHOOL as any)[school]?.name + ' Outburst', school, modules: [...(shape ? [shape] : []), ...mods.filter((x) => x !== 'size' || shape)], ...(opt ? { option: opt } : {}), ...(school2 && school2 !== school ? { school2, ...(opt2 ? { option2: opt2 } : {}) } : {}), ...(tone !== 'raw' ? { tone } : {}) };
   const v = (() => { try { return designVerdict(magicOf(c) || null, draft); } catch { return null; } })();

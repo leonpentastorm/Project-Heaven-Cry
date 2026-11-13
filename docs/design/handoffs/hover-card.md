@@ -110,8 +110,8 @@ You card chip carries its cost and source; the map's transient "STRAIN 1/6" floa
 | The practice "learn a module" picker offering the ten advanced-class modules, greyed | not offered while shelved |
 | The same school twice in a design | checked: neither design builder offers it (`sameSide` drops the design's own school; the engine refuses it with "not open yet"), and no player text shows the schools' `stack` lines |
 
-Kept on purpose: the Proving Ground (a testing tool) still lets the host grant a shelved module, marked "normally only
-with …"; the Narrator's glossary still knows each word's Grand form (lore, not an offer to the player).
+The Proving Ground's module list hides them too (it showed them greyed and could not grant them; `feelings40` suite).
+Kept on purpose: the Narrator's glossary still knows each word's Grand form (lore, not an offer to the player).
 
 ## 7. Two guns
 
