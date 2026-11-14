@@ -1171,7 +1171,7 @@ Families: `body`, `brain`, `heart`.
 | `doorOf` | `doorOf(c: Character): string \| null` | The door a character leans on (rule 28's preselection): the focus kind whose door skill has the most points (1 or more), else null. |
 | `runFoeDrops` | `runFoeDrops(u: Unit): Drops` | Rules 1.54 item 3 (spec R8): what a foe of a Survival fight drops: the loot door's flag off (no weapon, magazines, loose rounds or Boss's notable thing), its kind's table rolled as before, and given materials… |
 | `weaponOffer` | `weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' \| 'elite' \| 'boss'; ammo?: number; /** rule…` | The pick at a node (rule 26; rules 1.54 item 2): `offerSize(where)` weapons within the price band, the first for the character's own door (a focus of its kind) or the category of the weapon in its hand, the re… |
-| `pickedItem` | `pickedItem(w: RunWeapon): PackItem[]` | A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove as a focus, as the creation kits and the Proving Ground's give pack one). |
+| `pickedItem` | `pickedItem(w: RunWeapon): PackItem[]` | A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove's line kind is the one rule's, packKindOf, through lootToPack). |
 
 #### Credits and prices (rules 1.41) (`credits.ts`)
 

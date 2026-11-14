@@ -183,7 +183,7 @@ export function lootToPack(l: { item?: string; qty?: number; rarity?: string; na
   }
   if (ITEM[id]) {
     const note = String(l.note || '').trim().slice(0, 40);
-    return [{ id, item: id, name: label || ITEM[id].name, qty: n, kind: packKindOf(id, (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool'), ...(note ? { note } : {}), ...((ITEM[id] as any).category === 'quiver' && rarity !== 'standard' ? { rarity } : {}) }]; // rules 1.53: a quiver is graded gear
+    return [{ id, item: id, name: label || ITEM[id].name, qty: n, kind: packKindOf(id), ...(note ? { note } : {}), ...((ITEM[id] as any).category === 'quiver' && rarity !== 'standard' ? { rarity } : {}) }]; // rules 1.53: a quiver is graded gear
   }
   const name = label || id.replace(/^plot:/, '').replace(/^(mag|rounds):/i, '').replace(/_/g, ' ').trim(); if (!name) return [];
   return [plotItem(name, l.text || '', n)];

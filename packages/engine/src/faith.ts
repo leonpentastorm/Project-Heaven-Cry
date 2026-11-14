@@ -17,7 +17,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
-import { type Character, type Belief, type Vow, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
+import { type Character, type Belief, type Vow, packKindOf, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
 import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
@@ -1121,7 +1121,7 @@ function restock(cb: Combat, v: Unit): string {
   for (const [k, n] of Object.entries(thr) as [string, number][]) { const have = v.throwables?.[k] || 0; if (n > have) { (v.throwables ||= {})[k] = n; got += n - have; } }
   if (got) bits.push(got + ' throwable' + (got === 1 ? '' : 's') + ' back');
   if (v.res && v.resMax?.supplies != null) { v.res.supplies = v.resMax.supplies; bits.push(v.resMax.supplies + ' Supplies'); }
-  if (v.mg) v.mg.cores += 2; else if (c) c.pack = [...packOf(c).map((x) => ({ ...x })), { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: 'ammo' } as any];
+  if (v.mg) v.mg.cores += 2; else if (c) c.pack = [...packOf(c).map((x) => ({ ...x })), { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: packKindOf('standard_core') } as any];
   bits.push('+2 cores');
   if (v.maxDur) v.dur = v.maxDur;
   if (c) {
@@ -1604,7 +1604,7 @@ function storyRestock(c: Character): string {
   if (size != null) c.loaded = Math.max(c.loaded ?? 0, size);
   let pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : it.weapon && it.dur != null ? { ...it, dur: maxDurOf(it.weapon, it.rarity) } : { ...it }));
   const core = pack.find((it) => (it.item || it.id) === 'standard_core');
-  if (core) core.qty += 2; else pack = [...pack, { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: 'ammo' } as any];
+  if (core) core.qty += 2; else pack = [...pack, { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: packKindOf('standard_core') } as any];
   c.pack = pack;
   const sup = resourcesFor(c)?.resMax?.supplies; if (sup != null) (c.res ||= {}).supplies = sup;
   if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };

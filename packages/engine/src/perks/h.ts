@@ -9,7 +9,7 @@ import { register, stateOf, uses, note, pendRuling, postStory, has, charOfUnit, 
 import { wordsGate, raiseWords } from '../fighttalk';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
-import { mod, packOf, maxHp, maxMp, hasEmanator, restockResources } from '../character';
+import { mod, packOf, packKindOf, maxHp, maxMp, hasEmanator, restockResources } from '../character';
 import { unitFromCharacter } from '../combat';
 import { condFamily, endCond, MANA_START } from '../magic';
 import { SKILL, ITEM, MANA_BANDS, TRAITS } from '../data';
@@ -219,7 +219,7 @@ function glassesOff(h: Holder, why: string): boolean {
   const c = h.c; if (!c || !wearing(c, 'prescription_glasses')) return false;
   const worn = { ...(c.worn || {}) }; const slot = Object.keys(worn).find((k) => worn[k] === 'prescription_glasses'); if (!slot) return false;
   delete worn[slot]; c.worn = worn;
-  c.pack = [...packOf(c), { id: 'prescription_glasses', item: 'prescription_glasses', name: ITEM.prescription_glasses?.name || 'Prescription glasses', qty: 1, kind: 'tool' }];
+  c.pack = [...packOf(c), { id: 'prescription_glasses', item: 'prescription_glasses', name: ITEM.prescription_glasses?.name || 'Prescription glasses', qty: 1, kind: packKindOf('prescription_glasses') }];
   refreshUnit(h);
   const line = c.name + '\'s glasses come off (' + why + '): −4 Acuity and Ingenuity until they\'re back on.';
   if (inFight(h)) say(h.cb, line); else sys(h, line);

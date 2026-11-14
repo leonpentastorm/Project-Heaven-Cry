@@ -497,7 +497,7 @@ export function grantStartItems(c: Character) {
     const it: any = ITEM[id]; if (!it) continue;
     if (Object.values(worn).includes(id) || pack.some((x) => (x.item || x.id) === id)) continue;
     if (it.category === 'armour' && it.slot && !worn[it.slot]) { worn[it.slot] = id; continue; }
-    pack.push({ id, item: id, name: it.name, qty: 1, kind: 'tool' });
+    pack.push({ id, item: id, name: it.name, qty: 1, kind: packKindOf(id) });
   }
   c.pack = pack; c.worn = worn;
 }
@@ -549,10 +549,13 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
  * worn and packed (spec: Reloading, Item weights). */
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
 export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
-/** Rules 1.54 (survival-spec 14.2 item 6): the kind of pack line an item makes: its `pack_kind` in items.json, else
- * `fallback` (the caller's own default by category). No item id is named in code for it. */
-export const packKindOf = (id: string, fallback: PackItem['kind']): PackItem['kind'] => ((ITEM[id] as any)?.pack_kind as PackItem['kind']) || fallback;
-const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: packKindOf(id, 'tool'), ...(note ? { note } : {}) });
+/** Rules 1.54 (survival-spec 14.2 item 6): the kind of pack line an item makes, the ONE rule for every place that puts
+ * an item in a pack (a loadout, a kit, loot, a purchase, stowing, a trait's start item), so the same item always makes
+ * the same line and stacks: its `pack_kind` in items.json, else by its category (a focus a focus, a consumable a med,
+ * food food, anything else a tool). No item id is named in code for it. */
+export const packKindOf = (id: string): PackItem['kind'] => { const d: any = ITEM[id];
+  return (d?.pack_kind as PackItem['kind']) || (d?.category === 'focus' ? 'focus' : d?.category === 'consumable' ? 'med' : d?.category === 'food' ? 'food' : 'tool'); };
+const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: packKindOf(id), ...(note ? { note } : {}) });
 /** The starting kits. A focus starts in the off hand (spec: Hands 2; item 630: it counts only in a hand). */
 export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; offHand?: string; pack: PackItem[] }> = {
   medic: { weapon: 'service_pistol', weaponName: 'Service pistol (.32 Decrkm)', armourClass: 2, armourName: 'Medic plate', stims: 3,
@@ -1302,7 +1305,7 @@ export function gearEntry(id: string, st?: (GearState & { loaded?: number; id?: 
   const keep = Object.fromEntries(Object.entries(g).filter(([, v]) => v != null)), type = ammoType === undefined ? _t : ammoType;
   // The rounds in a stowed gun keep their type (review fix: incendiary rounds stayed incendiary only in the hand).
   if (WEAPON[id]) return { id, name: g.name || WEAPON[id].name, qty: 1, kind: 'weapon', weapon: id, ...keep, ...(loaded ? { loaded } : {}), ...(loaded && type ? { ammoType: type } : {}) } as PackItem;
-  if (ITEM[id]) return { id, item: id, name: ITEM[id].name, qty: 1, kind: (ITEM[id] as any).category === 'focus' ? 'focus' : 'tool', ...keep } as PackItem;
+  if (ITEM[id]) return { id, item: id, name: ITEM[id].name, qty: 1, kind: packKindOf(id), ...keep } as PackItem;
   return { id, item: id, name: id, qty: 1, kind: 'tool' };
 }
 /** What a hand holds, as the pack entry it would become (rules 1.9: put away or dropped), or null for an empty hand. */
@@ -1319,7 +1322,7 @@ export function unequip(c: Character, slot: string): string | null {
   const pack = packOf(c).map((x) => ({ ...x }));
   if (slot === 'main') { const e = handEntry(c, 'main'); if (!e) return 'Your hands are already empty.'; pack.push(e); emptyHand(c, 'main'); }
   else if (slot === 'off') { if (!c.offHand) return 'Nothing there.'; const e = gearEntry(c.offHand.id, c.offHand, c.offHand.loaded); if (e) pack.push(e); c.offHand = null; }
-  else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: 'tool' }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
+  else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
   c.pack = pack; return null;
 }
 /** Fit a mod from the pack onto the main-hand weapon, if it has that slot free. */
@@ -1330,7 +1333,7 @@ export function fitMod(c: Character, idx: number): string | null {
   if (!slots.includes(m.mod_slot)) return 'Your weapon has no ' + m.mod_slot + ' slot.';
   if (statQuery({ c }, 'equip_ban', { mod: m.id }).add > 0) return equipBanWhy(c, { mod: m.id });
   const old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
-  if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: 'tool' }); }
+  if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: packKindOf(old) }); }
   mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
   c.weaponState = { ...(c.weaponState || {}), mods }; c.pack = pack; return null;
 }
@@ -1390,7 +1393,7 @@ export function stowQuiver(c: Character, i: number): string | null {
   for (const [t, n] of Object.entries(q.arrows || {})) if (n > 0) packAddArrows(pack, t, n);
   const { arrows: _a, id, ...g } = q; void _a;
   const keep = Object.fromEntries(Object.entries(g).filter(([, v]) => v != null && !(Array.isArray(v) && !v.length)));
-  pack.push({ id, item: id, name: (g as any).name || (ITEM[id] as any)?.name || id, qty: 1, kind: 'tool', ...keep } as PackItem);
+  pack.push({ id, item: id, name: (g as any).name || (ITEM[id] as any)?.name || id, qty: 1, kind: packKindOf(id), ...keep } as PackItem);
   c.pack = pack; setQuivers(c, qs.filter((_, k) => k !== i));
   return null;
 }
@@ -1423,7 +1426,7 @@ export function fitQuiverMod(c: Character, idx: number, i: number): string | nul
   const slots: string[] = (ITEM[q.id] as any)?.mod_slots || [];
   if (!slots.includes(m.mod_slot)) return 'A quiver takes an enchantment, not a ' + m.mod_slot + ' mod.';
   const mods = [...(q.mods || [])], old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
-  if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: 'tool' }); }
+  if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: packKindOf(old) }); }
   mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
   c.pack = pack; setQuivers(c, qs.map((x, k) => (k === i ? { ...x, mods } : x)));
   return null;

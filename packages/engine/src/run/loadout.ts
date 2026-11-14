@@ -12,7 +12,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME } from '../data';
-import { type Character, type PackItem, packOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM } from '../character';
+import { type Character, type PackItem, packOf, packKindOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM } from '../character';
 import { packAdd, intoCounts, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
@@ -68,7 +68,7 @@ const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if 
   const rd = /^rounds:(.+)$/.exec(id); if (rd) return (CALIBRE_NAME[rd[1]] || rd[1]) + ' rounds';
   const mg = /^mag:(.+)$/.exec(id); if (mg) return String((WEAPON[mg[1]] as any)?.name || mg[1]).replace(/ \(.*\)$/, '') + ' magazine';
   return (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id; };
-const focusEntry = (id: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: 'focus' });
+const focusEntry = (id: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) });
 /** What the budget has spent on these picks (the menu's prices x how many). */
 export function loadoutSpent(c: Character, p: LoadoutPick): number {
   const lines = loadoutLines(c); return Object.entries(p.take).reduce((t, [k, q]) => t + (lines.find((l) => l.key === k)?.price || 0) * q, 0);

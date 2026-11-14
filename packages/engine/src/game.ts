@@ -645,7 +645,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'char/add': {
       const err = roomSheetError(g, by, a.sheet); if (err) fail(err);
       const c = newCharacter(id(g, 'c'), by, a.sheet);
-      if (musicTraitOf(c) && !packOf(c).some((x) => (x.item || x.id) === 'musek_blestor')) c.pack = [...packOf(c), { id: 'musek_blestor', item: 'musek_blestor', name: 'Musek Blestor', qty: 1, kind: 'tool' }];
+      if (musicTraitOf(c) && !packOf(c).some((x) => (x.item || x.id) === 'musek_blestor')) c.pack = [...packOf(c), { id: 'musek_blestor', item: 'musek_blestor', name: 'Musek Blestor', qty: 1, kind: packKindOf('musek_blestor') }];
       g.characters[c.id] = c;
       if (g.sandbox) g.sandbox.saved.characters[c.id] = JSON.parse(JSON.stringify(c)); // leaving the Proving Ground restores it as it came
       push(g, { kind: 'system', text: c.name + ' is locked in.' });
@@ -3554,7 +3554,7 @@ function sbRefill(c: Character) {
   const w = WEAPON[c.weapon];
   if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
   if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
-  if (carriesEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: 'ammo' }); }
+  if (carriesEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: packKindOf('standard_core') }); }
   c.pack = pack;
   if (carriesMpFocus(c)) c.mp = maxMp(c);
   c.stims = Math.max(c.stims, 3);
@@ -3591,7 +3591,7 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
   }
   if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
   const def = ITEM[item] as any; if (!def) fail('No such item.');
-  const kind: PackItem['kind'] = packKindOf(item, def.category === 'focus' ? 'focus' : def.category === 'consumable' ? 'med' : def.category === 'food' ? 'food' : 'tool'); // rules 1.54: pack_kind
+  const kind: PackItem['kind'] = packKindOf(item); // rules 1.54: pack_kind, the one rule
   const ex = pack.findIndex((x) => (x.item || x.id) === item && !x.rarity);
   if (ex >= 0 && kind !== 'focus') { pack[ex].qty += n; c.pack = pack; return ex; }
   pack.push({ id: item, item, name: def.name, qty: n, kind }); c.pack = pack; return pack.length - 1;

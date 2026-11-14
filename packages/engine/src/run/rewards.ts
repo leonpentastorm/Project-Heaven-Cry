@@ -168,8 +168,8 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
   const materials = materialsCard(where, nodeCredits(k, node.depth, stage));
   return { node: node.id, weapons, ...(materials ? { materials } : {}), ammo: o.ammo ?? packCount(k) };
 }
-/** A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove as a focus, as the creation
- * kits and the Proving Ground's give pack one). */
+/** A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove's line kind is the one rule's,
+ * packKindOf, through lootToPack). */
 export const pickedItem = (w: RunWeapon): PackItem[] => lootToPack({ item: w.id, rarity: w.rarity })
-  .map((it) => ((ITEM[w.id] as any)?.focus ? { ...it, kind: 'focus' as const, ...(w.rarity !== 'standard' ? { rarity: w.rarity } : {}) } : it))
+  .map((it) => ((ITEM[w.id] as any)?.focus && w.rarity !== 'standard' ? { ...it, rarity: w.rarity } : it))
   .map((it) => (w.prop ? { ...it, prop: w.prop } : it)); // rules 1.43: a Relic's property goes with it
