@@ -48,7 +48,8 @@ write it the same way) and none other. Lint baselines unchanged. `docs/ENGINE-HO
 
 ## 4. The measure (before and after)
 
-`packages/engine/test/balance/survival-run.ts`, stages capped at 5, the steps 9-10 cells (3 routes x seeds SIM-1 to 4)
+The full tables: `survival-fit/starting-boons-before.md` and `-after.md`. `packages/engine/test/balance/survival-run.ts`,
+stages capped at 5, the steps 9-10 cells (3 routes x seeds SIM-1 to 4)
 and the caster cells. **Before** is this branch with `SIM_LEVERS=none` (rules 1.50's run: the balance pass's caster
 policies, no supply share, no camp armour, the starting boon taken off; it reproduces survival-steps-9-10.md's solo
 gunner exactly: 2.6, 3.1, 3.0). **After** is every lever on. Stage-1 clears are of 12 runs (4 a route) unless named.
