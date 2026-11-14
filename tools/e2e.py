@@ -62,7 +62,7 @@ def kill_servers():
     """Stop every room server on this machine (wrangler dev and its workerd): one from before would serve the old worker."""
     if not WIN: subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True); return
     ps = ("Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'workerd.exe' -or ($_.Name -eq 'node.exe' -and $_.CommandLine -match 'wrangler' "
-          "-and $_.CommandLine -match '\bdev\b') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }")
+          r"-and $_.CommandLine -match '\bdev\b') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }")
     subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', ps], capture_output=True)
 E2E = os.path.join(ROOT, 'apps/web/e2e')
 G = json.load(open(os.path.join(E2E, 'groups.json')))
@@ -141,8 +141,15 @@ def start_server():
     global started, server_starts
     os.makedirs(os.path.join(ROOT, '.check/e2e'), exist_ok=True)
     log = os.path.join(ROOT, '.check/e2e/server.log')
-    if server_starts and os.path.exists(log): os.replace(log, os.path.join(ROOT, f'.check/e2e/server.{server_starts}.log'))
+    # (the one before is stopped first, whole: on Windows its processes hold the log open, and a held file cannot be renamed)
+    if started:
+        kill_tree(started)
+        try: started.wait(timeout=10)
+        except Exception: pass
     kill_servers(); time.sleep(1)
+    if server_starts and os.path.exists(log):
+        try: os.replace(log, os.path.join(ROOT, f'.check/e2e/server.{server_starts}.log'))
+        except OSError: pass
     # (warnings and errors only: a line for every file served was 120,000 lines a run. On a nearly full disk the rooms'
     # saved state goes to the memory disk with the browsers' files: the server stops when it cannot write it.)
     cmd = ['npm', 'run', 'dev', '-w', '@phc/server', '--', '--log-level', 'warn'] + (['--persist-to', os.path.join(SUITE_TMP, 'wrangler')] if SUITE_TMP else [])

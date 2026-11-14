@@ -8,6 +8,17 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.27.3 — a hit no longer says MISS
+
+A fix, and the every-weapon effects work it came with.
+
+- **The stray "MISS" is gone.** Since 0.27.0 every plain ranged hit also showed the word MISS and played a near-miss whiz (the enchanted arrow's line had broken the hit / cover / miss chain in the effects). A hit is a hit again.
+- **Every weapon's effects come from data.** Each weapon belongs to an effects family (its sound, its projectile, what it ejects, its mark) in `data/rules.json` `weapons_rules.fx`, with a weapon's own `fx` on top; 52 per-weapon cases left the code. A machine-built table plays every weapon through every way it can attack, hit and miss (`docs/design/handoffs/weapon-fx-table.md`: 1,552 rows, 0 failing).
+- **Their own sound and projectile:** the bows, the crossbow, the rocket launcher, the grenade launcher, the flamer and the core rifle. New sounds are CC0 and credited.
+- **The checks and the browser suites run on Windows** (the tools only; nothing in the game).
+
+Known and left open: the grenade launcher's thump is a stand-in sample; the flamer draws one gout per unit caught; a flamer that hits a crate or is stopped by cover sparks like a bullet; the core rifle ejects its spent charge; Heavy Bolt's streak is yellowish; aim is a ring.
+
 ## 0.27.2 — the camp: your loadout and a starting boon
 
 Built beside 0.27.0 and shipped after it (its detailed lines are in the 0.27.0 entry below, where its builders wrote them).
