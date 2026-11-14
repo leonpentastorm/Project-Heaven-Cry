@@ -1,5 +1,7 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
+> **Next after 0.27.0 (Survival): Balance 2.0** (Leon, 14 Nov 2026): every weapon measured against the plain rifle, outliers refitted, and the open class lines; see `docs/design/handoffs/SURVIVAL-PICKUP.md`.
+
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
 `CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.
 

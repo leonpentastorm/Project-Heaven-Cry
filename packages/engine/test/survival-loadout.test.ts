@@ -4,7 +4,7 @@
 // close; a campaign gives a bare character its loadout; a character made with a kit (an old draft, a test) keeps it.
 import { describe, expect, it } from 'vitest';
 import { type GameState, newGame, apply, RuleError, newCharacter, validateSheet, creditsOf, packOf, priceOf, carriedKg, carryLimit, viewFor,
-  LOADOUT, loadoutLines, loadoutSpent, recommendedPick, kitFor, campaignLoadout, KITS, WEAPON } from '../src';
+  LOADOUT, loadoutLines, loadoutSpent, recommendedPick, kitFor, campaignLoadout, KITS, WEAPON, quiversOf, quiverHolds } from '../src';
 import { sheetOf } from './helpers/perkfight';
 import svJ from '../../../data/survival.json';
 
@@ -65,7 +65,7 @@ describe('the camp (rules 1.52)', () => {
     expect(c.weapon).toBe('service_pistol'); expect(c.loaded).toBe(w.magazine); expect(packOf(c).find((x) => x.weapon === 'service_pistol' && x.mags)!.mags).toEqual([w.magazine]);
     expect(creditsOf(c)).toBe(LOADOUT.budget); // free
     g = lo(g, 'Kade', { op: 'pick', slot: 'weapon', id: 'recurve_bow' }); c = Object.values(g.characters)[0];
-    expect(c.weapon).toBe('recurve_bow'); expect(c.loaded).toBe((WEAPON.recurve_bow as any).magazine); // one quiver, full
+    expect(c.weapon).toBe('recurve_bow'); expect(quiversOf(c)).toHaveLength(1); expect(c.loaded).toBe(quiverHolds()); // one quiver, full (rules 1.53)
     expect(packOf(c).some((x) => x.weapon === 'service_pistol')).toBe(false); // ONE weapon: the pistol went back
     g = lo(g, 'Kade', { op: 'pick', slot: 'focus', id: 'evoker' }); c = Object.values(g.characters)[0];
     expect(c.offHand).toBeNull(); expect(packOf(c).some((x) => x.id === 'evoker' && x.kind === 'focus')).toBe(true); // a bow takes both hands: the focus is packed

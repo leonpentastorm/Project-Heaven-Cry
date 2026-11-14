@@ -1,6 +1,18 @@
 # Survival: the pick-up (14 Nov 2026, at the close of build steps 9 and 10)
 
-**Start here for Survival.** Survival is built (rules 1.39 to 1.50, and 1.52's loadout; version 0.27.0 on the branch) and **waits for
+> **Leon's word for 0.27.0 (14 Nov 2026):** "just focus on getting everything being work on to live for now". When the
+> four pieces in flight are merged (the text pass, bows and quivers, the starting boons with its reviewer's defects
+> fixed, the loadout and creation without a kit) and one clean `npm run check` and `npm run e2e -- all` are green on
+> the merged tree (nothing failing alone), **deploy 0.27.0 to live** (merge to `develop`, then `main`;
+> `backup/live-0.27.0`; the deploy routine in CLAUDE.md; verify live with old-save, creation-points and survival).
+> Red: no deploy, a fixer, a report. Nothing new is started before that.
+> **Balance 2.0 (named by Leon, 14 Nov; AFTER this release):** measure every weapon's turn against the plain rifle
+> (only the service rifle, the best gun and the best blade are on the contract today; the other 60 weapons were
+> numbered by trade-off and never measured one by one), list the outliers, refit; with it the open lines from
+> Classes 3.0 (Figments' door against the Rigger, the Skirmisher 159 against 145, the healer stall at level 20,
+> Hymn 138 against 150), casters in Survival after the boons, and the repair rate.
+
+**Start here for Survival.** Survival is built (rules 1.39 to 1.50, 1.52's loadout and 1.53's quivers; version 0.27.0 on the branch) and **waits for
 Leon's word to go live**: nothing of it is deployed. 0.26.0 (Classes 3.0) is live. Read `CLAUDE.md`, then this file,
 then the spec `docs/design/survival-spec.md` (draft 4 and its three "Settled by Leon" blocks; where the built revisions
 differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule). What to try by hand:

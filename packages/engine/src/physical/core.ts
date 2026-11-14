@@ -313,7 +313,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (wield === 'throwable') { const need = def.rounds === 'up_to' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
     const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'up_to' ? 1 : def.rounds;
-    if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
+    if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? emptyQuiverWhy(u) : 'Empty: reload first.'; // a quiver can't be refilled in a fight
     if (def.needs.last_round && have !== 1) return props.includes('drawn') ? 'Only with the last arrow in the quiver.' : 'Only with the last round in the weapon.'; // a Drawn weapon's u.ammo is its quiver's total (ranged/quiver.ts)
     if (need > 0 && (hand === 'off' ? u.offJammed : u.jammed)) return 'Jammed: clear it first.'; // each gun its own jam
   }
@@ -659,6 +659,8 @@ function wieldOf(cb: Combat, u: Unit, def: TechDef, args: TechArgs): Wield | nul
   const n = u.throwables?.[id] ?? 0; if (n < 1) return 'You carry no ' + w.name.toLowerCase() + '.';
   return { kind: 'throwable', item: id, weaponId: id, ammo: n };
 }
+/** Rules 1.53: an empty worn quiver's refusal, naming the ready quiver when it holds arrows (Switch quiver is the reload). */
+export const emptyQuiverWhy = (u: Unit) => { const n = Object.values(u.quiverReady?.arrows || {}).reduce((t, k) => t + Math.max(0, k || 0), 0); return n ? 'The quiver is empty: Switch quiver (' + n + ' in the other).' : 'The quiver is empty.'; };
 const HELD_FIELDS = ['weapon', 'ammo', 'attack', 'dur', 'maxDur', 'mods', 'ammoType', 'jammed', 'dmgMult'] as const;
 const putFields = (u: Unit, v: Record<string, any>) => { for (const k of Object.keys(v)) { if (v[k] === undefined) delete (u as any)[k]; else (u as any)[k] = v[k]; } };
 const HOLDS: { u: Unit; keep: Record<string, any>; out: boolean }[] = [];

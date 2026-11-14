@@ -58,6 +58,15 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
   Proving Ground gives the same to a bare character. Old drafts and saves that carry a kit keep it. Small parties are
   about a stage harder than before (`survival-loadout.md`).
 - **The browser suite `survival`** walks all of it, two browsers included.
+- **Bows and quivers (rules 1.53, Leon 14 Nov).** No more Nock an arrow (it was the bow's reload, and a quiver could
+  never be refilled in a fight, so it could never be taken): a shot draws its arrow from the worn quiver. Every archer
+  may carry **two quivers**, worn and ready; **Switch quiver** is the bow's reload (2 AP, a reload's price). A quiver is
+  graded gear: its grade gives **arrows held and nothing else** (Standard 40, 20 more than before; Fine 50 to Celestial
+  80); accuracy is the bow's. **One enchantment a quiver** rides every arrow drawn from it: Ember, Storm, Frost, Stone,
+  Gale or Acid (the Outburst tones' riders, ×0.9 damage, 400 credits), with its element's hit effect. In Survival the
+  counter sells a quiver to an archer, picks and the vault may offer one, the grade step and the Forge's Relic step grade
+  it, and the Forge stocks the enchantments; two Celestial quivers are an archer's run goal. What to try:
+  `docs/PLAYTEST-CHECKLIST.md` section B; the hand-off `docs/design/handoffs/bows-quivers.md`.
 
 ## 0.26.0 — Classes 3.0
 

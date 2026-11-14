@@ -12,7 +12,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME } from '../data';
-import { type Character, type PackItem, packOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit } from '../character';
+import { type Character, type PackItem, packOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM } from '../character';
 import { packAdd, intoCounts, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
@@ -62,12 +62,14 @@ export function loadoutSpent(c: Character, p: LoadoutPick): number {
  * then half-built: callers rebuild on a copy), or null. Lines the menu no longer has (ammunition for a gun put back)
  * are dropped from `p.take`. */
 function rebuild(c: Character, p: LoadoutPick): string | null {
-  c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded;
+  c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete c.quivers;
   c.pack = p.base.pack.map((x) => ({ ...x })); c.worn = { ...p.base.worn };
   const pack = c.pack, add = (its: PackItem[]) => { for (const it of its) if (!intoCounts(c, it)) packAdd(pack, it); };
   if (p.weapon) {
     const w: any = WEAPON[p.weapon]; c.weapon = p.weapon;
-    if (w?.magazine != null && w.ammo) { c.loaded = w.magazine; const spare = w.category === 'bow' ? LOADOUT.bow.spare : LOADOUT.gun.spare; for (let i = 0; i < spare; i++) add(magazineWorth(p.weapon)); }
+    // rules 1.53: a bow shoots from a quiver: ONE plain quiver, full (quiverHolds: the data's arrows for its grade)
+    if (drawnWeapon(p.weapon)) { setQuivers(c, [{ id: QUIVER_ITEM, arrows: { standard: quiverHolds() } }]); for (let i = 0; i < LOADOUT.bow.spare; i++) add(magazineWorth(p.weapon)); }
+    else if (w?.magazine != null && w.ammo) { c.loaded = w.magazine; for (let i = 0; i < LOADOUT.gun.spare; i++) add(magazineWorth(p.weapon)); }
   }
   if (p.focus) {
     if (twoHands(c, c.weapon)) add([focusEntry(p.focus)]); else c.offHand = { id: p.focus };
@@ -100,7 +102,7 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
   c.credits = LOADOUT.budget - spent;
   return null;
 }
-const GEAR_KEYS = ['weapon', 'offHand', 'armourClass', 'stims', 'pack', 'worn', 'loaded', 'credits'] as const;
+const GEAR_KEYS = ['weapon', 'offHand', 'armourClass', 'stims', 'pack', 'worn', 'loaded', 'loadedType', 'quivers', 'credits'] as const;
 /** Rebuild on a copy; when it holds, copy the gear into the character. The refusal in words, or null. */
 function commit(c: Character, p: LoadoutPick): string | null {
   const t: Character = JSON.parse(JSON.stringify(c)), q: LoadoutPick = JSON.parse(JSON.stringify(p));

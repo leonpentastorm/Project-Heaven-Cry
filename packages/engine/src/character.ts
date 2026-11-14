@@ -80,6 +80,8 @@ export interface Character extends Sheet {
   /** What the off hand holds: a one-handed weapon, a shield, a light or a focus (spec: Hands). `loaded`: the rounds in
    * an off-hand gun (rules 1.9, item 688; missing means full, old saves). */
   offHand?: ({ id: string; loaded?: number; ammoType?: string | null } & GearState) | null;
+  /** Rules 1.53: the quivers carried, worn first (QuiverInst). Absent on an older save: quiversOf reads the bow's own. */
+  quivers?: QuiverInst[];
   /** Slot armour worn, by slot (head, head_accessory, inner_torso, lower_torso, legs, hands, footwear). */
   worn?: Record<string, string>;
   /** Magic (spec: Mana, rules 1.2): Sigil words known; Outburst designs ready and the schools and modules learned;
@@ -847,15 +849,18 @@ export const gearProps = (c: Character): string[] => [
   ...packOf(c).flatMap((x) => (x.prop ? Array(Math.max(1, x.qty || 1)).fill(x.prop) : [])),
 ];
 /** Where a carried instance is: a hand, or a pack line by its index. */
-export type GearWhere = 'main' | 'off' | number;
+/** A carried instance: a hand, a pack line, or a carried quiver (rules 1.53: `quiver:0` the worn one, `quiver:1` the ready one). */
+export type GearWhere = 'main' | 'off' | number | `quiver:${number}`;
+const quiverAt = (where: GearWhere): number | null => (typeof where === 'string' && where.startsWith('quiver:') ? Number(where.slice(7)) : null);
 const isFocusId = (id: string) => Object.values(FOCUS_IDS).some((l) => l.includes(id));
 /** The weapon or focus instance at `where`: its id, rarity and property, or null (an empty hand, fists, a line that is
  * not a weapon or a focus). */
 export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Rarity; prop?: string; focus: boolean } | null {
-  const of = (id: string | undefined, st: { rarity?: Rarity; prop?: string } | undefined | null) => (!id || id === 'fists' || (!WEAPON[id] && !isFocusId(id)) ? null : { id, rarity: st?.rarity || 'standard', ...(st?.prop ? { prop: st.prop } : {}), focus: isFocusId(id) });
+  const of = (id: string | undefined, st: { rarity?: Rarity; prop?: string } | undefined | null) => (!id || id === 'fists' || (!WEAPON[id] && !isFocusId(id) && !isQuiverItem(id)) ? null : { id, rarity: st?.rarity || 'standard', ...(st?.prop ? { prop: st.prop } : {}), focus: isFocusId(id) });
   if (where === 'main') return of(c.weapon, c.weaponState);
   if (where === 'off') return c.offHand && !twoHands(c, c.weapon) ? of(c.offHand.id, c.offHand) : null;
-  const it = packOf(c)[where]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
+  { const qi = quiverAt(where); if (qi != null) { const q = quiversOf(c)[qi]; return q ? of(q.id, q) : null; } }
+  const it = packOf(c)[where as number]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
   return of(it.weapon || it.item || it.id, it);
 }
 const GRADES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
@@ -875,9 +880,10 @@ export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: 
   const st = <T extends { dur?: number; prop?: string; rarity?: Rarity }>(old: T): T => { const { prop: _p, dur: _d, ...rest } = old; void _p; void _d; return { ...rest, rarity, ...(dur ? { dur } : {}), ...(keepProp ? { prop: keepProp } : {}) } as T; };
   if (where === 'main') c.weaponState = st({ ...(c.weaponState || {}) });
   else if (where === 'off') c.offHand = st({ ...c.offHand! });
+  else if (quiverAt(where) != null) { const qi = quiverAt(where)!; setQuivers(c, quiversOf(c).map((q, k) => (k === qi ? st({ ...q }) : q))); }
   else {
-    const pack = packOf(c).map((x) => ({ ...x })), it = pack[where];
-    if ((it.qty || 1) > 1) { it.qty -= 1; pack.push({ ...st({ ...it }), qty: 1 }); } else pack[where] = st(it);
+    const pack = packOf(c).map((x) => ({ ...x })), it = pack[where as number];
+    if ((it.qty || 1) > 1) { it.qty -= 1; pack.push({ ...st({ ...it }), qty: 1 }); } else pack[where as number] = st(it);
     c.pack = pack;
   }
   return null;
@@ -896,7 +902,8 @@ export function wearAt(c: Character, where: GearWhere): Wear | null {
   };
   if (where === 'main') return one(c.weapon, c.weaponState);
   if (where === 'off') return c.offHand && !twoHands(c, c.weapon) ? one(c.offHand.id, c.offHand) : null;
-  const it = packOf(c)[where]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
+  if (quiverAt(where) != null) return null; // a quiver does not wear (rules 1.53)
+  const it = packOf(c)[where as number]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
   return one(it.weapon || it.item || it.id, it);
 }
 /** Rules 1.50: bring the instance at `where` back to its full durability (one of a stack in the pack is split off, as
@@ -907,8 +914,8 @@ export function repairAt(c: Character, where: GearWhere): number {
   if (where === 'main') c.weaponState = { ...(c.weaponState || {}), dur: w.max };
   else if (where === 'off') c.offHand = { ...c.offHand!, dur: w.max };
   else {
-    const pack = packOf(c).map((x) => ({ ...x })), it = pack[where];
-    if ((it.qty || 1) > 1) { it.qty -= 1; pack.push({ ...it, qty: 1, dur: w.max }); } else pack[where] = { ...it, dur: w.max };
+    const pack = packOf(c).map((x) => ({ ...x })), it = pack[where as number];
+    if ((it.qty || 1) > 1) { it.qty -= 1; pack.push({ ...it, qty: 1, dur: w.max }); } else pack[where as number] = { ...it, dur: w.max };
     c.pack = pack;
   }
   return w.max - w.now;
@@ -1316,6 +1323,99 @@ export function fitMod(c: Character, idx: number): string | null {
   c.weaponState = { ...(c.weaponState || {}), mods }; c.pack = pack; return null;
 }
 export const hasMod = (mods: string[] | undefined, id: string) => !!mods && mods.includes(id);
+
+// ---------- quivers (rules 1.53): graded gear, two carried, one worn ----------
+/** A quiver the character carries (rules 1.53): the item (items.json category `quiver`), its grade, the enchantment fitted
+ * in its one slot (`mods`), its name, and the arrows in it by type. `c.quivers[0]` is the worn one (arrows are drawn
+ * from it), `[1]` the ready one ("Switch quiver" is the bow's reload). The off hand's pattern: an instance outside the
+ * pack that keeps its own state. */
+export interface QuiverInst extends GearState { id: string; arrows: Record<string, number> }
+const QUIVER_RULES: any = (RULES as any).weapons_rules?.quiver || {};
+/** The quiver item every archer's first quiver is (items.json). */
+export const QUIVER_ITEM: string = QUIVER_RULES.item || 'quiver';
+/** How many quivers a character may carry (rules.json weapons_rules.quiver.carried: one worn, one ready). */
+export const QUIVERS_CARRIED: number = Number(QUIVER_RULES.carried ?? 2);
+export const isQuiverItem = (id: string | null | undefined) => !!id && (ITEM[id] as any)?.category === 'quiver';
+/** Is this weapon Drawn (a bow: it shoots from a quiver)? The data's own word (weapons.json phys.props). */
+export const drawnWeapon = (id: string | null | undefined) => !!id && ((WEAPON[id] as any)?.phys?.props || []).includes('drawn');
+/** The arrows a quiver of this grade holds (rules 1.53: the grade gives arrows held and nothing else; items.json arrows). */
+export const quiverHolds = (id: string = QUIVER_ITEM, rarity: Rarity = 'standard'): number => { const a: any = (ITEM[id] as any)?.arrows || (ITEM[QUIVER_ITEM] as any)?.arrows || {}; return Number(a[rarity] ?? a.standard ?? 0); };
+const arrowSum = (q: Record<string, number> | undefined) => Object.values(q || {}).reduce((t, n) => t + Math.max(0, n || 0), 0);
+/** Does the character carry a Drawn weapon (a hand or the pack)? */
+const carriesBow = (c: Character) => drawnWeapon(c.weapon) || packOf(c).some((x) => !!x.weapon && drawnWeapon(x.weapon));
+/** The quivers a character carries, worn first. A save from before rules 1.53 has none recorded: an archer then has the
+ * one plain quiver its bow came with, holding what the old per-bow quiver held (phys.quiver of the held bow, else the
+ * rounds loaded in it). Read only: nothing is written until a quiver changes (setQuivers). */
+export function quiversOf(c: Character): QuiverInst[] {
+  if (Array.isArray(c.quivers)) return c.quivers;
+  if (!carriesBow(c)) return [];
+  const old: Record<string, number> | undefined = (c.phys as any)?.quiver?.[c.weapon];
+  const n = drawnWeapon(c.weapon) ? Math.min(quiverHolds(), c.loaded ?? quiverHolds()) : 0;
+  return [{ id: QUIVER_ITEM, arrows: old ? { ...old } : n ? { [c.loadedType || 'standard']: n } : {} }];
+}
+/** Write the quivers (a copy), and keep the held bow's loaded count equal to the worn quiver's arrows. */
+export function setQuivers(c: Character, list: QuiverInst[]): void {
+  c.quivers = list.slice(0, QUIVERS_CARRIED).map((q) => ({ ...q, arrows: { ...q.arrows } }));
+  if (drawnWeapon(c.weapon)) { c.loaded = arrowSum(c.quivers[0]?.arrows); c.loadedType = null; }
+}
+/** Carry a quiver from the pack (rules 1.53): it becomes the ready quiver (the worn one if there is none). Refused when
+ * two are carried already. */
+export function carryQuiver(c: Character, idx: number): string | null {
+  const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx]; if (!it) return 'Nothing there.';
+  const id = it.item || it.id; if (!isQuiverItem(id)) return 'That isn\'t a quiver.';
+  const qs = quiversOf(c); if (qs.length >= QUIVERS_CARRIED) return 'You carry ' + QUIVERS_CARRIED + ' quivers already: put one away first.';
+  if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
+  c.pack = pack;
+  const g: any = Object.fromEntries(Object.entries({ rarity: it.rarity, mods: it.mods, name: it.name !== (ITEM[id] as any).name ? it.name : undefined, prop: it.prop }).filter(([, v]) => v != null));
+  setQuivers(c, [...qs, { id, ...g, arrows: {} }]);
+  return null;
+}
+/** Put a carried quiver (0 worn, 1 ready) in the pack: its arrows go back as loose arrows, it keeps its grade and its
+ * enchantment. Putting the worn one away makes the ready one the worn one. */
+export function stowQuiver(c: Character, i: number): string | null {
+  const qs = quiversOf(c), q = qs[i]; if (!q) return 'No quiver there.';
+  const pack = packOf(c).map((x) => ({ ...x }));
+  for (const [t, n] of Object.entries(q.arrows || {})) if (n > 0) packAddArrows(pack, t, n);
+  const { arrows: _a, id, ...g } = q; void _a;
+  const keep = Object.fromEntries(Object.entries(g).filter(([, v]) => v != null && !(Array.isArray(v) && !v.length)));
+  pack.push({ id, item: id, name: (g as any).name || (ITEM[id] as any)?.name || id, qty: 1, kind: 'tool', ...keep } as PackItem);
+  c.pack = pack; setQuivers(c, qs.filter((_, k) => k !== i));
+  return null;
+}
+function packAddArrows(pack: PackItem[], type: string, n: number) {
+  const e = pack.find((x) => x.calibre === 'arrow' && !x.mags && (x.ammoType || 'standard') === type);
+  if (e) e.qty += n; else pack.push({ id: 'rounds:arrow', name: CALIBRE_NAME.arrow || 'Arrow', qty: n, kind: 'ammo', calibre: 'arrow', ...(type !== 'standard' ? { ammoType: type } : {}) });
+}
+/** What a screen shows of each carried quiver (rules 1.53): worn or ready, its name and grade, what it holds and has,
+ * and its enchantment (name, tone and the tone's element, for the mark's colour and glyph). The engine's answer: the
+ * ARMS tab, the weapon strip and the backpack read this, never the data. */
+export interface QuiverCard { i: number; worn: boolean; id: string; name: string; rarity: Rarity; holds: number; arrows: Record<string, number>; total: number; ench: { id: string; name: string; tone: string; element: string | null } | null }
+export function quiverCards(c: Character): QuiverCard[] {
+  return quiversOf(c).map((q, i) => {
+    const rarity = q.rarity || 'standard', m = (q.mods || []).map((x) => ITEM[x] as any).find((x) => x?.mod_slot === 'enchantment');
+    return { i, worn: i === 0, id: q.id, name: q.name || (ITEM[q.id] as any)?.name || 'Quiver', rarity, holds: quiverHolds(q.id, rarity), arrows: { ...(q.arrows || {}) }, total: arrowSum(q.arrows),
+      ench: m ? { id: m.id, name: m.name, tone: m.tone, element: (TONE as any)[m.tone]?.element ?? null } : null };
+  });
+}
+/** Swap the worn and the ready quiver out of a fight (rules 1.53; in a fight it is the bow's reload, "Switch quiver"). */
+export function swapQuivers(c: Character): string | null {
+  const qs = quiversOf(c); if (qs.length < 2) return 'You carry one quiver.';
+  setQuivers(c, [qs[1], qs[0], ...qs.slice(2)]); return null;
+}
+/** Fit an enchantment (a mod with mod_slot `enchantment`) from the pack into a carried quiver's one slot (rules 1.53:
+ * one enchantment a quiver, at every grade). The one it replaces goes back to the pack. */
+export function fitQuiverMod(c: Character, idx: number, i: number): string | null {
+  const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx], m = it && (ITEM[it.item || it.id] as any);
+  if (!m || m.category !== 'mod') return 'That isn\'t a mod.';
+  const qs = quiversOf(c), q = qs[i]; if (!q) return 'No quiver there.';
+  const slots: string[] = (ITEM[q.id] as any)?.mod_slots || [];
+  if (!slots.includes(m.mod_slot)) return 'A quiver takes an enchantment, not a ' + m.mod_slot + ' mod.';
+  const mods = [...(q.mods || [])], old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
+  if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: 'tool' }); }
+  mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
+  c.pack = pack; setQuivers(c, qs.map((x, k) => (k === i ? { ...x, mods } : x)));
+  return null;
+}
 export const magazineSize = (weaponId: string, mods?: string[]) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : hasMod(mods, 'mod_extended_mag') ? Math.floor(m * 1.5) : m; };
 
 // ---------- class resources and advanced classes (spec: Classes; rules 1.3 shared subsystems) ----------

@@ -37,7 +37,7 @@ const traitItems = (c: Character): Set<string> => {
  * stims, nothing in the off hand; the pack keeps plot items and what traits give, and worn pieces traits give. */
 export function stripGear(c: Character): void {
   const keep = traitItems(c);
-  c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete (c as any).loadedType; delete (c as any).mainState;
+  c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete (c as any).loadedType; delete (c as any).mainState; delete c.quivers;
   c.pack = (c.pack || []).filter((x: PackItem) => x.kind === 'plot' || keep.has(x.item || x.id)).map((x) => ({ ...x }));
   c.worn = Object.fromEntries(Object.entries(c.worn || {}).filter(([, id]) => keep.has(id)));
 }

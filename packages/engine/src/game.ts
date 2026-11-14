@@ -6,7 +6,7 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
@@ -358,7 +358,7 @@ export type Action =
   | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/gift'; unitId: string; aim: string }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string; targetId?: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
-  | { type: 'gear/equip'; charId: string; idx: number | string; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number | string }
+  | { type: 'gear/equip'; charId: string; idx: number | string; to: 'main' | 'off' | 'worn' | 'quiver' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number | string; /** rules 1.53: fit an enchantment into carried quiver 0 or 1 */ quiver?: number }
   | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string; /** The off-hand gun's jam (its own Clear jam). */ hand?: 'main' | 'off' } | { type: 'combat/stim'; unitId: string; targetId: string; /** rules 1.33: Stim Throw (within 4 in sight) */ thrown?: boolean }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
   | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number | string; mod?: number | string; to?: 'main' | 'off' }
@@ -416,7 +416,7 @@ export type Action =
   // rules 1.13: a Call (calls/). opt: Order's things ('reload+move'); tile: Order's move, Cue's step, Warn's named tile; react: made off your turn, on your reaction (from 9 points)
   | { type: 'combat/call'; unitId: string; id: string; targetId?: string; tile?: string; opt?: string; text?: string; react?: boolean }
   | { type: 'phys/ready'; charId: string; system: TechSystem; ids: string[] } | { type: 'phys/pick'; charId: string; weaponId: string; id: string }
-  | { type: 'phys/quiver'; charId: string; weaponId: string; load: Record<string, number> } | { type: 'phys/answers'; charId: string; ids: string[] | null }
+  | { type: 'phys/quiver'; charId: string; weaponId: string; load: Record<string, number>; /** rules 1.53: 0 the worn quiver (default), 1 the ready one */ which?: number; /** swap the worn and the ready quiver */ swap?: boolean } | { type: 'phys/answers'; charId: string; ids: string[] | null }
   | SandboxAction
   // Blessing 2.0 (rules 1.6): prayers, vows, rites, and the Narrator's pacts, pieces, Devotion and apostasy (faith.ts).
   | FaithAction;
@@ -1036,9 +1036,12 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'gear/equip': case 'gear/unequip': case 'gear/mod': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      // rules 1.53: quivers are carried, stowed and enchanted out of a fight (in one, Switch quiver is the bow's reload)
+      const qv = (a.type === 'gear/equip' && a.to === 'quiver') || (a.type === 'gear/unequip' && /^quiver:/.test(String(a.slot))) || (a.type === 'gear/mod' && a.quiver != null);
+      if (g.phase === 'combat' && qv) fail('Change quivers after the fight: in it, Switch quiver is the bow\'s reload.');
       if (g.phase === 'combat') { gearForward(g, a, by); return; } // rules 1.9: a combat action at its cost (items 684–690)
       const ref = a.type === 'gear/unequip' ? 0 : a.idx, i = typeof ref === 'number' ? ref : packRef(c!, ref);
-      const err = a.type === 'gear/equip' ? equip(c!, i, a.to) : a.type === 'gear/unequip' ? unequip(c!, a.slot) : fitMod(c!, i);
+      const err = a.type === 'gear/equip' ? (a.to === 'quiver' ? carryQuiver(c!, i) : equip(c!, i, a.to)) : a.type === 'gear/unequip' ? (/^quiver:/.test(String(a.slot)) ? stowQuiver(c!, Number(String(a.slot).slice(7))) : unequip(c!, a.slot)) : a.quiver != null ? fitQuiverMod(c!, i, Number(a.quiver)) : fitMod(c!, i);
       if (err) fail(err); return;
     }
     case 'gear/give': { // rules 1.46 (give.ts): credits or any pack entry, to another character; a plain give, logged
@@ -1846,7 +1849,7 @@ function physAction(c: Character, a: Extract<Action, { type: 'phys/ready' | 'phy
       ensurePhys(c).ready[a.system] = ids; return null;
     }
     case 'phys/pick': return takePick(c, a.weaponId, a.id);
-    case 'phys/quiver': return loadQuiverWith(c, a.weaponId, a.load || {});
+    case 'phys/quiver': return a.swap ? swapQuivers(c) : loadQuiverWith(c, a.weaponId, a.load || {}, a.which === 1 ? 1 : 0);
     case 'phys/answers': {
       if (a.ids == null) { delete ensurePhys(c).answers; return null; }
       const ids = (Array.isArray(a.ids) ? a.ids : []).filter((x) => TECHNIQUE[x]?.group === 'answer' || ITEM_ANSWERS.has(x)); // an item Answer too (predicate answer_on: Share a Hit) if (new Set(ids).size !== ids.length) return 'Each Answer once.';
@@ -1896,7 +1899,7 @@ function swapWeapon(g: GameState, cb: Combat, u: Combat['units'][number], c: Cha
 function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'gear/unequip' | 'gear/mod' }>, by: string) {
   const c = g.characters[a.charId], u = g.combat?.units.find((x) => x.charId === a.charId && !x.companion);
   if (!u || !c) fail('Change gear after the fight: ' + (c?.name || 'this character') + ' isn\'t in it.');
-  const ca: Action = a.type === 'gear/equip' ? { type: 'combat/equip', unitId: u!.id, item: a.idx, to: a.to }
+  const ca: Action = a.type === 'gear/equip' ? { type: 'combat/equip', unitId: u!.id, item: a.idx, to: a.to as 'main' | 'off' | 'worn' }
     : a.type === 'gear/unequip' ? { type: 'combat/stow', unitId: u!.id, slot: a.slot } : { type: 'combat/swap', unitId: u!.id, mod: a.idx };
   combatAction(g, ca, by);
 }
@@ -1910,6 +1913,8 @@ const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mod
 function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base: Combat['units'][number]) {
   const fresh = unitFromCharacter(c, u.pos, { state: g.rng.state }), x = u as any, f = fresh as any, offWas = u.offWeapon;
   for (const k of GEAR_FRESH) { if (f[k] === undefined) delete x[k]; else x[k] = JSON.parse(JSON.stringify(f[k])); }
+  // rules 1.53: a quiver is never refilled in a fight; the same bow still in hand keeps the arrows its worn quiver has
+  if (u.quiver && drawnWeapon(u.weapon) && u.weapon === base.weapon) u.ammo = Object.values(u.quiver).reduce((t, n) => t + Math.max(0, n || 0), 0);
   if (u.offWeapon !== offWas) delete u.offJammed; // another off-hand weapon: the old one's jam went with it
   const dDef = fresh.def - base.def, dArm = fresh.armour - base.armour, dMove = fresh.movement - base.movement, dVis = (fresh.vision || 12) - (base.vision || 12);
   if (dDef) u.def += dDef;

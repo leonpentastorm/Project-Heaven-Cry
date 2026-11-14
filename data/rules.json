@@ -883,6 +883,12 @@
       "recoil": false,
       "damage_scales": "raw_power"
     },
+    "quiver": {
+      "rules": "rules 1.53 (Leon, 14 Nov 2026): every archer may carry two quivers, one worn (arrows are drawn from it as part of the shot) and one ready; Switch quiver is a Drawn weapon's reload and costs a reload (actions.json costs.reload); a quiver is never refilled in a fight. A quiver's grade gives arrows held (items.json quiver.arrows) and nothing else; one enchantment a quiver (items.json, mod_slot enchantment).",
+      "item": "quiver",
+      "carried": 2,
+      "provisional": true
+    },
     "melee": {
       "reach": 1,
       "reach_polearm": 2,

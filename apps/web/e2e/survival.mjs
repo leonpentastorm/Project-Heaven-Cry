@@ -79,7 +79,7 @@ await p.locator('[data-phc-camp-recommended]').click(); await settle(p, 300);
 const rec = await pick0();
 ok('Recommended fills a weapon and spends from the budget (' + rec.weapon + ', ' + JSON.stringify(rec.take) + ')', !!rec.weapon && Object.keys(rec.take).length > 0 && await numIn('[data-phc-camp-left]') < LO.budget);
 await p.locator('[data-phc-camp-pick="weapon:recurve_bow"]').click(); await settle(p, 300);
-ok('ONE weapon: the bow taken replaces the last pick, with one quiver loaded', (await pick0()).weapon === 'recurve_bow' && (await me0()).weapon === 'recurve_bow' && (await me0()).loaded === WPN.recurve_bow.magazine);
+ok('ONE weapon: the bow taken replaces the last pick, with one quiver loaded', (await pick0()).weapon === 'recurve_bow' && (await me0()).weapon === 'recurve_bow' && (await me0()).quivers?.length === 1 && (await me0()).loaded > 0); // rules 1.53: one quiver, full
 await p.locator('[data-phc-camp-pick="weapon:hellraiser_service_rifle"]').click(); await settle(p, 300);
 const fp = (await pick0()).focus; if (fp) { await p.locator('[data-phc-camp-pick="focus:' + fp + '"]').click(); await settle(p, 300); }
 ok('the rifle free (a loaded magazine and a spare), the focus declined', (await me0()).weapon === 'hellraiser_service_rifle' && !(await pick0()).focus && (await me0()).pack.some((x) => x.weapon === 'hellraiser_service_rifle' && x.mags));
