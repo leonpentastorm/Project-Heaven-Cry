@@ -90,6 +90,8 @@ function stepToward(cb: any, u: any, to: string, tiles: number, keep = 1): strin
   }
   return best;
 }
+/** How many Pictures the Rigger policy has asked for (the measure counts the fights it pictured in). */
+export const RIG = { pictures: 0 };
 /** The Rigger plays its door (spec 13.6 (1)). */
 export const rigger: Policy = (x) => {
   const u = x.u, cb = x.cb, c = x.c; if (!x.foes.length) return null;
@@ -101,7 +103,7 @@ export const rigger: Policy = (x) => {
     const next = want.find((f, j) => forms.filter((q: string) => q === f).length < want.slice(0, j + 1).filter((q) => q === f).length);
     if (next && held.length < W(x.g, () => heldMax(u))) {
       if ((u.mg.vcharge ?? 0) < figmentCharge(next, [])) { const s = ok(x, { action: { type: 'combat/perk', id: 'verb:visualizer_core' }, kind: 'setup', label: 'swap the Visualizer core' }); if (s) return s; }
-      else { const at = W(x.g, () => tileNear(cb, u, near.pos)); if (at) { const s = ok(x, { action: { type: 'combat/perk', id: 'verb:picture', choice: next, tile: at }, kind: 'setup', label: 'Picture a ' + next }); if (s) return s; } }
+      else { const at = W(x.g, () => tileNear(cb, u, near.pos)); if (at) { const s = ok(x, { action: { type: 'combat/perk', id: 'verb:picture', choice: next, tile: at }, kind: 'setup', label: 'Picture a ' + next }); if (s) { RIG.pictures++; return s; } } }
     }
     // its side must see the foe for a Figment to act on it
     if (!W(x.g, () => sideSeesUnit(cb, u.side, near)) && u.ap >= 3 && x.memo.seeStep !== cb.round) { x.memo.seeStep = cb.round; const to = W(x.g, () => stepToward(cb, u, near.pos, Math.floor((u.movement || 1) * 2), 5)); if (to) { const s = ok(x, { action: { type: 'combat/move', to }, kind: 'move', label: 'step up to see' }); if (s) return s; } }
