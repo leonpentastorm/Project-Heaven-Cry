@@ -47,6 +47,16 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
   durability for a tenth of its price times the share worn (at least 10; 80% at a Forge), on a Repair shelf beside the
   grade step. Wear bars on the shop's and every place's hands and pack and on the path map's squad panel, with a
   ⚠ WORN / ✕ BROKEN mark, so a worn gun is seen before a lane is chosen.
+- **Gear by mode, and the camp's loadout (rules 1.52; Leon, 14 Nov).** Character creation no longer picks a kit (the
+  Kit step is gone; its techniques and starting magic are the **Moves** step): a character is a person, and the mode
+  gives what it carries when play starts. **Survival opens at the camp**, a full screen (the character left, Take in the
+  middle, Carrying right with Budget left and Budget used): ONE free weapon (a melee weapon, a gun with a loaded and a
+  spare magazine, or a bow with one quiver), ONE free focus or none, and a budget of **300 credits** (Leon's "like 200",
+  raised after the measure: a call) spent on the shop's own menu at its prices; body armour takes half of it. What is not
+  spent is your purse (it replaces the flat 150). A Recommended button fills a loadout for your skills; everyone marks
+  Ready (the host can start for an away player). A campaign gives a fixed loadout (the old kit by your door skill); the
+  Proving Ground gives the same to a bare character. Old drafts and saves that carry a kit keep it. Small parties are
+  about a stage harder than before (`survival-loadout.md`).
 - **The browser suite `survival`** walks all of it, two browsers included.
 
 ## 0.26.0 — Classes 3.0

@@ -5,7 +5,7 @@ Classes 3.0 (0.26.0, Class Roster Revision 4, live). The sections after them wer
 1.26, live since 12 Nov) and still hold where Classes 3.0 did not change them. Tick a box when it looks right; write down anything that does not and say which line. "Right" is what the build
 is meant to do, not a guarantee that it does.
 
-## S. Survival mode (0.27.0, rules 1.39 to 1.49; built, not live until Leon's word)
+## S. Survival mode (0.27.0, rules 1.39 to 1.52; built, not live until Leon's word)
 
 Sources: `docs/design/handoffs/SURVIVAL-PICKUP.md` (start there), the spec `docs/design/survival-spec.md` (draft 4 and
 the three "Settled by Leon" blocks), the step hand-offs (`survival-step-*.md`, `survival-lanes.md`,
@@ -23,6 +23,21 @@ at once); a normal room never does.
 - [ ] The Narrator panel is collapsed with "Survival needs no Narrator." and opens on asking.
 - [ ] Start the run: the path map opens at stage 1 on the AHOC outpost; every purse holds 150 credits.
 - [ ] **What right looks like:** nobody is asked for an API key; a character above level 1 is refused in words.
+
+### S.1b Creation and the camp (rules 1.52; ten minutes)
+
+- [ ] Creation has no Kit step: Identity, Archetype, Skills, Traits, Belief, **Moves** (techniques and magic), Lock in;
+      the review says gear is given by the mode.
+- [ ] Start the run opens **the camp**, full screen: your character on the left (portrait, level, the skills gear reads,
+      kg of limit, armour class), Take in the middle, Carrying on the right with **Budget left** and **Budget used**.
+- [ ] Take ONE free weapon (Melee, Guns, Bows): another pick replaces it. A gun comes loaded with a spare magazine, a
+      bow with one quiver. Take a focus, then decline it by clicking it again.
+- [ ] Spend the budget: stims, rounds, a core, Class 1 armour (half of it). Class 2 armour says why it can't be taken
+      (over the budget). Remove a line from Carrying.
+- [ ] Recommended fills a sensible loadout for your skills; Start the run; at node 1 your purse is what you didn't spend.
+- [ ] Co-op: each builds their own; the run starts when both are Ready; the host's "Start for everyone" gives an
+      untouched loadout the Recommended one.
+- [ ] A campaign room (when one is open) or the Proving Ground: a new character arrives geared.
 
 ### S.2 The path map: lanes, junctions, the vault (ten minutes)
 
@@ -228,6 +243,20 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
 78. **The WORN mark is the Core Rules' Worn (25%)**, moved to data (`weapons_rules.worn.share`); no separate "close to
     breaking" number. A gun just above 25% at one shop can still break before the next; the bar shows it.
 79. **Shields repair too** (they have durability in data); a focus and armour do not wear and get no card.
+
+**The loadout (rules 1.52; `survival-loadout.md` section 5)**
+80. **The budget is 300, not Leon's 200:** at 200 the measured squads fell in stage 1 (a duo on every seed); at 300
+    Class 1 armour is still half of it.
+81. **Recommended takes Class 1 armour first** for every profile (the measured fit), then the door's core, a field kit,
+    a stim, and the weapon's ammunition.
+82. **The camp's gear shelf is a fixed list,** not a rolled stock, so every player sees the same choices.
+83. **The Evoker and the Visualizer bring one core free,** as a gun brings its spare magazine.
+84. **A campaign's default loadout** is the old kit chosen by the door skill until the campaigns name their own.
+85. **The Forge fits Class 1 armour (100):** a character may now set out with none.
+86. **The free list** includes the service rifle (the AHOC's issue weapon), though by price it is not "low level".
+87. **Small parties are harder than before** (a duo by about a stage; solo gunner on the gear route clears stage 1 on 1
+    seed of 4); the four-character curve is about where it was. A bigger budget or the small-party Elite shares are the
+    dials, after a playtest.
 
 ## 0. Classes 3.0 (0.26.0)
 

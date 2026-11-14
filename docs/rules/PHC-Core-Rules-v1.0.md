@@ -5684,14 +5684,14 @@ one weapon"* and *"1 weapon for free, take anything else with cost from the shop
    - **one free focus** of the four (Evoker, Emanator, Attuner, Visualizer); a core-fuelled one brings `focus_with` (one
      standard core). A two-handed weapon puts the focus in the pack, a one-handed one leaves it in the off hand. Either
      pick may be declined; declining gives nothing back;
-   - **a budget** of `budget` 200 credits spent on the **shop's own menu** at `priceOf`: every shelf of the shop's
+   - **a budget** of `budget` 300 credits (Leon's "like 200", raised by the measure: item 7) spent on the **shop's own menu** at `priceOf`: every shelf of the shop's
      counter but the restock (the gun's own magazines first, every calibre, the special rounds, thrown things, cores,
      field supplies), and a fixed starter list (`stock`: the free weapons again as second weapons, the four foci as a
      second focus, body armour by class at `rules.json armor.classes` prices through `priceOf('armour:<class>')`, and
      the cheaper worn pieces). Up to `max_qty` 10 of a line. **Unspent budget is the character's purse** (`run.start_credits`
      is now 0; it was 150).
-   The character's gear is rebuilt from its picks after every change. Refusals: over the budget ("Over the budget by 280
-   credits (480 of 200)."), past the carry limit ("Too heavy: Kade would carry 23.4 kg of 20 kg.", the numbers its own), a second body
+   The character's gear is rebuilt from its picks after every change. Refusals: over the budget ("Over the budget by 180
+   credits (480 of 300)."), past the carry limit ("Too heavy: Kade would carry 23.4 kg of 20 kg.", the numbers its own), a second body
    armour ("Body armour is one piece: take one class."), a worn slot taken, a second of a worn piece, the armour class's
    gate or a trait's cap, a weapon off the list, another player's character, a character marked ready.
 4. **Ready** (`run/ready`): each player marks it (and may take it back); when every connected player has, the squad
@@ -5699,12 +5699,14 @@ one weapon"* and *"1 weapon for free, take anything else with cost from the shop
    touched takes the Recommended one. Test rooms may skip the camp (`run/start` camp `recommended`), as `run/skip`.
 5. **Recommended** (`recommended`): the focus of the door skill with most points; the first weapon row that fits (a
    character with a focus the service pistol; Raw Power above Dexterity the machete; else the service rifle); the
-   profile's buys in order while the budget pays (a core-fuelled focus a core; an MP focus a field kit and a stim; a gun
-   two stims; a blade Class 1 armour); then the weapon's cheapest ammunition line while the budget pays.
+   profile's buys in order while the budget pays (Class 1 armour first for everyone; then a core-fuelled focus a core,
+   an MP focus a field kit, a gun a stim, a blade two stims); then the weapon's cheapest ammunition line while it pays.
 6. **The Forge fits Class 1** (`armour_fit.price` 1: 100), now that a character may set out with none.
-7. **The fit** (the simulator's parties now build their loadout by item 5; the solo gunner of the guard fell in stage 1
-   on every seed without the old kit's Class 3 armour and 144 rounds): `pressure_per_char` for a party of one 2.0 → 1.6,
-   and a solo Elite's damage share 0.75 → 0.6. Measured: items 3910 and 3911.
+7. **The fit** (the simulator's parties now build their loadout by item 5). Without the old kits (Class 1 to 3 armour,
+   144 rifle rounds, 4 cores) and at Leon's 200, the guard's solo gunner fell in stage 1 on every seed, and the headline
+   cells lost stage 1 (a duo on 3 seeds of 3, a squad of four on 2 of 3). Moved: `loadout.budget` 200 → **300** (Light
+   armour is still half of it; a call for Leon), Recommended's buys **armour first**, `pressure_per_char` for a party of
+   one 2.0 → 1.6, a solo Elite's damage share 0.75 → 0.6. Measured: items 3910 and 3911.
 
 ## Maps (rules 1.16)
 
@@ -9023,12 +9025,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3901. **Gear by mode (item 2; `modes.json` items[].`loadout`):** `camp` for Survival and the roguelike; `kit` for a campaign (`by_door` brain_power `sigil`, will_power `soul`, empathy `medic`; `default` `soldier`; a campaign's own `loadout` first), given to a bare character at `session/start` and on a mid-session `char/add`; the Proving Ground gives the same at `sandbox/start`. **A call for Leon:** the campaigns name their own loadouts when they are rewritten. PROVISIONAL.
 3902. **The camp (item 3; `survival.json loadout`):** `run/start` strips (`loadout.ts stripGear`) and opens it (`run/loadout.ts openCamp`); the loadout is picks (`g.run.loadout[charId]`: weapon, focus, take) and the gear is rebuilt from them (`rebuild`) after every change, on a copy first. PROVISIONAL.
 3903. **The free picks (item 3):** `weapons` melee `combat_knife`, `hatchet`, `ork_machete`; gun `service_pistol`, `drifter_revolver`, `sawn_off`, `hellraiser_service_rifle`; bow `recurve_bow`, `crossbow`; `gun` {loaded 1, spare 1}; `bow` {spare 0}; `focuses` the four; `focus_with` evoker and visualizer one `standard_core` each (**a call for Leon:** a Sigil or Figment caster's first core is free, as a gunner's spare magazine is). PROVISIONAL.
-3904. **The budget (item 3):** `budget` 200 credits (Leon's "like 200 points": it works as credits at the shop's prices: Class 1 armour 150 is three quarters of it, Class 2 400 is out of reach); `counter.skip` [restock]; `stock` the fixed starter list (**a call for Leon:** the camp's gear shelf is fixed, not rolled, so every player sees the same choices); `max_qty` 10. Unspent budget is the purse; `run.start_credits` 150 → 0. PROVISIONAL.
+3904. **The budget (item 3):** `budget` **300** credits. Leon's "like 200 points" works as credits (Class 1 armour 150 is three quarters of it) but the squads fell in stage 1 with it (item 3910); at 300 Class 1 armour is half the budget and Class 2 (400) is out of reach. **A call for Leon.** `counter.skip` [restock]; `stock` the fixed starter list (**a call for Leon:** the camp's gear shelf is fixed, not rolled, so every player sees the same choices); `max_qty` 10. Unspent budget is the purse; `run.start_credits` 150 → 0. PROVISIONAL.
 3905. **`priceOf('armour:<class>')` (item 3):** a body armour class at its `rules.json armor.classes[].price_credits` (Light 150, Medium 400, Heavy 900, Assault 1,800, Juggernaut 4,000), times the rarity's price: the one price door. PROVISIONAL.
 3906. **The camp's refusals (item 3), in words:** over the budget, too heavy, body armour twice, a worn slot taken, a second worn piece of a kind, the armour gate and a trait's cap, a weapon or focus off the list, another's character, a character marked ready, a line the camp does not stock, nothing to put back. PROVISIONAL.
 3907. **Ready and the host's close (item 4):** every connected player's Ready leaves the camp; the host's close takes an untouched loadout's Recommended one; test rooms may skip the camp (`camp: 'recommended'`). PROVISIONAL.
-3908. **Recommended (item 5; `recommended`):** `focus_by_door` brain_power `evoker`, visualization `visualizer`, will_power `emanator`, empathy `attuner`; `weapon` rows [{when focus: service pistol}, {raw_power over dexterity: ork machete}, {service rifle}]; `buys` core [standard core], mp [field kit, stim], gun [stim, stim], melee [Class 1 armour]; `fill` ammo. PROVISIONAL.
+3908. **Recommended (item 5; `recommended`):** `focus_by_door` brain_power `evoker`, visualization `visualizer`, will_power `emanator`, empathy `attuner`; `weapon` rows [{when focus: service pistol}, {raw_power over dexterity: ork machete}, {service rifle}]; `buys` core [Class 1 armour, standard core], mp [Class 1 armour, field kit], gun [Class 1 armour, stim], melee [Class 1 armour, stim, stim]; `fill` ammo. PROVISIONAL.
 3909. **The Forge's Class 1 (item 6):** `armour_fit.price` 1: 100 (Class 2 250, 3 600, 4 1,200 as before). PROVISIONAL.
-3910. **The fit (item 7):** `pressure_per_char` [2.0, 1.7, 1.3, 1.3] → [1.6, 1.7, 1.3, 1.3]; `share.elite.damage` for one 0.75 → 0.6. The guard's solo gunner (gear route, GUARD-1 to 3) before the fit: stage 1 cleared on 0 of 3 (lost at 1.5, 2.4, 1.6); after: it passes (stage 1 cleared on two seeds or more, never stage 4). PROVISIONAL.
+3910. **The fit (item 7):** `loadout.budget` 200 → 300; Recommended's armour first; `pressure_per_char` [2.0, 1.7, 1.3, 1.3] → [1.6, 1.7, 1.3, 1.3]; `share.elite.damage` for one 0.75 → 0.6. Tried and not kept: `pressure_per_char` [1.6, 1.4, 1.1, 1.1] (duo and four still lost stage 1 on SIM-1 and SIM-2: an Elite killed a full squad), duo and four Elite damage 0.8 / 0.85 (a squad of four cleared five stages). The guard's solo gunner (gear, GUARD-1 to 3) before the fit: stage 1 cleared on 0 of 3 (lost at 1.5, 2.4, 1.6); after: it passes. PROVISIONAL.
 3911. **The headline cells after rules 1.52** (SIM-1 to 3, stages capped at 5): `survival-loadout.md` section 4; against rules 1.49's tables (SIM-1 to 4). PROVISIONAL.
 3912. **Items 3900 to 3912 are rules 1.52's.**
