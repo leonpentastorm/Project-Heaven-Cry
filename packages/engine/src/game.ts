@@ -332,7 +332,7 @@ export type Action =
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
   | { type: 'run/boon'; charId: string; choice: number } | { type: 'run/tile'; tile: string } // rules 1.44 (run/stage.ts)
-  | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/forge, run/fit, run/train, run/shrine, run/trade, run/take
+  | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/repair (rules 1.50), run/forge, run/fit, run/train, run/shrine, run/trade, run/take
   /** Rules 1.42 (run/shop.ts): buy a counter line or a rolled piece (`key`), sell a pack entry, restock a class resource, leave (the host may close). */
   | { type: 'run/buy'; charId: string; key: string; qty?: number } | { type: 'run/sell'; charId: string; idx: number; qty?: number } | { type: 'run/restock'; charId: string; res: string; n?: number } | { type: 'run/leave'; close?: boolean }
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
@@ -3162,7 +3162,7 @@ function runAction(g: GameState, a: Action, by: string) {
       runPicksDone(g);
       return;
     }
-    case 'run/upgrade': case 'run/forge': case 'run/fit': case 'run/train': case 'run/shrine': case 'run/trade': case 'run/take': { // rules 1.43 (run/progress.ts)
+    case 'run/upgrade': case 'run/repair': case 'run/forge': case 'run/fit': case 'run/train': case 'run/shrine': case 'run/trade': case 'run/take': { // rules 1.43 (run/progress.ts; run/repair rules 1.50)
       const said: string[] = [];
       const no = progressAction(g, a, by, (text, charId, head) => { push(g, { kind: 'system', text, ...(charId ? { charId } : {}), ...(head ? { head } : {}) }); said.push(text.replace(/\.$/, '')); });
       if (no) fail(no);

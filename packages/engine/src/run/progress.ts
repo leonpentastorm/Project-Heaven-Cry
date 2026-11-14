@@ -11,7 +11,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, maxHp, maxDurOf, armourCap, armourGateWhy } from '../character';
+import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear } from '../character';
 import { payCredits, earnCredits, cantPay, priceOf } from '../credits';
 import { addDrill } from '../physical/data';
 import { addStudy } from '../sigilgrowth';
@@ -56,6 +56,7 @@ const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.n
 /** The actions of this file (the run reducer hands them here; game.ts Action lists them). */
 export type ProgressAction =
   | { type: 'run/upgrade'; charId: string; where: GearWhere; place: GradePlace; chit?: boolean; prop?: string }
+  | { type: 'run/repair'; charId: string; where: GearWhere; place: GradePlace }
   | { type: 'run/forge'; charId: string; slot: number } | { type: 'run/fit'; charId: string }
   | { type: 'run/train'; charId: string; train: 'drill' | 'study' | 'practice' | 'devotion'; weapon?: string }
   | { type: 'run/shrine'; charId: string; choice: 'rite' | 'piece' | 'token' }
@@ -134,6 +135,38 @@ function doUpgrade(g: GameState, c: Character, a: Extract<ProgressAction, { type
   say(c.name + '\'s ' + nameOf(it.id) + ' is ' + GRADE_WORD[to] + ' now' + (to === 'relic' ? ', ' + relicRow(a.prop!)!.name + ' (' + worthOf(a.prop!) + ' of the run\'s ' + BOON_CAP + ')' : '') + (a.chit ? ': paid with an armourer\'s chit.' : ': ' + price + ' credits.'), c.id);
   return null;
 }
+
+// ---------------------------------------------------------------------------------------------- the repair service
+/** Rules 1.50: the repair service's numbers (survival.json repair): the Core Rules' gunsmith rate (a full repair for that
+ * share of the item's price), the floor, the places and their factors. */
+export const REPAIR: { rate: number; floor: number; places: Record<GradePlace, number> } = SV.repair;
+/** Rules 1.50: what bringing `w` back to full costs at a place: max(floor, rate x priceOf(the item at its grade) x the
+ * share missing) x the place's factor, rounded up; 0 when nothing is missing. */
+export function repairPrice(w: Wear, place: GradePlace): number {
+  if (!w.max || w.now >= w.max) return 0;
+  const p = priceOf(w.id, w.rarity) || 0, share = (w.max - w.now) / w.max;
+  return Math.ceil(Math.max(REPAIR.floor, REPAIR.rate * p * share) * (REPAIR.places[place] ?? 1));
+}
+/** Why this repair can't be bought now, in words, or null (rules 1.50). */
+export function repairProblem(g: GameState, c: Character, a: { where: GearWhere; place: GradePlace }): string | null {
+  const h = here(g); if (!h || (h.n.kind !== 'shop' && h.n.kind !== 'forge')) return notHere('a shop or a Forge');
+  if (!(a.place in REPAIR.places)) return 'Repairs are bought at a shop or a Forge.';
+  if (h.n.kind !== a.place) return 'This is not a ' + (a.place === 'forge' ? 'Forge' : 'shop') + '.';
+  const w = wearAt(c, a.where); if (!w) return 'There is nothing there to repair.';
+  if (!w.max) return 'The ' + w.name + ' does not wear: there is nothing to repair.';
+  if (w.now >= w.max) return 'The ' + w.name + ' is in full repair (' + w.now + ' of ' + w.max + '): there is nothing to repair.';
+  return cantPay(c, repairPrice(w, a.place));
+}
+function doRepair(g: GameState, c: Character, a: Extract<ProgressAction, { type: 'run/repair' }>, say: Say): string | null {
+  const no = repairProblem(g, c, a); if (no) return no;
+  const w = wearAt(c, a.where)!, price = repairPrice(w, a.place);
+  payCredits(c, price); repairAt(c, a.where);
+  say(c.name + '\'s ' + w.name + ' is repaired to full (' + w.now + ' to ' + w.max + '): ' + price + ' credits.', c.id);
+  return null;
+}
+/** Rules 1.50: every carried thing that wears and is not full (the hands, then the pack), with where it is. */
+const wornOf = (c: Character): { where: GearWhere; w: Wear }[] => (['main', 'off', ...packOf(c).map((_, i) => i)] as GearWhere[])
+  .map((where) => ({ where, w: wearAt(c, where) })).filter((x): x is { where: GearWhere; w: Wear } => !!x.w && x.w.max > 0 && x.w.now < x.w.max);
 
 // ---------------------------------------------------------------------------------------------- the Forge
 /** The mods and worn pieces that would last for this character (rule 41): a mod for a slot its main weapon has free, a
@@ -297,6 +330,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
   const r = g.run; if (!r) return 'No run is under way.';
   switch (a.type) {
     case 'run/upgrade': return doUpgrade(g, c, a, say);
+    case 'run/repair': return doRepair(g, c, a, say);
     case 'run/forge': {
       const no = forgeProblem(g, c, a.slot); if (no) return no;
       const h = here(g)!, s = h.v.stock![a.slot];
@@ -358,7 +392,8 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
 // ---------------------------------------------------------------------------------------------- the screen's options
 /** One choice a safe node offers a character (rules 1.43): its words, its price (credits; 0 for none), the engine's
  * reason it can't be taken (null when it can), and the action to send. The client only draws these. */
-export interface RunOption { group: 'grade' | 'relic' | 'forge' | 'fit' | 'train' | 'shrine' | 'trade' | 'lasting'; key: string; label: string; detail: string; price: number; why: string | null; action: ProgressAction }
+export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fit' | 'train' | 'shrine' | 'trade' | 'lasting'; key: string; label: string; detail: string; price: number; why: string | null; action: ProgressAction;
+  /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] } }
 /** Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). */
 export function runOptions(g: GameState, charId: string): RunOption[] {
   const c = g.characters[charId], h = here(g); if (!c || !h) return [];
@@ -376,6 +411,11 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
       out.push({ group: 'grade', key: 'grade:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to), detail: at + (to !== 'relic' && k === 'shop' ? ' · at a Forge: ' + gradePrice(to, 'forge') : ''), price: to === 'relic' ? GRADE_UP.price.relic : gradePrice(to, k as GradePlace), why: upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
       if (chitAt(c) >= 0 && to !== 'relic') out.push({ group: 'grade', key: 'chit:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to) + ' with a chit', detail: at, price: 0, why: upgradeProblem(g, c, { ...base, chit: true }), action: { type: 'run/upgrade', charId, ...base, chit: true } });
     }
+  }
+  if (k === 'shop' || k === 'forge') for (const { where, w } of wornOf(c)) {
+    const at = (typeof where === 'number' ? 'pack' : where === 'main' ? 'main hand' : 'off hand'), a = { where, place: k as GradePlace };
+    out.push({ group: 'repair', key: 'repair:' + where, label: w.name + ': repair to full', detail: at + ' · ' + (w.state === 'broken' ? 'broken' : w.state === 'worn' ? 'worn' : 'wear') + ' ' + w.now + ' of ' + w.max + (k === 'shop' ? ' · at a Forge: ' + repairPrice(w, 'forge') : ''),
+      price: repairPrice(w, k as GradePlace), why: repairProblem(g, c, a), action: { type: 'run/repair', charId, ...a }, wear: { now: w.now, max: w.max, state: w.state } });
   }
   if (k === 'forge') {
     (h.v.stock || []).forEach((s, i) => out.push({ group: 'forge', key: 'forge:' + i, label: nameOf(s.id), detail: String((ITEM[s.id] as any)?.text || ''), price: s.price, why: forgeProblem(g, c, i), action: { type: 'run/forge', charId, slot: i } }));
@@ -427,3 +467,12 @@ export function gradeCards(g: GameState, c: Character): ServiceCard[] {
   });
 }
 registerShopService({ id: 'grade_step', tab: 'upgrade', kinds: ['shop'], cards: (g, c) => gradeCards(g as GameState, c) });
+/** Rules 1.50: the shop's repair service as cards of the services shelf: each carried thing with wear, its durability now
+ * and full, the price here, and the engine's reason when it can't be bought; the action is `run/repair {place: 'shop'}`. */
+export function repairCards(g: GameState, c: Character): ServiceCard[] {
+  return runOptions(g, c.id).filter((o) => o.group === 'repair').map((o) => {
+    const a = o.action as Extract<ProgressAction, { type: 'run/repair' }>, w = wearAt(c, a.where)!;
+    return { key: o.key, title: o.label, id: w.id, rarity: w.rarity, price: o.price, why: o.why, note: o.detail, lines: [{ label: 'Durability', before: String(w.now), after: String(w.max) }], action: o.action as any, wear: o.wear };
+  });
+}
+registerShopService({ id: 'repair', tab: 'upgrade', kinds: ['shop'], cards: (g, c) => repairCards(g as GameState, c) });

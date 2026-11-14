@@ -1019,6 +1019,11 @@
       "calibre": "rifle",
       "provisional": true
     },
+    "worn": {
+      "about": "Weapons v2, Durability rule 2 (moved from code by rules 1.50): a weapon or shield at this share of its full durability or less is Worn (guns jam on a natural 1 or 2, melee loses 10%); 0 is Broken. The screens' close-to-breaking mark (rules 1.50) is this state.",
+      "share": 0.25,
+      "provisional": true
+    },
     "reloading": {
       "cost_ap": 2,
       "magazine": "speed reload (cost_ap): swap in the fullest spare magazine; the one in the gun drops into the pile on your tile, empty or with its rounds and ammo type (spec items 679, 680)",

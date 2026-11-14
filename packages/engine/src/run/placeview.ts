@@ -4,7 +4,7 @@
 // a greet line from data, the node's tabs, large choice cards (each `runOptions` row of rules 1.43: what you gain, what
 // it costs, the engine's reason when it can't be taken), the Give tab (give.ts), your character, and the visit's log.
 // Nothing here decides anything: the options, prices and reasons are progress.ts's, the gives give.ts's.
-import { type Character, type Rarity, gearAt } from '../character';
+import { type Character, type Rarity, gearAt, wearAt } from '../character';
 import { FAITH_PATRON } from '../belief';
 import { rngFor, die } from '../rng';
 import { gearPreview } from '../gearpreview';
@@ -32,7 +32,7 @@ export interface PlaceViewV {
 }
 /** The tabs each place shows (the Give tab last on every one). */
 const TABS: Record<string, PlaceTabV[]> = {
-  forge: [{ id: 'upgrade', label: 'Upgrade', groups: ['grade', 'relic'] }, { id: 'stock', label: 'Mods and pieces', groups: ['forge'] }, { id: 'fit', label: 'Armour fitting', groups: ['fit'] }],
+  forge: [{ id: 'upgrade', label: 'Upgrade', groups: ['grade', 'relic', 'repair'] }, { id: 'stock', label: 'Mods and pieces', groups: ['forge'] }, { id: 'fit', label: 'Armour fitting', groups: ['fit'] }],
   training: [{ id: 'train', label: 'Training', groups: ['train'] }],
   rest: [{ id: 'train', label: 'Small training', groups: ['train'] }],
   shrine: [{ id: 'shrine', label: 'The shrine', groups: ['shrine'] }],
@@ -55,7 +55,7 @@ export function placeView(g: GameState, me: string, charId?: string | null): Pla
     const before = it ? gearPreview(c, { id: it.id, rarity: it.rarity }) : null, after = it && to ? gearPreview(c, { id: it.id, rarity: to }) : null;
     const diff = before && after ? after.lines.filter((l) => l.num != null).map((l) => ({ label: l.label, before: before.lines.find((x) => x.key === l.key)?.value ?? '—', after: l.value })).filter((l) => l.before !== l.after) : [];
     const prop = o.group === 'relic' && a.prop ? a.prop as string : null;
-    const id = it ? it.id : o.group === 'forge' ? (v.stock?.[a.slot]?.id || null) : o.group === 'train' && a.weapon ? a.weapon : null;
+    const id = it ? it.id : o.group === 'repair' ? (wearAt(c, a.where)?.id || null) : o.group === 'forge' ? (v.stock?.[a.slot]?.id || null) : o.group === 'train' && a.weapon ? a.weapon : null;
     return { o, id, rarity: it ? it.rarity : null, lines: diff, worth: prop ? worthOf(prop) + ' of your ' + BOON_CAP + '; ' + capRoom(c) + ' left' : null };
   }) : [];
   const party = g.players.map((p) => ({ id: p.id, name: Object.values(g.characters).find((x) => x.owner === p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', online: p.online, mine: p.id === me, marked: !!r.leans[p.id] }));

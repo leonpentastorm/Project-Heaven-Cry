@@ -35,7 +35,7 @@ describe.runIf(env.SURVIVAL_SIM)('Survival, simulated runs: the measure', () => 
     const cells = (env.SIM_CELLS ? String(env.SIM_CELLS).split(',') : Object.keys(PARTIES).flatMap((p) => ROUTES.map((r) => p + ':' + r))).map((x) => x.split(':'));
     const seeds = Number(env.SIM_SEEDS || 8), from = Number(env.SIM_FROM || 1), out: any[] = [];
     for (const [party, route] of cells) for (let i = from; i < from + seeds; i++) {
-      const t = Date.now(), r = simRun({ party, route: route as RoutePolicy, seed: 'SIM-' + i, maxStages: Number(env.SIM_MAX_STAGES || 7) });
+      const t = Date.now(), r = simRun({ party, route: route as RoutePolicy, seed: 'SIM-' + i, maxStages: Number(env.SIM_MAX_STAGES || 7), repair: env.SIM_REPAIR !== '0' });
       out.push({ ...r, ms: Date.now() - t });
       (globalThis as any).console.log(party + ':' + route + ' SIM-' + i + ' ' + r.how + ' stage ' + r.stage + ' depth ' + r.depth + ' cleared ' + r.cleared + ' (' + Math.round((Date.now() - t) / 1000) + ' s)' + (r.errors.length ? ' ERR ' + r.errors.slice(0, 2).join(' | ') : ''));
       if (env.SIM_OUT) writeFileSync(env.SIM_OUT, JSON.stringify(out));

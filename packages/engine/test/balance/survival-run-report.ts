@@ -27,8 +27,8 @@ export function tabulate(runs: RunResult[]): string {
     out.push('', '### ' + k + ' (' + rs.length + ' runs)');
     out.push('Ends: ' + rs.map((r) => r.how[0].toUpperCase() + ' ' + r.stage + '.' + r.depth).join(', '));
     const errs = rs.flatMap((r) => r.errors.map((e) => r.seed + ': ' + e.slice(0, 160))); if (errs.length) out.push('Errors (' + errs.length + '): ' + errs.slice(0, 3).join(' || '));
-    out.push('| Stage | Reached | Boss won | Fights (won) | Rounds: plain, Elite, Boss | HP before a fight (mean, min) | Rounds carried, min | Dry / broken / capped | Earned (of it: instead of a pick, sales) / spent, a character | XP, level at the Boss | Grade at the Boss | Steps | Rests, shops, Forges | Vault taken (pick) |');
-    out.push('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
+    out.push('| Stage | Reached | Boss won | Fights (won) | Rounds: plain, Elite, Boss | HP before a fight (mean, min) | Rounds carried, min | Dry / broken / capped | Earned (of it: instead of a pick, sales) / spent, a character | XP, level at the Boss | Grade at the Boss | Steps | Rests, shops, Forges | Vault taken (pick) | Wear before a fight: lowest, fights with a gun Worn or Broken | Repairs, credits a character |');
+    out.push('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
     for (let s = 1; s <= 7; s++) {
       const reached = rs.filter((r) => r.stages.some((x) => x.stage === s)); if (!reached.length) break;
       const fs = reached.flatMap((r) => r.fights.filter((q) => q.stage === s)), boss = fs.filter((q) => q.kind === 'boss');
@@ -41,7 +41,9 @@ export function tabulate(runs: RunResult[]): string {
         + ' | ' + per((x) => x.earned) + ' (' + per((x) => x.instead || []) + ', ' + per((x) => x.sold || []) + ') / ' + per((x) => x.spent) + ' | ' + (done.length ? r0(mean(done.flatMap((x) => x.xp))) + ', ' + r1(mean(done.flatMap((x) => x.level))) : '-')
         + ' | ' + (done.length ? Object.entries(done.flatMap((x) => x.grades).reduce((m: any, gr: string) => ((m[gr] = (m[gr] || 0) + 1), m), {})).map(([g, n]) => g + ' ' + n).join(', ') : '-')
         + ' | ' + r1(mean(sts.flatMap((x) => x.steps))) + ' | ' + r1(mean(sts.map((x) => x.rests))) + ', ' + r1(mean(sts.map((x) => x.shops))) + ', ' + r1(mean(sts.map((x) => x.forges)))
-        + ' | ' + sts.filter((x) => x.vault === 'taken').length + '/' + sts.filter((x) => x.vault !== 'none').length + (sts.some((x) => x.vaultPick) ? ' (' + sts.filter((x) => x.vaultPick).map((x) => x.vaultPick).join('; ') + ')' : '') + ' |');
+        + ' | ' + sts.filter((x) => x.vault === 'taken').length + '/' + sts.filter((x) => x.vault !== 'none').length + (sts.some((x) => x.vaultPick) ? ' (' + sts.filter((x) => x.vaultPick).map((x) => x.vaultPick).join('; ') + ')' : '') + ' | '
+        + (fs.some((q) => q.durMin != null) ? r0(100 * Math.min(...fs.filter((q) => q.durMin != null).map((q) => q.durMin!))) + '%, ' + fs.filter((q) => (q.wornBefore || 0) > 0).length : '-')
+        + ' | ' + (sts.some((x) => x.repairs) ? r1(mean(sts.flatMap((x) => x.repairs || []))) + ', ' + r0(mean(sts.flatMap((x) => x.repairSpent || []))) : '-') + ' |');
     }
     // where the losses fell
     const lost = rs.filter((r) => r.how === 'lost' || r.how === 'stalled').map((r) => { const f = r.fights[r.fights.length - 1]; return r.stage + '.' + r.depth + ' ' + (f ? f.kind : '?'); });

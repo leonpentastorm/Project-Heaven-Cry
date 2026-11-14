@@ -2407,6 +2407,16 @@ if _sv is not None:
         if not _chit or _chit.get("stock") is not False: errors.append("survival:grade_up.chit: an items.json item with stock: false (never sold)")
         for _k in ("per_visit", "relic_from_stage", "relic_offer", "cut_rate"):
             if not _num(_gu.get(_k)) or _gu[_k] <= 0: errors.append(f"survival:grade_up.{_k}: a number above 0")
+    # Rules 1.50: the repair service (the gunsmith's rate x priceOf x the share missing, a floor, the places' factors).
+    _rp = _sv.get("repair")
+    if _rp is not None:
+        if not _num(_rp.get("rate")) or not 0 < _rp["rate"] <= 1: errors.append("survival:repair.rate: a share of the item's price above 0 and at most 1")
+        if not _num(_rp.get("floor")) or _rp["floor"] < 0: errors.append("survival:repair.floor: credits, 0 or more")
+        _rpl = _rp.get("places") or {}
+        if set(_rpl) != {"shop", "forge"} or not all(_num(v) and 0 < v <= 1 for v in _rpl.values()): errors.append("survival:repair.places: shop and forge, each a factor above 0 and at most 1")
+        if _rp.get("provisional") is not True: errors.append("survival:repair: provisional: true (rules 1.50)")
+    _wr = ((data.get("rules") or {}).get("weapons_rules") or {}).get("worn") or {}
+    if _wr and (not _num(_wr.get("share")) or not 0 < _wr["share"] < 1): errors.append("rules:weapons_rules.worn.share: a share above 0 and below 1")
     if "armour_fit" in _sv and sorted((_sv["armour_fit"].get("price") or {}).keys()) != ["2", "3", "4"]: errors.append("survival:armour_fit.price: a price for classes 2, 3 and 4")
     if "boon_cap" in _sv and not _num(_sv["boon_cap"].get("cap")): errors.append("survival:boon_cap.cap: a number (percent of a rifle-turn)")
     _FITS = {"guns", "magazine_guns", "melee", "foci"}

@@ -138,6 +138,13 @@
     "chit": "armourer_chit",
     "provisional": true
   },
+  "repair": {
+    "about": "Rules 1.50: the repair service of a shop and a Forge (run/repair), the Core Rules' gunsmith (Weapons v2, Durability rule 4: 100% restored for `rate` of the weapon's price) priced by the share missing: max(`floor`, rate x priceOf(the item at its grade, no mods) x (missing / full)) x the place's factor, rounded up to whole credits. Any carried weapon or shield with wear (a hand or the pack) comes back to full; a focus and armour do not wear. No limit a visit.",
+    "rate": 0.1,
+    "floor": 10,
+    "places": { "shop": 1, "forge": 0.8 },
+    "provisional": true
+  },
   "forge": {
     "about": "Rules 1.43 (spec rule 44): the Forge's rolled stock, `slots` mods and worn pieces made for what its visitors carry (a mod for a slot one of them has free, a worn piece better than one of them wears), each at its price; the grade step's factor is grade_up.places.forge.",
     "slots": 4,

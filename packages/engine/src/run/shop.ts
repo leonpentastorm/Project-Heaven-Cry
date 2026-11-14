@@ -125,7 +125,9 @@ export function sellValue(it: PackItem, qty = it.mags ? 1 : it.qty): number | nu
 // ---------- the services shelf (the seam for build step 4a) ----------
 /** A card of the services shelf: what it is, its price here (null: none), the engine's reason it can't be taken (null:
  * it can), the numbers that change (the gear preview's lines), and the action the client sends to take it. */
-export interface ServiceCard { key: string; title: string; id?: string; rarity?: Rarity; price: number | null; why: string | null; note?: string; lines: { label: string; before: string; after: string }[]; action: { type: string; [k: string]: unknown } }
+export interface ServiceCard { key: string; title: string; id?: string; rarity?: Rarity; price: number | null; why: string | null; note?: string; lines: { label: string; before: string; after: string }[]; action: { type: string; [k: string]: unknown };
+  /** the service that listed it (shopView fills it: the screen heads its shelf by it) */ service?: string;
+  /** rules 1.50: a repair card's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: 'sound' | 'worn' | 'broken' } }
 /** A service a shop or Forge lists (rule 37's grade step: build step 4a's `run/upgrade` registers one): its id, the tab
  * it shows on, the node kinds it serves, and its cards for one character. */
 export interface ShopService { id: string; tab: 'upgrade' | 'services'; kinds: ('shop' | 'forge')[]; cards: (g: { run?: RunState | null; characters: Record<string, Character> }, c: Character, shop: ShopState) => ServiceCard[] }
