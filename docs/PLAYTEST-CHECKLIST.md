@@ -196,7 +196,24 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
 67. Names (Suggested): the five roads, the six vault guards, the marker motifs.
 
 **The fit and the close (rules 1.49, steps 9 and 10)**
-FIT_CALLS
+68. **The simulated players are the yardstick** (`test/balance/survival-run.ts`): careful but plain (no hunting a
+    hidden last foe, no stims, swaps or Echo rerolls, the class moves only as the fight policies use them). The curve is
+    fitted to them; real players who use more of the kit will go a little further.
+69. **Elites and Bosses pull ahead two levels a stage, to four** (`stage.elite_up` per 2, max 4; was 1 and 3): the
+    only foes that threaten a levelled squad are the ones that keep pace (ordinary foes lag and their hits are lost to
+    armour).
+70. **`stage.bulk` 0.42** (was 0.35) and **`stage.pressure` 0.35** (was 0.15): fights a little longer each stage, and the
+    danger cap rising with the Elites' lead.
+71. **The solo cap 2.0 a character and the solo Elite's share 0.75 HP and damage** (were 1.2 and 0.7 / 0.55); **the
+    duo cap 1.4** (was 1.25). The solo Boss's share (your 28% / 40%) is unchanged.
+72. **`rewards.instead_rate` 0.1** (was 0.5): credits instead of a weapon pick paid as much as the nodes and put the
+    Relic in stage 3.
+73. **`stage.xp` [1, 1, 1.1, 1.25, 1.25]** (was [1, 0.8, 0.9, 1, 1]): level 20 early in stage 6 on an average route.
+74. A fight the simulator could not finish in 20 rounds counts as won when the squad standing holds more than twice the
+    foes' HP (nearly always one hidden foe), else the run ends there ("stalled"). Measuring only.
+75. **Not fitted, reported** (survival-steps-9-10.md section 5): a Sigil caster alone, and a party of four casters, fall
+    in stage 1 or 2; guns wear out (durability) in stage 3 to 4 with no repair in Survival but the grade step; both need
+    a general addition, not a dial.
 
 ## 0. Classes 3.0 (0.26.0)
 
