@@ -15,6 +15,8 @@ export const ICON = {
   legend: 16,
   /** the reward card's weapon icon (was 52) */
   reward: 72,
+  /** a material's icon on the reward's Materials card (rules 1.54 item 2) */
+  material: 40,
   /** a held boon's icon in the run board */
   boonHeld: 24,
   /** the path map's width in the middle column (its height is 16:9 of it); a narrower middle scrolls it sideways */

@@ -1057,6 +1057,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'gear/make': { // rules 1.54 item 5 (recipes.ts): one converter for every recipe; free, between fights only
       const res = makeNow(g, by, a); if ('no' in res) fail(res.no);
       push(g, { kind: 'system', text: (res as { ok: string }).ok, charId: a.charId });
+      visitNote(g, (res as { ok: string }).ok.replace(/\.$/, ''), null); // the visit's log (a shop's or a place's), the keeper silent
       return;
     }
     case 'gear/drop': {
@@ -3188,23 +3189,26 @@ function runAction(g: GameState, a: Action, by: string) {
       const r = g.run!, o = r.offers?.[a.charId], c = g.characters[a.charId];
       if (r.state !== 'reward' || !o || !c) fail('There is nothing to pick for that character now.');
       if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ', or the host while they are away.');
+      let took = '';
       if (a.choice === 'credits') {
         if (o!.instead == null) fail('There is no credits choice here: take the materials or a weapon.');
-        earnCredits(c!, o!.instead!); stageLog(r).credits += o!.instead!; push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.' });
+        earnCredits(c!, o!.instead!); stageLog(r).credits += o!.instead!; took = c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.';
       } else if (a.choice === 'materials') {
         if (!o!.materials?.length) fail('There are no materials in this pick: take a weapon.');
         const pack = packOf(c!).map((x) => ({ ...x })), got = o!.materials!.flatMap((m) => lineGoods(m.item, m.n)); // rules 1.54 (Core Rules item 4111): whole, through packAdd
         for (const it of got) packAdd(pack, it);
         c!.pack = pack;
-        push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes the materials: ' + got.map((it) => itemLabel(it)).join(', ') + '.' });
+        took = c!.name + ' takes the materials: ' + got.map((it) => itemLabel(it)).join(', ') + '.';
       } else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
         const pack = packOf(c!).map((x) => ({ ...x }));
         for (const it of pickedItem(w!)) packAdd(pack, it);
         for (let i = 0; i < Math.round(o!.ammo * ammoMult(c!)); i++) for (const it of magazineWorth(w!.id)) packAdd(pack, it); // rule 23: a picked gun takes its share of the pack (rules 1.44: Bandolier's too)
         c!.pack = pack;
-        push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes the ' + (w!.rarity !== 'standard' ? w!.rarity[0].toUpperCase() + w!.rarity.slice(1) + ' ' : '') + itemName(w!.id) + '.' });
+        took = c!.name + ' takes the ' + (w!.rarity !== 'standard' ? w!.rarity[0].toUpperCase() + w!.rarity.slice(1) + ' ' : '') + itemName(w!.id) + '.';
       }
+      push(g, { kind: 'system', charId: c!.id, text: took });
+      if (r.note) r.note = { ...r.note, picks: { ...(r.note.picks || {}), [c!.id]: took } }; // the stop's note says what each took (the run board's This stop)
       const rest = { ...r.offers! }; delete rest[a.charId];
       r.offers = Object.keys(rest).length ? rest : null;
       runPicksDone(g);
@@ -3279,7 +3283,7 @@ function campDone(g: GameState, boons: CampBoons) {
 }
 /** Rules 1.46: a line of the visit's log at the safe node the party stands on (the shop's log and its face's line of
  * that kind, or the visit's own log), so every full-screen place shows what was done there, a give included. */
-function visitNote(g: GameState, text: string, kind: 'gave' | 'bought') {
+function visitNote(g: GameState, text: string, kind: 'gave' | 'bought' | null) {
   const r = g.run; if (!r) return;
   if (r.state === 'shop' && r.shop) { shopSays(g, kind, text); return; }
   if (r.visit && r.visit.node === r.at) r.visit = { ...r.visit, log: [text, ...(r.visit.log || [])].slice(0, 8) };

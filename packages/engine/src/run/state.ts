@@ -60,7 +60,8 @@ export interface RunWeapon { id: string; rarity: 'standard' | 'fine' | 'masterwo
 export interface RunOffer { node: string; weapons: RunWeapon[]; materials?: { item: string; n: number }[]; instead?: number; ammo: number }
 /** What the node the party stands on gave (its panel): XP and credits each, the ammunition by character, the text of
  * a node without a fight (data), who came back from the dead (rule 5), the fight's result. */
-export interface RunNote { node: string; kind: string; text?: string; xp?: number; credits?: number; ammo?: Record<string, string[]>; back?: string[]; won?: boolean; rounds?: number }
+export interface RunNote { node: string; kind: string; text?: string; xp?: number; credits?: number; ammo?: Record<string, string[]>; back?: string[]; won?: boolean; rounds?: number;
+  /** rules 1.54 item 2: what each character took from the pick (the materials or a weapon), in words, by character id */ picks?: Record<string, string> }
 /** One fight of the run (rule 35's beginning: the budget asked and spent, the foes, the result). */
 export interface RunFight { node: string; stage: number; depth: number; kind: string; template: string; setting: string; level: number;
   target: { bulk: number; pressure: number; rounds: number }; spent: { bulk: number; pressure: number }; scaleHp: number;

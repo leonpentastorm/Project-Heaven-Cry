@@ -44,9 +44,11 @@ function toolWords(c: Character, r: Recipe): string {
   const thing = r.tool.focus ? 'a focus in hand' : (() => { const n = nameOfId(r.tool.item || '').toLowerCase(); return (/^[aeiou]/.test(n) ? 'an ' : 'a ') + n; })();
   return c.name + ' needs ' + thing + ' ' + r.does + '.';
 }
+/** A fight is on (making is between fights only; the sheet hides the Make group then). */
+const inFight = (g: GameState) => g.phase === 'combat' && !!g.combat && !g.combat.over;
 /** Why the character can't make this now (not counting what it carries), in words, or null. */
 function stateProblem(g: GameState, c: Character): string | null {
-  if (g.phase === 'combat' && g.combat && !g.combat.over) return c.name + ' can\'t make anything in a fight.';
+  if (inFight(g)) return c.name + ' can\'t make anything in a fight.';
   if (c.dead || c.hp <= 0) return c.name + ' is down and can\'t make anything.';
   return null;
 }
@@ -79,8 +81,8 @@ export function makeNow(g: GameState, by: string, a: MakeAction): { ok: string }
  * (null: it can). The client sends `action` with `times` (1 to `most`). */
 export interface MakeRowV { recipe: string; name: string; needs: { item: string; name: string; n: number; have: number }[]; gives: { item: string; name: string; n: number }[];
   tool: { label: string; held: boolean }; most: number; why: string | null; action: MakeAction }
-/** The Make group for one character: shown when it carries a recipe's tool (null: nobody to make for, or at the camp,
- * where the GEAR tab is read-only). */
+/** The Make group for one character: shown when it carries a recipe's tool and no fight is on (null: nobody to make
+ * for, or at the camp, where the GEAR tab is read-only). */
 export interface MakeViewV { charId: string; name: string; shown: boolean; rows: MakeRowV[] }
 /** The Make group's view (rules 1.54) for player `me`'s character (or `charId`). */
 export function makeView(g: GameState, me: string, charId?: string | null): MakeViewV | null {
@@ -94,5 +96,5 @@ export function makeView(g: GameState, me: string, charId?: string | null): Make
     return { recipe: r.id, name: r.name, needs, gives: r.gives.map((l) => ({ item: l.item, name: nameOfId(l.item), n: l.n })),
       tool: { label: r.tool.focus ? 'Any focus in hand' : nameOfId(r.tool.item || ''), held }, most, why: makeProblem(g, me, action), action };
   });
-  return { charId: c.id, name: c.name, shown: rows.some((x) => x.tool.held), rows };
+  return { charId: c.id, name: c.name, shown: !inFight(g) && rows.some((x) => x.tool.held), rows };
 }

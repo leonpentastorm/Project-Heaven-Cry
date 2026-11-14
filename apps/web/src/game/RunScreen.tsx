@@ -29,21 +29,49 @@ const marks = (n: number) => '◆'.repeat(n);
 const PULSE = '@keyframes phcNodePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 7px rgba(255,255,255,.12)}}'
   + '.phc-node-lit>span:first-child{animation:phcNodePulse 2.2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-node-lit>span:first-child{animation:none}}';
 
+/** Rules 1.54 item 2: a material's picture (the painted icon once its art lands, ART-REQUESTS E2d), else a lettered
+ * tile from its own name (no item is named here). */
+function MaterialIcon({ item, name }: { item: string; name: string }) {
+  const src = gearIconUri(item, undefined, { large: true });
+  return <span aria-hidden="true" style={{ flex: 'none', display: 'grid', placeItems: 'center', width: ICON.material, height: ICON.material, borderRadius: 10, background: ink.panel, border: '1px solid ' + ink.line, overflow: 'hidden', fontSize: 16, fontWeight: 700, color: ink.muted }}>
+    {src ? <img src={src} alt="" width={ICON.material} height={ICON.material} style={{ objectFit: 'contain' }} /> : (name.replace(/[^A-Za-z]/g, '').slice(0, 2) || '·')}
+  </span>;
+}
+const bigCard = (on: boolean): React.CSSProperties => ({ display: 'flex', flexDirection: 'column', gap: 8, padding: '16px 14px', minHeight: 300, borderRadius: 14, border: '1px solid ' + (on ? ink.text : ink.line), background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', color: ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' });
+const takeBtn: React.CSSProperties = { marginTop: 'auto', alignSelf: 'stretch', minHeight: 40, display: 'grid', placeItems: 'center', borderRadius: 10, background: ink.text, color: ink.ground, fontWeight: 700, fontSize: 15 };
+
 function Offer({ o }: { o: OfferV }) {
+  const m = o.materials, cols = m ? 1 + o.cards.length : o.cards.length;
   return (
     <div data-phc-offer={o.charId} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
       <span style={kick}>{o.mine ? 'YOUR PICK · ' + o.name.toUpperCase() : o.name.toUpperCase() + (o.canPick ? ' · YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>
       {o.canPick ? <>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', minmax(0, 1fr))', gap: 10 }}>
+          {m ? (
+            <button type="button" data-phc-pick-materials="" {...tipProps('The materials go into your pack whole. With an ammo maker you make rounds from gunpowder and casings; with a focus in hand you press mana residue into a core.')}
+              onClick={() => act(m.action as any)} style={bigCard(false)}>
+              <span style={kick}>MATERIALS</span>
+              <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>For making</span>
+              {m.lines.map((l) => (
+                <span key={l.item} data-phc-material={l.item} data-phc-material-n={l.n} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <MaterialIcon item={l.item} name={l.name} />
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 14 }}>{l.name}</span>
+                  <b style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums' }}>× {l.n}</b>
+                </span>))}
+              <span style={{ fontSize: 12, color: ink.muted }}>Sells for {m.sells} credits</span>
+              <span style={takeBtn}>Take the materials</span>
+            </button>) : null}
           {o.cards.map((c) => (
             <button key={c.i} type="button" data-phc-pick={c.i} {...tipProps(c.tip)} onClick={() => act({ type: 'run/pick', charId: o.charId, choice: c.i })}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 8px', minHeight: 220, borderRadius: 12, border: '1px solid ' + (c.rarity === 'standard' ? ink.line : ink.text), background: ink.raised, color: ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'center' }}>
+              style={{ ...bigCard(c.rarity !== 'standard'), alignItems: 'center', textAlign: 'center', minHeight: m ? 300 : 240 }}>
+              {m ? <span style={{ ...kick, alignSelf: 'flex-start' }}>ONE WEAPON</span> : null}
               <img src={gearIconUri(c.id, undefined, { large: true })} alt="" width={ICON.reward} height={ICON.reward} style={{ display: 'block', objectFit: 'contain' }} />
-              <span style={{ fontFamily: "'Spectral', serif", fontSize: 17, fontWeight: 600, lineHeight: 1.2 }}>{c.name}</span>
+              <span style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.2 }}>{c.name}</span>
               <span style={{ fontSize: 11, letterSpacing: '0.1em', color: c.rarity === 'standard' ? ink.muted : ink.white }}>{c.rarityWord.toUpperCase()} {marks(c.marks)}</span>
               <span style={{ fontSize: 11, color: ink.muted }}>{c.category}</span>
               {c.lines.map((l) => <span key={l.key} data-phc-pick-line={l.key} style={{ fontSize: 12.5, color: ink.text }}>{l.label}: <b>{l.value}</b></span>)}
-              <span style={{ marginTop: 'auto', fontSize: 13, color: ink.white }}>{c.price} credits</span>
+              <span style={{ fontSize: 12, color: ink.muted }}>Worth {c.price} credits</span>
+              {m ? <span style={takeBtn}>Take the weapon</span> : null}
             </button>
           ))}
         </div>

@@ -47,7 +47,7 @@ import { panelsOf, PANEL_DRAW } from '../game/panels';
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
-import { approachOptions, sigilGrowthView, canLayGrandForms } from '@engine';
+import { approachOptions, sigilGrowthView, canLayGrandForms, makeView } from '@engine';
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
@@ -594,6 +594,25 @@ export class MainLogic extends DCLogic {
         style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 2px 8px; align-items: center; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-size: 12px; background: ' + (S.gearMenu === key ? '#1C2536' : '#0D1119') + '; border: 1px solid #1C2536' }; });
     // Plot items (the Narrator's story things) get their own group under the backpack.
     const plotView = rigView.filter((r) => r.src && r.src.kind === 'plot'), packView = rigView.filter((r) => !(r.src && r.src.kind === 'plot'));
+    // Rules 1.54 item 5 (survival-spec 14.7): the Make group, the engine's make list (recipes.ts makeView): each recipe the
+    // character has the tool for, what it needs with what is carried, what it gives, the most it can be made now, the
+    // engine's reason when it can't; a ‹ n › stepper (1 to the engine's most) and Make, which sends the row's gear/make.
+    // The view hides it in a fight and at the camp. Nothing here counts or prices anything.
+    const MV = c ? makeView(g, me, c.id) : null;
+    const mkIcon = (id) => gearIconUri(/^rounds:/.test(id) ? roundsGearId(id.slice('rounds:'.length)) : id, GEAR_INK, { large: true });
+    const mk = MV && MV.shown ? { has: true, charId: MV.charId, sub: 'Free, between fights: what a recipe needs comes out of your pack.',
+      rows: MV.rows.filter((r) => r.tool.held).map((r) => {
+        const most = Math.max(1, r.most), n = Math.min(most, Math.max(1, (S.mkN || {})[r.recipe] || 1)), setN = (v) => this.setState({ mkN: { ...(this.state.mkN || {}), [r.recipe]: v } });
+        const img = mkIcon(r.gives[0]?.item || ''), off = !!r.why || r.most < 1;
+        return { key: r.recipe, name: r.name, most: r.most, img, hasImg: !!img, noImg: !img, badge: (r.name.replace(/[^A-Za-z0-9]/g, '').charAt(0) || '▪').toUpperCase(),
+          gives: 'Makes ' + r.gives.map((l) => l.n + ' × ' + l.name).join(' and ') + ' each time',
+          needs: 'Takes ' + r.needs.map((l) => l.n + ' ' + (l.n === 1 ? l.name : ITEM[l.item]?.plural || l.name).toLowerCase() + ' (you have ' + l.have + ')').join(' and ') + ' · ' + r.tool.label,
+          n, less: () => setN(n - 1), more: () => setN(n + 1), noLess: n <= 1, noMore: n >= most,
+          off: off ? 'true' : undefined, why: r.why || '', status: r.why || 'You can make it ' + r.most + (r.most === 1 ? ' time' : ' times') + ' now.',
+          goLabel: n > 1 ? 'Make × ' + n : 'Make',
+          make: () => { if (off) { toast(r.why || ''); return; } act({ ...r.action, times: n }); setN(1); },
+          goStyle: 'min-height: 30px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (off ? 'border: 1px solid #2E3A50; background: transparent; color: #7F8BA1' : 'border: 0; background: #E7EBF3; color: #0A0D13') };
+      }) } : { has: false, charId: '', sub: '', rows: [] };
     const TIP = S.tip && tips[S.tip.key];
     const tipCard = TIP ? { ...TIP, lines: TIP.lines.map((t, i) => ({ key: i, t })), hasImg: !!TIP.img, noImg: !TIP.img, hasLore: !!TIP.lore,
       style: 'position: fixed; z-index: 40; left: ' + S.tip.x + 'px; ' + (S.tip.b != null ? 'bottom: ' + S.tip.b + 'px; max-height: calc(100vh - ' + (S.tip.b + 8) + 'px)' : 'top: ' + S.tip.y + 'px; max-height: calc(100vh - ' + ((S.tip.y || 0) + 8) + 'px)') + '; overflow: hidden; box-sizing: border-box; width: 260px; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); pointer-events: none' } : null;
@@ -1386,7 +1405,7 @@ export class MainLogic extends DCLogic {
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
-      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
+      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 12px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' },  bio,
       hero, stream, pushes,

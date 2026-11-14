@@ -196,6 +196,27 @@
 <button type="button" disabled="{{eoe.locked}}" tip="{{eoe.why}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #232D3F; background: transparent; color: #7F8BA1; font-family: inherit; font-size: 12px; font-weight: 600">Crack the Essence</button>
 </div>
 </div>
+<sc-if value="{{mk.has}}" hint-placeholder-val="{{false}}"><section aria-label="Make" data-phc-make="{{mk.charId}}" style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">MAKE</span><span style="font-size: 11.5px; line-height: 1.4; color: #A3AEC2">{{mk.sub}}</span></span>
+<div role="list" aria-label="Recipes" style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{mk.rows}}" as="m"><div role="listitem" data-phc-recipe="{{m.key}}" data-phc-recipe-most="{{m.most}}" style="display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 8px; background: #0D1119; border: 1px solid #1C2536">
+<div style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; font-size: 13px; font-weight: 700; color: #A3AEC2"><sc-if value="{{m.hasImg}}"><img src="{{m.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{m.noImg}}">{{m.badge}}</sc-if></span>
+<span style="display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0"><span style="font-size: 13px; font-weight: 700">{{m.name}}</span><span data-phc-recipe-gives="" style="font-size: 11.5px; color: #E7EBF3">{{m.gives}}</span></span>
+</div>
+<span data-phc-recipe-needs="" style="font-size: 11.5px; line-height: 1.4; color: #A3AEC2">{{m.needs}}</span>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span role="group" aria-label="How many times" style="display: inline-flex; align-items: center; border-radius: 8px; border: 1px solid #2E3A50">
+<button type="button" data-phc-make-less="{{m.key}}" aria-label="One fewer" onClick="{{m.less}}" disabled="{{m.noLess}}" style="width: 30px; height: 30px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">‹</button>
+<span data-phc-make-n="{{m.key}}" style="min-width: 26px; text-align: center; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums">{{m.n}}</span>
+<button type="button" data-phc-make-more="{{m.key}}" aria-label="One more" onClick="{{m.more}}" disabled="{{m.noMore}}" style="width: 30px; height: 30px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">›</button>
+</span>
+<button type="button" data-phc-make-go="{{m.key}}" onClick="{{m.make}}" aria-disabled="{{m.off}}" tip="{{m.why}}" style="{{m.goStyle}}">{{m.goLabel}}</button>
+<span data-phc-make-why="" style="flex: 1 1 120px; font-size: 11.5px; line-height: 1.35; color: #A3AEC2">{{m.status}}</span>
+</div>
+</div></sc-for>
+</div>
+</section></sc-if>
 </div>
 </sc-if>
 

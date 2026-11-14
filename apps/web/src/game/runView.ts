@@ -2,7 +2,7 @@
 // engine: the map's nodes and links (g.run), what the party can reach and why a node can't be taken (`reachable`,
 // `runMoveProblem`), what a node gives (`NODE_TIP`, `nodeXp`, `nodeCredits`), the panel's words (`NODE_TEXT`), the picks
 // (g.run.offers, priced by the engine), who has a level-up waiting (`levelUpDue`). RunScreen.tsx only draws it.
-import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, runWorth, BOON_CAP, relicRow, gearPreview, isStartBoon } from '@engine';
+import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, runWorth, BOON_CAP, relicRow, gearPreview, isStartBoon, materialsView, type MaterialsCardV } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
 export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null;
@@ -20,7 +20,8 @@ const PICK_WORD: Record<string, string> = { hit: 'To hit', dmg: 'Damage', ap: 'A
 /** The path map's legend: every node kind's word, in the map's own words (data), the gate's apart. */
 export const NODE_LEGEND: { kind: string; word: string }[] = ['fight', 'elite', 'boss', 'shop', 'forge', 'training', 'shrine', 'rest', 'cache', 'event']
   .map((k) => ({ kind: k, word: (MAP_DATA.words as Record<string, string>)[k] || k }));
-export interface OfferV { charId: string; name: string; mine: boolean; canPick: boolean; cards: OfferCardV[]; /** rules 1.54: an offer saved before 1.54 only (credits instead is retired) */ instead: number | null }
+export interface OfferV { charId: string; name: string; mine: boolean; canPick: boolean; cards: OfferCardV[]; /** rules 1.54: an offer saved before 1.54 only (credits instead is retired) */ instead: number | null;
+  /** rules 1.54 item 2: the Materials card (the engine's materialsView: each material, its count, what the card sells for, the pick's action); null where the pick has none (the vault's chest, a sealed crate) */ materials: MaterialsCardV | null }
 export interface RunViewV {
   stage: number; depth: number; rows: number; setting: string; settingId: string; seed: string; state: string; title: string;
   /** rules 1.48: the stage's lane count; the party has not left the camp yet (at the start every lane is lit) */
@@ -77,10 +78,12 @@ export function runView(g: GameState, me: string): RunViewV | null {
   const waiting = r.state === 'map' && !solo && leaned > 0 && leaned < online.length ? 'Waiting for ' + (online.length - leaned) + ' player' + (online.length - leaned === 1 ? '' : 's') : null;
   const offers: OfferV[] = Object.entries(r.offers || {}).map(([cid, o]) => {
     const c = g.characters[cid];
-    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, instead: o.instead ?? null,
-      cards: o.weapons.map((w, i) => ({ i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
-        tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || ''),
-        lines: c ? gearPreview(c, { id: w.id, rarity: w.rarity }).lines.filter((l) => ['hit', 'dmg', 'ap', 'door_mod'].includes(l.key)).map((l) => ({ key: l.key, label: PICK_WORD[l.key] || l.label, value: l.value })) : [] })) };
+    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, instead: o.instead ?? null, materials: materialsView(g, cid),
+      cards: o.weapons.map((w, i) => { const pv = c ? gearPreview(c, { id: w.id, rarity: w.rarity }).lines : [];
+        return { i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
+          // the one hover card: its name and grade, every number of the engine's gear preview, then its text
+          tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + pv.map((l) => l.label + ': ' + l.value + '.').join(' ') + ' ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || ''),
+          lines: pv.filter((l) => ['hit', 'dmg', 'ap', 'door_mod'].includes(l.key)).map((l) => ({ key: l.key, label: PICK_WORD[l.key] || l.label, value: l.value })) }; }) };
   });
   const charV = (cid: string, options: RunOption[]): ChoiceCharV => {
     const c = g.characters[cid];
@@ -93,11 +96,12 @@ export function runView(g: GameState, me: string): RunViewV | null {
   const note = n && nn ? {
     kicker: (nn.gate ? 'THE GATE' : wordOf(nn).toUpperCase()) + ' · STOP ' + nn.depth + ' OF ' + MAP_DATA.rows,
     title: n.won ? 'Won in ' + n.rounds + (n.rounds === 1 ? ' round' : ' rounds') : wordOf(nn),
-    text: n.text || (n.won ? 'Each of you takes the pay below, then picks a weapon.' : ''),
+    text: n.text || (n.won ? 'Each of you takes the pay below, then the materials or one weapon.' : ''),
     lines: [
       ...(n.xp ? ['Each of you: ' + n.xp + ' XP' + (n.credits ? ', ' + n.credits + ' credits' : '') + '.'] : []),
       ...Object.entries(n.ammo || {}).filter(([, l]) => l.length).map(([cid, l]) => (g.characters[cid]?.name || cid) + ': ' + l.join(', ') + '.'),
       ...(n.back || []).map((cid) => (g.characters[cid]?.name || cid) + ' is back on their feet at ' + survivalRun.dead_return_hp + ' HP.'),
+      ...Object.values(n.picks || {}), // rules 1.54 item 2: what each took from the pick, in the engine's words
     ],
   } : null;
   const setting = SETTING[runSetting(r)]?.name || runSetting(r);

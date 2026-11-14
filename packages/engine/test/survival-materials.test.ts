@@ -1,7 +1,7 @@
 // Rules 1.54 (survival-spec section 14, rows R6 to R13): the sheet in a run, materials, making, loot and the shop's
 // stock, every case through the one reducer. Numbers are read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView } from '../src';
+import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { Rec, type Pc } from './helpers/replay';
@@ -62,6 +62,7 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     const p = apply(g, { type: 'run/pick', charId: 'c1', choice: 'materials' }, 'host');
     for (const m of o.materials!) expect(has(p, 'c1', (x) => (x.item || x.id) === m.item)).toBe(had('c1', m.item) + m.n);
     expect(p.story.entries.at(-1)!.text).toMatch(/takes the materials: /);
+    expect(p.run!.note!.picks!.c1).toBe(p.story.entries.at(-1)!.text); // the stop's note says what was taken (the run board's This stop)
     // the card as the engine gives it to the screen: names, counts, what it sells for, the action the reducer takes
     const v = materialsView(g, 'c1')!;
     expect(v.lines.map((l) => [l.item, l.n])).toEqual(o.materials!.map((m) => [m.item, m.n]));
@@ -131,6 +132,7 @@ describe('rules 1.54 items 5 to 7: making (gear/make, one converter for every re
     expect(has(g, 'c1', (x) => (x.item || x.id) === CASE)).toBe(3);
     expect(g.characters.c1.credits).toBe(credits);
     expect(g.story.entries.at(-1)!.text).toMatch(new RegExp('^' + g.characters.c1.name + ' makes '));
+    expect(placeView(g, 'host')!.log[0]).toBe(g.story.entries.at(-1)!.text.replace(/\.$/, '')); // and in the visit's log
   });
 
   it('refusals in words naming the character: no tool, too little, in a fight, down, not yours', () => {
@@ -181,6 +183,10 @@ describe('rules 1.54 items 5 to 7: making (gear/make, one converter for every re
     expect(() => apply(g, { ...row.action, times: row.most }, 'host')).not.toThrow();
     const camp = apply(survivalRoom('PHC-0001', DUO), { type: 'run/start', seed: 'PHC-0001' } as any, 'host');
     expect(makeView(camp, 'host')).toBeNull();
+    // in a fight the sheet hides the Make group (rules 1.54 item 5: between fights only), the rows keep the reason
+    const fight = at('fight', { prep: (x) => { x.characters.c1.pack = [...packOf(x.characters.c1), line(TOOL, 1, { kind: 'tool' }), line(POWDER, 7), line(CASE, 4)]; } });
+    const fv = makeView(fight, 'host')!;
+    expect(fv.shown).toBe(false); expect(fv.rows.find((x) => x.recipe === ROUNDS.id)!.why).toBe(fight.characters.c1.name + ' can\'t make anything in a fight.');
   });
 
   it('the Proving Ground takes gear/make while gearing up, as it takes gear/load', () => {
