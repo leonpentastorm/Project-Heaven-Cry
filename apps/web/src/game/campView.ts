@@ -36,5 +36,5 @@ export function campView(g: GameState, me: string): CampViewV | null {
   const left = chars.filter((x) => !x.picked && x.cards.length).length;
   const face = FACES.find((f) => f.id === 'medic');
   return { isHost, solo, chars, party, waiting: !solo && left ? 'Waiting for ' + left + (left === 1 ? ' pick' : ' picks') : null, canGo: isHost && !solo && left > 0 && chars.some((x) => x.picked),
-    backdrop: (face?.backdrop && A[face.backdrop]) || '', seed: r.seed };
+    backdrop: (face?.backdrop && (A[face.backdrop + '-lg'] || A[face.backdrop])) || '', seed: r.seed }; // the rest's backdrop until the camp's own lands (ART-REQUESTS S10)
 }

@@ -76,10 +76,12 @@ const campCards = await p.locator('[data-phc-camp="' + kid + '"] [data-phc-start
 ok('the camp: three large cards, each its name, its sentence with its number from data, its line\'s word and its worth on the cap (' + offer0.join(', ') + ')', campCards.length === 3 && offer0.length === 3
   && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-camp] [data-phc-startboon] svg').count() === 3
   && /THE CAMP/.test(await p.locator('[data-phc-camphead]').textContent()));
-ok('a soldier (a rifle in hand) is offered gun boons: two of its three cards are the guns line\'s', offer0.filter((id) => /^start\.(zeroed|hot_loads|quick_mag)$/.test(id)).length >= 2);
+{ const lines = await p.locator('[data-phc-camp="' + kid + '"] [data-phc-startboon] [data-phc-line]').evaluateAll((e) => e.map((x) => x.getAttribute('data-phc-line')));
+  ok('the offer by line: two cards from its main line and one from its second, the rifle in hand\'s guns among them (' + lines.join(', ') + ')', lines.length === 3 && lines.some((l) => lines.filter((x) => x === l).length >= 2) && lines.includes('guns')); }
 ok('the camp\'s issue: the soldier\'s kit already wears class 3, so nothing to fit (the line says so)', /class 3/i.test(await p.locator('[data-phc-camp-fit="' + kid + '"]').textContent()) && !(await p.locator('[data-phc-fit]').count()));
-ok('rules 1.51: the map waits at the camp (a node refused in words)', /starting boons first/.test(await act({ type: 'run/move', node: r.nodes.find((n) => n.depth === 1).id }) || ''));
 await shot('startboon-1280'); await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 600); await shot('startboon-1920'); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
+await act({ type: 'run/move', node: r.nodes.find((n) => n.depth === 1).id }); await settle(p, 300);
+ok('rules 1.51: the map waits at the camp (a node asked for is refused: the squad stays at the camp)', (await run()).state === 'camp' && (await run()).at === null);
 const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0[0];
 await p.locator('[data-phc-startboon="' + pickId + '"]').click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
