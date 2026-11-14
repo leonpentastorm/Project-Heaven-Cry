@@ -547,7 +547,13 @@ hr = (await HG()).run;
 const forkN = hr.nodes.find((n) => n.id === hr.at), [tA, tB] = forkN ? forkN.links : [];
 ok('C2: the squad stands where the way forks (' + (forkN && forkN.id) + ': ' + (forkN ? forkN.links.join(', ') : '-') + ')', !!tA && !!tB && hr.state === 'map');
 if (tA && tB) {
-  for (const x of [h, gu]) { await x.evaluate(() => window.__phc.go('run')).catch(() => {}); await x.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); }
+  // each browser on its path map (a place still open on a screen is walked out of, as the stage 2 walk does)
+  for (const x of [h, gu]) {
+    if (!(await x.locator('[data-phc-pathmap]').count())) await x.evaluate(() => window.__phc.go('run')).catch(() => {});
+    await x.waitForSelector('[data-phc-pathmap], [data-phc-place], [data-phc-fullscreen]', { timeout: 30000, state: 'attached' });
+    if (!(await x.locator('[data-phc-pathmap]').count()) && await x.locator('[data-phc-leave]').count()) await x.locator('[data-phc-leave]').first().click();
+    await x.waitForSelector('[data-phc-pathmap]', { timeout: 30000 });
+  }
   await h.locator('[data-phc-node="' + tA + '"]').click();
   const marked = await until(gu, (id) => /marked by Leon/.test(document.querySelector('[data-phc-node="' + id + '"]')?.getAttribute('aria-label') || '') || null, tA, 15000).catch(() => false);
   ok('C2: the host\'s mark shows live on the guest\'s map (' + tA + ': "marked by Leon"), the squad waits for the guest', !!marked && (await GG()).run.at === forkN.id);
