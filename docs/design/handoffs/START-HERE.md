@@ -1,5 +1,14 @@
 # Start here (14 Nov 2026)
 
+> **UPDATE, 14 Nov 2026, 15:05 UTC. A real gap in live Survival (Leon: "where is the 2 side menu in survival
+> mode?"):** the run's screens (path map, shop and the other places, the camp, the picks) show only a small squad
+> list, so between fights a player cannot open the character sheet or the backpack (cannot equip the weapon just
+> picked, swap a quiver, use a stim, read perks or boons). A builder is adding the SAME two side menus as the play
+> screen (reusing those panel components, not a second copy) on branch `worktree-agent-ae8996efccf80ed27`; it ships
+> as 0.27.3 after its own proof. Also written today: `audio/SUNO-PROMPTS-survival.md` (33 music prompts, not wired)
+> and `art/briefs/GPT-PROMPTS-2026-11-14-portraits.md` (145 portraits repainted as different people, with a tag
+> file for class fantasy, gender, species).
+
 > **UPDATE, 14 Nov 2026, 14:35 UTC.** (1) **A real bug is LIVE in 0.27.0 and 0.27.1: a stray "MISS" label shows on
 > every plain ranged hit** (since commit 11726eaa, the bows merge, which broke the hit/cover/miss chain in the
 > effects). It is FIXED on branch `worktree-agent-a202ef14f498e698e` (head 77a3eea9, also `wip/` on the remote),
