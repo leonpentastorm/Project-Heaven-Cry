@@ -1,0 +1,445 @@
+[
+  {
+    "id": "P061",
+    "mode": "path-map-backdrop",
+    "label": "AHOC chapter outpost path-map backdrop",
+    "path": "art/illustrations/survival/map/path-ahoc.png",
+    "sha256": "ae44f9cf75875d7d15d3d26e85c0c6dbd42c9d87696ecd4455029c4a3fe74576",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P061.png",
+    "native_sha256": "c3b060b2e77d90d75cb553c83e62f24704ef0f1d453ee00bd599942d6ae4b7f2",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one widescreen 16:9 Path Map backdrop for Project Heaven Cry Survival, AHOC chapter outpost. Aerial view of a rugged frontier containment compound set into dark rock. Gate and watchtower bases, old oxide-red stencils on ceramic roofs, loading yards, tracks and bare gravel. Cold lamps and few quiet warm lamps, slate and worn oxide red. This is an environment painting behind about 40 overlaid tactical path UI nodes, paths and labels, arranged over 15 rows. Keep the entire interior from becoming busy, especially in the left, middle and right thirds. Reserve broad subdued mid-dark quiet areas and push the sharpest highlights and fine architecture to the perimeter. Painterly elevated aerial with a readable sense of place, no ground-level skyline. Heavenprint opaque gouache and restrained ink, broad directional brushwork, angular architectural forms, dry brush and selective warm ivory. Image 1 guides path-map scale and value structure only. Image 2 guides the setting's local palette, lighting and materials only. Design a fresh aerial composition. Absolutely no painted map markers, path overlay lines, symbols, dots, text, people, creatures, frames or watermarks. Opaque 16:9 full bleed with room for wide cropping.",
+    "references": [
+      "art/illustrations/survival/map/map-aerial.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "P062",
+    "mode": "path-map-backdrop",
+    "label": "Central City path-map backdrop",
+    "path": "art/illustrations/survival/map/path-city.png",
+    "sha256": "1472974d484848edfdf83ae9a5ad86bf6d06f1b0a9be7671fa3b3f16493ec3a0",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P062.png",
+    "native_sha256": "78bf1a70f3b75aaf50a8be7d5c3a996c625e2432c8a8c612957c560dad0e0f57",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one widescreen 16:9 Path Map backdrop for Project Heaven Cry Survival, Central City. High aerial of a lived-in old city district. Dense wet slate rooftops, little dark alleys, a river or a canal bend, and some amber shop lights. Leave three large quiet courts and water areas under the node field. This is an environment painting behind about 40 overlaid tactical path UI nodes, paths and labels, arranged over 15 rows. Keep the entire interior from becoming busy, especially in the left, middle and right thirds. Reserve broad subdued mid-dark quiet areas and push the sharpest highlights and fine architecture to the perimeter. Painterly elevated aerial with a readable sense of place, no ground-level skyline. Heavenprint opaque gouache and restrained ink, broad directional brushwork, angular architectural forms, dry brush and selective warm ivory. Image 1 guides path-map scale and value structure only. Image 2 guides the setting's local palette, lighting and materials only. Design a fresh aerial composition. Absolutely no painted map markers, path overlay lines, symbols, dots, text, people, creatures, frames or watermarks. Opaque 16:9 full bleed with room for wide cropping.",
+    "references": [
+      "art/illustrations/survival/map/map-aerial.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "P063",
+    "mode": "path-map-backdrop",
+    "label": "Daggerfall battlefield path-map backdrop",
+    "path": "art/illustrations/survival/map/path-field.png",
+    "sha256": "9beef0503a9834c7fb9711f06726a7991288f91a631c050acfda89e0f639ce55",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P063.png",
+    "native_sha256": "9f2044241d38f402ddc0ec6cbc4f0a2ae061f9b07b47c1315542d381721f7d8a",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one widescreen 16:9 Path Map backdrop for Project Heaven Cry Survival, Daggerfall battlefield. High aerial of a vast bleak scarred battlefield in ash and greys. Broken trenches, distant cratered earth, a few hulks and remnants of defensive lines near edges. Bare low-value no-man’s-land and a few soft orange embers. This is an environment painting behind about 40 overlaid tactical path UI nodes, paths and labels, arranged over 15 rows. Keep the entire interior from becoming busy, especially in the left, middle and right thirds. Reserve broad subdued mid-dark quiet areas and push the sharpest highlights and fine architecture to the perimeter. Painterly elevated aerial with a readable sense of place, no ground-level skyline. Heavenprint opaque gouache and restrained ink, broad directional brushwork, angular architectural forms, dry brush and selective warm ivory. Image 1 guides path-map scale and value structure only. Image 2 guides the setting's local palette, lighting and materials only. Design a fresh aerial composition. Absolutely no painted map markers, path overlay lines, symbols, dots, text, people, creatures, frames or watermarks. Opaque 16:9 full bleed with room for wide cropping.",
+    "references": [
+      "art/illustrations/survival/map/map-aerial.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "P064",
+    "mode": "path-map-backdrop",
+    "label": "Machine Works path-map backdrop",
+    "path": "art/illustrations/survival/map/path-works.png",
+    "sha256": "a254e4f3d682c0b8771b481e54b1eb2f6ade2ecfd8a1da155e0d3dcaadae94c7",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P064.png",
+    "native_sha256": "b40e1909fafa63f331c4a49088ef555ec0234b397626b755362dcd9cf00722b4",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one widescreen 16:9 Path Map backdrop for Project Heaven Cry Survival, Machine Works. High aerial of an industrial foundry complex, black iron roofs, heavy rail spurs and gantry silhouettes, assembly yards and a few furnace-orange windows near edges. Dark slate and burnt ochre, usable quiet plate-like roof areas. This is an environment painting behind about 40 overlaid tactical path UI nodes, paths and labels, arranged over 15 rows. Keep the entire interior from becoming busy, especially in the left, middle and right thirds. Reserve broad subdued mid-dark quiet areas and push the sharpest highlights and fine architecture to the perimeter. Painterly elevated aerial with a readable sense of place, no ground-level skyline. Heavenprint opaque gouache and restrained ink, broad directional brushwork, angular architectural forms, dry brush and selective warm ivory. Image 1 guides path-map scale and value structure only. Image 2 guides the setting's local palette, lighting and materials only. Design a fresh aerial composition. Absolutely no painted map markers, path overlay lines, symbols, dots, text, people, creatures, frames or watermarks. Opaque 16:9 full bleed with room for wide cropping.",
+    "references": [
+      "art/illustrations/survival/map/map-aerial.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "P065",
+    "mode": "path-map-backdrop",
+    "label": "Cathedral district path-map backdrop",
+    "path": "art/illustrations/survival/map/path-shrine.png",
+    "sha256": "4e7c81b20c2aed6dd15c54f0758734d7297ceb345006a9bc8232b76dc831a00c",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P065.png",
+    "native_sha256": "17fc6e429a3018cb8bd8afe881fa5fecab9e4e3df0db71d6944699e9578e292d",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one widescreen 16:9 Path Map backdrop for Project Heaven Cry Survival, Cathedral district. High aerial over a cathedral quarter in blue-violet dusk. Slate roofs, a pale cloister, formal courtyards and tarnished roof ribs, with pinpoints of candlelight. Soft broad stone plazas, dark violet values and restrained warm ivory. This is an environment painting behind about 40 overlaid tactical path UI nodes, paths and labels, arranged over 15 rows. Keep the entire interior from becoming busy, especially in the left, middle and right thirds. Reserve broad subdued mid-dark quiet areas and push the sharpest highlights and fine architecture to the perimeter. Painterly elevated aerial with a readable sense of place, no ground-level skyline. Heavenprint opaque gouache and restrained ink, broad directional brushwork, angular architectural forms, dry brush and selective warm ivory. Image 1 guides path-map scale and value structure only. Image 2 guides the setting's local palette, lighting and materials only. Design a fresh aerial composition. Absolutely no painted map markers, path overlay lines, symbols, dots, text, people, creatures, frames or watermarks. Opaque 16:9 full bleed with room for wide cropping.",
+    "references": [
+      "art/illustrations/survival/map/map-aerial.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "P066",
+    "mode": "path-map-backdrop",
+    "label": "Rim Station path-map backdrop",
+    "path": "art/illustrations/survival/map/path-rim.png",
+    "sha256": "ae2b61e31feb32ad71eaa4f23460501d7309a07b23ff30b37bd41021d74093bb",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P066.png",
+    "native_sha256": "4611059a733947549ec88c596e5a201db2505e63ceeaad6366c547ae31ff82cf",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one widescreen 16:9 Path Map backdrop for Project Heaven Cry Survival, Rim Station. High aerial directly over the rim station infrastructure. Wide steel-grey deck regions, branching struts, airlocks, hangar pads and protected black gaps between platforms. Cyan-white utility lights and isolated warm lighting at edges. The dark void is quiet, with no giant sky object. This is an environment painting behind about 40 overlaid tactical path UI nodes, paths and labels, arranged over 15 rows. Keep the entire interior from becoming busy, especially in the left, middle and right thirds. Reserve broad subdued mid-dark quiet areas and push the sharpest highlights and fine architecture to the perimeter. Painterly elevated aerial with a readable sense of place, no ground-level skyline. Heavenprint opaque gouache and restrained ink, broad directional brushwork, angular architectural forms, dry brush and selective warm ivory. Image 1 guides path-map scale and value structure only. Image 2 guides the setting's local palette, lighting and materials only. Design a fresh aerial composition. Absolutely no painted map markers, path overlay lines, symbols, dots, text, people, creatures, frames or watermarks. Opaque 16:9 full bleed with room for wide cropping.",
+    "references": [
+      "art/illustrations/survival/map/map-aerial.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "P067",
+    "mode": "path-node-marker-sheet",
+    "label": "Survival path node markers",
+    "path": "art/icons/survival/path-node-markers.png",
+    "sha256": "8c186cb4af4f060994ea1151a4d773fda7602c53e613df0093dd321d4b3dbeeb",
+    "native_dimensions": [
+      1983,
+      793
+    ],
+    "export_dimensions": [
+      1280,
+      512
+    ],
+    "upscaled": false,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P067.png",
+    "native_sha256": "8d1ad246099cb184adbb7b38300995b32494e3a69e0226533e398a44f67cdc1c",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Create exactly ten distinct tiny white flat-ink symbols for the Survival node marker atlas, arranged in a full exact 5 columns by 2 rows contact sheet on genuinely transparent alpha. Row one left to right: crossed blades, horned mask, sealed great door, lamp over shop counter, anvil and hammer. Row two left to right: training target with simple rifle silhouette, candle under arch, small campfire, open locker, two-armed signpost. Exactly one symbol per equally sized cell, evenly centered, ample empty gutters, baseline and visual weight consistent. Pure solid white icon glyphs, thick silhouettes and purposeful clear transparent cutouts readable at 24 pixels, consistent with the flat ink reference. The reference is for white graphic treatment only. No Wick character repeated in the icons. No grid lines, boxes, discs, dark or colored shading, glows, gradients, letters, captions, shadows, decorative framing, or background. Clean alpha, two straight rows of five clear isolated symbols.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "imagegen": "built-in",
+    "cell_size": [
+      256,
+      256
+    ],
+    "marker_exports": {
+      "fight": {
+        "path": "art/icons/survival/markers/fight.png",
+        "sha256": "d6da4c1b843cb9836e5975777314ee48bd15c406df190a090f8f33ce28cd8108",
+        "cell": [
+          0,
+          0
+        ]
+      },
+      "elite": {
+        "path": "art/icons/survival/markers/elite.png",
+        "sha256": "a75041a766aada2a5fa031ca5376024e223ee1bce8dfc05e33798ab95e4aa446",
+        "cell": [
+          1,
+          0
+        ]
+      },
+      "boss": {
+        "path": "art/icons/survival/markers/boss.png",
+        "sha256": "1e6dc40bdf88ecf328ff2722b98630f62d9d949b36fede53c96711789b2cd8ba",
+        "cell": [
+          2,
+          0
+        ]
+      },
+      "shop": {
+        "path": "art/icons/survival/markers/shop.png",
+        "sha256": "eeba638508bda8c4f6704723990a4c3b1b727f1566196cd77e487210a97df33d",
+        "cell": [
+          3,
+          0
+        ]
+      },
+      "forge": {
+        "path": "art/icons/survival/markers/forge.png",
+        "sha256": "9b4bd85b35ce29ffeaf734a906653871a794c27a612ded51b86de39ad300ad89",
+        "cell": [
+          4,
+          0
+        ]
+      },
+      "training": {
+        "path": "art/icons/survival/markers/training.png",
+        "sha256": "dfc260f7ca71dda00c0e448bbbd834e341edc4b04825f862f43b04a23ed3a2c6",
+        "cell": [
+          0,
+          1
+        ]
+      },
+      "shrine": {
+        "path": "art/icons/survival/markers/shrine.png",
+        "sha256": "cd06362e4dcd18578838883efae20a92051bebce48f378e8a69462e3a8fb6a6c",
+        "cell": [
+          1,
+          1
+        ]
+      },
+      "rest": {
+        "path": "art/icons/survival/markers/rest.png",
+        "sha256": "6a1d54c7e6275cce271f7b616f9656610a82adaaf95407aa0773dc3c2c9b2be7",
+        "cell": [
+          2,
+          1
+        ]
+      },
+      "cache": {
+        "path": "art/icons/survival/markers/cache.png",
+        "sha256": "4d50462bc45446716d9d6a3f6e66ecb680852efec0ba1fb655c46a350baa5310",
+        "cell": [
+          3,
+          1
+        ]
+      },
+      "crossroads": {
+        "path": "art/icons/survival/markers/crossroads.png",
+        "sha256": "289d16a1ed0334efa4ff35672012ff13a3b33b6ea1481925bb625b5617b5f776",
+        "cell": [
+          4,
+          1
+        ]
+      }
+    }
+  },
+  {
+    "id": "S4-ahoc",
+    "mode": "shopkeeper-portrait",
+    "label": "Chapter quartermaster",
+    "path": "art/portraits/survival/keeper-ahoc.png",
+    "sha256": "9f7a122f6053770a992ae92c1670967a845663a76e7e1e6feb4235aecc4c41f3",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-ahoc.png",
+    "native_sha256": "406f7c186171f93992f1e58e3e1cda63f26ce12fa9c096470ff38efaec81a2f4",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one Heavenprint portrait of the Survival shop's Chapter quartermaster for Project Heaven Cry. Match her established likeness in reference 1, a broad stocky middle-aged brown woman with a broad nose and short salt-and-pepper crew cut. Front-on, wearing a ceramic-grey field uniform, raising a stock box across a mesh counter beneath a green lamp. The first reference establishes this character’s exact facial design. The portrait sheets supply only paint style. Matte hand-painted opaque gouache and restrained printed ink, broad scumbled brush planes, charcoal lost edges, small ivory details, believable human anatomy and subtle acting. Chest-up or waist-up, face and decisive gesture inside middle 80%. 4:5 full bleed, head comfortably inside frame, distinct natural facial proportions. No labels, figures behind the subject, UI, frame, logo or watermark.",
+    "references": [
+      "art/portraits/survival/shop-quartermaster.png",
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "S4-city",
+    "mode": "shopkeeper-portrait",
+    "label": "Back-alley dealer",
+    "path": "art/portraits/survival/keeper-city.png",
+    "sha256": "db4762d4b7805a6bdea1b32d998150e586382603b5ff17722cacf80bd93cd032",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-city.png",
+    "native_sha256": "bbc6d47dfb54f7fa8de2a581327e335975c64a05bc89853e0e60a47c7aa7b2f4",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one Heavenprint portrait of the Survival shop's Back-alley dealer for Project Heaven Cry. Match his established likeness in reference 1, a lean olive-brown man in his thirties with a long narrow face, hooked prominent nose and black close curls. Distinct right-facing profile as he opens one side of a patched coat under a warm bulb in a wet blue alley. The first reference establishes this character’s exact facial design. The portrait sheets supply only paint style. Matte hand-painted opaque gouache and restrained printed ink, broad scumbled brush planes, charcoal lost edges, small ivory details, believable human anatomy and subtle acting. Chest-up or waist-up, face and decisive gesture inside middle 80%. 4:5 full bleed, head comfortably inside frame, distinct natural facial proportions. No labels, figures behind the subject, UI, frame, logo or watermark.",
+    "references": [
+      "art/portraits/survival/shop-dealer.png",
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "S4-field",
+    "mode": "shopkeeper-portrait",
+    "label": "Camp sutler",
+    "path": "art/portraits/survival/keeper-field.png",
+    "sha256": "e1d80c2fe204a701d1ecaf128936fda929761cc6a7bb77541354aa00862b5393",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-field.png",
+    "native_sha256": "3fe93994abfd5fe5b3991c197fc42e900c52a5521c8d3549efe8c3ea5779d834",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one Heavenprint portrait of the Survival shop's Camp sutler for Project Heaven Cry. Cast a new older heavy-set man with light freckled skin, a round bald head, a wide blunt nose, sleepy deep-set eyes, ruddy cheeks and a bushy white moustache. A weather-beaten old canvas apron and rolled sleeves. Framed at eye level looking down at an open stock ledger, hand weighing a ration. Muted overcast ochre and cool ash. Portrait sheets establish gouache handling and face hierarchy only; do not copy any likeness. The backdrop establishes local materials. Matte hand-painted opaque gouache and restrained printed ink, broad scumbled brush planes, charcoal lost edges, small ivory details, believable human anatomy and subtle acting. Chest-up or waist-up, face and decisive gesture inside middle 80%. 4:5 full bleed, head comfortably inside frame, distinct natural facial proportions. No labels, figures behind the subject, UI, frame, logo or watermark.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "S4-rim",
+    "mode": "shopkeeper-portrait",
+    "label": "Rim chandler",
+    "path": "art/portraits/survival/keeper-rim.png",
+    "sha256": "7fc74226c19a3ac716231c05fe0c7cfb62d457123ea80d2206d29f070212ff7b",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-rim.png",
+    "native_sha256": "ec774a8d6a5fb5c0e39adb200edce27428a145adbdb8086b318b0d3b8a6f8fb5",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one Heavenprint portrait of the Survival shop's Rim chandler for Project Heaven Cry. Cast a new sturdy forty-something East Asian man with a broad rectangular weathered face, low wide cheekbones, shallow nose bridge, heavy dark brows and a short straight black buzz cut. One faint old eyebrow notch. He checks a sealed core by the sweep of cold dock light across his slightly hunched three-quarter silhouette. Worn blue-black service overalls and cool rim-station steel. Portrait sheets establish gouache handling and face hierarchy only; do not copy any likeness. The backdrop establishes local materials. Matte hand-painted opaque gouache and restrained printed ink, broad scumbled brush planes, charcoal lost edges, small ivory details, believable human anatomy and subtle acting. Chest-up or waist-up, face and decisive gesture inside middle 80%. 4:5 full bleed, head comfortably inside frame, distinct natural facial proportions. No labels, figures behind the subject, UI, frame, logo or watermark.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "S4-shrine",
+    "mode": "shopkeeper-portrait",
+    "label": "Reliquary keeper",
+    "path": "art/portraits/survival/keeper-shrine.png",
+    "sha256": "79a7f54bdebf98030ce4d04310e06b3d017a1605e75372894a29b8d9005f3398",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-shrine.png",
+    "native_sha256": "58f36fe23bbdc7807cdde46160b83ff311514ccc00f868c3063b138424d66115",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint one Heavenprint portrait of the Survival shop's Reliquary keeper for Project Heaven Cry. Cast a new long-necked young woman with deep brown skin, a sharply angular diamond-shaped face, full lips, strong arched brows and shaved sides with a single braided crown. Lavender and ivory robe, looking slightly down and toward the viewer, her hands wrapping a tiny reliquary in worn linen. Candlelight and subdued blue-violet stone. Portrait sheets establish gouache handling and face hierarchy only; do not copy any likeness. The backdrop establishes local materials. Matte hand-painted opaque gouache and restrained printed ink, broad scumbled brush planes, charcoal lost edges, small ivory details, believable human anatomy and subtle acting. Chest-up or waist-up, face and decisive gesture inside middle 80%. 4:5 full bleed, head comfortably inside frame, distinct natural facial proportions. No labels, figures behind the subject, UI, frame, logo or watermark.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "S4-works",
+    "mode": "shopkeeper-portrait",
+    "label": "Smetanita trader",
+    "path": "art/portraits/survival/keeper-works.png",
+    "sha256": "1664bd6bc102f9ac70b66956c3dc1cf938204ea568ad2f4d8fc1419814441397",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "source": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-works.png",
+    "native_sha256": "2df2b973ffe57063f7ff5003b9886e435aaaf9cceb52bd085f0043bcffb77726",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "prompt": "Paint a single new Project Heaven Cry NPC portrait for the Machine Works shop, the Smetanita trader, visibly a woman automaton. She is a poised middle-aged civilian shopkeeper with a cultivated, quietly amused manner. Invented articulated ceramic face with slender aquiline facial design, dark graphite segment lines across her jaw and temple, removable ivory enamel cheek plates, small warm unlit brass inset irises, tiny chin hinge, and mechanically jointed slender fingers. A real woman's character and expression rendered as a constructed face, visibly mechanical at portrait size. She wears a plum-and-gold-thread headwrap and high-collared lacquer-black trading robe, with a worn ring over a ceramic finger. Warm amber foundry-market light in slate-blue surroundings. Her mechanical hand slides a coin across a lacquer counter next to an abacus and viewers see the unambiguous articulation. Half-body, three-quarter gaze. Broad matte hand-painted Heavenprint gouache and restrained ink, broken angular brush strokes, soft dry brush, warm ivory accents, a deliberately quiet background. Reference 1 is wardrobe and role only, redesign the human face as a mature civilian ceramic automaton woman. Reference 2 is material and mechanical construction only, do not copy the combat silhouette or featureless screen. Reference 3 is local color and practical light, reference 4 is brushwork. Large believable expressive face and unmistakable robot construction. Opaque 4:5 portrait full bleed, no text, logos, UI, watermark or frame.",
+    "references": [
+      "art/portraits/survival/shop-trader.png",
+      "art/portraits/survival/boss-robot-warframe.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  }
+]

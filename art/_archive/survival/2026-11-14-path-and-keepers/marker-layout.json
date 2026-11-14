@@ -1,0 +1,87 @@
+{
+  "rows": 2,
+  "columns": 5,
+  "coordinates": "zero-based column, row",
+  "markers": {
+    "fight": {
+      "path": "art/icons/survival/markers/fight.png",
+      "sha256": "d6da4c1b843cb9836e5975777314ee48bd15c406df190a090f8f33ce28cd8108",
+      "cell": [
+        0,
+        0
+      ]
+    },
+    "elite": {
+      "path": "art/icons/survival/markers/elite.png",
+      "sha256": "a75041a766aada2a5fa031ca5376024e223ee1bce8dfc05e33798ab95e4aa446",
+      "cell": [
+        1,
+        0
+      ]
+    },
+    "boss": {
+      "path": "art/icons/survival/markers/boss.png",
+      "sha256": "1e6dc40bdf88ecf328ff2722b98630f62d9d949b36fede53c96711789b2cd8ba",
+      "cell": [
+        2,
+        0
+      ]
+    },
+    "shop": {
+      "path": "art/icons/survival/markers/shop.png",
+      "sha256": "eeba638508bda8c4f6704723990a4c3b1b727f1566196cd77e487210a97df33d",
+      "cell": [
+        3,
+        0
+      ]
+    },
+    "forge": {
+      "path": "art/icons/survival/markers/forge.png",
+      "sha256": "9b4bd85b35ce29ffeaf734a906653871a794c27a612ded51b86de39ad300ad89",
+      "cell": [
+        4,
+        0
+      ]
+    },
+    "training": {
+      "path": "art/icons/survival/markers/training.png",
+      "sha256": "dfc260f7ca71dda00c0e448bbbd834e341edc4b04825f862f43b04a23ed3a2c6",
+      "cell": [
+        0,
+        1
+      ]
+    },
+    "shrine": {
+      "path": "art/icons/survival/markers/shrine.png",
+      "sha256": "cd06362e4dcd18578838883efae20a92051bebce48f378e8a69462e3a8fb6a6c",
+      "cell": [
+        1,
+        1
+      ]
+    },
+    "rest": {
+      "path": "art/icons/survival/markers/rest.png",
+      "sha256": "6a1d54c7e6275cce271f7b616f9656610a82adaaf95407aa0773dc3c2c9b2be7",
+      "cell": [
+        2,
+        1
+      ]
+    },
+    "cache": {
+      "path": "art/icons/survival/markers/cache.png",
+      "sha256": "4d50462bc45446716d9d6a3f6e66ecb680852efec0ba1fb655c46a350baa5310",
+      "cell": [
+        3,
+        1
+      ]
+    },
+    "crossroads": {
+      "path": "art/icons/survival/markers/crossroads.png",
+      "sha256": "289d16a1ed0334efa4ff35672012ff13a3b33b6ea1481925bb625b5617b5f776",
+      "cell": [
+        4,
+        1
+      ]
+    }
+  }
+}
