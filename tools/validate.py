@@ -2434,7 +2434,7 @@ if _sv is not None:
             for _ei, _e in enumerate(_it.get("effects") or []):
                 # rules 1.44: a boon may answer a run's stat (Bandolier's run_ammo, Tithe's run_credits; effects/stats.ts STATS)
                 if _lk == "boons" and _e.get("when") is None and _e.get("op") == "stat_mult":
-                    if _e.get("stat") not in ("run_ammo", "run_credits") or not _num(_e.get("value")): errors.append(f"{_w} effect {_ei}: a boon's stat_mult names run_ammo or run_credits and a number")
+                    if _e.get("stat") not in ("run_ammo", "run_supply", "run_credits") or not _num(_e.get("value")): errors.append(f"{_w} effect {_ei}: a boon's stat_mult names run_ammo, run_supply or run_credits and a number")
                     continue
                 check_trigger_effect(_e, f"{_w} effect {_ei}")
                 if _lk == "relic_props" and (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_w} effect {_ei}: a property works only with its instance: if.with_this true")

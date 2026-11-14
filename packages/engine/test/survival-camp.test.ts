@@ -287,25 +287,29 @@ describe('rules 1.51: the caster boons after a Boss (survival-spec 13.4)', () =>
 describe('rules 1.51: the supply pack (spec rule 52)', () => {
   const cores = (l: any[]) => l.filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + (x.qty || 1), 0);
   const sigil = () => clone(camp([{ build: 'sigil', level: 1 }])).characters.c1 as any;
-  it('cores: what was burnt, at least cores x n and at most cores_max x n; none without an Evoker or Visualizer', () => {
+  it('cores: after a fight exactly the spare cores burnt (none burnt, none back), at most cores_max x n; a cache cores x n; none without an Evoker or Visualizer', () => {
     const c = sigil(), ap = SV.ammo_pack;
-    expect(cores(ammoPack(c, 1, [], 0))).toBe(ap.cores); expect(cores(ammoPack(c, 1, [], 1))).toBe(ap.cores);
+    expect(cores(ammoPack(c, 1, [], 0))).toBe(0); expect(cores(ammoPack(c, 1, [], 1))).toBe(1);
     expect(cores(ammoPack(c, 1, [], 2))).toBe(Math.min(2, ap.cores_max)); expect(cores(ammoPack(c, 1, [], 9))).toBe(ap.cores_max);
-    expect(cores(ammoPack(c, 3, [], 9))).toBe(ap.cores_max * 3); expect(cores(ammoPack(c, 3, [], 0))).toBe(ap.cores * 3); // a Boss: 3 to 6
+    expect(cores(ammoPack(c, 3, [], 9))).toBe(ap.cores_max * 3); expect(cores(ammoPack(c, 3, [], 0))).toBe(0); // a Boss: what was burnt, up to 6
+    expect(cores(ammoPack(c, 1, []))).toBe(ap.cores); // a cache or the vault's chest: found, not refilled
     const gun = clone(camp([{ build: 'plain_gun', level: 1 }])).characters.c1 as any;
     expect(cores(ammoPack(gun, 1, undefined, 5))).toBe(0);
   });
-  it('the charge held and the cores burnt (charge before minus after, a core a core, rounded up)', () => {
+  it('the cores burnt: spare cores before minus after, never below 0, never more than were held (the review: no rounding up)', () => {
     const c = sigil(), held = chargeHeld(c);
     expect(held).toBe(packOf(c).filter((x) => x.id === 'standard_core').reduce((t, x) => t + x.qty, 0) * CORE_CHARGE + (c.evoCharge ?? CORE_CHARGE));
-    expect(coresBurnt(40, 40)).toBe(0); expect(coresBurnt(40, 39)).toBe(1); expect(coresBurnt(40, 25)).toBe(2); expect(coresBurnt(10, 30)).toBe(0);
+    expect(coresBurnt(4, 4)).toBe(0); expect(coresBurnt(4, 3)).toBe(1); expect(coresBurnt(4, 1)).toBe(3); expect(coresBurnt(1, 3)).toBe(0); expect(coresBurnt(2, -5)).toBe(2);
   });
-  it('MP: mp_share x n of max MP for a character carrying an Emanator or Attuner; none otherwise; Bandolier doubles it with the magazines and cores', () => {
+  it('MP: mp_share x n of max MP for a character carrying an Emanator or Attuner; none otherwise; Deep Satchel doubles the MP and cores, Bandolier only the magazines', () => {
     const o: any = clone(camp([{ build: 'outburst', level: 1 }])).characters.c1;
     expect(supplyMp(o, 1)).toBe(Math.round(SV.ammo_pack.mp_share * maxMp(o))); expect(supplyMp(o, 3)).toBe(Math.round(SV.ammo_pack.mp_share * 3 * maxMp(o)));
     expect(supplyMp(sigil(), 1)).toBe(0);
-    o.relics = ['boon.bandolier']; expect(supplyMp(o, 1)).toBe(Math.round(SV.ammo_pack.mp_share * 2 * maxMp(o)));
-    const s = sigil(); s.relics = ['boon.bandolier']; expect(cores(ammoPack(s, 1, [], 9))).toBe(SV.ammo_pack.cores_max * 2);
+    o.relics = ['boon.bandolier']; expect(supplyMp(o, 1)).toBe(Math.round(SV.ammo_pack.mp_share * maxMp(o)));
+    o.relics = ['boon.deep_satchel']; expect(supplyMp(o, 1)).toBe(Math.round(SV.ammo_pack.mp_share * 2 * maxMp(o)));
+    const s = sigil(); s.relics = ['boon.bandolier']; expect(cores(ammoPack(s, 1, [], 9))).toBe(SV.ammo_pack.cores_max);
+    s.relics = ['boon.deep_satchel']; expect(cores(ammoPack(s, 1, [], 9))).toBe(SV.ammo_pack.cores_max * 2);
+    expect(worthOf('boon.deep_satchel')).toBeGreaterThan(0); expect(capRoom(s)).toBe(BOON_CAP - worthOf('boon.deep_satchel'));
   });
   it('through the reducer: after a won fight the cores burnt come back, the MP share lands (never past the max), Flux is 0', () => {
     const pcs: Pc[] = [{ build: 'sigil', level: 1 }, { build: 'outburst', level: 1 }];
@@ -313,10 +317,13 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     n.kind = 'fight'; r.at = prev.id; r.state = 'map';
     let g = g0; for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
     const sig = g.combat!.units.find((u) => u.charId === 'c1')!, out = g.combat!.units.find((u) => u.charId === 'c2')!;
-    sig.mg!.charge = 1; sig.mg!.flux = 3; out.mg!.mp = 5; // two of its loaded core's charge... burnt: 10 - 1 = 9 charge, a core
-    const before = cores(packOf(g.characters.c1));
+    const before = cores(packOf(g.characters.c1)), g2 = clone(g);
+    sig.mg!.charge = 1; sig.mg!.cores -= 1; sig.mg!.flux = 3; out.mg!.mp = 5; // one spare core swapped in and most of the loaded one spent: one core burnt
     const done = apply(g, { type: 'run/skip' }, 'host');
-    expect(cores(packOf(done.characters.c1)) - before).toBe(Math.max(SV.ammo_pack.cores, Math.min(SV.ammo_pack.cores_max, 1)));
+    expect(cores(packOf(done.characters.c1))).toBe(before); // the one burnt came back, no more
+    g2.combat!.units.find((u) => u.charId === 'c1')!.mg!.charge = 1; // nothing burnt: the loaded core's 9 charge is not a spare core
+    const none = apply(g2, { type: 'run/skip' }, 'host');
+    expect(cores(packOf(none.characters.c1))).toBe(before);
     expect(done.story.magic!.c1.flux).toBe(0);
     expect(mpNow(done.characters.c2)).toBe(Math.min(maxMp(done.characters.c2), 5 + supplyMp(done.characters.c2, 1)));
     expect(done.run!.note!.ammo!.c2.some((x) => / MP$/.test(x))).toBe(true);

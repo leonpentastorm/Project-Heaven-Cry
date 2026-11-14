@@ -54,7 +54,8 @@ export const STATS = {
   // Classes 3.0 step 8 (rules 1.34): Figments
   figment_designs: 'Figment designs kept ready beyond the door\'s ladder (figments.ts designsMax; the Rigger +1)',
   // Rules 1.44 (Survival, build step 5): what a run pays, asked of the character's relics (a boon)
-  run_ammo: 'The ammunition pack after a fight or a cache, magazines and cores, a multiplier (run/rewards.ts runPack; Bandolier)',
+  run_ammo: 'The supply pack after a fight or a cache, its magazines, a multiplier (run/rewards.ts ammoPack; Bandolier)',
+  run_supply: 'The supply pack after a fight or a cache, its cores and MP, a multiplier (run/rewards.ts ammoPack, supplyMp; Deep Satchel)',
   run_credits: 'The credits a node pays, a multiplier (run/rewards.ts runPay; Tithe)',
   // ---- asked by the sheet (character.ts)
   equip_ban: 'This weapon or mod may not be equipped (>0)', one_hand_heavy: 'Heavy weapons in one hand (>0)',

@@ -60,7 +60,8 @@ export interface RunNote { node: string; kind: string; text?: string; xp?: numbe
 export interface RunFight { node: string; stage: number; depth: number; kind: string; template: string; setting: string; level: number;
   target: { bulk: number; pressure: number; rounds: number }; spent: { bulk: number; pressure: number }; scaleHp: number;
   foes: { name: string; tier: string; level: number; weapon: string; kind?: string; caster?: string; scale?: { hp?: number; damage?: number } }[];
-  /** rules 1.51: each character's Sigil and Figment charge as the fight began (run/rewards.ts chargeHeld), for the supply pack's cores */ charge?: Record<string, number>;
+  /** rules 1.51: each character's spare cores as the fight began (coresCarried), for the supply pack's cores */ cores?: Record<string, number>;
+  /** an older build's record (the charge held); not read */ charge?: Record<string, number>;
   outcome?: 'win' | 'loss'; rounds?: number; /** rules 1.44: the foes dropped (dead, Downed or given up) */ kills?: number; /** rules 1.47: what each character did (run/tally.ts) */ tally?: FightTally }
 /** One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. */
 export interface RunStock { id: string; price: number; sold?: string }

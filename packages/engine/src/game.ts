@@ -6,7 +6,7 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
@@ -61,7 +61,7 @@ import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runS
 import { MAP_DATA } from './run/map';
 import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
-import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade, supplyMp, chargeHeld, coresBurnt } from './run/rewards';
+import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade, supplyMp, coresBurnt } from './run/rewards';
 import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf, startOffer, startBoonProblem, CAMP } from './run/stage';
 import { relicRow, worthOf, BOON_CAP } from './run/power';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
@@ -3351,7 +3351,7 @@ function runEnter(g: GameState, id: string) {
 }
 /** Give a character the supply pack (rule 23; rules 1.51, spec rule 52): its magazines and cores (`burnt`: the cores it
  * burnt in the fight) and its MP share, never above its max; the names of what it got, for the panel. */
-function runAmmo(c: Character, count: number, burnt = 0): string[] {
+function runAmmo(c: Character, count: number, burnt?: number): string[] {
   const got = ammoPack(c, count, undefined, burnt), out = got.map((it) => itemLabel(it));
   if (got.length) { const pack = packOf(c).map((x) => ({ ...x })); for (const it of got) packAdd(pack, it); c.pack = pack; }
   const mp = supplyMp(c, count), was = mpNow(c);
@@ -3370,8 +3370,8 @@ function runFight(g: GameState, n: RunNode) {
   cb.tape = (cb.fx || []).filter((e) => e.k === 'turn').slice(-1) as any;
   sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind === 'vault_guard' ? 'THE VAULT\'S GUARD' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
   r.state = 'fight'; r.last = enc.template; r.out = [];
-  const charge = Object.fromEntries(chars.map((c) => [c.id, chargeHeld(c)])); // rules 1.51: the supply pack's cores are what the fight burnt
-  r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, charge, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
+  const cores = Object.fromEntries(chars.map((c) => [c.id, coresCarried(c)])); // rules 1.51: the supply pack's cores are the spare cores the fight burnt
+  r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, cores, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
     target: enc.target, spent: enc.spent, scaleHp: enc.scaleHp, foes: enc.foes.map((f) => ({ name: f.name, tier: f.tier, level: f.level!, weapon: f.weapon, ...(f.kind ? { kind: f.kind } : {}), ...(f.caster ? { caster: f.caster } : {}), ...(f.scale ? { scale: f.scale } : {}) })) }] };
   const wasLive = !!liveFight(g);
   g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
@@ -3385,7 +3385,7 @@ function runFight(g: GameState, n: RunNode) {
 function runFightOver(g: GameState) {
   const cb = g.combat!, r = g.run!, won = fightBack(g, cb, true), n = runNode(r, r.at)!, k = payKindOf(n);
   const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round, tally: fightTally(cb.tape || [], cb.units, cb.round) } : f));
-  const before = fights[fights.length - 1]?.charge || {};
+  const before = fights[fights.length - 1]?.cores || {};
   for (const id of Object.keys(g.characters)) { const m = g.story.magic?.[id]; if (m) m.flux = 0; } // rules 1.51 (spec rule 52 d): Flux is 0 after every fight of a run
   r.stats = { ...r.stats, fights }; delete cb.tape; // the tally is kept; the tape is not
   cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + counted(cb.round, 'round') + '. ' + cb.units.filter((u) => u.side === 'pc' && !u.companion).map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
@@ -3411,7 +3411,7 @@ function runFightOver(g: GameState) {
   for (const c of chars) {
     giveXp(g, c, 'combat', xp, 'Survival, ' + (n.gate ? 'the gate' : n.kind));
     const got = creditsFor(c, cr); earnCredits(c, got); lg.credits += got; // rules 1.44: Tithe (the stat run_credits)
-    ammo[c.id] = runAmmo(c, packCount(k), before[c.id] != null ? coresBurnt(before[c.id], chargeHeld(c)) : 0);
+    ammo[c.id] = runAmmo(c, packCount(k), before[c.id] != null ? coresBurnt(before[c.id], coresCarried(c)) : 0);
     offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
   }
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });

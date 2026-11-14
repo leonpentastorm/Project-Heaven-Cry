@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 58 stats, 24 condition fields, 488 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 489 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -514,7 +514,7 @@ Resources (`data/actions.json` `resources`; paid by `pay` / `spend`, named in an
 | `ledger` | Ledger | unit | res.ledger |
 | `devotion_xp` | Devotion XP | character | devotionXp |
 
-### Stat ids (49 plain, 9 families; `effects/stats.ts`)
+### Stat ids (50 plain, 9 families; `effects/stats.ts`)
 
 Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod`. A new id is a line in `STATS`.
 
@@ -565,7 +565,8 @@ Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod
 | `patron_presence` | While Witnessed, the patron stands at this unit's side: its interventions reach further and land on a Judged enemy of its first (>0; faith.ts presenceOf) |
 | `always_seen` | The other side sees this unit wherever it is (>0; tactics.ts sightOf, Classes 3.0 P7: Traced, a Figment's Stare) |
 | `figment_designs` | Figment designs kept ready beyond the door's ladder (figments.ts designsMax; the Rigger +1) |
-| `run_ammo` | The ammunition pack after a fight or a cache, magazines and cores, a multiplier (run/rewards.ts runPack; Bandolier) |
+| `run_ammo` | The supply pack after a fight or a cache, its magazines, a multiplier (run/rewards.ts ammoPack; Bandolier) |
+| `run_supply` | The supply pack after a fight or a cache, its cores and MP, a multiplier (run/rewards.ts ammoPack, supplyMp; Deep Satchel) |
 | `run_credits` | The credits a node pays, a multiplier (run/rewards.ts runPay; Tithe) |
 | `equip_ban` | This weapon or mod may not be equipped (>0) |
 | `one_hand_heavy` | Heavy weapons in one hand (>0) |
@@ -1095,7 +1096,7 @@ Families: `body`, `brain`, `heart`.
 | `RunWeapon` | `interface RunWeapon { id, rarity, price, prop }` | One weapon of a pick (rule 26): the weapon or focus, its rarity, its price at that rarity. |
 | `RunOffer` | `interface RunOffer { node, weapons, instead, ammo }` | A character's pick after a won fight (rule 26): three weapons, or credits instead; `ammo`: the node's ammunition pack count (a picked gun takes its share, rule 23). |
 | `RunNote` | `interface RunNote { node, kind, text, xp, credits, ammo, back, won, rounds }` | What the node the party stands on gave (its panel): XP and credits each, the ammunition by character, the text of a node without a fight (data), who came back from the dead (rule 5), the fight's result. |
-| `RunFight` | `interface RunFight { node, stage, depth, kind, template, setting, level, target, spent, scaleHp, foes, charge, outcome, rounds, kills, tally }` | One fight of the run (rule 35's beginning: the budget asked and spent, the foes, the result). |
+| `RunFight` | `interface RunFight { node, stage, depth, kind, template, setting, level, target, spent, scaleHp, foes, cores, charge, outcome, rounds, kills, tally }` | One fight of the run (rule 35's beginning: the budget asked and spent, the foes, the result). |
 | `RunStock` | `interface RunStock { id, price, sold }` | One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. |
 | `RunVisit` | `interface RunVisit { node, kind, steps, did, stock, trades, patron, log }` | The safe node the party stands on (rules 1.43, build step 4a): what each character did there this visit and what the node rolled on entry. |
 | `RunLasting` | `interface RunLasting { node, items }` | An armour-or-item pick (rules 1.43, spec rule 41): three things, at least two lasting; or nothing. |
@@ -1157,11 +1158,12 @@ Families: `body`, `brain`, `heart`.
 | `vaultGrade` | `vaultGrade(stage: number): Rarity` | Rules 1.48: the grade of the vault's weapon in a stage: `vault.grade_up` above the stage's pick ceiling, at most `vault.grade_max` (stage 1 Masterwork, from stage 2 Relic). |
 | `gunsOf` | `gunsOf(c: Character): string[]` | The guns a character carries, one entry each (in hand, off hand, pack). |
 | `magazineWorth` | `magazineWorth(id: string): PackItem[]` | A magazine's worth for one gun (rule 23): a full magazine, or a magazine's capacity of loose rounds. |
-| `ammoPack` | `ammoPack(c: Character, n: number, guns: string[] = gunsOf(c), burnt = 0): PackItem[]` | The supply pack (rule 23; rules 1.51, spec rule 52): `n` magazines' worth for every gun carried, and for a character carrying an Evoker or a Visualizer (`ammo_pack.core_doors`) the cores it burnt in the fight… |
-| `supplyMp` | `supplyMp(c: Character, n: number): number` | Rules 1.51 (spec rule 52 c): the MP a character takes back with the supply pack: `ammo_pack.mp_share` x n x the stat `run_ammo` of its max MP, rounded, for a character carrying an MP focus of `ammo_pack.mp_doo… |
+| `ammoPack` | `ammoPack(c: Character, n: number, guns: string[] = gunsOf(c), burnt?: number): PackItem[]` | The supply pack (rule 23; rules 1.51, spec rule 52): `n` magazines' worth for every gun carried (x the stat `run_ammo`: Bandolier), and for a character carrying an Evoker or a Visualizer (`ammo_pack.core_doors… |
+| `supplyMp` | `supplyMp(c: Character, n: number): number` | Rules 1.51 (spec rule 52 c): the MP a character takes back with the supply pack: `ammo_pack.mp_share` x n x the stat `run_supply` (Deep Satchel) of its max MP, rounded, for a character carrying an MP focus of… |
 | `chargeHeld` | `chargeHeld(c: Character): number` | Rules 1.51 (spec rule 52 b): the Sigil and Figment charge a character holds: its spare cores x a core's charge, and the loaded charge of each Evoker and Visualizer it carries. |
-| `coresBurnt` | `coresBurnt(before: number, after: number): number` | Rules 1.51 (spec rule 52 b): the cores burnt between two readings of `chargeHeld` (a core's charge a core, rounded up; never below 0). |
-| `ammoMult` | `ammoMult(c: Character): number` | Rules 1.44: the supply pack's multiplier for this character (the stat `run_ammo`, which its relics answer: Bandolier), on its magazines, its cores and (rules 1.51) its MP. |
+| `coresBurnt` | `coresBurnt(before: number, after: number): number` | Rules 1.51 (spec rule 52 b; the review): the spare cores burnt in a fight, from two counts of the cores carried (coresCarried) as it began and as it ended: never below 0, never more than were held as it began. |
+| `ammoMult` | `ammoMult(c: Character): number` | Rules 1.44: the supply pack's magazines multiplier for this character (the stat `run_ammo`, which its relics answer: Bandolier). |
+| `supplyMult` | `supplyMult(c: Character): number` | Rules 1.51 (the review): the supply pack's cores and MP multiplier (the stat `run_supply`: Deep Satchel). |
 | `creditsFor` | `creditsFor(c: Character, credits: number): number` | Rules 1.44: a node's credits as this character takes them (the stat `run_credits`, which its relics answer: Tithe). |
 | `priceBand` | `priceBand(k: PayKind, depth: number, stage: number): number` | The highest price a pick may roll at a node (rule 26), on the standard price. |
 | `stageCeiling` | `stageCeiling(stage: number): Rarity` | The highest grade a stage reaches (rule 26, rules 1.43): `rewards.ceiling` by stage (stage 1 Fine, stage 2 Masterwork, from stage 3 Relic): what its picks give and what its shops and Forges grade to. |

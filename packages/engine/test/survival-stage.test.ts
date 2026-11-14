@@ -39,8 +39,8 @@ function afterBoss(pcs: Pc[] = DUO, prep: (g: GameState) => void = () => {}, see
 }
 
 describe('rules 1.44: the thirteen boons, each through the item-op runner (spec section 3.5)', () => {
-  it('nineteen boons in data (thirteen, and rules 1.51\'s six caster boons), each a relic with one sentence and a worth; every setting\'s pool has one', () => {
-    expect(BOONS).toHaveLength(19);
+  it('twenty boons in data (thirteen, rules 1.51\'s six caster boons and Deep Satchel), each a relic with one sentence and a worth; every setting\'s pool has one', () => {
+    expect(BOONS).toHaveLength(20);
     for (const b of BOONS) { expect(b.kind).toBe('relic'); expect(b.text).not.toMatch(/\{=/); expect(typeof b.worth).toBe('number'); }
     for (const s of SV.settings) expect(BOONS.some((b) => (b.pools || []).includes(s.pool)), s.id).toBe(true);
   });
@@ -100,13 +100,13 @@ describe('rules 1.44: the thirteen boons, each through the item-op runner (spec 
     expect(at('c2').hp).toBe(10);
     expect(done.characters.c1.hp).toBe(at('c1').hp + (maxHp(done.characters.c1) - u.maxHp)); // it went home (the level-up after the pay adds its own HP)
   });
-  it('Bandolier: the ammunition pack x2, its magazines and its cores (the stat run_ammo)', () => {
+  it('Bandolier: the supply pack\'s magazines x2 (the stat run_ammo); its cores are Deep Satchel\'s (run_supply)', () => {
     const g = started(DUO), c: any = clone(g).characters.c2;
     const before = ammoPack(c, 1); c.relics = ['boon.bandolier'];
     expect(ammoMult(c)).toBe(boon('boon.bandolier').effects[0].value);
     const after = ammoPack(c, 1), cores = (l: any[]) => l.filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + (x.qty || 1), 0);
-    expect(after.length - cores(after) && after.length).toBeGreaterThan(before.length);
-    expect(cores(after)).toBe(cores(before) * 2);
+    expect(after.length - cores(after)).toBe((before.length - cores(before)) * 2);
+    expect(cores(after)).toBe(cores(before));
   });
   it('Tithe: +50% credits from every node that pays (the stat run_credits), paid through the reducer', () => {
     const g = inFight((g0) => { g0.characters.c1.relics = ['boon.tithe']; });
