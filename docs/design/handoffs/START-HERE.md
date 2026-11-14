@@ -1,5 +1,22 @@
 # Start here (14 Nov 2026)
 
+> **UPDATE, 14 Nov 2026, 13:45 UTC (usage at 95%: this may be the last note from the cloud session).**
+> **0.27.2 is built and on the working branch at b18c6ec6, NOT yet live** (the loadout, creation without a kit,
+> starting boons, the supply pack; the join's own check was green). Its release run was started and may not have
+> been read: logs in the session scratchpad as `r272-check.log` / `r272-e2e.log` (lost if the container was
+> reclaimed). **To finish:** on a quiet machine run `npm run check` and `npm run e2e -- all`; if green with nothing
+> failing alone, deploy 0.27.2 (Leon's word is given: "Auto deploy the other 2"): fast-forward `develop` and `main`
+> to the branch head, push `backup/live-0.27.2`, then assets, build.py --web, build, deploy_site.py, wrangler
+> deploy; verify live with old-save, creation-points, survival, room. Check first whether it already happened
+> (`git ls-remote origin main backup/live-0.27.2`).
+> **The every-weapon effects table** is on `worktree-agent-a202ef14f498e698e` (pushed as `wip/` if the watchdog or
+> the lead got to it): its work is committed (weapon effects read from data, the table built by machine, every
+> family fired in the browser, new CC0 sounds credited); it was in its final proof. Read its newest commits and
+> `docs/design/handoffs/weapon-fx-table.md` on that branch, run its proof, merge, ship as the next patch.
+> **Two things Leon has not ruled on from 0.27.2:** the free pistol is the 2-shot parlour pistol (cheapest of its
+> archetype) and the light blades' "next one up" is the throwing knives; the lead recommends a hand mark in data
+> for an archetype's basic weapon where "cheapest" picks badly.
+
 > **UPDATE, 14 Nov 2026, 13:20 UTC: 0.27.1 IS LIVE** (the shooting effects restored: the bullet in flight, techniques'
 > own effects, one shot heard and drawn per round fired). `main` = `develop` = `backup/live-0.27.1` = 76316985.
 > Release run under a loaded machine: `npm run check` ALL GREEN; every browser suite passed, 14 of them only when run
