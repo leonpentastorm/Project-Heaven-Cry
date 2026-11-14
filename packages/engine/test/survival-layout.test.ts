@@ -57,7 +57,7 @@ describe('Survival layout generator (rules 1.45)', () => {
     // Hazards appear only on templates that allow them, and do appear on those.
     expect(cases.some((c) => c.gen && c.hazardAllowed && hazardsIn(c.gen.rows) > 0)).toBe(true);
     expect(TEMPLATES.filter((t) => !t.hazard).length).toBeGreaterThan(0);
-  });
+  }, 300_000); // the 1,000-seed sweep takes 33 s on a loaded machine: a time limit, not a rule (it failed three full checks at 30 s)
 
   it('the encounter\'s own start tiles: never on a blocker, a hazard, a trap or a hole, every foe at the deployment minimum or more', () => {
     const bad: string[] = [];
