@@ -5923,7 +5923,7 @@ standard core's 150 credits (Magic, "Mana cores").
    Survival screen but a fight's. Between fights a character's own player may equip, unequip, load, swap a quiver, fit
    mods and give (`gear/*`, `gear/give`), as the engine already accepts in a run. **At the camp** (run state `loadout`)
    the sheet's GEAR tab is read-only: the camp rebuilds the gear from its picks after every change, so the engine
-   refuses every `gear/*` action there, in words ("At the camp, change your gear in the loadout."). **Ask and Rest never
+   refuses every `gear/*` action there, in words naming the character ("At the camp, change Kade's gear in the loadout."). **Ask and Rest never
    show in a run** (the engine already refuses `voice/`). **A run rests only at a Rest node:** the reducer's `rest` is
    refused in a run. It was not: `RUN_REFUSED` lists `rest/` and the action's type is `rest`, so a host could take a
    free long rest between any two nodes; the fix comes with a test, written first, that sends `rest` through the
@@ -9390,7 +9390,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     spec for 0.28.0 (survival-spec section 14), not built; its numbers are items 4101 to 4119. Each is a call the lead
     made for Leon on his words.
 4101. **The sheet in a run (rules 1.54 item 1):** the camp (run state `loadout`) refuses every `gear/*` action ("At the
-    camp, change your gear in the loadout."); Ask and Rest are never shown in a run. PROVISIONAL.
+    camp, change Kade's gear in the loadout.", naming the character); Ask and Rest are never shown in a run. PROVISIONAL.
 4102. **A rest in a run (rules 1.54 item 1):** the reducer's `rest` is refused in a run (`RUN_REFUSED` matched `rest/`,
     never the action's type `rest`). A fix, not a number; its test is written first and fails on the old code.
 4103. **The pick's two cards (rules 1.54 item 2):** Materials or One weapon; `rewards.offer` by where: fight, Elite, gate,

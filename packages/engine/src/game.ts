@@ -618,6 +618,7 @@ function reduce(g: GameState, a: Action, by: string) {
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
   if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
   if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
+  { const no = campGearProblem(g, a); if (no) fail(no); }
   if (g.sandbox && /^(world\/act|story\/(move|door))$/.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
   switch (a.type) {
@@ -3127,7 +3128,14 @@ export type SandboxAction =
 /** Rules 1.39 (survival-spec rule 36): actions with no place in a Survival run, refused as in the Proving Ground: the
  * Narrator's, the story's, the room's sessions and rests (a run's are its Rest nodes). (The Proving Ground refuses itself.) Level-ups,
  * gear, magic and the fight's own actions are not here. */
-const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest\/)/;
+const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest$)/; // rules 1.54 item 1: the action's type is `rest` (it read `rest/`, which no action is)
+/** Rules 1.54 item 1 (R6): at the camp (run state `loadout`) the gear is rebuilt from the loadout's picks after every
+ * change, so every `gear/*` action is refused there, in words naming the character. Null when it is not the camp. */
+const campGearProblem = (g: GameState, a: Action): string | null => {
+  if (g.run?.state !== 'loadout' || !a.type.startsWith('gear/')) return null;
+  const c = g.characters[(a as { charId?: string }).charId || ''];
+  return 'At the camp, change ' + (c ? c.name + '\'s' : 'your') + ' gear in the loadout.';
+};
 /** Rules 1.39: a run's actions through the one reducer (the state and the refusals are run/state.ts). */
 function runAction(g: GameState, a: Action, by: string) {
   switch (a.type) {
