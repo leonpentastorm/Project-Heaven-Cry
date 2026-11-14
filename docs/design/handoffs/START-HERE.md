@@ -113,6 +113,34 @@ Leon's words: "I will do code review and whatever balance needed in that new sec
    parties after the loadout, the repair rate (nearly free at 10%), the budget (300; Leon said "like 200").
 5. **The roguelike on top of Survival** (`docs/ROADMAP.md`).
 
+## Balance 2.0: Leon's notes so far (14 Nov 2026)
+
+Read this before measuring or refitting anything.
+
+1. **More levers, shown to the player** (Leon: "we also need more balancing levers in balance 2.0 too"). Two he named:
+   - **Recoil.** Guns already have recoil in the rules, but it barely appears in any text. Make it a real, visible
+     lever: on the weapon card, in the hover card, in the shop compare panel. Then weapons can differ by recoil as
+     well as damage, AP, magazine and range.
+   - **Focus variants by modifiers.** Many Evokers (and Emanators, Attuners, Visualizers) that differ only by a few
+     numbers, in his words "2 more flux, 2 more core per reload, shit like that". Build this as DATA: a focus is a
+     base plus a short list of modifiers read by general code (the "No rebuild" rule: no per-focus code). The same
+     shape should serve weapons (a variant is a base plus modifiers), so the roguelike's loot is lines in a file.
+2. **Every weapon measured against the plain rifle.** Today only the service rifle, the best gun and the best blade
+   are on the contract. The other 60 were numbered by trade-off and never measured one by one. The bow measures 90
+   to 100% of the rifle.
+3. **Do NOT "fix" Sigil damage on the Survival bot's numbers.** The lead first read the bot runs as "the Sigilist
+   deals half a gunner's damage: a rules ceiling". That was too strong. Leon tested on live 0.26.0: a normal
+   FIRE-SEEK hit is about 93, fair against three melee blows. The bot died because (a) its test build wore the
+   lightest armour and took 14 damage a round against the gunner's 2.5, (b) it plays badly (walks off its glyphs,
+   abandons a quarter of them, never uses area words), and (c) the measure counts HP actually removed, so a 93 hit
+   on a 15 HP rat counts as 15: one big hit wastes far more to overkill than several small shots. The real question
+   is narrower: does a level-1 Sigilist have a good answer to several weak enemies at once (the area words)?
+   Fix the bot's policy and count overkill separately before judging any caster.
+4. **Open class lines from Classes 3.0:** Figments door 119 and Rigger 123 (targets 130 and 150); Skirmisher 159
+   (145); Hymn 138 (150); the healer stall at level 20.
+5. **Survival dials to revisit:** small parties after the loadout; the repair rate (10%, nearly free); the camp
+   budget (300; Leon said "like 200").
+
 ## 6. The rules that cost the most
 
 1. Never deploy without Leon's explicit word for that release, and make a `backup/live-<version>` branch each time.
