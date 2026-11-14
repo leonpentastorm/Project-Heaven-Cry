@@ -146,3 +146,14 @@ describe('a sigil mark on the area map (rules 1.10, The Magic panel rule 4)', ()
     expect(markSvg('ward', { damage: 'broken' }).match(/stroke="#05070B"/g)!.length).toBeGreaterThan(1);
   });
 });
+
+describe('the character sheet\'s skill road map', () => {
+  it('lights the row of the character\'s own points (the "?" pop-up reads them)', () => {
+    const { c, L } = start();
+    c().skills.brain_power = 3; L.setState({ epccg: 'brain_power' });
+    const ep = L.renderVals().ep;
+    expect(ep.ptsLine).toMatch(/^You have 3 points in /);
+    expect(ep.steps.find((s: any) => s.n === 3).label).toMatch(/yours now$/);
+    expect(ep.steps.filter((s: any) => /yours$/.test(s.label)).map((s: any) => s.n)).toEqual([1, 2]);
+  });
+});
