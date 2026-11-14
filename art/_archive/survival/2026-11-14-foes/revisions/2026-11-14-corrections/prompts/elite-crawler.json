@@ -1,0 +1,11 @@
+{
+  "id": "elite-crawler",
+  "kind": "crawler",
+  "tier": "boss",
+  "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. The oldest cursed esper as an ordinary human sees it: a vast inhuman many-jointed Crawler elder in bust view, a broad crown of asymmetrical antler-like bent hand forms and cartilage arches around a SMALL OLD WEEPING HUMAN FACE embedded in its centre. That small old face is the one explicit human face; the rest must be visibly monstrous, huge ribbed shoulder knots and narrow jointed necks, not just a human wearing antlers. Human eyes centered at22%height and large enough to read40px. Dominant head crown fills upper frame with clearance, rich muted violet and tarnished-gold cloth scraps below, no supernatural bloom. Terrible and sorrowful, no gore.",
+  "references": [
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
+  ],
+  "source": "/workspace/generated_images/exec-691f89c6-eba5-4b92-bed9-5cd3add49c19.png"
+}

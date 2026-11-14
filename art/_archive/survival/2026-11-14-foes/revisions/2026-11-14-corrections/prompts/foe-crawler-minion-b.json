@@ -1,0 +1,11 @@
+{
+  "id": "foe-crawler-minion-b",
+  "kind": "crawler",
+  "tier": "minion",
+  "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A different cursed human perceived as a squat broad nonhuman creature. Fleshy-looking opaque clay-grey head with four asymmetrical folded lobes and tiny sorrowful human eyes in a central cleft; no ordinary nose, hair or attractive human face. Huge low shoulders and shortened neck, too many elbow joints partly under patched faded green cloth, a bent pan lid as poor protection. Tragic hesitation. No gore.",
+  "references": [
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
+  ],
+  "source": "/workspace/generated_images/exec-97b4fd6f-e1d8-4186-bad1-145d87a0623a.png"
+}

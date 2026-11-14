@@ -1,0 +1,12 @@
+{
+  "id": "foe-drone-vermin",
+  "kind": "drone",
+  "tier": "vermin",
+  "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. Recompose the SAME small worn invented scout drone in the first reference. Preserve its dented flattened oval carapace, chipped dull olive paint, short stabilizer fins and single warm amber lens. Turn the nose slightly toward camera so the MAIN LENS centre is precisely x50%,y22% of the vertical canvas, not left of centre. Centre the face/lens, then let the fuselage extend behind it; no duplicate lenses. Weakest tier, dull grey-olive with sparse exposed cables, restrained amber lens. No human body or invented human face. Plain dark painted ground and single hard upper-left light. Keep entire nose readable at40px.",
+  "references": [
+    "/workspace/phc-survival-foes-2026-11-14/recovered-delivery/art/portraits/survival/foes/foe-drone-vermin.png",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
+  ],
+  "source": "/workspace/generated_images/exec-ad02c60f-f9ff-4dd1-a159-d39a51a16bec.png"
+}

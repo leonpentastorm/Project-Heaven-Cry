@@ -1,0 +1,15 @@
+{
+  "count": 71,
+  "repainted_this_turn": 10,
+  "retained": 61,
+  "master_dimensions": [
+    800,
+    1000
+  ],
+  "status": "review-candidate",
+  "eye_line_method": "manual estimates, transformed with crop where applicable",
+  "commit_base": "b7897d5f9590ac6d982043518c1d2c3fae4d6b9b",
+  "master_png_and_native_hashes": "passed all 71",
+  "repository_survival_foes_validator": "passed on complete recovered snapshot",
+  "full_repository_validator": "blocked by unrelated assets omitted from the sparse checkout; first missing file: art/icons/skills/durability.png"
+}

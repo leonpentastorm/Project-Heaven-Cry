@@ -384,29 +384,40 @@
     "path": "art/portraits/survival/foes/foe-drone-vermin.png",
     "width": 800,
     "height": 1000,
-    "sha256": "44364e7702085d0b21b0d7f1d3270b53ea3b5631ed58fd8efd6fce67cb3a8ca6",
+    "sha256": "efd3a6d76465c9281f99eaafe942b16334f95af541a36299dbe746be56917b14",
     "collection": "survival-foes",
     "kind": "drone",
     "tier": "vermin",
     "role": "standard",
     "eye_line": {
-      "x": 0.3525,
-      "y": 0.2201
+      "x": 0.5,
+      "y": 0.222
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-vermin.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-drone-vermin.png",
     "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-vermin.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "0fa37c0816806bae7de1ca7e71471f1c9c0c8f9d8a64aa413ffd79dda23a8cff",
-    "prompt": "Heavenprint matte opaque gouache and ink on dark plain painted charcoal. Project Heaven Cry Survival bestiary single portrait of one tiny flying oval scrap drone hovering on a bent lens bracket, a single eye 22% down, no human or animal. Exactly one discrete machine. The only subject in frame is explicitly a free floating unmanned aircraft machine, no biped, torso, human skin, mechanical humanoid or hand in the image. Show arms/legs only as winglets or appendages physically part of the drone. Side lit with a distinct profile and focal sensor. 4:5 opaque, high centered lens readable at 40 px. No text, other subject, border, insignia or UI.",
+    "native_sha256": "c574dfbf4e567a445679f0114a1caec11cfb0cde10ac9eb046666ae7ac2f8a33",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. Recompose the SAME small worn invented scout drone in the first reference. Preserve its dented flattened oval carapace, chipped dull olive paint, short stabilizer fins and single warm amber lens. Turn the nose slightly toward camera so the MAIN LENS centre is precisely x50%,y22% of the vertical canvas, not left of centre. Centre the face/lens, then let the fuselage extend behind it; no duplicate lenses. Weakest tier, dull grey-olive with sparse exposed cables, restrained amber lens. No human body or invented human face. Plain dark painted ground and single hard upper-left light. Keep entire nose readable at40px.",
     "references": [
-      "art/portraits/m813/scavenger-drone.png"
+      "/workspace/phc-survival-foes-2026-11-14/recovered-delivery/art/portraits/survival/foes/foe-drone-vermin.png",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-drone-vermin.png",
+    "export_crop": [
+      56,
+      140,
+      1066,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "foe-drone-minion-a",
@@ -573,30 +584,38 @@
     "path": "art/portraits/survival/foes/foe-crawler-vermin.png",
     "width": 800,
     "height": 1000,
-    "sha256": "fe04800041bcbc76a39c5c59129f82dad4e9cbf495506ef776eb9fb41e26daf9",
+    "sha256": "d36e4e00a2891cf2d997bdb4fcc57aa76f753f57c9ca6319c804d7bb65075a8c",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "vermin",
     "role": "standard",
     "eye_line": {
-      "x": 0.53,
-      "y": 0.17
+      "x": 0.49,
+      "y": 0.229
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-vermin.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-vermin.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "bb6c177d8e9ca77483c8b33a8c1095f1e1c56da3b8cc50e815e53d91626b1bb6",
-    "prompt": "One Project Heaven Cry Survival portrait. A crawler vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: caved-in figure, frightened round human eyes.  Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "native_sha256": "85b9270be9a21f6afce0dace067dcca4af9fa4a5e759f9cefef09611302d25f8",
     "references": [
       "art/style-guide/references/approved-original-27.jpg",
-      "art/style-guide/references/approved-new-faces-27.jpg",
-      "art/portraits/survival/elite-crawler.png"
+      "art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-vermin.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections",
+    "prompt_summary": "New monster-form vermin: pale horseshoe chitin head, small sad human eyes, knotted neck, clasped long-finger hands; Heavenprint matte gouache, original/new-faces style anchors; eyes at x50%,y22%. Full exact generation prompt is in the conversation tool call."
   },
   {
     "id": "foe-crawler-minion-a",
@@ -605,30 +624,38 @@
     "path": "art/portraits/survival/foes/foe-crawler-minion-a.png",
     "width": 800,
     "height": 1000,
-    "sha256": "83df66224bde5235649b5febdb33c9a7e36c7ebdfa7cda1ec8a8f3e3a8929fc0",
+    "sha256": "1a93a1d47b34bcc892756848b354ded586de1fb36ee9d03938832ba5bd32ef20",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "minion",
     "role": "standard",
     "eye_line": {
-      "x": 0.53,
+      "x": 0.52,
       "y": 0.18
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-a.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-minion-a.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "0bdc1e4873bdfa67e8b2d517e1d922ecadabdaf8dd3042418727867c096620e9",
-    "prompt": "One Project Heaven Cry Survival portrait. A crawler minion: a line fighter, poorly armed. Specific design: tired human eyes through angular bony brow.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "native_sha256": "85a5ffd25a511944f2b835c28d4f0760e1d704a5f73c1ce51d4ab7f83da3430d",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A cursed human perceived by ordinary people as a narrow, frightening INHUMAN thing. Tall slit-shaped head made of overlapping ash-grey reed-like ribs; two recognizably human sad eyes peek from a dark aperture near its upper third. No intact ordinary face, no human nose or jaw; mouth a folded horizontal slit low on the throat. Hunched angular shoulders, elongated knotted forearms holding a chipped short pole low. Modest torn muted brown garment remains. Thin and fearful, original invented creature.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg",
-      "art/style-guide/references/approved-new-faces-27.jpg",
-      "art/portraits/survival/elite-crawler.png"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-minion-a.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "foe-crawler-minion-b",
@@ -637,30 +664,38 @@
     "path": "art/portraits/survival/foes/foe-crawler-minion-b.png",
     "width": 800,
     "height": 1000,
-    "sha256": "2ac05917c5e239bdf21646f82c2224b4b42c5a7fdb7d7ff54a21175cb71490d8",
+    "sha256": "f064e1e0e72d06f7ee895afd340a207523cf1a6fc1410dd4bd5850e65b7f30f1",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "minion",
     "role": "standard",
     "eye_line": {
-      "x": 0.5,
-      "y": 0.18
+      "x": 0.49,
+      "y": 0.182
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-b.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-minion-b.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "f4fa1d7de9dc43ce4adf509cd299bf11f99a59e05fb18f70d6830054afa642e6",
-    "prompt": "One Project Heaven Cry Survival portrait. A crawler minion: a line fighter, poorly armed. A second individual: different age, build and gear from the first. Specific design: older woman's eyes under asymmetric pale ridge.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "native_sha256": "280e3e1b744a942bce4fed1e964d1a27195f6badc88f7538fe696f51aff8b5ed",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A different cursed human perceived as a squat broad nonhuman creature. Fleshy-looking opaque clay-grey head with four asymmetrical folded lobes and tiny sorrowful human eyes in a central cleft; no ordinary nose, hair or attractive human face. Huge low shoulders and shortened neck, too many elbow joints partly under patched faded green cloth, a bent pan lid as poor protection. Tragic hesitation. No gore.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg",
-      "art/style-guide/references/approved-new-faces-27.jpg",
-      "art/portraits/survival/elite-crawler.png"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-minion-b.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "foe-crawler-soldier-a",
@@ -669,30 +704,38 @@
     "path": "art/portraits/survival/foes/foe-crawler-soldier-a.png",
     "width": 800,
     "height": 1000,
-    "sha256": "4f3e2f8e7a136422eace69e8f286c89b8a3ec26fb997e6294c0a5bf05be5c885",
+    "sha256": "bbcd49370516bb1758ddba613c3b40c3cad51f2371c128ebca8c2aa847d437de",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "soldier",
     "role": "standard",
     "eye_line": {
-      "x": 0.5,
-      "y": 0.18
+      "x": 0.535,
+      "y": 0.163
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-a.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-soldier-a.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "8a4c2818f11fa75be53c2214ad9295a745eadab457548a40bdd5128a03f5aed8",
-    "prompt": "One Project Heaven Cry Survival portrait. A crawler soldier: a trained, properly armed fighter. Specific design: deep-set grey eyes, shovel-like temples, slate wraps.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "native_sha256": "7d163f7a3b09c0c709fe589ac1e241ac43b7ddb3931803726111d5c8bbe81da3",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. An upright trained cursed fighter perceived as an inhuman shell creature. Head silhouette a long flattened diamond of pale cracked horn with backward-pointing lateral fins, two human eyes centered in a narrow unarmoured gap. No human nose or jaw. One thick twisted neck, lanky layered limbs under salvaged fitted dark plate. One clear oxide-red armour stripe, old short blade below shoulder line. Resolute human posture inside wrong anatomy, wary grief.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg",
-      "art/style-guide/references/approved-new-faces-27.jpg",
-      "art/portraits/survival/elite-crawler.png"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-soldier-a.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "foe-crawler-soldier-b",
@@ -701,29 +744,39 @@
     "path": "art/portraits/survival/foes/foe-crawler-soldier-b.png",
     "width": 800,
     "height": 1000,
-    "sha256": "52c6b2e26c2027ac5000a1d0503d322603d89d26d3df38057294295ebbd35844",
+    "sha256": "935c2e833923e0b13b90d39e9eda15e254a19fdc1744b458bd66d51c4039b9a1",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "soldier",
     "role": "standard",
     "eye_line": {
-      "x": 0.51,
+      "x": 0.48,
       "y": 0.22
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-b.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-soldier-b.png",
     "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-crawler-soldier-b.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "53697eb88e88b0727a52c63c6405bcef860a2469da7a208433aa82271bafe973",
-    "prompt": "A single Project Heaven Cry Survival portrait. Design: round human eyes under broad manta-shaped head, green cloth. One single person only. No secondary face, companion or distant figure. Level camera, do not repeat head tilt from the style reference. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "native_sha256": "c5bc8691351ea12c55632b7f26f67d915cf4ae62408434f1733dd10db90dd814",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A broad older cursed defender perceived as an uncanny grey-blue creature. Massive asymmetrical horseshoe brow with a small human eye pair set deeply into its black underside; lower face divided into three harmless closed plates. Heavy knot-like shoulders, one larger elbow joint low in frame, a carefully repaired quilted olive mantle and slab shoulder guard. One cold teal cloth accent. No intact ordinary human face, no human hair, no conventional humanoid mask costume. Committed defensive posture, exhausted and tragic.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-soldier-b.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "foe-crawler-elite",
@@ -732,30 +785,38 @@
     "path": "art/portraits/survival/foes/foe-crawler-elite.png",
     "width": 800,
     "height": 1000,
-    "sha256": "063e6be2375bb5a1d792c2404d64763359f9dfa4c2a4f5b6d9ff51ee169a0a66",
+    "sha256": "14b3ea85fc383ec68beeb5725b08435a113f42bf8bae91f54a289e57765d4332",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "elite",
     "role": "standard",
     "eye_line": {
-      "x": 0.5,
-      "y": 0.19
+      "x": 0.52,
+      "y": 0.182
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-elite.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-elite.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "057a645e85f7afed37d3bfcf362667fc4355b6737eb7ccded9a1d423489f9f4b",
-    "prompt": "One Project Heaven Cry Survival portrait. A crawler elite: a named veteran or a heavy unit: bigger, better armoured, with a distinguishing mark (a banner, a trophy, a commander plate). Specific design: weary human eyes, branching bony collar, muted plum and ivory.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "native_sha256": "6b841d8137e35024ef2c27f50c191c87adc261de6bfc2bcd10d40b6968a3ea5a",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A tall proud tragic cursed veteran perceived as an elaborate nonhuman creature. Head a crescent of branching bone-white jointed cartilage, split lower jaw closes into interlocking fingerlike plates, centered human eyes look mournfully outward. No ordinary human face or human nose. Long ribbon-like folded neck, four upper arm hinges arranged as a mantle but only two main forearms below. Muted violet cloth and aged brass commander plate are two accents, an original broken key trophy. Powerful measured bearing, not mindless beast. No gore or skeletal skull clich\u00e9.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg",
-      "art/style-guide/references/approved-new-faces-27.jpg",
-      "art/portraits/survival/elite-crawler.png"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-elite.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "foe-ork-vermin",
@@ -892,29 +953,39 @@
     "path": "art/portraits/survival/foes/foe-ork-soldier-b.png",
     "width": 800,
     "height": 1000,
-    "sha256": "7648e128ce9b2553f52ba84e3e31f1acf28706f7cf69ae870d4681f70105f7e9",
+    "sha256": "837f92beb08d9273be26279a49fa31e9c7abdcf0d3bdafe520843a7a281d70b2",
     "collection": "survival-foes",
     "kind": "ork",
     "tier": "soldier",
     "role": "standard",
     "eye_line": {
-      "x": 0.49,
-      "y": 0.18
+      "x": 0.501,
+      "y": 0.2
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-soldier-b.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-ork-soldier-b.png",
     "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-ork-soldier-b.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "7c5558e976c75ce4e31ca941d9fd70c3eacfb837e2d71834b281fd6e6ca458b4",
-    "prompt": "A single Project Heaven Cry Survival portrait. Design: long lean pale green ork, squared jaw and double braid. One single person only. No secondary face, companion or distant figure. Level camera, do not repeat head tilt from the style reference. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "native_sha256": "10721da48f9f769761f867b46d41dd2d352c88e9b91a9c1d8469761fcd111f68",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. An original trained female Ork veteran, broad thick neck, enormous square heavy jaw, GREY-GREEN skin, coarse flat upturned nose and two conspicuous worn lower tusks. Deep-set small eyes and thick asymmetrical brow, close shaven scalp with short coarse iron-grey bristles, broad scar across one cheek, no elf or ordinary beautiful human appearance. Sturdy deliberate gear: fitted pale salvaged ceramic shoulder plate over dark hide, one ochre-painted unit band without letters, machete hilt low. Proud stern grin. Distinct from the young red-cloaked male Ork soldier.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-ork-soldier-b.png",
+    "export_crop": [
+      196,
+      0,
+      925,
+      911
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "foe-ork-elite",
@@ -1745,30 +1816,38 @@
     "path": "art/portraits/survival/foes/elite-crawler.png",
     "width": 800,
     "height": 1000,
-    "sha256": "acb2f4d8501cc40ae695fdcec3ca11c157b2b2772092a8f634bac1e74a9ad59a",
+    "sha256": "12cdd5927aecd798b36bf8bf83b699fb64469065c4b0a4f4727b4908484eb724",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "boss",
     "role": "boss",
     "eye_line": {
-      "x": 0.49,
-      "y": 0.21
+      "x": 0.51,
+      "y": 0.216
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/elite-crawler.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/elite-crawler.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "6ac87b88fd1d8c9c4d66fb4b85937457c144fa964a90cf0a54fc12862c3800e7",
-    "prompt": "One Project Heaven Cry Survival portrait. The oldest of a Crawler brood, as ordinary people see it: vast, many-jointed, a crown of something like antlers or hands, and in the middle of it a small, old, very human face that is weeping. Specific design: weeping old face inside a dark crown of spidery hands.  Tier colors: rich colours and the largest bust. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "native_sha256": "ed317aa79cacde2bcad2ce5d7ec4f35d76f3f5801fd32f0fa7b3b2d5b2605c31",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. The oldest cursed esper as an ordinary human sees it: a vast inhuman many-jointed Crawler elder in bust view, a broad crown of asymmetrical antler-like bent hand forms and cartilage arches around a SMALL OLD WEEPING HUMAN FACE embedded in its centre. That small old face is the one explicit human face; the rest must be visibly monstrous, huge ribbed shoulder knots and narrow jointed necks, not just a human wearing antlers. Human eyes centered at22%height and large enough to read40px. Dominant head crown fills upper frame with clearance, rich muted violet and tarnished-gold cloth scraps below, no supernatural bloom. Terrible and sorrowful, no gore.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg",
-      "art/style-guide/references/approved-new-faces-27.jpg",
-      "art/portraits/survival/elite-crawler.png"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/elite-crawler.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "boss-ork-warlord",
@@ -1872,30 +1951,38 @@
     "path": "art/portraits/survival/foes/vault-guard-city.png",
     "width": 800,
     "height": 1000,
-    "sha256": "bc1fc3a2d981d8127fdb0852f48b86119e1354e21e1723c3b588aed164d1eb0d",
+    "sha256": "2e50c4e4e911a5137b907200973fc251dd42d4c401fb1679900ce0da89390e51",
     "collection": "survival-foes",
     "kind": "crawler",
     "tier": "elite",
     "role": "vault-guard",
     "eye_line": {
-      "x": 0.51,
-      "y": 0.17
+      "x": 0.55,
+      "y": 0.215
     },
     "status": "review-candidate",
     "production_approved": false,
-    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-city.png",
+    "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/vault-guard-city.png",
     "native_dimensions": [
       1122,
       1402
     ],
-    "native_sha256": "064b30a568aac78acfe9f0dba0dabe1724ed349cc8fad4e5a2aafff1ccfe4f29",
-    "prompt": "One Project Heaven Cry Survival portrait. The fence's bruiser: a crawler of Central City back streets, heavier and better kept than its fellows, standing before a strongroom door; keys, a seal or a chain as its mark. Specific design: asymmetrical human eyes under a curling bone brow, old iron key chain.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "native_sha256": "0ea32f286911f5202922e72481a3c3bc4f4ee3e68eec046580e2bd24c2b82f33",
+    "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A huge cursed Crawler strongroom guard, visibly inhuman: an overhanging boxy grey horn carapace cracked into asymmetrical planes with a sad human eye pair recessed centrally, lower head folded sideways into a closed beaklike seam. Broad heavy shoulder masses, mismatched well-kept plate fitted around extra joints. A chain with three large invented blank keys marks duty. Deep muted moss cloth and dull brass accents. Plain dark background with only a faint strongroom doorway edge at one side. No intact human actor face. Patient wariness.",
     "references": [
-      "art/style-guide/references/approved-original-27.jpg",
-      "art/style-guide/references/approved-new-faces-27.jpg",
-      "art/portraits/survival/elite-crawler.png"
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+      "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
     ],
-    "imagegen": "built-in"
+    "imagegen": "built-in",
+    "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/vault-guard-city.png",
+    "export_crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eye_line_method": "manual estimate on native review, transformed with export crop",
+    "revision": "2026-11-14-corrections"
   },
   {
     "id": "vault-guard-field",

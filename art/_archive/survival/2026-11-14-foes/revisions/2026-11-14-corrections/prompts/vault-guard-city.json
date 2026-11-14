@@ -1,0 +1,11 @@
+{
+  "id": "vault-guard-city",
+  "kind": "crawler",
+  "tier": "elite",
+  "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A huge cursed Crawler strongroom guard, visibly inhuman: an overhanging boxy grey horn carapace cracked into asymmetrical planes with a sad human eye pair recessed centrally, lower head folded sideways into a closed beaklike seam. Broad heavy shoulder masses, mismatched well-kept plate fitted around extra joints. A chain with three large invented blank keys marks duty. Deep muted moss cloth and dull brass accents. Plain dark background with only a faint strongroom doorway edge at one side. No intact human actor face. Patient wariness.",
+  "references": [
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
+  ],
+  "source": "/workspace/generated_images/exec-18b7b1a3-e212-45d5-aad5-5e4b7f305d73.png"
+}

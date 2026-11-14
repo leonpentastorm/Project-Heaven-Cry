@@ -1,0 +1,11 @@
+{
+  "id": "foe-ork-soldier-b",
+  "kind": "ork",
+  "tier": "soldier",
+  "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. An original trained female Ork veteran, broad thick neck, enormous square heavy jaw, GREY-GREEN skin, coarse flat upturned nose and two conspicuous worn lower tusks. Deep-set small eyes and thick asymmetrical brow, close shaven scalp with short coarse iron-grey bristles, broad scar across one cheek, no elf or ordinary beautiful human appearance. Sturdy deliberate gear: fitted pale salvaged ceramic shoulder plate over dark hide, one ochre-painted unit band without letters, machete hilt low. Proud stern grin. Distinct from the young red-cloaked male Ork soldier.",
+  "references": [
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
+  ],
+  "source": "/workspace/generated_images/exec-ca965174-f069-4f20-93ea-0c55bd2878e4.png"
+}

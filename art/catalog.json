@@ -3936,19 +3936,20 @@
       "path": "art/portraits/survival/foes/foe-drone-vermin.png",
       "width": 800,
       "height": 1000,
-      "sha256": "44364e7702085d0b21b0d7f1d3270b53ea3b5631ed58fd8efd6fce67cb3a8ca6",
+      "sha256": "efd3a6d76465c9281f99eaafe942b16334f95af541a36299dbe746be56917b14",
       "collection": "survival-foes",
       "kind": "drone",
       "tier": "vermin",
       "role": "standard",
       "eye_line": {
-        "x": 0.3525,
-        "y": 0.2201
+        "x": 0.5,
+        "y": 0.222
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-vermin.png",
-      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-vermin.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-drone-vermin.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-vermin.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-drone-vermin.png"
     },
     "foe-drone-minion-a": {
       "label": "drone minion a",
@@ -4050,109 +4051,115 @@
       "path": "art/portraits/survival/foes/foe-crawler-vermin.png",
       "width": 800,
       "height": 1000,
-      "sha256": "fe04800041bcbc76a39c5c59129f82dad4e9cbf495506ef776eb9fb41e26daf9",
+      "sha256": "d36e4e00a2891cf2d997bdb4fcc57aa76f753f57c9ca6319c804d7bb65075a8c",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "vermin",
       "role": "standard",
       "eye_line": {
-        "x": 0.53,
-        "y": 0.17
+        "x": 0.49,
+        "y": 0.229
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-vermin.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-vermin.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-vermin.png"
     },
     "foe-crawler-minion-a": {
       "label": "crawler minion a",
       "path": "art/portraits/survival/foes/foe-crawler-minion-a.png",
       "width": 800,
       "height": 1000,
-      "sha256": "83df66224bde5235649b5febdb33c9a7e36c7ebdfa7cda1ec8a8f3e3a8929fc0",
+      "sha256": "1a93a1d47b34bcc892756848b354ded586de1fb36ee9d03938832ba5bd32ef20",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "minion",
       "role": "standard",
       "eye_line": {
-        "x": 0.53,
+        "x": 0.52,
         "y": 0.18
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-a.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-minion-a.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-minion-a.png"
     },
     "foe-crawler-minion-b": {
       "label": "crawler minion b",
       "path": "art/portraits/survival/foes/foe-crawler-minion-b.png",
       "width": 800,
       "height": 1000,
-      "sha256": "2ac05917c5e239bdf21646f82c2224b4b42c5a7fdb7d7ff54a21175cb71490d8",
+      "sha256": "f064e1e0e72d06f7ee895afd340a207523cf1a6fc1410dd4bd5850e65b7f30f1",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "minion",
       "role": "standard",
       "eye_line": {
-        "x": 0.5,
-        "y": 0.18
+        "x": 0.49,
+        "y": 0.182
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-b.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-minion-b.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-minion-b.png"
     },
     "foe-crawler-soldier-a": {
       "label": "crawler soldier a",
       "path": "art/portraits/survival/foes/foe-crawler-soldier-a.png",
       "width": 800,
       "height": 1000,
-      "sha256": "4f3e2f8e7a136422eace69e8f286c89b8a3ec26fb997e6294c0a5bf05be5c885",
+      "sha256": "bbcd49370516bb1758ddba613c3b40c3cad51f2371c128ebca8c2aa847d437de",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "soldier",
       "role": "standard",
       "eye_line": {
-        "x": 0.5,
-        "y": 0.18
+        "x": 0.535,
+        "y": 0.163
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-a.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-soldier-a.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-soldier-a.png"
     },
     "foe-crawler-soldier-b": {
       "label": "crawler soldier b",
       "path": "art/portraits/survival/foes/foe-crawler-soldier-b.png",
       "width": 800,
       "height": 1000,
-      "sha256": "52c6b2e26c2027ac5000a1d0503d322603d89d26d3df38057294295ebbd35844",
+      "sha256": "935c2e833923e0b13b90d39e9eda15e254a19fdc1744b458bd66d51c4039b9a1",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "soldier",
       "role": "standard",
       "eye_line": {
-        "x": 0.51,
+        "x": 0.48,
         "y": 0.22
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-b.png",
-      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-crawler-soldier-b.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-crawler-soldier-b.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-soldier-b.png"
     },
     "foe-crawler-elite": {
       "label": "crawler elite",
       "path": "art/portraits/survival/foes/foe-crawler-elite.png",
       "width": 800,
       "height": 1000,
-      "sha256": "063e6be2375bb5a1d792c2404d64763359f9dfa4c2a4f5b6d9ff51ee169a0a66",
+      "sha256": "14b3ea85fc383ec68beeb5725b08435a113f42bf8bae91f54a289e57765d4332",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "elite",
       "role": "standard",
       "eye_line": {
-        "x": 0.5,
-        "y": 0.19
+        "x": 0.52,
+        "y": 0.182
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-elite.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-crawler-elite.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-crawler-elite.png"
     },
     "foe-ork-vermin": {
       "label": "ork vermin",
@@ -4231,19 +4238,20 @@
       "path": "art/portraits/survival/foes/foe-ork-soldier-b.png",
       "width": 800,
       "height": 1000,
-      "sha256": "7648e128ce9b2553f52ba84e3e31f1acf28706f7cf69ae870d4681f70105f7e9",
+      "sha256": "837f92beb08d9273be26279a49fa31e9c7abdcf0d3bdafe520843a7a281d70b2",
       "collection": "survival-foes",
       "kind": "ork",
       "tier": "soldier",
       "role": "standard",
       "eye_line": {
-        "x": 0.49,
-        "y": 0.18
+        "x": 0.501,
+        "y": 0.2
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-soldier-b.png",
-      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-ork-soldier-b.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/foe-ork-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-ork-soldier-b.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/foe-ork-soldier-b.png"
     },
     "foe-ork-elite": {
       "label": "ork elite",
@@ -4729,18 +4737,19 @@
       "path": "art/portraits/survival/foes/elite-crawler.png",
       "width": 800,
       "height": 1000,
-      "sha256": "acb2f4d8501cc40ae695fdcec3ca11c157b2b2772092a8f634bac1e74a9ad59a",
+      "sha256": "12cdd5927aecd798b36bf8bf83b699fb64469065c4b0a4f4727b4908484eb724",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "boss",
       "role": "boss",
       "eye_line": {
-        "x": 0.49,
-        "y": 0.21
+        "x": 0.51,
+        "y": 0.216
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/elite-crawler.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/elite-crawler.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/elite-crawler.png"
     },
     "boss-ork-warlord": {
       "label": "Ork warlord (ork)",
@@ -4801,18 +4810,19 @@
       "path": "art/portraits/survival/foes/vault-guard-city.png",
       "width": 800,
       "height": 1000,
-      "sha256": "bc1fc3a2d981d8127fdb0852f48b86119e1354e21e1723c3b588aed164d1eb0d",
+      "sha256": "2e50c4e4e911a5137b907200973fc251dd42d4c401fb1679900ce0da89390e51",
       "collection": "survival-foes",
       "kind": "crawler",
       "tier": "elite",
       "role": "vault-guard",
       "eye_line": {
-        "x": 0.51,
-        "y": 0.17
+        "x": 0.55,
+        "y": 0.215
       },
       "status": "review-candidate",
       "production_approved": false,
-      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-city.png"
+      "source_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/native-renders/vault-guard-city.png",
+      "previous_path": "art/_archive/survival/2026-11-14-foes/revisions/2026-11-14-corrections/superseded/vault-guard-city.png"
     },
     "vault-guard-field": {
       "label": "Ork loot-keeper (ork)",

@@ -1,0 +1,11 @@
+{
+  "id": "foe-crawler-elite",
+  "kind": "crawler",
+  "tier": "elite",
+  "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A tall proud tragic cursed veteran perceived as an elaborate nonhuman creature. Head a crescent of branching bone-white jointed cartilage, split lower jaw closes into interlocking fingerlike plates, centered human eyes look mournfully outward. No ordinary human face or human nose. Long ribbon-like folded neck, four upper arm hinges arranged as a mantle but only two main forearms below. Muted violet cloth and aged brass commander plate are two accents, an original broken key trophy. Powerful measured bearing, not mindless beast. No gore or skeletal skull clich\u00e9.",
+  "references": [
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
+  ],
+  "source": "/workspace/generated_images/exec-2bf14f31-19d6-4d8b-ab77-396f4184f4ed.png"
+}

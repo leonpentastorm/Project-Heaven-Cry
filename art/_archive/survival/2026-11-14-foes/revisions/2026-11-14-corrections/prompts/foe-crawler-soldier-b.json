@@ -1,0 +1,11 @@
+{
+  "id": "foe-crawler-soldier-b",
+  "kind": "crawler",
+  "tier": "soldier",
+  "prompt": "Heavenprint painted enemy bust portrait, opaque matte gouache and broken ink, broad directional brush planes, selective warm ivory edge accents, deep charcoal plain painted ground. Match approved sheets for paint ONLY, not their human heads or casting. Vertical4:5, 800x1000. Eye/lens midpoint at x50%,y22% from the top. Entire head outlined clearly against dark ground; large upper chest, head and shoulders dominate, secondary hands low. Strong hard light upper left, quiet background. Instantly recognizable small round40px token. No labels, logos, text, border, realworld emblem or existing franchise character. No photo skin or glossy3D, no gore. A broad older cursed defender perceived as an uncanny grey-blue creature. Massive asymmetrical horseshoe brow with a small human eye pair set deeply into its black underside; lower face divided into three harmless closed plates. Heavy knot-like shoulders, one larger elbow joint low in frame, a carefully repaired quilted olive mantle and slab shoulder guard. One cold teal cloth accent. No intact ordinary human face, no human hair, no conventional humanoid mask costume. Committed defensive posture, exhausted and tragic.",
+  "references": [
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-original-27.jpg",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-new-faces-27.jpg"
+  ],
+  "source": "/workspace/generated_images/exec-c6bcc5cc-3931-43c7-93b1-348b9bf367f7.png"
+}
