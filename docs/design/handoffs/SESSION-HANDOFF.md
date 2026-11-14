@@ -1,3 +1,5 @@
+> **Note (14 Nov 2026): `START-HERE.md` in this folder is the current entry point; where it disagrees with this file, it is newer.**
+
 # Session hand-off (brought up to date 14 Nov 2026, at the close of Survival)
 
 For whoever continues: a person, or a fresh AI session. Read `CLAUDE.md` first, then

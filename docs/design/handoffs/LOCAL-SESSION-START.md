@@ -1,3 +1,5 @@
+> **Note (14 Nov 2026): `START-HERE.md` in this folder is the current entry point; where it disagrees with this file, it is newer.**
+
 # Starting a local session: the total hand-off (rewritten 13 Nov 2026, at the close of Classes 3.0; brought up to date 14 Nov, at the close of Survival)
 
 For Leon, and for the **Fable-class Claude Code session he starts on his own Windows PC (WSL2)**. Written by the cloud

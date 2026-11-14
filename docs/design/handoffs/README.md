@@ -6,6 +6,7 @@ Notes one session (or one person) left for the next. The project-wide hand-off i
 
 | Hand-off | What it covers | Why it is still current |
 | --- | --- | --- |
+| [START-HERE.md](START-HERE.md) | **The current entry point (14 Nov 2026):** what is live, what is on the branch, the checks to run first, what to do next, the rules that cost the most, how to ship | Read it before anything else |
 | [SURVIVAL-PICKUP.md](SURVIVAL-PICKUP.md) | **Start here for Survival:** what is built (rules 1.39 to 1.49, 0.27.0), what is open by step, how to tune it (which dial in `data/survival.json` does what), how to run the simulated runs, what the roguelike will reuse | Survival is built and waits for Leon's word to go live |
 | [survival-steps-9-10.md](survival-steps-9-10.md) | Survival build steps 9 and 10 (rules 1.49, items 3600 onward): the run simulator (`test/balance/survival-run.ts`), the measured tables before and after the fit, every dial moved, what is still off target; the path map fitted to its frame; the `survival` browser suite completed | The fit's numbers and the calls made for Leon |
 | [survival-text-pass.md](survival-text-pass.md) | The Survival text pass (14 Nov): every player-visible string rewritten to the player, old → new by file; the keepers' tab lines and the shrine's votaries | The inventory; the rules are in `docs/design/ui-screens.md` "Writing for the player" |

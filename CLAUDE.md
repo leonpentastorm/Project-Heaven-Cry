@@ -2,7 +2,7 @@
 
 PHC began in 2020 as a Vietnamese tabletop RPG by Leon ("Romantic B0ss") and friends. It adapts Disco Elysium's skill web (27 skills that are also inner voices) to tactical squad combat. In Nov 2026 it was revived, translated to English, rebalanced and turned into a game-ready rules spec and data pack. **The goal now is a web game**: play immersively in the browser with an AI Narrator (bring-your-own API key, any provider), or with a human Narrator, solo or co-op with up to 4 players in a room.
 
-**Picking this up mid-mission? The mission since 13 Nov 2026 is Classes 3.0 (Class Roster Revision 4, built as one big patch): read `docs/design/handoffs/CLASSES-3.0-PICKUP.md` first; it is written so an Opus session can carry it on alone.** The mission before it (Nov 2026: the engine foundation and the balance pass, live as 0.23.0 and 0.24.0) is in `docs/design/handoffs/PICKUP.md`: what is merged, what is in flight, how to take a branch in, what is left in order.
+**Picking this up? Read `docs/design/handoffs/START-HERE.md` first (14 Nov 2026): what is live, what is on the branch, what to do next.** The mission guides it points to are `SURVIVAL-PICKUP.md` and `CLASSES-3.0-PICKUP.md` in the same folder.
 
 This file is the hand-off from the design sessions in claude.ai. Read it first, then `docs/rules/PHC-Core-Rules-v1.0.md`.
 

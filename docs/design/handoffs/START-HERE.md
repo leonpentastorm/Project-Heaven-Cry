@@ -1,0 +1,249 @@
+# Start here (14 Nov 2026)
+
+The current entry point for a fresh Claude Code session, or for Leon. Five minutes to read, then act. Where this file and
+an older hand-off disagree, this file is newer (`LOCAL-SESSION-START.md` and `SESSION-HANDOFF.md` are partly stale).
+
+## 1. In one minute
+
+- **The game.** Project Heaven Cry is a web game: a tactical squad RPG built on a 27-skill inner-voice web, played in the
+  browser, solo or co-op (up to 4), with an AI or human Narrator (Campaign) or none (Survival). The engine is
+  deterministic TypeScript; the rules spec and the data pack are the source of truth.
+- **Live:** 0.26.0 "Classes 3.0", https://project-heaven-cry.leonpentastorm.workers.dev (deployed 13 Nov).
+  `main` = `develop` = `be21576a`. Backup branch `backup/live-0.26.0`. Kept for good: `backup/live-0.22.0`,
+  `backup/live-0.23.0`.
+- **On the branch:** `claude/charming-gauss-hbq4n0` carries **0.27.0, Survival mode** (plus bows and quivers, the player-text
+  pass and the artist's Survival art). It is not on `develop` or `main` until deployed. A full release run (`npm run check`
+  and `npm run e2e -- all`) was in progress on its head. **Leon has given his word to deploy 0.27.0 when that run is green.**
+- **First thing to do:** find out whether 0.27.0 went live (section 2). If not, run the release check and deploy (section 7).
+
+## 2. Check the state first
+
+Fetch, then compare the branch with `main`. If they are equal (or `main` is ahead by the merge), 0.27.0 was deployed.
+
+```bash
+git fetch --all --prune && git log -1 --format='%h %s' origin/main && git log -1 --format='%h %s' origin/claude/charming-gauss-hbq4n0
+```
+
+Is the branch inside `main`? (no output means it is merged)
+
+```bash
+git log --oneline origin/main..origin/claude/charming-gauss-hbq4n0 | head
+```
+
+Is there a backup for 0.27.0 on the remote?
+
+```bash
+git ls-remote --heads origin 'backup/live-*'
+```
+
+What does the live title screen say? (the version is bottom right; open the site in a browser, or fetch the page and
+look for the version in the script bundle)
+
+```bash
+curl -s https://project-heaven-cry.leonpentastorm.workers.dev | head -c 600
+```
+
+Are the two unmerged pieces already being joined? Look at the integrator's branch and read its newest commits and its
+hand-off before redoing anything.
+
+```bash
+git branch -a | grep -E 'ab79122edee03fa74|wf_16ebfb69|a3a66dd818caa98e1' ; git log -8 --format='%h %s' origin/wip/worktree-agent-ab79122edee03fa74
+```
+
+Also check free disk (each agent worktree is about 3.5 GB): `df -h /`.
+
+## 3. What is where
+
+| For | Read |
+| --- | --- |
+| The project and Leon's working agreements (binding) | `CLAUDE.md` |
+| Rules and every number (the spec wins over data) | `docs/rules/PHC-Core-Rules-v1.0.md` (later revisions override the body) |
+| Data format, validator | `data/CONVENTIONS.md`; run `python3 tools/validate.py data` |
+| Where a new thing goes in the engine | `docs/ENGINE-GUIDE.md` and the generated `docs/ENGINE-HOOKS.md` |
+| Which test proves which change; the release steps | `docs/TESTING.md`; browser suites in `apps/web/e2e/README.md` |
+| Survival: what is built, how to tune it | `docs/design/handoffs/SURVIVAL-PICKUP.md`, spec `docs/design/survival-spec.md` |
+| Classes 3.0: what is built, the integration routine | `docs/design/handoffs/CLASSES-3.0-PICKUP.md` |
+| Balance ceilings and how to measure | `docs/design/balance-contract.md` |
+| What to try by hand, and the calls made for Leon | `docs/PLAYTEST-CHECKLIST.md` (section S is Survival) |
+| What is planned | `docs/ROADMAP.md` |
+| Player-facing text rules | `docs/design/ui-screens.md`, "Writing for the player" |
+| Art wanted, and the local LoRA plan | `art/briefs/ART-REQUESTS.md`, `art/briefs/FORGE-PHC.md` |
+| Setting a local machine up | `docs/design/handoffs/LOCAL-SESSION-START.md` section 2 (still true) |
+| Every other hand-off | `docs/design/handoffs/README.md` |
+
+## 4. Built but not merged
+
+Two pieces are built, pushed and not on the branch. Each is also on the remote as `wip/<name>`. An integrator agent was
+joining them on `worktree-agent-ab79122edee03fa74` (commits after every piece). Their hand-off files exist only on
+their own branches, not on the Survival branch.
+
+| Piece | Branch | Hand-off (on that branch) | Rules |
+| --- | --- | --- | --- |
+| Starting boons at the camp: 24 starting boons, 6 caster boons, the supply pack (burnt cores back, 30% MP back, Flux cleared) | `worktree-wf_16ebfb69-ae0-4` | `docs/design/handoffs/survival-starting-boons.md` | 1.51 |
+| Creation without a kit, and the Survival loadout at the camp (one free weapon, one free focus, the rest from the shop's menu out of a 300-credit budget, unspent budget kept as credits) | `worktree-agent-a3a66dd818caa98e1` | `docs/design/handoffs/survival-loadout.md` | 1.52 |
+
+**Defects to fix before the boons merge** (a reviewer found them):
+
+1. The boon Shelter does nothing (its heal kind never matches real prayers).
+2. The offer hands out cards a character cannot use, and sometimes fewer than three real options.
+3. Bandolier doubles caster supply but is worth 0 on the cap.
+4. The camp gave free armour and magazines; Leon's loadout ruling replaces that.
+
+**Leon's later ruling to apply when joining:** the free list is the most basic (cheapest) weapon of every weapon
+archetype, chosen by a rule in data. The camp's rack holds, per archetype, the same weapon again (to dual-wield) and the
+next better one. Ammunition and cores are for sale at the camp.
+
+These two ship together as **0.28.0**, after the defects are fixed and a clean release run is green. That needs Leon's word.
+
+## 5. What to do next, in order
+
+Leon's words: "I will do code review and whatever balance needed in that new section."
+
+1. **Confirm or finish the 0.27.0 deploy** (sections 2 and 7).
+2. **Join and ship the loadout and starting boons as 0.28.0** if not done (section 4).
+3. **The consolidation review** the "No rebuild" rule requires. One reviewer reads everything Survival added to the engine
+   since 0.26.0 (the diff of `docs/ENGINE-HOOKS.md` and `packages/engine/src` against `backup/live-0.26.0`). It lists:
+   near-duplicate primitives; item ids and numbers typed in code; second copies of a rule (are the weapon pick, boon pick,
+   starting boon, vault pick and trade pick one mechanism or six?); tests that skip the real path; lint baselines that
+   grew. Report in `docs/design/proposals/`. It was started and stopped on 14 Nov to save usage; nothing was written.
+4. **Balance 2.0.** Measure every weapon's turn against the plain rifle (only the service rifle, the best gun and the
+   best blade are on the contract; the bow measures 90 to 100% of the rifle), and refit outliers. Open class lines from
+   Classes 3.0: Figments door 119 and Rigger 123 against 130 and 150; Skirmisher 159 against 145; Hymn 138 against 150;
+   the healer stall at level 20. In Survival: the Sigilist's low damage at levels 1 to 5 (a Sigil rules matter), small
+   parties after the loadout, the repair rate (nearly free at 10%), the budget (300; Leon said "like 200").
+5. **The roguelike on top of Survival** (`docs/ROADMAP.md`).
+
+## 6. The rules that cost the most
+
+1. Never deploy without Leon's explicit word for that release, and make a `backup/live-<version>` branch each time.
+2. "No rebuild, ever again" (CLAUDE.md): builders never add engine pieces on their own word; content is data; one copy of
+   every rule and price; a consolidation pass before each release that added primitives; tests through the real path; lint
+   baselines only shrink.
+3. "Use the engine, don't build beside it": read `docs/ENGINE-GUIDE.md` and `docs/ENGINE-HOOKS.md` first and write a
+   Built-from table before building.
+4. Spec first, then data, then `python3 tools/validate.py data` must print `0 errors`.
+5. Numbers are PROVISIONAL and listed; never invent one silently.
+6. Write to the PLAYER (`docs/design/ui-screens.md`, "Writing for the player").
+7. Who does what: the top model designs, rules, reviews and merges; Opus builds from a brief with a test; cheaper models
+   do mechanical work.
+8. Golden tables and replays are never hand-merged: take a side, run the oracles, re-record on purpose.
+9. Agents run in worktrees, about 3.5 GB each: watch `df -h /`, remove a worktree as soon as its branch is merged, and
+   commit after every piece because the container restarts.
+10. Leon wants direct pushback, numbered feedback and a recommendation on every question. No answer means yes, except for deploys.
+
+## 7. How to ship
+
+Only with Leon's word for that release. For 0.27.0 he has given it, on a green run.
+
+1. Run the checks on the head you will ship. Both must be green, nothing failing alone. The e2e run takes about 35 minutes
+   on the cloud machine.
+
+```bash
+npm run check && npm run e2e -- all
+```
+
+2. Red means: no deploy. Start a fixer, write a report.
+3. Merge the branch to `develop`, then `develop` to `main`. Versions in the root and all workspace `package.json` files
+   (and `package-lock.json`) must be equal, with a `CHANGELOG.md` entry (0.27.0's is already written).
+4. On `main`, build the site.
+
+```bash
+npm run assets && python3 design/canvas-build/build.py --web && npm run build
+```
+
+5. Deploy (needs `CLOUDFLARE_API_TOKEN` with Workers and KV edit rights; the cloud session has it, a local machine does not
+   unless Leon sets it).
+
+```bash
+python3 tools/deploy_site.py && (cd apps/server && npx wrangler deploy)
+```
+
+6. Make the backup branch at the deployed `main` commit and push it.
+
+```bash
+git branch backup/live-0.27.0 origin/main && git push origin backup/live-0.27.0
+```
+
+7. Verify live with the smoke suites (old-save, creation-points, survival) and the title screen's version.
+8. Prune backups: keep the two latest, plus `backup/live-0.22.0` and `backup/live-0.23.0` for good. Update the live
+   version in `CLAUDE.md`, `docs/ROADMAP.md` and `SESSION-HANDOFF.md`.
+
+## 8. Waiting on Leon
+
+- Two keeper portraits do not match their names: `keeper-works` is painted as a woman automaton but named Ivo Smetanin;
+  `keeper-rim` as a man but named Corra Vell. Recommendation: swap the two names.
+- The "BOON ROOM 50 LEFT" wording.
+- Whether Aimed Shot's and Crossfire's white lines and Storm's red line should also be removed.
+- Art still wanted (list: `art/briefs/ART-REQUESTS.md`): three markers (horned skull, chest, camp tent); four keepers
+  (armourer, drill sergeant, medic, broker); ten shop and safe-node backdrops; thirteen boon icons; quiver icons; Figment
+  portraits. The artist works on `art/*` branches and pushes there.
+- His word for 0.28.0 when it is ready.
+
+## 9. How the lead works, and how it talks to Leon
+
+Leon asked that a new session keep this way of working. You are the lead.
+
+### The job
+
+- You are the lead: designer, ruler on rules questions, delegator, merger, and the only one who talks to Leon. You do not
+  build. Leon is the owner and the game's designer of record; he decides, you recommend.
+- Keep your own usage tiny: write the brief, read a short report, look at ONE screenshot per new screen, merge. Never open
+  long logs or read code line by line yourself; send a cheaper agent to look and report. Opus usage is the cost of doing
+  business: run as many builders as have separate ground to stand on (about four). The machine and merge conflicts are the
+  limits, not tokens.
+
+### How a piece of work goes
+
+1. Leon says something, often short and blunt, sometimes with a sketch or a screenshot. Quote his words verbatim into the
+   spec's "Settled by Leon" block and into the builder's brief. His newest ruling wins over his older ones and over your reading.
+2. Turn it into a brief a lighter model cannot misread: the files to read by name; what to build in numbered points; what
+   NOT to touch (who else is working where); spec first, then data, then the validator; where numbers live; the proof that
+   means done (named tests, named browser suites, `npm run check`); "commit after every piece"; "stop and write down what
+   is harder than briefed, never guess"; a report word limit.
+3. One builder per separable piece, each in its own worktree with its own port. Tell each what the others own.
+4. When it reports, try the merge yourself. Two or three conflicted files you settle by hand (both sides kept, revisions in
+   number order, generated files regenerated); more than that goes to an Opus integrator. Golden tables and replays are
+   never hand-merged.
+5. Look at one screenshot. Say plainly what looks wrong (a clipped marker, a prototype-looking map, designer notes on
+   screen) and put the fix in the next brief.
+6. A new system gets an adversarial reviewer who reads the code and tries to break it (farm it, starve it, co-op, save and
+   load) before it is called done. Reviewers have found real defects every time.
+7. Before any deploy: one clean `npm run check` and `npm run e2e -- all` on the merged tree on a quiet machine. A suite that
+   fails alone is a real bug until proven stale; a suite that passes only alone is named, and its suite is fixed. Never
+   weaken or skip a check.
+8. Keep the pick-up guide current as you go (a note at the top for every ruling that changes the plan). Schedule a
+   check-in with `send_later` every 60 to 90 minutes while agents run, re-arm the watchdog, watch the disk. A container
+   restart kills agents: their work survives if they committed; resume them with a message.
+
+### Judgement
+
+- Give a recommendation on every question, and build it if Leon does not answer ("no answer means yes"), listing it as a
+  call made for him that he can reverse. The one exception is a deploy.
+- Push back directly when a ruling has a cost he may not see, in one or two sentences, then do what he decides. Example:
+  when he asked for boons for casters, say that boons arrive after the first Boss and casters die before it, so the help
+  must exist at the camp. Example: when two of his rulings collide (free armour at the camp against "armour costs
+  budget"), say so and say which wins.
+- When a builder's wording would buff something by accident, catch it. Example: Mag Dump "one roll per 4 rounds" would
+  have given the long rifle a second roll; it was ruled back to "rolls as before, only rounds spent change".
+- Measure before fitting, and say what the measure can and cannot show (seed counts, bots playing badly). Do not chase a
+  target with numbers when the cause is a rule: name it and put it on the balance list.
+- Never claim more than was checked: say "passed on the builder's branch; not re-run on the merged tree" when that is the truth.
+
+### How to talk to Leon
+
+- He reads on a phone between other things. Lead with the state in one sentence (merged or not, live or not), then what he
+  needs. Short sections with bold lead-ins, a small table when comparing numbers, numbered lists for rulings and calls.
+  No walls of text, no file dumps, no jargon: say "damage tables" not "golden tables" when it reaches him, and explain a
+  term in a few words the first time.
+- Plain, direct, calm. No hype, no flattery, no apology spirals. When you got something wrong, say so in one line and say
+  what is now different ("Fair. The builders wrote my design rulings onto the screen and I did not catch it. A text pass
+  is running.").
+- Always say what was verified and how, and what was not. Always say whether something is live. Always end a decision with
+  your recommendation.
+- List "Calls made for you (reverse any)" whenever you decided something on his behalf, each in one line.
+- Match his register lightly (he is informal and swears; you stay friendly and dry, not stiff), and take his frustration as
+  information about the product, not about you.
+- When he asks "is it stalled?" or "how are we cooking", check the actual state (last commit age, files written in the last
+  ten minutes, running processes) before answering, and answer in a few lines.
+- Art: he hands prompts to an artist model. Give him the short prompt in the message and keep the full prompts in
+  `art/briefs`. Look at delivered art before wiring it and say what does not match its brief.
