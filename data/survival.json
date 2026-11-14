@@ -12,7 +12,7 @@
   },
   "loadout": {
     "about": "Rules 1.52 (Leon, 14 Nov 2026: 'Survival will give you one low level melee, one low level gun, a bow, one of the 4 focus and a budget'; corrected the same day: 'only one weapon'). The camp before node 1: each character takes ONE free weapon from `weapons` (melee, gun or bow), ONE free focus from `focuses` (either may be declined; declining gives nothing back), and spends `budget` credits on the shop's menu (`counter`, `stock`) at shop prices (credits.ts priceOf, the one price door). What is not spent is the character's starting purse. A gun comes with `gun.loaded` magazine loaded and `gun.spare` spare (a gun loaded round by round: that many magazines' worth of loose rounds); a bow with its quiver full (its own magazine in weapons.json). A core-fuelled focus comes with `focus_with`. Everything else is bought from the shop's own menu (`counter`, `stock`).",
-    "budget": 200,
+    "budget": 300,
     "weapons": {
       "melee": [
         "combat_knife",
@@ -113,18 +113,21 @@
       ],
       "buys": {
         "core": [
+          "armour:1",
           "standard_core"
         ],
         "mp": [
-          "field_kit",
-          "stim_injector"
+          "armour:1",
+          "field_kit"
         ],
         "gun": [
-          "stim_injector",
+          "armour:1",
           "stim_injector"
         ],
         "melee": [
-          "armour:1"
+          "armour:1",
+          "stim_injector",
+          "stim_injector"
         ]
       },
       "fill": "ammo"

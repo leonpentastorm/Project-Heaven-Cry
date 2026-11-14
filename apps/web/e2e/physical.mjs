@@ -25,7 +25,7 @@ const note = (label) => console.log('note ' + label);
   // a build with Athletics and Dexterity (both kinds of technique): the first archetype that has them
   const arch = 'fencer'; // (data/archetypes.json: the one preset with Athletics and Dexterity)
   if (arch) { await k.locator('[data-arch="' + arch + '"]').click().catch(() => {}); await k.locator('[data-arch-preview] button', { hasText: /^Use / }).click().catch(() => {}); }
-  await k.getByRole('navigation', { name: 'Creation steps' }).getByRole('button', { name: 'Kit' }).click(); await settle(k, 350);
+  await k.getByRole('navigation', { name: 'Creation steps' }).getByRole('button', { name: 'Moves' }).click(); await settle(k, 350);
   const cards = k.locator('[data-start-tech]');
   if (await cards.count()) {
     const per = await cards.evaluateAll((xs) => xs.map((x) => x.querySelectorAll('button[aria-pressed="true"]').length));

@@ -11,7 +11,7 @@
 // (`run/ready`); the host's close starts the run for everyone, an untouched loadout taking the Recommended one.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES } from '../data';
+import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME } from '../data';
 import { type Character, type PackItem, packOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit } from '../character';
 import { packAdd, intoCounts, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
@@ -48,7 +48,10 @@ export function loadoutLines(c: Character): LoadoutLine[] {
   for (const id of LOADOUT.stock.ids) { const p = priceOf(id); if (p != null) out.push({ key: 'stock:' + id, id, per: 1, shelf: 'stock', shelfName: 'Gear', price: p }); }
   return out;
 }
-const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if (a) return 'Class ' + a[1] + ' body armour'; return (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id; };
+const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if (a) return 'Class ' + a[1] + ' body armour';
+  const rd = /^rounds:(.+)$/.exec(id); if (rd) return (CALIBRE_NAME[rd[1]] || rd[1]) + ' rounds';
+  const mg = /^mag:(.+)$/.exec(id); if (mg) return String((WEAPON[mg[1]] as any)?.name || mg[1]).replace(/ \(.*\)$/, '') + ' magazine';
+  return (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id; };
 const focusEntry = (id: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: 'focus' });
 /** What the budget has spent on these picks (the menu's prices x how many). */
 export function loadoutSpent(c: Character, p: LoadoutPick): number {

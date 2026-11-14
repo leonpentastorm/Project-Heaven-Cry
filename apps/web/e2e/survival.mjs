@@ -34,7 +34,7 @@
 // up, it is repaired by a click: the purse down by the card's price, the rifle at full, the card gone; the Repair shelf
 // saved at 1280 and 1920; leaving with the rifle worn again, the path map's squad panel shows the WORN mark.
 import { readFileSync } from 'node:fs';
-import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE } from './lib.mjs';
+import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart } from './lib.mjs';
 const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
 const SVD = DATA('survival.json'), WPN = Object.fromEntries(DATA('weapons.json').items.map((w) => [w.id, w])), RAR = DATA('rules.json').rarity;
 const browser = await chromium.launch();
@@ -62,14 +62,41 @@ await p.locator('main button[aria-pressed]').first().click();
 await click(p, 'Next ›');
 await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
-await p.locator('button', { hasText: 'Line soldier' }).first().click();
 await click(p, 'Next ›'); await lockIn(p);
 await p.waitForSelector('text=✓ LOCKED IN');
 ok('a test room (settings.test, from the test hook)', (await G()).settings.test === true);
 await click(p, 'Start the run');
+
+// ---------- rules 1.52: the camp (one free weapon, one free focus, a budget at the shop's prices) ----------
+await p.waitForSelector('[data-phc-camp]', { timeout: 60000 });
+const LO = SVD.loadout, campId = Object.keys((await G()).characters)[0];
+const pick0 = () => G().then((g) => g.run.loadout?.[campId]), me0 = () => G().then((g) => g.characters[campId]);
+const numIn = (sel) => p.locator(sel).textContent().then((t) => Number((t.match(/\d+/g) || []).pop()));
+ok('Start the run opens the camp first (state loadout), the budget whole: ' + LO.budget, (await run()).state === 'loadout' && await numIn('[data-phc-camp-left]') === LO.budget && await numIn('[data-phc-camp-used]') === 0);
+ok('the free Weapon row shows Melee, Guns and Bows (' + (await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-pick]').count()) + ' cards) and the Focus row the four foci',
+  await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-pick]').count() === Object.values(LO.weapons).flat().length && await p.locator('[data-phc-camp-row="focus"] [data-phc-camp-pick]').count() === 4);
+await p.locator('[data-phc-camp-recommended]').click(); await settle(p, 300);
+const rec = await pick0();
+ok('Recommended fills a weapon and spends from the budget (' + rec.weapon + ', ' + JSON.stringify(rec.take) + ')', !!rec.weapon && Object.keys(rec.take).length > 0 && await numIn('[data-phc-camp-left]') < LO.budget);
+await p.locator('[data-phc-camp-pick="weapon:recurve_bow"]').click(); await settle(p, 300);
+ok('ONE weapon: the bow taken replaces the last pick, with one quiver loaded', (await pick0()).weapon === 'recurve_bow' && (await me0()).weapon === 'recurve_bow' && (await me0()).loaded === WPN.recurve_bow.magazine);
+await p.locator('[data-phc-camp-pick="weapon:hellraiser_service_rifle"]').click(); await settle(p, 300);
+const fp = (await pick0()).focus; if (fp) { await p.locator('[data-phc-camp-pick="focus:' + fp + '"]').click(); await settle(p, 300); }
+ok('the rifle free (a loaded magazine and a spare), the focus declined', (await me0()).weapon === 'hellraiser_service_rifle' && !(await pick0()).focus && (await me0()).pack.some((x) => x.weapon === 'hellraiser_service_rifle' && x.mags));
+const left0 = await numIn('[data-phc-camp-left]');
+await p.locator('[data-phc-camp-more="stock:armour:2"]').click(); await settle(p, 400);
+ok('a refusal in words: Class 2 body armour is over the budget, nothing changes', /^Over the budget by \d+ credits/.test(await p.locator('[data-phc-camp-card="stock:armour:2"] [data-phc-camp-why]').textContent()) && (await me0()).armourClass === 0 && await numIn('[data-phc-camp-left]') === left0);
+const stim = await numIn('[data-phc-camp-card="stim_injector"] [data-phc-camp-price]');
+const had = (await pick0()).take.stim_injector || 0;
+if (left0 >= stim) { await p.locator('[data-phc-camp-more="stim_injector"]').click(); await settle(p, 300); }
+ok('a stim from the budget at the shop\'s price (' + stim + '): Budget left and Budget used move, the purse is what is left',
+  left0 < stim || ((await pick0()).take.stim_injector === had + 1 && await numIn('[data-phc-camp-left]') === left0 - stim && (await me0()).credits === left0 - stim));
+await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
+const kept = (await me0()).credits;
+await p.locator('[data-phc-camp-ready]').click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 let r = await run();
-ok('Start the run opens the path map, seed ' + r.seed + ', stage 1', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'run');
+ok('Start the run leaves the camp for the path map, seed ' + r.seed + ', stage 1; the unspent budget kept (' + kept + ')', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'run' && (await me0()).credits === kept);
 
 // ---------- the path map ----------
 const drawn = await p.locator('[data-phc-node]').count();
@@ -507,7 +534,6 @@ const create = async (page, name) => {
   await click(page, 'Next ›');
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
-  await page.locator('button', { hasText: 'Line soldier' }).first().click();
   await click(page, 'Next ›'); await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 };
@@ -517,6 +543,7 @@ const code = (await h.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).
 await gu.goto(BASE + '/?room=' + code); await gu.getByPlaceholder('Leon').fill('Mai'); await click(gu, 'Join ›'); await gu.waitForSelector('text=The squad');
 await create(h, 'Kade'); await create(gu, 'Ha');
 await h.locator('button[data-phc-start]').click();
+await campStart(h, { weapon: 'hellraiser_service_rifle' }); await campStart(gu, { weapon: 'hellraiser_service_rifle' }); // rules 1.52: both ready
 await until(gu, () => !!document.querySelector('[data-phc-run-screen]'), null, 30000).catch(() => false);
 const HG = () => h.evaluate(() => window.__phc.getState().game), GG = () => gu.evaluate(() => window.__phc.getState().game);
 const actOn = (page, a) => page.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
@@ -614,6 +641,7 @@ await d.setViewportSize({ width: 1280, height: 720 });
 const DG = () => d.evaluate(() => window.__phc.getState().game), dAct = (a) => actOn(d, a);
 await hostAs(d, 'Leon'); await create(d, 'Ash');
 await d.locator('button[data-phc-start]').click();
+await campStart(d, { weapon: 'hellraiser_service_rifle' }); // rules 1.52
 await d.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 const dcid = Object.keys((await DG()).characters)[0];
 /** Walk by the engine's actions until `stop` says so (fights skipped, picks as credits, shops left, the first trail). */

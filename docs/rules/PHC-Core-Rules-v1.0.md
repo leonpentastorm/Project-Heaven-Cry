@@ -104,6 +104,8 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 
 **Order doesn't matter.** You can raise Attributes first, or place skills first: when a skill needs a higher Attribute, it spends that point for you, and the preview says so ("−1 skill · −1 Attribute (Endurance 3→4)"). A skill can't go up if its Attribute would need points you no longer have. Lock in needs every Skill and Attribute point spent. *(Rules 1.13: no Core step.)*
 
+**Gear is given by the mode** (rules 1.52; Leon, 14 Nov 2026). Creation makes a person: it picks no kit, and a new character is bare until play starts, when its mode gives what it carries (Survival: the loadout built at the camp; a campaign: its loadout; the Proving Ground: its own tools). The starting kits below and in Weapons ("Starting kits carry spares") are the old creation kits: a campaign's default loadout is built from them, and a draft or save that carries one keeps it.
+
 **Archetypes** (archetypes.json, 46 presets in 9 families, one of them **All-in**: nine 7/1/1 builds, one per Attribute) help new players. **Every archetype spends all three budgets:** picking one places the 10 Skill points and every Attribute point (rules 1.13: there are no Core points), so there is nothing left to spend; anything can still be changed on the Skills step. An archetype that can't spend them all isn't offered. Regular archetypes spread over at least two Cores; only the All-in family puts everything in one. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point from levelling, and an Attribute stops at the ceiling of your level.
 
 **Archetypes re-pointed (rules 1.13).** Thirteen presets were re-pointed for the new skill jobs; the other 33 are unchanged.
@@ -5654,6 +5656,56 @@ shop and the Forge that gunsmith. Every number is PROVISIONAL (items 3700 onward
    repair whatever is Worn or Broken at each shop and Forge, when affordable, before a grade step): items 3707 to 3709.
    No dial was moved.
 
+## Rules revision 1.52: gear by mode, and the Survival loadout
+
+Built on 14 Nov 2026 (`docs/design/handoffs/survival-loadout.md`). Leon (14 Nov 2026, binding): *"Revamp the character
+creation screen and remove the kit then, we give people stuff base on the mode. Survial will give you one low level
+melee, one low level gun, a bow, one of the 4 focus and a budget (like 200 points or smt) for them to choose ammo, stims
+and armor and such, a character going out with armor will lack in many other things."* Corrected the same day: *"only
+one weapon"* and *"1 weapon for free, take anything else with cost from the shop menu."* Every number is PROVISIONAL
+(items 3900 onward); the survival spec's fourth "Settled by Leon" block has the arithmetic.
+
+1. **Creation makes a person.** The creation screen no longer picks a kit; a sheet with no kit makes a **bare**
+   character (`c.bare`: bare fists, armour class 0, no stims, an empty pack but what its traits give). Its techniques and
+   starting magic are picked as before, on the step now called **Moves**. A sheet that names a kit (an old draft, a
+   test's) still starts with that kit, and a character already in a save is never stripped.
+2. **Gear is given by the mode** when play starts (`data/modes.json` items[].`loadout`): **Survival** (and the roguelike
+   until it has its own) builds a loadout at the camp (item 3); a **campaign** gives a bare character its loadout when
+   the session starts or when it joins mid-session: the campaign's own `loadout` when its data names one, else the
+   Campaign mode's, a fixed default built from the old creation kits by the door skill with most points (Brain Power the
+   Sigil student's, Will Power the Soul initiate's, Empathy the medic's, else the line soldier's). The **Proving Ground**
+   keeps its own gear tools and gives the same default to a bare character that comes to it.
+3. **The camp** (`g.run.state` `loadout`, before node 1; `data/survival.json loadout`). `run/start` strips every
+   character (Survival gives by mode; plot items and what traits give stay) and opens it. Each character takes, through
+   `run/loadout` (one reducer, refusals in words, nothing changed by a refusal):
+   - **one free weapon** of a short list of Standard weapons (`weapons`: melee, gun, bow); a gun comes with one magazine
+     loaded and `gun.spare` 1 spare (a gun loaded round by round: that many magazines' worth of loose rounds), a bow with
+     one quiver (its own magazine in `weapons.json`; `bow.spare` 0);
+   - **one free focus** of the four (Evoker, Emanator, Attuner, Visualizer); a core-fuelled one brings `focus_with` (one
+     standard core). A two-handed weapon puts the focus in the pack, a one-handed one leaves it in the off hand. Either
+     pick may be declined; declining gives nothing back;
+   - **a budget** of `budget` 200 credits spent on the **shop's own menu** at `priceOf`: every shelf of the shop's
+     counter but the restock (the gun's own magazines first, every calibre, the special rounds, thrown things, cores,
+     field supplies), and a fixed starter list (`stock`: the free weapons again as second weapons, the four foci as a
+     second focus, body armour by class at `rules.json armor.classes` prices through `priceOf('armour:<class>')`, and
+     the cheaper worn pieces). Up to `max_qty` 10 of a line. **Unspent budget is the character's purse** (`run.start_credits`
+     is now 0; it was 150).
+   The character's gear is rebuilt from its picks after every change. Refusals: over the budget ("Over the budget by 280
+   credits (480 of 200)."), past the carry limit ("Too heavy: Kade would carry 23.4 kg of 20 kg.", the numbers its own), a second body
+   armour ("Body armour is one piece: take one class."), a worn slot taken, a second of a worn piece, the armour class's
+   gate or a trait's cap, a weapon off the list, another player's character, a character marked ready.
+4. **Ready** (`run/ready`): each player marks it (and may take it back); when every connected player has, the squad
+   leaves the camp for node 1. The host's close (`run/ready` close) starts the run for everyone: a loadout nobody
+   touched takes the Recommended one. Test rooms may skip the camp (`run/start` camp `recommended`), as `run/skip`.
+5. **Recommended** (`recommended`): the focus of the door skill with most points; the first weapon row that fits (a
+   character with a focus the service pistol; Raw Power above Dexterity the machete; else the service rifle); the
+   profile's buys in order while the budget pays (a core-fuelled focus a core; an MP focus a field kit and a stim; a gun
+   two stims; a blade Class 1 armour); then the weapon's cheapest ammunition line while the budget pays.
+6. **The Forge fits Class 1** (`armour_fit.price` 1: 100), now that a character may set out with none.
+7. **The fit** (the simulator's parties now build their loadout by item 5; the solo gunner of the guard fell in stage 1
+   on every seed without the old kit's Class 3 armour and 144 rounds): `pressure_per_char` for a party of one 2.0 → 1.6,
+   and a solo Elite's damage share 0.75 → 0.6. Measured: items 3910 and 3911.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8967,3 +9019,16 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3708. **What repair costs (rules 1.50 item 7):** 0.1 to 0.3 repairs a character a stage where any were bought, 3 to 6 credits a character a stage on average (a broken Masterwork rifle at most 720): under 0.2% of a stage's income (spec 11.1: 3,861 to 6,864). PROVISIONAL.
 3709. **The curve after repair (rules 1.50 item 7):** the squad of four still ends in stage 3 or 4 (means 3.4, 4.3, 4.4; were 3.4, 4.4, 4.4; one training-route run cleared stage 4 before and fell in it after, the dice of a gun that fires instead of breaking); solo and duo cells unchanged; four casters 2.0 → 2.3; the grade ladder's walk (grades at each Boss, steps a stage) unchanged. No dial moved. PROVISIONAL.
 3710. **Items 3700 to 3710 are rules 1.50's.**
+3900. **Creation without a kit (rules 1.52 item 1):** a sheet with no kit is legal and makes a bare character (`c.bare`: `fists`, armour class 0, no stims, the trait items only; `character.ts BARE_KIT`); the creation screen's Kit step is gone (the Moves step keeps the techniques and starting magic). A sheet naming a kit (an old draft, a test) keeps it. PROVISIONAL.
+3901. **Gear by mode (item 2; `modes.json` items[].`loadout`):** `camp` for Survival and the roguelike; `kit` for a campaign (`by_door` brain_power `sigil`, will_power `soul`, empathy `medic`; `default` `soldier`; a campaign's own `loadout` first), given to a bare character at `session/start` and on a mid-session `char/add`; the Proving Ground gives the same at `sandbox/start`. **A call for Leon:** the campaigns name their own loadouts when they are rewritten. PROVISIONAL.
+3902. **The camp (item 3; `survival.json loadout`):** `run/start` strips (`loadout.ts stripGear`) and opens it (`run/loadout.ts openCamp`); the loadout is picks (`g.run.loadout[charId]`: weapon, focus, take) and the gear is rebuilt from them (`rebuild`) after every change, on a copy first. PROVISIONAL.
+3903. **The free picks (item 3):** `weapons` melee `combat_knife`, `hatchet`, `ork_machete`; gun `service_pistol`, `drifter_revolver`, `sawn_off`, `hellraiser_service_rifle`; bow `recurve_bow`, `crossbow`; `gun` {loaded 1, spare 1}; `bow` {spare 0}; `focuses` the four; `focus_with` evoker and visualizer one `standard_core` each (**a call for Leon:** a Sigil or Figment caster's first core is free, as a gunner's spare magazine is). PROVISIONAL.
+3904. **The budget (item 3):** `budget` 200 credits (Leon's "like 200 points": it works as credits at the shop's prices: Class 1 armour 150 is three quarters of it, Class 2 400 is out of reach); `counter.skip` [restock]; `stock` the fixed starter list (**a call for Leon:** the camp's gear shelf is fixed, not rolled, so every player sees the same choices); `max_qty` 10. Unspent budget is the purse; `run.start_credits` 150 → 0. PROVISIONAL.
+3905. **`priceOf('armour:<class>')` (item 3):** a body armour class at its `rules.json armor.classes[].price_credits` (Light 150, Medium 400, Heavy 900, Assault 1,800, Juggernaut 4,000), times the rarity's price: the one price door. PROVISIONAL.
+3906. **The camp's refusals (item 3), in words:** over the budget, too heavy, body armour twice, a worn slot taken, a second worn piece of a kind, the armour gate and a trait's cap, a weapon or focus off the list, another's character, a character marked ready, a line the camp does not stock, nothing to put back. PROVISIONAL.
+3907. **Ready and the host's close (item 4):** every connected player's Ready leaves the camp; the host's close takes an untouched loadout's Recommended one; test rooms may skip the camp (`camp: 'recommended'`). PROVISIONAL.
+3908. **Recommended (item 5; `recommended`):** `focus_by_door` brain_power `evoker`, visualization `visualizer`, will_power `emanator`, empathy `attuner`; `weapon` rows [{when focus: service pistol}, {raw_power over dexterity: ork machete}, {service rifle}]; `buys` core [standard core], mp [field kit, stim], gun [stim, stim], melee [Class 1 armour]; `fill` ammo. PROVISIONAL.
+3909. **The Forge's Class 1 (item 6):** `armour_fit.price` 1: 100 (Class 2 250, 3 600, 4 1,200 as before). PROVISIONAL.
+3910. **The fit (item 7):** `pressure_per_char` [2.0, 1.7, 1.3, 1.3] → [1.6, 1.7, 1.3, 1.3]; `share.elite.damage` for one 0.75 → 0.6. The guard's solo gunner (gear route, GUARD-1 to 3) before the fit: stage 1 cleared on 0 of 3 (lost at 1.5, 2.4, 1.6); after: it passes (stage 1 cleared on two seeds or more, never stage 4). PROVISIONAL.
+3911. **The headline cells after rules 1.52** (SIM-1 to 3, stages capped at 5): `survival-loadout.md` section 4; against rules 1.49's tables (SIM-1 to 4). PROVISIONAL.
+3912. **Items 3900 to 3912 are rules 1.52's.**

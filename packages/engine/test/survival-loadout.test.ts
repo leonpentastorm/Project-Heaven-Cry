@@ -121,18 +121,18 @@ describe('the camp (rules 1.52)', () => {
     expect(closed.run!.state).toBe('map'); expect(h.weapon).toBe(recommendedPick(h, { pack: [], worn: {} }).weapon);
     expect(refused(camp(true), { type: 'run/ready', close: true }, P2)).toBe('Only the host starts the run for everyone: mark Ready.');
   });
-  it('Recommended: the door\'s focus and cores for a Sigilist; the rifle and stims for a gunner; armour for a blade; field kit and stim for a healer; the arithmetic', () => {
+  it('Recommended: Class 1 armour first, then the door\'s core for a Sigilist, a stim for a gunner and a blade, a field kit for a healer; the arithmetic', () => {
     const rec = (skills: Record<string, number>) => { let g = camp(); const id = idOf(g, 'Kade'); g.characters[id].skills = skills; g = lo(g, 'Kade', { op: 'recommended' }); return { c: g.characters[id], p: g.run!.loadout![id] }; };
     const gun = rec({ dexterity: 3 });
-    expect(gun.c.weapon).toBe('hellraiser_service_rifle'); expect(gun.c.stims).toBe(2); expect(gun.c.offHand).toBeNull();
+    expect(gun.c.weapon).toBe('hellraiser_service_rifle'); expect(gun.c.armourClass).toBe(1); expect(gun.c.stims).toBe(1); expect(gun.c.offHand).toBeNull();
     expect(creditsOf(gun.c)).toBe(LOADOUT.budget - loadoutSpent(gun.c, gun.p));
     const blade = rec({ raw_power: 3, dexterity: 1 });
-    expect(blade.c.weapon).toBe('ork_machete'); expect(blade.c.armourClass).toBe(1); expect(creditsOf(blade.c)).toBe(LOADOUT.budget - priceOf('armour:1')!);
+    expect(blade.c.weapon).toBe('ork_machete'); expect(blade.c.armourClass).toBe(1); expect(creditsOf(blade.c)).toBe(LOADOUT.budget - loadoutSpent(blade.c, blade.p));
     const sig = rec({ brain_power: 3, dexterity: 1 });
     expect(sig.c.weapon).toBe('service_pistol'); expect(sig.c.offHand).toEqual({ id: 'evoker' });
     expect(packOf(sig.c).find((x) => x.id === 'standard_core')!.qty).toBe(LOADOUT.focus_with.evoker[0].qty + 1);
     const heal = rec({ empathy: 3 });
-    expect(heal.c.offHand).toEqual({ id: 'attuner' }); expect(packOf(heal.c).some((x) => x.id === 'field_kit')).toBe(true); expect(heal.c.stims).toBe(1);
+    expect(heal.c.offHand).toEqual({ id: 'attuner' }); expect(packOf(heal.c).some((x) => x.id === 'field_kit')).toBe(true); expect(heal.c.armourClass).toBe(1);
     for (const x of [gun, blade, sig, heal]) { expect(loadoutSpent(x.c, x.p)).toBeLessThanOrEqual(LOADOUT.budget); expect(carriedKg(x.c).total).toBeLessThanOrEqual(carryLimit(x.c)); }
     expect(SV.run.start_credits).toBe(0); // the old flat purse (150) is replaced by the unspent budget
   });

@@ -15,7 +15,7 @@ await host.locator('main button[aria-pressed]').first().click();
 const stepNow = () => host.evaluate(() => document.querySelector('button[aria-current="step"]')?.textContent || '');
 const next = async () => { const was = await stepNow(); await click(host, 'Next ›'); await until(host, (w) => (document.querySelector('button[aria-current="step"]')?.textContent || '') !== w, was, 30000); await settle(host); };
 await next(); await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await next(); await next(); await next(); await host.locator('button', { hasText: 'Line soldier' }).first().click();
+await next(); await next(); await next();
 await next(); await lockIn(host);
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');

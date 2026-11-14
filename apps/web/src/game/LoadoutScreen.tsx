@@ -42,16 +42,16 @@ function PickCard({ c, slot, charId }: { c: LoadoutCardV; slot: 'weapon' | 'focu
       style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, minHeight: 196, borderRadius: 14, textAlign: 'left', fontFamily: 'inherit', color: I.text, cursor: 'pointer',
         background: c.picked ? 'linear-gradient(180deg, rgba(44,56,78,0.98), rgba(28,37,54,0.98))' : 'linear-gradient(180deg, rgba(28,37,54,0.92), rgba(16,21,31,0.92))', border: c.picked ? '2px solid ' + I.white : '1px solid ' + I.line, opacity: off ? 0.6 : 1 }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-        <span style={{ flexShrink: 0, width: 64, height: 64, display: 'grid', placeItems: 'center', borderRadius: 10, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
-          {icon ? <img src={icon} alt="" width={58} height={58} style={{ objectFit: 'contain' }} /> : null}
+        <span style={{ flexShrink: 0, width: 52, height: 52, display: 'grid', placeItems: 'center', borderRadius: 10, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
+          {icon ? <img src={icon} alt="" width={48} height={48} style={{ objectFit: 'contain' }} /> : null}
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 17, fontWeight: 600, lineHeight: 1.15 }}>{c.name.replace(/ \(.*\)$/, '')}</span>
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: c.picked ? I.white : I.muted }}>{c.picked ? '✓ TAKEN · FREE' : 'FREE'}</span>
         </span>
       </div>
-      <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: '1fr auto', gap: '2px 10px', fontSize: 12.5 }}>
-        {c.preview.lines.slice(0, 4).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted }}>{l.label}</dt><dd style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
+      <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '2px 8px', fontSize: 12 }}>
+        {c.preview.lines.slice(0, 4).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={l.label}>{l.label.replace(/ \(.*\)$/, '')}</dt><dd style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
       </dl>
       {off ? <span style={{ marginTop: 'auto', fontSize: 12, color: I.muted }}>{c.why}</span> : null}
     </button>

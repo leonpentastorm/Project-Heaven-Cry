@@ -288,7 +288,7 @@ await click(nora, 'Create a character');
 await nora.getByPlaceholder('What the squad calls you').fill('Nora Vale');
 await nora.locator('main button[aria-pressed]').first().click();
 await click(nora, 'Next ›'); await nora.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await click(nora, 'Next ›'); await click(nora, 'Next ›'); await click(nora, 'Next ›'); await nora.locator('button', { hasText: 'Line soldier' }).first().click();
+await click(nora, 'Next ›'); await click(nora, 'Next ›'); await click(nora, 'Next ›');
 await click(nora, 'Next ›'); await lockIn(nora);
 await nora.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(nora, 'Start session');

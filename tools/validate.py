@@ -2191,6 +2191,15 @@ if _modes is not None:
         if m.get("start") not in ("run", "session"): errors.append(f"{w}: start is run (run/start) or session (session/start)")
         if m.get("available") is False and not (isinstance(m.get("coming"), str) and m.get("coming").strip()): errors.append(f"{w}: a locked mode says why (coming)")
         if m.get("available") is True and m.get("coming") is not None: errors.append(f"{w}: an open mode has no coming text (null)")
+        # Rules 1.52: gear is given by the mode: `loadout` {kind: camp (Survival's camp) | kit (a fixed loadout of the old kits)}
+        _lo = m.get("loadout")
+        if not isinstance(_lo, dict) or _lo.get("kind") not in ("camp", "kit"): errors.append(f"{w}: loadout is {{kind: camp | kit}} (rules 1.52: gear is given by the mode)")
+        elif _lo.get("kind") == "kit":
+            _kits = {"medic", "soldier", "sigil", "soul"}  # character.ts KITS
+            for _sk, _k in (_lo.get("by_door") or {}).items():
+                if _sk not in {x.get("id") for x in (data.get("skills") or {}).get("items", [])}: errors.append(f"{w}: loadout.by_door {_sk!r} is not a skill")
+                if _k not in _kits: errors.append(f"{w}: loadout.by_door.{_sk} {_k!r} is not one of the kits {sorted(_kits)}")
+            if _lo.get("default") not in _kits: errors.append(f"{w}: loadout.default {_lo.get('default')!r} is not one of the kits {sorted(_kits)}")
         a = m.get("art")
         if a is not None and _assets is not None:
             if not m.get("art_pending") and a not in _assets: errors.append(f"{w}: art {a!r} is not a web asset (art/catalog.json, npm run assets); mark it art_pending until it lands")
@@ -2301,6 +2310,39 @@ if _sv is not None:
         for _k in ("start_credits", "dead_return_hp"):
             if not _num(_r.get(_k)) or _r.get(_k) < 0: errors.append(f"survival:run.{_k}: a number of 0 or more")
         if _r.get("first_setting") not in {s.get("id") for s in _sv.get("settings") or []}: errors.append("survival:run.first_setting: not a setting")
+    # Rules 1.52: the camp's loadout. Every free weapon and focus exists; every stock id has a price (priceOf's shapes:
+    # a weapon or item with price_credits, armour:<class> from rules.json armor.classes); the budget is a number.
+    if "loadout" in _sv:
+        _lo, _w = _sv["loadout"], "survival:loadout"
+        _wid = {x.get("id"): x for x in (data.get("weapons") or {}).get("items", [])}
+        _iid = {x.get("id"): x for x in (data.get("items") or {}).get("items", [])}
+        if not (_num(_lo.get("budget")) and _lo["budget"] >= 0): errors.append(f"{_w}.budget: a number of credits, 0 or more")
+        if set((_lo.get("weapons") or {}).keys()) != {"melee", "gun", "bow"}: errors.append(f"{_w}.weapons: melee, gun and bow lists")
+        for _g, _ids in (_lo.get("weapons") or {}).items():
+            for _x in _ids:
+                if _x not in _wid: errors.append(f"{_w}.weapons.{_g}: {_x!r} is not a weapon")
+                elif _g == "bow" and _wid[_x].get("category") != "bow": errors.append(f"{_w}.weapons.bow: {_x!r} is not a bow")
+                elif _g == "melee" and "melee" not in str(_wid[_x].get("category")): errors.append(f"{_w}.weapons.melee: {_x!r} is not a melee weapon")
+                elif _g == "gun" and not (_wid[_x].get("magazine") and _wid[_x].get("ammo")): errors.append(f"{_w}.weapons.gun: {_x!r} is not a gun")
+        for _x in _lo.get("focuses") or []:
+            if not (_iid.get(_x) or {}).get("focus"): errors.append(f"{_w}.focuses: {_x!r} is not a focus (items.json focus)")
+        def _armour_classes(o):
+            if isinstance(o, dict):
+                if isinstance(o.get("armor"), dict) and "classes" in o["armor"]: return o["armor"]["classes"]
+                for v in o.values():
+                    r = _armour_classes(v)
+                    if r: return r
+            return None
+        _classes = {c.get("class"): c for c in (_armour_classes(data.get("rules")) or [])}
+        for _x in (_lo.get("stock") or {}).get("ids", []):
+            if _x.startswith("armour:") and _x[7:].isdigit(): _ok = (_classes.get(int(_x[7:])) or {}).get("price_credits", 0) > 0
+            else: _ok = ((_wid.get(_x) or _iid.get(_x) or {}).get("price_credits") or 0) > 0
+            if not _ok: errors.append(f"{_w}.stock: {_x!r} has no price (priceOf)")
+        for _x, _with in (_lo.get("focus_with") or {}).items():
+            if _x not in (_lo.get("focuses") or []): errors.append(f"{_w}.focus_with: {_x!r} is not a free focus")
+            for _y in _with:
+                if _y.get("id") not in _iid: errors.append(f"{_w}.focus_with.{_x}: {_y.get('id')!r} is not an item")
+        if _lo.get("provisional") is not True: errors.append(f"{_w}: provisional: true")
     if "tiers" in _sv:
         for _t in _tiers:
             _row = _sv["tiers"].get(_t)
@@ -2417,7 +2459,7 @@ if _sv is not None:
         if _rp.get("provisional") is not True: errors.append("survival:repair: provisional: true (rules 1.50)")
     _wr = ((data.get("rules") or {}).get("weapons_rules") or {}).get("worn") or {}
     if _wr and (not _num(_wr.get("share")) or not 0 < _wr["share"] < 1): errors.append("rules:weapons_rules.worn.share: a share above 0 and below 1")
-    if "armour_fit" in _sv and sorted((_sv["armour_fit"].get("price") or {}).keys()) != ["2", "3", "4"]: errors.append("survival:armour_fit.price: a price for classes 2, 3 and 4")
+    if "armour_fit" in _sv and sorted((_sv["armour_fit"].get("price") or {}).keys()) != ["1", "2", "3", "4"]: errors.append("survival:armour_fit.price: a price for classes 1, 2, 3 and 4 (rules 1.52: class 1, for a character who set out with none)")
     if "boon_cap" in _sv and not _num(_sv["boon_cap"].get("cap")): errors.append("survival:boon_cap.cap: a number (percent of a rifle-turn)")
     _FITS = {"guns", "magazine_guns", "melee", "foci"}
     _POOLS = {s.get("pool") for s in _sv.get("settings") or []}

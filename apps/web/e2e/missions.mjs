@@ -12,7 +12,7 @@ await click(host, 'Create a character');
 await host.getByPlaceholder('What the squad calls you').fill('MPAT');
 await host.locator('main button[aria-pressed]').first().click();
 await click(host, 'Next ›'); await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›'); await host.locator('button', { hasText: 'Line soldier' }).first().click();
+await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›');
 await click(host, 'Next ›'); await lockIn(host);
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
