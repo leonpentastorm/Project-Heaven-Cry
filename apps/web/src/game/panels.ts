@@ -27,3 +27,6 @@ export function panelsOf(g: Pick<GameState, 'settings' | 'sandbox' | 'run'> | nu
   const row = M.items.find((m) => m.id === mode.id);
   return { key: mode.id, list: (mode.panels || []).filter(isPanelId), hides: row?.hides || [] };
 }
+/** The story's area map (the header's AREA MAP button and the M key) is offered where the mode's list holds the map
+ * module: the story and the Proving Ground, never a run (ui-screens.md "The three columns": no area map in Survival). */
+export const offersAreaMap = (g: Pick<GameState, 'settings' | 'sandbox' | 'run'> | null | undefined): boolean => panelsOf(g).list.includes('map');

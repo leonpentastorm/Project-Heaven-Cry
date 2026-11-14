@@ -168,6 +168,10 @@ const covers = await p.evaluate(() => { const t = document.querySelector('.phc-a
   return [...document.querySelectorAll('[data-phc-node][data-phc-state="reachable"]')].map((n) => [n.getAttribute('data-phc-node'), n.getBoundingClientRect()]).filter(([, b]) => t.left < b.right && b.left < t.right && t.top < b.bottom && b.top < t.bottom).map(([id]) => id); });
 ok('rules 1.46: the path map\'s hover card sits beside its node and covers no reachable node (' + covers.join(', ') + ')', !covers.length);
 await sidePanels(p, 'the path map');
+// ui-screens.md "The three columns": a run has no area map: no header button, and M opens nothing.
+await p.keyboard.press('m'); await settle(p, 400);
+const areaMap = await p.evaluate(() => ({ button: document.querySelectorAll('[data-phc-areamap]').length, dialog: document.querySelectorAll('[role="dialog"][aria-label="Area map"]').length }));
+ok('a run offers no area map: no AREA MAP button (' + areaMap.button + '), and M opens nothing (' + areaMap.dialog + ')', areaMap.button === 0 && areaMap.dialog === 0);
 await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
 // rules 1.49 (build step 10): the map always fits its frame: every marker, its word and the camp inside the map's frame
 // (the vault's guard and chest were clipped by the frame's bottom at 1280 x 720), at three screen sizes

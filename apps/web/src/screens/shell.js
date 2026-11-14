@@ -9,6 +9,7 @@ import { openSettings } from '../game/settings';
 import { askConfirm, dialogOpen } from '../game/dialog';
 import { leaveProvingGround } from '../game/sandbox';
 import { openMemory } from '../game/memory';
+import { offersAreaMap } from '../game/panels';
 import { voiceState, voiceChip, voicePrefs } from '../game/voice';
 import { providerInfo } from '../narrator/providers';
 import { MODELS } from '../narrator/anthropic';
@@ -97,7 +98,7 @@ export function narratorVals(self, g, opts) {
     },
     // The one navigation button: the area map, or the way back to a fight that is on.
     nav: {
-      fight: inFight, map: !inFight,
+      fight: inFight, map: !inFight && offersAreaMap(g),
       toFight: () => go('combat'),
       openMap: () => opts.openArea(),
     },

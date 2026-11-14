@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import modes from '../../../../data/modes.json';
 import { MODES } from '@engine';
-import { PANEL_DRAW, PANEL_NAME, panelsOf, isPanelId } from './panels';
+import { PANEL_DRAW, PANEL_NAME, panelsOf, isPanelId, offersAreaMap } from './panels';
 
 const M = modes as any;
 describe('the right panel by mode (rules 1.54 item 11)', () => {
@@ -24,5 +24,10 @@ describe('the right panel by mode (rules 1.54 item 11)', () => {
     expect(panelsOf({ settings: { play: 'survival' }, run: { state: 'map' } } as any).list).toEqual(M.items.find((x: any) => x.id === 'survival').panels);
     expect(panelsOf({ settings: { play: 'campaign' }, run: null } as any).list).toEqual(M.items.find((x: any) => x.id === 'campaign').panels);
     expect(panelsOf({ settings: {}, sandbox: { state: 'gearing' } } as any).list).toEqual(M.proving_ground.panels);
+  });
+  it('the area map (header button, M key) is offered only where the list holds the map module: never in a run', () => {
+    expect(offersAreaMap({ settings: { play: 'survival' }, run: { state: 'map' } } as any)).toBe(false);
+    expect(offersAreaMap({ settings: { play: 'campaign' }, run: null } as any)).toBe(true);
+    expect(offersAreaMap({ settings: {}, sandbox: { state: 'gearing' } } as any)).toBe(true);
   });
 });

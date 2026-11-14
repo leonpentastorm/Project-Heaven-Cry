@@ -41,7 +41,7 @@ import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
 import { STORY_PANEL_NAME, STORY_PANELS_CSS, readStoryPanels, saveStoryPanels, isDefaultOrder, startStoryDrag, keyMoveStoryPanel, squadMinHeight, SQUAD_SEATS, SQUAD_ROW_PX, SQUAD_GAP_PX } from '../game/storyPanels';
-import { panelsOf, PANEL_DRAW } from '../game/panels';
+import { panelsOf, PANEL_DRAW, offersAreaMap } from '../game/panels';
 /** A weapon's line on the GEAR tab (Physical 2.0): its properties and the technique it teaches (drill replaced the
  *  old weapon skill and mastery). */
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
@@ -320,6 +320,7 @@ export class MainLogic extends DCLogic {
    *  opens it over another dialog. */
   toggleArea(fromButton) {
     if (this.state.area) { if (!fromButton) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); return; }
+    if (!offersAreaMap(getState().game)) return; // a mode without the map module (a run) has no area map
     if (!fromButton && typeof document !== 'undefined' && document.querySelector('[role="dialog"][aria-modal="true"]')) return;
     this.setState({ area: true, shNarr: false });
   }
