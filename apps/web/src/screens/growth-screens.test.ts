@@ -157,3 +157,14 @@ describe('the character sheet\'s skill road map', () => {
     expect(ep.steps.filter((s: any) => /yours$/.test(s.label)).map((s: any) => s.n)).toEqual([1, 2]);
   });
 });
+
+describe('the pack\'s Essence of Experience line', () => {
+  it('says what it sells for by the engine\'s sell rule (a stock: false item does not sell)', async () => {
+    const { sellValue } = await import('@engine');
+    const { c, L } = start(); c().essence = 2;
+    const row = L.renderVals().rig.find((r: any) => /^Essence of Experience/.test(r.name));
+    const v = sellValue({ id: 'eoe', item: 'essence_of_experience', qty: 1 } as any, 1);
+    expect(row.note).toBe(v == null ? 'Can\'t be sold' : 'Sells for ' + v);
+    expect(row.note).not.toMatch(/300/);
+  });
+});
