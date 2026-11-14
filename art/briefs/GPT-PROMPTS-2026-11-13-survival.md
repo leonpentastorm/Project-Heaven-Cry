@@ -35,6 +35,20 @@
 > is the first screen of every run. **Batch 2 (the two path-map directions) is replaced by batch 7** and is no longer
 > wanted. The game draws the trails, the markers and every word on top: no paths, no markers, no text in the
 > paintings.
+>
+> **Batch 7, S4 and the painted maps came in (14 Nov, the art branch's 9fbb08e9) and are in the game.** Verdicts
+> (`ART-REQUESTS.md` S1, S3, S4, S9): **(1) the six path backdrops are wired** (`survival-map-<setting>`): calm
+> middles, no paths, markers or text, 2560 × 1440 (upscaled from 1672 × 941). Two notes for a later pass, not a redo:
+> the camp at the left edge and the Boss's lair at the right are not clear landmarks on most (city and rim are near
+> symmetric), and city and rim are busy through the lanes' band (the game puts a dark band under the trails there, and
+> lighter on ahoc and works). **(2) Ten markers wired** (crossed blades, horned mask, sealed door for the Boss, lamp
+> over a counter, anvil, target and rifle, candle in an arch, campfire, locker, signpost): clean white ink, they read
+> at 16 to 40 px. **Still wanted, three markers in the same hand:** the vault's guard (a horned skull), the vault (a
+> chest), the camp (a tent). **(3) Six keepers wired**: strong. Two of them do not match the names the game gives them
+> (`keeper-works` is a woman automaton, the face is "Ivo Smetanin"; `keeper-rim` is a man, the face is "Corra
+> Vell"): Leon picks rename or repaint. **Still wanted:** the armourer, the drill sergeant, the medic, the crossroads
+> broker, and the ten S4 backdrops. **(4) The 18 painted maps** are catalogued as training material (`painted-map`,
+> upscaled from 1254 px: the FORGE captions mark them); the game does not ship them.
 
 Everything the Survival mode (`docs/ROADMAP.md`, "Survival mode" and "The roguelike: Leon's scope") needs that an image
 generator can make **now**. Leon, 13 Nov 2026: "Artist is free, ask for more paintings, prepare for Survival mode

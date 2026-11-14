@@ -22,7 +22,7 @@ The modes must not blend. Counts: `art/catalog.json` and the prompt files, 13 No
 | (b) **Wick**: the mascot acting out traits, perks, Calls; white flat ink | `phcwick` / `phcwick` | **189** (74 traits, 106 perks, 9 Calls) | 184 | **1st** (all in the repo) |
 | (a) **Gear**: painted objects, one object, three-quarter, transparent | `phcgear` / `phcgear` | **149** (60 weapons, 21 armour, 3 shields, 4 focuses, 13 mods, 7 tools, 6 consumables, 4 ammo, 3 food, 2 lights, 2 documents, 12 rounds, 8 mags, augment, loot x2, companion) | 144 | **2nd**, when the artist's branch lands |
 | (c) **Character portraits**: 800 x 1000, opaque; people and robots, **not gods** | `phcportrait` / `phcportrait` | **145**: 46 archetype cards, 54 world (27 New Faces + 27 Original Heavenprint), 27 EPCCG cast, 18 M813 | 140 | **3rd** |
-| (f) **Scenes and maps**: wide paintings, one LoRA, see 1.2 | `phcscene` / `phcscene` | **about 12**: 7 illustrations, 1 title-screen painting, 4 archived maps | about 12, plus crops | **last, only if the count supports it** |
+| (f) **Scenes and maps**: wide paintings, one LoRA, see 1.2 | `phcscene` / `phcscene` | **about 79** (14 Nov): 7 illustrations, 1 title-screen painting, 4 archived maps, and Survival's 18 painted battle maps, 24 backdrops, 6 path backdrops, 8 node scenes, 3 cards, 2 old path maps (all upscaled exports: see 1.2) | about 74, plus crops | **last; the count now supports it** |
 | (b2) **Glyphs**: white flat ink, no figure (prayers, feelings, modules) | `phcglyph` / `phcglyph` | **105** (39 + 25 + 41) | 105 | optional, after Wick |
 | (d) Skill portraits: faceless gesture figures | none | 27 | too few alone | skip |
 | (e) Monoline weapon icons (`art/icons/weapons/*.svg`, 60) | none | placeholders | not worth training | skip |
@@ -64,8 +64,20 @@ Inventory (13 Nov, verified by listing, not by eye):
   art and the only map paintings there are. **Recommendation: yes, train on them, as style reference only**, with the
   archive exclusion lifted for this one folder (the script has no mode for them: copy by hand). **Flag for Leon.**
 - Object sprites (25, top-down props) are another mode; nothing else in the catalog is scene-like.
+- **Survival (14 Nov, catalog `survival_art`; the art branch's 9cbddf49 and 9fbb08e9):** **18 painted top-down battle maps**
+  (`art/maps/survival/<setting>-<1..3>.png`, mode `painted-map`, ids `survival-m001` to `survival-m018`, three a setting),
+  delivered for this LoRA and as reference (the game does not draw them: rules 1.16 and 1.45, fights are assembled from the
+  kits; `npm run assets` does not build them). **Every one is an upscale**: native 1254 x 1254 (Lanczos) exported at 2600 x 2600,
+  catalog `upscaled: true` and `native_dimensions`; the native renders are in
+  `art/_archive/survival/2026-11-14-battle-maps/native-renders/` (M004 to M018; M001 to M003's under
+  `2026-11-13-scenes-and-portraits/map-studies/`). **Train on the native render, not the export** (an upscale teaches
+  Lanczos softness), and caption them "top-down battle map". Besides: 24 fight backdrops (`backdrops/`, mode `backdrop`), 6
+  path-map backdrops (`map/path-<setting>.png`, `survival-map-<setting>`), 8 node scenes, 3 cards and S1's 2 old path maps:
+  **all upscales too** (native 1672 x 941 to 2560 x 1440; the list is
+  `art/_archive/survival/2026-11-14-battle-maps/native-resolution-exceptions.json`, 55 entries). The captions step marks
+  each with its `upscaled` flag and uses the native file where the archive has one. All are `review-candidate`.
 
-**Honest count: about 12 images, 7 of them from one campaign. Far below the 20 to 40 consistent images a style LoRA on SDXL wants.**
+**Honest count (13 Nov): about 12 images, 7 of them from one campaign. Far below the 20 to 40 consistent images a style LoRA on SDXL wants.** (14 Nov: Survival's 61 wide paintings and 18 maps take it to about 79; see the Survival line above.)
 Risk: the LoRA memorises these paintings and hands them back (compositions, the black hole, the hangar) instead of a style.
 Two ways to grow the set properly, and neither makes it a big set:
 
