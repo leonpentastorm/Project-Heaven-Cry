@@ -20,15 +20,32 @@ double barrel."
   `whiff` and `deflect` (the melee misses: the stroke passing wide, the bounce tick), `wide` (the shot's miss: the
   tick past the target and its dust). The `miss` column is gone from the table: a miss draws no result.
 - **Removed outside the parts:** the bright arc sprite swept in front of every swinging attacker (fx/play.ts melee),
-  a bullet's and a pellet's drawn flight (fx/play.ts projectile: the pale streak; the flight is still traced and
-  timed, so the landing and the number wait for it as before), the dust kicked up where a missed shot went.
-- **Kept, redrawn not to be a line from the shooter:** `aim` (was a line of aim from the shooter: now the sight, a
-  thin ring with four ticks closing on the target), `heavy` (was a thick line from the muzzle through the target:
-  now the round driven out of the target's far side, played with the hit), `cone` (was two lines from the shooter
-  and a fill: now the cone's far band over the target), Flush Arc's drop (fx/ranged.ts: the last tile and a half
-  only, white). Kept as they were: the white aim line of Aimed Shot, Crossfire's two lines and Storm's red charge
-  line (fx/ranged.ts technique beats, not the yellow tracer style), Sweep's own wide arc (`sweep`) and every
-  other part.
+  the dust kicked up where a missed shot went.
+- **Wrongly removed on 13 Nov, restored on 14 Nov: the bullet in flight.** Leon on the live build: "FUCK i told you
+  to remove the yellow line not the bullet effect", and "the yellow line was added in a later effect update, the gun
+  always got bullets shot VFX, we even spent many token making sure the shot sycn perfectly". Two things were drawn
+  for a round, added at different times: the bullet's flight (fx/play.ts `projectile`: a short pale streak that
+  travels from the muzzle to where the round lands, since the first effects work, then synced round by round with
+  the sound, the casings and the numbers) and the yellow line (the `tracer` part, added with the technique table on
+  12 Nov, a stroke drawn from the muzzle to the target and held). The cleanup took both; the flight is back exactly
+  as it was (its look, colour, speed and timing, from history: `git show 1f918427^:apps/web/src/game/fx/play.ts`),
+  for every round fired, hit or miss: a bullet's streak, a shotgun shell's five pellets, an arrow's shaft, a
+  bolt, a rocket, a lobbed grenade. A miss still flies past the target and leaves nothing where it lands. A shell
+  fired without its own roll (a double barrel's second, a shotgun's Suppress, Rake or full-auto rounds) now flies
+  as its five pellets too (it was one streak). The `tracer` part stays deleted. The flight box carries
+  `data-fx-flight` and traces `flight`; every part traces `part` with its tag, so the suites can tell a round in
+  the air from a removed piece (rounds.test.ts, ranged.test.ts, brass, fx-room, fx-sweep).
+- **Every round heard (14 Nov, Leon: "repeat the exact amount of bullet was fire out, not a generic 4 shot sound
+  effect"):** no recording of a burst or of automatic fire plays over a volley; each round fired plays its
+  weapon's single shot as it leaves (heard = drawn = casings = rounds spent, rounds.test.ts).
+- **Kept as they were (14 Nov, Leon: "i only told you to delete that 4 effect"):** every technique's own
+  attack and hit parts less the four: `heavy` (Heavy Bolt, Punch Through, Dead Centre: a thick streak in the ink
+  with a white core from the muzzle through the target), `cone` (Rake, Mag Dump), their crosses, rings, brands and
+  ticks, Flush Arc's dashed arc from the shooter (fx/ranged.ts), the white aim line of Aimed Shot, Crossfire's
+  two lines and Storm's red charge line, Sweep's own wide arc (`sweep`). The one part still redrawn is `aim`:
+  its old form was a solid line in the ink from the shooter, Agility yellow for every gun, so it stays the sight
+  (a thin ring with four ticks closing on the target). The cleanup of 13 Nov had also redrawn `heavy`, `cone` and
+  Flush Arc and cut the rows' hit parts down to the hole; that was undone on 14 Nov.
 - **New: the weapon's mark** (`round`, playing `hole`, `pellets` or `shaft`): a shot that hits leaves it on the
   target (or on the object, or on the cover that stopped it), on the lower half of the token, clear of the damage
   number, as its round lands, and it fades in about a second at Normal speed. `hole`: a small dark puncture with a
@@ -82,17 +99,17 @@ double barrel."
 | Shot (`shot`) | ranged | fire | SHARED | plain shot (tracer) | UNIQUE | round |  |
 | Snap Shot (`snap_shot`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | ring · round | service_pistol ("Snap Shot") |
 | Burst (`burst`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | round · ticks | decrkm_autopistol ("Point Blank"), brigade_auto_shotgun ("Room Sweeper"), repeating_crossbow ("Volley") |
-| Aimed Shot (`aimed_shot`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | aim · round · star |  |
+| Aimed Shot (`aimed_shot`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | aim · cross · round · star |  |
 | Called Shot (`called_shot`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · round | ccec_marksman_rifle ("Steady Aim") |
-| Walking Fire (`walking_fire`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | dashes · round | lever_carbine ("Work the Lever") |
+| Walking Fire (`walking_fire`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | cross · dashes · round | lever_carbine ("Work the Lever") |
 | Punch Through (`punch_through`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | crack · heavy · round | adamantile_battle_rifle ("Armour-Breaker") |
 | Lob (`lob`) | ranged | fire | UNIQUE | fx/ranged.ts case | UNIQUE | ring · stomp | smetanita_thumper ("Lob") |
 | Heavy Bolt (`heavy_bolt`) | ranged | fire | SHARED | plain shot (tracer) | UNIQUE | chevrons · crack · heavy · round | crossbow ("Bolt Rest") |
 | Suppress (`suppress`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | brand · round · ticks | hellraiser_service_rifle ("Suppressing Fire"), hellraiser_rotary ("Spin Up") |
-| Rake (`rake`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | cone · round | decrkm_smg ("Spray and Pray"), mandestra_drum_gun ("Wide Spray") |
+| Rake (`rake`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | cone · cross · round | decrkm_smg ("Spray and Pray"), mandestra_drum_gun ("Wide Spray") |
 | Warning Shot (`warning_shot`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | brand |  |
 | Flush (`flush`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | crack · streak | lumeri_scattergun ("Door Key"), breacher_tube ("Bunker Buster") |
-| Mag Dump (`mag_dump`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | cone · round · ticks | drifter_revolver ("Fan the Hammer"), coach_gun ("Both Barrels") |
+| Mag Dump (`mag_dump`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | cone · cross · round · ticks | drifter_revolver ("Fan the Hammer"), coach_gun ("Both Barrels") |
 | Crossfire (`crossfire`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · round | parlour_pistol ("Ace in the Sleeve") |
 | Bead (`bead`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | aim · bracket | long_rifle ("One Breath") |
 | Spot (`spot`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand | whisper_smg ("Quiet Work") |
@@ -101,15 +118,15 @@ double barrel."
 | Shift (`shift`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | dashes · ring | legion_bullpup ("Shoot and Scoot") |
 | Vent (`vent`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | ring · ticks |  |
 | Head Down (`head_down`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | ring · stomp | smoke_grenade ("Cover Me") |
-| Dead Centre (`dead_centre`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · heavy · round · star | blackpoint_700 ("Through and Through") |
+| Dead Centre (`dead_centre`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · cross · heavy · round · star | blackpoint_700 ("Through and Through") |
 | Pin Down (`pin_down`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | brand · round · stomp | recurve_bow ("Nock and Loose") |
 | Rout (`rout`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | streak | frag_grenade ("Cook It") |
 | Stopping Shot (`stopping_shot`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | chevrons · round · streak | magistrate_pistol ("Stopping Power") |
-| Storm (`storm`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | dashes · ring · round | legion_pdw ("Clear the Room"), sawn_off ("Close Quarters") |
-| Last Round (`last_round`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | ring · round · star | frontier_hand_cannon ("Knockback") |
-| Overwatch (`overwatch`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | aim · round |  |
+| Storm (`storm`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | cross · dashes · ring · round | legion_pdw ("Clear the Room"), sawn_off ("Close Quarters") |
+| Last Round (`last_round`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | cross · ring · round · star | frontier_hand_cannon ("Knockback") |
+| Overwatch (`overwatch`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | aim · cross · round |  |
 | Deny (`deny`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | aim · bracket · round |  |
-| Cover Me (`cover_me`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | ticks |  |
+| Cover Me (`cover_me`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | cross · ticks |  |
 | Dead to Rights (`dead_to_rights`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · round | longbow ("Arc") |
 | Shield Bash (`shield_bash`) | melee | strike | UNIQUE | melee_fx force | UNIQUE | bash · chevrons · ring |  |
 | Raise Shield (`raise_shield`) | melee | link | UNIQUE | melee_fx guard | UNIQUE | guard · ring |  |

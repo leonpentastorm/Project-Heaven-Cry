@@ -113,8 +113,13 @@ await pause(p, 1500);
 //     (Leon, 12 Nov 2026). The engine's volley says the round with no roll (`loose`); the queue puts it on the last roll.
 //     Since 13 Nov 2026 (no tracer lines; "change the effect for shots to a bullet hole"): bullet holes drawn = rounds
 //     that hit, one after another; casings = rounds spent. Both rolls hit here: three holes, in rhythm.
+//     And each of the three rounds is drawn in flight from the muzzle (Leon, 14 Nov 2026: "i told you to remove the
+//     yellow line not the bullet effect"), with no tracer line.
 const burst = await p.evaluate(async ({ id, pos, to }) => {
   window.__phcFxTrace = [];
+  const flights = [], tracers = [];
+  const mo = new MutationObserver((ms) => { for (const m of ms) for (const b of m.addedNodes) { if (!b.getAttribute) continue; const f = b.getAttribute('data-fx-flight'); if (f) flights.push(f); if (b.getAttribute('data-tech-fx') === 'tracer') tracers.push(1); } });
+  mo.observe(document.body, { childList: true, subtree: true });
   const n = 900000 + Math.floor(Math.random() * 1000), W = { unit: id, from: pos, to, weapon: 'hellraiser_service_rifle', cat: 'rifle', target: null };
   window.__phcFx.queueFx([
     { k: 'technique', n, unit: id, id: 'burst', group: 'fire', system: 'ranged', target: null, at: pos, weapon: W.weapon },
@@ -125,13 +130,14 @@ const burst = await p.evaluate(async ({ id, pos, to }) => {
   // wait for the queue to play out (its own state, not a fixed time: a busy machine runs the timers late), at most 20 s
   const idle = () => { const d = window.__phcFxDebug?.(); return !d || !(d.timers > 0 || d.queueEndIn > 0 || d.heldBehindGate); };
   for (let t0 = performance.now(); performance.now() - t0 < 20000;) { await new Promise((r) => setTimeout(r, 100)); if (performance.now() - t0 > 600 && idle()) break; }
-  const T = window.__phcFxTrace; window.__phcFxTrace = undefined;
+  const T = window.__phcFxTrace; window.__phcFxTrace = undefined; mo.disconnect();
   const holes = T.filter((x) => x.w === 'hole');
   // the rhythm is judged on the plan (t: when each hole was due, the same on any machine), not on the wall clock (rt),
   // where a busy machine bunches late timers together (8 ms apart beside other suites)
-  return { rounds: T.filter((x) => x.w === 'round').length, shells: T.filter((x) => x.w === 'shell').length, holes: holes.length, kinds: [...new Set(holes.map((x) => x.kind))], at: holes.map((x) => Math.round(x.t)) };
+  return { rounds: T.filter((x) => x.w === 'round').length, shells: T.filter((x) => x.w === 'shell').length, holes: holes.length, kinds: [...new Set(holes.map((x) => x.kind))], at: holes.map((x) => Math.round(x.t)), proj: T.filter((x) => x.w === 'proj').length, flights, tracers: tracers.length };
 }, { id: me.id, pos: me.pos, to: right });
 ok('a character\'s Burst fires three rounds for its two rolls (' + burst.rounds + ') and throws three casings (' + burst.shells + ')', burst.rounds === 3 && burst.shells === 3);
+ok('…three bullets in flight (' + burst.proj + ' traced, ' + burst.flights.join(',') + ' drawn) and no tracer line (' + burst.tracers + ')', burst.proj === 3 && burst.flights.length === 3 && burst.flights.every((f) => f === 'bullet') && burst.tracers === 0);
 const gaps = burst.at.slice(1).map((t, i) => t - burst.at[i]);
 ok('…and its three hits leave three bullet holes (' + burst.holes + ', ' + burst.kinds.join(',') + '), one after another (' + gaps.join(', ') + ' ms apart)', burst.holes === 3 && burst.kinds.join() === 'hole' && gaps.every((g) => g > 20));
 await pause(p, 1200);

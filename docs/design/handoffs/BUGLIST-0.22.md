@@ -324,7 +324,7 @@ The full account, part by part: `docs/design/handoffs/technique-fx.md` ("What Le
 
 | The report | The cause | The fix |
 | --- | --- | --- |
-| "Please disable the yellow lines effect when shooting" | Two things drew a line per round from the muzzle: the `tracer` part (a stroke in the technique's ink, Agility yellow for every Dexterity gun, held for its whole beat) and the bullet's drawn flight (`projectile`, a pale glowing streak); `aim`, `heavy` and `cone` were also lines from the shooter | `tracer` deleted from the parts and every row; a bullet's and pellets' flight is traced and timed but not drawn; `aim` is now a sight closing on the target, `heavy` the round leaving the target's far side, `cone` only its far band over the target; Flush Arc's drop only over the last tile and a half |
+| "Please disable the yellow lines effect when shooting" | Two things drew a line per round from the muzzle: the `tracer` part (a stroke in the technique's ink, Agility yellow for every Dexterity gun, held for its whole beat) and the bullet's drawn flight (`projectile`, a pale glowing streak); `aim`, `heavy` and `cone` were also lines from the shooter | `tracer` deleted from the parts and every row; ~~a bullet's and pellets' flight is traced and timed but not drawn~~ (wrong: restored 14 Nov, see below); `aim` is now a sight closing on the target, `heavy` the round leaving the target's far side, `cone` only its far band over the target; Flush Arc's drop only over the last tile and a half |
 | "the half circle effect when meleeing" | The `slash` part (an arc swept across the target's front on every Cut, Draw Cut, Flurry, Hamstring, Riposte, Cleave) and a bright arc sprite in front of every swinging attacker (`play.ts` melee) | both deleted; the swing is the attacker's lunge; the cut on a hit (`cross`) is unchanged |
 | "the miss shot effect and the melee miss effect" | every row's `miss` result: `wide` (a tick past the target and dust), `whiff` (the stroke passing wide), `deflect` (a bounce tick), muted rings, stamps and pips; and the dust kicked up where a missed bullet went | the parts and the `miss` column are gone; a miss shows the word MISS and nothing else |
 | "change the effect for shots to a bullet hole" | (new) | `hole`: a small dark puncture, ragged pale edge, a few cracks, on the lower half of the token clear of the number, put down as its round lands, one a round that hit (a Burst's three one after another), gone in about a second; on an object or the cover that stopped the round too. The rule is now **bullet holes drawn = rounds that hit; casings = rounds spent** (`rounds.test.ts`, every gun × every shooting technique through the engine) |
@@ -334,3 +334,168 @@ Suites changed: `brass` (a Burst's three hits leave three holes in rhythm; three
 the cut and no arc; a miss draws nothing but MISS), `fx-room` (the six attacks: a mark for each shot that hit, none
 for a miss), `fx-sweep` (a fourth judgement: the family's mark, never before its round lands, none for a miss or a
 swing). None was deleted or weakened.
+
+### Found by Leon on the live build, 14 Nov: the bullet in flight was taken with the yellow line
+
+"FUCK i told you to remove the yellow line not the bullet effect"; "the yellow line was added in a later effect
+update, the gun always got bullets shot VFX, we even spent many token making sure the shot sycn perfectly, now it's
+all gone". The cleanup above read "the yellow lines" as two things: the `tracer` part (right: added with the technique
+table, 8a3e981d, 12 Nov) and the bullet's own drawn flight (wrong: `projectile` in fx/play.ts, there since bb16e06e and
+synced round by round afterwards). The flight is restored from history as it was; the rest of the cleanup stands.
+
+What a shot drew before the cleanup (`git show 1f918427^:apps/web/src/game/fx/play.ts`, techniqueParts.ts), one by one:
+
+| Piece | Where | Now |
+| --- | --- | --- |
+| (a) the muzzle flash | play.ts `muzzle` (a `muzzle` sprite and a `flare`) | kept (a shotgun's is the wide blast since 13 Nov) |
+| (b) the round in flight | play.ts `projectile` (a streak 0.8 tile long, pale #FFF3C4 to white, a #FFD27A glow, flying at 2.2 px/ms; a bow's shaft, a lobbed grenade, a rocket, a bolt); play.ts `shot` five pellets a shell; drawn for the extra rounds by ranged.ts `fly`, techniqueFx.ts `looseRounds`, play.ts `volley` (full auto's spray) | **restored** (removed 13 Nov) |
+| (c) the yellow tracer line | techniqueParts.ts `tracer` (a stroke from the muzzle to the target in the technique's ink, Agility yellow, held its beat), in the rows of Shot, Snap Shot, Burst, Aimed Shot, Called Shot, Walking Fire and others | stays removed |
+| (d) the miss marks | the rows' `miss` column (`wide`, `whiff`, `deflect`); play.ts `shot`'s `dust(end)` where a missed round went | stay removed |
+| (e) the casings | brass.ts `ejectShell` from play.ts `shot`, ranged.ts, techniqueFx.ts | unchanged |
+| (f) the hit mark | play.ts `impact` (flash, sparks or blood, decal, the number); since 13 Nov the weapon's mark (`hole`, `pellets`, `shaft`) | unchanged; an enchanted arrow keeps its element's hit |
+
+The cleanup merge's hunks in play.ts and ranged.ts, and what became of each:
+
+| File: hunk | What it did | Verdict |
+| --- | --- | --- |
+| play.ts `muzzle` | `wide`: a shotgun's short, wide blast | keep (the shotgun family fix) |
+| play.ts `projectile` | doc comment; `if (… look === 'bullet' \|\| look === 'pellets') return`; the streak's colour from the pale yellow to white | **restore**: the early return removed, the colour back to #FFF3C4 / #FFD27A as it was |
+| play.ts `shot` | the muzzle's `wide` for a shotgun | keep |
+| play.ts `shot` | the five-pellet cluster a shell (`projectile` × 5) deleted | **restore**, as it was |
+| play.ts `shot` miss | `dust(end, …)` where a missed round landed | stays removed (a miss mark; the round still flies there) |
+| play.ts `melee` | the arc sprites in front of the swinging attacker | stays removed |
+| play.ts `playFx` | `cover` added to the `ev` trace | keep |
+| ranged.ts imports, `HOT` | the mark's imports; the pale constant dropped | keep the imports; `HOT` back for Flush Arc |
+| ranged.ts `RangedKit.muzzle`, `fire`, loose rounds | the `wide` flag passed | keep |
+| ranged.ts Flush Arc | the dashed arc from the shooter cut to the last tile and a half, white | **restore** (second pass, below): Flush's own arc, not one of the four |
+| ranged.ts Punch Through Heavy | its hole in the next one | keep (its round's flight there came back with `projectile`) |
+
+Also, since the cleanup: a shotgun shell fired without its own roll (a double barrel's second, a shotgun's Suppress,
+Rake or full auto) flew as a single streak before and now flies as its five pellets (`projectile(…, 'pellets')`),
+so every shell looks the same. Not changed: a loose round of a technique beat (ranged.ts `lands`) that misses still
+kicks a little dirt where it falls, as it did before and after the cleanup; flagged for Leon, not removed on my word.
+
+Proof: rounds.test.ts (every gun × every shooting technique through the engine: one flight a round fired, five
+pellets a shell, a shaft an arrow, no removed part), ranged.test.ts ("the round in flight": hit, miss, shotgun, bow;
+R9's flight check, deleted on 13 Nov, back), and the suites `brass` (a Burst's three bullets in the air, no tracer),
+`fx-room` (every shot of the six attacks drawn in flight), `fx-sweep` (a fifth judgement: a gun's shot draws its round
+in flight, no removed part is drawn).
+
+### And the second pass, 14 Nov: only four things go, one comes; every round heard
+
+Leon, on the same build: "restore special effect on some of the technique too, heavy bolt lost it's effect, i only
+told you to delete that 4 effect and now there's hole everywhere. gun shot now play generic too. i want one gunshot
+effect, repeat the exact amount of bullet was fire out, not a generic 4 shot sound effect when i use burst which is 3
+and mag dump which is 12, same for the bullet effect." The rule for the whole fix: the cleanup takes **exactly four
+things** (the `tracer` part, the yellow line per round; the swing arc, `slash` and the arc sprite in front of the
+attacker; the shot's miss effect, `wide` and the dust where a missed round fell; the melee miss effect, `whiff` and
+`deflect`) and adds **one** (the bullet hole where a round hit). Everything else it changed is undone:
+
+- **The parts.** `heavy` (a thick streak in the ink with a white core from the muzzle through the target) and `cone`
+  (two lines from the shooter and a faint fill) are the parts they were; the cleanup had redrawn them. `aim` is the
+  one exception: its old form was a solid line in the technique's ink from the shooter to the target, Agility yellow
+  for every gun (on screen it was the yellow line itself, drawn under Aimed Shot's white line); it stays the sight
+  ring the cleanup drew on the target, so the technique keeps its sight and loses only the line. Flush Arc's dashed
+  arc from the shooter is back whole.
+- **The rows** (`fx/techniqueFx.ts` TECH_FX): each technique's attack and hit parts are what they were before 13 Nov,
+  less the four, with `round` (the hole, or the pellets, or the shaft) added to the hit of every rolled shot. The plain
+  Shot's hit is the hole alone (Leon's "change the effect for shots to a bullet hole": its cross became the hole). The
+  hole is drawn once for each round that hit (on the target, or the object it hit, or the cover that took it), never
+  for a swing, a miss, a technique's own use or a round fired at nobody.
+- **The sound.** No volley plays a recording of a burst or of automatic fire any more (play.ts `volleySound` and the
+  `silent` window, ranged.ts `rattles` are gone): every round fired plays its weapon's single shot as it leaves (the
+  same samples as before, `sfxCredits.ts`; no asset added), the rolled rounds, a Burst's third, Suppress's two, full
+  auto's spray and Mag Dump's stream alike, so heard = drawn = casings = rounds spent, read from the engine's event
+  (`loose` on the volley; the spray's typed fallback of seven is gone). The cadence is the one the rounds already had:
+  a loose round 85 ms after the last (`LOOSE_GAP`), the spray min(85, 600 / n) ms apart, Mag Dump's stream 45 ms apart
+  (twelve rounds in about half a second), the rolls at their beats. The `burst_*` and `auto_*` recordings stay in the
+  sound list, unused.
+
+Measured through the engine (`rounds.test.ts`, "the table Leon asked for"): rifle Shot 1 heard / 1 drawn / 1 casing;
+Burst 3 / 3 / 3 with 2 holes for 2 hits; full auto 10 / 10 / 10; revolver Mag Dump 6 / 6 / 0 casings (a revolver keeps
+its brass); LMG full auto 10 / 10 / 10, Suppress 3 / 3 / 3; coach gun Mag Dump (both barrels) 2 / 2 / 0; sawn-off 1
+blast of five pellets; bow 1 shaft. A rifle's or a belt's twelve-round Mag Dump is learned, not given with the gun, so
+the test character cannot use it: `ranged.test.ts` E4 plays a twelve-round dump's events and hears twelve shots.
+
+Every technique, before the cleanup, after it, and now (attack parts; hit parts; the miss column before the cleanup):
+
+| Technique | Before 13 Nov | After the cleanup (13 Nov) | Now (14 Nov) |
+| --- | --- | --- | --- |
+| `lunge` | attack dashes thrust; hit cross; miss whiff | attack dashes thrust; hit cross | attack dashes thrust; hit cross |
+| `charge` | attack thrust dashes; hit chevrons ring; miss deflect | attack thrust dashes; hit chevrons ring | attack thrust dashes; hit chevrons ring |
+| `feint` | attack jab; hit bracket; miss deflect | attack jab; hit bracket | attack jab; hit bracket |
+| `draw_cut` | attack slash; hit cross; miss whiff | attack –; hit cross | attack –; hit cross |
+| `ambush` | attack thrust; hit cross brand; miss whiff | attack thrust; hit cross brand | attack thrust; hit cross brand |
+| `cut` | attack slash; hit cross; miss whiff | attack –; hit cross | attack –; hit cross |
+| `sweep` | attack sweep; hit cross; miss whiff | attack sweep; hit cross | attack sweep; hit cross |
+| `bash` | attack jab; hit chevrons ring; miss deflect | attack jab; hit chevrons ring | attack jab; hit chevrons ring |
+| `sunder` | attack weapon chop; hit crack; miss deflect | attack weapon chop; hit crack | attack weapon chop; hit crack |
+| `flurry` | attack slash; hit pips cross; miss pips whiff | attack –; hit pips cross | attack –; hit pips cross |
+| `hamstring` | attack slash; hit drops brand; miss whiff | attack –; hit drops brand | attack –; hit drops brand |
+| `bind` | attack hook; hit bracket; miss deflect | attack hook; hit bracket | attack hook; hit bracket |
+| `half_sword` | attack thrust; hit crack; miss deflect | attack thrust; hit crack | attack thrust; hit crack |
+| `throw` | attack aim; hit cross; miss wide | attack aim; hit cross | attack aim; hit cross |
+| `pull_out` | attack hook; hit drops; miss deflect | attack hook; hit drops | attack hook; hit drops |
+| `sidestep` | attack dashes; hit ring; miss – | attack dashes; hit ring | attack dashes; hit ring |
+| `guard` | attack guard; hit ring; miss – | attack guard; hit ring | attack guard; hit ring |
+| `shove` | attack bash; hit chevrons streak; miss deflect stomp | attack bash; hit chevrons streak | attack bash; hit chevrons streak |
+| `trip` | attack hook; hit stomp; miss deflect wide | attack hook; hit stomp | attack hook; hit stomp |
+| `drag` | attack hook; hit chevrons streak; miss deflect | attack hook; hit chevrons streak | attack hook; hit chevrons streak |
+| `coup` | attack chop; hit cross crack; miss deflect | attack chop; hit cross crack | attack chop; hit cross crack |
+| `cleave` | attack slash; hit cross; miss whiff | attack –; hit cross | attack –; hit cross |
+| `break` | attack chop; hit crack; miss deflect | attack chop; hit crack | attack chop; hit crack |
+| `run_through` | attack thrust; hit cross drops; miss whiff | attack thrust; hit cross drops | attack thrust; hit cross drops |
+| `throw_down` | attack hook; hit stomp; miss deflect | attack hook; hit stomp | attack hook; hit stomp |
+| `parry` | attack guard; hit deflect ring; miss whiff | attack guard; hit ring | attack guard; hit ring |
+| `riposte` | attack slash guard; hit cross; miss whiff | attack guard; hit cross | attack guard; hit cross |
+| `keep_back` | attack thrust; hit chevrons bracket; miss whiff | attack thrust; hit chevrons bracket | attack thrust; hit chevrons bracket |
+| `shield_bash` | attack bash; hit chevrons ring; miss deflect | attack bash; hit chevrons ring | attack bash; hit chevrons ring |
+| `raise_shield` | attack guard; hit ring; miss – | attack guard; hit ring | attack guard; hit ring |
+| `grapple` | attack hook; hit bracket; miss deflect | attack hook; hit bracket | attack hook; hit bracket |
+| `shield_wall` | attack guard; hit ring; miss – | attack guard; hit ring | attack guard; hit ring |
+| `interpose` | attack guard dashes; hit ring; miss – | attack guard dashes; hit ring | attack guard dashes; hit ring |
+| `shot` | attack tracer; hit cross; miss wide | attack –; hit round | attack –; hit round |
+| `snap_shot` | attack tracer; hit cross ring; miss wide | attack –; hit round ring | attack –; hit round ring |
+| `burst` | attack tracer; hit cross ticks; miss wide | attack –; hit round ticks | attack –; hit round ticks |
+| `aimed_shot` | attack aim tracer; hit cross; miss wide | attack aim; hit round | attack aim; hit round cross |
+| `called_shot` | attack aim tracer; hit brand; miss wide | attack aim; hit round brand | attack aim; hit round brand |
+| `walking_fire` | attack dashes tracer; hit cross; miss wide | attack dashes; hit round | attack dashes; hit round cross |
+| `punch_through` | attack heavy; hit crack; miss wide | attack –; hit round heavy crack | attack heavy; hit round crack |
+| `lob` | attack ring; hit stomp; miss wide | attack ring; hit stomp | attack ring; hit stomp |
+| `heavy_bolt` | attack heavy; hit crack chevrons; miss wide | attack –; hit round heavy crack chevrons | attack heavy; hit round crack chevrons |
+| `suppress` | attack ticks; hit brand; miss wide ticks | attack ticks; hit round brand | attack ticks; hit round brand |
+| `rake` | attack cone; hit cross; miss wide | attack cone; hit round | attack cone; hit round cross |
+| `warning_shot` | attack tracer; hit brand; miss wide | attack –; hit brand | attack –; hit brand |
+| `flush` | attack tracer; hit crack streak; miss wide | attack –; hit crack streak | attack –; hit crack streak |
+| `mag_dump` | attack cone ticks; hit cross; miss wide | attack cone ticks; hit round | attack cone ticks; hit round cross |
+| `crossfire` | attack aim tracer; hit brand; miss wide | attack aim; hit round brand | attack aim; hit round brand |
+| `bead` | attack aim; hit bracket; miss – | attack aim; hit bracket | attack aim; hit bracket |
+| `spot` | attack aim; hit brand; miss – | attack aim; hit brand | attack aim; hit brand |
+| `brace` | attack guard; hit stomp; miss – | attack guard; hit stomp | attack guard; hit stomp |
+| `load_special` | attack ring; hit ring; miss – | attack ring; hit ring | attack ring; hit ring |
+| `shift` | attack dashes; hit ring; miss – | attack dashes; hit ring | attack dashes; hit ring |
+| `vent` | attack ticks; hit ring; miss – | attack ticks; hit ring | attack ticks; hit ring |
+| `head_down` | attack stomp; hit ring; miss – | attack stomp; hit ring | attack stomp; hit ring |
+| `dead_centre` | attack aim heavy; hit brand cross; miss wide | attack aim; hit round heavy brand | attack aim heavy; hit round brand cross |
+| `pin_down` | attack tracer; hit brand stomp; miss wide | attack –; hit round brand stomp | attack –; hit round brand stomp |
+| `rout` | attack tracer; hit streak; miss wide | attack –; hit streak | attack –; hit streak |
+| `stopping_shot` | attack tracer; hit chevrons streak; miss wide | attack –; hit round chevrons streak | attack –; hit round chevrons streak |
+| `storm` | attack dashes tracer; hit cross ring; miss wide | attack dashes; hit round ring | attack dashes; hit round cross ring |
+| `last_round` | attack tracer ring; hit cross; miss wide | attack ring; hit round | attack ring; hit round cross |
+| `overwatch` | attack aim tracer; hit cross; miss wide | attack aim; hit round | attack aim; hit round cross |
+| `deny` | attack aim tracer; hit bracket; miss wide | attack aim; hit round bracket | attack aim; hit round bracket |
+| `cover_me` | attack tracer ticks; hit cross; miss wide | attack –; hit ticks | attack ticks; hit cross |
+| `dead_to_rights` | attack aim tracer; hit brand; miss wide | attack aim; hit round brand | attack aim; hit round brand |
+| `move:fighter.lunge` | attack dashes thrust; hit cross ring; miss whiff | attack dashes thrust; hit cross ring | attack dashes thrust; hit cross ring |
+| `move:fighter.finisher` | attack chop; hit cross crack; miss deflect | attack chop; hit cross crack | attack chop; hit cross crack |
+| `move:fighter.shove` | attack bash; hit chevrons; miss deflect ring | attack bash; hit chevrons | attack bash; hit chevrons |
+| `move:defender.anchor` | attack guard ring; hit bracket; miss deflect | attack guard ring; hit bracket | attack guard ring; hit bracket |
+| `move:gunslinger.called_shot` | attack aim tracer; hit brand ring; miss wide | attack aim; hit round brand ring | attack aim; hit round brand ring |
+| `move:lumeri_templar.judgement` | attack ring chop; hit brand crack; miss deflect | attack ring chop; hit brand crack | attack ring chop; hit brand crack |
+
+Proof: `rounds.test.ts` (every gun × every shooting technique: gunshots heard = bullets drawn = casings = rounds spent,
+holes = rounds that hit, no removed part; Leon's table), `ranged.test.ts` ("each technique keeps its own effect": Heavy
+Bolt, Punch Through, Dead Centre, Rake, Mag Dump, Aimed Shot, Called Shot, Overwatch, Storm, Last Round draw their parts
+and never tracer, slash, whiff, deflect or wide; Flush's arc; a miss draws the attack only), `launch.test.ts` and
+`combatSpeed.test.ts` (each round heard), and the browser suites `brass`, `fx-room`, `fx-sweep` (a sixth judgement:
+gunshots heard = rounds fired, no burst recording), `physical`, `quivers`, `melee-fx`, `combat-speed`.

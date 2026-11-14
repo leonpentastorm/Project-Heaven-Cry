@@ -6,11 +6,14 @@
 //   hit / crit: what it does to the target (a crit is the hit made bigger, in white, with a starburst).
 // Leon, 13 Nov 2026, on live 0.25.0: "disable the yellow lines effect when shooting, the half circle effect when
 // meleeing, the miss shot effect and the melee miss effect … Just keep the slash effect on hit, and change the effect
-// for shots to a bullet hole." So: no tracer or any other line from shooter to target, no arc swept on a swing, and a
-// miss draws nothing (the word MISS is the whole of it). A shot that hits leaves the weapon's mark: the rows name the
-// part `round`, and the weapon's family picks what it is (shotMarkOf, read from the weapon's `ammo` in the data: a
-// bullet hole, a shotgun's pellet cluster, an arrow's or a bolt's shaft; nothing for a launcher, a flamer or a thrown
-// weapon, whose landing is their own).
+// for shots to a bullet hole." So: no `tracer` part (the yellow line per round), no arc swept on a swing, and a miss
+// draws nothing (the word MISS is the whole of it). A shot that hits leaves the weapon's mark: the rows name the part
+// `round`, and the weapon's family picks what it is (shotMarkOf, read from the weapon's `ammo` in the data: a bullet
+// hole, a shotgun's pellet cluster, an arrow's or a bolt's shaft; nothing for a launcher, a flamer or a thrown weapon,
+// whose landing is their own). Leon, 14 Nov 2026: only those four went and that one came; every technique's own
+// effect stays as it was before 13 Nov (Heavy Bolt's, Punch Through's and Dead Centre's `heavy`, Rake's and Mag
+// Dump's `cone`, their hit parts; the sights' `aim` stays a ring on the target, its old yellow line being one of the four), with the hole added to a hit and the plain Shot's cross become
+// the hole.
 // A new technique is one row. The test (techniqueFx.test.ts) walks every technique in the data and every physical class
 // move, and fails if one has no row, if a row names a part that doesn't exist, or if two rows are the same.
 //
@@ -23,7 +26,7 @@
 // Bullet holes drawn = rounds that hit; casings = rounds spent (Leon, 12 Nov 2026: "Burst eats 3 ammo but shoots only
 // 2 bullet VFX"; the rule became this on 13 Nov). The engine counts the rounds a volley spent with no roll of their own
 // on the volley event (`loose`, combat.ts noteLoose); techPrepass hands them to the volley's last roll, and this file
-// fires each as its own round (its muzzle flash, its casing, its bang where no one recording covers the volley), one
+// fires each as its own round (its muzzle flash, its bullet in flight, its casing, its own bang), one
 // LOOSE_GAP after the other, and puts its mark on the target when that roll hit. A double barrel's both barrels are
 // two shells: two blasts, one-two, and two pellet clusters. Full auto's spray, Mag Dump's stream and Suppress's extra
 // rounds are fired at nobody in particular: casings, no holes.
@@ -106,18 +109,18 @@ export const TECH_FX: Record<string, TechRow> = {
   shot: row([], [p('round')]),
   snap_shot: row([], [p('round'), p('ring', { r: 0.3 })]),
   burst: row([], [p('round'), p('ticks', { n: 2, r: 0.4 })]),
-  aimed_shot: row([p('aim')], [p('round')], [p('star', { n: 10 })]),
+  aimed_shot: row([p('aim')], [p('round'), p('cross', { n: 2, size: 0.18 })], [p('star', { n: 10 })]),
   called_shot: row([p('aim', { dash: '2 3' })], [p('round'), p('brand', { shape: 'target', up: 0, size: 0.16 })]),
-  walking_fire: row([p('dashes', { len: 0.9 })], [p('round')]),
-  punch_through: row([], [p('round'), p('heavy', { past: 0.9, w: 0.1 }), p('crack', { n: 2 })]),
+  walking_fire: row([p('dashes', { len: 0.9 })], [p('round'), p('cross', { n: 1, size: 0.18 })]),
+  punch_through: row([p('heavy', { past: 0.9, w: 0.1 })], [p('round'), p('crack', { n: 2 })]),
   lob: row([p('ring', { r: 0.8, dash: '4 4', from: 1.3 })], [p('stomp', { rings: 3 })]),
-  heavy_bolt: row([], [p('round'), p('heavy', { w: 0.2 }), p('crack', { n: 2 }), p('chevrons', { n: 1 })]),
+  heavy_bolt: row([p('heavy', { w: 0.2 })], [p('round'), p('crack', { n: 2 }), p('chevrons', { n: 1 })]),
   // ----- ranged: press -----
   suppress: row([p('ticks', { n: 4 })], [p('round'), p('brand', { shape: 'chevron', up: -0.5, side: 0 })]),
-  rake: row([p('cone', { span: 50 })], [p('round')]),
+  rake: row([p('cone', { span: 50 })], [p('round'), p('cross', { n: 1, size: 0.18 })]),
   warning_shot: row([], [p('brand', { shape: 'bar', up: 0.8, side: -0.6 })], [], { noRoll: true }),
   flush: row([], [p('crack', { n: 2 }), p('streak', { n: 2 })], [], { noRoll: true }),
-  mag_dump: row([p('cone', { span: 24 }), p('ticks', { n: 6, gap: 35 })], [p('round')]),
+  mag_dump: row([p('cone', { span: 24 }), p('ticks', { n: 6, gap: 35 })], [p('round'), p('cross', { n: 2, size: 0.22 })]),
   crossfire: row([p('aim', { dash: '5 3' })], [p('round'), p('brand', { shape: 'cross' })]),
   // ----- ranged: set -----
   bead: use([p('aim', { dash: '2 4' })], [p('bracket', { r: 0.6 })], own),
@@ -128,16 +131,16 @@ export const TECH_FX: Record<string, TechRow> = {
   vent: use([p('ticks', { n: 3, r: 0.4 })], [p('ring', { at: 'a', r: 0.45, from: 1.4, to: 0.8 })], own),
   head_down: use([p('stomp', { rings: 1 })], [p('ring', { at: 'a', r: 0.5, from: 1.4, to: 0.7 })], own),
   // ----- ranged: take -----
-  dead_centre: row([p('aim')], [p('round'), p('heavy', { w: 0.1, past: 0.3 }), p('brand', { shape: 'target', up: 0 })], [p('star', { n: 12 })]),
+  dead_centre: row([p('aim'), p('heavy', { w: 0.1, past: 0.3 })], [p('round'), p('brand', { shape: 'target', up: 0 }), p('cross', { n: 2, size: 0.2 })], [p('star', { n: 12 })]),
   pin_down: row([], [p('round'), p('brand', { shape: 'bar', up: -0.5, side: 0 }), p('stomp', { rings: 1 })]),
   rout: row([], [p('streak', { n: 3, len: 0.9 })], [], { noRoll: true }),
   stopping_shot: row([], [p('round'), p('chevrons', { n: 2 }), p('streak', { n: 2 })]),
-  storm: row([p('dashes', { len: 1.2 })], [p('round'), p('ring', { r: 0.4 })]),
-  last_round: row([p('ring', { at: 'a', r: 0.35 })], [p('round')], [p('star', { n: 6 })]),
+  storm: row([p('dashes', { len: 1.2 })], [p('round'), p('cross', { n: 1, size: 0.2 }), p('ring', { r: 0.4 })]),
+  last_round: row([p('ring', { at: 'a', r: 0.35 })], [p('round'), p('cross', { n: 2, size: 0.16 })], [p('star', { n: 6 })]),
   // ----- ranged: watch (each fires a shot of its own when it springs) -----
-  overwatch: row([p('aim', { dash: '3 3' })], [p('round')]),
+  overwatch: row([p('aim', { dash: '3 3' })], [p('round'), p('cross', { n: 1, size: 0.2 })]),
   deny: row([p('aim', { dash: '6 2' })], [p('round'), p('bracket', { r: 0.45 })]),
-  cover_me: row([], [p('ticks', { n: 3 })], [], { noRoll: true }),
+  cover_me: row([p('ticks', { n: 3 })], [p('cross', { n: 1, size: 0.18 })], [], { noRoll: true }),
   dead_to_rights: row([p('aim')], [p('round'), p('brand', { shape: 'target', up: 0, size: 0.22 })]),
 
   // ----- class moves that are physical attacks (data/classes.json; the engine marks their events with `move`) -----
@@ -254,8 +257,6 @@ export interface TechKit {
   muzzle(from: Pt, to: Pt, color?: string, wide?: boolean): { x: number; y: number };
   missPoint(from: Pt, to: Pt): { x: number; y: number };
   projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms: number, look: any, s: number, color?: string): void;
-  /** does one recording cover this volley's rounds (a gun's burst rattle)? then the extra rounds draw silent */
-  rattles(e: FxEvent): boolean;
   /** does fx/ranged.ts draw this shot's loose rounds itself (Suppress)? */
   drawsOwnLoose(e: FxEvent): boolean;
 }
@@ -322,22 +323,22 @@ export function wrapTechFx(H: Record<string, H>, K: TechKit) {
   };
   H.shove = onEvent('shove'); H.anchor = onEvent('anchor');
 
-  /** The rounds a roll accounts for beyond its own: each its muzzle flash, casing and (with no recording over the
-   *  volley) its bang, LOOSE_GAP apart after the roll's own; and, when the roll hit, its mark on the target as it lands
+  /** The rounds a roll accounts for beyond its own: each its muzzle flash, bullet in flight, casing and its
+   *  own bang, LOOSE_GAP apart after the roll's own; and, when the roll hit, its mark on the target as it lands
    *  (a Burst's three holes one after another, a double barrel's two pellet clusters). */
   function looseRounds(e: any, n: number) {
     const from = K.at(e.from), toP = centre(e.to); if (!toP) return;
-    const g = K.gunOf(e.weapon || '', e.cat || ''), br = brassOf(e.weapon || '', e.cat || ''), quiet = K.rattles(e);
+    const g = K.gunOf(e.weapon || '', e.cat || ''), br = brassOf(e.weapon || '', e.cat || '');
     const tok = from ? K.tokOf(e.unit, e.from) : null, aim = from ? angle(from, toP) : 0;
     const key = rowKey(e), mark = e.hit && !(key && TECH_FX[key]?.noRoll) ? shotMarkOf(e.weapon, e.cat) : null, vi = Number(e.vi) || 0;
     for (let i = 1; i <= n; i++) after(() => {
       trace('round', { unit: e.unit, loose: true });
-      if (!quiet && g.sound) K.play(g.sound, from || toP, { rate: (g.rate || 1) * (0.96 + Math.random() * 0.08) });
+      if (g.sound) K.play(g.sound, from || toP, { rate: (g.rate || 1) * (0.96 + Math.random() * 0.08) });
       if (tok && br.when === 'shot') ejectShell(whoOf(tok), br.shell, aim);
       if (!from) return;
       const m = g.look === 'bullet' || g.look === 'pellets' || g.look === 'bolt' ? K.muzzle(from, toP, g.color, g.look === 'pellets') : { x: from.x, y: from.y };
       const end = e.hit ? toP : K.missPoint(from, toP), ms = Math.max(60, Math.min(320, Math.hypot(end.x - m.x, end.y - m.y) / 2.2));
-      K.projectile(m, end, ms, g.look === 'pellets' ? 'bullet' : g.look, toP.s, g.color);
+      K.projectile(m, end, ms, g.look, toP.s, g.color); // a shell: its pellet cluster
       const b = K.at(e.to);
       if (mark && b) after(() => playPart('round', { a: from, b, dir: { x: Math.cos(aim), y: Math.sin(aim) }, s: b.s, ink: WHITE, scale: 1, delay: 0, outcome: 'hit', mark, round: vi + i }), ms);
     }, i * LOOSE_GAP);

@@ -1,10 +1,12 @@
 // The composable SVG parts every physical technique's animation is built from (fx/techniqueFx.ts: the table of which
 // parts each technique plays, and with what parameters). A technique may play ATTACK parts (its own gesture: a thrust,
 // a chop, the sight settling, a cone of fire arriving) and plays RESULT parts on the target on a hit and a crit.
-// Leon, 13 Nov 2026, on live 0.25.0: the tracer lines from shooter to target, the half circle swept on every melee
-// attack and the miss effects (a tracer going wide, a whiff, a deflect tick) "look SO BAD": they are gone. A miss shows
+// Leon, 13 Nov 2026, on live 0.25.0: the tracer lines from shooter to target (`tracer`), the half circle swept on every
+// melee attack (`slash`) and the miss effects (`wide`, `whiff`, `deflect`) "look SO BAD": they are gone. A miss shows
 // the word MISS and nothing else; a shot that hits leaves the weapon's mark (`round`: a bullet hole, a shotgun's pellet
-// cluster, an arrow's shaft), one a round that hit.
+// cluster, an arrow's shaft), one a round that hit. Leon, 14 Nov 2026: nothing else was to go, so `heavy` and `cone`
+// are as they were before (the cleanup had redrawn them); `aim` stays the sight on the target, since its old line from
+// the shooter was itself a yellow line.
 //
 // The asset rule (CLAUDE.md): everything here is a line, an arc, a ring, a tick, a chevron, a glyph or a tint, drawn as
 // SVG in viewport pixels; nothing here needs texture, so nothing new is sourced. The weapon part shows the weapon's own
@@ -50,7 +52,7 @@ function stage(pts: XY[], pad: number, ms: number, tag: string): { s: SVGSVGElem
   const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad, w = Math.max(1, Math.max(...xs) - x0 + pad), h = Math.max(1, Math.max(...ys) - y0 + pad);
   const s = svg(w, h, ''); s.setAttribute('viewBox', f1(x0) + ' ' + f1(y0) + ' ' + f1(w) + ' ' + f1(h));
   const box = put(s, { x: x0 + w / 2, y: y0 + h / 2 }, w, h, ms);
-  box.setAttribute('data-tech-fx', tag); box.style.zIndex = '2';
+  box.setAttribute('data-tech-fx', tag); box.style.zIndex = '2'; trace('part', { tag });
   s.style.filter = CASING;
   return { s, box };
 }
@@ -182,8 +184,9 @@ export const PARTS: Record<string, PartFn> = {
     }
   },
   /** The sight settling on the target: a thin ring closing in with four ticks (an Aimed or Called Shot, a held bead).
-   *  dash: the ring's dash; size: its radius in tiles. Drawn on the target, never as a line from the shooter (Leon,
-   *  13 Nov 2026: the lines from shooter to target are gone). */
+   *  dash: the ring's dash; size: its radius in tiles. Drawn on the target: before 13 Nov 2026 it
+   *  was a solid line in the technique's ink from the shooter, Agility yellow for every gun, the yellow line Leon had
+   *  removed; the sight is what stays of it (14 Nov 2026). */
   aim(c, o) {
     const r = c.s * num(o, 'size', 0.56), ink = str(o, 'color', '') || c.ink, w = Math.max(1.2, c.s * 0.03), dash = str(o, 'dash', '');
     const { s, box } = stage([{ x: c.b.x - r * 1.3, y: c.b.y - r * 1.3 }, { x: c.b.x + r * 1.3, y: c.b.y + r * 1.3 }], 4, 460 + c.delay, 'aim');
@@ -191,24 +194,24 @@ export const PARTS: Record<string, PartFn> = {
     for (const a of [0, 0.5, 1, 1.5]) { const d = { x: Math.cos(a * Math.PI), y: Math.sin(a * Math.PI) }; stroke(s, [add(c.b, d, r * 0.82), add(c.b, d, r * 1.25)], ink, w); }
     popBox(box, 440, c.delay, 1.6, 1);
   },
-  /** A heavy round driven through: a thick streak in the ink with a white core, out of the target's far side (a bolt, a
-   *  heavy round, armour-breaking). past: tiles beyond the target; w: width in tiles. Played with the hit. */
+  /** A heavy line: a thick white core in the ink, from the muzzle through the target (a bolt, a heavy round). */
   heavy(c, o) {
-    const from = add(c.b, c.dir, -c.s * 0.1), end = add(c.b, c.dir, c.s * num(o, 'past', 0.6));
+    const from = c.a ? add(c.a, c.dir, c.s * 0.45) : add(c.b, c.dir, -c.s * 2), end = add(c.b, c.dir, c.s * num(o, 'past', 0.6));
     const { s } = stage([from, end], c.s * 0.2, 440 + c.delay, 'heavy');
     const w = c.s * num(o, 'w', 0.16) * c.scale;
     drawOn(stroke(s, [from, end], str(o, 'color', '') || c.ink, w, { opacity: 0.55 }), lenOf([from, end]), num(o, 'draw', 70), 80, 240, c.delay);
     drawOn(stroke(s, [from, end], WHITE, Math.max(1.5, w * 0.3)), lenOf([from, end]), num(o, 'draw', 70), 80, 240, c.delay);
   },
-  /** The spread of fire arriving: the far end of a cone over the target, a band a tile deep between its outer edge and
-   *  a fainter dashed inner one (a scattering, a sweep of fire). span: degrees; len: tiles past the target. Never drawn back to the shooter. */
+  /** A cone from the attacker opening toward the target (a scattering, a sweep of fire). span: degrees; len: tiles past. */
   cone(c, o) {
-    const at = c.a || add(c.b, c.dir, -c.s * 2), half = (num(o, 'span', 36) * Math.PI) / 360, d = Math.hypot(c.b.x - at.x, c.b.y - at.y) + c.s * num(o, 'len', 0.6), d0 = Math.max(c.s * 0.4, d - c.s * 1.1);
-    const outer = arcPts(at, d, angOf(c.dir) - half, angOf(c.dir) + half, 10), inner = arcPts(at, d0, angOf(c.dir) + half, angOf(c.dir) - half, 10);
-    const { s } = stage([...outer, ...inner], 6, 520 + c.delay, 'cone');
+    if (!c.a) return;
+    const half = (num(o, 'span', 36) * Math.PI) / 360, d = Math.hypot(c.b.x - c.a.x, c.b.y - c.a.y) + c.s * num(o, 'len', 0.6);
+    const o0 = add(c.a, c.dir, c.s * 0.35), l = add(c.a, rot(c.dir, -half), d), r = add(c.a, rot(c.dir, half), d);
+    const { s } = stage([o0, l, r], 6, 520 + c.delay, 'cone');
     const ink = str(o, 'color', '') || c.ink;
-    drawOn(stroke(s, outer, ink, Math.max(1.5, c.s * 0.045), { opacity: 0.9 }), lenOf(outer), 140, 120, 240, c.delay);
-    drawOn(stroke(s, inner, ink, Math.max(1, c.s * 0.025), { opacity: 0.5, dash: '3 4' }), lenOf(inner), 140, 80, 220, c.delay + 40);
+    drawOn(stroke(s, [l, o0, r], ink, Math.max(1.5, c.s * 0.04), { opacity: 0.9 }), lenOf([l, o0, r]), 140, 120, 240, c.delay);
+    const fill = el('path', { d: pathD([o0, l, ...arcPts(c.a, d, angOf(c.dir) - half, angOf(c.dir) + half, 8), r]) + ' Z', fill: ink, opacity: 0 }); s.appendChild(fill);
+    anim(fill, [{ opacity: 0 }, { opacity: 0.18, offset: 0.3 }, { opacity: 0 }], { duration: 420, delay: c.delay, fill: 'both' });
   },
   /** Short radial ticks around the target, one after another (suppressing fire cracking past). n: ticks; r: tiles. */
   ticks(c, o) {

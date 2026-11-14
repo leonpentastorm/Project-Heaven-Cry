@@ -45,12 +45,14 @@ describe('what a weapon fires is what is drawn', () => {
     expect(tr.filter((e) => e.w === 'boom').length).toBe(3);
     expect(tr.some((e) => e.w === 'sfx' && /^(gun_|burst_|auto_)/.test(e.s || ''))).toBe(false);
   });
-  it('Suppress with a rifle: its rattle starts with the first muzzle flash, three rounds leave, and the hit comes with the last of them', () => {
+  it('Suppress with a rifle: each of its three rounds bangs with its own muzzle flash, and the hit comes with the last of them', () => {
     const tr = suppress(RIFLE), fly = tr.filter((e) => e.w === 'proj');
     expect(fly.map((e) => e.look)).toEqual(['bullet', 'bullet', 'bullet']);
-    const rattle = tr.find((e) => e.w === 'sfx' && /^burst_/.test(e.s || ''))!, flashes = tr.filter((e) => e.w === 'muzzle'), hit = tr.find((e) => e.w === 'impact')!;
-    expect(rattle).toBeTruthy(); expect(flashes).toHaveLength(3);
-    expect(Math.abs(flashes[0].t - rattle.t)).toBeLessThanOrEqual(20); // (it was a beat, about 100 ms, before the flash)
+    // one single shot a round, no recording of a burst (Leon, 14 Nov 2026: "repeat the exact amount of bullet was fire out")
+    const bangs = tr.filter((e) => e.w === 'sfx' && /^gun_/.test(e.s || '')), flashes = tr.filter((e) => e.w === 'muzzle'), hit = tr.find((e) => e.w === 'impact')!;
+    expect(tr.some((e) => e.w === 'sfx' && /^(burst_|auto_)/.test(e.s || ''))).toBe(false);
+    expect(bangs).toHaveLength(3); expect(flashes).toHaveLength(3);
+    expect(Math.abs(flashes[0].t - bangs[0].t)).toBeLessThanOrEqual(20); // (it was a beat, about 100 ms, before the flash)
     expect(hit.t).toBeGreaterThanOrEqual(Math.max(...fly.map((e) => e.t))); // (it landed before two of the three had left)
     const press = { k: 'pressure', n: n(), unit: 'f1', at: '9,3', now: 2, was: 0, state: 'pressed', by: 'pc-a', why: 'Suppress' };
     (window as any).__phcFxTrace = [];

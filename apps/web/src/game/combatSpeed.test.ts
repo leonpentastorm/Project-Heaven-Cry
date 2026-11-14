@@ -112,16 +112,15 @@ describe('the cut-ins follow it (game/spotlight)', () => {
 describe('review fixes (9 Nov 2026): what still ran at the old speed', () => {
   beforeEach(() => { localStorage.clear(); clearFx(); setCombatSpeed('normal'); setInBattle(true); vi.useFakeTimers(); });
   afterEach(() => { clearFx(); setInBattle(false); vi.useRealTimers(); });
-  it('a volley\'s silent window follows the pace: at Normal a chained shot 2.7 s in is still silent (it was 2.5 s flat)', () => {
+  it('no volley silences its shots any more: every chained round is heard with its own single shot (Leon, 14 Nov 2026)', () => {
     const spy = vi.spyOn(sfxMod, 'sfx').mockImplementation(() => {});
-    playFx({ k: 'volley', unit: 'u', from: '1,1', to: '5,1', cat: 'smg', mode: 'auto' } as any);
-    const auto = spy.mock.calls.length; expect(auto).toBeGreaterThan(0);
-    vi.advanceTimersByTime(2700);
-    playFx({ k: 'shot', unit: 'u', target: 't', from: '1,1', to: '5,1', weapon: 'decrkm_smg', cat: 'smg', hit: true, dmg: 4, chain: true } as any);
-    expect(spy.mock.calls.length).toBe(auto); // silent: inside 2500 / 0.85 ≈ 2941 ms
-    vi.advanceTimersByTime(400);
-    playFx({ k: 'shot', unit: 'u', target: 't', from: '1,1', to: '5,1', weapon: 'decrkm_smg', cat: 'smg', hit: true, dmg: 4, chain: true } as any);
-    expect(spy.mock.calls.length).toBeGreaterThan(auto); // past the window: its own sound
+    playFx({ k: 'volley', unit: 'u', from: '1,1', to: '5,1', cat: 'smg', mode: 'auto', loose: 0 } as any);
+    expect(spy.mock.calls.filter((c) => /^(auto_|burst_)/.test(String(c[0])))).toEqual([]); // no recording of automatic fire
+    for (const t of [0, 400]) {
+      vi.advanceTimersByTime(t); const before = spy.mock.calls.length;
+      playFx({ k: 'shot', unit: 'u', target: 't', from: '1,1', to: '5,1', weapon: 'decrkm_smg', cat: 'smg', hit: true, dmg: 4, chain: true } as any);
+      expect(spy.mock.calls.slice(before).some((c) => c[0] === 'gun_smg')).toBe(true);
+    }
     spy.mockRestore();
   });
   it('the A NEW FEELING card holds and fades at the pace (removed at (3200 + 420) / 0.85, not 3620)', () => {

@@ -15,7 +15,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf, WEAPONS, TECHNIQUES, fireBurst, fireAuto } from '@engine';
 import { fightWith, withGame } from '../../../../../packages/engine/test/helpers/perkfight';
 import { setLayer } from './dom';
-import { queueFx, setContext, clearFx } from './play';
+import { queueFx, setContext, clearFx, gunOf } from './play';
 import { resetRanged, STREAM_CAP } from './ranged';
 import { techPrepass, shotMarkOf, TECH_FX, rowKey } from './techniqueFx';
 import { brassOf } from './brass';
@@ -32,13 +32,17 @@ function grid(w = 16, h = 11) {
     scr.appendChild(b);
   }
   const layer = document.createElement('div'); document.body.appendChild(layer); setLayer(layer);
+  return layer;
 }
 const GUN_CATS = ['pistol', 'revolver', 'smg', 'rifle', 'shotgun', 'heavy', 'bow'];
 const guns = (WEAPONS as any[]).filter((w) => w.magazine != null && (GUN_CATS.includes(w.category) || (w.category === 'mana' && (w.phys?.system === 'ranged'))));
 /** The shooting techniques: ranged, firing rounds now (a Watch fires later, a Set fires none, a Lob is a grenade's). */
 const SHOOTING = (TECHNIQUES as any[]).filter((t) => t.system === 'ranged' && ['fire', 'press', 'take'].includes(t.group) && t.rounds !== 0 && t.id !== 'lob').map((t) => t.id);
 
-interface Run { label: string; spent: number; rounds: number; shells: number; perShot: boolean; holes: number; hits: number }
+interface Run { label: string; spent: number; rounds: number; shells: number; perShot: boolean; holes: number; hits: number; flights: Record<string, number>; gone: string[]; bangs: number }
+/** The pieces Leon had removed on 13 Nov 2026 (the yellow tracer lines, the melee half circle, the miss marks): none may
+ *  be drawn. The round in flight (a bullet's streak, a shell's pellets, an arrow) is drawn: Leon, 14 Nov 2026. */
+const REMOVED = ['tracer', 'slash', 'whiff', 'deflect', 'wide'];
 /** Fire `what` with this gun (a character's technique, or a plain attack mode by a character or an enemy) and play it. */
 function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean }): Run | null {
   const f = fightWith([{ weapon: gun.id, level: 6, skills: { dexterity: 5, raw_power: 5, athletics: 3 }, attrs: { agility: 5, strength: 5 } }], [{ weapon: what.enemy ? gun.id : 'service_pistol' }, {}, {}]);
@@ -56,10 +60,15 @@ function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean })
   const u1 = f.unit(shooter.id), spent = ammo0 - ((u1.ammo || 0) + (u1.loose || 0));
   const evs = (f.cb.fx || []).filter((e: any) => e.n > n0);
   if (!evs.some((e: any) => e.k === 'shot' || e.k === 'volley')) return null;
-  grid(); setContext(f.g, 'combat'); setInBattle(true);
+  const layer = grid(); setContext(f.g, 'combat'); setInBattle(true);
   (window as any).__phcFxTrace = [];
+  const seen = new MutationObserver(() => undefined); seen.observe(layer, { childList: true });
   queueFx(evs as any, 'test:' + gun.id + ':' + (what.tech || what.mode));
   vi.advanceTimersByTime(30000);
+  const added = seen.takeRecords().flatMap((m) => [...m.addedNodes]) as HTMLElement[]; seen.disconnect();
+  const flights: Record<string, number> = {};
+  for (const b of added) { const k = b.getAttribute?.('data-fx-flight'); if (k) flights[k] = (flights[k] || 0) + 1; }
+  const gone = added.map((b) => b.getAttribute?.('data-tech-fx') || '').filter((k) => REMOVED.includes(k));
   const T: any[] = (window as any).__phcFxTrace;
   clearFx();
   // the rounds that hit, from the events: each roll that hit (or struck the cover in the way), and the rounds it carries
@@ -72,7 +81,7 @@ function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean })
       if (e.hit) hits += 1 + (e.tech === 'suppress' ? 0 : Number(e._loose) || 0); else if (e.cover && !e.object) hits += 1;
     }
   }
-  return { label: gun.id + ' · ' + (what.tech || what.mode) + (what.enemy ? ' (enemy)' : ''), spent, rounds: T.filter((x) => x.w === 'round' && x.unit === u1.id).length, shells: T.filter((x) => x.w === 'shell').length, perShot: brassOf(gun.id, gun.category).when === 'shot', holes: T.filter((x) => x.w === 'hole').length, hits };
+  return { label: gun.id + ' · ' + (what.tech || what.mode) + (what.enemy ? ' (enemy)' : ''), spent, rounds: T.filter((x) => x.w === 'round' && x.unit === u1.id).length, shells: T.filter((x) => x.w === 'shell').length, perShot: brassOf(gun.id, gun.category).when === 'shot', holes: T.filter((x) => x.w === 'hole').length, hits, flights, gone, bangs: T.filter((x) => x.w === 'sfx' && x.s === gunOf(gun.id, gun.category).sound).length };
 }
 
 beforeEach(() => { vi.useFakeTimers(); resetRanged(); clearFx(); });
@@ -96,10 +105,47 @@ describe('shots on screen match rounds spent (every gun × every shooting techni
         else expect(r.rounds, r.label + ': rounds drawn vs spent').toBe(r.spent);
         expect(r.shells, r.label + ': casings').toBe(r.perShot ? r.rounds : 0);
         expect(r.holes, r.label + ': marks drawn vs rounds that hit').toBe(r.hits);
+        expect(r.gone, r.label + ': a removed piece was drawn (tracer, arc, miss mark)').toEqual([]);
+        // every round fired is drawn in flight (hit or miss): a bullet's streak, a shell's five pellets, an arrow
+        const mark = shotMarkOf(gun.id, gun.category);
+        if (mark === 'hole') expect((r.flights.bullet || 0) + (r.flights.bolt || 0) + (r.flights.beam || 0), r.label + ': bullets in flight vs rounds fired').toBe(r.rounds);
+        if (mark === 'pellets') expect(r.flights.bullet || 0, r.label + ': pellets in flight vs shells fired × 5').toBe(r.rounds * 5);
+        if (mark === 'shaft') expect(r.flights.arrow || 0, r.label + ': shafts in flight vs arrows loosed').toBe(r.rounds);
+        // every round its own single shot, heard as it is seen (Leon, 14 Nov 2026: "repeat the exact amount of bullet was
+        // fire out, not a generic 4 shot sound effect"): no recording of a burst or of automatic fire over them
+        if (/^gun_/.test(String(gunOf(gun.id, gun.category).sound))) expect(r.bangs, r.label + ': gunshots heard vs rounds fired').toBe(r.rounds);
       }
       if (shotMarkOf(gun.id, gun.category)) expect(runs.some((r) => r.holes > 0), gun.id + ': no round of any run hit (the walk would prove nothing)').toBe(true);
     }, 120000);
   }
+  it('the table Leon asked for (14 Nov 2026): gunshots heard = bullets drawn = casings = rounds the engine spent; holes = rounds that hit', () => {
+    const rows: string[] = [];
+    // (a technique runs where the test character knows it: Mag Dump comes with the revolver and the coach gun; a rifle,
+    // a long rifle or a belt learns it later, so their long strings are full auto and Suppress here, and the twelve-round
+    // Mag Dump stream is ranged.test.ts E4's)
+    const CASES: [string, { tech?: string; mode?: string }][] = [['hellraiser_service_rifle', { tech: 'shot' }], ['hellraiser_service_rifle', { tech: 'burst' }],
+      ['hellraiser_service_rifle', { mode: 'burst' }], ['hellraiser_service_rifle', { mode: 'auto' }], ['drifter_revolver', { tech: 'shot' }], ['drifter_revolver', { tech: 'mag_dump' }],
+      ['long_rifle', { tech: 'shot' }], ['hellraiser_lmg', { mode: 'auto' }], ['hellraiser_lmg', { tech: 'suppress' }], ['coach_gun', { tech: 'shot' }],
+      ['coach_gun', { tech: 'mag_dump' }], ['sawn_off', { tech: 'shot' }], ['recurve_bow', { tech: 'shot' }]];
+    for (const [id, what] of CASES) {
+      const tech = what.tech || what.mode;
+      const gun = guns.find((g) => g.id === id); expect(gun, id).toBeTruthy();
+      const r = fire(gun, what);
+      if (!r) { rows.push(id + ' · ' + tech + ': refused by the engine (this gun cannot)'); continue; }
+      const look = gunOf(gun.id, gun.category), drawn = look.look === 'pellets' ? (r.flights.bullet || 0) / 5 : look.look === 'arrow' ? r.flights.arrow || 0 : r.flights.bullet || 0;
+      rows.push(r.label + ': spent ' + r.spent + ', heard ' + r.bangs + ', drawn ' + drawn + ', casings ' + r.shells + ', holes ' + r.holes + ' of ' + r.hits + ' hits');
+      expect(r.rounds, r.label).toBe(r.spent);
+      if (/^gun_/.test(String(look.sound))) expect(r.bangs, r.label + ' heard').toBe(r.spent);
+      expect(drawn, r.label + ' drawn').toBe(r.spent);
+      expect(r.shells, r.label + ' casings').toBe(r.perShot ? r.spent : 0);
+      expect(r.holes, r.label + ' holes').toBe(r.hits);
+      if (tech === 'mag_dump') expect(r.spent, r.label + ': rules 1.38, four rounds a roll, twelve at most').toBeLessThanOrEqual(12);
+    }
+    console.log(rows.join('\n'));
+    // the long strings Leon named really ran: a Mag Dump of twelve on a belt, and one on a revolver's cylinder
+    expect(rows.filter((x) => / · mag_dump: spent /.test(x)).length).toBeGreaterThanOrEqual(2);
+    expect(rows.filter((x) => /refused/.test(x))).toEqual([]);
+  }, 120000);
   it('a character\'s Burst: three rounds drawn for its two rolls, the third on the second roll', () => {
     const r = fire(guns.find((g) => g.id === 'hellraiser_service_rifle'), { tech: 'burst' })!;
     expect(r.spent).toBe(3); expect(r.rounds).toBe(3); expect(r.shells).toBe(3);

@@ -56,6 +56,10 @@ await pause(p, 2500);
   const sh = (g.combat.fx || []).filter((e) => e.n > n0 && (e.k === 'shot' || e.k === 'melee') && !e.thrown && !e.object);
   const marksOf = (e) => T.filter((x) => x.w === 'hole' && x.n === e.n).length;
   const hitsMarked = sh.filter((e) => e.k === 'shot' && e.hit).every((e) => marksOf(e) >= 1), missesClean = sh.filter((e) => !e.hit && !e.cover).every((e) => marksOf(e) === 0), swingsClean = sh.filter((e) => e.k === 'melee').every((e) => marksOf(e) === 0);
+  // the round in flight (Leon, 14 Nov 2026: "i told you to remove the yellow line not the bullet effect"): each shot's
+  // bullet is drawn in the air, hit or miss; no tracer line, no swing arc, no miss mark is
+  const flown = sh.filter((e) => e.k === 'shot').every((e) => T.some((x) => x.w === 'flight' && x.n === e.n)), gone = T.filter((x) => x.w === 'part' && ['tracer', 'slash', 'whiff', 'deflect', 'wide'].includes(x.tag)).map((x) => x.tag);
+  ok('each shot\'s round is drawn in flight (' + T.filter((x) => x.w === 'flight').map((x) => x.look).join(',') + '), and no removed piece (' + gone.join(',') + ')', flown && gone.length === 0);
   ok('the six attacks (' + sh.map((e) => e.k + (e.hit ? ' hit' : ' miss')).join(', ') + ') leave a mark for each shot that hit, nothing for a miss or a swing (' + T.filter((x) => x.w === 'hole').map((x) => x.kind).join(',') + ')', sh.length > 0 && hitsMarked && missesClean && swingsClean);
 }
 await act({ type: 'sandbox/stop' }); await pause(p, 600); g = await G();

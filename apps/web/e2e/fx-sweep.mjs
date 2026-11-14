@@ -325,6 +325,12 @@ function judge(c, w, tr0, { tol, k, clock }) {
       if (!s.hit && !s.cover && marks.length) say('a miss left a ' + marks[0].kind);
       if (arrives != null && marks.length && marks[0].t < arrives - tol) say('its ' + marks[0].kind + ' ' + ms(arrives - marks[0].t) + ' before the ' + first.look + ' lands');
     }
+    // 5. the round in flight (Leon, 14 Nov 2026: "i told you to remove the yellow line not the bullet effect"): a gun's
+    //    shot draws its bullet or its pellets in the air, hit or miss; no technique draws a tracer line, a swing arc or
+    //    a miss mark (13 Nov 2026)
+    if (s.k === 'shot' && !s.thrown && !noGun && ['hole', 'pellets'].includes(markOf(WEAPON.get(s.weapon))) && projs.length && !of(s.n, 'flight').length) say('a shot from ' + s.weapon + ' with no round drawn in flight');
+    const gone = of(s.n, 'part').find((e) => ['tracer', 'slash', 'whiff', 'deflect', 'wide'].includes(e.tag));
+    if (gone) say('a removed piece drawn (' + gone.tag + ')');
     // the wounds that follow never come before the shot or swing is seen
     if (launch) for (let j = i + 1; j < evs.length && !starts.test(evs[j].k); j++) if (evs[j].k === 'hurt' && evs[j].t < launch.t - Math.min(1, tol)) say('a wound ' + ms(launch.t - evs[j].t) + ' before the ' + (s.k === 'melee' ? 'swing' : 'shot'));
   }
@@ -333,6 +339,11 @@ function judge(c, w, tr0, { tol, k, clock }) {
   const flashT = tr.filter((e) => e.w === 'muzzle' || e.w === 'proj').map((e) => e.t).sort((a, b) => a - b)[0];
   if (report != null && flashT == null) say('a gun\'s report with no shot drawn');
   if (report != null && flashT != null && Math.abs(flashT - report) > 200 * k + tol) say('the report ' + ms(Math.abs(flashT - report)) + (report < flashT ? ' before' : ' after') + ' the muzzle flash');
+  // 6. every round its own gunshot (Leon, 14 Nov 2026: "repeat the exact amount of bullet was fire out, not a generic 4
+  //    shot sound effect"): the single shots heard are the rounds fired, and no recording of a burst or of automatic fire
+  const bangs = tr.filter((e) => e.w === 'sfx' && /^gun_/.test(e.s)).length, fired = tr.filter((e) => e.w === 'round').length;
+  if (tr.some((e) => e.w === 'sfx' && /^(burst_|auto_)/.test(e.s))) say('a recording of a burst or of automatic fire');
+  if (bangs > 0 && bangs !== fired) say(bangs + ' gunshots heard for ' + fired + ' rounds fired');
   // Suppress (Leon: "plays the sound and damage way before the shoot VFX"): three rounds are drawn; a gun's rattle starts
   // with the first muzzle flash, and the hit comes with the last round to leave, never before it
   if (c.t === 'suppress') for (const sh of evs.filter((e) => e.k === 'shot' && e.tech === 'suppress')) {
