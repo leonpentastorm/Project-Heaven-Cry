@@ -208,7 +208,7 @@ async function shopChecks() {
     const status = await p.locator('[data-phc-card="' + dear.key + '"] [data-phc-status]').textContent();
     await p.locator('[data-phc-card="' + dear.key + '"] [data-phc-buy]').click();
     const t = await until(p, () => window.__phc.getState().toast?.text || null, null, 10000).catch(() => '');
-    ok('a purse too short says why, on the card and when tried ("' + status + '" / "' + t + '")', status === 'Short ' + (dear.price - credits) + ' credits.' && t === status);
+    ok('a purse too short says why, on the card and when tried ("' + status + '" / "' + t + '")', status === Object.values((await G()).characters)[0].name + ' is ' + (dear.price - credits) + ' credits short.' && t === status);
   } else ok('a purse too short says why (every piece affordable: nothing to test)', false);
   await p.waitForFunction(() => !window.__phc.getState().toast, null, { timeout: 15000 }).catch(() => {}); // its toast gone before the next shots
   // rules 1.48: the lanes put the first shop early in the stage, before a purse can afford a rolled weapon and a grade
@@ -413,7 +413,7 @@ const both = async (name) => { await shot(name + '-1280'); await p.setViewportSi
 const cid0 = Object.keys(g.characters)[0], offer = r.boons[cid0];
 const cards = await p.locator('[data-phc-boons="' + cid0 + '"] [data-phc-boon]').allTextContents();
 ok('the boon pick: three large cards, each its name, its sentence with its number from data and its worth (' + offer.join(', ') + ')', cards.length === 3 && offer.length === 3
-  && cards.every((t) => /\d/.test(t) && /of your 50|No run power/.test(t)) && await p.locator('[data-phc-boons] [data-phc-boon] svg').count() === 3);
+  && cards.every((t) => /\d/.test(t) && /boon room/.test(t)) && await p.locator('[data-phc-boons] [data-phc-boon] svg').count() === 3);
 await both('survival-boon-pick');
 await p.locator('[data-phc-boon="' + offer[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'tile', null, { timeout: 30000 });
@@ -452,7 +452,7 @@ for (let i = 0; i < 160; i++) {
     if (here && here.junction && !here.gate && !seen.junction) { seen.junction = ids.length === here.links.length && ids.length >= 2 && await p.locator('[data-phc-node="' + here.id + '"][data-phc-junction]').count() === 1; ok('stage 2, at a junction (' + here.id + '): its ' + ids.length + ' trails lit, drawn as a meeting of trails', seen.junction); }
     if (here && here.id === fork.id && !seen.fork) {
       const tip = await p.locator('[data-phc-node="' + vg.id + '"]').getAttribute('data-tip-text');
-      seen.fork = ids.includes(vg.id) && ids.length === 2 && /trail forks: a guarded vault/.test(tip || '');
+      seen.fork = ids.includes(vg.id) && ids.length === 2 && (tip || '').includes(SVD.tips.vault_guard); // the hover card carries the data's own words
       ok('the vault\'s fork: the lane and the guarded vault both lit, its card says so ("' + (tip || '').slice(0, 70) + '")', seen.fork);
       await both('survival-vault-fork');
     }
@@ -553,7 +553,7 @@ await h.evaluate(([cid, gun]) => { const c = window.__phc.getState().game.charac
 await h.locator('[data-phc-tab="give"]').click();
 await h.waitForSelector('[data-phc-give-to]');
 ok('C: the Give tab: the party as cards (' + (await h.locator('[data-phc-give-to]').allTextContents()).join(', ') + '), what can\'t be given greyed with its reason', await h.locator('[data-phc-give-to="' + ha.id + '"]').count() === 1
-  && /never given/.test(await h.locator('[data-phc-give-row="train"]').textContent()));
+  && /can't be handed over/.test(await h.locator('[data-phc-give-row="train"]').textContent()));
 const haC0 = (await GG()).characters[ha.id].credits;
 await h.locator('[data-phc-give-row="credits"]').click();
 for (let i = 0; i < 3; i++) await h.locator('[data-phc-give-send] [aria-label="More"]').click(); // 100 → 130 → 140 → 150? (steps of 10 above 10)
