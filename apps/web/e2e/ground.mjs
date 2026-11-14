@@ -52,7 +52,8 @@ if (await aiBtn.count()) await aiBtn.click();
 await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
-await closeTools();
+// the game closes the tools drawer by itself when a fight starts (it slides out over 200 ms): wait for it to be gone, do not click it shut
+await drawer.waitFor({ state: 'detached', timeout: 30000 });
 await myTurn(); await dismissCut();
 g = await G();
 const at = mine(g).pos, R = ref(at), gun = mine(g).weapon, loaded0 = mine(g).ammo;

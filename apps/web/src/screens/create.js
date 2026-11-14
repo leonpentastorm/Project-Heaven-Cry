@@ -23,7 +23,7 @@ import { patronPortrait } from '../game/faithArt';
 const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var(--h,auto);'
   + 'grid-template-columns:repeat(auto-fill,minmax(min(100%,max(var(--min,280px),calc((100% - (var(--n,3) - 1) * var(--gap,12px)) / var(--n,3)))),1fr))}'
   + '.phc-cc-grid>*{box-sizing:border-box;min-width:0;min-height:0;height:100%;overflow:hidden}'
-  + '.phc-cc-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}'
+  + '.phc-cc-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}'
   + '.phc-cc-scroll::-webkit-scrollbar{width:6px}.phc-cc-scroll::-webkit-scrollbar-thumb{background:#2E3A50;border-radius:3px}'
   // Back and Next stay on screen at the foot of the page on every step (an outside review of 0.25.0: on a 720 px screen
   // they were thousands of pixels down the Archetype step); a fade above them says the page goes on behind.

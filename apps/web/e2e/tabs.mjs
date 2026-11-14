@@ -4,7 +4,7 @@
 // Also: keyboard (1–9 and arrows; the row wraps onto a second line when the tabs don't fit), the cut-in picking an action switches the tab, the last tab is remembered, and a
 // narrow window (900 px) keeps the tab bar and Confirm stuck to the bottom.
 // Screenshots: e2e/shots/tabs-*.png.
-import { chromium, click, BASE, OUT, pickAction, settle } from './lib.mjs';
+import { chromium, click, BASE, OUT, pickAction, settle, fxIdle } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
@@ -141,8 +141,11 @@ for (const [vw, vh] of [[1440, 900], [1280, 720], [1024, 768]]) {
   const p = await open(vw, vh, [{ type: 'sandbox/class', classId: 'trickster', rank: 1 }, { type: 'sandbox/give', item: 'visualizer', equip: true },
     { type: 'sandbox/skill', skill: 'visualization', points: 5 }, { type: 'sandbox/skill', skill: 'rhetoric', points: 3 }]);
   await act(p, { type: 'sandbox/ai', on: false });
+  // the tabs show in the first moments of a fight and are replaced by the "WAITING FOR ..." hold: wait until the turn is yours ON SCREEN
+  await fxIdle(p);
   await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 });
-  await dismissCut(p, vw, vh); await settle(p, 300);
+  await dismissCut(p, vw, vh); await settle(p, 300); await fxIdle(p);
+  await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 });
   const bar = await p.evaluate(() => { const l = document.querySelector('[role="tablist"][aria-label="Actions"]'), ts = [...l.querySelectorAll('[role="tab"]')];
     return { tabs: ts.map((t) => t.getAttribute('data-tab')), rows: new Set(ts.map((t) => Math.round(t.getBoundingClientRect().top))).size, over: l.scrollWidth - l.clientWidth,
       // a name cut short (its text wider than its box) would be an abbreviation the player never asked for
@@ -157,7 +160,8 @@ for (const [vw, vh] of [[1440, 900], [1280, 720], [1024, 768]]) {
 {
   const p = await open(900, 800);
   await act(p, { type: 'sandbox/ai', on: false });
-  await settle(p, 600); await dismissCut(p, 900, 800); await settle(p, 300);
+  await settle(p, 600); await dismissCut(p, 900, 800); await settle(p, 300); await fxIdle(p);
+  await p.waitForSelector('.phc-cb-dock', { timeout: 30000 });
   const box = await p.evaluate(() => { const r = (el) => el && el.getBoundingClientRect();
     const dock = r(document.querySelector('.phc-cb-dock')), conf = r(Array.from(document.querySelectorAll('button')).find((b) => /^(Confirm|Click a tile)/.test(b.textContent.trim()))), grid = r(document.querySelector('.phc-grid'));
     return { scrollY: window.scrollY, H: window.innerHeight, dockTop: dock && Math.round(dock.top), dockBottom: dock && Math.round(dock.bottom), conf: conf && Math.round(conf.bottom), gridTop: grid && Math.round(grid.top), pos: getComputedStyle(document.querySelector('.phc-cb-dock')).position }; });

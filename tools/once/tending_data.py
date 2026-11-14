@@ -290,9 +290,10 @@ for s in sj["items"]:
         s["summary"] = "Feeling what the other side feels, enemies included."
     if s["id"] == "will_power":
         s["per_point"]["text"] = s["per_point"]["text"].rstrip()
-        if "free Pump" not in s["per_point"]["text"]:
-            s["per_point"]["text"] += " From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain."
-            s["epccg"]["effect"] = s["per_point"]["text"]
+        PUMP = "From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain."
+        if PUMP not in s["per_point"]["text"]:
+            s["per_point"]["text"] += " " + PUMP
+        s["epccg"]["effect"] = s["per_point"]["text"]
     if s["id"] == "camaraderie":
         s["per_point"]["text"] = "+10% healing received. Share a Hit, a protective reaction, from the first point."
         s["epccg"]["effect"] = s["per_point"]["text"]
