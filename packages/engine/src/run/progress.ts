@@ -403,6 +403,10 @@ export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fi
   /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] } }
 /** Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). */
 export function runOptions(g: GameState, charId: string): RunOption[] {
+  if (g.run?.state === 'camp') { // rules 1.51 (spec rule 53): the camp's issue, its one choice
+    const c0 = g.characters[charId], f = c0 ? fitOf(g, c0) : null;
+    return f ? [{ group: 'fit', key: 'fit', label: 'Armour class ' + c0.armourClass + ' to ' + f.cls, detail: 'The camp\'s issue: fitted free, once, before the first node.', price: 0, why: f.why, action: { type: 'run/fit', charId } }] : [];
+  }
   const c = g.characters[charId], h = here(g); if (!c || !h) return [];
   const out: RunOption[] = [], k = h.n.kind, word = (r: Rarity) => GRADE_WORD[r];
   const wheres: GearWhere[] = ['main', 'off', ...packOf(c).map((_, i) => i)];

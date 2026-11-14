@@ -31,7 +31,9 @@
 // What a run measures (RunResult): where it ended, every fight (stage, depth, kind, rounds, won, HP and rounds of
 // ammunition carried before it), each stage's credits earned and spent, XP and level, grade steps, the vault.
 import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, wearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
-  counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive } from '../../src';
+  counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf } from '../../src';
+import svJ from '../../../../data/survival.json';
+import './run-policies';
 import { Rec, type Pc } from '../helpers/replay';
 import { survivalRoom, ownerOf } from '../helpers/survival';
 import { BUILD, spendLevel } from './builds';
@@ -52,8 +54,16 @@ Object.assign(POLICIES, { healer });
 
 // ---------------------------------------------------------------------------------------------- the squads
 export type RoutePolicy = 'gear' | 'training' | 'safest';
-/** A member of a simulated party: a reference build at level 1, played by its fight policy (or the one named). */
-export const MEMBER: Record<string, Pc> = {
+/** Rules 1.51 (survival-spec 13.7): the levers of the measure, each on unless SIM_LEVERS names the ones on (a comma
+ * list; "none" for rules 1.50's run): `policies` the run's caster policies (run-policies.ts), `supply` the supply pack's
+ * cores back by what was burnt and its MP share (off: cores_max = cores and mp_share 0, as before), `issue` the camp's
+ * free armour, `start` the starting boon (off: taken off again after the camp), `caster` the caster boons after a Boss
+ * (off: never picked). Flux to 0 after a fight and the charge at a Rest are the engine's and always on. */
+export const LEVERS = ['policies', 'supply', 'issue', 'start', 'caster'];
+const leversOn = (): Set<string> => { const e = (globalThis as any).process?.env?.SIM_LEVERS; return new Set(e == null || e === '' ? LEVERS : e === 'none' ? [] : String(e).split(',')); };
+/** A member of a simulated party: a reference build at level 1, played by its fight policy (or the one named). With
+ * the lever `policies` the casters play the run's policies (rules 1.51); without it, rules 1.49's. */
+export const MEMBER_OLD: Record<string, Pc> = {
   gunner: { build: 'plain_gun', level: 1, policy: 'gunner' },
   sigil: { build: 'sigil', level: 1 },
   healer: { build: 'outburst', level: 1, policy: 'healer' },
@@ -61,18 +71,38 @@ export const MEMBER: Record<string, Pc> = {
   faith: { build: 'faith', level: 1 },
   rigger: { build: 'rigger', level: 1 },
 };
-/** The parties measured (section 10 row 9: sizes 1, 2 and 4; gunners, casters and a healer). */
+export const MEMBER: Record<string, Pc> = {
+  ...MEMBER_OLD,
+  sigil: { build: 'sigil', level: 1, policy: 'sigilRun' },
+  healer: { build: 'outburst', level: 1, policy: 'healerRun' },
+  outburst: { build: 'outburst', level: 1, policy: 'outburstRun' },
+  rigger: { build: 'rigger', level: 1, policy: 'rigger' },
+};
+/** The parties measured (section 10 row 9: sizes 1, 2 and 4; gunners, casters and a healer; rules 1.51: every caster
+ * alone, and a mixed squad). */
 export const PARTIES: Record<string, string[]> = {
-  solo_gunner: ['gunner'], solo_sigil: ['sigil'],
+  solo_gunner: ['gunner'], solo_sigil: ['sigil'], solo_outburst: ['outburst'], solo_healer: ['healer'], solo_rigger: ['rigger'],
   duo: ['gunner', 'healer'],
   four: ['gunner', 'faith', 'sigil', 'healer'],
   four_casters: ['sigil', 'outburst', 'rigger', 'healer'],
+  mixed: ['gunner', 'sigil', 'outburst', 'healer'],
 };
+/** Rules 1.51: the caster boons (survival.json boons with a caster door), left out of the pick without the lever `caster`. */
+const CASTER_DOORS = new Set(['brain_power', 'will_power', 'empathy', 'visualization']);
+const casterBoon = (id: string) => { const b: any = BOONS.find((q) => q.id === id); return !!b?.doors && b.doors.every((d: string) => CASTER_DOORS.has(d)); };
+/** Rules 1.51 (spec 13.6 (5)): the starting boon a simulated player takes: of its main line's cards (run/stage.ts
+ * lineOf), the +1 to hit row, else the damage row, else the first; with none of its main line, the first card. */
+export function startPick(offer: string[], c: any): number {
+  const main = lineOf(c).main, rows = offer.map((id, i) => ({ i, r: relicRow(id) as any })).filter((q) => (q.r?.lines || []).includes(main));
+  const has = (q: any, f: (e: any) => boolean) => (q.r?.effects || []).some(f);
+  const k = rows.find((q) => has(q, (e) => e.op === 'roll_mod')) || rows.find((q) => has(q, (e) => e.op === 'damage_mult' && e.when === 'dealing')) || rows[0];
+  return k ? k.i : 0;
+}
 
 // ---------------------------------------------------------------------------------------------- what is measured
 export interface FightRow { stage: number; depth: number; kind: string; rounds: number; won: boolean; hpBefore: number; hpAfter: number; ammo: (number | null)[]; dry: number; broken: number; capped?: boolean; /** rules 1.50: the lowest share of full durability among the squad's main-hand weapons before it, and how many were Worn or Broken */ durMin?: number; wornBefore?: number; /** the composed fight: foes, their tiers and levels, the bulk asked and spent, the HP scale */ foes?: string[]; bulk?: [number, number]; pressure?: [number, number]; scaleHp?: number; level?: number }
 export interface StageRow { stage: number; setting: string; earned: number[]; spent: number[]; /** of earned: the credits taken instead of a weapon pick, and sales */ instead: number[]; sold: number[]; xp: number[]; level: number[]; steps: number[]; grades: string[]; cleared: boolean; nodes: string[]; vault: 'taken' | 'skipped' | 'none'; vaultPick: string | null; rests: number; shops: number; forges: number; /** rules 1.50: repairs bought, and their credits, a character */ repairs?: number[]; repairSpent?: number[] }
-export interface RunResult { party: string; route: RoutePolicy; seed: string; how: string; stage: number; depth: number; cleared: number; fights: FightRow[]; stages: StageRow[]; errors: string[]; boons: string[][] }
+export interface RunResult { party: string; route: RoutePolicy; seed: string; how: string; stage: number; depth: number; cleared: number; fights: FightRow[]; stages: StageRow[]; errors: string[]; boons: string[][]; /** rules 1.51: each character's starting boon, and the levers on */ start?: (string | null)[]; levers?: string[] }
 
 const RANK = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 const rankOf = (r: string) => RANK.indexOf(r || 'standard');
@@ -121,16 +151,21 @@ function chooseNode(g: any, route: RoutePolicy): any {
 }
 
 // ---------------------------------------------------------------------------------------------- the run
-export interface RunCfg { party: string; route: RoutePolicy; seed: string; maxStages?: number; maxFightRounds?: number; /** rules 1.50: buy repairs (default on; SIM_REPAIR=0 in the measure turns it off) */ repair?: boolean }
+export interface RunCfg { party: string; route: RoutePolicy; seed: string; maxStages?: number; maxFightRounds?: number; /** rules 1.50: buy repairs (default on; SIM_REPAIR=0 in the measure turns it off) */ repair?: boolean; /** rules 1.51: the levers on (default: SIM_LEVERS, else all) */ levers?: string[] }
 export function simRun(cfg: RunCfg): RunResult {
-  const names = PARTIES[cfg.party], pcs: Pc[] = names.map((m) => MEMBER[m]), n = pcs.length, maxStages = cfg.maxStages ?? 7;
+  const L = cfg.levers ? new Set(cfg.levers) : leversOn(), AP: any = (svJ as any).ammo_pack, was = { cores_max: AP.cores_max, mp_share: AP.mp_share };
+  if (!L.has('supply')) { AP.cores_max = AP.cores; AP.mp_share = 0; }
+  try { return simRunWith(cfg, L); } finally { AP.cores_max = was.cores_max; AP.mp_share = was.mp_share; }
+}
+function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
+  const names = PARTIES[cfg.party], M = L.has('policies') ? MEMBER : MEMBER_OLD, pcs: Pc[] = names.map((m) => M[m]), n = pcs.length, maxStages = cfg.maxStages ?? 7;
   const r = new Rec(survivalRoom(cfg.seed, pcs, { test: true }), pcs);
   // every action, the fights' own included, goes through Rec.act: the refusals kept for a stalled fight's report, the
   // credits it moved counted to the stage (earned, of which instead of a pick and sales; or spent)
   const refusals: string[] = []; { const a0 = r.act.bind(r); r.act = (a: any, who?: string) => { const was = st ? credits() : null, e = a0(a, who); if (e) { refusals.push(a.type + (a.id ? ' ' + a.id : '') + ': ' + e); if (refusals.length > 12) refusals.shift(); }
     if (was) credits().forEach((v, i) => { const d = v - was[i]; if (d > 0) { st.earned[i] += d; if (a.type === 'run/pick') st.instead[i] += d; if (a.type === 'run/sell') st.sold[i] += d; } else st.spent[i] -= d; }); return e; }; }
   const ids = pcs.map((_, i) => 'c' + (i + 1)), C = (id: string) => r.g.characters[id], by = (id: string) => ownerOf(ids.indexOf(id));
-  const res: RunResult = { party: cfg.party, route: cfg.route, seed: cfg.seed, how: 'running', stage: 1, depth: 0, cleared: 0, fights: [], stages: [], errors: r.errors, boons: [] };
+  const res: RunResult = { party: cfg.party, route: cfg.route, seed: cfg.seed, how: 'running', stage: 1, depth: 0, cleared: 0, fights: [], stages: [], errors: r.errors, boons: [], levers: [...L] };
   const credits = () => ids.map((id) => creditsOf(C(id)));
   let st: StageRow; const stepsAt: Record<string, number> = {};
   const newStage = () => { st = { stage: r.g.run?.stage || 1, setting: r.g.run?.world?.[r.g.run.world.length - 1]?.setting, earned: ids.map(() => 0), spent: ids.map(() => 0), instead: ids.map(() => 0), sold: ids.map(() => 0), xp: [], level: [], steps: ids.map(() => 0), grades: [], cleared: false, nodes: [], vault: 'none', vaultPick: null, rests: 0, shops: 0, forges: 0, repairs: ids.map(() => 0), repairSpent: ids.map(() => 0) }; res.stages.push(st); };
@@ -234,8 +269,17 @@ export function simRun(cfg: RunCfg): RunResult {
       st.grades = ids.map((id) => { const c = C(id), it = gearAt(c, doorWhere(c)); return it ? it.rarity : '-'; });
       if (run.stage >= maxStages) { res.how = 'cap'; res.stage = run.stage; res.depth = 15; break; }
       for (const id of ids) { const offer = run.boons?.[id]; if (!offer) continue;
-        const ok = offer.map((b: string, i: number) => ({ b, i })).filter((q: any) => !boonProblem(C(id), offer, q.b)).sort((a: any, b: any) => worthOf(b.b) - worthOf(a.b));
+        const ok = offer.map((b: string, i: number) => ({ b, i })).filter((q: any) => !boonProblem(C(id), offer, q.b) && (L.has('caster') || !casterBoon(q.b))).sort((a: any, b: any) => worthOf(b.b) - worthOf(a.b));
         if (ok.length) must({ type: 'run/boon', charId: id, choice: ok[0].i }, by(id)); }
+      continue;
+    }
+    if (run.state === 'camp') { // rules 1.51: the camp's issue (armour), then each picks its starting boon
+      for (const id of ids) {
+        if (L.has('issue')) { const fit = opts(id).find((q) => q.group === 'fit' && !q.why); if (fit) must(fit.action, by(id)); }
+        const offer = r.g.run.boons?.[id]; if (offer) must({ type: 'run/boon', charId: id, choice: startPick(offer, C(id)) }, by(id));
+      }
+      if (!L.has('start')) for (const id of ids) C(id).relics = (C(id).relics || []).filter((x: string) => !isStartBoon(x)); // the lever off: as if there were none (outside the reducer: a measure, not a replay)
+      res.start = ids.map((id) => (C(id).relics || []).find(isStartBoon) || null);
       continue;
     }
     if (run.state === 'tile') { const t = run.tiles[0].id; for (let i = 0; i < n && r.g.run.state === 'tile'; i++) must({ type: 'run/tile', tile: t }, ownerOf(i)); newStage(); continue; }
