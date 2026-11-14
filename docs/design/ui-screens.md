@@ -19,6 +19,36 @@ Leon, 14 Nov 2026, on a shop shelf headed "Every calibre" with the note "never s
 9. **Every label fits its box at 1280** (the screenshots of a text change are taken at 1280 wide).
 10. **Tests read data, not sentences.** A browser check reads a data attribute or the data's own text (`data/modes.json` `coming`, a face's `lines`). It does not read a typed copy of a sentence that the next text pass will change.
 
+## The three columns (every mode)
+
+Leon, 14 Nov 2026 (rules 1.54 item 11; a standing rule): *"Make a rule that every mode from now on must maintain the left and right UI, each mode have different function in the right UI yes, but never erase them like Survival mode update just did."* His reference was the Proving Ground's play screen.
+
+1. **Every mode's screens keep the left panel and a right panel; the mode's own content is the middle.** The left panel is the character sheet with all its tabs and Level up, the same in every mode. A mode chooses **what** its right panel holds, never **whether** it has one. The middle can be anything: a story, a path map, a shop, a camp.
+2. **The right panel is data:** `data/modes.json` items carry `panels`, a list of panel ids, read by one panel registry (an id to what it draws). The modules keep their grips and their drag order (a per-browser preference, never game state).
+3. **Excepted today, as not a mode's screens:** the fight screen (no side panels in any mode, the Proving Ground included) and the full-screen level-up and creation flows. Nothing else is full screen. A new full-screen screen is a ruling for Leon, not a builder's choice.
+4. **A brief for any mode's screen that does not carry this rule is not sent** (`CLAUDE.md`, "Every mode keeps the side panels").
+5. **What the sheet offers follows the mode:** a Survival run never shows Ask (voices) or Rest; at Survival's camp the GEAR tab is read-only (the camp builds the gear).
+
+| Mode | Left | Middle | Right panel (`panels`, in order) |
+| --- | --- | --- | --- |
+| Campaign | the character sheet | the story (narrative, input bar), the area map when opened | `mana` (mana forecast), `map` (area map), `quests` (quest board), `squad` (player card): today's |
+| Proving Ground | the character sheet | the Proving Ground's centre view (its tools and waves) | today's four, as the Proving Ground draws them (its list's home in data is open: survival-spec 14.6) |
+| Survival | the character sheet | the path map, the camp, the shop, the Forge, every place, the rewards, the stage screen (survival-spec 8.2, 14) | `mana`; `run` (stage and stop, seed, a small map of the whole stage); `run_board` (this stop, boons held, the visit log, Report a run, Retire); `squad` (seats with ready marks, credits, and one phase control at the bottom: Go, Ready or Leave). No area map, no quest board |
+| Roguelike | not open | not open | Survival's list until it has its own |
+| Any mode's fight | none | the fight | none (excepted) |
+
+**Skill texts on the three skill screens** (Leon, 14 Nov: *"Redo skill menu in character creation, ? menu text, and level up menu text, especially will power ... no proper line break."*; rules 1.54, survival-spec 14.1 R16):
+
+1. **The bug first:** Will Power's per-point sentence was stored eight times (`skills.json` `per_point.text` and `epccg.effect`, written by a one-off tool whose guard never matched). It is deduplicated, the tool's guard fixed, and the validator fails when a skill's text holds the same sentence twice.
+2. **The shape:** a skill's per-point text is **rows** (`per_point.rows`), each `{when, text}`; `when` is one of `each`, `every 2`, `every 3`, `from 3`, `from 7`, `once`, and the screen labels it "Each point", "Every 2 points", "Every 3 points", "From 3 points", "From 7 points", "Once". Numbers in a row's text are `{=placeholders}`. There is one copy: `epccg.effect` is removed. All three screens render the rows through one helper.
+3. **Creation's skill row** shows **one line: what the next point gives.**
+4. **The hover card and the "?" pop-up** show the rows as a two-column list, the label left and the text right, **one line each**.
+5. **Level-up's skill card** shows **"Next point"** first, the rest folded under it (opened by a click, keyboard reachable).
+6. **Rules text is never under 13 px** (labels and tags may be smaller); a row's text is **at most 60 characters** where it can be.
+7. Example, Will Power: Each point · +10% Soul power, +10% mana syphoned. Every 2 points · +1 Strain limit, +1 tile of Outburst reach, 1 more design ready. Every 3 points · 1 more module slot. Each point · Your Outbursts' conditions are harder to save against. From 3 points · One Pump a round is free. From 7 points · A held Outburst swells without Strain. (The words come from today's sentence; the numbers are placeholders in the data.)
+
+**Trait cards scroll the page** (Leon, 14 Nov: *"in trait selection in creation screen you cannot scroll with mouse if your mouse touches the trait card"*): no card on the creation screen traps the mouse wheel; a card whose text overflows scrolls its text first and then the page. A browser check at 1280 × 720 proves it by the page's own scroll, not a list's.
+
 ## Story mode — `Main.dc.html`
 
 - **Header:** wordmark, Story/Combat switch, Narrator chip ("AI · your key"), room code, settings.
