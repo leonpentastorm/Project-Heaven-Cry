@@ -164,9 +164,12 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
     if (want?.track) {
       const owner = want.charId ? game!.players.find((x) => x.id === game!.characters[want.charId!]?.owner) : null;
       setCredit({ title: want.track.title, artist: want.track.artist, reason: want.charId ? (game!.characters[want.charId]?.name || '') + '\'s song · ' + want.reason : want.reason, color: owner?.color || '#FFFFFF', at: Date.now() });
-      const t = setTimeout(() => setCredit(null), 5000); return () => clearTimeout(t);
     }
   }, [key]);
+  // The credit leaves 5 s after it shows, whatever the music does meanwhile: its timer hangs on the credit, not on the
+  // track's key (a fight's end changed the key to no track inside the 5 s, cleared the timer, and the card stayed over
+  // the sheet until the next song).
+  React.useEffect(() => { if (!credit) return; const t = setTimeout(() => setCredit(null), 5000); return () => clearTimeout(t); }, [credit]);
 
   // The host ends a one-play song on the clock too, so a host who paused locally doesn't hold everyone on it.
   const now = game?.music?.now;

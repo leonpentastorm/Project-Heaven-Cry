@@ -222,6 +222,10 @@ let g = await G();
 ok('node 1 fought by hand to its end: ' + (g.combat?.summary || '?'), g.combat?.over === 'win' && g.run.state === 'reward');
 await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
+{ // the music's Now playing card leaves within its 5 s after a fight (it stayed over the sheet for 30 s and more)
+  const gone = await p.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some((e) => /NOW PLAYING/.test(e.textContent || '')), null, { timeout: 8000 }).then(() => true, () => false);
+  ok('after the fight the Now playing card is gone within 8 s (it does not sit over the sheet)', gone);
+}
 r = await run();
 const c = Object.values(g.characters)[0];
 ok('the rewards: XP (' + SVD.xp.base + ' at stop 1, rules 1.54 item 9) and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === SVD.xp.base && c.xp === r.note.xp && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
