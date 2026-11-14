@@ -424,8 +424,12 @@ def validate():
     if 'emblems' in catalog:
         families.append(('emblems', 2, 2))
     for family, minimum, maximum in families:
-        require(minimum <= len(catalog[family]) <= maximum, f'Unexpected {family} count')
-        for asset_id, asset in catalog[family].items():
+        entries = catalog[family]
+        count = len(entries)
+        if family == 'characters':
+            count -= sum(a.get('collection') == 'survival-foes' for a in entries.values())
+        require(minimum <= count <= maximum, f'Unexpected {family} count')
+        for asset_id, asset in entries.items():
             path = asset['path']
             require(path not in paths, f'Duplicate primary asset path: {path}')
             paths.add(path)
@@ -446,6 +450,7 @@ def validate():
     if any(a.get('collection') == 'archetypes' for a in catalog['characters'].values()):
         validate_archetype_cards(catalog)
     validate_eye_lines(catalog)
+    validate_survival_foes(catalog)
     validate_ui_colours(catalog, palette)
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
@@ -475,7 +480,7 @@ def validate_map_kits(catalog):
     under art/sprites/kit/<setting>/, the size its kind asks (a floor 1024 square, a container 384 x 256, every other
     piece 256 square, all RGBA PNG), a known kind, `use` with a reason when false, and every PNG of the folders listed."""
     kit = catalog.get('kit') or {}
-    on_disk = {str(p.relative_to(ROOT)) for p in (ROOT / 'art/sprites/kit').glob('*/*.png')}
+    on_disk = {p.relative_to(ROOT).as_posix() for p in (ROOT / 'art/sprites/kit').glob('*/*.png')}
     require({e['path'] for e in kit.values()} == on_disk, 'Map kit catalog out of date: run python3 tools/art/kit_catalog.py')
     for kid, e in kit.items():
         require(kid == f"kit-{e['setting']}-{e['piece']}" and e['path'] == f"art/sprites/kit/{e['setting']}/{e['piece']}.png", f'Map kit id and path disagree: {kid}')
@@ -487,6 +492,30 @@ def validate_map_kits(catalog):
         require((width, height) == (e['width'], e['height']) == want, f'Wrong map kit size: {kid} is {width}x{height}, wants {want[0]}x{want[1]}')
         require(isinstance(e.get('use'), bool) and (e['use'] or e.get('why')), f'Map kit use flag (and its reason when false): {kid}')
     print(f'OK: map kits {len(kit)} pieces in {len({e["setting"] for e in kit.values()})} settings ({sum(1 for e in kit.values() if not e["use"])} held back).')
+
+def validate_survival_foes(catalog):
+    entries = {key: value for key, value in catalog['characters'].items()
+               if value.get('collection') == 'survival-foes'}
+    if not entries:
+        return
+    archive = 'art/_archive/survival/2026-11-14-foes/'
+    manifest = json.loads(local(archive + 'manifest.json').read_text(encoding='utf-8'))
+    pending = json.loads(local(archive + 'missing-assets.json').read_text(encoding='utf-8'))
+    delivered = {entry['id']: entry for entry in manifest}
+    pending_ids = {entry['id'] for entry in pending}
+    require(len(delivered) == len(manifest) and len(pending_ids) == len(pending),
+            'Duplicate Survival foe ID')
+    require(set(entries) == set(delivered) and not set(entries) & pending_ids,
+            'Survival foe catalog does not match its handoff')
+    require(len(entries) + len(pending_ids) == 71, 'Unexpected Survival foe brief count')
+    for key, entry in entries.items():
+        require(entry['path'] == f'art/portraits/survival/foes/{key}.png', f'Wrong foe path: {key}')
+        require((entry['width'], entry['height']) == (800, 1000), f'Wrong foe dimensions: {key}')
+        for field in ('kind', 'tier', 'eye_line', 'sha256', 'source_path'):
+            require(entry[field] == delivered[key][field], f'Foe manifest mismatch: {key}/{field}')
+        native_hash = hashlib.sha256(local(entry['source_path']).read_bytes()).hexdigest()
+        require(native_hash == delivered[key]['native_sha256'], f'Foe source checksum mismatch: {key}')
+
 
 def validate_eye_lines(catalog):
     """Spotlight cut-ins (docs/design/cutin-spec.md 9.1): every character and patron portrait says where its eyes are, as

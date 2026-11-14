@@ -32,6 +32,9 @@ def emit(name, src, small, large, quality=82, versioned=False):
 
 for sid, a in C["skills"].items():
     emit("skill-" + sid, ROOT / a["path"], (400, 500), (800, 1000), versioned=True)  # recoloured in 0.19 (Acuity, Improvisation)
+# Every portrait collection in `characters` (the Survival foes too, collection survival-foes: char-foe-<kind>-<tier>[-a|-b],
+# the Bosses' (a setting's boss.portrait), char-vault-guard-<setting>, char-foe-caster-*, picked by data/survival.json foe_faces). The round token is
+# the CSS crop of this 4:5 image (object-fit: cover); the eye line goes to eyelines.json below.
 for cid, a in C["characters"].items():
     emit("char-" + cid, ROOT / a["path"], (320, 400), (800, 1000))
 for fam, prefix in (("traits", "wick-trait-"), ("perks", "wick-perk-")):
