@@ -4,7 +4,7 @@
 // the stage cleared after the Boss. A shop or another safe node replaces the whole screen (ShopScreen.tsx, PlaceScreen.tsx).
 // It draws runView (runView.ts); every action is a `run/*` sent through the store.
 import React from 'react';
-import { act, getState, go, toast } from './store';
+import { act, getState, go, toast, poke } from './store';
 import { placeOpen } from '@engine';
 import { PlaceScreen } from './PlaceScreen';
 import { runView, type RunNodeV, type OfferV, type ChoiceCharV } from './runView';
@@ -94,9 +94,15 @@ function useGiveToast(g: any, me: string) {
   }, [last]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
+/** Rules 1.46: the place this browser walked out of (closed on this screen only; the squad walks on from the map). Kept
+ * here, not in a component: the right panel's phase control (runPanels.tsx) closes it too. */
+let closedNode: string | null = null;
+export const placeClosedAt = () => closedNode;
+export function closePlace(node: string | null) { closedNode = node; poke?.(); }
+
 export function RunScreen() {
   const st = getState(), g = st.game, me = st.me.id;
-  const [closed, setClosed] = React.useState<string | null>(null); // rules 1.46: the place this screen walked out of
+  const closed = closedNode, setClosed = closePlace;
   useGiveToast(g, me);
   const v = g ? runView(g, me) : null;
   if (!g || !v) return <div style={{ padding: 40, color: ink.muted }}>No run is under way.</div>;

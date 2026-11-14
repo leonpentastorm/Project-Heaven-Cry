@@ -2244,6 +2244,10 @@ if _modes is not None:
     _by = {m.get("id"): m for m in _mi}
     if not (_by.get(_modes.get("default")) or {}).get("available"): errors.append(f"modes: default {_modes.get('default')!r} is not an open mode")
     if _modes.get("old_save") not in _by: errors.append(f"modes: old_save {_modes.get('old_save')!r} is not a mode")
+    for _k, _v in (_modes.get("panel_names") or {}).items():
+        if not isinstance(_v, str) or not _v.strip(): errors.append(f"modes: panel_names.{_k} must be a text")
+    _pg = (_modes.get("proving_ground") or {}).get("panels")
+    if not isinstance(_pg, list) or not _pg or any(_p not in (_modes.get("panel_names") or {}) for _p in _pg): errors.append("modes: proving_ground.panels is a non-empty list of panel_names ids")
     _assets_p = root.parent / "apps/web/src/game/assets.json"
     _assets = set(json.loads(_assets_p.read_text()).keys()) if _assets_p.exists() else None
     for m in _mi:
@@ -2264,6 +2268,15 @@ if _modes is not None:
                 if _sk not in {x.get("id") for x in (data.get("skills") or {}).get("items", [])}: errors.append(f"{w}: loadout.by_door {_sk!r} is not a skill")
                 if _k not in _kits: errors.append(f"{w}: loadout.by_door.{_sk} {_k!r} is not one of the kits {sorted(_kits)}")
             if _lo.get("default") not in _kits: errors.append(f"{w}: loadout.default {_lo.get('default')!r} is not one of the kits {sorted(_kits)}")
+        # Rules 1.54 item 11: the right panel by mode (`panels`, ids of `panel_names`), never none; `hides` from the sheet
+        _pn = _modes.get("panel_names") or {}
+        _pl = m.get("panels")
+        if not isinstance(_pl, list) or not _pl: errors.append(f"{w}: panels is a non-empty list (rules 1.54: every mode keeps a right panel)")
+        else:
+            for _p in _pl:
+                if _p not in _pn: errors.append(f"{w}: panel {_p!r} is not in panel_names")
+            if len(set(_pl)) != len(_pl): errors.append(f"{w}: a panel is listed twice")
+        if not isinstance(m.get("hides"), list) or any(_h not in ("ask", "rest") for _h in m.get("hides") or []): errors.append(f"{w}: hides is a list of ask, rest")
         a = m.get("art")
         if a is not None and _assets is not None:
             if not m.get("art_pending") and a not in _assets: errors.append(f"{w}: art {a!r} is not a web asset (art/catalog.json, npm run assets); mark it art_pending until it lands")

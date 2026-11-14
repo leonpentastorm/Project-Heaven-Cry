@@ -8,6 +8,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import type { GameState } from '@engine';
 import { RunScreen } from './RunScreen';
+import { PanelSlots } from './runPanels';
 
 /** Render children into a node of the screen's template (found again after every render: the template remounts it). */
 export function Portal({ at, children }: { at: string; children: React.ReactNode }) {
@@ -35,5 +36,8 @@ export function ModeCentre({ game, screen }: { game: GameState | null; screen: s
     return () => { story?.removeAttribute('data-centre-off'); input?.removeAttribute('data-centre-off'); centre?.removeAttribute('data-centre-on'); };
   });
   if (!on) return null;
-  return <Portal at="[data-phc-centre]"><RunScreen /></Portal>;
+  return <>
+    <Portal at="[data-phc-centre]"><RunScreen /></Portal>
+    <PanelSlots game={game!} />
+  </>;
 }

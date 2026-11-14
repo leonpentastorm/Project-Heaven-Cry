@@ -7,6 +7,9 @@
   "default": "survival",
   "old_save": "campaign",
   "loadout_note": "Rules 1.52 (Leon, 14 Nov 2026): a character is a person; what it carries is given by the mode when play starts (each item's `loadout`).",
+  "panels_note": "Rules 1.54 item 11 (Leon, 14 Nov 2026; docs/design/ui-screens.md, The three columns): every mode keeps the left panel (the character sheet) and a right panel; the mode's content is the middle. A mode chooses WHAT its right panel holds (each item's `panels`, top to bottom: ids of `panel_names`, drawn by the client's one panel registry, apps/web/src/game/panels.ts), never WHETHER it has one. `hides`: what the character sheet does not offer in the mode (ask: the voices' Ask; rest: Rest and Next session). The Proving Ground is a tool, not a mode card: its list is `proving_ground`.",
+  "panel_names": { "mana": "Mana forecast", "map": "Map", "quests": "Quest board", "squad": "Player card", "run": "The run", "run_board": "Run board" },
+  "proving_ground": { "panels": ["mana", "map", "quests", "squad"] },
   "items": [
     {
       "id": "survival",
@@ -18,6 +21,8 @@
       "narrator": "optional",
       "start": "run",
       "loadout": { "kind": "camp", "about": "Rules 1.52: each character builds its loadout at the camp before node 1 (data/survival.json loadout)." },
+      "panels": ["mana", "run", "run_board", "squad"],
+      "hides": ["ask", "rest"],
       "coming": null,
       "provisional": true
     },
@@ -30,6 +35,8 @@
       "narrator": "optional",
       "start": "run",
       "loadout": { "kind": "camp", "about": "Rules 1.52: as Survival's camp, until the roguelike has its own." },
+      "panels": ["mana", "run", "run_board", "squad"],
+      "hides": ["ask", "rest"],
       "coming": "Not open yet.",
       "provisional": true
     },
@@ -42,6 +49,8 @@
       "narrator": "required",
       "start": "session",
       "loadout": { "kind": "kit", "about": "Rules 1.52: a campaign gives each character its starting gear when the session starts (or when a character joins mid-session): the campaign's own `loadout` when it names one (same shape), else this. A fixed default built from the old creation kits (engine character.ts KITS), chosen by the door skill with most points (by_door, in this order; a tie goes to the first), else `default`. A call for Leon (PROVISIONAL): campaigns name their own loadouts when they are rewritten. The Proving Ground gives the same to a character that comes to it with nothing.", "by_door": { "brain_power": "sigil", "will_power": "soul", "empathy": "medic" }, "default": "soldier", "provisional": true },
+      "panels": ["mana", "map", "quests", "squad"],
+      "hides": [],
       "coming": "Not open yet.",
       "provisional": true
     }

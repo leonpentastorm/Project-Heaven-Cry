@@ -21,7 +21,9 @@ export const survivalRun: { start_credits: number; dead_return_hp: number; first
 /** A mode a room can play (data/modes.json ids). */
 export type PlayMode = 'survival' | 'roguelike' | 'campaign';
 /** One row of data/modes.json: a card of the lobby's mode picker. `available: false` locks it, and `coming` says why. */
-export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; art_pending?: boolean; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null }
+export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; art_pending?: boolean; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null;
+  /** rules 1.54 item 11: the right panel's modules, top to bottom (data/modes.json panel_names ids; the client's panel registry draws them) */
+  panels: string[] }
 /** The three modes in the picker's order (data/modes.json items). */
 export const MODES: ModeDef[] = (modesJ as any).items;
 /** The mode a new room selects (data/modes.json default: Survival). */
