@@ -11,9 +11,11 @@
 // (`run/ready`); the host's close starts the run for everyone, an untouched loadout taking the Recommended one.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { WEAPON, ITEM, SKILL } from '../data';
+import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES } from '../data';
 import { type Character, type PackItem, packOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit } from '../character';
-import { packAdd, intoCounts } from '../containers';
+import { packAdd, intoCounts, itemLabel } from '../containers';
+import { type GearPreview, gearPreview } from '../gearpreview';
+import { meBlock, type MeV } from './shopview';
 import { priceOf } from '../credits';
 import { counterLines, lineGoods, SHOP_DATA } from './shop';
 import { magazineWorth } from './rewards';
@@ -197,5 +199,72 @@ export function campReady(g: G, by: string, o: { close?: boolean; undo?: boolean
 }
 /** Who is still making a loadout (connected players with no Ready mark), by name. */
 export const campWaiting = (g: G): string[] => (g.run?.state === 'loadout' ? g.players.filter((p) => p.online && !g.run!.ready[p.id]).map((p) => p.name) : []);
-/** The words of a weapon's skill (for the screen's "the skills that matter for gear"). */
-export const skillName = (id: string): string => SKILL[id]?.name || id;
+
+// ---------------------------------------------------------------------------------------------- the camp's view
+/** A card of the camp's screen: a free pick or a menu line, with the engine's gear preview numbers, its price (0 for a
+ * free pick), how many are taken, and the reason one more can't be taken (null: it can). */
+export interface LoadoutCardV { key: string; id: string; name: string; group: string; price: number; per: number; taken: number; picked: boolean; why: string | null; preview: GearPreview; text: string }
+/** One line of the Carrying panel: what it is, its weight, and the action that puts it back (null: it comes with a pick). */
+export interface CarryRowV { group: string; label: string; kg: number; free: boolean; put: { type: 'run/loadout'; [k: string]: unknown } | null }
+/** The camp's screen for one player (their own character, or `charId`). */
+export interface LoadoutViewV {
+  me: MeV; skills: { id: string; name: string; points: number; attribute: string }[]; armourClass: number; armourName: string;
+  budget: number; spent: number; left: number;
+  weapon: { id: string; name: string; cards: LoadoutCardV[] }[]; focus: LoadoutCardV[]; weaponPick: string | null; focusPick: string | null;
+  shelves: { shelf: string; name: string; cards: LoadoutCardV[] }[];
+  carrying: CarryRowV[];
+  party: { id: string; charName: string; initials: string; color: string; ready: boolean; online: boolean; mine: boolean }[];
+  ready: boolean; isHost: boolean; waiting: string[]; seed: string;
+}
+/** The skills a loadout reads (the weapons' skills, the doors, the armour gate). */
+const GEAR_SKILLS = ['dexterity', 'raw_power', 'brain_power', 'visualization', 'will_power', 'empathy', 'pain_threshold'];
+const STEER: Record<string, string> = { guns: 'Ammunition', calibres: 'Ammunition', special: 'Ammunition', thrown: 'Thrown', cores: 'Mana and parts', supplies: 'Medicine and supplies', stock: 'Gear' };
+const SHELF_ORDER = ['guns', 'calibres', 'special', 'thrown', 'cores', 'supplies', 'stock'];
+/** The camp's view for player `me`; null when the camp is closed or they have no character there. */
+export function loadoutView(g: G, me: string, charId?: string | null): LoadoutViewV | null {
+  const r = g.run; if (r?.state !== 'loadout' || !r.loadout) return null;
+  const c = (charId && g.characters[charId]) || Object.values(g.characters).find((x) => x.owner === me && r.loadout![x.id]) || null;
+  if (!c || !r.loadout[c.id]) return null;
+  const p = r.loadout[c.id], mine = c.owner === me, locked = !!r.ready[c.owner];
+  /** Why this change can't be made (a trial on a copy, as the reducer would), or null. */
+  const why = (edit: (q: LoadoutPick) => void): string | null => {
+    if (!mine) return 'Only ' + c.name + '\'s player makes ' + c.name + '\'s loadout.';
+    if (locked) return 'Marked ready: take the mark back to change it.';
+    const t: Character = JSON.parse(JSON.stringify(c)), q: LoadoutPick = JSON.parse(JSON.stringify(p)); edit(q); return rebuild(t, q);
+  };
+  const preview = (id: string): GearPreview => {
+    const a = /^armour:(\d)$/.exec(id);
+    if (a) { const k = ARMOUR_CLASSES[Number(a[1])]; return { id, name: 'Class ' + a[1] + ' body armour (' + (k?.name || '') + ')', kind: 'armour', rarity: 'standard', category: 'Body armour', traits: [], text: 'Worn on the torso. One class at a time.',
+      lines: [{ key: 'armour', label: 'Armour', value: String(k?.value ?? 0), num: k?.value ?? 0, better: 'higher' }, { key: 'kg', label: 'Weight', value: (k?.weight_kg ?? 0) + ' kg', num: k?.weight_kg ?? 0, better: 'lower' }] }; }
+    return gearPreview(c, { id, rarity: 'standard' });
+  };
+  const pickCard = (slot: 'weapon' | 'focus', id: string, group: string): LoadoutCardV => { const pv = preview(id), on = p[slot] === id;
+    return { key: slot + ':' + id, id, name: pv.name, group, price: 0, per: 1, taken: on ? 1 : 0, picked: on, why: on ? null : why((q) => { q[slot] = id; }), preview: pv, text: pv.text }; };
+  const lines = loadoutLines(c), shelves: LoadoutViewV['shelves'] = [];
+  for (const sh of SHELF_ORDER) {
+    const ls = lines.filter((l) => l.shelf === sh); if (!ls.length) continue;
+    const name = sh === 'stock' ? 'Gear' : (SHOP_DATA.always.find((s) => s.shelf === sh)?.name || sh);
+    shelves.push({ shelf: sh, name, cards: ls.map((l) => { const pv = preview(l.id), n = p.take[l.key] || 0;
+      return { key: l.key, id: l.id, name: pv.name, group: STEER[sh] || name, price: l.price, per: l.per, taken: n, picked: n > 0,
+        why: n >= LOADOUT.max_qty ? 'At most ' + LOADOUT.max_qty + ' of a line.' : why((q) => { q.take[l.key] = n + 1; }), preview: pv, text: pv.text }; }) });
+  }
+  // the Carrying panel: the free picks, then what was taken (by line, put back one at a time), then the pack as it is
+  const carrying: CarryRowV[] = [];
+  const kgOf = (it: PackItem) => Math.round(carriedKg({ ...c, pack: [it], stims: 0, essence: 0, carried: [] } as Character).pack * 100) / 100;
+  if (p.weapon) carrying.push({ group: 'Free', label: nameOf(p.weapon) + ' · free weapon', kg: (WEAPON[p.weapon] as any)?.weight_kg || 0, free: true, put: { type: 'run/loadout', charId: c.id, op: 'pick', slot: 'weapon', id: null } });
+  if (p.focus) carrying.push({ group: 'Free', label: nameOf(p.focus) + ' · free focus', kg: (ITEM[p.focus] as any)?.weight_kg || 0, free: true, put: { type: 'run/loadout', charId: c.id, op: 'pick', slot: 'focus', id: null } });
+  for (const [k, n] of Object.entries(p.take)) { const l = lines.find((x) => x.key === k); if (!l) continue;
+    carrying.push({ group: 'Bought', label: (n > 1 ? n + ' × ' : '') + nameOf(l.id) + (l.per > 1 ? ' (' + l.per * n + ')' : '') + ' · ' + l.price * n + ' cr', kg: 0, free: false, put: { type: 'run/loadout', charId: c.id, op: 'take', key: k, qty: -1 } }); }
+  for (const it of packOf(c)) carrying.push({ group: 'In the pack', label: itemLabel(it), kg: kgOf(it), free: true, put: null });
+  if (c.stims) carrying.push({ group: 'In the pack', label: c.stims + ' × Stim injector', kg: Math.round(c.stims * ((ITEM.stim_injector as any)?.weight_kg || 0) * 100) / 100, free: true, put: null });
+  const spent = loadoutSpent(c, p), chars = Object.values(g.characters), owner = (pid: string) => chars.find((x) => x.owner === pid) || null;
+  return {
+    me: meBlock(c), skills: GEAR_SKILLS.map((id) => ({ id, name: SKILL[id]?.name || id, points: c.skills?.[id] || 0, attribute: (SKILL[id] as any)?.attribute || '' })),
+    armourClass: c.armourClass || 0, armourName: ARMOUR_CLASSES[c.armourClass || 0]?.name || 'None',
+    budget: LOADOUT.budget, spent, left: LOADOUT.budget - spent,
+    weapon: FREE_GROUPS.map((gr) => ({ id: gr.id, name: gr.name, cards: gr.ids.map((id) => pickCard('weapon', id, gr.name)) })), focus: LOADOUT.focuses.map((id) => pickCard('focus', id, 'Focus')),
+    weaponPick: p.weapon, focusPick: p.focus, shelves, carrying,
+    party: g.players.map((pl: any) => ({ id: pl.id, charName: owner(pl.id)?.name || pl.name, initials: pl.initials || '?', color: pl.color || '#A3AEC2', ready: !!r.ready[pl.id], online: pl.online, mine: pl.id === me })),
+    ready: !!r.ready[me], isHost: me === g.hostId, waiting: campWaiting(g), seed: r.seed,
+  };
+}

@@ -34,7 +34,6 @@ describe('creation without a kit (rules 1.52)', () => {
     expect(packOf(c).filter((x) => x.kind !== 'plot')).toEqual([]);
     const k = newCharacter('c2', HOST, sheetOf({ name: 'Old', kit: 'soldier' }));
     expect(k.bare).toBeUndefined(); expect(k.weapon).toBe(KITS.soldier.weapon); expect(k.armourClass).toBe(KITS.soldier.armourClass);
-    expect(validateSheet({ ...s, kit: 'nonsense' })).toBe('No such starting kit.');
   });
   it('a campaign gives a bare character the campaign\'s loadout at the session\'s start (the door skill picks the kit)', () => {
     let g = newGame('CAMP01', { id: HOST, name: 'Leon' }, 'seed-camp'); g.settings.play = 'campaign';

@@ -142,7 +142,7 @@
   },
   "rounds": { "about": "Rules 1.41 (spec rule 17): the target rounds R of a fight by node kind; a plain fight at depth early_depth or less is fight_early.", "fight": 5, "fight_early": 4, "early_depth": 2, "elite": 6.5, "gate": 6.5, "boss": 9, "vault_guard": 6.5, "provisional": true },
   "bulk_per_char_round": 0.25,
-  "pressure_per_char": [2, 1.7, 1.3, 1.3],
+  "pressure_per_char": [1.6, 1.7, 1.3, 1.3],
   "bulk_band": 0.15,
   "pressure_band": 0.1,
   "max_foes": [4, 6, 8, 10],
@@ -159,7 +159,7 @@
   "share": {
     "about": "Rules 1.41 (spec rule 20): an Elite or a Boss spawns scaled by the party's size N (index N - 1): its HP and its damage; it costs its bulk x hp and its pressure x damage.",
     "boss": { "hp": [0.28, 0.5, 0.75, 1], "damage": [0.4, 0.8, 0.8, 1] },
-    "elite": { "hp": [0.75, 1, 1, 1], "damage": [0.75, 1, 1, 1] },
+    "elite": { "hp": [0.75, 1, 1, 1], "damage": [0.6, 1, 1, 1] },
     "provisional": true
   },
   "map_size": { "about": "Rules 1.41 (spec rule 22): the fight's map by its units (the party and the foes): up to `units`, a square of `size` tiles, generated (rules 1.45, `layout`) or cropped from the middle of the open ground; the squad starts in the columns `squad_cols` (the west edge).", "steps": [ { "units": 6, "size": 16 }, { "units": 10, "size": 20 }, { "units": 99, "size": 26 } ], "squad_cols": [1, 2], "provisional": true },

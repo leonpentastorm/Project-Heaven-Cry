@@ -264,7 +264,6 @@ export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'trait
 export function validateSheet(s: Sheet): string | null {
   if (!s.name?.trim()) return 'A character needs a name.';
   if (!s.origin) return 'Pick an origin.';
-  if (s.kit && !KITS[s.kit]) return 'No such starting kit.'; // rules 1.52: an old draft's kit, else none
   if ((s.traits || []).length > 2) return 'At most 2 traits.';
   // Belief (rules 1.6): Faithful to a patron of the patron list, or Atheist. Optional (old drafts have none: Atheist).
   if (s.belief && !(s.belief.kind === 'atheist' || (s.belief.kind === 'faithful' && ((patronsJ as any).items || []).some((p: any) => p.id === (s.belief as any).patron)))) return 'Pick a patron, or be an Atheist.';
