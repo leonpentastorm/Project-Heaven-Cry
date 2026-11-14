@@ -12,6 +12,7 @@ const DUO = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 /** A run after its first fight, won: the reward screen's state. */
 function afterOneFight() {
   const r = new Rec(survivalRoom('PHC-T001', DUO, { test: true }), DUO); r.must({ type: 'run/start', seed: 'PHC-T001' });
+  for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/boon', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); // rules 1.51: the camp
   const node = chooseNode(r.g)!; for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
   r.fight(40); expect(r.g.run.state).toBe('reward');
   return r.g;
