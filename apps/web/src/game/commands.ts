@@ -69,7 +69,7 @@ export const RELOAD_TAC = 'reload-tac', RELOAD2_TAC = 'reload2-tac';
 export function reloadItems(u: any): ActionItem[] {
   if (!u) return [];
   const R: any = weaponActions(u).find((x: any) => x.id === 'reload'); if (!R) return [];
-  const w: any = (WEAPON as any)[u.weapon], unit = (w && w.reload_unit) || 'magazine', now = w && w.magazine != null ? ' ' + u.ammo + ' / ' + w.magazine + ' loaded now.' : '';
+  const w: any = (WEAPON as any)[u.weapon], unit = (w && w.reload_unit) || 'magazine', now = u.quiver ? '' : w && w.magazine != null ? ' ' + u.ammo + ' / ' + w.magazine + ' loaded now.' : ''; // a bow's Switch quiver card says its own counts (rules 1.53)
   if (!R.tactical) return [['reload', R.label, R.ap + ' AP', R.text + now, R.why]];
   return [
     ['reload', (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (speed)', R.ap + ' AP · the ' + unit + ' drops', 'Swap in your fullest spare ' + unit + ' (' + (u.mags || []).length + ' left). The one in the gun drops onto your tile with its rounds still in it. You can pick it up later and refill it with Load.' + now, R.why],
@@ -201,7 +201,7 @@ export function smartCommands(u: any): Command[] {
   else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
   cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
   const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name
-  if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.ammo >= w.magazine });
+  if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.quiver ? rl.ap + ' AP · the other quiver' : u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.quiver ? !!rl.why : u.ammo >= w.magazine }); // rules 1.53: a bow's reload is Switch quiver
   else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an enemy next to you', key: '3' });
   else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
   if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });

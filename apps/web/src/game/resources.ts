@@ -10,6 +10,8 @@
 // The held Outburst and Strain are read ONLY through heldOutburstOf() below: the Soul engine is changing shape
 // (Outburst 2.0: a held heart with design, stage 0–4, tone, form, free pumps left), so that is the one place to update.
 import * as E from '@engine';
+import { unitQuiverCards, quiverCards } from '@engine';
+import { enchantMark } from './quiverView';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
@@ -177,7 +179,16 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   // ---- the gun: rounds, spares, ammo type; its Heat; its condition ----
   const wid = u ? u.weapon : c?.weapon, w: any = wid ? (WEAPON as any)[wid] : null;
   const infinite = !!u?.infiniteAmmo;
-  if (w && w.magazine != null && !infinite) {
+  // rules 1.53: a bow's worn quiver (arrows left of what it holds, its enchantment's mark in words) and the ready one
+  const qcs = w && !infinite && (w.phys?.props || []).includes('drawn') ? (u ? unitQuiverCards(u) : c ? quiverCards(c) : []) : [];
+  if (qcs.length) {
+    const q = qcs[0], r = qcs[1], mark = enchantMark(q.ench), rAp = reloadApOf(u, c, w);
+    const row: ResRow = { key: 'ammo', label: 'Quiver', value: q.total + ' / ' + q.holds + ' arrows' + (r ? ' · ready ' + r.total + (r.ench ? ' (' + r.ench.name + ')' : '') : ''), now: q.total, max: q.holds, kind: 'bar', colour: mark ? mark.ink : RES_INK.body,
+      sub: (w.name || wid) + ' · ' + q.rarity + ' quiver' + (mark ? ' · ' + mark.text : ''),
+      hint: 'Arrows in the worn quiver: each shot draws one. A quiver is never refilled in a fight.' + (r ? ' Switch quiver (' + rAp + ' AP, the bow\'s reload) wears the other.' : '') };
+    if (q.total <= 0) Object.assign(row, r && r.total > 0 ? { warn: 'SWITCH', level: 'alert', hint: 'The quiver is empty: Switch quiver (' + rAp + ' AP) to the other (' + r.total + ' arrows).' } : { warn: 'EMPTY', level: 'alert', hint: 'The quiver is empty: swap weapons, or fight hand to hand.' });
+    rows.push(row);
+  } else if (w && w.magazine != null && !infinite) {
     const cap = u ? magazineSize(w.id, u.mods) ?? w.magazine : magazineSize(w.id, c?.weaponState?.mods) ?? w.magazine;
     const now = u ? u.ammo : loadedOf(c);
     const loose = w.reload === 'loose';

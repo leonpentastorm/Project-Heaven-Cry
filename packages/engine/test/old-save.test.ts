@@ -24,7 +24,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf } from '../src';
+import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf, quiversOf } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
 const load = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
@@ -217,4 +217,24 @@ describe('rules 1.39: an old save loads as a campaign', () => {
     const s = apply(g, { type: 'settings', patch: { play: 'survival' } }, g.hostId);
     expect(start(s, 'PHC-0002').run!.state).toBe('map');
   });
+});
+
+// Rules 1.53 (bows and quivers): save-pre-quivers-archer-mid-fight.json was written by the claude/charming-gauss-hbq4n0
+// engine at 92f51dbb, the commit before quivers became gear (the script beside it). Its archer has the old per-bow
+// quiver (c.phys.quiver.recurve_bow, c.loaded) and is mid-fight with an arrow already loosed (u.quiver, no quiverGear).
+describe('rules 1.53: a save from before quivers were gear loads and plays on', () => {
+  const ARCH: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'plain_gun', level: 1 }];
+  it('the archer\'s quiver goes on in the fight, its shots draw from it, and after the fight it is the character\'s worn quiver', () => {
+    const g0 = load('save-pre-quivers-archer-mid-fight'), archer = Object.values(g0.characters).find((c: any) => c.weapon === 'recurve_bow') as any;
+    expect(g0.phase).toBe('combat'); expect(archer.quivers).toBeUndefined();
+    expect(quiversOf(archer)).toEqual([{ id: 'quiver', arrows: { standard: 14, incendiary: 6 } }]); // read from the old record
+    const u0 = g0.combat.units.find((x: any) => x.charId === archer.id); expect(u0.quiver).toEqual({ standard: 13, incendiary: 6 }); expect(u0.ammo).toBe(19);
+    const r = new Rec(g0, ARCH);
+    r.fight(12);
+    expect(r.errors).toEqual([]);
+    const u = r.g.combat.units.find((x: any) => x.charId === archer.id);
+    if (!r.g.combat.over) { const n = Object.values(u.quiver || {}).reduce((t: number, k: any) => t + k, 0); expect(n).toBe(u.ammo); expect(n).toBeLessThanOrEqual(19); }
+    else { const qs = quiversOf(r.g.characters[archer.id]); expect(qs.length).toBe(1); expect(Object.values(qs[0].arrows).reduce((t: number, k: any) => t + k, 0)).toBe(r.g.characters[archer.id].loaded); }
+    expect(() => viewFor(r.g, 'host')).not.toThrow();
+  }, 60_000);
 });

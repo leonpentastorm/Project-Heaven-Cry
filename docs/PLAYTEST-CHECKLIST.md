@@ -229,6 +229,47 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
     breaking" number. A gun just above 25% at one shop can still break before the next; the bar shows it.
 79. **Shields repair too** (they have durability in data); a focus and armour do not wear and get no card.
 
+## B. Bows and quivers (rules 1.53, in 0.27.0)
+
+Sources: rules 1.53 (items 4000 to 4008), `docs/design/handoffs/bows-quivers.md`. Leon's rulings of 14 Nov 2026.
+
+**What to try**
+- [ ] Give a character a recurve bow or a longbow. Its ARMS tab shows one quiver, "Quiver · STANDARD · WORN", holding
+      40; load it from the arrows you carry (any mix of types). There is no Nock an arrow anywhere.
+- [ ] In a fight, shoot: each shot (Aimed Shot, a plain shot, a technique) takes an arrow from the worn quiver for the
+      shot's own AP; the Quiver row under the HP bar counts down (arrows left / what it holds).
+- [ ] Buy a second quiver (a Survival shop's counter shows one to a party with an archer; a campaign's shop or loot),
+      carry it from the backpack (ARMS tab: it is the READY quiver), load it. In a fight, the bow's group on the Attack
+      tab now has **Switch quiver** (2 AP, a reload's price): it wears the other quiver. With one quiver it is not there.
+- [ ] Empty the worn quiver with the other still full: a shot is refused "The quiver is empty: Switch quiver (N in the
+      other).", the Quiver row says SWITCH, and Switch quiver's card says the other holds N.
+- [ ] Fit an enchantment (Ember, Storm, Frost, Stone, Gale, Acid; the Survival Forge stocks them for a party with
+      quivers) into a quiver: the ARMS card shows its mark in the tone's colour with its name (▲ EMBER ENCHANTMENT). Every
+      arrow from that quiver carries the tone's rider and deals ×0.9 (the attack card shows the term); its hit plays the
+      element's own hit effect. Arrows from the other quiver are plain.
+- [ ] Grade a quiver (Survival: the grade step at a shop or the Forge lists "worn quiver" and "ready quiver"): Fine
+      holds 50, Masterwork 60, Relic 70 (no named property asked), Celestial 80. The shot's to-hit and damage do not
+      change with the quiver's grade (only the bow's grade buys accuracy).
+- [ ] An old save with an archer loads: the bow's arrows are its worn quiver.
+
+**Calls I made for you (reverse any)**
+80. **"20 more into each tier":** before 1.53 every quiver held 20 and grade did not change it, so the only tier was
+    the one number: the Standard quiver holds **40**. The ladder above it (Fine 50, Masterwork 60, Relic 70, Celestial
+    80) is mine, so a graded quiver means more arrows as you ruled; say if you want other steps.
+81. **Your "or":** two quivers and Switch quiver (the lead's reading, then yours), not a removed action alone.
+82. **Switch quiver costs a reload** (2 AP, the one reload rule), and is free where a reload is free (Resupply, Between
+    Heartbeats, Running Reload). A Last Round kill with a bow still owes no free reload (unchanged): should it free the
+    next Switch quiver?
+83. **The quivers are the character's, not the bow's:** a recurve and a longbow shoot from the same worn quiver.
+84. **The six enchantments are the Outburst tones' riders** at a stage each (Ember Fire 2: Burning; Storm 1: ignores
+    half cover; Frost 1: Slowed on a failed Body save; Stone 2: Prone on a failed save; Gale 1: a 2-tile push; Acid 1:
+    Corroded on a failed save), **400 credits and ×0.9 damage** (the incendiary round's price for its rider).
+85. **A quiver costs 120 credits and weighs 0.6 kg** (Standard; the grade's price factor above). Quivers are carried,
+    stowed and enchanted out of a fight only (in a fight, Switch quiver is all).
+86. **Survival:** the counter sells a plain quiver to a party with an archer; a reward pick may offer an archer a quiver
+    as its own offer; the vault's chest may hold one at its grade; the Forge stocks enchantments only for a party that
+    carries quivers (so a party without an archer sees the same stock as before).
+
 ## 0. Classes 3.0 (0.26.0)
 
 Sources: `docs/design/handoffs/CLASSES-3.0-PICKUP.md`, the step hand-offs (`classes-3.0-step-*.md`), the specs

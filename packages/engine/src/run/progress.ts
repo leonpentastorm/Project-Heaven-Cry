@@ -11,7 +11,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear } from '../character';
+import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem } from '../character';
 import { payCredits, earnCredits, cantPay, priceOf } from '../credits';
 import { addDrill } from '../physical/data';
 import { addStudy } from '../sigilgrowth';
@@ -115,7 +115,7 @@ export function upgradeProblem(g: GameState, c: Character, a: { where: GearWhere
   if (LADDER.indexOf(to) > LADDER.indexOf(ceil)) return to === 'relic' ? 'The Relic step opens in stage ' + GRADE_UP.relic_from_stage + '.' : 'Stage ' + h.r.stage + ' grades to ' + GRADE_WORD[ceil] + ' at most: ' + GRADE_WORD[to] + ' comes in a later stage.';
   if (to === 'relic' && a.place !== GRADE_UP.relic_at) return 'The Relic step is the Forge\'s.';
   if ((h.v.steps[c.id] || 0) >= GRADE_UP.per_visit) return 'One grade step a visit: ' + c.name + ' has had it here.';
-  if (to === 'relic') {
+  if (to === 'relic' && !isQuiverItem(it.id)) { // rules 1.53: a quiver's Relic step is arrows held, no named property
     if (a.chit) return 'A chit pays a Fine or Masterwork step, not the Relic.';
     const offer = relicChoices(g, c, a.where);
     if (!offer.length) return 'No named property fits the ' + nameOf(it.id) + ' inside ' + c.name + '\'s cap (' + runWorth(c) + ' of ' + BOON_CAP + ' used).';
@@ -130,9 +130,9 @@ function doUpgrade(g: GameState, c: Character, a: Extract<ProgressAction, { type
   const h = here(g)!, it = gearAt(c, a.where)!, to = nextGrade(it.rarity)!, price = gradePrice(to, a.place);
   if (a.chit) { const pack = packOf(c).map((x) => ({ ...x })), i = chitAt(c); if (pack[i].qty > 1) pack[i].qty--; else pack.splice(i, 1); c.pack = pack; }
   else payCredits(c, price);
-  const err = setGrade(c, a.where, to, to === 'relic' ? a.prop : undefined); if (err) return err;
+  const err = setGrade(c, a.where, to, to === 'relic' && !isQuiverItem(it.id) ? a.prop : undefined); if (err) return err;
   setVisit(h.r, h.v, { steps: bump(h.v.steps, c.id) });
-  say(c.name + '\'s ' + nameOf(it.id) + ' is ' + GRADE_WORD[to] + ' now' + (to === 'relic' ? ', ' + relicRow(a.prop!)!.name + ' (' + worthOf(a.prop!) + ' of the run\'s ' + BOON_CAP + ')' : '') + (a.chit ? ': paid with an armourer\'s chit.' : ': ' + price + ' credits.'), c.id);
+  say(c.name + '\'s ' + nameOf(it.id) + ' is ' + GRADE_WORD[to] + ' now' + (to === 'relic' && !isQuiverItem(it.id) ? ', ' + relicRow(a.prop!)!.name + ' (' + worthOf(a.prop!) + ' of the run\'s ' + BOON_CAP + ')' : '') + (a.chit ? ': paid with an armourer\'s chit.' : ': ' + price + ' credits.'), c.id);
   return null;
 }
 
@@ -178,6 +178,7 @@ export function lastingFor(c: Character): string[] {
   for (const it of Object.values(ITEM) as any[]) {
     if (priceOf(it.id) == null) continue;
     if (it.category === 'mod' && free.includes(it.mod_slot)) out.push(it.id);
+    if (it.category === 'mod' && it.mod_slot === 'enchantment' && quiversOf(c).some((q) => !(q.mods || []).length)) out.push(it.id); // rules 1.53: a quiver's one enchantment
     if (it.category === 'armour' && it.slot) { const worn = c.worn?.[it.slot]; if (!worn || (priceOf(it.id) || 0) > (priceOf(worn) || 0)) out.push(it.id); }
   }
   return out;
@@ -185,7 +186,8 @@ export function lastingFor(c: Character): string[] {
 function forgeStock(g: GameState, rng: ReturnType<typeof rngFor>): RunStock[] {
   const chars = Object.values(g.characters).filter((c) => !c.dead);
   const want = [...new Set(chars.flatMap((c) => lastingFor(c)))];
-  const any = (Object.values(ITEM) as any[]).filter((it) => (it.category === 'mod' || (it.category === 'armour' && it.slot)) && priceOf(it.id) != null).map((it) => it.id);
+  const archers = chars.some((c) => quiversOf(c).length); // rules 1.53: enchantments are stocked for a party that carries quivers
+  const any = (Object.values(ITEM) as any[]).filter((it) => (it.category === 'mod' || (it.category === 'armour' && it.slot)) && (archers || it.mod_slot !== 'enchantment') && priceOf(it.id) != null).map((it) => it.id);
   const out: string[] = [];
   for (const pool of [want, any.filter((id) => !want.includes(id))]) { const p = [...pool]; while (out.length < FORGE_SLOTS && p.length) out.push(p.splice(die(rng, p.length) - 1, 1)[0]); }
   return out.map((id) => ({ id, price: priceOf(id) || 0 }));
@@ -398,12 +400,12 @@ export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fi
 export function runOptions(g: GameState, charId: string): RunOption[] {
   const c = g.characters[charId], h = here(g); if (!c || !h) return [];
   const out: RunOption[] = [], k = h.n.kind, word = (r: Rarity) => GRADE_WORD[r];
-  const wheres: GearWhere[] = ['main', 'off', ...packOf(c).map((_, i) => i)];
+  const wheres: GearWhere[] = ['main', 'off', ...packOf(c).map((_, i) => i), ...quiversOf(c).map((_, i) => ('quiver:' + i) as GearWhere)]; // rules 1.53: the carried quivers too
   if (k === 'shop' || k === 'forge') for (const where of wheres) {
     const it = gearAt(c, where); if (!it || (WEAPON[it.id] as any)?.category === 'thrown') continue;
-    const to = nextGrade(it.rarity), at = (typeof where === 'number' ? 'pack' : where === 'main' ? 'main hand' : 'off hand');
+    const to = nextGrade(it.rarity), at = (typeof where === 'number' ? 'pack' : where === 'main' ? 'main hand' : where === 'off' ? 'off hand' : where === 'quiver:0' ? 'worn quiver' : 'ready quiver');
     const base = { where, place: k as GradePlace };
-    if (to === 'relic' && k === GRADE_UP.relic_at) {
+    if (to === 'relic' && k === GRADE_UP.relic_at && !isQuiverItem(it.id)) {
       const props = relicChoices(g, c, where), gate = upgradeProblem(g, c, { ...base, prop: props[0] });
       if (!props.length) out.push({ group: 'relic', key: 'relic:' + where, label: 'The Relic step: ' + nameOf(it.id), detail: at, price: GRADE_UP.price.relic, why: gate || upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
       for (const p of props) out.push({ group: 'relic', key: 'relic:' + where + ':' + p, label: nameOf(it.id) + ' to Relic, ' + relicRow(p)!.name, detail: relicRow(p)!.text + ' Worth ' + worthOf(p) + ' of ' + BOON_CAP + '; ' + capRoom(c) + ' left.', price: GRADE_UP.price.relic, why: upgradeProblem(g, c, { ...base, prop: p }), action: { type: 'run/upgrade', charId, ...base, prop: p } });

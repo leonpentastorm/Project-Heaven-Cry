@@ -169,7 +169,9 @@ describe('weapon-granted actions (plan 2.9)', () => {
   it('a bow has no Clear jam and no magazine; a revolver reloads with a speedloader; only heavy weapons Brace', () => {
     expect(weaponActions(unitWith('recurve_bow')).map((a) => a.id)).not.toContain('clear');
     expect(weaponActions(unitWith('recurve_bow')).map((a) => a.id)).not.toContain('load');
-    expect(weaponActions(unitWith('recurve_bow')).find((a) => a.id === 'reload')!.label).toBe('Nock an arrow');
+    // rules 1.53: no Nock an arrow; with one quiver a bow has no reload, with two it is Switch quiver
+    expect(weaponActions(unitWith('recurve_bow')).find((a) => a.id === 'reload')).toBeUndefined();
+    expect(weaponActions(unitWith('recurve_bow', { quiver: { standard: 3 }, quiverReady: { id: 'quiver', arrows: { standard: 9 } } } as any)).find((a) => a.id === 'reload')!.label).toBe('Switch quiver');
     expect(weaponActions(unitWith('drifter_revolver')).find((a) => a.id === 'reload')!.label).toBe('Speedloader');
     expect(weaponActions(unitWith('service_pistol')).map((a) => a.id)).not.toContain('brace');
     expect(weaponActions(unitWith('hellraiser_lmg')).map((a) => a.id)).toContain('brace');

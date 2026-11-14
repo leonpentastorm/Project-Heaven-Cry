@@ -329,7 +329,7 @@ describe('Last Round', () => {
     // a bow can't be reloaded in a fight (the quiver refuses it), so its kill makes no free reload
     const g = fight({ weapon: 'recurve_bow', foes: [{ at: 'H3' }, { at: 'J3' }] }); g.press(g.foe, 2, g.pc); g.pc.ammo = 1; g.pc.quiver = { standard: 1 }; g.foe.hp = 1; rig({ hit: true, die: 12 });
     expect(g.tech('last_round', { targetId: g.foe.id })).toBeNull(); expect(g.foe.dead || g.foe.downed).toBe(true); expect(g.pc.freeReload).toBeUndefined();
-    expect(() => g.act({ type: 'combat/reload', unitId: g.pc.id } as any)).toThrow(/quiver is filled before the fight/);
+    expect(() => g.act({ type: 'combat/reload', unitId: g.pc.id } as any)).toThrow(/one quiver: it is filled before the fight/); // rules 1.53: with two it would be Switch quiver
   });
 });
 
