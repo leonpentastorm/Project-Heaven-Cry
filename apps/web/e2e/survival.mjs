@@ -91,6 +91,11 @@ const had = (await pick0()).take.stim_injector || 0;
 if (left0 >= stim) { await p.locator('[data-phc-camp-more="stim_injector"]').click(); await settle(p, 300); }
 ok('a stim from the budget at the shop\'s price (' + stim + '): Budget left and Budget used move, the purse is what is left',
   left0 < stim || ((await pick0()).take.stim_injector === had + 1 && await numIn('[data-phc-camp-left]') === left0 - stim && (await me0()).credits === left0 - stim));
+// a second weapon from the shop's menu (the camp's Gear shelf, at its price): a combat knife in the pack
+if ((await pick0()).take['stock:armour:1']) { await p.locator('[data-phc-camp-less="stock:armour:1"]').click(); await settle(p, 300); }
+const knife = await numIn('[data-phc-camp-card="stock:combat_knife"] [data-phc-camp-price]');
+await p.locator('[data-phc-camp-more="stock:combat_knife"]').click(); await settle(p, 300);
+ok('a second weapon bought from the Gear shelf at its price (' + knife + '): it goes in the pack', (await me0()).pack.some((x) => x.weapon === 'combat_knife') && knife === WPN.combat_knife.price_credits);
 await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
 const kept = (await me0()).credits;
 await p.locator('[data-phc-camp-ready]').click();
@@ -383,7 +388,7 @@ while (guard++ < 40) {
       const b = before.characters[cid], a = after.characters[cid];
       done.forge = !!key && (a.weaponState?.rarity === 'fine') && b.credits - a.credits === 1200;
       ok('a Forge: the grade step clicked (' + key + '): Fine, 1,200 credits (' + b.credits + ' → ' + a.credits + ')', done.forge);
-      ok('… and a second step this visit is shown refused in words', /One grade step a visit/.test((await p.locator('[data-phc-choices]').allTextContents()).join(' ')));
+            ok('… and a second step this visit is shown refused in words', /One grade step a visit/.test((await p.locator('[data-phc-choices]').allTextContents()).join(' ')));
     } else if (k === 'event' && !done.event) {
       const { after, key } = await choose('');
       done.event = !!key && after.run.visit.did[cid] === 1;
