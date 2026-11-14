@@ -27,7 +27,7 @@
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const SEED = 'PHC-0007'; // rules 1.48: a seed whose stage 1 has a lane route through a training ground, a shrine, a Forge, a crossroads and a rest
+const SEED = 'PHC-0046'; // rules 1.48: a seed whose stage 1 has a lane route from its first node (a swarm, which the pinned shots can reach) through a training ground, a shrine, a Forge, a crossroads and a rest
 const p = await player(browser, 'host', { play: 'survival' });
 await p.context().addInitScript((seed) => { try { localStorage.setItem('phc.testRoom', '1'); localStorage.setItem('phc.testSeed', seed); } catch { /* */ } }, SEED);
 await p.setViewportSize({ width: 1280, height: 720 });
@@ -171,6 +171,9 @@ async function shopChecks() {
     ok('a purse too short says why, on the card and when tried ("' + status + '" / "' + t + '")', status === 'Short ' + (dear.price - credits) + ' credits.' && t === status);
   } else ok('a purse too short says why (every piece affordable: nothing to test)', false);
   await p.waitForFunction(() => !window.__phc.getState().toast, null, { timeout: 15000 }).catch(() => {}); // its toast gone before the next shots
+  // rules 1.48: the lanes put the first shop early in the stage, before a purse can afford a rolled weapon and a grade
+  // step: the test purse is topped up here (as node 1's dice are pinned), so the shop's and the Forge's checks have money (after the short-purse check, which wants a piece it can't afford)
+  await p.evaluate(() => { for (const c of Object.values(window.__phc.getState().game.characters)) c.credits = Math.max(c.credits || 0, 6000); });
   // sell one (the weapon picked after node 1), then buy a rolled weapon
   await p.locator('[data-phc-tab="sell"]').click();
   const rows = await p.locator('[data-phc-sell]').evaluateAll((l) => l.map((e) => ({ idx: e.getAttribute('data-phc-sell'), v: Number(e.querySelector('[data-phc-sell-value]')?.textContent.replace(/\D/g, '') || 0), btn: !!e.querySelector('[data-phc-sell-btn]') })));
@@ -363,7 +366,7 @@ const s2 = r, s2by = Object.fromEntries(s2.nodes.map((n) => [n.id, n])), vg = s2
 const s2route = []; for (let id = fork.id; id; id = s2.nodes.find((n) => n.links.includes(id) && !n.spur)?.id) s2route.unshift(id);
 const litNow = () => p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
 const seen = { lane: false, junction: false, fork: false, guard: false, chest: false, back: false };
-const toMap = async () => { await p.evaluate(() => { const s = window.__phc.getState(); if (s.screen !== 'run') window.__phc.go?.('run'); }).catch(() => {}); await p.waitForSelector('[data-phc-run-screen]', { timeout: 30000 });
+const toMap = async () => { await p.evaluate(() => { const s = window.__phc.getState(); if (s.screen !== 'run') window.__phc.go?.('run'); }).catch(() => {}); await p.waitForSelector('[data-phc-run-screen], [data-phc-place]', { timeout: 30000, state: 'attached' }); await settle(p, 300);
   if (await p.locator('[data-phc-place]').count()) { await p.locator('[data-phc-leave]').click(); } // a safe node is a place (rules 1.46): walk out to the map
   await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); await settle(p, 60); };
 for (let i = 0; i < 160; i++) {
