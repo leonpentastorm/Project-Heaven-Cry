@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, BOONS, BOON_CAP, worthOf, runWorth, capRoom, relicRow, previewAttack, toHitTerms, applyDamage, price, emit, bindGame,
   ammoPack, ammoMult, creditsFor, nodeCredits, nodeXp, budgetFor, foeLevel, ENC_BUDGET, SETTING, settingReady, boonOffer, boonProblem, nextTiles, nextPools, BOON_PICK, WORLD,
-  renownOf, keptDraft, xpForLevel, devotionXpOf, setDevotionXp, devotionThreshold, maxHp, graftFor, mapNodes, pathMap, type RunNode } from '../src';
+  renownOf, keptDraft, xpForLevel, devotionXpOf, setDevotionXp, devotionThreshold, maxHp, graftFor, mapNodes, pathMap, eliteUp, type RunNode } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
 import { survivalRoom, ownerOf, playStage } from './helpers/survival';
@@ -187,7 +187,7 @@ describe('rules 1.44: the next tile and stage 2 (spec rules 3, 19, 32)', () => {
     expect(y.run!.world.at(-1)!.setting).toBe(tiles[1].setting);
     expect(refused(g, { type: 'run/go' }, 'p2')).toBe('Only the host sends the squad on before everyone has marked a node.');
   });
-  it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses a level up, XP and credits x the stage\'s', () => {
+  it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses the stage's lead up, XP and credits x the stage\'s', () => {
     const r = new Rec(survivalRoom('PHC-0005', DUO, { test: true }), DUO);
     r.must({ type: 'run/start', seed: 'PHC-0005' });
     playStage(r, 2, { skip: true, through: 2 });
@@ -200,7 +200,7 @@ describe('rules 1.44: the next tile and stage 2 (spec rules 3, 19, 32)', () => {
       expect(Math.abs(f.spent.bulk - f.target.bulk)).toBeLessThanOrEqual(f.target.bulk * ENC_BUDGET.bulkBand + 1e-6);
       expect(f.spent.pressure).toBeLessThanOrEqual(f.target.pressure * (1 + ENC_BUDGET.pressureBand) + 1e-6);
       for (const foe of f.foes) expect(foe.level).toBe(foeLevel(foe.tier, f.level, 2));
-      if (f.kind !== 'fight') expect(f.foes.some((x: any) => (x.tier === 'elite' || x.tier === 'boss') && x.level === Math.min(20, f.level + 1))).toBe(true);
+      if (f.kind !== 'fight') expect(f.foes.some((x: any) => (x.tier === 'elite' || x.tier === 'boss') && x.level === Math.min(20, f.level + eliteUp(2)))).toBe(true); // rules 1.49: the stage's lead from data
     }
     expect(nodeXp('fight', 3, 2)).toBe(Math.round(nodeXp('fight', 3, 1) * SV.stage.xp[1]));
     expect(nodeCredits('fight', 3, 2)).toBe(Math.round(nodeCredits('fight', 3, 1) * (1 + SV.stage.credits)));

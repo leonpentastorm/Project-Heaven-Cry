@@ -31,7 +31,8 @@ describe('Survival encounters (rules 1.41)', () => {
     expect([1, 9, 10, 20].map((L) => tierLag('soldier', L))).toEqual([1, 1, 2, 2]);
     expect(tierLag('minion', 5)).toBe(3); expect(tierLag('vermin', 5)).toBe(3); expect(tierLag('elite', 12)).toBe(0); expect(tierLag('boss', 12)).toBe(0);
     expect(foeLevel('minion', 2, 1)).toBe(1); expect(foeLevel('soldier', 10, 1)).toBe(8); expect(foeLevel('elite', 6, 1)).toBe(6);
-    expect(foeLevel('elite', 6, 2)).toBe(7); expect(foeLevel('boss', 19, 4)).toBe(20); // rule 19: stage s puts them min(s - 1, 3) above, never past 20
+    // rule 19 (rules 1.49: the lead from data): stage s puts them min((s - 1) x elite_up.per, elite_up.max) above, never past 20
+    expect(foeLevel('elite', 6, 2)).toBe(6 + Math.min(B.stage.elite_up.per, B.stage.elite_up.max)); expect(foeLevel('boss', 19, 4)).toBe(20);
   });
 
   it('the lag factor matches the enemy level table within 3% (spec 5.2: HP and damage a level, one point to hit each way)', () => {

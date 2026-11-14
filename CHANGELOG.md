@@ -8,6 +8,43 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.27.0 — Survival mode
+
+The first real game mode, and the roguelike's first piece (rules 1.39 to 1.49; `docs/design/survival-spec.md`; the
+pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until Leon's word**. What to try by hand:
+`docs/PLAYTEST-CHECKLIST.md` section S, which ends with every call made for Leon.
+
+- **Choosing a mode.** The lobby shows three large cards under the seats: SURVIVAL (a new room's default), ROGUELIKE and
+  CAMPAIGN (locked, "Coming"). The Narrator panel is collapsed in Survival: no API key is needed to play.
+- **The run.** One to four players start at level 1 and walk stage after stage until the squad falls or retires after
+  a Boss; how far you get is the score. Each character keeps its own purse and its own rewards.
+- **The path map.** A themed overland map: 3 or 4 lanes from the camp that run straight for several nodes and meet only
+  at junctions, the gate (an Elite every lane passes), the final junction, then a shop and a rest before the Boss. Each
+  stretch of lane holds something different, so you choose by reading ahead. One dead end a map holds a guarded vault:
+  a fight past an Elite's and a chest a grade better than the stage's picks. In co-op each player marks a trail where
+  the way forks; a tie goes to the host. The map fits its frame at every screen size.
+- **Fights made for your squad.** Every fight is generated from a budget in Soldier-equivalents for the squad's size,
+  level, the node and the stage: length (bulk) and danger (pressure), from templates (a firing line, a swarm, a rush, a
+  caster and guards, an ambush, a line with a medic, drones, an Elite and its line, two Elites, the champion) on a
+  generated map built from the setting's kit. Ordinary foes lag behind your level; Elites and Bosses keep pace and pull
+  ahead stage by stage.
+- **Rewards.** After a won fight: XP, credits, a magazine's worth for every gun you carry and a pick of three weapons
+  (one for your own door) or credits instead; Elites and caches add a pick of kit (mods, worn pieces). A character who
+  dies in a won fight stands up at 1 HP with its full share.
+- **The shop** (full screen, a keeper per setting): every calibre always in stock, rolled gear, selling, restock, the
+  grade step (Fine 1,500, Masterwork 3,500), gives between players, a compare panel with the engine's numbers.
+- **Growing in a run.** The Forge (grade steps at 80%, the Relic step with a named property from stage 3, mods, worn
+  pieces, armour fitting), training grounds (drill, study, practice), shrines (a rite, a knowledge piece or a patron's
+  token), rests (a full heal, a new session and a small training), caches, and the Crossroads' trades.
+- **Stages and boons.** After each Boss every character picks one boon of three (thirteen rule-changers: Honed, Second
+  Wind, True Aim, Hardened…; at most 50% of a rifle-turn of run power each, Relic properties and tokens included),
+  then the squad picks the next tile of the world (six settings).
+- **The summary and Report a run:** stages, nodes, the path, each fight's tally, levels, classes, boons; one file to
+  send; keep the character as a draft at the level it reached.
+- **The fit (rules 1.49).** Whole runs were simulated through the rules (solo, two and four characters; gunners,
+  casters and a healer; three ways of choosing lanes) and the curve fitted by data alone: FIT_LINE
+- **The browser suite `survival`** walks all of it, two browsers included.
+
 ## 0.26.0 — Classes 3.0
 
 Class Roster Revision 4, built as one patch (rules 1.28 to 1.38). Every mechanic is now a **door**: open to anyone through its attribute's alpha skill, used better by its base class. What to try by hand: `docs/PLAYTEST-CHECKLIST.md` section 0, with the 53 calls made for Leon at its end; every system against 0.25.0: `docs/design/handoffs/PATCH-TALLY.md`; the mission: `docs/design/handoffs/CLASSES-3.0-PICKUP.md`.

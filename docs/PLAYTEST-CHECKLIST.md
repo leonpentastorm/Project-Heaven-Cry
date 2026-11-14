@@ -1,9 +1,202 @@
 # Playtest checklist: what to try by hand before a build goes live
 
-For Leon. **Section 0 is Classes 3.0 (0.26.0, Class Roster Revision 4), new to players; try it first.** The sections
-after it were written for 0.23.0 (rules 1.15 to 1.26, live since 12 Nov) and still hold where Classes 3.0 did not change
-them. Tick a box when it looks right; write down anything that does not and say which line. "Right" is what the build
+For Leon. **Section S is Survival mode (0.27.0, built, not live until your word); try it first.** Section 0 is
+Classes 3.0 (0.26.0, Class Roster Revision 4, live). The sections after them were written for 0.23.0 (rules 1.15 to
+1.26, live since 12 Nov) and still hold where Classes 3.0 did not change them. Tick a box when it looks right; write down anything that does not and say which line. "Right" is what the build
 is meant to do, not a guarantee that it does.
+
+## S. Survival mode (0.27.0, rules 1.39 to 1.49; built, not live until Leon's word)
+
+Sources: `docs/design/handoffs/SURVIVAL-PICKUP.md` (start there), the spec `docs/design/survival-spec.md` (draft 4 and
+the three "Settled by Leon" blocks), the step hand-offs (`survival-step-*.md`, `survival-lanes.md`,
+`survival-steps-9-10.md`). Every number is PROVISIONAL and in `data/survival.json`.
+
+**How to play it.** A new room selects **SURVIVAL** (the three cards under the seats). Make a level 1 character (or
+bring a level 1 draft), Start the run. Solo works; two browser tabs make a co-op room. Each block is about ten minutes.
+To try a later stage fast, a test room (`localStorage phc.testRoom = 1`) takes `run/skip` from the console (a fight won
+at once); a normal room never does.
+
+### S.1 The lobby and the start (five minutes)
+
+- [ ] Three large cards: SURVIVAL (selected, a check and the word), ROGUELIKE and CAMPAIGN locked ("Coming", a lock
+      mark, the hover card says when). A guest's click says "Only the host picks this."
+- [ ] The Narrator panel is collapsed with "Survival needs no Narrator." and opens on asking.
+- [ ] Start the run: the path map opens at stage 1 on the AHOC outpost; every purse holds 150 credits.
+- [ ] **What right looks like:** nobody is asked for an API key; a character above level 1 is refused in words.
+
+### S.2 The path map: lanes, junctions, the vault (ten minutes)
+
+- [ ] The map is an overland chart (the field chart until the painted backdrops land): the camp at the left, the Boss
+      at the right; 3 or 4 dashed trails (lanes) that run straight for several nodes and meet only at junctions
+      (diamonds), at the gate (row 8, an Elite every lane passes) and at the final junction (row 13), then a shop and a
+      rest, then the Boss.
+- [ ] From the camp every lane is lit. On a lane one click walks the squad on (one way forward); a choice comes only at
+      the camp, a junction, the gate and the vault's fork.
+- [ ] Each lane's stretch holds something different (a hard road with an Elite, a market road with a shop, the
+      armourer's road with a Forge, the drill road with a training ground, a quiet road with a rest): read ahead before
+      you pick.
+- [ ] **One vault a map:** a short dead-end spur off an edge lane (depths 6 to 10): a horned skull (its guard, a fight
+      past an Elite's) and a chest. The fork's card says "The trail forks: a guarded vault". After the chest the squad is
+      back on the lane it left.
+- [ ] **The map fits its frame** at 1280 × 720, 1280 × 800 and 1920 × 1080: no marker, word or the vault's spur cut off.
+- [ ] The hover card says what a node gives and costs with the engine's numbers, and never covers a lit node.
+- [ ] **Co-op:** at a fork each player marks a node (the marks show live, with initials); when everyone has marked the
+      squad goes; one mark each is a tie and goes to the host's; the host may go at once.
+
+### S.3 Fights and rewards (ten minutes)
+
+- [ ] Depths 1 and 2 are short fights on small maps (about 4 rounds); later plain fights about 5, Elites 6 to 7, the Boss
+      about 9 (the simulated runs measure this: `survival-steps-9-10.md`).
+- [ ] After a won fight each character gets XP, credits (its own purse), a magazine's worth for every gun it carries
+      and a pick of three weapons (one for its own door or weapon category) or credits instead. An Elite adds a pick of
+      kit (a mod or a worn piece among them).
+- [ ] Level 3 arrives around depth 3: the level-up screen gives the class of the highest attribute.
+- [ ] A character who dies in a won fight stands at 1 HP afterwards with its full share; the whole squad down ends the
+      run with its score.
+- [ ] **What right looks like:** a gunner on Bursts with the service rifle never runs dry between shops; the reward
+      cards show the engine's numbers (to hit, damage, AP).
+
+### S.4 The shop and the Forge (ten minutes)
+
+- [ ] A shop opens full screen at once: the keeper, five tabs (Always in stock, Today's gear, Upgrade, Sell, Give), large
+      cards, your purse, the compare panel. It reads at 1280 and 1920.
+- [ ] Every calibre is always in stock with magazines for your guns; a card you can't afford says "Short N credits."
+- [ ] The grade step at a shop: Fine 1,500, Masterwork 3,500 (stage 2 on); one step a visit; the card shows what
+      changes (to hit +1 a grade).
+- [ ] A Forge: the same steps at 80% (1,200, 2,800); mods and worn pieces; armour fitting; **from stage 3 the Relic
+      step** (6,500): three named properties offered, each with its worth against your 50 cap.
+- [ ] Two players in one shop: each in their own tab; a rolled piece one buys shows "Sold to …" on the other's screen;
+      Ready to leave, or the host's Close.
+- [ ] **Gives:** at any safe node, give credits or a pack entry (a graded weapon arrives whole, mods and property and
+      all); the receiver sees a toast and the purse move.
+
+### S.5 Growth away from the shop (ten minutes)
+
+- [ ] A rest heals everyone in full, starts a session (Echo 1) and offers one small training each (drill 100, study 3,
+      practice 5, Devotion 2).
+- [ ] A training ground: one big training each (drill 300, study 8, practice 10) and a second for 300 credits.
+- [ ] A shrine: a rite (Devotion +4), a knowledge piece for an Atheist, or the patron's token (a small boon on the cap).
+- [ ] A Crossroads: two or three trades (each with a cost), or walk on.
+- [ ] A cache: credits, ammunition and a pick of kit (two lasting things among three).
+
+### S.6 The Boss, the boon, the next tile, the end (ten minutes)
+
+- [ ] The Boss at row 15: STAGE 1 CLEARED; each character picks one boon of three (its sentence, its one number, its
+      worth against the 50 cap); the boon is felt (True Aim: the gear card's to-hit rises; Second Wind: 7 AP).
+- [ ] The next tile: two or three settings not yet played, each with its backdrop, Boss and boon theme; stage 2 is a
+      fresh map, harder (longer fights, Elites and Bosses a level up a stage).
+- [ ] Retire after a Boss, or lose: the summary (stages, nodes, the path, each fight, levels, classes, boons, each
+      stage's tally); Report a run saves a file; keep the character as a draft; back to the room with the score.
+
+### S.7 The curve (one evening, not ten minutes)
+
+- [ ] **What right looks like (Leon's targets):** a careful squad of four clears stage 1 most of the time and ends in
+      stage 3 or 4; solo is viable through stage 1 and into stage 2; one grade step a stage per character, with a real
+      choice between it and kit, trainings or a token; nobody runs dry of what their build runs on. The simulated runs'
+      measure of these, before and after the fit, is in `survival-steps-9-10.md`; what is still off target is listed
+      there.
+
+### Calls made for Leon during Survival (he can reverse any)
+
+Each was built as written because the spec was silent or the lead ruled ("no answer means yes"). Reverse any by its
+number; most are one data field or one line. Sources: each step's hand-off, the spec's section 12.
+
+**The spec's open questions, built as recommended (survival-spec section 12)**
+1. One difficulty in v1; the mode's name is Survival.
+2. A mode, not a generated campaign; trapped caches cut; a rest is a new session and a small training; the
+   always-stocked list goes past ammunition (cores, parts, stims, kits, grenades, special rounds, restock); credits
+   instead of a weapon at 50% of the cheapest offer; one offer always for your door; armour fitting at the Forge until
+   Equipment 2.0; no Celestial enemies; one currency (credits) and one rare item (the armourer's chit); a shopkeeper per
+   setting and one armourer, sergeant and medic for all; the shop and the Forge open with no node card; a shrine's
+   patron rolled per node.
+3. `stage.bulk` 0.35 a stage (was 0.25), so gear does not stretch runs a stage past the target (moved again by the fit:
+   rules 1.49).
+4. A death costs nothing past its fight: the dead come back at 1 HP with a full share.
+5. A graded focus is treated as the gun's case: the ceilings stay what a Standard focus reaches; a "best focus" guard row
+   at Masterwork later.
+6. The Forge: the shop's steps at full price, the Forge's at 80%, the Relic step at the Forge only, from stage 3, one
+   step a visit, Celestial never sold.
+7. A Relic's property takes its worth from the 50% cap.
+8. Rarity's "+1 mod slot" is not enforced (mods fit by the weapon's slot list) until Equipment 2.0.
+9. No respec or perk-swap service in v1.
+10. Six Crossroads trades, each with a cost; the node is named Crossroads.
+11. Trainings: the rest's 100 / 3 / 5 / 2 and the training ground's 300 / 8 / 10 and 300 credits for a second.
+12. Income: `stage.credits` 0.35; the armourer's chit only from the gate in stage 1.
+13. The node mix and the guarantees (since rules 1.48: lanes, themes and junction kinds).
+14. The shrine's token: a boon of worth at most 8 from the tile's pool, one a character a stage.
+15. Gives: a plain give at every safe node, no confirm; boons, tokens, trainings and the armour class can't be given.
+16. `stage.xp` [1, 0.8, 0.9, 1, 1] (moved by the fit: rules 1.49).
+17. The shop screen opened straight from the click; the training ground, shrine and rest full screen too (rules 1.46).
+
+**The mode and the run (steps 1 and 3)**
+18. An old lobby save reads as Campaign, not Survival (one line in `migrateLoaded`).
+19. Every online player must have a character to start a run; `char/add` mid-run is not refused.
+20. A load writes no `settings.play`.
+21. After a retire or a loss the room returns to its lobby with the last run's score; "Back to the room ›" after a loss.
+22. A character who fell in a lost run is refused at the next `run/start` (the alternative: raise it).
+23. A picked gun takes its share of the ammunition pack; one core a fight whatever the node.
+24. The weapon pick's price band is on the standard price; its first offer is the door's focus or the hand weapon's
+    category.
+25. The path map runs left to right (depth across).
+
+**Prices and the shop (step 4)**
+26. The calibre round prices are the Core Rules' table, not the spec's section 7 proposal.
+27. A full magazine is the Core Rules' empty magazine plus its rounds.
+28. Special rounds are priced on a rifle round (armour-piercing 6, hollow-point 4, incendiary 6).
+29. A sale counts the fitted mods at their own price.
+30. Only a character's own player buys for it (the host does not spend an away player's purse).
+31. The faces' names and lines (Suggested); the fallback portraits from the world pool.
+32. The AHOC and works shops draw an M813 illustration as their backdrop until their own land.
+
+**Progression (step 4a)**
+33. The grade step is capped by the stage at a shop and a Forge, as the picks are (stage 1 Fine, stage 2 Masterwork).
+34. The focus reading counts every save forced through a door skill, a perk's too.
+35. A Visualizer's grade reaches the saves its Figments force, not a Figment's own attack.
+36. The shrine's piece is for an Atheist only; the Faithful keep the rite.
+37. "Better than what it wears" is "dearer than the piece worn there".
+38. Balanced needs only its instance in hand.
+39. The graft rolls from this tile's pool.
+40. The kit picks block the map as the weapon pick does.
+
+**Gives and places (step 4b)**
+41. Campaign gives are widened too (any pack entry or credits, out of a fight).
+42. No give at a fight node after its fight.
+43. Only a character's own player gives.
+44. The Crossroads has a face (Teo Vant, Suggested; stand-in portrait).
+45. Walking out of a place is per screen, not an action (no Ready mark at a Forge or a training ground).
+
+**Stages and boons (step 5)**
+46. A boon's `doors`: Primed is offered only to a door it serves.
+47. The spec's "shrine" pool reads as `faith`; the machine pool holds one boon and the pick fills from every pool.
+48. Field Mending heals the living, before the write-back, with no Level term.
+49. Bandolier doubles cores too and a picked gun's share.
+50. Tithe on node pay only; Devout inside the 6-a-session tag cap.
+51. The next tiles are known all stage, so the graft reads their pools.
+52. Retire is open at the boon and at the tile; the summary shows first when a run ends.
+53. The kept draft is named "Name (level N)".
+
+**The tally (step 6)**
+54. Report a run is a plain `.json` file.
+55. Downs and deaths show as one column ("Downs") on screen.
+
+**Fight maps (steps 7 and 8)**
+56. Doors a stamp places stand open.
+57. Hazards on seven templates, not on a swarm, a rush, an ambush or two Elites.
+58. Half cover in straight runs of 1 to 3.
+59. Two small rooms in five settings' stamp lists.
+60. Four kit pieces held back; a seamed ground falls back to the kit's first good ground.
+61. The kit-drawing browser suite is `kit-map`.
+
+**Lanes and the vault (rules 1.48)**
+62. The gate stays one node every lane passes (the stage's midpoint).
+63. Row 14 stays a shop and a rest behind a final junction.
+64. Every route passes a shop and a rest (about 2 more shops and 3 more rests a map); not compensated in credits.
+65. No small junction after the gate (segments 2 to 4 leave none).
+66. The vault is a pick on the map, like the cache, not a full-screen place.
+67. Names (Suggested): the five roads, the six vault guards, the marker motifs.
+
+**The fit and the close (rules 1.49, steps 9 and 10)**
+FIT_CALLS
 
 ## 0. Classes 3.0 (0.26.0)
 

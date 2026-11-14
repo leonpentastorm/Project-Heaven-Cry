@@ -146,6 +146,59 @@ export function creationSheet(def: BuildDef, variant: Variant) {
     ...(def.belief ? { belief: def.belief } : {}), ...(def.sigils ? { sigils: def.sigils } : {}) };
 }
 
+/** One level's points spent by the build's plan (the reference builds' levelling here, and the Survival run simulator's,
+ * survival-run.ts): Skill points in the plan's order (an Attribute point when the skill needs it), the spare Attribute
+ * points, the class at level 3 (the one the rules give: the highest attribute), then the perk steps. `C` reads the
+ * character as it stands, `act` sends one levelup action for it through the reducer. True when the class the build
+ * wanted was not the one the rules gave. */
+export function spendLevel(def: BuildDef, variant: Variant, C: () => any, act: (a: any) => void, lv: number, notes: string[] = []): boolean {
+  const mainAttr = CLASS[def.classId].attribute, k = def.id + '|' + variant + '|' + lv;
+  let notWanted = false;
+  // Skill points, in the plan's order; an Attribute point is spent when the skill needs it.
+  for (let guard = 0; C().unspent.skill > 0 && guard < 60; guard++) {
+    const c = C(), total = sum(c.skills) + c.unspent.skill; let done = false;
+    for (const s of wanted(def, variant, c.skills, total)) {
+      if ((c.skills[s] || 0) >= 10) continue;
+      const a = attrOf(s), needAttr = (c.skills[s] || 0) + 1 > (c.attrs[a] || 1);
+      if (needAttr) { if (a !== mainAttr && (c.attrs[a] || 1) + 1 > (c.attrs[mainAttr] || 1)) continue; if (canRaise(c, 'attr', a)) continue; act({ type: 'levelup/raise', kind: 'attr', id: a }); }
+      if (canRaise(C(), 'skill', s)) continue;
+      act({ type: 'levelup/raise', kind: 'skill', id: s }); done = true; break;
+    }
+    if (done) continue;
+    // every planned skill is at a ceiling: the point goes to any skill the engine will take it in (a defence skill first)
+    const any = [...SKILLS].sort((x, y) => (x.slot === 'beta' ? 0 : 1) - (y.slot === 'beta' ? 0 : 1)).find((s) => !canRaise(C(), 'skill', s.id));
+    if (!any) break; act({ type: 'levelup/raise', kind: 'skill', id: any.id });
+  }
+  // Spare Attribute points: all in holds back what the class attribute will take at the next ceiling.
+  for (let i = 0, guard = 0; guard < 40; guard++) {
+    const c = C(), reserve = Math.max(0, 10 - (c.attrs[mainAttr] || 1));
+    if (c.unspent.attr <= 0) break;
+    if (!canRaise(c, 'attr', mainAttr) && (variant === 'allin' || (c.skills[def.main] || 0) >= (c.attrs[mainAttr] || 1))) { act({ type: 'levelup/raise', kind: 'attr', id: mainAttr }); continue; }
+    if (variant === 'allin' && c.unspent.attr <= reserve) break;
+    const a = def.spare.map((_, j) => def.spare[(i + j) % def.spare.length]).find((x) => !canRaise(c, 'attr', x) && (c.attrs[x] || 1) + 1 <= (c.attrs[mainAttr] || 1))
+      || ATTRS.map((x) => x.id).find((x) => !canRaise(c, 'attr', x) && (c.attrs[x] || 1) + 1 <= (c.attrs[mainAttr] || 1));
+    if (!a) break; i++; act({ type: 'levelup/raise', kind: 'attr', id: a });
+  }
+  // The class, at level 3: the one the rules give (the highest attribute).
+  if (lv >= 3 && !C().classId) {
+    const el = eligibleClasses(C()).map((x) => x.id), pick = el.includes(def.classId) ? def.classId : el[0];
+    if (pick !== def.classId) { notWanted = true; notes.push('class: ' + def.classId + ' was wanted, the rules give ' + el.join(' or ')); }
+    if (classPickError(C(), pick)) throw new Error(k + ': ' + classPickError(C(), pick));
+    act({ type: 'levelup/class', classId: pick });
+  }
+  takePerks(def, C, act);
+  return notWanted;
+}
+/** The perk steps Mastery has earned: the build's preferred perk first, else the first one offered. */
+export function takePerks(def: BuildDef, C: () => any, act: (a: any) => void) {
+  if (def.perks === 'none') return;
+  for (let guard = 0; guard < 40; guard++) {
+    const steps = pendingPerkSteps(C()); if (!steps.length) break;
+    const all = steps.flatMap((s) => s.choices), pref = (def.perks as string[]).map((p) => all.find((x) => x.id === p)).find(Boolean) || all[0];
+    act({ type: 'levelup/perk', perkId: pref.id });
+  }
+}
+
 export interface Built { def: BuildDef; variant: Variant; level: number; c: any; notes: string[]; classWanted: boolean; unspent: { skill: number; attr: number }; perkStepsLeft: number }
 const CACHE = new Map<string, string>();
 
@@ -161,54 +214,13 @@ export function buildCharacter(id: string, variant: Variant, level: number): Bui
   const cid = Object.keys(g.characters)[0];
   const C = () => g.characters[cid];
   const act = (a: any) => { g = apply(g, { charId: cid, ...a }, 'host'); };
-  const mainAttr = CLASS[def.classId].attribute;
   let classWanted = true;
   for (let lv = 2; lv <= level; lv++) {
     { const c = C(); c.xp = xpForLevel(lv); const was = bindGame(g); try { applyLevels(c); } finally { bindGame(was); } }
     if (C().level !== lv) throw new Error(k + ': level ' + lv + ' was not reached');
-    // Skill points, in the plan's order; an Attribute point is spent when the skill needs it.
-    for (let guard = 0; C().unspent.skill > 0 && guard < 60; guard++) {
-      const c = C(), total = sum(c.skills) + c.unspent.skill; let done = false;
-      for (const s of wanted(def, variant, c.skills, total)) {
-        if ((c.skills[s] || 0) >= 10) continue;
-        const a = attrOf(s), needAttr = (c.skills[s] || 0) + 1 > (c.attrs[a] || 1);
-        if (needAttr) { if (a !== mainAttr && (c.attrs[a] || 1) + 1 > (c.attrs[mainAttr] || 1)) continue; if (canRaise(c, 'attr', a)) continue; act({ type: 'levelup/raise', kind: 'attr', id: a }); }
-        if (canRaise(C(), 'skill', s)) continue;
-        act({ type: 'levelup/raise', kind: 'skill', id: s }); done = true; break;
-      }
-      if (done) continue;
-      // every planned skill is at a ceiling: the point goes to any skill the engine will take it in (a defence skill first)
-      const any = [...SKILLS].sort((x, y) => (x.slot === 'beta' ? 0 : 1) - (y.slot === 'beta' ? 0 : 1)).find((s) => !canRaise(C(), 'skill', s.id));
-      if (!any) break; act({ type: 'levelup/raise', kind: 'skill', id: any.id });
-    }
-    // Spare Attribute points: all in holds back what the class attribute will take at the next ceiling.
-    for (let i = 0, guard = 0; guard < 40; guard++) {
-      const c = C(), reserve = Math.max(0, 10 - (c.attrs[mainAttr] || 1));
-      if (c.unspent.attr <= 0) break;
-      if (!canRaise(c, 'attr', mainAttr) && (variant === 'allin' || (c.skills[def.main] || 0) >= (c.attrs[mainAttr] || 1))) { act({ type: 'levelup/raise', kind: 'attr', id: mainAttr }); continue; }
-      if (variant === 'allin' && c.unspent.attr <= reserve) break;
-      const a = def.spare.map((_, j) => def.spare[(i + j) % def.spare.length]).find((x) => !canRaise(c, 'attr', x) && (c.attrs[x] || 1) + 1 <= (c.attrs[mainAttr] || 1))
-        || ATTRS.map((x) => x.id).find((x) => !canRaise(c, 'attr', x) && (c.attrs[x] || 1) + 1 <= (c.attrs[mainAttr] || 1));
-      if (!a) break; i++; act({ type: 'levelup/raise', kind: 'attr', id: a });
-    }
-    // The class, at level 3: the one the rules give (the highest attribute).
-    if (lv >= 3 && !C().classId) {
-      const el = eligibleClasses(C()).map((x) => x.id), pick = el.includes(def.classId) ? def.classId : el[0];
-      if (pick !== def.classId) { classWanted = false; notes.push('class: ' + def.classId + ' was wanted, the rules give ' + el.join(' or ')); }
-      if (classPickError(C(), pick)) throw new Error(k + ': ' + classPickError(C(), pick));
-      act({ type: 'levelup/class', classId: pick });
-    }
-    takePerks();
+    if (spendLevel(def, variant, C, act, lv, notes)) classWanted = false;
   }
-  takePerks();
-  function takePerks() {
-    if (def.perks === 'none') return;
-    for (let guard = 0; guard < 40; guard++) {
-      const steps = pendingPerkSteps(C()); if (!steps.length) break;
-      const all = steps.flatMap((s) => s.choices), pref = (def.perks as string[]).map((p) => all.find((x) => x.id === p)).find(Boolean) || all[0];
-      act({ type: 'levelup/perk', perkId: pref.id });
-    }
-  }
+  takePerks(def, C, act);
   // ---------- what play earns: gear, drill, words, Devotion (assumptions; the engine's own functions and gates) ----------
   const c = C(), was = bindGame(g);
   try {

@@ -48,7 +48,8 @@ export function whereDiffer(a: any, b: any, at = '', out: string[] = [], max = 6
 }
 /** Log lines the coverage test counts (replay-hash.test.ts): what a fight really did, not what its map could do. */
 export const LOG_MARKS: Record<string, RegExp> = { opportunity: /opportunity attack/i, answer: / answers with /, overwatch: /overwatch/i, hides: / goes to ground/, door: / (opens|closes) the /, spotted: / spots | is spotted|found out|no longer hidden/i };
-export interface Pc { build: string; variant?: 'normal' | 'allin'; level: number }
+/** `policy`: play this character by another of the simulator's policies than its build's (the Survival run simulator's healer and gunner; absent in every recorded replay). */
+export interface Pc { build: string; variant?: 'normal' | 'allin'; level: number; policy?: string }
 export interface Replay { actions: number; state: string; stream: string; marks: [number, string, string][] }
 
 /** One game being recorded: every action goes through act(). */
@@ -130,7 +131,7 @@ export class Rec {
       if (cb.window) { if (this.act({ type: 'combat/decline', unitId: u.id }, this.byOf(u)) && this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('stuck in a window'); break; } continue; }
       const sp = spec(u);
       if (!sp) { if (this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('stuck on ' + u.name); break; } continue; }
-      const pol = POLICIES[BUILD[sp.build].policy], banned = new Set<string>(); let fails = 0; memo[u.id] ||= {};
+      const pol = POLICIES[sp.policy || BUILD[sp.build].policy], banned = new Set<string>(); let fails = 0; memo[u.id] ||= {};
       const scripted = script ? script(this, u.id, u.charId, (turns[u.id] = (turns[u.id] || 0) + 1)) : undefined;
       for (let k = 0; k < 30 && scripted !== 'done'; k++) {
         const c1 = this.g.combat; if (!c1 || c1.over || this.g.phase !== 'combat' || c1.window || cur(c1) !== u.id) break;
