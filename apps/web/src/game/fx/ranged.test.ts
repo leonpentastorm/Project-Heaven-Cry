@@ -187,13 +187,16 @@ describe('the effects', () => {
     queueFx([tech('rake'), shot(), shot({ target: 'f2', to: '7,4' }), shot({ target: 'f3', to: '6,5' })] as any);
     vi.advanceTimersByTime(200);
     expect(rfx(layer, 'sweep')).toBe(1);
-    expect(s.mock.calls.some((c) => c[0] === 'auto_rifle')).toBe(true); // one recording for the run
-    vi.advanceTimersByTime(3000); s.mockClear();
+    vi.advanceTimersByTime(3000);
+    // no recording of automatic fire: each of the three rounds its own single shot (Leon, 14 Nov 2026)
+    expect(s.mock.calls.filter((c) => /^(auto_|burst_)/.test(String(c[0]))).length).toBe(0);
+    expect(s.mock.calls.filter((c) => c[0] === 'gun_rifle').length).toBe(3);
+    s.mockClear();
     queueFx([tech('mag_dump'), shot(), shot(), shot(), shot(), { k: 'heat', n: n(), unit: 'pc-a', at: '1,3', now: 7, was: 3, why: 'dump', limit: 8 }] as any);
     vi.advanceTimersByTime(1400);
     expect(s.mock.calls.filter((c) => c[0] === 'brass').length).toBeGreaterThan(0);
     expect(s.mock.calls.some((c) => c[0] === 'dry_click')).toBe(true);
-    expect(s.mock.calls.filter((c) => c[0] === 'gun_rifle').length).toBe(0); // the rolls are silent under the recording
+    expect(s.mock.calls.filter((c) => /^(auto_|burst_)/.test(String(c[0]))).length).toBe(0); // no recording over the rolls
     expect(text(layer)).toMatch(/HEAT 7\/8/);
   });
   it('Sets and Watches: the bead held and lost, the spot, the lane, the watch broken by smoke; quiet ends say nothing', () => {
@@ -503,7 +506,7 @@ describe('the engine\'s events', () => {
     vi.advanceTimersByTime(12000);
     expect(layer.childElementCount).toBe(0);
   });
-  it('E4: the Mag Dump\'s volley sets the stream\'s rounds; the Rake\'s targets give the sweep; one recording', () => {
+  it('E4: the Mag Dump\'s volley sets the stream\'s rounds, each heard; the Rake\'s targets give the sweep', () => {
     const layer = grid();
     const s = vi.spyOn(sfxMod, 'sfx');
     const vol = { k: 'volley', n: n(), ...W, target: 'f1', to: '6,3', mode: 'dump', shots: 12, rolls: 4, tech: 'mag_dump' };
@@ -511,7 +514,9 @@ describe('the engine\'s events', () => {
       { k: 'heat', n: n(), unit: 'pc-a', at: '1,3', now: 7, was: 3, why: 'dump', limit: 8 }] as any);
     expect(tagOf(vol)?.volleys).toHaveLength(1);
     vi.advanceTimersByTime(1400);
-    expect(s.mock.calls.filter((c) => c[0] === 'auto_rifle').length).toBe(1); // the volley's recording, not a made-up one too
+    // twelve rounds spent: twelve single shots, no recording (Leon, 14 Nov 2026)
+    expect(s.mock.calls.filter((c) => /^(auto_|burst_)/.test(String(c[0]))).length).toBe(0);
+    expect(s.mock.calls.filter((c) => c[0] === 'gun_rifle').length).toBe(12); // the volley's twelve rounds: the two rolls sent and the ten the stream draws for the rest (no `loose` on this event)
     expect(s.mock.calls.some((c) => c[0] === 'dry_click')).toBe(true);
     expect(text(layer)).toMatch(/HEAT 7\/8/);
     vi.advanceTimersByTime(3000);
@@ -568,5 +573,36 @@ describe('the round in flight (Leon, 14 Nov 2026: "i told you to remove the yell
   it('a bow: the shaft in flight (after the draw), stuck in the target when it hits', () => {
     const r = one({ weapon: 'recurve_bow', cat: 'bow' });
     expect(r.flights).toEqual(['arrow']); expect(r.holes).toBe(1);
+  });
+});
+
+describe('each technique keeps its own effect (Leon, 14 Nov 2026: "heavy bolt lost it\'s effect, i only told you to delete that 4 effect")', () => {
+  /** Queue a technique and its shot through the queue and list the parts drawn (data-tech-fx, data-rfx) while it played. */
+  function parts(id: string, extra: Record<string, unknown> = {}, w: Record<string, unknown> = {}) {
+    const layer = grid(), seen = new MutationObserver(() => undefined); seen.observe(layer, { childList: true });
+    queueFx([etech(id, w), shot({ tech: id, vi: 0, ...w, ...extra })] as any);
+    vi.advanceTimersByTime(3000);
+    const added = seen.takeRecords().flatMap((m) => [...m.addedNodes]) as HTMLElement[]; seen.disconnect();
+    return added.flatMap((b) => [b.getAttribute?.('data-tech-fx'), b.getAttribute?.('data-rfx')]).filter(Boolean) as string[];
+  }
+  const CROSSBOW = { weapon: 'crossbow', cat: 'bow' };
+  for (const [id, want, w] of [
+    ['heavy_bolt', ['heavy', 'crack', 'chevrons', 'hole'], CROSSBOW], ['punch_through', ['heavy', 'crack', 'hole'], {}], ['dead_centre', ['aim', 'heavy', 'brand', 'cross', 'hole'], {}],
+    ['rake', ['cone', 'cross', 'hole'], {}], ['mag_dump', ['cone', 'ticks', 'cross', 'hole'], {}], ['aimed_shot', ['aim', 'cross', 'hole'], {}], ['called_shot', ['aim', 'brand', 'hole'], {}],
+    ['overwatch', ['aim', 'cross', 'hole'], {}], ['storm', ['dashes', 'cross', 'ring', 'hole'], {}], ['last_round', ['ring', 'cross', 'hole'], {}],
+  ] as [string, string[], Record<string, unknown>][]) {
+    it(id + ': ' + want.join(', ') + '; never a tracer, a swing arc or a miss mark', () => {
+      const got = parts(id, {}, w);
+      for (const k of want) expect(got, id + ' draws ' + k + ' (' + got.join(',') + ')').toContain(k === 'hole' && w === CROSSBOW ? 'shaft' : k);
+      for (const k of ['tracer', 'slash', 'whiff', 'deflect', 'wide']) expect(got).not.toContain(k);
+    });
+  }
+  it('Flush\'s arc drops from the shooter onto the target, as it did', () => {
+    const got = parts('flush', { target: null, hit: false, flush: true });
+    expect(got).toContain('arc');
+  });
+  it('a technique\'s miss draws its attack and no result, no hole', () => {
+    const got = parts('heavy_bolt', { hit: false, dmg: 0 }, CROSSBOW);
+    expect(got).toContain('heavy'); expect(got).not.toContain('shaft'); expect(got).not.toContain('crack');
   });
 });

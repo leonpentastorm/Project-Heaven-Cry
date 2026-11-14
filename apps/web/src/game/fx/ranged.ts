@@ -36,6 +36,7 @@ import { playPart } from './techniqueParts';
 import { fmtFloat, fmtNum } from '../numbers'; // rules 1.36: five-digit numbers (the level scale)
 
 const { WHITE, HP, MUTED } = P;
+const HOT = '#FFF3C4';
 type XY = { x: number; y: number };
 type Handler = (e: FxEvent) => void;
 
@@ -277,11 +278,8 @@ const streams = (e: any, r: TechRec | null) => !!r && gunLook(String(e.weapon ||
 /** A gun that fires tracers (bullets, pellets, a core rifle's bolt; not a launcher, a bow, a flamer or a thrown blade):
  *  its Suppress is drawn as a burst of three, the rolled round last. */
 const tracers = (e: any) => !e.thrown && !['lob', 'rocket', 'arrow', 'flame', 'thrown'].includes(gunLook(String(e.weapon || ''), String(e.cat || '')));
-/** …and whose burst is one recording (play.ts volleySound: bullets, not a shotgun's); any other gun's rounds each bang. */
-const rattles = (e: any) => gunLook(String(e.weapon || ''), String(e.cat || '')) === 'bullet' && e.cat !== 'shotgun' && !e.thrown;
-/** For fx/techniqueFx.ts (the rounds a volley spent beyond its rolls): does one recording cover this shot's volley, and
- *  does this file draw the shot's loose rounds itself (Suppress's, before its rolled round)? */
-export const rattlesOf = (e: any) => rattles(e);
+/** For fx/techniqueFx.ts (the rounds a volley spent beyond its rolls): does this file draw the shot's loose rounds itself
+ *  (Suppress's, before its rolled round)? */
 export const drawsOwnLoose = (e: any) => (e?.tech || tags.get(canon(e))?.id) === 'suppress';
 /** The most rounds a Mag Dump's stream draws (a 200-round belt is not 200 tracers): past it each tracer is a few. */
 export const STREAM_CAP = 30;
@@ -485,10 +483,8 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     if (kind === 'arc') {
       // Flush Arc: the round drops over the cover onto the target (the hurt that follows says half damage)
       const ft = tracer ? Math.min(420, flight(start, toP, 'bullet') * 1.6) : flight(start, toP, look);
-      // its drop over the cover, drawn over the last tile and a half only (never a line back to the shooter: Leon,
-      // 13 Nov 2026, live 0.25.0), in white as a Lob's arc is
-      const top = { x: toP.x - Math.cos(ang) * s * 1.5, y: toP.y - Math.sin(ang) * s * 1.5 };
-      after(() => P.arcPath(top, toP, Math.max(18, s * 0.6), { color: WHITE, ms: 160 + ft * 0.5, dash: '3 3', width: 2 }), ft * 0.5);
+      // its arc over the cover (restored 14 Nov 2026: Flush Arc's own effect, not one of the four Leon had removed)
+      P.arcPath(start, toP, Math.max(18, s * 0.6), { color: HOT, ms: ft + 160, dash: '3 3', width: 2 });
       fly(g, start, toP, ft, tracer ? s * 0.8 : s);
       after(() => K.dust(toP, s * 0.6), ft);
       return;
@@ -522,8 +518,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     // own round as the base shot. Before `loose`: the rounds the magazine held, less the rolls)
     const vol: any = r.volleys.find((v: any) => v.mode === 'dump'), loose = Number(vol?.loose), loaded = Number(vol?.shots);
     const n = Math.min(STREAM_CAP, Number.isFinite(loose) ? Math.max(0, loose) : Math.max(0, (Number.isFinite(loaded) && loaded > 0 ? loaded : r.shots.length * 3) - r.shots.length)), a = angle(from, toP), s = toP.s;
-    const tok = tokOf(e.unit, e.from), br = brassOf(e.weapon || '', e.cat || ''), who = tok && br.when === 'shot' ? whoOf(tok) : null;
+    const tok = tokOf(e.unit, e.from), br = brassOf(e.weapon || '', e.cat || ''), who = tok && br.when === 'shot' ? whoOf(tok) : null, g = K.gunOf(e.weapon || '', e.cat || '');
     for (let i = 0; i < n; i++) after(() => {
+      if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // each round its own bang (Leon, 14 Nov 2026)
       const m = i % 2 === 0 ? K.muzzle(from, toP) : { x: from.x + Math.cos(a) * s * 0.42, y: from.y + Math.sin(a) * s * 0.42 };
       const spread = s * (0.12 + 0.045 * i), climb = s * 0.03 * i;
       const end = { x: toP.x + (Math.random() - 0.5) * spread - Math.sin(a) * (Math.random() - 0.5) * spread, y: toP.y - climb + (Math.random() - 0.5) * spread };
@@ -612,10 +609,9 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       if (e.round && e.unit) pending.delete(String(e.unit));
       const round = e.round || ('tech' in e ? '' : roundOf(r, e));
       if (round && from && toP) roundFx(String(round), from, toP, ft, !!e.hit);
-      // the streams: one recording for the whole run, the later rolls silent and chained
+      // the streams: the rolls chained, each round its own bang
       if (r && streams(e, r)) {
         if (vi === 0) {
-          if (!r.volleys.length) bases.volley?.({ k: 'volley', n: 0, unit: e.unit, from: e.from, cat: e.cat, weapon: e.weapon, mode: 'auto' } as any);
           if (id === 'mag_dump') dumpStream(e, r);
           else {
             // the Rake's sweep over its targets (E4 `targets`, in the engine's order); before E4, its shots' targets
@@ -662,7 +658,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
             if (shooter && sbr.when === 'shot') ejectShell(whoOf(shooter), sbr.shell, a); // a casing for each round
             const end = { x: toP.x + Math.cos(a) * s * 0.9 - Math.sin(a) * side * s * 0.42, y: toP.y + Math.sin(a) * s * 0.9 + Math.cos(a) * side * s * 0.42 };
             const start: XY = lead ? K.muzzle(from, toP, g.color, g.look === 'pellets') : from, ft = flight(start, end, own);
-            if (!rattles(e) && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // no recording covers them: each round bangs
+            if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // each round its own bang
             fly(g, start, end, ft, own === 'bullet' ? s * 0.8 : s);
             if (own === 'bullet' || own === 'arrow') play(own === 'arrow' ? 'swish' : 'whiz', toP, { delay: ft * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
             after(() => lands(g, own === 'bullet' || own === 'arrow' ? { x: toP.x + side * s * 0.42, y: toP.y + s * 0.62 } : end, s, 0.85), ft); // at its feet, below the token
@@ -714,7 +710,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
 
     volley(e, base) {
       tagOf(e);
-      if (e.mode === 'dump' || e.mode === 'rake') base({ ...e, mode: 'auto', to: undefined }); // E4: one recording; the stream draws the rounds
+      if (e.mode === 'dump' || e.mode === 'rake') base({ ...e, mode: 'auto', to: undefined }); // E4: the stream draws the rounds, each its own bang
       else if (e.mode === 'suppress') base({ ...e, mode: 'burst', to: undefined });
       else base(e);
       if (e.mode === 'auto' && K.gunOf(e.weapon || '', e.cat || '').look === 'bullet') { const p = at(e.from); for (let k = 0; k < 3; k++) play('brass', p, { delay: 260 + k * 180, gain: 0.5, rate: jit(0.12) }); }

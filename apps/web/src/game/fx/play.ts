@@ -11,7 +11,7 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
-import { wrapRanged, rangedBeat, rangedBatch, resetRanged, rattlesOf, drawsOwnLoose } from './ranged';
+import { wrapRanged, rangedBeat, rangedBatch, resetRanged, drawsOwnLoose } from './ranged';
 import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
@@ -528,7 +528,7 @@ function walkUnit(e: FxEvent, path: string[], per: number, seen: boolean[]) {
 // ---------- weapons ----------
 type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam' | 'thrown';
 interface Gun { sound: Sfx | null; rate?: number; look: Look; color?: string; blast?: 'frag' | 'fire' | 'smoke' | 'flash' | 'zap' }
-function gunOf(id: string, cat: string): Gun {
+export function gunOf(id: string, cat: string): Gun {
   switch (id) {
     case 'magistrate_pistol': return { sound: 'gun_revolver', rate: 1.05, look: 'bullet' };
     case 'parlour_pistol': return { sound: 'gun_pistol', rate: 1.15, look: 'bullet' };
@@ -572,16 +572,10 @@ export function reloadKind(id: string, cat: string, look: Look = gunOf(id, cat).
   if (look === 'pellets' || cat === 'shotgun') return 'shells';
   return 'gun';
 }
-/** A burst or full-auto volley has one long recording; the shots inside it then fire silently. */
-function volleySound(cat: string, mode: string, weapon = ''): { s: Sfx; rate?: number } | null {
-  if (mode !== 'burst' && mode !== 'auto') return null;
-  if (cat === 'shotgun') return null;
-  // only a gun rattles: a bow's volley is its arrows, each with its own draw and release (and so for anything else that isn't bullets)
-  if (gunOf(weapon, cat).look !== 'bullet') return null;
-  if (mode === 'auto') return cat === 'heavy' ? { s: 'auto_heavy' } : cat === 'rifle' ? { s: 'auto_rifle' } : { s: 'auto_smg', rate: cat === 'pistol' ? 1.1 : 1 };
-  return cat === 'rifle' || cat === 'heavy' ? { s: 'burst_rifle' } : { s: 'burst_smg', rate: cat === 'pistol' ? 1.1 : 1 };
-}
-let volley: { unit: string; silent: boolean; until: number } | null = null;
+// Every round fired bangs once, with its weapon's own single shot (Leon, 14 Nov 2026: "i want one gunshot effect, repeat
+// the exact amount of bullet was fire out, not a generic 4 shot sound effect when i use burst which is 3 and mag dump
+// which is 12"). No volley plays a recording of a burst or of automatic fire over its rounds any more: the rounds the
+// engine says were spent are each heard, as each is drawn and each throws its casing.
 
 // ---------- the pieces of a shot ----------
 /** How fast each kind of projectile flies (px per ms) and the longest its flight is drawn (ms). */
@@ -792,10 +786,9 @@ const H: Record<string, Handler> = {
     // a thrown weapon is never a gunshot, whatever the event names as the weapon (a gun in the other hand, a blade that
     // is also a focus): a swish, no muzzle flash, no casing
     const g: Gun = shotGun(e), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
-    const silent = !!(volley && volley.unit === e.unit && volley.silent && e.chain && performance.now() < volley.until);
     // A bow's shot waits for the draw: the arrow comes from the quiver behind the portrait to the front, then flies.
     const draw = drawsArrow(e) ? DRAW_MS : 0;
-    if (!toP) { if (!silent && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jitter(0.04), delay: draw }); return; }
+    if (!toP) { if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jitter(0.04), delay: draw }); return; }
     const shooterTok = shooterSeen ? tokOf(e.unit, e.from) : null;
     if (e.killed && e.target) tokOrGhost(e.target, e.to, true);
     // a Trick Shot ricochet flies on from the first target: no draw, no casing, no recoil, and the shooter's aim stays
@@ -807,7 +800,7 @@ const H: Record<string, Handler> = {
     } else fire();
     function fire() {
       if (!e.thrown) trace('round', { unit: e.unit }); // one round left the gun (fx/techniqueFx.ts draws any it spent beyond this roll)
-      if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
+      if (g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
       if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown') mp = muzzle(from, toP, g.color, g.look === 'pellets');
@@ -863,17 +856,15 @@ const H: Record<string, Handler> = {
     }, 120);
   },
   volley(e) {
-    const vs = volleySound(e.cat || '', e.mode, e.weapon || ''), p = at(e.from) || centre(e.to);
-    volley = { unit: e.unit, silent: !!vs, until: performance.now() + slow(2500) }; // the shots it covers are spaced at the pace
-    if (vs) play(vs.s, p, { rate: vs.rate });
+    const p = at(e.from) || centre(e.to);
     if (e.mode === 'skill' && e.name) { const q = centre(e.from); if (q && visible(e.from)) floatText(String(e.name).toUpperCase(), q, WHITE, { small: true, ms: 1100 }); }
     if (e.mode === 'auto' && p && e.to && ['bullet', 'pellets'].includes(gunOf(e.weapon || '', e.cat || '').look)) {
-      // The spray: extra tracers fanning around the line (the engine rolls one shot per enemy near it).
+      // The spray: the rounds fanning around the line (the engine rolls one shot per enemy near it), each with its bang.
       const toP = centre(e.to); if (!toP || !visible(e.from)) return;
       const br = brassOf(e.weapon || '', e.cat || ''), who = br.when === 'shot' ? whoOf(tokOf(e.unit, e.from)) : null, aim = angle(p, toP);
-      // as many as the volley spent beyond its rolls (the engine's `loose`); seven before it was sent
-      const n = Number.isFinite(Number(e.loose)) ? Math.max(0, Number(e.loose)) : 7, look: Look = gunOf(e.weapon || '', e.cat || '').look === 'pellets' ? 'pellets' : 'bullet';
-      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, look, toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
+      // as many as the volley spent beyond its rolls (the engine's `loose`); none when the event does not say (an old replay)
+      const g = gunOf(e.weapon || '', e.cat || ''), n = Number.isFinite(Number(e.loose)) ? Math.max(0, Number(e.loose)) : 0, look: Look = g.look === 'pellets' ? 'pellets' : 'bullet';
+      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); if (g.sound) play(g.sound, p, { rate: (g.rate || 1) * jitter(0.04) }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, look, toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
     }
   },
   reload(e) {
@@ -1408,7 +1399,7 @@ Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, si
 wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
 // its rolls drawn one by one; it wraps everything above.
-wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, rattles: rattlesOf, drawsOwnLoose });
+wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose });
 /** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
 const streamsOwn = (v: FxEvent) => v.mode === 'dump' && gunOf(v.weapon || '', v.cat || '').look === 'bullet' && v.cat !== 'shotgun';
 
@@ -1809,7 +1800,7 @@ export function hurryFx(ms: number) {
   clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, queueEnd - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden), a closed gate and every cut-in with it. */
-export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; volley = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); }
+export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */
