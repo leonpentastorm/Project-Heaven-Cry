@@ -11,12 +11,13 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem } from '../character';
+import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem,
+  practiceOf, picksAt, nextPickAt, devotionXpOf, devotionLevelOf, devotionThreshold, DEVOTION_MAX_LEVEL } from '../character';
 import { payCredits, earnCredits, cantPay, priceOf } from '../credits';
-import { addDrill } from '../physical/data';
-import { addStudy } from '../sigilgrowth';
+import { addDrill, drillOf, drillMarks, TECHNIQUE } from '../physical/data';
+import { addStudy, sigilGrowthView } from '../sigilgrowth';
 import { addPractice } from '../magic';
-import { shiftDevotion, grantPiece, DEVOTION_XP } from '../faith';
+import { shiftDevotion, grantPiece, GATE } from '../faith';
 import { beliefOf, FAITH_PATRONS, FAITH_PATRON } from '../belief';
 import { lootToPack, packAdd } from '../containers';
 import { rngFor, die } from '../rng';
@@ -38,8 +39,9 @@ export type GradePlace = 'shop' | 'forge';
 export const TRAIN: { drill: number; study: number; practice: number; devotion: number } = SV.train;
 /** The training ground's big training, its second's price and the most a visit (survival.json training). */
 export const TRAINING: { drill: number; study: number; practice: number; extra_price: number; most: number } = SV.training;
-/** The shrine's numbers (survival.json shrine). */
-export const SHRINE: { token_max_worth: number; tokens_per_stage: number } = SV.shrine;
+/** The shrine's numbers (survival.json shrine): the rite's Devotion XP (rules 1.54 item 10: its own key; the campaigns'
+ * rites keep patrons.json gain.rite_kept), the token's most worth and how many a stage. */
+export const SHRINE: { rite: number; token_max_worth: number; tokens_per_stage: number } = SV.shrine;
 /** The armour-or-item picks (survival.json lasting). */
 export const LASTING: { offer: number; min: number; fill: string[]; chit_gate: number; chit_from_stage: number; chit_odds: number } = SV.lasting;
 /** The Crossroads' trades (survival.json trades). */
@@ -232,6 +234,34 @@ function trainDo(g: GameState, c: Character, kind: string, n: number, why: strin
   if (kind === 'practice') return [addPractice(c, n, why)];
   shiftDevotion(g, null, c, n, why); return [];
 }
+/** Rules 1.54 item 10 (survival-spec 14.5): what a training card's bar draws, all from the growth functions: the bar's
+ * start (the last step reached, 0 before any), where the character stands now, what this training adds, the next step
+ * (null when none is left: the bar is full), whether this training reaches it, and that step in words. */
+export interface TrainBar { from: number; now: number; add: number; to: number | null; reaches: boolean; mark: string }
+const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+const barOf = (from: number, now: number, add: number, to: number | null, mark: string): TrainBar => ({ from, now, add, to, reaches: to != null && now + add >= to, mark });
+/** The bar of a training of `kind` adding `n` (drill on `weapon`: its marks, drillMarks; study: the Sigil growth view;
+ * practice: the module picks, picksAt and nextPickAt; Devotion: the Devotion curve, devotionThreshold). */
+function trainBar(c: Character, kind: string, n: number, weapon?: string): TrainBar | null {
+  if (kind === 'drill' && weapon) {
+    const marks = drillMarks(c, weapon), i = marks.findIndex((m) => !m.reached), now = drillOf(c, weapon), from = i === 0 ? 0 : marks[(i < 0 ? marks.length : i) - 1].at;
+    if (i < 0) return barOf(from, now, n, null, 'Every mark on the ' + nameOf(weapon) + ' reached');
+    const m = marks[i], gives = m.gives === 'signature' && m.id ? 'the ' + nameOf(weapon) + '\'s signature move, ' + (TECHNIQUE[m.id]?.name || m.id) : 'a technique of your choice';
+    return barOf(from, now, n, m.at, 'Mark ' + ROMAN[i] + ' at ' + m.at + ': ' + gives);
+  }
+  if (kind === 'study') { const v = sigilGrowthView(c); return barOf(v.prev, v.study, n, v.next, 'A new Sigil word at ' + v.next); }
+  if (kind === 'practice') {
+    const now = practiceOf(c), to = nextPickAt(now); let from = now; while (from > 0 && picksAt(from - 1) === picksAt(now)) from--;
+    return barOf(from, now, n, to, 'A new Outburst module at ' + to);
+  }
+  if (kind === 'devotion') {
+    const now = devotionXpOf(c), lv = devotionLevelOf(now), from = devotionThreshold(lv);
+    if (lv >= DEVOTION_MAX_LEVEL) return barOf(from, now, n, null, 'Devotion ' + lv + ': full standing');
+    const next = lv + 1, at = devotionThreshold(next), opens = next === GATE.miracle ? ': a Miracle' : ([GATE[1], GATE[2], GATE[3]] as number[]).includes(next) ? ': a new Hymn' : '';
+    return barOf(from, now, n, at, 'Devotion ' + next + ' at ' + at + ' XP' + opens);
+  }
+  return null;
+}
 /** Why this training can't be taken now, or null (rule 39 at a rest: one small one; rule 45 at a training ground: one
  * big one free, a second for its price). */
 export function trainProblem(g: GameState, c: Character, a: { train: string; weapon?: string }): string | null {
@@ -365,7 +395,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       const no = shrineProblem(g, c, a.choice); if (no) return no;
       const h = here(g)!, p = FAITH_PATRON[h.v.patron!];
       if (a.choice === 'piece') { const err = grantPiece(g, c, p.id, 'a shrine of ' + p.name); if (err) return err; }
-      if (a.choice === 'rite') shiftDevotion(g, null, c, DEVOTION_XP.rite, 'a rite kept at a shrine of ' + p.name);
+      if (a.choice === 'rite') shiftDevotion(g, null, c, SHRINE.rite, 'a rite kept at a shrine of ' + p.name);
       if (a.choice === 'token') { const id = tokenFor(g, c)!; c.relics = [...(c.relics || []), id]; mark(h.r, c, 'token'); say(c.name + ' takes ' + p.name + '\'s token: ' + relicRow(id)!.name + '.', c.id); }
       setVisit(h.r, h.v, { did: bump(h.v.did, c.id) });
       return null;
@@ -404,7 +434,8 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
 export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fit' | 'train' | 'shrine' | 'trade' | 'lasting'; key: string; label: string; detail: string; price: number; why: string | null; action: ProgressAction;
   /** credits the option PAYS the character (a salvage), shown in place of a price */ pays?: number;
   /** what the option costs when it is not credits ("40 HP": a hard sparring), shown in place of a price */ costs?: string;
-  /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] } }
+  /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] };
+  /** rules 1.54 item 10: a training's bar (trainBar), for the card to draw */ bar?: TrainBar | null }
 /** Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). */
 export function runOptions(g: GameState, charId: string): RunOption[] {
   const c = g.characters[charId], h = here(g); if (!c || !h) return [];
@@ -434,14 +465,14 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   }
   if (k === 'rest' || k === 'training') {
     const am: any = k === 'training' ? TRAINING : TRAIN, price = trainPrice(g, c);
-    for (const w of carriedWeapons(c)) out.push({ group: 'train', key: 'drill:' + w, label: 'Drill +' + am.drill + ' with the ' + nameOf(w), detail: 'Toward the ' + nameOf(w) + '\'s next mark.', price, why: trainProblem(g, c, { train: 'drill', weapon: w }), action: { type: 'run/train', charId, train: 'drill', weapon: w } });
-    out.push({ group: 'train', key: 'study', label: 'Study +' + am.study, detail: 'Toward the next Sigil word.', price, why: trainProblem(g, c, { train: 'study' }), action: { type: 'run/train', charId, train: 'study' } });
-    out.push({ group: 'train', key: 'practice', label: 'Practice +' + am.practice, detail: 'Toward the next Outburst module.', price, why: trainProblem(g, c, { train: 'practice' }), action: { type: 'run/train', charId, train: 'practice' } });
-    if (k === 'rest') out.push({ group: 'train', key: 'devotion', label: 'Devotion +' + am.devotion + ' XP', detail: 'Prayer by the fire.', price: 0, why: trainProblem(g, c, { train: 'devotion' }), action: { type: 'run/train', charId, train: 'devotion' } });
+    for (const w of carriedWeapons(c)) out.push({ group: 'train', key: 'drill:' + w, label: 'Drill +' + am.drill + ' with the ' + nameOf(w), detail: 'Toward the ' + nameOf(w) + '\'s next mark.', price, why: trainProblem(g, c, { train: 'drill', weapon: w }), action: { type: 'run/train', charId, train: 'drill', weapon: w }, bar: trainBar(c, 'drill', am.drill, w) });
+    out.push({ group: 'train', key: 'study', label: 'Study +' + am.study, detail: 'Toward the next Sigil word.', price, why: trainProblem(g, c, { train: 'study' }), action: { type: 'run/train', charId, train: 'study' }, bar: trainBar(c, 'study', am.study) });
+    out.push({ group: 'train', key: 'practice', label: 'Practice +' + am.practice, detail: 'Toward the next Outburst module.', price, why: trainProblem(g, c, { train: 'practice' }), action: { type: 'run/train', charId, train: 'practice' }, bar: trainBar(c, 'practice', am.practice) });
+    if (k === 'rest') out.push({ group: 'train', key: 'devotion', label: 'Devotion +' + am.devotion + ' XP', detail: 'Prayer by the fire.', price: 0, why: trainProblem(g, c, { train: 'devotion' }), action: { type: 'run/train', charId, train: 'devotion' }, bar: trainBar(c, 'devotion', am.devotion) });
   }
   if (k === 'shrine') {
     const p = FAITH_PATRON[h.v.patron || ''], tok = tokenFor(g, c);
-    out.push({ group: 'shrine', key: 'rite', label: 'Keep a rite: Devotion +' + DEVOTION_XP.rite + ' XP', detail: 'For those with a patron.', price: 0, why: shrineProblem(g, c, 'rite'), action: { type: 'run/shrine', charId, choice: 'rite' } });
+    out.push({ group: 'shrine', key: 'rite', label: 'Keep a rite: Devotion +' + SHRINE.rite + ' XP', detail: 'For those with a patron.', price: 0, why: shrineProblem(g, c, 'rite'), action: { type: 'run/shrine', charId, choice: 'rite' } });
     out.push({ group: 'shrine', key: 'piece', label: 'A piece of ' + (p?.name || 'the patron') + '\'s lore', detail: 'For an Atheist: learn the next of its Hymns, prayed by dice.', price: 0, why: shrineProblem(g, c, 'piece'), action: { type: 'run/shrine', charId, choice: 'piece' } });
     out.push({ group: 'shrine', key: 'token', label: 'The token' + (tok ? ': ' + relicRow(tok)!.name : ''), detail: tok ? relicRow(tok)!.text + ' Uses ' + worthOf(tok) + ' boon room; you have ' + capRoom(c) + '.' : 'A small blessing for the run.', price: 0, why: shrineProblem(g, c, 'token'), action: { type: 'run/shrine', charId, choice: 'token' } });
   }

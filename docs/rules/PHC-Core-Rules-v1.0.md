@@ -5992,7 +5992,9 @@ standard core's 150 credits (Magic, "Mana cores").
    Experience leaves Survival's Boss drops through item 3's flag; **its leaving the shop's rolled stock is not part of
    this revision** (nothing in data excludes one item from a shop's rolled pool, and such a field is not on item 8's
    list: a question for the lead, survival-spec 14 (f)). **The difficulty fit of rules 1.49 is measured again** with the
-   run simulator on the new curve before release (survival-spec 14 (d) names the dials that move).
+   run simulator on the new curve before release (survival-spec 14 (d) names the dials that move). *(Measured and
+   fitted, item 4114: a squad of four's `pressure_per_char` 1.3 → **0.9** and its Elite share 1 / 1 → **0.8 / 0.8**;
+   solo and duo unchanged.)*
 10. **Rest training.** A rest's small training (`train`): drill 100 → **200**, study 3 → **5**, practice 5 → **8**,
    Devotion 2 → **4** XP. The training ground's (`training`): drill 300 → **400**, study 8 → **10**, practice 10 →
    **15** (the second training's price stays 300). The shrine's rite has its own key, `shrine.rite` **10** Devotion XP
@@ -9430,9 +9432,13 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     (level 3), 1,440 after stage 2 (5), 3,040 (7), 4,640 (9), 6,440 (11), 8,240 after stage 6 (13); the scout's
     count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13).
     Supersedes item 3611. PROVISIONAL.
-4114. **The curve measured again (rules 1.54 item 9):** rules 1.49's fit was made at levels 6 to 7 after stage 1; with
-    levels 3 and the one-weapon pick the run simulator (`survival-run.ts`) runs rules 1.49's cells again before release.
-    Not done when this was written.
+4114. **The curve measured again (rules 1.54 item 9; `docs/design/handoffs/survival-0.28-fit.md`):** 6 seeds a cell,
+    stages capped at 5, routes gear and training. On the new XP a squad of four ended at means 1.6 (gear) and 3.1
+    (training), off the target of stage 3 or 4, dying to stage 1's plain fights and Elites at levels 1 and 2; the solo
+    gunner 2.2 and 3.0 and the duo 2.1 and 4.0 (no move). **The fit:** `pressure_per_char` for four 1.3 → **0.9**
+    ([1.3, 1.7, 1.3, 0.9]) and `share.elite` for four HP 1 → **0.8**, damage 1 → **0.8**; the four then ends at means
+    3.4 (gear) and 3.8 (training) over 12 seeds. A party of three is not measured (its entries unmoved). The solo
+    Sigilist and Channeler stay in stage 1 to 2, as before 1.54 (Balance 2.0). PROVISIONAL.
 4115. **Trainings (rules 1.54 item 10):** a rest's drill 200, study 5, practice 8, Devotion 4; the training ground's drill
     400, study 10, practice 15; the second training's price 300 unchanged. Supersedes items 3015 and 3017. PROVISIONAL.
 4116. **The shrine's rite (rules 1.54 item 10):** `shrine.rite` 10 Devotion XP (was `patrons.json gain.rite_kept` 4,

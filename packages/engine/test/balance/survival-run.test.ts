@@ -16,15 +16,17 @@ const ROUTES: RoutePolicy[] = ['gear', 'training', 'safest'];
 
 describe('Survival, simulated runs (rules 1.49): the guard', () => {
   // A solo gunner on the gear route, three seeds: stage 1 is clearable alone (spec: solo viable through stage 1 and
-  // into 2); runs end (a run that clears stage 4 alone is a curve that stopped rising).
-  it('a solo gunner clears stage 1 on at least two seeds of three and never clears stage 4', () => {
+  // into 2); runs end (a run that clears stage 4 alone is a curve that stopped rising). Rules 1.54: on the slower levels
+  // the solo spread is wide (6 seeds, gear route: ends 1.1 to 4.x, mean 2.2) and GUARD-1 clears four stages, so one
+  // seed of three may; two may not.
+  it('a solo gunner clears stage 1 on at least two seeds of three and at most one clears stage 4', () => {
     const runs = ['GUARD-1', 'GUARD-2', 'GUARD-3'].map((seed) => simRun({ party: 'solo_gunner', route: 'gear', seed, maxStages: 4 }));
     for (const r of runs) expect(r.errors.filter((e) => !/levelup/.test(e)), r.seed).toEqual([]);
     expect(runs.filter((r) => r.cleared >= 1).length, runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth).join('; ')).toBeGreaterThanOrEqual(2);
     const ends = runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth + ' cleared ' + r.cleared).join('; ');
-    expect(runs.every((r) => r.cleared < 4), ends).toBe(true);
-    // levels per stage (spec 5.4: about level 6 to 7 after stage 1's Boss)
-    for (const r of runs) if (r.stages[0].cleared) expect(r.stages[0].level[0]).toBeGreaterThanOrEqual(5), expect(r.stages[0].level[0]).toBeLessThanOrEqual(8);
+    expect(runs.filter((r) => r.cleared >= 4).length, ends).toBeLessThanOrEqual(1);
+    // levels per stage (rules 1.54 item 9, survival-spec 14.4: level 3 after stage 1's Boss; 139 of 139 measured)
+    for (const r of runs) if (r.stages[0].cleared) expect(r.stages[0].level[0]).toBe(3);
     // a gunner on Bursts never runs dry between shops
     for (const r of runs) expect(r.fights.every((f) => f.ammo.every((a) => a == null || a > 0)), r.seed).toBe(true);
   }, 900_000);

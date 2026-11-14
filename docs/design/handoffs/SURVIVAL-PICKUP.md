@@ -92,7 +92,7 @@ Each hand-off's own "open" section has the detail; the calls made for Leon are n
 | Fights more or less dangerous | `pressure_per_char` (by party size), `max_foes` (by party size) | The pressure cap: Soldier-turns of damage a round the foes may bring |
 | Small parties easier or harder | `share.boss`, `share.elite` (HP and damage by party size) | How much of a full Elite or Boss a solo or duo meets |
 | How fast stages get harder | `stage.bulk` (length a stage), `stage.pressure` (danger a stage), `stage.elite_up` (Elites' and Bosses' lead in levels a stage, and its most) | The endless curve: where runs end |
-| How fast characters level | `xp` (f(d)), `stage.xp` (by stage) | Level 3 at about depth 3, level 20 early in stage 6 |
+| How fast characters level | `xp` (f(d): base 10, per_depth 2, Boss x 5), `stage.xp` ([1, 2.6, 4, 4, 4.5]) | Rules 1.54: level 3 after stage 1's Boss (at depth 12 or 13 on 4.5% of routes, the most-fights ones), about 5, 7, 9, 11 after stages 2 to 5 (`test/balance/survival-run-levels.test.ts`, `SIM_LEVELS=1`) |
 | How rich a party is | `credits` (c(d)), `stage.credits` (by stage), `rewards.instead_rate` (credits instead of a weapon), `loadout.budget` (rules 1.52: the camp's budget, the unspent part the purse), `sell_rate` | Income against the grade ladder |
 | How fast gear grows | `grade_up.price`, `grade_up.places.forge`, `grade_up.relic_from_stage`, `rewards.ceiling` (picks capped by stage), `rewards.rarity` | One grade step a stage, the Relic in stage 4 |
 | The vault | `vault.guard_factor`, `vault.grade_up`, `map.vault` | Its fight and its prize |
@@ -101,7 +101,7 @@ Each hand-off's own "open" section has the detail; the calls made for Leon are n
 | Run power | `boon_cap`, `boons[].worth`, `shrine.token_max_worth`, `start_boon.max_worth`, `start_boons[].worth` | How far boons and Relic properties go past the balance ceilings; how big the camp's pick is |
 | What casters get back | `ammo_pack.cores`, `ammo_pack.cores_max`, `ammo_pack.mp_share` | The supply pack's cores (what was burnt, between the two, x n) and MP share |
 | The camp's issue | `camp.issue_armour`, `camp.spare_mags` | The armour class fitted free at the camp; the spare magazines the gun in hand starts with |
-| Trainings | `train`, `training` | The rest's small and the training ground's big trainings |
+| Trainings | `train` (drill 200, study 5, practice 8, Devotion 4), `training` (drill 400, study 10, practice 15), `shrine.rite` (10) | The rest's small and the training ground's big trainings, the shrine's rite (rules 1.54 item 10); each training card carries its bar (`RunOption.bar`) |
 
 The fit of rules 1.49 moved the dials in `survival-steps-9-10.md` section 4; read its before-and-after tables before
 moving one again. Spec first (a rules revision), then the data, then `python3 tools/validate.py data`, then the guard.
