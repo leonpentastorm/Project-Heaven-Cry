@@ -399,6 +399,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
  * reason it can't be taken (null when it can), and the action to send. The client only draws these. */
 export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fit' | 'train' | 'shrine' | 'trade' | 'lasting'; key: string; label: string; detail: string; price: number; why: string | null; action: ProgressAction;
   /** credits the option PAYS the character (a salvage), shown in place of a price */ pays?: number;
+  /** what the option costs when it is not credits ("40 HP": a hard sparring), shown in place of a price */ costs?: string;
   /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] } }
 /** Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). */
 export function runOptions(g: GameState, charId: string): RunOption[] {
@@ -444,7 +445,7 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
     const t = TRADE[id];
     const one = (key: string, label: string, extra: Partial<Extract<ProgressAction, { type: 'run/trade' }>>, detail = t.text, pays?: number) => out.push({ group: 'trade', key: id + ':' + key, label, detail, price: tradePrice(c, { trade: id, ...extra }), ...(pays ? { pays } : {}), why: tradeProblem(g, c, { trade: id, ...extra }), action: { type: 'run/trade', charId, trade: id, ...extra } });
     if (t.do === 'grade') for (const where of wheres) { const it = gearAt(c, where); if (it && maxDurOf(it.id, it.rarity) && nextGrade(it.rarity) && nextGrade(it.rarity) !== 'relic') one(String(where), t.name + ': ' + nameOf(it.id) + ' to ' + word(nextGrade(it.rarity)!), { where }); }
-    else if (t.do === 'drill') for (const w of carriedWeapons(c)) one(w, t.name + ': drill +' + t.drill + ' with the ' + nameOf(w), { weapon: w });
+    else if (t.do === 'drill') for (const w of carriedWeapons(c)) { one(w, t.name + ': drill +' + t.drill + ' with the ' + nameOf(w), { weapon: w }); out[out.length - 1].costs = Math.floor(c.hp * t.hp_share) + ' HP'; }
     else if (t.do === 'wayside') for (const tr of ['devotion', 'study', 'practice'] as const) one(tr, t.name + ': ' + tr + ' +' + t[tr], { train: tr });
     else if (t.do === 'salvage') packOf(c).forEach((it, i) => { const n = salvageWorth(c, i, t.rate); if (n != null) one(String(i), t.name + ': the ' + it.name, { pick: i }, t.text, n); });
     else if (t.do === 'graft') { const gid = graftFor(g, c); one('x', t.name + (gid ? ': ' + relicRow(gid)!.name : ''), {}, gid ? relicRow(gid)!.text : t.text); }

@@ -67,7 +67,7 @@ function Choices({ x, kit }: { x: ChoiceCharV; kit?: boolean }) {
               onClick={(e) => { if (o.why) openTipOn(e.currentTarget); else act(o.action as any); }}
               style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 40, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (o.why ? ink.line : ink.text), background: o.why ? 'transparent' : ink.raised, color: o.why ? ink.muted : ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}>
               <span style={{ flex: 1, fontSize: 13, lineHeight: 1.35 }}>{o.label}{o.why ? <span style={{ display: 'block', fontSize: 11, color: ink.muted }}>{o.why}</span> : null}</span>
-              {o.price ? <span style={{ fontSize: 12, color: ink.white, whiteSpace: 'nowrap' }}>{o.price} credits</span> : o.pays ? <span style={{ fontSize: 12, color: ink.ok, whiteSpace: 'nowrap' }}>+{o.pays} credits</span> : <span style={{ fontSize: 11, color: ink.muted }}>Free</span>}
+              {o.price ? <span style={{ fontSize: 12, color: ink.white, whiteSpace: 'nowrap' }}>{o.price} credits</span> : o.pays ? <span style={{ fontSize: 12, color: ink.ok, whiteSpace: 'nowrap' }}>+{o.pays} credits</span> : <span style={{ fontSize: 11, color: ink.muted }}>{o.costs || 'Free'}</span>}
             </button>
           ))}
         </div>

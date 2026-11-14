@@ -14,7 +14,7 @@ import { SETTING } from './encounter';
 import { MAP_DATA } from './map';
 import { faceFor, faceTabLines } from './shop';
 import { type MeV, meBlock } from './shopview';
-import { capRoom, BOON_CAP } from './power';
+import { capRoom } from './power';
 import type { GameState } from '../game';
 
 /** A place's tab: its id, its word, and the option groups it holds (the Give tab holds none: it draws `giveView`). */
@@ -29,7 +29,7 @@ export interface PlaceViewV {
     /** the keeper's lines by kind (a tab's id as it opens, `bought` after a choice), for the client to pick from (survival.json faces) */ says: Record<string, string[]> };
   tabs: PlaceTabV[]; cards: PlaceCardV[]; me: MeV | null; canAct: boolean;
   party: { id: string; name: string; initials: string; color: string; online: boolean; mine: boolean; marked: boolean }[];
-  /** the character's boon room left, "30 of 50" ('' with no character) */
+  /** the character's boon room left, "30 left" ('' with no character) */
   log: string[]; worth: string;
 }
 /** The tabs each place shows (the Give tab last on every one). */
@@ -66,6 +66,6 @@ export function placeView(g: GameState, me: string, charId?: string | null): Pla
     face: { id: f?.id || '', name: patron ? patron.name : f?.name || '', role: patron ? 'Patron' : f?.role || '', portrait: f?.portrait || '', portraitPending: !!f?.portrait_pending, fallback: f?.fallback ?? null,
       patron: patron ? v.patron! : null, backdrop: f?.backdrop || '', backdropPending: !!f?.backdrop_pending, backdropFallback: f?.backdrop_fallback ?? null, line, says },
     tabs: [...(TABS[v.kind] || []), ...(Object.keys(g.characters).length > 1 ? [{ id: 'give', label: 'Give', groups: [] }] : [])], cards, me: c ? meBlock(c) : null, canAct: !!c && (c.owner === me),
-    party, log: v.log || [], worth: c ? capRoom(c) + ' of ' + BOON_CAP : '',
+    party, log: v.log || [], worth: c ? capRoom(c) + ' left' : '',
   };
 }

@@ -2,7 +2,7 @@
 // engine: the map's nodes and links (g.run), what the party can reach and why a node can't be taken (`reachable`,
 // `runMoveProblem`), what a node gives (`NODE_TIP`, `nodeXp`, `nodeCredits`), the panel's words (`NODE_TEXT`), the picks
 // (g.run.offers, priced by the engine), who has a level-up waiting (`levelUpDue`). RunScreen.tsx only draws it.
-import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, BOON_CAP, relicRow, gearPreview } from '@engine';
+import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, relicRow, gearPreview } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
 export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null;
@@ -82,7 +82,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
   });
   const charV = (cid: string, options: RunOption[]): ChoiceCharV => {
     const c = g.characters[cid];
-    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canAct: c?.owner === me || isHost, credits: c ? creditsOf(c) : 0, worth: (c ? capRoom(c) : 0) + ' of ' + BOON_CAP, relics: (c?.relics || []).map((id) => relicRow(id)?.name || id), options };
+    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canAct: c?.owner === me || isHost, credits: c ? creditsOf(c) : 0, worth: (c ? capRoom(c) : 0) + ' left', relics: (c?.relics || []).map((id) => relicRow(id)?.name || id), options };
   };
   const mineFirst = (a: ChoiceCharV, b: ChoiceCharV) => Number(b.mine) - Number(a.mine);
   const choices = r.visit && r.visit.node === here ? Object.keys(g.characters).map((cid) => charV(cid, runOptions(g, cid))).filter((x) => x.options.length).sort(mineFirst) : [];

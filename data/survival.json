@@ -191,7 +191,7 @@
       "text": "Everything you deal is {=effects.0.value|more}% stronger for the rest of the run." },
     { "id": "boon.second_wind", "kind": "relic", "name": "Second Wind", "pools": ["discipline"], "worth": 17, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "grant_ap", "when": "turn_ap", "value": 1 } ],
-      "text": "{=effects.0.value|signed} AP every turn (the ceiling holds)." },
+      "text": "{=effects.0.value|signed} AP every turn, up to your most." },
     { "id": "boon.true_aim", "kind": "relic", "name": "True Aim", "pools": ["discipline"], "worth": 7, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "roll_mod", "when": "to_hit", "value": 1 } ],
       "text": "{=effects.0.value|signed} to every roll to hit." },
@@ -203,7 +203,7 @@
       "text": "The first blow each fight that would drop you leaves you on {=effects.0.value} HP." },
     { "id": "boon.echo", "kind": "relic", "name": "Steady Breath", "pools": ["discipline"], "worth": 5, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "resource", "when": "combat_start", "resource": "echo", "value": 1 } ],
-      "text": "{=effects.0.value|signed} Echo at each fight's start (the most you hold still holds)." },
+      "text": "{=effects.0.value|signed} Echo at the start of each fight, up to your most." },
     { "id": "boon.deep_well", "kind": "relic", "name": "Deep Well", "pools": ["faith", "survival"], "worth": 8, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "mend_mult", "when": "heal", "if": { "actor": "self" }, "value": 1.2 },
                    { "op": "mend_mult", "when": "shield", "if": { "actor": "self" }, "value": 1.2 } ],
@@ -227,10 +227,10 @@
       "text": "The ammunition pack after a fight is {=effects.0.value}x: twice the magazines, and one more core." },
     { "id": "boon.tithe", "kind": "relic", "name": "Tithe", "pools": ["streets"], "worth": 0, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "stat_mult", "stat": "run_credits", "value": 1.5 } ],
-      "text": "{=effects.0.value|more}% more credits from every node that pays." },
+      "text": "{=effects.0.value|more}% more credits from every stop that pays." },
     { "id": "boon.devout", "kind": "relic", "name": "Devout", "pools": ["faith"], "worth": 0, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "resource", "when": "combat_end", "resource": "devotion_xp", "value": 1 } ],
-      "text": "{=effects.0.value|signed} Devotion XP at each fight's end (inside the session's cap)." }
+      "text": "{=effects.0.value|signed} Devotion XP at the end of each fight, within the session's limit." }
   ],
   "boon_pick": {
     "about": "Rules 1.44 (spec rules 30, 31): after each Boss every character picks one boon of `offer`, rolled from the tile's pool (`pools`), then from every pool when the tile's runs short; a boon held, or one whose worth would pass the run's cap, is not offered: a utility boon (worth 0) takes its place.",

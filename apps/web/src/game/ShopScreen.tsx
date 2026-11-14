@@ -141,7 +141,7 @@ export function ShopScreen() {
   const [tab, setTab] = React.useState('always'), [focus, setFocus] = React.useState<{ id: string; rarity: Rarity } | null>(null);
   const [qty, setQtyMap] = React.useState<Record<string, number>>({}), [confirm, setConfirm] = React.useState<number | null>(null);
   const v = g ? shopView(g as any, me) : null;
-  const say = useKeeperLine(v?.face.says || {}, tab, v?.face.line || '', v?.log.length || 0); // (before any return: a hook)
+  const say = useKeeperLine(v?.face.says || {}, tab === 'always' ? 'stock' : tab, v?.face.line || '', v?.log.length || 0); // (before any return: a hook)
   if (!g || !v) return <div style={{ padding: 40, color: I.muted }}>No shop is open.</div>;
   const charId = v.me?.id || '';
   const q = (k: string) => qty[k] || 1, setQ = (k: string) => (n: number) => setQtyMap({ ...qty, [k]: n });

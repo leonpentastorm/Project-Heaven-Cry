@@ -44,7 +44,7 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
       
       <span style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
-          <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: o.pays ? I.ok : I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : o.pays ? '+' + o.pays.toLocaleString('en') : 'Free'}</span>
+          <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: o.pays ? I.ok : I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : o.pays ? '+' + o.pays.toLocaleString('en') : o.costs || 'Free'}</span>
           {o.price ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS PAID TO YOU</span> : null}
         </span>
         <span style={{ marginLeft: 'auto', minHeight: 40, padding: '0 16px', display: 'inline-grid', placeItems: 'center', borderRadius: 10, background: o.why ? 'transparent' : I.text, outline: o.why ? '1px solid #3B475D' : 'none', color: o.why ? I.muted : I.ground, fontWeight: 700, fontSize: 15 }}>Take it</span>
@@ -64,7 +64,7 @@ function You({ m, worth }: { m: MeV | null; worth: string }) {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{m.name}</span>
           <span style={{ fontSize: 12, color: I.muted }}>Level {m.level} · Armour class {m.armourClass}</span>
-          {worth ? <span data-phc-boon-room="" style={{ fontSize: 12, color: I.muted }}>Boon room {worth}</span> : null}
+          {worth ? <span data-phc-boon-room="" style={{ fontSize: 12, color: I.muted }}>Boon room: {worth}</span> : null}
         </div>
       </div>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
