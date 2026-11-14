@@ -1,5 +1,15 @@
 # Start here (14 Nov 2026)
 
+> **UPDATE, 14 Nov 2026, 13:20 UTC: 0.27.1 IS LIVE** (the shooting effects restored: the bullet in flight, techniques'
+> own effects, one shot heard and drawn per round fired). `main` = `develop` = `backup/live-0.27.1` = 76316985.
+> Release run under a loaded machine: `npm run check` ALL GREEN; every browser suite passed, 14 of them only when run
+> alone (load 26 from two agents; the suites that cannot share a machine need fixing); live verified with old-save,
+> creation-points, fx-room, and `brass` (2 of 3 runs green against live: its hole-timing check is flaky).
+> **Still in flight, to ship as 0.27.2 on Leon's word already given ("auto deploy"), each needing a clean run:**
+> the every-weapon effects table (`worktree-agent-a202ef14f498e698e`: every weapon and technique through the engine,
+> sounds = projectiles = rounds fired, flamer/launcher/bow by family, per-weapon code moved to data) and the loadout
+> + starting boons join (`worktree-agent-ab79122edee03fa74`). Run their release check on a QUIET machine.
+
 > **UPDATE, 14 Nov 2026, 10:15 UTC: 0.27.0 (Survival mode) IS LIVE.** Deployed on Leon's word; `main` = `develop` =
 > `backup/live-0.27.0` = 024c9aab. Release run: `npm run check` ALL GREEN; 69 browser suites green, three passing only
 > alone under load (`survival`, `brass`, `resources`: fix the suites); live verified with old-save, creation-points,
