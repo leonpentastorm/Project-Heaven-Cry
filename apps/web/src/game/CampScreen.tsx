@@ -24,7 +24,7 @@ function CampPick({ c }: { c: CampCharV }) {
         {c.cards.map((k, n) => {
           const taken = c.picked === k.id, off = done || !c.canPick || !!k.why;
           return (
-            <button key={k.id} type="button" role="radio" aria-checked={taken ? 'true' : 'false'} className="phc-camp-card" data-phc-start={k.id} data-phc-why={k.why ? '' : undefined} aria-disabled={off ? 'true' : undefined}
+            <button key={k.id} type="button" role="radio" aria-checked={taken ? 'true' : 'false'} className="phc-camp-card" data-phc-startboon={k.id} data-phc-why={k.why ? '' : undefined} aria-disabled={off ? 'true' : undefined}
               {...tipProps(k.name + '. ' + k.text + ' Line: ' + k.lineWord + '. Worth ' + k.worthLine + '.' + (k.why ? ' ' + k.why : ''))}
               onClick={(e) => { if (off) openTipOn(e.currentTarget); else act({ type: 'run/boon', charId: c.charId, choice: k.i }); }}
               style={{ animationDelay: n * 80 + 'ms', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: 'clamp(18px, 1.6vw, 28px) 18px', minHeight: 'clamp(280px, 32vh, 400px)', borderRadius: 16,
