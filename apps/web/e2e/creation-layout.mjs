@@ -42,6 +42,18 @@ if (await lunar.count()) {
   ok('scrolling a card\'s text leaves its button where it was', Math.abs(btnY0.y - btnY1.y) < 1);
 }
 
+// The wheel is not trapped on a card: with the pointer over a trait card (its text scrolls first, then the page follows)
+// the page scrolls (the card's overscroll-behavior:contain held the wheel inside it).
+await p.setViewportSize({ width: 1280, height: 720 });
+await step('Traits');
+await p.evaluate(() => window.scrollTo(0, 0)); await settle(p, 150);
+const cardBox = await p.locator('[data-trait-grid] > *').first().boundingBox();
+await p.mouse.move(cardBox.x + cardBox.width / 2, Math.min(cardBox.y + cardBox.height / 2, 400)); await settle(p, 100);
+for (let i = 0; i < 4; i++) { await p.mouse.wheel(0, 600); await settle(p, 150); }
+const scrolledY = await p.evaluate(() => window.scrollY);
+ok('1280x720 Traits: the wheel over a trait card scrolls the page (scrollY ' + scrolledY + ')', scrolledY > 0);
+await p.setViewportSize({ width: 1440, height: 1000 });
+
 // The archetype preview: Use doesn't move from one archetype to another (5-row skill list held).
 await step('Archetype');
 // Measured inside the panel (it is sticky, so its place on screen follows the page's scroll).
