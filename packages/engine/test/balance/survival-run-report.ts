@@ -45,6 +45,9 @@ export function tabulate(runs: RunResult[]): string {
         + (fs.some((q) => q.durMin != null) ? r0(100 * Math.min(...fs.filter((q) => q.durMin != null).map((q) => q.durMin!))) + '%, ' + fs.filter((q) => (q.wornBefore || 0) > 0).length : '-')
         + ' | ' + (sts.some((x) => x.repairs) ? r1(mean(sts.flatMap((x) => x.repairs || []))) + ', ' + r0(mean(sts.flatMap((x) => x.repairSpent || []))) : '-') + ' |');
     }
+    // rules 1.54: the level on arriving at each stage's Boss (the fight's own record of the levels before it)
+    const door = [1, 2, 3, 4, 5, 6, 7].map((s) => rs.flatMap((r) => r.fights.filter((q) => q.stage === s && q.kind === 'boss' && q.lvl).flatMap((q) => q.lvl!))).map((xs, i) => (xs.length ? (i + 1) + ': ' + r1(mean(xs)) : '')).filter(Boolean);
+    if (door.length) out.push('Level arriving at the Boss, by stage: ' + door.join(', '));
     // where the losses fell
     const lost = rs.filter((r) => r.how === 'lost' || r.how === 'stalled').map((r) => { const f = r.fights[r.fights.length - 1]; return r.stage + '.' + r.depth + ' ' + (f ? f.kind : '?'); });
     if (lost.length) out.push('Fell at: ' + lost.join(', '));

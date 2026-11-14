@@ -101,7 +101,7 @@ export function startPick(offer: string[], c: any): number {
 }
 
 // ---------------------------------------------------------------------------------------------- what is measured
-export interface FightRow { /** rules 1.51: Pictures the Rigger policy asked for in it */ figs?: number; stage: number; depth: number; kind: string; rounds: number; won: boolean; hpBefore: number; hpAfter: number; ammo: (number | null)[]; dry: number; broken: number; capped?: boolean; /** rules 1.50: the lowest share of full durability among the squad's main-hand weapons before it, and how many were Worn or Broken */ durMin?: number; wornBefore?: number; /** the composed fight: foes, their tiers and levels, the bulk asked and spent, the HP scale */ foes?: string[]; bulk?: [number, number]; pressure?: [number, number]; scaleHp?: number; level?: number }
+export interface FightRow { /** rules 1.51: Pictures the Rigger policy asked for in it */ figs?: number; stage: number; depth: number; kind: string; rounds: number; won: boolean; hpBefore: number; hpAfter: number; ammo: (number | null)[]; dry: number; broken: number; capped?: boolean; /** rules 1.50: the lowest share of full durability among the squad's main-hand weapons before it, and how many were Worn or Broken */ durMin?: number; wornBefore?: number; /** the composed fight: foes, their tiers and levels, the bulk asked and spent, the HP scale */ foes?: string[]; bulk?: [number, number]; pressure?: [number, number]; scaleHp?: number; level?: number; /** rules 1.54: each character's level before it */ lvl?: number[] }
 export interface StageRow { stage: number; setting: string; earned: number[]; spent: number[]; /** of earned: the credits taken instead of a weapon pick, and sales */ instead: number[]; sold: number[]; xp: number[]; level: number[]; steps: number[]; grades: string[]; cleared: boolean; nodes: string[]; vault: 'taken' | 'skipped' | 'none'; vaultPick: string | null; rests: number; shops: number; forges: number; /** rules 1.50: repairs bought, and their credits, a character */ repairs?: number[]; repairSpent?: number[] }
 export interface RunResult { party: string; route: RoutePolicy; seed: string; how: string; stage: number; depth: number; cleared: number; fights: FightRow[]; stages: StageRow[]; errors: string[]; boons: string[][]; /** rules 1.51: each character's starting boon, and the levers on */ start?: (string | null)[]; levers?: string[] }
 
@@ -295,7 +295,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       const node = runNode(run, run.at), hp = hpShare(r.g), ammo = ids.map((id) => roundsFor(C(id)));
       const wears = ids.map((id) => wearAt(C(id), 'main')).filter((w: any) => w && w.max > 0) as any[];
       const durMin = wears.length ? Math.min(...wears.map((w) => w.now / w.max)) : null, wornBefore = wears.filter((w) => w.state !== 'sound').length;
-      const pic0 = RIG.pictures;
+      const pic0 = RIG.pictures, lvl = ids.map((id) => C(id)?.level ?? 0);
       r.fight(cfg.maxFightRounds ?? 20);
       const cb = r.g.combat;
       // a fight still on at the round cap: when the squad standing holds more than twice the HP of the foes standing (most
@@ -308,7 +308,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       const won = r.g.phase !== 'lobby';
       const after = ids.map((id) => roundsFor(C(id)));
       const sf = (r.g.run?.stats?.fights || []).slice(-1)[0] || (r.g.run?.end ? null : null);
-      res.fights.push({ ...(sf ? { foes: sf.foes.map((q: any) => q.tier[0] + q.level), bulk: [Math.round(sf.target.bulk * 100) / 100, Math.round(sf.spent.bulk * 100) / 100], pressure: [Math.round(sf.target.pressure * 100) / 100, Math.round(sf.spent.pressure * 100) / 100], scaleHp: sf.scaleHp, level: sf.level } : {}), stage: run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, rounds: cb?.round || 0, won, hpBefore: hp, hpAfter: won ? hpShare(r.g) : 0, ammo, dry: after.filter((q) => q === 0).length, ...(durMin != null ? { durMin: Math.round(durMin * 1000) / 1000, wornBefore } : {}), broken: (cb?.units || []).filter((u: any) => u.side === 'pc' && u.maxDur && (u.dur ?? 1) <= 0).length, capped, figs: RIG.pictures - pic0 });
+      res.fights.push({ ...(sf ? { foes: sf.foes.map((q: any) => q.tier[0] + q.level), bulk: [Math.round(sf.target.bulk * 100) / 100, Math.round(sf.spent.bulk * 100) / 100], pressure: [Math.round(sf.target.pressure * 100) / 100, Math.round(sf.spent.pressure * 100) / 100], scaleHp: sf.scaleHp, level: sf.level } : {}), stage: run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, rounds: cb?.round || 0, won, hpBefore: hp, hpAfter: won ? hpShare(r.g) : 0, ammo, dry: after.filter((q) => q === 0).length, ...(durMin != null ? { durMin: Math.round(durMin * 1000) / 1000, wornBefore } : {}), broken: (cb?.units || []).filter((u: any) => u.side === 'pc' && u.maxDur && (u.dur ?? 1) <= 0).length, capped, figs: RIG.pictures - pic0, lvl });
       if (!won) { res.how = 'lost'; res.stage = run.stage; res.depth = node.depth; break; }
       continue;
     }
