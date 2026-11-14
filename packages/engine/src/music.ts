@@ -12,7 +12,10 @@ import { costOf } from './effects/cost';
 /** The game's own fight music (spec: Music): files the web client ships (apps/web/public/music). */
 export type OstId = 'gunline' | 'heaven_falls' | 'last_rounds'
   | 'brass_on_the_floor' | 'danger_close' | 'flank_left' | 'held_breath' | 'hold_the_line' | 'line_of_four' | 'mag_check' | 'suppressing_fire'
-  | 'gearing_up';
+  | 'gearing_up'
+  // Survival mode's own tracks (audio/SUNO-PROMPTS-survival.md): in the list and the files, not yet picked by anything.
+  | 'surv_camp' | 'surv_map' | 'surv_map_ahoc' | 'surv_map_city' | 'surv_map_field' | 'surv_map_works' | 'surv_map_shrine' | 'surv_map_rim'
+  | 'surv_boon' | 'surv_shop' | 'surv_forge' | 'surv_rest';
 /** A track: a YouTube video (yt), or one of the game's own tracks (ost), and its credit. */
 export interface Track { yt?: string; ost?: OstId; title: string; artist: string; start?: number; length?: number; licence?: string }
 export const OST_ARTIST = 'Project Heaven Cry OST';
@@ -29,6 +32,18 @@ export const OST: Record<OstId, Track & { ost: OstId }> = {
   mag_check: { ost: 'mag_check', title: 'Mag Check', artist: OST_ARTIST, length: 62 },
   suppressing_fire: { ost: 'suppressing_fire', title: 'Suppressing Fire', artist: OST_ARTIST, length: 59 },
   gearing_up: { ost: 'gearing_up', title: 'Gearing Up', artist: OST_ARTIST, length: 179 },
+  surv_camp: { ost: 'surv_camp', title: 'Survival: Camp', artist: OST_ARTIST, length: 120 },
+  surv_map: { ost: 'surv_map', title: 'Survival: Path Map', artist: OST_ARTIST, length: 120 },
+  surv_map_ahoc: { ost: 'surv_map_ahoc', title: 'Survival: Path Map, AHOC outpost', artist: OST_ARTIST, length: 120 },
+  surv_map_city: { ost: 'surv_map_city', title: 'Survival: Path Map, Central City', artist: OST_ARTIST, length: 120 },
+  surv_map_field: { ost: 'surv_map_field', title: 'Survival: Path Map, old battlefield', artist: OST_ARTIST, length: 120 },
+  surv_map_works: { ost: 'surv_map_works', title: 'Survival: Path Map, machine works', artist: OST_ARTIST, length: 119 },
+  surv_map_shrine: { ost: 'surv_map_shrine', title: 'Survival: Path Map, shrine district', artist: OST_ARTIST, length: 120 },
+  surv_map_rim: { ost: 'surv_map_rim', title: 'Survival: Path Map, Rim station', artist: OST_ARTIST, length: 119 },
+  surv_boon: { ost: 'surv_boon', title: 'Survival: Boon', artist: OST_ARTIST, length: 119 },
+  surv_shop: { ost: 'surv_shop', title: 'Survival: Shop', artist: OST_ARTIST, length: 120 },
+  surv_forge: { ost: 'surv_forge', title: 'Survival: Forge', artist: OST_ARTIST, length: 163 },
+  surv_rest: { ost: 'surv_rest', title: 'Survival: Rest', artist: OST_ARTIST, length: 200 },
 };
 /** The ordinary fight's songs (spec: Music, The fight's song): one is picked for each fight. */
 export const FIGHT_POOL: readonly OstId[] = ['gunline', 'brass_on_the_floor', 'danger_close', 'flank_left', 'held_breath', 'hold_the_line', 'line_of_four', 'mag_check', 'suppressing_fire'];
