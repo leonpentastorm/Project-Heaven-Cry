@@ -38,17 +38,18 @@ import { MissionLayer } from './game/missionBoard';
 import { DialogHost } from './game/dialog';
 import { SettingsHost } from './game/settings';
 import { leaveFlow } from './screens/shell';
-import { RunScreen } from './game/RunScreen';
+import { ModeCentre } from './game/modeCentre';
 
+const MAIN = makeScreen(expand(mainT), MainLogic as any);
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
   create: makeScreen(expand(createT), CreateLogic as any),
   room: makeScreen(expand(roomT), RoomLogic as any),
-  main: makeScreen(expand(mainT), MainLogic as any),
+  main: MAIN,
   combat: makeScreen(expandLayout(expand(combatT)), CombatLogic as any),
   levelup: makeScreen(expand(levelupT), LevelUpLogic as any),
   ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
-  run: RunScreen as any,
+  run: MAIN, // rules 1.54: a run's screens are the play screen's middle (store.go sends 'run' to 'main')
 };
 
 onVoice(poke);
@@ -117,6 +118,7 @@ export function App() {
       {/* Spotlight cut-ins (decision 113): torn eye strips over a blurred screen, z-index 64. */}
       {st.role && <CutInLayer game={st.game || null} screen={st.screen} />}
       {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
+      {st.role && <ModeCentre game={st.game || null} screen={st.screen} />}
       {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
       <PlaytestTools />
       <Tips />

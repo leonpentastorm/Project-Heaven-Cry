@@ -109,7 +109,7 @@ export function RunScreen() {
   const pick = (n: RunNodeV, el: HTMLElement) => { if (n.state === 'reachable') act({ type: 'run/move', node: n.id }); else openTipOn(el); };
   const mine = v.offers.filter((o) => o.mine), others = v.offers.filter((o) => !o.mine);
   return (
-    <div data-phc-run-screen="" style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: ink.ground, color: ink.text, fontFamily: "'Chakra Petch', sans-serif", overflow: 'hidden' }}>
+    <div data-phc-run-screen="" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', background: ink.ground, color: ink.text, fontFamily: "'Chakra Petch', sans-serif", overflow: 'hidden' }}>
       <style>{PULSE}</style>
       <header style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 20px', borderBottom: '1px solid ' + ink.line, background: ink.panel, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.18em' }}>SURVIVAL</span>
