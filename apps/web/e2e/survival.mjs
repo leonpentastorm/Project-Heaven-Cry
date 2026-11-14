@@ -75,7 +75,7 @@ const kid = Object.keys((await G()).characters)[0], offer0 = r.boons[kid];
 const campCards = await p.locator('[data-phc-camp="' + kid + '"] [data-phc-startboon]').allTextContents();
 ok('the camp: three large cards, each its name, its sentence with its number from data, its line\'s word and its worth on the cap (' + offer0.join(', ') + ')', campCards.length === 3 && offer0.length === 3
   && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-camp] [data-phc-startboon] svg').count() === 3
-  && /THE CAMP/.test(await p.locator('[data-phc-camp-title]').textContent()));
+  && /THE CAMP/.test(await p.locator('[data-phc-camphead]').textContent()));
 ok('a soldier (a rifle in hand) is offered gun boons: two of its three cards are the guns line\'s', offer0.filter((id) => /^start\.(zeroed|hot_loads|quick_mag)$/.test(id)).length >= 2);
 ok('the camp\'s issue: the soldier\'s kit already wears class 3, so nothing to fit (the line says so)', /class 3/i.test(await p.locator('[data-phc-camp-fit="' + kid + '"]').textContent()) && !(await p.locator('[data-phc-fit]').count()));
 ok('rules 1.51: the map waits at the camp (a node refused in words)', /starting boons first/.test(await act({ type: 'run/move', node: r.nodes.find((n) => n.depth === 1).id }) || ''));

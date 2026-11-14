@@ -66,7 +66,7 @@ export function CampScreen() {
       </header>
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 26, padding: 'clamp(20px, 2.4vw, 48px)', maxWidth: 1500, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-          <h1 data-phc-camp-title="" style={{ margin: 0, fontFamily: "'Spectral', serif", fontSize: 'clamp(30px, 2.6vw, 44px)', fontWeight: 600, letterSpacing: '0.04em' }}>THE CAMP</h1>
+          <h1 data-phc-camphead="" style={{ margin: 0, fontFamily: "'Spectral', serif", fontSize: 'clamp(30px, 2.6vw, 44px)', fontWeight: 600, letterSpacing: '0.04em' }}>THE CAMP</h1>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(17px, 1.3vw, 22px)', color: '#DCE2EC' }}>Choose what you carry into the first fight.</span>
           {v.waiting ? <span data-phc-waiting="" style={{ fontSize: 14, color: ink.white }}>{v.waiting}</span> : null}
         </div>
