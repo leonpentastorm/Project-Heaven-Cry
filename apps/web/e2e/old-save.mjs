@@ -1,5 +1,6 @@
 // A save from before 0.19.0 holding perks that were renamed since (Grapple, Origami Hands) and one that never existed:
 // the game must open it, show the renamed perks, and not crash (0.19.0 crashed on start for such a save).
+import { tmpdir } from 'os';
 import { chromium, player, click, BASE, settle } from './lib.mjs';
 const browser = await chromium.launch(); const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -23,5 +24,5 @@ ok('the game opens the old save: no error screen', !/renderVals|TypeError|undefi
 const perks = await p.evaluate(() => { const g = window.__phc.getState().game; return g ? Object.values(g.characters)[0].perks.map((x) => x.id) : null; });
 ok('the sheet holds the renamed perks: ' + JSON.stringify(perks), !!perks && perks.includes('iron_grip') && perks.includes('both_hands') && !perks.includes('grapple') && !perks.includes('long_gone'));
 ok('no page errors: ' + errors.join(' | ').slice(0, 300), errors.length === 0);
-await p.screenshot({ path: (process.env.SHOT || '/tmp/old-save') + '.png' });
+await p.screenshot({ path: (process.env.SHOT || tmpdir() + '/old-save') + '.png' });
 await browser.close();

@@ -21,9 +21,9 @@
 //   PARTS=real,table,fog,glyphs  which parts to run · JOBS=3  how many pages play the table at once
 // One line per failing case, then the counts. The full report: .check/e2e/fx-sweep.json. Exit code 1 on any failure.
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs';
-import { chromium, player, click, BASE, pause } from './lib.mjs';
+import { chromium, player, click, BASE, pause, here } from './lib.mjs';
 
-const ROOT = new URL('../../../', import.meta.url).pathname;
+const ROOT = here('../../../', import.meta.url);
 const WEAPONS = JSON.parse(readFileSync(ROOT + 'data/weapons.json', 'utf8')).items;
 const TECHS = JSON.parse(readFileSync(ROOT + 'data/techniques.json', 'utf8')).items;
 const ONLY = process.env.ONLY ? new RegExp(process.env.ONLY) : null, REAL = !!process.env.REAL, LOG = !!process.env.SWEEP_LOG;

@@ -5,8 +5,8 @@
 // 1024×768 with no sideways page scroll. Shots for Leon: docs/design/handoffs/skeleton-2.0-shots/creation-points-<width>.png
 // (the window) and -full.png (the whole step), or SHOTS=<dir>.
 import { mkdirSync } from 'fs';
-import { chromium, click, player, hostAs, settle } from './lib.mjs';
-const SHOTS = process.env.SHOTS || new URL('../../../docs/design/handoffs/skeleton-2.0-shots/', import.meta.url).pathname.replace(/\/$/, '');
+import { chromium, click, player, hostAs, settle, here } from './lib.mjs';
+const SHOTS = process.env.SHOTS || here('../../../docs/design/handoffs/skeleton-2.0-shots/', import.meta.url).replace(/\/$/, '');
 mkdirSync(SHOTS, { recursive: true });
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };

@@ -1,0 +1,5 @@
+# Text files are LF in the repository and in every checkout (a Windows clone with CRLF made three source-reading
+# tests fail, and the Python generators write CRLF there: git stores LF either way).
+* text=auto eol=lf
+# (kept byte for byte: it is in art/checksums.sha256 with its CRLF)
+art/_archive/character-portraits/heavenprint-new-faces/character-index.csv -text

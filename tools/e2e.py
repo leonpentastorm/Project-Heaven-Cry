@@ -38,6 +38,32 @@ import json, os, re, shutil, subprocess, sys, tempfile, threading, time, urllib.
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WIN = os.name == 'nt'
+def exe(cmd):
+    """Windows: npm and npx are .cmd files a process cannot be started from by bare name, and 'python3' may be another
+    install than the one running this."""
+    return [sys.executable if cmd[0] == 'python3' else (shutil.which(cmd[0]) or cmd[0])] + cmd[1:]
+# A child gets its own process group, so that stopping it stops what it started (the server's workerd, a suite's browsers).
+GROUP = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if WIN else {'start_new_session': True}
+# The browsers: where Playwright keeps them (its own default), unless they were installed inside the checkout with
+#   PLAYWRIGHT_BROWSERS_PATH=node_modules/.playwright-browsers npx playwright install chromium
+# which is needed on Windows when this runs under a Store-packaged Python: such a process, and the suites it starts,
+# cannot see the real %LOCALAPPDATA% ("Executable doesn't exist" for a browser that is there).
+BROWSERS = os.path.join(ROOT, 'node_modules', '.playwright-browsers')
+if os.path.isdir(BROWSERS): os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', BROWSERS)
+def kill_tree(p, sig=9):
+    try:
+        if WIN: subprocess.run(['taskkill', '/F', '/T', '/PID', str(p.pid)], capture_output=True)
+        else: os.killpg(os.getpgid(p.pid), sig)
+    except Exception:
+        try: p.kill()
+        except Exception: pass
+def kill_servers():
+    """Stop every room server on this machine (wrangler dev and its workerd): one from before would serve the old worker."""
+    if not WIN: subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True); return
+    ps = ("Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'workerd.exe' -or ($_.Name -eq 'node.exe' -and $_.CommandLine -match 'wrangler' "
+          "-and $_.CommandLine -match '\bdev\b') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }")
+    subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', ps], capture_output=True)
 E2E = os.path.join(ROOT, 'apps/web/e2e')
 G = json.load(open(os.path.join(E2E, 'groups.json')))
 # `anim` runs at real speed: those suites check animation or time. `rules` plays fights at the test pace (FAST=1).
@@ -116,11 +142,11 @@ def start_server():
     os.makedirs(os.path.join(ROOT, '.check/e2e'), exist_ok=True)
     log = os.path.join(ROOT, '.check/e2e/server.log')
     if server_starts and os.path.exists(log): os.replace(log, os.path.join(ROOT, f'.check/e2e/server.{server_starts}.log'))
-    subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True); time.sleep(1)
+    kill_servers(); time.sleep(1)
     # (warnings and errors only: a line for every file served was 120,000 lines a run. On a nearly full disk the rooms'
     # saved state goes to the memory disk with the browsers' files: the server stops when it cannot write it.)
     cmd = ['npm', 'run', 'dev', '-w', '@phc/server', '--', '--log-level', 'warn'] + (['--persist-to', os.path.join(SUITE_TMP, 'wrangler')] if SUITE_TMP else [])
-    started = subprocess.Popen(cmd, cwd=ROOT, stdout=open(log, 'w'), stderr=subprocess.STDOUT, start_new_session=True)
+    started = subprocess.Popen(exe(cmd), cwd=ROOT, stdout=open(log, 'w'), stderr=subprocess.STDOUT, **GROUP)
     server_starts += 1
     for _ in range(240):
         if up(base): break
@@ -141,10 +167,10 @@ if not base:
     if not no_build:
         t0 = time.time()
         for cmd in (['python3', 'design/canvas-build/build.py', '--web'], ['npm', 'run', 'build']):
-            p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+            p = subprocess.run(exe(cmd), cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
             if p.returncode: print((p.stdout + p.stderr)[-1500:]); sys.exit('build failed: ' + ' '.join(cmd))
         print(f'built ({time.time() - t0:.0f}s)', flush=True)
-        subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True)  # a server from before would serve the old build's worker
+        kill_servers()  # a server from before would serve the old build's worker
         time.sleep(1)
     if not up(base): start_server()
     else: ours = False; warm(base)  # a server someone else started (npm run dev -w @phc/server): used as it is, never restarted
@@ -153,7 +179,7 @@ ANSI = re.compile(r'\x1b\[[0-9;]*m')
 def run(name, tag=''):
     shots = os.path.join(ROOT, '.check/e2e/shots', name)
     shutil.rmtree(shots, ignore_errors=True); os.makedirs(shots, exist_ok=True)
-    env = dict(os.environ, BASE=base, SHOTS=shots + '/')
+    env = dict(os.environ, BASE=base, SHOTS=shots.replace(os.sep, '/') + '/')
     if SUITE_TMP: env['TMPDIR'] = SUITE_TMP
     if not slow and name not in ANIM: env['FAST'] = '1'
     # PARTS means one thing to fx-sweep and another to coop-stall: a PARTS given to the whole run reaches a suite only
@@ -163,13 +189,12 @@ def run(name, tag=''):
     ensure_server()
     t0 = time.time(); log = os.path.join(ROOT, '.check/e2e', name + tag + '.log')
     # (its own process group: a suite that runs out of time is stopped with its browsers, which were left behind before)
-    p = subprocess.Popen(['node', 'apps/web/e2e/' + name + '.mjs'], cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, start_new_session=True)
+    p = subprocess.Popen(['node', 'apps/web/e2e/' + name + '.mjs'], cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace', env=env, **GROUP)
     try: out, _ = p.communicate(timeout=3600 if name == 'fx-sweep' and sweep_full else 1800); code = p.returncode
     except subprocess.TimeoutExpired:
-        try: os.killpg(os.getpgid(p.pid), 9)
-        except Exception: p.kill()
+        kill_tree(p)
         out, _ = p.communicate(); out = (out or '') + '\nTIMED OUT (30 minutes a suite; an hour for the whole sweep)'; code = 124
-    out = ANSI.sub('', out); open(log, 'w').write(out)
+    out = ANSI.sub('', out); open(log, 'w', encoding='utf-8').write(out)
     oks = len(re.findall(r'^ok ', out, re.M)); bad = [l for l in out.split('\n') if l.startswith('FAIL')]
     crashed = code != 0 and not bad
     # a suite that looked at nothing proves nothing: a green line must mean something was checked
@@ -231,9 +256,8 @@ try:
 finally:
     if SUITE_TMP: shutil.rmtree(SUITE_TMP, ignore_errors=True)
     if started:
-        try: os.killpg(os.getpgid(started.pid), 15)
-        except Exception: pass
-        subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True)
+        kill_tree(started, 15)
+        kill_servers()
 mins = f'  ({(time.time() - t_all) / 60:.1f} min)'
 if failed: print(f'{len(failed)} of {len(names)} FAILED: ' + ' '.join(failed) + (f' · and {len(flaky)} passed only alone: ' + ' '.join(flaky) if flaky else '') + mins)
 elif flaky: print(f'GREEN, BUT {len(flaky)} PASSED ONLY ALONE (a suite that cannot share the machine; fix the suite): ' + ' '.join(flaky) + mins)

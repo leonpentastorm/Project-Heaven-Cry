@@ -28,11 +28,11 @@ Examples
 It prints the units before, then after every step the fight log lines it wrote and every unit's HP, AP, meters and
 conditions. A refused action prints its reason.
 """
-import os, re, subprocess, sys
+import os, re, shutil, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if len(sys.argv) < 2 or sys.argv[1] in ('-h', '--help'): print(__doc__); sys.exit(0)
 env = dict(os.environ, PHC_TRY=sys.argv[1] if not os.path.exists(sys.argv[1]) else os.path.abspath(sys.argv[1]))
-p = subprocess.run(['npx', 'vitest', 'run', '--root', 'packages/engine', 'test/try.test.ts', '--silent=false'], cwd=ROOT, capture_output=True, text=True, env=env)
+p = subprocess.run([shutil.which('npx') or 'npx', 'vitest', 'run', '--root', 'packages/engine', 'test/try.test.ts', '--silent=false'], cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace', env=env)
 out = re.sub(r'\x1b\[[0-9;]*m', '', p.stdout + p.stderr)
 m = re.search(r'\nSTART\n.*?(?=\n\s*(?:✓|×|❯| Test Files|stdout \|))', out, re.S)
 print(m.group(0).strip() if m else out[-3000:])

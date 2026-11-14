@@ -16,7 +16,7 @@ after a change to a simulator policy or the enemy AI, and before a merge of engi
 
 Exit code 0 when all pass. Full logs are kept in .check/ (ignored by git) when something fails.
 """
-import os, re, subprocess, sys, time
+import os, re, shutil, subprocess, sys, time
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,7 +50,10 @@ ANSI = re.compile(r'\x1b\[[0-9;]*m')
 
 def run(job):
     kind, name, cmd = job; t0 = time.time()
-    p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+    # Windows: npm and npx are .cmd files CreateProcess cannot find by bare name, 'python3' may be another install than
+    # the one running this, and the console's code page is not UTF-8 (vitest prints check marks).
+    cmd = [sys.executable if cmd[0] == 'python3' else (shutil.which(cmd[0]) or cmd[0])] + cmd[1:]
+    p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
     out = ANSI.sub('', p.stdout + p.stderr); ok = p.returncode == 0; note = ''
     if name in DATA_JOBS:
         m = re.search(r'(\d+) errors?', out); ok = ok and bool(m) and m.group(1) == '0'; note = (m.group(0) if m else 'no result line')
@@ -71,7 +74,7 @@ if True:
         print(f"{'ok  ' if ok else 'FAIL'} {name:<13} {note}  ({secs:.0f}s)")
         if ok: continue
         fails += 1; os.makedirs(os.path.join(ROOT, '.check'), exist_ok=True)
-        log = os.path.join(ROOT, '.check', name.replace(' ', '-') + '.log'); open(log, 'w').write(out)
+        log = os.path.join(ROOT, '.check', name.replace(' ', '-') + '.log'); open(log, 'w', encoding='utf-8').write(out)
         lines = out.split('\n')
         if 'tests' in name or 'smoke' in name:
             keep = [l for l in lines if re.search(r'^\s*(FAIL|×|✗)\s|AssertionError|Error:|❯ .*\.test\.', l)][:30]

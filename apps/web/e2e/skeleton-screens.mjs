@@ -10,8 +10,8 @@
 // Shots for Leon: docs/design/handoffs/skeleton-2.0-shots/{archetypes,skillpage,levelup,tabs-wrap,calls,shield}-*.png
 // (or SHOTS=<dir>).
 import { mkdirSync, readFileSync } from 'fs';
-import { chromium, click, player, hostAs, BASE, settle } from './lib.mjs';
-const SHOTS = process.env.SHOTS || new URL('../../../docs/design/handoffs/skeleton-2.0-shots/', import.meta.url).pathname.replace(/\/$/, '');
+import { chromium, click, player, hostAs, BASE, settle, here } from './lib.mjs';
+const SHOTS = process.env.SHOTS || here('../../../docs/design/handoffs/skeleton-2.0-shots/', import.meta.url).replace(/\/$/, '');
 mkdirSync(SHOTS, { recursive: true });
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };

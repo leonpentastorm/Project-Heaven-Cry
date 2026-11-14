@@ -1,10 +1,14 @@
 import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 export const BASE = process.env.BASE || 'http://127.0.0.1:8787';
 // Where pictures go: SHOTS when it is set (the runner gives every suite its own folder and empties it when the suite
 // passes), else apps/web/e2e/shots/.
-export const OUT = process.env.SHOTS ? process.env.SHOTS.replace(/\/?$/, '/') : new URL('./shots/', import.meta.url).pathname;
+/** here('../x/', import.meta.url): a path beside a suite, with forward slashes. (A URL's .pathname is not a path on
+ *  Windows: it reads /C:/… and keeps %20 for a space.) */
+export const here = (rel, from) => fileURLToPath(new URL(rel, from)).replace(/\\/g, '/');
+export const OUT = process.env.SHOTS ? process.env.SHOTS.replace(/\/?$/, '/') : here('./shots/', import.meta.url);
 /** player(browser, name, { campaigns: ['m813'], play: 'survival' }): a page that shows campaigns their data hides (the test hook of
  *  apps/web/src/game/starts.ts, localStorage phc.showCampaigns): a suite that plays M813, hidden from the menu since
  *  Classes 3.0 step 10b, keeps playing it (the room this page hosts starts on it). */
