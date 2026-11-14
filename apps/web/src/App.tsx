@@ -103,9 +103,7 @@ export function App() {
       {tr.ghost === 'combat-in' && !reducedMotion() && <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 56, pointerEvents: 'none', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: '#FFFFFF', animation: 'phcFlash .5s ease-out .3s both' }} />
         <div style={{ position: 'absolute', top: '-20%', bottom: '-20%', left: '30%', width: '22%', background: 'linear-gradient(90deg, transparent, rgba(246, 81, 87, 0.85) 40%, #FFFFFF 50%, rgba(246, 81, 87, 0.85) 60%, transparent)', animation: 'phcSlash .5s cubic-bezier(.5,0,.3,1) .22s both' }} />
-        <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', transform: 'translateY(-50%)', display: 'grid', placeItems: 'center', animation: 'phcFlash .7s ease-out .25s both' }}>
-          <span style={{ padding: '10px 36px', background: '#0A0D13', borderTop: '3px solid #F65157', borderBottom: '3px solid #F65157', color: '#FFFFFF', fontFamily: "'Chakra Petch', sans-serif", fontSize: 'clamp(28px, 6vw, 64px)', fontWeight: 700, letterSpacing: '0.3em', fontStyle: 'italic' }}>COMBAT</span>
-        </div>
+        {/* (The fight's title is the FIGHT card of the turn banners, game/turnIntro.tsx: one card, not two.) */}
       </div>}
       {st.role && <Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role && <NarratorVoice game={st.game || null} />}
@@ -148,7 +146,8 @@ export function App() {
 type Ghost = null | 'forward' | 'back' | 'combat-in' | 'combat-out';
 const GHOST_CLS: Record<Exclude<Ghost, null>, string> = { forward: 'phc-slide-out-left', back: 'phc-slide-out-right', 'combat-in': 'phc-combat-ghost', 'combat-out': 'phc-story-ghost' };
 const IN_CLS: Record<Exclude<Ghost, null>, string> = { forward: 'phc-slide-in-right', back: 'phc-slide-in-left', 'combat-in': 'phc-combat-in', 'combat-out': 'phc-story-in' };
-// combat-in keeps its holder up until the slash and the COMBAT title are done (the copy itself is gone by 620 ms).
+// combat-in keeps its holder up until the slash and the flash are done (the copy itself is gone by 620 ms); the fight's
+// title is the FIGHT card (game/turnIntro.tsx), which plays over it.
 const GHOST_MS: Record<Exclude<Ghost, null>, number> = { forward: 340, back: 340, 'combat-in': COMBAT_IN_MS, 'combat-out': 520 };
 const IN_MS: Record<Exclude<Ghost, null>, number> = { forward: 450, back: 450, 'combat-in': COMBAT_IN_MS, 'combat-out': 780 };
 

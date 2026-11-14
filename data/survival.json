@@ -8,6 +8,11 @@
     "start_credits": 0,
     "dead_return_hp": 1,
     "first_setting": "ahoc",
+    "after_fight": {
+      "about": "What follows a fight, said on the fight's VICTORY or DEFEAT card (docs/design/ui-screens.md, the fight cards): won, the squad goes back to the trail; lost, the run is over.",
+      "won": "Back to the trail",
+      "lost": "The run is over"
+    },
     "provisional": true
   },
   "loadout": {
