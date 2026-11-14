@@ -204,17 +204,21 @@
 <span class="phc-pt-stepper" onKeyDown="{{a.keys}}"><button type="button" class="phc-pt-step" data-attr-down="{{a.key}}" aria-label="{{a.downAria}}" aria-disabled="{{a.downOff}}" tip="{{a.downTitle}}" onClick="{{a.down}}">‹</button><span class="phc-pt-val" data-attr-val="{{a.key}}" style="{{a.valStyle}}">{{a.val}}</span><button type="button" class="phc-pt-step" data-attr-up="{{a.key}}" aria-label="{{a.upAria}}" aria-disabled="{{a.upOff}}" tip="{{a.upTitle}}" onClick="{{a.up}}">›</button></span>
 <button type="button" class="phc-pt-side phc-pt-step" data-attr-reset="{{a.key}}" aria-label="{{a.resetAria}}" aria-disabled="{{a.resetOff}}" tip="{{a.resetAria}}" onClick="{{a.reset}}" style="font-size: 14px">↺</button>
 </div>
-<span data-attr-next="{{a.key}}" style="font-size: 12px; line-height: 16px; color: #C9D3E3">{{a.next}}</span>
+<span data-attr-next="{{a.key}}" style="font-size: 13px; line-height: 17px; color: #C9D3E3">{{a.next}}</span>
 <div style="{{a.railStyle}}">
 <sc-for list="{{a.cards}}" as="k" hint-placeholder-count="3">
-<div class="phc-card" data-skill="{{k.key}}" onMouseEnter="{{k.hover}}" onFocus="{{k.hover}}" style="{{k.style}}">
+<div class="phc-card phc-sk" data-skill="{{k.key}}" onMouseEnter="{{k.hover}}" onFocus="{{k.hover}}" style="{{k.style}}">
+<button type="button" class="phc-sk-face" data-skill-face="{{k.key}}" onClick="{{k.open}}" aria-label="{{k.openLabel}}" tip="{{k.openLabel}}"><img src="{{k.face}}" alt=""></button>
+<div class="phc-sk-body">
 <div class="phc-pt-row">
 <span class="phc-pt-name" tip="{{k.lineTitle}}" style="{{k.nameStyle}}">{{k.name}}</span>
-<span class="phc-pt-pips" aria-hidden="true"><sc-for list="{{k.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" tip="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span>
+<span class="phc-sk-mod" data-skill-mod="{{k.key}}" tip="{{k.modTitle}}">{{k.modChip}}</span>
 <span class="phc-pt-stepper" onKeyDown="{{k.keys}}"><button type="button" class="phc-pt-step" data-skill-down="{{k.key}}" aria-label="{{k.decAria}}" aria-disabled="{{k.decOff}}" tip="{{k.decTitle}}" onClick="{{k.dec}}">‹</button><span class="phc-pt-val" data-skill-val="{{k.key}}">{{k.pts}}</span><button type="button" class="phc-pt-step" data-skill-up="{{k.key}}" aria-label="{{k.incAria}}" aria-disabled="{{k.incOff}}" tip="{{k.incTitle}}" onClick="{{k.inc}}">›</button></span>
-<button type="button" class="phc-help phc-pt-side" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" tip="Read the EPCCG entry" style="{{k.helpStyle}}">?</button>
+<button type="button" class="phc-help phc-pt-side" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" tip="What each point gives" style="{{k.helpStyle}}">?</button>
 </div>
-<span class="phc-pt-line" tip="{{k.lineTitle}}"><span style="{{k.tagStyle}}; margin-right: 5px">{{k.tag}}</span><sc-if value="{{k.hasNeed}}" hint-placeholder-val="{{false}}"><span data-skill-need="{{k.key}}" style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #FFFFFF; margin-right: 5px">· {{k.need}}</span></sc-if>· {{k.line}}</span>
+<div class="phc-sk-tags"><span data-skill-tag="{{k.key}}" style="{{k.tagStyle}}">{{k.tag}}</span><sc-if value="{{k.hasNeed}}" hint-placeholder-val="{{false}}"><span data-skill-need="{{k.key}}" style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #FFFFFF">· {{k.need}}</span></sc-if><span class="phc-pt-pips" aria-hidden="true" style="margin-left: auto"><sc-for list="{{k.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" tip="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span></div>
+<span class="phc-pt-line" data-skill-next="{{k.key}}" data-next-at="{{k.nextAt}}" tip="{{k.lineTitle}}">{{k.line}}</span>
+</div>
 </div>
 </sc-for>
 </div>
@@ -225,11 +229,11 @@
 </sc-for>
 </div>
 <div style="{{detail.style}}">
-<button type="button" onClick="{{detail.zoom}}" aria-label="Enlarge the {{detail.name}} skill portrait" style="{{zoomBtn}}"><img src="{{detail.img}}" alt="" style="width: 64px; height: 80px; object-fit: cover; border-radius: 6px; background: #000"></button>
-<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1 1 0">
+<button type="button" onClick="{{detail.zoom}}" aria-label="Enlarge the {{detail.name}} skill portrait" style="{{zoomBtn}}"><img src="{{detail.img}}" alt="" style="width: 72px; height: 90px; object-fit: cover; border-radius: 8px; background: #000"></button>
+<div data-skill-detail="{{detail.key}}" style="display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 0">
 <span style="{{detail.nameStyle}}">{{detail.name}} · {{detail.attr}} · {{detail.mod}}</span>
-<span style="font-size: 13px; color: #C9D3E3">{{detail.summary}} {{detail.slot}}</span>
-<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 14px; color: #A3AEC2">“{{detail.quiet}}”</span>
+<span style="font-family: 'Spectral', serif; font-style: italic; font-size: 15px; line-height: 1.35; color: #C9D3E3">“{{detail.quiet}}”</span>
+<span data-detail-next="" style="font-size: 14px; font-weight: 600; line-height: 1.35; color: #E7EBF3">{{detail.next}}</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end; max-width: 300px">
 <span style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end"><span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">CLASS AT LEVEL 3</span><sc-for list="{{leanList}}" as="l" hint-placeholder-count="2"><span class="phc-lean-chip" style="{{l.chip}}"><sc-if value="{{l.hasIcon}}"><img class="phc-class-emblem" src="{{l.icon}}" alt="" style="width: 16px; height: 16px"></sc-if>{{l.name}} {{l.total}}</span></sc-for></span>

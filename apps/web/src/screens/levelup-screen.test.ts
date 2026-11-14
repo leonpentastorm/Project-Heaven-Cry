@@ -15,7 +15,7 @@ vi.mock('../game/store', () => ({ getState: () => snap || (snap = view()), subsc
 vi.mock('../game/report', () => ({ openReport: () => {}, PlaytestTools: () => null }));
 const { LevelUpLogic } = await import('./levelup.js');
 const React = await import('react'); const { createRoot } = await import('react-dom/client');
-const { makeScreen } = await import('../dc/runtime'); const { expand, D } = await import('./shared');
+const { makeScreen } = await import('../dc/runtime'); const { expand, D, nextLine } = await import('./shared');
 const tpl = (await import('../templates/levelup.template.html?raw')).default;
 const Screen = makeScreen(expand(tpl), LevelUpLogic as any);
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -153,12 +153,14 @@ describe('level-up screen', () => {
     expect((agi.querySelector('button[data-raise="attr"]') as HTMLButtonElement).disabled).toBe(true);
     expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toBe(canRaise(G.characters[c0.id], 'attr', 'agility'));
     expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toMatch(/^Agility 9 opens at level 6/);
-    // every skill: its slot in words and what a point gives, from the engine's data
-    const dex = el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!;
+    // every skill: its slot in words and what its next point gives, from the road map (rules 1.54 item 4119)
+    const dex = el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!, dp = (G.characters[c0.id].skills as any).dexterity || 0;
     expect(dex.querySelector('.phc-lu-slot')!.textContent).toBe('FIGHT');
-    expect(dex.querySelector('.phc-lu-give')!.textContent).toBe('Each point: ' + (SKILL as any).dexterity.per_point.text);
+    expect(dex.querySelector('.phc-lu-next')!.textContent).toBe('Next point (' + (dp + 1) + '): ' + nextLine('dexterity', dp));
+    expect(dex.querySelector('.phc-lu-next')!.getAttribute('data-next-at')).toBe(String(dp + 1));
     expect([...agi.querySelectorAll('.phc-lu-slot')].map((x) => x.textContent)).toEqual(['FIGHT', 'SURVIVE', 'TALK · NOTICE']);
-    expect(el.querySelectorAll('.phc-lu-give').length).toBe(27);
+    expect(el.querySelectorAll('.phc-lu-next').length).toBe(27); expect(el.querySelectorAll('.phc-lu-give').length).toBe(0);
+    expect(dex.querySelectorAll('[data-mark]').length).toBe(5);
     // the attribute's name opens its page: what a point gives, its three skills, what reads it
     await React.act(async () => { (agi.querySelector('button.phc-lu-attrname') as HTMLButtonElement).click(); });
     const page = el.querySelector('.phc-attr-page')!;
@@ -170,7 +172,11 @@ describe('level-up screen', () => {
     // a skill on the page opens that skill's own page
     await React.act(async () => { (page.querySelector('button.phc-attr-skill') as HTMLButtonElement).click(); });
     expect(el.querySelector('.phc-attr-page')).toBeNull();
-    expect(el.querySelector('.phc-ep-give')!.textContent).toContain('WHAT A POINT GIVES');
+    // ...with its road map: ten steps, the character's own points lit (rules 1.54 item 4119)
+    const steps = [...el.querySelectorAll('.phc-ep-road .phc-ep-step')], first = page.querySelector('button.phc-attr-skill')!.getAttribute('data-skill')!;
+    expect(steps.map((x) => x.getAttribute('data-step'))).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
+    const pts = (G.characters[c0.id].skills as any)[first] || 0;
+    expect(steps.filter((x) => x.getAttribute('data-state') === 'now').map((x) => x.getAttribute('data-step'))).toEqual(pts ? [String(pts)] : []);
     root.unmount();
   });
   it('advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing listed, nothing to learn', async () => {

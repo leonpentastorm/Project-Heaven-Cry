@@ -6,7 +6,7 @@ import { ARCHETYPES, SKILL, CALLS, SAVE_SKILL_OF } from '@engine';
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' } });
 vi.stubGlobal('location', { search: '', hash: '' });
 const { CreateLogic } = await import('./create.js');
-const { D: D0, epccgVals, attrPageVals, slotLine, ATTR_GIVES } = await import('./shared');
+const { D: D0, epccgVals, attrPageVals, slotLine, ATTR_GIVES, roadMap, perPoint } = await import('./shared');
 const D: any = D0;
 
 function screen(props: any = { startStep: 'archetype' }) {
@@ -71,7 +71,8 @@ describe('the "?" skill page', () => {
       expect(v.ep.line).toBe(slotLine(s.slot));
       expect(v.ep.line + v.ep.attrName).not.toMatch(/[αβγ]|Body|Mind|Soul/);
       expect(v.ep.attrName).toBe(D.attrs.find((a: any) => a.id === s.attr).name);
-      expect(v.ep.give).toBe((SKILL as any)[s.id].per_point.text);
+      // what a point gives: the road map's ten steps and the head line (rules 1.54 item 4119)
+      expect(v.ep.steps).toHaveLength(10); expect(v.ep.head).toBe(roadMap(s.id).head.join(' · '));
     }
     expect(slotLine('alpha')).toBe('How you fight');
     expect(slotLine('beta')).toBe('How you survive');
@@ -94,7 +95,7 @@ describe('the attribute page', () => {
       expect(v.ap.gives.map((g: any) => g.text.toLowerCase()).join(', ')).toBe((ATTR_GIVES as any)[a.id].toLowerCase());
       expect(v.ap.skills).toHaveLength(3);
       expect(v.ap.skills.map((k: any) => k.slot)).toEqual([slotLine('alpha'), slotLine('beta'), slotLine('gamma')]);
-      for (const k of v.ap.skills) expect(k.give).toBe((SKILL as any)[k.key].per_point.text);
+      for (const k of v.ap.skills) { expect(k.give).toBe(perPoint(k.key)); expect(k.give.length).toBeGreaterThan(0); }
       // its class, and its talking skill's Call
       expect(v.ap.reads.filter((r: any) => r.k === 'CLASS').map((r: any) => r.name)).toEqual([D.classes.find((c: any) => c.attribute === a.id).name]);
       const gamma = v.ap.skills[2].key, call = CALLS.find((c) => c.skill === gamma)!;
