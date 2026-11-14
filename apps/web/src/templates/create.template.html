@@ -217,7 +217,7 @@
 <button type="button" class="phc-help phc-pt-side" onClick="{{k.help}}" aria-label="What is {{k.name}}? Read its EPCCG entry" tip="What each point gives" style="{{k.helpStyle}}">?</button>
 </div>
 <div class="phc-sk-tags"><span data-skill-tag="{{k.key}}" style="{{k.tagStyle}}">{{k.tag}}</span><sc-if value="{{k.hasNeed}}" hint-placeholder-val="{{false}}"><span data-skill-need="{{k.key}}" style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #FFFFFF">· {{k.need}}</span></sc-if><span class="phc-pt-pips" aria-hidden="true" style="margin-left: auto"><sc-for list="{{k.pips}}" as="d" hint-placeholder-count="7"><button type="button" class="phc-pip" tabindex="-1" tip="{{d.title}}" onClick="{{d.set}}"><span style="{{d.style}}"></span></button></sc-for></span></div>
-<span class="phc-pt-line" data-skill-next="{{k.key}}" data-next-at="{{k.nextAt}}" tip="{{k.lineTitle}}">{{k.line}}</span>
+<span class="phc-pt-line" data-skill-next="{{k.key}}" data-next-at="{{k.nextAt}}" tip="{{k.line}}">{{k.line}}</span>
 </div>
 </div>
 </sc-for>
