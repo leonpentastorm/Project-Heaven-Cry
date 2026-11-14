@@ -10,6 +10,18 @@ import { tipProps } from './actionTip';
 
 export const FRAME_INK = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
 const I = FRAME_INK;
+/** What the keeper says (docs/design/ui-screens.md, Writing for the player): the engine's line (`base`: a greet, or the
+ * shop's line after a purchase), until a tab opens, when the keeper says one of its lines for that tab (`says[tab]`, data
+ * survival.json faces); after the next action (`logLen` grows) the engine's line again, or with `after` a line of that kind
+ * (a place's `bought`, since a place's own line never changes). The lines turn over in order, so a tab opened twice varies. */
+export function useKeeperLine(says: Record<string, string[]>, tab: string, base: string, logLen: number, after?: string): { text: string; key: string } {
+  const [st, setSt] = React.useState<{ tab: string; n: number; log: number; text: string | null }>({ tab, n: 0, log: logLen, text: null });
+  let next = st;
+  if (logLen !== st.log) { const l = after ? says[after] || [] : []; next = { tab, n: st.n + 1, log: logLen, text: l.length ? l[st.n % l.length] : null }; }
+  else if (tab !== st.tab) { const l = says[tab] || []; next = { tab, n: st.n + 1, log: logLen, text: l.length ? l[st.n % l.length] : st.text }; }
+  if (next !== st) setSt(next);
+  return { text: next.text ?? base, key: next.n + ':' + (next.text ?? base) };
+}
 /** One tab of the frame: its word, and when it can't be opened yet, why (the hover card says it). */
 export interface FrameTab { id: string; label: string; disabled?: boolean; why?: string }
 /** One member of the party strip: name, initials and colour, whether they are ready to leave, and whether it is you. */
@@ -69,13 +81,13 @@ export function FullScreenFrame(p: FrameProps) {
             <p key={p.lineKey} className="phc-line" style={{ margin: 0, fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 'clamp(18px, 1.35vw, 24px)', lineHeight: 1.45, color: I.text }}>“{p.line}”</p>
           </div>
           <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted }}>THE SQUAD{p.waiting.length ? ' · STILL BROWSING: ' + p.waiting.join(', ').toUpperCase() : ''}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted }}>THE SQUAD{p.waiting.length ? ' · STILL SHOPPING: ' + p.waiting.join(', ').toUpperCase() : ''}</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {p.party.map((m) => (
                 <span key={m.id} data-phc-party={m.id} data-phc-ready={m.ready ? '1' : '0'} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 10px 6px 6px', borderRadius: 99, background: I.panel, border: '1px solid ' + (m.ready ? I.white : I.line), opacity: m.online ? 1 : 0.5 }}>
                   <span style={{ display: 'grid', placeItems: 'center', width: 26, height: 26, borderRadius: '50%', fontSize: 10, fontWeight: 700, background: m.color, color: I.ground }}>{m.initials}</span>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{m.name}{m.mine ? ' (you)' : ''}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: m.ready ? I.white : I.muted }}>{m.ready ? (p.marks ? p.marks[0] : '✓ READY') : (p.marks ? p.marks[1] : 'BROWSING')}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: m.ready ? I.white : I.muted }}>{m.ready ? (p.marks ? p.marks[0] : '✓ READY') : (p.marks ? p.marks[1] : 'SHOPPING')}</span>
                 </span>
               ))}
             </div>
@@ -92,7 +104,7 @@ export function FullScreenFrame(p: FrameProps) {
               const on = t.id === p.tab;
               return <button key={t.id} type="button" role="tab" aria-selected={on} aria-disabled={t.disabled || undefined} tabIndex={on ? 0 : -1} data-phc-tab={t.id} {...tipProps(t.disabled ? t.why : null)}
                 onClick={() => { if (!t.disabled) p.onTab(t.id); }} onKeyDown={(e) => tabKey(e, i)}
-                style={{ minHeight: 48, padding: '0 20px', border: 0, borderBottom: '3px solid ' + (on ? I.white : 'transparent'), background: 'transparent', color: t.disabled ? '#5E6A80' : on ? I.white : I.muted, fontFamily: 'inherit', fontSize: 16, fontWeight: 700, letterSpacing: '0.02em', cursor: t.disabled ? 'not-allowed' : 'pointer' }}>{t.label}{t.disabled ? <span style={{ fontSize: 11, fontWeight: 600, marginLeft: 6, letterSpacing: '0.1em' }}>LATER</span> : null}</button>;
+                style={{ minHeight: 48, padding: '0 20px', border: 0, borderBottom: '3px solid ' + (on ? I.white : 'transparent'), background: 'transparent', color: t.disabled ? '#5E6A80' : on ? I.white : I.muted, fontFamily: 'inherit', fontSize: 16, fontWeight: 700, letterSpacing: '0.02em', cursor: t.disabled ? 'not-allowed' : 'pointer' }}>{t.label}</button>;
             })}
           </div>
           <div data-phc-purse="" style={{ marginLeft: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', paddingBottom: 8 }}>

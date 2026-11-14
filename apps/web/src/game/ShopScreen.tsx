@@ -9,7 +9,7 @@ import { act, getState } from './store';
 import { shopView, compareGear, type ShopCardV, type ShopViewV, type Rarity } from '@engine';
 import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
 import { tipProps } from './actionTip';
-import { FullScreenFrame, FRAME_INK as I, type FrameTab } from './FullScreenFrame';
+import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import ASSETS from './assets.json';
 import { GiveTab } from './GiveTab';
 import { UpgradeCard } from './UpgradeCard';
@@ -50,8 +50,8 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <span data-phc-card-name="" style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 19, fontWeight: 600, lineHeight: 1.15 }}>{c.name}</span>
-          {graded || ['weapon', 'focus', 'armour'].includes(c.preview.kind) || c.rare ? <span data-phc-grade="" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: graded ? I.white : I.muted }}>{c.rarityWord.toUpperCase()}{graded ? ' ' + MARK.repeat(c.marks) : ''}{c.rare ? ' · THE RARER PIECE' : ''}</span> : null}
-          <span style={{ fontSize: 12.5, color: I.muted }}>{c.doorWord && c.attr ? <>{c.forLine.split(' · ')[0]} · <span style={{ color: ATTR_INK[c.attr] || I.text }}>{c.doorWord}</span>{c.forLine.includes('your door') ? ' · your door' : ''}</> : c.forLine}</span>
+          {graded || ['weapon', 'focus', 'armour'].includes(c.preview.kind) || c.rare ? <span data-phc-grade="" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: graded ? I.white : I.muted }}>{c.rarityWord.toUpperCase()}{graded ? ' ' + MARK.repeat(c.marks) : ''}{c.rare ? ' · RARE' : ''}</span> : null}
+          <span style={{ fontSize: 12.5, color: I.muted }}>{c.doorWord && c.attr ? <>{c.forLine.split(' · ')[0]} · <span style={{ color: ATTR_INK[c.attr] || I.text }}>{c.doorWord}</span>{c.forLine.includes(' · yours') ? ' · yours' : ''}</> : c.forLine}</span>
         </div>
       </div>
       {c.preview.lines.length ? (
@@ -81,9 +81,9 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
 
 function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rarity } | null }) {
   const g = getState().game, c = v.me && g ? g.characters[v.me.id] : null;
-  if (!c || !focus || focus.id.startsWith('restock:')) return <p style={{ margin: 0, fontSize: 13, color: I.muted, lineHeight: 1.5 }}>Hover or focus a card to set it against what you hold.</p>;
+  if (!c || !focus || focus.id.startsWith('restock:')) return <p style={{ margin: 0, fontSize: 13, color: I.muted, lineHeight: 1.5 }}>Hover a card to compare it with what you hold.</p>;
   const cmp = compareGear(c, { id: focus.id, rarity: focus.rarity });
-  if (!cmp.held) return <p data-phc-compare="" style={{ margin: 0, fontSize: 13, color: I.muted, lineHeight: 1.5 }}>{cmp.next.name}: nothing you hold takes its place; it goes in the pack.</p>;
+  if (!cmp.held) return <p data-phc-compare="" style={{ margin: 0, fontSize: 13, color: I.muted, lineHeight: 1.5 }}>{cmp.next.name} goes in your pack. It replaces nothing you hold.</p>;
   return (
     <div data-phc-compare="" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>
@@ -103,7 +103,7 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
 }
 
 function You({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rarity } | null }) {
-  const m = v.me; if (!m) return <p style={{ color: I.muted }}>Bring a character to shop.</p>;
+  const m = v.me; if (!m) return <p style={{ color: I.muted }}>You have no character here.</p>;
   const pct = Math.min(100, Math.round((m.kg / Math.max(1, m.limit)) * 100)), over = m.kg > m.limit;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -129,7 +129,7 @@ function You({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rarity }
       <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <span style={kick}>THE PACK</span>
         <div aria-label={'Carrying ' + m.kg + ' of ' + m.limit + ' kg'} style={{ height: 8, borderRadius: 4, background: I.raised, overflow: 'hidden' }}><div style={{ width: pct + '%', height: '100%', background: over ? I.hp : I.text }} /></div>
-        <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · over the limit' : ''}</span>
+        <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · ' + Math.round((m.kg - m.limit) * 10) / 10 + ' kg over' : ''}</span>
         {m.pack.map((p, i) => <div key={i} data-phc-pack-line={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}><div style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>{p.wear ? <WearBar w={p.wear} label={p.label} compact /> : null}</div>)}
       </section>
     </div>
@@ -141,6 +141,7 @@ export function ShopScreen() {
   const [tab, setTab] = React.useState('always'), [focus, setFocus] = React.useState<{ id: string; rarity: Rarity } | null>(null);
   const [qty, setQtyMap] = React.useState<Record<string, number>>({}), [confirm, setConfirm] = React.useState<number | null>(null);
   const v = g ? shopView(g as any, me) : null;
+  const say = useKeeperLine(v?.face.says || {}, tab === 'always' ? 'stock' : tab, v?.face.line || '', v?.log.length || 0); // (before any return: a hook)
   if (!g || !v) return <div style={{ padding: 40, color: I.muted }}>No shop is open.</div>;
   const charId = v.me?.id || '';
   const q = (k: string) => qty[k] || 1, setQ = (k: string) => (n: number) => setQtyMap({ ...qty, [k]: n });
@@ -148,25 +149,25 @@ export function ShopScreen() {
   const card = (c: ShopCardV, big = false) => <Card key={c.key} c={c} qty={q(c.key)} setQty={setQ(c.key)} onFocus={() => setFocus({ id: c.id, rarity: c.rarity })} onBuy={() => buy(c)} big={big} />;
   const tabs: FrameTab[] = [
     { id: 'always', label: 'Always in stock' }, { id: 'gear', label: "Today's gear" }, { id: 'upgrade', label: 'Repair and upgrade' }, { id: 'sell', label: 'Sell' },
-    { id: 'give', label: 'Give' },
+    ...(Object.keys(g.characters).length > 1 ? [{ id: 'give', label: 'Give' }] : []), // a solo player has no one to hand anything to
   ];
   const portrait = v.face.portraitPending ? (v.face.fallback ? art('char-' + v.face.fallback) : '') : art(v.face.portrait);
   const backdrop = v.face.backdropPending ? (v.face.backdropFallback ? art('ill-' + v.face.backdropFallback) : '') : art(v.face.backdrop);
   let body: React.ReactNode;
-  if (tab === 'always') body = v.shelves.map((s) => <section key={s.shelf} data-phc-shelf={s.shelf}>{shelfHead(s.name, s.shelf === 'guns' ? 'what your squad carries, first' : s.shelf === 'calibres' ? 'never sold out' : undefined)}<div style={GRID}>{s.cards.map((c) => card(c))}</div></section>);
-  else if (tab === 'gear') body = <section data-phc-shelf="gear">{shelfHead("Today's gear", 'one of each; the first buyer takes it')}<div style={GRID}>{v.gear.map((c) => card(c, c.rare))}</div></section>;
+  if (tab === 'always') body = v.shelves.map((s) => <section key={s.shelf} data-phc-shelf={s.shelf}>{shelfHead(s.name)}<div style={GRID}>{s.cards.map((c) => card(c))}</div></section>);
+  else if (tab === 'gear') body = <section data-phc-shelf="gear">{shelfHead("Today's gear", 'One of each')}<div style={GRID}>{v.gear.map((c) => card(c, c.rare))}</div></section>;
   else if (tab === 'upgrade') { // rules 1.46 the grade step; rules 1.50 the Repair shelf (the services the engine registered, by service)
     const svc = (sv: ShopViewV['services'][number]) => <UpgradeCard key={sv.key} s={sv} onFocus={() => sv.id && setFocus({ id: sv.id, rarity: (sv.rarity || 'standard') as Rarity })} />;
     const grades = v.services.filter((sv) => sv.service !== 'repair'), repairs = v.services.filter((sv) => sv.service === 'repair');
     body = <>
-      <section data-phc-shelf="repair">{shelfHead('Repair', 'back to full durability, priced by the wear; cheaper at a Forge')}{repairs.length ? <div style={GRID}>{repairs.map(svc)}</div>
-        : <p data-phc-repair-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560, marginBottom: 28 }}>Nothing you carry is worn: every weapon is at full durability.</p>}</section>
-      <section data-phc-shelf="upgrade">{shelfHead('Upgrade', 'one grade step a visit, at the full price; cheaper at a Forge')}{grades.length ? <div style={GRID}>{grades.map(svc)}</div>
-        : <p data-phc-upgrade-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>Nothing you carry takes a grade step here: a weapon or a focus does.</p>}</section>
+      <section data-phc-shelf="repair">{shelfHead('Repair', 'Back to full durability')}{repairs.length ? <div style={GRID}>{repairs.map(svc)}</div>
+        : <p data-phc-repair-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560, marginBottom: 28 }}>Everything you carry is in full repair.</p>}</section>
+      <section data-phc-shelf="upgrade">{shelfHead('Upgrade', 'One upgrade per visit')}{grades.length ? <div style={GRID}>{grades.map(svc)}</div>
+        : <p data-phc-upgrade-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>You carry no weapon or focus that can be upgraded.</p>}</section>
     </>;
   }
   else if (tab === 'give') body = <GiveTab />;
-  else body = <section data-phc-shelf="sell">{shelfHead('Sell', 'a quarter of the price at its own grade')}<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{v.sell.map((r) => (
+  else body = <section data-phc-shelf="sell">{shelfHead('Sell')}<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{v.sell.map((r) => (
     <div key={r.idx} data-phc-sell={r.idx} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why ? 0.6 : 1 }}>
       <img src={iconOf(r.id)} alt="" width={40} height={40} style={{ objectFit: 'contain', visibility: iconOf(r.id) ? 'visible' : 'hidden' }} />
       <span style={{ flex: 1, minWidth: 0, fontSize: 14 }}>{r.label}</span>
@@ -177,10 +178,10 @@ export function ShopScreen() {
       </>}
     </div>))}</div></section>;
   return (
-    <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.setting} line={v.face.line} lineKey={v.face.line + v.log.length}
+    <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.setting} line={say.text} lineKey={say.key}
       tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0}
       party={v.party.map((p) => ({ id: p.id, name: p.charName, initials: p.initials, color: p.color, ready: p.ready, online: p.online, mine: p.mine }))} ready={v.ready} isHost={v.isHost} waiting={v.party.length > 1 ? v.waiting : []}
-      onReady={() => act({ type: 'run/leave' })} onClose={() => act({ type: 'run/leave', close: true })} closeTip="Everyone goes back to the map." readyWord={v.party.length > 1 ? 'Ready to leave' : 'Leave the shop'}
+      onReady={() => act({ type: 'run/leave' })} onClose={() => act({ type: 'run/leave', close: true })} closeTip="Takes everyone back to the map." readyWord={v.party.length > 1 ? 'Ready to leave' : 'Leave the shop'}
       log={v.log} side={<You v={v} focus={focus} />}>
       {body}
     </FullScreenFrame>

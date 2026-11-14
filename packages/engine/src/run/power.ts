@@ -42,7 +42,7 @@ export const capRoom = (c: Character): number => Math.max(0, BOON_CAP - runWorth
 /** Why `id` can't be added to this character's run power, or null: it would pass the cap (rule 31). */
 export function capProblem(c: Character, id: string): string | null {
   const w = worthOf(id), room = capRoom(c);
-  return w > room ? (ROW[id]?.name || id) + ' is worth ' + w + ' of the run\'s ' + BOON_CAP + '; ' + c.name + ' has ' + room + ' left.' : null;
+  return w > room ? c.name + ' has ' + room + ' boon room left; ' + (ROW[id]?.name || id) + ' needs ' + w + '.' : null;
 }
 
 const isFocus = (id: string) => Object.values(FOCUS_IDS).some((l) => l.includes(id));

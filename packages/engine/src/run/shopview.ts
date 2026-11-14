@@ -10,7 +10,7 @@ import { type GearPreview, gearPreview, rarityWord, rarityMarks } from '../gearp
 import { SETTING } from './encounter';
 import { relicRow } from './power';
 import { runSetting, type RunState } from './state';
-import { type ServiceCard, type ShopState, FACES, SHOP_DATA, counterLines, linePrice, buyProblem, sellProblem, sellValue, shopOf, shopServices, restockRoom } from './shop';
+import { type ServiceCard, type ShopState, FACES, SHOP_DATA, counterLines, linePrice, buyProblem, sellProblem, sellValue, shopOf, shopServices, restockRoom, faceTabLines } from './shop';
 
 /** One card on a shelf: what it is, its grade, what it is for (the door's attribute for its ink), its numbers (the gear
  * preview), the price of one purchase and how many that gives, and the reason it can't be bought now (null: it can). */
@@ -23,7 +23,8 @@ export interface SellRowV { idx: number; id: string; label: string; rarity: Rari
 /** The full-screen shop for one player and one character (spec 8.3). */
 export interface ShopViewV {
   kind: 'shop' | 'forge'; setting: string;
-  face: { id: string; name: string; role: string; portrait: string; portraitPending: boolean; fallback: string | null; backdrop: string; backdropPending: boolean; backdropFallback: string | null; line: string; lineKind: string };
+  face: { id: string; name: string; role: string; portrait: string; portraitPending: boolean; fallback: string | null; backdrop: string; backdropPending: boolean; backdropFallback: string | null; line: string; lineKind: string;
+    /** the keeper's lines by kind (a tab's id as it opens), for the client to pick from (survival.json faces) */ says: Record<string, string[]> };
   me: MeV | null;
   shelves: { shelf: string; name: string; cards: ShopCardV[] }[];
   gear: ShopCardV[]; services: ServiceCard[]; sell: SellRowV[];
@@ -38,8 +39,8 @@ const DOOR_ATTR: Record<string, string> = Object.fromEntries(Object.values(SKILL
 function forOf(c: Character | null, id: string, pv: GearPreview): { line: string; attr: string | null; door: string | null } {
   const it: any = ITEM[id], w: any = WEAPON[id];
   if (it?.focus) { const door = it.focus.door as string, mine = !!c && (c.skills[door] || 0) > 0;
-    return { line: 'Focus · ' + cap(kindOfDoor(door) || door) + (mine ? ' · your door' : ''), attr: DOOR_ATTR[door] || null, door: SKILL[door]?.name || door }; }
-  if (w && c) { const same = WEAPON[c.weapon]?.category === w.category; return { line: pv.category + (c.weapon === id ? ' · your weapon' : same ? ' · your kind' : ''), attr: null, door: null }; }
+    return { line: 'Focus · ' + cap(kindOfDoor(door) || door) + (mine ? ' · yours' : ''), attr: DOOR_ATTR[door] || null, door: SKILL[door]?.name || door }; }
+  if (w && c) { const same = WEAPON[c.weapon]?.category === w.category; return { line: pv.category + (c.weapon === id ? ' · in your hand' : same ? ' · your kind' : ''), attr: null, door: null }; }
   return { line: pv.category, attr: null, door: null };
 }
 /** The "you" panel of a full-screen place (the shop's, the Forge's, every safe node's): name, level, purse, portrait,
@@ -71,7 +72,7 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
       price, per, qtyMax: o.qtyMax ?? 1, preview: pv, why, sold: o.sold ?? null, rare: !!o.rare, text: pv.text,
       totals: Array.from({ length: o.qtyMax ?? 1 }, (_, i) => price * (i + 1)), whys: Array.from({ length: o.qtyMax ?? 1 }, (_, i) => (i ? ask(key, i + 1) : why)) };
   };
-  const ask = (key: string, qty = 1) => (c ? buyProblem(g as any, c.owner, { charId: c.id, key, qty }) : 'Bring a character to buy.');
+  const ask = (key: string, qty = 1) => (c ? buyProblem(g as any, c.owner, { charId: c.id, key, qty }) : 'You have no character here to buy for.');
   const lines = counterLines(chars);
   const shelves = SHOP_DATA.always.map((s) => ({ shelf: s.shelf, name: s.name, cards: lines.filter((l) => l.shelf === s.shelf && (!l.res || !c || classResources(c).some((x) => x.id === l.res && x.persist)))
     .map((l) => l.res ? card(l.key, 'restock:' + l.res, 'standard', linePrice(l), 1, ask(l.key), { name: 'Restock: ' + l.res.replace(/_/g, ' '), qtyMax: Math.max(1, Math.min(SHOP_DATA.max_qty, c ? restockRoom(c, l.res) : 1)) })
@@ -89,7 +90,7 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
   const party = g.players.map((p) => ({ id: p.id, charId: owner(p.id)?.id || null, name: p.name, charName: owner(p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', ready: !!r.ready[p.id], online: p.online, mine: p.id === me }));
   return {
     kind: sh.kind, setting: SETTING[runSetting(r)]?.name || runSetting(r),
-    face: { id: f?.id || '', name: f?.name || 'The shop', role: f?.role || 'Shopkeeper', portrait: f?.portrait || '', portraitPending: !!f?.portrait_pending, fallback: f?.fallback ?? null, backdrop: f?.backdrop || '', backdropPending: !!f?.backdrop_pending, backdropFallback: f?.backdrop_fallback ?? null, line: sh.line.text, lineKind: sh.line.kind },
+    face: { id: f?.id || '', name: f?.name || 'The shop', role: f?.role || 'Shopkeeper', portrait: f?.portrait || '', portraitPending: !!f?.portrait_pending, fallback: f?.fallback ?? null, backdrop: f?.backdrop || '', backdropPending: !!f?.backdrop_pending, backdropFallback: f?.backdrop_fallback ?? null, line: sh.line.text, lineKind: sh.line.kind, says: faceTabLines(f) },
     me: c ? meBlock(c) : null,
     shelves, gear, services, sell, party, log: sh.log, isHost: me === g.hostId, ready: !!r.ready[me],
     waiting: g.players.filter((p) => p.online && !r.ready[p.id]).map((p) => p.name),

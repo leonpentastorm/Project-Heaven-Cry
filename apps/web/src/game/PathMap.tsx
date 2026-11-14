@@ -107,7 +107,7 @@ function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: 
   const big = n.kind === 'boss' ? 64 : n.gate ? 50 : n.junction ? 42 : n.spur ? 40 : 36;
   const col = here || lit ? ink.white : walked ? ink.text : passed ? ink.muted : '#D9DCE3';
   const ring = here ? '3px solid ' + ink.white : lit ? '2px solid ' + ink.white : walked ? '2px solid ' + ink.text : n.spur ? '2px dashed rgba(231,235,243,0.55)' : '1.5px solid rgba(214,200,170,0.55)';
-  const label = n.word + (here ? ', you are here' : lit ? ', reachable' : walked ? ', walked' : '') + (n.junction ? ', a junction' : '') + (n.spur ? ', a dead end' : '') + (n.leans.length ? ', marked by ' + n.leans.map((l) => l.name).join(' and ') : '');
+  const label = n.word + (here ? ', you are here' : lit ? ', open now' : walked ? ', walked' : '') + (n.junction && !n.gate ? ', a fork' : '') + (n.spur ? ', off the trail' : '') + (n.leans.length ? ', marked by ' + n.leans.map((l) => l.name).join(' and ') : '');
   const below = labelBelow ?? (n.depth % 2 === 1 || n.kind === 'boss' || !!n.gate); // labels alternate above and below, so neighbours never collide (the vault's spur: beside)
   return (
     <button type="button" data-phc-node={n.id} data-phc-kind={n.kind} data-phc-state={n.state} data-phc-junction={n.junction ? '' : undefined} data-phc-spur={n.spur || undefined}
@@ -137,9 +137,9 @@ function Legend({ v }: { v: RunViewV }) {
     <div data-phc-pathmap-legend="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', alignItems: 'center', padding: '6px 10px', borderRadius: 8, background: '#10151F', border: '1px solid #232D3F', fontSize: 11, color: ink.text }}>
       {item('start', 'Camp')}
       {kinds.map((k) => item(k, seen.get(k)!))}
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke={ink.text} strokeWidth="3" strokeLinecap="round" /></svg>walked</span>
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke={ink.white} strokeWidth="3" strokeDasharray="6 5" strokeLinecap="round" /></svg>open now</span>
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="14" height="14" aria-hidden="true"><rect x="3" y="3" width="8" height="8" transform="rotate(45 7 7)" fill="none" stroke={ink.text} strokeWidth="1.5" /></svg>junction: trails meet and part</span>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke={ink.text} strokeWidth="3" strokeLinecap="round" /></svg>Walked</span>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke={ink.white} strokeWidth="3" strokeDasharray="6 5" strokeLinecap="round" /></svg>Open now</span>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="14" height="14" aria-hidden="true"><rect x="3" y="3" width="8" height="8" transform="rotate(45 7 7)" fill="none" stroke={ink.text} strokeWidth="1.5" /></svg>Fork</span>
     </div>
   );
 }
@@ -171,7 +171,7 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
           {firsts.map((n) => trail('camp>' + n.id, camp, pos[n.id], walkedFirst ? (walkedFirst.id === n.id ? 'walked' : 'quiet') : v.atStart && n.state === 'reachable' ? 'lit' : 'quiet'))}
           {v.links.filter((l) => !l.back && pos[l.from] && pos[l.to]).map((l) => trail(l.from + '>' + l.to, pos[l.from], pos[l.to], l.walked ? 'walked' : l.lit ? 'lit' : byId[l.to]?.spur ? 'spur' : 'quiet'))}
         </svg>
-        <span data-phc-node-camp="" aria-label={v.atStart ? 'The camp, you are here' : 'The camp'} {...tipProps('The camp. The stage starts here: every trail can be taken from it.')}
+        <span data-phc-node-camp="" aria-label={v.atStart ? 'The camp, you are here' : 'The camp'} {...tipProps('Camp. Every trail starts here.')}
           style={{ position: 'absolute', left: (camp.x / W) * 100 + '%', top: (camp.y / H) * 100 + '%', width: 44, height: 44, transform: 'translate(-50%, -50%)', display: 'grid', placeItems: 'center', borderRadius: '50%', border: v.atStart ? '3px solid #FFFFFF' : '2px solid ' + ink.text, background: ink.discWalked, color: ink.white, zIndex: 3 }}>
           <NodeGlyph kind="start" size={26} />
           <span style={{ position: 'absolute', top: '100%', marginTop: 3, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', textShadow: '0 1px 2px #000' }}>Camp</span>

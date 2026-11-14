@@ -65,20 +65,20 @@ describe('rules 1.46: gives between players (rule 47, primitive 13)', () => {
     const fight = clone(g); fight.run!.state = 'fight';
     expect(refused(fight, { type: 'gear/give', charId: 'c1', to: 'c2', credits: 5 })).toBe('Hand things over after the fight.');
     const fnode = clone(g); fnode.run!.nodes.find((n) => n.id === fnode.run!.at)!.kind = 'fight';
-    expect(refused(fnode, { type: 'gear/give', charId: 'c1', to: 'c2', credits: 5 })).toMatch(/^Gives are made at a node with no fight/);
+    expect(refused(fnode, { type: 'gear/give', charId: 'c1', to: 'c2', credits: 5 })).toMatch(/^Hand things over at a stop with no fight/);
     expect(GIVE.where).not.toContain('fight');
     const boon = clone(g); boon.characters.c1.relics = ['prop.keen'];
-    expect(refused(boon, { type: 'gear/give', charId: 'c1', to: 'c2', relic: 'prop.keen' })).toMatch(/never given/);
-    expect(refused(g, { type: 'gear/give', charId: 'c1', to: 'c2', train: 'drill' })).toMatch(/^Training is .* never given\.$/);
-    expect(refused(g, { type: 'gear/give', charId: 'c1', to: 'c2', armour: true })).toMatch(/armour class is fitted/);
+    expect(refused(boon, { type: 'gear/give', charId: 'c1', to: 'c2', relic: 'prop.keen' })).toMatch(/can't be handed over/);
+    expect(refused(g, { type: 'gear/give', charId: 'c1', to: 'c2', train: 'drill' })).toMatch(/^What .* has learned can't be handed over\.$/);
+    expect(refused(g, { type: 'gear/give', charId: 'c1', to: 'c2', armour: true })).toMatch(/armour fitting is made for .* alone/);
     const cap = clone(g), gun = cap.characters.c1.weapon;
     cap.characters.c1.pack = [...packOf(cap.characters.c1), { id: gun, weapon: gun, name: 'x', qty: 1, kind: 'weapon', rarity: 'relic', prop: 'prop.keen' }];
     cap.characters.c2.relics = Array(Math.ceil((BOON_CAP - worthOf('prop.keen') + 1) / worthOf('prop.keen'))).fill('prop.keen');
-    expect(refused(cap, { type: 'gear/give', charId: 'c1', to: 'c2', idx: packOf(cap.characters.c1).length - 1 })).toMatch(/past the run's cap/);
+    expect(refused(cap, { type: 'gear/give', charId: 'c1', to: 'c2', idx: packOf(cap.characters.c1).length - 1 })).toMatch(/boon room left; .* needs \d+\.$/);
     expect(refused(g, { type: 'gear/give', charId: 'c2', to: 'c1', credits: 5 }, 'host')).toMatch(/^Only .*'s player gives/);
     const solo = at('rest', { pcs: [{ build: 'plain_gun', level: 1 }] });
-    expect(refused(solo, { type: 'gear/give', charId: 'c1', to: 'c1', credits: 5 })).toMatch(/nobody to give to/);
-    expect(giveView(solo, 'host').none).toMatch(/nobody to give to/);
+    expect(refused(solo, { type: 'gear/give', charId: 'c1', to: 'c1', credits: 5 })).toBe('No one to hand anything to.');
+    expect(giveView(solo, 'host').none).toBe('No one to hand anything to.');
   });
 
   it('the Give tab\'s view lists every line with its reasons per receiver; a give in the shop is in its log and the keeper says the "gave" line', () => {
@@ -87,7 +87,7 @@ describe('rules 1.46: gives between players (rule 47, primitive 13)', () => {
     const v = giveView(shop, 'host');
     expect(v.to.map((t) => t.id)).toEqual(['c2']);
     expect(v.rows.find((r) => r.kind === 'credits')!.why.c2).toBeNull();
-    expect(v.rows.find((r) => r.key === 'train')!.why.c2).toMatch(/never given/);
+    expect(v.rows.find((r) => r.key === 'train')!.why.c2).toMatch(/can't be handed over/);
     expect(v.rows.some((r) => r.kind === 'held' && r.unequip === 'main')).toBe(true);
     const g = apply(shop, { type: 'gear/give', charId: 'c1', to: 'c2', credits: 40 }, 'host');
     expect(g.run!.shop!.log[0]).toMatch(/gives .* 40 credits/);
@@ -102,7 +102,7 @@ describe('rules 1.46: the shop\'s Upgrade tab is 4a\'s grade step (the services 
     const v = shopView(g as any, 'host')!, card = v.services.find((s) => s.key === 'grade:main')!;
     expect(card.price).toBe(gradePrice('fine', 'shop')); expect(card.why).toBeNull();
     expect(card.action).toMatchObject({ type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' });
-    expect(card.note).toMatch(new RegExp('at a Forge: ' + gradePrice('fine', 'forge')));
+    expect(card.note).not.toMatch(/Forge/); // the shop's card says its own price only (docs/design/ui-screens.md, Writing for the player)
     expect(card.lines.some((l) => /To hit/.test(l.label) && l.before !== l.after)).toBe(true);
     const before = creditsOf(g.characters.c1);
     g = apply(g, card.action as any, 'host');
@@ -110,7 +110,7 @@ describe('rules 1.46: the shop\'s Upgrade tab is 4a\'s grade step (the services 
     expect(before - creditsOf(g.characters.c1)).toBe(GRADE_UP.price.fine * GRADE_UP.places.shop);
     expect(g.run!.shop!.log[0]).toMatch(/Fine now/);
     const again = shopView(g as any, 'host')!.services.find((s) => s.key.startsWith('grade:'))!;
-    expect(again.why).toMatch(/One grade step a visit/);
+    expect(again.why).toMatch(/One upgrade per visit/);
   });
 
   it('a focus card shows its grade on the door\'s rolls (rules 1.43 focusAccTerm): Standard +0, Fine +1', () => {

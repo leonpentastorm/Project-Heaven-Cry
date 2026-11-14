@@ -34,6 +34,7 @@ differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule)
 | lanes | 1.48 | The path map as lanes, junctions and one guarded vault; the themed overland map (`PathMap.tsx`) | `survival-lanes.md` |
 | 9, 10 | 1.49 | The run simulator and the fit; the map fitted to its frame; the browser suite completed; the docs; 0.27.0 | `survival-steps-9-10.md` |
 | repair | 1.50 | The repair service (`run/repair` at a shop and a Forge; the Repair shelf; wear bars and the WORN mark on the places and the path map); the simulator repairs | `survival-repair.md` |
+| text | none | Every Survival string written to the player (Leon, 14 Nov: "write to the PLAYER"): keepers' lines by tab, the shrine's votaries, boon room, stops and forks, refusals by name; the rules in `ui-screens.md` "Writing for the player" | `survival-text-pass.md` |
 
 Code: `packages/engine/src/run/` (`map.ts`, `state.ts`, `encounter.ts`, `rewards.ts`, `shop.ts`, `shopview.ts`,
 `progress.ts`, `placeview.ts`, `power.ts`, `stage.ts`, `tally.ts`), the run reducer in `game.ts` (`runAction`,

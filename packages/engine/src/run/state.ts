@@ -142,13 +142,13 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
   const r = g.run; if (!r) return 'No run is under way.';
   if (!g.players.some((p) => p.id === by)) return 'Only a player in the room picks the way.';
   if (r.state === 'fight') return 'The fight is on.';
-  if (r.state === 'reward') return 'Take your picks first: the squad moves on when everyone has.';
-  if (r.state === 'shop') return 'Leave the shop first: everyone marks Ready to leave, or the host closes it.';
-  if (r.state === 'boon') return 'Pick your boons first: the next tile comes after them.';
-  if (r.state === 'tile') return 'Pick the next tile first: its map comes with it.';
+  if (r.state === 'reward') return 'Take your pick first. The squad moves on when everyone has.';
+  if (r.state === 'shop') return 'Leave the shop first: everyone marks ready, or the host closes it.';
+  if (r.state === 'boon') return 'Pick your boon first. The next tile comes after.';
+  if (r.state === 'tile') return 'Pick the next tile first.';
   if (r.state !== 'map') return 'The stage is over.';
-  const n = runNode(r, nodeId); if (!n) return 'No such node on this map.';
-  if (!reachable(r).some((x) => x.id === nodeId)) return 'You can\'t reach ' + (MAP_DATA.words as any)[n.kind] + ' at depth ' + n.depth + ' from here: pick a lit node.';
+  const n = runNode(r, nodeId); if (!n) return 'There is no such stop on this map.';
+  if (!reachable(r).some((x) => x.id === nodeId)) return 'You can\'t reach that ' + String((MAP_DATA.words as any)[n.kind] || 'stop').toLowerCase() + ' from here. Pick a lit stop.';
   return null;
 }
 /** The node the squad goes to (rule 11), or null while it waits: every connected player has leaned, the node with most
@@ -172,7 +172,7 @@ export function runSeed(code: string, seq: number): string {
 /** The words for a mode that can't be picked (its data's `coming`), or null when it can. */
 export function modeLocked(id: string): string | null {
   const m = modeOf(id); if (!m) return 'No such mode: ' + id + '.';
-  return m.available ? null : m.name + ' is not open yet. ' + (m.coming || 'Coming later.');
+  return m.available ? null : m.name + ' is not open yet.';
 }
 
 /** What a character in a run needs, said in words (rule 2): one a player, every one level 1. */
@@ -183,14 +183,14 @@ export function runStartProblem(g: { hostId: string; phase: string; settings: { 
   if (by !== g.hostId) return 'Only the host starts the run.';
   if (g.run && g.run.state !== 'over') return 'The run is under way.';
   if (g.phase !== 'lobby') return 'The room has already started.';
-  const play = playOf(g); if (play !== 'survival') return 'This room plays ' + (modeOf(play)?.name || play) + ': pick Survival to start a run.';
+  const play = playOf(g); if (play !== 'survival') return 'This room plays ' + (modeOf(play)?.name || play) + '. Pick Survival to start a run.';
   const seats = Object.values(g.characters); if (!seats.length) return 'Lock in a character to start.';
   for (const p of g.players) {
     const mine = seats.filter((c) => c.owner === p.id);
-    if (mine.length > 1) return 'Survival is one character a player: ' + p.name + ' has ' + mine.length + '. Take one back.';
-    if (!mine.length && p.online) return 'Everyone plays: ' + p.name + ' has no character locked in yet.';
+    if (mine.length > 1) return 'In Survival each player brings one character. ' + p.name + ' has ' + mine.length + ': take one back.';
+    if (!mine.length && p.online) return p.name + ' has no character locked in yet.';
   }
-  const high = seats.find((c) => c.level !== 1); if (high) return 'Survival starts at level 1: ' + high.name + ' is level ' + high.level + '.';
+  const high = seats.find((c) => c.level !== 1); if (high) return 'Survival starts at level 1. ' + high.name + ' is level ' + high.level + ': bring a new character.';
   // rules 1.41: a character who fell in a lost run stays fallen (its run is its score): a new run takes a fresh one
   const fell = seats.find((c) => c.dead); if (fell) return fell.name + ' fell in the last run: take ' + fell.name + ' back and bring a fresh level 1 character.';
   return null;
@@ -200,7 +200,7 @@ export function runRetireProblem(g: { hostId: string; run?: RunState | null }, b
   const r = g.run; if (!r) return 'No run is under way.';
   if (by !== g.hostId) return 'Only the host retires the run.';
   if (r.state === 'over') return 'The run is over.';
-  if (r.state !== 'boon' && r.state !== 'tile') return 'You retire after a Boss: beat this stage\'s Boss first.';
+  if (r.state !== 'boon' && r.state !== 'tile') return 'You can retire only after beating a stage\'s Boss.';
   return null;
 }
 /** The run's end and its score (rule 4): stages cleared (a retire comes after a Boss, so the stage under way counts),

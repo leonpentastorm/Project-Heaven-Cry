@@ -57,6 +57,10 @@ enemies now (guards, tier rules, what the AI must not be fooled or fooled by); l
 levels 1, 5, 10, 20, door user and class, and put the table in your hand-off; add your line to `data/rules.json`
 `balance` and the guard test as your spec's section 7 says; do not refit numbers to hit it: report.
 
+**Words on screen:** every string a player reads (labels, hover cards, refusals, keepers' lines) follows
+`docs/design/ui-screens.md` "Writing for the player": written to the player in the world's words, never a designer's
+note, a rule's reason or "later".
+
 **Close:** `python3 tools/engine_catalog.py` regenerated and `--check` clean; `npm run built-from --
 claude/charming-gauss-hbq4n0..HEAD` clean or each smell justified; `class-weapon-neutral.test.ts` passes with your
 class's moves removed from its PENDING list; `npm run check` ALL GREEN; your suites green on your port. Write

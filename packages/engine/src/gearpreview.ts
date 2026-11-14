@@ -119,7 +119,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     const n = quiverHolds(id, rarity), e = (inst.mods || []).map((m) => ITEM[m] as any).find((m) => m?.mod_slot === 'enchantment');
     return { ...base, kind: 'item', category: 'Quiver', traits: [], lines: [
       { key: 'arrows', label: 'Arrows held', value: String(n), num: n, better: 'higher' },
-      { key: 'ench', label: 'Enchantment', value: e ? e.name : 'none (one slot)', num: null },
+      { key: 'ench', label: 'Enchantment', value: e ? e.name : 'None (room for one)', num: null },
       { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
     ] };
   }

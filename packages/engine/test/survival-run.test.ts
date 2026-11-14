@@ -36,8 +36,8 @@ describe('Survival, one stage (rules 1.41)', () => {
 
   it('run/move refuses in words: a node out of reach, a non-player; solo, a mark is the move', () => {
     const g = started(SOLO), far = g.run!.nodes.find((n) => n.depth === 3)!;
-    expect(refused(g, { type: 'run/move', node: far.id })).toMatch(/^You can't reach .+ at depth 3 from here: pick a lit node\.$/);
-    expect(refused(g, { type: 'run/move', node: 'nowhere' })).toBe('No such node on this map.');
+    expect(refused(g, { type: 'run/move', node: far.id })).toMatch(/^You can't reach that .+ from here\. Pick a lit stop\.$/);
+    expect(refused(g, { type: 'run/move', node: 'nowhere' })).toBe('There is no such stop on this map.');
     expect(refused(g, { type: 'run/move', node: reachable(g.run!)[0].id }, 'stranger')).toBe('Only a player in the room picks the way.');
     const f = take(g, reachable(g.run!)[0], 1);
     expect(f.run!.at).toBe(reachable(g.run!)[0].id); expect(f.phase).toBe('combat'); expect(f.run!.state).toBe('fight');
@@ -48,12 +48,12 @@ describe('Survival, one stage (rules 1.41)', () => {
     const g = started(DUO), [a, b] = reachable(g.run!);
     const one = apply(g, { type: 'run/move', node: a.id }, 'host');
     expect(one.run!.at).toBeNull(); expect(one.run!.leans).toEqual({ host: a.id });
-    expect(refused(one, { type: 'run/go' }, 'p2')).toBe('Only the host sends the squad on before everyone has marked a node.');
+    expect(refused(one, { type: 'run/go' }, 'p2')).toBe('Only the host can send the squad on before everyone has marked a stop.');
     const tie = apply(one, { type: 'run/move', node: b.id }, 'p2');
     expect(tie.run!.at).toBe(a.id); expect(tie.run!.leans).toEqual({});
     const guestLed = apply(apply(g, { type: 'run/move', node: b.id }, 'p2'), { type: 'run/go' }, 'host');
     expect(guestLed.run!.at).toBe(b.id); // the host goes at once: the only mark is the guest's
-    expect(refused(g, { type: 'run/go' })).toBe('Mark a node first.');
+    expect(refused(g, { type: 'run/go' })).toBe('Mark a stop first.');
   });
 
   it('a fight node starts the composed fight on the fight\'s dice, and records its budget', () => {
@@ -88,7 +88,7 @@ describe('Survival, one stage (rules 1.41)', () => {
     const p1 = apply(g, { type: 'run/pick', charId: 'c1', choice: 1 }, 'host');
     expect(p1.characters.c1.pack!.some((x) => (x.weapon || x.item || x.id) === w.id && (x.rarity || 'standard') === w.rarity)).toBe(true);
     expect(p1.run!.state).toBe('reward');
-    expect(refused(p1, { type: 'run/move', node: p1.run!.nodes[0].id })).toBe('Take your picks first: the squad moves on when everyone has.');
+    expect(refused(p1, { type: 'run/move', node: p1.run!.nodes[0].id })).toBe('Take your pick first. The squad moves on when everyone has.');
     const p2 = apply(p1, { type: 'run/pick', charId: 'c2', choice: 'credits' }, 'p2');
     expect(creditsOf(p2.characters.c2)).toBe(creditsOf(g.characters.c2) + g.run!.offers!.c2.instead);
     expect(p2.run!.state).toBe('map'); expect(p2.run!.offers).toBeNull();
@@ -134,7 +134,7 @@ describe('Survival, one stage (rules 1.41)', () => {
     const g = started(DUO), boss = firstOf(g, 'boss'), at = standOn(g, before(g, boss).id);
     let x = apply(take(at, boss, 2), { type: 'run/skip' }, 'host');
     expect(x.run!.state).toBe('reward'); expect(x.characters.c1.xp).toBe(nodeXp('boss', 15, 1));
-    expect(refused(x, { type: 'run/retire' })).toBe('You retire after a Boss: beat this stage\'s Boss first.');
+    expect(refused(x, { type: 'run/retire' })).toBe('You can retire only after beating a stage\'s Boss.');
     x = apply(apply(x, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host'), { type: 'run/pick', charId: 'c2', choice: 0 }, 'p2');
     expect(x.run!.state).toBe('boon');
     expect(refused(x, { type: 'run/retire' }, 'p2')).toBe('Only the host retires the run.');

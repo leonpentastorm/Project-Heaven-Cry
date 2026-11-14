@@ -59,7 +59,7 @@ export function boonProblem(c: Character, offer: string[] | undefined, id: strin
   if (!offer || !id || !offer.includes(id)) return 'That boon is not on ' + c.name + '\'s offer.';
   if (holdsBoon(c, id)) return c.name + ' already has ' + (relicRow(id)?.name || id) + '.';
   const w = worthOf(id), room = capRoom(c);
-  return w > room ? (relicRow(id)?.name || id) + ' is worth ' + w + ' of the run\'s ' + BOON_CAP + '; ' + c.name + ' has ' + room + ' left.' : null;
+  return w > room ? c.name + ' has ' + room + ' boon room left; ' + (relicRow(id)?.name || id) + ' needs ' + w + '.' : null;
 }
 
 /** The tiles the squad may walk after this stage's Boss (rule 32): `WORLD.offer` settings that are ready, those not yet
@@ -78,7 +78,7 @@ export const nextPools = (r: RunState): string[] => [...new Set(nextTiles(r).map
 /** Why a player can't mark this tile now, or null. */
 export function tileProblem(r: RunState | null | undefined, id: string): string | null {
   if (!r) return 'No run is under way.';
-  if (r.state !== 'tile') return r.state === 'boon' ? 'Pick your boons first: the next tile comes after them.' : 'There is no tile to pick now.';
+  if (r.state !== 'tile') return r.state === 'boon' ? 'Pick your boon first. The next tile comes after.' : 'There is no tile to pick now.';
   return (r.tiles || []).some((t) => t.id === id) ? null : 'No such tile on offer.';
 }
 

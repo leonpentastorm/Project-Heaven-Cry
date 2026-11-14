@@ -4,7 +4,10 @@
 //    opens on asking; a guest sees the host's room and can't pick; both lock in and the host starts the run, which both
 //    see. B. A guest sees the host's pick live: a room opened on Campaign (the suites' test hook) switches to Survival,
 //    and Campaign can't be picked back (the engine refuses a locked mode).
+import { readFileSync } from 'node:fs';
 import { chromium, player, click, BASE, hostAs, lockIn, until, OUT } from './lib.mjs';
+// a locked card's reason is the data's own words (data/modes.json `coming`), never a sentence typed here
+const COMING = Object.fromEntries(JSON.parse(readFileSync(new URL('../../../data/modes.json', import.meta.url), 'utf8')).items.map((m) => [m.id, m.coming]));
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const cards = (p) => p.locator('[role="radiogroup"] [role="radio"]');
@@ -44,7 +47,7 @@ ok('the Proving Ground is a text button under the cards, not a card', (await hos
 const v0 = await host.evaluate(() => window.__phc.getState().game.v);
 await card(host, 'campaign').click();
 const tip1 = await until(host, () => (document.querySelector('.phc-atip')?.textContent || '').trim() || null, null, 5000).catch(() => '');
-ok('clicking the locked Campaign card ticks nothing (' + await checked(host) + ', ' + await play(host) + ') and the hover card says why: "' + tip1 + '"', await checked(host) === 'survival' && await play(host) === 'survival' && /Coming when the campaigns are rewritten/.test(tip1));
+ok('clicking the locked Campaign card ticks nothing (' + await checked(host) + ', ' + await play(host) + ') and the hover card says why: "' + tip1 + '"', await checked(host) === 'survival' && await play(host) === 'survival' && !!COMING.campaign && tip1.includes(COMING.campaign));
 ok('… and sends no action', await host.evaluate(() => window.__phc.getState().game.v) === v0);
 // keyboard: arrows move, Enter on a locked card picks nothing
 await card(host, 'survival').focus(); await host.keyboard.press('ArrowRight');
@@ -66,11 +69,11 @@ await guest.waitForSelector('[role="radiogroup"]');
 ok('the guest sees the room\'s mode: Survival selected', await checked(guest) === 'survival');
 await card(guest, 'roguelike').click();
 const tipG1 = await until(guest, () => (document.querySelector('.phc-atip')?.textContent || '').trim() || null, null, 5000).catch(() => '');
-ok('a guest\'s click on a locked card says why ("' + tipG1 + '")', /Coming after the advanced classes/.test(tipG1) && await checked(guest) === 'survival');
+ok('a guest\'s click on a locked card says why ("' + tipG1 + '")', !!COMING.roguelike && tipG1.includes(COMING.roguelike) && await checked(guest) === 'survival');
 await guest.mouse.click(5, 5);
 await card(guest, 'survival').click();
 const tipG2 = await until(guest, () => { const t = (document.querySelector('.phc-atip')?.textContent || '').trim(); return /host/.test(t) ? t : null; }, null, 5000).catch(() => '');
-ok('a guest can\'t pick: "Only the host picks this." in the hover card', /Only the host picks this/.test(tipG2) && await play(host) === 'survival');
+ok('a guest can\'t pick: "Only the host picks the mode." in the hover card', /Only the host picks the mode/.test(tipG2) && await play(host) === 'survival');
 ok('the guest sees no Narrator box either: "Survival needs no Narrator."', (await guest.locator('text=Survival needs no Narrator.').count()) === 1);
 // Start: the run (no key needed)
 await create(host, 'Kade');

@@ -27,7 +27,7 @@
       "available": false,
       "narrator": "optional",
       "start": "run",
-      "coming": "Coming after the advanced classes.",
+      "coming": "Not open yet.",
       "provisional": true
     },
     {
@@ -38,7 +38,7 @@
       "available": false,
       "narrator": "required",
       "start": "session",
-      "coming": "Coming when the campaigns are rewritten.",
+      "coming": "Not open yet.",
       "provisional": true
     }
   ]

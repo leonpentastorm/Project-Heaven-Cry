@@ -122,25 +122,25 @@ describe('rules 1.43: the grade step (rules 37, 38, 43)', () => {
     expect(refused(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('This is not a Forge.');
     const a = apply(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' }, 'host');
     expect(a.characters.c1.weaponState!.rarity).toBe('fine'); expect(creditsOf(a.characters.c1)).toBe(creditsOf(c0) - GRADE_UP.price.fine);
-    expect(refused(a, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toMatch(/^Stage 1 grades to Fine at most/);
+    expect(refused(a, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('Masterwork upgrades open in stage 2.');
     const b = apply(a, { type: 'run/upgrade', charId: 'c2', where: 'main', place: 'shop' }, 'p2');
-    expect(refused(b, { type: 'run/upgrade', charId: 'c2', where: 'off', place: 'shop' }, 'p2')).toBe('One grade step a visit: ' + b.characters.c2.name + ' has had it here.');
-    expect(refused(b, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' }, 'p2')).toMatch(/^Only .+'s player acts for/);
+    expect(refused(b, { type: 'run/upgrade', charId: 'c2', where: 'off', place: 'shop' }, 'p2')).toBe('One upgrade per visit. ' + b.characters.c2.name + ' has had it here.');
+    expect(refused(b, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' }, 'p2')).toMatch(/^Only .+'s player chooses for/);
     const forge = visit('forge');
     const f = apply(forge, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' }, 'host');
     expect(creditsOf(f.characters.c1)).toBe(10000 - Math.round(GRADE_UP.price.fine * GRADE_UP.places.forge)); expect(gradePrice('fine', 'forge')).toBe(1200);
     const poor = visit('forge', { credits: 100 });
-    expect(refused(poor, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toMatch(/is short 1100 credits/);
+    expect(refused(poor, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toMatch(/is 1100 credits short/);
     expect(refused(visit('rest'), { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('This is not a shop.');
   });
   it('the Relic step: a Forge only, from stage 3, one of three properties that fit and the cap; Masterwork first', () => {
     const prep = (g: GameState) => { for (const c of Object.values(g.characters)) setGrade(c, 'main', 'masterwork'); };
-    expect(refused(visit('forge', { stage: 2, prep }), { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('The Relic step opens in stage 3.');
+    expect(refused(visit('forge', { stage: 2, prep }), { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('Relic upgrades open in stage 3.');
     const shop = visit('shop', { stage: 3, prep });
-    expect(refused(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('The Relic step is the Forge\'s.');
+    expect(refused(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('Only a Forge makes a Relic.');
     const g = visit('forge', { stage: 3, prep }), c = g.characters.c1, offer = relicChoices(g, c, 'main');
     expect(offer.length).toBe(GRADE_UP.relic_offer); for (const p of offer) expect(propFits(p, c.weapon)).toBe(true);
-    expect(refused(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('Pick one of the three named properties.');
+    expect(refused(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('Pick one of the three properties.');
     expect(refused(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge', prop: 'prop.gentle' })).toMatch(/not one of the three/);
     const r = apply(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge', prop: offer[0] }, 'host');
     expect(r.characters.c1.weaponState).toMatchObject({ rarity: 'relic', prop: offer[0] }); expect(creditsOf(r.characters.c1)).toBe(10000 - GRADE_UP.price.relic);
@@ -177,8 +177,8 @@ describe('rules 1.43: trainings (rules 39, 45)', () => {
     const g = visit('rest'), w = g.characters.c1.weapon, d0 = physOf(g.characters.c1).drill[w] || 0;
     const a = apply(g, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w }, 'host');
     expect(physOf(a.characters.c1).drill[w]).toBe(d0 + TRAIN.drill);
-    expect(refused(a, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toBe('One small training at a rest: ' + a.characters.c1.name + ' has taken it.');
-    expect(refused(a, { type: 'run/train', charId: 'c2', train: 'practice' }, 'p2')).toMatch(/Practice is for an Outburst user/);
+    expect(refused(a, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toBe('One training per rest. ' + a.characters.c1.name + ' has had it.');
+    expect(refused(a, { type: 'run/train', charId: 'c2', train: 'practice' }, 'p2')).toMatch(/needs Will Power 1 to practise Outbursts/);
     const s = apply(a, { type: 'run/train', charId: 'c2', train: 'study' }, 'p2');
     expect((s.characters.c2 as any).sigilGrowth?.study ?? 0).toBeGreaterThanOrEqual(TRAIN.study);
   });
@@ -188,10 +188,10 @@ describe('rules 1.43: trainings (rules 39, 45)', () => {
     expect(physOf(a.characters.c1).drill[w]).toBe((physOf(g.characters.c1).drill[w] || 0) + TRAINING.drill); expect(creditsOf(a.characters.c1)).toBe(10000);
     const b = apply(a, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w }, 'host');
     expect(creditsOf(b.characters.c1)).toBe(10000 - TRAINING.extra_price);
-    expect(refused(b, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toMatch(/trained as much as the yard allows/);
-    expect(refused(g, { type: 'run/train', charId: 'c1', train: 'devotion' })).toBe('Devotion is the shrine\'s, not the sergeant\'s.');
+    expect(refused(b, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toMatch(/the most the yard allows/);
+    expect(refused(g, { type: 'run/train', charId: 'c1', train: 'devotion' })).toBe('Devotion is raised at a shrine, not here.');
     const poor = visit('training', { credits: 0 }), p1 = apply(poor, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w }, 'host');
-    expect(refused(p1, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toMatch(/is short 300 credits/);
+    expect(refused(p1, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toMatch(/is 300 credits short/);
   });
 });
 
@@ -203,8 +203,8 @@ describe('rules 1.43: the shrine (rule 46)', () => {
     const xp0 = devotionXpOf(g.characters.c1);
     const a = apply(g, { type: 'run/shrine', charId: 'c1', choice: 'rite' }, 'host');
     expect(devotionXpOf(a.characters.c1)).toBe(xp0 + DEVOTION_XP.rite);
-    expect(refused(a, { type: 'run/shrine', charId: 'c1', choice: 'token' })).toBe('One offer at a shrine: ' + a.characters.c1.name + ' has taken it.');
-    expect(refused(a, { type: 'run/shrine', charId: 'c2', choice: 'rite' }, 'p2')).toMatch(/is an Atheist: the rite is kept by the faithful/);
+    expect(refused(a, { type: 'run/shrine', charId: 'c1', choice: 'token' })).toBe('One thing per shrine. ' + a.characters.c1.name + ' has taken it.');
+    expect(refused(a, { type: 'run/shrine', charId: 'c2', choice: 'rite' }, 'p2')).toMatch(/is an Atheist: take a piece of lore or the token instead/);
     const b = apply(a, { type: 'run/shrine', charId: 'c2', choice: 'piece' }, 'p2');
     expect(b.characters.c2.faithPieces?.[p]).toBe(1);
     const t = apply(g, { type: 'run/shrine', charId: 'c2', choice: 'token' }, 'p2'), tok = t.characters.c2.relics![0];
@@ -221,7 +221,7 @@ describe('rules 1.43: the Crossroads (rule 42): every trade\'s gain and cost', (
     const a = apply(g, { type: 'run/trade', charId: 'c1', trade: t.id, where: 'main' }, 'host'), c = a.characters.c1;
     expect(c.weaponState!.rarity).toBe('fine'); expect(creditsOf(c)).toBe(10000 - Math.round(GRADE_UP.price.fine * t.cut_rate));
     expect(c.weaponState!.dur).toBe(Math.round(unitFromCharacter(c, '1,1', { state: 1 } as any).maxDur! * t.dur_share));
-    expect(refused(a, { type: 'run/trade', charId: 'c1', trade: t.id, where: 'main' })).toMatch(/^One trade each at a crossroads/);
+    expect(refused(a, { type: 'run/trade', charId: 'c1', trade: t.id, where: 'main' })).toMatch(/^One trade each\. /);
   });
   it('a hard sparring: drill for a share of HP now', () => {
     const g = all(at()), t = TRADES.items.find((x) => x.do === 'drill')!, c0 = g.characters.c1, w = c0.weapon;
@@ -239,7 +239,7 @@ describe('rules 1.43: the Crossroads (rule 42): every trade\'s gain and cost', (
     const g = all(at({ pcs: [{ build: 'outburst', level: 1 }, { build: 'sigil', level: 1 }] })), t = TRADES.items.find((x) => x.do === 'wayside')!;
     const p0 = practiceOf(g.characters.c1), a = apply(g, { type: 'run/trade', charId: 'c1', trade: t.id, train: 'practice' }, 'host');
     expect(practiceOf(a.characters.c1)).toBe(p0 + t.practice); expect(creditsOf(a.characters.c1)).toBe(10000);
-    const again = clone(a); again.run!.visit!.did = {}; expect(refused(again, { type: 'run/trade', charId: 'c1', trade: t.id, train: 'practice' })).toMatch(/once a stage/);
+    const again = clone(a); again.run!.visit!.did = {}; expect(refused(again, { type: 'run/trade', charId: 'c1', trade: t.id, train: 'practice' })).toMatch(/once per stage/);
   });
   it('a back-room graft: a boon of the tile\'s pool on the cap, max HP down by its share', () => {
     const g = all(at()), t = TRADES.items.find((x) => x.do === 'graft')!, hp0 = maxHp(g.characters.c1);
