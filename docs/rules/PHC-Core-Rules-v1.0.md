@@ -1490,7 +1490,7 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 
 **On screen** (Leon, 9 Nov 2026; decision 110): the meter is a **mana forecast**, its own movable panel on the combat screen (above the map by default; drag it under the map or into the action column; under the map on narrow windows), read like the weather: the band and the number on a gauge of the four bands, the trend this round and last, the outlook to the next band up and down (in deaths and Crystallises), what this air does to magic and what moves it. It left the header. Every number comes from the tables above.
 
-**Mana cores** are bot clusters. A standard core holds 10 charge (small 5, heavy 20) and costs 150 credits. One standard core also makes 10 enhanced rounds.
+**Mana cores** are bot clusters. A standard core holds 10 charge (small 5, heavy 20) and costs 150 credits *(Superseded by rules 1.54: 100 credits, Leon; ten mana residue and a focus in hand make one)*. One standard core also makes 10 enhanced rounds.
 
 > **Rules revision 1.2 (accepted 6 Nov 2026, with Leon's answers: Line range by length; charge paid on drawing and more on firing; enemy Sigil users Evoke your patterns).** It replaces the 1.1 Sigil and Soul rules: Sigils are written onto the map (Leon), and every Soul mage charges and releases. Every new number is provisional (items 68–76). **Its Sigil part is replaced by rules revision 1.4** (below); its Soul part is replaced by **rules revision 1.5** (Outburst 2.0, below).
 
@@ -5175,7 +5175,7 @@ The shop, the Forge, the training ground, the shrine and the Crossroads exist on
    credits c(d) = `credits.base` 80 + `credits.per_depth` 20 x d (x the same 1.5 and 2); **the ammunition pack**:
    `ammo_pack` magazines' worth (a fight 1, an Elite 2, the Boss 3) for every gun it carries, in hand or pack (a
    loose-loaded gun a magazine's capacity of rounds), and `ammo_pack.cores` 1 standard core if it carries an Evoker or
-   a Visualizer; and **the weapon pick**.
+   a Visualizer; and **the weapon pick**. *(Superseded by rules 1.54 item 9 for Survival's XP numbers: base 10, per_depth 2, the Boss x 5.)*
 11. **The weapon pick** (spec rule 26): `rewards.offer` 3 weapons or foci (every one with a price; no thrown things),
    each at most `rewards.price_band` base 300 + per_depth 150 x d + per_stage 1,000 x (s - 1) on its standard price
    (x 1.25 from an Elite, x 1.5 from the Boss); the first is for the character's own door (a focus of the door skill
@@ -5185,7 +5185,8 @@ The shop, the Forge, the training ground, the shrine and the Crossroads exist on
    Relic; a Celestial roll is a Relic; **a Relic is offered as Masterwork until build step 4a gives Relics their named
    property**). Or **credits instead**: `rewards.instead_rate` 0.5 of the cheapest offer's price. `run/pick
    {charId, choice}` by the character's player (or the host, for an away player); a picked gun takes its share of the
-   ammunition pack. The squad moves on when every pick is taken.
+   ammunition pack. The squad moves on when every pick is taken. *(Superseded by rules 1.54 item 2: Materials or One
+   weapon; credits instead retired; three weapons only at the vault's chest and a sealed crate.)*
 12. **The nodes without a fight** (spec rules 13, 24): a **rest** is `applyRest(g, 'long')` and a new session
    (`beginSession`); a **cache** pays `xp.cache` 0.25 x f(d) XP, `credits.cache` 1.5 x c(d) credits and the
    ammunition pack (`ammo_pack.cache` 1); its armour-or-item pick is build step 4a's. The shop, Forge, training
@@ -5211,10 +5212,11 @@ grade step, the Forge's rules and gives are build steps 4a and 4b; this revision
    unpriced thing or `stock: false`. It also prices the counter's shapes: **a round** (`rounds:<calibre>`) at the
    calibre's price per round (the Core Rules' table, `weapons_rules.calibres[].price_credits`, unchanged: .32 Decrkm 1,
    rifle 2, revolver 2, shell 3, arrow 3, bolt 4, .50 Frontier 4, .700 40, 40 mm grenade 60, fuel canister 50, rocket
-   400, core charge 15); **a full magazine** (`mag:<weapon>`) at the empty magazine's price (the Core Rules' 30 for a
+   400, core charge 15 *(Superseded by rules 1.54 item 7: 10)*); **a full magazine** (`mag:<weapon>`) at the empty magazine's price (the Core Rules' 30 for a
    pistol calibre, 40 for a rifle, 25 for a speedloader, 60 for a drum, belt or heavy box: `magazine_prices`) plus its
    rounds; **a special round** at its `price_mult` x the reference calibre's round (`special_round_price.calibre`:
-   rifle, so armour-piercing 6, hollow-point 4, incendiary 6; enhanced keeps its own 15).
+   rifle, so armour-piercing 6, hollow-point 4, incendiary 6; enhanced keeps its own 15 *(Superseded by rules 1.54 item 7:
+   10)*).
 2. **A shop node opens the shop at once** (spec 8.3): no node card; the run stands in the shop (`g.run.state`
    `shop`, `g.run.shop`) and no node can be taken until the party leaves. Its **face** is the setting's shopkeeper
    (`faces`), who greets with a line from data (each new line is the next from the visit's own stream).
@@ -5320,9 +5322,11 @@ this revision's `run/upgrade` with the place `shop`.
    session, one small training each (`train`): drill 100 on a carried weapon (`addDrill`), study 3 (a Sigil user, Brain
    Power 1 or more: `addStudy`), practice 5 (an Outburst user, Will Power 1 or more: `addPractice`) or Devotion 2 XP (the
    Faithful: `shiftDevotion`). **At a training ground** one big training free (`training`: drill 300, study 8, practice
-   10; Devotion is the shrine's) and a second for `extra_price` 300 credits; no third (`most` 2).
+   10; Devotion is the shrine's) and a second for `extra_price` 300 credits; no third (`most` 2). *(Superseded by rules
+   1.54 item 10: a rest's drill 200, study 5, practice 8, Devotion 4; the ground's drill 400, study 10, practice 15.)*
 10. **The shrine** (spec rule 46): its patron rolled of the eight on entry; `run/shrine {charId, choice}`, one offer each:
-   **the rite** (the Faithful: Devotion XP by `patrons.json gain.rite_kept` 4, outside the tag caps), **a piece of lore**
+   **the rite** (the Faithful: Devotion XP by `patrons.json gain.rite_kept` 4, outside the tag caps; *superseded by
+   rules 1.54 item 10: `shrine.rite` 10*), **a piece of lore**
    (an Atheist: `grantPiece` of the shrine's patron, its own refusals in words), or **the token**: one boon of the
    tile's pool of worth at most `shrine.token_max_worth` 8 inside the cap, at most `tokens_per_stage` 1 a character a
    stage, put in `c.relics`.
@@ -5351,7 +5355,8 @@ this revision's `run/upgrade` with the place `shop`.
    the grade steps with the Forge's price beside a shop's, the Relic's three properties with their worth against the
    cap, the stock, fitting, trainings, the shrine's three offers, the trades), each with its price and the engine's
    reason when it can't be taken; the picks of kit beside the weapon pick. The Forge's full-screen frame is the shop's
-   (build step 4) and comes when the two are merged.
+   (build step 4) and comes when the two are merged. *(Superseded by rules 1.54 item 11: every Survival screen plays in
+   the middle of the play screen, between the sheet and the right panel.)*
 
 ## Rules revision 1.44: stages, boons and the next tile (Survival, build step 5)
 
@@ -5489,7 +5494,8 @@ are built beside it.
    the one-step-a-visit count holds there.
 5. **A focus's card shows its grade on its door's rolls** (`door_acc`, read through rules 1.43's `focusAccTerm`):
    Standard +0, Fine +1, Masterwork +2 (`rarity.acc`).
-6. **Every safe node is a full-screen place** (spec 8.3 "The Forge uses this frame"): the Forge (the armourer:
+6. *(Superseded by rules 1.54 item 11: every safe node plays in the middle of the play screen, the sheet on its left
+   and the run's right panel on its right; the "your character on the right" panel is the sheet.)* **Every safe node is a full-screen place** (spec 8.3 "The Forge uses this frame"): the Forge (the armourer:
    Upgrade, Mods and pieces, Armour fitting, Give), a training ground (the drill sergeant), a shrine (its rolled
    patron's portrait), a crossroads (the broker, new face `broker`), a rest (the medic): the face and its greet line on
    the left, large choice cards (each `runOptions` row: what you gain, what it costs, the reason it can't), your
@@ -5609,9 +5615,11 @@ and the earlier revisions give the old numbers, this revision rules.
    stage 2 or 3 and duos in stage 2 to 4. The solo Boss's share (28% HP, 40% damage; Leon's settled ruling 5) is
    unchanged.
 5. **Income:** `rewards.instead_rate` 0.5 → **0.1** of the cheapest offer's price: a pick passed by still pays (a stage
-   1 Fine rifle's worth is about 270), and a stage's income comes back near spec 11.1's.
+   1 Fine rifle's worth is about 270), and a stage's income comes back near spec 11.1's. *(Superseded by rules 1.54
+   item 2: credits instead is retired.)*
 6. **Levels:** `stage.xp` [1, 0.8, 0.9, 1, 1] → **[1, 1, 1.1, 1.25, 1.25]**: an average route (rules 1.48: about 5.8
    fights, fewer than the spec's reference path) reaches level 19 by the end of stage 5 and level 20 early in stage 6.
+   *(Superseded by rules 1.54 item 9: `stage.xp` [1, 2.6, 4, 4, 4.5] with the smaller f(d); level 3 after stage 1.)*
 7. **The path map fits its frame** (rules 1.48 item 7): the 16:9 map is sized to the frame both ways and the vault's
    spur kept inside the map's own box, so no marker is cut off at 1280 × 720, 1280 × 800 or 1920 × 1080.
 8. **What the measure found after the fit, and what data cannot reach,** is items 3608 to 3612; the tables are in the
@@ -5643,7 +5651,8 @@ shop and the Forge that gunsmith. Every number is PROVISIONAL (items 3700 onward
 5. **The screens:** the shop's third tab is "Repair and upgrade": a **Repair** shelf (a card for each carried thing
    with wear: its icon, the durability bar now → full, the price here and at a Forge, the engine's reason when it can't be
    bought) above the grade step's shelf; the Forge's Upgrade tab holds a Repair group of the same cards. The "you" panel
-   of every full-screen place draws a wear bar under the hands and under each pack line that wears, the path map's squad
+   of every full-screen place *(superseded by rules 1.54 item 11: the shop's "You" panel is removed; the sheet's GEAR
+   tab draws the wear bars)* draws a wear bar under the hands and under each pack line that wears, the path map's squad
    panel under each member's main hand and for any other thing Worn or Broken; **Worn and Broken carry a mark in words and
    a glyph** (⚠ WORN, ✕ BROKEN) in the complication red. A weapon's or shield's gear preview shows its full durability at
    its grade (so a grade step's card shows it rise).
@@ -5886,6 +5895,117 @@ Weapons point 10 ("The quiver") where they differ, the Drawn property's line, an
    grade step grades a carried quiver. A graded quiver counts in the run's gear column as arrows held only (no worth
    against the best-gear ceiling: rules 1.26 holds the bow by the bow's grade). Two Celestial quivers are an archer's run
    goal: nothing blocks carrying two of the top grade (item 4007).
+
+## Rules revision 1.54: materials, making, cores, the slower climb and the side panels (Survival; Leon, 14 Nov 2026)
+
+Leon's rulings (14 Nov 2026), verbatim:
+1. "Make a rule that every mode from now on must maintain the left and right UI, each mode have different function in the right UI yes, but never erase them like Survival mode update just did. (Picture attached is left and right UI for Proving ground mode. The content and playing space of the mode is the middle part of the screen and that can be entirely different things but the side panels stay."
+2. "Add the left and right panel fuctions back to survival mode. check what special feature survival mode need and place it in the right panel. there is no area map in this mode or mission. Every screen of the current survival mode go to the middle screen. enlarger icons if too hard to see"
+3. "Loot gain menu move to middle screen. Add Gunpowder and casing into the loot table as well as the ammo maker into loot table, ammo maker make all ammo types using Gunpowder and casing, balance by weapon power."
+4. "Way too many weapon in the loot menu, make it gunpowder-casing-mana residue or one weapon instead."
+5. "Price of manacore to 100 credit, mana residue is another new item, use any focus to combine x amount of it into a manacore"
+6. "you level up way too fast now that the whole game is combat, rebalance is so you only get to level 3 as you are about to take on the first boss ,if your whole first run you focus on taking as many fight as possible."
+7. "Light rest training give so little, buff it"
+8. "Redo skill menu in character creation, ? menu text, and level up menu text, especially will power what the fuck are those text, i'm literally going blind trying to look at that text wall with no proper line break."
+9. "in trait selection in creation screen you cannot scroll with mouse if your mouse touches the trait card"
+
+Written 14 Nov 2026 as the spec for 0.28.0 (`docs/design/survival-spec.md` section 14 and its seventh "Settled by Leon"
+block); **not built**. Each item below is a call the lead made for Leon on his words, reversible by him ("no answer
+means yes"). Every number is PROVISIONAL except the standard core's 100 credits (Leon's, firm); items 4100 onward. The
+screens (Survival's screens in the middle, the right panel by mode, larger icons, the skill texts, the trait cards) are
+`docs/design/ui-screens.md` "The three columns (every mode)" and survival-spec section 14; item 11 states the standing
+rule. It overrides: rules 1.41 item 10's XP numbers and item 11 (three weapons, or credits instead); rules 1.42 item 1's
+core charge and enhanced round prices; rules 1.43 item 9's trainings, item 10's rite and item 15's full-screen frame;
+rules 1.46 item 6 (every safe node full screen); rules 1.49 items 5 and 6; rules 1.50 item 5's "you" panel; and the
+standard core's 150 credits (Magic, "Mana cores").
+
+1. **What the sheet does in a run.** The character sheet (the left panel, every tab, Level up) is on screen at every
+   Survival screen but a fight's. Between fights a character's own player may equip, unequip, load, swap a quiver, fit
+   mods and give (`gear/*`, `gear/give`), as the engine already accepts in a run. **At the camp** (run state `loadout`)
+   the sheet's GEAR tab is read-only: the camp rebuilds the gear from its picks after every change, so the engine
+   refuses every `gear/*` action there, in words ("At the camp, change your gear in the loadout."). **Ask and Rest never
+   show in a run** (the engine already refuses `voice/`). **A run rests only at a Rest node:** the reducer's `rest` is
+   refused in a run. It was not: `RUN_REFUSED` lists `rest/` and the action's type is `rest`, so a host could take a
+   free long rest between any two nodes; the fix comes with a test, written first, that sends `rest` through the
+   reducer in a run and fails on today's code. **No healing between fights but a rest** stands: a stim is used in a
+   fight only (`combat/stim` is the only way to use one), and making (item 5) heals nothing.
+2. **The pick after a fight: Materials or One weapon.** Each character picks one of two cards: **Materials**
+   (gunpowder, casings and mana residue together, item 4) or **One weapon** (one offer, chosen as the old first offer
+   was: a focus of the character's own door, else its weapon's category, else any in the band; rules 1.41 item 11's
+   band, rarity and stage cap unchanged). `run/pick {charId, choice}` takes the weapon's index `0` or `materials`.
+   **"Credits instead" is retired** (`rewards.instead_rate` and the offer's `instead` are removed); materials sell at
+   the sell rate (`sell_rate.rate` 0.25 of `priceOf`). How many weapons an offer holds is data by where it is made
+   (`rewards.offer`: a fight, an Elite, the gate, a Boss and the vault's guard 1; the vault's chest and a sealed crate 3,
+   and those two have no Materials card). XP, credits and the supply pack (rules 1.51 item 5) are paid as before. An
+   offer saved before this revision (no materials on it) keeps its credits choice.
+3. **Survival's foes leave no gear.** Every foe a Survival fight makes carries the flag that turns off what a foe
+   always drops (the loot door's "always": its weapon, its magazines and loose rounds, and a Boss's notable thing). What
+   it drops instead is materials, given (not rolled, so outside the fight's loot cap) onto its death tile's pile as any
+   drop: **gunpowder 2 to 5 and casings 2 to 5** from a foe whose weapon is a gun (a weapon with a calibre), **mana
+   residue 1 to 2** from a caster or a machine (a foe whose kind's table is `machine`), both when it is both. The numbers
+   are `survival.json drops`. Campaign and Proving Ground foes drop as before.
+4. **Three materials and a tool** (`items.json`): **Gunpowder** (`gunpowder`, 1 credit, 0.01 kg), **Casing** (`casing`,
+   1 credit, 0.01 kg), **Mana residue** (`mana_residue`, 10 credits, 0.02 kg; its name is never "residue" alone, which
+   names a feeling's tiles, rules 1.8), and the **Ammo maker** (`ammo_maker`, a tool, 2 kg, 300 credits). The three
+   materials are category `loot` (a shop never rolls them as Today's gear), stack in the pack and sell at the sell rate.
+   The ammo maker is a `tool` (a shop's rolled gear holds it by its category, inside the depth's price band) and is in
+   the shared loot tables (`person`, weight 1). **The Materials card** gives, for the node's credit value C (`nodeCredits`,
+   with the node's and the stage's multipliers): **gunpowder ⌈C/2⌉, casings ⌈C/2⌉, mana residue ⌈C/20⌉** (a fight worth
+   100 credits: 50, 50 and 5). It goes into the pack whole, through `packAdd` (item 4111).
+5. **Making.** **One converter** for every recipe, read from `data/recipes.json`; a row is `{id, name, needs: [{item,
+   n}], tool: {item} or {focus: "any"}, gives: [{item or rounds:<calibre>, n}], where: "between_fights"}`. `gear/make
+   {charId, recipe, times}` (times 1 or more) takes needs × times from the pack and puts gives × times in it. It is
+   **free** (no AP, no credits, no time) and **only between fights**: refused in a fight and for a character at 0 HP. Only
+   the character's own player makes for it. A tool that is an item must be **carried** (a hand or the pack); "any focus"
+   must be **in a hand** (any focus of the four kinds, or any weapon that counts as one: the one hold test). Refused in
+   words, naming the character: no tool ("Kade needs an ammo maker to make rounds.", "Ha needs a focus in hand to press a
+   core."), too little ("Kade needs 20 gunpowder for that and has 12."), in a fight ("Kade can't make anything in a
+   fight."), down ("Kade is down and can't make anything."), at the camp (item 1). The Proving Ground takes it while
+   gearing up as it takes `gear/load`; a campaign takes it out of a fight. No recipe has code of its own and no item id
+   is named in code.
+6. **Ammunition at the shop's price** (Leon: "balance by weapon power"). A round's shop price (`priceOf` of
+   `rounds:<calibre>`, a special round's of its item) already rises with the weapon's power, so it is the measure: a
+   recipe makes rounds worth V credits from **V/2 gunpowder and V/2 casings**. Making is never cheaper than buying; it is
+   ammunition where there is no shop. One recipe for each calibre but the core charge (eleven) and for each of the three
+   special rounds (armour-piercing, hollow-point, incendiary), each with the ammo maker; none for the core charge (it is a
+   core's) or for enhanced rounds. A recipe makes 1 round, or 2 where one round's price is odd, so the halves are whole
+   (survival-spec 14 (c) has the table). The validator checks every recipe against `priceOf`: what it needs is worth what
+   it gives, so a recipe cannot drift from a price.
+7. **Cores.** The standard core costs **100 credits** (was 150; Leon, firm), so it sells for 25. **Ten mana residue and
+   any focus in hand make one standard core** (`core_from_residue`, item 5's converter; 10 × 10 = 100, the same parity).
+   The core charge's round price 15 → **10** and enhanced rounds 15 → **10** (the same scale). The second, unread core
+   price (`rules.json` `cores.standard.price_credits` 150) is deleted, and the enhanced type's `rounds_per_core` if the
+   validator agrees nothing reads it.
+8. **The general pieces, each built once** (and only these): `packTake(pack, id, n)` beside `packAdd`; the recipes
+   module (the problem in words, doing it, the view) and `gear/make`; "any focus" as a form of the one hold test (the
+   focus test it already keeps, exported, not written again); the run offer's optional `materials` and the pick's value
+   `materials`; the flag on a foe's drops (item 3); an item field `pack_kind` that replaces the three places choosing a
+   pack line's kind by an item's id (the core, the two focus gloves, the ration pack; the same kinds as today); the pack's
+   quantity cap (20, a literal in `lootToPack`) moved into data (item 4111: its value, and why the Materials card's grant
+   does not pass through it). **No new trigger, predicate, op, hook, stat or cost site.**
+9. **The slower climb** (`survival.json` only; the shared `xp_total` is untouched): f(d) = `xp.base` **10** +
+   `xp.per_depth` **2** × (d − 1) (was 100 and 22); the Boss × `xp.boss` **5** (was 2); `stage.xp` **[1, 2.6, 4, 4,
+   4.5]** (was [1, 1, 1.1, 1.25, 1.25]; the last repeats). **Stage 1 is played before the class is earned:** on the
+   reference path (survival-spec 5.4) a character reaches level 2 at the gate, has 210 XP at the Boss's door and 400
+   after it (level 3 from the Boss); the most-fights lane route reaches 250 at depth 12 or 13. After the Bosses of
+   stages 1 to 6 a character stands at about level 3, 5, 7, 9, 11 and 12 to 13 (survival-spec 14 (d)). The Essence of
+   Experience leaves Survival's Boss drops through item 3's flag; **its leaving the shop's rolled stock is not part of
+   this revision** (nothing in data excludes one item from a shop's rolled pool, and such a field is not on item 8's
+   list: a question for the lead, survival-spec 14 (f)). **The difficulty fit of rules 1.49 is measured again** with the
+   run simulator on the new curve before release (survival-spec 14 (d) names the dials that move).
+10. **Rest training.** A rest's small training (`train`): drill 100 → **200**, study 3 → **5**, practice 5 → **8**,
+   Devotion 2 → **4** XP. The training ground's (`training`): drill 300 → **400**, study 8 → **10**, practice 10 →
+   **15** (the second training's price stays 300). The shrine's rite has its own key, `shrine.rite` **10** Devotion XP
+   (it read `patrons.json gain.rite_kept` 4, which the campaigns' rites keep). Each training card shows a bar: where the
+   character stands, what this training adds, and the mark it reaches, from the engine's view (survival-spec 14 (e)).
+11. **Every mode keeps its side panels** (Leon's ruling 1; a standing rule for every mode from now on). A mode's screens
+   keep the left panel (the character sheet with all its tabs and Level up) and a right panel; the mode's own content is
+   the middle. A mode chooses **what** its right panel holds (`data/modes.json` items' `panels`), never **whether** it
+   has one. Excepted today, as not a mode's screens: the fight screen (in every mode, the Proving Ground included) and
+   the full-screen level-up and creation flows. Survival's screens all play in the middle (the path map, the camp, the
+   shop, the Forge, every place, the rewards, the stage screen); its right panel is the mana forecast, the run, the run
+   board and the squad, with no area map and no quest board. Every "full screen" of rules 1.42 to 1.52 is superseded by
+   it.
 
 ## Maps (rules 1.16)
 
@@ -6329,7 +6449,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 **Numbers the spec doesn't give yet**
 
 1. **Weapon accuracy.** The attack roll adds weapon accuracy, but the weapon table has no accuracy column. *Data: 0 for all weapons.*
-2. **Prices.** No prices for weapons, small cores or heavy cores; only the standard core has one (150).
+2. **Prices.** No prices for weapons, small cores or heavy cores; only the standard core has one (150). *(Superseded by rules 1.54: the standard core 100.)*
 3. **Diagonal movement.** No cost is given. *Suggested: every second diagonal costs 2 tiles.*
 4. **Initiative ties** after Agility. *Suggested: compare Reaction Speed, then the players choose.*
 5. ~~Inner Voice ties.~~ *Obsolete in 1.1: Voices replace Inner Voice; ties between hooks go to the bigger margin, then the Narrator's choice.*
@@ -9039,13 +9159,13 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2818. **The fight's map (rules 1.41 item 7; `map_size`):** 16 / 20 / 26 by units up to 6 / 10 / more; the open ground's middle cropped; squad columns 1 and 2; no foe nearer than the deployment minimum (10). PROVISIONAL.
 2819. **Death (rules 1.41 item 9; `run.dead_return_hp` 1):** back at 1 HP after a won fight with a full share (spec question 4's recommendation). PROVISIONAL.
 2820. **A lost run returns the room to its lobby (rules 1.41 items 9, 13):** with the score in `g.run.end`; the fallen characters stay fallen and are refused at the next `run/start` (item 2800's words). A call made for Leon: the alternative is to raise them at the next run's start. PROVISIONAL.
-2821. **XP a node pays (rules 1.41 item 10; `xp`):** base 100, per_depth 22, elite 1.5, boss 2, cache 0.25. PROVISIONAL.
+2821. **XP a node pays (rules 1.41 item 10; `xp`):** base 100, per_depth 22, elite 1.5, boss 2, cache 0.25. PROVISIONAL. *(Superseded by rules 1.54: item 4112, base 10, per_depth 2, boss 5.)*
 2822. **Credits a node pays (rules 1.41 item 10; `credits`):** base 80, per_depth 20, elite 1.5, boss 2, cache 1.5. PROVISIONAL.
 2823. **The ammunition pack (rules 1.41 item 10; `ammo_pack`):** fight 1, elite 2, boss 3, cache 1 magazines' worth a gun; 1 core for an Evoker or Visualizer carried (`core_doors`). One core whatever the node (the spec's "one standard core"). PROVISIONAL.
-2824. **The pick's size and band (rules 1.41 item 11; `rewards.offer` 3, `rewards.price_band`):** base 300, per_depth 150, per_stage 1,000, elite x 1.25, boss x 1.5, on the standard price. PROVISIONAL.
+2824. *(The offer's size superseded by rules 1.54: item 4103.)* **The pick's size and band (rules 1.41 item 11; `rewards.offer` 3, `rewards.price_band`):** base 300, per_depth 150, per_stage 1,000, elite x 1.25, boss x 1.5, on the standard price. PROVISIONAL.
 2825. **The pick's rarity (rules 1.41 item 11; `rewards.rarity`, `rewards.ceiling`):** as the spec; a Relic is offered as Masterwork until build step 4a (no Relic property exists yet). PROVISIONAL.
 2826. **The pick's first offer (rules 1.41 item 11):** the door with most points (a focus of its kind), else the hand weapon's category; when none fits the band, any. PROVISIONAL.
-2827. **Credits instead (rules 1.41 item 11; `rewards.instead_rate` 0.5).** PROVISIONAL.
+2827. **Credits instead (rules 1.41 item 11; `rewards.instead_rate` 0.5).** PROVISIONAL. *(Superseded by rules 1.54: retired, item 4104.)*
 2828. **A picked gun takes its share of the ammunition pack (rules 1.41 item 11):** the pack is paid at the fight's end, the pick after it; rule 23's "every gun it carries" is read to include the picked one. PROVISIONAL.
 2829. **The rest and the cache (rules 1.41 item 12):** the rest's small training and the cache's armour-or-item pick are build step 4a's. PROVISIONAL.
 2830. **The panels' and hover cards' words (rules 1.41 item 12; `nodes`, `tips`).** PROVISIONAL.
@@ -9085,9 +9205,9 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3012. **Balanced reads "in hand" (rules 1.43 item 7):** a swap has no weapon of its own, so the property needs only its instance in a hand. PROVISIONAL.
 3013. **The Forge's stock (rules 1.43 item 8; `forge.slots` 4):** "better than one of them wears" is read as dearer (`priceOf`) than the piece worn in that slot, or any piece for an empty slot; when fewer than four fit the visitors, any mod or worn piece fills. PROVISIONAL.
 3014. **Armour fitting (rules 1.43 item 8; `armour_fit.price` class 2 250, 3 600, 4 1,200).** PROVISIONAL.
-3015. **The rest's small training (rules 1.43 item 9; `train` drill 100, study 3, practice 5, Devotion 2).** PROVISIONAL.
+3015. **The rest's small training (rules 1.43 item 9; `train` drill 100, study 3, practice 5, Devotion 2).** PROVISIONAL. *(Superseded by rules 1.54: item 4115.)*
 3016. **Who studies and who practises (rules 1.43 item 9):** a Sigil user is Brain Power 1 or more, an Outburst user Will Power 1 or more; drill takes any weapon carried (hand or pack), not a thrown thing. PROVISIONAL.
-3017. **The training ground (rules 1.43 item 9; `training` drill 300, study 8, practice 10, `extra_price` 300, `most` 2).** PROVISIONAL.
+3017. **The training ground (rules 1.43 item 9; `training` drill 300, study 8, practice 10, `extra_price` 300, `most` 2).** PROVISIONAL. *(Superseded by rules 1.54: item 4115.)*
 3018. **The shrine's patron is rolled per node (rules 1.43 item 10).** PROVISIONAL.
 3019. **The shrine's piece is for an Atheist only (rules 1.43 item 10):** a Faithful character keeps the rite (the spec's rule 46). PROVISIONAL.
 3020. **The token (rules 1.43 item 10; `shrine.token_max_worth` 8, `tokens_per_stage` 1).** PROVISIONAL.
@@ -9182,12 +9302,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3603. **The small parties' cap (rules 1.49 item 4):** `pressure_per_char` [2.0, 1.7, 1.3, 1.3] (was [1.2, 1.25, 1.3, 1.3]). PROVISIONAL.
 3604. **The small parties' share (rules 1.49 item 4):** solo Elite HP 0.75 and damage 0.75 (was 0.7 / 0.55); duo Elite 1 / 1 (was 0.9 / 0.8); duo Boss damage 0.8 (was 0.6). The solo Boss (0.28 / 0.4) as Leon settled it. PROVISIONAL.
 3605. **Credits instead of a pick (rules 1.49 item 5):** `rewards.instead_rate` 0.1 (was 0.5). PROVISIONAL.
-3606. **XP by stage (rules 1.49 item 6):** `stage.xp` [1, 1, 1.1, 1.25, 1.25] (was [1, 0.8, 0.9, 1, 1]). PROVISIONAL.
+3606. **XP by stage (rules 1.49 item 6):** `stage.xp` [1, 1, 1.1, 1.25, 1.25] (was [1, 0.8, 0.9, 1, 1]). PROVISIONAL. *(Superseded by rules 1.54: item 4112.)*
 3607. **The path map fits its frame (rules 1.49 item 7):** the 16:9 box sized by its frame's both sides (`containerType: size`); the vault's spur at least 48 map units from the top and bottom edges. PROVISIONAL.
 3608. **Measured after the fit (rules 1.49 item 8; 4 seeds a cell, stages capped at 5):** squads of four (a gunner, a Faith rifle, a Sigil caster, a healer) end in stage 3 or 4 on every route (means 3.4 to 4.4; every squad clears stage 1); duos (a gunner and a healer) in stage 2 to 4 (3.6 to 4.1); solo gunners in stage 2 or 3 (2.6 to 3.1; stage 1 cleared in 9 of 12). Before: every party with a gunner reached stage 5. PROVISIONAL.
 3609. **Not reached by data (rules 1.49 item 8):** a Sigil caster alone falls in stage 1 and a party of four casters in stage 1 or 2 (their fights run 8 to 13 rounds; Sigil and Outburst sustain over a long fight, and the simulator's caster policies, are the limit, not the budget); guns wear out (durability 400 a Standard weapon) by stage 3 to 4 and Survival has no repair but a grade step (Field Repair needs Proficiency 3 and works only in a fight): a repair line at the shop or the Forge is the general thing missing. PROVISIONAL.
 3610. **Income after the fit (rules 1.49 item 5):** a character earns about 2,450 to 4,600 in stage 1 (the gear route takes the vault; credits instead of a pick about 300 to 700 of it) and 2,800 to 5,800 a stage after (spec 11.1: 3,010 then 3,861 to 5,863); the Relic step lands in stage 3 on the richer routes, stage 4 otherwise. PROVISIONAL.
-3611. **Levels after the fit (rules 1.49 item 6):** about level 6 to 7.5 after stage 1's Boss, 9 to 11 after stage 2, 11.5 to 13.5 after stage 3, 15 after stage 4 and 17 after stage 5 on the slowest (training) route: level 20 in stage 6, earlier on the gear route. PROVISIONAL.
+3611. **Levels after the fit (rules 1.49 item 6):** about level 6 to 7.5 after stage 1's Boss, 9 to 11 after stage 2, 11.5 to 13.5 after stage 3, 15 after stage 4 and 17 after stage 5 on the slowest (training) route: level 20 in stage 6, earlier on the gear route. PROVISIONAL. *(Superseded by rules 1.54: item 4113.)*
 3612. **Items 3600 to 3612 are rules 1.49's.**
 3700. **The repair service (rules 1.50 item 1):** `run/repair {charId, where, place}` at a shop or a Forge, one carried weapon or shield back to its grade's full durability; a focus, armour, tools and thrown things do not wear; no limit a visit. PROVISIONAL.
 3701. **The repair price (rules 1.50 item 2):** max(`repair.floor` 10, `repair.rate` 0.1 × priceOf(item, grade) × missing / full) × `repair.places` (shop 1, Forge 0.8), rounded up; fitted mods are not counted. PROVISIONAL.
@@ -9266,3 +9386,64 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 4007. **A quiver's price:** 120 credits at Standard (× the grade's price factor, `priceOf`), 0.6 kg; in Survival a quiver
     is offered to a character who carries a Drawn weapon. PROVISIONAL.
 4008. **Items 4000 to 4008 are rules 1.53's.**
+4100. **Materials, making, cores, the slower climb and the side panels (rules 1.54), Leon 14 Nov 2026:** written as the
+    spec for 0.28.0 (survival-spec section 14), not built; its numbers are items 4101 to 4119. Each is a call the lead
+    made for Leon on his words.
+4101. **The sheet in a run (rules 1.54 item 1):** the camp (run state `loadout`) refuses every `gear/*` action ("At the
+    camp, change your gear in the loadout."); Ask and Rest are never shown in a run. PROVISIONAL.
+4102. **A rest in a run (rules 1.54 item 1):** the reducer's `rest` is refused in a run (`RUN_REFUSED` matched `rest/`,
+    never the action's type `rest`). A fix, not a number; its test is written first and fails on the old code.
+4103. **The pick's two cards (rules 1.54 item 2):** Materials or One weapon; `rewards.offer` by where: fight, Elite, gate,
+    Boss and the vault's guard 1, the vault's chest and a sealed crate 3 (no Materials card on those two). One card
+    cuts the free grade-upgrade chance of a pick to about a third (the curve of rules 1.49 was fitted at three):
+    measured again with item 4114. PROVISIONAL.
+4104. **Credits instead retired (rules 1.54 item 2):** `rewards.instead_rate` (0.1) and the offer's `instead` removed;
+    an offer saved before 1.54 keeps its credits choice. Supersedes items 2827 and rules 1.49 item 5's rate. PROVISIONAL.
+4105. **Survival's foes' drops (rules 1.54 item 3; `survival.json drops`):** the always-drops off (weapon, magazines,
+    loose rounds, a Boss's notable thing); gunpowder 2 to 5 and casings 2 to 5 from a foe with a gun, mana residue 1 to
+    2 from a caster or a machine; given, outside the loot cap. PROVISIONAL.
+4106. **The materials and the tool (rules 1.54 item 4; `items.json`):** gunpowder 1 credit 0.01 kg, casing 1 credit
+    0.01 kg, mana residue 10 credits 0.02 kg (category `loot`); the ammo maker 300 credits 2 kg (category `tool`),
+    in the shared `person` loot table at weight 1. PROVISIONAL.
+4107. **The Materials card (rules 1.54 item 4):** gunpowder ⌈C/2⌉, casings ⌈C/2⌉, mana residue ⌈C/20⌉ for C =
+    `nodeCredits` of the node (a stage 1 fight at depth 1, C 100: 50, 50, 5: fifty rifle rounds' worth and half a
+    core). Sold whole it brings 0.375 × C (the old credits instead brought 0.1 of the cheapest offer). PROVISIONAL.
+4108. **Making (rules 1.54 item 5):** free, between fights only, never at 0 HP; an item tool carried, "any focus" in a
+    hand. PROVISIONAL.
+4109. **The ammunition recipes (rules 1.54 item 6):** V/2 gunpowder and V/2 casings for rounds worth V at `priceOf`; one
+    round, two where a round's price is odd; eleven calibres (all but the core charge) and three special rounds
+    (survival-spec 14 (c)). Arrows and bolts are made from gunpowder and casings too, as Leon's "all ammo types" says; a
+    call for Leon. PROVISIONAL.
+4110. **Cores (rules 1.54 item 7):** the standard core 100 credits (Leon, firm; was 150; supersedes the "Mana cores"
+    paragraph's 150 and item 2's "(150)"); 10 mana residue and any focus in hand make one; the core charge 10 a round
+    and enhanced rounds 10 (were 15 each). PROVISIONAL but the core's 100.
+4111. **The pack's quantity cap in data (rules 1.54 item 8):** the literal 20 in `lootToPack` moves into data at 20, so
+    no loot pile and no Narrator's loot changes. The Materials card's grant does not pass through it: it goes in by
+    `packAdd`, as the counter's purchases do, because C has no ceiling in an endless run (`stage.credits` 0.35 a stage:
+    a stage 6 Boss's C is 2 × (80 + 20 × 15) × 2.75 = 2,090, so 1,045 gunpowder), and any fixed cap would cut a later
+    stage's card. A foe's drop (at most 5) is under the cap. The lead's brief said the larger amounts go "through the
+    data cap": a question for the lead. PROVISIONAL.
+4112. **XP (rules 1.54 item 9; `survival.json`):** `xp.base` 10, `xp.per_depth` 2, `xp.boss` 5, `stage.xp` [1, 2.6, 4,
+    4, 4.5]; `xp.elite` 1.5, `xp.vault_guard` 1.5 and `xp.cache` 0.25 unchanged; the shared `xp_total` untouched.
+    Supersedes items 2821 and 3606. PROVISIONAL.
+4113. **Levels by stage (rules 1.54 item 9):** on the reference path (survival-spec 5.4) 400 XP after stage 1's Boss
+    (level 3), 1,440 after stage 2 (5), 3,040 (7), 4,640 (9), 6,440 (11), 8,240 after stage 6 (13); the scout's
+    count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13).
+    Supersedes item 3611. PROVISIONAL.
+4114. **The curve measured again (rules 1.54 item 9):** rules 1.49's fit was made at levels 6 to 7 after stage 1; with
+    levels 3 and the one-weapon pick the run simulator (`survival-run.ts`) runs rules 1.49's cells again before release.
+    Not done when this was written.
+4115. **Trainings (rules 1.54 item 10):** a rest's drill 200, study 5, practice 8, Devotion 4; the training ground's drill
+    400, study 10, practice 15; the second training's price 300 unchanged. Supersedes items 3015 and 3017. PROVISIONAL.
+4116. **The shrine's rite (rules 1.54 item 10):** `shrine.rite` 10 Devotion XP (was `patrons.json gain.rite_kept` 4,
+    which the campaigns keep). PROVISIONAL.
+4117. **Every mode keeps its side panels (rules 1.54 item 11):** the right panel by mode, `modes.json` items'
+    `panels`: Survival `mana`, `run`, `run_board`, `squad`; a campaign `mana`, `map`, `quests`, `squad` (today's).
+    Excepted: the fight screen, the level-up and creation flows. PROVISIONAL (the lists).
+4118. **Larger icons on Survival's screens:** path markers (a plain stop, a junction, the vault's spur, the gate, the
+    Boss, the camp) 36 / 42 / 40 / 50 / 64 / 44 → 48 / 52 / 48 / 60 / 76 / 52 px, no marker or its glyph under 32 px,
+    labels 10 → 12 px, boon icons 16 → 24 px, the reward weapon's icon 52 → 72 px. PROVISIONAL.
+4119. **Skill texts (ui-screens "The three columns"):** a skill's per-point text as rows (`per_point.rows`: each a `when`
+    and a text, numbers by placeholders), one copy (`epccg.effect` removed); rules text never under 13 px; a row at most
+    60 characters where it can be. PROVISIONAL.
+4120. **Items 4100 to 4120 are rules 1.54's.**
