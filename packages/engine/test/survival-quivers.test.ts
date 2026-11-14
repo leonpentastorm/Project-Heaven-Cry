@@ -28,12 +28,12 @@ describe('rules 1.53: quivers in a Survival run', () => {
   });
   it('the grade step grades a carried quiver at the shop, and the Relic step at the Forge asks no named property; worth nothing on the cap', () => {
     let g = visit('shop', { stage: 2, prep: (x) => archer(x) }); const c = Object.values(g.characters)[0];
-    const o = runOptions(g, c.id).find((x) => x.group === 'grade' && x.action.where === 'quiver:0')!;
+    const o = runOptions(g, c.id).find((x) => x.group === 'grade' && (x.action as any).where === 'quiver:0')!;
     expect(o).toBeTruthy(); expect(o.why).toBeNull(); expect(o.detail).toMatch(/worn quiver/);
     g = apply(g, o.action as any, c.owner);
     expect(quiversOf(g.characters[c.id])[0].rarity).toBe('fine');
     const f = visit('forge', { stage: 9, prep: (x) => { const a = archer(x); setQuivers(a, [{ id: 'quiver', rarity: 'masterwork', arrows: {} }]); } }); const fc = Object.values(f.characters)[0];
-    const relic = runOptions(f, fc.id).find((x) => x.action.where === 'quiver:0')!;
+    const relic = runOptions(f, fc.id).find((x) => (x.action as any).where === 'quiver:0')!;
     expect(relic).toBeTruthy(); expect(relic.why).toBeNull();
     const before = runWorth(fc), g2 = apply(f, relic.action as any, fc.owner);
     expect(quiversOf(g2.characters[fc.id])[0].rarity).toBe('relic'); expect(runWorth(g2.characters[fc.id])).toBe(before);

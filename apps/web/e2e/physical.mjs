@@ -92,7 +92,7 @@ ok('the drill tools: +300 on the knife reaches mark I', (await C()).phys.drill.c
 ok('…the signature is learned (Coup known)', (await C()).phys.known.includes('coup'));
 await sheetTab('ARMS').click(); await settle(p, 300);
 ok('…the ARMS tab shows mark I reached and Coup as a signature', /✓ MARK I/.test(await arms.locator('[data-drill="combat_knife"]').textContent()) && /SIGNATURE · Combat knife/.test(await arms.locator('[data-technique="coup"]').textContent()));
-ok('the quiver menu for the bow in the pack, with what it holds', (await arms.locator('[data-quiver="recurve_bow"]').count()) === 1 && /Capacity|loaded/.test(await arms.locator('[data-quiver="recurve_bow"]').textContent()));
+ok('the quiver menu for the bow in the pack: its worn quiver, with what it holds (rules 1.53)', (await arms.locator('[data-quiver="q0"]').count()) === 1 && /Holds|loaded/.test(await arms.locator('[data-quiver="q0"]').textContent()));
 for (const [w, h] of [[1440, 900], [1280, 720]]) { await p.setViewportSize({ width: w, height: h }); await settle(p, 350); await snap('arms-' + w); }
 await p.setViewportSize({ width: 1440, height: 900 }); await settle(p, 300);
 await act({ type: 'sandbox/technique', charId: cid, id: 'suppress', ready: true });
