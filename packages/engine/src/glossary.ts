@@ -26,7 +26,7 @@ function build(): WikiEntry[] {
   // A skill says its slot in words (rules 1.13): alpha a way of fighting, beta a defence, gamma world play and speech,
   // which rolls 1 better on checks (its full points; an alpha or a beta adds its points − 1).
   for (const s of SKILLS as any[]) add('skill:' + s.id, s.name, line(s.name + ' (' + s.core + ', ' + (ATTR[s.attribute]?.name || s.attribute) + '; ' + SLOT_WORDS[s.slot as 'alpha' | 'beta' | 'gamma'] + ').', s.summary,
-    s.per_point?.text ? 'A point gives: ' + s.per_point.text : '',
+    s.per_point?.rows?.length ? 'A point gives: ' + s.per_point.rows.map((r: any) => (r.at === 'each' ? '' : r.at + ': ') + r.text).join('; ') + '.' : '', // rules 1.54 item 4119: the rows
     s.voice ? 'Voice: ' + s.voice.persona + ' Wants: ' + s.voice.wants + ' Style: ' + s.voice.style : '',
     s.overreach ? 'Overreach at ' + s.overreach.from_points + '+: ' + (s.overreach.text || s.overreach.trigger || '') : ''));
   // Perks, traits and class moves say who runs them (effects/coverage.ts): the Narrator rules only what the engine doesn't.

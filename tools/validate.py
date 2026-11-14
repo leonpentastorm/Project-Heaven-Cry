@@ -100,6 +100,58 @@ for s in items("skills"):
         for x in sorted({x for x in sents if sents.count(x) > 1}):
             errors.append(f"skills: {path} says the same sentence {sents.count(x)} times: {x[:60]}")
 
+# rules 1.54 item 4119 (the road map): what a point gives is per_point.rows, the one copy: each {at, text}, `at` one of
+# each, each from n, every 2, every 3, from n, at n (n 1 to 10); no row twice; no prose per_point.text, no epccg.effect.
+# Numbers are placeholders into per_point.numbers; where the engine reads the same number from data, it must be equal.
+_AT = re.compile(r"^(each|every 2|every 3|(each from|from|at) (\d+))$")
+_ld = lambda stem: data.get(stem) if isinstance(data.get(stem), dict) else {}
+_calls_r, _tech_r, _fig_r = (_ld("calls").get("rules") or {}), ((_ld("techniques").get("rules") or {}).get("guard") or {}), ((_ld("figments").get("visualizer") or {}).get("range") or {})
+_hymn_r, _cyc_r = (((_ld("patrons").get("prayer") or {}).get("hymn") or {}).get("cooldown_rule") or {}), (_ld("soul_modules").get("cycle") or {})
+_SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where it lives)
+    ("durability", "pool"): (_tech_r.get("per_durability"), "techniques.json rules.guard.per_durability"),
+    ("durability", "pool_max"): (_tech_r.get("max"), "techniques.json rules.guard.max"),
+    ("durability", "guard_base"): (_tech_r.get("gain_base"), "techniques.json rules.guard.gain_base"),
+    ("durability", "guard_per_point"): (_tech_r.get("gain_per_point"), "techniques.json rules.guard.gain_per_point"),
+    ("durability", "brace"): (_tech_r.get("brace_gain"), "techniques.json rules.guard.brace_gain"),
+    ("visualization", "range"): (_fig_r.get("per_point"), "figments.json visualizer.range.per_point"),
+    ("faith", "hymn_cut"): (_hymn_r.get("per_faith"), "patrons.json prayer.hymn.cooldown_rule.per_faith"),
+    ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
+    ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
+}
+for s in items("skills"):
+    if not isinstance(s, dict):
+        continue
+    sid, pp = s.get("id"), s.get("per_point") or {}
+    rows, nums = pp.get("rows"), pp.get("numbers") or {}
+    if "text" in pp: errors.append(f"skills:{sid}: per_point.text is gone (rules 1.54 item 4119): what a point gives is per_point.rows")
+    if "effect" in (s.get("epccg") or {}): errors.append(f"skills:{sid}: epccg.effect is gone (rules 1.54 item 4119): per_point.rows is the one copy")
+    if not isinstance(rows, list) or not rows:
+        errors.append(f"skills:{sid}: per_point.rows is missing or empty (every skill says what a point gives as rows)"); continue
+    seen = set()
+    for i, r in enumerate(rows):
+        w = f"skills:{sid}: per_point.rows.{i}"
+        if not isinstance(r, dict) or set(r) != {"at", "text"} or not isinstance(r.get("text"), str) or not r["text"].strip():
+            errors.append(f"{w}: a row is {{at, text}} with a text"); continue
+        m = _AT.match(str(r["at"]))
+        if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
+            errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")
+        if r["text"] in seen: errors.append(f"{w}: the row {r['text'][:40]!r} is there twice")
+        seen.add(r["text"])
+        for ref in re.findall(r"\{=([^}|]+)", r["text"]):
+            if not ref.startswith("per_point.numbers."): errors.append(f"{w}: {{={ref}}} reads outside per_point.numbers (a row's numbers are its skill's per_point.numbers)")
+    for k, v in nums.items():
+        if not isinstance(v, (int, float)) or isinstance(v, bool): errors.append(f"skills:{sid}: per_point.numbers.{k} is not a number")
+        elif not any("{=per_point.numbers." + k + "}" in r.get("text", "") or "{=per_point.numbers." + k + "|" in r.get("text", "") for r in rows if isinstance(r, dict)):
+            errors.append(f"skills:{sid}: per_point.numbers.{k} is read by no row")
+    if "call_range" in nums and nums["call_range"] != _calls_r.get("range_per_point"):
+        errors.append(f"skills:{sid}: per_point.numbers.call_range {nums['call_range']} is not calls.json rules.range_per_point {_calls_r.get('range_per_point')}")
+    for (k_sid, k), (want, where) in _SAME.items():
+        if k_sid == sid and nums.get(k) != want: errors.append(f"skills:{sid}: per_point.numbers.{k} {nums.get(k)} is not {where} {want}")
+    if sid == "will_power":
+        _fp, _sw = ((_cyc_r.get("free_pumps") or [{}])[0]).get("will_power"), (_cyc_r.get("swell_no_strain") or {}).get("will_power")
+        if not any("{=per_point.numbers.pumps}" in r.get("text", "") and r.get("at") == f"from {_fp}" for r in rows): errors.append(f"skills:will_power: the free Pump's row is at 'from {_fp}' (soul_modules.json cycle.free_pumps.0.will_power)")
+        if not any(r.get("at") == f"from {_sw}" for r in rows): errors.append(f"skills:will_power: a row at 'from {_sw}' says the held Outburst swells without Strain (soul_modules.json cycle.swell_no_strain.will_power)")
+
 new_ops = collections.Counter()
 
 def walk(obj, where):

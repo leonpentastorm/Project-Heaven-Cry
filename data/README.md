@@ -10,7 +10,7 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 |---|---|---|
 | `rules.json` | (object) | Every constant: d20 and the TN ladder, skill Voices, Overreach (indulge/resist), Echo, the XP table, AP economy, the 1.5 m grid, initiative, the action table, derived-stat formulas, damage and armour, rest, mana-meter bands, Flux, Strain, blessing tiers, levelling, multiplayer (4 per room), and the lists of what the engine owns and what the Narrator owns |
 | `attributes.json` | 9 + 3 cores | Attributes with their α/β/γ skills and derived-stat formulas; cores with their economies |
-| `skills.json` | 27 | Slot, what a point gives (`per_point.text`), unlocks at 3/5/7/9/10, Overreach, voice card |
+| `skills.json` | 27 | Slot, what a point gives (`per_point.rows` {at, text}, numbers in `per_point.numbers`; rules 1.54 item 4119), unlocks at 3/5/7/9/10, Overreach, voice card |
 | `classes.json` | 9 base, 21 advanced (shelved), a pool of 39 moves | Class Roster Revision 3: one base class per attribute, its skills, role, resource and rank I to III moves; `assignment` holds the level-3 rule and the rank gates; the advanced classes are shelved |
 | `archetypes.json` | 46 | Creation presets, guidance only: 9 families including All-in (7/1/1 builds); each archetype spends every creation point (10-point skill preset and all 9 attributes; no Core points since rules 1.13, though each item still carries a `cores` block; `tools/archetype_fill.py`) plus class leans |
 | `traits.json` | 74 | Max 2 at creation; upsides, downsides, excludes, Narrator hooks |
