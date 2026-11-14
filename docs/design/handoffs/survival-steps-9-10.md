@@ -209,3 +209,17 @@ Against Leon's targets:
 
 `PLAYTEST-CHECKLIST.md` section S, calls 68 to 75. The one to look at first: **71**, the small parties' shares (a duo's
 Elite at full strength, a solo's at three quarters; the solo Boss as you settled it).
+
+## 9. Proof
+
+- `npm run check`: **ALL GREEN** (validator 0 errors, spec tables, screen data, engine hooks, both type checks, engine
+  4,215 passed, web 1,207 passed).
+- `npm run e2e -- all` on this worktree's own server (port 9003, `--base`): the first pass ran 40 suites green, then the
+  server was stopped by the session's background time limit and every suite after it failed to connect; the 29 not yet
+  green were run again on a fresh server: **all green**, with two named:
+  - **kit-map** failed beside the others because its walk entered a rest, which opens full screen since rules 1.46 and
+    which its walk never left (the lanes of rules 1.48 lead the walk there; it had not been re-run since): the walk now
+    leaves a place as the survival suite does. Its run alone after the fix: 20 checks, green.
+  - **sigil15** passed only alone: "Investigate succeeds at +9 against TN 8 (a natural 1 fails)", a natural 1 on a
+    shared machine; nothing Survival touches.
+  - `survival`: 95 checks, green (beside the others and alone).
