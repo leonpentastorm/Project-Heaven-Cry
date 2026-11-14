@@ -10,7 +10,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources } from '../character';
+import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM } from '../character';
 import { lootToPack, packAdd, intoCounts, itemLabel } from '../containers';
 import { priceOf, creditsOf, payCredits, earnCredits, ROUND_PRICE, emptyMagPrice } from '../credits';
 import { rollTable } from '../loot';
@@ -94,6 +94,8 @@ export function counterLines(chars: Character[]): CounterLine[] {
   const put = (l: CounterLine) => { if (seen.has(l.key)) return; seen.add(l.key); out.push(l); };
   for (const s of SHOP_DATA.always) {
     if (s.shelf === 'guns') {
+      // rules 1.53: a party with an archer finds a plain quiver on the counter (every archer may carry two)
+      for (const c of chars) if ((drawnWeapon(c.weapon) || packOf(c).some((x) => !!x.weapon && drawnWeapon(x.weapon))) && priceOf(QUIVER_ITEM) != null) put({ key: 'quiver', id: QUIVER_ITEM, per: 1, shelf: 'guns' });
       for (const c of chars) for (const g of gunsOf(c)) { const w: any = WEAPON[g];
         if (w.reload === 'magazine' && priceOf('mag:' + g) != null) put({ key: 'mag:' + g, id: 'mag:' + g, per: 1, shelf: 'guns' });
         else if (ROUND_PRICE[w.ammo]) put({ key: 'guns:rounds:' + w.ammo, id: 'rounds:' + w.ammo, per: w.magazine || 1, shelf: 'guns' }); }

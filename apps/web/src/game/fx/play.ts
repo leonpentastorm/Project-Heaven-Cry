@@ -828,6 +828,7 @@ const H: Record<string, Handler> = {
         const wide = !e.hit && !coverP;
         if (g.blast && !(wide && g.look === 'flame')) explosion(e.hit ? e.to : undefined, e.hit ? 1 : 0.6, g.blast, e.hit ? undefined : { x: end.x, y: end.y, s: toP.s });
         if (e.hit) impact(e, toP, e.target, { crit: e.crit, dmg: e.dmg, color: g.look === 'bolt' ? SIGIL_INK : undefined, sound: g.look === 'arrow' ? 'hit_flesh' : undefined });
+        if (e.hit && e.element) elementImpact(toP, e.element, 'sigil', { power: 0.6, quiet: true, decalKey: e.to }); // rules 1.53: an enchanted arrow's hit is its element's own hit effect
         else if (coverP) { burst('spark_burst', coverP, coverP.s * 0.7, 260, { color: '#FFD27A' }); dust(coverP, coverP.s); play('hit_metal', coverP, { rate: jitter() }); floatText('COVER', toP, MUTED, { small: true }); }
         else {
           if (g.look === 'flame') { burst('flame', end, toP.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 }); play('vent', toP, { rate: 0.6, gain: 0.8 }); }

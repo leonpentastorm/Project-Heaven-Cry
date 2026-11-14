@@ -14,7 +14,7 @@
 // later, the first time it shoots. While a Drawn weapon is held u.ammo is the worn quiver's total, so the engine's round
 // counting (resolveAttack, spendRounds, the gates for rounds and the last round) needs nothing new. Between shots
 // u.ammoType is the arrow taken next: the type with the most left, the default for a shot that names none.
-import type { Character, PackItem, QuiverInst } from '../../character';
+import type { Character, PackItem, QuiverInst, QuiverCard } from '../../character';
 import { packOf, roundsOf, quiversOf, setQuivers, quiverHolds, QUIVER_ITEM } from '../../character';
 import { packAdd } from '../../containers';
 import { WEAPON, ITEM } from '../../data';
@@ -282,3 +282,16 @@ export function loadQuiver(c: Character, weaponId: string, load: Record<string, 
   return null;
 }
 quiverLoader(loadQuiver);
+
+// ---------- what the screens show ----------
+/** A fighter's quivers as the screens show them (rules 1.53; character.ts quiverCards is the same out of a fight):
+ * the worn one (its arrows left now) and the ready one. Empty for a unit with no quivers on it. */
+export function unitQuiverCards(u: Unit): QuiverCard[] {
+  const worn = isDrawn(u.weapon) ? quiverView(u) : u.quiver || null; if (!worn && !u.quiverReady) return [];
+  const card = (i: number, g: Omit<QuiverInst, 'arrows'> | undefined, arrows: Quiver): QuiverCard => {
+    const id = g?.id || QUIVER_ITEM, rarity = g?.rarity || 'standard', e = enchantmentOf(g?.mods);
+    return { i, worn: i === 0, id, name: g?.name || (ITEM[id] as any)?.name || 'Quiver', rarity, holds: quiverHolds(id, rarity), arrows: { ...arrows }, total: quiverTotal(arrows),
+      ench: e ? { id: e.id, name: e.name, tone: e.tone, element: toneElement(e.tone) } : null };
+  };
+  return [card(0, u.quiverGear, worn || {}), ...(u.quiverReady ? [card(1, u.quiverReady, u.quiverReady.arrows || {})] : [])];
+}
