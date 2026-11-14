@@ -6,7 +6,7 @@
 // a minefield across the way: the move preview marks the tile it crosses and says "Path crosses: …".
 // Setup the buttons don't cover (a shot to empty a round, reading state) goes through window.__phc. Screens in
 // e2e/shots/ground-*.png.
-import { chromium, player, click, pickAction, BASE, OUT, settle } from './lib.mjs';
+import { chromium, player, click, pickAction, BASE, OUT, settle, sidePanels } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -43,6 +43,7 @@ await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFun
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
+await sidePanels(p, 'the Proving Ground, gearing up'); // rules 1.54 item 11
 let g = await G();
 const meId = Object.values(g.characters)[0].id;
 await openTools();
@@ -52,7 +53,8 @@ if (await aiBtn.count()) await aiBtn.click();
 await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
-await closeTools();
+// the game closes the tools drawer by itself when a fight starts (it slides out over 200 ms): wait for it to be gone, do not click it shut
+await drawer.waitFor({ state: 'detached', timeout: 30000 });
 await myTurn(); await dismissCut();
 g = await G();
 const at = mine(g).pos, R = ref(at), gun = mine(g).weapon, loaded0 = mine(g).ammo;

@@ -7,7 +7,7 @@
 // fight, the loaded charge full at a Rest).
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, boonWorks, boonServes, FOCUS_IDS, START_BOONS, START_BOON, LOADOUT, RACK, WEAPON, BOONS, BOON_CAP, runWorth, capRoom, worthOf, relicRow, lineOf, lineBoons, startOffer, isStartBoon,
-  ammoPack, supplyMp, chargeHeld, coresBurnt, maxMp, mpNow, previewAttack, toHitTerms, applyDamage, price, emit, bindGame, glyphCost, packOf, magazineWorth, KITS, newCharacter, CORE_CHARGE, VIS_CHARGE, healUnit, FAITH_PATRON } from '../src';
+  ammoPack, supplyMp, chargeHeld, coresBurnt, maxMp, mpNow, previewAttack, toHitTerms, applyDamage, price, emit, bindGame, glyphCost, packOf, magazineWorth, KITS, newCharacter, CORE_CHARGE, VIS_CHARGE, healUnit, FAITH_PATRON, loadoutView } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
 import { BUILDS } from './balance/builds';
@@ -82,6 +82,16 @@ describe('rules 1.51 and 1.52: the camp through the reducer: the loadout, then t
     expect(c.run!.state).toBe('map'); expect(c.run!.loadout).toBeNull();
     expect(c.characters.c1.relics).toEqual([offerOf(g, 'c1')[1]]); expect(c.characters.c2.relics).toEqual([offerOf(g, 'c2')[0]]);
     expect(apply(c, { type: 'run/move', node: first.id }, 'host').run!.leans.host).toBe(first.id);
+  });
+  it('the camp view says why Ready is refused, the reducer\'s own words: a player with two characters, one boon still to choose', () => {
+    const g0 = camp(DUO); g0.characters.c2.owner = 'host'; // the host plays both
+    const a = apply(g0, { type: 'run/boon', charId: 'c1', choice: 0 }, 'host');
+    const v = loadoutView(a as any, 'host', 'c1')!;
+    expect(v.boon.chosen).not.toBeNull(); // the viewed one has its boon; the other has not
+    expect(v.readyWhy).toBe(refused(a, { type: 'run/ready' }, 'host'));
+    const b = apply(a, { type: 'run/boon', charId: 'c2', choice: 0 }, 'host');
+    expect(loadoutView(b as any, 'host', 'c1')!.readyWhy).toBeNull();
+    expect(v.solo).toBe(false); expect(loadoutView(camp([DUO[0]]) as any, 'host')!.solo).toBe(true);
   });
   it('refusals in words; the host\'s Go gives an away player the Recommended loadout and the first card', () => {
     const g0 = apply(survivalRoom('PHC-0001', DUO, { test: true }), { type: 'run/start', seed: 'PHC-0001' }, 'host');

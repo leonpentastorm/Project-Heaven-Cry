@@ -55,7 +55,7 @@ for (let step = 0; step < 40 && fights < 3; step++) {
       await act({ type: 'run/leave' }).catch(() => {});
       // rules 1.48's lanes can lead the walk into a rest or another place, which opens full screen (rules 1.46): walk
       // out of it to the path map, as the survival suite does
-      if (await p.locator('[data-phc-place] [data-phc-leave], [data-phc-leave]').count()) { await p.locator('[data-phc-leave]').first().click(); await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); }
+      if (await p.locator('[data-phc-phase="leave"]').count()) { await p.locator('[data-phc-phase="leave"]').first().click(); await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); }
       continue;
     }
   } else if (r.state === 'fight') {
@@ -99,9 +99,9 @@ for (let step = 0; step < 40 && fights < 3; step++) {
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip: ' + e, false); break; }
     await click(p, 'Back to the map ›', { timeout: 60000 });
   } else if (r.state === 'reward') {
-    await p.waitForSelector('[data-phc-instead], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
+    await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
     if (await p.locator('[data-phc-kit] [data-phc-choice]').count()) { await p.locator('[data-phc-kit] [data-phc-choice]').first().click(); await settle(p, 300); if (!(await G()).run.offers) continue; }
-    await p.locator('[data-phc-instead]').first().click();
+    await p.locator('[data-phc-pick-materials], [data-phc-pick="0"]').first().click(); // rules 1.54 item 2: the Materials card (else the first weapon)
     await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'reward', null, { timeout: 30000 });
   } else break;
 }

@@ -1,7 +1,8 @@
-// The full-screen shop (survival-spec 8.3; rules 1.42): it replaces the play screen when the party stands on a shop.
-// Drawn in FullScreenFrame (every safe node's frame since rules 1.46): the keeper, the tabs (Always in stock, Today's
-// gear, Upgrade: 4a's grade step through the services seam, Sell, Give: GiveTab.tsx), large item cards, your purse, hands and pack, and the compare
-// panel against what you hold. Everything it shows comes from the engine: `shopView` (prices, quantities, the reasons
+// The shop (survival-spec 8.3; rules 1.42), the play screen's middle when the party stands on a shop (rules 1.54 item
+// 11: the side panels kept; your hands and pack are the sheet's GEAR tab, the one place for gear). Drawn in
+// FullScreenFrame (every safe node's frame since rules 1.46): the keeper, the tabs (Always in stock, Today's gear,
+// Upgrade: 4a's grade step through the services seam, Sell, Give: GiveTab.tsx), large item cards two across, your
+// purse, and the compare panel against what you hold under the shelves (survival-spec 14.7). Everything it shows comes from the engine: `shopView` (prices, quantities, the reasons
 // a thing can't be bought, the sell values) and `compareGear` (the gear preview's numbers, both columns); every action is
 // a `run/*` sent through the store. Each player browses their own view of the one shared stock.
 import React from 'react';
@@ -13,7 +14,6 @@ import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from '.
 import ASSETS from './assets.json';
 import { GiveTab } from './GiveTab';
 import { UpgradeCard } from './UpgradeCard';
-import { WearBar } from './WearBar';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
@@ -102,40 +102,6 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
   );
 }
 
-function You({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rarity } | null }) {
-  const m = v.me; if (!m) return <p style={{ color: I.muted }}>You have no character here.</p>;
-  const pct = Math.min(100, Math.round((m.kg / Math.max(1, m.limit)) * 100)), over = m.kg > m.limit;
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        {m.portrait ? <img src={m.portrait} alt="" width={56} height={70} style={{ objectFit: 'cover', borderRadius: 10, border: '1px solid #3B475D' }} /> : <span style={{ width: 56, height: 70, borderRadius: 10, background: I.raised, display: 'inline-block' }} />}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{m.name}</span>
-          <span style={{ fontSize: 12, color: I.muted }}>Level {m.level} · Armour class {m.armourClass}</span>
-        </div>
-      </div>
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span style={kick}>HANDS AND WORN</span>
-        <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Main · </span>{m.hand}{m.handRarity !== 'standard' ? ' (' + m.handRarity + ')' : ''}</span>
-        {m.handWear ? <span data-phc-hand-wear="main"><WearBar w={m.handWear} label={m.hand} compact /></span> : null}
-        {m.off ? <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Off · </span>{m.off}</span> : null}
-        {m.off && m.offWear ? <span data-phc-hand-wear="off"><WearBar w={m.offWear} label={m.off} compact /></span> : null}
-        {m.worn.map((w) => <span key={w.slot} style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>{w.slot} · </span>{w.name}</span>)}
-      </section>
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 14, background: 'rgba(16,21,31,0.9)', border: '1px solid ' + I.line }}>
-        <span style={kick}>COMPARE</span>
-        <Compare v={v} focus={focus} />
-      </section>
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span style={kick}>THE PACK</span>
-        <div aria-label={'Carrying ' + m.kg + ' of ' + m.limit + ' kg'} style={{ height: 8, borderRadius: 4, background: I.raised, overflow: 'hidden' }}><div style={{ width: pct + '%', height: '100%', background: over ? I.hp : I.text }} /></div>
-        <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · ' + Math.round((m.kg - m.limit) * 10) / 10 + ' kg over' : ''}</span>
-        {m.pack.map((p, i) => <div key={i} data-phc-pack-line={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}><div style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>{p.wear ? <WearBar w={p.wear} label={p.label} compact /> : null}</div>)}
-      </section>
-    </div>
-  );
-}
-
 export function ShopScreen() {
   const st = getState(), g = st.game, me = st.me.id;
   const [tab, setTab] = React.useState('always'), [focus, setFocus] = React.useState<{ id: string; rarity: Rarity } | null>(null);
@@ -180,10 +146,12 @@ export function ShopScreen() {
   return (
     <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.setting} line={say.text} lineKey={say.key}
       tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0}
-      party={v.party.map((p) => ({ id: p.id, name: p.charName, initials: p.initials, color: p.color, ready: p.ready, online: p.online, mine: p.mine }))} ready={v.ready} isHost={v.isHost} waiting={v.party.length > 1 ? v.waiting : []}
-      onReady={() => act({ type: 'run/leave' })} onClose={() => act({ type: 'run/leave', close: true })} closeTip="Takes everyone back to the map." readyWord={v.party.length > 1 ? 'Ready to leave' : 'Leave the shop'}
-      log={v.log} side={<You v={v} focus={focus} />}>
+      onClose={v.isHost && v.party.length > 1 ? () => act({ type: 'run/leave', close: true }) : undefined} closeTip="Takes everyone back to the map.">
       {body}
+      {tab !== 'give' ? <section data-phc-compare-panel="" style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 14, background: 'rgba(16,21,31,0.9)', border: '1px solid ' + I.line }}>
+        <span style={kick}>COMPARE</span>
+        <Compare v={v} focus={focus} />
+      </section> : null}
     </FullScreenFrame>
   );
 }

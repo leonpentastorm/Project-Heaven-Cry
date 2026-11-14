@@ -67,7 +67,7 @@ describe('rules 1.48: the vault', () => {
     x = apply(x, { type: 'run/skip' }, 'host');
     expect(x.characters.c1.xp).toBe(nodeXp('vault_guard', guard.depth, 1));
     expect(creditsOf(x.characters.c1)).toBe(before + nodeCredits('vault_guard', guard.depth, 1));
-    for (let i = 0; i < 2; i++) x = apply(x, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'credits' }, ownerOf(i));
+    for (let i = 0; i < 2; i++) x = apply(x, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'materials' }, ownerOf(i));
     expect(reachable(x.run!).map((n) => n.id)).toEqual([chest.id]);
     const c0 = creditsOf(x.characters.c1);
     x = apply(x, { type: 'run/move', node: chest.id }, 'p2'); // one way: one click
@@ -77,7 +77,7 @@ describe('rules 1.48: the vault', () => {
     for (const w of x.run!.offers!.c1.weapons) expect(['masterwork']).toContain(w.rarity);
     const w0 = x.run!.offers!.c1.weapons[0];
     x = apply(x, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host');
-    x = apply(x, { type: 'run/pick', charId: 'c2', choice: 'credits' }, 'p2');
+    x = apply(x, { type: 'run/pick', charId: 'c2', choice: 1 }, 'p2'); // rules 1.54: no Materials card at the chest
     expect(x.run!.state).toBe('map');
     expect((x.characters.c1.pack || []).some((p: any) => (p.weapon || p.item || p.id) === w0.id && p.rarity === 'masterwork')).toBe(true);
     expect(reachable(x.run!).map((n) => n.id)).toEqual(fork.links.filter((l) => l !== guard.id));

@@ -20,7 +20,7 @@ import {
   attackEvent,
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
-import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
+import { mod, devotionXpOf, moduleSlots, packOf, packKindOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
@@ -586,7 +586,7 @@ register({
       run: (h) => {
         const c = h.c!; if (!uses(h).take('per_rest', selfCap(c), h.key + '#cores')) return 'You already made as many cores this rest as your Virtue.';
         c.mp = (c.mp ?? 0) - 100; const pack = packOf(c).map((x) => ({ ...x })), it = pack.find((x) => (x.item || x.id) === 'standard_core');
-        if (it) it.qty += 1; else pack.push({ id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 1, kind: 'ammo' } as any);
+        if (it) it.qty += 1; else pack.push({ id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 1, kind: packKindOf('standard_core') } as any);
         c.pack = pack; const st = charState(c); st.selfCores = (st.selfCores || 0) + 1;
         postStory(h, c.name + ' crystallises a mana core from their own heart.');
         if (h.g) pendRuling(h.g, c, h.key, c.name + ' made a core from their own MP: a pile of self-made cores is conspicuous; do the Celestials notice?');

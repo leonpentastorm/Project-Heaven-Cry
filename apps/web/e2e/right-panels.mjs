@@ -3,7 +3,7 @@
 // down the column; the order is kept in this browser; Reset puts it back. The player card always has room for five
 // seats (four players and the Narrator): filling it to five changes nothing's size.
 // Screenshots: e2e/shots/rp-*.png (1440 × 900 and 1280 × 720).
-import { chromium, player, click, hostAs, OUT, settle, lockIn } from './lib.mjs';
+import { chromium, player, click, hostAs, OUT, settle, lockIn, sidePanels } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host', { campaigns: ['m813'] });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -34,6 +34,7 @@ ok('each has a grip, in its header (never over a button)', (await p.locator('[da
 ok('no Reset while the order is the first one', (await p.locator('.phc-rp-reset').count()) === 0);
 await snap('default-1440');
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 400); await snap('default-1280');
+await sidePanels(p, 'a campaign\'s story');
 await p.setViewportSize({ width: 1440, height: 900 }); await settle(p, 300);
 
 // ---------- the keyboard: the player card to the top with Home, then down one ----------

@@ -61,7 +61,8 @@ let hostState: GameState | null = null;
 
 // ---------- identity, library, navigation ----------
 export function setName(name: string) { set({ me: { ...S.me, name } }); write(LS.me, S.me); }
-export function go(screen: Screen, extra: Partial<ClientState> = {}) { set({ screen, ...extra }); }
+/** Go to a screen. 'run' is the play screen since rules 1.54 (a run's screens are its middle column): kept as a name. */
+export function go(screen: Screen, extra: Partial<ClientState> = {}) { set({ screen: screen === 'run' ? 'main' : screen, ...extra }); }
 export function saveToLibrary(sheet: Sheet) {
   const lib = [{ ...sheet, savedAt: Date.now() }, ...S.library.filter((x) => x.name !== sheet.name)].slice(0, 30);
   set({ library: lib }); write(LS.lib, lib);
@@ -208,15 +209,16 @@ function provingClosed(prev: GameState | null, g: GameState) {
 }
 /** Where a player should be, given the game: combat follows the fight, story otherwise. */
 function screenFor(g: GameState): Screen { return g.phase === 'lobby' ? 'room' : g.phase === 'combat' ? 'combat' : homeScreen(g); }
-/** Where "back" goes outside a fight: a Survival run's path map (rules 1.41), else the story. */
-export const homeScreen = (g: GameState | null | undefined): Screen => (g && g.phase === 'combat' ? 'combat' : g && g.run && g.run.state !== 'over' ? 'run' : g && g.phase === 'lobby' ? 'room' : 'main');
+/** Where "back" goes outside a fight: the play screen (rules 1.54: a Survival run's screens are its middle column, the
+ * side panels kept), the room in the lobby. */
+export const homeScreen = (g: GameState | null | undefined): Screen => (g && g.phase === 'combat' ? 'combat' : g && g.run && g.run.state !== 'over' ? 'main' : g && g.phase === 'lobby' ? 'room' : 'main');
 function followPhase(prev: GameState | null, g: GameState) {
   if (S.screen === 'create' || S.screen === 'levelup' || S.screen === 'ultimate') return;
   // A finished fight keeps its players on the grid until they click "Back to the story".
   if (prev && prev.phase === 'combat' && g.phase !== 'combat' && S.screen === 'combat') return; // (a lost Survival run goes to the lobby: its card shows first too)
   if (!prev || prev.phase !== g.phase) set({ screen: screenFor(g) });
   // rules 1.44: a run that has just ended (retired, or lost once its fight card is left) shows its summary first
-  if (prev?.run && prev.run.state !== 'over' && g.run?.state === 'over' && S.screen !== 'combat') set({ screen: 'run' });
+  if (prev?.run && prev.run.state !== 'over' && g.run?.state === 'over' && S.screen !== 'combat') set({ screen: 'main' });
   if (g.awards.some((a) => g.characters[a.charId]?.owner === S.me.id)) set({ screen: 'ultimate' });
 }
 
@@ -316,6 +318,9 @@ const narratorSetUp = () => S.narrator.scripted || !notReadyReason(S.narrator);
 async function maybeFightRule() {
   const g = hostState;
   if (S.role !== 'host' || !g || g.phase !== 'combat' || !g.combat || g.settings.mode !== 'ai') return;
+  // A Survival run has no Narrator (rules 1.54 item 1): the engine refuses every narrator/ action while the run lives,
+  // so nothing is asked or told here (it showed a refusal toast at each run fight's start).
+  if (g.run && g.run.state !== 'over') return;
   // The engine refuses attempts while no Narrator is connected: tell it when that changes (only in a fight).
   if (!g.sandbox && !!g.narrator.offline === narratorSetUp()) { runHost({ type: 'narrator/ready', ready: narratorSetUp() }, S.me.id, null); return; }
   const r = fightRulingOf(g.combat); if (!r || fightAsked === r.id) return;

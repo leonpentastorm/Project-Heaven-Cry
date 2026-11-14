@@ -1,6 +1,6 @@
 # Playtest checklist: what to try by hand before a build goes live
 
-For Leon. **Section S is Survival mode (0.27.0, built, not live until your word); try it first.** Section 0 is
+For Leon. **Section S is Survival mode (0.27.0 and 0.28.0, built, not live until your word; S.8 is what 0.28.0 adds); try it first.** Section 0 is
 Classes 3.0 (0.26.0, Class Roster Revision 4, live). The sections after them were written for 0.23.0 (rules 1.15 to
 1.26, live since 12 Nov) and still hold where Classes 3.0 did not change them. Tick a box when it looks right; write down anything that does not and say which line. "Right" is what the build
 is meant to do, not a guarantee that it does.
@@ -132,6 +132,25 @@ at once); a normal room never does.
       choice between it and kit, trainings or a token; nobody runs dry of what their build runs on. The simulated runs'
       measure of these, before and after the fit, is in `survival-steps-9-10.md`; what is still off target is listed
       there.
+
+### S.8 Materials, making and the side panels (0.28.0, rules 1.54; fifteen minutes)
+
+- [ ] Every Survival screen (the camp, the path map, a reward, the shop, a place, the stage's end) keeps your sheet on
+      the left and the run's panel on the right. The fight screen has none, as before.
+- [ ] Win a fight: two large cards, **Materials** (gunpowder, casings, mana residue with their counts) and **One weapon**
+      (its icon, its grade, its numbers; hover it for every number). No "credits instead". Take the materials: they are
+      in your pack, and the run board on the right says what you took.
+- [ ] The vault's chest and a sealed crate show three weapons and no Materials card.
+- [ ] Buy the **Ammo maker** at a shop (Always in stock, Field supplies). Open your sheet's **GEAR** tab: a **Make**
+      section lists a row for each kind of round, with what it takes, what you have, and how many times you can make it.
+      Step to 2 and press **Make × 2**: the rounds arrive, the gunpowder and casings leave, nothing is paid, and the shop's
+      visit log on the right says what you made. A row you can't afford says why in words.
+- [ ] Hold a focus in a hand (the off hand beside a one-handed weapon) with 10 mana residue: Make shows the core; make
+      one. Put the focus in the pack: the core row goes.
+- [ ] In a fight the Make section is not there; at the camp the GEAR tab is read-only and Make is not there.
+- [ ] At a rest, a training ground and a shrine (its rite), each training card shows a bar: where you stand, a lighter
+      stretch for what this training adds, and the next mark in words ("Mark I at 300: ..."); "Reaches it" when it does.
+- [ ] **What right looks like:** no number on these screens disagrees with what lands in the sheet afterwards.
 
 ### Calls made for Leon during Survival (he can reverse any)
 
@@ -338,6 +357,30 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
      2, or the Outburst's level 1 to 5 damage in Balance 2.0. The solo Sigilist: 3 of 12 (Balance 2.0).
 114. **The gunner's gain is the starting boon's:** 29 of 36 with every lever, 25 of 36 with the starting boon off; the
      supply pack and the run policies move a gunner by nothing (identical runs). Nothing was shrunk.
+
+**The side panels, materials and the slower climb (rules 1.54, 0.28.0; built, what to try is S.8)**
+115. **Every mode keeps the sheet on the left and a right panel;** the fight screen, level-up and creation stay without them.
+116. **Survival plays on the play screen,** its screens in the middle, as the Proving Ground's tools do; the shop is no longer full screen.
+117. **Survival's right panel:** mana forecast, Run (stage, stop, seed, a small map of the stage), Run board, Squad with one Go / Ready / Leave button.
+118. **The shop's "You" panel is gone:** the sheet's GEAR tab is the one place for your gear.
+119. **The path map keeps its size and scrolls sideways** in the middle; the small map on the right shows the whole stage.
+120. **Bigger icons:** stops 48 to 76 px (were 36 to 64), labels 12 px, boon icons 24 px, the reward weapon 72 px.
+121. **At the camp the GEAR tab is read-only;** between fights you may equip, load, swap quivers, fit mods and give.
+122. **A run rests only at a Rest stop:** a free long rest the host could call anywhere is now refused.
+123. **After a fight: Materials or One weapon;** no more "credits instead". The vault's chest and a sealed crate keep three weapons.
+124. **Materials for a fight worth C credits:** C/2 gunpowder, C/2 casings, C/20 mana residue (50, 50, 5 at stage 1, depth 1).
+125. **Survival's enemies drop no guns:** gunpowder and casings 2 to 5 each from gunmen, mana residue 1 to 2 from casters and machines.
+126. **Making costs exactly the shop's price** (half gunpowder, half casings); never cheaper, so it is ammunition away from a shop.
+127. **Arrows and bolts are made from gunpowder and casings too** (your "all ammo types" read literally).
+128. **No recipe for the core charge or enhanced rounds;** cores come from 10 mana residue and a focus in hand.
+129. **The core charge and enhanced rounds cost 10** (were 15), scaled with the core's 100.
+130. **Making is free** (no AP, no credits) and only between fights, never at 0 HP.
+131. **XP: you reach level 3 with stage 1's Boss** (level 2 at the gate); about two levels a stage after (3, 5, 7, 9, 11, 12 to 13).
+132. **The supply pack after a fight is unchanged;** its size against making waits for Balance 2.0.
+133. **Rest training doubled or near it** (drill 200, study 5, practice 8, Devotion 4); the training ground's 400 / 10 / 15; the shrine's rite 10.
+134. **Each training card shows a bar** to the next mark.
+135. **Skill texts are short rows** ("Every 2 points · ..."), one line on the creation row; Will Power's eight copies are gone.
+136. **The trait cards no longer trap the mouse wheel.**
 
 ## B. Bows and quivers (rules 1.53, in 0.27.0)
 

@@ -238,3 +238,21 @@ describe('the Proving Ground: a wave drops ammo a ranger can pick up', () => {
     expect(packOf(ch()).some((p) => p.weapon === gun && p.kind === 'weapon' && p.dur != null)).toBe(true); // the worn gun too
   });
 });
+
+describe('one pack-line kind for an item, wherever it comes from (rules 1.54, pack_kind: packKindOf)', () => {
+  it('a kit\'s ration and a given ration make one stack; every item gives the line kind loot gives', async () => {
+    const { lootToPack, ITEM } = await import('../src') as any;
+    let g = newGame('PK1', { id: H, name: 'Host' });
+    g = apply(g, { type: 'char/add', sheet: { ...sheetOf('Rook'), kit: 'soldier' } } as any, H);
+    g = apply(g, { type: 'sandbox/start' } as any, H);
+    const id = Object.keys(g.characters)[0], rations = () => packOf(g.characters[id]).filter((p) => (p.item || p.id) === 'ration_pack');
+    expect(rations()).toHaveLength(1); const q0 = rations()[0].qty;
+    g = apply(g, { type: 'sandbox/give', charId: id, item: 'ration_pack' } as any, H);
+    expect(rations()).toHaveLength(1); expect(rations()[0].qty).toBe(q0 + 1);
+    for (const it of Object.keys(ITEM)) {
+      const d = ITEM[it]; if (d.stock === false || it === 'stim_injector' || !['food', 'consumable', 'focus', 'tool'].includes(d.category)) continue;
+      const h = apply(g, { type: 'sandbox/give', charId: id, item: it } as any, H), line = packOf(h.characters[id]).find((p) => (p.item || p.id) === it);
+      expect(line?.kind, it).toBe(lootToPack({ item: it })[0].kind);
+    }
+  });
+});

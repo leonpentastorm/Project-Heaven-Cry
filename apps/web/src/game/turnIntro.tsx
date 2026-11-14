@@ -6,6 +6,12 @@
 //    holds ~0.9 s and goes back up. A unit you own: "YOUR TURN", then a large character card slides in from the left
 //    with the unit's numbers and four big commands (the player's own picks per character, else a smart default).
 //  · Area map (story mode): a banner when a new overworld round opens ("ROUND 3 · YOUR MOVE").
+//  · The fight cards (Leon, 14 Nov 2026; docs/design/ui-screens.md "The fight cards"): three more kinds of the same banner,
+//    in the same slot. FIGHT as a fight begins (the fight's name, its setting, who goes first; the first turn's banner
+//    waits for it), VICTORY or DEFEAT when it ends (after the fight's last effect has played; in a Survival run with the
+//    line of what follows, data/survival.json run.after_fight). Once per fight: the browser keeps which fights it has
+//    shown (sessionStorage), so a reload or a late join shows none. Not in the Proving Ground (its WAVE banner and wave
+//    card are its own) nor on the area map. Each carries data-phc-card (its kind) for the browser checks.
 //
 // Events (window CustomEvents) for the combat screen (combat.js) and the effects layer:
 //  · 'phc:combat-action' {action, unit}   a command tile was picked in the cut-in: select that action. Action ids are
@@ -25,13 +31,14 @@
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
 import React from 'react';
-import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId } from '@engine';
+import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId, SETTING, runSetting, survivalRun } from '@engine';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
 import { bigPortrait } from './charfile';
 import { sfx, sfxGraph, SFX_FILES, reducedMotion, busLevel, type Sfx } from './sfx';
 import { COMBAT_IN_MS } from './presence';
 import { combatStreamKey } from './fx/FxLayer';
+import { fxBusyUntil } from './fx/play';
 import { hasLayer } from './fx/dom';
 import { resolveCommands, readPrefs, EV_CUSTOMISE, classOf, readCardSide, cardOnRight, type Command } from './commands';
 import { CommandsDialog } from './commandsDialog';
@@ -80,7 +87,11 @@ export function cue(name: Cue) {
 }
 
 // ---------- what a banner and a cut-in show ----------
-interface Banner { id: string; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number }
+/** What a banner is: a unit's turn, the area map's round, or one of the fight cards. */
+type CardKind = 'turn' | 'round' | 'fight' | 'victory' | 'defeat';
+interface Banner { id: string; kind: CardKind; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number;
+  /** the slab behind (default: red for a hostile, else white), the mark before the kicker, the sign drawn with no picture */
+  slab?: string; mark?: string; glyph?: string; /** an end card's line of what follows (data) */ after?: string }
 interface Cut { k?: number; id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
   hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): every row, in the You card's order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
@@ -96,11 +107,37 @@ function bannerFor(g: GameState, cb: any, unitId: string, meId: string, round: n
   const unseen = foe && !here;
   const color = foe ? '#F65157' : owner?.color || '#7FD4FF';
   return {
-    id: 'b' + unitId + ':' + round + ':' + Math.random().toString(36).slice(2, 6), unitId, side: u.side, at: u.pos, mine, foe, unseen,
+    id: 'b' + unitId + ':' + round + ':' + Math.random().toString(36).slice(2, 6), kind: 'turn', unitId, side: u.side, at: u.pos, mine, foe, unseen,
     kicker: mine ? 'YOUR TURN' : foe ? 'HOSTILE' : (owner ? owner.name.toUpperCase() : 'ALLY'), kickerColor: mine ? '#FFFFFF' : color,
     name: unseen ? 'Unseen hostile' : u.name, sub: 'ROUND ' + round + (u.downed ? ' · DOWNED' : ''), stripe: color, img: unseen ? '' : unitImg(u) || (foe ? '' : IMG['wick-welcome']),
     hold: mine ? 900 : foe ? 650 : 800,
   };
+}
+
+// ---------- the fight cards ----------
+/** How long the cards hold (ms at Normal; × the combat speed): FIGHT plays in the length of the combat-in transition
+ *  (its slide in and out are 520 of it), the end cards as long as the area map's round banner. */
+const FIGHT_HOLD = COMBAT_IN_MS - 520, ROUND_HOLD = 1100;
+/** Fights whose cards this browser has shown this session ('<stream>|fight', '<stream>|end'): a reload shows none again. */
+const SHOWN_KEY = 'phc.fightCards';
+const shownList = (): string[] => { try { const l = JSON.parse(sessionStorage.getItem(SHOWN_KEY) || '[]'); return Array.isArray(l) ? l : []; } catch { return []; } };
+const cardShown = (key: string) => shownList().includes(key);
+const markShown = (key: string) => { try { sessionStorage.setItem(SHOWN_KEY, JSON.stringify([...shownList().filter((k) => k !== key), key].slice(-40))); } catch { /* */ } };
+/** Fights that have cards: not the Proving Ground (its WAVE banner and wave card are its own), not the area map. */
+const carded = (g: GameState, cb: any) => !!cb && !g.sandbox && !cb.overworld;
+/** The FIGHT card: the fight's name, its setting (a run's), and who goes first (fog of war: an unseen hostile is "the hostiles"). */
+function fightCard(g: GameState, cb: any, meId: string): Banner {
+  const b = cb.order.length ? bannerFor(g, cb, cb.order[0], meId, 1) : null;
+  const who = !b ? '' : b.mine ? 'You go first' : b.foe ? 'The hostiles go first' : b.name + ' goes first';
+  const setting = g.run ? SETTING[runSetting(g.run)]?.name || '' : '';
+  return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: 'FIGHT', sub: [setting, who].filter(Boolean).join(' · '),
+    stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: FIGHT_HOLD };
+}
+/** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight). */
+function endCard(g: GameState, cb: any, won: boolean): Banner {
+  const color = won ? '#6FEA77' : '#F65157', after = g.run ? survivalRun.after_fight?.[won ? 'won' : 'lost'] || '' : '';
+  return { id: 'e' + Date.now(), kind: won ? 'victory' : 'defeat', kicker: cb.name, kickerColor: color, name: won ? 'VICTORY' : 'DEFEAT', sub: after, after,
+    stripe: color, slab: won ? '#FFFFFF' : '#F65157', mark: '', glyph: won ? '✓' : '✕', img: '', mine: false, foe: !won, hold: ROUND_HOLD };
 }
 
 /** Would the card on the left cover this unit's tile? Then it comes in from the right instead, so the unit stays in view. */
@@ -181,6 +218,8 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const showCombatTurn = (unitId: string, round: number) => {
     // A spotlight cut-in on screen: the banner waits for it to clear (decision 113).
     if (cutInActive()) { const f = () => { removeEventListener(EV_CUTIN_END, f); later(() => showCombatTurn(unitId, round), 60); }; addEventListener(EV_CUTIN_END, f); later(() => removeEventListener(EV_CUTIN_END, f), (CUTIN_MAX_MS + 400) * fightPace()); return; }
+    // A fight card holds the slot (FIGHT before the first turn): the turn's banner follows it.
+    const busy = slotUntil.current - Date.now(); if (busy > 0) { later(() => showCombatTurn(unitId, round), busy + 30); return; }
     const { game: g, meId: me, screen: sc } = live.current, cb = g?.combat;
     if (!g || !cb || g.phase !== 'combat' || sc !== 'combat' || cb.over || document.hidden) return;
     const b0 = bannerFor(g, cb, unitId, me, round); if (!b0) return;
@@ -203,10 +242,19 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       if (/^data:/.test(c.img)) bigPortrait(c.img).then((big) => setCutImg((x) => (x === c.img ? big : x))).catch(() => {});
     }, (reducedMotion() ? 150 : 380) * k);
   };
+  // A fight card: the same banner, in the same slot, marked shown for this fight.
+  const slotUntil = React.useRef(0);
+  const showCard = (b0: Banner, key: string) => {
+    if (document.hidden) return;
+    const k = fightPace(), b = { ...b0, k }, total = ((reducedMotion() ? 300 : 520) + b.hold) * k;
+    markShown(key); setBanner(b); slotUntil.current = Date.now() + total;
+    if (b.kind !== 'fight') cue(b.kind === 'victory' ? 'banner_mine' : 'banner_foe'); // FIGHT: the combat-in's own sting plays
+    later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
+  };
   const showRound = (round: number, mineToo: boolean) => {
     if (document.hidden) return;
-    const b: Banner = { id: 'r' + round + ':' + Date.now(), kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: 'Say one thing · spend your AP · end your turn',
-      stripe: '#FFFFFF', img: IMG['emblem-ahoc-seal'] || '', mine: mineToo, foe: false, hold: 1100 };
+    const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: 'Say one thing · spend your AP · end your turn',
+      stripe: '#FFFFFF', img: IMG['emblem-ahoc-seal'] || '', mine: mineToo, foe: false, hold: ROUND_HOLD };
     setBanner(b); cue('round');
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), (reducedMotion() ? 300 : 520) + b.hold);
   };
@@ -220,6 +268,16 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const fightId = cb ? cb.name : '';
   const fx = (cb?.fx || []) as any[], lastN = cb ? cb.fxSeq || (fx.length ? fx[fx.length - 1].n : 0) : 0;
   const turnKey = cb ? cb.round + ':' + cb.turn + ':' + (cb.order[cb.turn] || '') : '';
+  // A fight that began while this page watched (the same game, its phase turned to combat): only it gets a FIGHT card.
+  // A reload or a late join sees the game already in a fight, so it gets none.
+  const phaseSeen = React.useRef<{ code: string; phase: string } | null>(null), begun = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    const was = phaseSeen.current;
+    if (game && was && was.code === game.code && was.phase !== 'combat' && game.phase === 'combat') begun.current = combatStreamKey(game);
+    phaseSeen.current = game ? { code: game.code, phase: game.phase } : null;
+  }, [game?.code, game?.phase]);
+  /** Fights this page has watched while they were on (an end card is for those only, not for one found already over). */
+  const liveFights = React.useRef(new Set<string>());
   React.useEffect(() => {
     if (!cb || screen !== 'combat') {
       if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); }
@@ -229,7 +287,13 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     }
     const prev = seen.current;
     const newFight = !prev || prev.fight !== fightId || lastN < prev.n;
-    if (newFight) resetClock(combatStreamKey(game));
+    const stream = combatStreamKey(game);
+    if (newFight) resetClock(stream);
+    if (stream && !cb.over) liveFights.current.add(stream);
+    // FIGHT: at once (it plays over the combat-in), before the first turn's banner, which waits for it.
+    if (newFight && stream && begun.current === stream && cb.round === 1 && carded(game!, cb) && !cardShown(stream + '|fight')) {
+      begun.current = null; showCard(fightCard(game!, cb, meId), stream + '|fight');
+    }
     // Joining or reloading in the middle of a fight: just the banner for whoever is up now.
     if (!prev) {
       seen.current = { fight: fightId, n: lastN, key: turnKey };
@@ -280,6 +344,27 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       later(() => showRound(roundKey, mineToo), 200);
     }
   }, [roundKey, screen]);
+
+  // ----- the end of a fight: VICTORY or DEFEAT, once its last effect has played -----
+  const anyCb = game?.combat || null;
+  const overKey = anyCb && anyCb.over && screen === 'combat' ? (combatStreamKey(game) || '') + '|' + anyCb.over : '';
+  React.useEffect(() => {
+    if (!overKey || !game || !anyCb) return;
+    const stream = combatStreamKey(game)!, won = anyCb.over === 'win';
+    if ((!won && anyCb.over !== 'loss') || !carded(game, anyCb) || !liveFights.current.has(stream) || cardShown(stream + '|end')) return; // an Extraction is neither
+    const efx = (anyCb.fx || []) as any[], lastFx = anyCb.fxSeq || (efx.length ? efx[efx.length - 1].n : 0), clock = fxClock.current;
+    const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
+    const still = () => { const { game: g2, screen: sc } = live.current; return !!g2?.combat?.over && sc === 'combat' && combatStreamKey(g2) === stream; };
+    const tryShow = () => {
+      if (!still()) return;
+      const waitFx = (clock.on || hasLayer()) && clock.at < lastFx;
+      // Its last effect has started: the card waits for it (and anything queued with it) to finish, and for a cut-in.
+      const rest = waitFx ? 100 : cutInActive() ? 120 : fxBusyUntil() - performance.now();
+      if (rest > 20 && Date.now() < until) { later(tryShow, Math.min(rest, 400) + 20); return; }
+      const g2 = live.current.game!; showCard(endCard(g2, g2.combat, won), stream + '|end');
+    };
+    tryShow();
+  }, [overKey]);
 
   // ----- the cut-in: auto-dismiss, any click or key dismisses, 1–4 picks a command -----
   const hovering = React.useRef(false);
@@ -339,19 +424,19 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
   ensureCss();
   const dur = Math.round(((rm ? 300 : 520) + b.hold) * (b.k || 1)), k = b.k || 1;
   return (
-    <div aria-live="polite" role="status" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 58, display: 'flex', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', paddingBottom: 12 }}>
+    <div aria-live="polite" role="status" data-phc-card={b.kind} data-phc-card-id={b.id} data-phc-card-after={b.after || undefined} style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 58, display: 'flex', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', paddingBottom: 12 }}>
       <div style={{ position: 'relative', marginTop: 10, animation: (rm ? 'phcBannerFade ' : 'phcBanner ') + dur + 'ms cubic-bezier(.2,.8,.2,1) both' }}>
         {/* A white slab behind, offset: the bold two-tone look. */}
-        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, transform: 'translate(10px, 8px) skewX(-16deg)', background: b.foe ? '#F65157' : '#FFFFFF' }} />
+        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, transform: 'translate(10px, 8px) skewX(-16deg)', background: b.slab || (b.foe ? '#F65157' : '#FFFFFF') }} />
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 16, minWidth: 'min(560px, 92vw)', maxWidth: '92vw', padding: '10px 34px 10px 0', transform: 'skewX(-16deg)', background: '#0A0D13', borderBottom: '3px solid ' + b.stripe, overflow: 'hidden', boxShadow: '0 14px 40px rgba(0,0,0,.6)' }}>
           <span aria-hidden="true" style={{ alignSelf: 'stretch', width: 16, background: b.stripe, flex: 'none' }} />
           <span style={{ transform: 'skewX(16deg)', display: 'flex', alignItems: 'center', gap: 16, minWidth: 0 }}>
             {b.img ? <img src={b.img} alt="" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', background: '#000', border: '3px solid ' + b.stripe, flex: 'none' }} />
-              : <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 64, height: 64, borderRadius: '50%', border: '3px solid ' + b.stripe, color: b.stripe, fontSize: 28, fontWeight: 700, flex: 'none' }}>!</span>}
+              : <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 64, height: 64, borderRadius: '50%', border: '3px solid ' + b.stripe, color: b.stripe, fontSize: 28, fontWeight: 700, flex: 'none' }}>{b.glyph || '!'}</span>}
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, fontFamily: "'Chakra Petch', sans-serif" }}>
-              <span style={{ fontSize: b.mine ? 15 : 13, fontWeight: 700, letterSpacing: '0.32em', color: b.kickerColor }}>{b.mine ? '▶ ' : b.foe ? '⚠ ' : ''}{b.kicker}</span>
+              <span style={{ fontSize: b.mine ? 15 : 13, fontWeight: 700, letterSpacing: '0.32em', color: b.kickerColor, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.mark ?? (b.mine ? '▶ ' : b.foe ? '⚠ ' : '')}{b.kicker}</span>
               <span style={{ fontSize: 'clamp(22px, 3.4vw, 34px)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.05, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{b.name}</span>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2' }}>{b.sub}</span>
+              {b.sub && <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{b.sub}</span>}
             </span>
           </span>
           {!rm && <span aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent)', animation: 'phcBannerShine ' + Math.round(700 * k) + 'ms ease-out ' + Math.round(150 * k) + 'ms both' }} />}
@@ -448,4 +533,4 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
 }
 
 /** For tests: what a banner and a cut-in would show for a unit. */
-export const _test = { bannerFor, cutFor, estMs };
+export const _test = { bannerFor, cutFor, estMs, fightCard, endCard };

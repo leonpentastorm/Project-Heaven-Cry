@@ -24,10 +24,10 @@ def main():
                 paths.add(path)
     for f in (ROOT / 'art').rglob('*'):
         if f.is_file() and f != LIST and f.name != '.DS_Store':
-            paths.add(str(f.relative_to(ROOT)))
+            paths.add(f.relative_to(ROOT).as_posix())
     lines = [f'{hashlib.sha256((ROOT / p).read_bytes()).hexdigest()}  {p}' for p in sorted(paths)]
-    LIST.write_text('\n'.join(lines) + '\n')
-    print(f'{len(lines)} checksums -> {LIST.relative_to(ROOT)}')
+    LIST.write_text('\n'.join(lines) + '\n', newline='\n')
+    print(f'{len(lines)} checksums -> {LIST.relative_to(ROOT).as_posix()}')
 
 if __name__ == '__main__':
     main()

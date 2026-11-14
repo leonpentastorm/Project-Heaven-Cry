@@ -120,7 +120,7 @@ describe('the game\'s tracks and their files', () => {
   const ids = Object.keys(OST) as OstId[];
   it('every track the engine can pick has a file and loop points, and nothing else has', () => {
     expect(Object.keys(OST_FILES).sort()).toEqual([...ids].sort());
-    expect(ids.length).toBe(12);
+    expect(ids.length).toBe(24); // 12 of the fights, the title-side and the Proving Ground, 12 of Survival mode
     for (const id of [...FIGHT_POOL, 'heaven_falls', 'last_rounds', 'gearing_up'] as OstId[]) expect(OST_FILES[id], id).toBeTruthy();
     // One file a track: no two tracks play the same file.
     expect(new Set(ids.map((id) => OST_FILES[id].src)).size).toBe(ids.length);
@@ -143,7 +143,8 @@ describe('the game\'s tracks and their files', () => {
     // Stream copies: no ID3 tag (so no cover art) at the head, and under 4 MiB (audio/README.md: over that, re-encode).
     const head = readFileSync(file).subarray(0, 3).toString('latin1');
     expect(head).not.toBe('ID3');
-    expect(readFileSync(file).length).toBeLessThan(4 * 1024 * 1024);
+    // Survival's ambient tracks are 2 to 3 minutes: they keep to the site's own limit (Cloudflare KV: 25 MB a file, 20 MB here).
+    expect(readFileSync(file).length).toBeLessThan(id.startsWith('surv_') ? 20e6 : 4 * 1024 * 1024);
   });
   it('no master carries the "(ingame)" book-keeping suffix in its tags (audio/README.md)', () => {
     const MASTERS = resolve(__dirname, '../../../../audio/music');
@@ -160,5 +161,31 @@ describe('the game\'s tracks and their files', () => {
     const music = CREDITS.find((g) => g.group === 'Music')!.items.map((c) => c.what);
     for (const id of ids) expect(music.some((w) => w.startsWith(OST[id].title + ' (')), OST[id].title).toBe(true);
     for (const w of music) expect(w).not.toMatch(/ingame/i);
+  });
+});
+
+describe('the commissioned tracks of Survival mode', () => {
+  const doc = readFileSync(resolve(__dirname, '../../../../audio/SUNO-PROMPTS-survival.md'), 'utf8');
+  it('every prompt id the prompts file marks as having a track is in the track list, with its file and master', () => {
+    const line = doc.split(/\r?\n/).find((l) => l.startsWith('**Tracks delivered'));
+    expect(line, 'the prompts file lists the delivered tracks').toBeTruthy();
+    const delivered = [...line!.matchAll(/`(surv-[a-z0-9-]+)`/g)].map((m) => m[1]);
+    expect(delivered.length).toBeGreaterThan(0);
+    for (const pid of delivered) {
+      const id = pid.replace(/-/g, '_') as OstId;
+      expect(OST[id], pid).toBeTruthy();
+      expect(existsSync(resolve(__dirname, '../../public/music/' + pid + '.mp3')), pid).toBe(true);
+      expect(existsSync(resolve(__dirname, '../../../../audio/music/' + pid + '-original.mp3')), pid).toBe(true);
+    }
+    // And the other way: every Survival track in the list is marked delivered.
+    const mine = (Object.keys(OST) as OstId[]).filter((i) => i.startsWith('surv_')).map((i) => i.replace(/_/g, '-')).sort();
+    expect(mine).toEqual([...delivered].sort());
+  });
+  it('every Survival context resolves to at least one track', () => {
+    // Survival's contexts (the camp, the path map by setting, the boon, the shop, the Forge, the rest): a table in
+    // audio/SUNO-PROMPTS-survival.md's delivered list; nothing in the engine picks them yet (see the hand-off).
+    const contexts: Record<string, string[]> = { camp: ['surv_camp'], map: ['surv_map'], boon: ['surv_boon'], shop: ['surv_shop'], forge: ['surv_forge'], rest: ['surv_rest'],
+      'map:ahoc': ['surv_map_ahoc'], 'map:city': ['surv_map_city'], 'map:field': ['surv_map_field'], 'map:works': ['surv_map_works'], 'map:shrine': ['surv_map_shrine'], 'map:rim': ['surv_map_rim'] };
+    for (const [ctx, tracks] of Object.entries(contexts)) { expect(tracks.length, ctx).toBeGreaterThan(0); for (const t of tracks) expect(OST_FILES[t as OstId], ctx).toBeTruthy(); }
   });
 });

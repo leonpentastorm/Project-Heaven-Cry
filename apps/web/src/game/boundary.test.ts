@@ -66,6 +66,11 @@ describe('the client asks the engine; it does not go round it', () => {
     // and no action literal waits in a variable to be sent either (the old this._tech, _call, _pr, _pk payloads)
     expect(combat).not.toMatch(/payload: \{ type: 'combat\//);
   });
+  it('the run\'s screens write no refusal of their own: a dead control\'s reason is the engine\'s (loadoutView readyWhy, a view\'s why)', () => {
+    const RUN = /[\\/]game[\\/](runPanels|RunScreen|LoadoutScreen|ShopScreen|PlaceScreen|StageScreen)\.tsx$/;
+    // a status line (who the squad waits for) is not a refusal; any other literal reason is the client deciding legality
+    expect(hits(/\bwhy: ['"](?!Waiting for )/, RUN)).toEqual([]);
+  });
   it('no screen works out an action\'s cost, legality or targets: the descriptor and the engine\'s preview do (finding 3)', () => {
     const SCREENS = /[\\/](screens[\\/](combat|faithCombat)\.js|game[\\/](actionFlow|callView|techView)\.ts)$/; // (commands.ts: the turn card's smartCommands still prints its own costs; client-boundary-3-actions.md, what is left)
     // the old per-system pickers, prompts and previews the flow replaced

@@ -15,13 +15,16 @@ import { type PathNode, pathMap, mapNodes, MAP_DATA } from './map';
 import type { ShopState } from './shop';
 import type { LoadoutPick } from './loadout';
 
-/** The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41). */
-export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string } = (survivalJ as any).run;
+/** The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41); its
+ *  after_fight lines are the fight cards' words for what follows a fight (the client's turnIntro.tsx). */
+export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string; after_fight: { won: string; lost: string } } = (survivalJ as any).run;
 
 /** A mode a room can play (data/modes.json ids). */
 export type PlayMode = 'survival' | 'roguelike' | 'campaign';
 /** One row of data/modes.json: a card of the lobby's mode picker. `available: false` locks it, and `coming` says why. */
-export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; art_pending?: boolean; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null }
+export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; art_pending?: boolean; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null;
+  /** rules 1.54 item 11: the right panel's modules, top to bottom (data/modes.json panel_names ids; the client's panel registry draws them) */
+  panels: string[] }
 /** The three modes in the picker's order (data/modes.json items). */
 export const MODES: ModeDef[] = (modesJ as any).items;
 /** The mode a new room selects (data/modes.json default: Survival). */
@@ -50,12 +53,15 @@ export interface RunEnd { how: 'lost' | 'retired'; stage: number; cleared: numbe
 export interface RunStageLog { stage: number; setting: string; nodes: number; fights: number; won: number; kills: number; credits: number; steps: number; boons: Record<string, string> }
 /** One weapon of a pick (rule 26): the weapon or focus, its rarity, its price at that rarity. */
 export interface RunWeapon { id: string; rarity: 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial'; price: number; /** a Relic's named property (rules 1.43) */ prop?: string }
-/** A character's pick after a won fight (rule 26): three weapons, or credits instead; `ammo`: the node's ammunition
- * pack count (a picked gun takes its share, rule 23). */
-export interface RunOffer { node: string; weapons: RunWeapon[]; instead: number; ammo: number }
+/** A character's pick after a won fight (rule 26; rules 1.54 item 2): its weapons (one after a fight, three at the
+ * vault's chest or a sealed crate), or the Materials card (`materials`, where offered); `instead`: the credits choice of
+ * an offer saved before rules 1.54 (none is made now); `ammo`: the node's ammunition pack count (a picked gun takes its
+ * share, rule 23). */
+export interface RunOffer { node: string; weapons: RunWeapon[]; materials?: { item: string; n: number }[]; instead?: number; ammo: number }
 /** What the node the party stands on gave (its panel): XP and credits each, the ammunition by character, the text of
  * a node without a fight (data), who came back from the dead (rule 5), the fight's result. */
-export interface RunNote { node: string; kind: string; text?: string; xp?: number; credits?: number; ammo?: Record<string, string[]>; back?: string[]; won?: boolean; rounds?: number }
+export interface RunNote { node: string; kind: string; text?: string; xp?: number; credits?: number; ammo?: Record<string, string[]>; back?: string[]; won?: boolean; rounds?: number;
+  /** rules 1.54 item 2: what each character took from the pick (the materials or a weapon), in words, by character id */ picks?: Record<string, string> }
 /** One fight of the run (rule 35's beginning: the budget asked and spent, the foes, the result). */
 export interface RunFight { node: string; stage: number; depth: number; kind: string; template: string; setting: string; level: number;
   target: { bulk: number; pressure: number; rounds: number }; spent: { bulk: number; pressure: number }; scaleHp: number;

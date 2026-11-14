@@ -87,5 +87,30 @@ await p2.screenshot({ path: SHOTS + '/title-phone.png' });
   await p3.screenshot({ path: SHOTS + '/title-room-no-m813.png' });
   await c3.close();
 }
+// The title comes up at once (title-screen.md section 8; it took 14 to 25 s on the live site, waiting for about 880
+// images): on a cold cache with the network slowed (every picture held 800 ms, plus a slow link), the main menu answers
+// a click within 5 s, before the art has finished loading; the title's own layers then land and the rest keeps coming.
+{
+  const c4 = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  await c4.addInitScript(() => { try { sessionStorage.setItem('phc.pressedAnyKey', '1'); localStorage.setItem('phc.tips', '["*"]'); } catch { /* */ } });
+  const p4 = await c4.newPage(), cdp = await c4.newCDPSession(p4);
+  await cdp.send('Network.enable'); await cdp.send('Network.setCacheDisabled', { cacheDisabled: true });
+  await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 60, downloadThroughput: (40 * 1024 * 1024) / 8, uploadThroughput: (5 * 1024 * 1024) / 8 });
+  await p4.route(/\/assets\/[^/?]+\.(webp|png|jpe?g)(\?.*)?$/, async (r) => { await new Promise((res) => setTimeout(res, 800)); await r.continue().catch(() => {}); });
+  const t0 = Date.now();
+  await p4.goto(BASE, { waitUntil: 'commit' });
+  const btn = p4.getByRole('button', { name: 'NEW GAME', exact: true }).first();
+  await btn.waitFor({ timeout: 60000 }).catch(() => {});
+  const clickable = await btn.click({ trial: true, timeout: 60000 }).then(() => true, () => false), ms = Date.now() - t0;
+  const pre = await p4.evaluate(() => ({ ...(window.__phcPreload || {}) }));
+  ok('cold cache, slow network: the main menu answers a click in ' + ms + ' ms (5,000 or less)', clickable && ms <= 5000);
+  ok('… before the art has loaded (' + pre.done + ' of ' + ((pre.first || 0) + (pre.rest || 0)) + ' pictures in)', pre.rest > 0 && pre.done < pre.first + pre.rest);
+  await pause(p4, 600); await p4.screenshot({ path: SHOTS + '/title-cold.png' }); // (once the menu has slid in)
+  const landed = await p4.waitForFunction(() => { const im = [...document.querySelectorAll('img.phc-layer-img')]; return im.length > 0 && im.every((x) => x.complete && x.naturalWidth > 0); }, null, { timeout: 30000 }).then(() => true, () => false);
+  ok('the title\'s own layers land and swap in', landed);
+  const later = await p4.evaluate(() => window.__phcPreload?.done || 0);
+  ok('the rest keeps loading behind the title (' + pre.done + ' then ' + later + ')', later > pre.done);
+  await c4.close();
+}
 console.log('errors', errors);
 await browser.close();

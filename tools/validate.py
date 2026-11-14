@@ -80,6 +80,78 @@ for s in items("skills"):
     if at != ["attr:" + str(s.get("attribute"))]:
         errors.append(f"skills: {s.get('id')} has attr tags {at}, its attribute is {s.get('attribute')} (want exactly ['attr:{s.get('attribute')}'])")
 
+# a skill's text never says the same sentence twice (14 Nov 2026: will_power's Pump sentence was appended eight times
+# by a guard that never matched); the sentence must be 30 characters or more to count
+def _skill_texts(o, path):
+    if isinstance(o, str):
+        yield path, o
+    elif isinstance(o, dict):
+        for k, v in o.items():
+            yield from _skill_texts(v, path + "/" + str(k))
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            yield from _skill_texts(v, path + "/" + str(i))
+
+for s in items("skills"):
+    if not isinstance(s, dict):
+        continue
+    for path, text in _skill_texts(s, str(s.get("id"))):
+        sents = [x.strip() for x in re.split(r"(?<=[.!?])\s+", text) if len(x.strip()) >= 30]
+        for x in sorted({x for x in sents if sents.count(x) > 1}):
+            errors.append(f"skills: {path} says the same sentence {sents.count(x)} times: {x[:60]}")
+
+# rules 1.54 item 4119 (the road map): what a point gives is per_point.rows, the one copy: each {at, text}, `at` one of
+# each, each from n, every 2, every 3, from n, at n (n 1 to 10); no row twice; no prose per_point.text, no epccg.effect.
+# Numbers are placeholders into per_point.numbers; where the engine reads the same number from data, it must be equal.
+_AT = re.compile(r"^(each|every 2|every 3|(each from|from|at) (\d+))$")
+_ld = lambda stem: data.get(stem) if isinstance(data.get(stem), dict) else {}
+_calls_r, _tech_r, _fig_r = (_ld("calls").get("rules") or {}), ((_ld("techniques").get("rules") or {}).get("guard") or {}), ((_ld("figments").get("visualizer") or {}).get("range") or {})
+_hymn_r, _cyc_r = (((_ld("patrons").get("prayer") or {}).get("hymn") or {}).get("cooldown_rule") or {}), (_ld("soul_modules").get("cycle") or {})
+_SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where it lives)
+    ("durability", "pool"): (_tech_r.get("per_durability"), "techniques.json rules.guard.per_durability"),
+    ("durability", "pool_max"): (_tech_r.get("max"), "techniques.json rules.guard.max"),
+    ("durability", "guard_base"): (_tech_r.get("gain_base"), "techniques.json rules.guard.gain_base"),
+    ("durability", "guard_per_point"): (_tech_r.get("gain_per_point"), "techniques.json rules.guard.gain_per_point"),
+    ("durability", "brace"): (_tech_r.get("brace_gain"), "techniques.json rules.guard.brace_gain"),
+    ("visualization", "range"): (_fig_r.get("per_point"), "figments.json visualizer.range.per_point"),
+    ("faith", "hymn_cut"): (_hymn_r.get("per_faith"), "patrons.json prayer.hymn.cooldown_rule.per_faith"),
+    ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
+    ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
+}
+for s in items("skills"):
+    if not isinstance(s, dict):
+        continue
+    sid, pp = s.get("id"), s.get("per_point") or {}
+    rows, nums = pp.get("rows"), pp.get("numbers") or {}
+    if "text" in pp: errors.append(f"skills:{sid}: per_point.text is gone (rules 1.54 item 4119): what a point gives is per_point.rows")
+    if "effect" in (s.get("epccg") or {}): errors.append(f"skills:{sid}: epccg.effect is gone (rules 1.54 item 4119): per_point.rows is the one copy")
+    if not isinstance(rows, list) or not rows:
+        errors.append(f"skills:{sid}: per_point.rows is missing or empty (every skill says what a point gives as rows)"); continue
+    seen = set()
+    for i, r in enumerate(rows):
+        w = f"skills:{sid}: per_point.rows.{i}"
+        if not isinstance(r, dict) or set(r) != {"at", "text"} or not isinstance(r.get("text"), str) or not r["text"].strip():
+            errors.append(f"{w}: a row is {{at, text}} with a text"); continue
+        m = _AT.match(str(r["at"]))
+        if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
+            errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")
+        if r["text"] in seen: errors.append(f"{w}: the row {r['text'][:40]!r} is there twice")
+        seen.add(r["text"])
+        for ref in re.findall(r"\{=([^}|]+)", r["text"]):
+            if not ref.startswith("per_point.numbers."): errors.append(f"{w}: {{={ref}}} reads outside per_point.numbers (a row's numbers are its skill's per_point.numbers)")
+    for k, v in nums.items():
+        if not isinstance(v, (int, float)) or isinstance(v, bool): errors.append(f"skills:{sid}: per_point.numbers.{k} is not a number")
+        elif not any("{=per_point.numbers." + k + "}" in r.get("text", "") or "{=per_point.numbers." + k + "|" in r.get("text", "") for r in rows if isinstance(r, dict)):
+            errors.append(f"skills:{sid}: per_point.numbers.{k} is read by no row")
+    if "call_range" in nums and nums["call_range"] != _calls_r.get("range_per_point"):
+        errors.append(f"skills:{sid}: per_point.numbers.call_range {nums['call_range']} is not calls.json rules.range_per_point {_calls_r.get('range_per_point')}")
+    for (k_sid, k), (want, where) in _SAME.items():
+        if k_sid == sid and nums.get(k) != want: errors.append(f"skills:{sid}: per_point.numbers.{k} {nums.get(k)} is not {where} {want}")
+    if sid == "will_power":
+        _fp, _sw = ((_cyc_r.get("free_pumps") or [{}])[0]).get("will_power"), (_cyc_r.get("swell_no_strain") or {}).get("will_power")
+        if not any("{=per_point.numbers.pumps}" in r.get("text", "") and r.get("at") == f"from {_fp}" for r in rows): errors.append(f"skills:will_power: the free Pump's row is at 'from {_fp}' (soul_modules.json cycle.free_pumps.0.will_power)")
+        if not any(r.get("at") == f"from {_sw}" for r in rows): errors.append(f"skills:will_power: a row at 'from {_sw}' says the held Outburst swells without Strain (soul_modules.json cycle.swell_no_strain.will_power)")
+
 new_ops = collections.Counter()
 
 def walk(obj, where):
@@ -2224,6 +2296,10 @@ if _modes is not None:
     _by = {m.get("id"): m for m in _mi}
     if not (_by.get(_modes.get("default")) or {}).get("available"): errors.append(f"modes: default {_modes.get('default')!r} is not an open mode")
     if _modes.get("old_save") not in _by: errors.append(f"modes: old_save {_modes.get('old_save')!r} is not a mode")
+    for _k, _v in (_modes.get("panel_names") or {}).items():
+        if not isinstance(_v, str) or not _v.strip(): errors.append(f"modes: panel_names.{_k} must be a text")
+    _pg = (_modes.get("proving_ground") or {}).get("panels")
+    if not isinstance(_pg, list) or not _pg or any(_p not in (_modes.get("panel_names") or {}) for _p in _pg): errors.append("modes: proving_ground.panels is a non-empty list of panel_names ids")
     _assets_p = root.parent / "apps/web/src/game/assets.json"
     _assets = set(json.loads(_assets_p.read_text()).keys()) if _assets_p.exists() else None
     for m in _mi:
@@ -2244,6 +2320,15 @@ if _modes is not None:
                 if _sk not in {x.get("id") for x in (data.get("skills") or {}).get("items", [])}: errors.append(f"{w}: loadout.by_door {_sk!r} is not a skill")
                 if _k not in _kits: errors.append(f"{w}: loadout.by_door.{_sk} {_k!r} is not one of the kits {sorted(_kits)}")
             if _lo.get("default") not in _kits: errors.append(f"{w}: loadout.default {_lo.get('default')!r} is not one of the kits {sorted(_kits)}")
+        # Rules 1.54 item 11: the right panel by mode (`panels`, ids of `panel_names`), never none; `hides` from the sheet
+        _pn = _modes.get("panel_names") or {}
+        _pl = m.get("panels")
+        if not isinstance(_pl, list) or not _pl: errors.append(f"{w}: panels is a non-empty list (rules 1.54: every mode keeps a right panel)")
+        else:
+            for _p in _pl:
+                if _p not in _pn: errors.append(f"{w}: panel {_p!r} is not in panel_names")
+            if len(set(_pl)) != len(_pl): errors.append(f"{w}: a panel is listed twice")
+        if not isinstance(m.get("hides"), list) or any(_h not in ("ask", "rest") for _h in m.get("hides") or []): errors.append(f"{w}: hides is a list of ask, rest")
         a = m.get("art")
         if a is not None and _assets is not None:
             if not m.get("art_pending") and a not in _assets: errors.append(f"{w}: art {a!r} is not a web asset (art/catalog.json, npm run assets); mark it art_pending until it lands")
@@ -2259,6 +2344,30 @@ if _sv is not None:
         _sv = {}
     _SV_KINDS = {"fight", "elite", "boss", "shop", "forge", "training", "shrine", "rest", "cache", "event", "vault_guard", "vault"}
     _LANE_KINDS = _SV_KINDS - {"boss", "vault_guard", "vault"}  # the kinds a lane or a junction node may take (rules 1.48)
+    # Rules 1.54: `music`, the track a run plays in each situation. Every id is one of the engine's OstId list.
+    _mu = _sv.get("music")
+    if _mu is not None:
+        _w = "survival:music"
+        _ost_file = root.parent / "packages" / "engine" / "src" / "music.ts"
+        _ost_m = re.search(r"export type OstId =(.*?);", _ost_file.read_text(encoding="utf-8"), re.S) if _ost_file.exists() else None
+        _ost_ids = set(re.findall(r"'([a-z0-9_]+)'", _ost_m.group(1))) if _ost_m else None
+        _sids = {s.get("id") for s in _sv.get("settings") or []}
+        def _mtrack(path, v):
+            if not isinstance(v, str) or (_ost_ids is not None and v not in _ost_ids):
+                errors.append(f"{_w}.{path}: {v!r} is not a track in the engine's OstId list (packages/engine/src/music.ts)")
+        if not isinstance(_mu, dict) or set(_mu) - {"about", "camp", "map", "place", "boon"} or not {"camp", "map", "place", "boon"} <= set(_mu):
+            errors.append(f"{_w}: an object of camp, map, place and boon (and about)")
+        else:
+            _mtrack("camp", _mu["camp"]); _mtrack("boon", _mu["boon"])
+            _mm = _mu["map"] if isinstance(_mu["map"], dict) else {}
+            if "default" not in _mm: errors.append(f"{_w}.map: needs a `default` track")
+            for _k, _v in _mm.items():
+                if _k != "default" and _k not in _sids: errors.append(f"{_w}.map.{_k}: not a setting id")
+                _mtrack("map." + _k, _v)
+            _mpl = _mu["place"] if isinstance(_mu["place"], dict) else {}
+            for _k, _v in _mpl.items():
+                if _k not in _SV_KINDS: errors.append(f"{_w}.place.{_k}: not a node kind")
+                _mtrack("place." + _k, _v)
     _mp = _sv.get("map")
     if _mp is not None:
         _w = "survival:map"
@@ -2354,6 +2463,8 @@ if _sv is not None:
         for _k in ("start_credits", "dead_return_hp"):
             if not _num(_r.get(_k)) or _r.get(_k) < 0: errors.append(f"survival:run.{_k}: a number of 0 or more")
         if _r.get("first_setting") not in {s.get("id") for s in _sv.get("settings") or []}: errors.append("survival:run.first_setting: not a setting")
+        _af = _r.get("after_fight")  # the fight cards' line for what follows a fight (docs/design/ui-screens.md)
+        if not (isinstance(_af, dict) and all(isinstance(_af.get(_k), str) and _af[_k].strip() for _k in ("won", "lost"))): errors.append("survival:run.after_fight: a won and a lost text")
     # Rules 1.52: the camp's loadout. Every free weapon and focus exists; every stock id has a price (priceOf's shapes:
     # a weapon or item with price_credits, armour:<class> from rules.json armor.classes); the budget is a number.
     if "loadout" in _sv:
@@ -2539,7 +2650,7 @@ if _sv is not None:
             if _lk == "relic_props" and (not _it.get("fits") or not set(_it["fits"]) <= _FITS): errors.append(f"{_w}: fits names what it goes on ({sorted(_FITS)})")
             if _lk == "boons" and (not _it.get("pools") or not set(_it["pools"]) <= _POOLS | {"faith"}): errors.append(f"{_w}: pools names the settings' pools ({sorted(p for p in _POOLS if p)})")
             if _lk == "boons" and "doors" in _it and not (isinstance(_it["doors"], list) and _it["doors"] and set(_it["doors"]) <= {k["id"] for k in data["skills"]["items"]}): errors.append(f"{_w}: doors names door skills (skills.json ids)")
-    for _k, _f in (("train", ("drill", "study", "practice", "devotion")), ("training", ("drill", "study", "practice", "extra_price", "most")), ("shrine", ("token_max_worth", "tokens_per_stage")), ("forge", ("slots",)), ("graft", ("hp_mult",))):
+    for _k, _f in (("train", ("drill", "study", "practice", "devotion")), ("training", ("drill", "study", "practice", "extra_price", "most")), ("shrine", ("rite", "token_max_worth", "tokens_per_stage")), ("forge", ("slots",)), ("graft", ("hp_mult",))):
         for _x in _f:
             if _k in _sv and (not _num(_sv[_k].get(_x)) or _sv[_k][_x] <= 0): errors.append(f"survival:{_k}.{_x}: a number above 0")
     _ls = _sv.get("lasting")
@@ -2675,6 +2786,37 @@ if _sv is not None:
         # Rules 1.46 (build step 4b): every safe node is a full-screen place with a face
         for _nk in ("shop", "forge", "training", "shrine", "rest", "event"):
             if not any(_f.get("node") == _nk for _f in _sv["faces"].get("items") or []): errors.append(f"survival:faces: no face stands at a {_nk!r} node (rules 1.46: every safe node is a full-screen place)")
+    # The faces of Survival's foes (foe_faces; the 14 Nov delivery): every kind a setting fields (and its Boss's and vault
+    # guard's) and every caster has a word, and every face the lookup can give (each tier and variant, each caster, each
+    # setting's boss.portrait and vault_guard.portrait) is a portrait in art/catalog.json characters.
+    _ff = _sv.get("foe_faces")
+    if _ff is not None:
+        _w, _fw = "survival:foe_faces", _ff.get("words") or {}
+        _catp = root.parent / "art" / "catalog.json"
+        _fchars = set((json.loads(_catp.read_text()) if _catp.exists() else {}).get("characters") or {})
+        for _k in ("asset", "kind", "caster"):
+            if not isinstance(_ff.get(_k), str) or not _ff[_k]: errors.append(f"{_w}: needs an `{_k}` pattern")
+        _fv = _ff.get("variants") or {}
+        _tiers = [t.get("id") for t in items("enemies")]
+        for _t in _fv:
+            if _t not in _tiers: errors.append(f"{_w}.variants: {_t!r} is not an enemy tier")
+        def _fill(_p, **_v): return re.sub(r"\{(\w+)\}", lambda m: str(_v.get(m.group(1), "")), _p or "")
+        _want = set()
+        for _st in _sv.get("settings") or []:
+            _ks = set(_st.get("kinds") or {})
+            for _k in sorted(_ks | {(_st.get("boss") or {}).get("kind"), (_st.get("vault_guard") or {}).get("kind")} - {None}):
+                if _k not in _fw: errors.append(f"{_w}.words: the kind {_k!r} (settings.{_st.get('id')}) has no word"); continue
+                if _k in _ks:
+                    for _t in _tiers:
+                        if _t == "boss": continue  # a Boss wears its setting's boss.portrait
+                        for _vr in _fv.get(_t) or [""]: _want.add(_fill(_ff.get("kind"), kind=_fw[_k], tier=_t, variant=_vr))
+            for _o, _p in (("boss", (_st.get("boss") or {}).get("portrait")), ("vault_guard", (_st.get("vault_guard") or {}).get("portrait"))):
+                if _p: _want.add(_p)
+                else: errors.append(f"survival:settings.{_st.get('id')}.{_o}: needs a portrait (a catalog id; foe_faces)")
+        for _c in _casters:
+            if _c not in _fw: errors.append(f"{_w}.words: the caster {_c!r} has no word"); continue
+            _want.add(_fill(_ff.get("caster"), caster=_fw[_c]))
+        for _id in sorted(_want - _fchars): errors.append(f"{_w}: the face {_id!r} is not a portrait in art/catalog.json characters")
     # Rules 1.46 (build step 4b, spec rule 47): where gives are made in a run
     _gv = _sv.get("give")
     if _gv is not None:
@@ -2682,6 +2824,87 @@ if _sv is not None:
         if not _gv.get("where") or not set(_gv["where"]) <= _kinds - {"fight", "elite", "boss"}: errors.append("survival:give.where: node kinds with no fight")
         if not isinstance(_gv.get("at_start"), bool): errors.append("survival:give.at_start: true or false")
         if _gv.get("provisional") is not True: errors.append("survival:give: provisional: true")
+
+# Rules 1.54 (survival-spec 14.2, 14.3): items' pack_kind and plural, the recipes (one converter, recipes.ts) and the
+# parity of every row with priceOf (credits.ts: a calibre's round price, an item's price_credits, a special round's
+# price_mult x the reference calibre's), and the shop's stock rule (Leon 14 Nov: what a trait grants is not sold, but
+# food and drink are).
+_rw = (data.get("rules") or {}).get("weapons_rules") or {}
+_rcal = {c.get("id"): c.get("price_credits") for c in _rw.get("calibres") or []}
+_rref = _rcal.get((_rw.get("special_round_price") or {}).get("calibre"))
+_rimap = {i.get("id"): i for i in items("items") if isinstance(i, dict)}
+_rwmap = {w.get("id"): w for w in items("weapons") if isinstance(w, dict)}
+_PACK_KINDS = {"weapon", "ammo", "tool", "focus", "food", "med", "loot", "plot"}
+for _i in _rimap.values():
+    if "pack_kind" in _i and _i["pack_kind"] not in _PACK_KINDS: errors.append(f"items:{_i.get('id')}: pack_kind {_i['pack_kind']!r} is not a pack line's kind ({', '.join(sorted(_PACK_KINDS))})")
+    if "plural" in _i and not (isinstance(_i["plural"], str) and _i["plural"].strip()): errors.append(f"items:{_i.get('id')}: plural must be a name")
+def _rprice(_id):
+    """credits.ts priceOf at the standard grade, or None (unpriced or stock: false)."""
+    if _id.startswith("rounds:"): _p = _rcal.get(_id[7:]); return _p if _num(_p) and _p > 0 else None
+    _d = _rwmap.get(_id) or _rimap.get(_id)
+    if not _d or _d.get("stock") is False: return None
+    if _num(_d.get("price_credits")) and _d["price_credits"] > 0: return _d["price_credits"]
+    if _num(_d.get("price_mult")) and _d["price_mult"] > 0 and _num(_rref): return _d["price_mult"] * _rref
+    return None
+_rc = data.get("recipes")
+if _rc is not None:
+    if _rc.get("provisional") is not True: errors.append("recipes: provisional: true")
+    _seen = collections.Counter(r.get("id") for r in items("recipes"))
+    for _k, _n in _seen.items():
+        if _n > 1: errors.append(f"recipes: id {_k!r} is used {_n} times")
+    for _r in items("recipes"):
+        _w = f"recipes:{_r.get('id')}"
+        for _f in ("id", "name", "does"):
+            if not (isinstance(_r.get(_f), str) and _r[_f].strip()): errors.append(f"{_w}: needs a {_f}")
+        if _r.get("where") != "between_fights": errors.append(f"{_w}: where must be between_fights (the only place making is done, rules 1.54 item 5)")
+        _t = _r.get("tool") or {}
+        if not ((set(_t) == {"item"} and _t["item"] in _rimap) or _t == {"focus": "any"}): errors.append(f"{_w}: tool must be {{item: an items.json id}} or {{focus: any}}")
+        _lines = {"needs": _r.get("needs"), "gives": _r.get("gives")}
+        _worth = {}
+        for _side, _l in _lines.items():
+            if not (isinstance(_l, list) and _l): errors.append(f"{_w}: {_side} must be a list of {{item, n}}"); continue
+            _sum = 0
+            for _e in _l:
+                _id, _n = (_e or {}).get("item", ""), (_e or {}).get("n")
+                if not (isinstance(_n, int) and _n >= 1): errors.append(f"{_w}.{_side}: {_id!r} needs n, a whole number of 1 or more")
+                if _side == "needs" and _id not in _rimap: errors.append(f"{_w}.needs: {_id!r} is not an items.json item")
+                if _side == "gives" and not (_id in _rimap or (_id.startswith("rounds:") and _id[7:] in _rcal)): errors.append(f"{_w}.gives: {_id!r} is not an item or rounds:<calibre>")
+                _p = _rprice(_id)
+                if _p is None: errors.append(f"{_w}.{_side}: {_id!r} has no price (priceOf), so the row can't be held to it"); _sum = None
+                elif _sum is not None and isinstance(_n, int): _sum += _p * _n
+            _worth[_side] = _sum
+        if _worth.get("needs") is not None and _worth.get("gives") is not None and _worth["needs"] != _worth["gives"]:
+            errors.append(f"{_w}: needs are worth {_worth['needs']} credits and gives {_worth['gives']} (rules 1.54 item 6: a row is worth what it makes, at priceOf)")
+# Rules 1.54 items 2 to 4 (survival.json rewards.offer by where, rewards.materials, drops).
+_sv54 = data.get("survival") or {}
+_rw54 = _sv54.get("rewards") or {}
+_WHERE = {"fight", "elite", "boss", "vault_guard", "vault", "crate"}
+if "offer" in _rw54:
+    _of = _rw54["offer"]
+    if not (isinstance(_of, dict) and set(_of) == _WHERE and all(isinstance(v, int) and v >= 1 for v in _of.values())): errors.append(f"survival:rewards.offer: a whole number of 1 or more for each of {sorted(_WHERE)} (rules 1.54 item 2)")
+    if "instead_rate" in _rw54: errors.append("survival:rewards.instead_rate: credits instead is retired (rules 1.54 item 2)")
+    _ma = _rw54.get("materials") or {}
+    if not set(_ma.get("at") or []) <= _WHERE: errors.append("survival:rewards.materials.at: where a pick is made")
+    for _e in _ma.get("items") or []:
+        if _e.get("item") not in _rimap: errors.append(f"survival:rewards.materials: {_e.get('item')!r} is not an items.json item")
+        if not (_num(_e.get("per_credits")) and _e["per_credits"] > 0): errors.append(f"survival:rewards.materials: {_e.get('item')!r} needs per_credits above 0")
+if _sv54.get("drops") is not None:
+    _dr, _lt = _sv54["drops"], {t.get("id") for t in items("loot_tables")}
+    if _dr.get("provisional") is not True: errors.append("survival:drops: provisional: true")
+    for _w, _rows in [("gun", _dr.get("gun") or [])] + [("by_table." + str(k), v) for k, v in (_dr.get("by_table") or {}).items()]:
+        if _w.startswith("by_table.") and _w[9:] not in _lt: errors.append(f"survival:drops.{_w}: not a loot_tables.json table")
+        for _e in _rows:
+            _q = _e.get("qty")
+            if _e.get("item") not in _rimap: errors.append(f"survival:drops.{_w}: {_e.get('item')!r} is not an items.json item")
+            if not (isinstance(_q, list) and len(_q) == 2 and all(isinstance(x, int) and x >= 1 for x in _q) and _q[0] <= _q[1] <= (data.get("loot_tables") or {}).get("qty_max", 20)): errors.append(f"survival:drops.{_w}: {_e.get('item')!r} qty is a [min, max] range within the loot cap (qty_max)")
+if not (isinstance((data.get("loot_tables") or {}).get("qty_max"), int) and data["loot_tables"]["qty_max"] >= 1): errors.append("loot_tables: qty_max, the most of one thing a loot entry gives (a whole number)")
+
+# Leon 14 Nov 2026: an item a trait grants is not sold in the shop (stock: false, as the armourer's chit), unless it is food.
+for _tr in items("traits"):
+    for _gid in [e.get("item") for e in (_tr.get("effects") or []) if isinstance(e, dict) and e.get("op") == "start_item"]:
+        _gi = _rimap.get(_gid)
+        if _gi and _gi.get("category") != "food" and _gi.get("stock") is not False:
+            errors.append(f"items:{_gid}: the trait {_tr.get('id')} grants it, so it is not sold (stock: false; food and drink are the exception)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

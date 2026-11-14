@@ -8,11 +8,17 @@ import { type Combat, visibility } from './combat';
 import { SKILL, TRAITS } from './data';
 import { seedFrom } from './rng';
 import { costOf } from './effects/cost';
+import { runSetting, runNode } from './run/state';
+import './datatext'; // fills the texts' {=placeholders} before any data is read
+import survivalJ from '../../../data/survival.json';
 
 /** The game's own fight music (spec: Music): files the web client ships (apps/web/public/music). */
 export type OstId = 'gunline' | 'heaven_falls' | 'last_rounds'
   | 'brass_on_the_floor' | 'danger_close' | 'flank_left' | 'held_breath' | 'hold_the_line' | 'line_of_four' | 'mag_check' | 'suppressing_fire'
-  | 'gearing_up';
+  | 'gearing_up'
+  // Survival mode's own tracks (audio/SUNO-PROMPTS-survival.md): which plays when is data (survival.json `music`, runMusic).
+  | 'surv_camp' | 'surv_map' | 'surv_map_ahoc' | 'surv_map_city' | 'surv_map_field' | 'surv_map_works' | 'surv_map_shrine' | 'surv_map_rim'
+  | 'surv_boon' | 'surv_shop' | 'surv_forge' | 'surv_rest';
 /** A track: a YouTube video (yt), or one of the game's own tracks (ost), and its credit. */
 export interface Track { yt?: string; ost?: OstId; title: string; artist: string; start?: number; length?: number; licence?: string }
 export const OST_ARTIST = 'Project Heaven Cry OST';
@@ -29,11 +35,44 @@ export const OST: Record<OstId, Track & { ost: OstId }> = {
   mag_check: { ost: 'mag_check', title: 'Mag Check', artist: OST_ARTIST, length: 62 },
   suppressing_fire: { ost: 'suppressing_fire', title: 'Suppressing Fire', artist: OST_ARTIST, length: 59 },
   gearing_up: { ost: 'gearing_up', title: 'Gearing Up', artist: OST_ARTIST, length: 179 },
+  surv_camp: { ost: 'surv_camp', title: 'Survival: Camp', artist: OST_ARTIST, length: 120 },
+  surv_map: { ost: 'surv_map', title: 'Survival: Path Map', artist: OST_ARTIST, length: 120 },
+  surv_map_ahoc: { ost: 'surv_map_ahoc', title: 'Survival: Path Map, AHOC outpost', artist: OST_ARTIST, length: 120 },
+  surv_map_city: { ost: 'surv_map_city', title: 'Survival: Path Map, Central City', artist: OST_ARTIST, length: 120 },
+  surv_map_field: { ost: 'surv_map_field', title: 'Survival: Path Map, old battlefield', artist: OST_ARTIST, length: 120 },
+  surv_map_works: { ost: 'surv_map_works', title: 'Survival: Path Map, machine works', artist: OST_ARTIST, length: 119 },
+  surv_map_shrine: { ost: 'surv_map_shrine', title: 'Survival: Path Map, shrine district', artist: OST_ARTIST, length: 120 },
+  surv_map_rim: { ost: 'surv_map_rim', title: 'Survival: Path Map, Rim station', artist: OST_ARTIST, length: 119 },
+  surv_boon: { ost: 'surv_boon', title: 'Survival: Boon', artist: OST_ARTIST, length: 119 },
+  surv_shop: { ost: 'surv_shop', title: 'Survival: Shop', artist: OST_ARTIST, length: 120 },
+  surv_forge: { ost: 'surv_forge', title: 'Survival: Forge', artist: OST_ARTIST, length: 163 },
+  surv_rest: { ost: 'surv_rest', title: 'Survival: Rest', artist: OST_ARTIST, length: 200 },
 };
 /** The ordinary fight's songs (spec: Music, The fight's song): one is picked for each fight. */
 export const FIGHT_POOL: readonly OstId[] = ['gunline', 'brass_on_the_floor', 'danger_close', 'flank_left', 'held_breath', 'hold_the_line', 'line_of_four', 'mag_check', 'suppressing_fire'];
 /** The Proving Ground's music while the squad is gearing up (spec: Music, The Proving Ground). */
 export const GEARING_UP: OstId = 'gearing_up';
+/** Survival's music by situation (data/survival.json `music`, rules 1.54): the camp, the path map by setting (else
+ * `default`), a place by its node's kind, the boon pick. One lookup, runMusic. */
+export const RUN_MUSIC: { camp: OstId; map: Record<string, OstId>; place: Record<string, OstId>; boon: OstId } = (survivalJ as any).music;
+/**
+ * The track a Survival run plays now (rules 1.54), or null when nothing here is the run's own (a fight, which keeps the
+ * fight music, or the summary, which keeps what plays today). The camp plays camp; the boon pick plays boon; a place
+ * the party stands in plays its node kind's track, and a place with none (and the map, a reward, the next tile) plays
+ * the setting's map track, else the default.
+ */
+export function runMusic(g: Pick<GameState, 'run'>): { id: OstId; why: string } | null {
+  const r = g.run; if (!r || r.state === 'over' || r.state === 'fight') return null;
+  if (r.state === 'loadout') return { id: RUN_MUSIC.camp, why: 'Survival: the camp' };
+  if (r.state === 'boon') return { id: RUN_MUSIC.boon, why: 'Survival: the boon pick' };
+  // A place's screen is open: the shop's (state 'shop'; once left, its visit stays on the map), or a safe node's visit on the map.
+  const at = runNode(r, r.at), open = r.state === 'shop' || (r.state === 'map' && r.visit?.node === r.at && r.visit.kind !== 'shop');
+  const kind = open ? at?.kind : undefined;
+  const own = kind ? RUN_MUSIC.place[kind] : undefined;
+  if (own) return { id: own, why: 'Survival: ' + kind };
+  const setting = runSetting(r);
+  return { id: RUN_MUSIC.map[setting] || RUN_MUSIC.map.default, why: 'Survival: the path map' };
+}
 /** A track's identity, for "has the song changed?": the OST id or the YouTube id. */
 export const trackKey = (t: Track | null | undefined) => (t ? (t.ost ? 'ost:' + t.ost : 'yt:' + (t.yt || '')) : '');
 
@@ -149,6 +188,8 @@ export function musicFor(g: GameState): { key: string; layer: 'spotlight' | 'pin
     }
     return { key: 'c:' + th.id, layer: 'combat', track: OST[th.id], reason: th.why };
   }
+  const run = runMusic(g);
+  if (run) return { key: 'sv:' + run.id, layer: 'ambient', track: OST[run.id], reason: run.why };
   if (g.sandbox) return { key: 'pg:' + GEARING_UP, layer: 'ambient', track: OST[GEARING_UP], reason: 'Proving Ground: gearing up' };
   const t = zone?.music?.ambient || camp?.music?.ambient || null;
   return { key: 'a:' + trackKey(t), layer: 'ambient', track: t, reason: zone ? 'Area: ' + zone.name : 'Area' };

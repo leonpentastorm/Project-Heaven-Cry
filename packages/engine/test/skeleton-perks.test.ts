@@ -56,13 +56,14 @@ describe('the data of the pass', () => {
     for (const t of TRAITS as any[]) expect(old.test(JSON.stringify([t.text, t.upsides, t.downsides])), t.id).toBe(false);
     for (const p of PERKS as any[]) expect(old.test(JSON.stringify([p.text, p.tiers?.I?.text, p.tiers?.II?.text])), p.id).toBe(false);
   });
-  it('the EPCCG pages: Acuity speaks with Demitri Kortev, Improvisation with Drava Keel, and every effect line is what a point gives now', () => {
+  it('the EPCCG pages: Acuity speaks with Demitri Kortev, Improvisation with Drava Keel, and what a point gives has one copy (the rows)', () => {
     const S = SKILL as any;
     expect(S.analysis.epccg.speaker).toMatch(/^Demitri Kortev/); expect(S.analysis.epccg.intro).toMatch(/^Acuity is your grasp of complex mechanisms/); expect(S.analysis.voice.tone_from).toMatch(/^Demitri Kortev/);
     expect(S.proficiency.epccg.speaker).toBe('Drava Keel, salvage fitter of the Mandestra lowland yards'); expect(S.proficiency.epccg.portrait_id).toBe('drava-keel');
     expect(S.proficiency.epccg.note).toMatch(/Suggested/); expect(S.proficiency.epccg.provisional && S.analysis.epccg.provisional).toBe(true);
     const all = Object.values(S) as any[]; expect(all.length).toBe(27);
-    for (const k of all) expect(k.epccg.effect, k.id).toBe(k.per_point.text);
+    // rules 1.54 item 4119: one copy of what a point gives, the rows (the EPCCG page reads them; its effect line is gone)
+    for (const k of all) { expect(k.epccg.effect, k.id).toBeUndefined(); expect(k.per_point.text, k.id).toBeUndefined(); expect(k.per_point.rows.length, k.id).toBeGreaterThan(0); }
     expect(new Set(all.map((k) => k.epccg.speaker)).size).toBe(27); // one character to a skill
     expect(JSON.stringify(all.map((k) => [k.epccg.speaker, k.epccg.portrait, k.epccg.quote, k.voice.tone_from]))).not.toMatch(/D12\.9\.6|crime scene/); // it left the book (docs/lore/D12-9-6.md)
   });

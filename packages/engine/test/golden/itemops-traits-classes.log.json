@@ -170,7 +170,7 @@
 "class/marksman@II/prices": "PRICES attack? reload1 swap_weapon? shove2 break? vent1 swap_core2 stim1 stabilise? prone1 stand? hide2 overwatch? brace1 analyze2 disengage1 sprint2 pickup1 clear? load1",
 "class/marksman@II/reload": "Tester 1 reloads and drops the empty magazine (2 spare left).",
 "class/marksman@II/stats": "STATS never_jams:1x1 reactions:1x1 reactions:1x1 never_jams:1x1",
-"class/marksman@III/aimed-attack": "Far soldier is far below Tester 1's level: one hit is enough. / Tester 1 takes an aimed shot at Far soldier: d20 10 +12 = 22 vs 13 · hit, 259 damage · down for good / The air turns RICH (mana 20): Far soldier fell. / Far soldier drops: Hellraiser service rifle (worn), magazine 24/24, magazine 24/24, Flare.",
+"class/marksman@III/aimed-attack": "Far soldier is far below Tester 1's level: one hit is enough. / Tester 1 takes an aimed shot at Far soldier: d20 10 +12 = 22 vs 13 · hit, 259 damage · down for good / The air turns RICH (mana 20): Far soldier fell. / Far soldier drops: Hellraiser service rifle (worn), magazine 24/24, magazine 24/24, Frag grenade.",
 "class/marksman@III/prices": "PRICES attack? reload1 swap_weapon? shove2 break? vent1 swap_core2 stim1 stabilise? prone1 stand? hide2 overwatch? brace1 analyze2 disengage1 sprint2 pickup1 clear? load1",
 "class/marksman@III/reload": "Tester 1 reloads and drops the empty magazine (2 spare left).",
 "class/marksman@III/stats": "STATS never_jams:1x1 reactions:1x1 reactions:1x1 never_jams:1x1",

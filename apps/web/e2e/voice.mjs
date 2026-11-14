@@ -27,7 +27,9 @@ const init = ({ edge }) => {
   // The Kokoro stand-in: the same three functions as game/voiceRuntime.ts.
   // __voiceFail: 'all' (every plan fails), 'webgpu' (only the GPU plans: a real WebGPU error), 'noise' (the GPU warms up
   // but makes noise, not speech), or null.
-  window.__voiceFail = null; window.__voiceStepMs = 120;
+  // The step can be set before a reload (sessionStorage 'test.voiceStepMs'): the title comes up at once and starts the
+  // load before any evaluate after the reload could slow it.
+  window.__voiceFail = null; window.__voiceStepMs = Number(sessionStorage.getItem('test.voiceStepMs')) || 120;
   const audio = () => ({ audio: new Float32Array(4800).fill(0.2), sampling_rate: 24000 });
   window.__phcVoiceRuntime = {
     gpuInfo: async () => ({ ok: true, why: '', name: 'Test GPU', f16: true }),
@@ -134,8 +136,8 @@ await sec.locator('[data-voice-wait]').click();
 
 // ---------- the play screen's chip ----------
 // Opted in: the title starts loading at once (slow here, to catch "Loading N%").
-await p.evaluate(() => { window.__voiceStepMs = 400; });
-await p.reload(); await p.evaluate(() => { window.__voiceStepMs = 400; });
+await p.evaluate(() => { sessionStorage.setItem('test.voiceStepMs', '400'); });
+await p.reload();
 await p.waitForFunction(() => window.__phcVoice && window.__phcVoice.state().status !== 'idle', null, { timeout: 30000 });
 ok('opted in: the title screen starts the voice by itself (' + await p.evaluate(() => window.__phcVoice.state().status) + ')', ['loading', 'installing', 'ready'].includes(await p.evaluate(() => window.__phcVoice.state().status)));
 await click(p, 'PROVING GROUND', { timeout: 30000 });
@@ -171,7 +173,8 @@ ok('and the fallback there is Google US English', (await q.evaluate(() => window
 // Wait for Kokoro: a line held while Kokoro is still loading shows its text after 8 s, the browser voice never takes it,
 // and the Kokoro audio follows when the model is ready.
 await q.evaluate(() => { localStorage.setItem('phc.voice', JSON.stringify({ ...JSON.parse(localStorage.getItem('phc.voice') || '{}'), install: true, ready: true })); });
-await q.reload(); await q.evaluate(() => { window.__voiceStepMs = 1000; window.__spoken = []; });
+await q.evaluate(() => { sessionStorage.setItem('test.voiceStepMs', '1000'); });
+await q.reload(); await q.evaluate(() => { window.__spoken = []; });
 await q.waitForFunction(() => window.__phcVoice && window.__phcVoice.state().status === 'loading', null, { timeout: 30000 });
 const t0 = Date.now();
 q.evaluate(() => window.__phcVoice.say('late-1', 'The engine room is dark. Something moves.'));

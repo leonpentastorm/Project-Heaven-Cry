@@ -1,12 +1,12 @@
-// THE CAMP (rules 1.51, 1.52; Leon, 14 Nov 2026: a loadout screen with the character on the left, what can be taken,
-// what has been taken, the points left and used, and Start; then the starting boon). ONE flow in one full-screen frame,
-// in the house frame (the shop's inks and fonts: Spectral titles, Chakra Petch for the UI and numbers): left, the
-// character (portrait, name, level, the skills that matter for gear, weight carried against the limit, armour class);
-// middle, two steps: 1 LOADOUT (the weapon rack by archetype: the free weapon, the same again at its price, the better
-// one with its numbers against the free one; the free Focus; then the shop's menu: ammunition, thrown, mana and parts,
+// THE CAMP (rules 1.51, 1.52; Leon, 14 Nov 2026: a loadout screen with what can be taken, what has been taken, the
+// points left and used, and Start; then the starting boon). ONE flow, in the house frame (the shop's inks and fonts:
+// Spectral titles, Chakra Petch for the UI and numbers). Rules 1.54 item 11: it is the play screen's MIDDLE column; the
+// character is the sheet on the left (its GEAR tab read-only here), and Ready / Start is the right panel's one phase
+// control (runPanels.tsx). Here: BUDGET LEFT and BUDGET USED large, the last refusal in words, Recommended and Next;
+// then two steps: 1 LOADOUT (the weapon rack by archetype: the free weapon, the same again at its price, the better one
+// with its numbers against the free one; the free Focus; then the shop's menu: ammunition, thrown, mana and parts,
 // medicine and supplies, gear, with prices and steppers) and 2 STARTING BOON (three large cards, offered by what the
-// loadout holds); right, CARRYING (what is taken, grouped, each removable), BUDGET LEFT and BUDGET USED large, the last
-// refusal in words, Recommended and Next / Ready / Start. Every number and reason is the engine's (`loadoutView`:
+// loadout holds); then CARRYING (what is taken, grouped, each removable). Every number and reason is the engine's (`loadoutView`:
 // priceOf, the gear preview, the reducer's own refusals tried on a copy, startOffer); every action is `run/loadout`,
 // `run/boon` or `run/ready`.
 import React from 'react';
@@ -18,14 +18,13 @@ import { FRAME_INK as I } from './FullScreenFrame';
 import { boonCards } from './campView';
 import { boonIconSvg } from './boonIcons';
 
-const ATTR_INK: Record<string, string> = { endurance: '#F65157', strength: '#F68A38', agility: '#E3BF51', perception: '#40BAA0', intelligence: '#8BDEEE', expression: '#5394AC', insight: '#EB95B7', determination: '#9D7ADC', virtue: '#D36A90' };
 const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scrollbar-thumb{background:#2A3447;border-radius:6px}'
   + '.phc-camp button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}'
   + '.phc-camp-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}'
   + '.phc-camp-shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}'
-  + '.phc-camp-rack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}'
-  + '.phc-camp-boons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.4vw,24px)}';
+  + '.phc-camp-rack{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}'
+  + '.phc-camp-boons{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}';
 /** A card's picture: the painted gear icon (rounds and magazines by their gear ids), else the line icon. */
 function iconOf(id: string): string {
   const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id);
@@ -133,33 +132,6 @@ function BoonStep({ v, charId }: { v: LoadoutViewV; charId: string }) {
   );
 }
 
-function Character({ v }: { v: LoadoutViewV }) {
-  const m = v.me, pct = Math.min(100, Math.round((m.kg / Math.max(1, m.limit)) * 100)), over = m.kg > m.limit;
-  return (
-    <section aria-label="Your character" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 22px', minHeight: 0, overflowY: 'auto', borderRight: '1px solid ' + I.line }}>
-      <div style={{ position: 'relative', width: '100%', maxWidth: 300, aspectRatio: '4 / 5', alignSelf: 'center', borderRadius: 16, overflow: 'hidden', border: '1px solid #3B475D', background: I.raised, flexShrink: 0, maxHeight: 'calc(100vh - 460px)', minHeight: 160 }}>
-        {m.portrait ? <img data-phc-camp-portrait="" src={m.portrait} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} /> : <div style={{ display: 'grid', placeItems: 'center', height: '100%', color: I.muted, fontSize: 12, letterSpacing: '0.18em' }}>AHOC</div>}
-      </div>
-      <div>
-        <h1 data-phc-camp-name="" style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 'clamp(26px, 2.2vw, 38px)', lineHeight: 1.1 }}>{m.name}</h1>
-        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', color: I.muted }}>LEVEL {m.level} · ARMOUR CLASS {v.armourClass} ({v.armourName.toUpperCase()})</span>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span style={kick}>CARRIED</span>
-        <div aria-label={'Carrying ' + m.kg + ' of ' + m.limit + ' kg'} style={{ height: 8, borderRadius: 4, background: I.raised, overflow: 'hidden' }}><div style={{ width: pct + '%', height: '100%', background: over ? I.hp : I.text }} /></div>
-        <span data-phc-camp-kg="" style={{ fontSize: 14, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: over ? I.hp : I.text }}>{m.kg} of {m.limit} kg</span>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span style={kick}>THE SKILLS GEAR READS</span>
-        {v.skills.map((s) => (
-          <div key={s.id} data-phc-camp-skill={s.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: s.points ? I.text : '#7F8BA1' }}>
-            <span style={{ color: s.points ? ATTR_INK[s.attribute] || I.text : '#7F8BA1', fontWeight: 600 }}>{s.name}</span><span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{s.points}</span>
-          </div>))}
-      </div>
-    </section>
-  );
-}
-
 export function LoadoutScreen() {
   const st = getState(), g = st.game, me = st.me.id;
   const [step, setStep] = React.useState<1 | 2>(1);
@@ -169,98 +141,84 @@ export function LoadoutScreen() {
   const groups: { name: string; cards: LoadoutCardV[] }[] = [];
   for (const s of v.shelves) for (const c of s.cards) { let gr = groups.find((x) => x.name === c.group); if (!gr) groups.push(gr = { name: c.group, cards: [] }); gr.cards.push(c); }
   const carryGroups: string[] = []; for (const r of v.carrying) if (!carryGroups.includes(r.group)) carryGroups.push(r.group);
-  const solo = v.party.length <= 1;
+  const solo = v.solo;
   return (
-    <div className="phc-camp" data-phc-fullscreen="" data-phc-camp="" style={{ position: 'fixed', inset: 0, zIndex: 50, background: I.ground, color: I.text, fontFamily: "'Chakra Petch', sans-serif", overflow: 'hidden' }}>
+    <div className="phc-camp" data-phc-camp="" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: I.ground, color: I.text, fontFamily: "'Chakra Petch', sans-serif" }}>
       <style>{CSS}</style>
-      <div style={{ height: '100%', display: 'grid', gridTemplateColumns: 'minmax(260px, 22%) minmax(0, 1fr) minmax(300px, 25%)', gridTemplateRows: 'auto minmax(0, 1fr)' }}>
-        <header style={{ gridColumn: '1 / 4', display: 'flex', alignItems: 'baseline', gap: 16, padding: '18px 26px 14px', borderBottom: '1px solid ' + I.line }}>
-          <h1 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 'clamp(26px, 2vw, 34px)' }}>The camp</h1>
-          <nav aria-label="The camp's steps" style={{ display: 'flex', gap: 8 }}>
-            {([[1, '1 · Loadout'], [2, '2 · Starting boon' + (v.boon.chosen ? ' ✓' : '')]] as const).map(([n, label]) => (
-              <button key={n} type="button" data-phc-camp-step={n} aria-current={step === n ? 'step' : undefined} onClick={() => setStep(n)}
-                style={{ minHeight: 34, padding: '0 14px', borderRadius: 99, border: '1px solid ' + (step === n ? I.white : '#3B475D'), background: step === n ? I.raised : 'transparent', color: step === n ? I.white : I.muted, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{label}</button>))}
-          </nav>
-          <span style={{ marginLeft: 'auto', fontSize: 12, color: I.muted, whiteSpace: 'nowrap' }}>Seed {v.seed}</span>
-        </header>
-        <Character v={v} />
-        <main aria-label={step === 1 ? 'Loadout' : 'Starting boon'} data-phc-camp-take="" data-phc-camp-on={step} style={{ minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: '18px 22px 48px' }}>
-          {step === 1 ? <>
-            <section data-phc-camp-row="weapon" style={{ marginBottom: 22 }}>
-              {head('Weapon', 'one free')}
-              {v.rack.map((a) => (
-                <div key={a.id} data-phc-camp-rack={a.id} style={{ marginBottom: 14 }}>
-                  <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
-                  <div className="phc-camp-rack" role="group" aria-label={a.name}>
-                    <PickCard c={a.free} slot="weapon" charId={charId} />
-                    {a.again ? <ShelfCard c={a.again} charId={charId} tag="ANOTHER ONE" /> : <span />}
-                    {a.better ? <ShelfCard c={a.better} charId={charId} tag="THE BETTER ONE" compare={a.better.compare} /> : <span />}
-                  </div>
-                </div>))}
-            </section>
-            <section data-phc-camp-row="focus" style={{ marginBottom: 22 }}>
-              {head('Focus', 'one free, or none')}
-              <div className="phc-camp-pick" role="radiogroup" aria-label="Focus">{v.focus.map((c) => <PickCard key={c.key} c={c} slot="focus" charId={charId} />)}</div>
-            </section>
-            {groups.map((gr) => (
-              <section key={gr.name} data-phc-camp-shelf={gr.name} style={{ marginBottom: 22 }}>
-                {head(gr.name)}
-                <div className="phc-camp-shelf">{gr.cards.map((c) => <ShelfCard key={c.key} c={c} charId={charId} />)}</div>
-              </section>))}
-          </> : <>
-            {head('Starting boon', 'yours for the whole run')}
-            <BoonStep v={v} charId={charId} />
-          </>}
-        </main>
-        <aside aria-label="Carrying" data-phc-camp-carry="" style={{ minHeight: 0, display: 'flex', flexDirection: 'column', borderLeft: '1px solid ' + I.line, background: 'rgba(16,21,31,0.55)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '18px 22px 14px', borderBottom: '1px solid ' + I.line }}>
-            <div data-phc-camp-left="" style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={kick}>BUDGET LEFT</span>
-              <span style={{ fontSize: 'clamp(34px, 2.8vw, 50px)', fontWeight: 700, lineHeight: 1, color: I.white, fontVariantNumeric: 'tabular-nums' }}>{v.left}</span>
-            </div>
-            <div data-phc-camp-used="" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <span style={kick}>BUDGET USED</span>
-              <span style={{ fontSize: 'clamp(34px, 2.8vw, 50px)', fontWeight: 700, lineHeight: 1, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{v.spent}</span>
-            </div>
-            <span style={{ gridColumn: '1 / 3', fontSize: 12, color: I.muted }}>of {v.budget} credits · what you don't spend, you keep</span>
-          </div>
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '14px 22px' }}>
-            <h2 style={{ margin: '0 0 10px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Carrying</h2>
-            {!v.carrying.length ? <p style={{ margin: 0, fontSize: 13.5, color: I.muted }}>Nothing yet: bare fists.</p> : null}
-            {carryGroups.map((gr) => (
-              <div key={gr} style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
-                <span style={kick}>{gr.toUpperCase()}</span>
-                {v.carrying.filter((r) => r.group === gr).map((r, i) => (
-                  <div key={i} data-phc-camp-carry-row="" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5, lineHeight: 1.35 }}>
-                    <span style={{ flex: 1, minWidth: 0 }}>{r.label}</span>
-                    {r.kg ? <span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums', fontSize: 12 }}>{r.kg} kg</span> : null}
-                    {r.put ? <button type="button" data-phc-camp-put="" aria-label={(r.putLabel || 'Remove') + ': ' + r.label} onClick={() => act(r.put as any)} style={{ minHeight: 30, padding: '0 10px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>{r.putLabel || 'Remove'}</button> : null}
-                  </div>))}
-              </div>))}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 22px 20px', borderTop: '1px solid ' + I.line }}>
-            {last ? <span data-phc-camp-refusal="" role="status" style={{ fontSize: 13, color: I.white }}>{last}</span> : null}
-            {!solo ? <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{v.party.map((p) => (
-              <span key={p.id} data-phc-party={p.id} data-phc-ready={p.ready ? '1' : '0'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px 4px 4px', borderRadius: 99, background: I.panel, border: '1px solid ' + (p.ready ? I.white : I.line), opacity: p.online ? 1 : 0.5, fontSize: 12 }}>
-                <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 9, fontWeight: 700, background: p.color, color: I.ground }}>{p.initials}</span>
-                {p.charName}{p.mine ? ' (you)' : ''} <b style={{ color: p.ready ? I.white : I.muted }}>{p.ready ? '✓ READY' : 'PACKING'}</b>
-              </span>))}</div> : null}
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button type="button" data-phc-camp-recommended="" disabled={v.ready} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)} {...tipProps('A loadout for your skills: the focus you can use, the weapon for your best weapon skill, armour, then ammunition.')}
-                style={{ flex: 1, minHeight: 46, borderRadius: 12, border: '1px solid #3B475D', background: 'transparent', color: v.ready ? I.muted : I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: v.ready ? 'default' : 'pointer' }}>Recommended</button>
-              {!v.boon.chosen && !v.ready && v.boon.cards.length ? (
-                <button type="button" data-phc-camp-next="" onClick={() => setStep(2)} disabled={step === 2} {...tipProps(step === 2 ? 'Choose one of the three.' : null)}
-                  style={{ flex: 1.3, minHeight: 46, borderRadius: 12, border: 0, background: step === 2 ? I.raised : I.text, color: step === 2 ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: step === 2 ? 'default' : 'pointer' }}>{step === 2 ? 'Choose a boon' : 'Starting boon ›'}</button>
-              ) : (
-                <button type="button" data-phc-camp-ready="" onClick={() => act({ type: 'run/ready', ...(v.ready ? { undo: true } : {}) } as any)}
-                  style={{ flex: 1.3, minHeight: 46, borderRadius: 12, border: 0, background: v.ready ? I.raised : I.ok, color: v.ready ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>{solo ? 'Start the run' : v.ready ? '✓ Ready (undo)' : 'Ready'}</button>
-              )}
-            </div>
-            {!solo && v.isHost ? <button type="button" data-phc-camp-close="" onClick={() => act({ type: 'run/ready', close: true } as any)} {...tipProps('Everyone sets out now. Anyone still away gets the Recommended loadout and the first starting boon.')}
-              style={{ minHeight: 40, borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Start for everyone{v.waiting.length ? ' (waiting: ' + v.waiting.join(', ') + ')' : ''}</button> : null}
-          </div>
-        </aside>
+      <header style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '8px 14px', padding: '16px 20px 12px', borderBottom: '1px solid ' + I.line }}>
+        <h1 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 30 }}>The camp</h1>
+        <nav aria-label="The camp's steps" style={{ display: 'flex', gap: 8 }}>
+          {([[1, '1 · Loadout'], [2, '2 · Starting boon' + (v.boon.chosen ? ' ✓' : '')]] as const).map(([n, label]) => (
+            <button key={n} type="button" data-phc-camp-step={n} aria-current={step === n ? 'step' : undefined} onClick={() => setStep(n)}
+              style={{ minHeight: 34, padding: '0 14px', borderRadius: 99, border: '1px solid ' + (step === n ? I.white : '#3B475D'), background: step === n ? I.raised : 'transparent', color: step === n ? I.white : I.muted, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{label}</button>))}
+        </nav>
+      </header>
+      <div data-phc-camp-budget="" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px 18px', padding: '12px 20px', borderBottom: '1px solid ' + I.line, background: 'rgba(16,21,31,0.55)' }}>
+        <div data-phc-camp-left="" style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={kick}>BUDGET LEFT</span>
+          <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: I.white, fontVariantNumeric: 'tabular-nums' }}>{v.left}</span>
+        </div>
+        <div data-phc-camp-used="" style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={kick}>BUDGET USED</span>
+          <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{v.spent}</span>
+        </div>
+        <span style={{ fontSize: 12, color: I.muted, maxWidth: 160 }}>of {v.budget} credits · what you don't spend, you keep</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button type="button" data-phc-camp-recommended="" disabled={v.ready} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)} {...tipProps('A loadout for your skills: the focus you can use, the weapon for your best weapon skill, armour, then ammunition.')}
+            style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: v.ready ? I.muted : I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: v.ready ? 'default' : 'pointer' }}>Recommended</button>
+          {!v.boon.chosen && !v.ready && v.boon.cards.length ? (
+            <button type="button" data-phc-camp-next="" onClick={() => setStep(2)} disabled={step === 2} {...tipProps(step === 2 ? 'Choose one of the three.' : null)}
+              style={{ minHeight: 42, padding: '0 16px', borderRadius: 10, border: 0, background: step === 2 ? I.raised : I.text, color: step === 2 ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: step === 2 ? 'default' : 'pointer' }}>{step === 2 ? 'Choose a boon' : 'Starting boon ›'}</button>
+          ) : null}
+          {!solo && v.isHost ? <button type="button" data-phc-camp-close="" onClick={() => act({ type: 'run/ready', close: true } as any)} {...tipProps('Everyone sets out now. Anyone still away gets the Recommended loadout and the first starting boon.')}
+            style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Start for everyone{v.waiting.length ? ' (waiting: ' + v.waiting.join(', ') + ')' : ''}</button> : null}
+        </div>
+        {last ? <span data-phc-camp-refusal="" role="status" style={{ flexBasis: '100%', fontSize: 13, color: I.white }}>{last}</span> : null}
       </div>
+      <main aria-label={step === 1 ? 'Loadout' : 'Starting boon'} data-phc-camp-take="" data-phc-camp-on={step} style={{ padding: '16px 20px 20px' }}>
+        {step === 1 ? <>
+          <section data-phc-camp-row="weapon" style={{ marginBottom: 22 }}>
+            {head('Weapon', 'one free')}
+            {v.rack.map((a) => (
+              <div key={a.id} data-phc-camp-rack={a.id} style={{ marginBottom: 14 }}>
+                <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
+                <div className="phc-camp-rack" role="group" aria-label={a.name}>
+                  <PickCard c={a.free} slot="weapon" charId={charId} />
+                  {a.again ? <ShelfCard c={a.again} charId={charId} tag="ANOTHER ONE" /> : <span />}
+                  {a.better ? <ShelfCard c={a.better} charId={charId} tag="THE BETTER ONE" compare={a.better.compare} /> : <span />}
+                </div>
+              </div>))}
+          </section>
+          <section data-phc-camp-row="focus" style={{ marginBottom: 22 }}>
+            {head('Focus', 'one free, or none')}
+            <div className="phc-camp-pick" role="radiogroup" aria-label="Focus">{v.focus.map((c) => <PickCard key={c.key} c={c} slot="focus" charId={charId} />)}</div>
+          </section>
+          {groups.map((gr) => (
+            <section key={gr.name} data-phc-camp-shelf={gr.name} style={{ marginBottom: 22 }}>
+              {head(gr.name)}
+              <div className="phc-camp-shelf">{gr.cards.map((c) => <ShelfCard key={c.key} c={c} charId={charId} />)}</div>
+            </section>))}
+        </> : <>
+          {head('Starting boon', 'yours for the whole run')}
+          <BoonStep v={v} charId={charId} />
+        </>}
+      </main>
+      <section aria-label="Carrying" data-phc-camp-carry="" style={{ padding: '14px 20px 28px', borderTop: '1px solid ' + I.line, background: 'rgba(16,21,31,0.55)' }}>
+        <h2 style={{ margin: '0 0 10px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 22 }}>Carrying</h2>
+        {!v.carrying.length ? <p style={{ margin: 0, fontSize: 13.5, color: I.muted }}>Nothing yet: bare fists.</p> : null}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '4px 20px' }}>
+          {carryGroups.map((gr) => (
+            <div key={gr} style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+              <span style={kick}>{gr.toUpperCase()}</span>
+              {v.carrying.filter((r) => r.group === gr).map((r, i) => (
+                <div key={i} data-phc-camp-carry-row="" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5, lineHeight: 1.35 }}>
+                  <span style={{ flex: 1, minWidth: 0 }}>{r.label}</span>
+                  {r.kg ? <span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums', fontSize: 12 }}>{r.kg} kg</span> : null}
+                  {r.put ? <button type="button" data-phc-camp-put="" aria-label={(r.putLabel || 'Remove') + ': ' + r.label} onClick={() => act(r.put as any)} style={{ minHeight: 30, padding: '0 10px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>{r.putLabel || 'Remove'}</button> : null}
+                </div>))}
+            </div>))}
+        </div>
+      </section>
     </div>
   );
 }

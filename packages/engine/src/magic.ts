@@ -6,7 +6,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import figmentsJ from '../../../data/figments.json';
 import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
 import {
-  type Character, type OutburstDesign, mod, maxMp, healingMult, packOf, soulPicksLeft, practiceOf,
+  type Character, type OutburstDesign, packKindOf, mod, maxMp, healingMult, packOf, soulPicksLeft, practiceOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
@@ -188,7 +188,7 @@ export function magicToCharacter(c: Character, u: Unit) {
     let left = had - want; // positive: cores spent; negative: cores made
     const pack = packOf(c).map((x) => ({ ...x }));
     if (left > 0) for (const it of pack) { if ((it.item || it.id) !== 'standard_core' || !left) continue; const n = Math.min(left, it.qty); it.qty -= n; left -= n; }
-    else { const it = pack.find((x) => (x.item || x.id) === 'standard_core'); if (it) it.qty += -left; else pack.push({ id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: -left, kind: 'ammo' }); }
+    else { const it = pack.find((x) => (x.item || x.id) === 'standard_core'); if (it) it.qty += -left; else pack.push({ id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: -left, kind: packKindOf('standard_core') }); }
     c.pack = pack.filter((x) => x.qty > 0 || x.mags);
     m.cores = want; m.coresMade = 0;
   }

@@ -33,10 +33,33 @@
 // shelf shows its card (the bar now → full, the price from data, the short purse's reason in words); the purse topped
 // up, it is repaired by a click: the purse down by the card's price, the rifle at full, the card gone; the Repair shelf
 // saved at 1280 and 1920; leaving with the rifle worn again, the path map's squad panel shows the WORN mark.
-import { readFileSync } from 'node:fs';
-import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart } from './lib.mjs';
+// Rules 1.54 item 11 (every mode keeps the side panels): every run screen is the play screen's middle; at every run
+// state (the camp, the path map, the shop, a place, the rewards, the stage cleared, the summary) the left sheet and the
+// right panel are both on screen at 1280 x 720 (lib.mjs sidePanels); a weapon taken after node 1 is equipped through
+// the sheet's GEAR tab by a click; the phase control (Ready, Leave, Go) is the right panel's squad.
+// Rules 1.54 items 2 to 10 (materials, making, the training bar): node 1's pick is two large cards, the Materials card
+// (gunpowder, casings, mana residue, each with its count) and one weapon (its 72 px icon, its grade, the gear preview's
+// numbers in its hover card); the Materials card clicked, the three arrive in the pack (state). At the shop the ammo
+// maker is bought from the counter by a click, and rounds for the gun in hand are made through the sheet's GEAR tab
+// (Make: the stepper to 2, Make): the rounds arrive, the gunpowder and casings leave, the visit's log says so. A
+// training ground's drill card shows its bar (where you stand, +the ground's drill, the next mark in words). At stage 1's
+// end a focus is placed in the pack (the suite's set-up), held in the off hand through the sheet (the knife in the main
+// hand), and ten mana residue are pressed into a core through Make. TOP_SHOTS=dir copies top-make, top-lootcards and
+// top-trainingbar there.
+import { readFileSync, copyFileSync } from 'node:fs';
+import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart, sidePanels } from './lib.mjs';
 const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
 const SVD = DATA('survival.json'), WPN = Object.fromEntries(DATA('weapons.json').items.map((w) => [w.id, w])), RAR = DATA('rules.json').rarity;
+// rules 1.54 (materials and making): the recipes and the items, from data (no item id typed here)
+const RECIPES = DATA('recipes.json').items, ITM = DATA('items.json').items;
+const MAKER = RECIPES.find((x) => x.tool.item).tool.item, CORE = RECIPES.find((x) => x.tool.focus === 'any');
+/** How many of an item id a character carries (its pack lines); rounds of a calibre: the loose rounds. */
+const held = (c, id) => (c.pack || []).filter((x) => (x.item || x.id) === id).reduce((t, x) => t + (x.qty || 0), 0);
+const loose = (c, cal) => (c.pack || []).filter((x) => x.calibre === cal && !x.mags && !x.ammoType).reduce((t, x) => t + (x.qty || 0), 0);
+/** rules 1.54 item 2: the pick a walk by actions takes: the Materials card where the pick has one, else the first weapon. */
+const pickOf = (o) => (o && o.materials && o.materials.length ? 'materials' : 0);
+/** The screenshots this build is judged by (top-make, top-lootcards, top-trainingbar), copied from OUT by name. */
+const TOP = process.env.TOP_SHOTS ? process.env.TOP_SHOTS.replace(/\/?$/, '/') : null;
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SEED = 'PHC-0046'; // rules 1.48: a seed whose stage 1 has a lane route from its first node (a swarm, which the pinned shots can reach) through a training ground, a shrine, a Forge, a crossroads and a rest
@@ -101,6 +124,7 @@ const KN = FREE('light_blades'), knife = await numIn('[data-phc-camp-card="stock
 await p.locator('[data-phc-camp-more="stock:' + KN + '"]').click(); await settle(p, 300);
 ok('a second weapon from the rack at its price (' + knife + '): it goes in the pack', (await me0()).pack.some((x) => x.weapon === KN) && knife === WPN[KN].price_credits);
 await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
+await sidePanels(p, 'the camp');
 const kept = (await me0()).credits;
 // the starting boon: the camp's second step, three large cards offered by what the loadout holds
 ok('Ready waits for the starting boon: the button reads Next', await p.locator('[data-phc-camp-next]').count() === 1 && !(await p.locator('[data-phc-camp-ready]').count()));
@@ -116,7 +140,7 @@ ok('a starting boon chosen (' + pickId + '): marked, given when the camp closes'
 await p.locator('[data-phc-camp-ready]').click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 let r = await run();
-ok('Start the run leaves the camp for the path map, seed ' + r.seed + ', stage 1; the unspent budget kept (' + kept + ')', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'run' && (await me0()).credits === kept);
+ok('Start the run leaves the camp for the path map, seed ' + r.seed + ', stage 1; the unspent budget kept (' + kept + ')', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'main' && (await me0()).credits === kept);
 ok('the starting boon is the character\'s relic for the run; the squad panel shows it, marked Camp, and the run power against the cap', ((await me0()).relics || []).includes(pickId)
   && await p.locator('[data-phc-held="' + pickId + '"]').count() === 1 && /Camp/.test(await p.locator('[data-phc-held="' + pickId + '"]').textContent()) && /of 50/.test(await p.locator('[data-phc-member-cap="' + campId + '"]').textContent()));
 
@@ -135,7 +159,7 @@ const lit = await p.locator('[data-phc-node][data-phc-state="reachable"]').evalu
 const first = r.nodes.filter((n) => n.depth === 1).map((n) => n.id);
 ok('the first row is lit, nothing else (' + lit.join(', ') + ')', JSON.stringify(lit.sort()) === JSON.stringify(first.sort()));
 const tip0 = await p.locator('[data-phc-node="' + lit[0] + '"]').getAttribute('data-tip-text');
-ok('a fight node\'s hover card says what it gives, with the engine\'s numbers: "' + tip0 + '"', /XP/.test(tip0 || '') && /credits/.test(tip0 || '') && /pick of three weapons/.test(tip0 || ''));
+ok('a fight node\'s hover card says what it gives, with the engine\'s numbers: "' + tip0 + '"', /XP/.test(tip0 || '') && /credits/.test(tip0 || '') && /materials/.test(tip0 || '') && /one weapon/.test(tip0 || ''));
 const far = r.nodes.find((n) => n.depth === 3);
 await p.locator('[data-phc-node="' + far.id + '"]').click();
 const tip1 = await until(p, () => (document.querySelector('.phc-atip')?.textContent || '').trim() || null, null, 5000).catch(() => '');
@@ -143,6 +167,11 @@ ok('an unlit node can\'t be taken and its card says why ("' + tip1.slice(0, 90) 
 const covers = await p.evaluate(() => { const t = document.querySelector('.phc-atip')?.getBoundingClientRect(); if (!t) return ['no card'];
   return [...document.querySelectorAll('[data-phc-node][data-phc-state="reachable"]')].map((n) => [n.getAttribute('data-phc-node'), n.getBoundingClientRect()]).filter(([, b]) => t.left < b.right && b.left < t.right && t.top < b.bottom && b.top < t.bottom).map(([id]) => id); });
 ok('rules 1.46: the path map\'s hover card sits beside its node and covers no reachable node (' + covers.join(', ') + ')', !covers.length);
+await sidePanels(p, 'the path map');
+// ui-screens.md "The three columns": a run has no area map: no header button, and M opens nothing.
+await p.keyboard.press('m'); await settle(p, 400);
+const areaMap = await p.evaluate(() => ({ button: document.querySelectorAll('[data-phc-areamap]').length, dialog: document.querySelectorAll('[role="dialog"][aria-label="Area map"]').length }));
+ok('a run offers no area map: no AREA MAP button (' + areaMap.button + '), and M opens nothing (' + areaMap.dialog + ')', areaMap.button === 0 && areaMap.dialog === 0);
 await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
 // rules 1.49 (build step 10): the map always fits its frame: every marker, its word and the camp inside the map's frame
 // (the vault's guard and chest were clipped by the frame's bottom at 1280 x 720), at three screen sizes
@@ -158,6 +187,11 @@ await mapFits('stage 1\'s map');
 // ---------- node 1 by hand ----------
 await p.locator('[data-phc-node="' + lit[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 });
+{ // the host's browser asks no Narrator in a run (rules 1.54 item 1): no narrator/ action is sent, so no refusal toast
+  await settle(p, 1500);
+  const seen = await p.evaluate(() => ({ mode: window.__phc.getState().game.settings.mode, toast: window.__phc.getState().toast?.text || '' }));
+  ok('a run fight starts with no refusal toast (settings.mode ' + seen.mode + ', toast "' + seen.toast + '")', !/no Narrator and no story|refused/i.test(seen.toast));
+}
 r = await run();
 ok('a lit node is taken: the fight begins (' + r.stats.fights[0].template + ', ' + r.stats.fights[0].foes.length + ' foe(s))', r.at === lit[0] && r.state === 'fight');
 { // rules 1.51: the starting boon is felt in the first fight: Zeroed a +1 term named for it on a shot; Set Feet a Guard point
@@ -188,13 +222,30 @@ let g = await G();
 ok('node 1 fought by hand to its end: ' + (g.combat?.summary || '?'), g.combat?.over === 'win' && g.run.state === 'reward');
 await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
+{ // the music's Now playing card leaves within its 5 s after a fight (it stayed over the sheet for 30 s and more)
+  const gone = await p.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some((e) => /NOW PLAYING/.test(e.textContent || '')), null, { timeout: 8000 }).catch(() => 'stayed') !== 'stayed';
+  ok('after the fight the Now playing card is gone within 8 s (it does not sit over the sheet)', gone);
+}
 r = await run();
 const c = Object.values(g.characters)[0];
-ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
-  && /100 XP/.test(await p.locator('[data-phc-note]').textContent()));
-ok('a pick of three weapons, each with its rarity word and price, and credits instead', await p.locator('[data-phc-pick]').count() === 3 && /Take \d+ credits instead/.test(await p.locator('[data-phc-instead]').textContent())
-  && (await p.locator('[data-phc-pick]').allTextContents()).every((t) => /(STANDARD|FINE)/.test(t) && /\d+ credits/.test(t)));
+ok('the rewards: XP (' + SVD.xp.base + ' at stop 1, rules 1.54 item 9) and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === SVD.xp.base && c.xp === r.note.xp && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
+  && new RegExp(r.note.xp + ' XP').test(await p.locator('[data-phc-note]').textContent()));
+const o1 = r.offers[c.id], wcard = p.locator('[data-phc-offer="' + c.id + '"] [data-phc-pick]');
+{ // rules 1.54 item 2: Materials or One weapon, two large cards; credits instead is gone
+  const mats = await p.locator('[data-phc-offer="' + c.id + '"] [data-phc-material]').evaluateAll((l) => l.map((e) => [e.getAttribute('data-phc-material'), Number(e.getAttribute('data-phc-material-n'))]));
+  ok('the pick: two large cards, the materials (' + mats.map((m) => m.join(' ')).join(', ') + ', the engine\'s offer) and one weapon; no credits instead', await p.locator('[data-phc-pick-materials]').count() === 1 && await wcard.count() === 1
+    && !(await p.locator('[data-phc-instead]').count()) && JSON.stringify(mats) === JSON.stringify(o1.materials.map((m) => [m.item, m.n])) && mats.length === SVD.rewards.materials.items.length);
+  const wt = await wcard.textContent(), icon = await wcard.locator('img').first().getAttribute('width'), tip = await wcard.getAttribute('data-tip-text');
+  const pv = await p.evaluate(([cid, w]) => window.__phc.gearPreview(cid, { id: w.id, rarity: w.rarity }), [c.id, o1.weapons[0]]);
+  ok('the weapon card: its icon at 72 px, its grade word, its worth; its hover card holds every number of the engine\'s gear preview (' + pv.lines.length + ')', icon === '72' && /(STANDARD|FINE)/.test(wt) && /\d+ credits/.test(wt)
+    && pv.lines.every((l) => (tip || '').includes(l.label + ': ' + l.value)));
+  const sz = await p.locator('[data-phc-pick-materials]').boundingBox(), sw = await wcard.boundingBox();
+  ok('… both cards large and side by side (' + Math.round(sz?.width || 0) + ' and ' + Math.round(sw?.width || 0) + ' px wide, ' + Math.round(sz?.height || 0) + ' px tall)', !!sz && !!sw && sz.height >= 280 && Math.abs(sz.y - sw.y) < 2 && sz.width >= 200);
+}
+await p.mouse.move(2, 2);
 await shot('survival-reward-pick');
+if (TOP) copyFileSync(OUT + 'survival-reward-pick.png', TOP + 'top-lootcards.png');
+await sidePanels(p, 'the rewards');
 // ---------- rules 1.47 (build step 6): the fight's tally on the reward screen ----------
 {
   const t = r.stats.fights[0].tally, row = p.locator('[data-phc-tally="fight"] [data-phc-tally-row="' + c.id + '"]');
@@ -202,11 +253,25 @@ await shot('survival-reward-pick');
   ok('the reward screen shows the fight\'s tally: a row for the character with the engine\'s damage dealt (' + t.chars[c.id].dealt + '), taken and kills', await p.locator('[data-phc-tally="fight"]').count() === 1 && t.chars[c.id].dealt > 0
     && await cell('dealt') === t.chars[c.id].dealt && await cell('taken') === t.chars[c.id].taken && await cell('kills') === t.chars[c.id].kills && /of \d+/.test(await row.locator('[data-phc-tally-cell="aim"]').textContent()));
 }
-const want = r.offers[c.id].weapons[0];
-await p.locator('[data-phc-pick="0"]').click();
+await p.locator('[data-phc-pick-materials]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
 g = await G();
-ok('the weapon taken is in the pack at its rarity (' + want.id + ', ' + want.rarity + ')', (Object.values(g.characters)[0].pack || []).some((x) => (x.weapon || x.item || x.id) === want.id && (x.rarity || 'standard') === want.rarity));
+{ const c1 = Object.values(g.characters)[0];
+  ok('the Materials card taken: gunpowder, casings and mana residue arrive in the pack (' + o1.materials.map((m) => m.item + ' ' + held(c, m.item) + ' → ' + held(c1, m.item)).join(', ') + ')', o1.materials.every((m) => held(c1, m.item) === held(c, m.item) + m.n));
+  ok('… and the run board says what was taken, in words', /takes the materials/.test(await p.locator('[data-phc-board-pick]').first().textContent().catch(() => '')));
+}
+/** Rules 1.54 item 11: a weapon taken from a pick, equipped through the sheet's GEAR tab (the one place for gear) by a click. */
+const equipCheck = async (want) => {
+  const wname = WPN[want.id]?.name || want.id;
+  await p.locator('#phc-sheet-tab-gear').click(); await settle(p, 300);
+  const row = p.locator('[aria-label="Backpack contents"] [role="listitem"]').filter({ hasText: wname }).first();
+  await row.locator('button').first().click(); await settle(p, 200);
+  await row.getByRole('button', { name: 'Main hand', exact: true }).click();
+  await p.waitForFunction((id) => Object.values(window.__phc.getState().game.characters)[0].weapon === id, want.id, { timeout: 30000 }).catch(() => {});
+  ok('the weapon taken (' + wname + ') is equipped through the sheet\'s GEAR tab by a click: the character\'s weapon is ' + want.id, Object.values((await G()).characters)[0].weapon === want.id);
+  await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200);
+};
+let equipped = false;
 ok('… and the map lights the node\'s links', JSON.stringify((await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')))).sort()) === JSON.stringify([...g.run.nodes.find((n) => n.id === g.run.at).links].sort()));
 
 // ---------- the rest of the stage, fights won by run/skip ----------
@@ -226,9 +291,10 @@ const fitsCheck = () => p.evaluate(() => {
 });
 async function shopChecks() {
   sawShop = true;
-  await p.waitForSelector('[data-phc-fullscreen]', { timeout: 30000 });
-  ok('a shop node opens the shop full screen: the keeper, the tabs, the purse; the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0
-    && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent()) && await p.locator('[role="tab"]').count() === 4 && /\d/.test(await p.locator('[data-phc-purse-n]').textContent()));
+  await p.waitForSelector('[data-phc-place-frame]', { timeout: 30000 });
+  ok('a shop node opens the shop in the middle: the keeper, the tabs, the purse; the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0
+    && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent()) && await p.locator('[data-phc-place-frame] [role="tab"]').count() === 4 && /\d/.test(await p.locator('[data-phc-purse-n]').textContent()));
+  await sidePanels(p, 'the shop');
   ok('solo: no Give tab (there is no one to hand anything to; docs/design/ui-screens.md, Writing for the player)', await p.locator('[data-phc-tab="give"]').count() === 0);
   {
     // the keeper speaks as a tab opens: one of its own lines for that tab (data survival.json faces), never a designer's note
@@ -271,6 +337,35 @@ async function shopChecks() {
   // rules 1.48: the lanes put the first shop early in the stage, before a purse can afford a rolled weapon and a grade
   // step: the test purse is topped up here (as node 1's dice are pinned), so the shop's and the Forge's checks have money (after the short-purse check, which wants a piece it can't afford)
   await p.evaluate(() => { for (const c of Object.values(window.__phc.getState().game.characters)) c.credits = Math.max(c.credits || 0, 6000); });
+  { // rules 1.54 items 4 and 5: the ammo maker from the counter's supplies shelf, then rounds made through the sheet's GEAR tab
+    await p.locator('[data-phc-tab="always"]').click(); await settle(p, 300);
+    const m0 = Object.values((await G()).characters)[0], card = p.locator('[data-phc-card="' + MAKER + '"]');
+    await card.locator('[data-phc-buy]').click();
+    await p.waitForFunction((id) => (Object.values(window.__phc.getState().game.characters)[0].pack || []).some((x) => (x.item || x.id) === id), MAKER, { timeout: 30000 }).catch(() => {});
+    const m1 = Object.values((await G()).characters)[0];
+    ok('the ammo maker bought from the counter by a click (' + (m0.credits - m1.credits) + ' credits): it is in the pack', held(m1, MAKER) === 1 && m0.credits - m1.credits === ITM.find((x) => x.id === MAKER).price_credits);
+    const cal = WPN[m1.weapon]?.ammo, rec = RECIPES.find((x) => x.gives[0].item === 'rounds:' + cal) || RECIPES.find((x) => x.tool.item);
+    const rcal = rec.gives[0].item.replace(/^rounds:/, ''), times = 2;
+    await p.locator('#phc-sheet-tab-gear').click();
+    await p.waitForSelector('[data-phc-make]', { timeout: 30000 }).catch(() => {});
+    const row = p.locator('[data-phc-recipe="' + rec.id + '"]');
+    ok('the sheet\'s GEAR tab shows Make with a row for each recipe of the ammo maker (' + await p.locator('[data-phc-recipe]').count() + '), the core\'s not (no focus in hand)', await p.locator('[data-phc-make]').count() === 1
+      && await p.locator('[data-phc-recipe]').count() === RECIPES.filter((x) => x.tool.item === MAKER).length && await p.locator('[data-phc-recipe="' + CORE.id + '"]').count() === 0);
+    const most = Number(await row.getAttribute('data-phc-recipe-most'));
+    ok('… the ' + rec.name + ' row: what it takes with what you have, what it makes, the engine\'s most (' + most + ')', most === Math.min(...rec.needs.map((l) => Math.floor(held(m1, l.item) / l.n)))
+      && new RegExp('you have ' + held(m1, rec.needs[0].item) + '\\)').test(await row.locator('[data-phc-recipe-needs]').textContent()));
+    await row.locator('[data-phc-make-more]').click(); await settle(p, 150);
+    ok('… the stepper reads 2 and the button Make × 2', (await row.locator('[data-phc-make-n]').textContent()).trim() === '2' && /Make × 2/.test(await row.locator('[data-phc-make-go]').textContent()));
+    await p.locator('[data-phc-make]').scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await settle(p, 400);
+    await p.screenshot({ path: OUT + 'survival-make-1280.png' }); if (TOP) copyFileSync(OUT + 'survival-make-1280.png', TOP + 'top-make.png');
+    await row.locator('[data-phc-make-go]').click();
+    await p.waitForFunction(([cal, n]) => (Object.values(window.__phc.getState().game.characters)[0].pack || []).filter((x) => x.calibre === cal && !x.mags && !x.ammoType).reduce((t, x) => t + x.qty, 0) !== n, [rcal, loose(m1, rcal)], { timeout: 30000 }).catch(() => {});
+    const m2 = Object.values((await G()).characters)[0];
+    ok('Make × 2 clicked: ' + rec.gives[0].n * times + ' rounds arrive (' + loose(m1, rcal) + ' → ' + loose(m2, rcal) + '), the gunpowder and casings leave (' + rec.needs.map((l) => held(m1, l.item) + ' → ' + held(m2, l.item)).join(', ') + '), free',
+      loose(m2, rcal) === loose(m1, rcal) + rec.gives[0].n * times && rec.needs.every((l) => held(m2, l.item) === held(m1, l.item) - l.n * times) && m2.credits === m1.credits);
+    ok('… the visit\'s log says what was made', /makes /.test(await p.locator('[data-phc-visit-log]').textContent()));
+    await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200);
+  }
   // sell one (the weapon picked after node 1), then buy a rolled weapon
   await p.locator('[data-phc-tab="sell"]').click();
   const rows = await p.locator('[data-phc-sell]').evaluateAll((l) => l.map((e) => ({ idx: e.getAttribute('data-phc-sell'), v: Number(e.querySelector('[data-phc-sell-value]')?.textContent.replace(/\D/g, '') || 0), btn: !!e.querySelector('[data-phc-sell-btn]') })));
@@ -293,7 +388,7 @@ async function shopChecks() {
   // rules 1.50: the Repair shelf, a worn rifle repaired at the shop
   {
     const hold = await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0], was = c.credits; c.weaponState = { ...(c.weaponState || {}), dur: 60 }; c.credits = 3; return was; });
-    await p.locator('[data-phc-tab="sell"]').click(); await p.locator('[data-phc-tab="upgrade"]').click(); // drawn again from the state
+    await p.locator('[data-phc-tab="sell"]').click(); await p.locator('[data-phc-tab="upgrade"]').click(); await p.evaluate(() => window.__phc.go("main")); // drawn again from the state (the shelves and the right panel: a test hand-off is no action)
     const card = p.locator('[data-phc-repair="repair:main"]');
     await card.waitFor({ timeout: 30000 }).catch(() => {});
     const me0 = Object.values((await G()).characters)[0], w = WPN[me0.weapon], rar = me0.weaponState?.rarity || 'standard';
@@ -303,7 +398,7 @@ async function shopChecks() {
     ok('the Repair shelf: the worn rifle\'s card, its bar 60 → ' + full + ' marked WORN, its price from data (' + price + ' = ' + want + ')', !!bar && bar.state === 'worn' && bar.now === '60' && bar.max === String(full) && /WORN/.test(bar.mark) && price === want);
     const status = (await card.locator('[data-phc-status]').textContent().catch(() => '')) || '';
     ok('a purse too short for the repair says by how much ("' + status + '")', (await card.getAttribute('data-phc-service-why')) === '' && status.includes((want - 3) + ' credits short'));
-    ok('the "you" panel marks the rifle in hand WORN', await p.locator('[data-phc-hand-wear="main"] [data-phc-wear="worn"]').count() === 1);
+    ok('the right panel\'s squad marks the rifle in hand WORN', await p.locator('[data-phc-member-wear="main"] [data-phc-wear="worn"]').count() === 1);
     await p.evaluate((h) => { Object.values(window.__phc.getState().game.characters)[0].credits = h; }, hold);
     await p.locator('[data-phc-tab="sell"]').click(); await p.locator('[data-phc-tab="upgrade"]').click();
     await settle(p, 500); await p.screenshot({ path: OUT + 'survival-repair-1280.png' });
@@ -316,7 +411,7 @@ async function shopChecks() {
     const me1 = Object.values((await G()).characters)[0];
     ok('Repair clicked: the purse down by the card\'s price (' + (r0 - me1.credits) + '), the rifle at full (' + me1.weaponState?.dur + '), logged, the card gone',
       r0 - me1.credits === want && me1.weaponState?.dur === full && /repaired to full/.test(await p.locator('[data-phc-visit-log]').textContent())
-      && await p.locator('[data-phc-repair]').count() === 0 && await p.locator('[data-phc-repair-empty]').count() === 1 && await p.locator('[data-phc-hand-wear="main"] [data-phc-wear="sound"]').count() === 1);
+      && await p.locator('[data-phc-repair]').count() === 0 && await p.locator('[data-phc-repair-empty]').count() === 1 && await p.locator('[data-phc-member-wear="main"]').count() === 0);
   }
   const ups = await p.locator('[data-phc-service]:not([data-phc-repair])').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-service'), why: e.hasAttribute('data-phc-service-why'), price: Number(e.querySelector('[data-phc-price]')?.textContent.replace(/\D/g, '') || 0), lines: e.querySelectorAll('[data-phc-upgrade-lines] b').length })));
   const up = ups.find((x) => !x.why && x.key !== 'grade:main') || ups.find((x) => !x.why);
@@ -332,12 +427,12 @@ async function shopChecks() {
   }
   await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 600); await p.screenshot({ path: OUT + 'survival-shop-upgrade-1920.png' });
   await p.setViewportSize({ width: 1280, height: 720 });
-  // the shelves scroll inside their region: no card's price or button sits under the visit's strip
+  // rules 1.54: the shelves scroll inside the middle column: every Buy button, scrolled to, sits inside it (never under a side panel)
   await p.locator('[data-phc-tab="gear"]').click(); await settle(p, 300);
-  const under = await p.evaluate(async () => { const foot = document.querySelector('[data-phc-visit-log]').getBoundingClientRect().top, bad = [];
-    for (const b of document.querySelectorAll('[data-phc-buy]')) { b.scrollIntoView({ block: 'nearest' }); await new Promise((r) => setTimeout(r, 30)); const r = b.getBoundingClientRect(); if (r.bottom > foot) bad.push(b.getAttribute('data-phc-buy')); }
+  const under = await p.evaluate(async () => { const mid = document.querySelector('[data-phc-centre]').getBoundingClientRect(), bad = [];
+    for (const b of document.querySelectorAll('[data-phc-buy]')) { b.scrollIntoView({ block: 'nearest' }); await new Promise((r) => setTimeout(r, 30)); const r = b.getBoundingClientRect(); if (r.left < mid.left - 1 || r.right > mid.right + 1 || r.bottom > mid.bottom + 1) bad.push(b.getAttribute('data-phc-buy')); }
     return bad; });
-  ok('every Buy button, scrolled to, sits above the visit\'s strip (' + under.join(', ') + ')', !under.length);
+  ok('every Buy button, scrolled to, sits inside the middle column (' + under.join(', ') + ')', !under.length);
   await p.locator('[data-phc-tab="always"]').click();
   await p.setViewportSize({ width: 1920, height: 1080 });
   await settle(p, 900); await p.screenshot({ path: OUT + 'survival-shop-1920.png' });
@@ -345,7 +440,7 @@ async function shopChecks() {
   await p.locator('[data-phc-tab="gear"]').click(); await settle(p, 500); await p.screenshot({ path: OUT + 'survival-shop-gear-1920.png' });
   await p.setViewportSize({ width: 1280, height: 720 });
   await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0]; c.weaponState = { ...(c.weaponState || {}), dur: 60 }; }); // rules 1.50: worn again, for the map's mark
-  await p.locator('[data-phc-leave]').click();
+  await p.locator('[data-phc-phase="leave"]').click();
   await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
   ok('Leave the shop: back on the path map', await p.locator('[data-phc-pathmap]').count() === 1);
   ok('rules 1.50: the path map\'s squad panel marks the worn rifle before a lane is chosen', await p.locator('[data-phc-member] [data-phc-wear="worn"] [data-phc-wear-mark]').count() === 1);
@@ -356,12 +451,12 @@ let sawLevelUp = false, guard = 0;
 const PLACES = ['forge', 'training', 'shrine', 'event', 'rest'], placeShots = {};
 /** A full-screen place's layout check: no clipped words, no overlapping cards, no card under the visit's strip. */
 const placeFits = () => p.evaluate(() => {
-  const bad = [], foot = document.querySelector('[data-phc-visit-log]')?.getBoundingClientRect().top ?? Infinity;
+  const bad = [], foot = document.querySelector('[data-phc-centre]')?.getBoundingClientRect().bottom ?? Infinity; // (rules 1.54: the middle column's foot)
   if (document.documentElement.scrollWidth > innerWidth + 1) bad.push('the page scrolls sideways');
   for (const el of document.querySelectorAll('[data-phc-keeper-name], [data-phc-tab], [data-phc-price]')) if (el.scrollWidth > el.clientWidth + 1) bad.push('clipped: ' + el.textContent.slice(0, 30));
   const cards = [...new Set([...document.querySelectorAll('[data-phc-choice], [data-phc-service]')].map((e) => e.closest('[data-phc-service]') || e))].map((e) => e.getBoundingClientRect());
   for (let i = 0; i < cards.length; i++) for (let j = i + 1; j < cards.length; j++) { const a = cards[i], b = cards[j]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) bad.push('cards overlap'); }
-  const first = document.querySelector('[data-phc-choice], [data-phc-service]'); if (first && first.getBoundingClientRect().top > foot) bad.push('the first card is under the strip');
+  const first = document.querySelector('[data-phc-choice], [data-phc-service]'); if (first && first.getBoundingClientRect().top > foot) bad.push('the first card is below the middle column');
   return bad.slice(0, 4);
 });
 // rules 1.43: the route from here that passes the most of the five progression nodes (then the most fights)
@@ -384,7 +479,7 @@ const choose = async (pre) => {
 while (guard++ < 40) {
   r = await run(); if (!r || r.state === 'boon' || r.state === 'over') break;
   if (r.state === 'map') {
-    if (await p.locator('[data-phc-place]').count()) { await p.locator('[data-phc-leave]').click(); await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); } // back at a place after its pick (a crate)
+    if (await p.locator('[data-phc-place]').count()) { await p.locator('[data-phc-phase="leave"]').click(); await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); } // back at a place after its pick (a crate)
     const ids = await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
     const kinds = Object.fromEntries(r.nodes.map((n) => [n.id, n.kind]));
     const next = ids.find((id) => route.includes(id)) || ids.find((id) => !['fight', 'elite', 'boss', 'vault_guard', 'vault'].includes(kinds[id])) || ids.find((id) => kinds[id] !== 'vault_guard') || ids[0]; // stage 1 leaves the vault (stage 2 takes it)
@@ -395,7 +490,8 @@ while (guard++ < 40) {
     if (PLACES.includes(k) && await p.locator('[data-phc-place]').count()) { // rules 1.46: every safe node opens full screen (seen on arrival)
       if (!placeShots[k]) {
         placeShots[k] = true;
-        ok('rules 1.46: the ' + k + ' opens full screen: its face, its tabs, large cards (solo: no Give tab); the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0 && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent())
+        await sidePanels(p, 'a place: the ' + k);
+        ok('rules 1.46: the ' + k + ' opens in the middle: its face, its tabs, large cards (solo: no Give tab); the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0 && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent())
           && await p.locator('[data-phc-tab="give"]').count() === 0 && !!(await p.locator('[data-phc-keeper-portrait]').getAttribute('src').catch(() => '')));
         await p.mouse.move(2, 2); // no hover card over the shot
         await settle(p, 900); await p.screenshot({ path: OUT + 'survival-place-' + k + '-1280.png' });
@@ -405,9 +501,15 @@ while (guard++ < 40) {
       }
     }
     if (k === 'training' && !done.training) {
+      { // rules 1.54 item 10: the drill card's bar, from the engine's view
+        const dc = p.locator('[data-phc-choices] [data-phc-choice^="drill:"]:not([data-phc-why])').first(), dk = await dc.getAttribute('data-phc-choice').catch(() => null), dw = dk && dk.slice(6), gx = await G();
+        const bar = await dc.locator('[data-phc-trainbar]').evaluate((e) => ({ now: Number(e.getAttribute('data-phc-trainbar-now')), add: Number(e.getAttribute('data-phc-trainbar-add')), to: e.getAttribute('data-phc-trainbar-to'), mark: e.querySelector('[data-phc-trainbar-mark]')?.textContent || '' })).catch(() => null);
+        ok('a training card shows its bar: where you stand (' + bar?.now + '), what it adds (+' + bar?.add + '), the next mark in words ("' + bar?.mark + '")', !!bar && bar.now === (gx.characters[cid].phys?.drill?.[dw] || 0) && bar.add === SVD.training.drill && /^Mark I+ at \d+/.test(bar.mark) && bar.mark.includes(bar.to));
+        if (TOP) copyFileSync(OUT + 'survival-place-training-1280.png', TOP + 'top-trainingbar.png');
+      }
       const { before, after, key } = await choose('drill:'), w = key && key.slice(6);
-      done.training = !!key && (after.characters[cid].phys?.drill?.[w] || 0) - (before.characters[cid].phys?.drill?.[w] || 0) === 300;
-      ok('a training ground: a drill clicked (' + key + '), +300 drill, free', done.training && after.characters[cid].credits === before.characters[cid].credits);
+      done.training = !!key && (after.characters[cid].phys?.drill?.[w] || 0) - (before.characters[cid].phys?.drill?.[w] || 0) === SVD.training.drill;
+      ok('a training ground: a drill clicked (' + key + '), +' + SVD.training.drill + ' drill, free', done.training && after.characters[cid].credits === before.characters[cid].credits);
     } else if (k === 'shrine' && !done.shrine) {
       const { before, after, key } = await choose('');
       const b = before.characters[cid], a = after.characters[cid];
@@ -429,18 +531,18 @@ while (guard++ < 40) {
       ok('a rest: its small training clicked (' + key + ')', done.rest);
     }
     if (await p.locator('[data-phc-place]').count()) { // rules 1.46: every safe node is a full-screen place; walk out to the map
-      await p.locator('[data-phc-leave]').click();
+      await p.locator('[data-phc-phase="leave"]').click();
       await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 });
     }
   } else if (r.state === 'shop') {
     if (!sawShop) await shopChecks();
-    else { await p.locator('[data-phc-leave]').click(); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'shop', null, { timeout: 30000 }); }
+    else { await p.locator('[data-phc-phase="leave"]').click(); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'shop', null, { timeout: 30000 }); }
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
     await click(p, 'Back to the map ›', { timeout: 60000 });
   } else if (r.state === 'reward') {
-    await p.waitForSelector('[data-phc-instead], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
+    await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
     if (await p.locator('[data-phc-kit] [data-phc-choice]').count()) { // rules 1.43: the pick of kit (an Elite's, a cache's)
       const before = await G(); await p.locator('[data-phc-kit] [data-phc-choice]').first().click();
       await p.waitForFunction(() => !window.__phc.getState().game.run.lasting, null, { timeout: 30000 });
@@ -454,8 +556,15 @@ while (guard++ < 40) {
       await click(p, /Back to the map/, { timeout: 30000 });
       await p.waitForSelector('[data-phc-run-screen]', { timeout: 30000 });
     }
-    await p.locator('[data-phc-instead]').first().click();
-    await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'reward', null, { timeout: 30000 });
+    const ro = Object.values((await run()).offers || {})[0];
+    if (!equipped && ro && ro.weapons.length === 1 && WPN[ro.weapons[0].id] && ro.weapons[0].id !== Object.values((await G()).characters)[0].weapon) { // the first weapon card of the walk: taken, then equipped through the sheet
+      await p.locator('[data-phc-pick="0"]').first().click();
+      await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'reward', null, { timeout: 30000 });
+      if ((await run()).state === 'map') { equipped = true; await equipCheck(ro.weapons[0]); }
+    } else {
+      await p.locator('[data-phc-pick-materials], [data-phc-pick="0"]').first().click(); // rules 1.54 item 2: the materials (else the first weapon)
+      await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'reward', null, { timeout: 30000 });
+    }
   }
 }
 r = await run(); g = await G();
@@ -464,6 +573,29 @@ ok('rules 1.43: the route passed a training ground, a shrine, a Forge, a crossro
 ok('a shop was on the way and opened full screen', sawShop);
 ok('rules 1.46: every safe node on the route opened full screen (' + Object.keys(placeShots).join(', ') + ')', ['forge', 'training', 'shrine', 'event', 'rest'].every((k) => placeShots[k]));
 ok('the whole stage walked to the Boss: 15 nodes, STAGE 1 CLEARED', r.state === 'boon' && r.path.length === 15 && /STAGE 1 CLEARED/.test(await p.locator('[data-phc-cleared]').textContent()));
+ok('rules 1.54 item 11: a weapon taken from a pick on the walk was equipped through the sheet', equipped);
+await sidePanels(p, 'the stage cleared');
+{ // rules 1.54 item 7: with a focus in hand, ten mana residue pressed into a core through the sheet's Make
+  const F = ITM.find((x) => x.focus && x.pack_kind), RES = CORE.needs[0].item, MADE = CORE.gives[0].item;
+  await p.evaluate(([f, name, kind]) => { const c = Object.values(window.__phc.getState().game.characters)[0]; c.pack = [...(c.pack || []), { id: f, item: f, name, qty: 1, kind }]; }, [F.id, F.name, F.pack_kind]); // the suite's set-up: a focus in the pack
+  await p.evaluate(() => window.__phc.go('main')); // drawn again from the state (a test hand-off is no action)
+  const hold = async (name, button) => { const row = p.locator('[aria-label="Backpack contents"] [role="listitem"]').filter({ hasText: name }).first();
+    await row.locator('button').first().click(); await settle(p, 200); await row.getByRole('button', { name: button, exact: true }).click(); await settle(p, 300); };
+  await p.locator('#phc-sheet-tab-gear').click(); await settle(p, 300);
+  const c0 = Object.values((await G()).characters)[0];
+  if (WPN[c0.weapon]?.hands === '2H') await hold(WPN[KN].name, 'Main hand'); // a one-handed knife in the main hand, so the off hand is free
+  await hold(F.name, 'Off hand');
+  const c1 = Object.values((await G()).characters)[0];
+  ok('the focus held in the off hand through the sheet (' + F.name + '), ' + held(c1, RES) + ' mana residue carried', c1.offHand?.id === F.id && held(c1, RES) >= CORE.needs[0].n);
+  await p.waitForSelector('[data-phc-recipe="' + CORE.id + '"]', { timeout: 15000 }).catch(() => {});
+  const row = p.locator('[data-phc-recipe="' + CORE.id + '"]');
+  ok('Make shows the core: it takes ' + CORE.needs[0].n + ' mana residue with the focus in hand', await row.count() === 1 && new RegExp('Takes ' + CORE.needs[0].n + ' mana residue').test(await row.locator('[data-phc-recipe-needs]').textContent()));
+  await row.locator('[data-phc-make-go]').click();
+  await p.waitForFunction(([id, n]) => (Object.values(window.__phc.getState().game.characters)[0].pack || []).filter((x) => (x.item || x.id) === id).reduce((t, x) => t + x.qty, 0) !== n, [MADE, held(c1, MADE)], { timeout: 30000 }).catch(() => {});
+  const c2 = Object.values((await G()).characters)[0];
+  ok('Make clicked: a core arrives (' + held(c1, MADE) + ' → ' + held(c2, MADE) + '), ' + CORE.needs[0].n + ' mana residue leave (' + held(c1, RES) + ' → ' + held(c2, RES) + ')', held(c2, MADE) === held(c1, MADE) + CORE.gives[0].n && held(c2, RES) === held(c1, RES) - CORE.needs[0].n);
+  await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200);
+}
 
 // ---------- rules 1.44 (build step 5): the boon, the next tile, stage 2, retire, the summary ----------
 const both = async (name) => { await shot(name + '-1280'); await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 600); await shot(name + '-1920'); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); };
@@ -497,7 +629,7 @@ const s2route = []; for (let id = fork.id; id; id = s2.nodes.find((n) => n.links
 const litNow = () => p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
 const seen = { lane: false, junction: false, fork: false, guard: false, chest: false, back: false };
 const toMap = async () => { await p.evaluate(() => { const s = window.__phc.getState(); if (s.screen !== 'run') window.__phc.go?.('run'); }).catch(() => {}); await p.waitForSelector('[data-phc-run-screen], [data-phc-place]', { timeout: 30000, state: 'attached' }); await settle(p, 300);
-  if (await p.locator('[data-phc-place]').count()) { await p.locator('[data-phc-leave]').click(); } // a safe node is a place (rules 1.46): walk out to the map
+  if (await p.locator('[data-phc-place]').count()) { await p.locator('[data-phc-phase="leave"]').click(); } // a safe node is a place (rules 1.46): walk out to the map
   await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); await settle(p, 60); };
 for (let i = 0; i < 160; i++) {
   r = await run(); if (r.state === 'boon' || r.state === 'over') break;
@@ -526,7 +658,7 @@ for (let i = 0; i < 160; i++) {
   } else if (r.state === 'reward') {
     if (s2by[r.at]?.kind === 'vault' && !seen.chest) { const o = Object.values(r.offers)[0]; seen.chest = o.weapons.length === 3 && o.weapons.every((w) => w.rarity === 'relic' || w.rarity === 'masterwork') && (r.note.credits || 0) > 0;
       ok('the vault\'s chest: credits (' + r.note.credits + ') and three weapons a grade above stage 2\'s picks (' + o.weapons.map((w) => w.rarity).join(', ') + ')', seen.chest); await both('survival-vault-chest'); }
-    for (const id of Object.keys(r.offers || {})) e = e || await act({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(r.lasting || {})) e = e || await act({ type: 'run/take', charId: id, choice: 0 });
+    for (const [id, o] of Object.entries(r.offers || {})) e = e || await act({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(r.lasting || {})) e = e || await act({ type: 'run/take', charId: id, choice: 0 });
   }
   if (e) { ok('stage 2 walked: ' + e, false); break; }
   await settle(p, 40);
@@ -543,6 +675,7 @@ const sum = (await p.locator('[data-phc-summary]').textContent()).replace(/\s+/g
 ok('retire: the summary (' + sum.slice(0, 110) + '): 2 stages cleared, 32 nodes (stage 2 took the vault\'s two), a row a stage with its fights, foes, credits, grade steps and boons', g.run.end.how === 'retired' && g.run.end.cleared === 2
   && /2 stages cleared/.test(sum) && /32 stops walked/.test(sum) && await p.locator('[data-phc-stage-row]').count() === 2 && sum.includes(g.run.end.stages[0].boons[cid0] ? 'Kade: ' : 'Boons'));
 await both('survival-summary');
+await sidePanels(p, 'the summary');
 // ---------- rules 1.47 (build step 6): the summary's tallies and Report a run ----------
 {
   const sumTx = await p.locator('[data-phc-tallies]').textContent(), k = g.run.stats.fights.filter((f) => f.tally);
@@ -583,10 +716,11 @@ await h.waitForSelector('[role="radiogroup"]');
 const code = (await h.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).match(/ROOM ([A-Z0-9]{6})/)[1];
 await gu.goto(BASE + '/?room=' + code); await gu.getByPlaceholder('Leon').fill('Mai'); await click(gu, 'Join ›'); await gu.waitForSelector('text=The squad');
 await create(h, 'Kade'); await create(gu, 'Ha');
+await h.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length === 2, null, { timeout: 60000 }).catch(() => {}); // both locked in, on the host's side, before Start
 await h.locator('button[data-phc-start]').click();
 await campStart(gu, { weapon: GUN }); // rules 1.51, 1.52: the guest's loadout, its starting boon, Ready
-await until(h, () => [...document.querySelectorAll('[data-phc-party]')].some((e) => e.getAttribute('data-phc-ready') === '1'), null, 15000).catch(() => false);
-ok('two browsers at the camp: the guest\'s Ready shows on the host\'s screen live, the map still waits for the host', (await h.locator('[data-phc-party][data-phc-ready="1"]').count()) === 1 && (await h.evaluate(() => window.__phc.getState().game.run.state)) === 'loadout');
+await until(h, () => [...document.querySelectorAll('[data-phc-member]')].some((e) => e.getAttribute('data-phc-ready') === '1'), null, 15000).catch(() => false);
+ok('two browsers at the camp: the guest\'s Ready shows on the host\'s squad panel live, the map still waits for the host', (await h.locator('[data-phc-member][data-phc-ready="1"]').count()) === 1 && (await h.evaluate(() => window.__phc.getState().game.run.state)) === 'loadout');
 await h.locator('[data-phc-camp-close]').click(); // the host starts for everyone: its own untouched loadout is the Recommended one, with the first card
 await until(gu, () => !!document.querySelector('[data-phc-run-screen]'), null, 30000).catch(() => false);
 const HG = () => h.evaluate(() => window.__phc.getState().game), GG = () => gu.evaluate(() => window.__phc.getState().game);
@@ -598,15 +732,16 @@ const way = (() => { const back = (id) => { const n = byId[id]; if (n.depth === 
 for (let i = 0; i < 80; i++) {
   hr = (await HG()).run; if (hr.state === 'shop' || hr.state === 'over') break;
   let e = null;
-  if (hr.state === 'map') { const next = way[hr.path.length]; e = await actOn(h, { type: 'run/move', node: next }); if (!e) { await settle(h, 150); e = await actOn(gu, { type: 'run/move', node: next }); } }
+  // the guest's move only where the way forks (on a lane with one way forward the host's click walks the squad on)
+  if (hr.state === 'map') { const next = way[hr.path.length], at = hr.nodes.find((n) => n.id === hr.at), forks = !at || at.links.length >= 2; e = await actOn(h, { type: 'run/move', node: next }); if (!e && forks) { await settle(h, 150); e = await actOn(gu, { type: 'run/move', node: next }); } }
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
-  else if (hr.state === 'reward') { for (const id of Object.keys(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
+  else if (hr.state === 'reward') { for (const [id, o] of Object.entries(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('C: walked to the shop: ' + e, false); break; }
   await settle(h, 120);
 }
 await h.evaluate(() => window.__phc.go('run')).catch(() => {}); await gu.evaluate(() => window.__phc.go('run')).catch(() => {});
-await h.waitForSelector('[data-phc-fullscreen]', { timeout: 60000 }); await gu.waitForSelector('[data-phc-fullscreen]', { timeout: 60000 });
-ok('C: both browsers stand in the shop, full screen (node ' + shopN.id + ')', (await HG()).run.state === 'shop');
+await h.waitForSelector('[data-phc-place-frame]', { timeout: 60000 }); await gu.waitForSelector('[data-phc-place-frame]', { timeout: 60000 });
+ok('C: both browsers stand in the shop (node ' + shopN.id + ')', (await HG()).run.state === 'shop');
 // a graded weapon with a mod in Kade's pack (a test hand-off: the host's state, as the purse above)
 let hg = await HG(); const kade = Object.values(hg.characters).find((c) => c.owner === hg.hostId), ha = Object.values(hg.characters).find((c) => c.id !== kade.id);
 await h.evaluate(([cid, gun]) => { const c = window.__phc.getState().game.characters[cid]; c.pack = [...(c.pack || []), { id: gun, weapon: gun, name: 'Kade\'s old rifle', qty: 1, kind: 'weapon', rarity: 'fine', mods: ['mod_red_dot'] }]; c.credits += 400; }, [kade.id, kade.weapon]);
@@ -621,7 +756,8 @@ const n = Number((await h.locator('[data-phc-give-n]').textContent()).replace(/\
 ok('C: the button reads what it does ("' + (await h.locator('[data-phc-give-go]').textContent()) + '")', new RegExp('^Give ' + n + ' credits to Ha$').test(await h.locator('[data-phc-give-go]').textContent()));
 await h.screenshot({ path: OUT + 'survival-shop-give-1280.png' });
 await h.locator('[data-phc-give-go]').click();
-const toastC = await until(gu, () => window.__phc.getState().toast?.text || null, null, 15000).catch(() => '');
+const toastC = await until(gu, () => { const t = window.__phc.getState().toast?.text || ''; return /gives Ha \d+ credits/.test(t) ? t : null; }, null, 15000).catch(() => ''); // the give's own toast
+await gu.waitForFunction(([cid, want]) => window.__phc.getState().game.characters[cid].credits === want, [ha.id, haC0 + n], { timeout: 15000 }).catch(() => {}); // and the purse at its new number
 ok('C: the guest sees the credits arrive: a toast ("' + toastC + '") and the purse (' + haC0 + ' → ' + (await GG()).characters[ha.id].credits + ')', /gives Ha \d+ credits/.test(toastC) && (await GG()).characters[ha.id].credits === haC0 + n);
 const idx = (await HG()).characters[kade.id].pack.findIndex((x) => x.name === 'Kade\'s old rifle');
 await h.locator('[data-phc-give-row="pack:' + idx + '"]').click();
@@ -631,9 +767,9 @@ const got = ((await GG()).characters[ha.id].pack || []).find((x) => x.name === '
 ok('C: the graded weapon arrives whole on the guest\'s side (Fine, its mod, its own pack line)', !!got && got.rarity === 'fine' && JSON.stringify(got.mods) === '["mod_red_dot"]' && got.qty === 1);
 ok('C: both browsers\' visit logs say who gave what', /gives Ha/.test(await gu.locator('[data-phc-visit-log]').textContent()) && /gives Ha/.test(await h.locator('[data-phc-visit-log]').textContent()));
 await h.setViewportSize({ width: 1920, height: 1080 }); await settle(h, 600); await h.screenshot({ path: OUT + 'survival-shop-give-1920.png' }); await h.setViewportSize({ width: 1280, height: 720 });
-await gu.locator('[data-phc-leave]').click();
+await gu.locator('[data-phc-phase="leave"]').click();
 await h.waitForFunction((pid) => !!window.__phc.getState().game.run.ready?.[pid], (await GG()).players.find((x) => x.name === 'Mai').id, { timeout: 30000 }).catch(() => {});
-ok('C: the guest marks Ready to leave; the host sees READY and the shop stays open', (await HG()).run.state === 'shop' && /READY/.test(await h.locator('[data-phc-party][data-phc-ready="1"]').first().textContent().catch(() => '')));
+ok('C: the guest marks Ready to leave; the host sees READY and the shop stays open', (await HG()).run.state === 'shop' && /READY/.test(await h.locator('[data-phc-member][data-phc-ready="1"]').first().textContent().catch(() => '')));
 await h.locator('[data-phc-close]').click();
 await gu.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }).catch(() => {});
 ok('C: the host closes the shop: both browsers are back on the path map', (await HG()).run.state === 'map' && await gu.locator('[data-phc-pathmap]').count() === 1 && await h.locator('[data-phc-pathmap]').count() === 1);
@@ -648,7 +784,7 @@ for (let i = 0; i < 80; i++) {
   if (hr.state === 'map') e = await actOn(h, { type: 'run/move', node: nexts[0] });
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
   else if (hr.state === 'shop') { e = await actOn(h, { type: 'run/leave', close: true }); }
-  else if (hr.state === 'reward') { for (const id of Object.keys(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
+  else if (hr.state === 'reward') { for (const [id, o] of Object.entries(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('C2: walked on to a fork: ' + e, false); break; }
   await settle(h, 120);
 }
@@ -659,8 +795,8 @@ if (tA && tB) {
   // each browser on its path map (a place still open on a screen is walked out of, as the stage 2 walk does)
   for (const x of [h, gu]) {
     if (!(await x.locator('[data-phc-pathmap]').count())) await x.evaluate(() => window.__phc.go('run')).catch(() => {});
-    await x.waitForSelector('[data-phc-pathmap], [data-phc-place], [data-phc-fullscreen]', { timeout: 30000, state: 'attached' });
-    if (!(await x.locator('[data-phc-pathmap]').count()) && await x.locator('[data-phc-leave]').count()) await x.locator('[data-phc-leave]').first().click();
+    await x.waitForSelector('[data-phc-pathmap], [data-phc-place], [data-phc-place-frame]', { timeout: 30000, state: 'attached' });
+    if (!(await x.locator('[data-phc-pathmap]').count()) && await x.locator('[data-phc-phase="leave"]').count()) await x.locator('[data-phc-phase="leave"]').first().click();
     await x.waitForSelector('[data-phc-pathmap]', { timeout: 30000 });
   }
   await h.locator('[data-phc-node="' + tA + '"]').click();
@@ -669,6 +805,7 @@ if (tA && tB) {
   await h.screenshot({ path: OUT + 'survival-lean-1280.png' });
   await gu.locator('[data-phc-node="' + tB + '"]').click();
   await h.waitForFunction((id) => window.__phc.getState().game.run.at !== id, forkN.id, { timeout: 30000 }).catch(() => {});
+  await gu.waitForFunction((id) => window.__phc.getState().game.run.at === id, tA, { timeout: 30000 }).catch(() => {}); // the guest's copy at the target too
   ok('C2: one mark each is a tie, and it goes to the host\'s trail (' + tA + ', not ' + tB + ')', (await HG()).run.at === tA && (await GG()).run.at === tA);
 }
 ok('C: no page errors (' + [...h.errors, ...gu.errors].slice(0, 3).join(' | ') + ')', !h.errors.length && !gu.errors.length);
@@ -688,14 +825,14 @@ await d.locator('button[data-phc-start]').click();
 await campStart(d, { weapon: GUN }); // rules 1.51, 1.52: the camp's one flow
 await d.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 const dcid = Object.keys((await DG()).characters)[0];
-/** Walk by the engine's actions until `stop` says so (fights skipped, picks as credits, shops left, the first trail). */
+/** Walk by the engine's actions until `stop` says so (fights skipped, picks the materials, shops left, the first trail). */
 const walkD = async (stop, why) => { for (let i = 0; i < 400; i++) {
   const dr = (await DG()).run; if (!dr || dr.state === 'over' || await stop(dr)) return true;
   let e = null;
   if (dr.state === 'map') { const here = dr.nodes.find((n) => n.id === dr.at), nx = here ? here.links.filter((l) => dr.nodes.find((n) => n.id === l)?.kind !== 'vault_guard') : dr.nodes.filter((n) => n.depth === 1).map((n) => n.id); e = await dAct({ type: 'run/move', node: nx[0] }); }
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
-  else if (dr.state === 'reward') { for (const id of Object.keys(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
+  else if (dr.state === 'reward') { for (const [id, o] of Object.entries(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
   else if (dr.state === 'boon') e = await dAct({ type: 'run/boon', charId: dcid, choice: 0 });
   else if (dr.state === 'tile') e = await dAct({ type: 'run/tile', tile: dr.tiles[0].id });
   if (e) { ok('D: ' + why + ': ' + e, false); return false; }
@@ -730,7 +867,7 @@ for (let i = 0; i < 80; i++) {
   if (dr.state === 'map') e = await dAct({ type: 'run/move', node: toForge[dr.path.filter((x) => x.startsWith('s3.')).length] });
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
-  else if (dr.state === 'reward') { for (const id of Object.keys(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
+  else if (dr.state === 'reward') { for (const [id, o] of Object.entries(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('D: the way to the Forge: ' + e, false); break; }
 }
 await d.evaluate(() => window.__phc.go('run')).catch(() => {});

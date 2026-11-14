@@ -76,6 +76,28 @@ Every rule-bearing item carries both:
 - Special ammo (rules.json `weapons_rules.ammo_types`): items with `ammo_type` (`ammo_armor_piercing` etc.) are loaded out of
   combat; a pack magazine entry may carry `magTypes` (one per spare magazine, null for standard).
 
+## Items, making and loot (rules 1.54)
+- `pack_kind` (items.json, optional): the kind of pack line the item makes (`weapon`, `ammo`, `tool`, `focus`, `food`,
+  `med`, `loot`, `plot`); read by `packKindOf` wherever an item goes into a pack (the kits, loot, the Proving Ground's
+  give). Without it each place keeps its default by category. Never pick a kind by an item's id in code.
+- `plural` (items.json, optional): the name for more than one, where it is not the name ("Casings"); the words of a
+  refusal read it.
+- `stock: false` (items.json): the item has no price (`priceOf`), so no counter, rolled stock or sale holds it (the
+  armourer's chit). Leon, 14 Nov 2026: every item a trait grants (`start_item`, the Musek Blestor) is `stock: false`
+  unless it is `food`; the validator checks the `start_item` ones.
+- `recipes.json`: one row a recipe, `{id, name, needs: [{item, n}], tool: {item} or {focus: "any"}, does, gives: [{item
+  or rounds:<calibre>, n}], where: "between_fights", provisional}`, made by the one converter (`recipes.ts`, the reducer's
+  `gear/make {charId, recipe, times}`). `does` is the end of the no-tool refusal ("to make rounds"). The validator holds
+  every row's needs worth what it gives at `priceOf`; a new recipe is a row, never code.
+- `loot_tables.json qty_max`: the most of one thing a loot entry gives (the pack's quantity cap, 20). A grant that is
+  not loot (a purchase, the Materials card) goes into the pack whole.
+- A foe's `drops` may carry `gear: false` (the loot door's flag): its weapon, magazines, loose rounds and a Boss's
+  notable thing do not drop. Every foe a Survival fight makes carries it, with its kind's table and the materials of
+  `survival.json drops` (`gun`; `by_table`, by the foe's loot table) given.
+- `survival.json rewards.offer` is by where a pick is made (`fight`, `elite` (the gate too), `boss`, `vault_guard`,
+  `vault`, `crate`); `rewards.materials` the Materials card (`at`: where it is offered; `items`: each at ceil(C /
+  `per_credits`) for the node's credits C).
+
 ## Shared subsystems (rules 1.3)
 - `start_item` (traits): an items.json or weapons.json id; an item with `category: "armour"` and a `slot` is worn at creation.
 - `enemies.json` `companions`: stat blocks for companions (`id`, `kind`, `hp`, `defense`, `attack_bonus`, `armour`,

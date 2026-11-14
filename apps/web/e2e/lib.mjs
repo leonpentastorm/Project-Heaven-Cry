@@ -39,9 +39,36 @@ export async function player(browser, name, opts = {}) {
   // (the title's menu or its "press any key", a panel with a box to type in, or any screen that is not the title)
   const ready = () => page.waitForFunction(() => !!document.querySelector('nav[aria-label="Main menu"], .phc-press, #root input, #root textarea') || !['home', undefined].includes(window.__phc?.getState?.().screen), null, { timeout: 120000 }).catch(() => {});
   const goto = page.goto.bind(page), reload = page.reload.bind(page);
-  page.goto = async (url, o) => { const r = await goto(url, o); await ready(); return r; };
+  page.goto = async (url, o) => { const r = await goto(url, { timeout: 120000, ...(o || {}) }); await ready(); return r; }; // (two minutes: a busy machine)
   page.reload = async (o) => { const r = await reload(o); await ready(); return r; };
   return page;
+}
+/** The standing rule of rules 1.54 item 11 (CLAUDE.md "Every mode keeps the side panels"; ui-screens.md "The three
+ *  columns"): at 1280 x 720 the left panel (the character sheet) and the right panel are both on screen, uncovered, and
+ *  at least 240 px wide. Sets the viewport to 1280 x 720 for the look (and puts it back), prints an ok / FAIL line as the
+ *  suites do and fails the suite on a FAIL: it is a check, never skipped. Returns whether it held. */
+export async function sidePanels(page, where = '') {
+  const was = page.viewportSize(), W = 1280, H = 720;
+  if (!was || was.width !== W || was.height !== H) { await page.setViewportSize({ width: W, height: H }); await settle(page, 400); }
+  const bad = await page.evaluate(() => {
+    const out = [];
+    for (const [name, sel] of [['the left sheet', 'aside[aria-label="Character sheet"]'], ['the right panel', '[data-story-zone]']]) {
+      const e = document.querySelector(sel); if (!e) { out.push(name + ' is missing'); continue; }
+      const r = e.getBoundingClientRect(), cs = getComputedStyle(e), w = Math.max(0, Math.min(r.right, innerWidth) - Math.max(r.left, 0));
+      if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) out.push(name + ' is hidden');
+      if (w < 240) out.push(name + ' is ' + Math.round(w) + ' px wide on screen');
+      if (Math.min(r.bottom, innerHeight) - Math.max(r.top, 0) < 200) out.push(name + ' is not on screen');
+      // nothing lies over it: what is drawn at three points down its middle belongs to it
+      for (const f of [0.25, 0.5, 0.75]) { const x = r.left + Math.min(r.width / 2, 120), y = Math.max(r.top, 0) + (Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) * f, t = document.elementFromPoint(x, y);
+        if (t && !e.contains(t)) { out.push(name + ' is covered by ' + (t.closest('[data-phc-place-frame],[data-phc-camp],[data-phc-run-screen]') ? 'the middle' : t.tagName.toLowerCase())); break; } }
+    }
+    return out;
+  });
+  if (!was || was.width !== W || was.height !== H) { await page.setViewportSize(was); await settle(page, 300); }
+  const good = !bad.length;
+  console.log((good ? 'ok   ' : 'FAIL ') + 'rules 1.54: both side panels on screen at 1280 x 720, each at least 240 px wide' + (where ? ' (' + where + ')' : '') + (good ? '' : ': ' + bad.join('; ')));
+  if (!good) process.exitCode = 1;
+  return good;
 }
 /** Host a room from the title screen: NEW GAME, then your name, then Open a room. */
 export async function hostAs(page, name) {

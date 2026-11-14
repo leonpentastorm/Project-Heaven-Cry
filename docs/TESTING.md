@@ -74,6 +74,13 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 
 ## The tools
 
+- **Watching builders** (`tools/agent_watch.py`, standard library, Windows and Linux; the old `agent_watch.sh` stays for the
+  Linux container): `python3 tools/agent_watch.py --once` prints one row per git worktree (branch, age of newest commit,
+  age of newest written file, uncommitted changes) and exits 1 on `STALLED` (no commit or file for `--stall-min` 20),
+  `UNSAVED` (changes older than `--unsaved-min` 15) or free disk under `--min-free-gb` 10. `--push-wip` also pushes each
+  branch that is ahead to `origin wip/<branch>` (fast-forward only; never develop or main; a diverged wip branch is
+  reported, not forced). `--every 300 --push-wip` loops and logs one line per pass to `.check/agent-watch.log`
+  (add `--exit-on-alarm` to stop at the first alarm). It never deletes, commits or edits anything.
 - `tools/check.py` (`npm run check`): the no-browser gate. Logs of failures in `.check/`.
 - The truth guards, all inside `npm run check` (how they work and how to extend them:
   `docs/design/handoffs/text-number-truth.md`): `tools/text_numbers.py` (a number in a data text must be a number in the

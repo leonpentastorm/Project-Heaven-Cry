@@ -17,7 +17,7 @@ import { OBJ } from '../objects';
 import { CASTER } from '../ai-sigil';
 import { HEART_CASTER } from '../ai-soul';
 import { rollTable } from '../loot';
-import { type Rng, rngFor, die, next } from '../rng';
+import { type Rng, rngFor, die, next, seedFrom } from '../rng';
 
 const SV: any = svJ;
 /** Where a slot's foes start (spec section 3.2): the far edge, nearer, between, behind the line, the middle of the far
@@ -34,7 +34,7 @@ export interface EncounterTemplate { id: string; name: string; nodes: string[]; 
  * none), its props by object kind (a count range each), and its kit (the art folder `art/sprites/kit/<kit>`). */
 export interface SettingLayout { stamps: string[]; cover: { half: string[]; full: string[] }; hazard: { kind: string; chance: number } | null; props: Record<string, [number, number]>; kit: string }
 /** A setting, one tile of the world (spec section 3.3, `survival.json settings`). */
-export interface SettingDef { id: string; name: string; kinds: Record<string, number>; boss: { name: string; kind: string; weapon: string; casters: string[]; portrait: string | null }; /** rules 1.48: the vault's named guard (an Elite) */ vault_guard?: { name: string; kind: string; weapon: string }; pool: string; pools?: Record<string, Record<string, string[]>>; layout: SettingLayout }
+export interface SettingDef { id: string; name: string; kinds: Record<string, number>; boss: { name: string; kind: string; weapon: string; casters: string[]; portrait: string | null }; /** rules 1.48: the vault's named guard (an Elite) */ vault_guard?: { name: string; kind: string; weapon: string; portrait?: string }; pool: string; pools?: Record<string, Record<string, string[]>>; layout: SettingLayout }
 /** The kind of fight a node holds (the gate is an Elite node every path passes; rules 1.48: the vault's guard). */
 export type FightKind = 'fight' | 'elite' | 'gate' | 'boss' | 'vault_guard';
 /** Rules 1.48: the vault (survival.json `vault`): its guard's budget is an Elite fight's x `guard_factor` (bulk and
@@ -95,7 +95,8 @@ export function budgetFor(n: number, kind: FightKind, depth: number, stage: numb
 }
 
 /** One foe of a composed fight: what `startCombat` takes, and what it cost and where it starts. */
-export interface EncounterFoe extends FoeSpec { spawn: Spawn; cost: { bulk: number; pressure: number } }
+export interface EncounterFoe extends FoeSpec { spawn: Spawn; cost: { bulk: number; pressure: number };
+  /** Its face, an art asset name (`survival.json foe_faces`); runFight puts it on the unit. */ portrait?: string }
 /** A composed fight (rule 15's output), with its budget asked and spent (rule 35 reports it). */
 export interface Encounter {
   template: string; name: string; text: string; kind: string; level: number; fightKind: FightKind;
@@ -185,6 +186,7 @@ export function composeEncounter(inp: EncounterIn): Encounter {
   const scaleHp = b.scale !== 1 ? b.scale : b.f.spent.bulk > 0 && b.f.spent.bulk < lo && b.err < 1e6 ? target.bulk / b.f.spent.bulk : 1;
   const foes = b.f.picks.map((p) => armed(p, rng, setting, fightKind, n, scaleHp, big(p.tier) ? b.dmg : 1));
   number(foes);
+  faces(foes, b.f.picks, setting, inp.seed + '#' + inp.node.id);
   const spent = { bulk: b.f.spent.bulk * scaleHp, pressure: b.f.spent.pressure };
   const map = encounterMap(inp.node.id, n + foes.length, foes, rngFor(inp.seed, inp.node.id + '#map'), { setting: setting.id, template: b.t.id });
   return { template: b.t.id, name: b.t.name, text: b.t.text, kind: fightKind, level: L, fightKind: kind, target, spent, scaleHp, ok: ok || scaleHp !== 1, foes, map };
@@ -210,6 +212,24 @@ function armed(p: Pick, rng: Rng, setting: SettingDef, fightKind: string, n: num
   const hp = sh.hp * scaleHp, dmg = sh.damage * scaleDmg;
   return { name, tier: p.tier, weapon, level: p.level, kind: kind === 'celestial' ? 'human' : kind, ...(caster ? { caster } : {}), ...(s.tags?.length ? { tags: [...s.tags] } : {}), ...(s.hidden ? { hidden: true } : {}),
     ...(hp !== 1 || dmg !== 1 ? { scale: { ...(hp !== 1 ? { hp } : {}), ...(dmg !== 1 ? { damage: dmg } : {}) } } : {}), spawn: s.spawn || 'far', cost: p.cost };
+}
+/** The faces of a fight's foes (`survival.json foe_faces`): a caster's, the setting's Boss's or vault guard's (its data's
+ * `portrait`), else its kind and tier's. A tier with variants takes one by the fight's seed and node and the foe's place
+ * among the foes of that face: no die is rolled, two of a face differ, and one foe keeps its face wherever it is shown. */
+const FACES: { asset: string; kind: string; caster: string; variants: Record<string, string[]>; words: Record<string, string> } = SV.foe_faces;
+const fillIn = (pattern: string, v: Record<string, string>) => pattern.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? '');
+function faces(foes: EncounterFoe[], picks: Pick[], setting: SettingDef, key: string) {
+  if (!FACES) return;
+  const seen: Record<string, number> = {};
+  foes.forEach((f, i) => {
+    const s = picks[i].slot, own = s.boss ? setting.boss.portrait : s.guard ? setting.vault_guard?.portrait : null;
+    const cw = f.caster ? FACES.words[f.caster] : undefined, kw = FACES.words[f.kind || 'human'];
+    const ids = cw ? [fillIn(FACES.caster, { caster: cw })] : own ? [own]
+      : kw ? (FACES.variants[f.tier] || ['']).map((variant) => fillIn(FACES.kind, { kind: kw, tier: f.tier, variant })) : [];
+    if (!ids.length) return;
+    const nth = (seen[ids[0]] = (seen[ids[0]] ?? -1) + 1);
+    f.portrait = fillIn(FACES.asset, { id: ids[((seedFrom(key + '#' + ids[0]) >>> 0) + nth) % ids.length] });
+  });
 }
 /** Two foes of one name are numbered (Trooper 1, Trooper 2). */
 function number(foes: EncounterFoe[]) {

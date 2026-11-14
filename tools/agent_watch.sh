@@ -1,4 +1,5 @@
 #!/bin/bash
+# Cross-platform Python port: tools/agent_watch.py (use that on Windows; this script stays for the Linux container).
 # Usage: tools/agent_watch.sh  (run it in the background; STALL=<minutes> to change the limit; it runs just under 2 h, then says to re-arm)
 # Classes 3.0 watchdog: every 5 min push each unmerged worktree branch to wip/ (commits only), and EXIT with a
 # message (which wakes the lead) when a worktree has shown no sign of life for STALL minutes, or disk is low.

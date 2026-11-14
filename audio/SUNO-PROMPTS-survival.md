@@ -9,6 +9,10 @@ How to use: set **Instrumental** on. Paste the **Style** line into "Style of mus
 the **Structure** line into the lyrics box to shape it. Generate 2 to 4 takes, keep the one whose first and last
 bars match, and trim to a clean loop. Target lengths are in each row. File names are the ids the game will look for.
 
+**Tracks delivered (14 Nov 2026):** `surv-camp`, `surv-map`, `surv-map-ahoc`, `surv-map-city`, `surv-map-field`, `surv-map-works`, `surv-map-shrine`, `surv-map-rim`, `surv-boon`, `surv-shop`, `surv-forge`, `surv-rest`. They are in the game's track list, files and credits (`audio/README.md`); the game does not play them yet (no Survival music mechanism). A test checks this line against the track list.
+
+**Still to make:** every other id in the tables below: `surv-next-tile`, both summaries, all of section C (fights, Elite, vault guard, the four Bosses, the two stings), `surv-training`, `surv-shrine`, `surv-crossroads`, `surv-vault-open`. Until they exist those places use the fallbacks named in the notes at the end.
+
 ## A. The run's frame
 
 | Id | Use | Length | Style | Structure |

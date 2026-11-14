@@ -10,7 +10,7 @@ import { type GearPreview, gearPreview, rarityWord, rarityMarks } from '../gearp
 import { SETTING } from './encounter';
 import { relicRow } from './power';
 import { runSetting, type RunState } from './state';
-import { type ServiceCard, type ShopState, FACES, SHOP_DATA, counterLines, linePrice, buyProblem, sellProblem, sellValue, shopOf, shopServices, restockRoom, faceTabLines } from './shop';
+import { type ServiceCard, type ShopState, FACES, SHOP_DATA, counterLines, linePrice, buyProblem, sellProblem, sellValue, shopOf, shopServices, restockRoom, faceTabLines, lineGoods } from './shop';
 
 /** One card on a shelf: what it is, its grade, what it is for (the door's attribute for its ink), its numbers (the gear
  * preview), the price of one purchase and how many that gives, and the reason it can't be bought now (null: it can). */
@@ -60,6 +60,16 @@ export function meBlock(c: Character): MeV {
     worn: Object.entries(c.worn || {}).map(([slot, id]) => ({ slot: cap(slot.replace(/_/g, ' ')), name: (ITEM[id] as any)?.name || id })), armourClass: c.armourClass || 0,
     pack: packOf(c).map((it, i) => ({ label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), kg: Math.round(carriedKg({ ...c, pack: [it], stims: 0, essence: 0, carried: [] } as Character).pack * 100) / 100, wear: wearView(c, i) })),
     kg: kg.total, limit: carryLimit(c), handWear: wearView(c, 'main'), offWear: wearView(c, 'off') };
+}
+/** Rules 1.54 item 4: the Materials card of a character's open pick, as the reward screen draws it: each material (its
+ * id for the icon, its name, how many, the pack line's words), what the whole card sells for at the shop's rate, and the
+ * action that takes it. Null when the pick holds no Materials card (the vault's chest, a sealed crate, an old offer). */
+export interface MaterialsCardV { charId: string; lines: { item: string; name: string; n: number; label: string }[]; sells: number; action: { type: 'run/pick'; charId: string; choice: 'materials' } }
+export function materialsView(g: { run?: RunState | null }, charId: string): MaterialsCardV | null {
+  const o = g.run?.offers?.[charId]; if (!o?.materials?.length) return null;
+  const goods = o.materials.map((m) => ({ m, it: lineGoods(m.item, m.n) }));
+  return { charId, lines: goods.map(({ m, it }) => ({ item: m.item, name: (ITEM[m.item] as any)?.name || m.item, n: m.n, label: it.map((x) => itemLabel(x)).join(', ') })),
+    sells: goods.reduce((t, { it }) => t + it.reduce((u, x) => u + (sellValue(x) || 0), 0), 0), action: { type: 'run/pick', charId, choice: 'materials' } };
 }
 /** The shop's view for player `me` (their own character, or `charId` when they have several); null when no shop is open. */
 export function shopView(g: G, me: string, charId?: string | null): ShopViewV | null {

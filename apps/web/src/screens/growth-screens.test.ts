@@ -146,3 +146,37 @@ describe('a sigil mark on the area map (rules 1.10, The Magic panel rule 4)', ()
     expect(markSvg('ward', { damage: 'broken' }).match(/stroke="#05070B"/g)!.length).toBeGreaterThan(1);
   });
 });
+
+describe('the character sheet\'s skill road map', () => {
+  it('lights the row of the character\'s own points (the "?" pop-up reads them)', () => {
+    const { c, L } = start();
+    c().skills.brain_power = 3; L.setState({ epccg: 'brain_power' });
+    const ep = L.renderVals().ep;
+    expect(ep.ptsLine).toMatch(/^You have 3 points in /);
+    expect(ep.steps.find((s: any) => s.n === 3).label).toMatch(/yours now$/);
+    expect(ep.steps.filter((s: any) => /yours$/.test(s.label)).map((s: any) => s.n)).toEqual([1, 2]);
+  });
+});
+
+describe('the pack\'s Essence of Experience line', () => {
+  it('says what it sells for by the engine\'s sell rule (a stock: false item does not sell)', async () => {
+    const { sellValue } = await import('@engine');
+    const { c, L } = start(); c().essence = 2;
+    const row = L.renderVals().rig.find((r: any) => /^Essence of Experience/.test(r.name));
+    const v = sellValue({ id: 'eoe', item: 'essence_of_experience', qty: 1 } as any, 1);
+    expect(row.note).toBe(v == null ? 'Can\'t be sold' : 'Sells for ' + v);
+    expect(row.note).not.toMatch(/300/);
+  });
+});
+
+describe('the right panel\'s squad module (the registry, rules 1.54 item 11)', () => {
+  it('the run\'s player card where the mode\'s list holds the run module, the story\'s speaking order else', async () => {
+    const { panelsOf } = await import('../game/panels');
+    const { L } = start();
+    const story = L.renderVals().rp; expect(story.runSquad).toBe(false); expect(story.storySquad).toBe(true);
+    const run = L.panelVals(4, panelsOf({ settings: { play: 'survival' }, run: { state: 'map' } } as any));
+    expect(run.runSquad).toBe(true); expect(run.storySquad).toBe(false);
+    const none = L.panelVals(4, { key: 'x', list: ['mana'], hides: [] });
+    expect(none.runSquad || none.storySquad).toBe(false);
+  });
+});

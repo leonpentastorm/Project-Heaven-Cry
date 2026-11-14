@@ -1,7 +1,7 @@
 // Character creation (EPCCG), ported from design/canvas-build/create.logic.js. Same rules code as the prototype;
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
-import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIVES as ATTR_NEXT, SLOT_WORD, SLOT_ORDER, perPoint } from './shared';
+import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIVES as ATTR_NEXT, SLOT_WORD, SLOT_ORDER, headLine, nextLine } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
 import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL } from '@engine';
 import { feelingInk, feelingIconSrc, iconStyle, feelingTip } from '../game/feelingsView';
@@ -23,7 +23,7 @@ import { patronPortrait } from '../game/faithArt';
 const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var(--h,auto);'
   + 'grid-template-columns:repeat(auto-fill,minmax(min(100%,max(var(--min,280px),calc((100% - (var(--n,3) - 1) * var(--gap,12px)) / var(--n,3)))),1fr))}'
   + '.phc-cc-grid>*{box-sizing:border-box;min-width:0;min-height:0;height:100%;overflow:hidden}'
-  + '.phc-cc-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}'
+  + '.phc-cc-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}'
   + '.phc-cc-scroll::-webkit-scrollbar{width:6px}.phc-cc-scroll::-webkit-scrollbar-thumb{background:#2E3A50;border-radius:3px}'
   // Back and Next stay on screen at the foot of the page on every step (an outside review of 0.25.0: on a 720 px screen
   // they were thousands of pixels down the Archetype step); a fade above them says the page goes on behind.
@@ -51,7 +51,14 @@ const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var
   + '.phc-pt-val{width:26px;text-align:center;font-size:19px;font-weight:700;line-height:1}'
   + '.phc-pt-side{flex:none;width:26px;height:26px}'
   + '.phc-pt-step:focus-visible,.phc-pt-btn:focus-visible,.phc-pt-side:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}'
-  + '.phc-pt-line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:30px;font-size:11.5px;line-height:15px;color:#A3AEC2}'
+  + '.phc-pt-line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:36px;font-size:13px;line-height:18px;color:#C9D3E3}'
+  + '.phc-sk{display:flex;gap:10px;align-items:flex-start;padding:7px 8px;border-radius:10px;background:#0C1018;border:1px solid #232D3F}'
+  + '.phc-sk-face{flex:none;width:48px;height:60px;padding:0;border:1px solid #2E3A50;border-radius:7px;overflow:hidden;background:#000;cursor:pointer}'
+  + '.phc-sk-face img{display:block;width:100%;height:100%;object-fit:cover}'
+  + '.phc-sk-face:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}'
+  + '.phc-sk-body{display:flex;flex-direction:column;gap:3px;flex:1 1 0;min-width:0}'
+  + '.phc-sk-mod{flex:none;padding:1px 7px;border-radius:999px;border:1px solid #3B475D;font-size:11px;font-weight:700;color:#E7EBF3;white-space:nowrap}'
+  + '.phc-sk-tags{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;white-space:nowrap}'
   + '.phc-pt-bar{position:sticky;top:0;z-index:5}'
   + '@media (max-width:1180px){.phc-pt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.phc-pt-fam:nth-child(3){grid-column:1/-1}.phc-pt-fam:nth-child(3) .phc-pt-attrs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}'
   + '@media (max-width:700px){.phc-pt-grid{grid-template-columns:minmax(0,1fr)}.phc-pt-fam:nth-child(3) .phc-pt-attrs{display:flex}.phc-pt-pips{display:none}.phc-pt-bar{position:static}.phc-pt-line{height:auto;-webkit-line-clamp:4}}'
@@ -201,7 +208,6 @@ export function _pointsTodo(d) {
   if (place.length) out.push('Still to place: ' + place.join(' and ') + '.');
   return out.join(' ');
 }
-const PERK_AT = [3, 5, 7];
 const HIST_MAX = 60;
 
 const btn = (on, color) => 'min-height: 40px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; ' +
@@ -392,11 +398,13 @@ export class CreateLogic extends DCLogic {
           railStyle: 'display: flex; flex-direction: column; gap: 5px; margin-left: 4px; padding-left: 9px; border-left: 2px solid ' + a.ink,
           cards: skillsUnder(a.id).map((s) => {
             const p = S.skills[s.id] || 0, m = checkMod(s.id, p), m1 = checkMod(s.id, p + 1), up2 = _setSkill(now, s.id, p + 1, extra), dn2 = _setSkill(now, s.id, p - 1, extra);
-            const give = perPoint(s.id), [tag, slot] = SLOT_WORD[s.slot], lifts = up2.ok && p + 1 > v, perk = PERK_AT.includes(p + 1) ? ' A perk at ' + (p + 1) + '.' : '';
+            const give = nextLine(s.id, p), [tag, slot] = SLOT_WORD[s.slot], lifts = up2.ok && p + 1 > v;
             const inc = () => this.pointsDo((st, x) => _setSkill(st, s.id, (st.skills[s.id] || 0) + 1, x), s.id), dec = () => this.pointsDo((st, x) => _setSkill(st, s.id, (st.skills[s.id] || 0) - 1, x), s.id);
             return { ...s, key: s.id, pts: p, tag, need: lifts ? 'TAKES ' + a.name.toUpperCase() + ' TO ' + (p + 1) : '', hasNeed: lifts,
-              line: p < ATTR_CAP ? 'Roll ' + fmt(m) + ', next ' + fmt(m1) + '. Next point: ' + give + perk : 'Roll ' + fmt(m) + '. At ' + ATTR_CAP + ', the most at creation. Each point: ' + give,
-              lineTitle: s.name + ': ' + s.summary + ' ' + slot + '. Each point: ' + give,
+              // One line: what the next point gives (the road map's step at points + 1; rules 1.54 item 4119).
+              line: p < ATTR_CAP ? 'Next point: ' + give : 'At ' + ATTR_CAP + ', the most at creation.', nextAt: p < ATTR_CAP ? p + 1 : 0,
+              lineTitle: s.name + ': ' + s.summary + ' ' + slot + '. ' + headLine(s.id),
+              modChip: fmt(m), modTitle: 'Roll ' + fmt(m) + (p < ATTR_CAP ? ' now, ' + fmt(m1) + ' with the next point' : ''), face: s.img, open: () => this.setState({ epccg: s.id, hover: s.id }), openLabel: s.name + ': what each point gives (its EPCCG entry)',
               inc, dec, keys: arrows(inc, dec), incOff: up2.ok ? 'false' : 'true', decOff: dn2.ok ? 'false' : 'true',
               incAria: up2.ok ? 'Raise ' + s.name + ' from ' + p + ' to ' + (p + 1) + ' for 1 Skill point' + (lifts ? ' and 1 Attribute point: ' + a.name + ' rises from ' + v + ' to ' + (p + 1) : '') + '. Roll ' + fmt(m1) + '. ' + give : 'Raise ' + s.name + ', now ' + p + '. Not possible: ' + up2.text,
               decAria: dn2.ok ? 'Lower ' + s.name + ' from ' + p + ' to ' + (p - 1) + '. 1 Skill point back.' : 'Lower ' + s.name + ', now ' + p + '. Not possible: ' + dn2.text,
@@ -404,8 +412,8 @@ export class CreateLogic extends DCLogic {
               pips: Array.from({ length: ATTR_CAP }, (_, i) => ({ key: i, style: pip(i < p, i < v, a.ink), title: 'Set ' + s.name + ' to ' + (i + 1) + (i + 1 > v ? ': ' + a.name + ' rises to ' + (i + 1) + ' too' : ''),
                 set: () => this.pointsDo((st, x) => { const cur = st.skills[s.id] || 0; return _setSkill(st, s.id, i + 1 === cur ? i : i + 1, x); }, s.id) })),
               hover: hoverOn(s.id), help: () => this.setState({ epccg: s.id, hover: s.id }), helpStyle: epBtnStyle(a.ink, 'width: 26px; height: 26px; font-size: 13px'),
-              nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (p ? a.ink : '#E7EBF3'), tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
-              style: 'display: flex; flex-direction: column; gap: 2px; padding: 4px 6px 5px 8px; border-radius: 8px; border: 1px solid ' + (S.hover === s.id ? '#5A6781' : 'transparent') + '; background: ' + (S.hover === s.id ? '#161D2B' : 'transparent') };
+              nameStyle: 'font-size: 14px; font-weight: 700; color: ' + a.ink, tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
+              style: S.hover === s.id ? 'border-color: ' + a.ink + '; background: #161D2B' : '' };
           }),
         };
       }),
@@ -426,8 +434,8 @@ export class CreateLogic extends DCLogic {
       resetAll: () => this.pointsDo(() => (der.spent || der.attrSpent ? { ok: true, skills: {}, aSet: {}, applied: null, what: 'everything reset', text: 'Everything reset: all ' + SKILL_PTS + ' Skill points and ' + attrTotal + ' Attribute points are yours to place.' } : no('Nothing is placed yet.'))),
     };
     const hv = SK[S.hover] || D.skills[0], hp = S.skills[hv.id] || 0;
-    const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill'), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: 'roll ' + fmt(checkMod(hv.id, hp)) + (hp === 0 ? ' untrained' : ''), summary: hv.summary, quiet: hv.quiet,
-      slot: SLOT_WORD[hv.slot][1] + '. Each point: ' + perPoint(hv.id),
+    const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill'), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: 'roll ' + fmt(checkMod(hv.id, hp)) + (hp === 0 ? ' untrained' : ''), quiet: hv.quiet,
+      next: hp < ATTR_CAP ? 'Next point (' + (hp + 1) + '): ' + nextLine(hv.id, hp) : 'At ' + ATTR_CAP + ', the most at creation.', key: hv.id,
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
       style: 'display: flex; align-items: center; gap: 14px; min-height: 100px; box-sizing: border-box; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     // Class Roster Revision 3: level 3 offers the class of the highest attribute (every tied one).
@@ -564,7 +572,7 @@ export class CreateLogic extends DCLogic {
       return { key: l.id, name: l.name, total: an + ' ' + l.total, icon: emblemOf(l.id).icon, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core],
         attrStyle: 'font-size: 12px; font-weight: 700; color: ' + ATTR[l.attribute].ink }; });
 
-    return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
+    return { ...epccgVals(this, (id) => S.skills[id] || 0), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left === 0 && statsPlaced ? '✓ EVERY POINT PLACED' : left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'),
       isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isMoves: S.step === 'moves', noMoves: !hasTech && !hasMagic, isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
       ...this.beliefVals(),

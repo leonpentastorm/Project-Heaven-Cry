@@ -12,7 +12,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME } from '../data';
-import { type Character, type PackItem, packOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM } from '../character';
+import { type Character, type PackItem, packOf, packKindOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM } from '../character';
 import { packAdd, intoCounts, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
@@ -68,7 +68,7 @@ const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if 
   const rd = /^rounds:(.+)$/.exec(id); if (rd) return (CALIBRE_NAME[rd[1]] || rd[1]) + ' rounds';
   const mg = /^mag:(.+)$/.exec(id); if (mg) return String((WEAPON[mg[1]] as any)?.name || mg[1]).replace(/ \(.*\)$/, '') + ' magazine';
   return (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id; };
-const focusEntry = (id: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: 'focus' });
+const focusEntry = (id: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) });
 /** What the budget has spent on these picks (the menu's prices x how many). */
 export function loadoutSpent(c: Character, p: LoadoutPick): number {
   const lines = loadoutLines(c); return Object.entries(p.take).reduce((t, [k, q]) => t + (lines.find((l) => l.key === k)?.price || 0) * q, 0);
@@ -215,6 +215,16 @@ export function recommendedPick(c: Character, base: LoadoutPick['base']): Pick<L
   return { weapon: p.weapon, focus: p.focus, take: p.take };
 }
 
+/** Rules 1.51: the loadout, then the starting boon, then Ready: why player `by` can't mark Ready yet (one of their
+ * characters has a starting boon to choose), or null. The one gate: campReady and the camp's view read it. */
+function boonFirst(g: G, by: string): string | null {
+  const r = g.run; if (!r?.loadout) return null;
+  for (const [id, p] of Object.entries(r.loadout)) {
+    const c = g.characters[id]; if (!c || c.owner !== by || p.boon || !startOffer(c, r.seed).length) continue;
+    return 'Choose ' + c.name + '\'s starting boon first.';
+  }
+  return null;
+}
 /** Mark Ready at the camp (`run/ready`), or take the mark back; the host's `close` starts the run for everyone (an
  * untouched loadout takes the Recommended one). Returns whether the camp closed now. */
 export function campReady(g: G, by: string, o: { close?: boolean; undo?: boolean } = {}): { closed: false } | { closed: true; boons: CampBoons } | { no: string } {
@@ -222,10 +232,7 @@ export function campReady(g: G, by: string, o: { close?: boolean; undo?: boolean
   if (!g.players.some((p) => p.id === by)) return { no: 'Only a player in the room marks ready.' };
   if (o.close && by !== g.hostId) return { no: 'Only the host starts the run for everyone: mark Ready.' };
   if (o.undo) { const rest = { ...r.ready }; delete rest[by]; r.ready = rest; return { closed: false }; }
-  if (!o.close) for (const [id, p] of Object.entries(r.loadout)) { // rules 1.51: the loadout, then the starting boon, then Ready
-    const c = g.characters[id]; if (!c || c.owner !== by || p.boon || !startOffer(c, r.seed).length) continue;
-    return { no: 'Choose ' + c.name + '\'s starting boon first.' };
-  }
+  if (!o.close) { const no = boonFirst(g, by); if (no) return { no }; }
   r.ready = { ...r.ready, [by]: true };
   const on = g.players.filter((p) => p.online);
   if (!o.close && on.some((p) => !r.ready[p.id])) return { closed: false };
@@ -268,6 +275,10 @@ export interface LoadoutViewV {
   carrying: CarryRowV[];
   party: { id: string; charName: string; initials: string; color: string; ready: boolean; online: boolean; mine: boolean }[];
   ready: boolean; isHost: boolean; waiting: string[]; seed: string;
+  /** why Ready (run/ready) is refused for this player now, the reducer's own words; null when it isn't (or marked) */
+  readyWhy: string | null;
+  /** one player in the room: Ready starts the run */
+  solo: boolean;
 }
 /** The skills a loadout reads (the weapons' skills, the doors, the armour gate). */
 const GEAR_SKILLS = ['dexterity', 'raw_power', 'brain_power', 'visualization', 'will_power', 'empathy', 'pain_threshold'];
@@ -336,5 +347,6 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
     weaponPick: p.weapon, focusPick: p.focus, shelves, carrying,
     party: g.players.map((pl: any) => ({ id: pl.id, charName: owner(pl.id)?.name || pl.name, initials: pl.initials || '?', color: pl.color || '#A3AEC2', ready: !!r.ready[pl.id], online: pl.online, mine: pl.id === me })),
     ready: !!r.ready[me], isHost: me === g.hostId, waiting: campWaiting(g), seed: r.seed,
+    readyWhy: r.ready[me] ? null : boonFirst(g, me), solo: g.players.length <= 1,
   };
 }
