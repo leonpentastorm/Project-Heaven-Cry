@@ -2695,6 +2695,37 @@ if _sv is not None:
         # Rules 1.46 (build step 4b): every safe node is a full-screen place with a face
         for _nk in ("shop", "forge", "training", "shrine", "rest", "event"):
             if not any(_f.get("node") == _nk for _f in _sv["faces"].get("items") or []): errors.append(f"survival:faces: no face stands at a {_nk!r} node (rules 1.46: every safe node is a full-screen place)")
+    # The faces of Survival's foes (foe_faces; the 14 Nov delivery): every kind a setting fields (and its Boss's and vault
+    # guard's) and every caster has a word, and every face the lookup can give (each tier and variant, each caster, each
+    # setting's boss.portrait and vault_guard.portrait) is a portrait in art/catalog.json characters.
+    _ff = _sv.get("foe_faces")
+    if _ff is not None:
+        _w, _fw = "survival:foe_faces", _ff.get("words") or {}
+        _catp = root.parent / "art" / "catalog.json"
+        _fchars = set((json.loads(_catp.read_text()) if _catp.exists() else {}).get("characters") or {})
+        for _k in ("asset", "kind", "caster"):
+            if not isinstance(_ff.get(_k), str) or not _ff[_k]: errors.append(f"{_w}: needs an `{_k}` pattern")
+        _fv = _ff.get("variants") or {}
+        _tiers = [t.get("id") for t in items("enemies")]
+        for _t in _fv:
+            if _t not in _tiers: errors.append(f"{_w}.variants: {_t!r} is not an enemy tier")
+        def _fill(_p, **_v): return re.sub(r"\{(\w+)\}", lambda m: str(_v.get(m.group(1), "")), _p or "")
+        _want = set()
+        for _st in _sv.get("settings") or []:
+            _ks = set(_st.get("kinds") or {})
+            for _k in sorted(_ks | {(_st.get("boss") or {}).get("kind"), (_st.get("vault_guard") or {}).get("kind")} - {None}):
+                if _k not in _fw: errors.append(f"{_w}.words: the kind {_k!r} (settings.{_st.get('id')}) has no word"); continue
+                if _k in _ks:
+                    for _t in _tiers:
+                        if _t == "boss": continue  # a Boss wears its setting's boss.portrait
+                        for _vr in _fv.get(_t) or [""]: _want.add(_fill(_ff.get("kind"), kind=_fw[_k], tier=_t, variant=_vr))
+            for _o, _p in (("boss", (_st.get("boss") or {}).get("portrait")), ("vault_guard", (_st.get("vault_guard") or {}).get("portrait"))):
+                if _p: _want.add(_p)
+                else: errors.append(f"survival:settings.{_st.get('id')}.{_o}: needs a portrait (a catalog id; foe_faces)")
+        for _c in _casters:
+            if _c not in _fw: errors.append(f"{_w}.words: the caster {_c!r} has no word"); continue
+            _want.add(_fill(_ff.get("caster"), caster=_fw[_c]))
+        for _id in sorted(_want - _fchars): errors.append(f"{_w}: the face {_id!r} is not a portrait in art/catalog.json characters")
     # Rules 1.46 (build step 4b, spec rule 47): where gives are made in a run
     _gv = _sv.get("give")
     if _gv is not None:

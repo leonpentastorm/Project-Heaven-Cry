@@ -3354,6 +3354,7 @@ function runFight(g: GameState, n: RunNode) {
   const r = g.run!, chars = Object.values(g.characters).filter((c) => !c.dead);
   const enc = composeEncounter({ levels: chars.map((c) => c.level), node: n, stage: r.stage, setting: runSetting(r), seed: r.seed, last: r.last });
   const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' || n.kind === 'vault_guard' ? 'hard' : 'standard', g.rng);
+  cb.units.filter((u) => u.side === 'foe').forEach((u, i) => { const p = enc.foes[i]?.portrait; if (p) u.img = p; }); // its face (survival.json foe_faces)
   magicIn(g, cb);
   cb.noXp = true; // the run pays its own XP (rule 14)
   // rules 1.47: the fight keeps its effects for the tally (run/tally.ts); the opening turn was emitted as the fight began,
