@@ -43,7 +43,7 @@ import { condSkillMod, STORY_CARRY } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreUsed, clearPrayerLimits, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -3571,7 +3571,7 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
   }
   if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
   const def = ITEM[item] as any; if (!def) fail('No such item.');
-  const kind: PackItem['kind'] = def.category === 'focus' ? 'focus' : item === 'standard_core' ? 'ammo' : def.category === 'consumable' ? 'med' : def.category === 'food' ? 'food' : 'tool';
+  const kind: PackItem['kind'] = packKindOf(item, def.category === 'focus' ? 'focus' : def.category === 'consumable' ? 'med' : def.category === 'food' ? 'food' : 'tool'); // rules 1.54: pack_kind
   const ex = pack.findIndex((x) => (x.item || x.id) === item && !x.rarity);
   if (ex >= 0 && kind !== 'focus') { pack[ex].qty += n; c.pack = pack; return ex; }
   pack.push({ id: item, item, name: def.name, qty: n, kind }); c.pack = pack; return pack.length - 1;
