@@ -11,6 +11,7 @@ import { quiversOf, setQuivers, quiverHolds, carryQuiver, stowQuiver, fitQuiverM
 import { ITEM, WEAPON } from '../src/data';
 import { priceOf } from '../src/credits';
 import { enchantmentOf } from '../src/physical/ranged/quiver';
+import { gearPreview, compareGear } from '../src/gearpreview';
 import { bowFight } from './helpers/physfight-ranged';
 
 beforeEach(() => rig(null));
@@ -72,6 +73,13 @@ describe('out of a fight: carry, stow, enchant, grade, swap', () => {
     // two Celestial quivers: nothing blocks the run goal
     const x = s.g.characters[c.id]; x.pack = [...x.pack!, { id: 'quiver', item: 'quiver', name: 'Quiver', qty: 1, kind: 'tool', rarity: 'celestial' }];
     expect(carryQuiver(x, x.pack.length - 1)).toBeNull(); expect(quiversOf(x).map((q) => q.rarity)).toEqual(['celestial', 'celestial']);
+  });
+  it('the gear preview (shop and Forge cards): a quiver shows its arrows held by grade against the worn one; an enchantment its damage and rider', () => {
+    const { c } = archer();
+    const pv = gearPreview(c, { id: 'quiver', rarity: 'fine' });
+    expect(pv.category).toBe('Quiver'); expect(pv.lines.find((l) => l.key === 'arrows')!.num).toBe(quiverHolds('quiver', 'fine'));
+    const cmp = compareGear(c, { id: 'quiver', rarity: 'fine' }); expect(JSON.stringify(cmp)).toMatch(/Worn quiver/);
+    const e = gearPreview(c, { id: 'ench_frost' }); expect(e.lines.find((l) => l.key === 'arrow_dmg')!.num).toBe((ITEM as any).ench_frost.damage_mult);
   });
   it('the actions: phys/quiver loads the ready quiver (which: 1) and swaps; gear actions carry, stow and enchant; none of it in a fight', () => {
     const { s, c } = archer([{ id: 'quiver', item: 'quiver', name: 'Quiver', qty: 1, kind: 'tool' }, arrows(20, 'incendiary')]);
