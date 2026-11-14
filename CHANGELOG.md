@@ -47,6 +47,16 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
   durability for a tenth of its price times the share worn (at least 10; 80% at a Forge), on a Repair shelf beside the
   grade step. Wear bars on the shop's and every place's hands and pack and on the path map's squad panel, with a
   ⚠ WORN / ✕ BROKEN mark, so a worn gun is seen before a lane is chosen.
+- **The camp and starting boons (rules 1.51; Leon: "if caster keep getting wreck, we should give them some boons").**
+  A run opens at the camp: each character picks one starting boon of three, offered by what it runs on (a Sigil
+  caster two Sigil boons and one gun boon, a rifleman gun boons, an Outburst caster Outburst boons…), small (4 to 6 of
+  the run's 50), so every run has a first choice from node 1. A caster's armour is fitted to class 3 for free at the
+  camp (the soldier kit's), and the gun in hand carries three spare magazines. Six **caster boons** join the Boss's pick
+  (Ward of Script, Long Hand, Sure Script, Steady Heart, Deep Reserve, Mercy's Return). The fight's ammunition pack is
+  now a **supply pack**: the cores you burnt come back (1 to 2 a fight), an Emanator or Attuner gets 30% of its max MP,
+  Flux is 0 at every fight's start and a Rest fills the loaded core. Held boons show on the path map's squad panel
+  ("Camp" on the starting one). Deep Well and the Gentle property now strengthen heals given to anyone, as they say.
+  Two new kits in the engine (`rigger`, `mender`). The measure, before and after: `survival-starting-boons.md`.
 - **The browser suite `survival`** walks all of it, two browsers included.
 
 ## 0.26.0 — Classes 3.0

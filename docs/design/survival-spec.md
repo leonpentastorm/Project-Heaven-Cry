@@ -688,7 +688,7 @@ Draft 2's questions 1 to 8 are settled (the first block at the top). From draft 
 16. **XP with fewer fights:** the reference path now takes seven fights, not eight and a cache, so `stage.xp` rises to [1, 0.8, 0.9, 1, 1] to keep level 20 early in stage 6 and rank III in stage 3 (section 5.4). **Recommend as written;** the alternative is a slower climb (level 17 at stage 5's end).
 17. **The shop screen:** opened straight from the click, no node card; a full-screen replacement with the keeper, five tabs, large cards, the compare panel and the Give tab; the Forge in the same frame (section 8.3). **Recommend as written;** the training ground, shrine and rest keep the node-card form, made full-screen later if they feel thin beside the shop.
 
-## 13. Starting boons, caster boons and supply (draft 5; Leon's ruling of 14 Nov; rules 1.51 when built)
+## 13. Starting boons, caster boons and supply (draft 5; Leon's ruling of 14 Nov; built as rules 1.51, `docs/design/handoffs/survival-starting-boons.md`)
 
 **Settled by Leon (14 Nov, fourth batch, after the run measure of rules 1.49; binding):** *"if caster keep getting wreck, we should give them some boons"*. The lead's reading, built as follows unless Leon reverses a part (section 13.9):
 1. **Boons today come too late for a caster.** They arrive only after a stage's Boss, and no solo caster of the 32 measured runs reached one. So **every character picks one starting boon of three at the camp**, before node 1: small, counted on the run cap like any boon, and offered by what the character runs on (its line: guns, blades, Guard, Shadow, Sigil, Outburst, Bonds and Tending, Figments, Faith). Every run gets a first choice and a build identity from node 1 (rules 48 to 50).
@@ -741,10 +741,10 @@ Each row has `id`, `kind: "relic"`, `name` *(Suggested)*, `lines`, `worth`, `eff
 
 | Id | Line | One sentence (the number) | Worth | Built from |
 | --- | --- | --- | --- | --- |
-| start.zeroed | guns | **+1** to hit with guns. | 6 | `roll_mod` on `to_hit`, `if: {damage: ["weapon"], melee: false}` |
+| start.zeroed | guns | **+1** to hit with guns. | 6 | `roll_mod` on `attack`, `if: {melee: false}` (built so: the `to_hit` hook has no melee flag) |
 | start.hot_loads | guns | Your guns deal **+5%** damage. | 5 | `damage_mult` 1.05 on `dealing`, `if: {actor: self, damage: ["weapon"], melee: false}` |
 | start.quick_mag | guns | Your first reload each fight costs **0** AP. | 4 | `cost_mod` `set: 0` on `cost`, `if: {action: ["reload"]}`, limit per_combat 1 (peek); `use` on `reload` |
-| start.balanced | blades | **+1** to hit in melee. | 6 | `roll_mod` on `to_hit`, `if: {damage: ["weapon"], melee: true}` |
+| start.balanced | blades | **+1** to hit in melee. | 6 | `roll_mod` on `attack`, `if: {melee: true}` (built so) |
 | start.whetted | blades | Your melee blows deal **+5%** damage. | 5 | `damage_mult` 1.05 on `dealing`, `if: {actor: self, melee: true}` |
 | start.in_close | blades | You take **6%** less damage from foes standing next to you. | 4 | `damage_mult` 0.94 on `taking`, `if: {actor_within: 1}` |
 | start.set_feet | Guard | **+1** Guard at each fight's start. | 4 | `resource` guard 1 on `combat_start`, `if: {self_skill: {durability: 1}}` (Primed's precedent: its +2 is worth 8) |
@@ -759,12 +759,12 @@ Each row has `id`, `kind: "relic"`, `name` *(Suggested)*, `lines`, `worth`, `eff
 | start.clear_pulse | Outburst, Bonds and Tending | **+1** to hit with Outbursts. | 6 | `roll_mod` on `to_hit`, `if: {damage: ["soul"]}` |
 | start.hot_blood | Outburst | Your Outbursts deal **+5%** damage. | 5 | `damage_mult` 1.05 on `dealing`, `if: {actor: self, damage: ["outburst"]}` |
 | start.second_breath | Outburst | When you drop a foe, **3** MP back a point of Will Power (15 at Will Power 5). | 4 | `resource` mp on `kill`, `if: {actor: self}`, `value` a number block `{base: 0, per: [{of: "skill:will_power", value: 3}]}` |
-| start.gentle_hands | Bonds and Tending | The heals and shields you give are **+12%** stronger. | 5 | `mend_mult` 1.12 on `heal` and `shield`, `if: {actor: self}` (Deep Well's +20% is 8) |
+| start.gentle_hands | Bonds and Tending | The heals and shields you give are **+12%** stronger. | 5 | `mend_mult` 1.12 on `heal` and `shield`, `if: {actor: self, target: any}` (built so: the heal's holder is the healed unit unless `if` names the target; Deep Well's +20% is 8, and Deep Well now names it too) |
 | start.kindled | Bonds and Tending | Once a turn, a heal you give returns **a quarter** of what it healed as MP. | 4 | `resource` mp on `heal_given`, `if: {actor: self}`, `value` `{base: 0, per: [{of: "event:amount", value: 0.25}]}`, limit per_turn 1 |
 | start.quick_sketch | Figments | Your first Picture each fight costs **1** AP less. | 4 | `cost_mod` −1 (min 0) on `cost`, `if: {action: ["picture"]}`, limit per_combat 1 (peek); `use` on `acted`, `if: {action: ["picture"]}` |
 | start.spare_charge | Figments | **+3** Visualizer charge when a fight's first round begins (up to its most). | 4 | `resource` vcharge 3 on `round_start`, limit per_combat 1 |
 | start.vigil | Faith | Your first Whisper each fight costs **0** AP. | 4 | `cost_mod` `set: 0` on `cost`, `if: {action: ["whisper"]}`, limit per_combat 1 (peek); `use` on `acted`, `if: {action: ["whisper"]}` |
-| start.shelter | Faith | The heals you give by prayer are **+15%** stronger. | 4 | `mend_mult` 1.15 on `heal`, `if: {actor: self, how: ["prayer"]}` |
+| start.shelter | Faith | The heals you give by prayer are **+15%** stronger. | 4 | `mend_mult` 1.15 on `heal`, `if: {actor: self, target: any, how: ["prayer"]}` |
 
 *Lines with two rows* (Figments, Faith; Bonds and Tending shares Clear Pulse with Outburst, so it has three): their offer is both rows and one card of the second line, which for most such characters is the guns line, with its 6. *Pricing:* +1 to hit is True Aim's 7 on one door; +5% damage is half of Honed's 10; a once-a-fight AP is about 1 AP of a 5-round fight's 30, about 4%; MP rows are priced as about a third of a Channeler's turn, once or twice a fight, binding only when MP runs short (the supply pack covers the rest). *Build checks:* the `acted` rows assume the reducer names the actions `draw`, `picture` and `whisper` (`combat.ts acted`); `spare_charge` uses the first `round_start` because `magicIn` writes the charge after `combat_start` (step 5's open item 1); `extra_doses` and `spare_charge` stop at the resource's most (`resGive`); `kindled`'s `event:amount` is the heal landed (`heal_given` ctx `n`). Each is a line in `test/item-ops` through its door, its number read from data.
 

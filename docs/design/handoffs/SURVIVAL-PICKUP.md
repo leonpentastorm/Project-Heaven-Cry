@@ -1,8 +1,8 @@
 # Survival: the pick-up (14 Nov 2026, at the close of build steps 9 and 10)
 
-**Start here for Survival.** Survival is built (rules 1.39 to 1.50; version 0.27.0 on the branch) and **waits for
+**Start here for Survival.** Survival is built (rules 1.39 to 1.51; version 0.27.0 on the branch) and **waits for
 Leon's word to go live**: nothing of it is deployed. 0.26.0 (Classes 3.0) is live. Read `CLAUDE.md`, then this file,
-then the spec `docs/design/survival-spec.md` (draft 4 and its three "Settled by Leon" blocks; where the built revisions
+then the spec `docs/design/survival-spec.md` (draft 5 and its four "Settled by Leon" blocks; where the built revisions
 differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule). What to try by hand:
 `docs/PLAYTEST-CHECKLIST.md` section S (it ends with every call made for Leon, numbered).
 
@@ -22,15 +22,16 @@ differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule)
 | lanes | 1.48 | The path map as lanes, junctions and one guarded vault; the themed overland map (`PathMap.tsx`) | `survival-lanes.md` |
 | 9, 10 | 1.49 | The run simulator and the fit; the map fitted to its frame; the browser suite completed; the docs; 0.27.0 | `survival-steps-9-10.md` |
 | repair | 1.50 | The repair service (`run/repair` at a shop and a Forge; the Repair shelf; wear bars and the WORN mark on the places and the path map); the simulator repairs | `survival-repair.md` |
+| starting boons | 1.51 | The camp (state `camp`: a starting boon of three by the character's line, `run/boon` and the host's `run/go` there; the camp's issue: free armour to class 3, three spare magazines), six caster boons in the Boss's pool, the supply pack (burnt cores back 1 to 2 x n, the MP share, Flux 0 after a fight, the loaded core full at a Rest), the `rigger` and `mender` kits; `CampScreen`, held boons on the squad panel; the simulator's run policies (`run-policies.ts`) and levers (`SIM_LEVERS`) | `survival-starting-boons.md` |
 
 Code: `packages/engine/src/run/` (`map.ts`, `state.ts`, `encounter.ts`, `rewards.ts`, `shop.ts`, `shopview.ts`,
-`progress.ts`, `placeview.ts`, `power.ts`, `stage.ts`, `tally.ts`), the run reducer in `game.ts` (`runAction`,
+`progress.ts`, `placeview.ts`, `power.ts`, `stage.ts` (rules 1.51: `lineOf`, `startOffer`, `START_BOON`, `CAMP`), `tally.ts`), the run reducer in `game.ts` (`runAction`,
 `runEnter`, `runFight`, `runFightOver`), `credits.ts`, `give.ts`, `gearpreview.ts`; the client's `apps/web/src/game/`
-`RunScreen.tsx`, `PathMap.tsx`, `ShopScreen.tsx`, `PlaceScreen.tsx`, `FullScreenFrame.tsx`, `StageScreen`; data
+`RunScreen.tsx`, `PathMap.tsx`, `ShopScreen.tsx`, `PlaceScreen.tsx`, `FullScreenFrame.tsx`, `StageScreen`, `CampScreen` (rules 1.51); data
 `data/survival.json`, `data/modes.json`; art `art/sprites/kit/<setting>/`, `art/illustrations/survival/`.
 
 Tests: `packages/engine/test/survival-*.test.ts` (map, encounter, run, shop, progress, give, stage, tally, layout,
-vault), `test/balance/survival-run.test.ts` (the run guard; the measure, opt-in), the browser suites `room`,
+vault, camp), `test/balance/survival-run.test.ts` (the run guard; the measure, opt-in), the browser suites `room`,
 `survival`, `kit-map`.
 
 ## 2. What is open, by step
@@ -58,7 +59,9 @@ Each hand-off's own "open" section has the detail; the calls made for Leon are n
 - **Steps 9 and 10:** what the fit could not reach with data dials, and why: `survival-steps-9-10.md` section 5 (its
   durability finding is answered by rules 1.50's repair service).
 - **Repair:** a gun above the worn share at one shop can wear out before the next (one fight in 44 runs); the policy
-  repairs only Worn or Broken. The casters' sustain (rules 1.49 item 3609) is still open.
+  repairs only Worn or Broken.
+- **Starting boons (rules 1.51):** the casters' sustain is answered (the supply pack, the camp's issue, starting and
+  caster boons); what the measure still found short, and the open items: `survival-starting-boons.md` sections 4 and 6.
 
 ## 3. How to tune it (every dial is a field of `data/survival.json`, PROVISIONAL)
 
@@ -74,7 +77,9 @@ Each hand-off's own "open" section has the detail; the calls made for Leon are n
 | The vault | `vault.guard_factor`, `vault.grade_up`, `map.vault` | Its fight and its prize |
 | Repairs dearer or cheaper | `repair.rate`, `repair.floor`, `repair.places` | The gunsmith's share of the price, the least a repair costs, the Forge's factor |
 | What lanes hold | `map.themes`, `map.junction_kinds`, `map.every_route`, `map.shop_gap` | The node mix on a route (rests and shops a route) |
-| Run power | `boon_cap`, `boons[].worth`, `shrine.token_max_worth` | How far boons and Relic properties go past the balance ceilings |
+| Run power | `boon_cap`, `boons[].worth`, `shrine.token_max_worth`, `start_boon.max_worth`, `start_boons[].worth` | How far boons and Relic properties go past the balance ceilings; how big the camp's pick is |
+| What casters get back | `ammo_pack.cores`, `ammo_pack.cores_max`, `ammo_pack.mp_share` | The supply pack's cores (what was burnt, between the two, x n) and MP share |
+| The camp's issue | `camp.issue_armour`, `camp.spare_mags` | The armour class fitted free at the camp; the spare magazines the gun in hand starts with |
 | Trainings | `train`, `training` | The rest's small and the training ground's big trainings |
 
 The fit of rules 1.49 moved the dials in `survival-steps-9-10.md` section 4; read its before-and-after tables before
@@ -90,8 +95,10 @@ SURVIVAL_SIM=1 SIM_CELLS=four:gear,solo_gunner:gear SIM_SEEDS=6 SIM_MAX_STAGES=5
 SIM_REPORT=/tmp/runs.json npx vitest run test/balance/survival-run.test.ts -t tables   # prints the tables
 ```
 
-Parties: `solo_gunner`, `solo_sigil`, `duo` (gunner and healer), `four` (gunner, Faith rifle, Sigil caster, healer),
-`four_casters` (Sigil, Outburst, Rigger, healer). Routes: `gear`, `training`, `safest`. A four-character run to stage 5
+Parties: `solo_gunner`, `solo_sigil`, `solo_outburst`, `solo_healer`, `solo_rigger`, `duo` (gunner and healer), `four`
+(gunner, Faith rifle, Sigil caster, healer), `four_casters` (Sigil, Outburst, Rigger, healer), `mixed` (gunner, Sigil,
+Outburst, healer). Rules 1.51: `SIM_LEVERS` (a comma list of `policies`, `supply`, `issue`, `start`, `caster`; `none`;
+default all) measures one lever at a time. Routes: `gear`, `training`, `safest`. A four-character run to stage 5
 takes about a minute; split the cells over four processes. The guard (`npm run check`) plays three solo runs and holds
 generous bands; widen them only with the measured reason.
 
