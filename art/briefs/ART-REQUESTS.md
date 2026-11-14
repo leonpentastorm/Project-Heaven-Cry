@@ -229,3 +229,5 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 
 - **14 Nov 2026:** P1 opened: every character portrait repainted as a different person (same-face syndrome), with a tag file (class fantasy, gender, species) at `art/portraits/tags.json`; the full request with one row per portrait is `art/briefs/GPT-PROMPTS-2026-11-14-portraits.md`.
+
+- **14 Nov 2026:** F1 opened: faces for the enemies of Survival (every kind and tier, the Bosses, the vault guards, the casters): `art/briefs/GPT-PROMPTS-2026-11-14-survival-foes.md`. Today no Survival enemy has a portrait (the earlier request asked for five Elite and Boss faces only; none delivered).
