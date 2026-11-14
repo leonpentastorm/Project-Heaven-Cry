@@ -125,11 +125,11 @@ export function doorOf(c: Character): string | null {
 export type OfferWhere = PayKind | 'crate';
 /** Rules 1.54 item 2 (spec R7): how many weapons a pick holds where it is made (`rewards.offer`; the gate reads the
  * Elite's, as every table does). */
-export const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; return t[w === 'gate' ? 'elite' : w] ?? t.fight; };
+const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; return t[w === 'gate' ? 'elite' : w] ?? t.fight; };
 /** Rules 1.54 item 4 (Core Rules item 4107): the Materials card of a node worth C credits (nodeCredits): each of
  * `rewards.materials.items` at ceil(C / per_credits); none where `rewards.materials.at` does not name it (the vault's
  * chest, a sealed crate). */
-export function materialsCard(w: OfferWhere, credits: number): { item: string; n: number }[] | null {
+function materialsCard(w: OfferWhere, credits: number): { item: string; n: number }[] | null {
   const m = SV.rewards.materials; if (!m || !(m.at as string[]).includes(w === 'gate' ? 'elite' : w)) return null;
   return (m.items as { item: string; per_credits: number }[]).map((x) => ({ item: x.item, n: Math.ceil(credits / x.per_credits) })).filter((x) => x.n > 0);
 }
