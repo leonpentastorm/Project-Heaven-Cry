@@ -30,6 +30,29 @@ const HEAD: Record<string, [string, string]> = {
 };
 const NOTHING: Record<string, string> = { upgrade: 'You carry no weapon or focus that can be upgraded.', stock: 'The armourer has nothing for your squad today.', fit: 'You wear the heaviest armour the armourer fits.' };
 
+/** Rules 1.54 item 10 (survival-spec 14.5 "The card's bar"): a training's bar, all from the engine's view (trainBar):
+ * the stretch from the last step reached to the next, where the character stands (filled), what this training adds (a
+ * lighter segment; past the next step it runs to the bar's end), the next step as a tick, and that step in words. */
+function TrainBarView({ b }: { b: NonNullable<PlaceCardV['bar']> }) {
+  const end = b.to ?? b.now + b.add, span = Math.max(1, end - b.from), at = (n: number) => Math.max(0, Math.min(100, (100 * (n - b.from)) / span));
+  return (
+    <span data-phc-trainbar="" data-phc-trainbar-now={b.now} data-phc-trainbar-add={b.add} data-phc-trainbar-to={b.to ?? ''} data-phc-trainbar-reaches={b.reaches ? '1' : '0'}
+      role="img" aria-label={b.now + ' now, this adds ' + b.add + '. ' + b.mark + (b.reaches ? '. This training reaches it.' : '.')}
+      style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <span aria-hidden="true" style={{ position: 'relative', height: 10, borderRadius: 5, background: I.raised, overflow: 'hidden' }}>
+        <span data-phc-trainbar-gain="" style={{ position: 'absolute', top: 0, bottom: 0, left: at(b.now) + '%', width: (at(b.now + b.add) - at(b.now)) + '%', background: 'rgba(231,235,243,0.42)' }} />
+        <span style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: at(b.now) + '%', background: '#7A879E' }} />
+        {b.to != null ? <span style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 2, background: I.white }} /> : null}
+      </span>
+      <span aria-hidden="true" style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 12, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>
+        <span>{b.now} now · <b style={{ color: I.white }}>+{b.add}</b></span>
+        {b.reaches ? <span style={{ color: I.ok, fontWeight: 700 }}>✓ Reaches it</span> : null}
+      </span>
+      <span data-phc-trainbar-mark="" aria-hidden="true" style={{ fontSize: 13, lineHeight: 1.35, color: '#DCE2EC' }}>{b.mark}</span>
+    </span>
+  );
+}
+
 function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
   const o = x.o, icon = x.id ? gearIconUri(x.id, undefined, { large: true }) : '';
   return (
@@ -42,7 +65,7 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
         <span style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 20, fontWeight: 600, lineHeight: 1.2 }}>{o.label}</span>
       </div>
       {o.detail ? <span style={{ fontSize: 14, lineHeight: 1.45, color: '#DCE2EC' }}>{o.detail}</span> : null}
-      
+      {x.bar ? <TrainBarView b={x.bar} /> : null}
       <span style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: o.pays ? I.ok : I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : o.pays ? '+' + o.pays.toLocaleString('en') : o.costs || 'Free'}</span>

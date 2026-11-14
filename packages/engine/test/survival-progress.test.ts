@@ -212,9 +212,11 @@ describe('rules 1.43: trainings (rules 39, 45)', () => {
     const p = card(g, 'c1', 'practice').bar!; expect(p).toMatchObject({ now: practiceOf(g.characters.c1), add: TRAIN.practice, to: nextPickAt(practiceOf(g.characters.c1)) });
     const dv = card(g, 'c1', 'devotion').bar!, xp = devotionXpOf(g.characters.c1);
     expect(dv).toMatchObject({ now: xp, add: TRAIN.devotion, from: devotionThreshold(devotionLevelOf(xp)), to: devotionThreshold(devotionLevelOf(xp) + 1) });
-    // the training ground's bar adds the ground's amounts; every other card has none
+    // the training ground's bar adds the ground's amounts; the shrine's rite its Devotion (shrine.rite); every other card has none
     const t = visit('training'); expect(card(t, 'c1', 'drill:' + w).bar!.add).toBe(TRAINING.drill);
-    expect(placeView(visit('shrine'), ownerOf(0), 'c1')!.cards.every((q) => q.bar === null)).toBe(true);
+    const sh = placeView(visit('shrine'), ownerOf(0), 'c1')!.cards;
+    expect(sh.find((q) => q.o.key === 'rite')!.bar).toMatchObject({ now: xp, add: SHRINE.rite, to: devotionThreshold(devotionLevelOf(xp) + 1) });
+    expect(sh.filter((q) => q.o.key !== 'rite').every((q) => q.bar === null)).toBe(true);
   });
 });
 

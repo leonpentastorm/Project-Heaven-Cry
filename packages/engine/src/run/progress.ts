@@ -472,7 +472,7 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   }
   if (k === 'shrine') {
     const p = FAITH_PATRON[h.v.patron || ''], tok = tokenFor(g, c);
-    out.push({ group: 'shrine', key: 'rite', label: 'Keep a rite: Devotion +' + SHRINE.rite + ' XP', detail: 'For those with a patron.', price: 0, why: shrineProblem(g, c, 'rite'), action: { type: 'run/shrine', charId, choice: 'rite' } });
+    out.push({ group: 'shrine', key: 'rite', label: 'Keep a rite: Devotion +' + SHRINE.rite + ' XP', detail: 'For those with a patron.', price: 0, why: shrineProblem(g, c, 'rite'), action: { type: 'run/shrine', charId, choice: 'rite' }, bar: trainBar(c, 'devotion', SHRINE.rite) });
     out.push({ group: 'shrine', key: 'piece', label: 'A piece of ' + (p?.name || 'the patron') + '\'s lore', detail: 'For an Atheist: learn the next of its Hymns, prayed by dice.', price: 0, why: shrineProblem(g, c, 'piece'), action: { type: 'run/shrine', charId, choice: 'piece' } });
     out.push({ group: 'shrine', key: 'token', label: 'The token' + (tok ? ': ' + relicRow(tok)!.name : ''), detail: tok ? relicRow(tok)!.text + ' Uses ' + worthOf(tok) + ' boon room; you have ' + capRoom(c) + '.' : 'A small blessing for the run.', price: 0, why: shrineProblem(g, c, 'token'), action: { type: 'run/shrine', charId, choice: 'token' } });
   }
