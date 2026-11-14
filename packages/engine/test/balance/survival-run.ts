@@ -2,7 +2,7 @@
 // SURVIVAL, SIMULATED RUNS (docs/design/survival-spec.md section 5.6 and section 10 row 9; rules 1.49): a party plays a
 // whole Survival run through the one reducer, as players would, and the run is measured. Nothing here decides a rule:
 // every node, fight, price, pick and gain is the engine's (run/start, run/move, the fights by the balance simulator's
-// policies through Rec.fight, run/pick, run/take, run/buy, run/sell, run/upgrade, run/forge, run/fit, run/train,
+// policies through Rec.fight, run/pick, run/take, run/buy, run/sell, run/repair, run/upgrade, run/forge, run/fit, run/train,
 // run/shrine, run/trade, run/boon, run/tile, levelup/*, gear/*). What is the simulator's is only the players' choices:
 //
 //   points    every level's Skill and Attribute points by the build's plan, the class the rules give at level 3, perk
@@ -13,7 +13,9 @@
 //               training  training grounds, shrines and rests first (the vault passed by);
 //               safest    rests and shops first, fewest fights (the vault passed by);
 //             any of them: a party under 55% HP takes the stretch with the nearest rest;
-//   spending  section 11.5, in order, at each shop and Forge: the counter's upkeep (rounds or magazines to 5 magazines'
+//   spending  section 11.5, in order, at each shop and Forge: a repair (rules 1.50) of every carried thing that is Worn
+//             or Broken (wearState: at the data's worn share or less), when affordable, before anything else (SIM_REPAIR=0
+//             turns it off, for the before-and-after); the counter's upkeep (rounds or magazines to 5 magazines'
 //             worth for the gun in hand, cores to 4 for a Sigil or Figment user, class restocks); one grade step on the
 //             door's item (the gun in hand, else the focus) when affordable, at a Forge if one is still ahead this
 //             stage, else at the shop; the next armour class at a Forge in stages 1 and 2; a mod for a free slot, the
@@ -28,7 +30,7 @@
 //
 // What a run measures (RunResult): where it ended, every fight (stage, depth, kind, rounds, won, HP and rounds of
 // ammunition carried before it), each stage's credits earned and spent, XP and level, grade steps, the vault.
-import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
+import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, wearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
   counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive } from '../../src';
 import { Rec, type Pc } from '../helpers/replay';
 import { survivalRoom, ownerOf } from '../helpers/survival';
@@ -68,8 +70,8 @@ export const PARTIES: Record<string, string[]> = {
 };
 
 // ---------------------------------------------------------------------------------------------- what is measured
-export interface FightRow { stage: number; depth: number; kind: string; rounds: number; won: boolean; hpBefore: number; hpAfter: number; ammo: (number | null)[]; dry: number; broken: number; capped?: boolean; /** the composed fight: foes, their tiers and levels, the bulk asked and spent, the HP scale */ foes?: string[]; bulk?: [number, number]; pressure?: [number, number]; scaleHp?: number; level?: number }
-export interface StageRow { stage: number; setting: string; earned: number[]; spent: number[]; /** of earned: the credits taken instead of a weapon pick, and sales */ instead: number[]; sold: number[]; xp: number[]; level: number[]; steps: number[]; grades: string[]; cleared: boolean; nodes: string[]; vault: 'taken' | 'skipped' | 'none'; vaultPick: string | null; rests: number; shops: number; forges: number }
+export interface FightRow { stage: number; depth: number; kind: string; rounds: number; won: boolean; hpBefore: number; hpAfter: number; ammo: (number | null)[]; dry: number; broken: number; capped?: boolean; /** rules 1.50: the lowest share of full durability among the squad's main-hand weapons before it, and how many were Worn or Broken */ durMin?: number; wornBefore?: number; /** the composed fight: foes, their tiers and levels, the bulk asked and spent, the HP scale */ foes?: string[]; bulk?: [number, number]; pressure?: [number, number]; scaleHp?: number; level?: number }
+export interface StageRow { stage: number; setting: string; earned: number[]; spent: number[]; /** of earned: the credits taken instead of a weapon pick, and sales */ instead: number[]; sold: number[]; xp: number[]; level: number[]; steps: number[]; grades: string[]; cleared: boolean; nodes: string[]; vault: 'taken' | 'skipped' | 'none'; vaultPick: string | null; rests: number; shops: number; forges: number; /** rules 1.50: repairs bought, and their credits, a character */ repairs?: number[]; repairSpent?: number[] }
 export interface RunResult { party: string; route: RoutePolicy; seed: string; how: string; stage: number; depth: number; cleared: number; fights: FightRow[]; stages: StageRow[]; errors: string[]; boons: string[][] }
 
 const RANK = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
@@ -119,7 +121,7 @@ function chooseNode(g: any, route: RoutePolicy): any {
 }
 
 // ---------------------------------------------------------------------------------------------- the run
-export interface RunCfg { party: string; route: RoutePolicy; seed: string; maxStages?: number; maxFightRounds?: number }
+export interface RunCfg { party: string; route: RoutePolicy; seed: string; maxStages?: number; maxFightRounds?: number; /** rules 1.50: buy repairs (default on; SIM_REPAIR=0 in the measure turns it off) */ repair?: boolean }
 export function simRun(cfg: RunCfg): RunResult {
   const names = PARTIES[cfg.party], pcs: Pc[] = names.map((m) => MEMBER[m]), n = pcs.length, maxStages = cfg.maxStages ?? 7;
   const r = new Rec(survivalRoom(cfg.seed, pcs, { test: true }), pcs);
@@ -131,7 +133,7 @@ export function simRun(cfg: RunCfg): RunResult {
   const res: RunResult = { party: cfg.party, route: cfg.route, seed: cfg.seed, how: 'running', stage: 1, depth: 0, cleared: 0, fights: [], stages: [], errors: r.errors, boons: [] };
   const credits = () => ids.map((id) => creditsOf(C(id)));
   let st: StageRow; const stepsAt: Record<string, number> = {};
-  const newStage = () => { st = { stage: r.g.run?.stage || 1, setting: r.g.run?.world?.[r.g.run.world.length - 1]?.setting, earned: ids.map(() => 0), spent: ids.map(() => 0), instead: ids.map(() => 0), sold: ids.map(() => 0), xp: [], level: [], steps: ids.map(() => 0), grades: [], cleared: false, nodes: [], vault: 'none', vaultPick: null, rests: 0, shops: 0, forges: 0 }; res.stages.push(st); };
+  const newStage = () => { st = { stage: r.g.run?.stage || 1, setting: r.g.run?.world?.[r.g.run.world.length - 1]?.setting, earned: ids.map(() => 0), spent: ids.map(() => 0), instead: ids.map(() => 0), sold: ids.map(() => 0), xp: [], level: [], steps: ids.map(() => 0), grades: [], cleared: false, nodes: [], vault: 'none', vaultPick: null, rests: 0, shops: 0, forges: 0, repairs: ids.map(() => 0), repairSpent: ids.map(() => 0) }; res.stages.push(st); };
   r.must({ type: 'run/start', seed: cfg.seed });
   newStage();
   // every action through Rec, the credits it moved counted to the stage (earned or spent)
@@ -156,6 +158,14 @@ export function simRun(cfg: RunCfg): RunResult {
   const fitBought = (id: string, item: string) => { const c = C(id), i = packOf(c).findIndex((x) => (x.item || x.id) === item); if (i < 0) return;
     if ((ITEM[item] as any)?.category === 'mod') act({ type: 'gear/mod', charId: id, idx: i }, by(id)); else act({ type: 'gear/equip', charId: id, idx: i, to: 'worn' }, by(id)); };
 
+  // ---- repairs (rules 1.50): every carried thing Worn or Broken, the hands first, when affordable
+  const repairHere = (id: string) => {
+    if (cfg.repair === false) return;
+    for (const o of opts(id).filter((q) => q.group === 'repair' && q.wear && q.wear.state !== 'sound' && !q.why)) {
+      const was = creditsOf(C(id)); if (must(o.action, by(id))) continue;
+      st.repairs![ids.indexOf(id)]++; st.repairSpent![ids.indexOf(id)] += was - creditsOf(C(id));
+    }
+  };
   // ---- the counter: upkeep first (section 11.5)
   const upkeep = (id: string) => {
     const c = C(id), lines = counterLines([c]), w: any = WEAPON[c.weapon];
@@ -170,8 +180,9 @@ export function simRun(cfg: RunCfg): RunResult {
       for (let k = 0; line && k < 6 && have() < 4; k++) if (act({ type: 'run/buy', charId: id, key: line.key, qty: 1 }, by(id))) break; }
     for (const l of lines.filter((q) => q.res)) { const room = restockRoom(C(id), l.res!); if (room > 0) act({ type: 'run/buy', charId: id, key: l.key, qty: room }, by(id)); }
   };
-  const atShop = () => { st.shops++; for (const id of ids) { upkeep(id); gradeHere(id, 'shop'); } for (let i = 0; i < n && r.g.run?.state === 'shop'; i++) must({ type: 'run/leave' }, ownerOf(i)); };
+  const atShop = () => { st.shops++; for (const id of ids) { repairHere(id); upkeep(id); gradeHere(id, 'shop'); } for (let i = 0; i < n && r.g.run?.state === 'shop'; i++) must({ type: 'run/leave' }, ownerOf(i)); };
   const atForge = () => { st.forges++; for (const id of ids) {
+    repairHere(id);
     gradeHere(id, 'forge');
     if (savingForRelic(id)) continue;
     const fit = opts(id).find((q) => q.group === 'fit' && !q.why); if (fit && r.g.run.stage <= 2) must(fit.action, by(id));
@@ -232,6 +243,8 @@ export function simRun(cfg: RunCfg): RunResult {
     if (run.state === 'shop') { atShop(); continue; }
     if (run.state === 'fight') {
       const node = runNode(run, run.at), hp = hpShare(r.g), ammo = ids.map((id) => roundsFor(C(id)));
+      const wears = ids.map((id) => wearAt(C(id), 'main')).filter((w: any) => w && w.max > 0) as any[];
+      const durMin = wears.length ? Math.min(...wears.map((w) => w.now / w.max)) : null, wornBefore = wears.filter((w) => w.state !== 'sound').length;
       r.fight(cfg.maxFightRounds ?? 20);
       const cb = r.g.combat;
       // a fight still on at the round cap: when the squad standing holds more than twice the HP of the foes standing (most
@@ -244,7 +257,7 @@ export function simRun(cfg: RunCfg): RunResult {
       const won = r.g.phase !== 'lobby';
       const after = ids.map((id) => roundsFor(C(id)));
       const sf = (r.g.run?.stats?.fights || []).slice(-1)[0] || (r.g.run?.end ? null : null);
-      res.fights.push({ ...(sf ? { foes: sf.foes.map((q: any) => q.tier[0] + q.level), bulk: [Math.round(sf.target.bulk * 100) / 100, Math.round(sf.spent.bulk * 100) / 100], pressure: [Math.round(sf.target.pressure * 100) / 100, Math.round(sf.spent.pressure * 100) / 100], scaleHp: sf.scaleHp, level: sf.level } : {}), stage: run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, rounds: cb?.round || 0, won, hpBefore: hp, hpAfter: won ? hpShare(r.g) : 0, ammo, dry: after.filter((q) => q === 0).length, broken: (cb?.units || []).filter((u: any) => u.side === 'pc' && u.maxDur && (u.dur ?? 1) <= 0).length, capped });
+      res.fights.push({ ...(sf ? { foes: sf.foes.map((q: any) => q.tier[0] + q.level), bulk: [Math.round(sf.target.bulk * 100) / 100, Math.round(sf.spent.bulk * 100) / 100], pressure: [Math.round(sf.target.pressure * 100) / 100, Math.round(sf.spent.pressure * 100) / 100], scaleHp: sf.scaleHp, level: sf.level } : {}), stage: run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, rounds: cb?.round || 0, won, hpBefore: hp, hpAfter: won ? hpShare(r.g) : 0, ammo, dry: after.filter((q) => q === 0).length, ...(durMin != null ? { durMin: Math.round(durMin * 1000) / 1000, wornBefore } : {}), broken: (cb?.units || []).filter((u: any) => u.side === 'pc' && u.maxDur && (u.dur ?? 1) <= 0).length, capped });
       if (!won) { res.how = 'lost'; res.stage = run.stage; res.depth = node.depth; break; }
       continue;
     }

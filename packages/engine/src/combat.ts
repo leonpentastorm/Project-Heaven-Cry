@@ -5,7 +5,7 @@ import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -1277,7 +1277,7 @@ const charFor = (u: Unit): Character | null => { const G = boundGameRef(); retur
 export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean } = {}) {
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
-  const worn = att.maxDur ? (att.dur ?? att.maxDur) <= att.maxDur * 0.25 : false;
+  const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
   const bayonet = melee && useW === WEAPON.fists && hasMod(att.mods, 'mod_bayonet');
   // a load on a weapon with no magazine (Special Ammo on a blade or a fist, rules 1.30) counts on its hits as a gun's rounds do
   const ammo = (!melee || w.magazine == null) && useW === w ? AMMO_TYPES[ammoId(att.ammoType) || ''] || null : null;
@@ -1387,7 +1387,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   pay(cb, att, pv.ap);
   if (att.mg) calmFight(cb, att); // rules 1.5, calming the heart: the first weapon attack of your turn eases 1 Strain
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
-  const worn = att.maxDur ? (att.dur ?? att.maxDur) <= att.maxDur * 0.25 : false;
+  const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
   // The die, then items: 'attack_roll' {att, tgt, mode, die, toHit, need, critMin, noFumble, hit?} (die may be rerolled,
   // critMin lowered; set hit to force the result).
   // An ambush (spec: attacks from Hidden crit on 19-20 and use the Ambush multiplier): the first attack of each Hidden entry.

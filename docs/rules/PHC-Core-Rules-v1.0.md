@@ -690,9 +690,9 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 #### 4. Durability
 
 1. Every weapon, shield and mod has **Durability**. An attack action wears 1 (full auto wears 2); a jam or fumble wears 5 more.
-2. **Worn** (25% or less): guns jam on a natural 1 or 2; melee loses 10% damage.
+2. **Worn** (25% or less): guns jam on a natural 1 or 2; melee loses 10% damage. *(Rules 1.50: the 25% is data, `rules.json weapons_rules.worn.share`, read by the fight and by every screen's WORN mark.)*
 3. **Broken** (0): guns can't fire, melee does half damage, shields stop protecting. Broken things can still be repaired.
-4. **Field Repair** (this defines spec item 22's missing action): 2 AP, Proficiency 3+, uses one charge of a **spare-parts kit**, restores 10% + 5% per Proficiency point above 3. Out of combat, 10 minutes per kit charge restores 50%. A gunsmith restores 100% for 10% of the weapon's price.
+4. **Field Repair** (this defines spec item 22's missing action): 2 AP, Proficiency 3+, uses one charge of a **spare-parts kit**, restores 10% + 5% per Proficiency point above 3. Out of combat, 10 minutes per kit charge restores 50%. A gunsmith restores 100% for 10% of the weapon's price. *(Rules 1.50: in Survival the shop and the Forge are the gunsmith, `run/repair`, priced by the share of durability missing with a floor; see rules 1.50.)*
 5. Durability by family: sidearms 300, SMGs 300, rifles 400, shotguns 300, heavy 500, bows 200, light blades 250, heavy melee 300, unarmed 200, mana arms 250, shields 150 (plus their HP), torches burn 30 minutes.
 
 #### 5. Mods
@@ -5615,6 +5615,45 @@ and the earlier revisions give the old numbers, this revision rules.
 8. **What the measure found after the fit, and what data cannot reach,** is items 3608 to 3612; the tables are in the
    hand-off.
 
+## Rules revision 1.50: the repair service (Survival)
+
+Built on 14 Nov 2026 (`docs/design/handoffs/survival-repair.md`). The steps 9-10 measure found guns wearing out in
+stages 3 to 4 with no way back in Survival but a grade step (rules 1.49 item 3609). The Core Rules already had the
+answer (Weapons v2, Durability rule 4: "a gunsmith restores 100% for 10% of the weapon's price"); this revision makes the
+shop and the Forge that gunsmith. Every number is PROVISIONAL (items 3700 onward).
+
+1. **Repair** (`run/repair`, through the one reducer): at a **shop** or a **Forge**, a character brings **one carried
+   weapon or shield** (a hand or a pack line; one of a stack is split off) **back to full durability** (its grade's full,
+   `maxDurOf`). A focus, an armour piece, a tool and a thrown thing do not wear and are not repaired. No limit a visit.
+2. **The price** is one function of the item's price and the wear: **max(`floor` 10, `rate` 0.1 × priceOf(the item at
+   its grade, without mods) × the share of durability missing) × the place's factor** (a shop 1, a Forge 0.8), rounded
+   up to whole credits (`data/survival.json repair`). The rate is the Core Rules' gunsmith's tenth; at a share missing of
+   1 (Broken) it is that rule exactly. A Standard service rifle at 60 of 400 costs 77 at a shop, 62 at a Forge; a
+   Masterwork one Broken 720 and 576; a Relic one Broken 2,250 and 1,800.
+3. **Refusals, in words** (nothing changes): not at a shop or a Forge ("You are not at a shop or a Forge: walk to one
+   on the map."); the other place ("This is not a Forge."); nothing there ("There is nothing there to repair."); a thing
+   that does not wear ("The Evoker does not wear: there is nothing to repair."); already full ("The Hellraiser service
+   rifle is in full repair (400 of 400): there is nothing to repair."); a purse too short, by how much ("Kade is short 74
+   credits (has 3, needs 77).").
+4. **Worn is data:** Durability rule 2's 25% moved from code to `rules.json weapons_rules.worn.share` (0.25; no number
+   changed): the fight's jam and melee rules, the fight's weapon-condition row and every screen's WORN mark read the one
+   `wearState`.
+5. **The screens:** the shop's third tab is "Repair and upgrade": a **Repair** shelf (a card for each carried thing
+   with wear: its icon, the durability bar now → full, the price here and at a Forge, the engine's reason when it can't be
+   bought) above the grade step's shelf; the Forge's Upgrade tab holds a Repair group of the same cards. The "you" panel
+   of every full-screen place draws a wear bar under the hands and under each pack line that wears, the path map's squad
+   panel under each member's main hand and for any other thing Worn or Broken; **Worn and Broken carry a mark in words and
+   a glyph** (⚠ WORN, ✕ BROKEN) in the complication red. A weapon's or shield's gear preview shows its full durability at
+   its grade (so a grade step's card shows it rise).
+6. **The other repairs stay as they are** (Field Repair in a fight with Improvisation 3 and a spare-parts charge; the
+   Operative's Field Fix; Overhaul's bench repair out of a fight; the Quartermaster's Requisition Approved; Factory Made's
+   self-repair). Spare-parts charges were already on the shop's counter (Field supplies, 16 a charge). A character who can
+   repair in the field still can; the service is the way back for everyone else, and for a weapon a fight's Field Repair
+   (10% + 5% a point) cannot bring back far.
+7. **What the measure found** (the steps 9-10 cells and seeds, SIM-1 to 4, stages capped at 5; the simulated players
+   repair whatever is Worn or Broken at each shop and Forge, when affordable, before a grade step): items 3707 to 3709.
+   No dial was moved.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8917,3 +8956,14 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3610. **Income after the fit (rules 1.49 item 5):** a character earns about 2,450 to 4,600 in stage 1 (the gear route takes the vault; credits instead of a pick about 300 to 700 of it) and 2,800 to 5,800 a stage after (spec 11.1: 3,010 then 3,861 to 5,863); the Relic step lands in stage 3 on the richer routes, stage 4 otherwise. PROVISIONAL.
 3611. **Levels after the fit (rules 1.49 item 6):** about level 6 to 7.5 after stage 1's Boss, 9 to 11 after stage 2, 11.5 to 13.5 after stage 3, 15 after stage 4 and 17 after stage 5 on the slowest (training) route: level 20 in stage 6, earlier on the gear route. PROVISIONAL.
 3612. **Items 3600 to 3612 are rules 1.49's.**
+3700. **The repair service (rules 1.50 item 1):** `run/repair {charId, where, place}` at a shop or a Forge, one carried weapon or shield back to its grade's full durability; a focus, armour, tools and thrown things do not wear; no limit a visit. PROVISIONAL.
+3701. **The repair price (rules 1.50 item 2):** max(`repair.floor` 10, `repair.rate` 0.1 × priceOf(item, grade) × missing / full) × `repair.places` (shop 1, Forge 0.8), rounded up; fitted mods are not counted. PROVISIONAL.
+3702. **The repair's refusals (rules 1.50 item 3):** not at a shop or Forge; the other place; nothing there; does not wear; in full repair; short N credits. PROVISIONAL.
+3703. **The worn share (rules 1.50 item 4):** `rules.json weapons_rules.worn.share` 0.25 (Durability rule 2, moved from code; unchanged). PROVISIONAL.
+3704. **The screens' wear (rules 1.50 item 5):** the Repair shelf (shop) and group (Forge); wear bars on the places' hands and pack and the path map's squad panel; ⚠ WORN and ✕ BROKEN at the worn share and at 0; a weapon's and shield's gear preview line "Durability (full)". PROVISIONAL.
+3705. **The other repairs (rules 1.50 item 6):** Field Repair, Field Fix, Overhaul's bench repair, Requisition Approved and Factory Made unchanged; spare-parts charges stay on the counter. PROVISIONAL.
+3706. **The simulated players repair (rules 1.50 item 7):** at each shop and Forge, before upkeep and a grade step, every carried thing Worn or Broken, when affordable (`survival-run.ts repairHere`; `SIM_REPAIR=0` measures without). PROVISIONAL.
+3707. **Breakage after repair (rules 1.50 item 7):** fights fought with a squad gun Broken fell from 5 to 1 in the squad of four's training route's stage 4 (2 to 0 in stage 5), from 5 to 0 in the safest route's stage 4, from 4 to 1 for four casters in stage 2; one gun still broke between shops in stage 4 (a gun above the worn share at one shop can wear out before the next). PROVISIONAL.
+3708. **What repair costs (rules 1.50 item 7):** 0.1 to 0.3 repairs a character a stage where any were bought, 3 to 6 credits a character a stage on average (a broken Masterwork rifle at most 720): under 0.2% of a stage's income (spec 11.1: 3,861 to 6,864). PROVISIONAL.
+3709. **The curve after repair (rules 1.50 item 7):** the squad of four still ends in stage 3 or 4 (means 3.4, 4.3, 4.4; were 3.4, 4.4, 4.4; one training-route run cleared stage 4 before and fell in it after, the dice of a gun that fires instead of breaking); solo and duo cells unchanged; four casters 2.0 → 2.3; the grade ladder's walk (grades at each Boss, steps a stage) unchanged. No dial moved. PROVISIONAL.
+3710. **Items 3700 to 3710 are rules 1.50's.**

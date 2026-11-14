@@ -58,13 +58,18 @@ at once); a normal room never does.
 
 ### S.4 The shop and the Forge (ten minutes)
 
-- [ ] A shop opens full screen at once: the keeper, five tabs (Always in stock, Today's gear, Upgrade, Sell, Give), large
+- [ ] A shop opens full screen at once: the keeper, five tabs (Always in stock, Today's gear, Repair and upgrade, Sell, Give), large
       cards, your purse, the compare panel. It reads at 1280 and 1920.
 - [ ] Every calibre is always in stock with magazines for your guns; a card you can't afford says "Short N credits."
 - [ ] The grade step at a shop: Fine 1,500, Masterwork 3,500 (stage 2 on); one step a visit; the card shows what
       changes (to hit +1 a grade).
 - [ ] A Forge: the same steps at 80% (1,200, 2,800); mods and worn pieces; armour fitting; **from stage 3 the Relic
       step** (6,500): three named properties offered, each with its worth against your 50 cap.
+- [ ] **Repair (rules 1.50):** fight a few nodes, then open a shop's "Repair and upgrade" tab: the Repair shelf has a
+      card for the worn gun (bar now → full, the price, the Forge's price beside it); repair it and the purse drops by the
+      card's price, the bar is full. A Forge's Upgrade tab has the same cards at 80%. Too poor: the card says by how much.
+- [ ] A gun at 25% or less shows ⚠ WORN (at 0 ✕ BROKEN) on the shop's and every place's hands, on its pack line, and on
+      the path map's squad panel before you pick a lane.
 - [ ] Two players in one shop: each in their own tab; a rolled piece one buys shows "Sold to …" on the other's screen;
       Ready to leave, or the host's Close.
 - [ ] **Gives:** at any safe node, give credits or a pack entry (a graded weapon arrives whole, mods and property and
@@ -214,7 +219,15 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
     foes' HP (nearly always one hidden foe), else the run ends there ("stalled"). Measuring only.
 75. **Not fitted, reported** (survival-steps-9-10.md section 5): a Sigil caster alone, and a party of four casters, fall
     in stage 1 or 2; guns wear out (durability) in stage 3 to 4 with no repair in Survival but the grade step; both need
-    a general addition, not a dial.
+    a general addition, not a dial. *(Durability: answered by rules 1.50's repair service, calls 76 to 79.)*
+
+**Repair (rules 1.50)**
+76. **The price is the Core Rules' gunsmith by the wear:** a tenth of the item's price at its grade times the share
+    missing, at least 10 credits, 80% at a Forge (the grade step's factor). Mods are not counted.
+77. **No limit a visit**, and both a shop and a Forge repair (the Forge cheaper): repair is upkeep, not growth.
+78. **The WORN mark is the Core Rules' Worn (25%)**, moved to data (`weapons_rules.worn.share`); no separate "close to
+    breaking" number. A gun just above 25% at one shop can still break before the next; the bar shows it.
+79. **Shields repair too** (they have durability in data); a focus and armour do not wear and get no card.
 
 ## 0. Classes 3.0 (0.26.0)
 

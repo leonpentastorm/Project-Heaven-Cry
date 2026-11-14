@@ -11,7 +11,7 @@
 // (Outburst 2.0: a held heart with design, stage 0–4, tone, form, free pumps left), so that is the one place to update.
 import * as E from '@engine';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
-  coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam } from '@engine';
+  coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
 export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY' | 'STOWED';
@@ -222,7 +222,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const d = u.dur ?? u.maxDur, melee = !!w && isMelee(w), jams = !!w && canJam(w);
     if (d <= 0) rows.push({ key: 'dur', label: 'Weapon condition', value: 'BROKEN', now: 0, max: u.maxDur, kind: 'bar', colour: RES_INK.body, warn: 'BROKEN', level: 'alert',
       hint: melee ? 'Broken: it still swings, but for half damage until repaired (Field Repair, or a workshop).' : 'Broken: it won\'t fire until repaired (Field Repair, or a workshop).' });
-    else if (d <= u.maxDur * 0.25) rows.push({ key: 'dur', label: 'Weapon condition', value: d + ' / ' + u.maxDur, now: d, max: u.maxDur, kind: 'bar', colour: RES_INK.body, warn: 'WORN', level: 'caution',
+    else if (wearState(d, u.maxDur) === 'worn') rows.push({ key: 'dur', label: 'Weapon condition', value: d + ' / ' + u.maxDur, now: d, max: u.maxDur, kind: 'bar', colour: RES_INK.body, warn: 'WORN', level: 'caution',
       hint: (melee ? 'Worn: it hits for 90% damage.' : jams ? 'Worn: low condition makes jams likelier.' : 'Worn: at 0 it breaks and won\'t fire.') + ' Field Repair (2 AP) with spare parts.' });
   }
   // ---- throwables carried ----

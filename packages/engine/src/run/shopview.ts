@@ -3,7 +3,7 @@
 // purse, hands and pack, the party's ready marks and the visit's log. Every price, quantity, number and reason comes from
 // here (priceOf, the gear preview, the reducer's own refusals: `buyProblem`, `sellProblem`); the client builds none.
 import { WEAPON, ITEM, SKILL } from '../data';
-import { type Character, type Rarity, packOf, carriedKg, carryLimit, kindOfDoor, classResources } from '../character';
+import { type Character, type Rarity, type GearWhere, packOf, carriedKg, carryLimit, kindOfDoor, classResources, wearAt } from '../character';
 import { itemLabel } from '../containers';
 import { creditsOf } from '../credits';
 import { type GearPreview, gearPreview, rarityWord, rarityMarks } from '../gearpreview';
@@ -45,15 +45,20 @@ function forOf(c: Character | null, id: string, pv: GearPreview): { line: string
 /** The "you" panel of a full-screen place (the shop's, the Forge's, every safe node's): name, level, purse, portrait,
  * hands and worn, the armour class, the pack with each line's weight and the carry limit. */
 export interface MeV { id: string; name: string; level: number; credits: number; portrait: string; hand: string; handRarity: Rarity; off: string | null; worn: { slot: string; name: string }[]; armourClass: number;
-  pack: { label: string; kg: number }[]; kg: number; limit: number }
+  pack: { label: string; kg: number; wear: WearV | null }[]; kg: number; limit: number;
+  /** rules 1.50: the wear of the main and off hand's instance (null: nothing there wears) */ handWear: WearV | null; offWear: WearV | null }
+/** Rules 1.50: a carried thing's wear as a screen draws it (character.ts wearAt): now, full, the state. */
+export interface WearV { now: number; max: number; state: 'sound' | 'worn' | 'broken' }
+/** Rules 1.50: the wear at `where` for a screen, or null when nothing there wears. */
+export const wearView = (c: Character, where: GearWhere): WearV | null => { const w = wearAt(c, where); return w && w.max ? { now: w.now, max: w.max, state: w.state } : null; };
 /** The "you" panel for a character (rules 1.42; shared by every full-screen place since rules 1.46). */
 export function meBlock(c: Character): MeV {
   const kg = carriedKg(c);
   return { id: c.id, name: c.name, level: c.level, credits: creditsOf(c), portrait: c.portrait || '', hand: (WEAPON[c.weapon] as any)?.name || (ITEM[c.weapon] as any)?.name || c.weapon, handRarity: (c.weaponState?.rarity || 'standard') as Rarity,
     off: c.offHand ? ((WEAPON[c.offHand.id] as any)?.name || (ITEM[c.offHand.id] as any)?.name || c.offHand.id) + (c.offHand.rarity && c.offHand.rarity !== 'standard' ? ' (' + c.offHand.rarity + ')' : '') : null,
     worn: Object.entries(c.worn || {}).map(([slot, id]) => ({ slot: cap(slot.replace(/_/g, ' ')), name: (ITEM[id] as any)?.name || id })), armourClass: c.armourClass || 0,
-    pack: packOf(c).map((it) => ({ label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), kg: Math.round(carriedKg({ ...c, pack: [it], stims: 0, essence: 0, carried: [] } as Character).pack * 100) / 100 })),
-    kg: kg.total, limit: carryLimit(c) };
+    pack: packOf(c).map((it, i) => ({ label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), kg: Math.round(carriedKg({ ...c, pack: [it], stims: 0, essence: 0, carried: [] } as Character).pack * 100) / 100, wear: wearView(c, i) })),
+    kg: kg.total, limit: carryLimit(c), handWear: wearView(c, 'main'), offWear: wearView(c, 'off') };
 }
 /** The shop's view for player `me` (their own character, or `charId` when they have several); null when no shop is open. */
 export function shopView(g: G, me: string, charId?: string | null): ShopViewV | null {
@@ -72,7 +77,7 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
     .map((l) => l.res ? card(l.key, 'restock:' + l.res, 'standard', linePrice(l), 1, ask(l.key), { name: 'Restock: ' + l.res.replace(/_/g, ' '), qtyMax: Math.max(1, Math.min(SHOP_DATA.max_qty, c ? restockRoom(c, l.res) : 1)) })
       : card(l.key, l.id, 'standard', linePrice(l), l.per, ask(l.key), { qtyMax: SHOP_DATA.max_qty })) })).filter((s) => s.cards.length);
   const gear = sh.stock.map((p) => card(p.key, p.id, p.rarity, p.price, 1, p.sold ? 'Sold to ' + (g.characters[p.sold]?.name || 'another') + '.' : ask(p.key), { sold: p.sold ? (g.characters[p.sold]?.name || null) : null, rare: !!p.rare }));
-  const services = c ? shopServices(sh.kind).flatMap((s) => s.cards(g, c, sh)) : [];
+  const services = c ? shopServices(sh.kind).flatMap((s) => s.cards(g, c, sh).map((x) => ({ ...x, service: s.id }))) : [];
   const sell: SellRowV[] = c ? packOf(c).map((it, idx) => {
     const v = sellValue(it), why = sellProblem(g as any, c.owner, { charId: c.id, idx }), id = it.weapon || it.item || it.id;
     const graded = (it.rarity && it.rarity !== 'standard') || (it.mods || []).length;

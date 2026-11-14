@@ -13,6 +13,7 @@ import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { ShopScreen } from './ShopScreen';
 import { StageScreen } from './StageScreen';
+import { WearBar } from './WearBar';
 import { TallyTable } from './RunTally';
 import { lastFightTally } from './tallyView';
 
@@ -133,6 +134,8 @@ export function RunScreen() {
                 <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
                   <span style={{ fontWeight: 700 }}>{p.name}</span>
                   <span style={{ fontSize: 12, color: ink.muted }}>Level {p.level} · <span style={{ color: p.hp < p.maxHp ? ink.hp : ink.muted }}>HP {p.hp}/{p.maxHp}</span> · <span data-phc-credits={p.id} style={{ color: ink.white }}>{p.credits} credits</span></span>
+                  {p.wear ? <span data-phc-member-wear="main" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 110 }}>{p.weapon}</span><WearBar w={p.wear} label={p.weapon} compact /></span> : null}
+                  {p.worn.map((x, i) => <span key={i} data-phc-member-wear="other" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 110 }}>{x.name}</span><WearBar w={x.w} label={x.name} compact /></span>)}
                 </span>
                 {p.levelUp && p.mine ? <button type="button" data-phc-levelup={p.id} onClick={() => go('levelup', { levelupChar: p.id })} style={btn(true)}>★ Level up</button> : p.levelUp ? <span style={{ fontSize: 11, color: ink.white }}>★ level up waiting</span> : null}
               </div>

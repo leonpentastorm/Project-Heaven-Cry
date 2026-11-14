@@ -7,7 +7,7 @@
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, magazineSize } from './character';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, magazineSize, maxDurOf } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee } from './combat';
 import { priced } from './effects/cost';
 import { rngFor } from './rng';
@@ -88,6 +88,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       if (mag != null) lines.push({ key: 'mag', label: 'Magazine', value: mag + ' ' + (CALIBRE_NAME[w.ammo] || w.ammo || ''), num: mag, better: 'higher' });
       lines.push({ key: 'range', label: 'Range', value: effectiveRange(w) + ' tiles', num: effectiveRange(w), better: 'higher' });
     }
+    { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
     const traits = [...(w.properties || []), ...((w.phys?.props as string[]) || [])].map((t) => cap(String(t).replace(/_/g, ' ')));
     return { ...base, kind: 'weapon', category: cap(String(w.category).replace(/_/g, ' ')), traits: [...new Set(traits)], lines };
   }
@@ -110,6 +111,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       { key: 'armour', label: 'Armour', value: String(u.armour), num: u.armour, better: 'higher' },
       { key: 'injury', label: 'Injury resistance', value: pct(u.injResist || 0), num: u.injResist || 0, better: 'higher' },
       { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
+      ...(maxDurOf(id, rarity) ? [{ key: 'dur', label: 'Durability (full)', value: String(maxDurOf(id, rarity)), num: maxDurOf(id, rarity), better: 'higher' as const }] : []), // rules 1.50: a shield wears
     ] };
   }
   if (it?.category === 'mod') {

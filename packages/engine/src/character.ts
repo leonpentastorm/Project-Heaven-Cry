@@ -147,6 +147,12 @@ export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; pri
 })) as any;
 export const maxDurOf = (weaponId: string, rarity: Rarity = 'standard') => Math.round(((WEAPON[weaponId] as any)?.durability || ITEM[weaponId] && (ITEM[weaponId] as any).durability || 0) * RARITY[rarity].dur);
 export const weaponDurOf = (c: Character) => c.weaponState?.dur ?? maxDurOf(c.weapon, c.weaponState?.rarity);
+/** Weapons v2, Durability rule 2 (`rules.json weapons_rules.worn.share`, moved from code by rules 1.50): at this share of
+ * its full durability or less a weapon or shield is Worn. */
+export const WORN_SHARE: number = Number((RULES as any).weapons_rules?.worn?.share ?? 0.25);
+/** The state of a thing that wears (Weapons v2, Durability rules 2 and 3): Broken at 0, Worn at WORN_SHARE of full or
+ * less, else sound. The one test of a worn weapon: the fight's jam and melee rules and every screen's mark read it. */
+export const wearState = (now: number, max: number): 'sound' | 'worn' | 'broken' => (max <= 0 ? 'sound' : now <= 0 ? 'broken' : now <= max * WORN_SHARE ? 'worn' : 'sound');
 /** Effects of everything worn and held in the off hand (slot armour, shields, lights). */
 export function gearEffects(c: Character): { op: string; value?: number; hazard?: string }[] {
   const ids = [...Object.values(c.worn || {}), ...(c.offHand && !WEAPON[c.offHand.id] ? [c.offHand.id] : [])];
@@ -866,6 +872,37 @@ export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: 
     c.pack = pack;
   }
   return null;
+}
+/** Rules 1.50: the wear of one carried instance. `max` is its grade's full durability (`maxDurOf`); 0 for a thing that
+ * does not wear (a focus, an armour piece, a tool, a thrown thing). A missing `dur` is full. */
+export interface Wear { id: string; name: string; rarity: Rarity; now: number; max: number; state: 'sound' | 'worn' | 'broken' }
+/** Rules 1.50: the wear of the carried instance at `where` (a hand or a pack line), or null when nothing is there (an
+ * empty hand, fists, no such line, a plot item, rounds or magazines). General: the repair service, the screens' wear
+ * bars, a campaign's smith. */
+export function wearAt(c: Character, where: GearWhere): Wear | null {
+  const one = (id: string | undefined, st: { rarity?: Rarity; dur?: number } | null | undefined): Wear | null => {
+    if (!id || id === 'fists') return null; const def: any = WEAPON[id] || ITEM[id]; if (!def) return null;
+    const rarity = st?.rarity || 'standard', max = def.category === 'thrown' ? 0 : maxDurOf(id, rarity), now = max ? Math.max(0, Math.min(max, st?.dur ?? max)) : 0;
+    return { id, name: def.name || id, rarity, now, max, state: wearState(now, max) };
+  };
+  if (where === 'main') return one(c.weapon, c.weaponState);
+  if (where === 'off') return c.offHand && !twoHands(c, c.weapon) ? one(c.offHand.id, c.offHand) : null;
+  const it = packOf(c)[where]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
+  return one(it.weapon || it.item || it.id, it);
+}
+/** Rules 1.50: bring the instance at `where` back to its full durability (one of a stack in the pack is split off, as
+ * setGrade does). Returns the durability restored (0: nothing wears there, or it is already full). Who may do it and
+ * what it costs are the caller's (the repair service, run/progress.ts). */
+export function repairAt(c: Character, where: GearWhere): number {
+  const w = wearAt(c, where); if (!w || !w.max || w.now >= w.max) return 0;
+  if (where === 'main') c.weaponState = { ...(c.weaponState || {}), dur: w.max };
+  else if (where === 'off') c.offHand = { ...c.offHand!, dur: w.max };
+  else {
+    const pack = packOf(c).map((x) => ({ ...x })), it = pack[where];
+    if ((it.qty || 1) > 1) { it.qty -= 1; pack.push({ ...it, qty: 1, dur: w.max }); } else pack[where] = { ...it, dur: w.max };
+    c.pack = pack;
+  }
+  return w.max - w.now;
 }
 /** An Evoker in a hand: Sigils can be drawn and Evoked (spec: Hands 2). */
 export const hasEvoker = (c: Character) => holds(c, { slot: 'hand', door: 'evoker' });
