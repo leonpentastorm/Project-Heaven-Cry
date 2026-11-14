@@ -1,17 +1,17 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-> **Next after 0.27.0 (Survival): Balance 2.0** (Leon, 14 Nov 2026): every weapon measured against the plain rifle, outliers refitted, and the open class lines; see `docs/design/handoffs/SURVIVAL-PICKUP.md`.
+> **0.28.0 is live (15 Nov 2026).** **Next: Balance 2.0** (Leon, 14 Nov 2026): every weapon measured against the plain rifle, outliers refitted, and the open class lines; see `docs/design/handoffs/SURVIVAL-PICKUP.md`.
 
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
 `CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.
 
 ## Now (14 Nov 2026, at the close of Survival)
 
-1. **Survival mode is built** (0.27.0 on the branch; rules 1.39 to 1.49; `docs/design/handoffs/SURVIVAL-PICKUP.md`):
+1. **Survival mode is live** (0.27.x, and 0.28.0 with rules 1.54; rules 1.39 to 1.49; `docs/design/handoffs/SURVIVAL-PICKUP.md`):
    the mode picker, the path map as lanes with one guarded vault, generated fights and maps, rewards, the full-screen
    shop, the Forge, trainings, shrines, the Crossroads, gives, endless stages with boons and tiles, the tally and Report
-   a run, and the curve fitted by simulated runs (`survival-steps-9-10.md`). **It waits for Leon's word to go live.**
-   His playtest with `docs/PLAYTEST-CHECKLIST.md` section S comes first; he names which of its calls to reverse.
+   a run, and the curve fitted by simulated runs (`survival-steps-9-10.md`). **Live.** Open: Balance 2.0 draft (`docs/design/proposals/2026-11-balance-2.0.md`, awaiting Leon; includes heavy guns with 2+2 special rounds, the provisional 0.28 XP and stage fit since the simulator never makes or sells materials, level 3 before the first Boss on 42% of most-fights routes); the art prompt list (`art/briefs/GPT-PROMPTS-2026-11-15-everything-missing.md`, 66 images); the consolidation pass owed before the next system.
+   Leon names which of the checklist section S calls to reverse.
 2. **Classes 3.0 is live** (0.26.0; rules 1.28 to 1.38; `docs/design/handoffs/CLASSES-3.0-PICKUP.md`): nine doors,
    nine renamed base classes, Shadow, Bonds and Tending, Figments, the Chaplain's prayers, reactions made real, the
    enemy acting on what it sees, the level scale ×7.5 with heals in percent of HP. Its checklist is section 0 (53
@@ -337,7 +337,7 @@ before this mode, as the performance notes say.
 Leon: "I just want a mode you can play with progression and combat. Our combat system is sick, but M813 is not
 written well and is very outdated now, you barely have any combat in it, and the only place to do anything in this
 game is the Proving Ground, which is a glorified tester tool." Name: **Survival** *(his: "survival mode or
-something")*. **Built** (14 Nov 2026, 0.27.0 on the branch, rules 1.39 to 1.49; the spec is
+something")*. **Built and live** (14 Nov 2026, 0.27.x, rules 1.39 to 1.49; live 0.28.0 adds 1.54; the spec is
 `docs/design/survival-spec.md`, the pick-up `docs/design/handoffs/SURVIVAL-PICKUP.md`); waiting for Leon's word to go
 live. The notes below are the first proposal, kept for the record.
 

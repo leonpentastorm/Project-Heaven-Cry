@@ -10,8 +10,7 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.28.0 — materials, making, a slower climb and the side panels back
 
-Survival's second pass, on Leon's 14 Nov rulings (rules 1.54; `docs/design/survival-spec.md` section 14). Built, **not
-live until Leon's word**. Every number is provisional but the core's 100 credits.
+Survival's second pass, on Leon's 14 Nov rulings (rules 1.54; `docs/design/survival-spec.md` section 14). **Live since 15 Nov 2026**. Every number is provisional but the core's 100 credits.
 
 - **The side panels in every mode.** The character sheet stays on the left and a right panel stays on the right in
   every mode, Survival included; the mode plays in the middle. In Survival every screen (the path map, the camp, the
