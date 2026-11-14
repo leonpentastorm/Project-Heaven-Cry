@@ -91,3 +91,7 @@ One painting a setting, catalogued under `illustrations` as **`survival-map-<set
 ## Painted gear delivery — 13 November 2026
 
 151 Heavenprint gear icons are registered in `catalog.json` under `gear`: 149 brief items and two katana concepts. Masters are in `icons/gear/`; 256/128/64/32 px PNG exports are in `icons/gear/exports/`. See the [implementation handoff](_archive/gear/2026-11-13-complete/HANDOFF.md) for review sheets, provenance and the remaining web-build integration. Individual assets remain review candidates.
+
+## Survival trial — 13 November 2026
+
+45 candidates: 24 fight backdrops and 21 AHOC kit tests, indexed under `survival_art` in the catalog. See the [handoff](_archive/survival/2026-11-13-trial/HANDOFF.md) for known failures and the [continuation prompt](briefs/GPT-CONTINUE-2026-11-13-survival.md) for the 249 pending renders. This kit is not certified for implementation.

@@ -2,7 +2,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from './log';
-import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
+import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
@@ -46,7 +46,9 @@ export interface MapDef { id: string; name: string; w: number; h: number; solid:
   notes?: { at: string; text: string }[];
   /** Objects the map starts with, beyond its cover lists (spec: Map objects). */
   dark?: boolean;
-  objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; to?: string; sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[] }
+  objects?: { kind: string; at: string; name?: string; text?: string; hidden?: boolean; locked?: boolean; open?: boolean; to?: string; sprite?: string; spriteBox?: { w: number; h: number; dx: number; dy: number }; portrait?: string; approaches?: { label: string; skills: string[]; tn: number; stakes: string; success?: string }[] }[];
+  /** Rules 1.45: how a generated map is drawn (the setting's kit, its ground, the dressing). Presentation only. */
+  skin?: MapSkin }
 
 const keyOfRef = (r: string) => (r.charCodeAt(0) - 65) + ',' + (Number(r.slice(1)) - 1);
 /** The M813 rear landing pad from the Combat prototype; a generic yard (open ground) for anything else. */
@@ -72,11 +74,14 @@ export const MAPS: Record<string, MapDef> = {
   yard: layoutMap('yard', MAP_LAYOUTS.open_ground),
 };
 /** A map from a layout picture (data/maps.json's shape: rows, w, h, legend, notes): its solid and difficult ground, its
- * crates as half cover and pillars as full, its start tiles. The open ground's yard, and Survival's cropped fights. */
+ * crates as half cover and pillars as full, its other objects, its start tiles. The open ground's yard, and Survival's
+ * fights (generated, or cropped from the open ground). */
 export function layoutMap(id: string, L: { name: string; w: number; h: number; rows: string[]; legend?: Record<string, any>; notes?: { at: string; text: string }[] }): MapDef {
   const p = readLayout(L.rows, L.w, L.h, L.legend), ks = (rs: string[]) => rs.map((r) => keyOfRef(r));
   const at = (kind: string) => ks(p.objects.filter((o) => o.kind === kind).map((o) => o.at));
-  return { id, name: L.name, w: L.w, h: L.h, solid: ks(p.solid), cover: at('crate'), full: at('pillar'), difficult: ks(p.difficult), pcStart: ks(p.start), foeStart: ks(p.enemyStart), notes: L.notes || [] } as MapDef;
+  // Rules 1.45: any other object of the legend (a low wall, a barricade, a door, a lamp…) is one of the map's objects.
+  const others = p.objects.filter((o) => o.kind !== 'crate' && o.kind !== 'pillar');
+  return { id, name: L.name, w: L.w, h: L.h, solid: ks(p.solid), cover: at('crate'), full: at('pillar'), difficult: ks(p.difficult), pcStart: ks(p.start), foeStart: ks(p.enemyStart), notes: L.notes || [], ...(others.length ? { objects: others } : {}) } as MapDef;
 }
 
 export interface Unit {
@@ -694,7 +699,7 @@ export function defaultObjects(map: MapDef): MapObject[] {
       const ob = makeObject(id(), o.kind, k, { name: o.name, text: o.text, approaches: (o.approaches || []).map((a) => ({ label: a.label, skills: a.skills, tn: a.tn, stakes: a.stakes, success: (a.success || '') as any, tries: [] })),
         // A sigil mark (rules 1.10): its word, age and damage (makeObject gives it its Investigate approach).
         ...((o as any).kind === 'sigil_mark' ? { word: String((o as any).word || '').toLowerCase(), ...((o as any).age ? { age: (o as any).age } : {}), ...((o as any).damage ? { damage: (o as any).damage } : {}) } : {}) });
-      if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; if (o.to) ob.to = o.to;
+      if (o.hidden != null && OBJ[o.kind]?.trap) ob.hidden = o.hidden; if (o.locked) ob.locked = true; if (o.open && OBJ[o.kind]?.door) ob.open = true; if (o.to) ob.to = o.to;
       if (o.sprite) ob.sprite = o.sprite; if (o.spriteBox) ob.spriteBox = o.spriteBox; if (o.portrait) ob.portrait = o.portrait; return ob; }).filter(Boolean) as MapObject[]];
 }
 /** The fight's objects; saves from before objects existed are rebuilt from their cover state. */

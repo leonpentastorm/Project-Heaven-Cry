@@ -1,0 +1,485 @@
+{
+  "P025": {
+    "path": "art/illustrations/survival/map/map-display.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_crop": [
+      1672,
+      940
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1920,
+      1080
+    ]
+  },
+  "P026": {
+    "path": "art/illustrations/survival/map/map-aerial.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_crop": [
+      1672,
+      940
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1920,
+      1080
+    ]
+  },
+  "P027": {
+    "path": "art/illustrations/survival/nodes/shop-quartermaster.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P028": {
+    "path": "art/illustrations/survival/nodes/shop-alley-dealer.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P029": {
+    "path": "art/illustrations/survival/nodes/shop-faction-trader.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P030": {
+    "path": "art/illustrations/survival/nodes/rest-safe-room.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P031": {
+    "path": "art/illustrations/survival/nodes/rest-campfire.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P032": {
+    "path": "art/illustrations/survival/nodes/elite-lair.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P033": {
+    "path": "art/illustrations/survival/nodes/boss-door.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P034": {
+    "path": "art/illustrations/survival/nodes/reward-cache.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P035": {
+    "path": "art/portraits/survival/shop-quartermaster.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P036": {
+    "path": "art/portraits/survival/shop-dealer.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P037": {
+    "path": "art/portraits/survival/shop-trader.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P038": {
+    "path": "art/portraits/survival/rest-medic.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P039": {
+    "path": "art/portraits/survival/giver-mission.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P040": {
+    "path": "art/portraits/survival/boss-ork-warlord.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P041": {
+    "path": "art/portraits/survival/elite-crawler.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P042": {
+    "path": "art/portraits/survival/boss-robot-warframe.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P043": {
+    "path": "art/portraits/survival/boss-beast-mana-warped.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P044": {
+    "path": "art/portraits/survival/boss-upper-realm-patch.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_crop": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "upscaled": false,
+    "native_minimum_met": true,
+    "native_minimum": [
+      800,
+      1000
+    ]
+  },
+  "P058": {
+    "path": "art/illustrations/survival/cards/title-survival.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P059": {
+    "path": "art/illustrations/survival/cards/run-over.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  },
+  "P060": {
+    "path": "art/illustrations/survival/cards/run-won.png",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_crop": [
+      1448,
+      1086
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true,
+    "native_minimum_met": false,
+    "native_minimum": [
+      1600,
+      1200
+    ]
+  }
+}

@@ -42,7 +42,7 @@ version bump.
 - **Art:** the contract in spec 4.3 and `art/README.md`; `tools/build_web_assets.py` emits catalog illustrations
   `survival-map-*`; the artist's batch 7 (prompts 61 to 67: six backdrops and a 13-marker sheet) in
   `art/briefs/GPT-PROMPTS-2026-11-13-survival.md` (its "Read this first" note says it is next and replaces batch 2);
-  `ART-REQUESTS.md` S8.
+  `ART-REQUESTS.md` S9.
 
 ## Built from
 
@@ -127,4 +127,4 @@ junction, `GRD>VLT` the spur).
 5. **The vault is a pick on the map**, like the cache, not a full-screen place (the coordinator's "if cheap"): a place
    needs a face and a tab of its own.
 6. Names *(Suggested)*: the five roads, the six vault guards, the batch 7 marker motifs.
-7. The marker sheet and the six backdrops are wanted (S8); the field chart and line icons stand in.
+7. The marker sheet and the six backdrops are wanted (S9); the field chart and line icons stand in.

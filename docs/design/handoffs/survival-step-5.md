@@ -67,9 +67,9 @@ new hook has no listener outside a run's relics). The survival replay guard now 
    `combat_start`; either moves the order of an existing hook, so it is the lead's call.
 2. **A levelled character in another room** (item 3119): the kept draft is in the library, but `char/add` builds a level
    1 character from a sheet and Survival refuses above level 1. A campaign room taking a levelled sheet is a new door.
-3. **Tile backdrops:** the 24 are on `origin/art/survival-ahoc-review-2026-11-13` as `survival-b01`..`b24` (review
-   candidates); the cards draw `survival-backdrop-<setting>-a` from `assets.json` when present (S5 says how), else a
-   plain panel. Boss portraits for field and shrine are missing (S6).
+3. **Tile backdrops:** wired at the merge with steps 7 and 8: the 24 are in the catalog (`survival_art`, `survival-b01`..`b24`,
+   review candidates); `npm run assets` emits each as `survival-backdrop-<setting>-<letter>` and the card draws it, else a
+   plain panel (ART-REQUESTS S6, renumbered at the merge with step 4). Boss portraits for field and shrine are missing (S7).
 4. **Placeholder settings** (item 3114): every setting but AHOC fights with stand-ins by name (`awaiting`).
 5. Stage 2's foes dropped read 0 when every fight is skipped by `run/skip` (no foe falls); real fights count.
 6. The Report a run bundle (step 6) can read `g.run.stages` and `RunEnd` as they are.

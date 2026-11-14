@@ -1,0 +1,17 @@
+{
+  "id": "B08",
+  "number": 8,
+  "filename": "city-d-square.png",
+  "path": "art/illustrations/survival/backdrops/city-d-square.png",
+  "mode": "backdrop",
+  "prompt": "Paint one wide environment illustration for a game in Heavenprint: hand-painted opaque gouache and ink with broken,\ndirectional brush strokes, selective dry-brush scumbling, restrained hatching where a crease or an edge needs it,\ncharcoal lost edges, warm ivory accents on the focal edges, deliberate angular architectural forms in layers\n(foreground, middle, far), and quiet low-detail areas. Not line art, not a photograph, not a 3D render, no airbrushed\ngloss, no uniform digital sharpness, no cinematic lens flare. Match the attached Heavenprint scene references for\nbrushwork, finish and layering. **This is a backdrop that sits behind a tactical tile map and game UI:** no characters,\nno creatures, no figures of any kind (a distant empty vehicle or a parked machine is fine), a calm and open centre\n(the middle 50% of the frame is a plain, low-contrast, walkable-looking ground or floor plane with only soft\ntexture), and the detail, props, architecture and the strongest values pushed to the edges and corners. Keep the\noverall value range mid-dark and the contrast gentle in the centre, so that the picture still reads when darkened to\nabout 40% under a grid. Camera: a raised three-quarter view looking into the place (not a flat top-down map and not a\nground-level wide shot); no strong vanishing lines converging on the centre. One clear light source; light is locally\ncoloured by the scene, never tinted by a skill or attribute colour; no glowing bloom. 16:9, 2560 x 1440 PNG if you\ncan, never smaller than 1920 x 1080. No text, no letters, no numbers, no signs with writing (blank or abstract marks\nonly), no logos, no UI, no frame, no border, no watermark. Everything is invented: nothing recognisable from\nreal-world works, brands, buildings or places.\n\nSETTING MATERIALS AND LIGHT: Central City; lived-in ivory plaster and brick, iron pipes and shutters, dusk sky, blue-grey shadows and restrained warm shop lamps.\nSUBJECT: The heart: a small plaza with a dry fountain and a stopped clock tower on one side, shuttered cafe fronts, one lit window above, street lamps flickering. The paving in the middle is open and quiet.\n\nCRITICAL COMPOSITION: raised three-quarter camera about 7 metres high, looking downward, broad open floor plane occupying middle half, edge detail and layer depth. Do not mimic the people, numbers, black hole or parchment border of reference images. Absolutely no figures, no faces, no writing, no frame. Treat references as paint/material anchors only. Entire painting fills a wide 16:9 frame. Aim native 2560x1440 or higher; do not trade painterly structural clarity for photographic detail.",
+  "references": [
+    "/workspace/phc-gear-publish/art/illustrations/m813/outpost813.png",
+    "/workspace/phc-gear-publish/art/illustrations/m813/shield-line.png",
+    "/workspace/phc-gear-publish/art/illustrations/proving-ground/drill-yard.png",
+    "/workspace/phc-gear-publish/art/style-guide/references/approved-pilot.png",
+    "/workspace/phc-gear-publish/art/portraits/world/new-faces/orren-vask.png"
+  ],
+  "transparent": false,
+  "source": "/workspace/generated_images/exec-203d2923-8530-49a4-a406-c4efad4fb4e3.png"
+}

@@ -17,6 +17,17 @@
 > is that the part you move in reads as clear at a glance:** a doorway's opening is a clean, obviously walkable gap
 > with the floor showing through, a broken section's gap likewise, and nothing of a wall piece spills onto the
 > walkable tiles beside it.
+>
+> **The kits in the game's renderer (13 Nov, later: Survival steps 7 and 8, rules 1.45).** All six kits are in and the game
+> draws its fight maps from them: the ground repeated under the tiles, walls chosen by their neighbours (straight,
+> corner, end; the game makes a T and a cross from those, so **no T piece is wanted**), doorway gaps, cover and objects
+> by kind, decals, dressing. Half-tile walls read well and the doorways read clear. **Redo four pieces** (held back
+> until then; the game draws its plain fallback in their place): AHOC `ground-2` (a seam at the left-right join) and
+> shrine `ground-2` (the octagon rows lose their step at the top-bottom join), both measured with
+> `tools/art/kit_seams.py`, which every ground must pass ("clean") before delivery; AHOC `dress-2` (it has lettering:
+> no text, ever); rim `wall-corner` (paint it as the rim's straight piece bent round: same panels, same shade). **Wanted
+> besides:** a one-tile `container` per setting (the engine's container is one tile; the 1.5-tile one is drawn shrunk).
+> The list is `ART-REQUESTS.md` S8.
 
 > **New, and next in line (Leon, 13 Nov, rules 1.48): batch 7, the path map backdrops and the marker sheet (7
 > images).** After seeing the first path map Leon ruled it a themed overland map of lanes ("Also theme it. Ask the
@@ -263,6 +274,10 @@ or overlap; no perspective, no side faces, no baked shadow. Pieces: `wall-straig
 edge), `wall-door` (two short wall stubs with jambs, an empty 128 px gap between them: the game puts a door sprite in it),
 `wall-broken` (a straight run whose middle is a ragged breach, rubble at the edges of the gap, still butts at both ends).
 Saved facing east/right; the game rotates them.
+
+At a connecting cell edge, carry the painted cap through the cut without a dark end outline. Keep the dark outline on
+exposed edges. Align the painted stripe on the straight, corner, end, doorway and broken pieces to the same centreline
+at every connection. Check straight runs and rotated corners at 256 px and 64 px.
 
 **Where to save (a proposal; rename at integration):** `art/sprites/kit/<setting>/<piece>.png`, with `<setting>` one of
 `ahoc`, `city`, `field`, `works`, `shrine`, `rim`; ground `ground-1.png` to `ground-3.png` (1024 x 1024, opaque); decals

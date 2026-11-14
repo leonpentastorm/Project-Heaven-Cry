@@ -3,19 +3,21 @@
 // A fight for THIS party at THIS node: a budget in Soldier-equivalents (SE) on two axes, bulk (how long the fight lasts)
 // and pressure (how hard it hits), filled from a template's slots with foes priced by their tier, their lag behind the
 // party (ordinary enemies) or their lead (Elites and Bosses from stage 2) and their spawn share (a big unit against a
-// small party). Then a map: the open ground cropped to the fight's size (build step 7 brings the layout generator).
+// small party). Then a map: generated for the fight's size, setting and template (rules 1.45, `maplayout.ts`
+// generateLayout), or the open ground cropped (step 3's form: the data switch `layout.use`, and the fallback).
 // Pure and deterministic: everything comes from the seed through a named stream (`rngFor(seed, node + '#fight')`), so
 // the same seed, party and node give the same fight. It deals no damage and rolls no check: the fight itself is
 // `startCombat` with these `FoeSpec`s, on the fight's own dice.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { ENEMY, clampEnemyLevel, fightLevelOf, WEAPON } from '../data';
-import { type FoeSpec, type MapDef, layoutMap, standable } from '../combat';
-import { MAP_LAYOUTS, MAP_LIMITS, deployEnemy, nearestFree, startGap } from '../maplayout';
+import { type FoeSpec, type MapDef, layoutMap, standable, keyOf } from '../combat';
+import { MAP_LAYOUTS, MAP_LIMITS, deployEnemy, nearestFree, startGap, squadStartTiles, generateLayout, type LayoutRecipe, type LayoutStamp } from '../maplayout';
+import { OBJ } from '../objects';
 import { CASTER } from '../ai-sigil';
 import { HEART_CASTER } from '../ai-soul';
 import { rollTable } from '../loot';
-import { type Rng, rngFor, die } from '../rng';
+import { type Rng, rngFor, die, next } from '../rng';
 
 const SV: any = svJ;
 /** Where a slot's foes start (spec section 3.2): the far edge, nearer, between, behind the line, the middle of the far
@@ -25,9 +27,14 @@ export type Spawn = 'far' | 'near' | 'between' | 'back' | 'central' | 'flanks' |
  * required (`req`) or allowed (`max`), from which depth, its weapons' range, a fixed kind, tags, a hidden start. */
 export interface EncounterSlot { tier?: string; caster?: string[]; boss?: boolean; /** rules 1.48: the setting's named vault guard */ guard?: boolean; range?: 'ranged' | 'melee' | 'close'; kind?: string; tags?: string[]; hidden?: boolean; req?: number; max?: number; from_depth?: number; spawn?: Spawn }
 /** A template (spec section 3.2, `survival.json templates`). */
-export interface EncounterTemplate { id: string; name: string; nodes: string[]; from_depth: number; weight: number; min_party?: number; kinds?: string[]; slots: EncounterSlot[]; text: string }
+export interface EncounterTemplate { id: string; name: string; nodes: string[]; from_depth: number; weight: number; min_party?: number; kinds?: string[]; slots: EncounterSlot[]; text: string;
+  /** Rules 1.45: a hazard patch may be laid on this template's maps (by the setting's chance). */
+  hazard?: boolean }
+/** A setting's map recipe (rules 1.45): its stamps (ids in `layout.stamps`), its cover kinds, its hazard and chance (or
+ * none), its props by object kind (a count range each), and its kit (the art folder `art/sprites/kit/<kit>`). */
+export interface SettingLayout { stamps: string[]; cover: { half: string[]; full: string[] }; hazard: { kind: string; chance: number } | null; props: Record<string, [number, number]>; kit: string }
 /** A setting, one tile of the world (spec section 3.3, `survival.json settings`). */
-export interface SettingDef { id: string; name: string; kinds: Record<string, number>; boss: { name: string; kind: string; weapon: string; casters: string[]; portrait: string | null }; /** rules 1.48: the vault's named guard (an Elite) */ vault_guard?: { name: string; kind: string; weapon: string }; pool: string; pools?: Record<string, Record<string, string[]>> }
+export interface SettingDef { id: string; name: string; kinds: Record<string, number>; boss: { name: string; kind: string; weapon: string; casters: string[]; portrait: string | null }; /** rules 1.48: the vault's named guard (an Elite) */ vault_guard?: { name: string; kind: string; weapon: string }; pool: string; pools?: Record<string, Record<string, string[]>>; layout: SettingLayout }
 /** The kind of fight a node holds (the gate is an Elite node every path passes; rules 1.48: the vault's guard). */
 export type FightKind = 'fight' | 'elite' | 'gate' | 'boss' | 'vault_guard';
 /** Rules 1.48: the vault (survival.json `vault`): its guard's budget is an Elite fight's x `guard_factor` (bulk and
@@ -179,7 +186,8 @@ export function composeEncounter(inp: EncounterIn): Encounter {
   const foes = b.f.picks.map((p) => armed(p, rng, setting, fightKind, n, scaleHp, big(p.tier) ? b.dmg : 1));
   number(foes);
   const spent = { bulk: b.f.spent.bulk * scaleHp, pressure: b.f.spent.pressure };
-  return { template: b.t.id, name: b.t.name, text: b.t.text, kind: fightKind, level: L, fightKind: kind, target, spent, scaleHp, ok: ok || scaleHp !== 1, foes, map: encounterMap(inp.node.id, n + foes.length, foes, rng) };
+  const map = encounterMap(inp.node.id, n + foes.length, foes, rngFor(inp.seed, inp.node.id + '#map'), { setting: setting.id, template: b.t.id });
+  return { template: b.t.id, name: b.t.name, text: b.t.text, kind: fightKind, level: L, fightKind: kind, target, spent, scaleHp, ok: ok || scaleHp !== 1, foes, map };
 }
 /** A slot's foe made whole (rule 21 e): its weapon from the setting's pool by tier and range (a caster's own; the Boss's
  * the setting's), its kind, tags, level, spawn and scale. Never a Celestial. */
@@ -210,25 +218,48 @@ function number(foes: EncounterFoe[]) {
   for (const f of foes) if (count[f.name] > 1) { seen[f.name] = (seen[f.name] || 0) + 1; f.name = f.name + ' ' + seen[f.name]; }
 }
 
-/** The fight's map (rule 22, step 3's form): the open ground's middle cropped to the size its units ask (`map_size`),
- * the squad's start tiles on the west edge (`squad_cols`), each foe's start by its slot's spawn, from the enemy line the
- * map's own deployment rule gives (`deployEnemy`, 10 to 14 tiles off). Build step 7 replaces the crop with stamps. */
-export function encounterMap(id: string, units: number, foes: EncounterFoe[], rng: Rng): MapDef {
-  const MS = SV.map_size, size: number = (MS.steps as { units: number; size: number }[]).find((s) => units <= s.units)?.size || MAP_LIMITS.max;
+/** The layout generator's numbers (rules 1.45; `survival.json layout`, every one PROVISIONAL). */
+export const LAYOUT_DATA: any = SV.layout;
+/** The recipe for a map of this size in this setting for this template (rules 1.45): the numbers from `layout`, the
+ * setting's stamps, cover, props and hazard (none when the template does not allow one, or by the setting's chance on
+ * the map's own stream). */
+export function layoutRecipe(size: number, setting: SettingDef, template: EncounterTemplate | null, rng: Rng): LayoutRecipe {
+  const D = LAYOUT_DATA, sl = setting.layout, hz = template?.hazard && sl.hazard && next(rng) < sl.hazard.chance ? { kind: sl.hazard.kind, size: D.hazard_size } : null;
+  const stamps: LayoutStamp[] = sl.stamps.map((id) => ({ id, ...D.stamps[id] }));
+  return { size, squadCols: SV.map_size.squad_cols, zoneCols: D.zone_cols, foeZone: D.foe_zone, tries: D.tries, stamps, stampCount: D.stamp_count[String(size)] || [0, 0],
+    stampGap: D.stamp_gap, legend: D.legend, cover: sl.cover, fullEvery: D.full_every, coverRun: D.cover_run, coverShare: D.cover_share, coverReach: D.cover_reach, startCoverReach: D.start_cover_reach,
+    barrels: D.barrels, props: sl.props, difficult: D.difficult, hazard: hz, dressing: D.dressing, dressPieces: D.dress_pieces, grounds: D.grounds };
+}
+/** The open ground's middle cropped to a square of `size` (step 3's map, kept behind `layout.use` and as the fallback). */
+function cropped(id: string, size: number): MapDef {
   const G = MAP_LAYOUTS.open_ground, x0 = Math.floor((G.w - size) / 2), y0 = Math.floor((G.h - size) / 2);
   const rows = G.rows.slice(y0, y0 + size).map((r) => r.slice(x0, x0 + size).replace(/[SE]/g, '.'));
-  const map = layoutMap('survival-' + id, { name: 'Open ground (' + size + ' × ' + size + ')', w: size, h: size, rows, legend: G.legend, notes: [] });
+  return layoutMap('survival-' + id, { name: 'Open ground (' + size + ' × ' + size + ')', w: size, h: size, rows, legend: G.legend, notes: [] });
+}
+
+/** The fight's map (rule 22; rules 1.45): a square of the size its units ask (`map_size`), generated for the setting and
+ * template on the node's map stream (`generateLayout`; its skin says how to draw it), or the open ground cropped when
+ * `layout.use` says so or no try passes; the squad's start tiles on the west edge (`squad_cols`), each foe's start by
+ * its slot's spawn, from the enemy line the map's own deployment rule gives (`deployEnemy`, 10 to 14 tiles off), never
+ * on a blocker, a hazard, a trap or a hole. */
+export function encounterMap(id: string, units: number, foes: EncounterFoe[], rng: Rng, how: { setting?: string; template?: string } = {}): MapDef {
+  const MS = SV.map_size, size: number = (MS.steps as { units: number; size: number }[]).find((s) => units <= s.units)?.size || MAP_LIMITS.max;
+  const setting = SETTING[how.setting || ''] || null, tpl = TEMPLATES.find((t) => t.id === how.template) || null;
+  const gen = LAYOUT_DATA.use === 'generated' && setting ? generateLayout(layoutRecipe(size, setting, tpl, rng), rng, setting.layout.kit) : null;
+  const map = gen ? { ...layoutMap('survival-' + id, { name: setting!.name + ' (' + size + ' × ' + size + ')', w: size, h: size, rows: gen.rows, legend: gen.legend, notes: [] }), skin: gen.skin } : cropped(id, size);
   const mid = (size - 1) / 2, cols: number[] = MS.squad_cols;
-  const cand: string[] = []; for (const x of cols) for (let y = 0; y < size; y++) if (standable(map, x + ',' + y)) cand.push(x + ',' + y);
-  map.pcStart = cand.sort((a, b) => Math.abs(Number(a.split(',')[1]) - mid) - Math.abs(Number(b.split(',')[1]) - mid) || Number(a.split(',')[0]) - Number(b.split(',')[0])).slice(0, 6);
-  const blocked = new Set<string>([...map.solid, ...map.cover, ...(map.full || [])]);
+  // A start is never on a blocker (a wall, cover, a closed door, a terminal…), a hazard, a trap or a hole.
+  const bad = new Set<string>((map.objects || []).filter((o) => { const k = OBJ[o.kind]; return !!k && ((k.blocks_move && !(k.door && o.open)) || !!k.hazard || !!k.trap || o.kind === 'hole'); }).map((o) => keyOf(o.at, map)!).filter(Boolean));
+  const startable = (k: string) => standable(map, k) && !bad.has(k);
+  map.pcStart = squadStartTiles(size, size, cols, startable);
+  const blocked = new Set<string>([...map.solid, ...map.cover, ...(map.full || []), ...bad]);
   const line = deployEnemy(size, size, map.pcStart, blocked);
   const farX = Math.round(line.reduce((s, k) => s + Number(k.split(',')[0]), 0) / Math.max(1, line.length));
   const gap = startGap(map.pcStart, line), nearShift = Math.max(0, gap - MAP_LIMITS.deploy_min);
   const taken = new Set<string>(map.pcStart);
   // No foe starts nearer the squad than the map's deployment minimum (or the line's own gap, on a map too small for it).
   const minGap = Math.min(MAP_LIMITS.deploy_min, gap), sqX = Math.max(...cols);
-  const free = (k: string) => standable(map, k) && !taken.has(k) && startGap(map.pcStart, [k]) >= minGap;
+  const free = (k: string) => startable(k) && !taken.has(k) && startGap(map.pcStart, [k]) >= minGap;
   let flank = 0, split = 0, far = 0;
   const yOf = (i: number) => Math.round(mid + (i % 2 ? 1 : -1) * Math.ceil(i / 2) * 2);
   map.foeStart = foes.map((f) => {
@@ -243,9 +274,8 @@ export function encounterMap(id: string, units: number, foes: EncounterFoe[], rn
       default: y = yOf(far++);
     }
     const want = Math.max(0, Math.min(size - 1, x)) + ',' + Math.max(0, Math.min(size - 1, y));
-    const k = nearestFree(size, size, want, free) || nearestFree(size, size, want, (t) => standable(map, t) && !taken.has(t)) || want;
+    const k = nearestFree(size, size, want, free) || nearestFree(size, size, want, (t) => startable(t) && !taken.has(t)) || want;
     taken.add(k); return k;
   });
-  void rng;
   return map;
 }

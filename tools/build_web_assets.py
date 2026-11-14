@@ -67,6 +67,37 @@ for mid, a in C.get("maps", {}).items():
 for sid, a in C.get("sprites", {}).items():
     w, h = a.get("dimensions", [256, 256])
     emit("sprite-" + sid, ROOT / a["path"], (w // 2, h // 2), None, 90)
+# Map kits (rules 1.45; catalog `kit`, written by tools/art/kit_catalog.py): kit-<setting>-<piece>, drawn per tile by the
+# fight map (apps/web/src/game/kitMap.ts). A 256 px piece at 128 px (a tile shows at 46 to 64 css px: sharp at 2x), the
+# container at 192 x 128; a floor (1024 px, four tiles a side) at 512 px in its four quarter turns, -r0 to -r3 (the map's
+# ground turns by the stream, and a CSS background can't turn). A piece with "use": false is not built, so the map draws
+# what it drew before (the per-piece fallback). Only what a map shows is fetched: a URL is loaded when a tile names it.
+KIT_TURNS = (None, Image.ROTATE_270, Image.ROTATE_180, Image.ROTATE_90)  # r1 = a quarter turn clockwise
+
+def emit_turns(name, src, size):
+    src = pathlib.Path(src)
+    for r, op in enumerate(KIT_TURNS):
+        dst = OUT / f"{name}-r{r}.webp"
+        if not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime:
+            im = Image.open(src).convert("RGB").resize((size, size), Image.LANCZOS)
+            (im if op is None else im.transpose(op)).save(dst, "WEBP", quality=80, method=4)
+        assets[f"{name}-r{r}"] = f"/assets/{name}-r{r}.webp"
+
+for kid, a in C.get("kit", {}).items():
+    if not a.get("use", True):
+        continue
+    if a["kind"] == "floor":
+        emit_turns(kid, ROOT / a["path"], 512)
+    else:
+        emit(kid, ROOT / a["path"], (a["width"] // 2, a["height"] // 2), None, 88)
+# Survival's tile backdrops (rules 1.44, ART-REQUESTS S5): catalog `survival_art`, mode "backdrop", one file per setting
+# and letter (`<setting>-<a..d>-<what>.png`), emitted as `survival-backdrop-<setting>-<letter>`, the id a setting's
+# `backdrop` names in data/survival.json. The next tile's card draws it (stageView.ts); missing, it is a plain panel.
+for bid, a in C.get("survival_art", {}).items():
+    if a.get("mode") != "backdrop":
+        continue
+    setting, letter = pathlib.Path(a["path"]).stem.split("-")[:2]
+    emit(f"survival-backdrop-{setting}-{letter}", ROOT / a["path"], (800, 450), (1600, 900), 80)
 # Blessing 2.0 (docs/design/handoffs/blessing-art-brief.md): picked up from their folders as they are delivered, so the art
 # drops in with no code change (game/faithArt.ts falls back to code-drawn placeholders for anything missing):
 #   art/portraits/patrons/<id>.png -> patron-<id> (4:5 portrait)

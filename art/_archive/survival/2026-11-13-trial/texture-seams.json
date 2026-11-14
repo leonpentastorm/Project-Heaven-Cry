@@ -1,0 +1,20 @@
+{
+  "ground-1.png": {
+    "join_mean_abs_rgb_x": 7.488606770833333,
+    "join_mean_abs_rgb_y": 6.240559895833333,
+    "interior_mean_abs_rgb_x": 4.208203188640437,
+    "interior_mean_abs_rgb_y": 4.638985304150375,
+    "join_to_interior_ratio_x": 1.7795259485207298,
+    "join_to_interior_ratio_y": 1.3452424370152827,
+    "note": "Continuity metric only, not a substitute for visual inspection."
+  },
+  "ground-2.png": {
+    "join_mean_abs_rgb_x": 8.974609375,
+    "join_mean_abs_rgb_y": 49.0390625,
+    "interior_mean_abs_rgb_x": 4.7152300474503095,
+    "interior_mean_abs_rgb_y": 5.072026973362659,
+    "join_to_interior_ratio_x": 1.9033237582655986,
+    "join_to_interior_ratio_y": 9.668533459609742,
+    "note": "Continuity metric only, not a substitute for visual inspection."
+  }
+}
