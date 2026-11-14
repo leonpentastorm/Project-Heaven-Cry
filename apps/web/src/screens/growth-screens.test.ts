@@ -168,3 +168,15 @@ describe('the pack\'s Essence of Experience line', () => {
     expect(row.note).not.toMatch(/300/);
   });
 });
+
+describe('the right panel\'s squad module (the registry, rules 1.54 item 11)', () => {
+  it('the run\'s player card where the mode\'s list holds the run module, the story\'s speaking order else', async () => {
+    const { panelsOf } = await import('../game/panels');
+    const { L } = start();
+    const story = L.renderVals().rp; expect(story.runSquad).toBe(false); expect(story.storySquad).toBe(true);
+    const run = L.panelVals(4, panelsOf({ settings: { play: 'survival' }, run: { state: 'map' } } as any));
+    expect(run.runSquad).toBe(true); expect(run.storySquad).toBe(false);
+    const none = L.panelVals(4, { key: 'x', list: ['mana'], hides: [] });
+    expect(none.runSquad || none.storySquad).toBe(false);
+  });
+});

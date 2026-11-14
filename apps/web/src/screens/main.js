@@ -365,7 +365,7 @@ export class MainLogic extends DCLogic {
    *  slots React draws into (a run's panels), the reset link, and the player card's styles. `seats`: how many the
    *  player card keeps room for (four players and the Narrator; four in the Proving Ground, which has no Narrator).
    *  The order is this browser's, not the game's. */
-  panelVals(seats, PL, run) {
+  panelVals(seats, PL) {
     if (this._rpKey !== PL.key) { this._rpKey = PL.key; this._rp = null; }
     const all = PL.list, order = this._rp || (this._rp = readStoryPanels(all));
     const set = (o, focus) => { this._rp = o; saveStoryPanels(o, all); this.setState({});
@@ -378,7 +378,9 @@ export class MainLogic extends DCLogic {
     const last = order[order.length - 1] === 'squad';
     const slots = all.filter((id) => PANEL_DRAW[id] === 'slot').map((id) => ({ key: id, id, name: STORY_PANEL_NAME[id] || id, head: (STORY_PANEL_NAME[id] || id).toUpperCase(), grip: grip[id], gripKey: gripKey[id],
       style: 'order: ' + o[id] + '; flex: none; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px; background: #0D1119; border: 1px solid #232D3F' }));
-    return { o, on, grip, gripKey, slots, runSquad: !!run, storySquad: !run, custom: !isDefaultOrder(order, all), reset: () => set([...all]), names: STORY_PANEL_NAME,
+    // The squad module by the registry: the run's player card (runPanels.tsx RunSquad, in its slot) where the mode's list
+    // holds the run module, else the story's speaking order; neither where the list has no squad.
+    return { o, on, grip, gripKey, slots, runSquad: !!on.squad && !!on.run, storySquad: !!on.squad && !on.run, custom: !isDefaultOrder(order, all), reset: () => set([...all]), names: STORY_PANEL_NAME,
       // Last in the column (its first place), the player card sticks to the bottom so End turn is always in reach;
       // moved up, it sits in the flow like the others.
       squadStyle: 'order: ' + o.squad + '; flex: none; display: flex; flex-direction: column; gap: 8px; background: #0A0D13; '
@@ -1395,7 +1397,7 @@ export class MainLogic extends DCLogic {
         .concat(isHost && !g.sandbox ? [{ key: 'session', label: 'Next session', text: 'End session ' + (g.sessionN || 1) + ' and start session ' + ((g.sessionN || 1) + 1) + ': everyone recovers as after a long rest (not a day), Echo is back to 1, and once-a-session things start over (rites, the Miracle, the faith caps, grudges).',
           pick: () => { act({ type: 'session/next' }); this.setState({ restOpen: false }); } }] : []) };
     const u = g.narrator.usage, host = playerOf(g.hostId);
-    const rpV = this.panelVals(SB ? 4 : SQUAD_SEATS, PL, RUN);
+    const rpV = this.panelVals(SB ? 4 : SQUAD_SEATS, PL);
 
     return {
       ...epccgVals(this, c ? (id) => c.skills[id] || 0 : undefined), ...lightboxVals(this), code: g.code, withNarrator: !SB && !RUN, canRest: !SB && !RUN && !HIDES.has('rest'), canAsk: !HIDES.has('ask'), report: openReport,
