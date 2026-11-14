@@ -7,9 +7,10 @@
 // stage's end (StageScreen) take the middle in its place. Nothing here covers the side panels.
 // It draws runView (runView.ts); every action is a `run/*` sent through the store.
 import React from 'react';
-import { act, getState, toast, poke } from './store';
+import { act, getState, toast } from './store';
 import { placeOpen } from '@engine';
 import { PlaceScreen } from './PlaceScreen';
+import { placeClosed, closePlace } from './placeMark';
 import { runView, type RunNodeV, type OfferV, type ChoiceCharV } from './runView';
 import { PathMap } from './PathMap';
 import { gearIconUri } from './gearIcons';
@@ -125,20 +126,14 @@ function useGiveToast(g: any, me: string) {
   }, [last]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-/** Rules 1.46: the place this browser walked out of (closed on this screen only; the squad walks on from the map). Kept
- * here, not in a component: the right panel's phase control (runPanels.tsx) closes it too. */
-let closedNode: string | null = null;
-export const placeClosedAt = () => closedNode;
-export function closePlace(node: string | null) { closedNode = node; poke?.(); }
 
 export function RunScreen() {
   const st = getState(), g = st.game, me = st.me.id;
-  const closed = closedNode, setClosed = closePlace;
   useGiveToast(g, me);
   const v = g ? runView(g, me) : null;
   if (!g || !v) return <div style={{ padding: 40, color: ink.muted }}>No run is under way.</div>;
-  const visitNode = g.run?.visit?.node || null, place = placeOpen(g as any);
-  if (place && closed !== visitNode) return <PlaceScreen onLeave={() => setClosed(visitNode)} />; // rules 1.46: every safe node (in the middle since rules 1.54)
+  const place = placeOpen(g as any), run = g.run;
+  if (place && !placeClosed(run)) return <PlaceScreen onLeave={() => closePlace(run)} />; // rules 1.46: every safe node (in the middle since rules 1.54)
   if (v.state === 'loadout') return <LoadoutScreen />; // rules 1.52: the camp before node 1
   if (v.state === 'shop') return <ShopScreen />; // rules 1.42: the shop (spec 8.3)
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary
@@ -167,7 +162,7 @@ export function RunScreen() {
           {others.map((o) => <Offer key={o.charId} o={o} />)}
           {tally ? <TallyTable t={tally} compact /> : null}
           {v.kits.map((x) => <Choices key={'kit-' + x.charId} x={x} kit />)}
-          {place ? <button type="button" data-phc-reopen="" onClick={() => setClosed(null)} style={btn(true)}>Back to the {(v.note?.title || 'place')} ›</button> : v.choices.map((x) => <Choices key={'ch-' + x.charId} x={x} />)}
+          {place ? <button type="button" data-phc-reopen="" onClick={() => closePlace(null)} style={btn(true)}>Back to the {(v.note?.title || 'place')} ›</button> : v.choices.map((x) => <Choices key={'ch-' + x.charId} x={x} />)}
         </section>
       ) : null}
       <section aria-label="Path map" style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>

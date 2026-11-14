@@ -20,7 +20,7 @@ import { downloadRunReport } from './runReport';
 import { scrub } from './debug';
 import { tipProps } from './actionTip';
 import { Portal } from './modeCentre';
-import { placeClosedAt, closePlace } from './RunScreen';
+import { placeClosed, closePlace } from './placeMark';
 import { ICON } from './runIconSizes';
 import { WearBar } from './WearBar';
 
@@ -121,7 +121,7 @@ function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
     const solo = sv.party.length <= 1, word = solo ? 'Leave the shop' : 'Ready to leave';
     return sv.ready ? { key: 'leave', label: '✓ ' + word, attr: { 'data-phc-phase': 'leave' }, why: 'Waiting for ' + sv.waiting.join(', ') + '.' } : { key: 'leave', label: word, attr: { 'data-phc-phase': 'leave' }, go: () => act({ type: 'run/leave' }) };
   }
-  if (placeOpen(g as any) && placeClosedAt() !== r.visit?.node) return { key: 'leave', label: 'To the path map ›', attr: { 'data-phc-phase': 'leave' }, go: () => closePlace(r.visit?.node || null) };
+  if (placeOpen(g as any) && !placeClosed(r)) return { key: 'leave', label: 'To the path map ›', attr: { 'data-phc-phase': 'leave' }, go: () => closePlace(r) };
   if (r.state === 'tile') { const sv = stageView(g, me); return sv && sv.canGo ? { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) } : null; }
   if (r.state === 'map' && v.canGo) return { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) };
   if (r.state === 'fight' && g.combat) return { key: 'fight', label: 'To the fight', attr: { 'data-phc-phase': 'fight' }, go: () => go('combat') };
