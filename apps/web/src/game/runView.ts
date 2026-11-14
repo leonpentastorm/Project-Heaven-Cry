@@ -5,8 +5,11 @@
 import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, runWorth, BOON_CAP, relicRow, gearPreview } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
-export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null }
-export interface RunLinkV { from: string; to: string; walked: boolean; lit: boolean }
+export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null;
+  /** rules 1.48: a lane node's lane; a meeting node (junction, gate, final junction); the vault's spur step and the node it leaves */
+  lane: number | null; junction: boolean; spur: 'guard' | 'chest' | null; from: string | null }
+/** A link of the map; `back`: the vault chest's way back onto its lane (walked, never drawn as a trail). */
+export interface RunLinkV { from: string; to: string; walked: boolean; lit: boolean; back: boolean }
 export interface PartyV { id: string; name: string; level: number; hp: number; maxHp: number; credits: number; initials: string; color: string; mine: boolean; levelUp: boolean; classLine: string }
 export interface OfferCardV { i: number; id: string; name: string; rarity: string; rarityWord: string; marks: number; category: string; price: number; tip: string; lines: { key: string; label: string; value: string }[] }
 /** The pick card's short words for the gear preview's lines (the card is narrow; the hover card has the rest). */
@@ -16,7 +19,9 @@ export const NODE_LEGEND: { kind: string; word: string }[] = ['fight', 'elite', 
   .map((k) => ({ kind: k, word: (MAP_DATA.words as Record<string, string>)[k] || k }));
 export interface OfferV { charId: string; name: string; mine: boolean; canPick: boolean; cards: OfferCardV[]; instead: number }
 export interface RunViewV {
-  stage: number; depth: number; rows: number; setting: string; seed: string; state: string; title: string;
+  stage: number; depth: number; rows: number; setting: string; settingId: string; seed: string; state: string; title: string;
+  /** rules 1.48: the stage's lane count; the party has not left the camp yet (at the start every lane is lit) */
+  lanes: number; atStart: boolean;
   nodes: RunNodeV[]; links: RunLinkV[]; party: PartyV[];
   /** "Waiting for 1 player" while the leans are not all in; null when nobody has leaned or it is solo. */
   waiting: string | null; canGo: boolean; isHost: boolean; solo: boolean;
@@ -31,14 +36,18 @@ export interface RunViewV {
 export interface ChoiceCharV { charId: string; name: string; mine: boolean; canAct: boolean; credits: number; worth: string; relics: string[]; options: RunOption[] }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const wordOf = (n: RunNode) => (n.gate ? 'Gate' : (MAP_DATA.words as Record<string, string>)[n.kind] || n.kind);
+/** Rules 1.48: the theme's name of a lane node's segment ("The market road"), or null. */
+const roadOf = (n: RunNode) => (n.theme ? MAP_DATA.themes.find((t) => t.id === n.theme)?.name || null : null);
 const itemName = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
 const catOf = (id: string) => { const w: any = WEAPON[id]; if (w) return cap(String(w.category || 'weapon').replace(/_/g, ' ')); const it: any = ITEM[id]; return it?.focus ? 'Focus · ' + cap(String(it.id)) : cap(String(it?.category || 'item')); };
 /** The hover card of a node: what it gives and costs (data), and for a node that pays, the engine's XP and credits each. */
 export function nodeTip(g: GameState, n: RunNode): string {
   const r = g.run!, k = n.gate ? 'gate' : n.kind, base = (NODE_TIP as Record<string, string>)[k] || '';
-  const pay = n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss' || n.kind === 'cache' ? (n.gate ? 'gate' : n.kind) : null;
-  const nums = pay ? ' Each of you: ' + nodeXp(pay as any, n.depth, r.stage) + ' XP and ' + nodeCredits(pay as any, n.depth, r.stage) + ' credits.' : '';
-  return wordOf(n) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows + '. ' + base + nums;
+  const pay = ['fight', 'elite', 'boss', 'cache', 'vault_guard', 'vault'].includes(n.kind) ? (n.gate ? 'gate' : n.kind) : null;
+  const xp = pay ? nodeXp(pay as any, n.depth, r.stage) : 0, cr = pay ? nodeCredits(pay as any, n.depth, r.stage) : 0;
+  const nums = pay ? ' Each of you: ' + (xp ? xp + ' XP and ' : '') + cr + ' credits.' : '';
+  const road = roadOf(n), where = n.spur ? 'A dead end off the trail' : n.junction ? (n.gate ? 'Every trail meets here' : 'A junction: trails meet and part here') : road ? 'On ' + road.charAt(0).toLowerCase() + road.slice(1) : '';
+  return wordOf(n) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows + '. ' + (where ? where + '. ' : '') + base + nums;
 }
 
 export function runView(g: GameState, me: string): RunViewV | null {
@@ -47,13 +56,13 @@ export function runView(g: GameState, me: string): RunViewV | null {
   const hereNode = runNode(r, here), depth = hereNode?.depth || 0;
   const players = g.players, pl = (id: string) => players.find((p) => p.id === id);
   const nodes: RunNodeV[] = r.nodes.map((n) => ({
-    id: n.id, depth: n.depth, col: n.col, kind: n.kind, word: wordOf(n), gate: !!n.gate,
+    id: n.id, depth: n.depth, col: n.col, kind: n.kind, word: wordOf(n), gate: !!n.gate, lane: n.lane ?? null, junction: !!n.junction, spur: n.spur || null, from: n.from || null,
     state: n.id === here ? 'here' : walked.has(n.id) ? 'walked' : can.has(n.id) ? 'reachable' : n.depth <= depth ? 'passed' : 'ahead',
     tip: nodeTip(g, n),
     leans: Object.entries(r.leans).filter(([, id]) => id === n.id).map(([pid]) => ({ initials: pl(pid)?.initials || '?', color: pl(pid)?.color || '#A3AEC2', name: pl(pid)?.name || '?' })),
     why: can.has(n.id) ? null : r.state === 'map' ? runMoveProblem(g, me, n.id) : null,
   }));
-  const links: RunLinkV[] = r.nodes.flatMap((n) => n.links.map((to) => ({ from: n.id, to, walked: walked.has(n.id) && walked.has(to) && r.path.indexOf(to) === r.path.indexOf(n.id) + 1, lit: n.id === here && can.has(to) })));
+  const links: RunLinkV[] = r.nodes.flatMap((n) => n.links.map((to) => ({ from: n.id, to, walked: walked.has(n.id) && walked.has(to) && r.path.indexOf(to) === r.path.indexOf(n.id) + 1, lit: n.id === here && can.has(to), back: n.spur === 'chest' })));
   const party: PartyV[] = Object.values(g.characters).map((c) => {
     const p = pl(c.owner);
     return { id: c.id, name: c.name, level: c.level, hp: Math.max(0, c.hp), maxHp: maxHp(c), credits: creditsOf(c), initials: p?.initials || '?', color: p?.color || '#A3AEC2', mine: c.owner === me, levelUp: levelUpDue(c),
@@ -88,7 +97,8 @@ export function runView(g: GameState, me: string): RunViewV | null {
   } : null;
   const setting = SETTING[runSetting(r)]?.name || runSetting(r);
   return {
-    stage: r.stage, depth, rows: MAP_DATA.rows, setting, seed: r.seed, state: r.state,
+    stage: r.stage, depth, rows: MAP_DATA.rows, setting, settingId: runSetting(r), seed: r.seed, state: r.state,
+    lanes: r.nodes.filter((n) => n.depth === 1).length, atStart: !here,
     title: r.state === 'boon' ? 'STAGE ' + r.stage + ' CLEARED' : r.state === 'reward' ? 'Rewards' : r.state === 'over' ? 'The run is over' : depth ? 'Pick the next node' : 'Pick the first node',
     nodes, links, party, waiting, canGo: isHost && !solo && leaned > 0 && r.state === 'map', isHost, solo, note,
     offers, pending: [...offers.map((o) => o.name), ...kits.map((k) => k.name)], choices, kits,

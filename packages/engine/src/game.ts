@@ -57,11 +57,11 @@ import { setBraced, setDowned, stagger, startHidden } from './unitstate';
 import { clearConds, restoreConds } from './magic';
 import { condMods } from './condtable';
 import { runOwned } from './owned';
-import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, survivalRun, runSetting, runNode, runMoveProblem, leanWinner } from './run/state';
+import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, survivalRun, runSetting, runNode, runMoveProblem, leanWinner, reachable } from './run/state';
 import { MAP_DATA } from './run/map';
 import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
-import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult } from './run/rewards';
+import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade } from './run/rewards';
 import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf } from './run/stage';
 import { relicRow, worthOf, BOON_CAP } from './run/power';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
@@ -3130,6 +3130,9 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     case 'run/move': { // rules 1.41 (spec rules 8, 11): a player's mark on a reachable node; when everyone has marked, the squad goes
       const no = runMoveProblem(g, by, a.node); if (no) fail(no);
+      // rules 1.48: a lean matters only where the way forks (the start, a junction, the vault's fork): on a lane with one
+      // way forward the first player's click walks the squad on
+      if (reachable(g.run!).length === 1) { runEnter(g, a.node); return; }
       g.run!.leans = { ...g.run!.leans, [by]: a.node };
       const w = leanWinner(g); if (w) runEnter(g, w);
       return;
@@ -3261,7 +3264,7 @@ function closeVisit(r: RunState) {
 /** Rules 1.44: the score a run keeps at its end (rules 4, 6, 35): the renown, each character's boons, the stages' log. */
 const runScore = (g: GameState) => { const chars = Object.values(g.characters); return { renown: renownOf(chars), boons: boonsOf(chars), stages: (g.run!.stages || []).map((x) => ({ ...x, boons: { ...x.boons } })) }; };
 /** The kind of pay a node gives (the gate pays as an Elite). */
-const payKindOf = (n: RunNode): PayKind => (n.gate ? 'gate' : n.kind === 'elite' || n.kind === 'boss' || n.kind === 'cache' ? n.kind : 'fight');
+const payKindOf = (n: RunNode): PayKind => (n.gate ? 'gate' : n.kind === 'elite' || n.kind === 'boss' || n.kind === 'cache' || n.kind === 'vault_guard' || n.kind === 'vault' ? n.kind : 'fight');
 /** The squad enters a node (rules 1.41; spec rules 13, 24, 29): a new scene; a fight begins, a rest heals, a cache pays,
  * the nodes still to be built say what will be there. */
 function runEnter(g: GameState, id: string) {
@@ -3269,7 +3272,7 @@ function runEnter(g: GameState, id: string) {
   closeVisit(r); stageLog(r).nodes++; // rules 1.44: the stage's log
   r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null; r.visit = null;
   newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The gate' : word) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows);
-  if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss') { runFight(g, n); return; }
+  if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss' || n.kind === 'vault_guard') { runFight(g, n); return; }
   if (n.kind === 'shop') { // rules 1.42 (spec 8.3): no node card: the shop opens full screen at once
     const sh = openShop(r, n, runSetting(r)), f = FACES.find((x) => x.id === sh.face);
     r.visit = openVisit(g, n); // rules 1.43: the shop's grade step is counted on the visit (run/progress.ts)
@@ -3285,6 +3288,11 @@ function runEnter(g: GameState, id: string) {
     r.renown = renownOf(Object.values(g.characters)); // rule 6
     r.note = { ...r.note, xp, credits: cr, ammo };
     r.lasting = Object.fromEntries(Object.values(g.characters).map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); r.state = 'reward'; } // rules 1.43 (rule 41): the cache's pick of kit
+  if (n.kind === 'vault') { // rules 1.48: the vault's chest: credits and a weapon of three one grade above the stage's picks; then back onto the lane
+    const k: PayKind = 'vault', cr = nodeCredits(k, n.depth, r.stage), grade = vaultGrade(r.stage), offers: Record<string, RunOffer> = {};
+    for (const c of Object.values(g.characters)) { const got = creditsFor(c, cr); earnCredits(c, got); stageLog(r).credits += got; offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed, { grade, ammo: packCount(k) }); }
+    r.note = { ...r.note, credits: cr };
+    r.offers = offers; r.state = 'reward'; }
   push(g, { kind: 'system', head: (n.gate ? 'THE GATE' : word.toUpperCase()), text: text || word });
 }
 /** Give a character the ammunition pack (rule 23); the names of what it got, for the panel. */
@@ -3297,11 +3305,11 @@ function runAmmo(c: Character, count: number): string[] {
 function runFight(g: GameState, n: RunNode) {
   const r = g.run!, chars = Object.values(g.characters).filter((c) => !c.dead);
   const enc = composeEncounter({ levels: chars.map((c) => c.level), node: n, stage: r.stage, setting: runSetting(r), seed: r.seed, last: r.last });
-  const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' ? 'hard' : 'standard', g.rng);
+  const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' || n.kind === 'vault_guard' ? 'hard' : 'standard', g.rng);
   magicIn(g, cb);
   cb.noXp = true; // the run pays its own XP (rule 14)
   cb.tape = []; // rules 1.47: the fight keeps its effects for the tally (run/tally.ts)
-  sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
+  sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind === 'vault_guard' ? 'THE VAULT\'S GUARD' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
   r.state = 'fight'; r.last = enc.template; r.out = [];
   r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
     target: enc.target, spent: enc.spent, scaleHp: enc.scaleHp, foes: enc.foes.map((f) => ({ name: f.name, tier: f.tier, level: f.level!, weapon: f.weapon, ...(f.kind ? { kind: f.kind } : {}), ...(f.caster ? { caster: f.caster } : {}), ...(f.scale ? { scale: f.scale } : {}) })) }] };

@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 58 stats, 24 condition fields, 483 primitive exports, 130 fx kinds, 171 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 58 stats, 24 condition fields, 485 primitive exports, 130 fx kinds, 171 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1117,11 +1117,12 @@ Families: `body`, `brain`, `heart`.
 | name | signature or shape | what for |
 | --- | --- | --- |
 | `Spawn` | `type Spawn = 'far' \| 'near' \| 'between' \| 'back' \| 'central' \| 'flanks' \| 'split'` | Where a slot's foes start (spec section 3.2): the far edge, nearer, between, behind the line, the middle of the far line, both flanks, or split top and bottom. |
-| `EncounterSlot` | `interface EncounterSlot { tier, caster, boss, range, kind, tags, hidden, req, max, from_depth, spawn }` | One slot of a template: a tier (or a caster archetype, whose tier it takes, or the setting's Boss), how many are required (`req`) or allowed (`max`), from which depth, its weapons' range, a fixed kind, tags, a… |
+| `EncounterSlot` | `interface EncounterSlot { tier, caster, boss, guard, range, kind, tags, hidden, req, max, from_depth, spawn }` | One slot of a template: a tier (or a caster archetype, whose tier it takes, or the setting's Boss), how many are required (`req`) or allowed (`max`), from which depth, its weapons' range, a fixed kind, tags, a… |
 | `EncounterTemplate` | `interface EncounterTemplate { id, name, nodes, from_depth, weight, min_party, kinds, slots, text, hazard }` | A template (spec section 3.2, `survival.json templates`). |
 | `SettingLayout` | `interface SettingLayout { stamps, cover, hazard, props, kit }` | A setting's map recipe (rules 1.45): its stamps (ids in `layout.stamps`), its cover kinds, its hazard and chance (or none), its props by object kind (a count range each), and its kit (the art folder `art/sprit… |
-| `SettingDef` | `interface SettingDef { id, name, kinds, boss, pool, pools, layout }` | A setting, one tile of the world (spec section 3.3, `survival.json settings`). |
-| `FightKind` | `type FightKind = 'fight' \| 'elite' \| 'gate' \| 'boss'` | The kind of fight a node holds (the gate is an Elite node every path passes). |
+| `SettingDef` | `interface SettingDef { id, name, kinds, boss, vault_guard, pool, pools, layout }` | A setting, one tile of the world (spec section 3.3, `survival.json settings`). |
+| `FightKind` | `type FightKind = 'fight' \| 'elite' \| 'gate' \| 'boss' \| 'vault_guard'` | The kind of fight a node holds (the gate is an Elite node every path passes; rules 1.48: the vault's guard). |
+| `VAULT` | `VAULT: { guard_factor: number; grade_up: number; grade_max: string }` | Rules 1.48: the vault (survival.json `vault`): its guard's budget is an Elite fight's x `guard_factor` (bulk and pressure); the chest's weapon is `grade_up` grades above the stage's pick ceiling, at most `grad… |
 | `TEMPLATES` | `TEMPLATES: EncounterTemplate[]` | The encounter templates (`survival.json templates`). |
 | `SETTINGS` | `SETTINGS: SettingDef[]` | The settings, the world's tiles (`survival.json settings`). |
 | `SETTING` | `SETTING: Record<string, SettingDef>` | A setting by id. |
@@ -1149,10 +1150,11 @@ Families: `body`, `brain`, `heart`.
 | --- | --- | --- |
 | `NODE_TEXT` | `NODE_TEXT: Record<string, string>` | What each kind of node without a fight says on its panel (`survival.json nodes`; the shop, Forge, training ground, shrine and Crossroads until build steps 4 and 4a). |
 | `NODE_TIP` | `NODE_TIP: Record<string, string>` | The path map's hover card for each kind of node (`survival.json tips`; the gate has its own). |
-| `PayKind` | `type PayKind = FightKind \| 'cache'` | The node kinds that pay: the fights, and a cache. |
+| `PayKind` | `type PayKind = FightKind \| 'cache' \| 'vault'` | The node kinds that pay: the fights, a cache, and (rules 1.48) the vault's chest. |
 | `nodeXp` | `nodeXp(k: PayKind, depth: number, stage: number): number` | XP each character takes at a node (section 3.1): f(d) = base + per_depth x (d - 1), x the kind, x the stage's. |
 | `nodeCredits` | `nodeCredits(k: PayKind, depth: number, stage: number): number` | Credits each character takes at a node (section 3.1, 11.1): c(d) = base + per_depth x d, x the kind, x the stage's. |
 | `packCount` | `packCount(k: PayKind): number` | The ammunition pack's count at a node (rule 23): magazines' worth for each gun. |
+| `vaultGrade` | `vaultGrade(stage: number): Rarity` | Rules 1.48: the grade of the vault's weapon in a stage: `vault.grade_up` above the stage's pick ceiling, at most `vault.grade_max` (stage 1 Masterwork, from stage 2 Relic). |
 | `gunsOf` | `gunsOf(c: Character): string[]` | The guns a character carries, one entry each (in hand, off hand, pack). |
 | `magazineWorth` | `magazineWorth(id: string): PackItem[]` | A magazine's worth for one gun (rule 23): a full magazine, or a magazine's capacity of loose rounds. |
 | `ammoPack` | `ammoPack(c: Character, n: number, guns: string[] = gunsOf(c)): PackItem[]` | The ammunition pack (rule 23): `n` magazines' worth for every gun carried, and the cores for a Sigil or Visualizer focus carried. |
@@ -1162,7 +1164,7 @@ Families: `body`, `brain`, `heart`.
 | `stageCeiling` | `stageCeiling(stage: number): Rarity` | The highest grade a stage reaches (rule 26, rules 1.43): `rewards.ceiling` by stage (stage 1 Fine, stage 2 Masterwork, from stage 3 Relic): what its picks give and what its shops and Forges grade to. |
 | `cappedRarity` | `cappedRarity(r: Rarity, stage: number): Rarity` | A rolled rarity capped by the stage's ceiling (rule 26): a Celestial roll is a Relic (Celestial is a Relic and a quirk, and no quirk is in data yet). |
 | `doorOf` | `doorOf(c: Character): string \| null` | The door a character leans on (rule 28's preselection): the focus kind whose door skill has the most points (1 or more), else null. |
-| `weaponOffer` | `weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' \| 'elite' \| 'boss'; ammo?: number } = {}):…` | The weapon pick at a node (rule 26): `offer` weapons within the price band, the first for the character's own door (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolle… |
+| `weaponOffer` | `weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' \| 'elite' \| 'boss'; ammo?: number; /** rule…` | The weapon pick at a node (rule 26): `offer` weapons within the price band, the first for the character's own door (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolle… |
 | `pickedItem` | `pickedItem(w: RunWeapon): PackItem[]` | A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove as a focus, as the creation kits and the Proving Ground's give pack one). |
 
 #### Credits and prices (rules 1.41) (`credits.ts`)
@@ -1272,7 +1274,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `light` | `at`, `tiles`, `side` | sigil.ts:1129 | 1 |
 | `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1575 | 1 |
 | `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2451 | 2 |
-| `mana` | `band`, `mana` | game.ts:3856 | 2 |
+| `mana` | `band`, `mana` | game.ts:3864 | 2 |
 | `mask` | `target`, `at`, `fade` | magic.ts:490 | 2 |
 | `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image` | combat.ts:1422 | 6 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:35 | 3 |

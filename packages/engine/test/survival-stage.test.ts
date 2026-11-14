@@ -21,8 +21,8 @@ const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); 
 const boon = (id: string) => BOONS.find((b) => b.id === id)! as any;
 const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
-/** Take a node: every player marks it. */
-const take = (g: GameState, id: string, n: number) => { let x = g; for (let i = 0; i < n; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
+/** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
+const take = (g: GameState, id: string, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
 /** The squad on a fight node (depth 3), its fight under way; `prep` changes the state first (relics, HP). */
 function inFight(prep: (g: GameState) => void = () => {}, pcs: Pc[] = DUO): GameState {
   const g0 = clone(started(pcs)), r = g0.run!, n = r.nodes.find((x) => x.depth === 3)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;

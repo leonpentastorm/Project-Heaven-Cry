@@ -29,6 +29,13 @@
 > besides:** a one-tile `container` per setting (the engine's container is one tile; the 1.5-tile one is drawn shrunk).
 > The list is `ART-REQUESTS.md` S8.
 
+> **New, and next in line (Leon, 13 Nov, rules 1.48): batch 7, the path map backdrops and the marker sheet (7
+> images).** After seeing the first path map Leon ruled it a themed overland map of lanes ("Also theme it. Ask the
+> artist."). Make **batch 7 right after the backdrops of batch 1**, before the kit's other five settings: the path map
+> is the first screen of every run. **Batch 2 (the two path-map directions) is replaced by batch 7** and is no longer
+> wanted. The game draws the trails, the markers and every word on top: no paths, no markers, no text in the
+> paintings.
+
 Everything the Survival mode (`docs/ROADMAP.md`, "Survival mode" and "The roguelike: Leon's scope") needs that an image
 generator can make **now**. Leon, 13 Nov 2026: "Artist is free, ask for more paintings, prepare for Survival mode
 even." The artist is an image generator (GPT): **one image a prompt**. For each image paste **the style block of its
@@ -43,18 +50,19 @@ and runs the checks (`python3 tools/validate_art.py`, `npm run assets`).
 `art/illustrations/survival/` (backdrops in `backdrops/`, the path map in `map/`, node cards in `nodes/`, run cards in
 `cards/`), portraits in `art/portraits/survival/`, gear re-dos replace the files in `art/icons/gear/` (same names).
 
-## Counts (294 images)
+## Counts (299 images: 294, less batch 2's two, and batch 7's seven)
 
 | Batch | What | Images | Style block |
 | --- | --- | --- | --- |
 | 1 | **Fight backdrops**: six settings, four each (also the scenes-model training set) | **24** | Scene block (below) |
 | 1c | **The map kit** (what the game assembles maps from: ground tiles, decals, walls, one sprite per object kind, set dressing; 36 a setting) | **216** | Kit block (below) |
 | 1b | **Painted battle maps** (top-down, three a setting; training material first) | **18** | Map block (below) |
-| 2 | **The path map**: two directions for Leon to pick from | **2** | Scene block, map variant |
+| 2 | ~~**The path map**: two directions for Leon to pick from~~ **replaced by batch 7** (rules 1.48) | ~~2~~ 0 | |
 | 3 | **Node scenes**: shop (3), free rest (2), Elite's lair, Boss's arena door, reward cache | **8** | Scene block, card variant |
 | 4 | **People**: shopkeepers (3), field medic, mission-giver, Elite and Boss faces (5) | **10** | Portrait block (copied from the 5 Nov style guide) |
 | 5 | **Gear follow-ups**: three missing magazines and ten re-dos for 32 px | **13** | Gear block (copied from `GPT-PROMPTS-2026-11-13-gear.md` section 1) |
 | 6 | **Survival cards** (optional, last): title, run over, run won | **3** | Scene block, card variant |
+| 7 | **Path map backdrops** (rules 1.48): one overland map a setting (six), and one inked marker sheet | **7** | Scene block, overland-map variant; marker sheet: its own block |
 
 ## The order to make them in
 
@@ -63,7 +71,7 @@ What the first playable Survival build needs first:
 1. **Batch 1, settings 1 to 3 first** (12 backdrops: the AHOC outpost, the Central City back streets, the Daggerfall
    battlefield). A run needs one setting per fight to start; send **the first four (the AHOC outpost set) to Leon as the
    style check** for the whole scenes set, then carry on without waiting.
-2. **Batch 2** (the path map): the first screen of the run; Leon picks one of the two.
+2. **Batch 7** (the path map backdrops and the marker sheet, rules 1.48; it replaces batch 2): the first screen of every run; the AHOC map first, to Leon as the style check, then the other five and the marker sheet.
 3. **Batch 3** (node scenes) and **batch 4** (the shopkeepers, medic, mission-giver first; the five Elite and Boss faces
    later): the shop and the rest need them.
 4. **Batch 1c, the map kit** (right after the backdrops and BEFORE the painted maps; settings 1 to 3 first, the AHOC kit to Leon as the kit style check; the core 21 pieces of a setting first).
@@ -841,6 +849,8 @@ first backdrop from batch 1 once it exists (the matched set shares palette and m
 
 ## Batch 2: the path map (2 for Leon to pick from)
 
+> **Replaced by batch 7 (rules 1.48, 13 Nov): do not make these two.** The path map is now a themed overland map, one a setting; kept here for the record.
+
 The UI draws the nodes, paths, icons and text on top (this is the path-selection screen's backdrop, not a battle map; the battle maps are batch 1b). Both are wide, 16:9, 2560 x 1440, the scene block's rules apply except: the centre may be busier
 (it is a map of places), but leave **three or four large calm zones** (left, centre and right thirds each with a calm
 band) where the nodes and lines will sit, and keep it dark enough (mid-dark values) for pale lines and chips.
@@ -963,3 +973,96 @@ Scene block, **card variant** (4:3, 2048 x 1536, no characters). The UI puts the
 **59. `run-over.png`** A "run over" card: the same road at night, a single dropped lantern burning low on a cracked step in the foreground, mana motes rising from the ground (the dead feed the air), the lit windows far away and dim. Quiet loss, not gore.
 
 **60. `run-won.png`** A "run won" card: dawn on the same road, the paths merging into one wide road to a lit city gate, the lantern re-lit and placed on a wall, a pale gold sky, warm ivory light. Earned relief, not triumph.
+
+---
+
+## Batch 7: path map backdrops (6) and the marker sheet (1) (rules 1.48; replaces batch 2)
+
+The path map is **a themed overland map**: the trails of a stage run left to right from a camp (left edge) to the Boss's
+lair (right edge), as on an old hand-drawn field chart. **The game draws on top of the painting:** the dashed trails
+(three or four lanes that meet only at a few junctions), the inked node markers, the camp and Boss markers, a legend and
+every word. So the painting carries **no paths, no roads drawn as routes, no markers, no icons, no text, no border, no
+compass rose, no frame**. Its job is the ground: what this setting looks like from high above.
+
+**The art contract** (survival-spec section 4.3): catalog id `survival-map-<setting>`, file
+`art/illustrations/survival/maps/<setting>.png`, **16:9, 2560 x 1440 PNG**. **The middle band** (about the middle 60%
+of the height, the whole width) is **calm and mid-toned**: soft ground texture only, no strong darks or lights, no
+busy detail, so white ink lines and white markers read on it at a glance. Terrain masses, ridges, ruins, water and the
+setting's landmarks sit toward the **top and bottom edges**. **The left edge** holds a small camp (tents or a fire ring
+seen from above); **the right edge** the Boss's lair as a landmark. Overall mid-dark values, gentle contrast.
+
+**Overland-map variant of the scene block:** paste the scene block, then replace its backdrop paragraph (from "This is
+a backdrop" to "about 40% under a grid.") and its camera sentence with:
+
+> **This is the backdrop of an overland map screen; the game draws trails, markers and labels on it.** An overhead view
+> of the place's ground as if painted on an old field chart: a slightly raised top-down view (no horizon, no sky, no
+> vanishing lines), the land seen whole from high above, painted in the same Heavenprint gouache and ink as the
+> setting's backdrops so it is clearly the same place. No characters, no creatures, no figures. **The middle band, about
+> the middle 60% of the height across the whole width, stays calm, open and mid-toned** (plain ground, soft texture,
+> gentle values) so white lines and white icons read on it; the strongest shapes, landmarks and values sit along the
+> top and bottom edges. At the far left edge, a small camp seen from above (tents or a fire ring); at the far right
+> edge, the Boss's lair as a landmark. **No drawn paths or roads that read as routes, no markers, no icons, no symbols,
+> no text, no numbers, no compass rose, no border, no frame, no legend, no grid lines.** Mid-dark overall, gentle
+> contrast, one soft light from the upper left.
+
+**Attach as references:** the scene block's references, plus **the setting's own batch 1 backdrops** (so the map is
+the same place) and the delivered map-kit ground tile of that setting if it exists. Save as
+`art/illustrations/survival/maps/<setting>.png`.
+
+**61. `ahoc.png`** (`survival-map-ahoc`) The AHOC chapter outpost's ground from high above: a frontier world's rock
+shelf and gravel flats around a walled compound; along the top edge a cliff with the outpost's bunkers, gates and a
+radar mast set into it, along the bottom edge crate yards, a landing pad ring and a perimeter fence fading out. The
+middle band a wide plain of pale gravel and scrub, dusted with tyre scuffs too faint to read as roads. Left edge: a camp
+of three tents and a fire ring behind sandbags. Right edge: the warframe's hangar, a huge armoured shed with its doors
+shut and floodlights along its roof. Cold grey stone, rust-red and ivory stencil marks (no letters), amber lamp dots.
+
+**62. `city.png`** (`survival-map-city`) Central City's back streets from above: along the top and bottom edges dense
+blocks of rooftops, courtyards, laundry lines, water tanks and signal masts, a few lit windows; the middle band a broad
+run of wet flagstones and low flat roofs in one calm mid-tone, alleys only hinted. Left edge: a camp on a rooftop, a
+tarp and a stove. Right edge: the Crawler elder's den, a sunken courtyard with a dark stair going down under an
+overgrown arch. Rain-dark slate, sodium-amber light, teal shadow.
+
+**63. `field.png`** (`survival-map-field`) A Daggerfall-type battlefield from above: along the top edge trench lines,
+a wrecked walker on its side and craters in rows; along the bottom edge barbed wire, shell holes filled with dark water
+and a broken bunker; the middle band churned brown earth smoothed into one calm, low-contrast field. Left edge: a
+dug-in camp with a fire under a canvas lean-to. Right edge: the Ork warlord's war camp, a ring of scrap walls and
+spiked plates round a heap of loot. Mud browns, ash grey, a sick ochre sky's light on the ground.
+
+**64. `works.png`** (`survival-map-works`) A machine works and drone foundry from above: along the top edge gantries,
+casting pits glowing faintly, roofs of long sheds and conveyor lines; along the bottom edge a scrap yard of stacked
+hulls and a cooling pond; the middle band a vast swept concrete floor with faint painted bay markings too worn to read.
+Left edge: a camp of crates and a work lamp in a corner of the floor. Right edge: the foundry's heart, a great round
+furnace hall with its roof vents lit. Oil black, steel blue, furnace orange in small doses.
+
+**65. `shrine.png`** (`survival-map-shrine`) A shrine and cathedral district from above: along the top edge the roofs
+of a cathedral nave and its buttresses, cloisters and a candle-lit courtyard; along the bottom edge a graveyard of
+plain markers (no writing), a reflecting pool and lancet-arched gatehouses; the middle band a pale paved processional
+square in soft stone, calm. Left edge: a pilgrims' camp under an arcade. Right edge: the upper-realm patch's sanctum, a
+too-perfect white dome on a raised platform, out of place. Bone white, lead grey, candle gold, a little violet in the
+shadows.
+
+**66. `rim.png`** (`survival-map-rim`) A rim station from above: along the top edge hull plates, docking arms, radiator
+fins and a ring of the black hole's accretion light at the frame's corner; along the bottom edge container stacks, a
+cargo crane and airlock collars; the middle band a long, plain deck of riveted plates under even light. Left edge: a
+camp of bedrolls in a container's lee. Right edge: the warframe's bay, a sealed armoured hangar door in the hull with
+warning chevrons (no text). Gunmetal, ice blue, a thin line of accretion gold.
+
+**67. `node-markers.png`** **The inked marker sheet** (its own block, not the scene block):
+
+> Draw a sheet of 13 map markers for a game's overland map, in pure white flat ink on a transparent background (PNG
+> with alpha), in the house icon style of the attached trait icons (`art/icons/traits/mind-without-fog.png` is the
+> master): bold flat white shapes, a confident inked silhouette with a few interior cuts, no outlines in another
+> colour, no shading, no gradients, no texture, no colour at all. Each marker is a self-contained emblem that reads at
+> 32 px, laid out on a 4 x 4 grid of 512 x 512 cells (3 cells empty), each centred in its cell with generous margin.
+> In order: (1) crossed blades (a fight), (2) a horned mask (an Elite), (3) a horned skull (the vault's guard), (4) a
+> great skull, larger and crowned with jagged plates (the Boss), (5) a campfire with crossed logs (a rest), (6) a
+> market stall with an awning (a shop), (7) an anvil with a hammer (a forge), (8) a target dummy on a post (a training
+> ground), (9) a shrine arch with a small flame inside (a shrine), (10) a crossroads signpost with two arms (a
+> crossroads), (11) a strongbox with straps (a cache), (12) a treasure chest, lid shut, banded (the vault), (13) a camp
+> tent with a pennant (the start). No text, no numbers, no letters, no frame, no background. Invented shapes, nothing
+> recognisable from real-world works or brands. 2048 x 2048 PNG.
+
+They **replace the SVG stand-ins** the game draws today (`apps/web/src/game/runIcons.ts`): when the sheet lands, Claude
+cuts it into one file a marker (`art/icons/nodes/<kind>.png`, ids `icon-node-<kind>`; the camp `icon-node-start`) and
+the path map draws them; the line icons stay the fallback.
+

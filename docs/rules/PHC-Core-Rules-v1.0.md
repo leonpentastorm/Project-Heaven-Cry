@@ -5524,6 +5524,56 @@ two lines in `game.ts`, `apps/web/src/game/` (`tallyView.ts`, `RunTally.tsx`, `r
    each character's build at the end (level, class, points, perks, gear, boons). Nothing is sent; no key is in it. The
    Report a problem bundle carries the same as its `run` part when a run is on the room.
 
+## Rules revision 1.48: the path map as lanes, junctions and one vault (Survival, Leon 13 Nov)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-lanes.md`) from Leon's ruling after he saw the first path map
+(survival-spec, "Settled by Leon", third block): *"when you pick a path usually you need to go straight for several turn
+before a crossroad or something let you choose another, not all nodes can go up down another path. Only the first node
+is the one that can choose every path to go, this lead to a choice. Also let the engine generate deadends that have
+strong fight and guard extra treasure chest, 1 per map. Also theme it. Ask the artist."* It replaces rules 1.40's rows
+(every node linking to two of the next row, "a choice of two kinds at 12 of 14 steps") and rule 9 (a)'s guarantee.
+Every number is in `data/survival.json` (`map`, `vault`) and PROVISIONAL (items 3500 to 3514). Code: `run/map.ts`, the
+run reducer's `run/move` and `runEnter` (`game.ts`), `run/encounter.ts` (the guard's budget and name), `run/rewards.ts`
+(the chest's grade), `apps/web/src/game/PathMap.tsx` (the overland map).
+
+1. **Lanes.** A stage's map is 3 or 4 lanes (`map.lanes`, by weight). The stage starts at the camp, before depth 1,
+   from which every lane can be taken. A lane is a run of nodes with exactly one way forward.
+2. **Junctions.** Lanes meet only at junctions: two or three neighbouring lanes (`junction.sizes`) merge into one node
+   and split again onto the same lanes; there, and only there, a party changes lane. Between two meeting nodes a lane
+   runs straight for 2 to 4 nodes (`junction.segment`; that run is a **segment**). Every lane meets the others at the
+   gate (row 8, as before) and at the **final junction** (row 13), which leads to row 14's shop and rest (both, as
+   before) and so to the Boss. With 15 rows and segments of 2 to 4, the stretch before the gate takes one junction row
+   (depth 3, 4 or 5) a group of lanes, and the stretch after it runs straight from the gate to the final junction. No
+   two links cross.
+3. **Reading ahead.** Each segment takes a **theme** (`map.themes`: the hard road an Elite, the market road a shop, the
+   armourer's road the Forge, the drill road a training ground, the quiet road a rest; each with its own fill), and the
+   segments leaving one node take different themes and never offer the same things: the choice is made by reading the
+   lanes ahead (the whole map is visible from the start). A junction node rolls its kind from `junction_kinds`.
+4. **The guarantees, for lanes** (repaired deterministically in this order; a draw that can't meet them is drawn again
+   from the next stream, `map#<stage>#<n>`, at most `MAP_DRAWS` 8 times; never Math.random): (a) every route from the
+   camp to the Boss passes a shop and a rest before row 14 (`every_route`); (b) from the camp and from every junction a
+   shop lies at most `shop_gap` 6 nodes ahead on some route; (c) the reference route (spec 5.4) exists: a shop in rows 3
+   to 7 and in 9 to 12, a rest in 3 to 12, a Forge in 3 to 13, shops never more than 6 apart; (d) the segments from one
+   node differ. The placement rules stand (row 1 plain fights, no Elite before depth 4 nor in rows 7 and 9, no shop or
+   rest in row 13, no special kind linked to its own kind).
+5. **The lean** (spec rule 11) matters only where the way forks: at the camp, at a junction and at the vault's fork. On
+   a lane with one way forward the first player's click walks the squad on.
+6. **The vault.** One dead end a map: a spur of two nodes off an **edge lane** node (`vault.edge`) of depths 6 to 10
+   (`vault.depths`, the middle third), never a junction. First the **vault's guard**, a fight with an Elite fight's
+   budget × `vault.guard_factor` 1.3 (bulk and pressure), anchored by the setting's named guard (`settings[].vault_guard`,
+   an Elite; the template `vault_watch`); it pays as an Elite (XP and credits × 1.5, two magazines, a weapon pick at
+   Elite rarity) and counts in the tally and the stage's log like any fight; a wipe there ends the run like any wipe.
+   Then **the vault**: each character takes credits (`credits.vault` 2 × c(d)) and a pick of three weapons or foci at
+   `vault.grade_up` 1 grade above the stage's pick ceiling, at most `vault.grade_max` Relic (stage 1 Masterwork, from
+   stage 2 Relic; a Relic comes with its named property, or as Masterwork when none fits the cap), or credits instead.
+   It leads nowhere: after it the party walks on along the lane it left (the way back is free and takes no time). Taking
+   it is a choice at the fork ("The trail forks: a guarded vault"); a party may pass it by.
+7. **Drawn as a themed overland map** (spec 4.3 and 8.2): the setting's painted backdrop (`survival-map-<setting>`,
+   2560 × 1440; the art contract in spec 4.3), or until it lands a dark field chart drawn in code; the lanes as dashed
+   trails curving between the markers (a small jitter seeded by each node's id), the walked trail solid, the open ones
+   lit; nodes as inked markers (the camp a tent, the junctions diamonds, the vault a chest and its guard a horned skull,
+   the Boss the largest); a legend under the map.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8798,3 +8848,18 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3404. **The tally's display (rules 1.47 item 4):** the reward screen's small table; the summary's run and per-stage tables. PROVISIONAL.
 3405. **Report a run (rules 1.47 item 5):** one JSON file, builds at the end only (the start sheets are level 1 and are not kept). PROVISIONAL.
 3406. **Items 3400 to 3406 are rules 1.47's.**
+3500. **Lanes (rules 1.48 item 1):** `map.lanes` 3 or 4, equal weights. PROVISIONAL.
+3501. **Junctions (rules 1.48 item 2):** `junction.sizes` 2 or 3 lanes, equal weights; segments 2 to 4 nodes (`junction.segment`); the final junction at row 13 (`final_row`). Measured over 1,000 seeds × 5 stages: junction rows (the final one included, the gate not) 2 in 67% of maps, 3 in 33%; first-half junctions at depth 3, 4, 5 a third each; segments 2 nodes 22%, 3 nodes 22%, 4 nodes 56%. PROVISIONAL.
+3502. **Junction kinds (rules 1.48 item 3):** `junction_kinds` fight 8, shop 2, rest 2, event 1, cache 1, shrine 1, training 1. PROVISIONAL.
+3503. **Themes (rules 1.48 item 3; names Suggested):** hard (an Elite; weight 3), market (a shop, fill fight 4 cache 1; 3), smithy (the Forge; 2), drill (a training ground, fill fight 3 shrine 1; 2), quiet (a rest, fill fight 4 event 1; 2). PROVISIONAL.
+3504. **Every route passes a shop and a rest before row 14 (rules 1.48 item 4 a; `every_route`).** It is what puts about 6 shops and 6 rests on a map (rules 1.40 had about 4 and 3). PROVISIONAL.
+3505. **A shop within 6 nodes of the camp and of every junction (rules 1.48 item 4 b; `shop_gap` 6, as before).** PROVISIONAL.
+3506. **Redraws (rules 1.48 item 4):** `MAP_DRAWS` 8 (code); measured, more than 95% of maps are the first draw (the test holds it). PROVISIONAL.
+3507. **The lean only at a fork (rules 1.48 item 5).** PROVISIONAL.
+3508. **The vault's place (rules 1.48 item 6):** `vault.depths` [6, 10], `vault.edge` true (the spur drawn outward). PROVISIONAL.
+3509. **The vault's guard (rules 1.48 item 6):** `vault.guard_factor` 1.3; `rounds.vault_guard` 6.5; pays `xp.vault_guard` 1.5, `credits.vault_guard` 1.5, `ammo_pack.vault_guard` 2, its pick at Elite rarity in `price_band.vault_guard` 1.25; the six named guards (Suggested): Strongroom warden, The fence's bruiser, Ork loot-keeper, Vault press, Reliquary warden, Bonded-store sentinel. PROVISIONAL.
+3510. **The vault (rules 1.48 item 6):** `credits.vault` 2 (× c(d)), `xp.vault` 0, `ammo_pack.vault` 1, `price_band.vault` 1.5, `vault.grade_up` 1, `vault.grade_max` relic. In stage 1 its Masterwork is the stage's prize, a grade the shops and Forges of stage 1 do not sell (spec 11.6). PROVISIONAL.
+3511. **The vault is a pick on the map, not a place (rules 1.48 item 6; as the cache, item 3311).** PROVISIONAL.
+3512. **Fights on a route (rules 1.48; measured):** 5.75 a route on average, 85% of routes in the spec's 5 to 8; the stage-1 reference route about 2,500 XP and 2,560 credits, an average route about 2,750 and 2,720 (spec 11.1 had 3,026 and 2,860); the vault adds about 380 XP and 845 credits, optional. PROVISIONAL.
+3513. **The map's backdrop (rules 1.48 item 7):** `survival-map-<setting>`, 2560 × 1440, the art contract in survival-spec 4.3; the field chart drawn in code until it lands. PROVISIONAL.
+3514. **Items 3500 to 3514 are rules 1.48's.**

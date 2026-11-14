@@ -10,7 +10,7 @@ import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
 import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
-import { ENC_BUDGET, type FightKind } from './encounter';
+import { ENC_BUDGET, VAULT, type FightKind } from './encounter';
 import type { RunOffer, RunWeapon } from './state';
 import { capRoom, rollProps, worthOf } from './power';
 import { statQuery } from '../effects/hooks';
@@ -21,9 +21,10 @@ const SV: any = svJ;
 export const NODE_TEXT: Record<string, string> = SV.nodes;
 /** The path map's hover card for each kind of node (`survival.json tips`; the gate has its own). */
 export const NODE_TIP: Record<string, string> = SV.tips;
-/** The node kinds that pay: the fights, and a cache. */
-export type PayKind = FightKind | 'cache';
-const mult = (o: { elite: number; boss: number; cache: number }, k: PayKind) => (k === 'elite' || k === 'gate' ? o.elite : k === 'boss' ? o.boss : k === 'cache' ? o.cache : 1);
+/** The node kinds that pay: the fights, a cache, and (rules 1.48) the vault's chest. */
+export type PayKind = FightKind | 'cache' | 'vault';
+/** A kind's multiplier in a table of them (the gate pays as an Elite; a kind the table does not name, x 1). */
+const mult = (o: Record<string, number>, k: PayKind) => (k === 'gate' ? o.elite : k === 'fight' ? 1 : o[k] ?? 1);
 const stageXp = (s: number) => { const l: number[] = ENC_BUDGET.stage.xp; return l[Math.max(0, Math.min(l.length - 1, s - 1))]; };
 /** XP each character takes at a node (section 3.1): f(d) = base + per_depth x (d - 1), x the kind, x the stage's. */
 export const nodeXp = (k: PayKind, depth: number, stage: number): number =>
@@ -33,6 +34,12 @@ export const nodeCredits = (k: PayKind, depth: number, stage: number): number =>
   Math.round((SV.credits.base + SV.credits.per_depth * depth) * mult(SV.credits, k) * (1 + ENC_BUDGET.stage.credits * (Math.max(1, stage) - 1)));
 /** The ammunition pack's count at a node (rule 23): magazines' worth for each gun. */
 export const packCount = (k: PayKind): number => (k === 'gate' ? SV.ammo_pack.elite : SV.ammo_pack[k] ?? SV.ammo_pack.fight);
+/** Rules 1.48: the grade of the vault's weapon in a stage: `vault.grade_up` above the stage's pick ceiling, at most
+ * `vault.grade_max` (stage 1 Masterwork, from stage 2 Relic). */
+export const vaultGrade = (stage: number): Rarity => {
+  const v = VAULT, i = Math.min(RARITIES.indexOf(stageCeiling(stage)) + v.grade_up, RARITIES.indexOf(v.grade_max as Rarity));
+  return RARITIES[Math.max(0, i)];
+};
 
 /** Is this a gun (a weapon with a magazine and a calibre)? Thrown things and blades are not. */
 const isGun = (id: string) => { const w: any = WEAPON[id]; return !!w && w.magazine != null && !!w.ammo && w.category !== 'thrown'; };
@@ -71,7 +78,7 @@ const PICKABLE: string[] = [...Object.keys(WEAPON).filter((id) => (WEAPON[id] as
 const categoryOf = (id: string): string => (WEAPON[id] as any)?.category || ((ITEM[id] as any)?.focus ? 'focus' : 'item');
 /** The highest price a pick may roll at a node (rule 26), on the standard price. */
 export const priceBand = (k: PayKind, depth: number, stage: number): number => {
-  const b = SV.rewards.price_band; return (b.base + b.per_depth * depth + b.per_stage * (Math.max(1, stage) - 1)) * (k === 'elite' || k === 'gate' ? b.elite : k === 'boss' ? b.boss : 1);
+  const b = SV.rewards.price_band; return (b.base + b.per_depth * depth + b.per_stage * (Math.max(1, stage) - 1)) * mult(b, k);
 };
 /** The highest grade a stage reaches (rule 26, rules 1.43): `rewards.ceiling` by stage (stage 1 Fine, stage 2
  * Masterwork, from stage 3 Relic): what its picks give and what its shops and Forges grade to. */
@@ -93,7 +100,7 @@ export function doorOf(c: Character): string | null {
 /** The weapon pick at a node (rule 26): `offer` weapons within the price band, the first for the character's own door
  * (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled rarity capped by the
  * stage; or credits instead at instead_rate of the cheapest offer's price. From `rngFor(seed, node + '#pick#' + id)`. */
-export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' | 'elite' | 'boss'; ammo?: number } = {}): RunOffer {
+export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' | 'elite' | 'boss'; ammo?: number; /** rules 1.48: every weapon at this grade (the vault's chest), not rolled */ grade?: Rarity } = {}): RunOffer {
   const rng = rngFor(seed, node.id + '#pick#' + c.id), band = priceBand(o.rarity === 'elite' && k === 'fight' ? 'elite' : k, node.depth, stage);
   const fits = PICKABLE.filter((id) => (priceOf(id) || Infinity) <= band);
   const door = doorOf(c), dk = door ? kindOfDoor(door) : null;
@@ -102,11 +109,11 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
   const ids: string[] = [];
   const first = take(own.length ? own : fits, ids); if (first) ids.push(first);
   while (ids.length < SV.rewards.offer) { const x = take(fits, ids); if (!x) break; ids.push(x); }
-  const table = SV.rewards.rarity[o.rarity || (k === 'gate' ? 'elite' : k === 'cache' ? 'fight' : k)];
+  const table = SV.rewards.rarity[o.rarity || (k === 'gate' || k === 'vault_guard' ? 'elite' : k === 'cache' || k === 'vault' ? 'fight' : k)];
   let room = capRoom(c);
   const weapons: RunWeapon[] = ids.map((id) => {
-    const rolled = (rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([r, w]) => ({ item: r, weight: Number(w) })) })?.item || 'standard') as Rarity;
-    let rarity = cappedRarity(rolled, stage), prop: string | undefined;
+    const rolled = o.grade || (rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([r, w]) => ({ item: r, weight: Number(w) })) })?.item || 'standard') as Rarity;
+    let rarity = o.grade || cappedRarity(rolled, stage), prop: string | undefined;
     // rules 1.43 (rule 26): a Relic comes with its named property rolled, worth on the cap; none that fits: Masterwork
     if (rarity === 'relic') { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
     return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };

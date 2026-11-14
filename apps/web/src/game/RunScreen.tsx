@@ -1,16 +1,14 @@
-// The Survival run's screen between fights (survival-spec 8.2; rules 1.41, build step 3; polished in rules 1.42): the
-// path map (an even grid: depth in evenly spaced columns across the width, a depth's nodes evenly spaced on one row
-// pitch; each node its kind's icon and word on a backplate the links pass under; the route walked solid, the reachable
-// lit, the rest dimmed; a legend of the kinds), the party strip (level, HP, credits, a level-up waiting), and the node's
-// panel: what the node gave, the weapon pick after a fight (its numbers from the engine's gear preview), the stage
-// cleared after the Boss. A shop replaces the whole screen (ShopScreen.tsx, spec 8.3). It draws runView (runView.ts);
-// every action is a `run/*` sent through the store.
+// The Survival run's screen between fights (survival-spec 8.2; rules 1.41, build step 3): the path map (PathMap.tsx, rules
+// 1.48: lanes on a themed overland map; where the party stands, what it can reach, each player's mark), the party strip
+// (level, HP, credits, a level-up waiting), and the node's panel: what the node gave, the weapon pick after a fight,
+// the stage cleared after the Boss. A shop or another safe node replaces the whole screen (ShopScreen.tsx, PlaceScreen.tsx).
+// It draws runView (runView.ts); every action is a `run/*` sent through the store.
 import React from 'react';
 import { act, getState, go, toast } from './store';
 import { placeOpen } from '@engine';
 import { PlaceScreen } from './PlaceScreen';
-import { runView, NODE_LEGEND, type RunNodeV, type OfferV, type ChoiceCharV } from './runView';
-import { nodeIconSvg } from './runIcons';
+import { runView, type RunNodeV, type OfferV, type ChoiceCharV } from './runView';
+import { PathMap } from './PathMap';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { ShopScreen } from './ShopScreen';
@@ -24,24 +22,6 @@ const btn = (on = true): React.CSSProperties => ({ minHeight: 40, padding: '0 16
 const marks = (n: number) => '◆'.repeat(n);
 const PULSE = '@keyframes phcNodePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 7px rgba(255,255,255,.12)}}'
   + '.phc-node-lit>span:first-child{animation:phcNodePulse 2.2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-node-lit>span:first-child{animation:none}}';
-
-function MapNode({ n, x, y, onPick }: { n: RunNodeV; x: number; y: number; onPick: (n: RunNodeV, el: HTMLElement) => void }) {
-  const lit = n.state === 'reachable', here = n.state === 'here', done = n.state === 'walked', passed = n.state === 'passed';
-  const big = n.kind === 'boss' || n.gate, size = big ? 54 : 42;
-  const col = here || lit ? ink.white : done ? ink.text : ink.muted;
-  const ring = here ? '3px solid ' + ink.white : lit ? '2px solid ' + ink.white : done ? '2px solid ' + ink.text : '1px solid #3B475D';
-  const label = n.word + (here ? ', you are here' : lit ? ', reachable' : done ? ', walked' : '') + (n.leans.length ? ', marked by ' + n.leans.map((l) => l.name).join(' and ') : '');
-  return (
-    <button type="button" data-phc-node={n.id} data-phc-kind={n.kind} data-phc-state={n.state} aria-label={label} {...tipProps(n.tip + (n.why ? ' ' + n.why : ''))}
-      onClick={(e) => onPick(n, e.currentTarget)} className={lit ? 'phc-node-lit' : undefined}
-      style={{ position: 'absolute', left: x + '%', top: y + '%', transform: 'translate(-50%, -' + size / 2 + 'px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: 0, border: 0, background: 'transparent', fontFamily: 'inherit', cursor: lit ? 'pointer' : 'default', opacity: passed ? 0.3 : done ? 0.72 : 1, zIndex: here || lit ? 3 : 2 }}>
-      <span style={{ position: 'relative', display: 'grid', placeItems: 'center', width: size, height: size, borderRadius: '50%', border: ring, background: here ? ink.raised : ink.panel, color: col, boxShadow: here ? '0 0 0 4px rgba(255,255,255,0.18)' : 'none' }}
-        dangerouslySetInnerHTML={{ __html: nodeIconSvg(n.gate ? 'elite' : n.kind, big ? 32 : 24) }} />
-      <span style={{ fontSize: 'clamp(9px, 0.62vw, 11px)', fontWeight: 700, letterSpacing: '0.02em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', padding: '1px 4px', borderRadius: 6, background: 'rgba(10,13,19,0.94)' }}>{here ? '● ' : ''}{n.word}</span>
-      {n.leans.length ? <span style={{ position: 'absolute', top: -8, right: -14, display: 'flex', gap: 2 }}>{n.leans.map((l) => <span key={l.initials} style={{ display: 'grid', placeItems: 'center', width: 20, height: 20, borderRadius: '50%', fontSize: 9, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}</span> : null}
-    </button>
-  );
-}
 
 function Offer({ o }: { o: OfferV }) {
   return (
@@ -113,7 +93,6 @@ function useGiveToast(g: any, me: string) {
 
 export function RunScreen() {
   const st = getState(), g = st.game, me = st.me.id;
-  const box = React.useRef<HTMLDivElement>(null);
   const [closed, setClosed] = React.useState<string | null>(null); // rules 1.46: the place this screen walked out of
   useGiveToast(g, me);
   const v = g ? runView(g, me) : null;
@@ -123,13 +102,6 @@ export function RunScreen() {
   if (v.state === 'shop') return <ShopScreen />; // rules 1.42: the shop replaces the play screen (spec 8.3)
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary, full screen
   const fight = v.state === 'fight';
-  // an even grid: depth in columns evenly spaced across the width; a depth's nodes in their map order, evenly spaced and
-  // centred on one row pitch for every depth (the order keeps the links as the map makes them)
-  const byDepth: Record<number, RunNodeV[]> = {}; for (const n of v.nodes) (byDepth[n.depth] ||= []).push(n);
-  const most = Math.max(1, ...Object.values(byDepth).map((l) => l.length)), pitch = Math.min(24, 72 / Math.max(1, most - 1));
-  const xOf = (d: number) => 4.5 + ((d - 1) / Math.max(1, v.rows - 1)) * 91;
-  const pos: Record<string, { x: number; y: number }> = {};
-  for (const l of Object.values(byDepth)) [...l].sort((a, b) => a.col - b.col).forEach((n, i) => { pos[n.id] = { x: xOf(n.depth), y: 46 + (i - (l.length - 1) / 2) * pitch }; });
   const pick = (n: RunNodeV, el: HTMLElement) => { if (n.state === 'reachable') act({ type: 'run/move', node: n.id }); else openTipOn(el); };
   const mine = v.offers.filter((o) => o.mine), others = v.offers.filter((o) => !o.mine);
   return (
@@ -149,17 +121,8 @@ export function RunScreen() {
             {v.waiting ? <span data-phc-waiting="" style={{ fontSize: 13, color: ink.white }}>{v.waiting}</span> : null}
             {v.canGo ? <button type="button" data-phc-go="" onClick={() => act({ type: 'run/go' })} style={btn(true)}>Go now</button> : null}
           </div>
-          <div data-phc-legend="" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 16px', fontSize: 11.5, color: ink.muted }}>
-            {NODE_LEGEND.map((k) => <span key={k.kind} data-phc-legend-kind={k.kind} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ display: 'inline-grid', color: ink.text }} dangerouslySetInnerHTML={{ __html: nodeIconSvg(k.kind, 16) }} />{k.word}</span>)}
-            <span style={{ marginLeft: 'auto' }}>Lit: reachable · solid: your route · {v.solo ? 'click a lit node to go' : 'click to mark; the squad goes when everyone has, a tie to the host'}</span>
-          </div>
-          <div ref={box} data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', flex: 1, minHeight: 360, borderRadius: 14, background: 'radial-gradient(ellipse at 50% 40%, #141B28 0%, #0A0D13 75%)', border: '1px solid ' + ink.line, overflow: 'hidden' }}>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} aria-hidden="true">
-              {v.links.map((l) => { const a = pos[l.from], b = pos[l.to]; if (!a || !b) return null;
-                return <line key={l.from + '>' + l.to} x1={a.x} y1={a.y} x2={b.x} y2={b.y} vectorEffect="non-scaling-stroke" stroke={l.walked ? ink.text : l.lit ? ink.white : '#34405A'} strokeWidth={l.walked ? 3.5 : l.lit ? 2.5 : 1.25} strokeDasharray={l.walked ? undefined : l.lit ? '6 4' : '3 6'} strokeLinecap="round" />; })}
-            </svg>
-            {v.nodes.map((n) => <MapNode key={n.id} n={n} x={pos[n.id].x} y={pos[n.id].y} onPick={pick} />)}
-          </div>
+          <PathMap v={v} onPick={pick} />
+          <span style={{ fontSize: 12, color: ink.muted }}>Lit nodes are the ones you can reach. Hover a node for what it gives and costs. A trail runs on to the next junction: read ahead before you pick one.{v.solo ? ' Click a lit node to go.' : ' Where the trail forks, click one to mark it: the squad goes when everyone has marked; a tie goes to the host. On a trail with one way on, a click walks the squad on.'}</span>
         </section>
         <aside aria-label="The squad and the node" style={{ flex: '0 1 340px', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 12, padding: 16, borderLeft: '1px solid ' + ink.line, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

@@ -19,7 +19,7 @@ function at(kind: string, o: { pcs?: Pc[]; credits?: number; prep?: (g: GameStat
   n.kind = kind as any; r.at = prev.id; r.state = 'map';
   for (const c of Object.values(g0.characters)) c.credits = o.credits ?? 10000;
   o.prep?.(g0);
-  let g = g0; for (let i = 0; i < (o.pcs || DUO).length; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+  let g = g0; for (let i = 0; i < (o.pcs || DUO).length && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
   return g;
 }
 const lastLine = (g: GameState) => [...g.story.entries].reverse().find((e: any) => e.kind === 'system')?.text || '';
