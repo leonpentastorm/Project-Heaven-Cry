@@ -20,8 +20,9 @@ describe('Survival, simulated runs (rules 1.49): the guard', () => {
   it('a solo gunner clears stage 1 on at least two seeds of three and never clears stage 4', () => {
     const runs = ['GUARD-1', 'GUARD-2', 'GUARD-3'].map((seed) => simRun({ party: 'solo_gunner', route: 'gear', seed, maxStages: 4 }));
     for (const r of runs) expect(r.errors.filter((e) => !/levelup/.test(e)), r.seed).toEqual([]);
-    expect(runs.filter((r) => r.cleared >= 1).length).toBeGreaterThanOrEqual(2);
-    expect(runs.every((r) => r.cleared < 4)).toBe(true);
+    expect(runs.filter((r) => r.cleared >= 1).length, runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth).join('; ')).toBeGreaterThanOrEqual(2);
+    const ends = runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth + ' cleared ' + r.cleared).join('; ');
+    expect(runs.every((r) => r.cleared < 4), ends).toBe(true);
     // levels per stage (spec 5.4: about level 6 to 7 after stage 1's Boss)
     for (const r of runs) if (r.stages[0].cleared) expect(r.stages[0].level[0]).toBeGreaterThanOrEqual(5), expect(r.stages[0].level[0]).toBeLessThanOrEqual(8);
     // a gunner on Bursts never runs dry between shops
