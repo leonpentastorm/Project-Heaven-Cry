@@ -35,8 +35,9 @@ export const playOf = (g: { settings: { play?: PlayMode } }): PlayMode => g.sett
 /** Where a run stands. `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
  * after a won fight (offers); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:
  * after a Boss (the stage is cleared; rules 1.44: each character picks a boon, then the squad picks the next tile);
- * `over`: lost or retired. */
-export type RunPhase = 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
+ * `camp`: before node 1 (rules 1.51: each character picks a starting boon, and the camp's issue); `over`: lost or
+ * retired. */
+export type RunPhase = 'camp' | 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
 /** A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. */
 export type RunNode = PathNode;
 /** A tile of the world the party walks (rule 32): a stage's setting and its boon pool. */
@@ -59,6 +60,7 @@ export interface RunNote { node: string; kind: string; text?: string; xp?: numbe
 export interface RunFight { node: string; stage: number; depth: number; kind: string; template: string; setting: string; level: number;
   target: { bulk: number; pressure: number; rounds: number }; spent: { bulk: number; pressure: number }; scaleHp: number;
   foes: { name: string; tier: string; level: number; weapon: string; kind?: string; caster?: string; scale?: { hp?: number; damage?: number } }[];
+  /** rules 1.51: each character's Sigil and Figment charge as the fight began (run/rewards.ts chargeHeld), for the supply pack's cores */ charge?: Record<string, number>;
   outcome?: 'win' | 'loss'; rounds?: number; /** rules 1.44: the foes dropped (dead, Downed or given up) */ kills?: number; /** rules 1.47: what each character did (run/tally.ts) */ tally?: FightTally }
 /** One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. */
 export interface RunStock { id: string; price: number; sold?: string }
@@ -112,7 +114,8 @@ export interface RunState {
   lasting?: Record<string, RunLasting> | null;
   /** Rules 1.43: what a character has had once a stage (a shrine's token, the wayside shrine), as "what@stage", by id. */
   marks?: Record<string, string[]>;
-  /** Rules 1.44: the boons on offer after a Boss (spec rule 30), by character id; null when none. */
+  /** Rules 1.44: the boons on offer after a Boss (spec rule 30), and rules 1.51's starting boons at the camp, by
+   * character id; null when none. */
   boons?: Record<string, string[]> | null;
   /** Rules 1.44: the tiles on offer for the next stage (spec rule 32); null when none. */
   tiles?: RunTile[] | null;
@@ -145,6 +148,7 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
   if (r.state === 'reward') return 'Take your picks first: the squad moves on when everyone has.';
   if (r.state === 'shop') return 'Leave the shop first: everyone marks Ready to leave, or the host closes it.';
   if (r.state === 'boon') return 'Pick your boons first: the next tile comes after them.';
+  if (r.state === 'camp') return 'Pick your starting boons first: the map opens when everyone has.';
   if (r.state === 'tile') return 'Pick the next tile first: its map comes with it.';
   if (r.state !== 'map') return 'The stage is over.';
   const n = runNode(r, nodeId); if (!n) return 'No such node on this map.';

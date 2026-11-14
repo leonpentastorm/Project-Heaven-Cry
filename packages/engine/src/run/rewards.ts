@@ -5,7 +5,8 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type PackItem, type Rarity, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf } from '../character';
+import { type Character, type PackItem, type Rarity, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
+import { CORE_CHARGE, VIS_CHARGE } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
 import { rollTable } from '../loot';
@@ -56,17 +57,34 @@ export function magazineWorth(id: string): PackItem[] {
   const w: any = WEAPON[id]; if (!w || w.magazine == null || !w.ammo || w.category === 'thrown') return []; // rules 1.42: a blade or a thrown thing has no magazine (it gave a stray plot item)
   return w.reload === 'loose' ? [roundsOf(w.ammo, w.magazine || 0)] : lootToPack({ item: 'mag:' + id });
 }
-/** The ammunition pack (rule 23): `n` magazines' worth for every gun carried, and the cores for a Sigil or Visualizer
- * focus carried. The pack items, in order (the caller adds them with packAdd). */
-export function ammoPack(c: Character, n: number, guns: string[] = gunsOf(c)): PackItem[] {
-  const out: PackItem[] = [], m = ammoMult(c), mags = Math.round(n * m), coreN = Math.round(SV.ammo_pack.cores * m);
+/** The supply pack (rule 23; rules 1.51, spec rule 52): `n` magazines' worth for every gun carried, and for a character
+ * carrying an Evoker or a Visualizer (`ammo_pack.core_doors`) the cores it burnt in the fight back, at least
+ * `ammo_pack.cores` x n and at most `ammo_pack.cores_max` x n (`burnt` 0, as at a cache or the vault: the least); all of
+ * it x the stat `run_ammo` (Bandolier). The pack items, in order (the caller adds them with packAdd); the MP share is
+ * `supplyMp`. */
+export function ammoPack(c: Character, n: number, guns: string[] = gunsOf(c), burnt = 0): PackItem[] {
+  const out: PackItem[] = [], m = ammoMult(c), mags = Math.round(n * m);
   for (const id of guns) for (let i = 0; i < mags; i++) out.push(...magazineWorth(id));
+  const coreN = Math.round(Math.min(SV.ammo_pack.cores_max * n, Math.max(SV.ammo_pack.cores * n, burnt)) * m);
   const cores = (SV.ammo_pack.core_doors as string[]).some((k) => holds(c, { slot: 'person', door: k }));
   if (cores && coreN > 0) out.push(...lootToPack({ item: 'standard_core', qty: coreN }));
   return out;
 }
-/** Rules 1.44: the ammunition pack's multiplier for this character (the stat `run_ammo`, which its relics answer:
- * Bandolier), on its magazines and its cores. */
+/** Rules 1.51 (spec rule 52 c): the MP a character takes back with the supply pack: `ammo_pack.mp_share` x n x the stat
+ * `run_ammo` of its max MP, rounded, for a character carrying an MP focus of `ammo_pack.mp_doors`; else 0. The caller
+ * adds it, never above the max. */
+export function supplyMp(c: Character, n: number): number {
+  const mp = (SV.ammo_pack.mp_doors as string[]).some((k) => holds(c, { slot: 'person', door: k }));
+  return mp ? Math.round(SV.ammo_pack.mp_share * n * ammoMult(c) * maxMp(c)) : 0;
+}
+/** Rules 1.51 (spec rule 52 b): the Sigil and Figment charge a character holds: its spare cores x a core's charge, and
+ * the loaded charge of each Evoker and Visualizer it carries. */
+export const chargeHeld = (c: Character): number => coresCarried(c) * CORE_CHARGE + evoChargeNow(c) + (carriesVisualizer(c) ? Math.max(0, Math.min(VIS_CHARGE, c.visCharge ?? VIS_CHARGE)) : 0);
+/** Rules 1.51 (spec rule 52 b): the cores burnt between two readings of `chargeHeld` (a core's charge a core, rounded up;
+ * never below 0). */
+export const coresBurnt = (before: number, after: number): number => Math.max(0, Math.ceil((before - after) / CORE_CHARGE));
+/** Rules 1.44: the supply pack's multiplier for this character (the stat `run_ammo`, which its relics answer:
+ * Bandolier), on its magazines, its cores and (rules 1.51) its MP. */
 export const ammoMult = (c: Character): number => statQuery({ c }, 'run_ammo').mult;
 /** Rules 1.44: a node's credits as this character takes them (the stat `run_credits`, which its relics answer: Tithe). */
 export const creditsFor = (c: Character, credits: number): number => Math.round(credits * statQuery({ c }, 'run_credits').mult);
