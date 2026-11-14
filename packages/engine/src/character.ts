@@ -1377,6 +1377,17 @@ function packAddArrows(pack: PackItem[], type: string, n: number) {
   const e = pack.find((x) => x.calibre === 'arrow' && !x.mags && (x.ammoType || 'standard') === type);
   if (e) e.qty += n; else pack.push({ id: 'rounds:arrow', name: CALIBRE_NAME.arrow || 'Arrow', qty: n, kind: 'ammo', calibre: 'arrow', ...(type !== 'standard' ? { ammoType: type } : {}) });
 }
+/** What a screen shows of each carried quiver (rules 1.53): worn or ready, its name and grade, what it holds and has,
+ * and its enchantment (name, tone and the tone's element, for the mark's colour and glyph). The engine's answer: the
+ * ARMS tab, the weapon strip and the backpack read this, never the data. */
+export interface QuiverCard { i: number; worn: boolean; id: string; name: string; rarity: Rarity; holds: number; arrows: Record<string, number>; total: number; ench: { id: string; name: string; tone: string; element: string | null } | null }
+export function quiverCards(c: Character): QuiverCard[] {
+  return quiversOf(c).map((q, i) => {
+    const rarity = q.rarity || 'standard', m = (q.mods || []).map((x) => ITEM[x] as any).find((x) => x?.mod_slot === 'enchantment');
+    return { i, worn: i === 0, id: q.id, name: q.name || (ITEM[q.id] as any)?.name || 'Quiver', rarity, holds: quiverHolds(q.id, rarity), arrows: { ...(q.arrows || {}) }, total: arrowSum(q.arrows),
+      ench: m ? { id: m.id, name: m.name, tone: m.tone, element: (TONE as any)[m.tone]?.element ?? null } : null };
+  });
+}
 /** Swap the worn and the ready quiver out of a fight (rules 1.53; in a fight it is the bow's reload, "Switch quiver"). */
 export function swapQuivers(c: Character): string | null {
   const qs = quiversOf(c); if (qs.length < 2) return 'You carry one quiver.';

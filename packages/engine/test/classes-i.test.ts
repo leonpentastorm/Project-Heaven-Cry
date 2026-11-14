@@ -1,6 +1,7 @@
 // Lane I: the 13 base classes, every move in play. Player actions go through the reducer (apply: combat/perk,
 // combat/attack, combat/move, combat/draw, combat/outburst, story/perk, check/roll); what enemies do goes through the
 // same engine functions their turns use (resolveAttack, moveUnit, applyDamage, harm, applyCond), with the game bound.
+import { quiversOf } from '../src/character';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
@@ -91,7 +92,7 @@ describe('Marksman', () => {
     s.act({ type: 'story/perk', charId: id, id: 'class:marksman.special_ammo', actionId: 'story_incendiary' });
     expect(arrows()).toBe(a0 + had); // what the bow held goes back to the pack first
     // the quiver record is what the next fight arms from (review fix: c.loadedType alone came out as standard arrows)
-    const c = s.g.characters[id]; expect(c.loaded).toBe(12); expect(c.loadedType).toBeNull(); expect((c as any).phys.quiver.recurve_bow).toEqual({ incendiary: 12 });
+    const c = s.g.characters[id]; expect(c.loaded).toBe(12); expect(c.loadedType).toBeNull(); expect(quiversOf(c)[0].arrows).toEqual({ incendiary: 12 }); // rules 1.53: the worn quiver
   });
   it('Killzone (rules 1.30): with one reaction it spends that one and only the first held attack fires, at +2', () => {
     const f = fightWith([cls('marksman', 3, { weapon: 'hellraiser_service_rifle' })], [{}, {}]);

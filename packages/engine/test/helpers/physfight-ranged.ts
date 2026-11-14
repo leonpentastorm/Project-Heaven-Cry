@@ -2,8 +2,9 @@
 // uses. The fight itself is helpers/physfight.ts (the lead's; not changed here).
 import { expect } from 'vitest';
 import { WEAPON, type TechPreview } from '../../src';
-import type { physFight } from './physfight';
-import { armQuiver, isDrawn } from '../../src/physical/ranged/quiver';
+import { physFight } from './physfight';
+import { setQuivers, quiverHolds, type QuiverInst } from '../../src/character';
+import { armQuiver, isDrawn, ensureQuiver, defaultArrow } from '../../src/physical/ranged/quiver';
 
 export type PhysF = ReturnType<typeof physFight>;
 /** The whole game as text: a preview must leave it exactly as it was. */
@@ -33,4 +34,18 @@ export function calm(f: PhysF) {
     if (u.side !== 'pc' && !u.charId && WEAPON[u.weapon]?.magazine != null) { u.ammo = WEAPON[u.weapon].magazine!; if (isDrawn(u.weapon)) { delete u.quiver; delete (u.tech || {})._quiver; armQuiver(u); } }
   }
   for (const u of f.cb.units) for (const v of f.cb.units) if ((v.tech as any)?.spotted?.by === u.id) delete (v.tech as any).spotted;
+}
+/** An archer (recurve bow, Dexterity 6) against a soldier; the worn quiver at fight start is `q` (default: a full
+ * Standard quiver), and `ready` a second quiver carried. */
+export function bowFight(q?: Record<string, number>, o: { weapon?: string; known?: string[]; foe?: { tier?: string; weapon?: string }; worn?: Partial<QuiverInst>; ready?: QuiverInst } = {}) {
+  const f = physFight([{ weapon: o.weapon || 'recurve_bow', skills: { dexterity: 6 }, known: o.known }], [{ at: 'F5', tier: o.foe?.tier || 'soldier', weapon: o.foe?.weapon }]);
+  f.put(f.pc, 'C5'); f.put(f.foe, 'F5'); calm(f);
+  if (q || o.ready || o.worn) { // as if the fight had started with these quivers
+    q ||= { standard: quiverHolds() };
+    const u = f.unit(f.pc.id), c = f.char(u); setQuivers(c, [{ id: 'quiver', ...(o.worn || {}), arrows: { ...q } }, ...(o.ready ? [o.ready] : [])]);
+    delete u.quiver; delete (u.tech || {})._quiver; u.ammo = Object.values(q).reduce((t, n) => t + n, 0);
+    f.bound(() => ensureQuiver(u)); u.ammoType = defaultArrow(u.quiver) === 'standard' ? null : defaultArrow(u.quiver);
+  }
+  f.turn(f.pc);
+  return f;
 }

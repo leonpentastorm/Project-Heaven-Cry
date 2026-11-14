@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { phys, enemyTurn, reload, reloadHands, weaponActions, type Unit, type Character, type PackItem } from '../src';
 import { physFight, rig } from './helpers/physfight';
-import { calm } from './helpers/physfight-ranged';
+import { calm, bowFight } from './helpers/physfight-ranged';
 import { storyWith } from './helpers/perkfight';
 import { condOn } from '../src/magic';
 import { loadQuiver, quiverView, ensureQuiver, defaultArrow, arrowId, isDrawn } from '../src/physical/ranged/quiver';
@@ -18,20 +18,6 @@ import { ITEM, WEAPON } from '../src/data';
 const arrows = (n: number, type?: string): PackItem => ({ id: 'rounds:arrow', name: 'Arrow', qty: n, kind: 'ammo', calibre: 'arrow', ...(type ? { ammoType: type } : {}) });
 /** Arrows of a type in a character's pack (standard: no ammoType). */
 const carried = (c: Character, type = 'standard') => (c.pack || []).filter((x) => x.calibre === 'arrow' && !x.mags && (x.ammoType || 'standard') === type).reduce((t, x) => t + x.qty, 0);
-/** An archer (recurve bow, Dexterity 6) against a soldier; the worn quiver at fight start is `q` (default: a full
- * Standard quiver), and `ready` a second quiver carried. */
-export function bowFight(q?: Record<string, number>, o: { weapon?: string; known?: string[]; foe?: { tier?: string; weapon?: string }; worn?: Partial<QuiverInst>; ready?: QuiverInst } = {}) {
-  const f = physFight([{ weapon: o.weapon || 'recurve_bow', skills: { dexterity: 6 }, known: o.known }], [{ at: 'F5', tier: o.foe?.tier || 'soldier', weapon: o.foe?.weapon }]);
-  f.put(f.pc, 'C5'); f.put(f.foe, 'F5'); calm(f);
-  if (q || o.ready || o.worn) { // as if the fight had started with these quivers
-    q ||= { standard: quiverHolds() };
-    const u = f.unit(f.pc.id), c = f.char(u); setQuivers(c, [{ id: 'quiver', ...(o.worn || {}), arrows: { ...q } }, ...(o.ready ? [o.ready] : [])]);
-    delete u.quiver; delete (u.tech || {})._quiver; u.ammo = Object.values(q).reduce((t, n) => t + n, 0);
-    f.bound(() => ensureQuiver(u)); u.ammoType = defaultArrow(u.quiver) === 'standard' ? null : defaultArrow(u.quiver);
-  }
-  f.turn(f.pc);
-  return f;
-}
 const worn = (c: Character) => quiversOf(c)[0]?.arrows;
 const total = (u: Unit) => Object.values(u.quiver || {}).reduce((t, n) => t + n, 0);
 beforeEach(() => rig(null));

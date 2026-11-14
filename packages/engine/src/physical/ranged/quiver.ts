@@ -25,6 +25,7 @@ import { charOfUnit } from '../../effects/hooks';
 import { applyToneRiders, toneRiders, toneElement, withElement } from '../../magic';
 import { weaponProps } from '../data';
 import { onHook, strikeRound, strikingWith, techState, techStateOf } from './shared';
+import { emptyQuiverWhy } from '../core';
 import type { Tech } from './shared';
 
 type Loader = (c: Character, weaponId: string, load: Record<string, number>, which?: number) => string | null;
@@ -83,11 +84,12 @@ const enchanted = (u: Unit | null | undefined): Enchantment | null => (u && isDr
 /** Technique state on the unit: w, the Drawn weapon u.ammo was last made equal to the quiver for; armed, the quivers
  * are on the unit. */
 const QS = '_quiver';
-/** The character's quivers as the fight starts (a copy), or one Standard quiver at capacity (an enemy, a companion). */
+/** The character's quivers as the fight starts (a copy); with none recorded (an enemy, a companion), one quiver holding
+ * what is in the weapon (an enemy archer's is filled to a Standard quiver's capacity first: armQuiver). */
 function quiversFor(u: Unit): QuiverInst[] {
-  const c = u.companion ? null : charOfUnit(u);
-  if (!c) return [{ id: QUIVER_ITEM, arrows: { standard: quiverHolds() } }];
-  return quiversOf(c).map((q) => ({ ...q, arrows: clean(q.arrows || {}) }));
+  const c = u.companion ? null : charOfUnit(u), qs = c ? quiversOf(c) : [];
+  if (qs.length) return qs.map((q) => ({ ...q, arrows: clean(q.arrows || {}) }));
+  return [{ id: QUIVER_ITEM, arrows: { [arrowId(u.ammoType) || 'standard']: Math.max(0, u.ammo || 0) } }]; // no quiver recorded: what is in the weapon
 }
 const gearOf = (q: QuiverInst | undefined) => { if (!q) return { id: QUIVER_ITEM }; const { arrows: _a, ...g } = q; void _a; return g; };
 /** Put the quivers on the unit (the fight's start, or the first shot of a unit that joined later). */
@@ -125,7 +127,8 @@ function draw(u: Unit, n: number, want: string | null) {
  * of standard arrows at capacity. */
 export function armQuiver(u: Unit): void {
   if (u.infiniteAmmo) return;
-  if (!isDrawn(u.weapon) && !(u.charId && !u.companion && quiversOf(charOfUnit(u)!).length)) return;
+  if (!isDrawn(u.weapon)) { const c = u.charId && !u.companion ? charOfUnit(u) : null; if (!c || !Array.isArray(c.quivers) || !c.quivers.length) return; }
+  if (!u.charId) { u.ammo = quiverHolds(); u.ammoType = null; } // an enemy archer: one Standard quiver of standard arrows
   arm(u); if (isDrawn(u.weapon)) { ensureQuiver(u); nock(u); }
 }
 onHook('combat_start', (ctx: any) => { for (const u of (ctx.cb as Combat).units) armQuiver(u); });
@@ -184,7 +187,7 @@ strikeRound({
   spent(t, n) { if (t.hand === 'main' && t.u.quiver && isDrawn(t.u.weapon) && techStateOf(t.u, QS).w === t.u.weapon) { draw(t.u, n, arrowId(t.args.ammo)); if (!WRAPPED.has(t.u)) nock(t.u); } },
 });
 /** The refusal for an empty worn quiver, naming the ready one when it holds arrows (rules 1.53). */
-const emptyWhy = (u: Unit) => { const n = quiverTotal(u.quiverReady?.arrows); return n ? 'The quiver is empty: Switch quiver (' + n + ' in the other).' : 'The quiver is empty.'; };
+const emptyWhy = emptyQuiverWhy;
 // Every ranged attack with a Drawn weapon: a named arrow with none left, or an empty quiver, can't be loosed. A storm
 // enchantment's arrow ignores half cover (the tone's ignore_cover rider, read before the roll).
 onHook('attack_preview', (ctx: any) => {
