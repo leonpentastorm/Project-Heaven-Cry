@@ -6,8 +6,9 @@
 // callers pass the live object list and the character's pack; nothing here rolls dice.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
+import ltJ from '../../../data/loot_tables.json';
 import { WEAPON, ITEM, CALIBRE_NAME } from './data';
-import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf } from './character';
+import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf, packKindOf } from './character';
 import { type MapObject, type CacheItem, makeObject } from './objects';
 
 const WP: any = wpJ;
@@ -15,6 +16,10 @@ const WP: any = wpJ;
 export const PILE: { max_entries: number; narrator_entries_per_turn: number; narrator_items_per_pile: number; rounds_max: number; route_slack_tiles: number; tactical_reload_extra_ap: number } = WP.pile;
 /** Picking up costs this much AP on every map (item 674). */
 export const PICKUP_AP: number = WP.ap.pickup;
+/** Rules 1.54 item 8 (Core Rules item 4111): the most of one thing a loot entry gives (`loot_tables.json qty_max`; a
+ * weapon at most 3 of it, rounds `PILE.rounds_max`). A grant that is not loot (a purchase, the Materials card) goes in by
+ * packAdd whole. */
+export const LOOT_QTY_MAX: number = (ltJ as any).qty_max;
 
 // ---------- what a container is ----------
 export const isPile = (o: MapObject) => o.kind === 'pile';
@@ -77,6 +82,21 @@ export function packAdd(pack: PackItem[], it0: PackItem): PackItem[] {
   const ex = it.calibre ? pack.find((x) => sameRounds(x, it)) : stackable(it) ? pack.find((x) => stackable(x) && stackKey(x) === stackKey(it)) : undefined;
   if (ex) { ex.qty += it.qty; if (it.text && !ex.text) ex.text = it.text; } else pack.push(it);
   return pack;
+}
+/** Rules 1.54 (survival-spec 14.2 item 1): take `n` of an id (an item id, or `rounds:<calibre>` for plain rounds) out of
+ * a pack across its stacks, the first stack first (the pack array is changed in place; an emptied stack leaves it). All
+ * or nothing: when the pack holds fewer than `n`, nothing is taken. Magazines, special-typed rounds and plot items are
+ * never taken. Returns how many of the id the pack held before (`n` 0 takes nothing: a count). */
+export function packTake(pack: PackItem[], id: string, n: number): number {
+  const ofId = (x: PackItem) => !x.mags && x.kind !== 'plot' && !x.ammoType && (x.item || x.id) === id;
+  const had = pack.filter(ofId).reduce((t, x) => t + Math.max(0, x.qty), 0);
+  let left = Math.max(0, Math.round(n)); if (!left || had < left) return had;
+  for (let i = 0; i < pack.length && left > 0;) {
+    const x = pack[i]; if (!ofId(x)) { i++; continue; }
+    const k = Math.min(x.qty, left); x.qty -= k; left -= k;
+    if (x.qty <= 0) pack.splice(i, 1); else i++;
+  }
+  return had;
 }
 
 // ---------- piles ----------
@@ -147,7 +167,7 @@ export function intoCounts(c: Character, it: PackItem): boolean {
 export function lootToPack(l: { item?: string; qty?: number; rarity?: string; name?: string; text?: string; note?: string }): PackItem[] {
   if (!l || typeof l !== 'object') return [];
   const id = String(l.item || '').trim(), label = String(l.name || '').trim().slice(0, 60), q = Number(l.qty);
-  const n = Math.max(1, Math.min(20, Math.round(Math.abs(q) || 1)));
+  const n = Math.max(1, Math.min(LOOT_QTY_MAX, Math.round(Math.abs(q) || 1)));
   const rarity = ['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? (l.rarity as any) : 'standard';
   const m = /^mag:(.+)$/i.exec(id), r = /^rounds:(.+)$/i.exec(id);
   if (m && WEAPON[m[1]] && WEAPON[m[1]].magazine != null) {
@@ -163,7 +183,7 @@ export function lootToPack(l: { item?: string; qty?: number; rarity?: string; na
   }
   if (ITEM[id]) {
     const note = String(l.note || '').trim().slice(0, 40);
-    return [{ id, item: id, name: label || ITEM[id].name, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : id === 'standard_core' ? 'ammo' : 'tool', ...(note ? { note } : {}), ...((ITEM[id] as any).category === 'quiver' && rarity !== 'standard' ? { rarity } : {}) }]; // rules 1.53: a quiver is graded gear
+    return [{ id, item: id, name: label || ITEM[id].name, qty: n, kind: packKindOf(id, (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool'), ...(note ? { note } : {}), ...((ITEM[id] as any).category === 'quiver' && rarity !== 'standard' ? { rarity } : {}) }]; // rules 1.53: a quiver is graded gear
   }
   const name = label || id.replace(/^plot:/, '').replace(/^(mag|rounds):/i, '').replace(/_/g, ' ').trim(); if (!name) return [];
   return [plotItem(name, l.text || '', n)];

@@ -549,7 +549,10 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
  * worn and packed (spec: Reloading, Item weights). */
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
 export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
-const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: id === 'evoker' || id === 'emanator' ? 'focus' : id === 'standard_core' ? 'ammo' : id === 'ration_pack' ? 'food' : 'tool', ...(note ? { note } : {}) });
+/** Rules 1.54 (survival-spec 14.2 item 6): the kind of pack line an item makes: its `pack_kind` in items.json, else
+ * `fallback` (the caller's own default by category). No item id is named in code for it. */
+export const packKindOf = (id: string, fallback: PackItem['kind']): PackItem['kind'] => ((ITEM[id] as any)?.pack_kind as PackItem['kind']) || fallback;
+const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: packKindOf(id, 'tool'), ...(note ? { note } : {}) });
 /** The starting kits. A focus starts in the off hand (spec: Hands 2; item 630: it counts only in a hand). */
 export const KITS: Record<string, { weapon: string; weaponName?: string; armourClass: number; armourName: string; stims: number; offHand?: string; pack: PackItem[] }> = {
   medic: { weapon: 'service_pistol', weaponName: 'Service pistol (.32 Decrkm)', armourClass: 2, armourName: 'Medic plate', stims: 3,
@@ -820,13 +823,15 @@ const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.
  * focus kind, evoker, emanator or attuner, or the door it opens, a skill id: brain_power, will_power, empathy; rules
  * 1.33) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or the pack).
  * THE one test of "a focus in hand": hasEvoker, hasEmanator and hasAttuner are it. */
-export interface HoldSpec { slot?: 'hand' | 'person'; door?: string; item?: string }
+export interface HoldSpec { slot?: 'hand' | 'person'; /** a focus kind, the skill it opens, or `any` (rules 1.54: any focus, isFocusId) */ door?: string; item?: string }
 /** A Figment design (rules 1.34, figments.json): a form and up to two traits, named. */
 export interface FigmentDesign { id: string; name: string; form: string; traits: string[] }
 /** The doors whose focus `holds` knows: each kind's name and the skill it opens (FOCUS_IDS, FOCUS_DOOR). */
 export const FOCUS_DOORS: string[] = [...FOCUS_KINDS, ...FOCUS_KINDS.map((k) => FOCUS_DOOR[k])];
 /** Does this character hold it (see HoldSpec)? */
 export function holds(c: Character, o: HoldSpec): boolean {
+  // rules 1.54 (survival-spec 14.2 item 3): door `any`, any focus of the four kinds or a weapon that counts as one
+  if (o.door === 'any') return ((o.slot || 'hand') === 'person' ? [c.weapon, c.offHand?.id, ...packOf(c).filter((x) => x.qty > 0).map((x) => x.item || x.id)] : inHands(c)).some((id) => !!id && isFocusId(id));
   const k = o.door ? kindOfDoor(o.door) : null, ids = o.door ? (k ? FOCUS_IDS[k] : []) : o.item ? [o.item] : [];
   if (!ids.length) return false;
   if ((o.slot || 'hand') === 'person') return carries(c, ids);
@@ -858,7 +863,8 @@ export const gearProps = (c: Character): string[] => [
 /** A carried instance: a hand, a pack line, or a carried quiver (rules 1.53: `quiver:0` the worn one, `quiver:1` the ready one). */
 export type GearWhere = 'main' | 'off' | number | `quiver:${number}`;
 const quiverAt = (where: GearWhere): number | null => (typeof where === 'string' && where.startsWith('quiver:') ? Number(where.slice(7)) : null);
-const isFocusId = (id: string) => Object.values(FOCUS_IDS).some((l) => l.includes(id));
+/** The one focus test: is this id a focus of any kind (an item or a weapon in FOCUS_IDS)? */
+export const isFocusId = (id: string) => Object.values(FOCUS_IDS).some((l) => l.includes(id));
 /** The weapon or focus instance at `where`: its id, rarity and property, or null (an empty hand, fists, a line that is
  * not a weapon or a focus). */
 export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Rarity; prop?: string; focus: boolean } | null {

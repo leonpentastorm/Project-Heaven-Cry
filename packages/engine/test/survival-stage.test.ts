@@ -34,7 +34,7 @@ function afterBoss(pcs: Pc[] = DUO, prep: (g: GameState) => void = () => {}, see
   const g0 = clone(started(pcs, seed)), r = g0.run!, boss = r.nodes.find((x) => x.kind === 'boss')!, prev = r.nodes.find((x) => x.links.includes(boss.id))!;
   r.at = prev.id; prep(g0);
   let g = apply(take(g0, boss.id, pcs.length), { type: 'run/skip' }, 'host');
-  for (let i = 0; i < pcs.length; i++) g = apply(g, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'credits' }, ownerOf(i));
+  for (let i = 0; i < pcs.length; i++) g = apply(g, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'materials' }, ownerOf(i));
   return g;
 }
 

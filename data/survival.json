@@ -99,8 +99,12 @@
   "credits": { "about": "Rules 1.41 (spec section 3.1): c(d) = base + per_depth x d to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault.", "base": 80, "per_depth": 20, "elite": 1.5, "boss": 2, "cache": 1.5, "vault_guard": 1.5, "vault": 2, "provisional": true },
   "ammo_pack": { "about": "Rules 1.41, 1.51 (spec rules 23, 52): the supply pack. After a won fight (or at a cache or the vault) each character gets, with n this many by the node: n magazines' worth of rounds for every gun it carries (x the stat run_ammo); with a focus of a kind in `core_doors` carried, after a fight the spare cores it burnt in it back (none burnt, none back), at most `cores_max` x n, and at a cache or the vault `cores` x n; with a focus of a kind in `mp_doors` carried, `mp_share` x n of its max MP (cores and MP x the stat run_supply).", "fight": 1, "elite": 2, "boss": 3, "cache": 1, "vault_guard": 2, "vault": 1, "cores": 1, "cores_max": 2, "core_doors": ["evoker", "visualizer"], "mp_share": 0.3, "mp_doors": ["emanator", "attuner"], "provisional": true },
   "rewards": {
-    "about": "Rules 1.41 (spec rule 26): the weapon pick of `offer` weapons after a won fight, the first for the character's own door or weapon category; rarity by node kind, capped by `ceiling` (by stage, the last repeats); price at most base + per_depth x d + per_stage x (s - 1), x elite or boss; or credits instead, instead_rate of the cheapest offer's price.",
-    "offer": 3,
+    "about": "Rules 1.41, 1.54 (spec rule 26, section 14 R7): the pick after a won fight: `offer` weapons by where it is made (the gate reads the Elite's), the first for the character's own door or weapon category; rarity by node kind, capped by `ceiling` (by stage, the last repeats); price at most base + per_depth x d + per_stage x (s - 1), x elite or boss. Or, where `materials.at` names, the Materials card instead: each of `materials.items` at ceil(C / per_credits) for the node's credits C (nodeCredits), into the pack whole (packAdd, Core Rules item 4111). Credits instead is retired (rules 1.54 item 2); an offer saved before keeps its credits choice.",
+    "offer": { "fight": 1, "elite": 1, "boss": 1, "vault_guard": 1, "vault": 3, "crate": 3 },
+    "materials": {
+      "at": ["fight", "elite", "boss", "vault_guard"],
+      "items": [{ "item": "gunpowder", "per_credits": 2 }, { "item": "casing", "per_credits": 2 }, { "item": "mana_residue", "per_credits": 20 }]
+    },
     "rarity": {
       "fight": { "standard": 75, "fine": 25 },
       "elite": { "fine": 60, "masterwork": 35, "relic": 5 },
@@ -108,7 +112,12 @@
     },
     "ceiling": ["fine", "masterwork", "relic"],
     "price_band": { "base": 300, "per_depth": 150, "per_stage": 1000, "elite": 1.25, "boss": 1.5, "vault_guard": 1.25, "vault": 1.5 },
-    "instead_rate": 0.1,
+    "provisional": true
+  },
+  "drops": {
+    "about": "Rules 1.54 item 3 (spec section 14 R8): what a Survival foe drops. Every foe a Survival fight makes carries the loot door's flag that turns off what a foe always drops (its weapon, magazines and loose rounds, a Boss's notable thing) and rolls its kind's table as before; besides, given (outside the loot cap): `gun` from a foe whose weapon has a calibre, and by the foe's table (loot_tables.json: a caster's, a machine's) `by_table`. A qty is a [min, max] range.",
+    "gun": [{ "item": "gunpowder", "qty": [2, 5] }, { "item": "casing", "qty": [2, 5] }],
+    "by_table": { "caster": [{ "item": "mana_residue", "qty": [1, 2] }], "machine": [{ "item": "mana_residue", "qty": [1, 2] }] },
     "provisional": true
   },
   "nodes": {
@@ -531,7 +540,7 @@
       { "shelf": "special", "name": "Special rounds", "ids": [ { "id": "ammo_armor_piercing", "per": 10 }, { "id": "ammo_hollow_point", "per": 10 }, { "id": "ammo_incendiary", "per": 10 }, { "id": "ammo_enhanced", "per": 10 } ] },
       { "shelf": "thrown", "name": "Thrown", "ids": [ { "id": "frag_grenade", "per": 1 }, { "id": "smoke_grenade", "per": 1 }, { "id": "flashbang", "per": 1 }, { "id": "incendiary_grenade", "per": 1 }, { "id": "throwing_knives", "per": 1 } ] },
       { "shelf": "cores", "name": "Cores", "ids": [ { "id": "standard_core", "per": 1 } ] },
-      { "shelf": "supplies", "name": "Field supplies", "ids": [ { "id": "spare_parts", "per": 1 }, { "id": "stim_injector", "per": 1 }, { "id": "field_kit", "per": 1 }, { "id": "ration_pack", "per": 1 } ] },
+      { "shelf": "supplies", "name": "Field supplies", "ids": [ { "id": "spare_parts", "per": 1 }, { "id": "stim_injector", "per": 1 }, { "id": "field_kit", "per": 1 }, { "id": "ration_pack", "per": 1 }, { "id": "ammo_maker", "per": 1 } ] },
       { "shelf": "restock", "name": "Restock", "ids": [] }
     ],
     "max_qty": 10,

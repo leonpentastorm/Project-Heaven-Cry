@@ -7,7 +7,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import ltJ from '../../../data/loot_tables.json';
 import { WEAPON, ITEM, CALIBRE_NAME, SIGIL, TONE, SCHOOL, MODULE } from './data';
 import { type PackItem, type Rarity, maxDurOf, plotItem, roundsOf, moduleShelved } from './character';
-import { lootToPack, magItem, itemLabel } from './containers';
+import { lootToPack, magItem, itemLabel, PILE, LOOT_QTY_MAX } from './containers';
 import { say, type Combat, type Unit, dropToPile } from './combat';
 import { type Rng, next, die } from './rng';
 
@@ -15,8 +15,10 @@ import { type Rng, next, die } from './rng';
  * `rounds:<calibre>`, `personal` for a personal effect, anything else a plot item), a qty or a [min, max] range, a
  * chance (drops lists only; absent: certain) or a weight (tables only). */
 export interface DropEntry { item: string; qty?: number | [number, number]; chance?: number; weight?: number; rarity?: string; name?: string; text?: string; note?: string }
-/** What one enemy drops beyond its weapon and magazines: a table to roll, and a list of its own. */
-export interface Drops { table?: string; items?: DropEntry[] }
+/** What one enemy drops beyond its weapon and magazines: a table to roll, and a list of its own. `gear: false` (rules
+ * 1.54 item 3; every foe a Survival fight makes) turns off what it always drops: its weapon, magazines and loose rounds,
+ * and a Boss's notable thing. */
+export interface Drops { table?: string; items?: DropEntry[]; gear?: false }
 /** A weighted table (`none`: the weight of nothing). */
 export interface LootTable { id: string; name?: string; text?: string; none?: number; entries: DropEntry[] }
 
@@ -40,9 +42,10 @@ export function knownDropId(id: string): boolean {
   return false;
 }
 const ammoId = (id: string) => /^(mag|rounds):/i.test(id);
-/** A qty as written: a number or a [min, max] range, both within 1–20 (for magazines and rounds, 0–120: rounds). */
+/** A qty as written: a number or a [min, max] range, both within 1 to the pack's cap (`LOOT_QTY_MAX`; for magazines and
+ * rounds, 0 to `PILE.rounds_max`: rounds). */
 function cleanQty(q: any, id: string): number | [number, number] | undefined {
-  const lo = ammoId(id) ? 0 : 1, hi = ammoId(id) ? 120 : 20, clamp = (n: number) => Math.max(lo, Math.min(hi, Math.round(n)));
+  const lo = ammoId(id) ? 0 : 1, hi = ammoId(id) ? PILE.rounds_max : LOOT_QTY_MAX, clamp = (n: number) => Math.max(lo, Math.min(hi, Math.round(n)));
   if (Array.isArray(q) && q.length === 2 && q.every((n) => Number.isFinite(Number(n)))) { const a = clamp(Number(q[0])), b = clamp(Number(q[1])); return a === b ? a : [Math.min(a, b), Math.max(a, b)]; }
   if (q != null && Number.isFinite(Number(q))) return clamp(Number(q));
   return undefined;
@@ -111,7 +114,7 @@ function entryPacks(rng: Rng, e: DropEntry): PackItem[] {
   const qty = rollQty(rng, e.qty);
   if (e.item === 'personal') { const list = LOOT.personal_items; if (!list.length) return []; const p = list[die(rng, list.length) - 1]; return [plotItem(e.name || p.name, e.text || p.text, 1)]; }
   if ((e.item === 'sigil_plate' || e.item === 'heart_plate') && !e.note) {
-    const n = Math.max(1, Math.min(20, Math.round(Number(qty) || 1)));
+    const n = Math.max(1, Math.min(LOOT_QTY_MAX, Math.round(Number(qty) || 1)));
     return Array.from({ length: n }, () => lootToPack({ item: e.item, qty: 1, name: e.name, text: e.text, note: rollPlateNote(rng, e.item) })).flat();
   }
   return lootToPack({ item: e.item, qty: qty ?? undefined, rarity: e.rarity, name: e.name, text: e.text, note: e.note });
@@ -150,8 +153,9 @@ function dropLabel(it: PackItem, worn: boolean): string {
  * by noteDeaths. Returns what dropped. */
 export function rollDeathDrops(cb: Combat, rng: Rng, u: Unit): PackItem[] {
   if (!dropsLoot(u)) return [];
-  const tables = tablesOf(cb), always = alwaysDrops(rng, u), given: PackItem[] = [], rolled: PackItem[][] = [], extra: PackItem[] = [];
-  const rolls = LOOT.rolls_by_tier[u.tier || 'minion'] ?? 1, d = u.drops;
+  const d = u.drops, gear = d?.gear !== false; // rules 1.54 item 3: the flag turns off the always-drops and the notable thing
+  const tables = tablesOf(cb), always = gear ? alwaysDrops(rng, u) : [], given: PackItem[] = [], rolled: PackItem[][] = [], extra: PackItem[] = [];
+  const rolls = LOOT.rolls_by_tier[u.tier || 'minion'] ?? 1;
   const roll = (t: LootTable | undefined) => { for (let i = 0; i < rolls; i++) { const e = rollTable(rng, t); if (e) rolled.push(entryPacks(rng, e)); } };
   if (d) {
     if (d.table) roll(tables[d.table]);
@@ -165,7 +169,7 @@ export function rollDeathDrops(cb: Combat, rng: Rng, u: Unit): PackItem[] {
     cb.lootRolled = (cb.lootRolled || 0) + 1; extra.push(...r);
   }
   // A boss always drops one notable thing, outside the cap (item 696).
-  const notable = u.tier === 'boss' ? rollTable(rng, tables[LOOT.boss_table]) : null;
+  const notable = u.tier === 'boss' && gear ? rollTable(rng, tables[LOOT.boss_table]) : null;
   const list = [...always, ...given, ...extra, ...(notable ? entryPacks(rng, notable) : [])].filter((x) => x && (x.qty > 0 || x.mags?.length));
   if (!list.length) return [];
   dropToPile(cb, u.pos, list, 'death');

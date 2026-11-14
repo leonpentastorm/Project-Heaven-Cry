@@ -5923,7 +5923,7 @@ standard core's 150 credits (Magic, "Mana cores").
    Survival screen but a fight's. Between fights a character's own player may equip, unequip, load, swap a quiver, fit
    mods and give (`gear/*`, `gear/give`), as the engine already accepts in a run. **At the camp** (run state `loadout`)
    the sheet's GEAR tab is read-only: the camp rebuilds the gear from its picks after every change, so the engine
-   refuses every `gear/*` action there, in words ("At the camp, change your gear in the loadout."). **Ask and Rest never
+   refuses every `gear/*` action there, in words naming the character ("At the camp, change Kade's gear in the loadout."). **Ask and Rest never
    show in a run** (the engine already refuses `voice/`). **A run rests only at a Rest node:** the reducer's `rest` is
    refused in a run. It was not: `RUN_REFUSED` lists `rest/` and the action's type is `rest`, so a host could take a
    free long rest between any two nodes; the fix comes with a test, written first, that sends `rest` through the
@@ -5948,7 +5948,7 @@ standard core's 150 credits (Magic, "Mana cores").
    1 credit, 0.01 kg), **Mana residue** (`mana_residue`, 10 credits, 0.02 kg; its name is never "residue" alone, which
    names a feeling's tiles, rules 1.8), and the **Ammo maker** (`ammo_maker`, a tool, 2 kg, 300 credits). The three
    materials are category `loot` (a shop never rolls them as Today's gear), stack in the pack and sell at the sell rate.
-   The ammo maker is a `tool` (a shop's rolled gear holds it by its category, inside the depth's price band) and is in
+   The ammo maker is a `tool`, always on the shop's counter (the supplies shelf, at its price) and is in
    the shared loot tables (`person`, weight 1). **The Materials card** gives, for the node's credit value C (`nodeCredits`,
    with the node's and the stage's multipliers): **gunpowder ⌈C/2⌉, casings ⌈C/2⌉, mana residue ⌈C/20⌉** (a fight worth
    100 credits: 50, 50 and 5). It goes into the pack whole, through `packAdd` (item 4111).
@@ -5989,9 +5989,11 @@ standard core's 150 credits (Magic, "Mana cores").
    reference path (survival-spec 5.4) a character reaches level 2 at the gate, has 210 XP at the Boss's door and 400
    after it (level 3 from the Boss); the most-fights lane route reaches 250 at depth 12 or 13. After the Bosses of
    stages 1 to 6 a character stands at about level 3, 5, 7, 9, 11 and 12 to 13 (survival-spec 14 (d)). The Essence of
-   Experience leaves Survival's Boss drops through item 3's flag; **its leaving the shop's rolled stock is not part of
-   this revision** (nothing in data excludes one item from a shop's rolled pool, and such a field is not on item 8's
-   list: a question for the lead, survival-spec 14 (f)). **The difficulty fit of rules 1.49 is measured again** with the
+   Experience leaves Survival's Boss drops through item 3's flag, and the shop's stock through `stock: false` (the
+   field that already kept the armourer's chit unsold: `priceOf` gives it no price, so no counter, roll or sale
+   holds it). **Leon (14 Nov): what a trait grants is not sold in the shop, food and drink excepted** (the mask, the
+   Musek Blestor and every trait's `start_item` but food carry `stock: false`; the smoker's cigarettes are food and
+   stay; the validator holds it). **The difficulty fit of rules 1.49 is measured again** with the
    run simulator on the new curve before release (survival-spec 14 (d) names the dials that move). *(Measured and
    fitted, item 4114: a squad of four's `pressure_per_char` 1.3 → **0.9** and its Elite share 1 / 1 → **0.8 / 0.8**;
    solo and duo unchanged.)*
@@ -9392,7 +9394,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     spec for 0.28.0 (survival-spec section 14), not built; its numbers are items 4101 to 4119. Each is a call the lead
     made for Leon on his words.
 4101. **The sheet in a run (rules 1.54 item 1):** the camp (run state `loadout`) refuses every `gear/*` action ("At the
-    camp, change your gear in the loadout."); Ask and Rest are never shown in a run. PROVISIONAL.
+    camp, change Kade's gear in the loadout.", naming the character); Ask and Rest are never shown in a run. PROVISIONAL.
 4102. **A rest in a run (rules 1.54 item 1):** the reducer's `rest` is refused in a run (`RUN_REFUSED` matched `rest/`,
     never the action's type `rest`). A fix, not a number; its test is written first and fails on the old code.
 4103. **The pick's two cards (rules 1.54 item 2):** Materials or One weapon; `rewards.offer` by where: fight, Elite, gate,

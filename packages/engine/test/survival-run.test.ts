@@ -80,19 +80,20 @@ describe('Survival, one stage (rules 1.41)', () => {
     expect(rounds(g.characters.c1)).toBe(mags0 + SV.ammo_pack.fight * mag);
     for (const id of ['c1', 'c2']) {
       const o = g.run!.offers![id];
-      expect(o.weapons).toHaveLength(SV.rewards.offer);
+      expect(o.weapons).toHaveLength(SV.rewards.offer.fight); // rules 1.54 item 2: one weapon after a fight
       for (const w of o.weapons) { expect(['standard', 'fine']).toContain(w.rarity); expect(w.price).toBe(priceOf(w.id, w.rarity)); expect(priceOf(w.id)!).toBeLessThanOrEqual(SV.rewards.price_band.base + SV.rewards.price_band.per_depth * n.depth); }
-      expect(o.instead).toBe(Math.round(Math.min(...o.weapons.map((w) => w.price)) * SV.rewards.instead_rate));
+      expect(o.instead).toBeUndefined(); expect(o.materials!.length).toBe(SV.rewards.materials.items.length); // credits instead retired
     }
-    // the picks: owner (or host) only; a weapon into the pack at its rarity; credits instead; then back to the map
+    // the picks: owner (or host) only; a weapon into the pack at its rarity; the materials (rules 1.54); then back to the map
     expect(refused(g, { type: 'run/pick', charId: 'c1', choice: 0 }, 'p2')).toMatch(/^Only .+'s player picks for /);
-    const w = g.run!.offers!.c1.weapons[1];
-    const p1 = apply(g, { type: 'run/pick', charId: 'c1', choice: 1 }, 'host');
+    expect(refused(g, { type: 'run/pick', charId: 'c1', choice: 'credits' }, 'host')).toBe('There is no credits choice here: take the materials or a weapon.');
+    const w = g.run!.offers!.c1.weapons[0];
+    const p1 = apply(g, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host');
     expect(p1.characters.c1.pack!.some((x) => (x.weapon || x.item || x.id) === w.id && (x.rarity || 'standard') === w.rarity)).toBe(true);
     expect(p1.run!.state).toBe('reward');
     expect(refused(p1, { type: 'run/move', node: p1.run!.nodes[0].id })).toBe('Take your pick first. The squad moves on when everyone has.');
-    const p2 = apply(p1, { type: 'run/pick', charId: 'c2', choice: 'credits' }, 'p2');
-    expect(creditsOf(p2.characters.c2)).toBe(creditsOf(g.characters.c2) + g.run!.offers!.c2.instead);
+    const p2 = apply(p1, { type: 'run/pick', charId: 'c2', choice: 'materials' }, 'p2');
+    for (const m of g.run!.offers!.c2.materials!) expect(p2.characters.c2.pack!.filter((x) => (x.item || x.id) === m.item).reduce((t, x) => t + x.qty, 0)).toBe(m.n);
     expect(p2.run!.state).toBe('map'); expect(p2.run!.offers).toBeNull();
     expect(reachable(p2.run!).map((x) => x.id)).toEqual(runNode(p2.run!, p2.run!.at)!.links);
   });

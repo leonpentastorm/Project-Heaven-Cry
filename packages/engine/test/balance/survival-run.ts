@@ -262,7 +262,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
     const run = r.g.run, vault = runNode(run, run.at)?.kind === 'vault';
     for (const id of ids) { const o = r.g.run.offers?.[id]; if (!o) continue; const c = C(id);
       const k = o.weapons.findIndex((w: any) => better(c, w));
-      if (k < 0) { must({ type: 'run/pick', charId: id, choice: 'credits' }, by(id)); if (vault) st.vaultPick = 'credits'; continue; }
+      if (k < 0) { const ch = o.materials?.length ? 'materials' : 0; must({ type: 'run/pick', charId: id, choice: ch }, by(id)); if (vault) st.vaultPick = String(ch); continue; } // rules 1.54: the Materials card (credits instead retired); none at the vault's chest: its first weapon
       const w = o.weapons[k], where = doorWhere(c), old = gearAt(c, where)!.id;
       if (must({ type: 'run/pick', charId: id, choice: k }, by(id))) continue;
       if (vault) st.vaultPick = w.rarity + ' ' + w.id;

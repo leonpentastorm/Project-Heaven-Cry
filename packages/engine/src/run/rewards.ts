@@ -9,7 +9,8 @@ import { type Character, type PackItem, type Rarity, FOCUS_IDS, FOCUS_DOOR, hold
 import { CORE_CHARGE, VIS_CHARGE } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
-import { rollTable } from '../loot';
+import { rollTable, defaultTable, type Drops, type DropEntry } from '../loot';
+import type { Unit } from '../combat';
 import { rngFor, die } from '../rng';
 import { ENC_BUDGET, VAULT, type FightKind } from './encounter';
 import type { RunOffer, RunWeapon } from './state';
@@ -120,10 +121,31 @@ export function doorOf(c: Character): string | null {
   for (const [k, sk] of Object.entries(FOCUS_DOOR)) { const n = c.skills[sk] || 0; if (n > top) { top = n; best = k; } }
   return best;
 }
-/** The weapon pick at a node (rule 26): `offer` weapons within the price band, the first for the character's own door
- * (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled rarity capped by the
- * stage; or credits instead at instead_rate of the cheapest offer's price. From `rngFor(seed, node + '#pick#' + id)`. */
-export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' | 'elite' | 'boss'; ammo?: number; /** rules 1.48: every weapon at this grade (the vault's chest), not rolled */ grade?: Rarity } = {}): RunOffer {
+/** Where a pick is made (rules 1.54, `rewards.offer` by where): a node kind that pays, or a sealed crate. */
+export type OfferWhere = PayKind | 'crate';
+/** Rules 1.54 item 2 (spec R7): how many weapons a pick holds where it is made (`rewards.offer`; the gate reads the
+ * Elite's, as every table does). */
+const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; return t[w === 'gate' ? 'elite' : w] ?? t.fight; };
+/** Rules 1.54 item 4 (Core Rules item 4107): the Materials card of a node worth C credits (nodeCredits): each of
+ * `rewards.materials.items` at ceil(C / per_credits); none where `rewards.materials.at` does not name it (the vault's
+ * chest, a sealed crate). */
+function materialsCard(w: OfferWhere, credits: number): { item: string; n: number }[] | null {
+  const m = SV.rewards.materials; if (!m || !(m.at as string[]).includes(w === 'gate' ? 'elite' : w)) return null;
+  return (m.items as { item: string; per_credits: number }[]).map((x) => ({ item: x.item, n: Math.ceil(credits / x.per_credits) })).filter((x) => x.n > 0);
+}
+/** Rules 1.54 item 3 (spec R8): what a foe of a Survival fight drops: the loot door's flag off (no weapon, magazines,
+ * loose rounds or Boss's notable thing), its kind's table rolled as before, and given materials (`survival.json drops`):
+ * `gun` for a gun, `by_table` by its table (a caster's, a machine's). */
+export function runFoeDrops(u: Unit): Drops {
+  const D = SV.drops, table = defaultTable(u);
+  return { gear: false, table, items: [...(isGun(u.weapon) ? D.gun : []), ...(D.by_table[table] || [])].map((e: DropEntry) => ({ ...e })) };
+}
+/** The pick at a node (rule 26; rules 1.54 item 2): `offerSize(where)` weapons within the price band, the first for the
+ * character's own door (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled
+ * rarity capped by the stage; and where it is offered, the Materials card for the node's credits. From
+ * `rngFor(seed, node + '#pick#' + id)`. */
+export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' | 'elite' | 'boss'; ammo?: number; /** rules 1.48: every weapon at this grade (the vault's chest), not rolled */ grade?: Rarity; /** rules 1.54: where it is made when not the node's kind (a sealed crate) */ where?: OfferWhere } = {}): RunOffer {
+  const where: OfferWhere = o.where || k;
   const rng = rngFor(seed, node.id + '#pick#' + c.id), band = priceBand(o.rarity === 'elite' && k === 'fight' ? 'elite' : k, node.depth, stage);
   // rules 1.53: a character who carries a Drawn weapon may be offered a quiver, and it counts as an offer for its door
   const archer = drawnWeapon(c.weapon) || packOf(c).some((x) => !!x.weapon && drawnWeapon(x.weapon)), quiver = archer && (priceOf(QUIVER_ITEM) || Infinity) <= band ? [QUIVER_ITEM] : [];
@@ -133,7 +155,7 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
   const take = (list: string[], have: string[]) => { const l = list.filter((id) => !have.includes(id)); return l.length ? l[die(rng, l.length) - 1] : null; };
   const ids: string[] = [];
   const first = take(own.length ? own : fits, ids); if (first) ids.push(first);
-  while (ids.length < SV.rewards.offer) { const x = take(fits, ids); if (!x) break; ids.push(x); }
+  while (ids.length < offerSize(where)) { const x = take(fits, ids); if (!x) break; ids.push(x); }
   const table = SV.rewards.rarity[o.rarity || (k === 'gate' || k === 'vault_guard' ? 'elite' : k === 'cache' || k === 'vault' ? 'fight' : k)];
   let room = capRoom(c);
   const weapons: RunWeapon[] = ids.map((id) => {
@@ -143,8 +165,8 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
     if (rarity === 'relic' && id !== QUIVER_ITEM) { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
     return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };
   });
-  const cheapest = weapons.length ? Math.min(...weapons.map((w) => w.price)) : 0;
-  return { node: node.id, weapons, instead: Math.round(cheapest * SV.rewards.instead_rate), ammo: o.ammo ?? packCount(k) };
+  const materials = materialsCard(where, nodeCredits(k, node.depth, stage));
+  return { node: node.id, weapons, ...(materials ? { materials } : {}), ammo: o.ammo ?? packCount(k) };
 }
 /** A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove as a focus, as the creation
  * kits and the Proving Ground's give pack one). */

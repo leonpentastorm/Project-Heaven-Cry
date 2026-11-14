@@ -28,7 +28,7 @@ import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
 import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
-import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
+import { type Drops, type LootTable, cleanDrops, cleanTables, dropsLoot } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { itemAmount } from './effects/amounts';
@@ -43,7 +43,7 @@ import { condSkillMod, STORY_CARRY } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreUsed, clearPrayerLimits, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -61,14 +61,15 @@ import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runS
 import { MAP_DATA } from './run/map';
 import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
-import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade, supplyMp, coresBurnt } from './run/rewards';
+import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade, supplyMp, coresBurnt, runFoeDrops } from './run/rewards';
 import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf } from './run/stage';
 import { relicRow, worthOf, BOON_CAP } from './run/power';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
-import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays } from './run/shop';
+import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays, lineGoods } from './run/shop';
 import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutAction, type CampBoons } from './run/loadout';
 import { gearIfBare, campaignLoadout } from './loadout';
 import { type GiveAction, giveNow } from './give';
+import { type MakeAction, makeNow } from './recipes';
 import { earnCredits, creditsOf } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -334,7 +335,7 @@ export type Action =
   | ({ type: 'run/loadout' } & LoadoutAction) | { type: 'run/ready'; close?: boolean; undo?: boolean }
   // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
   // credits; tests only, win the fight under way
-  | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
+  | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'materials' | 'credits' } | { type: 'run/skip' }
   | { type: 'run/boon'; charId: string; choice: number } | { type: 'run/tile'; tile: string } // rules 1.44 (run/stage.ts)
   | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/repair (rules 1.50), run/forge, run/fit, run/train, run/shrine, run/trade, run/take
   /** Rules 1.42 (run/shop.ts): buy a counter line or a rolled piece (`key`), sell a pack entry, restock a class resource, leave (the host may close). */
@@ -373,7 +374,7 @@ export type Action =
   | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/ask-rest'; charId: string; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string; choice?: string }
   | { type: 'gear/ammo'; charId: string; ammo: string }
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
-  | GiveAction | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
+  | GiveAction | MakeAction | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   /** Classes 3.0 P9: the owner gives one of its turn-less owned units a verb (owned.ts runOwned; paid by the owner) */
   | { type: 'combat/owned'; unitId: string; owned: string; verb: string; targetId?: string; tile?: any }
@@ -618,6 +619,7 @@ function reduce(g: GameState, a: Action, by: string) {
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
   if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
   if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
+  { const no = campGearProblem(g, a); if (no) fail(no); }
   if (g.sandbox && /^(world\/act|story\/(move|door))$/.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
   switch (a.type) {
@@ -1050,6 +1052,11 @@ function reduce(g: GameState, a: Action, by: string) {
       push(g, { kind: 'system', head: 'A GIVE', text: done.ok, charId: done.to.id });
       visitNote(g, done.ok.replace(/\.$/, ''), 'gave');
       if (g.phase === 'story' && !g.run) canon(g, done.ok.replace(/\.$/, '') + ' (scene ' + g.story.scene.n + ').', [], 1);
+      return;
+    }
+    case 'gear/make': { // rules 1.54 item 5 (recipes.ts): one converter for every recipe; free, between fights only
+      const res = makeNow(g, by, a); if ('no' in res) fail(res.no);
+      push(g, { kind: 'system', text: (res as { ok: string }).ok, charId: a.charId });
       return;
     }
     case 'gear/drop': {
@@ -3127,7 +3134,14 @@ export type SandboxAction =
 /** Rules 1.39 (survival-spec rule 36): actions with no place in a Survival run, refused as in the Proving Ground: the
  * Narrator's, the story's, the room's sessions and rests (a run's are its Rest nodes). (The Proving Ground refuses itself.) Level-ups,
  * gear, magic and the fight's own actions are not here. */
-const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest\/)/;
+const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest$)/; // rules 1.54 item 1: the action's type is `rest` (it read `rest/`, which no action is)
+/** Rules 1.54 item 1 (R6): at the camp (run state `loadout`) the gear is rebuilt from the loadout's picks after every
+ * change, so every `gear/*` action is refused there, in words naming the character. Null when it is not the camp. */
+const campGearProblem = (g: GameState, a: Action): string | null => {
+  if (g.run?.state !== 'loadout' || !a.type.startsWith('gear/')) return null;
+  const c = g.characters[(a as { charId?: string }).charId || ''];
+  return 'At the camp, change ' + (c ? c.name + '\'s' : 'your') + ' gear in the loadout.';
+};
 /** Rules 1.39: a run's actions through the one reducer (the state and the refusals are run/state.ts). */
 function runAction(g: GameState, a: Action, by: string) {
   switch (a.type) {
@@ -3170,12 +3184,20 @@ function runAction(g: GameState, a: Action, by: string) {
       const no = runMoveProblem(g, by, w!); if (no) fail(no);
       runEnter(g, w!); return;
     }
-    case 'run/pick': { // rules 1.41 (spec rule 26): one weapon of three, or the credits instead
+    case 'run/pick': { // rules 1.41 (spec rule 26), 1.54 item 2: a weapon of the pick, or the Materials card (an offer saved before 1.54: its credits)
       const r = g.run!, o = r.offers?.[a.charId], c = g.characters[a.charId];
       if (r.state !== 'reward' || !o || !c) fail('There is nothing to pick for that character now.');
       if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ', or the host while they are away.');
-      if (a.choice === 'credits') { earnCredits(c!, o!.instead); stageLog(r).credits += o!.instead; push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.' }); }
-      else {
+      if (a.choice === 'credits') {
+        if (o!.instead == null) fail('There is no credits choice here: take the materials or a weapon.');
+        earnCredits(c!, o!.instead!); stageLog(r).credits += o!.instead!; push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.' });
+      } else if (a.choice === 'materials') {
+        if (!o!.materials?.length) fail('There are no materials in this pick: take a weapon.');
+        const pack = packOf(c!).map((x) => ({ ...x })), got = o!.materials!.flatMap((m) => lineGoods(m.item, m.n)); // rules 1.54 (Core Rules item 4111): whole, through packAdd
+        for (const it of got) packAdd(pack, it);
+        c!.pack = pack;
+        push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes the materials: ' + got.map((it) => itemLabel(it)).join(', ') + '.' });
+      } else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
         const pack = packOf(c!).map((x) => ({ ...x }));
         for (const it of pickedItem(w!)) packAdd(pack, it);
@@ -3354,6 +3376,7 @@ function runFight(g: GameState, n: RunNode) {
   const r = g.run!, chars = Object.values(g.characters).filter((c) => !c.dead);
   const enc = composeEncounter({ levels: chars.map((c) => c.level), node: n, stage: r.stage, setting: runSetting(r), seed: r.seed, last: r.last });
   const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' || n.kind === 'vault_guard' ? 'hard' : 'standard', g.rng);
+  for (const u of cb.units) if (dropsLoot(u)) u.drops = runFoeDrops(u); // rules 1.54 item 3: no gear, materials (run/rewards.ts)
   magicIn(g, cb);
   cb.noXp = true; // the run pays its own XP (rule 14)
   // rules 1.47: the fight keeps its effects for the tally (run/tally.ts); the opening turn was emitted as the fight began,
@@ -3406,7 +3429,7 @@ function runFightOver(g: GameState) {
     offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
   }
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
-  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the supply pack, and a weapon to pick or credits instead.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the supply pack, and a pick: the materials or a weapon.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'reward'; r.offers = offers;
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
@@ -3563,7 +3586,7 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
   }
   if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
   const def = ITEM[item] as any; if (!def) fail('No such item.');
-  const kind: PackItem['kind'] = def.category === 'focus' ? 'focus' : item === 'standard_core' ? 'ammo' : def.category === 'consumable' ? 'med' : def.category === 'food' ? 'food' : 'tool';
+  const kind: PackItem['kind'] = packKindOf(item, def.category === 'focus' ? 'focus' : def.category === 'consumable' ? 'med' : def.category === 'food' ? 'food' : 'tool'); // rules 1.54: pack_kind
   const ex = pack.findIndex((x) => (x.item || x.id) === item && !x.rarity);
   if (ex >= 0 && kind !== 'focus') { pack[ex].qty += n; c.pack = pack; return ex; }
   pack.push({ id: item, item, name: def.name, qty: n, kind }); c.pack = pack; return pack.length - 1;
@@ -4184,6 +4207,7 @@ function sandboxGear(g: GameState, a: Action, by: string) {
     'magic/pick': () => ({ type: 'sandbox/learn', charId, module: (a as any).module }),
   };
   if (a.type === 'gear/load') { sbChange(g, c!, () => { if (!loadAll(c!)) fail('Nothing to load: no part-empty magazines with matching loose rounds.'); }); return; }
+  if (a.type === 'gear/make') { sbChange(g, c!, () => { const res = makeNow(g, by, a); if ('no' in res) fail(res.no); sbLog(g, (res as { ok: string }).ok); }); return; } // rules 1.54: as gear/load
   const to = m[a.type]; if (!to) fail('Unknown action.');
   sandboxAction(g, to(), by);
 }

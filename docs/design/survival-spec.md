@@ -991,12 +991,14 @@ The ground stays twice a rest or more, as section 11.3 wants. The pull against t
 4. **The middle column at 1280 wide is about 640 px**; the path map needs more. **Recommend the map keeps its size and scrolls sideways in the middle**, the right panel's small map showing the whole stage; the map is not redrawn smaller.
 
 **For the lead (stopped or open in this spec; not Leon's):**
-- **The Essence of Experience out of Survival's shop is stopped.** The shop's rolled items are every priced item of the categories `stock.item_categories` names; the Essence is a consumable, as are the Sigil and Heart plates, so taking the category out drops them too, and a field that excludes one id is not on the approved list (14.2). It leaves the Boss's drops through 14.2 item 5. The lead approves a field or rules otherwise.
+- **The Essence of Experience out of Survival's shop: settled (the lead and Leon, 14 Nov).** The existing item field `stock: false` (the armourer's chit's) does it: `priceOf` gives no price, so no counter, roll or sale holds it. Leon's line of 14 Nov widens it: every item a trait grants is `stock: false` unless it is food (the mask, the Musek Blestor, every `start_item`; the smoker's cigarettes stay); the validator checks it. It leaves the Boss's drops through 14.2 item 5.
+- **Survival's foes' materials** are the spec's `survival.json drops` (`gun`, `by_table` keyed by the foe's loot table), not rows in `loot_tables.json`.
+- **"Credits instead" in the run simulator** (`test/balance/survival-run.ts`) became the Materials card where it is offered, else the first weapon (the vault's chest).
 - **The cap (Core Rules item 4111):** the brief says amounts above 20 go through the data cap; credits grow 0.35 a stage with no ceiling, so the spec keeps the cap at 20 and puts the Materials card in through packAdd (as the counter's buys go in).
 - **"All 12" calibres:** the data's twelve include the core charge; the table has eleven and the three special rounds.
 - **Arrows and bolts from gunpowder and casings** follow Leon's "all ammo types" literally; a call for Leon (Core Rules item 4109).
 - **The Proving Ground's panel list:** the Proving Ground is not a row of the modes file's items (it is a tool, section 8.1 item 7); its list keeps today's four and needs a home in data (a top-level entry beside the items is the spec's suggestion). The Roguelike row takes Survival's list until it has its own, as its loadout does.
-- **The ammo maker on the counter or only in the rolled gear:** the brief says "the shop's stock"; as a tool it is rolled, so a shop may not have one. The counter would make it certain.
+- **The ammo maker on the counter: settled (14 Nov).** Always on the counter's supplies shelf at its price (300); being on the counter keeps it out of the rolled gear; it rolls as loot (`person`, weight 1).
 
 ### 14.8 Music by situation (built from existing pieces; no new primitive)
 

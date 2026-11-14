@@ -20,7 +20,7 @@ const PICK_WORD: Record<string, string> = { hit: 'To hit', dmg: 'Damage', ap: 'A
 /** The path map's legend: every node kind's word, in the map's own words (data), the gate's apart. */
 export const NODE_LEGEND: { kind: string; word: string }[] = ['fight', 'elite', 'boss', 'shop', 'forge', 'training', 'shrine', 'rest', 'cache', 'event']
   .map((k) => ({ kind: k, word: (MAP_DATA.words as Record<string, string>)[k] || k }));
-export interface OfferV { charId: string; name: string; mine: boolean; canPick: boolean; cards: OfferCardV[]; instead: number }
+export interface OfferV { charId: string; name: string; mine: boolean; canPick: boolean; cards: OfferCardV[]; /** rules 1.54: an offer saved before 1.54 only (credits instead is retired) */ instead: number | null }
 export interface RunViewV {
   stage: number; depth: number; rows: number; setting: string; settingId: string; seed: string; state: string; title: string;
   /** rules 1.48: the stage's lane count; the party has not left the camp yet (at the start every lane is lit) */
@@ -77,7 +77,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
   const waiting = r.state === 'map' && !solo && leaned > 0 && leaned < online.length ? 'Waiting for ' + (online.length - leaned) + ' player' + (online.length - leaned === 1 ? '' : 's') : null;
   const offers: OfferV[] = Object.entries(r.offers || {}).map(([cid, o]) => {
     const c = g.characters[cid];
-    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, instead: o.instead,
+    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, instead: o.instead ?? null,
       cards: o.weapons.map((w, i) => ({ i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
         tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || ''),
         lines: c ? gearPreview(c, { id: w.id, rarity: w.rarity }).lines.filter((l) => ['hit', 'dmg', 'ap', 'door_mod'].includes(l.key)).map((l) => ({ key: l.key, label: PICK_WORD[l.key] || l.label, value: l.value })) : [] })) };
