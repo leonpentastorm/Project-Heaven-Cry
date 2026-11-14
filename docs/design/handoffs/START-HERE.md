@@ -1,5 +1,18 @@
 # Start here (14 Nov 2026)
 
+> **UPDATE, 14 Nov 2026, 14:35 UTC.** (1) **A real bug is LIVE in 0.27.0 and 0.27.1: a stray "MISS" label shows on
+> every plain ranged hit** (since commit 11726eaa, the bows merge, which broke the hit/cover/miss chain in the
+> effects). It is FIXED on branch `worktree-agent-a202ef14f498e698e` (head 77a3eea9, also `wip/` on the remote),
+> which is the every-weapon effects work: a machine-built table of 1,552 rows (weapon x action x hit/miss; 0
+> failing), 52 per-weapon `case` labels moved into data (`rules.json weapons_rules.fx`, read by `fx/weaponFx.ts`),
+> the flamer, launcher, rocket, bows and core rifle each with their own sound and projectile, a test that fails if
+> effects code names a weapon id. Its `npm run check` passed except timeouts under load. (2) The 0.27.2 release run
+> (loadout + boons) on b18c6ec6: `npm run check` ALL GREEN; browser suites in progress, none failing so far.
+> **Plan:** when that run ends green, merge the weapon effects branch, re-run `npm run check` and the shooting
+> suites (brass, fx-sweep, fx-room, combat-speed, physical, physical-pack, quivers, melee-fx, smoke), and deploy
+> 0.27.2 with both. Open for Leon from the weapon work: the grenade launcher's thump is a stand-in sample; the
+> flamer draws one gout per unit caught (the engine spends one fuel each); the core rifle ejects its spent charge.
+
 > **UPDATE, 14 Nov 2026, 13:45 UTC (usage at 95%: this may be the last note from the cloud session).**
 > **0.27.2 is built and on the working branch at b18c6ec6, NOT yet live** (the loadout, creation without a kit,
 > starting boons, the supply pack; the join's own check was green). Its release run was started and may not have
