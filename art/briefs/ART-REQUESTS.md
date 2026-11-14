@@ -226,3 +226,6 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 - **11 Nov 2026:** E1 added (Heavenprint artwork for all equipment, planned with Equipment 2.0).
 - **11 Nov 2026:** list started. W1, W2, F1, F2 opened. Breaching Strike, Nothing Gets Past and Iron Grip were
   checked against their rules 1.13 meanings and fit as they are.
+
+
+- **14 Nov 2026:** P1 opened: every character portrait repainted as a different person (same-face syndrome), with a tag file (class fantasy, gender, species) at `art/portraits/tags.json`; the full request with one row per portrait is `art/briefs/GPT-PROMPTS-2026-11-14-portraits.md`.
