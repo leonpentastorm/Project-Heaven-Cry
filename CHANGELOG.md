@@ -42,7 +42,7 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
 - **The summary and Report a run:** stages, nodes, the path, each fight's tally, levels, classes, boons; one file to
   send; keep the character as a draft at the level it reached.
 - **The fit (rules 1.49).** Whole runs were simulated through the rules (solo, two and four characters; gunners,
-  casters and a healer; three ways of choosing lanes) and the curve fitted by data alone: FIT_LINE
+  casters and a healer; three ways of choosing lanes) and the curve fitted by data alone (rules 1.49): Elites and Bosses pull ahead two levels a stage (to four), fights grow a little longer and the danger cap with them, small parties meet their Elites at full strength, credits instead of a pick are a tenth of its price, and XP per stage is raised. A squad of four now ends in stage 3 or 4, a duo in stage 2 to 4, a solo gunner in stage 2 or 3 (before: every party with a gunner reached stage 5).
 - **The browser suite `survival`** walks all of it, two browsers included.
 
 ## 0.26.0 — Classes 3.0

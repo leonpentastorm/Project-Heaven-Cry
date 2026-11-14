@@ -55,4 +55,4 @@ section 8; the open questions in `balance-questions.md`; Bug 12 of `BUGLIST-0.22
 5. Nine of fx-sweep's nineteen real-speed cases are refused "no place to stand" in the Proving Ground (launchers, the
    flamer, grenades, the thumper): the suite counts them as refused, not failed, so those weapons go unchecked at real
    speed. Worth a look when someone is in the sweep.
-6. **Survival's measured gaps** (`survival-steps-9-10.md` section 5): KNOWN_SURVIVAL
+6. **Survival's measured gaps** (`survival-steps-9-10.md` section 5): a Sigil caster alone and a party of four casters fall in stage 1 or 2; guns wear out by stage 3 to 4 with no repair in Survival but a grade step. Both need a general addition, not a dial.
