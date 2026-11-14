@@ -48,7 +48,7 @@ describe('Survival encounters (rules 1.41)', () => {
     for (const id of Object.keys(ENEMY)) expect(B.tiers[id], id).toBeTruthy();
     expect(foeCost('soldier', 3, 4, 4).bulk).toBeCloseTo(B.lagFactor, 5);
     expect(foeCost('minion', 1, 4, 4).pressure).toBeCloseTo(B.tiers.minion.pressure * Math.pow(B.lagFactor, 3), 5);
-    expect(foeCost('elite', 5, 4, 4).bulk).toBeCloseTo(B.tiers.elite.bulk / B.lagFactor, 5);
+    expect(foeCost('elite', 5, 4, 4).bulk).toBeCloseTo(B.tiers.elite.bulk / B.lagFactor * shareOf('elite', 4).hp, 5); // rules 1.54's fit: a four's Elite share from data
     expect(foeCost('boss', 1, 1, 1).bulk).toBeCloseTo(B.tiers.boss.bulk * shareOf('boss', 1).hp, 5);
     expect(foeCost('boss', 1, 1, 1).pressure).toBeCloseTo(B.tiers.boss.pressure * shareOf('boss', 1).damage, 5);
   });
