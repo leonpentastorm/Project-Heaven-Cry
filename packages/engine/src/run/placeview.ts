@@ -8,7 +8,7 @@ import { type Character, type Rarity, gearAt, wearAt } from '../character';
 import { FAITH_PATRON } from '../belief';
 import { rngFor, die } from '../rng';
 import { gearPreview } from '../gearpreview';
-import { type RunOption, runOptions, nextGrade } from './progress';
+import { type RunOption, type TrainBar, runOptions, nextGrade } from './progress';
 import { runNode, runSetting, type RunState } from './state';
 import { SETTING } from './encounter';
 import { MAP_DATA } from './map';
@@ -20,8 +20,9 @@ import type { GameState } from '../game';
 /** A place's tab: its id, its word, and the option groups it holds (the Give tab holds none: it draws `giveView`). */
 export interface PlaceTabV { id: string; label: string; groups: RunOption['group'][] }
 /** One large choice card: the engine's option, and for a grade step the numbers before and after (the gear preview),
- * for a Relic property its worth against the character's cap. */
-export interface PlaceCardV { o: RunOption; id: string | null; rarity: Rarity | null; lines: { label: string; before: string; after: string }[]; worth: string | null }
+ * for a Relic property its worth against the character's cap, for a training its bar (rules 1.54 item 10: the option's
+ * trainBar, where the character stands, what it adds, the next step in words; null for any other card). */
+export interface PlaceCardV { o: RunOption; id: string | null; rarity: Rarity | null; lines: { label: string; before: string; after: string }[]; worth: string | null; bar: TrainBar | null }
 /** The full-screen place for one player (rules 1.46). */
 export interface PlaceViewV {
   node: string; kind: string; word: string; setting: string;
@@ -58,7 +59,7 @@ export function placeView(g: GameState, me: string, charId?: string | null): Pla
     const diff = before && after ? after.lines.filter((l) => l.num != null).map((l) => ({ label: l.label, before: before.lines.find((x) => x.key === l.key)?.value ?? '—', after: l.value })).filter((l) => l.before !== l.after) : [];
     const prop = o.group === 'relic' && a.prop ? a.prop as string : null;
     const id = it ? it.id : o.group === 'repair' ? (wearAt(c, a.where)?.id || null) : o.group === 'forge' ? (v.stock?.[a.slot]?.id || null) : o.group === 'train' && a.weapon ? a.weapon : null;
-    return { o, id, rarity: it ? it.rarity : null, lines: diff, worth: null };
+    return { o, id, rarity: it ? it.rarity : null, lines: diff, worth: null, bar: o.bar ?? null };
   }) : [];
   const party = g.players.map((p) => ({ id: p.id, name: Object.values(g.characters).find((x) => x.owner === p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', online: p.online, mine: p.id === me, marked: !!r.leans[p.id] }));
   return {

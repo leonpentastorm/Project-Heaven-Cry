@@ -7,8 +7,8 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, creditsOf, priceOf, RARITY, unitFromCharacter, maxHp, packOf, setGrade, gearAt, gearProps,
   toHitTerms, focusAccTerm, previewAttack, withOffHand, saveAgainst, saveTn, addPractice, practiceOf, runOptions, relicChoices, gradePrice, GRADE_UP, TRAIN, TRAINING, TRADES,
-  runWorth, capRoom, BOON_CAP, worthOf, relicRow, RELIC_PROPS, propFits, weaponOffer, pickedItem, cappedRarity, stageCeiling, lastingOffer, DEVOTION_XP, devotionXpOf, bindGame, FOCUS_IDS } from '../src';
-import { physOf } from '../src';
+  runWorth, capRoom, BOON_CAP, worthOf, relicRow, RELIC_PROPS, propFits, weaponOffer, pickedItem, cappedRarity, stageCeiling, lastingOffer, SHRINE, devotionXpOf, bindGame, FOCUS_IDS } from '../src';
+import { physOf, placeView, drillMarks, sigilGrowthView, nextPickAt, devotionThreshold, devotionLevelOf } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { storyWith, fightWith } from './helpers/perkfight';
 import type { Pc } from './helpers/replay';
@@ -192,7 +192,29 @@ describe('rules 1.43: trainings (rules 39, 45)', () => {
     expect(refused(b, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toMatch(/the most the yard allows/);
     expect(refused(g, { type: 'run/train', charId: 'c1', train: 'devotion' })).toBe('Devotion is raised at a shrine, not here.');
     const poor = visit('training', { credits: 0 }), p1 = apply(poor, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w }, 'host');
-    expect(refused(p1, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toMatch(/is 300 credits short/);
+    expect(refused(p1, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toMatch(new RegExp('is ' + TRAINING.extra_price + ' credits short'));
+  });
+  it('rules 1.54 item 10: each training card carries its bar (where you stand, what it adds, the next step in words), moved by the training itself', () => {
+    const g = visit('rest'), w = g.characters.c1.weapon;
+    const card = (x: GameState, id: string, key: string) => placeView(x, ownerOf(id === 'c1' ? 0 : 1), id)!.cards.find((q) => q.o.key === key)!;
+    const d = card(g, 'c1', 'drill:' + w), marks = drillMarks(g.characters.c1, w), next = marks.find((m) => !m.reached)!;
+    expect(d.bar).toEqual(d.o.bar);
+    expect(d.bar).toMatchObject({ now: physOf(g.characters.c1).drill[w] || 0, add: TRAIN.drill, to: next.at, reaches: (physOf(g.characters.c1).drill[w] || 0) + TRAIN.drill >= next.at });
+    expect(d.bar!.mark).toContain(String(next.at));
+    const a = apply(g, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w }, 'host');
+    expect(card(a, 'c1', 'drill:' + w).bar!.now).toBe(d.bar!.now + TRAIN.drill);
+    // study: the Sigil growth's step; the Sigilist's study bar moves by the rest's study
+    const s0 = card(g, 'c2', 'study').bar!;
+    expect(s0).toMatchObject({ add: TRAIN.study, to: sigilGrowthView(g.characters.c2).next, now: sigilGrowthView(g.characters.c2).study });
+    const s1 = apply(g, { type: 'run/train', charId: 'c2', train: 'study' }, 'p2');
+    expect(sigilGrowthView(s1.characters.c2).study).toBe(s0.now + TRAIN.study);
+    // practice and Devotion: the module picks and the Devotion curve
+    const p = card(g, 'c1', 'practice').bar!; expect(p).toMatchObject({ now: practiceOf(g.characters.c1), add: TRAIN.practice, to: nextPickAt(practiceOf(g.characters.c1)) });
+    const dv = card(g, 'c1', 'devotion').bar!, xp = devotionXpOf(g.characters.c1);
+    expect(dv).toMatchObject({ now: xp, add: TRAIN.devotion, from: devotionThreshold(devotionLevelOf(xp)), to: devotionThreshold(devotionLevelOf(xp) + 1) });
+    // the training ground's bar adds the ground's amounts; every other card has none
+    const t = visit('training'); expect(card(t, 'c1', 'drill:' + w).bar!.add).toBe(TRAINING.drill);
+    expect(placeView(visit('shrine'), ownerOf(0), 'c1')!.cards.every((q) => q.bar === null)).toBe(true);
   });
 });
 
@@ -203,7 +225,7 @@ describe('rules 1.43: the shrine (rule 46)', () => {
     expect(p).toBeTruthy();
     const xp0 = devotionXpOf(g.characters.c1);
     const a = apply(g, { type: 'run/shrine', charId: 'c1', choice: 'rite' }, 'host');
-    expect(devotionXpOf(a.characters.c1)).toBe(xp0 + DEVOTION_XP.rite);
+    expect(devotionXpOf(a.characters.c1)).toBe(xp0 + SHRINE.rite); // rules 1.54 item 10: survival.json shrine.rite, not the campaigns' rite_kept
     expect(refused(a, { type: 'run/shrine', charId: 'c1', choice: 'token' })).toBe('One thing per shrine. ' + a.characters.c1.name + ' has taken it.');
     expect(refused(a, { type: 'run/shrine', charId: 'c2', choice: 'rite' }, 'p2')).toMatch(/is an Atheist: take a piece of lore or the token instead/);
     const b = apply(a, { type: 'run/shrine', charId: 'c2', choice: 'piece' }, 'p2');

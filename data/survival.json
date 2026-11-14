@@ -29,7 +29,7 @@
     "bulk": 0.42,
     "pressure": 0.35,
     "credits": 0.35,
-    "xp": [1, 1, 1.1, 1.25, 1.25],
+    "xp": [1, 2.6, 4, 4, 4.5],
     "elite_up": { "per": 2, "max": 4 },
     "provisional": true
   },
@@ -95,7 +95,7 @@
     },
     "provisional": true
   },
-  "xp": { "about": "Rules 1.41 (spec section 3.1): f(d) = base + per_depth x (d - 1) to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault.", "base": 100, "per_depth": 22, "elite": 1.5, "boss": 2, "cache": 0.25, "vault_guard": 1.5, "vault": 0, "provisional": true },
+  "xp": { "about": "Rules 1.41 (spec section 3.1): f(d) = base + per_depth x (d - 1) to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault. Rules 1.54 item 9: base 10, per_depth 2, boss 5 (level 3 after stage 1's Boss).", "base": 10, "per_depth": 2, "elite": 1.5, "boss": 5, "cache": 0.25, "vault_guard": 1.5, "vault": 0, "provisional": true },
   "credits": { "about": "Rules 1.41 (spec section 3.1): c(d) = base + per_depth x d to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault.", "base": 80, "per_depth": 20, "elite": 1.5, "boss": 2, "cache": 1.5, "vault_guard": 1.5, "vault": 2, "provisional": true },
   "ammo_pack": { "about": "Rules 1.41, 1.51 (spec rules 23, 52): the supply pack. After a won fight (or at a cache or the vault) each character gets, with n this many by the node: n magazines' worth of rounds for every gun it carries (x the stat run_ammo); with a focus of a kind in `core_doors` carried, after a fight the spare cores it burnt in it back (none burnt, none back), at most `cores_max` x n, and at a cache or the vault `cores` x n; with a focus of a kind in `mp_doors` carried, `mp_share` x n of its max MP (cores and MP x the stat run_supply).", "fight": 1, "elite": 2, "boss": 3, "cache": 1, "vault_guard": 2, "vault": 1, "cores": 1, "cores_max": 2, "core_doors": ["evoker", "visualizer"], "mp_share": 0.3, "mp_doors": ["emanator", "attuner"], "provisional": true },
   "rewards": {
@@ -375,16 +375,17 @@
   },
   "train": {
     "about": "Rules 1.43 (spec rule 39): the rest's small training, one a character: drill on a weapon it carries (addDrill), study (addStudy, a Sigil user), practice (addPractice, an Outburst user), or Devotion XP (shiftDevotion, the Faithful).",
-    "drill": 100, "study": 3, "practice": 5, "devotion": 2,
+    "drill": 200, "study": 5, "practice": 8, "devotion": 4,
     "provisional": true
   },
   "training": {
     "about": "Rules 1.43 (spec rule 45): the training ground's big training, one a character for free and a second (the most is `most`) for extra_price credits: drill, study or practice (Devotion is the shrine's).",
-    "drill": 300, "study": 8, "practice": 10, "extra_price": 300, "most": 2,
+    "drill": 400, "study": 10, "practice": 15, "extra_price": 300, "most": 2,
     "provisional": true
   },
   "shrine": {
-    "about": "Rules 1.43 (spec rule 46): one offer a character: the rite (Devotion XP by patrons.json gain.rite_kept), a knowledge piece for an Atheist (grantPiece), or the patron's token, a boon of the tile's pool of worth at most token_max_worth, at most tokens_per_stage a character a stage, on the cap.",
+    "about": "Rules 1.43 (spec rule 46): one offer a character: the rite (rite Devotion XP; rules 1.54 item 10: its own key, was patrons.json gain.rite_kept, which the campaigns keep), a knowledge piece for an Atheist (grantPiece), or the patron's token, a boon of the tile's pool of worth at most token_max_worth, at most tokens_per_stage a character a stage, on the cap.",
+    "rite": 10,
     "token_max_worth": 8,
     "tokens_per_stage": 1,
     "provisional": true
