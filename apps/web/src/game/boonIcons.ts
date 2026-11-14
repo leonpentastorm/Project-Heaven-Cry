@@ -25,6 +25,7 @@ export const BOON_ICON_PATHS: Record<string, string[]> = {
   'boon.sure_script': ['M32 32 m-18 0 a18 18 0 1 0 36 0 a18 18 0 1 0 -36 0', 'M22 32 L42 32', 'M32 22 L32 42', 'M26 26 L38 38'], // a glyph in a ring
   'boon.steady_heart': ['M32 52 C14 40 10 30 14 22 C18 14 28 14 32 22 C36 14 46 14 50 22 C54 30 50 40 32 52 Z', 'M22 32 L42 32'], // a level heart
   'boon.deep_reserve': ['M20 12 L44 12 L44 52 L20 52 Z', 'M20 24 L44 24', 'M20 36 L44 36', 'M28 44 L36 44'], // a full vessel
+  'boon.deep_satchel': ['M14 22 L50 22 L52 52 L12 52 Z', 'M22 22 C22 12 42 12 42 22', 'M14 32 L50 32', 'M30 32 L30 38 L34 38 L34 32'], // a satchel, full
   'boon.mercy_return': ['M26 12 L38 12 L38 26 L52 26 L52 38 L38 38 L38 52 L26 52 L26 38 L12 38 L12 26 L26 26 Z', 'M44 50 C52 46 54 36 50 30'], // a cross and a way back
 };
 /** Rules 1.51: the starting boons draw their line's glyph (data/survival.json start_boons `lines`, the first). */

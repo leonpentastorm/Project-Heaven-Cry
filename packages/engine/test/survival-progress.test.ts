@@ -134,7 +134,8 @@ describe('rules 1.43: the grade step (rules 37, 38, 43)', () => {
     expect(refused(visit('rest'), { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('This is not a shop.');
   });
   it('the Relic step: a Forge only, from stage 3, one of three properties that fit and the cap; Masterwork first', () => {
-    const prep = (g: GameState) => { for (const c of Object.values(g.characters)) setGrade(c, 'main', 'masterwork'); };
+    // the service rifle in hand (rules 1.52: the camp's free rifle fits fewer properties), Masterwork
+    const prep = (g: GameState) => { for (const c of Object.values(g.characters)) { c.weapon = 'hellraiser_service_rifle'; delete c.weaponState; setGrade(c, 'main', 'masterwork'); } };
     expect(refused(visit('forge', { stage: 2, prep }), { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('Relic upgrades open in stage 3.');
     const shop = visit('shop', { stage: 3, prep });
     expect(refused(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('Only a Forge makes a Relic.');
@@ -249,6 +250,8 @@ describe('rules 1.43: the Crossroads (rule 42): every trade\'s gain and cost', (
   });
   it('a salvage buyer: a pack line for its share of its price', () => {
     const g = all(at()), t = TRADES.items.find((x) => x.do === 'salvage')!, c0 = g.characters.c1;
+    // rules 1.52: the camp's Recommended loadout carries nothing salvageable but its gun: a knife in the pack to sell
+    c0.pack = [...packOf(c0), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }];
     const i = packOf(c0).findIndex((x) => !x.mags && !x.calibre && x.kind !== 'ammo' && priceOf(x.weapon || x.item || x.id, x.rarity || 'standard') != null);
     const it = packOf(c0)[i], n = Math.round(priceOf(it.weapon || it.item || it.id, it.rarity || 'standard')! * t.rate);
     const a = apply(g, { type: 'run/trade', charId: 'c1', trade: t.id, pick: i }, 'host');

@@ -60,9 +60,6 @@ export function boonOffer(c: Character, pool: string, seed: string, nodeId: stri
  * main line and `second` from the second), the most a starting boon is worth, each alpha skill's line, each focus kind's
  * line, each line's words. */
 export const START_BOON: { offer: number; main: number; second: number; max_worth: number; lines: Record<string, string>; focus_lines: Record<string, string>; names: Record<string, string> } = SV.start_boon;
-/** The camp's issue (survival.json `camp`, rules 1.51; spec rule 53): the armour class fitted free at the camp, and the
- * spare magazines the gun in hand is topped up to. */
-export const CAMP: { issue_armour: number; spare_mags: number } = SV.camp;
 const ORDER = Object.keys(START_BOON.lines); // the alpha skills in the lines' order (the tie-break)
 /** A weapon's line: a melee weapon or empty hands (fists) blades; anything else (a gun, a bow, a crossbow) guns. */
 const weaponLine = (id: string | null | undefined): string => { const w: any = id ? WEAPON[id] : null; return !w || w.category === 'unarmed' || (!isGunId(id) && (/melee/.test(w.category) || w.phys?.system === 'melee')) ? 'blades' : 'guns'; };

@@ -6,7 +6,7 @@
 // (magazines, the cores burnt back between 1 and 2 x n, the MP share, Bandolier on all of it, Flux 0 after a run's
 // fight, the loaded charge full at a Rest).
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, boonWorks, boonServes, FOCUS_IDS, START_BOONS, START_BOON, CAMP, BOONS, BOON_CAP, runWorth, capRoom, worthOf, relicRow, lineOf, lineBoons, startOffer, isStartBoon,
+import { type GameState, apply, RuleError, boonWorks, boonServes, FOCUS_IDS, START_BOONS, START_BOON, LOADOUT, RACK, WEAPON, BOONS, BOON_CAP, runWorth, capRoom, worthOf, relicRow, lineOf, lineBoons, startOffer, isStartBoon,
   ammoPack, supplyMp, chargeHeld, coresBurnt, maxMp, mpNow, previewAttack, toHitTerms, applyDamage, price, emit, bindGame, glyphCost, packOf, magazineWorth, KITS, newCharacter, CORE_CHARGE, VIS_CHARGE, healUnit, FAITH_PATRON } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
@@ -19,20 +19,26 @@ const W = <T,>(g: GameState, f: () => T): T => { const was = bindGame(g); try { 
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const row = (id: string): any => START_BOONS.find((b) => b.id === id) || BOONS.find((b) => b.id === id);
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
-const camp = (pcs: Pc[], seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+/** The camp (rules 1.52): run/start, then every character on its Recommended loadout (the camp stays open). */
+const camp = (pcs: Pc[], seed = 'PHC-0001') => { let g = apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+  for (let i = 0; i < pcs.length; i++) g = apply(g, { type: 'run/loadout', charId: 'c' + (i + 1), op: 'recommended' } as any, ownerOf(i)); return g; };
+/** A character's starting offer as it stands (read from what it holds). */
+const offerOf = (g: GameState, id: string) => startOffer(g.characters[id], g.run!.seed);
+/** Out of the camp: the host starts the run for everyone. */
+const leave = (g: GameState) => apply(g, { type: 'run/go' }, 'host');
 const linesOf = (ids: string[]) => ids.map((id) => row(id).lines);
 
 describe('rules 1.51: the offer by line (spec rule 49)', () => {
   it('a Sigilist (Evoker in hand, Brain Power) is offered two Sigil boons and one gun boon (its pistol)', () => {
     const g = camp([{ build: 'sigil', level: 1 }]), c = g.characters.c1;
     expect(lineOf(c)).toEqual({ main: 'sigil', second: 'guns' });
-    const l = linesOf(g.run!.boons!.c1);
+    const l = linesOf(offerOf(g, 'c1'));
     expect(l.filter((x) => x.includes('sigil'))).toHaveLength(START_BOON.main); expect(l.filter((x) => x.includes('guns'))).toHaveLength(START_BOON.second);
   });
   it('a level 1 gunner is offered two gun boons; its second line is its next alpha skill\'s, else blades', () => {
     const g = camp([{ build: 'plain_gun', level: 1 }]), c = g.characters.c1, l = lineOf(c);
     expect(l.main).toBe('guns'); expect(l.second).not.toBe('guns');
-    const lines = linesOf(g.run!.boons!.c1);
+    const lines = linesOf(offerOf(g, 'c1'));
     expect(lines.filter((x) => x.includes('guns'))).toHaveLength(START_BOON.main);
     expect(lines.filter((x) => x.includes(l.second))).toHaveLength(START_BOON.second);
   });
@@ -47,10 +53,10 @@ describe('rules 1.51: the offer by line (spec rule 49)', () => {
   });
   it('every reference build is offered three distinct real starting boons, the same on the same seed, each worth at most max_worth', () => {
     for (const b of BUILDS) {
-      const g = camp([{ build: b.id, level: 1 }]), o = g.run!.boons!.c1;
+      const g = camp([{ build: b.id, level: 1 }]), o = offerOf(g, 'c1');
       expect(new Set(o).size, b.id).toBe(START_BOON.offer);
       for (const id of o) { expect(isStartBoon(id), id).toBe(true); expect(worthOf(id)).toBeLessThanOrEqual(START_BOON.max_worth); }
-      expect(camp([{ build: b.id, level: 1 }]).run!.boons!.c1).toEqual(o);
+      expect(offerOf(camp([{ build: b.id, level: 1 }]), 'c1')).toEqual(o);
     }
   });
   it('every line has at least two rows; every damage line the same shapes (+1 to hit worth 6, +5% damage 5, a tempo row 4); no starting boon is a Boss boon', () => {
@@ -61,41 +67,54 @@ describe('rules 1.51: the offer by line (spec rule 49)', () => {
   });
 });
 
-describe('rules 1.51: the camp through the reducer (spec rules 48, 53)', () => {
+describe('rules 1.51 and 1.52: the camp through the reducer: the loadout, then the starting boon, then Ready', () => {
   const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
-  it('run/start opens the camp: the map waits; each player takes one card for its character; the map opens when all have', () => {
+  it('run/start opens the camp: the map waits; each player chooses a card; Ready waits for the choice; the boons are given as it closes', () => {
     const g = camp(DUO), first = g.run!.nodes.find((n) => n.depth === 1)!;
-    expect(g.run!.state).toBe('camp');
-    expect(refused(g, { type: 'run/move', node: first.id })).toBe('Choose your starting boon first. The map opens when everyone has.');
+    expect(g.run!.state).toBe('loadout');
+    expect(refused(g, { type: 'run/move', node: first.id })).toMatch(/^Finish your loadout at the camp first/);
+    expect(refused(g, { type: 'run/ready' }, 'host')).toBe('Choose Plain gun 1\'s starting boon first.');
     const a = apply(g, { type: 'run/boon', charId: 'c1', choice: 1 }, 'host');
-    expect(a.characters.c1.relics).toEqual([g.run!.boons!.c1[1]]); expect(a.run!.state).toBe('camp');
-    const b = apply(a, { type: 'run/boon', charId: 'c2', choice: 0 }, 'p2');
-    expect(b.run!.state).toBe('map'); expect(b.run!.boons).toBeNull(); expect(b.characters.c2.relics).toEqual([g.run!.boons!.c2[0]]);
-    expect(apply(b, { type: 'run/move', node: first.id }, 'host').run!.leans.host).toBe(first.id);
+    expect(a.run!.loadout!.c1.boon).toBe(offerOf(g, 'c1')[1]); expect(a.characters.c1.relics || []).toEqual([]); // chosen, given at the close
+    const b = apply(a, { type: 'run/ready' }, 'host'); expect(b.run!.state).toBe('loadout');
+    expect(refused(b, { type: 'run/boon', charId: 'c1', choice: 0 }, 'host')).toBe('Plain gun 1 is marked ready: take the mark back to change the loadout.');
+    const c = apply(apply(b, { type: 'run/boon', charId: 'c2', choice: 0 }, 'p2'), { type: 'run/ready' }, 'p2');
+    expect(c.run!.state).toBe('map'); expect(c.run!.loadout).toBeNull();
+    expect(c.characters.c1.relics).toEqual([offerOf(g, 'c1')[1]]); expect(c.characters.c2.relics).toEqual([offerOf(g, 'c2')[0]]);
+    expect(apply(c, { type: 'run/move', node: first.id }, 'host').run!.leans.host).toBe(first.id);
   });
-  it('refusals in words; the host picks for an away player; the host\'s go gives every character who has not picked its first card', () => {
-    const g = camp(DUO);
-    expect(refused(g, { type: 'run/boon', charId: 'c1', choice: 0 }, 'p2')).toBe('Only Plain gun 1\'s player picks for Plain gun 1, or the host while they are away.');
+  it('refusals in words; the host\'s Go gives an away player the Recommended loadout and the first card', () => {
+    const g0 = apply(survivalRoom('PHC-0001', DUO, { test: true }), { type: 'run/start', seed: 'PHC-0001' }, 'host');
+    const g = apply(g0, { type: 'run/loadout', charId: 'c1', op: 'recommended' } as any, 'host');
+    expect(refused(g, { type: 'run/boon', charId: 'c1', choice: 0 }, 'p2')).toBe('Only Plain gun 1\'s player makes Plain gun 1\'s loadout.');
     expect(refused(g, { type: 'run/boon', charId: 'c1', choice: 7 })).toBe('That boon is not on Plain gun 1\'s offer.');
     expect(refused(g, { type: 'run/go' }, 'p2')).toBe('Only the host can send the squad on before everyone has marked a stop.');
     const a = apply(g, { type: 'run/boon', charId: 'c1', choice: 2 }, 'host');
-    expect(refused(a, { type: 'run/boon', charId: 'c1', choice: 0 })).toBe('There is no boon to pick for that character now.');
-    const b = apply(a, { type: 'run/go' }, 'host');
-    expect(b.run!.state).toBe('map'); expect(b.run!.boons).toBeNull();
-    expect(b.characters.c2.relics).toEqual([g.run!.boons!.c2[0]]); expect(b.characters.c1.relics).toEqual([g.run!.boons!.c1[2]]);
-    expect(b.story.entries.some((e) => /was away and takes the first card/.test(e.text))).toBe(true);
-    expect(runWorth(b.characters.c2)).toBe(worthOf(g.run!.boons!.c2[0])); expect(capRoom(b.characters.c2)).toBe(BOON_CAP - worthOf(g.run!.boons!.c2[0]));
+    const b = leave(a); // p2 never touched the camp
+    expect(b.run!.state).toBe('map');
+    const c2 = b.characters.c2; expect(c2.weapon).not.toBe('fists'); expect(c2.relics).toEqual([startOffer(c2, b.run!.seed)[0]]);
+    expect(b.characters.c1.relics).toEqual([offerOf(g, 'c1')[2]]);
+    expect(b.story.entries.some((e) => /takes the first starting boon offered/.test(e.text))).toBe(true);
+    expect(runWorth(c2)).toBe(worthOf(c2.relics![0])); expect(capRoom(c2)).toBe(BOON_CAP - worthOf(c2.relics![0]));
   });
-  it('the camp\'s issue: armour fitted to class 3 free at the camp (once), refused after it; the gun in hand topped up to three spare magazines', () => {
-    const g = camp(DUO), c2 = g.characters.c2;
-    expect(KITS.sigil.armourClass).toBeLessThan(CAMP.issue_armour);
-    const credits = c2.credits, a = apply(g, { type: 'run/fit', charId: 'c2' }, 'p2');
-    expect(a.characters.c2.armourClass).toBe(CAMP.issue_armour); expect(a.characters.c2.credits).toBe(credits);
-    expect(refused(a, { type: 'run/fit', charId: 'c2' }, 'p2')).toBe('Sigil caster 2 already wears class 3: the camp issues up to class 3.');
-    const spare = (c: any) => packOf(c).filter((x) => x.id === 'mag:' + c.weapon).reduce((t, x) => t + (x.qty || 0), 0);
-    expect(spare(g.characters.c2)).toBe(CAMP.spare_mags); expect(spare(g.characters.c1)).toBeGreaterThanOrEqual(CAMP.spare_mags);
-    const map = apply(a, { type: 'run/go' }, 'host');
-    expect(refused(map, { type: 'run/fit', charId: 'c1' })).toBe('You are not at a Forge.');
+  it('the offer follows the loadout: a Sigil card chosen with the Evoker goes when the Evoker is put back', () => {
+    const g = camp(DUO), o = offerOf(g, 'c2'), k = o.findIndex((id) => row(id).lines.includes('sigil'));
+    expect(k).toBeGreaterThanOrEqual(0);
+    const a = apply(g, { type: 'run/boon', charId: 'c2', choice: k }, 'p2');
+    const b = apply(a, { type: 'run/loadout', charId: 'c2', op: 'pick', slot: 'focus', id: null } as any, 'p2');
+    expect(offerOf(b, 'c2').some((id) => row(id).lines.includes('sigil'))).toBe(false);
+    expect(b.run!.loadout!.c2.boon).toBeUndefined();
+  });
+  it('no free armour or magazines at the camp (Leon: armour is bought from the budget): what a character wears is what it bought', () => {
+    const g0 = apply(survivalRoom('PHC-0001', DUO, { test: true }), { type: 'run/start', seed: 'PHC-0001' }, 'host');
+    expect(g0.characters.c2.armourClass || 0).toBe(0);
+    const pick = apply(g0, { type: 'run/loadout', charId: 'c2', op: 'pick', slot: 'weapon', id: RACK.find((x) => x.id === 'pistols')!.free } as any, 'p2');
+    expect(pick.characters.c2.armourClass || 0).toBe(0);
+    const c2 = pick.characters.c2, w: any = (WEAPON as any)[c2.weapon], ammo = packOf(c2).filter((x) => x.kind === 'ammo');
+    const held = ammo.reduce((t, x: any) => t + (x.mags ? x.mags.reduce((u: number, n: number) => u + n, 0) : x.id === 'mag:' + c2.weapon ? (x.qty || 0) * w.magazine : x.qty || 0), 0);
+    expect(held).toBe(LOADOUT.gun.spare * w.magazine); // the free gun's one spare, no more
+    expect(refused(pick, { type: 'run/fit', charId: 'c2' }, 'p2')).toBe('You are not at a Forge.');
+    const g = camp(DUO); expect(g.characters.c2.armourClass).toBe(g.run!.loadout!.c2.take['stock:armour:1'] ? 1 : 0);
   });
   it('the rigger and mender kits hold their focus in the off hand', () => {
     expect(KITS.rigger.offHand).toBe('visualizer'); expect(KITS.mender.offHand).toBe('attuner');
@@ -245,7 +264,7 @@ describe('rules 1.51 (the review): the offer serves only cards a character can u
   });
   it('every kit and reference build is offered three distinct cards that all work for it', () => {
     for (const kit of Object.keys(KITS)) usable(mk(kit, { dexterity: 1 }));
-    for (const b of BUILDS) { const g = camp([{ build: b.id, level: 1 }]), c = g.characters.c1; for (const id of g.run!.boons!.c1) expect(boonWorks(c, row(id)), b.id + ' ' + id).toBe(true); }
+    for (const b of BUILDS) { const g = camp([{ build: b.id, level: 1 }]), c = g.characters.c1; for (const id of offerOf(g, 'c1')) expect(boonWorks(c, row(id)), b.id + ' ' + id).toBe(true); }
   });
   it('after a Boss: Steady Heart is not served to an Attuner with Empathy alone; Sure Script needs the Evoker in hand', () => {
     expect(boonServes(mk('mender', { empathy: 3 }), row('boon.steady_heart'))).toBe(false);
@@ -343,7 +362,9 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
 describe('rules 1.51: a seeded run through the camp replays to the same hash', () => {
   it('twice the same', () => {
     const pcs: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
-    const play = () => { const r = new Rec(survivalRoom('PHC-C001', pcs, { test: true }), pcs); r.must({ type: 'run/start', seed: 'PHC-C001' }); for (let i = 0; i < 2; i++) r.must({ type: 'run/boon', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); return r; };
+    const play = () => { const r = new Rec(survivalRoom('PHC-C001', pcs, { test: true }), pcs); r.must({ type: 'run/start', seed: 'PHC-C001' });
+      for (let i = 0; i < 2; i++) { r.must({ type: 'run/loadout', charId: 'c' + (i + 1), op: 'recommended' } as any, ownerOf(i)); r.must({ type: 'run/boon', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); r.must({ type: 'run/ready' } as any, ownerOf(i)); }
+      return r; };
     const a = play(), b = play();
     expect(a.g.run!.state).toBe('map'); expect(JSON.stringify(a.g.characters)).toBe(JSON.stringify(b.g.characters));
   });

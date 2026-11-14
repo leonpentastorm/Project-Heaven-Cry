@@ -18,7 +18,7 @@ await click(p, 'Create a character');
 await p.getByPlaceholder('What the squad calls you').fill('MPAT');
 await p.locator('main button[aria-pressed]').first().click();
 await click(p, 'Next ›'); await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›'); await p.locator('button', { hasText: 'Line soldier' }).first().click();
+await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
 await click(p, 'Next ›'); await lockIn(p);
 await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(p, 'Start session');

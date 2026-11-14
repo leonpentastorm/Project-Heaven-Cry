@@ -6,6 +6,7 @@
   "provisional": true,
   "default": "survival",
   "old_save": "campaign",
+  "loadout_note": "Rules 1.52 (Leon, 14 Nov 2026): a character is a person; what it carries is given by the mode when play starts (each item's `loadout`).",
   "items": [
     {
       "id": "survival",
@@ -16,6 +17,7 @@
       "available": true,
       "narrator": "optional",
       "start": "run",
+      "loadout": { "kind": "camp", "about": "Rules 1.52: each character builds its loadout at the camp before node 1 (data/survival.json loadout)." },
       "coming": null,
       "provisional": true
     },
@@ -27,6 +29,7 @@
       "available": false,
       "narrator": "optional",
       "start": "run",
+      "loadout": { "kind": "camp", "about": "Rules 1.52: as Survival's camp, until the roguelike has its own." },
       "coming": "Not open yet.",
       "provisional": true
     },
@@ -38,6 +41,7 @@
       "available": false,
       "narrator": "required",
       "start": "session",
+      "loadout": { "kind": "kit", "about": "Rules 1.52: a campaign gives each character its starting gear when the session starts (or when a character joins mid-session): the campaign's own `loadout` when it names one (same shape), else this. A fixed default built from the old creation kits (engine character.ts KITS), chosen by the door skill with most points (by_door, in this order; a tie goes to the first), else `default`. A call for Leon (PROVISIONAL): campaigns name their own loadouts when they are rewritten. The Proving Ground gives the same to a character that comes to it with nothing.", "by_door": { "brain_power": "sigil", "will_power": "soul", "empathy": "medic" }, "default": "soldier", "provisional": true },
       "coming": "Not open yet.",
       "provisional": true
     }

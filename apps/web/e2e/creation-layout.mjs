@@ -23,9 +23,10 @@ for (const W of [1440, 1920, 2560]) {
   await step('Archetype'); const a = await grid('[data-arch-grid]');
   await step('Traits'); const t = await grid('[data-trait-grid]');
   await step('Belief'); await p.locator('[data-belief="faithful"]').click(); await settle(p, 250); const b = await grid('[data-patron-grid]');
-  await step('Kit'); const k = await grid('[data-kit-grid]');
-  ok(W + ' px: archetypes ' + a.cols + ', traits ' + t.cols + ', patrons ' + b.cols + ', kits ' + k.cols + ' a row (at most 2 / 3 / 2 / 4)', a.cols <= 2 && t.cols <= 3 && b.cols <= 2 && k.cols <= 4);
-  ok(W + ' px: every card in a grid is the same height (' + [a, t, b, k].map((x) => x.min + '–' + x.max).join(', ') + ')', [a, t, b, k].every((x) => x.max - x.min <= 1));
+  // rules 1.52: the Kit step is gone (gear is given by the mode); its techniques and magic are the Moves step
+  await step('Moves'); ok(W + ' px: the Moves step holds no kit cards', (await p.locator('[data-kit-grid]').count()) === 0);
+  ok(W + ' px: archetypes ' + a.cols + ', traits ' + t.cols + ', patrons ' + b.cols + ' a row (at most 2 / 3 / 2)', a.cols <= 2 && t.cols <= 3 && b.cols <= 2);
+  ok(W + ' px: every card in a grid is the same height (' + [a, t, b].map((x) => x.min + '–' + x.max).join(', ') + ')', [a, t, b].every((x) => x.max - x.min <= 1));
 }
 
 // Text that doesn't fit scrolls inside its card (the longest trait, at the narrowest desktop width).
@@ -79,7 +80,7 @@ for (const W of [1100, 1440]) {
 }
 // Phone width: one card a row, nothing wider than the screen.
 await p.setViewportSize({ width: 390, height: 844 });
-for (const s of ['Identity', 'Archetype', 'Skills', 'Traits', 'Belief', 'Kit', 'Lock in']) {
+for (const s of ['Identity', 'Archetype', 'Skills', 'Traits', 'Belief', 'Moves', 'Lock in']) {
   await step(s);
   const wide = await p.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   ok('390 px, ' + s + ': no sideways scroll (' + wide + ' px over)', wide <= 1);
@@ -96,7 +97,7 @@ const inView = (sel, name) => p.evaluate(([sel, name]) => {
 }, [sel, name]);
 for (const [W, H] of [[1280, 720], [1366, 768]]) {
   await p.setViewportSize({ width: W, height: H }); await settle(p, 250);
-  for (const s of ['Identity', 'Archetype', 'Skills', 'Traits', 'Belief', 'Kit', 'Lock in']) {
+  for (const s of ['Identity', 'Archetype', 'Skills', 'Traits', 'Belief', 'Moves', 'Lock in']) {
     await step(s);
     const seen = [];
     for (const y of [0, 1e6]) {

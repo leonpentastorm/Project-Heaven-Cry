@@ -62,12 +62,14 @@ import { MAP_DATA } from './run/map';
 import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
 import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade, supplyMp, coresBurnt } from './run/rewards';
-import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf, startOffer, startBoonProblem, CAMP } from './run/stage';
+import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf } from './run/stage';
 import { relicRow, worthOf, BOON_CAP } from './run/power';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
 import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays } from './run/shop';
+import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutAction, type CampBoons } from './run/loadout';
+import { gearIfBare, campaignLoadout } from './loadout';
 import { type GiveAction, giveNow } from './give';
-import { earnCredits } from './credits';
+import { earnCredits, creditsOf } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -327,7 +329,9 @@ export type Action =
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
   /** Rules 1.39: the host starts a Survival run (seed: a shared seed, else one from the room); the host retires it after a Boss. */
-  | { type: 'run/start'; seed?: string } | { type: 'run/retire' }
+  | { type: 'run/start'; seed?: string; /** tests only (a test room): skip the camp, every character on the Recommended loadout */ camp?: 'recommended' } | { type: 'run/retire' }
+  // rules 1.52 (run/loadout.ts): the camp's loadout before node 1, and Ready (the host's close starts the run for everyone)
+  | ({ type: 'run/loadout' } & LoadoutAction) | { type: 'run/ready'; close?: boolean; undo?: boolean }
   // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
@@ -646,6 +650,8 @@ function reduce(g: GameState, a: Action, by: string) {
       // Locked in mid-session: the session's start counts for them too ('session_start' for this character only: Old
       // Timer's Echo, start items; hooks gap A14).
       if (g.phase !== 'lobby') { c.echo = 1; if (!g.sandbox) emitStory(g, 'session_start', { g, n: g.sessionN, late: true }, [c]); }
+      // rules 1.52: locked in mid-play: the mode gives the gear now (a campaign's loadout; the Proving Ground's the same)
+      if (g.phase !== 'lobby' && !g.run && gearIfBare(c, campaignLoadout(g.campaign as any))) c.hp = maxHp(c);
       return;
     }
     case 'session/next': {
@@ -669,6 +675,8 @@ function reduce(g: GameState, a: Action, by: string) {
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
+      // rules 1.52: gear is given by the mode: a campaign gives each bare character its loadout (the campaign's own, else the mode's)
+      for (const c of Object.values(g.characters)) if (gearIfBare(c, campaignLoadout(g.campaign as any))) c.hp = maxHp(c);
       placeBoardNpc(g);
       g.story.zone = g.campaign!.startZone; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
       for (const pin of g.campaign!.pins || []) applyMemOp(g, { op: 'pin', text: pin });
@@ -3128,10 +3136,21 @@ function runAction(g: GameState, a: Action, by: string) {
       const seed = typeof a.seed === 'string' && a.seed.trim() ? a.seed.trim().slice(0, 40) : runSeed(g.code, g.seq);
       g.run = newRun(seed); g.phase = 'story'; g.combat = null; beginSession(g);
       g.story.round = 1; g.story.await = 'none'; g.story.work = null;
-      // rules 1.41 (spec rule 2): each character's own purse starts at start_credits
+      // rules 1.41 (spec rule 2): each character's own purse starts at start_credits (rules 1.52: 0; the camp's budget)
       for (const c of Object.values(g.characters)) { c.credits = 0; earnCredits(c, survivalRun.start_credits); }
-      openCamp(g);
-      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. At the camp, each of you chooses a starting boon. Then choose your first stop.' });
+      // rules 1.52: the camp before node 1: everyone builds a loadout (gear is given by the mode)
+      openCamp(g.run, Object.values(g.characters));
+      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. At the camp, take one weapon and one focus free, and spend up to ' + LOADOUT.budget + ' credits; what you don\'t spend, you keep.' });
+      if (a.camp === 'recommended') { if (!g.settings.test) fail('Skipping the camp is for the test room only.'); campClose(g); }
+      return;
+    }
+    case 'run/loadout': { // rules 1.52 (run/loadout.ts): a pick, a take, Recommended or clear, for the player's own character
+      const res = loadoutAction(g, by, a as any); if ('no' in res) fail(res.no);
+      return;
+    }
+    case 'run/ready': { // rules 1.52: Ready at the camp; when everyone is (or the host closes), the run goes on to node 1
+      const res = campReady(g, by, { close: !!a.close, undo: !!a.undo }); if ('no' in res) fail(res.no);
+      if ('closed' in res && res.closed) campDone(g, res.boons);
       return;
     }
     case 'run/move': { // rules 1.41 (spec rules 8, 11): a player's mark on a reachable node; when everyone has marked, the squad goes
@@ -3145,10 +3164,7 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     case 'run/go': { // the host takes the squad at once: the node most marked, a tie to the host's own mark
       if (!isHost(g, by)) fail('Only the host can send the squad on before everyone has marked a stop.');
-      if (g.run?.state === 'camp') { // rules 1.51: the host leaves the camp; every character who has not picked takes its first card
-        for (const [id, offer] of Object.entries(g.run.boons || {})) if (g.characters[id] && offer[0]) takeStartBoon(g, g.characters[id], offer[0], true);
-        leaveCamp(g); return;
-      }
+      if (g.run?.state === 'loadout') { campClose(g); return; } // rules 1.51, 1.52: the host starts the run from the camp
       if (g.run?.state === 'tile') { const w = leanWinner(g, true, (g.run.tiles || []).map((t) => t.id)); if (!w) fail('Mark a tile first.'); runTile(g, w!); return; } // rules 1.44: a tile goes like a node
       const w = leanWinner(g, true); if (!w) fail('Mark a stop first.');
       const no = runMoveProblem(g, by, w!); if (no) fail(no);
@@ -3199,14 +3215,9 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     case 'run/boon': { // rules 1.44 (spec rules 30, 31): one boon of the character's offer, a relic for the rest of the run
       const r = g.run!, c = g.characters[a.charId], offer = r.boons?.[a.charId];
-      if ((r.state !== 'boon' && r.state !== 'camp') || !offer || !c) fail('There is no boon to pick for that character now.');
+      if (r.state === 'loadout') { const res = campBoon(g, by, a.charId, Number(a.choice)); if ('no' in res) fail(res.no); return; } // rules 1.51: the starting boon, chosen at the camp
+      if (r.state !== 'boon' || !offer || !c) fail('There is no boon to pick for that character now.');
       if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ', or the host while they are away.');
-      if (r.state === 'camp') { // rules 1.51 (spec rule 48): the starting boon
-        const sid = offer![Number(a.choice)], no = startBoonProblem(c!, offer, sid); if (no) fail(no);
-        takeStartBoon(g, c!, sid!, false);
-        if (!r.boons) leaveCamp(g);
-        return;
-      }
       const id = offer![Number(a.choice)], no = boonProblem(c!, offer, id); if (no) fail(no);
       c!.relics = [...(c!.relics || []), id!];
       stageLog(r).boons = { ...stageLog(r).boons, [c!.id]: id! };
@@ -3234,6 +3245,15 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     default: fail('No such run action: ' + a.type + '.');
   }
+}
+/** Rules 1.52: the host closes the camp at once (tests: run/start's camp 'recommended'). */
+function campClose(g: GameState) { const res = campReady(g, g.hostId, { close: true }); if ('closed' in res && res.closed) campDone(g, res.boons); }
+/** Rules 1.52: the camp is closed: each character's loadout in a line, and the squad on its map. */
+function campDone(g: GameState, boons: CampBoons) {
+  const r = g.run!; r.state = 'map';
+  for (const [id, b] of Object.entries(boons)) if (g.characters[id]) takeStartBoon(g, g.characters[id], b.id, b.first); // rules 1.51: the starting boons
+  for (const c of Object.values(g.characters)) push(g, { kind: 'system', charId: c.id, text: c.name + ' sets out with ' + (c.weapon === 'fists' ? 'bare fists' : 'the ' + (WEAPON[c.weapon]?.name || c.weapon)) + (c.offHand ? ' and the ' + ((ITEM as any)[c.offHand.id]?.name || WEAPON[c.offHand.id]?.name || c.offHand.id) : '') + ', ' + creditsOf(c) + ' credits kept.' });
+  push(g, { kind: 'system', head: 'SURVIVAL', text: 'The squad leaves the camp. Choose your first stop.' });
 }
 /** Rules 1.46: a line of the visit's log at the safe node the party stands on (the shop's log and its face's line of
  * that kind, or the visit's own log), so every full-screen place shows what was done there, a give included. */
@@ -3263,40 +3283,11 @@ function openTiles(g: GameState) {
   const r = g.run!; r.state = 'tile'; r.leans = {}; r.tiles = nextTiles(r);
   push(g, { kind: 'system', head: 'THE NEXT TILE', text: 'Pick where stage ' + (r.stage + 1) + ' is fought: ' + r.tiles.map((t) => SETTING[t.setting]?.name || t.setting).join(', ') + '.' });
 }
-/** Rules 1.51 (spec rules 48, 53): the camp opens after run/start: each character's starting offer (run/stage.ts
- * startOffer), and the camp's issue: the gun in hand topped up to `camp.spare_mags` spare magazines (the armour is
- * fitted by `run/fit`, free here: run/progress.ts fitOf). */
-function openCamp(g: GameState) {
-  const r = g.run!, boons: Record<string, string[]> = {};
-  for (const c of Object.values(g.characters)) {
-    const o = startOffer(c, r.seed); if (o.length) boons[c.id] = o;
-    campMags(c);
-  }
-  r.state = 'camp'; r.boons = Object.keys(boons).length ? boons : null;
-  if (!r.boons) leaveCamp(g);
-}
-/** Rules 1.51 (spec rule 53): the gun in a character's hand topped up to `camp.spare_mags` spare magazines (a loose-loaded
- * gun: that many magazines' worth of rounds). */
-function campMags(c: Character) {
-  const w: any = WEAPON[c.weapon]; if (!w || w.magazine == null || !w.ammo || w.category === 'thrown') return;
-  const pack = packOf(c).map((x) => ({ ...x })), cap = Math.max(1, w.magazine || 1);
-  const have = w.reload === 'loose' ? Math.floor(pack.filter((x) => x.kind === 'ammo' && x.calibre === w.ammo).reduce((t, x) => t + (x.qty || 0), 0) / cap)
-    : pack.filter((x) => x.id === 'mag:' + c.weapon).reduce((t, x) => t + (x.qty || 0), 0);
-  for (let i = have; i < CAMP.spare_mags; i++) for (const it of magazineWorth(c.weapon)) packAdd(pack, it);
-  c.pack = pack;
-}
-/** Rules 1.51: a character takes a starting boon (a relic for the run); `skipped`: the host sent the squad on for it. */
-function takeStartBoon(g: GameState, c: Character, id: string, skipped: boolean) {
-  const r = g.run!;
+/** Rules 1.51: a character takes its starting boon (a relic for the run) as the camp closes; `first`: nobody chose for
+ * it (an away player, or the host started the run), so it takes the first card of its offer. */
+function takeStartBoon(g: GameState, c: Character, id: string, first: boolean) {
   c.relics = [...(c.relics || []), id]; // the stage's log keeps the Boss's boon; the starting one is in the relics (and the score's boonsOf)
-  push(g, { kind: 'system', charId: c.id, text: c.name + (skipped ? ' was away and takes the first card: ' : ' takes the starting boon ') + (relicRow(id)?.name || id) + ' (' + worthOf(id) + ' of the run\'s ' + BOON_CAP + ').' });
-  const rest = { ...(r.boons || {}) }; delete rest[c.id];
-  r.boons = Object.keys(rest).length ? rest : null;
-}
-/** Rules 1.51: the camp is left: the map is open for the first node. */
-function leaveCamp(g: GameState) {
-  const r = g.run!; r.state = 'map'; r.boons = null; r.leans = {};
-  push(g, { kind: 'system', head: 'THE CAMP', text: 'Everyone carries a starting boon. Pick the first node.' });
+  push(g, { kind: 'system', charId: c.id, text: c.name + (first ? ' takes the first starting boon offered: ' : ' takes the starting boon ') + (relicRow(id)?.name || id) + ' (' + worthOf(id) + ' of the run\'s ' + BOON_CAP + ').' });
 }
 /** Rules 1.44: the squad walks onto a tile: the next stage, its fresh map from the seed, a new scene. */
 function runTile(g: GameState, id: string) {
@@ -3807,7 +3798,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     g.story.entries = []; g.story.journal = []; g.story.scene = { title: PROVING_GROUND.title, n: 0, hooks: [], revealed: [], asked: {}, fired: {} };
     g.story.zone = PROVING_GROUND.startZone; g.story.positions = {}; g.story.npcs = []; g.story.mana = MANA_START;
     g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; g.story.fx = []; g.story.objects = defaultObjects(zoneMap(g));
-    for (const c of Object.values(g.characters)) sbRefill(c);
+    for (const c of Object.values(g.characters)) { gearIfBare(c, campaignLoadout(null)); sbRefill(c); } // rules 1.52: a bare character gets the default loadout here
     positionsOf(g);
     // Gearing up: the squad on the map, wave 1 standing idle across it, the tools open. The fight starts from here.
     g.phase = 'story'; g.story.round = 1; g.story.await = 'players'; g.story.work = null;

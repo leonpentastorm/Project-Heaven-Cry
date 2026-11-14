@@ -83,7 +83,8 @@ export async function tipOf(locator) {
   if (!(await locator.count().catch(() => 0))) return '';
   return locator.first().evaluate((el) => (el.getAttribute('aria-description') || el.getAttribute('data-tip-text') || el.getAttribute('title')) || '').catch(() => '');
 }
-export async function makeCharacter(page, name, archFamily, archName, kit) {
+/** Rules 1.52: creation picks no kit (gear is given by the mode); `_kit` is kept for old callers and ignored. */
+export async function makeCharacter(page, name, archFamily, archName, _kit) {
   await click(page, 'Make a character');
   await page.getByPlaceholder('What the squad calls you').fill(name);
   await page.locator('button:has-text("Thousand-Planet")').first().click().catch(async () => { await page.locator('[aria-pressed]').nth(0).click(); });
@@ -93,8 +94,7 @@ export async function makeCharacter(page, name, archFamily, archName, kit) {
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); // traits
   await click(page, 'Next ›'); // Belief (rules 1.6; not chosen: Atheist)
-  await click(page, 'Next ›'); // kit
-  await page.locator('button', { hasText: kit }).first().click();
+  await click(page, 'Next ›'); // Moves (techniques and magic; rules 1.52: the Kit step is gone)
   await click(page, 'Next ›'); // lock in
 }
 /** A BASE on this machine (127.0.0.1, localhost, ::1, or any 127.x address). */
@@ -260,4 +260,20 @@ export async function titleHoverDuringHello(page) {
     await settle(page, 400);
   }
   return r;
+}
+/** Rules 1.51, 1.52: the Survival camp before node 1, one flow. Waits for it, presses Recommended, takes `o.weapon` as the
+ *  free weapon when given (a rack's free one), goes to the starting boon, chooses card `o.boon` (default the first), and
+ *  marks Ready (solo: "Start the run"). */
+export async function campStart(page, o = {}) {
+  await page.waitForSelector('[data-phc-camp]', { timeout: 60000 });
+  await page.locator('[data-phc-camp-step="1"]').click(); await settle(page, 150);
+  await page.locator('[data-phc-camp-recommended]').click(); await settle(page, 250);
+  if (o.weapon) { const b = page.locator('[data-phc-camp-pick="weapon:' + o.weapon + '"]'); if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click(); await settle(page, 250); }
+  if (await page.locator('[data-phc-camp-next]').count()) await page.locator('[data-phc-camp-next]').click();
+  else await page.locator('[data-phc-camp-step="2"]').click();
+  await page.waitForSelector('[data-phc-startboon]', { timeout: 15000 });
+  const card = page.locator('[data-phc-startboon]').nth(o.boon || 0);
+  if ((await card.getAttribute('aria-checked')) !== 'true') await card.click();
+  await page.waitForSelector('[data-phc-camp-ready]', { timeout: 15000 });
+  await page.locator('[data-phc-camp-ready]').click();
 }

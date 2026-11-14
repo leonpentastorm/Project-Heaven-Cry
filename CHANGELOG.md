@@ -57,6 +57,16 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
   Flux is 0 at every fight's start and a Rest fills the loaded core. Held boons show on the path map's squad panel
   ("Camp" on the starting one). Deep Well and the Gentle property now strengthen heals given to anyone, as they say.
   Two new kits in the engine (`rigger`, `mender`). The measure, before and after: `survival-starting-boons.md`.
+- **Gear by mode, and the camp's loadout (rules 1.52; Leon, 14 Nov).** Character creation no longer picks a kit (the
+  Kit step is gone; its techniques and starting magic are the **Moves** step): a character is a person, and the mode
+  gives what it carries when play starts. **Survival opens at the camp**, a full screen (the character left, Take in the
+  middle, Carrying right with Budget left and Budget used): ONE free weapon (a melee weapon, a gun with a loaded and a
+  spare magazine, or a bow with one quiver), ONE free focus or none, and a budget of **300 credits** (Leon's "like 200",
+  raised after the measure: a call) spent on the shop's own menu at its prices; body armour takes half of it. What is not
+  spent is your purse (it replaces the flat 150). A Recommended button fills a loadout for your skills; everyone marks
+  Ready (the host can start for an away player). A campaign gives a fixed loadout (the old kit by your door skill); the
+  Proving Ground gives the same to a bare character. Old drafts and saves that carry a kit keep it. Small parties are
+  about a stage harder than before (`survival-loadout.md`).
 - **The browser suite `survival`** walks all of it, two browsers included.
 - **Bows and quivers (rules 1.53, Leon 14 Nov).** No more Nock an arrow (it was the bow's reload, and a quiver could
   never be refilled in a fight, so it could never be taken): a shot draws its arrow from the worn quiver. Every archer

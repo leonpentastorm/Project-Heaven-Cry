@@ -12,8 +12,8 @@ import { PathMap } from './PathMap';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { ShopScreen } from './ShopScreen';
+import { LoadoutScreen } from './LoadoutScreen';
 import { StageScreen } from './StageScreen';
-import { CampScreen } from './CampScreen';
 import { boonIconSvg } from './boonIcons';
 import { WearBar } from './WearBar';
 import { TallyTable } from './RunTally';
@@ -102,9 +102,9 @@ export function RunScreen() {
   if (!g || !v) return <div style={{ padding: 40, color: ink.muted }}>No run is under way.</div>;
   const visitNode = g.run?.visit?.node || null, place = placeOpen(g as any);
   if (place && closed !== visitNode) return <PlaceScreen onLeave={() => setClosed(visitNode)} />; // rules 1.46: every safe node full screen
+  if (v.state === 'loadout') return <LoadoutScreen />; // rules 1.52: the camp before node 1, full screen
   if (v.state === 'shop') return <ShopScreen />; // rules 1.42: the shop replaces the play screen (spec 8.3)
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary, full screen
-  if (v.state === 'camp') return <CampScreen />; // rules 1.51: the camp, full screen, before node 1
   const fight = v.state === 'fight';
   const pick = (n: RunNodeV, el: HTMLElement) => { if (n.state === 'reachable') act({ type: 'run/move', node: n.id }); else openTipOn(el); };
   const mine = v.offers.filter((o) => o.mine), others = v.offers.filter((o) => !o.mine);

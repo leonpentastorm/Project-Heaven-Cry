@@ -12,7 +12,7 @@
 > Classes 3.0 (Figments' door against the Rigger, the Skirmisher 159 against 145, the healer stall at level 20,
 > Hymn 138 against 150), casters in Survival after the boons, and the repair rate.
 
-**Start here for Survival.** Survival is built (rules 1.39 to 1.51; version 0.27.0 on the branch) and **waits for
+**Start here for Survival.** Survival is built (rules 1.39 to 1.50, 1.52's loadout and 1.53's quivers; version 0.27.0 on the branch) and **waits for
 Leon's word to go live**: nothing of it is deployed. 0.26.0 (Classes 3.0) is live. Read `CLAUDE.md`, then this file,
 then the spec `docs/design/survival-spec.md` (draft 5 and its four "Settled by Leon" blocks; where the built revisions
 differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule). What to try by hand:
@@ -34,13 +34,14 @@ differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule)
 | lanes | 1.48 | The path map as lanes, junctions and one guarded vault; the themed overland map (`PathMap.tsx`) | `survival-lanes.md` |
 | 9, 10 | 1.49 | The run simulator and the fit; the map fitted to its frame; the browser suite completed; the docs; 0.27.0 | `survival-steps-9-10.md` |
 | repair | 1.50 | The repair service (`run/repair` at a shop and a Forge; the Repair shelf; wear bars and the WORN mark on the places and the path map); the simulator repairs | `survival-repair.md` |
+| loadout | 1.52 | Creation without a kit (gear by mode: `modes.json loadout`); the camp before node 1 (`run/loadout`, `run/ready`; one free weapon, one free focus, a budget of 300 at the shop's prices (Leon's "like 200", raised by the measure); Recommended); the camp's full screen (`LoadoutScreen.tsx`, `loadoutView`); the fit for the bare start | `survival-loadout.md` |
 | text | none | Every Survival string written to the player (Leon, 14 Nov: "write to the PLAYER"): keepers' lines by tab, the shrine's votaries, boon room, stops and forks, refusals by name; the rules in `ui-screens.md` "Writing for the player" | `survival-text-pass.md` |
 | starting boons | 1.51 | The camp (state `camp`: a starting boon of three by the character's line, `run/boon` and the host's `run/go` there; the camp's issue: free armour to class 3, three spare magazines), six caster boons in the Boss's pool, the supply pack (burnt cores back 1 to 2 x n, the MP share, Flux 0 after a fight, the loaded core full at a Rest), the `rigger` and `mender` kits; `CampScreen`, held boons on the squad panel; the simulator's run policies (`run-policies.ts`) and levers (`SIM_LEVERS`) | `survival-starting-boons.md` |
 
 Code: `packages/engine/src/run/` (`map.ts`, `state.ts`, `encounter.ts`, `rewards.ts`, `shop.ts`, `shopview.ts`,
-`progress.ts`, `placeview.ts`, `power.ts`, `stage.ts` (rules 1.51: `lineOf`, `startOffer`, `START_BOON`, `CAMP`), `tally.ts`), the run reducer in `game.ts` (`runAction`,
+`progress.ts`, `placeview.ts`, `power.ts`, `stage.ts`, `tally.ts`, `loadout.ts`; the mode's gear `src/loadout.ts`), the run reducer in `game.ts` (`runAction`,
 `runEnter`, `runFight`, `runFightOver`), `credits.ts`, `give.ts`, `gearpreview.ts`; the client's `apps/web/src/game/`
-`RunScreen.tsx`, `PathMap.tsx`, `ShopScreen.tsx`, `PlaceScreen.tsx`, `FullScreenFrame.tsx`, `StageScreen`, `CampScreen` (rules 1.51); data
+`RunScreen.tsx`, `PathMap.tsx`, `ShopScreen.tsx`, `LoadoutScreen.tsx`, `PlaceScreen.tsx`, `FullScreenFrame.tsx`, `StageScreen`; data
 `data/survival.json`, `data/modes.json`; art `art/sprites/kit/<setting>/`, `art/illustrations/survival/`.
 
 Tests: `packages/engine/test/survival-*.test.ts` (map, encounter, run, shop, progress, give, stage, tally, layout,
@@ -85,7 +86,7 @@ Each hand-off's own "open" section has the detail; the calls made for Leon are n
 | Small parties easier or harder | `share.boss`, `share.elite` (HP and damage by party size) | How much of a full Elite or Boss a solo or duo meets |
 | How fast stages get harder | `stage.bulk` (length a stage), `stage.pressure` (danger a stage), `stage.elite_up` (Elites' and Bosses' lead in levels a stage, and its most) | The endless curve: where runs end |
 | How fast characters level | `xp` (f(d)), `stage.xp` (by stage) | Level 3 at about depth 3, level 20 early in stage 6 |
-| How rich a party is | `credits` (c(d)), `stage.credits` (by stage), `rewards.instead_rate` (credits instead of a weapon), `run.start_credits`, `sell_rate` | Income against the grade ladder |
+| How rich a party is | `credits` (c(d)), `stage.credits` (by stage), `rewards.instead_rate` (credits instead of a weapon), `loadout.budget` (rules 1.52: the camp's budget, the unspent part the purse), `sell_rate` | Income against the grade ladder |
 | How fast gear grows | `grade_up.price`, `grade_up.places.forge`, `grade_up.relic_from_stage`, `rewards.ceiling` (picks capped by stage), `rewards.rarity` | One grade step a stage, the Relic in stage 4 |
 | The vault | `vault.guard_factor`, `vault.grade_up`, `map.vault` | Its fight and its prize |
 | Repairs dearer or cheaper | `repair.rate`, `repair.floor`, `repair.places` | The gunsmith's share of the price, the least a repair costs, the Forge's factor |

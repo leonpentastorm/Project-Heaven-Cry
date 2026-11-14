@@ -6,6 +6,7 @@
 // same map with its skin's kit swapped for one with no art draws pixel for pixel as the same map with no skin at all
 // (today's flat tiles). SHOTS=dir: kit-map-1..3.png (whole map) and the fallback pair; DSF=2 for 2x.
 import { chromium, player, click, hostAs, lockIn, settle, OUT } from './lib.mjs';
+import { campStart } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SEED = process.env.KIT_SEED || 'PHC-0001';
@@ -23,14 +24,12 @@ await p.locator('main button[aria-pressed]').first().click();
 await click(p, 'Next ›');
 await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
-await p.locator('button', { hasText: 'Line soldier' }).first().click();
 await click(p, 'Next ›'); await lockIn(p);
 await p.waitForSelector('text=✓ LOCKED IN');
 await click(p, 'Start the run');
+await campStart(p); // rules 1.52: the camp first
 // the music's "now playing" card floats over the map's corner for a few seconds: hidden here, so the pictures compare
 await p.addStyleTag({ content: 'div[role="status"][style*="position: fixed"]{display:none!important}' });
-await p.waitForSelector('[data-phc-camp-screen]', { timeout: 60000 }); // rules 1.51: the camp first
-await p.locator('[data-phc-startboon]').first().click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 
 /** What the grid shows, read from the page: kit layers by kind, tiles with the kit ground, sprites by source. */

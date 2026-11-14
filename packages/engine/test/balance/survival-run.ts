@@ -31,7 +31,7 @@
 // What a run measures (RunResult): where it ended, every fight (stage, depth, kind, rounds, won, HP and rounds of
 // ammunition carried before it), each stage's credits earned and spent, XP and level, grade steps, the vault.
 import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, wearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
-  counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf } from '../../src';
+  counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf, startOffer } from '../../src';
 import svJ from '../../../../data/survival.json';
 import { RIG } from './run-policies';
 import { Rec, type Pc } from '../helpers/replay';
@@ -56,10 +56,11 @@ Object.assign(POLICIES, { healer });
 export type RoutePolicy = 'gear' | 'training' | 'safest';
 /** Rules 1.51 (survival-spec 13.7): the levers of the measure, each on unless SIM_LEVERS names the ones on (a comma
  * list; "none" for rules 1.50's run): `policies` the run's caster policies (run-policies.ts), `supply` the supply pack's
- * cores back by what was burnt and its MP share (off: cores_max = cores and mp_share 0, as before), `issue` the camp's
- * free armour, `start` the starting boon (off: taken off again after the camp), `caster` the caster boons after a Boss
- * (off: never picked). Flux to 0 after a fight and the charge at a Rest are the engine's and always on. */
-export const LEVERS = ['policies', 'supply', 'issue', 'start', 'caster'];
+ * cores back by what was burnt and its MP share (off: cores_max = cores and mp_share 0, as before), `start` the starting
+ * boon (off: taken off again after the camp), `caster` the caster boons after a Boss (off: never picked). Flux to 0
+ * after a fight and the charge at a Rest are the engine's and always on. (The review: the camp's free armour, the old
+ * `issue` lever, is gone: armour is bought at the camp from the loadout's budget, rules 1.52.) */
+export const LEVERS = ['policies', 'supply', 'start', 'caster'];
 const leversOn = (): Set<string> => { const e = (globalThis as any).process?.env?.SIM_LEVERS; return new Set(e == null || e === '' ? LEVERS : e === 'none' ? [] : String(e).split(',')); };
 /** A member of a simulated party: a reference build at level 1, played by its fight policy (or the one named). With
  * the lever `policies` the casters play the run's policies (rules 1.51); without it, rules 1.49's. */
@@ -169,7 +170,20 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   const credits = () => ids.map((id) => creditsOf(C(id)));
   let st: StageRow; const stepsAt: Record<string, number> = {};
   const newStage = () => { st = { stage: r.g.run?.stage || 1, setting: r.g.run?.world?.[r.g.run.world.length - 1]?.setting, earned: ids.map(() => 0), spent: ids.map(() => 0), instead: ids.map(() => 0), sold: ids.map(() => 0), xp: [], level: [], steps: ids.map(() => 0), grades: [], cleared: false, nodes: [], vault: 'none', vaultPick: null, rests: 0, shops: 0, forges: 0, repairs: ids.map(() => 0), repairSpent: ids.map(() => 0) }; res.stages.push(st); };
+  // rules 1.51, 1.52: the camp's one flow for every member, as a sensible player: the Recommended loadout (Class 1 armour
+  // first for every build, casters included), then the starting boon by its line (startPick), then Ready
   r.must({ type: 'run/start', seed: cfg.seed });
+  for (const id of ids) {
+    r.must({ type: 'run/loadout', charId: id, op: 'recommended' } as any, by(id));
+    const offer = startOffer(C(id), cfg.seed); if (offer.length) r.must({ type: 'run/boon', charId: id, choice: startPick(offer, C(id)) }, by(id));
+  }
+  for (const id of ids) if (r.g.run?.state === 'loadout') r.must({ type: 'run/ready' } as any, by(id));
+  if (!L.has('start')) for (const id of ids) C(id).relics = (C(id).relics || []).filter((x: string) => !isStartBoon(x)); // the lever off: as if there were none (outside the reducer: a measure, not a replay)
+  // survival-spec 13.7's forced cell: SIM_START_FORCE names the starting boon every character carries (a measure: so no
+  // row dominates its line), put in place of the one picked, outside the reducer
+  { const force = (globalThis as any).process?.env?.SIM_START_FORCE;
+    if (force && L.has('start')) for (const id of ids) C(id).relics = [...(C(id).relics || []).filter((x: string) => !isStartBoon(x)), force]; }
+  res.start = ids.map((id) => (C(id).relics || []).find(isStartBoon) || null);
   newStage();
   // every action through Rec, the credits it moved counted to the stage (earned or spent)
   const act = (a: any, who = 'host') => r.act(a, who);
@@ -271,19 +285,6 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       for (const id of ids) { const offer = run.boons?.[id]; if (!offer) continue;
         const ok = offer.map((b: string, i: number) => ({ b, i })).filter((q: any) => !boonProblem(C(id), offer, q.b) && (L.has('caster') || !casterBoon(q.b))).sort((a: any, b: any) => worthOf(b.b) - worthOf(a.b));
         if (ok.length) must({ type: 'run/boon', charId: id, choice: ok[0].i }, by(id)); }
-      continue;
-    }
-    if (run.state === 'camp') { // rules 1.51: the camp's issue (armour), then each picks its starting boon
-      for (const id of ids) {
-        if (L.has('issue')) { const fit = opts(id).find((q) => q.group === 'fit' && !q.why); if (fit) must(fit.action, by(id)); }
-        const offer = r.g.run.boons?.[id]; if (offer) must({ type: 'run/boon', charId: id, choice: startPick(offer, C(id)) }, by(id));
-      }
-      if (!L.has('start')) for (const id of ids) C(id).relics = (C(id).relics || []).filter((x: string) => !isStartBoon(x)); // the lever off: as if there were none (outside the reducer: a measure, not a replay)
-      // survival-spec 13.7's forced cell: SIM_START_FORCE names the starting boon every character carries (a measure: so no
-      // row dominates its line), put in place of the one picked, outside the reducer
-      const force = (globalThis as any).process?.env?.SIM_START_FORCE;
-      if (force && L.has('start')) for (const id of ids) C(id).relics = [...(C(id).relics || []).filter((x: string) => !isStartBoon(x)), force];
-      res.start = ids.map((id) => (C(id).relics || []).find(isStartBoon) || null);
       continue;
     }
     if (run.state === 'tile') { const t = run.tiles[0].id; for (let i = 0; i < n && r.g.run.state === 'tile'; i++) must({ type: 'run/tile', tile: t }, ownerOf(i)); newStage(); continue; }

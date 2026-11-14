@@ -117,6 +117,13 @@ export function counterLines(chars: Character[]): CounterLine[] {
   }
   return out;
 }
+/** The goods `n` units of a counter id are, as pack entries (rounds, full magazines, weapons one by one, an item's
+ * stack): what a purchase puts in the pack (rules 1.42; rules 1.52: the camp's loadout too). */
+export function lineGoods(id: string, n: number): PackItem[] {
+  const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id);
+  return r ? [roundsOf(r[1], n)] : m || (WEAPON[id] as any) ? Array.from({ length: n }, () => lootToPack({ item: id })).flat()
+    : lootToPack({ item: id }).map((it) => ({ ...it, qty: n }));
+}
 /** What one purchase of a counter line costs (the price of one unit x `per`; a restock point at `restock_price`). */
 export const linePrice = (l: CounterLine): number => (l.res ? SHOP_DATA.restock_price : (priceOf(l.id) || 0) * l.per);
 /** "Kade is 240 credits short." or null: the words a card shows when the purse can't pay (credits.ts cantPay). */
@@ -214,10 +221,7 @@ export function buy(g: G, by: string, a: { charId: string; key: string; qty?: nu
     const err = payCredits(c, linePrice(l) * q); if (err) return { no: err };
     if (l.res) { c.res = { ...(c.res || {}), [l.res]: (c.res?.[l.res] ?? 0) + q }; what = q + ' ' + l.res.replace(/_/g, ' '); }
     else {
-      const n = l.per * q, r = /^rounds:(.+)$/.exec(l.id), m = /^mag:(.+)$/.exec(l.id);
-      const got: PackItem[] = r ? [roundsOf(r[1], n)] : m ? Array.from({ length: n }, () => lootToPack({ item: l.id })).flat()
-        : (WEAPON[l.id] as any) ? Array.from({ length: n }, () => lootToPack({ item: l.id })).flat()
-        : lootToPack({ item: l.id }).map((it) => ({ ...it, qty: n }));
+      const n = l.per * q, got = lineGoods(l.id, n);
       into(got);
       what = got.length === 1 ? itemLabel(got[0]) : n + ' × ' + itemLabel(got[0]);
     }

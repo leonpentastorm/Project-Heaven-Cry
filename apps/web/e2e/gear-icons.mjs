@@ -1,6 +1,6 @@
 // Item icons on screen (Physical 2.0, implementer C part 1; art/style-guide/weapon-icons.md): a weapon's, armour
 // piece's or shield's monoline icon beside its name wherever an item is listed:
-//  · the creation Kit step (each kit's weapons);
+//  · (the creation Kit step is gone: rules 1.52; the Survival camp's cards show the gear icons);
 //  · the Proving Ground's Equipped, Pack and Give lists;
 //  · the sheet's GEAR tab (the hands, the body slots, the backpack rows);
 //  · the backpack in a fight, the reload card, a pile's hover and the pick-up checklist.
@@ -14,24 +14,15 @@ const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v)
 const ICON = 'img:is([src^="data:image/svg+xml"], [src^="/assets/gear-"])'; // painted or monoline (one selector, so a scope prefix holds)
 const PAINT = 'img[src^="/assets/gear-"]';
 
-// ---------- 1. the Kit step ----------
+// ---------- 1. creation has no Kit step (rules 1.52: gear is given by the mode; the camp's cards carry the gear icons,
+// checked by the survival suite) ----------
 {
   const p = await player(browser, 'kit');
   await p.setViewportSize({ width: 1440, height: 900 });
   await hostAs(p, 'Leon');
   await click(p, 'Create a character');
-  for (const [w, h] of [[1440, 900], [1280, 720]]) {
-    await p.setViewportSize({ width: w, height: h });
-    await p.getByRole('navigation', { name: 'Creation steps' }).getByRole('button', { name: 'Kit' }).click(); await settle(p, 350);
-    await p.locator('[data-kit-icons]').first().waitFor({ timeout: 30000 });
-    if (w === 1440) {
-      const per = await p.locator('[data-kit-icons]').evaluateAll((xs) => xs.map((x) => x.querySelectorAll('img').length));
-      ok('the Kit step: every kit card shows its weapons as icons (' + per.join(', ') + ')', per.length >= 4 && per.every((n) => n >= 1));
-      ok('…the Sigil student shows the Evoker glove and the Soul initiate the Emanator glove', (await p.locator('[data-kit-icons] img[data-tip-text="Evoker"]').count()) === 1 && (await p.locator('[data-kit-icons] img[data-tip-text="Emanator"]').count()) === 1);
-      ok('…at 48 px', (await p.locator('[data-kit-icons] img').first().evaluate((e) => Math.round(e.getBoundingClientRect().width))) === 48);
-    }
-    await p.screenshot({ path: OUT + 'icons-kit-' + w + '.png' });
-  }
+  const steps = await p.getByRole('navigation', { name: 'Creation steps' }).getByRole('button').allTextContents();
+  ok('creation has no Kit step (' + steps.map((t) => t.replace(/^\d+/, '').trim()).join(', ') + ')', !steps.some((t) => /\bKit\b/.test(t)) && steps.some((t) => /Moves/.test(t)));
   await p.close();
 }
 

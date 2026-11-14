@@ -301,19 +301,11 @@
 </section>
 </sc-if>
 
-<sc-if value="{{isKit}}" hint-placeholder-val="{{false}}">
+<sc-if value="{{isMoves}}" hint-placeholder-val="{{false}}">
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
-<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Starting kit</h1>
-<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What the quartermaster hands you on the way out. Everyone also gets one <span style="color: #E7EBF3">Essence of Experience</span>: 100 XP sealed in mana, cracked by a Mastery 2 Evoker or Emanator user. It sells well.</p>
-<div class="phc-cc-grid" data-kit-grid="" style="--n: 4; --min: 240px; --h: 190px; --gap: 12px">
-<sc-for list="{{kitCards}}" as="k" hint-placeholder-count="4">
-<button type="button" onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="{{k.style}}">
-<span style="flex: none; font-size: 21px; font-weight: 700">{{k.name}}</span>
-<sc-if value="{{k.hasIcons}}" hint-placeholder-val="{{true}}"><span data-kit-icons="1" style="position: absolute; top: 14px; right: 14px; display: flex; gap: 8px"><sc-for list="{{k.icons}}" as="ki"><img class="phc-gear-icon" src="{{ki.src}}" alt="" tip="{{ki.name}}" width="48" height="48" style="flex: none; width: 48px; height: 48px"></sc-for></span></sc-if>
-<span class="phc-cc-scroll" style="width: 100%; display: flex; flex-direction: column; gap: 6px"><sc-for list="{{k.items}}" as="i" hint-placeholder-count="4"><span style="font-size: 15px; color: #C9D3E3">{{i.text}}</span></sc-for></span>
-</button>
-</sc-for>
-</div>
+<h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Moves</h1>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What your build already knows how to do. What you carry is not chosen here: the mode hands it out when play starts (in Survival you build a loadout at the camp; a campaign gives its own). Everyone also carries one <span style="color: #E7EBF3">Essence of Experience</span>: 100 XP sealed in mana, cracked by a Mastery 2 Evoker or Emanator user. It sells well.</p>
+<sc-if value="{{noMoves}}" hint-placeholder-val="{{false}}"><p data-no-moves="" style="margin: 0; font-size: 15px; color: #C9D3E3">This build starts with no techniques and no magic: techniques come with points in Dexterity or Raw Power, magic with Brain Power or Will Power.</p></sc-if>
 
 <sc-if value="{{hasTech}}" hint-placeholder-val="{{true}}">
 <h2 style="margin: 12px 0 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Techniques</h2>
@@ -471,8 +463,10 @@
 
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px">
 <div style="display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">KIT · {{kitName}}</span>
-<sc-for list="{{kitItems}}" as="i" hint-placeholder-count="5"><span style="font-size: 14px; color: #DCE2EC">{{i.text}}</span></sc-for>
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">GEAR · GIVEN BY THE MODE</span>
+<span data-gear-by-mode="" style="font-size: 14px; color: #DCE2EC">Survival: a loadout you build at the camp before node 1.</span>
+<span style="font-size: 14px; color: #DCE2EC">A campaign: the gear it hands its characters.</span>
+<span style="font-size: 14px; color: #DCE2EC">Essence of Experience ×1</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">CLASS AT LEVEL 3 · YOUR HIGHEST ATTRIBUTE</span>

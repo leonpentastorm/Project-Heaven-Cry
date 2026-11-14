@@ -14,7 +14,8 @@ const join = (g: GameState, id: string, name: string) => apply(g, { type: 'playe
 const add = (g: GameState, by: string, name: string) => apply(g, { type: 'char/add', sheet: sheetOf({ name }) }, by);
 /** Two players, one character each, in a Survival room's lobby. */
 const squad = () => add(add(join(room(), P2, 'Mai'), HOST, 'Kade'), P2, 'Ha');
-const start = (g: GameState, seed?: string) => apply(g, { type: 'run/start', ...(seed ? { seed } : {}) }, HOST);
+/** Start the run and close the camp at once (rules 1.52: the host's close; untouched loadouts take the Recommended one). */
+const start = (g: GameState, seed?: string) => apply(apply(g, { type: 'run/start', ...(seed ? { seed } : {}) }, HOST), { type: 'run/ready', close: true }, HOST);
 /** A run standing after a Boss (the boon pick): no path map exists before step 2, so the state is set as it will be. */
 const afterBoss = (g: GameState, state: 'boon' | 'tile' = 'boon') => { const x: GameState = JSON.parse(JSON.stringify(g)); x.run!.state = state; x.run!.path = ['s1n1', 's1n2', 's1n3']; return x; };
 
@@ -53,15 +54,12 @@ describe('run/start', () => {
   it('starts the run: g.run at stage 1 at the camp (rules 1.51), the room out of the lobby, session 1 begun, no Narrator work', () => {
     const g0 = squad(), g = start(g0, 'PHC-0001');
     expect(g.phase).toBe('story');
-    // rules 1.41: the run holds stage 1's tile and its path map (survival-run.test.ts checks them); rules 1.51: it opens
-    // at the camp, each character's starting offer of three (survival-camp.test.ts checks them)
-    const ids = Object.keys(g.characters);
-    for (const id of ids) expect(g.run!.boons![id]).toHaveLength(3);
-    expect({ ...g.run, nodes: [], world: [], boons: null }).toEqual({ seed: 'PHC-0001', stage: 1, world: [], nodes: [], at: null, path: [], state: 'camp', leans: {}, ready: {}, offers: null, shop: null, stats: { fights: [] }, out: [], renown: 0, last: null, note: null, boons: null,
+    // rules 1.41: the run holds stage 1's tile and its path map (survival-run.test.ts checks them)
+    expect({ ...g.run, nodes: [], world: [] }).toEqual({ seed: 'PHC-0001', stage: 1, world: [], nodes: [], at: null, path: [], state: 'map', leans: {}, ready: {}, offers: null, shop: null, stats: { fights: [] }, out: [], renown: 0, last: null, note: null, loadout: null, // rules 1.52: the camp closed
       stages: [{ stage: 1, setting: 'ahoc', nodes: 0, fights: 0, won: 0, kills: 0, credits: 0, steps: 0, boons: {} }] }); // rules 1.44: the stage's log
     expect(g.run!.nodes.length).toBeGreaterThan(0); expect(g.run!.world).toHaveLength(1);
     expect(g.sessionN).toBe(1); expect(g.story.await).toBe('none'); expect(g.story.work).toBeNull(); expect(g.narrator.busy).toBe(false);
-    expect(g.story.entries.at(-1)!.text).toBe('The run begins at stage 1 (seed PHC-0001) on AHOC chapter outpost. At the camp, each of you chooses a starting boon. Then choose your first stop.');
+    expect(g.story.entries.some((e) => /^The run begins at stage 1 \(seed PHC-0001\) on AHOC chapter outpost\. At the camp/.test(e.text))).toBe(true); expect(g.story.entries.at(-1)!.text).toBe('The squad leaves the camp. Choose your first stop.'); // rules 1.52
     for (const c of Object.values(g.characters)) { expect(c.level).toBe(1); expect(c.echo).toBe(1); }
     expect(g0.run).toBeUndefined(); // the state given is untouched
   });
@@ -72,7 +70,7 @@ describe('run/start', () => {
   });
   it('the views carry the run to every player; a guest\'s view throws nothing', () => {
     const g = start(squad(), 'PHC-0001');
-    expect(viewFor(g, HOST).run!.seed).toBe('PHC-0001'); expect(viewFor(g, P2).run!.state).toBe('camp');
+    expect(viewFor(g, HOST).run!.seed).toBe('PHC-0001'); expect(viewFor(g, P2).run!.state).toBe('map');
   });
   it('refusals, in words', () => {
     const g = squad();
@@ -128,7 +126,7 @@ describe('run/retire', () => {
   it('a retired run is over and the room is back in its lobby (rules 1.41); a new run needs level 1 characters', () => {
     const over = apply(afterBoss(start(squad())), { type: 'run/retire' }, HOST);
     expect(over.phase).toBe('lobby'); expect(over.run!.state).toBe('over');
-    expect(apply(over, { type: 'run/start' }, HOST).run!.state).toBe('camp'); // these two are still level 1 (rules 1.51: a run opens at the camp)
+    expect(apply(over, { type: 'run/start' }, HOST).run!.state).toBe('loadout'); // these two are still level 1 (rules 1.52: the camp first)
   });
 });
 

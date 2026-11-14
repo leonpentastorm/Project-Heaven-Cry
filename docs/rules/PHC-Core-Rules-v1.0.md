@@ -104,6 +104,8 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 
 **Order doesn't matter.** You can raise Attributes first, or place skills first: when a skill needs a higher Attribute, it spends that point for you, and the preview says so ("−1 skill · −1 Attribute (Endurance 3→4)"). A skill can't go up if its Attribute would need points you no longer have. Lock in needs every Skill and Attribute point spent. *(Rules 1.13: no Core step.)*
 
+**Gear is given by the mode** (rules 1.52; Leon, 14 Nov 2026). Creation makes a person: it picks no kit, and a new character is bare until play starts, when its mode gives what it carries (Survival: the loadout built at the camp; a campaign: its loadout; the Proving Ground: its own tools). The starting kits below and in Weapons ("Starting kits carry spares") are the old creation kits: a campaign's default loadout is built from them, and a draft or save that carries one keeps it.
+
 **Archetypes** (archetypes.json, 46 presets in 9 families, one of them **All-in**: nine 7/1/1 builds, one per Attribute) help new players. **Every archetype spends all three budgets:** picking one places the 10 Skill points and every Attribute point (rules 1.13: there are no Core points), so there is nothing left to spend; anything can still be changed on the Skills step. An archetype that can't spend them all isn't offered. Regular archetypes spread over at least two Cores; only the All-in family puts everything in one. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point from levelling, and an Attribute stops at the ceiling of your level.
 
 **Archetypes re-pointed (rules 1.13).** Thirteen presets were re-pointed for the new skill jobs; the other 33 are unchanged.
@@ -5724,6 +5726,58 @@ PROVISIONAL (items 3800 onward) and lives in `data/survival.json` (`start_boon`,
    times the seeds), which the forced cell shows is the seeded dice of a changed turn, not a boon's size. One lever at
    a time, the camp's armour is the one that moves a caster at stage 1. No dial was moved.
 
+## Rules revision 1.52: gear by mode, and the Survival loadout
+
+Built on 14 Nov 2026 (`docs/design/handoffs/survival-loadout.md`). Leon (14 Nov 2026, binding): *"Revamp the character
+creation screen and remove the kit then, we give people stuff base on the mode. Survial will give you one low level
+melee, one low level gun, a bow, one of the 4 focus and a budget (like 200 points or smt) for them to choose ammo, stims
+and armor and such, a character going out with armor will lack in many other things."* Corrected the same day: *"only
+one weapon"* and *"1 weapon for free, take anything else with cost from the shop menu."* Every number is PROVISIONAL
+(items 3900 onward); the survival spec's fourth "Settled by Leon" block has the arithmetic.
+
+1. **Creation makes a person.** The creation screen no longer picks a kit; a sheet with no kit makes a **bare**
+   character (`c.bare`: bare fists, armour class 0, no stims, an empty pack but what its traits give). Its techniques and
+   starting magic are picked as before, on the step now called **Moves**. A sheet that names a kit (an old draft, a
+   test's) still starts with that kit, and a character already in a save is never stripped.
+2. **Gear is given by the mode** when play starts (`data/modes.json` items[].`loadout`): **Survival** (and the roguelike
+   until it has its own) builds a loadout at the camp (item 3); a **campaign** gives a bare character its loadout when
+   the session starts or when it joins mid-session: the campaign's own `loadout` when its data names one, else the
+   Campaign mode's, a fixed default built from the old creation kits by the door skill with most points (Brain Power the
+   Sigil student's, Will Power the Soul initiate's, Empathy the medic's, else the line soldier's). The **Proving Ground**
+   keeps its own gear tools and gives the same default to a bare character that comes to it.
+3. **The camp** (`g.run.state` `loadout`, before node 1; `data/survival.json loadout`). `run/start` strips every
+   character (Survival gives by mode; plot items and what traits give stay) and opens it. Each character takes, through
+   `run/loadout` (one reducer, refusals in words, nothing changed by a refusal):
+   - **one free weapon** of a short list of Standard weapons (`weapons`: melee, gun, bow); a gun comes with one magazine
+     loaded and `gun.spare` 1 spare (a gun loaded round by round: that many magazines' worth of loose rounds), a bow with
+     one quiver (its own magazine in `weapons.json`; `bow.spare` 0);
+   - **one free focus** of the four (Evoker, Emanator, Attuner, Visualizer); a core-fuelled one brings `focus_with` (one
+     standard core). A two-handed weapon puts the focus in the pack, a one-handed one leaves it in the off hand. Either
+     pick may be declined; declining gives nothing back;
+   - **a budget** of `budget` 300 credits (Leon's "like 200", raised by the measure: item 7) spent on the **shop's own menu** at `priceOf`: every shelf of the shop's
+     counter but the restock (the gun's own magazines first, every calibre, the special rounds, thrown things, cores,
+     field supplies), and a fixed starter list (`stock`: the free weapons again as second weapons, the four foci as a
+     second focus, body armour by class at `rules.json armor.classes` prices through `priceOf('armour:<class>')`, and
+     the cheaper worn pieces). Up to `max_qty` 10 of a line. **Unspent budget is the character's purse** (`run.start_credits`
+     is now 0; it was 150).
+   The character's gear is rebuilt from its picks after every change. Refusals: over the budget ("Over the budget by 180
+   credits (480 of 300)."), past the carry limit ("Too heavy: Kade would carry 23.4 kg of 20 kg.", the numbers its own), a second body
+   armour ("Body armour is one piece: take one class."), a worn slot taken, a second of a worn piece, the armour class's
+   gate or a trait's cap, a weapon off the list, another player's character, a character marked ready.
+4. **Ready** (`run/ready`): each player marks it (and may take it back); when every connected player has, the squad
+   leaves the camp for node 1. The host's close (`run/ready` close) starts the run for everyone: a loadout nobody
+   touched takes the Recommended one. Test rooms may skip the camp (`run/start` camp `recommended`), as `run/skip`.
+5. **Recommended** (`recommended`): the focus of the door skill with most points; the first weapon row that fits (a
+   character with a focus the service pistol; Raw Power above Dexterity the machete; else the service rifle); the
+   profile's buys in order while the budget pays (Class 1 armour first for everyone; then a core-fuelled focus a core,
+   an MP focus a field kit, a gun a stim, a blade two stims); then the weapon's cheapest ammunition line while it pays.
+6. **The Forge fits Class 1** (`armour_fit.price` 1: 100), now that a character may set out with none.
+7. **The fit** (the simulator's parties now build their loadout by item 5). Without the old kits (Class 1 to 3 armour,
+   144 rifle rounds, 4 cores) and at Leon's 200, the guard's solo gunner fell in stage 1 on every seed, and the headline
+   cells lost stage 1 (a duo on 3 seeds of 3, a squad of four on 2 of 3). Moved: `loadout.budget` 200 → **300** (Light
+   armour is still half of it; a call for Leon), Recommended's buys **armour first**, `pressure_per_char` for a party of
+   one 2.0 → 1.6, a solo Elite's damage share 0.75 → 0.6. Measured: items 3910 and 3911.
+
 ## Rules revision 1.53: bows and quivers (Leon, 14 Nov 2026)
 
 Leon's rulings (14 Nov 2026), verbatim: "make the quiver enchantable and add 20 more arrow into each tier. The 'knock
@@ -9115,6 +9169,19 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3815. **The measure of rules 1.51 (rules 1.51 item 9):** solo Channeler stage 1 in 9 of 12 (was 2), solo Sigilist 3 of 12 (was 0), solo healer 8 of 12 with 5 stalled, solo Rigger 4 of 12 with a Picture in every fight, four casters reach stage 3 in 2 of 4 (was 1), squads of four end at 3.7, 4.2, 3.9 (were 3.4, 4.3, 4.4), solo gunner 11 of 12 (was 9). PROVISIONAL.
 3816. **Not reached (rules 1.51 item 9):** the solo Sigilist's 7 of 12 (a Sigil fix at levels 1 to 5, its own revision) and the healer's stalls at most 2 of 12 (the Mender's damage). PROVISIONAL.
 3817. **Items 3800 to 3817 are rules 1.51's.**
+3900. **Creation without a kit (rules 1.52 item 1):** a sheet with no kit is legal and makes a bare character (`c.bare`: `fists`, armour class 0, no stims, the trait items only; `character.ts BARE_KIT`); the creation screen's Kit step is gone (the Moves step keeps the techniques and starting magic). A sheet naming a kit (an old draft, a test) keeps it. PROVISIONAL.
+3901. **Gear by mode (item 2; `modes.json` items[].`loadout`):** `camp` for Survival and the roguelike; `kit` for a campaign (`by_door` brain_power `sigil`, will_power `soul`, empathy `medic`; `default` `soldier`; a campaign's own `loadout` first), given to a bare character at `session/start` and on a mid-session `char/add`; the Proving Ground gives the same at `sandbox/start`. **A call for Leon:** the campaigns name their own loadouts when they are rewritten. PROVISIONAL.
+3902. **The camp (item 3; `survival.json loadout`):** `run/start` strips (`loadout.ts stripGear`) and opens it (`run/loadout.ts openCamp`); the loadout is picks (`g.run.loadout[charId]`: weapon, focus, take) and the gear is rebuilt from them (`rebuild`) after every change, on a copy first. PROVISIONAL.
+3903. **The free picks (item 3):** `weapons` melee `combat_knife`, `hatchet`, `ork_machete`; gun `service_pistol`, `drifter_revolver`, `sawn_off`, `hellraiser_service_rifle`; bow `recurve_bow`, `crossbow`; `gun` {loaded 1, spare 1}; `bow` {spare 0}; `focuses` the four; `focus_with` evoker and visualizer one `standard_core` each (**a call for Leon:** a Sigil or Figment caster's first core is free, as a gunner's spare magazine is). PROVISIONAL.
+3904. **The budget (item 3):** `budget` **300** credits. Leon's "like 200 points" works as credits (Class 1 armour 150 is three quarters of it) but the squads fell in stage 1 with it (item 3910); at 300 Class 1 armour is half the budget and Class 2 (400) is out of reach. **A call for Leon.** `counter.skip` [restock]; `stock` the fixed starter list (**a call for Leon:** the camp's gear shelf is fixed, not rolled, so every player sees the same choices); `max_qty` 10. Unspent budget is the purse; `run.start_credits` 150 → 0. PROVISIONAL.
+3905. **`priceOf('armour:<class>')` (item 3):** a body armour class at its `rules.json armor.classes[].price_credits` (Light 150, Medium 400, Heavy 900, Assault 1,800, Juggernaut 4,000), times the rarity's price: the one price door. PROVISIONAL.
+3906. **The camp's refusals (item 3), in words:** over the budget, too heavy, body armour twice, a worn slot taken, a second worn piece of a kind, the armour gate and a trait's cap, a weapon or focus off the list, another's character, a character marked ready, a line the camp does not stock, nothing to put back. PROVISIONAL.
+3907. **Ready and the host's close (item 4):** every connected player's Ready leaves the camp; the host's close takes an untouched loadout's Recommended one; test rooms may skip the camp (`camp: 'recommended'`). PROVISIONAL.
+3908. **Recommended (item 5; `recommended`):** `focus_by_door` brain_power `evoker`, visualization `visualizer`, will_power `emanator`, empathy `attuner`; `weapon` rows [{when focus: service pistol}, {raw_power over dexterity: ork machete}, {service rifle}]; `buys` core [Class 1 armour, standard core], mp [Class 1 armour, field kit], gun [Class 1 armour, stim], melee [Class 1 armour, stim, stim]; `fill` ammo. PROVISIONAL.
+3909. **The Forge's Class 1 (item 6):** `armour_fit.price` 1: 100 (Class 2 250, 3 600, 4 1,200 as before). PROVISIONAL.
+3910. **The fit (item 7):** `loadout.budget` 200 → 300; Recommended's armour first; `pressure_per_char` [2.0, 1.7, 1.3, 1.3] → [1.6, 1.7, 1.3, 1.3]; `share.elite.damage` for one 0.75 → 0.6. Tried and not kept: `pressure_per_char` [1.6, 1.4, 1.1, 1.1] (duo and four still lost stage 1 on SIM-1 and SIM-2: an Elite killed a full squad), duo and four Elite damage 0.8 / 0.85 (a squad of four cleared five stages). The guard's solo gunner (gear, GUARD-1 to 3) before the fit: stage 1 cleared on 0 of 3 (lost at 1.5, 2.4, 1.6); after: it passes. PROVISIONAL.
+3911. **The headline cells after rules 1.52** (SIM-1 to 3, stages capped at 5): `survival-loadout.md` section 4; against rules 1.49's tables (SIM-1 to 4). PROVISIONAL.
+3912. **Items 3900 to 3912 are rules 1.52's.**
 4000. **Bows and quivers (rules 1.53), Leon 14 Nov 2026:** the revision as built; its numbers are items 4001 to 4007.
 4001. **Nock an arrow was the bow's reload, refused in every fight since rules 1.12** (Weapons point 10, item 949): the
     shot already drew its arrow at no AP of its own, so its removal freed no AP. The golden tables and the measure show

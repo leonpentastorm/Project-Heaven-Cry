@@ -189,7 +189,7 @@ describe('rules 1.44: the next tile and stage 2 (spec rules 3, 19, 32)', () => {
   });
   it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses the stage\'s lead up, XP and credits x the stage\'s', () => {
     const r = new Rec(survivalRoom('PHC-0005', DUO, { test: true }), DUO);
-    r.must({ type: 'run/start', seed: 'PHC-0005' });
+    r.must({ type: 'run/start', seed: 'PHC-0005', camp: 'recommended' });
     playStage(r, 2, { skip: true, through: 2 });
     expect(r.errors).toEqual([]);
     const s2 = r.g.run.stats.fights.filter((f: any) => f.stage === 2);
@@ -242,7 +242,7 @@ describe('rules 1.44: the end of a run and its score (spec rules 4, 6, 35)', () 
 
 describe('rules 1.44: the replay guard over two stages', () => {
   it('a seeded two-stage run through the reducer gives the same hash twice, and a save and load in the middle changes nothing', () => {
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0006', DUO, { test: true }), DUO, reload); r.must({ type: 'run/start', seed: 'PHC-0006' }); playStage(r, 2, { skip: true, through: 2 }); return r; };
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0006', DUO, { test: true }), DUO, reload); r.must({ type: 'run/start', seed: 'PHC-0006', camp: 'recommended' }); playStage(r, 2, { skip: true, through: 2 }); return r; };
     const a = play(), b = play(), c = play([30]);
     expect(a.errors).toEqual([]);
     expect(a.g.run.stage).toBe(2); expect(a.g.run.state).toBe('boon');

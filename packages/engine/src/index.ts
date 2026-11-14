@@ -41,6 +41,8 @@ export * from './give';
 export * from './gearpreview';
 export * from './run/shop';
 export * from './run/shopview';
+export * from './run/loadout';
+export * from './loadout';
 export * from './run/placeview';
 // Physical 2.0 (rules 1.12): the technique systems. `phys` holds everything; the names the client uses are also top-level.
 export * as phys from './physical';

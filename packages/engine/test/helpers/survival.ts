@@ -11,13 +11,14 @@ export function survivalRoom(seed: string, pcs: Pc[], o: { test?: boolean } = {}
   pcs.forEach((_, i) => { if (!i) return; const id = 'p' + (i + 1); g.players.push({ id, name: 'Player ' + (i + 1), initials: 'P' + (i + 1), color: '#A3AEC2', online: true }); g.characters['c' + (i + 1)].owner = id; });
   return g;
 }
-/** `run/start` and (rules 1.51) out of the camp at once: the host's `run/go` gives every character the first card of its
- * starting offer. For the tests that start at the map and measure other rules, the starting boon is then taken off
- * again (`keep: true` leaves it on), so their numbers are the rules' own; the camp's own tests are survival-camp.test.ts. */
+/** `run/start` and out of the camp at once (rules 1.51, 1.52): a test room skips it with every character on the
+ * Recommended loadout and the first card of its starting offer (run/start's camp: 'recommended'); any other room's host
+ * closes it (run/ready close, the same for an untouched loadout). For the tests that start at the map and measure other
+ * rules, the starting boon is then taken off again (`keep: true` leaves it on), so their numbers are the rules' own; the
+ * camp's own tests are survival-camp.test.ts and survival-loadout.test.ts. */
 export function startRun(g: any, seed: string, o: { by?: string; keep?: boolean } = {}): GameState {
-  const by = o.by || 'host', s = apply(g, { type: 'run/start', seed }, by);
-  if (s.run?.state !== 'camp') return s;
-  const out: any = apply(s, { type: 'run/go' }, by);
+  const by = o.by || 'host', s = apply(g, { type: 'run/start', seed, ...(g.settings?.test ? { camp: 'recommended' } : {}) } as any, by);
+  const out: any = s.run?.state === 'loadout' ? apply(s, { type: 'run/ready', close: true } as any, by) : s;
   if (!o.keep) for (const c of Object.values(out.characters) as any[]) c.relics = (c.relics || []).filter((id: string) => !isStartBoon(id));
   return out;
 }

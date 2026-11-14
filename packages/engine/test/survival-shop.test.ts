@@ -48,7 +48,8 @@ describe('Survival shop (rules 1.42)', () => {
   });
 
   it('the counter: every calibre (twelve), the special rounds, thrown, cores, supplies, priced; the guns shelf for every gun carried', () => {
-    const g = inShop(), lines = counterLines(Object.values(g.characters));
+    const g = inShop(); g.characters.c1.weapon = 'hellraiser_service_rifle'; // a magazine-fed gun in hand (rules 1.52: the camp's free rifle loads round by round)
+    const lines = counterLines(Object.values(g.characters));
     const cal = lines.filter((l) => l.shelf === 'calibres').map((l) => l.id.slice('rounds:'.length));
     expect(cal.sort()).toEqual(RJ.weapons_rules.calibres.map((c: any) => c.id).sort());
     for (const id of ['ammo_armor_piercing', 'ammo_hollow_point', 'ammo_incendiary', 'ammo_enhanced', 'frag_grenade', 'smoke_grenade', 'flashbang', 'incendiary_grenade', 'standard_core', 'spare_parts', 'stim_injector', 'field_kit', 'ration_pack'])
