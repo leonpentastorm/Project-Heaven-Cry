@@ -2374,6 +2374,8 @@ if _sv is not None:
         for _k in ("start_credits", "dead_return_hp"):
             if not _num(_r.get(_k)) or _r.get(_k) < 0: errors.append(f"survival:run.{_k}: a number of 0 or more")
         if _r.get("first_setting") not in {s.get("id") for s in _sv.get("settings") or []}: errors.append("survival:run.first_setting: not a setting")
+        _af = _r.get("after_fight")  # the fight cards' line for what follows a fight (docs/design/ui-screens.md)
+        if not (isinstance(_af, dict) and all(isinstance(_af.get(_k), str) and _af[_k].strip() for _k in ("won", "lost"))): errors.append("survival:run.after_fight: a won and a lost text")
     # Rules 1.52: the camp's loadout. Every free weapon and focus exists; every stock id has a price (priceOf's shapes:
     # a weapon or item with price_credits, armour:<class> from rules.json armor.classes); the budget is a number.
     if "loadout" in _sv:
