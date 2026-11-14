@@ -11,7 +11,7 @@ import { type GameState, apply, RuleError, BOONS, BOON_CAP, worthOf, runWorth, c
   renownOf, keptDraft, xpForLevel, devotionXpOf, setDevotionXp, devotionThreshold, maxHp, graftFor, mapNodes, pathMap, eliteUp, type RunNode } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, ownerOf, playStage } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -19,7 +19,7 @@ const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 
 const W = <T,>(g: GameState, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const boon = (id: string) => BOONS.find((b) => b.id === id)! as any;
-const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => startRun(survivalRoom(seed, pcs, { test: true }), seed);
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
 const take = (g: GameState, id: string, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
@@ -39,8 +39,8 @@ function afterBoss(pcs: Pc[] = DUO, prep: (g: GameState) => void = () => {}, see
 }
 
 describe('rules 1.44: the thirteen boons, each through the item-op runner (spec section 3.5)', () => {
-  it('thirteen boons in data, each a relic with one sentence and a worth; every setting\'s pool has one', () => {
-    expect(BOONS).toHaveLength(13);
+  it('twenty boons in data (thirteen, rules 1.51\'s six caster boons and Deep Satchel), each a relic with one sentence and a worth; every setting\'s pool has one', () => {
+    expect(BOONS).toHaveLength(20);
     for (const b of BOONS) { expect(b.kind).toBe('relic'); expect(b.text).not.toMatch(/\{=/); expect(typeof b.worth).toBe('number'); }
     for (const s of SV.settings) expect(BOONS.some((b) => (b.pools || []).includes(s.pool)), s.id).toBe(true);
   });
@@ -100,13 +100,13 @@ describe('rules 1.44: the thirteen boons, each through the item-op runner (spec 
     expect(at('c2').hp).toBe(10);
     expect(done.characters.c1.hp).toBe(at('c1').hp + (maxHp(done.characters.c1) - u.maxHp)); // it went home (the level-up after the pay adds its own HP)
   });
-  it('Bandolier: the ammunition pack x2, its magazines and its cores (the stat run_ammo)', () => {
+  it('Bandolier: the supply pack\'s magazines x2 (the stat run_ammo); its cores are Deep Satchel\'s (run_supply)', () => {
     const g = started(DUO), c: any = clone(g).characters.c2;
     const before = ammoPack(c, 1); c.relics = ['boon.bandolier'];
     expect(ammoMult(c)).toBe(boon('boon.bandolier').effects[0].value);
     const after = ammoPack(c, 1), cores = (l: any[]) => l.filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + (x.qty || 1), 0);
-    expect(after.length - cores(after) && after.length).toBeGreaterThan(before.length);
-    expect(cores(after)).toBe(cores(before) * 2);
+    expect(after.length - cores(after)).toBe((before.length - cores(before)) * 2);
+    expect(cores(after)).toBe(cores(before));
   });
   it('Tithe: +50% credits from every node that pays (the stat run_credits), paid through the reducer', () => {
     const g = inFight((g0) => { g0.characters.c1.relics = ['boon.tithe']; });
@@ -189,7 +189,7 @@ describe('rules 1.44: the next tile and stage 2 (spec rules 3, 19, 32)', () => {
   });
   it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses the stage\'s lead up, XP and credits x the stage\'s', () => {
     const r = new Rec(survivalRoom('PHC-0005', DUO, { test: true }), DUO);
-    r.must({ type: 'run/start', seed: 'PHC-0005' });
+    r.must({ type: 'run/start', seed: 'PHC-0005', camp: 'recommended' });
     playStage(r, 2, { skip: true, through: 2 });
     expect(r.errors).toEqual([]);
     const s2 = r.g.run.stats.fights.filter((f: any) => f.stage === 2);
@@ -242,7 +242,7 @@ describe('rules 1.44: the end of a run and its score (spec rules 4, 6, 35)', () 
 
 describe('rules 1.44: the replay guard over two stages', () => {
   it('a seeded two-stage run through the reducer gives the same hash twice, and a save and load in the middle changes nothing', () => {
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0006', DUO, { test: true }), DUO, reload); r.must({ type: 'run/start', seed: 'PHC-0006' }); playStage(r, 2, { skip: true, through: 2 }); return r; };
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0006', DUO, { test: true }), DUO, reload); r.must({ type: 'run/start', seed: 'PHC-0006', camp: 'recommended' }); playStage(r, 2, { skip: true, through: 2 }); return r; };
     const a = play(), b = play(), c = play([30]);
     expect(a.errors).toEqual([]);
     expect(a.g.run.stage).toBe(2); expect(a.g.run.state).toBe('boon');

@@ -34,7 +34,7 @@
 // up, it is repaired by a click: the purse down by the card's price, the rifle at full, the card gone; the Repair shelf
 // saved at 1280 and 1920; leaving with the rifle worn again, the path map's squad panel shows the WORN mark.
 import { readFileSync } from 'node:fs';
-import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE } from './lib.mjs';
+import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart } from './lib.mjs';
 const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
 const SVD = DATA('survival.json'), WPN = Object.fromEntries(DATA('weapons.json').items.map((w) => [w.id, w])), RAR = DATA('rules.json').rarity;
 const browser = await chromium.launch();
@@ -62,14 +62,63 @@ await p.locator('main button[aria-pressed]').first().click();
 await click(p, 'Next ›');
 await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
-await p.locator('button', { hasText: 'Line soldier' }).first().click();
 await click(p, 'Next ›'); await lockIn(p);
 await p.waitForSelector('text=✓ LOCKED IN');
 ok('a test room (settings.test, from the test hook)', (await G()).settings.test === true);
 await click(p, 'Start the run');
+// ---------- rules 1.51, 1.52: the camp, one flow: the loadout (a free weapon from the rack, a free focus, a budget at the
+// shop's prices), then the starting boon, then Ready ----------
+await p.waitForSelector('[data-phc-camp]', { timeout: 60000 });
+const LO = SVD.loadout, campId = Object.keys((await G()).characters)[0];
+/** An archetype's weapons cheapest first (Leon, 14 Nov: the free one is the most basic, the rack's better one the next). */
+const archOf = (id) => { const a = LO.archetypes.list.find((x) => x.id === id); return Object.values(WPN).filter((w) => w.mastery_family === a.family && w.category === a.category && !(a.skip || []).includes(w.id) && w.price_credits > 0).sort((x, y) => x.price_credits - y.price_credits || (x.id < y.id ? -1 : 1)).map((w) => w.id); };
+const FREE = (id) => archOf(id)[0], GUN = FREE('smgs');
+const pick0 = () => G().then((g) => g.run.loadout?.[campId]), me0 = () => G().then((g) => g.characters[campId]);
+const numIn = (sel) => p.locator(sel).textContent().then((t) => Number((t.match(/\d+/g) || []).pop()));
+ok('Start the run opens the camp first (state loadout), the budget whole: ' + LO.budget, (await run()).state === 'loadout' && await numIn('[data-phc-camp-left]') === LO.budget && await numIn('[data-phc-camp-used]') === 0);
+ok('the weapon rack: one row an archetype (' + LO.archetypes.list.length + '), each the free one, another one and the better one; the Focus row the four foci',
+  await p.locator('[data-phc-camp-rack]').count() === LO.archetypes.list.length && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-pick]').count() === LO.archetypes.list.length
+  && await p.locator('[data-phc-camp-row="focus"] [data-phc-camp-pick]').count() === 4 && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-compare]').count() > 0);
+await p.locator('[data-phc-camp-recommended]').click(); await settle(p, 300);
+const rec = await pick0();
+ok('Recommended fills a weapon and spends from the budget (' + rec.weapon + ', ' + JSON.stringify(rec.take) + ')', !!rec.weapon && Object.keys(rec.take).length > 0 && await numIn('[data-phc-camp-left]') < LO.budget);
+await p.locator('[data-phc-camp-pick="weapon:' + FREE('bows') + '"]').click(); await settle(p, 300);
+ok('ONE weapon: the bow taken replaces the last pick, with one quiver loaded', (await pick0()).weapon === FREE('bows') && (await me0()).weapon === FREE('bows') && (await me0()).quivers?.length === 1 && (await me0()).loaded > 0); // rules 1.53: one quiver, full
+await p.locator('[data-phc-camp-pick="weapon:' + GUN + '"]').click(); await settle(p, 300);
+const fp = (await pick0()).focus; if (fp) { await p.locator('[data-phc-camp-pick="focus:' + fp + '"]').click(); await settle(p, 300); }
+ok('the free gun (a loaded magazine and a spare), the focus declined', (await me0()).weapon === GUN && !(await pick0()).focus && (await me0()).pack.some((x) => x.weapon === GUN && x.mags));
+const left0 = await numIn('[data-phc-camp-left]');
+await p.locator('[data-phc-camp-more="stock:visualizer"]').click(); await settle(p, 400);
+ok('a refusal in words: a second focus (a Visualizer) is over the budget, nothing changes', /^Over the budget by \d+ credits/.test(await p.locator('[data-phc-camp-card="stock:visualizer"] [data-phc-camp-why]').textContent()) && !(await pick0()).take['stock:visualizer'] && await numIn('[data-phc-camp-left]') === left0);
+const stim = await numIn('[data-phc-camp-card="stim_injector"] [data-phc-camp-price]');
+const had = (await pick0()).take.stim_injector || 0;
+if (left0 >= stim) { await p.locator('[data-phc-camp-more="stim_injector"]').click(); await settle(p, 300); }
+ok('a stim from the budget at the shop\'s price (' + stim + '): Budget left and Budget used move, the purse is what is left',
+  left0 < stim || ((await pick0()).take.stim_injector === had + 1 && await numIn('[data-phc-camp-left]') === left0 - stim && (await me0()).credits === left0 - stim));
+// a second weapon from the rack (another one of a free weapon, at its price): a knife in the pack
+if ((await pick0()).take['stock:armour:1']) { await p.locator('[data-phc-camp-less="stock:armour:1"]').click(); await settle(p, 300); }
+const KN = FREE('light_blades'), knife = await numIn('[data-phc-camp-card="stock:' + KN + '"] [data-phc-camp-price]');
+await p.locator('[data-phc-camp-more="stock:' + KN + '"]').click(); await settle(p, 300);
+ok('a second weapon from the rack at its price (' + knife + '): it goes in the pack', (await me0()).pack.some((x) => x.weapon === KN) && knife === WPN[KN].price_credits);
+await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
+const kept = (await me0()).credits;
+// the starting boon: the camp's second step, three large cards offered by what the loadout holds
+ok('Ready waits for the starting boon: the button reads Next', await p.locator('[data-phc-camp-next]').count() === 1 && !(await p.locator('[data-phc-camp-ready]').count()));
+await p.locator('[data-phc-camp-next]').click(); await p.waitForSelector('[data-phc-startboon]', { timeout: 30000 });
+const campCards = await p.locator('[data-phc-startboon]').allTextContents(), offer0 = await p.locator('[data-phc-startboon]').evaluateAll((e) => e.map((x) => x.getAttribute('data-phc-startboon')));
+ok('the starting boon: three large cards, each its name, its sentence with its number from data, its line\'s word and its worth on the cap (' + offer0.join(', ') + ')', campCards.length === 3
+  && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-startboon] svg').count() === 3);
+await act({ type: 'run/move', node: (await run()).nodes.find((n) => n.depth === 1).id }); await settle(p, 300);
+ok('the map waits at the camp (a stop asked for is refused)', (await run()).state === 'loadout' && (await run()).at === null);
+const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0[0];
+await p.locator('[data-phc-startboon="' + pickId + '"]').click(); await settle(p, 300);
+ok('a starting boon chosen (' + pickId + '): marked, given when the camp closes', (await pick0()).boon === pickId && !((await me0()).relics || []).includes(pickId) && await p.locator('[data-phc-camp-ready]').count() === 1);
+await p.locator('[data-phc-camp-ready]').click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 let r = await run();
-ok('Start the run opens the path map, seed ' + r.seed + ', stage 1', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'run');
+ok('Start the run leaves the camp for the path map, seed ' + r.seed + ', stage 1; the unspent budget kept (' + kept + ')', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'run' && (await me0()).credits === kept);
+ok('the starting boon is the character\'s relic for the run; the squad panel shows it, marked Camp, and the run power against the cap', ((await me0()).relics || []).includes(pickId)
+  && await p.locator('[data-phc-held="' + pickId + '"]').count() === 1 && /Camp/.test(await p.locator('[data-phc-held="' + pickId + '"]').textContent()) && /of 50/.test(await p.locator('[data-phc-member-cap="' + campId + '"]').textContent()));
 
 // ---------- the path map ----------
 const drawn = await p.locator('[data-phc-node]').count();
@@ -111,6 +160,14 @@ await p.locator('[data-phc-node="' + lit[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 });
 r = await run();
 ok('a lit node is taken: the fight begins (' + r.stats.fights[0].template + ', ' + r.stats.fights[0].foes.length + ' foe(s))', r.at === lit[0] && r.state === 'fight');
+{ // rules 1.51: the starting boon is felt in the first fight: Zeroed a +1 term named for it on a shot; Set Feet a Guard point
+  // at the fight's start (each its number from data)
+  const felt = await p.evaluate((pick) => { const g = window.__phc.getState().game, cb = g.combat, me = cb.units.find((u) => u.charId && u.side === 'pc');
+    if (pick === 'start.set_feet') return { guard: me?.res?.guard ?? 0 };
+    const foe = cb.units.find((u) => u.side === 'foe' && !u.dead && u.id); if (!me || !foe) return null;
+    return { term: (window.__phc.attackTerms(me.id, foe.id, 'shot') || []).find((t) => t.label === 'Zeroed') || null }; }, pickId);
+  ok('rules 1.51: the starting boon (' + pickId + ') is felt in the first fight (' + JSON.stringify(felt) + ')', pickId === 'start.set_feet' ? (felt?.guard ?? 0) >= 1 : pickId === 'start.zeroed' ? felt?.term?.v === 1 : true);
+}
 for (let i = 0; i < 400; i++) {
   const s = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over || g.phase !== 'combat') return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId ? 'mine' : 'theirs'; });
   if (s === 'over') break;
@@ -133,7 +190,7 @@ await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 r = await run();
 const c = Object.values(g.characters)[0];
-ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === 150 + r.note.credits && (r.note.ammo[c.id] || []).length > 0
+ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
   && /100 XP/.test(await p.locator('[data-phc-note]').textContent()));
 ok('a pick of three weapons, each with its rarity word and price, and credits instead', await p.locator('[data-phc-pick]').count() === 3 && /Take \d+ credits instead/.test(await p.locator('[data-phc-instead]').textContent())
   && (await p.locator('[data-phc-pick]').allTextContents()).every((t) => /(STANDARD|FINE)/.test(t) && /\d+ credits/.test(t)));
@@ -361,7 +418,7 @@ while (guard++ < 40) {
       const b = before.characters[cid], a = after.characters[cid];
       done.forge = !!key && (a.weaponState?.rarity === 'fine') && b.credits - a.credits === 1200;
       ok('a Forge: the grade step clicked (' + key + '): Fine, 1,200 credits (' + b.credits + ' → ' + a.credits + ')', done.forge);
-      ok('… and a second step this visit is shown refused in words', /One upgrade per visit\. /.test(await p.locator('[data-phc-choices]').first().textContent()));
+      ok('… and a second step this visit is shown refused in words', /One upgrade per visit\. /.test((await p.locator('[data-phc-choices]').allTextContents()).join(' ')));
     } else if (k === 'event' && !done.event) {
       const { after, key } = await choose('');
       done.event = !!key && after.run.visit.did[cid] === 1;
@@ -518,7 +575,6 @@ const create = async (page, name) => {
   await click(page, 'Next ›');
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
-  await page.locator('button', { hasText: 'Line soldier' }).first().click();
   await click(page, 'Next ›'); await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 };
@@ -528,6 +584,10 @@ const code = (await h.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).
 await gu.goto(BASE + '/?room=' + code); await gu.getByPlaceholder('Leon').fill('Mai'); await click(gu, 'Join ›'); await gu.waitForSelector('text=The squad');
 await create(h, 'Kade'); await create(gu, 'Ha');
 await h.locator('button[data-phc-start]').click();
+await campStart(gu, { weapon: GUN }); // rules 1.51, 1.52: the guest's loadout, its starting boon, Ready
+await until(h, () => [...document.querySelectorAll('[data-phc-party]')].some((e) => e.getAttribute('data-phc-ready') === '1'), null, 15000).catch(() => false);
+ok('two browsers at the camp: the guest\'s Ready shows on the host\'s screen live, the map still waits for the host', (await h.locator('[data-phc-party][data-phc-ready="1"]').count()) === 1 && (await h.evaluate(() => window.__phc.getState().game.run.state)) === 'loadout');
+await h.locator('[data-phc-camp-close]').click(); // the host starts for everyone: its own untouched loadout is the Recommended one, with the first card
 await until(gu, () => !!document.querySelector('[data-phc-run-screen]'), null, 30000).catch(() => false);
 const HG = () => h.evaluate(() => window.__phc.getState().game), GG = () => gu.evaluate(() => window.__phc.getState().game);
 const actOn = (page, a) => page.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
@@ -625,6 +685,7 @@ await d.setViewportSize({ width: 1280, height: 720 });
 const DG = () => d.evaluate(() => window.__phc.getState().game), dAct = (a) => actOn(d, a);
 await hostAs(d, 'Leon'); await create(d, 'Ash');
 await d.locator('button[data-phc-start]').click();
+await campStart(d, { weapon: GUN }); // rules 1.51, 1.52: the camp's one flow
 await d.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 const dcid = Object.keys((await DG()).characters)[0];
 /** Walk by the engine's actions until `stop` says so (fights skipped, picks as credits, shops left, the first trail). */

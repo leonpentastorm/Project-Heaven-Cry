@@ -16,7 +16,7 @@ async function create(page, name) {
   await page.getByPlaceholder('What the squad calls you').fill(name);
   await page.locator('main button[aria-pressed]').first().click();
   await click(page, 'Next ›'); await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-  await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›'); await page.locator('button', { hasText: 'Line soldier' }).first().click(); await click(page, 'Next ›');
+  await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
   await lockIn(page); await page.waitForSelector('text=✓ LOCKED IN', { timeout: 30000 });
 }
 const music = (p) => p.locator('button[aria-label^="Music:"]').getAttribute('aria-label', { timeout: 500 }).catch(() => null);

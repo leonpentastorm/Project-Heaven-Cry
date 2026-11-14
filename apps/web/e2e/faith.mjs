@@ -31,7 +31,6 @@ if (SHOTS) await p.screenshot({ path: SHOTS + '/belief-atheist.png' });
 await p.locator('[data-belief="faithful"]').click();
 await p.locator('[data-patron="mother_ember"] [data-swear]').click();
 await click(p, 'Next ›'); // kit
-await p.locator('button', { hasText: 'Line soldier' }).first().click();
 await click(p, 'Next ›'); await lockIn(p, { timeout: 30000 });
 await p.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length > 0, null, { timeout: 30000 });
 const sheet = await p.evaluate(() => Object.values(window.__phc.getState().game.characters)[0]);

@@ -6,10 +6,10 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign } from './figments';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
@@ -61,13 +61,15 @@ import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runS
 import { MAP_DATA } from './run/map';
 import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
-import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade } from './run/rewards';
+import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade, supplyMp, coresBurnt } from './run/rewards';
 import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf } from './run/stage';
 import { relicRow, worthOf, BOON_CAP } from './run/power';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
 import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays } from './run/shop';
+import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutAction, type CampBoons } from './run/loadout';
+import { gearIfBare, campaignLoadout } from './loadout';
 import { type GiveAction, giveNow } from './give';
-import { earnCredits } from './credits';
+import { earnCredits, creditsOf } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -327,7 +329,9 @@ export type Action =
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
   /** Rules 1.39: the host starts a Survival run (seed: a shared seed, else one from the room); the host retires it after a Boss. */
-  | { type: 'run/start'; seed?: string } | { type: 'run/retire' }
+  | { type: 'run/start'; seed?: string; /** tests only (a test room): skip the camp, every character on the Recommended loadout */ camp?: 'recommended' } | { type: 'run/retire' }
+  // rules 1.52 (run/loadout.ts): the camp's loadout before node 1, and Ready (the host's close starts the run for everyone)
+  | ({ type: 'run/loadout' } & LoadoutAction) | { type: 'run/ready'; close?: boolean; undo?: boolean }
   // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
@@ -646,6 +650,8 @@ function reduce(g: GameState, a: Action, by: string) {
       // Locked in mid-session: the session's start counts for them too ('session_start' for this character only: Old
       // Timer's Echo, start items; hooks gap A14).
       if (g.phase !== 'lobby') { c.echo = 1; if (!g.sandbox) emitStory(g, 'session_start', { g, n: g.sessionN, late: true }, [c]); }
+      // rules 1.52: locked in mid-play: the mode gives the gear now (a campaign's loadout; the Proving Ground's the same)
+      if (g.phase !== 'lobby' && !g.run && gearIfBare(c, campaignLoadout(g.campaign as any))) c.hp = maxHp(c);
       return;
     }
     case 'session/next': {
@@ -669,6 +675,8 @@ function reduce(g: GameState, a: Action, by: string) {
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
+      // rules 1.52: gear is given by the mode: a campaign gives each bare character its loadout (the campaign's own, else the mode's)
+      for (const c of Object.values(g.characters)) if (gearIfBare(c, campaignLoadout(g.campaign as any))) c.hp = maxHp(c);
       placeBoardNpc(g);
       g.story.zone = g.campaign!.startZone; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
       for (const pin of g.campaign!.pins || []) applyMemOp(g, { op: 'pin', text: pin });
@@ -3128,9 +3136,21 @@ function runAction(g: GameState, a: Action, by: string) {
       const seed = typeof a.seed === 'string' && a.seed.trim() ? a.seed.trim().slice(0, 40) : runSeed(g.code, g.seq);
       g.run = newRun(seed); g.phase = 'story'; g.combat = null; beginSession(g);
       g.story.round = 1; g.story.await = 'none'; g.story.work = null;
-      // rules 1.41 (spec rule 2): each character's own purse starts at start_credits
+      // rules 1.41 (spec rule 2): each character's own purse starts at start_credits (rules 1.52: 0; the camp's budget)
       for (const c of Object.values(g.characters)) { c.credits = 0; earnCredits(c, survivalRun.start_credits); }
-      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. Choose your first stop.' });
+      // rules 1.52: the camp before node 1: everyone builds a loadout (gear is given by the mode)
+      openCamp(g.run, Object.values(g.characters));
+      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. At the camp, take one weapon and one focus free, and spend up to ' + LOADOUT.budget + ' credits; what you don\'t spend, you keep.' });
+      if (a.camp === 'recommended') { if (!g.settings.test) fail('Skipping the camp is for the test room only.'); campClose(g); }
+      return;
+    }
+    case 'run/loadout': { // rules 1.52 (run/loadout.ts): a pick, a take, Recommended or clear, for the player's own character
+      const res = loadoutAction(g, by, a as any); if ('no' in res) fail(res.no);
+      return;
+    }
+    case 'run/ready': { // rules 1.52: Ready at the camp; when everyone is (or the host closes), the run goes on to node 1
+      const res = campReady(g, by, { close: !!a.close, undo: !!a.undo }); if ('no' in res) fail(res.no);
+      if ('closed' in res && res.closed) campDone(g, res.boons);
       return;
     }
     case 'run/move': { // rules 1.41 (spec rules 8, 11): a player's mark on a reachable node; when everyone has marked, the squad goes
@@ -3144,6 +3164,7 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     case 'run/go': { // the host takes the squad at once: the node most marked, a tie to the host's own mark
       if (!isHost(g, by)) fail('Only the host can send the squad on before everyone has marked a stop.');
+      if (g.run?.state === 'loadout') { campClose(g); return; } // rules 1.51, 1.52: the host starts the run from the camp
       if (g.run?.state === 'tile') { const w = leanWinner(g, true, (g.run.tiles || []).map((t) => t.id)); if (!w) fail('Mark a tile first.'); runTile(g, w!); return; } // rules 1.44: a tile goes like a node
       const w = leanWinner(g, true); if (!w) fail('Mark a stop first.');
       const no = runMoveProblem(g, by, w!); if (no) fail(no);
@@ -3194,6 +3215,7 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     case 'run/boon': { // rules 1.44 (spec rules 30, 31): one boon of the character's offer, a relic for the rest of the run
       const r = g.run!, c = g.characters[a.charId], offer = r.boons?.[a.charId];
+      if (r.state === 'loadout') { const res = campBoon(g, by, a.charId, Number(a.choice)); if ('no' in res) fail(res.no); return; } // rules 1.51: the starting boon, chosen at the camp
       if (r.state !== 'boon' || !offer || !c) fail('There is no boon to pick for that character now.');
       if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ', or the host while they are away.');
       const id = offer![Number(a.choice)], no = boonProblem(c!, offer, id); if (no) fail(no);
@@ -3224,6 +3246,15 @@ function runAction(g: GameState, a: Action, by: string) {
     default: fail('No such run action: ' + a.type + '.');
   }
 }
+/** Rules 1.52: the host closes the camp at once (tests: run/start's camp 'recommended'). */
+function campClose(g: GameState) { const res = campReady(g, g.hostId, { close: true }); if ('closed' in res && res.closed) campDone(g, res.boons); }
+/** Rules 1.52: the camp is closed: each character's loadout in a line, and the squad on its map. */
+function campDone(g: GameState, boons: CampBoons) {
+  const r = g.run!; r.state = 'map';
+  for (const [id, b] of Object.entries(boons)) if (g.characters[id]) takeStartBoon(g, g.characters[id], b.id, b.first); // rules 1.51: the starting boons
+  for (const c of Object.values(g.characters)) push(g, { kind: 'system', charId: c.id, text: c.name + ' sets out with ' + (c.weapon === 'fists' ? 'bare fists' : 'the ' + (WEAPON[c.weapon]?.name || c.weapon)) + (c.offHand ? ' and the ' + ((ITEM as any)[c.offHand.id]?.name || WEAPON[c.offHand.id]?.name || c.offHand.id) : '') + ', ' + creditsOf(c) + ' credits kept.' });
+  push(g, { kind: 'system', head: 'SURVIVAL', text: 'The squad leaves the camp. Choose your first stop.' });
+}
 /** Rules 1.46: a line of the visit's log at the safe node the party stands on (the shop's log and its face's line of
  * that kind, or the visit's own log), so every full-screen place shows what was done there, a give included. */
 function visitNote(g: GameState, text: string, kind: 'gave' | 'bought') {
@@ -3251,6 +3282,12 @@ function runPicksDone(g: GameState) {
 function openTiles(g: GameState) {
   const r = g.run!; r.state = 'tile'; r.leans = {}; r.tiles = nextTiles(r);
   push(g, { kind: 'system', head: 'THE NEXT TILE', text: 'Pick where stage ' + (r.stage + 1) + ' is fought: ' + r.tiles.map((t) => SETTING[t.setting]?.name || t.setting).join(', ') + '.' });
+}
+/** Rules 1.51: a character takes its starting boon (a relic for the run) as the camp closes; `first`: nobody chose for
+ * it (an away player, or the host started the run), so it takes the first card of its offer. */
+function takeStartBoon(g: GameState, c: Character, id: string, first: boolean) {
+  c.relics = [...(c.relics || []), id]; // the stage's log keeps the Boss's boon; the starting one is in the relics (and the score's boonsOf)
+  push(g, { kind: 'system', charId: c.id, text: c.name + (first ? ' takes the first starting boon offered: ' : ' takes the starting boon ') + (relicRow(id)?.name || id) + ' (' + worthOf(id) + ' of the run\'s ' + BOON_CAP + ').' });
 }
 /** Rules 1.44: the squad walks onto a tile: the next stage, its fresh map from the seed, a new scene. */
 function runTile(g: GameState, id: string) {
@@ -3287,7 +3324,10 @@ function runEnter(g: GameState, id: string) {
   const text = (NODE_TEXT as any)[n.kind] as string | undefined;
   r.note = { node: id, kind: n.kind, ...(text ? { text } : {}) };
   r.visit = openVisit(g, n); // rules 1.43: what is done at a safe node, and what it rolled on entry (run/progress.ts)
-  if (n.kind === 'rest') { applyRest(g, 'long'); beginSession(g); } // rule 24: the long rest and a new session; the small training is run/train
+  if (n.kind === 'rest') { // rule 24: the long rest and a new session; the small training is run/train
+    applyRest(g, 'long'); beginSession(g);
+    for (const c of Object.values(g.characters)) { if (carriesEvoker(c)) c.evoCharge = CORE_CHARGE; if (carriesVisualizer(c)) c.visCharge = VIS_CHARGE; } // rules 1.51 (spec rule 52 d): the loaded cores full
+  }
   if (n.kind === 'cache') { const k: PayKind = 'cache', xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {};
     for (const c of Object.values(g.characters)) { giveXp(g, c, 'survival', xp, 'a cache'); const got = creditsFor(c, cr); earnCredits(c, got); stageLog(r).credits += got; ammo[c.id] = runAmmo(c, packCount(k)); }
     r.renown = renownOf(Object.values(g.characters)); // rule 6
@@ -3300,11 +3340,14 @@ function runEnter(g: GameState, id: string) {
     r.offers = offers; r.state = 'reward'; }
   push(g, { kind: 'system', head: (n.gate ? 'THE GATE' : word.toUpperCase()), text: text || word });
 }
-/** Give a character the ammunition pack (rule 23); the names of what it got, for the panel. */
-function runAmmo(c: Character, count: number): string[] {
-  const got = ammoPack(c, count); if (!got.length) return [];
-  const pack = packOf(c).map((x) => ({ ...x })); for (const it of got) packAdd(pack, it); c.pack = pack;
-  return got.map((it) => itemLabel(it));
+/** Give a character the supply pack (rule 23; rules 1.51, spec rule 52): its magazines and cores (`burnt`: the cores it
+ * burnt in the fight) and its MP share, never above its max; the names of what it got, for the panel. */
+function runAmmo(c: Character, count: number, burnt?: number): string[] {
+  const got = ammoPack(c, count, undefined, burnt), out = got.map((it) => itemLabel(it));
+  if (got.length) { const pack = packOf(c).map((x) => ({ ...x })); for (const it of got) packAdd(pack, it); c.pack = pack; }
+  const mp = supplyMp(c, count), was = mpNow(c);
+  if (mp > 0 && was < maxMp(c)) { c.mp = Math.min(maxMp(c), was + mp); out.push((c.mp - was) + ' MP'); }
+  return out;
 }
 /** A fight node: the encounter composed for this party (run/encounter.ts) and started on the fight's own dice. */
 function runFight(g: GameState, n: RunNode) {
@@ -3313,10 +3356,13 @@ function runFight(g: GameState, n: RunNode) {
   const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' || n.kind === 'vault_guard' ? 'hard' : 'standard', g.rng);
   magicIn(g, cb);
   cb.noXp = true; // the run pays its own XP (rule 14)
-  cb.tape = []; // rules 1.47: the fight keeps its effects for the tally (run/tally.ts)
+  // rules 1.47: the fight keeps its effects for the tally (run/tally.ts); the opening turn was emitted as the fight began,
+  // before the tape existed, so it is taken from the effects (else a blow with no source on that turn had no one to credit)
+  cb.tape = (cb.fx || []).filter((e) => e.k === 'turn').slice(-1) as any;
   sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind === 'vault_guard' ? 'THE VAULT\'S GUARD' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
   r.state = 'fight'; r.last = enc.template; r.out = [];
-  r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
+  const cores = Object.fromEntries(chars.map((c) => [c.id, coresCarried(c)])); // rules 1.51: the supply pack's cores are the spare cores the fight burnt
+  r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, cores, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
     target: enc.target, spent: enc.spent, scaleHp: enc.scaleHp, foes: enc.foes.map((f) => ({ name: f.name, tier: f.tier, level: f.level!, weapon: f.weapon, ...(f.kind ? { kind: f.kind } : {}), ...(f.caster ? { caster: f.caster } : {}), ...(f.scale ? { scale: f.scale } : {}) })) }] };
   const wasLive = !!liveFight(g);
   g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
@@ -3330,6 +3376,8 @@ function runFight(g: GameState, n: RunNode) {
 function runFightOver(g: GameState) {
   const cb = g.combat!, r = g.run!, won = fightBack(g, cb, true), n = runNode(r, r.at)!, k = payKindOf(n);
   const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round, tally: fightTally(cb.tape || [], cb.units, cb.round) } : f));
+  const before = fights[fights.length - 1]?.cores || {};
+  for (const id of Object.keys(g.characters)) { const m = g.story.magic?.[id]; if (m) m.flux = 0; } // rules 1.51 (spec rule 52 d): Flux is 0 after every fight of a run
   r.stats = { ...r.stats, fights }; delete cb.tape; // the tally is kept; the tape is not
   cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + counted(cb.round, 'round') + '. ' + cb.units.filter((u) => u.side === 'pc' && !u.companion).map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
   push(g, { kind: 'combat', text: cb.summary });
@@ -3354,11 +3402,11 @@ function runFightOver(g: GameState) {
   for (const c of chars) {
     giveXp(g, c, 'combat', xp, 'Survival, ' + (n.gate ? 'the gate' : n.kind));
     const got = creditsFor(c, cr); earnCredits(c, got); lg.credits += got; // rules 1.44: Tithe (the stat run_credits)
-    ammo[c.id] = runAmmo(c, packCount(k));
+    ammo[c.id] = runAmmo(c, packCount(k), before[c.id] != null ? coresBurnt(before[c.id], coresCarried(c)) : 0);
     offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
   }
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
-  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits and ammunition, and a weapon to pick or credits instead.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the supply pack, and a weapon to pick or credits instead.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'reward'; r.offers = offers;
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
@@ -3750,7 +3798,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     g.story.entries = []; g.story.journal = []; g.story.scene = { title: PROVING_GROUND.title, n: 0, hooks: [], revealed: [], asked: {}, fired: {} };
     g.story.zone = PROVING_GROUND.startZone; g.story.positions = {}; g.story.npcs = []; g.story.mana = MANA_START;
     g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; g.story.fx = []; g.story.objects = defaultObjects(zoneMap(g));
-    for (const c of Object.values(g.characters)) sbRefill(c);
+    for (const c of Object.values(g.characters)) { gearIfBare(c, campaignLoadout(null)); sbRefill(c); } // rules 1.52: a bare character gets the default loadout here
     positionsOf(g);
     // Gearing up: the squad on the map, wave 1 standing idle across it, the tools open. The fight starts from here.
     g.phase = 'story'; g.story.round = 1; g.story.await = 'players'; g.story.work = null;

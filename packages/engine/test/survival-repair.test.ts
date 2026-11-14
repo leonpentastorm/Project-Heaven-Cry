@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, creditsOf, priceOf, maxDurOf, wearAt, repairAt, wearState, WORN_SHARE, repairPrice, repairProblem, REPAIR,
   runOptions, shopView, placeView, gearPreview, bindGame } from '../src';
-import { survivalRoom, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 import svJ from '../../../data/survival.json';
 import rulesJ from '../../../data/rules.json';
@@ -14,7 +14,7 @@ import rulesJ from '../../../data/rules.json';
 const SV: any = svJ, RJ: any = rulesJ;
 const SOLO: Pc[] = [{ build: 'plain_gun', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
-const started = (pcs: Pc[] = SOLO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[] = SOLO, seed = 'PHC-0001') => startRun(survivalRoom(seed, pcs, { test: true }), seed);
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** The squad at a node of this kind (depth 5 made that kind, its way in walked), the gun in hand worn to `dur`. */
 function at(kind: string, o: { dur?: number; credits?: number; pcs?: Pc[]; prep?: (g: GameState) => void } = {}): GameState {

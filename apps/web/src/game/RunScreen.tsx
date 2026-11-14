@@ -12,7 +12,9 @@ import { PathMap } from './PathMap';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { ShopScreen } from './ShopScreen';
+import { LoadoutScreen } from './LoadoutScreen';
 import { StageScreen } from './StageScreen';
+import { boonIconSvg } from './boonIcons';
 import { WearBar } from './WearBar';
 import { TallyTable } from './RunTally';
 import { lastFightTally } from './tallyView';
@@ -100,6 +102,7 @@ export function RunScreen() {
   if (!g || !v) return <div style={{ padding: 40, color: ink.muted }}>No run is under way.</div>;
   const visitNode = g.run?.visit?.node || null, place = placeOpen(g as any);
   if (place && closed !== visitNode) return <PlaceScreen onLeave={() => setClosed(visitNode)} />; // rules 1.46: every safe node full screen
+  if (v.state === 'loadout') return <LoadoutScreen />; // rules 1.52: the camp before node 1, full screen
   if (v.state === 'shop') return <ShopScreen />; // rules 1.42: the shop replaces the play screen (spec 8.3)
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary, full screen
   const fight = v.state === 'fight';
@@ -135,6 +138,10 @@ export function RunScreen() {
                   <span style={{ fontWeight: 700 }}>{p.name}</span>
                   <span style={{ fontSize: 12, color: ink.muted }}>Level {p.level} · <span style={{ color: p.hp < p.maxHp ? ink.hp : ink.muted }}>HP {p.hp}/{p.maxHp}</span> · <span data-phc-credits={p.id} style={{ color: ink.white }}>{p.credits} credits</span></span>
                   {p.wear ? <span data-phc-member-wear="main" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 110 }}>{p.weapon}</span><WearBar w={p.wear} label={p.weapon} compact /></span> : null}
+                  {p.boons.length ? <span data-phc-member-boons={p.id} style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', fontSize: 11.5, color: ink.muted }}>
+                    {p.boons.map((b) => <span key={b.id} data-phc-held={b.id} {...tipProps(b.name + (b.camp ? ' (from the camp)' : '') + '. ' + b.text + ' Worth ' + b.worth + '.')} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '1px 6px 1px 2px', borderRadius: 8, background: ink.raised, color: ink.text }}>
+                      <span style={{ display: 'inline-grid', color: ink.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(b.id, 16) }} />{b.name}{b.camp ? <span style={{ color: ink.muted }}>· Camp</span> : null}</span>)}
+                    <span data-phc-member-cap={p.id}>{p.worth}</span></span> : null}
                   {p.worn.map((x, i) => <span key={i} data-phc-member-wear="other" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 110 }}>{x.name}</span><WearBar w={x.w} label={x.name} compact /></span>)}
                 </span>
                 {p.levelUp && p.mine ? <button type="button" data-phc-levelup={p.id} onClick={() => go('levelup', { levelupChar: p.id })} style={btn(true)}>★ Level up</button> : p.levelUp ? <span style={{ fontSize: 11, color: ink.white }}>★ level up waiting</span> : null}

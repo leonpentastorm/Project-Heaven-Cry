@@ -7,10 +7,11 @@
 // changes the state. Every pick comes from a named stream of the run's seed (rule 12), never the fight's dice.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { type Character, xpForLevel } from '../character';
+import { type Character, xpForLevel, holds, isGunId, inHands, FOCUS_DOOR } from '../character';
+import { SKILL, WEAPON } from '../data';
 import { rngFor, die, type Rng } from '../rng';
 import { SETTING, SETTINGS, type SettingDef } from './encounter';
-import { BOONS, BOON_CAP, capRoom, graftOf, relicRow, worthOf, type RelicRow } from './power';
+import { BOONS, BOON_CAP, START_BOONS, capRoom, graftOf, relicRow, worthOf, type RelicRow } from './power';
 import { type RunState, type RunTile, type RunStageLog, runSetting } from './state';
 import { mapNodes, pathMap, MAP_DATA } from './map';
 
@@ -35,7 +36,7 @@ export const poolBoons = (pool: string): RelicRow[] => BOONS.filter((b) => (b.po
 /** Does this character hold this boon already (as a boon, a shrine's token or a graft of it)? No boon twice (rule 31). */
 export const holdsBoon = (c: Character, id: string): boolean => (c.relics || []).some((r) => r === id || r === graftOf(id));
 /** Does a boon do anything for this character (its `doors`: the door skills it serves, one point in any; none: all)? */
-export const boonServes = (c: Character, b: RelicRow & { doors?: string[] }): boolean => !b.doors || b.doors.some((k) => (c.skills[k] || 0) >= 1);
+export const boonServes = (c: Character, b: RelicRow & { doors?: string[] }): boolean => (!b.doors || b.doors.some((k) => (c.skills[k] || 0) >= 1)) && boonWorks(c, b);
 
 const draw = <T>(rng: Rng, from: T[], n: number, out: T[] = []): T[] => { const p = [...from]; while (out.length < n && p.length) out.push(p.splice(die(rng, p.length) - 1, 1)[0]); return out; };
 /** The boons offered to a character after the Boss of a tile of this pool (rules 30, 31): `BOON_PICK.offer` distinct,
@@ -54,6 +55,65 @@ export function boonOffer(c: Character, pool: string, seed: string, nodeId: stri
   }
   return out;
 }
+// ---------------------------------------------------------------------------------------------- the camp (rules 1.51)
+/** The starting boon's numbers (survival.json `start_boon`, rules 1.51; spec rules 48 to 50): the offer (`main` from the
+ * main line and `second` from the second), the most a starting boon is worth, each alpha skill's line, each focus kind's
+ * line, each line's words. */
+export const START_BOON: { offer: number; main: number; second: number; max_worth: number; lines: Record<string, string>; focus_lines: Record<string, string>; names: Record<string, string> } = SV.start_boon;
+const ORDER = Object.keys(START_BOON.lines); // the alpha skills in the lines' order (the tie-break)
+/** A weapon's line: a melee weapon or empty hands (fists) blades; anything else (a gun, a bow, a crossbow) guns. */
+const weaponLine = (id: string | null | undefined): string => { const w: any = id ? WEAPON[id] : null; return !w || w.category === 'unarmed' || (!isGunId(id) && (/melee/.test(w.category) || w.phys?.system === 'melee')) ? 'blades' : 'guns'; };
+const doorHeld = (c: Character, k: string): boolean => holds(c, { slot: 'hand', door: k }) && (c.skills[FOCUS_DOOR[k as keyof typeof FOCUS_DOOR]] || 0) >= 1;
+/** Does this boon do anything for this character as it stands (its `needs`, BoonNeeds; rules 1.51 item 2)? The offer
+ * serves only rows that work: a Sigil row needs an Evoker in hand with Brain Power, a gun row a gun in hand, and so on. */
+export function boonWorks(c: Character, b: RelicRow): boolean {
+  const n = b.needs; if (!n) return true;
+  if (n.door && ![n.door].flat().some((k) => doorHeld(c, k))) return false;
+  if (n.weapon) {
+    const hands = inHands(c);
+    const ok = n.weapon === 'gun' ? hands.some((id) => isGunId(id)) : n.weapon === 'melee' ? weaponLine(c.weapon) === 'blades' || hands.slice(1).some((id) => weaponLine(id) === 'blades' && !!WEAPON[id]) : hands.some((id) => !!WEAPON[id] && weaponLine(id) === 'guns');
+    if (!ok) return false;
+  }
+  return Object.entries(n.skill || {}).every(([k, v]) => (c.skills[k] || 0) >= v);
+}
+/** The alpha skills a character has 1 point or more in, best first: by the attribute's value, then the skill's points,
+ * then the lines' order (rule 49 b). */
+const alphaOrder = (c: Character): string[] => ORDER.filter((k) => (c.skills[k] || 0) >= 1)
+  .sort((a, b) => ((c.attrs as any)[SKILL[b]?.attribute] || 0) - ((c.attrs as any)[SKILL[a]?.attribute] || 0) || (c.skills[b] || 0) - (c.skills[a] || 0) || ORDER.indexOf(a) - ORDER.indexOf(b));
+/** A character's two lines (rule 49; rules 1.51 item 2): what it runs on, read from the sheet and the hands (no class at
+ * level 1, and the archetype is not saved). `main`: a focus in a hand whose door skill has 1 point or more (its door's
+ * line), else the best alpha skill's line, else the main hand's weapon (guns; a melee weapon blades). `second`: the main
+ * hand's weapon if it differs, else the next alpha skill's line, else the other weapon line. */
+export function lineOf(c: Character): { main: string; second: string } {
+  const works = (l: string) => lineBoons(l).some((b) => boonWorks(c, b));
+  const held = Object.keys(START_BOON.focus_lines).filter((k) => doorHeld(c, k)).map((k) => START_BOON.focus_lines[k]);
+  const alpha = alphaOrder(c).map((k) => START_BOON.lines[k]).filter(works), weapon = weaponLine(c.weapon);
+  const main = held[0] || alpha[0] || weapon;
+  const second = held.find((l) => l !== main) || (weapon !== main && works(weapon) ? weapon : alpha.find((l) => l !== main) || (weapon !== main ? weapon : weapon === 'guns' ? 'blades' : 'guns'));
+  return { main, second };
+}
+/** The starting boons of a line (data order). */
+export const lineBoons = (line: string): RelicRow[] => START_BOONS.filter((b) => b.lines.includes(line));
+/** The starting boons offered to a character at the camp (rules 48 to 50): `START_BOON.main` drawn from its main line and
+ * `START_BOON.second` from its second, never the same row twice, from `rngFor(seed, 'camp#start#' + id)`; a line with
+ * too few rows is filled from the second line, then from every row, so the offer always holds `START_BOON.offer`. */
+export function startOffer(c: Character, seed: string): string[] {
+  const rng = rngFor(seed, 'camp#start#' + c.id), l = lineOf(c), out: RelicRow[] = [];
+  const from = (list: RelicRow[], n: number) => draw(rng, list.filter((b) => !out.includes(b) && b.worth <= START_BOON.max_worth && boonWorks(c, b)), out.length + n, out);
+  from(lineBoons(l.main), START_BOON.main);
+  from(lineBoons(l.second), START_BOON.offer - out.length);
+  from(START_BOONS, START_BOON.offer - out.length);
+  return out.map((b) => b.id);
+}
+/** Is this a starting boon (rules 1.51)? */
+export const isStartBoon = (id: string): boolean => START_BOONS.some((b) => b.id === id);
+/** Why this character can't take this starting boon now, or null: it is not on its offer, or it took one already. */
+export function startBoonProblem(c: Character, offer: string[] | undefined, id: string | undefined): string | null {
+  if (!offer || !id || !offer.includes(id)) return 'That boon is not on ' + c.name + '\'s offer.';
+  if ((c.relics || []).some(isStartBoon)) return c.name + ' already carries a starting boon.';
+  return null;
+}
+
 /** Why this character can't take this boon now, or null: it is not on its offer, it holds it, or it passes the cap. */
 export function boonProblem(c: Character, offer: string[] | undefined, id: string | undefined): string | null {
   if (!offer || !id || !offer.includes(id)) return 'That boon is not on ' + c.name + '\'s offer.';
@@ -100,8 +160,9 @@ export function enterStage(r: RunState, t: RunTile): RunState {
 }
 /** The run's renown (rule 6): the XP its characters took past level 20, which counts only to the score. */
 export const renownOf = (chars: Character[]): number => chars.reduce((t, c) => t + Math.max(0, (c.xp || 0) - xpForLevel(20)), 0);
-/** Each character's boons (the relics that are boons, grafts and tokens included), for the score. */
-export const boonsOf = (chars: Character[]): Record<string, string[]> => Object.fromEntries(chars.map((c) => [c.id, (c.relics || []).filter((id) => BOONS.some((b) => b.id === id || graftOf(b.id) === id))]));
+/** Each character's boons (the relics that are boons, grafts and tokens included, and rules 1.51's starting boon), for
+ * the score. */
+export const boonsOf = (chars: Character[]): Record<string, string[]> => Object.fromEntries(chars.map((c) => [c.id, (c.relics || []).filter((id) => isStartBoon(id) || BOONS.some((b) => b.id === id || graftOf(b.id) === id))]));
 
 /** A character kept as a draft after a run (rule 4, Leon 13 Nov): the whole sheet at the level it reached, with its
  * gear, perks and class, for other rooms; marked `draft` (a run takes level 1 only) and `kept` (where it came from). The

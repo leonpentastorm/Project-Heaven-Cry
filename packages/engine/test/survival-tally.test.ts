@@ -17,7 +17,7 @@ describe('the fight tally equals the effects it was made from', () => {
   for (const seed of ['PHC-T001', 'PHC-T002', 'PHC-T003']) it('seeded fight ' + seed + ': damage, shots, hits, taken, kills and rounds are the stream\'s sums', () => {
     const w = watch();
     try {
-      const r = new Rec(survivalRoom(seed, DUO, { test: true }), DUO); r.must({ type: 'run/start', seed });
+      const r = new Rec(survivalRoom(seed, DUO, { test: true }), DUO); r.must({ type: 'run/start', seed, camp: 'recommended' });
       playStage(r, DUO.length, { maxNodes: 1 });
       const f = r.g.run.stats.fights[0]; expect(f?.outcome).toBeTruthy();
       const t: FightTally = f.tally; expect(t).toBeTruthy(); expect(t.rounds).toBe(f.rounds);

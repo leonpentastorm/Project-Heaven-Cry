@@ -147,7 +147,8 @@ export class Rec {
           else if (JSON.stringify({ ...v, campaign: null }) !== JSON.stringify({ ...this.g, campaign: null })) this.bagsMade++; }
         if (!step) break;
         const err = this.act({ unitId: u.id, ...step.action }, this.byOf(u));
-        if (pol === POLICIES.sigil) { const v3 = this.view(), c3 = v3.combat; if (c3) sigilAfter({ ...x, g: v3, cb: c3, u: c3.units.find((q: any) => q.id === u.id) }, step, !err); }
+        const after = pol === POLICIES.sigil ? sigilAfter : (pol as any).after; // a policy that keeps a plan across actions (rules 1.51: the run's Sigil policy too)
+        if (after) { const v3 = this.view(), c3 = v3.combat; if (c3) after({ ...x, g: v3, cb: c3, u: c3.units.find((q: any) => q.id === u.id) }, step, !err); }
         if (err) { banned.add(JSON.stringify(step.action)); if (++fails > 6) break; }
       }
       const c4 = this.g.combat;

@@ -5,9 +5,9 @@
 // stage, retiring to the lobby. Numbers are read from data/survival.json. Then the replay guard: a seeded stage played
 // by the simulator's policies gives the same hash twice, and a save and load in the middle changes nothing.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, mapNodes, pathMap, reachable, runNode, nodeXp, nodeCredits, ENC_BUDGET, creditsOf, priceOf, maxHp, NODE_TEXT, type RunNode } from '../src';
+import { type GameState, apply, RuleError, mapNodes, pathMap, reachable, runNode, nodeXp, nodeCredits, ENC_BUDGET, creditsOf, priceOf, maxHp, NODE_TEXT, WEAPON, type RunNode } from '../src';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, ownerOf, playStage } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -15,7 +15,7 @@ const SOLO: Pc[] = [{ build: 'plain_gun', level: 1 }];
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const SQUAD: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'tank', level: 1 }, { build: 'sigil', level: 1 }, { build: 'outburst', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
-const started = (pcs: Pc[], seed = 'PHC-0001', test = true) => apply(survivalRoom(seed, pcs, { test }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[], seed = 'PHC-0001', test = true) => startRun(survivalRoom(seed, pcs, { test }), seed);
 /** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
 const take = (g: GameState, node: RunNode | string, n: number) => { let x = g; const id = typeof node === 'string' ? node : node.id; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
 const firstOf = (g: GameState, kind: string) => g.run!.nodes.find((n) => n.kind === kind)!;
@@ -25,11 +25,11 @@ const standOn = (g: GameState, id: string | null): GameState => { const x: GameS
 const before = (g: GameState, n: RunNode) => g.run!.nodes.find((x) => x.links.includes(n.id))!;
 
 describe('Survival, one stage (rules 1.41)', () => {
-  it('run/start: the stage\'s path map from the seed, stage 1\'s tile, every purse at start_credits, the first row reachable', () => {
+  it('run/start: the stage\'s path map from the seed, stage 1\'s tile, every purse at what the camp\'s budget did not spend, the first row reachable', () => {
     const g = started(DUO);
     expect(g.run!.nodes).toEqual(mapNodes(pathMap('PHC-0001', 1, undefined, SV.run.first_setting)));
     expect(g.run!.world[0].setting).toBe(SV.run.first_setting);
-    for (const c of Object.values(g.characters)) expect(creditsOf(c)).toBe(SV.run.start_credits);
+    for (const c of Object.values(g.characters)) { expect(creditsOf(c)).toBeGreaterThanOrEqual(SV.run.start_credits); expect(creditsOf(c)).toBeLessThanOrEqual(SV.run.start_credits + SV.loadout.budget); } // rules 1.52
     expect(reachable(g.run!).map((n) => n.depth)).toEqual(g.run!.nodes.filter((n) => n.depth === 1).map(() => 1));
     expect(g.run!.state).toBe('map'); expect(g.phase).toBe('story');
   });
@@ -69,13 +69,15 @@ describe('Survival, one stage (rules 1.41)', () => {
     expect(refused(plain, { type: 'run/skip' })).toBe('Skipping a fight is for the test room only.');
     const g0 = take(started(DUO), reachable(started(DUO).run!)[0], 2);
     expect(refused(g0, { type: 'run/skip' }, 'p2')).toBe('Only the host skips a fight.');
-    const mags0 = g0.characters.c1.pack!.find((p) => p.mags && p.weapon === g0.characters.c1.weapon)!.mags!.length;
+    // the rounds held for the gun in hand, in magazines or loose (rules 1.52: the free rifle may load round by round)
+    const rounds = (c: any) => { const w: any = (WEAPON as any)[c.weapon]; return (c.pack || []).reduce((t: number, p: any) => t + (p.mags && p.weapon === c.weapon ? p.mags.reduce((u: number, n: number) => u + n, 0) : p.calibre === w.ammo && !p.mags ? p.qty || 0 : 0), 0); };
+    const mags0 = rounds(g0.characters.c1), mag = (WEAPON as any)[g0.characters.c1.weapon].magazine;
     const g = apply(g0, { type: 'run/skip' }, 'host'), n = runNode(g.run!, g.run!.at)!;
     expect(g.run!.state).toBe('reward'); expect(g.phase).toBe('story');
     expect(g.characters.c1.xp).toBe(nodeXp('fight', n.depth, 1));
-    expect(creditsOf(g.characters.c1)).toBe(SV.run.start_credits + nodeCredits('fight', n.depth, 1));
+    expect(creditsOf(g.characters.c1)).toBe(creditsOf(g0.characters.c1) + nodeCredits('fight', n.depth, 1));
     expect(nodeXp('fight', 2, 1)).toBe(SV.xp.base + SV.xp.per_depth); expect(nodeCredits('fight', 1, 1)).toBe(SV.credits.base + SV.credits.per_depth);
-    expect(g.characters.c1.pack!.find((p) => p.mags && p.weapon === g.characters.c1.weapon)!.mags!.length).toBe(mags0 + SV.ammo_pack.fight);
+    expect(rounds(g.characters.c1)).toBe(mags0 + SV.ammo_pack.fight * mag);
     for (const id of ['c1', 'c2']) {
       const o = g.run!.offers![id];
       expect(o.weapons).toHaveLength(SV.rewards.offer);
@@ -121,7 +123,7 @@ describe('Survival, one stage (rules 1.41)', () => {
     for (const c of Object.values(r.characters)) expect(c.hp).toBe(maxHp(c));
     expect(r.sessionN).toBe((at.sessionN || 0) + 1); expect(r.run!.state).toBe('map'); expect(r.run!.note!.text).toBe(NODE_TEXT.rest);
     const cache = firstOf(g, 'cache'), c0 = standOn(g, before(g, cache).id), cg = take(c0, cache, 2);
-    expect(cg.characters.c1.xp).toBe(nodeXp('cache', cache.depth, 1)); expect(creditsOf(cg.characters.c1)).toBe(SV.run.start_credits + nodeCredits('cache', cache.depth, 1));
+    expect(cg.characters.c1.xp).toBe(nodeXp('cache', cache.depth, 1)); expect(creditsOf(cg.characters.c1)).toBe(creditsOf(c0.characters.c1) + nodeCredits('cache', cache.depth, 1));
     expect(cg.run!.note!.ammo!.c1.length).toBeGreaterThan(0);
     for (const k of ['forge', 'training', 'shrine', 'event']) { // the shop opens full screen (rules 1.42: survival-shop.test.ts)
       const n = g.run!.nodes.find((x) => x.kind === k); if (!n) continue;
@@ -144,7 +146,7 @@ describe('Survival, one stage (rules 1.41)', () => {
 
   it('a whole stage walked through the reducer by run/skip reaches the Boss and clears it, every step accepted', () => {
     const r = new Rec(survivalRoom('PHC-0002', DUO, { test: true }), DUO);
-    r.must({ type: 'run/start', seed: 'PHC-0002' });
+    r.must({ type: 'run/start', seed: 'PHC-0002', camp: 'recommended' });
     playStage(r, 2, { skip: true });
     expect(r.errors).toEqual([]);
     expect(r.g.run.state).toBe('boon'); expect(r.g.run.path).toHaveLength(SV.map.rows);
@@ -156,7 +158,7 @@ describe('Survival, one stage (rules 1.41)', () => {
   it.runIf((globalThis as any).process?.env?.SURVIVAL_STAGE_REPORT)('report: stages played by the policies', () => {
     const lines: string[] = [];
     for (const [name, pcs] of [['solo plain gun', SOLO], ['squad of four', SQUAD]] as [string, Pc[]][]) for (let s = 1; s <= 6; s++) {
-      const r = new Rec(survivalRoom('PHC-T' + s, pcs, { test: true }), pcs); r.must({ type: 'run/start', seed: 'PHC-T' + s }); playStage(r, pcs.length);
+      const r = new Rec(survivalRoom('PHC-T' + s, pcs, { test: true }), pcs); r.must({ type: 'run/start', seed: 'PHC-T' + s, camp: 'recommended' }); playStage(r, pcs.length);
       const run = r.g.run, fs = run.stats.fights;
       lines.push(name + ' PHC-T' + s + ': ' + (run.state === 'boon' ? 'STAGE CLEARED' : 'lost at node ' + run.path.length) + ', levels ' + Object.values(r.g.characters).map((c: any) => c.level).join('/') + (r.errors.length ? ' ERR ' + r.errors[0] : ''));
       for (const f of fs) lines.push('   d' + f.depth + ' ' + f.kind + ' ' + f.template + ' L' + f.level + ': bulk ' + f.spent.bulk.toFixed(2) + '/' + f.target.bulk.toFixed(2) + ', pressure ' + f.spent.pressure.toFixed(2) + '/' + f.target.pressure.toFixed(2) + ', ' + f.foes.length + ' foes, ' + f.outcome + ' in ' + f.rounds + ' (R ' + f.target.rounds + ')');
@@ -165,7 +167,7 @@ describe('Survival, one stage (rules 1.41)', () => {
   }, 1_200_000);
 
   it('the replay guard: a seeded stage played by the simulator\'s policies gives the same hash twice, and a save and load in the middle changes nothing', () => {
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0003', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0003' }); playStage(r, SQUAD.length); return r; };
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0003', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0003', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

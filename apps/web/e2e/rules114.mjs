@@ -86,8 +86,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   await click(p, 'Create a character'); await p.getByPlaceholder('What the squad calls you').fill('MPAT');
   await p.locator('main button[aria-pressed]').first().click(); await click(p, 'Next ›');
   await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-  await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
-  await p.locator('button', { hasText: 'Field medic' }).first().click(); await click(p, 'Next ›');
+  await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
   await lockIn(p); await p.waitForSelector('text=✓ LOCKED IN');
   await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
   await click(p, 'Start session'); await p.waitForSelector('text=The rear pad', { timeout: 30000 });

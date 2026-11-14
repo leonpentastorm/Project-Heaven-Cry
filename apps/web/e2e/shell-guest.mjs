@@ -19,7 +19,6 @@ async function create(page, name, family, kit) {
   if (family) await page.getByRole('tab', { name: family, exact: true }).click();
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
-  await page.locator('button', { hasText: kit }).first().click();
   await click(page, 'Next ›'); await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 }

@@ -67,7 +67,7 @@ const STAT_MAP: Record<string, string> = {
   module_slots: 'module_slots', ready_designs: 'ready_designs', vision: 'vision', carry: 'carry', injury_resist: 'injury_resist', mp_max: 'mp_max',
   hp_per_level: 'hp_per_level', glyph_ap: 'glyph_ap', attack: 'attack', ap: 'ap', shove_guard: 'shove_guard', one_hand_heavy: 'one_hand_heavy', throw_range: 'throw_range',
 };
-const MULT_MAP: Record<string, string> = { hp_max: 'hp', hp: 'hp', move: 'move', carry: 'carry', mp_max: 'mp_max', field_repair_amount: 'field_repair_amount', run_ammo: 'run_ammo', run_credits: 'run_credits' };
+const MULT_MAP: Record<string, string> = { hp_max: 'hp', hp: 'hp', move: 'move', carry: 'carry', mp_max: 'mp_max', field_repair_amount: 'field_repair_amount', run_ammo: 'run_ammo', run_supply: 'run_supply', run_credits: 'run_credits' };
 
 /** The stat a data stat_mod answers: its STAT_MAP name, else the stat itself when it is a declared one (stats.ts STATS
  * and families: Reflex's `reactions`, the Breaker's `technique:riposte`; rules 1.30), else none. */

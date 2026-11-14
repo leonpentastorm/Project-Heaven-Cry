@@ -23,7 +23,7 @@ import { rngFor, die } from '../rng';
 import { type RunState, type RunVisit, type RunLasting, type RunStock, runNode, runSetting } from './state';
 import { SETTING } from './encounter';
 import { stageCeiling, weaponOffer } from './rewards';
-import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf } from './power';
+import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
 import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
@@ -347,7 +347,9 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       say(c.name + ' buys the ' + nameOf(s.id) + ' from the armourer: ' + s.price + ' credits.', c.id); return null;
     }
     case 'run/fit': {
-      const f = fitOf(g, c); if (!f) return c.name + ' wears the heaviest class the Forge fits.'; if (f.why) return f.why;
+      const f = fitOf(g, c);
+      if (!f) return c.name + ' wears the heaviest class the Forge fits.';
+      if (f.why) return f.why;
       payCredits(c, f.price); c.armourClass = f.cls;
       say(c.name + ' is fitted for armour class ' + f.cls + ': ' + f.price + ' credits.', c.id); return null;
     }

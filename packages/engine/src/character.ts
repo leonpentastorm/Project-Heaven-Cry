@@ -15,7 +15,10 @@ import { statOf, levelFactor, scaleOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
-  name: string; portrait: string; origin: string; kit: string; traits: string[];
+  name: string; portrait: string; origin: string;
+  /** Rules 1.52: creation no longer picks a kit (gear is given by the mode). An old draft's or a test's sheet may still
+   * name one of KITS: the character then starts with that kit, as before. */
+  kit?: string; traits: string[];
   /** Relics carried (engine foundations 3: items added at run time with addItems('relic', …); data only). */
   relics?: string[];
   /** The creation rules this sheet was locked in under (SHEET_REV; rules 1.11, item 931). A sheet without it was made
@@ -54,6 +57,8 @@ export interface Vow { id: string; allyId?: string; state: 'sworn' | 'kept' | 'b
 
 export interface Character extends Sheet {
   id: string; owner: string;
+  /** Rules 1.52: made with no kit and not yet geared by its mode (loadout.ts gives the mode's loadout and clears it). */
+  bare?: boolean;
   level: number; xp: number; xpBySource: Record<string, number>;
   /** Rules 1.41: the credits in this character's own purse (credits.ts: earnCredits, payCredits). Absent: none. */
   credits?: number;
@@ -251,7 +256,7 @@ export function traitGainError(have: string[] | null | undefined, id: string): s
   return ex ? (t as any)?.name + ' and ' + ((TRAITS.find((x) => x.id === ex) as any)?.name || ex) + ' can\'t be taken together.' : null;
 }
 
-/** A sheet is legal to lock in: every budget spent, tree caps hold, 0–2 traits, a name, an origin, a kit. */
+/** A sheet is legal to lock in: every budget spent, tree caps hold, 0–2 traits, a name, an origin (rules 1.52: no kit). */
 /** A sheet's creation spend by the rules it was made under. A sheet stamped with rules 1.11 (rulesRev) is read by
  * today's budgets only, and so is one with no stamp (no older budget is tried: item 1504). */
 export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'traits' | 'rulesRev'>) {
@@ -261,7 +266,6 @@ export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'trait
 export function validateSheet(s: Sheet): string | null {
   if (!s.name?.trim()) return 'A character needs a name.';
   if (!s.origin) return 'Pick an origin.';
-  if (!s.kit) return 'Pick a starting kit.';
   if ((s.traits || []).length > 2) return 'At most 2 traits.';
   // Belief (rules 1.6): Faithful to a patron of the patron list, or Atheist. Optional (old drafts have none: Atheist).
   if (s.belief && !(s.belief.kind === 'atheist' || (s.belief.kind === 'faithful' && ((patronsJ as any).items || []).some((p: any) => p.id === (s.belief as any).patron)))) return 'Pick a patron, or be an Atheist.';
@@ -458,11 +462,14 @@ export function armourCap(c: { traits?: string[] }): number | null {
 /** Turn a locked-in sheet into a level-1 character (spec: Creation; kits from the creation screen). */
 export function newCharacter(id: string, owner: string, s: Sheet): Character {
   const d = sheetDerive(s);
-  const kit = KITS[s.kit] || KITS.medic;
+  // Rules 1.52: a sheet with no kit makes a BARE character (bare fists, no armour, an empty pack; `bare`): the mode gives
+  // its gear when play starts (loadout.ts). An old draft's or a test's kit is carried as before.
+  const kit = s.kit ? KITS[s.kit] || KITS.medic : BARE_KIT;
   const c: Character = {
     ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
     injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV, mpRev: 124, hpRev: HP_REV,
+    ...(s.kit ? {} : { bare: true, kit: '' }),
   };
   // A trait that caps armour (Forlorn Hope: Class I at most) drops the kit's armour to the cap at lock-in (the kit's
   // heavier plate isn't carried; PROVISIONAL, spec 14).
@@ -538,7 +545,8 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
   return 'Collector (Gun Nut): the ' + (it.name || WEAPON[id]?.name || id) + ' is in ' + c.name + '\'s collection. Parting with it takes a Dexterity check (TN 12), the Narrator\'s call; on a fail it stays until the next rest.';
 }
 
-/** The four starting kits from the creation screen: what's held, worn and packed (spec: Reloading, Item weights). */
+/** The starting kits from the creation screen (the campaign's four; rules 1.51 added `rigger` and `mender`): what's held,
+ * worn and packed (spec: Reloading, Item weights). */
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
 export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
 const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: id === 'evoker' || id === 'emanator' ? 'focus' : id === 'standard_core' ? 'ammo' : id === 'ration_pack' ? 'food' : 'tool', ...(note ? { note } : {}) });
@@ -552,9 +560,16 @@ export const KITS: Record<string, { weapon: string; weaponName?: string; armourC
     pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('standard_core', 4), gear('chalk_and_wax')] },
   soul: { weapon: 'drifter_revolver', armourClass: 1, armourName: 'Padded coat', stims: 0, offHand: 'emanator',
     pack: [magsOf('drifter_revolver', 2), roundsOf('revolver', 12), gear('prayer_beads')] },
+  // Rules 1.51 (survival-spec rule 28): the Figments and the Bonds and Tending kits, each with its focus in the off hand.
+  rigger: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0, offHand: 'visualizer',
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('standard_core', 4)] },
+  mender: { weapon: 'service_pistol', armourClass: 2, armourName: 'Medic plate', stims: 0, offHand: 'attuner',
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('field_kit', 1, 'Bandages, splints, a suture set')] },
 };
+/** Rules 1.52: what a character made with no kit carries until its mode gives its gear: bare fists and nothing else. */
+export const BARE_KIT: (typeof KITS)[string] = { weapon: 'fists', armourClass: 0, armourName: 'None', stims: 0, pack: [] };
 /** The pack, with saves from before magazines were tracked brought up to date. */
-export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit] || KITS.medic).pack).map((it) => {
+export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit || ''] || KITS.medic).pack).map((it) => {
   if (it.id === 'rifle_magazine' && !it.mags) return magsOf(c.weapon, it.qty);
   if (!it.item && ITEM[it.id]) return { ...it, item: it.id };
   return it;

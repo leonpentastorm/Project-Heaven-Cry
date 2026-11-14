@@ -57,6 +57,26 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
   durability for a tenth of its price times the share worn (at least 10; 80% at a Forge), on a Repair shelf beside the
   grade step. Wear bars on the shop's and every place's hands and pack and on the path map's squad panel, with a
   ⚠ WORN / ✕ BROKEN mark, so a worn gun is seen before a lane is chosen.
+- **Gear by mode (rules 1.52; Leon, 14 Nov).** Character creation no longer picks a kit (the Kit step is gone; its
+  techniques and starting magic are the **Moves** step): a character is a person, and the mode gives what it carries
+  when play starts. A campaign gives a fixed loadout (the old kit by your door skill); the Proving Ground gives the same
+  to a bare character. Old drafts and saves that carry a kit keep it.
+- **The camp (rules 1.51, 1.52; Leon: "if caster keep getting wreck, we should give them some boons", and his loadout
+  and weapon-rack rulings).** A run opens at the camp, one full screen in three steps. **The loadout:** ONE free weapon,
+  the most basic of each of nine archetypes (knives and light blades, heavy blades, fist weapons, pistols, revolvers,
+  submachine guns, rifles, shotguns, bows); the **rack** beside it holds the same weapon again and the next one up, with
+  its numbers against the free one; ONE free focus or none; and a budget of **300 credits** (Leon's "like 200", raised
+  after the measure: a call) spent at the shop's prices on armour, ammunition, cores and supplies. Anything bought goes
+  back at full price before Ready; what is not spent is your purse. **The starting boon:** three cards offered by what
+  your loadout holds (a Sigil caster Sigil boons, a rifleman gun boons…), small (4 to 6 of the run's 50), and every card
+  one you can use. **Ready** (the host can start for an away player, who gets the Recommended loadout and the first
+  card). No armour is free: it is bought. Seven **caster boons** join the Boss's pick (Ward of Script, Long Hand, Sure
+  Script, Steady Heart, Deep Reserve, Mercy's Return, Deep Satchel). The fight's ammunition pack is now a **supply
+  pack**: the spare cores you burnt come back, an Emanator or Attuner gets 30% of its max MP, Flux is 0 at every
+  fight's start and a Rest fills the loaded core. Held boons show on the path map's squad panel ("Camp" on the starting
+  one). Deep Well and the Gentle property now strengthen heals given to anyone, as they say; Shelter now works on prayer
+  heals. A solo run's fights are a little lighter (the solo pressure 1.3). The measure: `survival-starting-boons.md`,
+  `survival-loadout.md` and rules 1.52 item 3916.
 - **The browser suite `survival`** walks all of it, two browsers included.
 - **Effects: the bullet in flight is back; the yellow tracer lines stay removed** (Leon, 14 Nov: the 13 Nov cleanup took the bullet's own flight along with the tracer lines). Every round fired flies from the muzzle to where it lands as before, hit or miss (a shotgun shell as its five pellets, an arrow as its shaft); a hit still leaves its hole, a miss no dust.
 - **Effects: only the four go** (Leon, 14 Nov): the cleanup was to take the tracer lines, the swing arc and the two miss effects and add the bullet hole, nothing more. Every technique's own effect is back (Heavy Bolt's, Punch Through's and Dead Centre's heavy round, Rake's and Mag Dump's cone, Flush's arc, their hit marks) with the hole on a hit; the sights stay a ring on the target. **Every round fired is heard**: one single gunshot a round, a Burst three, a Mag Dump as many as it spends, no recorded burst or automatic fire.

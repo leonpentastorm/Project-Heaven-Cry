@@ -215,7 +215,8 @@ describe('rules 1.39: an old save loads as a campaign', () => {
     expect(g.phase).toBe('lobby');
     expect(apply(g, { type: 'session/start' }, g.hostId).phase).toBe('story');
     const s = apply(g, { type: 'settings', patch: { play: 'survival' } }, g.hostId);
-    expect(start(s, 'PHC-0002').run!.state).toBe('map');
+    expect(start(s, 'PHC-0002').run!.state).toBe('loadout'); // rules 1.52: the camp before node 1
+    expect(apply(start(s, 'PHC-0002'), { type: 'run/ready', close: true }, g.hostId).run!.state).toBe('map');
   });
 });
 

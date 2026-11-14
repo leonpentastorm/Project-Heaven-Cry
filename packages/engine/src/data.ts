@@ -95,6 +95,8 @@ const findKey = (o: any, k: string): any => { if (!o || typeof o !== 'object') r
 export const CALIBRE_NAME: Record<string, string> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.name]));
 export const ROUND_KG: Record<string, number> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.round_kg]));
 export const ARMOUR_KG: number[] = (findKey(RULES, 'armor')?.armor?.classes || []).map((c: any) => c.weight_kg || 0);
+/** The body armour classes (rules.json combat armor.classes): class, name, value, penalty, weight, price. */
+export const ARMOUR_CLASSES: { class: number; name: string; value: number; weight_kg: number; price_credits: number }[] = findKey(RULES, 'armor')?.armor?.classes || [];
 
 // ---------- magic (spec: Mana, rules 1.2) ----------
 export interface SigilDef { id: string; word: string; class: 'subject_element' | 'subject_effect' | 'form' | 'motion' | 'modifier'; charge: number; text: string; damage?: number; damage_type?: string; grand?: string; [k: string]: any }

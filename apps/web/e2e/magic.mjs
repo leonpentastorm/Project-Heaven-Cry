@@ -25,7 +25,6 @@ await host.locator('[data-skill-up="will_power"]').click();
 await click(host, 'Next ›'); // traits
 await click(host, 'Next ›'); // Belief (rules 1.6; not chosen: Atheist)
 await click(host, 'Next ›'); // kit
-await host.locator('button', { hasText: 'Sigil student' }).first().click();
 await host.waitForSelector('text=SIGIL WORDS · MIND · PICK 2');
 await host.waitForSelector('text=OUTBURST · SOUL · 1 DESIGN');
 ok('the Kit step shows both magic sections', true);

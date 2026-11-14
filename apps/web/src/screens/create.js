@@ -3,8 +3,7 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIVES as ATTR_NEXT, SLOT_WORD, SLOT_ORDER, perPoint } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
-import { gearIconUri } from '../game/gearIcons';
-import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, KITS, WEAPON, ITEM, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL } from '@engine';
+import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL } from '@engine';
 import { feelingInk, feelingIconSrc, iconStyle, feelingTip } from '../game/feelingsView';
 const FEELING_START = ['rage', 'love'];
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
@@ -114,7 +113,9 @@ const NAMES = ['Ninety-Two', 'Vesper Hale', 'Orrin Kade', '4-Ten', 'Sable Quill'
 const ID_KEYS = ['gender', 'blood', 'hand', 'association', 'song', 'songTitle', 'songArtist', 'dream', 'history'];
 /** The Lock in step's final button (apps/web/e2e/lib.mjs LOCK_IN holds the same two for the browser suites). */
 export const LOCK_LABEL = { solo: 'Lock in this character', room: 'Lock in and bring to the room' };
-const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['belief', 'Belief'], ['kit', 'Kit'], ['lockin', 'Lock in']];
+const STEPS = [['identity', 'Identity'], ['archetype', 'Archetype'], ['skills', 'Skills'], ['traits', 'Traits'], ['belief', 'Belief'], ['moves', 'Moves'], ['lockin', 'Lock in']];
+// Rules 1.52 (Leon, 14 Nov 2026): creation makes a person; the Kit step is gone (gear is given by the mode when play
+// starts: Survival's camp, a campaign's loadout). Its starting techniques and magic stay, as the Moves step.
 const CORES = ['body', 'mind', 'soul'];
 const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
 const SK = {}; D.skills.forEach((s) => { SK[s.id] = s; });
@@ -233,9 +234,9 @@ const eyePreviewStyle = (img, y) => {
 };
 const pIdx = (id) => Math.max(0, D.portraits.findIndex((p) => p.id === id));
 
-// Starting magic (spec: The Magic panel and learning, rules 1.4): Brain Power 1+ or the Sigil student kit picks 2 Sigil
+// Starting magic (spec: The Magic panel and learning, rules 1.4): Brain Power 1+ picks 2 Sigil
 // words that make a spell, one of them a Reach word (so a new mage can hit past one tile): a Subject and a Reach word.
-// Will Power 1+ or the Soul initiate kit makes 1 Outburst design. The engine's defaults are preselected (SPARK · SEEK;
+// Will Power 1+ makes 1 Outburst design. The engine's defaults are preselected (SPARK · SEEK;
 // Damage + Move) so a player who skips this is still legal. The engine decides what's legal (startingWordsError).
 /** A draft's starting words under 1.4: kept when legal, else converted the engine's way (a 1.2 Stack's Form becomes
  * SEEK), else the defaults. */
@@ -245,8 +246,8 @@ const DEFAULT_SIGILS = [...STARTING_DEFAULT], DEFAULT_OB = { name: '', school: '
  *  has no skill for. */
 const techPicksOf = (S) => { const sl = startingTechniqueSlots({ skills: S.skills }), d = defaultTechniques({ skills: S.skills }), t = S.tech || {};
   return { melee: sl.melee ? (Array.isArray(t.melee) ? t.melee : d.melee) : [], ranged: sl.ranged ? (Array.isArray(t.ranged) ? t.ranged : d.ranged) : [] }; };
-const canSigilOf = (S) => (S.skills.brain_power || 0) >= 1 || S.kit === 'sigil';
-const canSoulOf = (S) => (S.skills.will_power || 0) >= 1 || S.kit === 'soul';
+const canSigilOf = (S) => (S.skills.brain_power || 0) >= 1;
+const canSoulOf = (S) => (S.skills.will_power || 0) >= 1;
 const slotsOf = (S) => moduleSlots({ skills: S.skills });
 const WORD_CLASS = [['subject_element', 'ELEMENTS · SUBJECT'], ['subject_affliction', 'AFFLICTIONS · SUBJECT'], ['subject_boon', 'BOONS · SUBJECT'], ['subject_working', 'WORKINGS · SUBJECT'],
   ['reach', 'REACH · ONE OF YOUR TWO'], ['delivery', 'DELIVERY · LEARNED IN PLAY'], ['burst', 'BURST · LEARNED IN PLAY'], ['filter', 'FILTER · LEARNED IN PLAY']];
@@ -277,7 +278,7 @@ export class CreateLogic extends DCLogic {
     this.state = {
       step: props.startStep || 'identity', name: props.sampleName || '', origin: props.sampleName ? 1 : null, portrait: props.sampleName ? pIdx('mpat') : pIdx('mallow-3'),
       fam: 'all', arch: arch || 'bulwark', skills: arch ? { ...ARCH[arch].preset } : {}, aSet: arch ? { ...ARCH[arch].attributes } : {}, applied: arch, hist: [], note: null,
-      hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [], kit: props.sampleName ? 'medic' : null,
+      hover: 'durability', tcat: 'All', traits: props.sampleName ? ['factory_made'] : [],
       idv: { gender: '', blood: '', hand: 'Right', association: '', song: '', songTitle: '', songArtist: '', dream: '', history: '' },
       sigils: [...DEFAULT_SIGILS], ob: { ...DEFAULT_OB }, tech: { melee: null, ranged: null },
     };
@@ -285,7 +286,7 @@ export class CreateLogic extends DCLogic {
     if (d) {
       const oi = D.origins.findIndex((o) => o.name === d.origin), pi = D.portraits.findIndex((p) => p.img === d.portrait);
       Object.assign(this.state, { name: d.name || '', origin: oi >= 0 ? oi : null, portrait: pi >= 0 ? pi : pIdx('mallow-3'), upload: pi < 0 && /^data:image\//.test(d.portrait || '') ? d.portrait : null, portraitEye: typeof d.portraitEye === 'number' ? d.portraitEye : null, skills: { ...(d.skills || {}) }, aSet: { ...(d.attrs || {}) },
-        traits: [...(d.traits || [])], kit: d.kit || null, applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
+        traits: [...(d.traits || [])], applied: typeof d.archetype === 'string' && ARCH[d.archetype] ? d.archetype : null, step: 'lockin', idv: { ...this.state.idv, ...(d.identity || {}) },
         sigils: _draftSigils(d.sigils), tech: { melee: d.techniques && Array.isArray(d.techniques.melee) ? [...d.techniques.melee] : null, ranged: d.techniques && Array.isArray(d.techniques.ranged) ? [...d.techniques.ranged] : null }, belief: d.belief && (d.belief.kind === 'atheist' || d.belief.patron) ? { ...d.belief } : null,
         ob: d.outburst && SCHOOL[d.outburst.school] ? { name: d.outburst.name || '', school: d.outburst.school, modules: [...(d.outburst.modules || [])], option: d.outburst.option || '', tone: d.outburst.tone || 'raw' } : { ...DEFAULT_OB } });
     }
@@ -453,15 +454,8 @@ export class CreateLogic extends DCLogic {
     });
     const traitChip = picked.length + ' OF 2 PICKED';
 
-    // kit
-    // The kit's weapons as icons (gearIcons.ts): the one in hand, the focus in the off hand, then any in the pack. Its body armour is an Armour Class
-    // from the kit, not an item, so it has no icon.
-    const kitIcons = (id) => { const K = KITS[id]; if (!K) return [];
-      return [K.weapon, ...(K.offHand ? [K.offHand] : []), ...K.pack.filter((it) => it.weapon).map((it) => it.weapon)].filter((w, i, a) => a.indexOf(w) === i).map((w) => ({ key: w, src: gearIconUri(w), name: WEAPON[w]?.name || ITEM[w]?.name || w })).filter((x) => x.src); };
-    const kitCards = D.kits.map((k) => ({ name: k.name, items: k.items.map((x) => ({ text: x })), icons: kitIcons(k.id), hasIcons: kitIcons(k.id).length > 0, pick: set({ kit: k.id }), pressed: S.kit === k.id ? 'true' : 'false',
-      style: 'position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 18px; border-radius: 12px; color: #E7EBF3; font-family: inherit; cursor: pointer; ' + (S.kit === k.id ? 'background: #1C2536; border: 1px solid #E7EBF3' : 'background: #10151F; border: 1px solid #232D3F') }));
 
-    // kit: starting magic (only for a build that can cast)
+    // moves: starting magic (only for a build that can cast)
     const canSigil = canSigilOf(S), canSoul = canSoulOf(S), hasMagic = canSigil || canSoul;
     // Physical 2.0 (rules 1.12): starting techniques. Raw Power or Athletics picks 2 melee techniques (one an Opener),
     // Dexterity picks 2 ranged ones. The engine's defaults are picked already (Lunge and Sidestep; Suppress and Shift), so a
@@ -535,7 +529,7 @@ export class CreateLogic extends DCLogic {
     const trainedSkills = D.skills.filter((s) => S.skills[s.id]).map((s) => ({ label: s.name + ' ' + S.skills[s.id], style: 'font-size: 14px; font-weight: 600; color: ' + ATTR[s.attr].ink }));
     const traitNames = picked.length ? picked.map((id) => (D.traits.find((t) => t.id === id) || {}).name).join(' · ') : 'None';
     const statsPlaced = der.attrLeft === 0 && Object.values(der.attr).every((v) => v <= ATTR_CAP);
-    const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All ' + SKILL_PTS + ' Skill points placed', left === 0], ['All ' + attrTotal + ' Attribute points placed, none above ' + ATTR_CAP, statsPlaced], ['Starting kit', !!S.kit],
+    const checks = [['Name', !!S.name], ['Origin', S.origin !== null], ['All ' + SKILL_PTS + ' Skill points placed', left === 0], ['All ' + attrTotal + ' Attribute points placed, none above ' + ATTR_CAP, statsPlaced],
       ...(canSigil ? [['Sigil words: ' + sig.map((w) => SIGIL[w]?.word || w).join(' + '), !sigErr]] : []), ...(hasTech ? [['Techniques: ' + techSys.map((x) => x.picked).join(' · '), !techErr]] : []), ...(canSoul ? [['Outburst: ' + obName, !obErr]] : [])].map(([label, ok]) => ({
       label, mark: ok ? '✓' : '◆', markStyle: 'width: 20px; text-align: center; font-weight: 700; color: ' + (ok ? '#6FEA77' : '#FFFFFF') }));
     const cantLock = checks.some((c) => c.mark !== '✓');
@@ -552,7 +546,7 @@ export class CreateLogic extends DCLogic {
     const n2 = (x) => (Math.round(x * 100) / 100).toString();
     // Stats at level 1: the engine's numbers for a character built from these points (game/derived.ts), each with the
     // attribute and skill behind it.
-    const pc1 = previewCharacter(S.skills, AV, S.traits, S.kit);
+    const pc1 = previewCharacter(S.skills, AV, S.traits, null);
     const stats = pc1 ? [...derivedLines(pc1).map((r) => ({ key: r.key, k: r.k, v: r.v, from: r.from })), { key: 'ap', k: 'AP per turn', v: '6', from: 'Everyone' }, { key: 'echo', k: 'Echo', v: '1 at session start', from: 'Everyone' }] : [];
     const tree = CORES.map((c) => ({ name: c.toUpperCase(), nameStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: ' + D.core[c],
       attrs: D.attrs.filter((a) => a.core === c).map((a) => ({ name: a.name, val: AV[a.id], nameStyle: 'font-size: 13px; font-weight: 700; color: ' + a.ink,
@@ -561,8 +555,6 @@ export class CreateLogic extends DCLogic {
             style: 'display: flex; justify-content: space-between; gap: 6px; font-size: 13px; color: ' + (p ? '#E7EBF3' : '#7F8BA1') }; }) })) }));
     const traitFull = picked.map((id) => D.traits.find((t) => t.id === id)).filter(Boolean).map((t) => ({ zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, cat: t.cat.toUpperCase(), icon: t.icon, flavour: t.flavour,
       up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })) }));
-    const kit = S.kit ? D.kits.find((k) => k.id === S.kit) : null;
-    const kitItems = [...(kit ? kit.items : []), 'Essence of Experience ×1'].map((text) => ({ text }));
     const voiceList = D.skills.filter((sk) => PT(sk.id) > 0).sort((a, b) => PT(b.id) - PT(a.id)).slice(0, 4).map((sk) => ({ name: sk.name.toUpperCase(), line: sk.quiet,
       nameStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: ' + ATTR[sk.attr].ink }));
     const magicSigils = canSigil ? sig.map((w) => ({ word: SIGIL[w]?.word || w, img: glyphUri(w, SIGIL_INK), text: SIGIL[w]?.text || '' })) : [];
@@ -574,21 +566,21 @@ export class CreateLogic extends DCLogic {
 
     return { ...epccgVals(this), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left === 0 && statsPlaced ? '✓ EVERY POINT PLACED' : left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'),
-      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isKit: S.step === 'kit', isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
+      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isMoves: S.step === 'moves', noMoves: !hasTech && !hasMagic, isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
       ...this.beliefVals(),
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
       families, points, detail, leanList, archNote,
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
-      kitCards, hasTech, techSys, techVerdict, techVerdictStyle: 'font-size: 13px; font-weight: 700; color: ' + (techErr ? '#FFFFFF' : '#6FEA77'), hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
+      hasTech, techSys, techVerdict, techVerdictStyle: 'font-size: 13px; font-weight: 700; color: ' + (techErr ? '#FFFFFF' : '#6FEA77'), hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
       schoolCards, obOpts, hasOpts: obOpts.length > 0, obTones, feelChips, feelHint, obToneHint: visOk ? 'Raw ignores armour and has no rider; an element adds a rider that grows with the stage (armour counts half).' : 'An element tone needs Lore Master 1; your Outburst is Raw (it ignores armour).',
       obShapeIcon: obInfo.icon, obShapeLine: obInfo.line, obShapeStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: ' + obInfo.ink, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
       onObName: (e) => this.setState({ ob: { ...obOf(this.state), name: e.target.value.slice(0, 40) } }), obVerdict, obVerdictStyle,
       resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetSigilsLabel: 'Back to ' + DEFAULT_SIGILS.map((w) => SIGIL[w]?.word || w).join(' + '), resetOb: set({ ob: { ...DEFAULT_OB } }),
       magicSigils, magicLine, hasMagicLine: !!magicLine, magicOb,
-      summaryLine: [o ? o.name : 'No origin yet', S.kit ? (D.kits.find((k) => k.id === S.kit) || {}).name : 'No kit yet'].join(' · '),
+      summaryLine: o ? o.name : 'No origin yet',
       trainedSkills, traitNames, leanText: der.leans.length ? (der.leans.length > 1 ? 'Tied: at level 3 you choose one of these, for good.' : 'Your highest attribute decides it. A tie lets you choose.') : 'Place some points first: your highest attribute decides your class.',
-      record, originRows, stats, tree, traitFull, hasTraits: traitFull.length > 0, noTraits: traitFull.length === 0, kitItems, kitName: kit ? kit.name : 'No kit yet', voiceList, hasVoices: voiceList.length > 0, leanCards,
+      record, originRows, stats, tree, traitFull, hasTraits: traitFull.length > 0, noTraits: traitFull.length === 0, voiceList, hasVoices: voiceList.length > 0, leanCards,
       originName: o ? o.name : 'No origin yet', hasOriginRows: !!o,
       checks, cantLock, lockOff: cantLock, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: ' + (S.stamp ? 'default' : 'pointer') + '; ' + (S.stamp ? 'background: ' + STAMP_RED + '; color: #FFFFFF' : cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),
       stamped: !!S.stamp, stampMode: S.stamp || 'on', sealStyle: SEAL_STYLE + (S.stamp ? '0' : '0.55'),
@@ -661,7 +653,7 @@ export class CreateLogic extends DCLogic {
   }
   sheet() {
     const S = this.state, o = S.origin === null ? null : D.origins[S.origin];
-    return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, ...(S.upload ? { portraitEye: Math.round((S.portraitEye ?? EYE_DEFAULT) * 100) / 100 } : {}), origin: o ? o.name : '', kit: S.kit || '', traits: [...S.traits], rulesRev: SHEET_REV,
+    return { name: S.name.trim(), portrait: S.upload || D.portraits[S.portrait].img, ...(S.upload ? { portraitEye: Math.round((S.portraitEye ?? EYE_DEFAULT) * 100) / 100 } : {}), origin: o ? o.name : '', traits: [...S.traits], rulesRev: SHEET_REV,
       skills: { ...S.skills }, attrs: derive(S.skills, S.aSet).attr, cores: derive(S.skills, S.aSet).core, identity: { ...S.idv }, archetype: S.applied || null,
       // Blessing 2.0: Faithful (to a patron) or Atheist; not chosen reads as Atheist (the engine's rule for old saves).
       ...(S.belief ? { belief: { ...S.belief } } : {}),

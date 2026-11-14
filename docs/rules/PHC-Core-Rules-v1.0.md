@@ -104,6 +104,8 @@ Everyone spends the same budgets (the 2020 EPCCG's: 6 Core, 10 Attribute, 10 Ski
 
 **Order doesn't matter.** You can raise Attributes first, or place skills first: when a skill needs a higher Attribute, it spends that point for you, and the preview says so ("−1 skill · −1 Attribute (Endurance 3→4)"). A skill can't go up if its Attribute would need points you no longer have. Lock in needs every Skill and Attribute point spent. *(Rules 1.13: no Core step.)*
 
+**Gear is given by the mode** (rules 1.52; Leon, 14 Nov 2026). Creation makes a person: it picks no kit, and a new character is bare until play starts, when its mode gives what it carries (Survival: the loadout built at the camp; a campaign: its loadout; the Proving Ground: its own tools). The starting kits below and in Weapons ("Starting kits carry spares") are the old creation kits: a campaign's default loadout is built from them, and a draft or save that carries one keeps it.
+
 **Archetypes** (archetypes.json, 46 presets in 9 families, one of them **All-in**: nine 7/1/1 builds, one per Attribute) help new players. **Every archetype spends all three budgets:** picking one places the 10 Skill points and every Attribute point (rules 1.13: there are no Core points), so there is nothing left to spend; anything can still be changed on the Skills step. An archetype that can't spend them all isn't offered. Regular archetypes spread over at least two Cores; only the All-in family puts everything in one. Archetypes are guidance only and have no effect after creation. After creation the caps work normally: to raise a skill past its Attribute you need an Attribute point from levelling, and an Attribute stops at the ceiling of your level.
 
 **Archetypes re-pointed (rules 1.13).** Thirteen presets were re-pointed for the new skill jobs; the other 33 are unchanged.
@@ -5654,6 +5656,177 @@ shop and the Forge that gunsmith. Every number is PROVISIONAL (items 3700 onward
    repair whatever is Worn or Broken at each shop and Forge, when affordable, before a grade step): items 3707 to 3709.
    No dial was moved.
 
+## Rules revision 1.51: starting boons, caster boons and the supply pack (Survival)
+
+Built on 14 Nov 2026 (`docs/design/handoffs/survival-starting-boons.md`; design: `docs/design/survival-spec.md` section
+13, rules 48 to 54). Leon, 14 Nov 2026: *"if caster keep getting wreck, we should give them some boons"*. The run measure
+of rules 1.49 had every solo caster fall in stage 1, before the first Boss and so before any boon. This revision gives
+every character a small boon from the camp, adds caster boons to the Boss's pool, refills what casters burn between
+fights as rounds are refilled, and gives the casters the armour the soldier kit already has. Every number is
+PROVISIONAL (items 3800 onward) and lives in `data/survival.json` (`start_boon`, `start_boons`, `boons`, `ammo_pack`,
+`camp`).
+
+1. **The camp and the starting boon.** `run/start` opens the **camp** (the run's state `camp`) before node 1. Every
+   character is offered **three starting boons** (`start_boon.offer` 3) and takes one with `run/boon` (the Boss's boon
+   pick's action; its player, or the host for an away player). The path map opens when every character has taken one;
+   the host's `run/go` at the camp sends the squad on at once, and every character that has not picked takes **the first
+   card of its offer**. A starting boon is a `relic` item in `c.relics`, worth at most `start_boon.max_worth` **6** on the
+   run's cap of 50. The starting boons are their own pool (`start_boons`, 24 rows): never offered after a Boss, at a
+   shrine or by the graft, and no Boss boon is a starting boon.
+2. **The offer, by line.** A line is what a character runs on, one for each attribute's alpha skill
+   (`start_boon.lines`): Guard (Durability), blades (Raw Power), guns (Dexterity), Shadow (Ingenuity), Sigil (Brain
+   Power), Figments (Visualization), Bonds and Tending (Empathy), Outburst (Will Power), Faith (Faith). **The main line:**
+   a focus in a hand whose door skill has 1 point or more gives its door's line (Evoker Sigil, Emanator Outburst, Attuner
+   Bonds and Tending, Visualizer Figments); else the line of the highest attribute's alpha skill when it has 1 point or
+   more (a tie: the alpha skill with more points, then the order above); else the main-hand weapon's (a gun or empty
+   hands: guns; a melee weapon: blades). **The second line:** the main-hand weapon's line if it differs; else the next
+   attribute's alpha skill line (by the same order, 1 point or more) if it differs; else the other weapon line. **The
+   cards:** `start_boon.main` **2** from the main line and `start_boon.second` **1** from the second, never the same row
+   twice, from `rngFor(seed, 'camp#start#' + character id)`; a line with too few rows is filled from the second line,
+   then from every row, so the offer is always three real cards.
+3. **The starting pool** (`start_boons`; survival-spec section 13.3): every damage line has the same three shapes, +1 to
+   hit with its door (worth 6), +5% damage with it (5), and a tempo or sustain row (4); the Guard, Shadow, Bonds,
+   Figments and Faith rows are worth 4 or 5. **Vigil** reads "your first prayer each fight, if it is a Whisper, costs 0
+   AP": the reducer names every prayer `pray` when it is made, so the limit is spent by the fight's first prayer of any
+   kind (a call made for Leon). Zeroed and Balanced Grip are terms of the attack (`roll_mod` on `attack`, which knows a melee blow
+   from a shot; the `to_hit` hook does not). A boon on the heals a character gives names `target: any` (the `heal` and
+   `shield` triggers' holder is the healed unit unless `if` names the target): so do Deep Well and the Gentle property,
+   which until now strengthened only the heals a character gave itself (a fix, not a new number).
+4. **Caster boons after a Boss** (`boons`, survival-spec section 13.4): Ward of Script (10), Long Hand (12), Sure Script
+   (13), Steady Heart (13), Deep Reserve (10), Mercy's Return (8), each with `doors`. **Bandolier** now doubles the whole
+   supply pack: magazines, cores and the MP share.
+5. **The supply pack** (replaces rules 1.41's ammunition pack; spec rule 52). After a won fight, and at a
+   cache and the vault's chest, with n = `ammo_pack` by the node (a fight 1, an Elite, the gate or the vault's guard 2,
+   a Boss 3, a cache or the vault 1) × the stat `run_ammo`: (a) n magazines' worth for every gun carried; (b) a character
+   carrying an Evoker or a Visualizer gets back **the cores it burnt**, at least `ammo_pack.cores` **1** × n and at most
+   `ammo_pack.cores_max` **2** × n, where burnt = (its spare cores × 10 plus each carried focus's loaded charge before the
+   fight, minus the same after) ÷ 10, rounded up, never below 0; (c) a character carrying an Emanator or an Attuner gets
+   `ammo_pack.mp_share` **0.3** × n of its max MP back, never above the max; (d) **Flux is 0 after every fight** of a run,
+   and **a Rest node fills the loaded charge** of every carried Evoker and Visualizer to full (10); (e) everything else
+   (HP, Strain, the meters, prayer waits, Echo, toxins, Supplies, stims, field kits, spare parts) is as before.
+6. *(Withdrawn by item 10 b: no free armour or magazines at the camp.)* **The camp's issue** (spec rule 53). At the camp each character may have its armour fitted up to class
+   `camp.issue_armour` **3** at no cost (`run/fit`, the Forge's fitting, price 0 at the camp; the class's own gates
+   hold), and every gun a character holds in hand is topped up to `camp.spare_mags` **3** spare magazines (or 3 ×
+   capacity of loose rounds). **Two kits are added** (`character.ts KITS`): `rigger` (a Visualizer in the off hand, the
+   service pistol, 4 standard cores) and `mender` (an Attuner in the off hand, the service pistol, a field kit). The
+   campaign's four kits are unchanged: the third magazine is the camp's issue, in Survival only (a call made for Leon).
+7. **Primed** (spec rule 54): its "Flux −2" and "Strain −1" are struck from the design (they were never built; with Flux
+   and Strain 0 at every fight's start they would do nothing). Its Guard, Momentum and Shadow stay.
+8. **The simulator's players** (`packages/engine/test/balance/survival-run.ts`, `policies.ts`; spec section 13.6): the
+   Rigger plays a Figment policy; the healer heals an ally under 60% HP (itself alone under 50%); the Sigil caster
+   Evokes a whole Line at once, draws its Lines near the foe and spends spare AP shooting, venting or stepping to cover;
+   the Outburst caster Releases at the stage that drops its target (stage 0 or 1 on Vermin and Minions); the caster
+   builds take the camp's armour; every build picks its starting boon (+1 to hit, else +5% damage, else the first card).
+   Echo stays unplayed for every build.
+9. **What the measure found** (survival-starting-boons.md section 4; 3 routes x 4 seeds, stages capped at 5; before is
+   rules 1.50's run): the solo Channeler clears stage 1 in 9 of 12 (was 2), four casters reach stage 3 in half their runs
+   (was 1 in 4), the Rigger pictures a Figment in every fight, squads of four still end in stage 3 or 4; the solo
+   Sigilist clears stage 1 in 3 of 12 (was 0; target 7: the Sigil Line at low Brain Power, survival-spec 13.9.3) and a
+   healer alone stalls in 5 of 12; the solo gunner clears stage 1 in 11 of 12 (was 9; 32 of 36 against 28 on three
+   times the seeds), which the forced cell shows is the seeded dice of a changed turn, not a boon's size. One lever at
+   a time, the camp's armour is the one that moves a caster at stage 1. No dial was moved.
+10. **The review, and the camp joined with the loadout** (14 Nov 2026, before release; items 3817 to 3825). It overrides
+   items 1, 2, 4, 5 and 6 above where they differ.
+   (a) **The camp is the loadout's** (rules 1.52 item 8): the starting boon is the camp's second step, chosen from the
+   offer read from what the loadout holds, and given when the camp closes; there is no state `camp` of its own.
+   (b) **No free armour and no free magazines at the camp** (Leon, 14 Nov: armour is bought from the budget): item 6's
+   issue is withdrawn (`camp` in `survival.json` is gone; the Forge fits at its price). The `rigger` and `mender` kits
+   stay in the engine for the simulator and old sheets.
+   (c) **A boon names what it needs** (`needs` on a starting or Boss boon: a focus in hand with its door skill, a gun,
+   ranged or melee weapon in hand, skill points; `run/stage.ts boonWorks`). The offer draws only rows that work for the
+   character; a line whose rows all fail (Brain Power with no Evoker) is skipped; a character holding two doors is
+   offered from both (the second line is the other door's); Thick Hide and In Close need nothing and fill. Empty hands
+   are melee (the blades line). The Boss's offer reads the same needs. Clear Pulse leaves the Bonds line; Steady Heart
+   loses its Empathy door; two rows join: **Held Close** (Bonds and Tending: 6% less damage taken while you hold a Bond;
+   worth 4) and **Covering Prayer** (Faith: the shields you give by prayer 15% stronger; worth 4). A prayer's shield
+   now carries the heal kind `blessing`, as its heals do.
+   (d) **Shelter works:** its `how` is `blessing`, the kind every prayer's heal carries (it named `prayer`, which no heal
+   carries, and did nothing).
+   (e) **Bandolier doubles the magazines only** again (rules 1.44); **Deep Satchel** (a Boss boon, worth 8, the four focus
+   doors, a focus in hand) doubles the supply pack's cores and MP (the stat `run_supply`).
+   (f) **The cores back after a fight are the spare cores the fight burnt** (the cores carried as it began, less as it
+   ended: none burnt, none back; never more than burnt or held), at most `cores_max` × n; a cache or the vault's chest
+   finds `cores` × n. The loaded core's partial charge is not a burnt core (a Rest fills it).
+   (g) **Long Hand is worth 15** (was 12): priced against Second Wind's 17, since a Sigilist draws on most turns.
+
+## Rules revision 1.52: gear by mode, and the Survival loadout
+
+Built on 14 Nov 2026 (`docs/design/handoffs/survival-loadout.md`). Leon (14 Nov 2026, binding): *"Revamp the character
+creation screen and remove the kit then, we give people stuff base on the mode. Survial will give you one low level
+melee, one low level gun, a bow, one of the 4 focus and a budget (like 200 points or smt) for them to choose ammo, stims
+and armor and such, a character going out with armor will lack in many other things."* Corrected the same day: *"only
+one weapon"* and *"1 weapon for free, take anything else with cost from the shop menu."* Every number is PROVISIONAL
+(items 3900 onward); the survival spec's fourth "Settled by Leon" block has the arithmetic.
+
+1. **Creation makes a person.** The creation screen no longer picks a kit; a sheet with no kit makes a **bare**
+   character (`c.bare`: bare fists, armour class 0, no stims, an empty pack but what its traits give). Its techniques and
+   starting magic are picked as before, on the step now called **Moves**. A sheet that names a kit (an old draft, a
+   test's) still starts with that kit, and a character already in a save is never stripped.
+2. **Gear is given by the mode** when play starts (`data/modes.json` items[].`loadout`): **Survival** (and the roguelike
+   until it has its own) builds a loadout at the camp (item 3); a **campaign** gives a bare character its loadout when
+   the session starts or when it joins mid-session: the campaign's own `loadout` when its data names one, else the
+   Campaign mode's, a fixed default built from the old creation kits by the door skill with most points (Brain Power the
+   Sigil student's, Will Power the Soul initiate's, Empathy the medic's, else the line soldier's). The **Proving Ground**
+   keeps its own gear tools and gives the same default to a bare character that comes to it.
+3. **The camp** (`g.run.state` `loadout`, before node 1; `data/survival.json loadout`). `run/start` strips every
+   character (Survival gives by mode; plot items and what traits give stay) and opens it. Each character takes, through
+   `run/loadout` (one reducer, refusals in words, nothing changed by a refusal):
+   - **one free weapon** *(superseded by item 9: the most basic of each archetype)* of a short list of Standard weapons (`weapons`: melee, gun, bow); a gun comes with one magazine
+     loaded and `gun.spare` 1 spare (a gun loaded round by round: that many magazines' worth of loose rounds), a bow with
+     one quiver (its own magazine in `weapons.json`; `bow.spare` 0);
+   - **one free focus** of the four (Evoker, Emanator, Attuner, Visualizer); a core-fuelled one brings `focus_with` (one
+     standard core). A two-handed weapon puts the focus in the pack, a one-handed one leaves it in the off hand. Either
+     pick may be declined; declining gives nothing back;
+   - **a budget** of `budget` 300 credits (Leon's "like 200", raised by the measure: item 7) spent on the **shop's own menu** at `priceOf`: every shelf of the shop's
+     counter but the restock (the gun's own magazines first, every calibre, the special rounds, thrown things, cores,
+     field supplies), and a fixed starter list (`stock`: the free weapons again as second weapons, the four foci as a
+     second focus, body armour by class at `rules.json armor.classes` prices through `priceOf('armour:<class>')`, and
+     the cheaper worn pieces). Up to `max_qty` 10 of a line. **Unspent budget is the character's purse** (`run.start_credits`
+     is now 0; it was 150).
+   The character's gear is rebuilt from its picks after every change. Refusals: over the budget ("Over the budget by 180
+   credits (480 of 300)."), past the carry limit ("Too heavy: Kade would carry 23.4 kg of 20 kg.", the numbers its own), a second body
+   armour ("Body armour is one piece: take one class."), a worn slot taken, a second of a worn piece, the armour class's
+   gate or a trait's cap, a weapon off the list, another player's character, a character marked ready.
+4. **Ready** (`run/ready`): each player marks it (and may take it back); when every connected player has, the squad
+   leaves the camp for node 1. The host's close (`run/ready` close) starts the run for everyone: a loadout nobody
+   touched takes the Recommended one. Test rooms may skip the camp (`run/start` camp `recommended`), as `run/skip`.
+5. **Recommended** (`recommended`): the focus of the door skill with most points; the first weapon row that fits (a
+   character with a focus the service pistol; Raw Power above Dexterity the machete; else the service rifle); the
+   profile's buys in order while the budget pays (Class 1 armour first for everyone; then a core-fuelled focus a core,
+   an MP focus a field kit, a gun a stim, a blade two stims); then the weapon's cheapest ammunition line while it pays.
+6. **The Forge fits Class 1** (`armour_fit.price` 1: 100), now that a character may set out with none.
+7. **The fit** (the simulator's parties now build their loadout by item 5). Without the old kits (Class 1 to 3 armour,
+   144 rifle rounds, 4 cores) and at Leon's 200, the guard's solo gunner fell in stage 1 on every seed, and the headline
+   cells lost stage 1 (a duo on 3 seeds of 3, a squad of four on 2 of 3). Moved: `loadout.budget` 200 → **300** (Light
+   armour is still half of it; a call for Leon), Recommended's buys **armour first**, `pressure_per_char` for a party of
+   one 2.0 → 1.6, a solo Elite's damage share 0.75 → 0.6. Measured: items 3910 and 3911.
+8. **One camp, three steps** (joined with rules 1.51's starting boons, 14 Nov 2026): the loadout, then the starting boon
+   (three cards offered by what the loadout holds), then Ready, on one screen. `run/boon` at the camp chooses the boon
+   (the character's own player, before Ready); a loadout change that takes it off the offer drops it; Ready is refused
+   until it is chosen ("Choose Kade's starting boon first."); the boons are given when the camp closes. The host's Go
+   (`run/go`, or `run/ready` close) gives an away player the Recommended loadout and the first card of its offer. There is
+   no free armour fitting and no free magazines (rules 1.51 item 10 b).
+9. **The free weapon and the rack by archetype** (Leon, 14 Nov 2026, binding: *"freelist get the most basic one of all the
+   weapon achetype, then we put the same weapon type but better in the rack shop, and identical weapon too, so you can
+   dualwield or upgrade your choice, don't forget to put extra ammo and cores in there to exchange or the first thing
+   everyone doing is rush to a shop"*). It overrides item 3's free list and its `stock` weapons. An **archetype** is a
+   weapons.json family as the data groups it (`loadout.archetypes`: its mastery family and category): knives and light
+   blades, heavy blades and axes, fist weapons (fists themselves skipped), pistols, revolvers, submachine guns, rifles,
+   shotguns, bows and crossbows. **The free weapon is each archetype's cheapest by `priceOf`** (Standard); **the rack**
+   holds the same weapon again at its price (a second to carry or dual-wield) and **the next one up by price** (one
+   step), shown with its numbers against the free one; a better one over the whole budget is shown with the refusal
+   (seven of the nine). The engine computes the list (`archetypeWeapons`, `RACK`); the validator checks that every priced
+   family is an archetype or `left_out` with its reason (launchers, flamers and belt-fed guns; the focus weapons;
+   grenades, which are on the Thrown shelf). The counter's shelves stay (every calibre, the gun in hand's magazines,
+   quivers for an archer, cores). What was bought can be put back at its full price before Ready; the free weapon's
+   spare magazine and a focus's free core may be left behind for nothing (`op: spare`); nothing free sells. Recommended
+   takes its archetype's free weapon: a focus-holder the revolver (six rounds, one hand), Raw Power above Dexterity the
+   heavy blade, else the rifle.
+10. **The fit after the join** (items 3915, 3916): the solo gunner fell to 7 of 12 at stage 1 and the solo Channeler to 2
+   with the camp's free armour gone. Moved: `pressure_per_char` for a party of one 1.6 → **1.3**, and Recommended's
+   focus row from the pistols' free weapon (now the two-round parlour pistol) to the revolvers'. A budget of 450 with
+   Class 2 first was tried and not kept.
+
 ## Rules revision 1.53: bows and quivers (Leon, 14 Nov 2026)
 
 Leon's rulings (14 Nov 2026), verbatim: "make the quiver enchantable and add 20 more arrow into each tier. The 'knock
@@ -9027,6 +9200,52 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3708. **What repair costs (rules 1.50 item 7):** 0.1 to 0.3 repairs a character a stage where any were bought, 3 to 6 credits a character a stage on average (a broken Masterwork rifle at most 720): under 0.2% of a stage's income (spec 11.1: 3,861 to 6,864). PROVISIONAL.
 3709. **The curve after repair (rules 1.50 item 7):** the squad of four still ends in stage 3 or 4 (means 3.4, 4.3, 4.4; were 3.4, 4.4, 4.4; one training-route run cleared stage 4 before and fell in it after, the dice of a gun that fires instead of breaking); solo and duo cells unchanged; four casters 2.0 → 2.3; the grade ladder's walk (grades at each Boss, steps a stage) unchanged. No dial moved. PROVISIONAL.
 3710. **Items 3700 to 3710 are rules 1.50's.**
+3800. **The camp (rules 1.51 item 1):** `run/start` opens the run's state `camp`; each character takes one starting boon of `start_boon.offer` 3 with `run/boon`; the map opens when all have; the host's `run/go` gives every character that has not picked the first card of its offer. PROVISIONAL.
+3801. **A starting boon's size (rules 1.51 item 1):** worth at most `start_boon.max_worth` 6 of the run's cap of 50; its own pool `start_boons` (24 rows), never offered after a Boss, at a shrine or by the graft. PROVISIONAL.
+3802. **The line (rules 1.51 item 2):** `start_boon.lines` maps each alpha skill to its line; main line: a held focus with its door skill 1+, else the highest attribute's alpha skill with 1+, else the main hand's weapon (guns, blades); second line: the main hand's weapon, else the next attribute's alpha skill, else the other weapon line. PROVISIONAL.
+3803. **The offer's cards (rules 1.51 item 2):** `start_boon.main` 2 from the main line, `start_boon.second` 1 from the second, distinct, from `rngFor(seed, 'camp#start#' + id)`; short lines filled from the second line, then from every row. PROVISIONAL.
+3804. **The starting pool's shape (rules 1.51 item 3):** on each damage line (guns, blades, Sigil, Outburst) +1 to hit (worth 6), +5% damage (5), a tempo or sustain row (4); Guard, Shadow, Bonds and Tending, Figments, Faith rows worth 4 or 5 (survival-spec 13.3 lists all 24 and their numbers). PROVISIONAL.
+3805. **Vigil (rules 1.51 item 3):** the first prayer each fight, if it is a Whisper, costs 0 AP (the limit is spent by the first prayer of any kind). PROVISIONAL.
+3806. **Caster boons (rules 1.51 item 4):** Ward of Script (a shield of 10% of max HP at the first round; worth 10), Long Hand (once a turn a glyph drawn gives back 1 AP; 12), Sure Script (+2 to hit with Sigils; 13), Steady Heart (+2 to hit with Outbursts; 13), Deep Reserve (2 MP a point of Will Power each round; 10), Mercy's Return (half of each heal given back as MP; 8); each served only to its `doors`. PROVISIONAL.
+3807. **Bandolier (rules 1.51 item 4):** doubles the whole supply pack (magazines, the cores' floor and ceiling, the MP share). PROVISIONAL.
+3808. **The supply pack's cores (rules 1.51 item 5):** the cores burnt in the fight back, at least `ammo_pack.cores` 1 × n and at most `ammo_pack.cores_max` 2 × n; burnt = charge before minus after (spare cores × 10 + each carried Evoker's and Visualizer's loaded charge) ÷ 10, rounded up. PROVISIONAL.
+3809. **The supply pack's MP (rules 1.51 item 5):** an Emanator or Attuner carried: `ammo_pack.mp_share` 0.3 × n of max MP back after a won fight, a cache and the vault, never above the max. PROVISIONAL.
+3810. **Flux and charge in a run (rules 1.51 item 5):** Flux 0 after every fight of a run; a Rest node fills each carried Evoker's and Visualizer's loaded charge to 10. PROVISIONAL.
+3811. **The camp's issue (rules 1.51 item 6):** armour fitted up to `camp.issue_armour` 3 for 0 credits at the camp (the class's gates hold); the gun in hand topped up to `camp.spare_mags` 3 spare magazines; Survival only. PROVISIONAL.
+3812. **The rigger and mender kits (rules 1.51 item 6):** `rigger` (Visualizer, service pistol, 4 standard cores, padded coat class 1) and `mender` (Attuner, service pistol, a field kit, medic plate class 2). PROVISIONAL.
+3813. **Primed (rules 1.51 item 7):** "Flux −2" and "Strain −1" struck; Guard +2, Momentum +1, Shadow +1 as built. PROVISIONAL.
+3814. **The simulator's caster policies (rules 1.51 item 8):** as rules 1.51 item 8 says (survival-spec 13.6). PROVISIONAL.
+3815. **The measure of rules 1.51 (rules 1.51 item 9):** solo Channeler stage 1 in 9 of 12 (was 2), solo Sigilist 3 of 12 (was 0), solo healer 8 of 12 with 5 stalled, solo Rigger 4 of 12 with a Picture in every fight, four casters reach stage 3 in 2 of 4 (was 1), squads of four end at 3.7, 4.2, 3.9 (were 3.4, 4.3, 4.4), solo gunner 11 of 12 (was 9). PROVISIONAL.
+3816. **Not reached (rules 1.51 item 9):** the solo Sigilist's 7 of 12 (a Sigil fix at levels 1 to 5, its own revision) and the healer's stalls at most 2 of 12 (the Mender's damage). PROVISIONAL.
+3817. **The camp joined with the loadout (rules 1.51 item 10 a):** the starting boon chosen at the loadout's camp, from `startOffer` on what the character holds; Ready waits for it; the camp's close gives each its choice, or the first card. Supersedes item 3800's own camp state. PROVISIONAL.
+3818. **No camp issue (item 10 b):** item 3811 withdrawn (Leon: armour is bought from the budget). PROVISIONAL.
+3819. **A boon's needs (item 10 c):** `needs` {door, weapon: gun / ranged / melee, skill}; the offer and the Boss's pick serve only rows that work; two doors are both offered; Thick Hide and In Close are the filler. Supersedes items 3802 and 3803 where they differ. PROVISIONAL.
+3820. **Held Close (item 10 c):** Bonds and Tending, worth 4: ×0.94 damage taken while the holder holds a Bond (`self_tied` bond). PROVISIONAL.
+3821. **Covering Prayer (item 10 c):** Faith, worth 4: ×1.15 on the shields you give by prayer (heal kind `blessing`). PROVISIONAL.
+3822. **Shelter's kind (item 10 d):** `how: ["blessing"]`. A fix, not a new number.
+3823. **Bandolier and Deep Satchel (item 10 e):** Bandolier ×2 magazines (worth 0); Deep Satchel ×2 cores and MP (`run_supply`), worth 8. Supersedes item 3807. PROVISIONAL.
+3824. **The cores back (item 10 f):** spare cores burnt, at most `cores_max` × n after a fight; a cache and the vault `cores` × n. Supersedes item 3808. PROVISIONAL.
+3825. **Long Hand (item 10 g):** worth 15 (was 12). PROVISIONAL.
+3826. **The measure after the review:** rules 1.52 items 3915 and 3916 (the joined tree).
+3827. **Items 3800 to 3827 are rules 1.51's.**
+3900. **Creation without a kit (rules 1.52 item 1):** a sheet with no kit is legal and makes a bare character (`c.bare`: `fists`, armour class 0, no stims, the trait items only; `character.ts BARE_KIT`); the creation screen's Kit step is gone (the Moves step keeps the techniques and starting magic). A sheet naming a kit (an old draft, a test) keeps it. PROVISIONAL.
+3901. **Gear by mode (item 2; `modes.json` items[].`loadout`):** `camp` for Survival and the roguelike; `kit` for a campaign (`by_door` brain_power `sigil`, will_power `soul`, empathy `medic`; `default` `soldier`; a campaign's own `loadout` first), given to a bare character at `session/start` and on a mid-session `char/add`; the Proving Ground gives the same at `sandbox/start`. **A call for Leon:** the campaigns name their own loadouts when they are rewritten. PROVISIONAL.
+3902. **The camp (item 3; `survival.json loadout`):** `run/start` strips (`loadout.ts stripGear`) and opens it (`run/loadout.ts openCamp`); the loadout is picks (`g.run.loadout[charId]`: weapon, focus, take) and the gear is rebuilt from them (`rebuild`) after every change, on a copy first. PROVISIONAL.
+3903. **The free picks (item 3):** `weapons` melee `combat_knife`, `hatchet`, `ork_machete`; gun `service_pistol`, `drifter_revolver`, `sawn_off`, `hellraiser_service_rifle`; bow `recurve_bow`, `crossbow`; `gun` {loaded 1, spare 1}; `bow` {spare 0}; `focuses` the four; `focus_with` evoker and visualizer one `standard_core` each (**a call for Leon:** a Sigil or Figment caster's first core is free, as a gunner's spare magazine is). PROVISIONAL.
+3904. **The budget (item 3):** `budget` **300** credits. Leon's "like 200 points" works as credits (Class 1 armour 150 is three quarters of it) but the squads fell in stage 1 with it (item 3910); at 300 Class 1 armour is half the budget and Class 2 (400) is out of reach. **A call for Leon.** `counter.skip` [restock]; `stock` the fixed starter list (**a call for Leon:** the camp's gear shelf is fixed, not rolled, so every player sees the same choices); `max_qty` 10. Unspent budget is the purse; `run.start_credits` 150 → 0. PROVISIONAL.
+3905. **`priceOf('armour:<class>')` (item 3):** a body armour class at its `rules.json armor.classes[].price_credits` (Light 150, Medium 400, Heavy 900, Assault 1,800, Juggernaut 4,000), times the rarity's price: the one price door. PROVISIONAL.
+3906. **The camp's refusals (item 3), in words:** over the budget, too heavy, body armour twice, a worn slot taken, a second worn piece of a kind, the armour gate and a trait's cap, a weapon or focus off the list, another's character, a character marked ready, a line the camp does not stock, nothing to put back. PROVISIONAL.
+3907. **Ready and the host's close (item 4):** every connected player's Ready leaves the camp; the host's close takes an untouched loadout's Recommended one; test rooms may skip the camp (`camp: 'recommended'`). PROVISIONAL.
+3908. **Recommended (item 5; `recommended`):** `focus_by_door` brain_power `evoker`, visualization `visualizer`, will_power `emanator`, empathy `attuner`; `weapon` rows [{when focus: service pistol}, {raw_power over dexterity: ork machete}, {service rifle}]; `buys` core [Class 1 armour, standard core], mp [Class 1 armour, field kit], gun [Class 1 armour, stim], melee [Class 1 armour, stim, stim]; `fill` ammo. PROVISIONAL.
+3909. **The Forge's Class 1 (item 6):** `armour_fit.price` 1: 100 (Class 2 250, 3 600, 4 1,200 as before). PROVISIONAL.
+3910. **The fit (item 7):** `loadout.budget` 200 → 300; Recommended's armour first; `pressure_per_char` [2.0, 1.7, 1.3, 1.3] → [1.6, 1.7, 1.3, 1.3]; `share.elite.damage` for one 0.75 → 0.6. Tried and not kept: `pressure_per_char` [1.6, 1.4, 1.1, 1.1] (duo and four still lost stage 1 on SIM-1 and SIM-2: an Elite killed a full squad), duo and four Elite damage 0.8 / 0.85 (a squad of four cleared five stages). The guard's solo gunner (gear, GUARD-1 to 3) before the fit: stage 1 cleared on 0 of 3 (lost at 1.5, 2.4, 1.6); after: it passes. PROVISIONAL.
+3911. **The headline cells after rules 1.52** (SIM-1 to 3, stages capped at 5): `survival-loadout.md` section 4; against rules 1.49's tables (SIM-1 to 4). PROVISIONAL.
+3912. **The camp's one flow (item 8):** run/boon at the camp, Ready waits for the boon, the close gives it. PROVISIONAL.
+3913. **The archetypes (item 9; `loadout.archetypes`):** light_blades (combat knife 60 / throwing knives 80), heavy_melee (ork machete 250 / maul 450), unarmed (knuckledusters 60 / servo fist 1,200), pistols (parlour pistol 150 / service pistol 250), revolvers (drifter revolver 350 / frontier hand cannon 800), smgs (Decrkm SMG 600 / Legion PDW 750), rifles (lever carbine 700 / service rifle 900), shotguns (sawn-off 300 / coach gun 400), bows (recurve bow 300 / longbow 450): free / the rack's better one. Supersedes item 3903. PROVISIONAL.
+3914. **Recommended's weapon rows (item 9):** focus → revolvers, Raw Power over Dexterity → heavy_melee, else rifles. Supersedes item 3908's weapons. PROVISIONAL.
+3915. **The fit (item 10):** `pressure_per_char` [1.6, 1.7, 1.3, 1.3] → [1.3, 1.7, 1.3, 1.3]. PROVISIONAL.
+3916. **The measure on the joined tree** (3 routes × SIM-1 to 4, stages capped at 5; stage 1 cleared of 12; mean end by route gear, training, safest): solo gunner 9 (2.2, 3.3, 3.1); solo Sigilist 3 (1.3, 1.8, 1.6); solo Channeler 3 (1.6, 1.6, 2.7); solo Mender 8, 4 stalled (2.4, 3.3, 2.9); solo Rigger 6 (1.8, 2.2, 2.1); four casters 5, reach stage 3 in 4 (2.5, 3.4, 2.8); squad of four 10 (4.3, 3.3, 3.5); duo 8 (2.5, 5.0, 3.3). Not reached: the Channeler (about the gunner's 9) and the Sigilist (Balance 2.0). PROVISIONAL.
+3917. **Items 3900 to 3917 are rules 1.52's.**
 4000. **Bows and quivers (rules 1.53), Leon 14 Nov 2026:** the revision as built; its numbers are items 4001 to 4007.
 4001. **Nock an arrow was the bow's reload, refused in every fight since rules 1.12** (Weapons point 10, item 949): the
     shot already drew its arrow at no AP of its own, so its removal freed no AP. The golden tables and the measure show

@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, reachable, creditsOf, priceOf, counterLines, linePrice, sellValue, rollStock, faceFor, FACES, SHOP_DATA, SELL_RATE, ROUND_PRICE, emptyMagPrice,
   gearPreview, compareGear, registerShopService, shopServices, packOf, WEAPON, ITEM, RARITY, runMoveProblem, magazineWorth, type RunNode } from '../src';
-import { survivalRoom, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { type Pc } from './helpers/replay';
 import svJ from '../../../data/survival.json';
 import rulesJ from '../../../data/rules.json';
@@ -15,7 +15,7 @@ import rulesJ from '../../../data/rules.json';
 const SV: any = svJ, RJ: any = rulesJ;
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
-const started = (pcs: Pc[], seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[], seed = 'PHC-0001') => startRun(survivalRoom(seed, pcs, { test: true }), seed);
 const take = (g: GameState, node: RunNode, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== node.id; i++) x = apply(x, { type: 'run/move', node: node.id }, ownerOf(i)); return x; };
 /** A run standing at the node before the first shop, then into the shop (both players mark it). */
 function inShop(pcs: Pc[] = DUO, seed = 'PHC-0001', rich: number | null = null): GameState {
@@ -48,7 +48,8 @@ describe('Survival shop (rules 1.42)', () => {
   });
 
   it('the counter: every calibre (twelve), the special rounds, thrown, cores, supplies, priced; the guns shelf for every gun carried', () => {
-    const g = inShop(), lines = counterLines(Object.values(g.characters));
+    const g = inShop(); g.characters.c1.weapon = 'hellraiser_service_rifle'; // a magazine-fed gun in hand (rules 1.52: the camp's free rifle loads round by round)
+    const lines = counterLines(Object.values(g.characters));
     const cal = lines.filter((l) => l.shelf === 'calibres').map((l) => l.id.slice('rounds:'.length));
     expect(cal.sort()).toEqual(RJ.weapons_rules.calibres.map((c: any) => c.id).sort());
     for (const id of ['ammo_armor_piercing', 'ammo_hollow_point', 'ammo_incendiary', 'ammo_enhanced', 'frag_grenade', 'smoke_grenade', 'flashbang', 'incendiary_grenade', 'standard_core', 'spare_parts', 'stim_injector', 'field_kit', 'ration_pack'])

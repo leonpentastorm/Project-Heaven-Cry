@@ -6,7 +6,7 @@
 // seed gives the same map; the data switch falls back to the cropped open ground. SURVIVAL_LAYOUT_REPORT=1 prints the
 // measured numbers and a map of each size.
 import { describe, expect, it, vi } from 'vitest';
-vi.setConfig({ testTimeout: 300_000 }); // seed sweeps: slow on a loaded machine; a time limit, not a rule
+vi.setConfig({ testTimeout: 600_000 }); // seed sweeps: slow on a loaded machine; a time limit, not a rule
 import { generateLayout, layoutProblems, turnStamp, MAP_LIMITS } from '../src/maplayout';
 import { SETTINGS, SETTING, TEMPLATES, LAYOUT_DATA, layoutRecipe, encounterMap, composeEncounter, type EncounterFoe } from '../src/run/encounter';
 import { rngFor } from '../src/rng';
@@ -58,7 +58,7 @@ describe('Survival layout generator (rules 1.45)', () => {
     // Hazards appear only on templates that allow them, and do appear on those.
     expect(cases.some((c) => c.gen && c.hazardAllowed && hazardsIn(c.gen.rows) > 0)).toBe(true);
     expect(TEMPLATES.filter((t) => !t.hazard).length).toBeGreaterThan(0);
-  }, 300_000); // the 1,000-seed sweep takes 33 s on a loaded machine: a time limit, not a rule (it failed three full checks at 30 s)
+  }, 600_000); // the long limit (survival-run, -stage): 1,000 seeds take over 30 s on a busy machine; the count is not cut
 
   it('the encounter\'s own start tiles: never on a blocker, a hazard, a trap or a hole, every foe at the deployment minimum or more', () => {
     const bad: string[] = [];
@@ -75,7 +75,7 @@ describe('Survival layout generator (rules 1.45)', () => {
       if (m.skin?.setting !== setting.id) bad.push(s + ': no skin');
     }
     expect(bad.slice(0, 5)).toEqual([]);
-  });
+  }, 600_000); // the long limit (survival-run, -stage): 1,000 seeds take over 30 s on a busy machine; the count is not cut
 
   it('deterministic: the same seed, node and party give the same map; another node another map', () => {
     const inp = { levels: [1, 1], node: { id: 'r3c1', depth: 3, kind: 'fight' }, stage: 1, setting: 'ahoc', seed: 'PHC-0001' };

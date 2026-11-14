@@ -108,7 +108,7 @@ archer), `test/phys-ranged-quiver.test.ts` (the old cases on the new model), `te
 
 ## 6. Calls for Leon
 
-The checklist's calls 80 to 86 (`docs/PLAYTEST-CHECKLIST.md` section B): the grade ladder above Standard's 40 (50 / 60 /
+The checklist's calls B1 to B7 (`docs/PLAYTEST-CHECKLIST.md` section B): the grade ladder above Standard's 40 (50 / 60 /
 70 / 80), Switch quiver at a reload's 2 AP and Last Round's free reload, quivers the character's not the bow's, the six
 stages and the 400-credit ×0.9 price, a quiver's 120 credits, Survival's offers.
 

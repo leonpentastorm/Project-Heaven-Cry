@@ -172,7 +172,7 @@ P('cond_family', 'words', 'the condition\'s family is one of these (body, brain,
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
 P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
-P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (tending, prayer, perk, stim…)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
+P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
 P('ap_above', 'number', 'the event\'s AP (a price, a swap) is over this', (ev, v) => (ev.ctx.ap ?? 0) > v);
 P('own_turn', 'bool', 'it is (or is not) the holder\'s own turn', (ev, v) => (ev.cb.order[ev.cb.turn] === ev.self.id && !ev.cb.window) === v);
 P('flag', 'string', 'the item\'s flag is set (the mark op sets it)', (ev, v) => !!flags(ev)[v]);
@@ -379,9 +379,9 @@ O('cancel', ['cond_incoming', 'forced_move', 'injury', 'attack', 'spot'], false,
   ev.ctx.cancel = true; ev.ctx.why = e.why ? fill(e.why, ev) : label;
 });
 // rev4-primitives.md batch row: the damage_mult of mending. On `heal` (heal_in) and `shield` (shield_grant), before the
-// heal or shield is floored and capped; the kind of a heal or shield (tending, prayer, perk…) is read with `how`.
+// heal or shield is floored and capped; the kind of a heal or shield (tending, blessing (prayers), perk…) is read with `how`.
 // (Not on heal_given: by then the heal has landed and there is nothing left to multiply.)
-O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, prayer, perk…)', (ev, e) => {
+O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk…)', (ev, e) => {
   const v = typeof e.value === 'number' ? e.value : 1; if (typeof ev.ctx.n === 'number') ev.ctx.n = ev.ctx.n * v;
 });
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });

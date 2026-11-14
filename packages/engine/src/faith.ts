@@ -1163,7 +1163,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     switch (id) {
       case 'luck': fs(x).luck = 2; return ' · ' + x.name + ': +2 on the next roll';
       case 'health': return land(cb, rng, u, x, e, power, (pw) => ' · ' + x.name + healLine(cb, u, x, prayerAmount('heal', effVal(e, 'heal'), pw, levelTerm(u)), 'whisper'));
-      case 'protection': return land(cb, rng, u, x, e, power, (pw) => ' · ' + x.name + ' gains a ' + mendSized(cb, u, x, 'shield', prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), { of: 'whisper' }).shield + ' shield');
+      case 'protection': return land(cb, rng, u, x, e, power, (pw) => ' · ' + x.name + ' gains a ' + mendSized(cb, u, x, 'shield', prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), { of: 'whisper' }, { healKind: 'blessing' }).shield + ' shield');
       case 'courage': { const had = ['fear', 'shaken'].filter((k) => condOn(x, k)); for (const k of had) endCond(x, k, cb); return ' · ' + x.name + (had.length ? ' steadies (' + had.join(', ') + ' ended)' : ' was already steady'); }
       case 'guidance': {
         let out = '';
@@ -1178,7 +1178,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
   }
   switch (id) {
     // Holy Father Nerukhan
-    case 'saints_shield': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + ' gains a ' + mendSized(cb, u, one!, 'shield', prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), { of: 'hymn' }).shield + ' shield');
+    case 'saints_shield': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + ' gains a ' + mendSized(cb, u, one!, 'shield', prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), { of: 'hymn' }, { healKind: 'blessing' }).shield + ' shield');
     case 'judgement': return land(cb, rng, u, one!, e, power, (pw) => { const hm = one!.faith?.harmedHelpless ? Number(fxOf(e, 'vs_status_damage')?.mult ?? 1.3) : 1; return harmLine(cb, u, one!, prayerStrike(prayerDamage(e), pw, term(hm, 'it harmed the helpless'), dealTerm(u)), 'soul') + (hm !== 1 ? ' (×' + hm + ': it harmed the helpless)' : ''); });
     case 'absolution': return land(cb, rng, u, one!, e, power, (pw) => { const ids = cleanseHarmful(cb, one!); return ' · ' + one!.name + ' is absolved' + (ids.length ? ' (' + ids.join(', ') + ')' : '') + ' and' + healLine(cb, u, one!, prayerAmount('heal', effVal(e, 'heal'), pw, levelTerm(u))); });
     case 'saints_verdict': { // rules 1.6.2 (item 727): every enemy in sight; double and 2 rounds for those that harmed the helpless
@@ -1245,7 +1245,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += land(cb, rng, u, v, e, power, (pw) => {
         const up = v.downed; healUnit(cb, v, v.maxHp, u, 'blessing', { noLimit: true }); v.hp = v.maxHp; // to full whatever trims a heal
         const ended = cleanseHarmful(cb, v);
-        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), u) + ' shield';
+        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), u, { kind: 'blessing' }) + ' shield';
       });
       return out;
     }

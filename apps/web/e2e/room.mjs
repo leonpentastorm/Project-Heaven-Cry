@@ -6,6 +6,7 @@
 //    and Campaign can't be picked back (the engine refuses a locked mode).
 import { readFileSync } from 'node:fs';
 import { chromium, player, click, BASE, hostAs, lockIn, until, OUT } from './lib.mjs';
+import { campStart, settle } from './lib.mjs';
 // a locked card's reason is the data's own words (data/modes.json `coming`), never a sentence typed here
 const COMING = Object.fromEntries(JSON.parse(readFileSync(new URL('../../../data/modes.json', import.meta.url), 'utf8')).items.map((m) => [m.id, m.coming]));
 const browser = await chromium.launch();
@@ -23,7 +24,6 @@ async function create(page, name) {
   await click(page, 'Next ›');
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
-  await page.locator('button', { hasText: 'Line soldier' }).first().click();
   await click(page, 'Next ›'); await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 }
@@ -81,10 +81,18 @@ await create(guest, 'Ha');
 const label = (await host.locator('button[data-phc-start]').textContent()).trim();
 ok('Start reads "Start the run" and needs no key (' + label + ')', label === 'Start the run' && await host.locator('button[data-phc-start]').isEnabled());
 await host.locator('button[data-phc-start]').click();
+// rules 1.52: the camp first, on both screens; each builds its own loadout and marks Ready; the run goes on when both are
+const hostCamp = await until(host, () => !!document.querySelector('[data-phc-camp]'), null, 15000).catch(() => false);
+const guestCamp = await until(guest, () => !!document.querySelector('[data-phc-camp]'), null, 15000).catch(() => false);
+ok('Start opens the camp on both screens (rules 1.52)', !!hostCamp && !!guestCamp && (await host.evaluate(() => window.__phc.getState().game.run.state)) === 'loadout');
+await campStart(host);
+await settle(host, 400);
+ok('the host is ready and the camp waits for the guest', (await host.evaluate(() => window.__phc.getState().game.run.state)) === 'loadout' && (await host.locator('[data-phc-camp-ready]').textContent()).includes('Ready'));
+await campStart(guest);
 const hostRun = await until(host, () => !!document.querySelector('[data-phc-run-screen]'), null, 15000).catch(() => false);
 const guestRun = await until(guest, () => !!document.querySelector('[data-phc-run-screen]'), null, 15000).catch(() => false);
 const run = await host.evaluate(() => { const r = window.__phc.getState().game.run; return r && { state: r.state, stage: r.stage, seed: r.seed }; });
-ok('the host starts the run: g.run at stage 1 on the map (' + JSON.stringify(run) + '), shown to host and guest on the path map (rules 1.41)', !!hostRun && !!guestRun && run && run.state === 'map' && run.stage === 1 && /^PHC-/.test(run.seed));
+ok('both picked: g.run at stage 1 on the map (' + JSON.stringify(run) + '), shown to host and guest on the path map (rules 1.41)', !!hostRun && !!guestRun && run && run.state === 'map' && run.stage === 1 && /^PHC-/.test(run.seed));
 ok('the cards are gone while the run is on', !(await cards(host).count()) && !(await cards(guest).count()));
 const errsA = [host, guest].flatMap((p) => p.errors || []);
 await host.context().close(); await guest.context().close();
