@@ -5,7 +5,7 @@ Classes 3.0 (0.26.0, Class Roster Revision 4, live). The sections after them wer
 1.26, live since 12 Nov) and still hold where Classes 3.0 did not change them. Tick a box when it looks right; write down anything that does not and say which line. "Right" is what the build
 is meant to do, not a guarantee that it does.
 
-## S. Survival mode (0.27.0, rules 1.39 to 1.49; built, not live until Leon's word)
+## S. Survival mode (0.27.0, rules 1.39 to 1.51; built, not live until Leon's word)
 
 Sources: `docs/design/handoffs/SURVIVAL-PICKUP.md` (start there), the spec `docs/design/survival-spec.md` (draft 4 and
 the three "Settled by Leon" blocks), the step hand-offs (`survival-step-*.md`, `survival-lanes.md`,
@@ -21,8 +21,23 @@ at once); a normal room never does.
 - [ ] Three large cards: SURVIVAL (selected, a check and the word), ROGUELIKE and CAMPAIGN locked ("Coming", a lock
       mark, the hover card says when). A guest's click says "Only the host picks this."
 - [ ] The Narrator panel is collapsed with "Survival needs no Narrator." and opens on asking.
-- [ ] Start the run: the path map opens at stage 1 on the AHOC outpost; every purse holds 150 credits.
+- [ ] Start the run: **the camp** opens first (rules 1.51): "THE CAMP", and for your character three large cards, each
+      a line glyph, a name, one sentence with its number, the line's word in its attribute's colour ("SIGIL · BRAIN
+      POWER") and its worth ("5 of your 50"). Every purse holds 150 credits.
+- [ ] **The offer reads what you run on:** a Sigil caster (Evoker in hand) is offered two Sigil boons and one gun boon;
+      a rifleman two gun boons (or two of its highest attribute's line) and one more; an Outburst caster two Outburst
+      boons. Hover a card: the full text. Click one: the map opens, and the squad panel shows it with "Camp" and the
+      run power ("5 of 50").
+- [ ] **The camp's issue:** a caster's kit (class 1 or 2) shows "Fit class 3: free"; click it and the armour is class 3
+      with no credits paid. A soldier's kit already wears class 3 and the line says so.
+- [ ] **Co-op:** each player sees its own cards first; the strip shows each player "Chosen" or "choosing"; the map
+      waits for everyone; the host's "Go on" gives an away player the first card.
 - [ ] **What right looks like:** nobody is asked for an API key; a character above level 1 is refused in words.
+- [ ] **Felt in the first fight (rules 1.51):** with Zeroed, a shot's hover card lists "Zeroed +1"; with Hot Loads the
+      damage line has "Hot Loads"; with Quick Chalk the first glyph costs 1 AP less, once.
+- [ ] **The supply pack after a fight:** a Sigil caster gets back the cores it burnt (1 to 2 a fight, more at an Elite
+      and a Boss), an Outburst caster or a Mender "N MP" (30% of max MP a fight), a gunner its magazines as before;
+      Flux is 0 at every fight's start; a Rest fills the loaded core.
 
 ### S.2 The path map: lanes, junctions, the vault (ten minutes)
 
@@ -228,6 +243,30 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
 78. **The WORN mark is the Core Rules' Worn (25%)**, moved to data (`weapons_rules.worn.share`); no separate "close to
     breaking" number. A gun just above 25% at one shop can still break before the next; the bar shows it.
 79. **Shields repair too** (they have durability in data); a focus and armour do not wear and get no card.
+
+**Starting boons, caster boons and supply (rules 1.51; survival-spec section 13.9, built as recommended)**
+80. **Starting boons are small:** worth 4 to 6, at most 6 of the 50 (12%), one each, their own pool: big enough to pick
+    for, small enough that the Boss boons stay the run's rule-changers (13.9.1).
+81. **The camp's free armour, class 3, in Survival only** (a campaign's kits are unchanged); the third spare magazine
+    is the camp's issue too, in Survival only (13.9.2).
+82. **The Sigilist may still fall short:** measured first; what it still needs is a Sigil rule at levels 1 to 5, not a
+    bigger boon (13.9.3; the measure is in `survival-starting-boons.md`).
+83. **Primed's Flux −2 and Strain −1 struck** (they were never built; Flux and Strain are 0 at every fight's start now)
+    (13.9.4).
+84. **MP 30% of max a fight, cores what you burnt (1 to 2 a fight)**, an Elite x2, a Boss x3 (13.9.5).
+85. **Echo stays unplayed by the simulator** for every build (13.9.6).
+86. **An away player takes the first card** when the host goes on (13.9.7).
+87. **Figments get no Boss boon yet**, until the Rigger is measured with its own policy (13.9.8).
+88. **Lines are read from the sheet and the hands** (a focus in hand with its door skill, else the highest attribute's
+    alpha skill, else the weapon); the second line is the weapon in hand if different, else the next attribute's (13.9.9).
+89. **Vigil:** "your first prayer each fight, if it is a Whisper, costs 0 AP": the engine names every prayer `pray` when
+    it is made, so a Hymn first spends it.
+90. **Zeroed and Balanced Grip** are terms of the attack (they tell a shot from a blow); the to-hit hook does not.
+91. **Deep Well and the Gentle property now strengthen the heals you give anyone** (they named the healer but the heal's
+    holder is the healed unit, so they worked only on your own heals): a fix, not a new number; Gentle Hands and Shelter
+    are built the same way.
+92. **The simulator's caster policies are the run's own** (`run-policies.ts`); the balance pass's policies, which the
+    golden tables and replays play, are unchanged.
 
 ## 0. Classes 3.0 (0.26.0)
 
