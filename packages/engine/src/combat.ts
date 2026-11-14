@@ -193,6 +193,8 @@ export interface Unit {
   stopped?: number; watch?: import('./physical/types').HeldWatch; chain?: { t: string; n: number; last: string | null; ended: boolean };
   tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
   techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean;
+  /** Rules 1.53: the worn quiver's item, grade and enchantment (its arrows are `quiver`), and the ready quiver. */
+  quiverGear?: Omit<import('./character').QuiverInst, 'arrows'>; quiverReady?: import('./character').QuiverInst | null;
   /** Calls (rules 1.13, calls/): what Calls left on this unit and its own Call counters; an enemy's Call list and the
    * level that stands in for its skill points. */
   call?: import('./calls/types').CallMarks; calls?: string[]; callLevel?: number;
@@ -1424,7 +1426,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     // the special round or arrow fired (Load Special's, a quiver's): its look on screen
     ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}),
     ...(!melee && typeof opts.extra === 'number' && opts.extra < 0 ? { step: opts.extra } : {}), // this roll's own to-hit step (a Burst's later roll: −4, −3, −1; an enemy's −1 or −2), for the screen
-    ...(opts.fx || {}) });
+    ...(opts.fx || {}), ...(rc.fx || {}) });
   let damage = 0, killed = false, injury = '';
   if (hit) {
     const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush });
@@ -2264,6 +2266,13 @@ const typesFor = (types: (string | null)[] | undefined, n: number) => Array.from
  * menu, out of a fight: physical/ranged/quiver.ts). Each returns a refusal or null; reload(), reloadHands() and the
  * reload entry of weaponActions() all ask, so no path (the Reload action, the area map, Running Reload, Between
  * Heartbeats, Resupply) reloads past them. cb is null when the caller has no fight at hand (weaponActions). */
+/** Rules 1.53: a weapon whose reload is its own (a Drawn weapon's is Switch quiver: physical/ranged/quiver.ts). It names
+ * the action, says whether it is offered, why it can't be taken now (null: it can), and runs it for the reload's price
+ * (the same cost rule as any reload: reloadAp). Null: the weapon reloads as every other does. */
+export interface ReloadWay { offered: boolean; label: string; text: string; why: string | null; run?: (cb: Combat, u: Unit, ap: number) => string | null }
+const RELOAD_WAYS: ((u: Unit) => ReloadWay | null)[] = [];
+export const reloadWay = (f: (u: Unit) => ReloadWay | null) => { RELOAD_WAYS.push(f); };
+export function reloadWayOf(u: Unit): ReloadWay | null { for (const f of RELOAD_WAYS) { const r = f(u); if (r) return r; } return null; }
 type ReloadRefuser = (u: Unit, weaponId: string, cb: Combat | null) => string | null;
 const RELOAD_REFUSERS: ReloadRefuser[] = [];
 export const reloadRefuser = (f: ReloadRefuser) => { RELOAD_REFUSERS.push(f); };
@@ -2284,6 +2293,16 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   const w = WEAPON[u.weapon];
   if (w.magazine == null) return 'Nothing to reload.';
   { const no = reloadRefused(u, u.weapon, cb); if (no) return no; }
+  { const way = reloadWayOf(u); if (way) { // rules 1.53: Switch quiver, a Drawn weapon's reload, at a reload's price
+    if (!way.offered || !way.run) return way.why || 'This weapon doesn\'t reload.';
+    if (o.both) return 'Switch quiver is the bow\'s own reload.';
+    if (forbids({ u }, 'reload')) return forbids({ u }, 'reload') + ': no reloading.';
+    if (way.why) return way.why;
+    const rAp = free ? 0 : reloadAp(u, cb); { const no = whyNot(cb, u, rAp); if (no) return no; }
+    emit(cb, 'reload', { u, ap: rAp, cb, quiver: true });
+    if (u.dead || u.downed) return null;
+    return way.run(cb, u, rAp);
+  } }
   if (!weaponActions(u, cb).some((x) => x.id === 'reload')) return 'This weapon doesn\'t reload.';
   if (forbids({ u }, 'reload')) return forbids({ u }, 'reload') + ': no reloading.';
   if (o.tactical && w.reload === 'loose') return 'Loaded round by round: there is only one reload.';
@@ -2960,7 +2979,7 @@ export function canJam(w: WeaponDef | undefined): boolean {
 /** Reload AP: the weapon's reload_ap (default 2; the breacher tube 3), 1 with a quick-release magazine, then items. */
 export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb, u }, 'reload', hasMod(u.mods, 'mod_quick_release') ? costOf('reload', 'ap_quick_release') : w.reload_ap ?? costOf('reload')).ap; };
 const RELOAD_LABEL: Record<string, string> = { magazine: 'Swap magazine', speedloader: 'Speedloader', drum: 'Swap drum', belt: 'Feed belt' };
-const LOOSE_LABEL: Record<string, string> = { arrow: 'Nock an arrow', bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
+const LOOSE_LABEL: Record<string, string> = { bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
 export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'repair' | 'overwatch' | 'burst' | 'auto' | 'skill'; label: string; ap: number; why: string | null; text: string;
   /** The reload's tactical variant (rules 1.9): its AP and why it can't be used now. */
   tactical?: { ap: number; why: string | null } }
@@ -2971,7 +2990,9 @@ export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
   const hd = w.handling || {}, deny = new Set<string>(hd.deny || []), grant = new Set<string>(hd.grant || []);
   const out: WeaponAction[] = [], add = (a: WeaponAction) => { if (!deny.has(a.id)) out.push(a); };
   const melee = isMelee(w), need = (n: number) => whyNot(cb, u, n);
-  if (w.magazine != null && w.reload) {
+  const way = reloadWayOf(u);
+  if (way) { if (way.offered) { const r = reloadAp(u, cb); add({ id: 'reload', label: way.label, ap: r, why: (cb ? reloadRefused(u, w.id, cb) : null) || way.why || need(r), text: way.text }); } }
+  else if (w.magazine != null && w.reload) {
     const r = reloadAp(u, cb), unit = w.reload_unit || 'magazine';
     const label = w.reload === 'loose' ? LOOSE_LABEL[w.ammo] || 'Load rounds' : RELOAD_LABEL[w.reload_unit] || 'Reload';
     const why = reloadRefused(u, w.id, null) || (u.jammed ? 'Jammed: clear it first.' : u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) ? 'Already full.' : u.mags && w.reload !== 'loose' && !u.mags.some((n) => n > 0) ? 'No loaded spare ' + unit + 's.' : w.reload === 'loose' && u.mags && !(u.loose || 0) ? 'No rounds left to load.' : need(r));

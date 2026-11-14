@@ -1,29 +1,37 @@
 // Physical 2.0, ranged: the quiver (Leon: a quiver gets its own loading menu, and a bow can't be reloaded in a fight).
-// Rules 1.12, Weapons point 10: a Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix
-// of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight.
+// Rules 1.12, Weapons point 10: a Drawn weapon shoots from a quiver, filled out of a fight from the arrows you carry, in
+// any mix of types up to what it holds. Each shot names its arrow type. A quiver can't be refilled in a fight.
+// Rules 1.53 (Leon, 14 Nov 2026): a quiver is graded gear the character carries (character.ts QuiverInst, quiversOf):
+// every archer may carry two, one worn and one ready. Loosing an arrow draws it from the worn quiver as part of the shot
+// (there is no "Nock an arrow": that was the bow's reload, dead since the quiver could not be refilled in a fight).
+// "Switch quiver" is a Drawn weapon's reload (the reload's price, combat.ts reloadWay), and it makes the ready quiver the
+// worn one. A quiver's grade gives arrows held and nothing else; its one enchantment (an items.json mod, mod_slot
+// `enchantment`) rides every arrow drawn from it: an Outburst tone's riders at the enchantment's stage
+// (magic.ts applyToneRiders, the same rider Storm Hand's Infusion puts on a weapon hit), at its damage_mult.
 //
-// The character side is c.phys.quiver[weaponId] (a count per arrow type: loadQuiver below, run by the phys/quiver
-// action). The unit's copy for the fight is u.quiver, built when the fight starts (combat_start) or, for a unit that
-// joins later or draws a bow mid-fight, the first time it shoots. u.ammo is always the quiver's total, so the engine's
-// round counting (resolveAttack, spendRounds, the gates for rounds and the last round) needs nothing new. Between
-// shots u.ammoType is the arrow on the string: the type with the most left, the default for a shot that names none.
-// The type's rider (rules.json ammo_types) applies to the shot through the engine's own ammo code.
-import type { Character, PackItem } from '../../character';
-import { packOf, loadedOf, roundsOf } from '../../character';
+// The unit's copy for the fight: u.quiver (the worn quiver's arrows), u.quiverGear (its item, grade and enchantment) and
+// u.quiverReady (the ready quiver, arrows and all), built when the fight starts (combat_start) or, for a unit that joins
+// later, the first time it shoots. While a Drawn weapon is held u.ammo is the worn quiver's total, so the engine's round
+// counting (resolveAttack, spendRounds, the gates for rounds and the last round) needs nothing new. Between shots
+// u.ammoType is the arrow taken next: the type with the most left, the default for a shot that names none.
+import type { Character, PackItem, QuiverInst } from '../../character';
+import { packOf, roundsOf, quiversOf, setQuivers, quiverHolds, QUIVER_ITEM } from '../../character';
 import { packAdd } from '../../containers';
-import { WEAPON } from '../../data';
+import { WEAPON, ITEM } from '../../data';
 import { AMMO_TYPES, ammoId } from '../../tactics';
-import { type Combat, type Unit, isMelee, reloadRefuser } from '../../combat';
+import { type Combat, type Unit, isMelee, reloadRefuser, reloadWay, emitFx, say } from '../../combat';
+import { pay } from '../../effects/cost';
 import { charOfUnit } from '../../effects/hooks';
-import { physOf, ensurePhys, weaponProps } from '../data';
+import { applyToneRiders, toneRiders, toneElement, withElement } from '../../magic';
+import { weaponProps } from '../data';
 import { onHook, strikeRound, strikingWith, techState, techStateOf } from './shared';
 import type { Tech } from './shared';
 
-type Loader = (c: Character, weaponId: string, load: Record<string, number>) => string | null;
+type Loader = (c: Character, weaponId: string, load: Record<string, number>, which?: number) => string | null;
 let LOADER: Loader | null = null;
 /** The ranged lane registers its loadQuiver here; the phys/quiver action runs it. */
 export const quiverLoader = (f: Loader) => { LOADER = f; };
-export const loadQuiverWith = (c: Character, weaponId: string, load: Record<string, number>): string | null => (LOADER ? LOADER(c, weaponId, load) : 'Quivers aren\'t in the game yet.');
+export const loadQuiverWith = (c: Character, weaponId: string, load: Record<string, number>, which?: number): string | null => (LOADER ? LOADER(c, weaponId, load, which) : 'Quivers aren\'t in the game yet.');
 
 // ---------- arrows ----------
 export type Quiver = Record<string, number>;
@@ -34,10 +42,10 @@ const NAME: Record<string, string> = { standard: 'standard', armor_piercing: 'ar
 export const arrowName = (type: string) => NAME[type] || type.replace(/_/g, '-');
 /** An arrow type id from what a player or a menu sends ('ap', 'armour_piercing', 'standard'…); null if there is none. */
 export const arrowId = (x: string | null | undefined): string | null => { const t = ammoId(x || null); return !t ? null : t === 'standard' || AMMO_TYPES[t] ? t : null; };
-/** Does this weapon have a quiver (the Drawn property)? Crossbows are not Drawn: they keep their reload. */
+/** Does this weapon shoot from a quiver (the Drawn property)? Crossbows are not Drawn: they keep their reload. */
 export const isDrawn = (weaponId: string | null | undefined) => !!weaponId && weaponProps(weaponId).includes('drawn');
-/** The quiver's capacity: the weapon's magazine (20 for both bows in the data). */
-export const quiverCap = (weaponId: string) => WEAPON[weaponId]?.magazine ?? 0;
+/** What the unit's worn quiver holds (rules 1.53: its grade's arrows, items.json quiver.arrows); an enemy's is Standard. */
+export const quiverCap = (u?: Unit | null) => quiverHolds(u?.quiverGear?.id || QUIVER_ITEM, u?.quiverGear?.rarity || 'standard');
 export const quiverTotal = (q: Quiver | null | undefined) => Object.values(q || {}).reduce((t, n) => t + Math.max(0, n || 0), 0);
 /** The type with the most left (ties: standard, then the ammo_types order). With none left: standard. */
 export function defaultArrow(q: Quiver | null | undefined): string {
@@ -56,52 +64,101 @@ function toCount(q0: Quiver, n: number): Quiver {
 }
 const asType = (k: string) => (k === 'standard' ? null : k);
 
-// ---------- the unit's quiver ----------
-/** Technique state on the unit: w, the weapon u.quiver belongs to; by, the quivers of bows it has put away. */
+// ---------- enchantments ----------
+/** An enchantment (items.json, mod_slot `enchantment`): the tone whose riders it puts on each arrow, at which stage, and
+ * the damage the arrow keeps (its price for the rider, as an incendiary round's ×0.9). */
+export interface Enchantment { id: string; name: string; tone: string; stage: number; damage_mult: number }
+export const enchantmentOf = (mods: string[] | null | undefined): Enchantment | null => {
+  for (const m of mods || []) { const it: any = ITEM[m]; if (it?.mod_slot === 'enchantment' && it.tone) return { id: it.id, name: it.name, tone: it.tone, stage: Number(it.stage ?? 1), damage_mult: Number(it.damage_mult ?? 1) }; }
+  return null;
+};
+/** The riders an enchanted arrow carries after its hit (the ones a tone puts on damage itself are the damage's: skipped). */
+const SKIP = ['armour_full', 'bonus_damage', 'ignore_cover', 'chain'];
+/** The element an enchantment's hit looks like on screen (the tone's element: fire, shock, freeze, stone, gale, acid). */
+export const enchantElement = (e: Enchantment | null) => (e ? toneElement(e.tone) : null);
+/** The enchantment on the arrows this unit looses now (its worn quiver's), or null: a Drawn weapon held, a quiver armed. */
+const enchanted = (u: Unit | null | undefined): Enchantment | null => (u && isDrawn(u.weapon) && !u.infiniteAmmo && u.quiver ? enchantmentOf(u.quiverGear?.mods) : null);
+
+// ---------- the unit's quivers ----------
+/** Technique state on the unit: w, the Drawn weapon u.ammo was last made equal to the quiver for; armed, the quivers
+ * are on the unit. */
 const QS = '_quiver';
-/** The quiver the unit's held weapon has now, without writing anything (the preview, the screen). Null: not Drawn. */
+/** The character's quivers as the fight starts (a copy), or one Standard quiver at capacity (an enemy, a companion). */
+function quiversFor(u: Unit): QuiverInst[] {
+  const c = u.companion ? null : charOfUnit(u);
+  if (!c) return [{ id: QUIVER_ITEM, arrows: { standard: quiverHolds() } }];
+  return quiversOf(c).map((q) => ({ ...q, arrows: clean(q.arrows || {}) }));
+}
+const gearOf = (q: QuiverInst | undefined) => { if (!q) return { id: QUIVER_ITEM }; const { arrows: _a, ...g } = q; void _a; return g; };
+/** Put the quivers on the unit (the fight's start, or the first shot of a unit that joined later). */
+function arm(u: Unit) {
+  const qs = quiversFor(u), st = techState(u, QS);
+  u.quiver = qs[0] ? clean(qs[0].arrows) : {}; u.quiverGear = gearOf(qs[0]); u.quiverReady = qs[1] ? { ...qs[1], arrows: clean(qs[1].arrows) } : null;
+  st.armed = true; delete st.w;
+}
+/** The worn quiver of the unit's held weapon now, without writing anything (the preview, the screen). Null: not Drawn. */
 export function quiverView(u: Unit): Quiver | null {
   if (!isDrawn(u.weapon) || u.infiniteAmmo) return null;
   const st = techStateOf(u, QS);
-  let q: Quiver | undefined;
-  if (u.quiver && (!st.w || st.w === u.weapon)) q = u.quiver;
-  else if (st.by?.[u.weapon]) q = st.by[u.weapon];
-  else {
-    const c = u.companion ? null : charOfUnit(u), rec = c ? physOf(c).quiver[u.weapon] : undefined;
-    q = rec ? { ...rec } : { [arrowId(u.ammoType) || 'standard']: u.ammo }; // no load set yet: what is in the weapon
-  }
-  return quiverTotal(q) === u.ammo ? clean(q || {}) : toCount(q || {}, Math.max(0, u.ammo));
+  if (!st.armed || !u.quiver) { const q = quiversFor(u)[0]; return q ? clean(q.arrows) : {}; }
+  if (st.w !== u.weapon) return clean(u.quiver); // a bow just drawn: the quiver is what it holds
+  return quiverTotal(u.quiver) === u.ammo ? clean(u.quiver) : toCount(u.quiver, Math.max(0, u.ammo));
 }
-/** The same, written onto the unit (u.quiver) so a shot can draw from it. */
+/** The same, written onto the unit so a shot can draw from it: u.ammo follows the quiver when a Drawn weapon has just
+ * come into the hand, and the quiver follows u.ammo after that (the engine counts rounds on u.ammo). */
 export function ensureQuiver(u: Unit): Quiver | null {
-  const q = quiverView(u); if (!q) return null;
+  if (!isDrawn(u.weapon) || u.infiniteAmmo) return null;
   const st = techState(u, QS);
-  if (u.quiver && st.w && st.w !== u.weapon) (st.by ||= {})[st.w] = u.quiver; // a bow put away keeps its arrows
-  if (st.by) delete st.by[u.weapon];
-  st.w = u.weapon; u.quiver = q;
-  return q;
+  if (!st.armed || !u.quiver) arm(u);
+  if (st.w !== u.weapon) { st.w = u.weapon; u.quiver = clean(u.quiver!); u.ammo = quiverTotal(u.quiver); return u.quiver; }
+  u.quiver = quiverTotal(u.quiver) === u.ammo ? clean(u.quiver!) : toCount(u.quiver!, Math.max(0, u.ammo));
+  return u.quiver;
 }
-/** Put the arrow on the string: the default type for the next shot. */
+/** Take the next arrow: the default type for the next shot. */
 const nock = (u: Unit | null | undefined) => { if (u?.quiver && isDrawn(u.weapon) && techStateOf(u, QS).w === u.weapon) u.ammoType = asType(defaultArrow(u.quiver)); };
 /** Take n arrows: the type asked for first, then the type with the most left. */
 function draw(u: Unit, n: number, want: string | null) {
   const q = u.quiver; if (!q) return;
   for (let i = 0; i < n && quiverTotal(q) > 0; i++) { const k = want && (q[want] || 0) > 0 ? want : defaultArrow(q); q[k]--; if (!q[k]) delete q[k]; }
 }
-/** The quiver at the start of a fight: a character's load (its count is what the bow holds, c.loaded: it travels with
- * the weapon), or what the bow holds before any load was set; an enemy archer's standard arrows at capacity. */
+/** The quivers at the start of a fight: a character's (character.ts quiversOf); an enemy archer's, one Standard quiver
+ * of standard arrows at capacity. */
 export function armQuiver(u: Unit): void {
-  if (!isDrawn(u.weapon) || u.infiniteAmmo) return;
-  if (!u.charId) { u.ammo = quiverCap(u.weapon); u.quiver = { standard: u.ammo }; techState(u, QS).w = u.weapon; nock(u); return; }
-  ensureQuiver(u); nock(u);
+  if (u.infiniteAmmo) return;
+  if (!isDrawn(u.weapon) && !(u.charId && !u.companion && quiversOf(charOfUnit(u)!).length)) return;
+  arm(u); if (isDrawn(u.weapon)) { ensureQuiver(u); nock(u); }
 }
 onHook('combat_start', (ctx: any) => { for (const u of (ctx.cb as Combat).units) armQuiver(u); });
 
+// ---------- Switch quiver: a Drawn weapon's reload (rules 1.53) ----------
+const quiverWord = (g: { name?: string; mods?: string[] } | null | undefined, n: number) => { const e = enchantmentOf(g?.mods); return n + (n === 1 ? ' arrow' : ' arrows') + (e ? ', ' + e.name.toLowerCase() : ''); };
+reloadWay((u) => {
+  if (!isDrawn(u.weapon) || u.infiniteAmmo) return null;
+  const ready = u.quiverReady ?? (techStateOf(u, QS).armed ? null : quiversFor(u)[1] || null), worn = quiverView(u);
+  if (!ready) return { offered: false, label: 'Switch quiver', text: '', why: 'You carry one quiver: it is filled before the fight.' };
+  const n = quiverTotal(ready.arrows), left = quiverTotal(worn);
+  return {
+    offered: true, label: 'Switch quiver',
+    text: 'Put the worn quiver away and wear the other: ' + quiverWord(ready, n) + '. A quiver is never refilled in a fight.' + (!left && n ? ' Your quiver is empty: the other holds ' + n + '.' : ''),
+    why: !n ? 'The other quiver is empty.' : null,
+    run: (cb: Combat, x: Unit, ap: number) => {
+      ensureQuiver(x); if (!x.quiverReady) arm(x);
+      const r = x.quiverReady!, now = { ...(x.quiverGear || { id: QUIVER_ITEM }), arrows: clean(x.quiver || {}) } as QuiverInst;
+      if (!quiverTotal(r.arrows)) return 'The other quiver is empty.';
+      pay(cb, x, ap);
+      x.quiver = clean(r.arrows); x.quiverGear = gearOf(r); x.quiverReady = now;
+      x.ammo = quiverTotal(x.quiver); techState(x, QS).w = x.weapon; nock(x);
+      emitFx(cb, 'reload', { unit: x.id, at: x.pos, weapon: x.weapon, cat: WEAPON[x.weapon]?.category, how: 'quiver', dur: 1000, left: quiverTotal(now.arrows), ammo: x.ammo, cap: quiverCap(x), ...(enchantElement(enchanted(x)) ? { element: enchantElement(enchanted(x)) } : {}) });
+      say(cb, x.name + ' switches quiver: ' + quiverWord(x.quiverGear, x.ammo) + ' (the other keeps ' + quiverTotal(now.arrows) + ').');
+      return null;
+    },
+  };
+});
+
 // ---------- shots ----------
-// A technique's strike (core strikeRound): the arrow it names (args.ammo) goes on the string for that shot, the preview
-// included (so the card shows its rider); a type with none left is refused, unless an earlier shot of the same use
-// emptied it (a volley then goes on with the type with the most left). Afterwards the arrow on the string is the
-// default again.
+// A technique's strike (core strikeRound): the arrow it names (args.ammo) is taken for that shot, the preview included
+// (so the card shows its rider); a type with none left is refused, unless an earlier shot of the same use emptied it (a
+// volley then goes on with the type with the most left). Afterwards the next arrow is the default again.
 const FAIL = new Map<Unit, string>();
 const WRAPPED = new Set<Unit>();
 const SHOT = new WeakSet<Tech>();
@@ -116,7 +173,7 @@ strikeRound({
     else if (want && (q[want] || 0) > 0) type = want;
     else if (want && !SHOT.has(t)) fail = 'No ' + arrowName(want) + ' arrows left in the quiver.';
     WRAPPED.add(u); if (fail) FAIL.set(u, fail);
-    if (!fail && quiverTotal(q) > 0 && !NOTED.has(t)) { NOTED.add(t); t.note('Arrow: ' + arrowName(type) + ' (' + (q[type] || 0) + ' in the quiver).'); }
+    if (!fail && quiverTotal(q) > 0 && !NOTED.has(t)) { NOTED.add(t); const e = enchanted(u) || (!techStateOf(u, QS).armed ? enchantmentOf(quiversFor(u)[0]?.mods) : null); t.note('Arrow: ' + arrowName(type) + ' (' + (q[type] || 0) + ' in the quiver)' + (e ? ', ' + e.name.toLowerCase() : '') + '.'); }
     return { type: asType(type) };
   },
   done(t) {
@@ -126,70 +183,86 @@ strikeRound({
   // Rounds a technique burns beyond its roll (Suppress's 3): arrows of the type it names, then the type with the most left.
   spent(t, n) { if (t.hand === 'main' && t.u.quiver && isDrawn(t.u.weapon) && techStateOf(t.u, QS).w === t.u.weapon) { draw(t.u, n, arrowId(t.args.ammo)); if (!WRAPPED.has(t.u)) nock(t.u); } },
 });
-// Every ranged attack with a Drawn weapon: a named arrow with none left, or an empty quiver, can't be loosed.
+/** The refusal for an empty worn quiver, naming the ready one when it holds arrows (rules 1.53). */
+const emptyWhy = (u: Unit) => { const n = quiverTotal(u.quiverReady?.arrows); return n ? 'The quiver is empty: Switch quiver (' + n + ' in the other).' : 'The quiver is empty.'; };
+// Every ranged attack with a Drawn weapon: a named arrow with none left, or an empty quiver, can't be loosed. A storm
+// enchantment's arrow ignores half cover (the tone's ignore_cover rider, read before the roll).
 onHook('attack_preview', (ctx: any) => {
-  const u: Unit = ctx.att; if (!u || ctx.melee || !isDrawn(u.weapon) || u.infiniteAmmo) return;
+  const u: Unit = ctx.att; if (!u || ctx.melee || ctx.mode === 'thrown' || !isDrawn(u.weapon) || u.infiniteAmmo) return;
   const f = FAIL.get(u); if (f) { ctx.fail ||= f; return; }
-  const q = quiverView(u); if (q && !quiverTotal(q)) { ctx.fail ||= 'The quiver is empty.'; return; }
+  const q = quiverView(u); if (q && !quiverTotal(q)) { ctx.fail ||= emptyWhy(u); return; }
+  const e = enchanted(u); if (e && toneRiders(e.tone, e.stage).riders.some((r) => r.rider === 'ignore_cover')) ctx.ignoreCover = true;
   // canStrike (a Watch's test) has no wrap: it asks the same of the arrow its technique names
   const t = WRAPPED.has(u) ? null : strikingWith(u);
   if (t?.args.ammo) { const want = arrowId(t.args.ammo); if (!want) ctx.fail ||= 'No such arrow.'; else if (!(q?.[want] || 0)) ctx.fail ||= 'No ' + arrowName(want) + ' arrows left in the quiver.'; }
 });
-// A plain attack (the Attack button, the enemy's plain shot, the old Overwatch) looses the arrow on the string.
+// A plain attack (the Attack button, the enemy's plain shot, the old Overwatch) looses the next arrow.
 onHook('attack_target', (ctx: any) => { const u: Unit = ctx.att; if (u && !WRAPPED.has(u) && ensureQuiver(u)) nock(u); });
-// The arrow leaves the quiver as the engine counts the round (resolveAttack takes 1 from u.ammo right after this hook).
+// The arrow leaves the quiver as the engine counts the round (resolveAttack takes 1 from u.ammo right after this hook);
+// an enchanted arrow's shot carries its element for the screen.
 onHook('attack_roll', (ctx: any) => {
-  const u: Unit = ctx.att, w = u && WEAPON[u.weapon]; if (!w || ctx.mode === 'melee' || isMelee(w) || !isDrawn(u.weapon) || u.infiniteAmmo) return;
+  const u: Unit = ctx.att, w = u && WEAPON[u.weapon]; if (!w || ctx.mode === 'melee' || ctx.mode === 'thrown' || isMelee(w) || !isDrawn(u.weapon) || u.infiniteAmmo) return;
   if (!ensureQuiver(u)) return;
   draw(u, 1, arrowId(u.ammoType) || 'standard');
+  const el = enchantElement(enchanted(u)); if (el) ctx.fx = { ...(ctx.fx || {}), element: el };
 });
-onHook('on_hit', (ctx: any) => { if (ctx.att && !WRAPPED.has(ctx.att)) nock(ctx.att); });
+// An enchanted arrow deals its damage_mult (the price of the rider, as an incendiary round's).
+onHook('damage_out', (ctx: any) => {
+  if (ctx.melee || ctx.mode === 'thrown' || ctx.src?.weapon !== ctx.att?.weapon) return;
+  const e = enchanted(ctx.att); if (e && e.damage_mult !== 1) ctx.mults.push({ v: e.damage_mult, label: e.name.toLowerCase() });
+});
+onHook('on_hit', (ctx: any) => {
+  const u: Unit = ctx.att;
+  if (u && !ctx.melee && ctx.mode !== 'thrown' && ctx.tgt && !ctx.tgt.dead && ctx.tgt.side !== u.side) {
+    const e = enchanted(u);
+    if (e) { const s = withElement(toneElement(e.tone), () => applyToneRiders(ctx.cb, ctx.rng, u, ctx.tgt, e.tone, e.stage, u.pos, SKIP)).replace(/^ · /, ''); if (s) say(ctx.cb, '  ' + e.name + ': ' + s); }
+  }
+  if (u && !WRAPPED.has(u)) nock(u);
+});
 onHook('on_miss', (ctx: any) => { if (ctx.att && !WRAPPED.has(ctx.att)) nock(ctx.att); });
 
-// ---------- no plain reload: in a fight none, out of one only through the quiver menu ----------
-// The engine's reload() and reloadHands() ask (combat.ts reloadRefuser), so every path is refused: the Reload action,
-// the area map's reload, Running Reload, Between Heartbeats and Resupply (review fix: only the action was). Out of a
-// fight the plain reload would top the bow up with untyped arrows and lose the quiver's types, so it goes to the menu.
+// ---------- out of a fight: the quiver menu fills a quiver; the plain reload is refused ----------
+// Out of a fight the plain reload would top the bow up with untyped arrows and lose the quiver's types, so it goes to
+// the menu. In a fight a Drawn weapon's reload is Switch quiver (above).
 reloadRefuser((u, weaponId, cb) => {
   if (!isDrawn(weaponId) || u.infiniteAmmo) return null;
-  return cb?.overworld ? 'Fill the quiver from the quiver menu.' : cb ? 'A quiver is filled before the fight.' : 'A quiver is filled from its own menu, out of a fight.';
+  return cb?.overworld ? 'Fill the quiver from the quiver menu.' : cb ? null : 'A quiver is filled from its own menu, out of a fight.';
 });
 
 // ---------- after the fight ----------
-// The quiver is written back to the character (c.loaded is already the unit's u.ammo, its total).
+// The quivers are written back to the character (setQuivers keeps the held bow's loaded count equal to the worn one).
 onHook('combat_end', (ctx: any) => {
   const g = ctx.g, cb: Combat = ctx.cb; if (!g || !cb) return;
   for (const u of cb.units) {
-    const c: Character | undefined = u.charId ? g.characters?.[u.charId] : undefined; if (!c) continue;
-    const st = techStateOf(u, QS); if (!st.w && !st.by) continue;
-    const p = ensurePhys(c);
-    for (const [w, q] of Object.entries((st.by || {}) as Record<string, Quiver>)) p.quiver[w] = clean(q);
-    if (st.w && u.quiver) { p.quiver[st.w] = clean(u.quiver); if (c.weapon === st.w) { c.loaded = quiverTotal(u.quiver); c.loadedType = null; } }
+    const c: Character | undefined = u.charId && !u.companion ? g.characters?.[u.charId] : undefined; if (!c) continue;
+    if (!techStateOf(u, QS).armed || !u.quiver) continue;
+    const list: QuiverInst[] = [{ ...(u.quiverGear || { id: QUIVER_ITEM }), arrows: clean(u.quiver) } as QuiverInst, ...(u.quiverReady ? [{ ...u.quiverReady, arrows: clean(u.quiverReady.arrows) }] : [])];
+    setQuivers(c, list);
   }
 });
 
 // ---------- loading (out of a fight) ----------
 const arrowsOf = (it: PackItem, cal: string) => !!it.calibre && it.calibre === cal && !it.mags && it.qty > 0;
 const typeOf = (it: PackItem) => arrowId(it.ammoType) || 'standard';
-/** Fill a Drawn weapon's quiver from the arrows the character carries (the phys/quiver action, out of a fight). The
- * load is a count per arrow type; what the quiver held goes back to the pack first, so an empty load unloads it.
- * A refusal in plain words, or null. */
-export function loadQuiver(c: Character, weaponId: string, load: Record<string, number>): string | null {
+/** Fill a carried quiver (which: 0 the worn one, 1 the ready one) from the arrows the character carries (the phys/quiver
+ * action, out of a fight). `weaponId` names the Drawn weapon the arrows are for (one you carry). The load is a count per
+ * arrow type; what the quiver held goes back to the pack first, so an empty load unloads it. A refusal in plain words,
+ * or null. */
+export function loadQuiver(c: Character, weaponId: string, load: Record<string, number>, which = 0): string | null {
   const w = WEAPON[weaponId]; if (!w) return 'No such weapon.';
   const name = w.name.toLowerCase();
   if (!isDrawn(weaponId)) return 'The ' + name + ' has no quiver: it loads as it always has.';
   const pack = packOf(c).map((x) => ({ ...x })), held = c.weapon === weaponId, stowed = held ? -1 : pack.findIndex((x) => x.kind === 'weapon' && x.weapon === weaponId);
   if (!held && stowed < 0) return 'You don\'t carry a ' + name + '.';
+  const qs = quiversOf(c), q = qs[which]; if (!q) return which ? 'You carry one quiver.' : 'You carry no quiver.';
   const want: Quiver = {};
   for (const [k, n] of Object.entries(load || {})) {
     const t = arrowId(k); if (!t) return 'No such arrow: ' + String(k).replace(/_/g, ' ') + '.';
     if (typeof n !== 'number' || !Number.isInteger(n) || n < 0) return 'Count arrows in whole numbers.';
     if (n) want[t] = (want[t] || 0) + n;
   }
-  const cap = quiverCap(weaponId); if (quiverTotal(want) > cap) return 'The ' + name + '\'s quiver holds ' + cap + ' arrows.';
-  // What is in it now: the load set before, to the count the weapon holds (before any load: the rounds loaded in it).
-  const now = held ? Math.min(cap, loadedOf(c)) : Math.min(cap, pack[stowed].loaded ?? 0), rec = physOf(c).quiver[weaponId];
-  const prev = toCount(rec ? { ...rec } : { [arrowId(held ? c.loadedType : pack[stowed].ammoType) || 'standard']: now }, now);
+  const cap = quiverHolds(q.id, q.rarity || 'standard'); if (quiverTotal(want) > cap) return 'The quiver holds ' + cap + ' arrows.';
+  const prev = toCount(q.arrows || {}, Math.min(cap, quiverTotal(q.arrows)));
   const cal = w.ammo || 'arrow';
   for (const [t, n] of Object.entries(want)) {
     const have = pack.filter((x) => arrowsOf(x, cal) && typeOf(x) === t).reduce((s, x) => s + x.qty, 0) + (prev[t] || 0);
@@ -201,11 +274,8 @@ export function loadQuiver(c: Character, weaponId: string, load: Record<string, 
     let n = n0;
     for (const x of pack) { if (!n) break; if (!arrowsOf(x, cal) || typeOf(x) !== t) continue; const k = Math.min(n, x.qty); x.qty -= k; n -= k; }
   }
-  const total = quiverTotal(want);
-  if (held) { c.loaded = total; c.loadedType = null; }
-  else { const e = pack[stowed]; if (total) e.loaded = total; else delete e.loaded; delete e.ammoType; }
   c.pack = pack.filter((x) => x.qty > 0 || x.mags);
-  ensurePhys(c).quiver[weaponId] = want;
+  setQuivers(c, qs.map((x, i) => (i === which ? { ...x, arrows: want } : x)));
   return null;
 }
 quiverLoader(loadQuiver);

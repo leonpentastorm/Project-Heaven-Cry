@@ -315,6 +315,27 @@
       "effects": []
     },
     {
+      "id": "quiver",
+      "name": "Quiver",
+      "category": "quiver",
+      "weight_kg": 0.6,
+      "price_credits": 120,
+      "arrows": {
+        "standard": 40,
+        "fine": 50,
+        "masterwork": 60,
+        "relic": 70,
+        "celestial": 80
+      },
+      "mod_slots": [
+        "enchantment"
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Holds {=arrows.standard} arrows at Standard, {=arrows.fine} at Fine, {=arrows.masterwork} at Masterwork, {=arrows.relic} at Relic and {=arrows.celestial} at Celestial: a quiver's grade gives arrows held and nothing else. Every archer may carry two, one worn and one ready; Switch quiver is the bow's reload. One enchantment at every grade.",
+      "lore": "Every archer's first quiver comes with the bow."
+    },
+    {
       "id": "mod_red_dot",
       "name": "Red dot sight",
       "category": "mod",
@@ -542,6 +563,126 @@
         }
       ],
       "mod_slot": "inscription"
+    },
+    {
+      "id": "ench_fire",
+      "name": "Ember enchantment",
+      "category": "mod",
+      "mod_slot": "enchantment",
+      "weight_kg": 0,
+      "price_credits": 400,
+      "tone": "fire",
+      "stage": 2,
+      "damage_mult": 0.9,
+      "adjudication": "engine",
+      "provisional": true,
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "enchantment"
+        }
+      ],
+      "text": "Enchantment, for a quiver: every arrow drawn from it carries the Ember tone's rider at stage {=stage} (Burning, no save) and deals ×{=damage_mult} damage."
+    },
+    {
+      "id": "ench_storm",
+      "name": "Storm enchantment",
+      "category": "mod",
+      "mod_slot": "enchantment",
+      "weight_kg": 0,
+      "price_credits": 400,
+      "tone": "storm",
+      "stage": 1,
+      "damage_mult": 0.9,
+      "adjudication": "engine",
+      "provisional": true,
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "enchantment"
+        }
+      ],
+      "text": "Enchantment, for a quiver: every arrow drawn from it carries the Storm tone's rider at stage {=stage} (it ignores half cover) and deals ×{=damage_mult} damage."
+    },
+    {
+      "id": "ench_frost",
+      "name": "Frost enchantment",
+      "category": "mod",
+      "mod_slot": "enchantment",
+      "weight_kg": 0,
+      "price_credits": 400,
+      "tone": "frost",
+      "stage": 1,
+      "damage_mult": 0.9,
+      "adjudication": "engine",
+      "provisional": true,
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "enchantment"
+        }
+      ],
+      "text": "Enchantment, for a quiver: every arrow drawn from it carries the Frost tone's rider at stage {=stage} (Slowed unless the target passes a Body save) and deals ×{=damage_mult} damage."
+    },
+    {
+      "id": "ench_stone",
+      "name": "Stone enchantment",
+      "category": "mod",
+      "mod_slot": "enchantment",
+      "weight_kg": 0,
+      "price_credits": 400,
+      "tone": "stone",
+      "stage": 2,
+      "damage_mult": 0.9,
+      "adjudication": "engine",
+      "provisional": true,
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "enchantment"
+        }
+      ],
+      "text": "Enchantment, for a quiver: every arrow drawn from it carries the Stone tone's rider at stage {=stage} (Prone unless the target passes a Body save) and deals ×{=damage_mult} damage."
+    },
+    {
+      "id": "ench_gale",
+      "name": "Gale enchantment",
+      "category": "mod",
+      "mod_slot": "enchantment",
+      "weight_kg": 0,
+      "price_credits": 400,
+      "tone": "gale",
+      "stage": 1,
+      "damage_mult": 0.9,
+      "adjudication": "engine",
+      "provisional": true,
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "enchantment"
+        }
+      ],
+      "text": "Enchantment, for a quiver: every arrow drawn from it carries the Gale tone's rider at stage {=stage} (a push away from you) and deals ×{=damage_mult} damage."
+    },
+    {
+      "id": "ench_acid",
+      "name": "Acid enchantment",
+      "category": "mod",
+      "mod_slot": "enchantment",
+      "weight_kg": 0,
+      "price_credits": 400,
+      "tone": "acid",
+      "stage": 1,
+      "damage_mult": 0.9,
+      "adjudication": "engine",
+      "provisional": true,
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "enchantment"
+        }
+      ],
+      "text": "Enchantment, for a quiver: every arrow drawn from it carries the Acid tone's rider at stage {=stage} (Corroded unless the target passes a Body save) and deals ×{=damage_mult} damage."
     },
     {
       "id": "field_helmet",

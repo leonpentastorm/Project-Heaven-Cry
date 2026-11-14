@@ -535,7 +535,7 @@
       "damage": "20 + 5*raw_power",
       "damage_type": "physical",
       "range_tiles": 14,
-      "magazine": 20,
+      "magazine": 40,
       "heat_limit": null,
       "modes": [
         "single"
@@ -2165,7 +2165,7 @@
       "damage": "25 + 6*raw_power",
       "damage_type": "physical",
       "range_tiles": 20,
-      "magazine": 20,
+      "magazine": 40,
       "heat_limit": null,
       "modes": [
         "single"
