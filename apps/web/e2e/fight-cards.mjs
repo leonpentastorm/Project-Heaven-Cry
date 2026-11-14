@@ -78,7 +78,7 @@ await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 g = await G();
 const cid = Object.keys(g.characters)[0];
-ok('the reward taken as credits', (await act({ type: 'run/pick', charId: cid, choice: 'credits' })) === null);
+ok('the reward taken as the materials (rules 1.54 item 2)', (await act({ type: 'run/pick', charId: cid, choice: 'materials' })) === null);
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
 await p.emulateMedia({ reducedMotion: 'reduce' });
 await p.locator('[data-phc-node="' + n2 + '"]').click();

@@ -96,7 +96,7 @@ function RunBoard({ g, me }: { g: GameState; me: string }) {
         </div>))}
       {log.length ? <div data-phc-visit-log="" style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         <span style={kick}>THIS VISIT</span>
-        {log.slice(-6).map((l, i) => <span key={i} style={{ fontSize: 12, lineHeight: 1.35, color: '#C9D3E3' }}>{l}</span>)}
+        {log.slice(0, 6).map((l, i) => <span key={i} style={{ fontSize: 12, lineHeight: 1.35, color: '#C9D3E3' }}>{l}</span>)}
       </div> : null}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         <button type="button" data-phc-report-run="" {...tipProps('Saves one file with the seed, the stages, every fight\'s tally and each character\'s build. Nothing is sent.')} onClick={() => downloadRunReport(g, scrub, toast)} style={btn(false)}>Report a run</button>

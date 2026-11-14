@@ -37,10 +37,29 @@
 // state (the camp, the path map, the shop, a place, the rewards, the stage cleared, the summary) the left sheet and the
 // right panel are both on screen at 1280 x 720 (lib.mjs sidePanels); a weapon taken after node 1 is equipped through
 // the sheet's GEAR tab by a click; the phase control (Ready, Leave, Go) is the right panel's squad.
-import { readFileSync } from 'node:fs';
+// Rules 1.54 items 2 to 10 (materials, making, the training bar): node 1's pick is two large cards, the Materials card
+// (gunpowder, casings, mana residue, each with its count) and one weapon (its 72 px icon, its grade, the gear preview's
+// numbers in its hover card); the Materials card clicked, the three arrive in the pack (state). At the shop the ammo
+// maker is bought from the counter by a click, and rounds for the gun in hand are made through the sheet's GEAR tab
+// (Make: the stepper to 2, Make): the rounds arrive, the gunpowder and casings leave, the visit's log says so. A
+// training ground's drill card shows its bar (where you stand, +the ground's drill, the next mark in words). At stage 1's
+// end a focus is placed in the pack (the suite's set-up), held in the off hand through the sheet (the knife in the main
+// hand), and ten mana residue are pressed into a core through Make. TOP_SHOTS=dir copies top-make, top-lootcards and
+// top-trainingbar there.
+import { readFileSync, copyFileSync } from 'node:fs';
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart, sidePanels } from './lib.mjs';
 const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
 const SVD = DATA('survival.json'), WPN = Object.fromEntries(DATA('weapons.json').items.map((w) => [w.id, w])), RAR = DATA('rules.json').rarity;
+// rules 1.54 (materials and making): the recipes and the items, from data (no item id typed here)
+const RECIPES = DATA('recipes.json').items, ITM = DATA('items.json').items;
+const MAKER = RECIPES.find((x) => x.tool.item).tool.item, CORE = RECIPES.find((x) => x.tool.focus === 'any');
+/** How many of an item id a character carries (its pack lines); rounds of a calibre: the loose rounds. */
+const held = (c, id) => (c.pack || []).filter((x) => (x.item || x.id) === id).reduce((t, x) => t + (x.qty || 0), 0);
+const loose = (c, cal) => (c.pack || []).filter((x) => x.calibre === cal && !x.mags && !x.ammoType).reduce((t, x) => t + (x.qty || 0), 0);
+/** rules 1.54 item 2: the pick a walk by actions takes: the Materials card where the pick has one, else the first weapon. */
+const pickOf = (o) => (o && o.materials && o.materials.length ? 'materials' : 0);
+/** The screenshots this build is judged by (top-make, top-lootcards, top-trainingbar), copied from OUT by name. */
+const TOP = process.env.TOP_SHOTS ? process.env.TOP_SHOTS.replace(/\/?$/, '/') : null;
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SEED = 'PHC-0046'; // rules 1.48: a seed whose stage 1 has a lane route from its first node (a swarm, which the pinned shots can reach) through a training ground, a shrine, a Forge, a crossroads and a rest
@@ -140,7 +159,7 @@ const lit = await p.locator('[data-phc-node][data-phc-state="reachable"]').evalu
 const first = r.nodes.filter((n) => n.depth === 1).map((n) => n.id);
 ok('the first row is lit, nothing else (' + lit.join(', ') + ')', JSON.stringify(lit.sort()) === JSON.stringify(first.sort()));
 const tip0 = await p.locator('[data-phc-node="' + lit[0] + '"]').getAttribute('data-tip-text');
-ok('a fight node\'s hover card says what it gives, with the engine\'s numbers: "' + tip0 + '"', /XP/.test(tip0 || '') && /credits/.test(tip0 || '') && /pick of three weapons/.test(tip0 || ''));
+ok('a fight node\'s hover card says what it gives, with the engine\'s numbers: "' + tip0 + '"', /XP/.test(tip0 || '') && /credits/.test(tip0 || '') && /materials/.test(tip0 || '') && /one weapon/.test(tip0 || ''));
 const far = r.nodes.find((n) => n.depth === 3);
 await p.locator('[data-phc-node="' + far.id + '"]').click();
 const tip1 = await until(p, () => (document.querySelector('.phc-atip')?.textContent || '').trim() || null, null, 5000).catch(() => '');
@@ -196,11 +215,23 @@ await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 r = await run();
 const c = Object.values(g.characters)[0];
-ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
-  && /100 XP/.test(await p.locator('[data-phc-note]').textContent()));
-ok('a pick of three weapons, each with its rarity word and price, and credits instead', await p.locator('[data-phc-pick]').count() === 3 && /Take \d+ credits instead/.test(await p.locator('[data-phc-instead]').textContent())
-  && (await p.locator('[data-phc-pick]').allTextContents()).every((t) => /(STANDARD|FINE)/.test(t) && /\d+ credits/.test(t)));
+ok('the rewards: XP (' + SVD.xp.base + ' at stop 1, rules 1.54 item 9) and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === SVD.xp.base && c.xp === r.note.xp && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
+  && new RegExp(r.note.xp + ' XP').test(await p.locator('[data-phc-note]').textContent()));
+const o1 = r.offers[c.id], wcard = p.locator('[data-phc-offer="' + c.id + '"] [data-phc-pick]');
+{ // rules 1.54 item 2: Materials or One weapon, two large cards; credits instead is gone
+  const mats = await p.locator('[data-phc-offer="' + c.id + '"] [data-phc-material]').evaluateAll((l) => l.map((e) => [e.getAttribute('data-phc-material'), Number(e.getAttribute('data-phc-material-n'))]));
+  ok('the pick: two large cards, the materials (' + mats.map((m) => m.join(' ')).join(', ') + ', the engine\'s offer) and one weapon; no credits instead', await p.locator('[data-phc-pick-materials]').count() === 1 && await wcard.count() === 1
+    && !(await p.locator('[data-phc-instead]').count()) && JSON.stringify(mats) === JSON.stringify(o1.materials.map((m) => [m.item, m.n])) && mats.length === SVD.rewards.materials.items.length);
+  const wt = await wcard.textContent(), icon = await wcard.locator('img').first().getAttribute('width'), tip = await wcard.getAttribute('data-tip-text');
+  const pv = await p.evaluate(([cid, w]) => window.__phc.gearPreview(cid, { id: w.id, rarity: w.rarity }), [c.id, o1.weapons[0]]);
+  ok('the weapon card: its icon at 72 px, its grade word, its worth; its hover card holds every number of the engine\'s gear preview (' + pv.lines.length + ')', icon === '72' && /(STANDARD|FINE)/.test(wt) && /\d+ credits/.test(wt)
+    && pv.lines.every((l) => (tip || '').includes(l.label + ': ' + l.value)));
+  const sz = await p.locator('[data-phc-pick-materials]').boundingBox(), sw = await wcard.boundingBox();
+  ok('… both cards large and side by side (' + Math.round(sz?.width || 0) + ' and ' + Math.round(sw?.width || 0) + ' px wide, ' + Math.round(sz?.height || 0) + ' px tall)', !!sz && !!sw && sz.height >= 280 && Math.abs(sz.y - sw.y) < 2 && sz.width >= 200);
+}
+await p.mouse.move(2, 2);
 await shot('survival-reward-pick');
+if (TOP) copyFileSync(OUT + 'survival-reward-pick.png', TOP + 'top-lootcards.png');
 await sidePanels(p, 'the rewards');
 // ---------- rules 1.47 (build step 6): the fight's tally on the reward screen ----------
 {
@@ -209,12 +240,15 @@ await sidePanels(p, 'the rewards');
   ok('the reward screen shows the fight\'s tally: a row for the character with the engine\'s damage dealt (' + t.chars[c.id].dealt + '), taken and kills', await p.locator('[data-phc-tally="fight"]').count() === 1 && t.chars[c.id].dealt > 0
     && await cell('dealt') === t.chars[c.id].dealt && await cell('taken') === t.chars[c.id].taken && await cell('kills') === t.chars[c.id].kills && /of \d+/.test(await row.locator('[data-phc-tally-cell="aim"]').textContent()));
 }
-const want = r.offers[c.id].weapons[0];
-await p.locator('[data-phc-pick="0"]').click();
+await p.locator('[data-phc-pick-materials]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
 g = await G();
-ok('the weapon taken is in the pack at its rarity (' + want.id + ', ' + want.rarity + ')', (Object.values(g.characters)[0].pack || []).some((x) => (x.weapon || x.item || x.id) === want.id && (x.rarity || 'standard') === want.rarity));
-{ // rules 1.54 item 11: the weapon taken, equipped through the sheet's GEAR tab (the one place for gear) by a click
+{ const c1 = Object.values(g.characters)[0];
+  ok('the Materials card taken: gunpowder, casings and mana residue arrive in the pack (' + o1.materials.map((m) => m.item + ' ' + held(c, m.item) + ' → ' + held(c1, m.item)).join(', ') + ')', o1.materials.every((m) => held(c1, m.item) === held(c, m.item) + m.n));
+  ok('… and the run board says what was taken, in words', /takes the materials/.test(await p.locator('[data-phc-board-pick]').first().textContent().catch(() => '')));
+}
+/** Rules 1.54 item 11: a weapon taken from a pick, equipped through the sheet's GEAR tab (the one place for gear) by a click. */
+const equipCheck = async (want) => {
   const wname = WPN[want.id]?.name || want.id;
   await p.locator('#phc-sheet-tab-gear').click(); await settle(p, 300);
   const row = p.locator('[aria-label="Backpack contents"] [role="listitem"]').filter({ hasText: wname }).first();
@@ -223,7 +257,8 @@ ok('the weapon taken is in the pack at its rarity (' + want.id + ', ' + want.rar
   await p.waitForFunction((id) => Object.values(window.__phc.getState().game.characters)[0].weapon === id, want.id, { timeout: 30000 }).catch(() => {});
   ok('the weapon taken (' + wname + ') is equipped through the sheet\'s GEAR tab by a click: the character\'s weapon is ' + want.id, Object.values((await G()).characters)[0].weapon === want.id);
   await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200);
-}
+};
+let equipped = false;
 ok('… and the map lights the node\'s links', JSON.stringify((await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')))).sort()) === JSON.stringify([...g.run.nodes.find((n) => n.id === g.run.at).links].sort()));
 
 // ---------- the rest of the stage, fights won by run/skip ----------
@@ -289,6 +324,35 @@ async function shopChecks() {
   // rules 1.48: the lanes put the first shop early in the stage, before a purse can afford a rolled weapon and a grade
   // step: the test purse is topped up here (as node 1's dice are pinned), so the shop's and the Forge's checks have money (after the short-purse check, which wants a piece it can't afford)
   await p.evaluate(() => { for (const c of Object.values(window.__phc.getState().game.characters)) c.credits = Math.max(c.credits || 0, 6000); });
+  { // rules 1.54 items 4 and 5: the ammo maker from the counter's supplies shelf, then rounds made through the sheet's GEAR tab
+    await p.locator('[data-phc-tab="always"]').click(); await settle(p, 300);
+    const m0 = Object.values((await G()).characters)[0], card = p.locator('[data-phc-card="' + MAKER + '"]');
+    await card.locator('[data-phc-buy]').click();
+    await p.waitForFunction((id) => (Object.values(window.__phc.getState().game.characters)[0].pack || []).some((x) => (x.item || x.id) === id), MAKER, { timeout: 30000 }).catch(() => {});
+    const m1 = Object.values((await G()).characters)[0];
+    ok('the ammo maker bought from the counter by a click (' + (m0.credits - m1.credits) + ' credits): it is in the pack', held(m1, MAKER) === 1 && m0.credits - m1.credits === ITM.find((x) => x.id === MAKER).price_credits);
+    const cal = WPN[m1.weapon]?.ammo, rec = RECIPES.find((x) => x.gives[0].item === 'rounds:' + cal) || RECIPES.find((x) => x.tool.item);
+    const rcal = rec.gives[0].item.replace(/^rounds:/, ''), times = 2;
+    await p.locator('#phc-sheet-tab-gear').click();
+    await p.waitForSelector('[data-phc-make]', { timeout: 30000 }).catch(() => {});
+    const row = p.locator('[data-phc-recipe="' + rec.id + '"]');
+    ok('the sheet\'s GEAR tab shows Make with a row for each recipe of the ammo maker (' + await p.locator('[data-phc-recipe]').count() + '), the core\'s not (no focus in hand)', await p.locator('[data-phc-make]').count() === 1
+      && await p.locator('[data-phc-recipe]').count() === RECIPES.filter((x) => x.tool.item === MAKER).length && await p.locator('[data-phc-recipe="' + CORE.id + '"]').count() === 0);
+    const most = Number(await row.getAttribute('data-phc-recipe-most'));
+    ok('… the ' + rec.name + ' row: what it takes with what you have, what it makes, the engine\'s most (' + most + ')', most === Math.min(...rec.needs.map((l) => Math.floor(held(m1, l.item) / l.n)))
+      && new RegExp('you have ' + held(m1, rec.needs[0].item) + '\\)').test(await row.locator('[data-phc-recipe-needs]').textContent()));
+    await row.locator('[data-phc-make-more]').click(); await settle(p, 150);
+    ok('… the stepper reads 2 and the button Make × 2', (await row.locator('[data-phc-make-n]').textContent()).trim() === '2' && /Make × 2/.test(await row.locator('[data-phc-make-go]').textContent()));
+    await p.locator('[data-phc-make]').scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await settle(p, 400);
+    await p.screenshot({ path: OUT + 'survival-make-1280.png' }); if (TOP) copyFileSync(OUT + 'survival-make-1280.png', TOP + 'top-make.png');
+    await row.locator('[data-phc-make-go]').click();
+    await p.waitForFunction(([cal, n]) => (Object.values(window.__phc.getState().game.characters)[0].pack || []).filter((x) => x.calibre === cal && !x.mags && !x.ammoType).reduce((t, x) => t + x.qty, 0) !== n, [rcal, loose(m1, rcal)], { timeout: 30000 }).catch(() => {});
+    const m2 = Object.values((await G()).characters)[0];
+    ok('Make × 2 clicked: ' + rec.gives[0].n * times + ' rounds arrive (' + loose(m1, rcal) + ' → ' + loose(m2, rcal) + '), the gunpowder and casings leave (' + rec.needs.map((l) => held(m1, l.item) + ' → ' + held(m2, l.item)).join(', ') + '), free',
+      loose(m2, rcal) === loose(m1, rcal) + rec.gives[0].n * times && rec.needs.every((l) => held(m2, l.item) === held(m1, l.item) - l.n * times) && m2.credits === m1.credits);
+    ok('… the visit\'s log says what was made', /makes /.test(await p.locator('[data-phc-visit-log]').textContent()));
+    await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200);
+  }
   // sell one (the weapon picked after node 1), then buy a rolled weapon
   await p.locator('[data-phc-tab="sell"]').click();
   const rows = await p.locator('[data-phc-sell]').evaluateAll((l) => l.map((e) => ({ idx: e.getAttribute('data-phc-sell'), v: Number(e.querySelector('[data-phc-sell-value]')?.textContent.replace(/\D/g, '') || 0), btn: !!e.querySelector('[data-phc-sell-btn]') })));
@@ -424,9 +488,15 @@ while (guard++ < 40) {
       }
     }
     if (k === 'training' && !done.training) {
+      { // rules 1.54 item 10: the drill card's bar, from the engine's view
+        const dc = p.locator('[data-phc-choices] [data-phc-choice^="drill:"]:not([data-phc-why])').first(), dk = await dc.getAttribute('data-phc-choice').catch(() => null), dw = dk && dk.slice(6), gx = await G();
+        const bar = await dc.locator('[data-phc-trainbar]').evaluate((e) => ({ now: Number(e.getAttribute('data-phc-trainbar-now')), add: Number(e.getAttribute('data-phc-trainbar-add')), to: e.getAttribute('data-phc-trainbar-to'), mark: e.querySelector('[data-phc-trainbar-mark]')?.textContent || '' })).catch(() => null);
+        ok('a training card shows its bar: where you stand (' + bar?.now + '), what it adds (+' + bar?.add + '), the next mark in words ("' + bar?.mark + '")', !!bar && bar.now === (gx.characters[cid].phys?.drill?.[dw] || 0) && bar.add === SVD.training.drill && /^Mark I+ at \d+/.test(bar.mark) && bar.mark.includes(bar.to));
+        if (TOP) copyFileSync(OUT + 'survival-place-training-1280.png', TOP + 'top-trainingbar.png');
+      }
       const { before, after, key } = await choose('drill:'), w = key && key.slice(6);
-      done.training = !!key && (after.characters[cid].phys?.drill?.[w] || 0) - (before.characters[cid].phys?.drill?.[w] || 0) === 300;
-      ok('a training ground: a drill clicked (' + key + '), +300 drill, free', done.training && after.characters[cid].credits === before.characters[cid].credits);
+      done.training = !!key && (after.characters[cid].phys?.drill?.[w] || 0) - (before.characters[cid].phys?.drill?.[w] || 0) === SVD.training.drill;
+      ok('a training ground: a drill clicked (' + key + '), +' + SVD.training.drill + ' drill, free', done.training && after.characters[cid].credits === before.characters[cid].credits);
     } else if (k === 'shrine' && !done.shrine) {
       const { before, after, key } = await choose('');
       const b = before.characters[cid], a = after.characters[cid];
@@ -459,7 +529,7 @@ while (guard++ < 40) {
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
     await click(p, 'Back to the map ›', { timeout: 60000 });
   } else if (r.state === 'reward') {
-    await p.waitForSelector('[data-phc-instead], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
+    await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
     if (await p.locator('[data-phc-kit] [data-phc-choice]').count()) { // rules 1.43: the pick of kit (an Elite's, a cache's)
       const before = await G(); await p.locator('[data-phc-kit] [data-phc-choice]').first().click();
       await p.waitForFunction(() => !window.__phc.getState().game.run.lasting, null, { timeout: 30000 });
@@ -473,8 +543,15 @@ while (guard++ < 40) {
       await click(p, /Back to the map/, { timeout: 30000 });
       await p.waitForSelector('[data-phc-run-screen]', { timeout: 30000 });
     }
-    await p.locator('[data-phc-instead]').first().click();
-    await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'reward', null, { timeout: 30000 });
+    const ro = Object.values((await run()).offers || {})[0];
+    if (!equipped && ro && ro.weapons.length === 1 && WPN[ro.weapons[0].id] && ro.weapons[0].id !== Object.values((await G()).characters)[0].weapon) { // the first weapon card of the walk: taken, then equipped through the sheet
+      await p.locator('[data-phc-pick="0"]').first().click();
+      await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'reward', null, { timeout: 30000 });
+      if ((await run()).state === 'map') { equipped = true; await equipCheck(ro.weapons[0]); }
+    } else {
+      await p.locator('[data-phc-pick-materials], [data-phc-pick="0"]').first().click(); // rules 1.54 item 2: the materials (else the first weapon)
+      await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'reward', null, { timeout: 30000 });
+    }
   }
 }
 r = await run(); g = await G();
@@ -483,7 +560,29 @@ ok('rules 1.43: the route passed a training ground, a shrine, a Forge, a crossro
 ok('a shop was on the way and opened full screen', sawShop);
 ok('rules 1.46: every safe node on the route opened full screen (' + Object.keys(placeShots).join(', ') + ')', ['forge', 'training', 'shrine', 'event', 'rest'].every((k) => placeShots[k]));
 ok('the whole stage walked to the Boss: 15 nodes, STAGE 1 CLEARED', r.state === 'boon' && r.path.length === 15 && /STAGE 1 CLEARED/.test(await p.locator('[data-phc-cleared]').textContent()));
+ok('rules 1.54 item 11: a weapon taken from a pick on the walk was equipped through the sheet', equipped);
 await sidePanels(p, 'the stage cleared');
+{ // rules 1.54 item 7: with a focus in hand, ten mana residue pressed into a core through the sheet's Make
+  const F = ITM.find((x) => x.focus && x.pack_kind), RES = CORE.needs[0].item, MADE = CORE.gives[0].item;
+  await p.evaluate(([f, name, kind]) => { const c = Object.values(window.__phc.getState().game.characters)[0]; c.pack = [...(c.pack || []), { id: f, item: f, name, qty: 1, kind }]; }, [F.id, F.name, F.pack_kind]); // the suite's set-up: a focus in the pack
+  await p.evaluate(() => window.__phc.go('main')); // drawn again from the state (a test hand-off is no action)
+  const hold = async (name, button) => { const row = p.locator('[aria-label="Backpack contents"] [role="listitem"]').filter({ hasText: name }).first();
+    await row.locator('button').first().click(); await settle(p, 200); await row.getByRole('button', { name: button, exact: true }).click(); await settle(p, 300); };
+  await p.locator('#phc-sheet-tab-gear').click(); await settle(p, 300);
+  const c0 = Object.values((await G()).characters)[0];
+  if (WPN[c0.weapon]?.hands === '2H') await hold(WPN[KN].name, 'Main hand'); // a one-handed knife in the main hand, so the off hand is free
+  await hold(F.name, 'Off hand');
+  const c1 = Object.values((await G()).characters)[0];
+  ok('the focus held in the off hand through the sheet (' + F.name + '), ' + held(c1, RES) + ' mana residue carried', c1.offHand?.id === F.id && held(c1, RES) >= CORE.needs[0].n);
+  await p.waitForSelector('[data-phc-recipe="' + CORE.id + '"]', { timeout: 15000 }).catch(() => {});
+  const row = p.locator('[data-phc-recipe="' + CORE.id + '"]');
+  ok('Make shows the core: it takes ' + CORE.needs[0].n + ' mana residue with the focus in hand', await row.count() === 1 && new RegExp('Takes ' + CORE.needs[0].n + ' mana residue').test(await row.locator('[data-phc-recipe-needs]').textContent()));
+  await row.locator('[data-phc-make-go]').click();
+  await p.waitForFunction(([id, n]) => (Object.values(window.__phc.getState().game.characters)[0].pack || []).filter((x) => (x.item || x.id) === id).reduce((t, x) => t + x.qty, 0) !== n, [MADE, held(c1, MADE)], { timeout: 30000 }).catch(() => {});
+  const c2 = Object.values((await G()).characters)[0];
+  ok('Make clicked: a core arrives (' + held(c1, MADE) + ' → ' + held(c2, MADE) + '), ' + CORE.needs[0].n + ' mana residue leave (' + held(c1, RES) + ' → ' + held(c2, RES) + ')', held(c2, MADE) === held(c1, MADE) + CORE.gives[0].n && held(c2, RES) === held(c1, RES) - CORE.needs[0].n);
+  await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200);
+}
 
 // ---------- rules 1.44 (build step 5): the boon, the next tile, stage 2, retire, the summary ----------
 const both = async (name) => { await shot(name + '-1280'); await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 600); await shot(name + '-1920'); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); };
@@ -546,7 +645,7 @@ for (let i = 0; i < 160; i++) {
   } else if (r.state === 'reward') {
     if (s2by[r.at]?.kind === 'vault' && !seen.chest) { const o = Object.values(r.offers)[0]; seen.chest = o.weapons.length === 3 && o.weapons.every((w) => w.rarity === 'relic' || w.rarity === 'masterwork') && (r.note.credits || 0) > 0;
       ok('the vault\'s chest: credits (' + r.note.credits + ') and three weapons a grade above stage 2\'s picks (' + o.weapons.map((w) => w.rarity).join(', ') + ')', seen.chest); await both('survival-vault-chest'); }
-    for (const id of Object.keys(r.offers || {})) e = e || await act({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(r.lasting || {})) e = e || await act({ type: 'run/take', charId: id, choice: 0 });
+    for (const [id, o] of Object.entries(r.offers || {})) e = e || await act({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(r.lasting || {})) e = e || await act({ type: 'run/take', charId: id, choice: 0 });
   }
   if (e) { ok('stage 2 walked: ' + e, false); break; }
   await settle(p, 40);
@@ -623,7 +722,7 @@ for (let i = 0; i < 80; i++) {
   // the guest's move only where the way forks (on a lane with one way forward the host's click walks the squad on)
   if (hr.state === 'map') { const next = way[hr.path.length], at = hr.nodes.find((n) => n.id === hr.at), forks = !at || at.links.length >= 2; e = await actOn(h, { type: 'run/move', node: next }); if (!e && forks) { await settle(h, 150); e = await actOn(gu, { type: 'run/move', node: next }); } }
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
-  else if (hr.state === 'reward') { for (const id of Object.keys(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
+  else if (hr.state === 'reward') { for (const [id, o] of Object.entries(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('C: walked to the shop: ' + e, false); break; }
   await settle(h, 120);
 }
@@ -672,7 +771,7 @@ for (let i = 0; i < 80; i++) {
   if (hr.state === 'map') e = await actOn(h, { type: 'run/move', node: nexts[0] });
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
   else if (hr.state === 'shop') { e = await actOn(h, { type: 'run/leave', close: true }); }
-  else if (hr.state === 'reward') { for (const id of Object.keys(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
+  else if (hr.state === 'reward') { for (const [id, o] of Object.entries(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('C2: walked on to a fork: ' + e, false); break; }
   await settle(h, 120);
 }
@@ -713,14 +812,14 @@ await d.locator('button[data-phc-start]').click();
 await campStart(d, { weapon: GUN }); // rules 1.51, 1.52: the camp's one flow
 await d.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 const dcid = Object.keys((await DG()).characters)[0];
-/** Walk by the engine's actions until `stop` says so (fights skipped, picks as credits, shops left, the first trail). */
+/** Walk by the engine's actions until `stop` says so (fights skipped, picks the materials, shops left, the first trail). */
 const walkD = async (stop, why) => { for (let i = 0; i < 400; i++) {
   const dr = (await DG()).run; if (!dr || dr.state === 'over' || await stop(dr)) return true;
   let e = null;
   if (dr.state === 'map') { const here = dr.nodes.find((n) => n.id === dr.at), nx = here ? here.links.filter((l) => dr.nodes.find((n) => n.id === l)?.kind !== 'vault_guard') : dr.nodes.filter((n) => n.depth === 1).map((n) => n.id); e = await dAct({ type: 'run/move', node: nx[0] }); }
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
-  else if (dr.state === 'reward') { for (const id of Object.keys(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
+  else if (dr.state === 'reward') { for (const [id, o] of Object.entries(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
   else if (dr.state === 'boon') e = await dAct({ type: 'run/boon', charId: dcid, choice: 0 });
   else if (dr.state === 'tile') e = await dAct({ type: 'run/tile', tile: dr.tiles[0].id });
   if (e) { ok('D: ' + why + ': ' + e, false); return false; }
@@ -755,7 +854,7 @@ for (let i = 0; i < 80; i++) {
   if (dr.state === 'map') e = await dAct({ type: 'run/move', node: toForge[dr.path.filter((x) => x.startsWith('s3.')).length] });
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
-  else if (dr.state === 'reward') { for (const id of Object.keys(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
+  else if (dr.state === 'reward') { for (const [id, o] of Object.entries(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('D: the way to the Forge: ' + e, false); break; }
 }
 await d.evaluate(() => window.__phc.go('run')).catch(() => {});
