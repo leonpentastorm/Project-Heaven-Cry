@@ -339,6 +339,11 @@ function judge(c, w, tr0, { tol, k, clock }) {
   const flashT = tr.filter((e) => e.w === 'muzzle' || e.w === 'proj').map((e) => e.t).sort((a, b) => a - b)[0];
   if (report != null && flashT == null) say('a gun\'s report with no shot drawn');
   if (report != null && flashT != null && Math.abs(flashT - report) > 200 * k + tol) say('the report ' + ms(Math.abs(flashT - report)) + (report < flashT ? ' before' : ' after') + ' the muzzle flash');
+  // 6. every round its own gunshot (Leon, 14 Nov 2026: "repeat the exact amount of bullet was fire out, not a generic 4
+  //    shot sound effect"): the single shots heard are the rounds fired, and no recording of a burst or of automatic fire
+  const bangs = tr.filter((e) => e.w === 'sfx' && /^gun_/.test(e.s)).length, fired = tr.filter((e) => e.w === 'round').length;
+  if (tr.some((e) => e.w === 'sfx' && /^(burst_|auto_)/.test(e.s))) say('a recording of a burst or of automatic fire');
+  if (bangs > 0 && bangs !== fired) say(bangs + ' gunshots heard for ' + fired + ' rounds fired');
   // Suppress (Leon: "plays the sound and damage way before the shoot VFX"): three rounds are drawn; a gun's rattle starts
   // with the first muzzle flash, and the hit comes with the last round to leave, never before it
   if (c.t === 'suppress') for (const sh of evs.filter((e) => e.k === 'shot' && e.tech === 'suppress')) {

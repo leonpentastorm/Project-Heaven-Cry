@@ -4,8 +4,9 @@
 // Leon, 13 Nov 2026, on live 0.25.0: the tracer lines from shooter to target (`tracer`), the half circle swept on every
 // melee attack (`slash`) and the miss effects (`wide`, `whiff`, `deflect`) "look SO BAD": they are gone. A miss shows
 // the word MISS and nothing else; a shot that hits leaves the weapon's mark (`round`: a bullet hole, a shotgun's pellet
-// cluster, an arrow's shaft), one a round that hit. Leon, 14 Nov 2026: nothing else was to go, so `aim`, `heavy` and
-// `cone` are as they were before (the cleanup had redrawn them).
+// cluster, an arrow's shaft), one a round that hit. Leon, 14 Nov 2026: nothing else was to go, so `heavy` and `cone`
+// are as they were before (the cleanup had redrawn them); `aim` stays the sight on the target, since its old line from
+// the shooter was itself a yellow line.
 //
 // The asset rule (CLAUDE.md): everything here is a line, an arc, a ring, a tick, a chevron, a glyph or a tint, drawn as
 // SVG in viewport pixels; nothing here needs texture, so nothing new is sourced. The weapon part shows the weapon's own
@@ -182,14 +183,16 @@ export const PARTS: Record<string, PartFn> = {
       drawOn(stroke(s, [from, end], str(o, 'color', '') || c.ink, Math.max(3, c.s * 0.1 * c.scale)), c.s * 0.5, 50, 60, 160, c.delay + i * gap);
     }
   },
-  /** A thin line of aim from the attacker to the target, drawn first (an Aimed or Called Shot, a held bead). Restored
-   *  14 Nov 2026 (Leon: the cleanup was to take only the tracer lines, the swing arc and the miss effects). */
+  /** The sight settling on the target: a thin ring closing in with four ticks (an Aimed or Called Shot, a held bead).
+   *  dash: the ring's dash; size: its radius in tiles. Drawn on the target: before 13 Nov 2026 it
+   *  was a solid line in the technique's ink from the shooter, Agility yellow for every gun, the yellow line Leon had
+   *  removed; the sight is what stays of it (14 Nov 2026). */
   aim(c, o) {
-    if (!c.a) return;
-    const from = add(c.a, c.dir, c.s * 0.4), end = nearSide(c, num(o, 'short', 0.5));
-    const { s } = stage([from, end], 6, 420 + c.delay, 'aim');
-    const n = stroke(s, [from, end], str(o, 'color', '') || c.ink, Math.max(1.2, c.s * 0.03), { dash: str(o, 'dash', '') || undefined });
-    if (o.dash) { anim(n, [{ opacity: 0 }, { opacity: 0.9, offset: 0.2 }, { opacity: 0.9, offset: 0.7 }, { opacity: 0 }], { duration: 420, delay: c.delay, fill: 'both' }); } else drawOn(n, lenOf([from, end]), 120, 160, 140, c.delay);
+    const r = c.s * num(o, 'size', 0.56), ink = str(o, 'color', '') || c.ink, w = Math.max(1.2, c.s * 0.03), dash = str(o, 'dash', '');
+    const { s, box } = stage([{ x: c.b.x - r * 1.3, y: c.b.y - r * 1.3 }, { x: c.b.x + r * 1.3, y: c.b.y + r * 1.3 }], 4, 460 + c.delay, 'aim');
+    s.appendChild(el('circle', { cx: f1(c.b.x), cy: f1(c.b.y), r: f1(r), fill: 'none', stroke: ink, 'stroke-width': f1(w), ...(dash ? { 'stroke-dasharray': dash } : {}) }));
+    for (const a of [0, 0.5, 1, 1.5]) { const d = { x: Math.cos(a * Math.PI), y: Math.sin(a * Math.PI) }; stroke(s, [add(c.b, d, r * 0.82), add(c.b, d, r * 1.25)], ink, w); }
+    popBox(box, 440, c.delay, 1.6, 1);
   },
   /** A heavy line: a thick white core in the ink, from the muzzle through the target (a bolt, a heavy round). */
   heavy(c, o) {

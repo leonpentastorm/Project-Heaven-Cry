@@ -12,7 +12,7 @@
 // hole, a shotgun's pellet cluster, an arrow's or a bolt's shaft; nothing for a launcher, a flamer or a thrown weapon,
 // whose landing is their own). Leon, 14 Nov 2026: only those four went and that one came; every technique's own
 // effect stays as it was before 13 Nov (Heavy Bolt's, Punch Through's and Dead Centre's `heavy`, Rake's and Mag
-// Dump's `cone`, the sights' `aim`, their hit parts), with the hole added to a hit and the plain Shot's cross become
+// Dump's `cone`, their hit parts; the sights' `aim` stays a ring on the target, its old yellow line being one of the four), with the hole added to a hit and the plain Shot's cross become
 // the hole.
 // A new technique is one row. The test (techniqueFx.test.ts) walks every technique in the data and every physical class
 // move, and fails if one has no row, if a row names a part that doesn't exist, or if two rows are the same.
@@ -80,7 +80,7 @@ export const TECH_FX: Record<string, TechRow> = {
   hamstring: row([], [p('drops', { n: 2 }), p('brand', { shape: 'chevron', up: -0.45, side: 0 })]),
   bind: use([p('hook', { w: 0.07 })], [p('bracket', { r: 0.42 })]),
   half_sword: row([p('thrust', { w: 0.05, len: 0.45, draw: 60 })], [p('crack', { n: 1 })]),
-  throw: row([p('aim', { dash: '6 5', short: 0.3 })], [p('cross', { n: 1, size: 0.24 })]),
+  throw: row([p('aim', { dash: '6 5', size: 0.5 })], [p('cross', { n: 1, size: 0.24 })]),
   pull_out: use([p('hook', { w: 0.1 })], [p('drops', { n: 3 })]),
   // ----- melee: links -----
   sidestep: use([p('dashes', { len: 0.8, side: -1 })], [p('ring', { at: 'a', r: 0.45, from: 0.6, to: 1.1 })], own),
