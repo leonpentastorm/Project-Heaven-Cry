@@ -51,7 +51,7 @@ function PickCard({ c, slot, charId }: { c: LoadoutCardV; slot: 'weapon' | 'focu
         </span>
       </div>
       <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '2px 8px', fontSize: 12 }}>
-        {c.preview.lines.slice(0, 4).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={l.label}>{l.label.replace(/ \(.*\)$/, '')}</dt><dd style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
+        {c.preview.lines.slice(0, 4).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} {...tipProps(l.label)}>{l.label.replace(/ \(.*\)$/, '')}</dt><dd style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
       </dl>
       {off ? <span style={{ marginTop: 'auto', fontSize: 12, color: I.muted }}>{c.why}</span> : null}
     </button>
