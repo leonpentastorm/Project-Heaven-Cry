@@ -27,7 +27,7 @@ const PULSE = '@keyframes phcNodePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,2
 function Offer({ o }: { o: OfferV }) {
   return (
     <div data-phc-offer={o.charId} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
-      <span style={kick}>{o.mine ? 'YOUR PICK · ' + o.name.toUpperCase() : o.name.toUpperCase() + (o.canPick ? ' · AWAY? YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>
+      <span style={kick}>{o.mine ? 'YOUR PICK · ' + o.name.toUpperCase() : o.name.toUpperCase() + (o.canPick ? ' · YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>
       {o.canPick ? <>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8 }}>
           {o.cards.map((c) => (
@@ -49,15 +49,15 @@ function Offer({ o }: { o: OfferV }) {
 }
 
 /** Rules 1.43: the words over each group of a safe node's choices (the engine names the group; the client its heading). */
-const GROUP: Record<string, string> = { grade: 'GRADE STEP', relic: 'THE RELIC STEP', forge: 'THE ARMOURER\'S STOCK', fit: 'ARMOUR FITTING', train: 'TRAINING', shrine: 'THE SHRINE', trade: 'TRADES', lasting: 'PICK ONE' };
+const GROUP: Record<string, string> = { grade: 'UPGRADE', relic: 'RELIC UPGRADE', repair: 'REPAIR', forge: 'MODS AND ARMOUR', fit: 'ARMOUR FITTING', train: 'TRAINING', shrine: 'BLESSINGS', trade: 'TRADES', lasting: 'PICK ONE' };
 /** One character's choices at a safe node (the Forge, a training ground, a shrine, a crossroads, a rest's training, the
  * grade step at a shop) or its pick of kit: every option is the engine's, with its price and its reason when it can't. */
 function Choices({ x, kit }: { x: ChoiceCharV; kit?: boolean }) {
   const groups = [...new Set(x.options.map((o) => o.group))];
   return (
     <div data-phc-choices={x.charId} data-phc-kit={kit ? '' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
-      <span style={kick}>{(x.mine ? 'YOU · ' : '') + x.name.toUpperCase()} · <span data-phc-purse={x.charId} style={{ color: ink.white }}>{x.credits} CREDITS</span> · RUN POWER {x.worth}</span>
-      {x.relics.length ? <span style={{ fontSize: 12, color: ink.muted }}>Carries: {x.relics.join(', ')}</span> : null}
+      <span style={kick}>{(x.mine ? 'YOU · ' : '') + x.name.toUpperCase()} · <span data-phc-purse={x.charId} style={{ color: ink.white }}>{x.credits} CREDITS</span></span>
+      {x.relics.length ? <span style={{ fontSize: 12, color: ink.muted }}>Boons: {x.relics.join(', ')}</span> : null}
       {!x.canAct ? <span style={{ fontSize: 13, color: ink.muted }}>{x.name}'s player chooses.</span> : groups.map((gname) => (
         <div key={gname} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <span style={{ ...kick, fontSize: 10 }}>{GROUP[gname] || gname.toUpperCase()}</span>
@@ -67,7 +67,7 @@ function Choices({ x, kit }: { x: ChoiceCharV; kit?: boolean }) {
               onClick={(e) => { if (o.why) openTipOn(e.currentTarget); else act(o.action as any); }}
               style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 40, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (o.why ? ink.line : ink.text), background: o.why ? 'transparent' : ink.raised, color: o.why ? ink.muted : ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}>
               <span style={{ flex: 1, fontSize: 13, lineHeight: 1.35 }}>{o.label}{o.why ? <span style={{ display: 'block', fontSize: 11, color: ink.muted }}>{o.why}</span> : null}</span>
-              {o.price ? <span style={{ fontSize: 12, color: ink.white, whiteSpace: 'nowrap' }}>{o.price} credits</span> : <span style={{ fontSize: 11, color: ink.muted }}>free</span>}
+              {o.price ? <span style={{ fontSize: 12, color: ink.white, whiteSpace: 'nowrap' }}>{o.price} credits</span> : o.pays ? <span style={{ fontSize: 12, color: ink.ok, whiteSpace: 'nowrap' }}>+{o.pays} credits</span> : <span style={{ fontSize: 11, color: ink.muted }}>Free</span>}
             </button>
           ))}
         </div>
@@ -110,7 +110,7 @@ export function RunScreen() {
       <style>{PULSE}</style>
       <header style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 20px', borderBottom: '1px solid ' + ink.line, background: ink.panel, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.18em' }}>SURVIVAL</span>
-        <span data-phc-run-where="" style={{ fontSize: 14 }}>Stage {v.stage} · {v.depth ? 'Node ' + v.depth + ' of ' + v.rows : 'The start · ' + v.rows + ' nodes to the Boss'}</span>
+        <span data-phc-run-where="" style={{ fontSize: 14 }}>Stage {v.stage} · {v.depth ? 'Stop ' + v.depth + ' of ' + v.rows : 'At camp · ' + v.rows + ' stops to the Boss'}</span>
         <span style={{ fontFamily: "'Spectral', serif", fontSize: 17 }}>{v.setting}</span>
         <span style={{ marginLeft: 'auto', fontSize: 12, color: ink.muted }}>Seed {v.seed}</span>
         <button type="button" onClick={() => go('room')} style={btn(false)}>The room</button>
@@ -123,7 +123,7 @@ export function RunScreen() {
             {v.canGo ? <button type="button" data-phc-go="" onClick={() => act({ type: 'run/go' })} style={btn(true)}>Go now</button> : null}
           </div>
           <PathMap v={v} onPick={pick} />
-          <span style={{ fontSize: 12, color: ink.muted }}>Lit nodes are the ones you can reach. Hover a node for what it gives and costs. A trail runs on to the next junction: read ahead before you pick one.{v.solo ? ' Click a lit node to go.' : ' Where the trail forks, click one to mark it: the squad goes when everyone has marked; a tie goes to the host. On a trail with one way on, a click walks the squad on.'}</span>
+          <span data-phc-map-hint="" style={{ fontSize: 12, color: ink.muted }}>{v.solo ? 'Click a lit stop to go there. Hover any stop to see what it holds.' : 'Click a lit stop. At a fork it marks your choice, and the squad goes when everyone has marked. Hover any stop to see what it holds.'}</span>
         </section>
         <aside aria-label="The squad and the node" style={{ flex: '0 1 340px', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 12, padding: 16, borderLeft: '1px solid ' + ink.line, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

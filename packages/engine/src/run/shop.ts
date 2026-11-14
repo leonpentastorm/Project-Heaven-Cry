@@ -12,7 +12,7 @@ import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources } from '../character';
 import { lootToPack, packAdd, intoCounts, itemLabel } from '../containers';
-import { priceOf, creditsOf, payCredits, earnCredits, ROUND_PRICE, emptyMagPrice } from '../credits';
+import { priceOf, creditsOf, payCredits, earnCredits, cantPay, ROUND_PRICE, emptyMagPrice } from '../credits';
 import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
 import { gunsOf, priceBand, cappedRarity, pickedItem } from './rewards';
@@ -25,9 +25,21 @@ export const SHOP_DATA: { always: { shelf: string; name: string; ids: { id: stri
 export const SELL_RATE: number = SV.sell_rate.rate;
 /** A face of a safe node (spec section 3.4): its name, role, art ids and fallbacks, stock bias and price, and lines. */
 export interface Face { id: string; name: string; role: string; node: string; settings: string[]; portrait: string; portrait_pending?: boolean; fallback: string | null; fallback_patron?: boolean;
-  backdrop: string; backdrop_pending?: boolean; backdrop_fallback: string | null; bias: Record<string, number>; price: number; lines: Record<FaceLine, string[]> }
+  backdrop: string; backdrop_pending?: boolean; backdrop_fallback: string | null; bias: Record<string, number>; price: number; lines: Record<FaceLine, string[]> & Partial<Record<TabLine, string[]>>;
+  /** the shrine's face: each patron's votary's own greet, bought and leave lines (by patron id) */ votaries?: Record<string, Partial<Record<FaceLine, string[]>>> }
 /** The kinds of line a face says (data `lines`). */
 export type FaceLine = 'greet' | 'bought' | 'cant_afford' | 'sold' | 'sold_to' | 'gave' | 'leave';
+/** What a keeper says as a tab of its place opens (data `lines`, by the tab's id; docs/design/ui-screens.md, Writing for the player). */
+export type TabLine = 'stock' | 'gear' | 'upgrade' | 'sell' | 'give' | 'fit' | 'train' | 'shrine' | 'trade';
+/** A keeper's lines by kind (its tabs' and its purchases'; the client picks one as a tab opens or a thing is bought),
+ * with the shrine's votary's own lines over the face's when the shrine's patron is known. */
+export function faceTabLines(f: Face | undefined, patron?: string | null): Record<string, string[]> {
+  if (!f) return {};
+  const v = patron ? f.votaries?.[patron] : undefined, out: Record<string, string[]> = {};
+  for (const [k, l] of Object.entries(f.lines)) if (Array.isArray(l) && l.length) out[k] = l;
+  if (v) for (const [k, l] of Object.entries(v)) if (Array.isArray(l) && l.length) out[k] = l;
+  return out;
+}
 /** Every face (`survival.json faces.items`). */
 export const FACES: Face[] = SV.faces.items;
 /** The face of a node kind on a setting (the shop's keeper of that setting; the armourer, sergeant, medic everywhere). */
@@ -105,8 +117,8 @@ export function counterLines(chars: Character[]): CounterLine[] {
 }
 /** What one purchase of a counter line costs (the price of one unit x `per`; a restock point at `restock_price`). */
 export const linePrice = (l: CounterLine): number => (l.res ? SHOP_DATA.restock_price : (priceOf(l.id) || 0) * l.per);
-/** "Short 240 credits." or null: the words a card shows when the purse can't pay. */
-export const shortOf = (c: Character, n: number): string | null => (creditsOf(c) >= n ? null : 'Short ' + (n - creditsOf(c)) + ' credits.');
+/** "Kade is 240 credits short." or null: the words a card shows when the purse can't pay (credits.ts cantPay). */
+export const shortOf = (c: Character, n: number): string | null => cantPay(c, n);
 /** What a restock line can still take for this character (its maximum less what it holds), or 0. */
 export function restockRoom(c: Character, res: string): number { const r = classResources(c).find((x) => x.id === res && x.persist); return r ? Math.max(0, r.max - (c.res?.[res] ?? 0)) : 0; }
 
@@ -170,14 +182,14 @@ const qtyOf = (q: unknown) => Math.round(Number(q ?? 1));
 export function buyProblem(g: G, by: string, a: { charId: string; key: string; qty?: number }): string | null {
   const no = whoProblem(g, by, a.charId); if (no) return no;
   const sh = shopOf(g)!, c = g.characters[a.charId], q = qtyOf(a.qty);
-  if (!(q >= 1 && q <= SHOP_DATA.max_qty)) return 'Buy 1 to ' + SHOP_DATA.max_qty + ' at a time.';
+  if (!(q >= 1 && q <= SHOP_DATA.max_qty)) return 'You can buy 1 to ' + SHOP_DATA.max_qty + ' at a time.';
   const piece = sh.stock.find((p) => p.key === a.key);
   if (piece) {
     if (piece.sold) return 'Sold to ' + (g.characters[piece.sold]?.name || 'another') + '.';
-    if (q !== 1) return 'One of a kind: buy it once.';
+    if (q !== 1) return 'There is only one of these.';
     return shortOf(c, piece.price);
   }
-  const l = counterLines(Object.values(g.characters)).find((x) => x.key === a.key); if (!l) return 'The shop doesn\'t sell that.';
+  const l = counterLines(Object.values(g.characters)).find((x) => x.key === a.key); if (!l) return 'This shop does not sell that.';
   if (l.res) { const room = restockRoom(c, l.res); if (!room) return c.name + ' has no ' + l.res.replace(/_/g, ' ') + ' to restock.'; if (q > room) return c.name + ' has room for ' + room + ' more.'; }
   return shortOf(c, linePrice(l) * q);
 }
@@ -185,7 +197,7 @@ export function buyProblem(g: G, by: string, a: { charId: string; key: string; q
  * Essence into their counts, a restock into the resource); a rolled piece is marked sold to the buyer. Returns the
  * log line, or the refusal in words (nothing changes). */
 export function buy(g: G, by: string, a: { charId: string; key: string; qty?: number }): { ok: string } | { no: string } {
-  const no = buyProblem(g, by, a); if (no) { const sh = shopOf(g); if (sh && /^Short/.test(no)) sayLine(g.run!, sh, 'cant_afford', a.charId); return { no }; }
+  const no = buyProblem(g, by, a); if (no) { const sh = shopOf(g); if (sh && / credits short\.$/.test(no)) sayLine(g.run!, sh, 'cant_afford', a.charId); return { no }; }
   const sh = shopOf(g)!, c = g.characters[a.charId], q = qtyOf(a.qty), piece = sh.stock.find((p) => p.key === a.key);
   const pack = packOf(c).map((x) => ({ ...x }));
   const into = (its: PackItem[]) => { for (const it of its) if (!intoCounts(c, it)) packAdd(pack, it); };
@@ -218,9 +230,9 @@ export function sellProblem(g: G, by: string, a: { charId: string; idx: number; 
   const no = whoProblem(g, by, a.charId); if (no) return no;
   const c = g.characters[a.charId], it = packOf(c)[a.idx]; if (!it) return 'Nothing there in ' + c.name + '\'s pack.';
   const q = qtyOf(a.qty ?? (it.mags ? 1 : it.qty)), most = it.mags ? it.mags.length : it.qty;
-  if (!(q >= 1 && q <= most)) return 'Sell 1 to ' + most + ' of those.';
+  if (!(q >= 1 && q <= most)) return 'You can sell 1 to ' + most + ' of those.';
   const v = sellValue(it, q); if (v == null) return itemLabel(it) + ' can\'t be sold.';
-  if (v <= 0) return itemLabel(it) + ' is worth less than a credit here.';
+  if (v <= 0) return itemLabel(it) + ' is worth nothing here.';
   return null;
 }
 /** Sell `qty` of a pack entry (rule 27): out of the pack, `sellValue` into the seller's purse. The log line or the refusal. */
@@ -239,7 +251,7 @@ export function sell(g: G, by: string, a: { charId: string; idx: number; qty?: n
 export function leaveShop(g: G, by: string, close = false): { left: boolean; line?: string } | { no: string } {
   const r = g.run, sh = shopOf(g); if (!r || !sh) return { no: 'No shop is open here.' };
   if (!g.players.some((p) => p.id === by)) return { no: 'Only a player in the room leaves the shop.' };
-  if (close && by !== g.hostId) return { no: 'Only the host closes the shop for everyone: mark Ready to leave.' };
+  if (close && by !== g.hostId) return { no: 'Only the host can close the shop for everyone. Mark yourself ready to leave instead.' };
   r.ready = { ...r.ready, [by]: true };
   const on = g.players.filter((p) => p.online);
   if (!close && on.some((p) => !r.ready[p.id])) return { left: false };

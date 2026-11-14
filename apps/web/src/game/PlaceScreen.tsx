@@ -10,7 +10,7 @@ import { act, getState } from './store';
 import { placeView, type PlaceCardV, type PlaceViewV, type MeV } from '@engine';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
-import { FullScreenFrame, FRAME_INK as I, type FrameTab } from './FullScreenFrame';
+import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import { patronPortrait } from './faithArt';
 import { GiveTab } from './GiveTab';
 import { UpgradeCard } from './UpgradeCard';
@@ -23,11 +23,11 @@ const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing
 const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 28 };
 /** The words over each group of cards (the engine names the group; the client its heading and its note). */
 const HEAD: Record<string, [string, string]> = {
-  grade: ['The grade step', 'one a visit, cheaper than a shop\'s'], repair: ['Repair', 'back to full durability, priced by the wear; cheaper than a shop\'s'], relic: ['The Relic step', 'pick one named property: it stays on the weapon and counts on your cap'],
-  forge: ['Mods and worn pieces', 'made for what the squad carries'], fit: ['Armour fitting', 'the next armour class, fitted to you'],
-  train: ['Training', 'what you learn here is yours for the run'], shrine: ['The shrine', 'each of you takes one'], trade: ['Trades', 'one each, or walk on'],
+  grade: ['Upgrade', 'One upgrade per visit'], repair: ['Repair', 'Back to full durability'], relic: ['Relic upgrade', 'Pick one property. It stays on the weapon.'],
+  forge: ['Mods and armour', 'Made for what your squad carries'], fit: ['Armour fitting', 'Lets you wear heavier armour'],
+  train: ['Training', ''], shrine: ['Blessings', 'Take one'], trade: ['Trades', 'One each, or walk on'],
 };
-const NOTHING: Record<string, string> = { upgrade: 'Nothing you carry takes a grade step: a weapon or a focus does.', stock: 'The armourer has nothing for the squad today.', fit: 'Your armour class is as high as the armourer fits.' };
+const NOTHING: Record<string, string> = { upgrade: 'You carry no weapon or focus that can be upgraded.', stock: 'The armourer has nothing for your squad today.', fit: 'You wear the heaviest armour the armourer fits.' };
 
 function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
   const o = x.o, icon = x.id ? gearIconUri(x.id, undefined, { large: true }) : '';
@@ -41,11 +41,11 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
         <span style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 20, fontWeight: 600, lineHeight: 1.2 }}>{o.label}</span>
       </div>
       {o.detail ? <span style={{ fontSize: 14, lineHeight: 1.45, color: '#DCE2EC' }}>{o.detail}</span> : null}
-      {x.worth ? <span style={{ fontSize: 13, color: I.white }}>Worth {x.worth}.</span> : null}
+      
       <span style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
-          <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : 'Free'}</span>
-          {o.price ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>COSTS THE NODE</span>}
+          <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: o.pays ? I.ok : I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : o.pays ? '+' + o.pays.toLocaleString('en') : 'Free'}</span>
+          {o.price ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS PAID TO YOU</span> : null}
         </span>
         <span style={{ marginLeft: 'auto', minHeight: 40, padding: '0 16px', display: 'inline-grid', placeItems: 'center', borderRadius: 10, background: o.why ? 'transparent' : I.text, outline: o.why ? '1px solid #3B475D' : 'none', color: o.why ? I.muted : I.ground, fontWeight: 700, fontSize: 15 }}>Take it</span>
       </span>
@@ -55,7 +55,7 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
 }
 
 function You({ m, worth }: { m: MeV | null; worth: string }) {
-  if (!m) return <p style={{ color: I.muted }}>Bring a character.</p>;
+  if (!m) return <p style={{ color: I.muted }}>You have no character here.</p>;
   const pct = Math.min(100, Math.round((m.kg / Math.max(1, m.limit)) * 100)), over = m.kg > m.limit;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -64,7 +64,7 @@ function You({ m, worth }: { m: MeV | null; worth: string }) {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{m.name}</span>
           <span style={{ fontSize: 12, color: I.muted }}>Level {m.level} · Armour class {m.armourClass}</span>
-          <span style={{ fontSize: 12, color: I.muted }}>Run power {worth}</span>
+          {worth ? <span data-phc-boon-room="" style={{ fontSize: 12, color: I.muted }}>Boon room {worth}</span> : null}
         </div>
       </div>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -78,7 +78,7 @@ function You({ m, worth }: { m: MeV | null; worth: string }) {
       <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <span style={kick}>THE PACK</span>
         <div aria-label={'Carrying ' + m.kg + ' of ' + m.limit + ' kg'} style={{ height: 8, borderRadius: 4, background: I.raised, overflow: 'hidden' }}><div style={{ width: pct + '%', height: '100%', background: over ? I.hp : I.text }} /></div>
-        <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · over the limit' : ''}</span>
+        <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · ' + Math.round((m.kg - m.limit) * 10) / 10 + ' kg over' : ''}</span>
         {m.pack.map((p, i) => <div key={i} data-phc-pack-line={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}><div style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>{p.wear ? <WearBar w={p.wear} label={p.label} compact /> : null}</div>)}
       </section>
     </div>
@@ -96,7 +96,7 @@ function TabBody({ v, tab }: { v: PlaceViewV; tab: string }) {
         <section key={gname} data-phc-group={gname}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '6px 0 12px' }}>
             <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>{HEAD[gname]?.[0] || gname}</h2>
-            <span style={{ fontSize: 12, color: I.muted }}>{HEAD[gname]?.[1] || ''}</span>
+            {HEAD[gname]?.[1] ? <span style={{ fontSize: 12, color: I.muted }}>{HEAD[gname][1]}</span> : null}
             <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
           </div>
           <div style={GRID}>
@@ -115,16 +115,17 @@ export function PlaceScreen({ onLeave }: { onLeave: () => void }) {
   const st = getState(), g = st.game, me = st.me.id;
   const v = g ? placeView(g as any, me) : null;
   const [tab, setTab] = React.useState<string>(v?.tabs[0]?.id || 'give');
+  const on = v ? (v.tabs.some((t) => t.id === tab) ? tab : v.tabs[0].id) : tab;
+  const say = useKeeperLine(v?.face.says || {}, on, v?.face.line || '', v?.log.length || 0, 'bought'); // (before any return: a hook)
   if (!g || !v) return null;
-  const on = v.tabs.some((t) => t.id === tab) ? tab : v.tabs[0].id;
   const tabs: FrameTab[] = v.tabs.map((t) => ({ id: t.id, label: t.label }));
   const portrait = v.face.patron ? patronPortrait(v.face.patron, true) || '' : v.face.portraitPending ? (v.face.fallback ? art('char-' + v.face.fallback) : '') : art(v.face.portrait);
   const backdrop = v.face.backdropPending ? (v.face.backdropFallback ? art('ill-' + v.face.backdropFallback) : '') : art(v.face.backdrop);
   return (
     <div data-phc-place={v.kind}>
-      <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.word + ' · ' + v.setting} line={v.face.line} lineKey={v.node}
+      <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.word + ' · ' + v.setting} line={say.text} lineKey={v.node + say.key}
         tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0}
-        party={v.party.map((p) => ({ id: p.id, name: p.name, initials: p.initials, color: p.color, ready: p.marked, online: p.online, mine: p.mine }))} ready={false} isHost={false} waiting={[]} hideClose marks={['NEXT NODE MARKED', 'HERE']}
+        party={v.party.map((p) => ({ id: p.id, name: p.name, initials: p.initials, color: p.color, ready: p.marked, online: p.online, mine: p.mine }))} ready={false} isHost={false} waiting={[]} hideClose marks={['NEXT STOP MARKED', 'HERE']}
         onReady={onLeave} onClose={onLeave} closeTip="" readyWord="To the path map ›" log={v.log} emptyLog="Nothing taken here yet."
         side={<You m={v.me} worth={v.worth} />}>
         {on === 'give' ? <GiveTab /> : <TabBody v={v} tab={on} />}

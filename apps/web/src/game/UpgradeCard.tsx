@@ -41,7 +41,7 @@ export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocu
         <button type="button" data-phc-upgrade-go="" data-phc-choice={choice ? s.key : undefined} data-phc-why={choice && s.why ? '' : undefined} aria-disabled={s.why ? 'true' : undefined} onClick={(e) => { if (s.why) openTipOn(e.currentTarget.closest('article')); else act(s.action as any); }}
           style={{ marginLeft: 'auto', minHeight: 42, padding: '0 18px', borderRadius: 10, border: 0, background: s.why ? 'transparent' : I.text, outline: s.why ? '1px solid #3B475D' : 'none', color: s.why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>{w ? 'Repair' : 'Upgrade'}</button>
       </div>
-      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: s.why ? I.muted : I.ok }}>{s.why || (w ? '✓ You can repair it' : '✓ You can take this step')}</span>
+      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: s.why ? I.muted : I.ok }}>{s.why || (w ? '✓ You can repair it' : '✓ You can upgrade it')}</span>
     </article>
   );
 }

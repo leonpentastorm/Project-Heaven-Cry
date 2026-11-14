@@ -23,7 +23,7 @@ import { rngFor, die } from '../rng';
 import { type RunState, type RunVisit, type RunLasting, type RunStock, runNode, runSetting } from './state';
 import { SETTING } from './encounter';
 import { stageCeiling, weaponOffer } from './rewards';
-import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
+import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf } from './power';
 import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
@@ -72,7 +72,12 @@ function here(g: GameState): { r: RunState; n: NonNullable<ReturnType<typeof run
   const n = runNode(r, r.at), v = r.visit; if (!n || !v || v.node !== n.id) return null;
   return { r, n, v };
 }
-const notHere = (want: string) => 'You are not at ' + want + ': walk to one on the map.';
+const notHere = (want: string) => 'You are not at ' + want + '.';
+/** The first stage whose picks reach grade `to` (rewards.ceiling), for "Masterwork upgrades open in stage 2." */
+const opensIn = (to: Rarity): number => { for (let s = 1; s <= 99; s++) if (LADDER.indexOf(stageCeiling(s)) >= LADDER.indexOf(to)) return s; return 99; };
+const gradeOpens = (to: Rarity) => GRADE_WORD[to] + ' upgrades open in stage ' + (to === 'relic' ? Math.max(GRADE_UP.relic_from_stage, opensIn(to)) : opensIn(to)) + '.';
+/** Where a carried thing is, in a card's words. */
+const whereWord = (where: GearWhere) => (typeof where === 'number' ? 'In your pack' : where === 'main' ? 'In your hand' : 'In your off hand');
 /** Rules 1.43: a visit begins as the party enters a safe node; the Forge rolls its stock, the Crossroads its trades, the
  * shrine its patron, each from the run's seed through the node's own stream (rule 12). */
 export function openVisit(g: GameState, n: { id: string; kind: string }): RunVisit {
@@ -83,7 +88,7 @@ export function openVisit(g: GameState, n: { id: string; kind: string }): RunVis
   return v;
 }
 /** Who may act for a character: its player, or the host (for an away player, as with picks). */
-const mayAct = (g: GameState, c: Character, by: string) => (c.owner === by || by === g.hostId ? null : 'Only ' + c.name + '\'s player acts for ' + c.name + ' (or the host, for an away player).');
+const mayAct = (g: GameState, c: Character, by: string) => (c.owner === by || by === g.hostId ? null : 'Only ' + c.name + '\'s player chooses for ' + c.name + ', or the host while they are away.');
 const setVisit = (r: RunState, v: RunVisit, patch: Partial<RunVisit>) => { r.visit = { ...v, ...patch }; };
 const bump = (m: Record<string, number>, id: string) => ({ ...m, [id]: (m[id] || 0) + 1 });
 const marksOf = (r: RunState, c: Character, what: string) => (r.marks?.[c.id] || []).filter((m) => m === what + '@' + r.stage).length;
@@ -106,20 +111,20 @@ export function relicChoices(g: GameState, c: Character, where: GearWhere): stri
 /** Why this grade step can't be taken now, in words, or null (rules 37, 38, 43). */
 export function upgradeProblem(g: GameState, c: Character, a: { where: GearWhere; place: GradePlace; chit?: boolean; prop?: string }): string | null {
   const h = here(g); if (!h) return notHere('a shop or a Forge');
-  if (!(a.place in GRADE_UP.places)) return 'A grade step is bought at a shop or a Forge.';
+  if (!(a.place in GRADE_UP.places)) return 'Upgrades are bought at a shop or a Forge.';
   if (h.n.kind !== a.place) return 'This is not a ' + (a.place === 'forge' ? 'Forge' : 'shop') + '.';
-  const it = gearAt(c, a.where); if (!it) return 'There is no weapon or focus there to grade.';
-  if ((WEAPON[it.id] as any)?.category === 'thrown') return 'A thrown thing is not graded.';
-  const to = nextGrade(it.rarity); if (!to) return 'The ' + GRADE_WORD[it.rarity] + ' ' + nameOf(it.id) + ' is graded as far as anyone sells: Celestial is never for sale.';
+  const it = gearAt(c, a.where); if (!it) return 'There is no weapon or focus there to upgrade.';
+  if ((WEAPON[it.id] as any)?.category === 'thrown') return 'Thrown weapons can\'t be upgraded.';
+  const to = nextGrade(it.rarity); if (!to) return 'The ' + GRADE_WORD[it.rarity] + ' ' + nameOf(it.id) + ' is as good as any armourer can make it.';
   const ceil = stageCeiling(h.r.stage);
-  if (LADDER.indexOf(to) > LADDER.indexOf(ceil)) return to === 'relic' ? 'The Relic step opens in stage ' + GRADE_UP.relic_from_stage + '.' : 'Stage ' + h.r.stage + ' grades to ' + GRADE_WORD[ceil] + ' at most: ' + GRADE_WORD[to] + ' comes in a later stage.';
-  if (to === 'relic' && a.place !== GRADE_UP.relic_at) return 'The Relic step is the Forge\'s.';
-  if ((h.v.steps[c.id] || 0) >= GRADE_UP.per_visit) return 'One grade step a visit: ' + c.name + ' has had it here.';
+  if (LADDER.indexOf(to) > LADDER.indexOf(ceil) || (to === 'relic' && h.r.stage < GRADE_UP.relic_from_stage)) return gradeOpens(to);
+  if (to === 'relic' && a.place !== GRADE_UP.relic_at) return 'Only a Forge makes a Relic.';
+  if ((h.v.steps[c.id] || 0) >= GRADE_UP.per_visit) return 'One upgrade per visit. ' + c.name + ' has had it here.';
   if (to === 'relic') {
-    if (a.chit) return 'A chit pays a Fine or Masterwork step, not the Relic.';
+    if (a.chit) return 'An armourer\'s chit pays for a Fine or Masterwork upgrade, not a Relic.';
     const offer = relicChoices(g, c, a.where);
-    if (!offer.length) return 'No named property fits the ' + nameOf(it.id) + ' inside ' + c.name + '\'s cap (' + runWorth(c) + ' of ' + BOON_CAP + ' used).';
-    if (!a.prop) return 'Pick one of the three named properties.';
+    if (!offer.length) return c.name + ' has too little boon room left (' + capRoom(c) + ') for any Relic property of the ' + nameOf(it.id) + '.';
+    if (!a.prop) return 'Pick one of the three properties.';
     if (!offer.includes(a.prop)) return 'That property is not one of the three offered for the ' + nameOf(it.id) + '.';
   }
   if (a.chit) return chitAt(c) < 0 ? c.name + ' has no armourer\'s chit.' : null;
@@ -132,7 +137,7 @@ function doUpgrade(g: GameState, c: Character, a: Extract<ProgressAction, { type
   else payCredits(c, price);
   const err = setGrade(c, a.where, to, to === 'relic' ? a.prop : undefined); if (err) return err;
   setVisit(h.r, h.v, { steps: bump(h.v.steps, c.id) });
-  say(c.name + '\'s ' + nameOf(it.id) + ' is ' + GRADE_WORD[to] + ' now' + (to === 'relic' ? ', ' + relicRow(a.prop!)!.name + ' (' + worthOf(a.prop!) + ' of the run\'s ' + BOON_CAP + ')' : '') + (a.chit ? ': paid with an armourer\'s chit.' : ': ' + price + ' credits.'), c.id);
+  say(c.name + '\'s ' + nameOf(it.id) + ' is ' + GRADE_WORD[to] + ' now' + (to === 'relic' ? ', ' + relicRow(a.prop!)!.name : '') + (a.chit ? ': paid with an armourer\'s chit.' : ': ' + price + ' credits.'), c.id);
   return null;
 }
 
@@ -153,8 +158,8 @@ export function repairProblem(g: GameState, c: Character, a: { where: GearWhere;
   if (!(a.place in REPAIR.places)) return 'Repairs are bought at a shop or a Forge.';
   if (h.n.kind !== a.place) return 'This is not a ' + (a.place === 'forge' ? 'Forge' : 'shop') + '.';
   const w = wearAt(c, a.where); if (!w) return 'There is nothing there to repair.';
-  if (!w.max) return 'The ' + w.name + ' does not wear: there is nothing to repair.';
-  if (w.now >= w.max) return 'The ' + w.name + ' is in full repair (' + w.now + ' of ' + w.max + '): there is nothing to repair.';
+  if (!w.max) return 'The ' + w.name + ' never wears out.';
+  if (w.now >= w.max) return 'The ' + w.name + ' is already in full repair.';
   return cantPay(c, repairPrice(w, a.place));
 }
 function doRepair(g: GameState, c: Character, a: Extract<ProgressAction, { type: 'run/repair' }>, say: Say): string | null {
@@ -202,7 +207,7 @@ export function fitOf(g: GameState, c: Character): { cls: number; price: number;
   const next = (c.armourClass || 0) + 1, price = FIT[String(next)];
   if (price == null) return null;
   const h = here(g), cap = armourCap(c);
-  const why = !h || h.n.kind !== 'forge' ? notHere('a Forge') : cap != null && next > cap ? c.name + ' can wear Class ' + cap + ' at most.' : armourGateWhy(c, next) || cantPay(c, price);
+  const why = !h || h.n.kind !== 'forge' ? notHere('a Forge') : cap != null && next > cap ? c.name + ' can\'t wear armour heavier than class ' + cap + '.' : armourGateWhy(c, next) || cantPay(c, price);
   return { cls: next, price, why };
 }
 
@@ -212,16 +217,16 @@ const carriedWeapons = (c: Character): string[] => [...new Set([c.weapon, c.offH
 /** Why a character can take this kind of training (or the wayside's gift) at all, or null: drill needs a weapon it
  * carries, study a Sigil user, practice an Outburst user, Devotion the Faithful (rules 39, 42, 45). */
 function trainKindProblem(c: Character, kind: string, weapon?: string): string | null {
-  if (kind === 'drill') return weapon && carriedWeapons(c).includes(weapon) ? null : 'Name a weapon ' + c.name + ' carries to drill with.';
-  if (kind === 'study') return (c.skills.brain_power || 0) > 0 ? null : 'Study is for a Sigil user (Brain Power 1 or more).';
-  if (kind === 'practice') return (c.skills.will_power || 0) > 0 ? null : 'Practice is for an Outburst user (Will Power 1 or more).';
-  if (kind === 'devotion') return beliefOf(c).kind === 'faithful' ? null : c.name + ' is an Atheist: there is no Devotion to raise.';
+  if (kind === 'drill') return weapon && carriedWeapons(c).includes(weapon) ? null : c.name + ' must carry a weapon to drill with it.';
+  if (kind === 'study') return (c.skills.brain_power || 0) > 0 ? null : c.name + ' needs Brain Power 1 to study the Sigil words.';
+  if (kind === 'practice') return (c.skills.will_power || 0) > 0 ? null : c.name + ' needs Will Power 1 to practise Outbursts.';
+  if (kind === 'devotion') return beliefOf(c).kind === 'faithful' ? null : c.name + ' is an Atheist, with no patron to pray to.';
   return 'No such training.';
 }
 /** What a training gives: drill, study, practice or Devotion through its own door; the lines for the log. */
 function trainDo(g: GameState, c: Character, kind: string, n: number, why: string, weapon?: string): string[] {
-  if (kind === 'drill') { const d = addDrill(c, weapon!, n); return [c.name + ' drills with the ' + nameOf(weapon!) + ' (+' + d.add + ', ' + why + '): drill ' + d.total + (d.mark ? ', mark ' + d.mark + ' reached' : '') + (d.learned ? '; a technique is learned' : '') + '.']; }
-  if (kind === 'study') { const l = addStudy(c, n, why); return l.length ? l : [c.name + ' studies the Sigil words (+' + n + ', ' + why + ').']; }
+  if (kind === 'drill') { const d = addDrill(c, weapon!, n); return [c.name + ' drills with the ' + nameOf(weapon!) + ': +' + d.add + ', ' + d.total + ' in all' + (d.mark ? '; mark ' + d.mark + ' reached' : '') + (d.learned ? '; a technique learned' : '') + '.']; }
+  if (kind === 'study') { const l = addStudy(c, n, why); return l.length ? l : [c.name + ' studies the Sigil words: +' + n + '.']; }
   if (kind === 'practice') return [addPractice(c, n, why)];
   shiftDevotion(g, null, c, n, why); return [];
 }
@@ -230,10 +235,10 @@ function trainDo(g: GameState, c: Character, kind: string, n: number, why: strin
 export function trainProblem(g: GameState, c: Character, a: { train: string; weapon?: string }): string | null {
   const h = here(g); if (!h || (h.n.kind !== 'rest' && h.n.kind !== 'training')) return notHere('a rest or a training ground');
   const done = h.v.did[c.id] || 0;
-  if (h.n.kind === 'rest' && done >= 1) return 'One small training at a rest: ' + c.name + ' has taken it.';
+  if (h.n.kind === 'rest' && done >= 1) return 'One training per rest. ' + c.name + ' has had it.';
   if (h.n.kind === 'training') {
-    if (a.train === 'devotion') return 'Devotion is the shrine\'s, not the sergeant\'s.';
-    if (done >= TRAINING.most) return c.name + ' has trained as much as the yard allows this visit.';
+    if (a.train === 'devotion') return 'Devotion is raised at a shrine, not here.';
+    if (done >= TRAINING.most) return c.name + ' has trained ' + TRAINING.most + ' times here, the most the yard allows.';
   }
   return trainKindProblem(c, a.train, a.weapon) || (h.n.kind === 'training' && done >= 1 ? cantPay(c, TRAINING.extra_price) : null);
 }
@@ -250,13 +255,13 @@ export function tokenFor(g: GameState, c: Character): string | null {
 /** Why this shrine offer can't be taken now, or null (rule 46). */
 export function shrineProblem(g: GameState, c: Character, choice: string): string | null {
   const h = here(g); if (!h || h.n.kind !== 'shrine') return notHere('a shrine');
-  if (h.v.did[c.id]) return 'One offer at a shrine: ' + c.name + ' has taken it.';
+  if (h.v.did[c.id]) return 'One thing per shrine. ' + c.name + ' has taken it.';
   const faithful = beliefOf(c).kind === 'faithful', p = FAITH_PATRON[h.v.patron || ''];
-  if (choice === 'rite') return faithful ? null : c.name + ' is an Atheist: the rite is kept by the faithful (a piece of lore, or the token).';
-  if (choice === 'piece') return faithful ? 'A piece of lore is for the faithless: ' + c.name + ' keeps the rite.' : (c.faithPieces?.[p?.id] || 0) >= 3 ? c.name + ' already knows all three of ' + p?.name + '\'s Hymns.' : null;
+  if (choice === 'rite') return faithful ? null : c.name + ' is an Atheist: take a piece of lore or the token instead.';
+  if (choice === 'piece') return faithful ? c.name + ' has a patron: keep the rite instead.' : (c.faithPieces?.[p?.id] || 0) >= 3 ? c.name + ' already knows all three of ' + p?.name + '\'s Hymns.' : null;
   if (choice === 'token') {
-    if (marksOf(h.r, c, 'token') >= SHRINE.tokens_per_stage) return 'One token a stage: ' + c.name + ' has had it.';
-    return tokenFor(g, c) ? null : 'The shrine has no token for ' + c.name + ': nothing in this tile\'s pool is small enough to fit the cap.';
+    if (marksOf(h.r, c, 'token') >= SHRINE.tokens_per_stage) return 'One token per stage. ' + c.name + ' has had it.';
+    return tokenFor(g, c) ? null : 'The shrine has no token ' + c.name + ' has boon room for.';
   }
   return 'No such offer at a shrine.';
 }
@@ -285,23 +290,23 @@ export function salvageWorth(c: Character, pick: number, rate: number): number |
 export function tradeProblem(g: GameState, c: Character, a: { trade: string; where?: GearWhere; weapon?: string; train?: string; pick?: number }): string | null {
   const h = here(g); if (!h || h.n.kind !== 'event') return notHere('a crossroads');
   const t = TRADE[a.trade]; if (!t || !(h.v.trades || []).includes(t.id)) return 'That trade is not offered here.';
-  if (h.v.did[c.id]) return 'One trade each at a crossroads: ' + c.name + ' has made one.';
+  if (h.v.did[c.id]) return 'One trade each. ' + c.name + ' has made one.';
   switch (t.do) {
     case 'grade': {
       const it = a.where != null ? gearAt(c, a.where) : null; if (!it) return 'Pick a weapon ' + c.name + ' carries.';
-      if (!maxDurOf(it.id, it.rarity)) return 'The off-books armourer works on weapons with wear to pay in: a focus has none.';
-      const to = nextGrade(it.rarity); if (!to || to === 'relic') return 'The off-books armourer grades to Fine or Masterwork only.';
-      const ceil = stageCeiling(h.r.stage); if (LADDER.indexOf(to) > LADDER.indexOf(ceil)) return 'Stage ' + h.r.stage + ' grades to ' + GRADE_WORD[ceil] + ' at most.';
+      if (!maxDurOf(it.id, it.rarity)) return 'The off-books armourer works on weapons, not foci.';
+      const to = nextGrade(it.rarity); if (!to || to === 'relic') return 'The off-books armourer only upgrades to Fine or Masterwork.';
+      const ceil = stageCeiling(h.r.stage); if (LADDER.indexOf(to) > LADDER.indexOf(ceil)) return gradeOpens(to);
       return cantPay(c, tradePrice(c, a));
     }
     case 'drill': { const k = trainKindProblem(c, 'drill', a.weapon); if (k) return k; return Math.floor(c.hp * t.hp_share) < 1 ? c.name + ' has too little HP left to spar.' : null; }
     case 'crate': return cantPay(c, t.price);
     case 'wayside': {
-      if (marksOf(h.r, c, 'wayside') >= t.per_stage) return 'The wayside shrine gives once a stage: ' + c.name + ' has had it.';
+      if (marksOf(h.r, c, 'wayside') >= t.per_stage) return 'The wayside shrine gives once per stage. ' + c.name + ' has had it.';
       return a.train === 'devotion' || a.train === 'study' || a.train === 'practice' ? trainKindProblem(c, a.train) : 'The wayside shrine gives Devotion, study or practice.';
     }
-    case 'graft': return graftFor(g, c) ? null : 'Nothing here fits ' + c.name + '\'s cap.';
-    case 'salvage': return a.pick == null || salvageWorth(c, a.pick, t.rate) == null ? 'Pick a weapon or item from the pack with a price (rounds and magazines sell at a shop).' : null;
+    case 'graft': return graftFor(g, c) ? null : c.name + ' has no boon room left for a graft.';
+    case 'salvage': return a.pick == null || salvageWorth(c, a.pick, t.rate) == null ? 'Pick a weapon or item from your pack. Rounds and magazines sell at a shop.' : null;
   }
   return 'No such trade.';
 }
@@ -357,7 +362,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       const h = here(g)!, p = FAITH_PATRON[h.v.patron!];
       if (a.choice === 'piece') { const err = grantPiece(g, c, p.id, 'a shrine of ' + p.name); if (err) return err; }
       if (a.choice === 'rite') shiftDevotion(g, null, c, DEVOTION_XP.rite, 'a rite kept at a shrine of ' + p.name);
-      if (a.choice === 'token') { const id = tokenFor(g, c)!; c.relics = [...(c.relics || []), id]; mark(h.r, c, 'token'); say(c.name + ' takes ' + p.name + '\'s token: ' + relicRow(id)!.name + ' (' + worthOf(id) + ' of the run\'s ' + BOON_CAP + ').', c.id); }
+      if (a.choice === 'token') { const id = tokenFor(g, c)!; c.relics = [...(c.relics || []), id]; mark(h.r, c, 'token'); say(c.name + ' takes ' + p.name + '\'s token: ' + relicRow(id)!.name + '.', c.id); }
       setVisit(h.r, h.v, { did: bump(h.v.did, c.id) });
       return null;
     }
@@ -370,7 +375,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
         case 'drill': { const cost = Math.floor(c.hp * t.hp_share); c.hp -= cost; say(c.name + ' spars hard and pays ' + cost + ' HP.', c.id); for (const l of trainDo(g, c, 'drill', t.drill, 'a hard sparring', a.weapon)) say(l, c.id); break; }
         case 'crate': { payCredits(c, t.price); h.r.offers = { ...(h.r.offers || {}), [c.id]: weaponOffer(c, { id: h.n.id + '#crate', depth: h.n.depth }, 'fight', h.r.stage, h.r.seed, { rarity: t.rarity, ammo: 0 }) }; h.r.state = 'reward'; say(c.name + ' pays ' + t.price + ' credits for a sealed crate: three weapons inside.', c.id); break; }
         case 'wayside': { mark(h.r, c, 'wayside'); for (const l of trainDo(g, c, a.train!, t[a.train!], 'a wayside shrine')) say(l, c.id); break; }
-        case 'graft': { const id = graftFor(g, c)!; c.relics = [...(c.relics || []), id]; c.hp = Math.min(c.hp, maxHp(c)); say(c.name + ' takes a back-room graft: ' + relicRow(id)!.name + ' (' + worthOf(id) + ' of the run\'s ' + BOON_CAP + '); max HP ' + maxHp(c) + '.', c.id); break; }
+        case 'graft': { const id = graftFor(g, c)!; c.relics = [...(c.relics || []), id]; c.hp = Math.min(c.hp, maxHp(c)); say(c.name + ' takes a back-room graft: ' + relicRow(id)!.name + '. Max HP is ' + maxHp(c) + ' now.', c.id); break; }
         case 'salvage': { const n = salvageWorth(c, a.pick!, t.rate)!, pack = packOf(c).map((x) => ({ ...x })), it = pack[a.pick!]; if (it.qty > 1) it.qty--; else pack.splice(a.pick!, 1); c.pack = pack; earnCredits(c, n); say(c.name + ' sells the ' + it.name + ' to a salvage buyer: ' + n + ' credits.', c.id); break; }
       }
       return null;
@@ -393,6 +398,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
 /** One choice a safe node offers a character (rules 1.43): its words, its price (credits; 0 for none), the engine's
  * reason it can't be taken (null when it can), and the action to send. The client only draws these. */
 export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fit' | 'train' | 'shrine' | 'trade' | 'lasting'; key: string; label: string; detail: string; price: number; why: string | null; action: ProgressAction;
+  /** credits the option PAYS the character (a salvage), shown in place of a price */ pays?: number;
   /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] } }
 /** Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). */
 export function runOptions(g: GameState, charId: string): RunOption[] {
@@ -401,46 +407,46 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   const wheres: GearWhere[] = ['main', 'off', ...packOf(c).map((_, i) => i)];
   if (k === 'shop' || k === 'forge') for (const where of wheres) {
     const it = gearAt(c, where); if (!it || (WEAPON[it.id] as any)?.category === 'thrown') continue;
-    const to = nextGrade(it.rarity), at = (typeof where === 'number' ? 'pack' : where === 'main' ? 'main hand' : 'off hand');
+    const to = nextGrade(it.rarity), at = whereWord(where);
     const base = { where, place: k as GradePlace };
     if (to === 'relic' && k === GRADE_UP.relic_at) {
       const props = relicChoices(g, c, where), gate = upgradeProblem(g, c, { ...base, prop: props[0] });
-      if (!props.length) out.push({ group: 'relic', key: 'relic:' + where, label: 'The Relic step: ' + nameOf(it.id), detail: at, price: GRADE_UP.price.relic, why: gate || upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
-      for (const p of props) out.push({ group: 'relic', key: 'relic:' + where + ':' + p, label: nameOf(it.id) + ' to Relic, ' + relicRow(p)!.name, detail: relicRow(p)!.text + ' Worth ' + worthOf(p) + ' of ' + BOON_CAP + '; ' + capRoom(c) + ' left.', price: GRADE_UP.price.relic, why: upgradeProblem(g, c, { ...base, prop: p }), action: { type: 'run/upgrade', charId, ...base, prop: p } });
+      if (!props.length) out.push({ group: 'relic', key: 'relic:' + where, label: nameOf(it.id) + ': Relic upgrade', detail: at, price: GRADE_UP.price.relic, why: gate || upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
+      for (const p of props) out.push({ group: 'relic', key: 'relic:' + where + ':' + p, label: nameOf(it.id) + ': Relic, ' + relicRow(p)!.name, detail: relicRow(p)!.text + ' Uses ' + worthOf(p) + ' boon room; you have ' + capRoom(c) + '.', price: GRADE_UP.price.relic, why: upgradeProblem(g, c, { ...base, prop: p }), action: { type: 'run/upgrade', charId, ...base, prop: p } });
     } else if (to) {
-      out.push({ group: 'grade', key: 'grade:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to), detail: at + (to !== 'relic' && k === 'shop' ? ' · at a Forge: ' + gradePrice(to, 'forge') : ''), price: to === 'relic' ? GRADE_UP.price.relic : gradePrice(to, k as GradePlace), why: upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
-      if (chitAt(c) >= 0 && to !== 'relic') out.push({ group: 'grade', key: 'chit:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to) + ' with a chit', detail: at, price: 0, why: upgradeProblem(g, c, { ...base, chit: true }), action: { type: 'run/upgrade', charId, ...base, chit: true } });
+      out.push({ group: 'grade', key: 'grade:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to), detail: at + (to !== 'relic' && k === 'forge' && gradePrice(to, 'shop') > gradePrice(to, 'forge') ? ' · ' + (gradePrice(to, 'shop') - gradePrice(to, 'forge')) + ' less than a shop' : ''), price: to === 'relic' ? GRADE_UP.price.relic : gradePrice(to, k as GradePlace), why: upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
+      if (chitAt(c) >= 0 && to !== 'relic') out.push({ group: 'grade', key: 'chit:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to) + ', with a chit', detail: at, price: 0, why: upgradeProblem(g, c, { ...base, chit: true }), action: { type: 'run/upgrade', charId, ...base, chit: true } });
     }
   }
   if (k === 'shop' || k === 'forge') for (const { where, w } of wornOf(c)) {
-    const at = (typeof where === 'number' ? 'pack' : where === 'main' ? 'main hand' : 'off hand'), a = { where, place: k as GradePlace };
-    out.push({ group: 'repair', key: 'repair:' + where, label: w.name + ': repair to full', detail: at + ' · ' + (w.state === 'broken' ? 'broken' : w.state === 'worn' ? 'worn' : 'wear') + ' ' + w.now + ' of ' + w.max + (k === 'shop' ? ' · at a Forge: ' + repairPrice(w, 'forge') : ''),
+    const at = whereWord(where), a = { where, place: k as GradePlace };
+    out.push({ group: 'repair', key: 'repair:' + where, label: w.name + ': repair to full', detail: at + ' · ' + (w.state === 'broken' ? 'broken' : w.state === 'worn' ? 'worn' : 'used') + ', ' + w.now + ' of ' + w.max + (k === 'forge' && repairPrice(w, 'shop') > repairPrice(w, 'forge') ? ' · ' + (repairPrice(w, 'shop') - repairPrice(w, 'forge')) + ' less than a shop' : ''),
       price: repairPrice(w, k as GradePlace), why: repairProblem(g, c, a), action: { type: 'run/repair', charId, ...a }, wear: { now: w.now, max: w.max, state: w.state } });
   }
   if (k === 'forge') {
     (h.v.stock || []).forEach((s, i) => out.push({ group: 'forge', key: 'forge:' + i, label: nameOf(s.id), detail: String((ITEM[s.id] as any)?.text || ''), price: s.price, why: forgeProblem(g, c, i), action: { type: 'run/forge', charId, slot: i } }));
-    const f = fitOf(g, c); if (f) out.push({ group: 'fit', key: 'fit', label: 'Armour class ' + c.armourClass + ' to ' + f.cls, detail: 'Fitted by the armourer.', price: f.price, why: f.why, action: { type: 'run/fit', charId } });
+    const f = fitOf(g, c); if (f) out.push({ group: 'fit', key: 'fit', label: 'Armour class ' + c.armourClass + ' to ' + f.cls, detail: 'The armourer fits you for heavier armour.', price: f.price, why: f.why, action: { type: 'run/fit', charId } });
   }
   if (k === 'rest' || k === 'training') {
     const am: any = k === 'training' ? TRAINING : TRAIN, price = trainPrice(g, c);
-    for (const w of carriedWeapons(c)) out.push({ group: 'train', key: 'drill:' + w, label: 'Drill +' + am.drill + ' with the ' + nameOf(w), detail: 'Drill toward the weapon\'s next mark.', price, why: trainProblem(g, c, { train: 'drill', weapon: w }), action: { type: 'run/train', charId, train: 'drill', weapon: w } });
+    for (const w of carriedWeapons(c)) out.push({ group: 'train', key: 'drill:' + w, label: 'Drill +' + am.drill + ' with the ' + nameOf(w), detail: 'Toward the ' + nameOf(w) + '\'s next mark.', price, why: trainProblem(g, c, { train: 'drill', weapon: w }), action: { type: 'run/train', charId, train: 'drill', weapon: w } });
     out.push({ group: 'train', key: 'study', label: 'Study +' + am.study, detail: 'Toward the next Sigil word.', price, why: trainProblem(g, c, { train: 'study' }), action: { type: 'run/train', charId, train: 'study' } });
     out.push({ group: 'train', key: 'practice', label: 'Practice +' + am.practice, detail: 'Toward the next Outburst module.', price, why: trainProblem(g, c, { train: 'practice' }), action: { type: 'run/train', charId, train: 'practice' } });
     if (k === 'rest') out.push({ group: 'train', key: 'devotion', label: 'Devotion +' + am.devotion + ' XP', detail: 'Prayer by the fire.', price: 0, why: trainProblem(g, c, { train: 'devotion' }), action: { type: 'run/train', charId, train: 'devotion' } });
   }
   if (k === 'shrine') {
     const p = FAITH_PATRON[h.v.patron || ''], tok = tokenFor(g, c);
-    out.push({ group: 'shrine', key: 'rite', label: 'Keep a rite: Devotion +' + DEVOTION_XP.rite + ' XP', detail: 'For the faithful.', price: 0, why: shrineProblem(g, c, 'rite'), action: { type: 'run/shrine', charId, choice: 'rite' } });
-    out.push({ group: 'shrine', key: 'piece', label: 'A piece of ' + (p?.name || 'the patron') + '\'s lore', detail: 'For the faithless: the next of its Hymns, prayed by dice.', price: 0, why: shrineProblem(g, c, 'piece'), action: { type: 'run/shrine', charId, choice: 'piece' } });
-    out.push({ group: 'shrine', key: 'token', label: 'The token' + (tok ? ': ' + relicRow(tok)!.name : ''), detail: tok ? relicRow(tok)!.text + ' Worth ' + worthOf(tok) + ' of ' + BOON_CAP + '; ' + capRoom(c) + ' left.' : 'A small blessing for the run.', price: 0, why: shrineProblem(g, c, 'token'), action: { type: 'run/shrine', charId, choice: 'token' } });
+    out.push({ group: 'shrine', key: 'rite', label: 'Keep a rite: Devotion +' + DEVOTION_XP.rite + ' XP', detail: 'For those with a patron.', price: 0, why: shrineProblem(g, c, 'rite'), action: { type: 'run/shrine', charId, choice: 'rite' } });
+    out.push({ group: 'shrine', key: 'piece', label: 'A piece of ' + (p?.name || 'the patron') + '\'s lore', detail: 'For an Atheist: learn the next of its Hymns, prayed by dice.', price: 0, why: shrineProblem(g, c, 'piece'), action: { type: 'run/shrine', charId, choice: 'piece' } });
+    out.push({ group: 'shrine', key: 'token', label: 'The token' + (tok ? ': ' + relicRow(tok)!.name : ''), detail: tok ? relicRow(tok)!.text + ' Uses ' + worthOf(tok) + ' boon room; you have ' + capRoom(c) + '.' : 'A small blessing for the run.', price: 0, why: shrineProblem(g, c, 'token'), action: { type: 'run/shrine', charId, choice: 'token' } });
   }
   if (k === 'event') for (const id of h.v.trades || []) {
     const t = TRADE[id];
-    const one = (key: string, label: string, extra: Partial<Extract<ProgressAction, { type: 'run/trade' }>>, detail = t.text) => out.push({ group: 'trade', key: id + ':' + key, label, detail, price: tradePrice(c, { trade: id, ...extra }), why: tradeProblem(g, c, { trade: id, ...extra }), action: { type: 'run/trade', charId, trade: id, ...extra } });
+    const one = (key: string, label: string, extra: Partial<Extract<ProgressAction, { type: 'run/trade' }>>, detail = t.text, pays?: number) => out.push({ group: 'trade', key: id + ':' + key, label, detail, price: tradePrice(c, { trade: id, ...extra }), ...(pays ? { pays } : {}), why: tradeProblem(g, c, { trade: id, ...extra }), action: { type: 'run/trade', charId, trade: id, ...extra } });
     if (t.do === 'grade') for (const where of wheres) { const it = gearAt(c, where); if (it && maxDurOf(it.id, it.rarity) && nextGrade(it.rarity) && nextGrade(it.rarity) !== 'relic') one(String(where), t.name + ': ' + nameOf(it.id) + ' to ' + word(nextGrade(it.rarity)!), { where }); }
     else if (t.do === 'drill') for (const w of carriedWeapons(c)) one(w, t.name + ': drill +' + t.drill + ' with the ' + nameOf(w), { weapon: w });
     else if (t.do === 'wayside') for (const tr of ['devotion', 'study', 'practice'] as const) one(tr, t.name + ': ' + tr + ' +' + t[tr], { train: tr });
-    else if (t.do === 'salvage') packOf(c).forEach((it, i) => { const n = salvageWorth(c, i, t.rate); if (n != null) one(String(i), t.name + ': the ' + it.name + ' for ' + n, { pick: i }); });
+    else if (t.do === 'salvage') packOf(c).forEach((it, i) => { const n = salvageWorth(c, i, t.rate); if (n != null) one(String(i), t.name + ': the ' + it.name, { pick: i }, t.text, n); });
     else if (t.do === 'graft') { const gid = graftFor(g, c); one('x', t.name + (gid ? ': ' + relicRow(gid)!.name : ''), {}, gid ? relicRow(gid)!.text : t.text); }
     else one('x', t.name, {});
   }

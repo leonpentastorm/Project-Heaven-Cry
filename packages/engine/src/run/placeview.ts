@@ -12,9 +12,9 @@ import { type RunOption, runOptions, nextGrade } from './progress';
 import { runNode, runSetting, type RunState } from './state';
 import { SETTING } from './encounter';
 import { MAP_DATA } from './map';
-import { faceFor } from './shop';
+import { faceFor, faceTabLines } from './shop';
 import { type MeV, meBlock } from './shopview';
-import { worthOf, capRoom, runWorth, BOON_CAP } from './power';
+import { capRoom, BOON_CAP } from './power';
 import type { GameState } from '../game';
 
 /** A place's tab: its id, its word, and the option groups it holds (the Give tab holds none: it draws `giveView`). */
@@ -25,17 +25,19 @@ export interface PlaceCardV { o: RunOption; id: string | null; rarity: Rarity | 
 /** The full-screen place for one player (rules 1.46). */
 export interface PlaceViewV {
   node: string; kind: string; word: string; setting: string;
-  face: { id: string; name: string; role: string; portrait: string; portraitPending: boolean; fallback: string | null; patron: string | null; backdrop: string; backdropPending: boolean; backdropFallback: string | null; line: string };
+  face: { id: string; name: string; role: string; portrait: string; portraitPending: boolean; fallback: string | null; patron: string | null; backdrop: string; backdropPending: boolean; backdropFallback: string | null; line: string;
+    /** the keeper's lines by kind (a tab's id as it opens, `bought` after a choice), for the client to pick from (survival.json faces) */ says: Record<string, string[]> };
   tabs: PlaceTabV[]; cards: PlaceCardV[]; me: MeV | null; canAct: boolean;
   party: { id: string; name: string; initials: string; color: string; online: boolean; mine: boolean; marked: boolean }[];
+  /** the character's boon room left, "30 of 50" ('' with no character) */
   log: string[]; worth: string;
 }
 /** The tabs each place shows (the Give tab last on every one). */
 const TABS: Record<string, PlaceTabV[]> = {
-  forge: [{ id: 'upgrade', label: 'Upgrade', groups: ['grade', 'relic', 'repair'] }, { id: 'stock', label: 'Mods and pieces', groups: ['forge'] }, { id: 'fit', label: 'Armour fitting', groups: ['fit'] }],
+  forge: [{ id: 'upgrade', label: 'Repair and upgrade', groups: ['grade', 'relic', 'repair'] }, { id: 'stock', label: 'Mods and armour', groups: ['forge'] }, { id: 'fit', label: 'Armour fitting', groups: ['fit'] }],
   training: [{ id: 'train', label: 'Training', groups: ['train'] }],
   rest: [{ id: 'train', label: 'Small training', groups: ['train'] }],
-  shrine: [{ id: 'shrine', label: 'The shrine', groups: ['shrine'] }],
+  shrine: [{ id: 'shrine', label: 'Blessings', groups: ['shrine'] }],
   event: [{ id: 'trade', label: 'Trades', groups: ['trade'] }],
 };
 /** The node kinds that open as a full-screen place (the shop has its own view, shopview.ts). */
@@ -48,22 +50,22 @@ export function placeView(g: GameState, me: string, charId?: string | null): Pla
   if (!placeOpen(g)) return null;
   const r = g.run!, v = r.visit!, n = runNode(r, v.node)!, setting = runSetting(r), f = faceFor(v.kind, setting);
   const c: Character | null = (charId && g.characters[charId]) || Object.values(g.characters).find((x) => x.owner === me) || null;
-  const lines = f?.lines?.greet || [], line = lines.length ? lines[die(rngFor(r.seed, v.node + '#line#0'), lines.length) - 1] : '';
-  const patron = v.kind === 'shrine' && v.patron ? FAITH_PATRON[v.patron] : null;
+  const patron = v.kind === 'shrine' && v.patron ? FAITH_PATRON[v.patron] : null, says = faceTabLines(f, patron ? v.patron : null);
+  const lines = says.greet || [], line = lines.length ? lines[die(rngFor(r.seed, v.node + '#line#0'), lines.length) - 1] : '';
   const cards: PlaceCardV[] = c ? runOptions(g, c.id).map((o) => {
     const a: any = o.action, it = (o.group === 'grade' || o.group === 'relic') && a.where != null ? gearAt(c, a.where) : null, to = it ? nextGrade(it.rarity) : null;
     const before = it ? gearPreview(c, { id: it.id, rarity: it.rarity }) : null, after = it && to ? gearPreview(c, { id: it.id, rarity: to }) : null;
     const diff = before && after ? after.lines.filter((l) => l.num != null).map((l) => ({ label: l.label, before: before.lines.find((x) => x.key === l.key)?.value ?? '—', after: l.value })).filter((l) => l.before !== l.after) : [];
     const prop = o.group === 'relic' && a.prop ? a.prop as string : null;
     const id = it ? it.id : o.group === 'repair' ? (wearAt(c, a.where)?.id || null) : o.group === 'forge' ? (v.stock?.[a.slot]?.id || null) : o.group === 'train' && a.weapon ? a.weapon : null;
-    return { o, id, rarity: it ? it.rarity : null, lines: diff, worth: prop ? worthOf(prop) + ' of your ' + BOON_CAP + '; ' + capRoom(c) + ' left' : null };
+    return { o, id, rarity: it ? it.rarity : null, lines: diff, worth: null };
   }) : [];
   const party = g.players.map((p) => ({ id: p.id, name: Object.values(g.characters).find((x) => x.owner === p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', online: p.online, mine: p.id === me, marked: !!r.leans[p.id] }));
   return {
     node: v.node, kind: v.kind, word: (n.gate ? 'Gate' : (MAP_DATA.words as Record<string, string>)[v.kind] || v.kind), setting: SETTING[setting]?.name || setting,
     face: { id: f?.id || '', name: patron ? patron.name : f?.name || '', role: patron ? 'Patron' : f?.role || '', portrait: f?.portrait || '', portraitPending: !!f?.portrait_pending, fallback: f?.fallback ?? null,
-      patron: patron ? v.patron! : null, backdrop: f?.backdrop || '', backdropPending: !!f?.backdrop_pending, backdropFallback: f?.backdrop_fallback ?? null, line },
-    tabs: [...(TABS[v.kind] || []), { id: 'give', label: 'Give', groups: [] }], cards, me: c ? meBlock(c) : null, canAct: !!c && (c.owner === me),
-    party, log: v.log || [], worth: c ? runWorth(c) + ' of ' + BOON_CAP : '',
+      patron: patron ? v.patron! : null, backdrop: f?.backdrop || '', backdropPending: !!f?.backdrop_pending, backdropFallback: f?.backdrop_fallback ?? null, line, says },
+    tabs: [...(TABS[v.kind] || []), ...(Object.keys(g.characters).length > 1 ? [{ id: 'give', label: 'Give', groups: [] }] : [])], cards, me: c ? meBlock(c) : null, canAct: !!c && (c.owner === me),
+    party, log: v.log || [], worth: c ? capRoom(c) + ' of ' + BOON_CAP : '',
   };
 }
