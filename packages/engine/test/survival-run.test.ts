@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, mapNodes, pathMap, reachable, runNode, nodeXp, nodeCredits, ENC_BUDGET, creditsOf, priceOf, maxHp, NODE_TEXT, type RunNode } from '../src';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, ownerOf, playStage } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -15,7 +15,7 @@ const SOLO: Pc[] = [{ build: 'plain_gun', level: 1 }];
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const SQUAD: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'tank', level: 1 }, { build: 'sigil', level: 1 }, { build: 'outburst', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
-const started = (pcs: Pc[], seed = 'PHC-0001', test = true) => apply(survivalRoom(seed, pcs, { test }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[], seed = 'PHC-0001', test = true) => startRun(survivalRoom(seed, pcs, { test }), seed);
 /** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
 const take = (g: GameState, node: RunNode | string, n: number) => { let x = g; const id = typeof node === 'string' ? node : node.id; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
 const firstOf = (g: GameState, kind: string) => g.run!.nodes.find((n) => n.kind === kind)!;

@@ -3360,7 +3360,9 @@ function runFight(g: GameState, n: RunNode) {
   const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' || n.kind === 'vault_guard' ? 'hard' : 'standard', g.rng);
   magicIn(g, cb);
   cb.noXp = true; // the run pays its own XP (rule 14)
-  cb.tape = []; // rules 1.47: the fight keeps its effects for the tally (run/tally.ts)
+  // rules 1.47: the fight keeps its effects for the tally (run/tally.ts); the opening turn was emitted as the fight began,
+  // before the tape existed, so it is taken from the effects (else a blow with no source on that turn had no one to credit)
+  cb.tape = (cb.fx || []).filter((e) => e.k === 'turn').slice(-1) as any;
   sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind === 'vault_guard' ? 'THE VAULT\'S GUARD' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
   r.state = 'fight'; r.last = enc.template; r.out = [];
   const charge = Object.fromEntries(chars.map((c) => [c.id, chargeHeld(c)])); // rules 1.51: the supply pack's cores are what the fight burnt

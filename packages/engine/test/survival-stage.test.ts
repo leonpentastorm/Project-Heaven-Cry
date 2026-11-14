@@ -11,7 +11,7 @@ import { type GameState, apply, RuleError, BOONS, BOON_CAP, worthOf, runWorth, c
   renownOf, keptDraft, xpForLevel, devotionXpOf, setDevotionXp, devotionThreshold, maxHp, graftFor, mapNodes, pathMap, eliteUp, type RunNode } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, ownerOf, playStage } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -19,7 +19,7 @@ const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 
 const W = <T,>(g: GameState, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const boon = (id: string) => BOONS.find((b) => b.id === id)! as any;
-const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => startRun(survivalRoom(seed, pcs, { test: true }), seed);
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
 const take = (g: GameState, id: string, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
@@ -39,8 +39,8 @@ function afterBoss(pcs: Pc[] = DUO, prep: (g: GameState) => void = () => {}, see
 }
 
 describe('rules 1.44: the thirteen boons, each through the item-op runner (spec section 3.5)', () => {
-  it('thirteen boons in data, each a relic with one sentence and a worth; every setting\'s pool has one', () => {
-    expect(BOONS).toHaveLength(13);
+  it('nineteen boons in data (thirteen, and rules 1.51\'s six caster boons), each a relic with one sentence and a worth; every setting\'s pool has one', () => {
+    expect(BOONS).toHaveLength(19);
     for (const b of BOONS) { expect(b.kind).toBe('relic'); expect(b.text).not.toMatch(/\{=/); expect(typeof b.worth).toBe('number'); }
     for (const s of SV.settings) expect(BOONS.some((b) => (b.pools || []).includes(s.pool)), s.id).toBe(true);
   });
