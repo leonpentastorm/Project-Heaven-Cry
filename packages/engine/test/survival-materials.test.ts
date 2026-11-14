@@ -13,8 +13,8 @@ const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); 
 const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => startRun(survivalRoom(seed, pcs, { test: true }), seed);
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** The squad at a node of this kind (depth 5), every player marking it (as survival-give.test.ts walks). */
-function at(kind: string, o: { pcs?: Pc[]; prep?: (g: GameState) => void } = {}): GameState {
-  const g0 = clone(started(o.pcs || DUO)), r = g0.run!;
+function at(kind: string, o: { pcs?: Pc[]; seed?: string; prep?: (g: GameState) => void } = {}): GameState {
+  const g0 = clone(started(o.pcs || DUO, o.seed)), r = g0.run!;
   const n = r.nodes.find((x) => x.depth === 5 && !x.gate)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
   n.kind = kind as any; r.at = prev.id; r.state = 'map';
   o.prep?.(g0);
@@ -82,6 +82,28 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     for (const p of piles) for (const e of p.items || []) { expect(e.pack?.kind).not.toBe('weapon'); expect(e.pack?.mags).toBeUndefined(); }
     expect(lines.length).toBeGreaterThan(0);
     expect(piles.flatMap((p: any) => p.items || []).some((e: any) => [...SV.drops.gun, ...Object.values(SV.drops.by_table).flat()].some((d: any) => d.item === e.item))).toBe(true);
+  });
+});
+
+describe('the shop\'s stock (Leon, 14 Nov): a trait\'s gear is not sold, food is; the ammo maker is on the counter', () => {
+  const traitGear = Object.values(ITEM).filter((x: any) => x.stock === false).map((x) => x.id);
+  it('the counter sells the ammo maker at its price; nothing a trait grants is on the counter or in the rolled stock', () => {
+    expect(traitGear.length).toBeGreaterThan(1);
+    for (const seed of ['PHC-0001', 'PHC-0002', 'PHC-0003']) {
+      const g = at('shop', { seed, prep: (x) => { for (const c of Object.values(x.characters)) c.credits = 10000; } });
+      const sh = g.run!.shop!;
+      for (const p of sh.stock) expect(traitGear).not.toContain(p.id);
+      const b = apply(g, { type: 'run/buy', charId: 'c1', key: TOOL }, 'host');
+      expect(b.characters.c1.credits).toBe(10000 - priceOf(TOOL)!);
+      expect(has(b, 'c1', (x) => (x.item || x.id) === TOOL)).toBe(1);
+      for (const id of traitGear) expect(refused(g, { type: 'run/buy', charId: 'c1', key: id })).toBe('This shop does not sell that.');
+    }
+  });
+  it('a trait\'s gear has no price, so it can\'t be sold either; food a trait counts (the smoker\'s) keeps its price', () => {
+    const g = at('shop', { prep: (x) => { x.characters.c1.pack = [...packOf(x.characters.c1), line(traitGear[0], 1, { kind: 'tool' })]; } });
+    const idx = packOf(g.characters.c1).findIndex((x) => (x.item || x.id) === traitGear[0]);
+    expect(refused(g, { type: 'run/sell', charId: 'c1', idx })).toMatch(/can't be sold\.$/);
+    for (const x of Object.values(ITEM) as any[]) if (x.category === 'food') expect(x.stock).not.toBe(false);
   });
 });
 

@@ -2778,7 +2778,7 @@ if _sv54.get("drops") is not None:
 if not (isinstance((data.get("loot_tables") or {}).get("qty_max"), int) and data["loot_tables"]["qty_max"] >= 1): errors.append("loot_tables: qty_max, the most of one thing a loot entry gives (a whole number)")
 
 # Leon 14 Nov 2026: an item a trait grants is not sold in the shop (stock: false, as the armourer's chit), unless it is food.
-for _tr in items("traits") if False else []:
+for _tr in items("traits"):
     for _gid in [e.get("item") for e in (_tr.get("effects") or []) if isinstance(e, dict) and e.get("op") == "start_item"]:
         _gi = _rimap.get(_gid)
         if _gi and _gi.get("category") != "food" and _gi.get("stock") is not False:

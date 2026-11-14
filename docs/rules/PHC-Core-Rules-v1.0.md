@@ -5948,7 +5948,7 @@ standard core's 150 credits (Magic, "Mana cores").
    1 credit, 0.01 kg), **Mana residue** (`mana_residue`, 10 credits, 0.02 kg; its name is never "residue" alone, which
    names a feeling's tiles, rules 1.8), and the **Ammo maker** (`ammo_maker`, a tool, 2 kg, 300 credits). The three
    materials are category `loot` (a shop never rolls them as Today's gear), stack in the pack and sell at the sell rate.
-   The ammo maker is a `tool` (a shop's rolled gear holds it by its category, inside the depth's price band) and is in
+   The ammo maker is a `tool`, always on the shop's counter (the supplies shelf, at its price) and is in
    the shared loot tables (`person`, weight 1). **The Materials card** gives, for the node's credit value C (`nodeCredits`,
    with the node's and the stage's multipliers): **gunpowder ⌈C/2⌉, casings ⌈C/2⌉, mana residue ⌈C/20⌉** (a fight worth
    100 credits: 50, 50 and 5). It goes into the pack whole, through `packAdd` (item 4111).
@@ -5989,9 +5989,11 @@ standard core's 150 credits (Magic, "Mana cores").
    reference path (survival-spec 5.4) a character reaches level 2 at the gate, has 210 XP at the Boss's door and 400
    after it (level 3 from the Boss); the most-fights lane route reaches 250 at depth 12 or 13. After the Bosses of
    stages 1 to 6 a character stands at about level 3, 5, 7, 9, 11 and 12 to 13 (survival-spec 14 (d)). The Essence of
-   Experience leaves Survival's Boss drops through item 3's flag; **its leaving the shop's rolled stock is not part of
-   this revision** (nothing in data excludes one item from a shop's rolled pool, and such a field is not on item 8's
-   list: a question for the lead, survival-spec 14 (f)). **The difficulty fit of rules 1.49 is measured again** with the
+   Experience leaves Survival's Boss drops through item 3's flag, and the shop's stock through `stock: false` (the
+   field that already kept the armourer's chit unsold: `priceOf` gives it no price, so no counter, roll or sale
+   holds it). **Leon (14 Nov): what a trait grants is not sold in the shop, food and drink excepted** (the mask, the
+   Musek Blestor and every trait's `start_item` but food carry `stock: false`; the smoker's cigarettes are food and
+   stay; the validator holds it). **The difficulty fit of rules 1.49 is measured again** with the
    run simulator on the new curve before release (survival-spec 14 (d) names the dials that move).
 10. **Rest training.** A rest's small training (`train`): drill 100 → **200**, study 3 → **5**, practice 5 → **8**,
    Devotion 2 → **4** XP. The training ground's (`training`): drill 300 → **400**, study 8 → **10**, practice 10 →
