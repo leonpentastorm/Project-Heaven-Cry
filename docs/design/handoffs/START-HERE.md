@@ -125,6 +125,13 @@ Read this before measuring or refitting anything.
      numbers, in his words "2 more flux, 2 more core per reload, shit like that". Build this as DATA: a focus is a
      base plus a short list of modifiers read by general code (the "No rebuild" rule: no per-focus code). The same
      shape should serve weapons (a variant is a base plus modifiers), so the roguelike's loot is lines in a file.
+   - **The limit Leon set:** "not too extreme as to become diablo 2 or path of exile but if we have a system that put
+     modifier into weapon and they just work, the design space will grow considerably." So: HAND-MADE variants, not
+     random rolls. Each variant is a named item with ONE or TWO modifiers a player can read in a sentence ("holds 2
+     more Flux", "2 more cores a reload", "kicks less"), drawn from a short closed list of modifier kinds that
+     general code already understands. No affix tables, no stacked random stats, no item level, no numbers a player
+     must compare across six lines. The test of the system: a designer adds a variant by writing one data line, and
+     it works on the card, in the shop, in the fight and in the balance measure with no code.
 2. **Every weapon measured against the plain rifle.** Today only the service rifle, the best gun and the best blade
    are on the contract. The other 60 were numbered by trade-off and never measured one by one. The bow measures 90
    to 100% of the rifle.
