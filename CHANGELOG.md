@@ -47,26 +47,26 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
   durability for a tenth of its price times the share worn (at least 10; 80% at a Forge), on a Repair shelf beside the
   grade step. Wear bars on the shop's and every place's hands and pack and on the path map's squad panel, with a
   ⚠ WORN / ✕ BROKEN mark, so a worn gun is seen before a lane is chosen.
-- **The camp and starting boons (rules 1.51; Leon: "if caster keep getting wreck, we should give them some boons").**
-  A run opens at the camp: each character picks one starting boon of three, offered by what it runs on (a Sigil
-  caster two Sigil boons and one gun boon, a rifleman gun boons, an Outburst caster Outburst boons…), small (4 to 6 of
-  the run's 50), so every run has a first choice from node 1. A caster's armour is fitted to class 3 for free at the
-  camp (the soldier kit's), and the gun in hand carries three spare magazines. Six **caster boons** join the Boss's pick
-  (Ward of Script, Long Hand, Sure Script, Steady Heart, Deep Reserve, Mercy's Return). The fight's ammunition pack is
-  now a **supply pack**: the cores you burnt come back (1 to 2 a fight), an Emanator or Attuner gets 30% of its max MP,
-  Flux is 0 at every fight's start and a Rest fills the loaded core. Held boons show on the path map's squad panel
-  ("Camp" on the starting one). Deep Well and the Gentle property now strengthen heals given to anyone, as they say.
-  Two new kits in the engine (`rigger`, `mender`). The measure, before and after: `survival-starting-boons.md`.
-- **Gear by mode, and the camp's loadout (rules 1.52; Leon, 14 Nov).** Character creation no longer picks a kit (the
-  Kit step is gone; its techniques and starting magic are the **Moves** step): a character is a person, and the mode
-  gives what it carries when play starts. **Survival opens at the camp**, a full screen (the character left, Take in the
-  middle, Carrying right with Budget left and Budget used): ONE free weapon (a melee weapon, a gun with a loaded and a
-  spare magazine, or a bow with one quiver), ONE free focus or none, and a budget of **300 credits** (Leon's "like 200",
-  raised after the measure: a call) spent on the shop's own menu at its prices; body armour takes half of it. What is not
-  spent is your purse (it replaces the flat 150). A Recommended button fills a loadout for your skills; everyone marks
-  Ready (the host can start for an away player). A campaign gives a fixed loadout (the old kit by your door skill); the
-  Proving Ground gives the same to a bare character. Old drafts and saves that carry a kit keep it. Small parties are
-  about a stage harder than before (`survival-loadout.md`).
+- **Gear by mode (rules 1.52; Leon, 14 Nov).** Character creation no longer picks a kit (the Kit step is gone; its
+  techniques and starting magic are the **Moves** step): a character is a person, and the mode gives what it carries
+  when play starts. A campaign gives a fixed loadout (the old kit by your door skill); the Proving Ground gives the same
+  to a bare character. Old drafts and saves that carry a kit keep it.
+- **The camp (rules 1.51, 1.52; Leon: "if caster keep getting wreck, we should give them some boons", and his loadout
+  and weapon-rack rulings).** A run opens at the camp, one full screen in three steps. **The loadout:** ONE free weapon,
+  the most basic of each of nine archetypes (knives and light blades, heavy blades, fist weapons, pistols, revolvers,
+  submachine guns, rifles, shotguns, bows); the **rack** beside it holds the same weapon again and the next one up, with
+  its numbers against the free one; ONE free focus or none; and a budget of **300 credits** (Leon's "like 200", raised
+  after the measure: a call) spent at the shop's prices on armour, ammunition, cores and supplies. Anything bought goes
+  back at full price before Ready; what is not spent is your purse. **The starting boon:** three cards offered by what
+  your loadout holds (a Sigil caster Sigil boons, a rifleman gun boons…), small (4 to 6 of the run's 50), and every card
+  one you can use. **Ready** (the host can start for an away player, who gets the Recommended loadout and the first
+  card). No armour is free: it is bought. Seven **caster boons** join the Boss's pick (Ward of Script, Long Hand, Sure
+  Script, Steady Heart, Deep Reserve, Mercy's Return, Deep Satchel). The fight's ammunition pack is now a **supply
+  pack**: the spare cores you burnt come back, an Emanator or Attuner gets 30% of its max MP, Flux is 0 at every
+  fight's start and a Rest fills the loaded core. Held boons show on the path map's squad panel ("Camp" on the starting
+  one). Deep Well and the Gentle property now strengthen heals given to anyone, as they say; Shelter now works on prayer
+  heals. A solo run's fights are a little lighter (the solo pressure 1.3). The measure: `survival-starting-boons.md`,
+  `survival-loadout.md` and rules 1.52 item 3916.
 - **The browser suite `survival`** walks all of it, two browsers included.
 - **Bows and quivers (rules 1.53, Leon 14 Nov).** No more Nock an arrow (it was the bow's reload, and a quiver could
   never be refilled in a fight, so it could never be taken): a shot draws its arrow from the worn quiver. Every archer

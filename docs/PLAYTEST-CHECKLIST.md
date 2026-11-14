@@ -21,37 +21,39 @@ at once); a normal room never does.
 - [ ] Three large cards: SURVIVAL (selected, a check and the word), ROGUELIKE and CAMPAIGN locked ("Coming", a lock
       mark, the hover card says when). A guest's click says "Only the host picks this."
 - [ ] The Narrator panel is collapsed with "Survival needs no Narrator." and opens on asking.
-- [ ] Start the run: **the camp** opens first (rules 1.51): "THE CAMP", and for your character three large cards, each
-      a line glyph, a name, one sentence with its number, the line's word in its attribute's colour ("SIGIL · BRAIN
-      POWER") and its worth ("5 of your 50"). Every purse holds 150 credits.
-- [ ] **The offer reads what you run on:** a Sigil caster (Evoker in hand) is offered two Sigil boons and one gun boon;
-      a rifleman two gun boons (or two of its highest attribute's line) and one more; an Outburst caster two Outburst
-      boons. Hover a card: the full text. Click one: the map opens, and the squad panel shows it with "Camp" and the
-      run power ("5 of 50").
-- [ ] **The camp's issue:** a caster's kit (class 1 or 2) shows "Fit class 3: free"; click it and the armour is class 3
-      with no credits paid. A soldier's kit already wears class 3 and the line says so.
-- [ ] **Co-op:** each player sees its own cards first; the strip shows each player "Chosen" or "choosing"; the map
-      waits for everyone; the host's "Go on" gives an away player the first card.
 - [ ] **What right looks like:** nobody is asked for an API key; a character above level 1 is refused in words.
-- [ ] **Felt in the first fight (rules 1.51):** with Zeroed, a shot's hover card lists "Zeroed +1"; with Hot Loads the
-      damage line has "Hot Loads"; with Quick Chalk the first glyph costs 1 AP less, once.
-- [ ] **The supply pack after a fight:** a Sigil caster gets back the cores it burnt (1 to 2 a fight, more at an Elite
-      and a Boss), an Outburst caster or a Mender "N MP" (30% of max MP a fight), a gunner its magazines as before;
-      Flux is 0 at every fight's start; a Rest fills the loaded core.
 
-### S.1b Creation and the camp (rules 1.52; ten minutes)
+### S.1b Creation and the camp (rules 1.51, 1.52; fifteen minutes)
 
 - [ ] Creation has no Kit step: Identity, Archetype, Skills, Traits, Belief, **Moves** (techniques and magic), Lock in;
       the review says gear is given by the mode.
-- [ ] Start the run opens **the camp**, full screen: your character on the left (portrait, level, the skills gear reads,
-      kg of limit, armour class), Take in the middle, Carrying on the right with **Budget left** and **Budget used**.
-- [ ] Take ONE free weapon (Melee, Guns, Bows): another pick replaces it. A gun comes loaded with a spare magazine, a
-      bow with one quiver. Take a focus, then decline it by clicking it again.
-- [ ] Spend the budget: stims, rounds, a core, Class 1 armour (half of it). Class 2 armour says why it can't be taken
-      (over the budget). Remove a line from Carrying.
-- [ ] Recommended fills a sensible loadout for your skills; Start the run; at node 1 your purse is what you didn't spend.
-- [ ] Co-op: each builds their own; the run starts when both are Ready; the host's "Start for everyone" gives an
-      untouched loadout the Recommended one.
+- [ ] Start the run opens **the camp**, one full screen in steps (**1 · Loadout**, **2 · Starting boon**): your
+      character on the left (portrait, level, the skills gear reads, kg of limit, armour class), the step in the middle,
+      Carrying on the right with **Budget left** and **Budget used**.
+- [ ] **The weapon rack:** one row a kind of weapon (nine), each with the free one, "Another one" at its price, and "The
+      better one" with its numbers against the free one (▲ better, ▼ worse). Seven of the better ones are over the
+      budget and say so. Take ONE free weapon: another pick replaces it. A gun comes loaded with a spare magazine, a bow
+      with one quiver. "Leave it" on the free spare leaves it behind for nothing; "Take it" brings it back.
+- [ ] Take a focus, then decline it by clicking it again. Spend the budget: stims, rounds, a core, Class 1 armour (half
+      of it). Class 2 armour says why it can't be taken (over the budget). Remove a line from Carrying: the full price
+      comes back.
+- [ ] **No armour is free:** your armour class is what you bought (none, or Class 1).
+- [ ] **Next: starting boon** shows three large cards, each a line glyph, a name, one sentence with its number, the
+      line's word in its attribute's colour ("SIGIL · BRAIN POWER") and its worth ("5 of your 50"). Every card is one you
+      can use: a Sigil caster (Evoker in hand) gets Sigil cards and a gun card; a Mender (Attuner) never an Outburst
+      card; someone with Brain Power but no Evoker no Sigil card; a character with an Evoker and an Emanator cards from
+      both. Put your focus back in step 1 and the cards change.
+- [ ] Ready waits for a card ("Choose Kade's starting boon first."). Choose one, then **Start the run**: the map opens,
+      the squad panel shows the boon with "Camp" and the run power ("5 of 50"), and your purse is what you didn't spend.
+- [ ] **Co-op:** each builds their own and chooses their own card; the strip shows each player ✓ READY or PACKING; the
+      run starts when both are Ready; the host's "Start for everyone" gives an away player the Recommended loadout and
+      the first card.
+- [ ] **Felt in the first fight (rules 1.51):** with Zeroed, a shot's hover card lists "Zeroed +1"; with Hot Loads the
+      damage line has "Hot Loads"; with Quick Chalk the first glyph costs 1 AP less, once; with Shelter a Whisper of
+      Health heals 15% more.
+- [ ] **The supply pack after a fight:** a Sigil caster gets back the spare cores it burnt (none if it burnt none), an
+      Outburst caster or a Mender "N MP" (30% of max MP a fight), a gunner its magazines as before; Flux is 0 at every
+      fight's start; a Rest fills the loaded core.
 - [ ] A campaign room (when one is open) or the Proving Ground: a new character arrives geared.
 
 ### S.2 The path map: lanes, junctions, the vault (ten minutes)
@@ -262,7 +264,7 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
 **Starting boons, caster boons and supply (rules 1.51; survival-spec section 13.9, built as recommended)**
 80. **Starting boons are small:** worth 4 to 6, at most 6 of the 50 (12%), one each, their own pool: big enough to pick
     for, small enough that the Boss boons stay the run's rule-changers (13.9.1).
-81. **The camp's free armour, class 3, in Survival only** (a campaign's kits are unchanged); the third spare magazine
+81. *(Withdrawn: call 103.)* **The camp's free armour, class 3, in Survival only** (a campaign's kits are unchanged); the third spare magazine
     is the camp's issue too, in Survival only (13.9.2).
 82. **The Sigilist may still fall short:** measured first; what it still needs is a Sigil rule at levels 1 to 5, not a
     bigger boon (13.9.3; the measure is in `survival-starting-boons.md`).
@@ -291,18 +293,52 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
     reach stage 3), the Rigger (a Figment every fight) and the squads (stage 3 to 4) are on target.
 
 **The loadout (rules 1.52; `survival-loadout.md` section 5)**
-87. **The budget is 300, not Leon's 200:** at 200 the measured squads fell in stage 1 (a duo on every seed); at 300
+95. **The budget is 300, not Leon's 200:** at 200 the measured squads fell in stage 1 (a duo on every seed); at 300
     Class 1 armour is still half of it.
-88. **Recommended takes Class 1 armour first** for every profile (the measured fit), then the door's core, a field kit,
+96. **Recommended takes Class 1 armour first** for every profile (the measured fit), then the door's core, a field kit,
     a stim, and the weapon's ammunition.
-89. **The camp's gear shelf is a fixed list,** not a rolled stock, so every player sees the same choices.
-90. **The Evoker and the Visualizer bring one core free,** as a gun brings its spare magazine.
-91. **A campaign's default loadout** is the old kit chosen by the door skill until the campaigns name their own.
-92. **The Forge fits Class 1 armour (100):** a character may now set out with none.
-93. **The free list** includes the service rifle (the AHOC's issue weapon), though by price it is not "low level".
-94. **Small parties are harder than before** (a duo by about a stage; solo gunner on the gear route clears stage 1 on 1
+97. **The camp's gear shelf is a fixed list,** not a rolled stock, so every player sees the same choices.
+98. **The Evoker and the Visualizer bring one core free,** as a gun brings its spare magazine.
+99. **A campaign's default loadout** is the old kit chosen by the door skill until the campaigns name their own.
+100. **The Forge fits Class 1 armour (100):** a character may now set out with none.
+101. ~~**The free list** includes the service rifle~~ *(Superseded by your weapon-rack ruling: call 104.)*
+102. **Small parties are harder than before** (a duo by about a stage; solo gunner on the gear route clears stage 1 on 1
     seed of 4); the four-character curve is about where it was. A bigger budget or the small-party Elite shares are the
-    dials, after a playtest.
+    dials, after a playtest. *(Fitted after the join: call 113.)*
+
+**The review, the join and the weapon rack (rules 1.51 item 10, 1.52 items 8 to 10)**
+103. **The camp's free armour is gone** (your loadout ruling): armour is bought from the budget, and the free third
+     magazine with it. Calls 81 and the camp's issue are withdrawn. The casters lost their biggest lever (call 113).
+104. **The free weapon is the cheapest of each archetype by price**, so the rifle's is the **lever carbine** (700, loaded
+     round by round), not the service rifle (900, now the rifle rack's better one), and the pistol's is the two-round
+     **parlour pistol** (150; the service pistol 250 is its better one).
+105. **The archetypes are the data's families and categories**: knives and light blades (knife, then throwing knives),
+     heavy blades and axes and polearms in one (machete, then the maul), fist weapons (fists skipped: knuckledusters),
+     pistols and revolvers apart, SMGs, rifles (the long rifle is one of them), shotguns, bows and crossbows in one
+     (recurve, then longbow). Say if you want long rifles, crossbows or polearms as their own archetype.
+106. **Left out of the free list:** launchers, flamers and belt-fed or rotary guns (support weapons), the focus weapons
+     (the Evoker blade, the Emanator katana and gauntlet, the core rifle: a focus and a weapon at once), and grenades
+     (on the Thrown shelf).
+107. **The better one over the budget is shown with its refusal** for seven of nine archetypes (only the throwing knives
+     and the service pistol are affordable): a goal for the first shop.
+108. **Recommended gives a focus-holder the revolver** (six rounds, one hand) rather than the pistols' two-round parlour
+     pistol; Raw Power above Dexterity the machete; else the lever carbine.
+109. **The starting boon is the camp's second step**, read from what the loadout holds; Ready waits for it; the host's
+     Start gives an away player the Recommended loadout and the first card.
+110. **Every card is one the character can use** (a boon names what it needs: a focus in hand, a gun or a melee weapon,
+     skill points). Two new rows: **Held Close** (Bonds: 6% less damage while you hold a Bond) and **Covering Prayer**
+     (Faith: prayer shields 15% stronger). Clear Pulse left the Bonds line; Steady Heart lost its Empathy door.
+111. **Bandolier doubles magazines only**, as before; the caster supply's doubling is a new Boss boon, **Deep Satchel**
+     (worth 8): Bandolier's doubling was real power for casters at worth 0.
+112. **Cores back are exactly the spare cores burnt** (none burnt, none back); **Long Hand is worth 15** (was 12).
+113. **The fit after the join:** a solo party's pressure 1.6 → **1.3**. Solo gunner stage 1 in 9 of 12; squad of four
+     ends in stage 3 to 4; duo 2.5, 5.0, 3.3 by route. **Missed:** the solo Channeler clears stage 1 in **3 of 12**
+     (target: about the gunner's 9; a level 1 Channeler in Class 1 armour loses to one Soldier). A budget of 450 with
+     Class 2 armour first lifted it only to 4 and the gunner past its band. Your call: a bigger budget, a cheaper Class
+     2, or the Outburst's level 1 to 5 damage in Balance 2.0. The solo Sigilist: 3 of 12 (Balance 2.0).
+114. **The gunner's gain is the starting boon's:** 29 of 36 with every lever, 25 of 36 with the starting boon off; the
+     supply pack and the run policies move a gunner by nothing (identical runs). Nothing was shrunk.
+
 ## B. Bows and quivers (rules 1.53, in 0.27.0)
 
 Sources: rules 1.53 (items 4000 to 4008), `docs/design/handoffs/bows-quivers.md`. Leon's rulings of 14 Nov 2026.
@@ -327,20 +363,20 @@ Sources: rules 1.53 (items 4000 to 4008), `docs/design/handoffs/bows-quivers.md`
 - [ ] An old save with an archer loads: the bow's arrows are its worn quiver.
 
 **Calls I made for you (reverse any)**
-80. **"20 more into each tier":** before 1.53 every quiver held 20 and grade did not change it, so the only tier was
+B1. **"20 more into each tier":** before 1.53 every quiver held 20 and grade did not change it, so the only tier was
     the one number: the Standard quiver holds **40**. The ladder above it (Fine 50, Masterwork 60, Relic 70, Celestial
     80) is mine, so a graded quiver means more arrows as you ruled; say if you want other steps.
-81. **Your "or":** two quivers and Switch quiver (the lead's reading, then yours), not a removed action alone.
-82. **Switch quiver costs a reload** (2 AP, the one reload rule), and is free where a reload is free (Resupply, Between
+B2. **Your "or":** two quivers and Switch quiver (the lead's reading, then yours), not a removed action alone.
+B3. **Switch quiver costs a reload** (2 AP, the one reload rule), and is free where a reload is free (Resupply, Between
     Heartbeats, Running Reload). A Last Round kill with a bow still owes no free reload (unchanged): should it free the
     next Switch quiver?
-83. **The quivers are the character's, not the bow's:** a recurve and a longbow shoot from the same worn quiver.
-84. **The six enchantments are the Outburst tones' riders** at a stage each (Ember Fire 2: Burning; Storm 1: ignores
+B4. **The quivers are the character's, not the bow's:** a recurve and a longbow shoot from the same worn quiver.
+B5. **The six enchantments are the Outburst tones' riders** at a stage each (Ember Fire 2: Burning; Storm 1: ignores
     half cover; Frost 1: Slowed on a failed Body save; Stone 2: Prone on a failed save; Gale 1: a 2-tile push; Acid 1:
     Corroded on a failed save), **400 credits and ×0.9 damage** (the incendiary round's price for its rider).
-85. **A quiver costs 120 credits and weighs 0.6 kg** (Standard; the grade's price factor above). Quivers are carried,
+B6. **A quiver costs 120 credits and weighs 0.6 kg** (Standard; the grade's price factor above). Quivers are carried,
     stowed and enchanted out of a fight only (in a fight, Switch quiver is all).
-86. **Survival:** the counter sells a plain quiver to a party with an archer; a reward pick may offer an archer a quiver
+B7. **Survival:** the counter sells a plain quiver to a party with an archer; a reward pick may offer an archer a quiver
     as its own offer; the vault's chest may hold one at its grade; the Forge stocks enchantments only for a party that
     carries quivers (so a party without an archer sees the same stock as before).
 

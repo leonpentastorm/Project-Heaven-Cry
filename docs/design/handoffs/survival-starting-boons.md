@@ -1,5 +1,12 @@
 # Survival: starting boons, caster boons and the supply pack (hand-off, 14 Nov 2026)
 
+> **After the integration (14 Nov 2026):** this branch was joined with the others for 0.27.0 and changed there. The camp is
+> ONE flow on the loadout's screen (the loadout, then the starting boon, then Ready); the camp's free armour and free
+> magazines are gone (armour is bought); the reviewer's defects were fixed (Shelter, the offer by what a character can
+> use, Bandolier and Deep Satchel, the cores back, Long Hand); the free weapon is the most basic of each archetype with
+> a rack beside it (Leon's ruling); the solo pressure is 1.3. Rules 1.51 item 10 and rules 1.52 items 8 to 10 say what
+> holds now; the measure on the joined tree is rules 1.52 item 3916.
+
 Leon, 14 Nov 2026: *"if caster keep getting wreck, we should give them some boons"*. Design: `docs/design/survival-spec.md`
 section 13 (draft 5, rules 48 to 54). Rules: `docs/rules/PHC-Core-Rules-v1.0.md` **revision 1.51**, items **3800 onward**
 (every number PROVISIONAL, in `data/survival.json`). Branch: this worktree's, from `claude/charming-gauss-hbq4n0` at

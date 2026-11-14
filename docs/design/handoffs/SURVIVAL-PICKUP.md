@@ -11,10 +11,16 @@
 > numbered by trade-off and never measured one by one), list the outliers, refit; with it the open lines from
 > Classes 3.0 (Figments' door against the Rigger, the Skirmisher 159 against 145, the healer stall at level 20,
 > Hymn 138 against 150), casters in Survival after the boons, and the repair rate.
+> **Measured for Balance 2.0 on the 0.27.0 tree** (rules 1.52 item 3916; 3 routes × SIM-1 to 4, stages capped at 5, the
+> camp as a player builds it, no free armour): the **solo Sigilist clears stage 1 in 3 of 12** (means 1.3, 1.8, 1.6; its
+> Line at Brain Power 1 to 3 is the gap, a Sigil rules matter) and the **solo Channeler in 3 of 12** (a level 1
+> Channeler in Class 1 armour loses to one Soldier; the camp's free class 3 had made it 9); the solo gunner 9 of 12.
+> **The camp, joined (14 Nov):** one flow (the loadout, the starting boon, Ready); the free weapon is the most basic of
+> each archetype and the rack holds it again and the next one up (Leon's ruling); no free armour.
 
-**Start here for Survival.** Survival is built (rules 1.39 to 1.50, 1.52's loadout and 1.53's quivers; version 0.27.0 on the branch) and **waits for
+**Start here for Survival.** Survival is built (rules 1.39 to 1.53: the starting boons 1.51, the loadout 1.52, the quivers 1.53; version 0.27.0 on the branch) and **waits for
 Leon's word to go live**: nothing of it is deployed. 0.26.0 (Classes 3.0) is live. Read `CLAUDE.md`, then this file,
-then the spec `docs/design/survival-spec.md` (draft 5 and its four "Settled by Leon" blocks; where the built revisions
+then the spec `docs/design/survival-spec.md` (draft 5 and its six "Settled by Leon" blocks; where the built revisions
 differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule). What to try by hand:
 `docs/PLAYTEST-CHECKLIST.md` section S (it ends with every call made for Leon, numbered).
 
@@ -34,6 +40,7 @@ differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule)
 | lanes | 1.48 | The path map as lanes, junctions and one guarded vault; the themed overland map (`PathMap.tsx`) | `survival-lanes.md` |
 | 9, 10 | 1.49 | The run simulator and the fit; the map fitted to its frame; the browser suite completed; the docs; 0.27.0 | `survival-steps-9-10.md` |
 | repair | 1.50 | The repair service (`run/repair` at a shop and a Forge; the Repair shelf; wear bars and the WORN mark on the places and the path map); the simulator repairs | `survival-repair.md` |
+| starting boons | 1.51 | Starting boons (26, by what a character can use: a boon's `needs`), seven caster boons in the Boss's pool (Deep Satchel among them), the supply pack (the spare cores burnt back, 30% MP for an Emanator or Attuner, Flux 0 after a run's fight); the reviewer's fixes (Shelter, the offer, Bandolier, the cores, Long Hand) | `survival-starting-boons.md` (rules 1.51 item 10 for the review) |
 | loadout | 1.52 | Creation without a kit (gear by mode: `modes.json loadout`); the camp before node 1 (`run/loadout`, `run/ready`; one free weapon, one free focus, a budget of 300 at the shop's prices (Leon's "like 200", raised by the measure); Recommended); the camp's full screen (`LoadoutScreen.tsx`, `loadoutView`); the fit for the bare start | `survival-loadout.md` |
 | text | none | Every Survival string written to the player (Leon, 14 Nov: "write to the PLAYER"): keepers' lines by tab, the shrine's votaries, boon room, stops and forks, refusals by name; the rules in `ui-screens.md` "Writing for the player" | `survival-text-pass.md` |
 | starting boons | 1.51 | The camp (state `camp`: a starting boon of three by the character's line, `run/boon` and the host's `run/go` there; the camp's issue: free armour to class 3, three spare magazines), six caster boons in the Boss's pool, the supply pack (burnt cores back 1 to 2 x n, the MP share, Flux 0 after a fight, the loaded core full at a Rest), the `rigger` and `mender` kits; `CampScreen`, held boons on the squad panel; the simulator's run policies (`run-policies.ts`) and levers (`SIM_LEVERS`) | `survival-starting-boons.md` |

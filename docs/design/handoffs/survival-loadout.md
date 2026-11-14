@@ -1,5 +1,12 @@
 # Survival: gear by mode and the camp's loadout (rules 1.52; 14 Nov 2026)
 
+> **After the integration (14 Nov 2026):** this branch was joined with the others for 0.27.0 and changed there. The camp is
+> ONE flow on the loadout's screen (the loadout, then the starting boon, then Ready); the camp's free armour and free
+> magazines are gone (armour is bought); the reviewer's defects were fixed (Shelter, the offer by what a character can
+> use, Bandolier and Deep Satchel, the cores back, Long Hand); the free weapon is the most basic of each archetype with
+> a rack beside it (Leon's ruling); the solo pressure is 1.3. Rules 1.51 item 10 and rules 1.52 items 8 to 10 say what
+> holds now; the measure on the joined tree is rules 1.52 item 3916.
+
 Leon's ruling (binding): *"Revamp the character creation screen and remove the kit then, we give people stuff base on
 the mode. Survial will give you one low level melee, one low level gun, a bow, one of the 4 focus and a budget (like 200
 points or smt) for them to choose ammo, stims and armor and such, a character going out with armor will lack in many
