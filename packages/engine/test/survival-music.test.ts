@@ -58,7 +58,7 @@ describe('rules 1.54: Survival\'s music by situation', () => {
     const g0 = clone(started()), r = g0.run!, boss = r.nodes.find((x) => x.kind === 'boss')!, prev = r.nodes.find((x) => x.links.includes(boss.id))!;
     r.at = prev.id;
     let g = apply(take(g0, boss.id), { type: 'run/skip' }, 'host');
-    for (let i = 0; i < DUO.length; i++) g = apply(g, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'credits' }, ownerOf(i));
+    for (let i = 0; i < DUO.length; i++) g = apply(g, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'materials' }, ownerOf(i));
     expect(g.run!.state).toBe('boon');
     expect(heard(g)).toBe(M.boon);
   });
