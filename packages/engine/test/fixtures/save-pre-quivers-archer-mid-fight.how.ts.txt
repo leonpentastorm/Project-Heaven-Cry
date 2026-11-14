@@ -1,0 +1,22 @@
+// Writes test/fixtures/save-pre-quivers-archer-mid-fight.json with the engine at 92f51dbb (claude/charming-gauss-hbq4n0,
+// the commit before rules 1.53's quivers): an archer (recurve bow) whose quiver was loaded out of a fight with a mix of
+// arrows (c.phys.quiver, the old per-bow quiver; c.loaded its count), a second character with a rifle, then a fight
+// started and the archer's first shot loosed (the arrow drawn; u.quiver on the unit, no quiverGear). Run once (as a
+// vitest file in that engine's test/ folder, OUT=<path>); never regenerate.
+import { it } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { apply } from '../src';
+import { storyWith } from './helpers/perkfight';
+it('writes the fixture', () => {
+  const s = storyWith([{ name: 'Ilse', weapon: 'recurve_bow', skills: { dexterity: 6 } }, { name: 'Kade', weapon: 'hellraiser_service_rifle', skills: { dexterity: 4 } }], 'BOWS1');
+  const id = s.chars[0].id;
+  const c = s.g.characters[id];
+  c.pack = [...(c.pack || []), { id: 'rounds:arrow', name: 'Arrow', qty: 6, kind: 'ammo', calibre: 'arrow', ammoType: 'incendiary' } as any];
+  s.act({ type: 'phys/quiver', charId: id, weaponId: 'recurve_bow', load: { standard: 14, incendiary: 6 } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'They come over the wall.', combat: { name: 'The wall', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
+  let g = s.g; const cb = g.combat!;
+  for (let i = 0; i < 6 && cb.units.find((u) => u.id === cb.order[g.combat!.turn])?.charId !== id; i++) g = apply(g, { type: 'combat/end-turn', unitId: g.combat!.order[g.combat!.turn] } as any, 'host');
+  const u = g.combat!.units.find((x) => x.charId === id)!, foe = g.combat!.units.find((x) => x.side === 'foe')!;
+  try { g = apply(g, { type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' } as any, 'host'); } catch { /* out of range: the fixture still holds the quiver */ }
+  writeFileSync(process.env.OUT!, JSON.stringify(g));
+});
