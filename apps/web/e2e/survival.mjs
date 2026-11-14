@@ -223,7 +223,7 @@ ok('node 1 fought by hand to its end: ' + (g.combat?.summary || '?'), g.combat?.
 await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 { // the music's Now playing card leaves within its 5 s after a fight (it stayed over the sheet for 30 s and more)
-  const gone = await p.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some((e) => /NOW PLAYING/.test(e.textContent || '')), null, { timeout: 8000 }).then(() => true, () => false);
+  const gone = await p.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some((e) => /NOW PLAYING/.test(e.textContent || '')), null, { timeout: 8000 }).catch(() => 'stayed') !== 'stayed';
   ok('after the fight the Now playing card is gone within 8 s (it does not sit over the sheet)', gone);
 }
 r = await run();
