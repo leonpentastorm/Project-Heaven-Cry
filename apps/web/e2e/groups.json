@@ -2,7 +2,7 @@
  "smoke": ["old-save", "creation-points", "perks", "two-players", "turn-order"],
  "rules": [
   "old-save", "creation-points", "creation-layout", "skeleton-screens", "rules114", "perks", "classes", "classes-moves", "chaplain", "figments", "pg-levelup",
-  "physical", "physical-pack", "gear-icons", "combat-fixes", "tabs", "sandbox", "ground", "world-play", "right-panels",
+  "physical", "physical-pack", "quivers", "gear-icons", "combat-fixes", "tabs", "sandbox", "ground", "world-play", "right-panels",
   "music-pool", "coop-stall", "faith", "layout", "mana-forecast", "mapzoom", "missions", "pg-art", "playscreen",
   "playtest-tools", "reconnect", "shell-guest", "ui-shell", "voice", "vote", "shadow", "tending", "reactions", "room", "survival", "kit-map"
  ],

@@ -24,11 +24,13 @@ const ids = (gr: any[], tab: string) => (gr.find((x) => x[3] === tab)?.[1] || []
 const labels = (gr: any[], tab: string) => (gr.find((x) => x[3] === tab)?.[1] || []).map((i: any) => i[1]);
 
 describe('weapon-granted actions in the action list', () => {
-  it('a bow shows no Clear jam and no magazine; it nocks arrows', () => {
+  it('a bow shows no Clear jam and no magazine, and no Nock an arrow; with two quivers its reload is Switch quiver (rules 1.53)', () => {
     const { cb, u, g } = fight(charWith()); u.weapon = 'recurve_bow'; u.mags = []; u.loose = 10; u.ammo = 0;
     const gr = actionGroups(cb, u, null, { g });
     expect(ids(gr, 'utility')).not.toContain('clear'); expect(ids(gr, 'utility')).not.toContain('load');
-    expect(labels(gr, 'attack')).toContain('Nock an arrow'); // (with the shots since 0.18.1)
+    expect(labels(gr, 'attack')).not.toContain('Nock an arrow'); expect(labels(gr, 'attack')).not.toContain('Switch quiver'); // one quiver: no reload
+    (u as any).quiver = { standard: 0 }; (u as any).quiverReady = { id: 'quiver', arrows: { standard: 8 } };
+    expect(labels(actionGroups(cb, u, null, { g }), 'attack')).toContain('Switch quiver');
     expect(ids(gr, 'attack')).not.toContain('brace');
   });
   it('a revolver reloads with a speedloader; an LMG braces; a knife reloads nothing and has its Cut and Techniques', () => {

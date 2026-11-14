@@ -621,7 +621,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Long rifle | Rifle | 48 (rules 1.18; was 50). A Shot costs 3 AP, an Aimed Shot 4 | 30 | 5 | 6 | single | 6 kg |
 | .700 Blackpoint anti-materiel | Heavy | 66 (rules 1.18; was 90), ignores 10 armour | 40 | 3 | 3 | single; must be braced or prone | 15 kg |
 | Hellraiser LMG | Heavy | 25 | 18 | 100 | 14 | burst, auto; −2 to hit unless emplaced | 10 kg |
-| Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 20 | none | single | 1.5 kg |
+| Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 40 | none | single | 1.5 kg |
 | Crossbow | Bow | 55 | 16 | 1 | none | single | 4 kg |
 | Combat knife | Light melee | 15 (thrown: 6 tiles) | 1 | none | none | none | 0.5 kg |
 | Sabre | Light melee | 28 | 1 | none | none | none | 1.5 kg |
@@ -824,8 +824,8 @@ Weapon skills and lore:
 
 | Type | Dmg | Range | Ammo | Kg | Price | Needs |
 |---|---|---|---|---|---|---|
-| ✓ Recurve bow | 20 + 5 × Raw Power | 14 | quiver of 20 | 1.5 | 300 | |
-| Longbow | 25 + 6 × Raw Power | 20 | quiver of 20 | 2 | 450 | Raw Power 3 |
+| ✓ Recurve bow | 20 + 5 × Raw Power | 14 | quiver of 40 | 1.5 | 300 | |
+| Longbow | 25 + 6 × Raw Power | 20 | quiver of 40 | 2 | 450 | Raw Power 3 |
 | ✓ Crossbow | 55 | 16 | 1 bolt | 4 | 500 | |
 | Repeating crossbow | 22 | 10 | 6 bolts | 3.5 | 700 | |
 
@@ -1032,7 +1032,7 @@ Ranged:
 | **Arc** | It flies over. Indirect fire. |
 | **Silent** | No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden. |
 | **Loud** | A cannon in the hand. A miss still gives Pressure; saves against it are harder. |
-| **Drawn** | Your arm is the powder. No Heat or Recoil; a quiver, not a magazine; it can't be reloaded in a fight. |
+| **Drawn** | Your arm is the powder. No Heat or Recoil; quivers, not magazines: its reload is Switch quiver, and a quiver is never refilled in a fight (rules 1.53). |
 | **Thrown** | It can leave the hand. |
 
 Each weapon also names the skill its attacks roll (**hits with**) and what its damage **scales with**: the damage multiplier of a weapon attack is 1 + 0.1 × (that Attribute − 1) + 0.05 × that skill (Derived stats). A Bare weapon scales with Strength and with both Raw Power and Dexterity.
@@ -1105,7 +1105,7 @@ Guard is a pool of points that takes hits for you. Anyone with Durability has on
 7. **A Watch** (a held shot) is paid for on your turn with its trigger, and fires as your reaction with no prompt. It ends when it fires or at the start of your next turn. It can't be set while you are Pressed, and becoming Pressed ends one you hold.
 8. **Stopped once.** A unit that a ranged technique has Pinned, pushed, knocked Prone or halted can't be stopped by another ranged technique until the end of its next turn. Where a stop allows a save it is the better of Guts and Athletics against TN 12. *(Superseded by Leon's ruling of 10 Nov 2026 (rule 8 above): 12 + half the user's strength with the weapon's skill, rounded up, plus the technique's step.)* Melee techniques neither set nor check this.
 9. **A Press** adds 1 Heat on top of what it fires. A **Set** costs 1 AP, never fires and adds no Heat. Every technique lists its rounds beside its AP; a technique the magazine can't pay for is refused with the count.
-10. **The quiver.** A Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight.
+10. **The quiver.** A Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight. *(Rules 1.53: quivers are graded gear, two carried, one worn; Switch quiver is a Drawn weapon's reload; a quiver holds its grade's arrows, 40 at Standard; one enchantment a quiver.)*
 11. **Thrown weapons.** A technique that throws the held weapon makes a ranged attack at throwing range, with line of sight and cover, aimed with Dexterity whatever the weapon hits with. It burns no rounds and adds no Heat or Recoil. A hit gives Pressure as any ranged hit does. *(Rules 1.12 added "and Momentum when the technique is a melee one"; superseded by the Momentum rework: only the plain attack, Cut, gives Momentum.)* The weapon lands in the pile on the target's tile.
 12. **A weapon that isn't in the hand.** A technique that draws its weapon (Draw Cut, Snap Shot) names a stowed weapon: the draw is part of the technique and costs nothing more, and the weapon that was in the hand goes to the pack. A carried grenade is the weapon of a technique used with it (Lob, Rout): it has the grenade's properties, and one is spent.
 13. **Nailed in place.** Where a technique pins "until it spends 2 AP", the target can't move until it pays 2 AP to pull free, or an ally next to it does. A weapon left in it falls to its tile when it is freed, when it dies or surrenders, or when the fight ends. **A weapon left in it (Run Through, Reach)** may be pulled out by anyone next to it for the same 2 AP, which frees it: the one who left it, or anyone else not on the target's side, takes the weapon into a free hand (no free hand: it falls to the target's tile); an ally of the target frees it as above (Leon, 10 Nov 2026).
@@ -5654,6 +5654,66 @@ shop and the Forge that gunsmith. Every number is PROVISIONAL (items 3700 onward
    repair whatever is Worn or Broken at each shop and Forge, when affordable, before a grade step): items 3707 to 3709.
    No dial was moved.
 
+## Rules revision 1.53: bows and quivers (Leon, 14 Nov 2026)
+
+Leon's rulings (14 Nov 2026), verbatim: "make the quiver enchantable and add 20 more arrow into each tier. The 'knock
+an arrow' action is now useless so remove it. or let people carry 2 quiver and change that action to 'Switch to another
+quiver'"; then "naw, nock an arrow was the reload action for bow, but after we add a rule that quiver can't reload mid
+fight it doesn't do shit. So let all acher carry 2 quiver then swap between them like 2 magazine, or one quiver full of
+enchanted and one normal arrow, they choose, it also give the archer an objective of 2 celestial quiver in a run"; and
+"no quiver add more arrow and notthing else, want accuracy then upgrade the bow". Built 14 Nov 2026
+(`docs/design/handoffs/bows-quivers.md`). Every number is PROVISIONAL (items 4000 onward). It overrides rules 1.12's
+Weapons point 10 ("The quiver") where they differ, the Drawn property's line, and item 79's "Nock an arrow".
+
+1. **There is no Nock an arrow.** It was a Drawn weapon's reload (the reload action under the label every weapon loaded
+   round by round shows, at the reload's 2 AP); rules 1.12 (Weapons point 10: "A quiver can't be refilled in a fight";
+   item 949) refused it in every fight, so it was shown and could never be taken. Loosing an arrow already drew it from
+   the quiver as part of the shot (Aimed Shot, a plain shot, every technique: the shot's own AP, nothing more). Removing
+   the action frees no AP and moves no number of the bow's (item 4001).
+2. **Quivers are gear, and every archer may carry two** (`rules.json weapons_rules.quiver.carried` 2): one **worn**,
+   which arrows are drawn from, and one **ready**. A quiver is an item (`items.json quiver`), carried the way the off
+   hand carries its instance: its grade, its one enchantment and the arrows in it stay with it (put in the pack, its
+   arrows go back to the pack as loose arrows). An archer's first quiver comes with the bow: a character who carries a
+   Drawn weapon and no quiver recorded (every save before this revision) has one Standard quiver holding what its bow
+   held. The quivers are the character's, not the bow's: a recurve bow and a longbow shoot from the same worn quiver.
+   Quivers are carried, put away, enchanted and filled out of a fight only.
+3. **Switch quiver is a Drawn weapon's reload** (Attack tab, the bow's group, where a gun's reload is): the reload's
+   price (`actions.json costs.reload`: 2 AP, the same rule as every reload; free where a reload is free, Resupply or
+   Between Heartbeats), and the ready quiver becomes the worn one. **With one quiver it is not offered.** It is refused
+   in words when the ready quiver is empty ("The other quiver is empty."). A quiver is never refilled in a fight (rules
+   1.12 stays): switching back finds what was left. Between fights a quiver is filled from carried arrows (the quiver
+   menu, any mix of types up to what it holds), as before, worn or ready.
+4. **An empty worn quiver:** a shot is refused in words, naming the other when it holds arrows ("The quiver is empty:
+   Switch quiver (7 in the other)."); the Switch quiver card says so.
+5. **A quiver's grade gives arrows held and nothing else** (Leon: "want accuracy then upgrade the bow"): no accuracy,
+   no damage, no durability (a quiver does not wear). It climbs the grade ladder every weapon climbs (Standard, Fine,
+   Masterwork, Relic, Celestial: `setGrade`, Survival's grade step at a shop and the Forge). Arrows held,
+   `items.json quiver.arrows`: **Standard 40, Fine 50, Masterwork 60, Relic 70, Celestial 80** (item 4003). Before this
+   revision every quiver held 20 (the bow's `magazine`) and grade did not change it; "20 more into each tier" is the
+   Standard 40. The bows' own `magazine` (the quiver a bow comes with, an enemy archer's) is 40.
+6. **One enchantment a quiver** (its one slot, `mod_slots: ["enchantment"]`, at every grade; it does not grow with
+   grade): an items.json mod with `mod_slot: "enchantment"`, fitted from the pack (the same fitting as a weapon's mods),
+   bought where mods are sold (the Survival Forge's stock, a campaign's shop). It rides **every arrow drawn from that
+   quiver** and no other: an Outburst tone's riders at the enchantment's stage on the arrow's hit (the riders the tone
+   puts on damage itself, armour and bonus damage and chains, are left out; the same rider a weapon hit carries under
+   Storm Hand's Infusion), and the arrow deals the enchantment's `damage_mult` (the price of the rider, as an incendiary
+   round's ×0.9). Six, one per tone the game has: **Ember** (Fire at stage 2: Burning, no save), **Storm** (stage 1:
+   ignores half cover, read before the roll), **Frost** (stage 1: Slowed unless the target passes a Body save),
+   **Stone** (stage 2: Prone unless it passes a Body save), **Gale** (stage 1: a push away from you), **Acid** (stage 1:
+   Corroded unless it passes a Body save). Each **400 credits, ×0.9 damage** (items 4004, 4005). An arrow's type rider
+   (armour-piercing, hollow-point, incendiary) still applies on top. The shot carries the element for the screen (the
+   element's own hit effect).
+7. **Enemies' bows follow the same rule:** an enemy archer has one Standard quiver of standard arrows (40), draws from
+   it as part of the shot, and has no reload.
+8. **What it does to the bow's line** (item 4006): the nock was never paid, so nothing moved by its going; the 40-arrow
+   Standard quiver lifts only the plain-shots-only rotation on the simulator's eight-turn range (2.5 shots a turn ran a
+   quiver of 20 dry in turn 8); the bow's best way (Aimed Shots, 16 arrows in 8 turns) did not move. No dial was moved.
+9. **Survival:** a quiver is a weapon-class piece for an archer: the reward pick's "one offer for your door" counts a
+   quiver for a character who carries a Drawn weapon, the shop and the Forge stock quivers and enchantments, and the
+   grade step grades a carried quiver. A graded quiver counts in the run's gear column as arrows held only (no worth
+   against the best-gear ceiling: rules 1.26 holds the bow by the bow's grade). Two Celestial quivers are an archer's run
+   goal: nothing blocks carrying two of the top grade (item 4007).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -6188,7 +6248,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 76. **Twinbound:** the Twin's HP 50%, 4 AP, 6-tile leash, 3 Strain on its loss, three fixed built-in Outbursts.
 77. **Magic in the engine (first build; the Ring and Stack parts superseded by rules 1.4):** damage types against armour (Sigil takes full armour, Elemental half, Soul and true none); a Ring hits at ×0.8, SPREAD at ×0.6; Evoke charge 1 a glyph minus the Sigil core saving (minimum 1); ~~the Evoker and Emanator count when carried, not only in hand~~ (retired by item 630: a focus counts only in a hand); learning is one new word, school or module a scene, from an ally who knows it or a Sigil plate; enemies save at +0 / +1 / +2 / +3 by tier (minion to boss); the mana meter starts each session at 15; the periodic, proximity, expire, mastery and teleport modules, the six advanced classes' moves and the Grand forms fall back to the Narrator until the engine runs them.
 78. **The perk, trait and class-move runtime (first build, provisional):** item skill modifiers reach every d20 that uses the skill (checks, passives, saves, weapon attacks, initiative), never derived per-point stats; an active perk's or class move's other effects run only when its action runs, while a trait's effects always stand; story hooks reach every character; a per-scene use spans a fight in that scene; a story use the Narrator refuses is refunded.
-79. **Weapon-granted actions (provisional):** a weapon shows only the actions it grants (Reload by its own name: Swap magazine, Speedloader, Swap drum, Feed belt, Nock an arrow, Load a bolt…; Load a magazine; Clear jam; Brace; Field Repair; Overwatch or Hold a strike). Only weapons with a Heat limit jam; the rest fumble on a natural 1 (−1 AP next turn) and build no Heat. Brace only for weapons that need or reward it. The breacher tube reloads for 3 AP (data `reload_ap`).
+79. **Weapon-granted actions (provisional):** a weapon shows only the actions it grants (Reload by its own name: Swap magazine, Speedloader, Swap drum, Feed belt, Load a bolt, a bow's Switch quiver with two quivers (rules 1.53; it was Nock an arrow, which could never be taken)…; Load a magazine; Clear jam; Brace; Field Repair; Overwatch or Hold a strike). Only weapons with a Heat limit jam; the rest fumble on a natural 1 (−1 AP next turn) and build no Heat. Brace only for weapons that need or reward it. The breacher tube reloads for 3 AP (data `reload_ap`).
 80. **Holding an advanced class (provisional):** held alongside the base class, with all three moves at once; it doesn't replace the base class's moves.
 81. **AP bookkeeping (provisional):** AP banked for next turn counts toward that turn's +3 perk AP; debt comes off after the floor of 2, at most 4; out-of-turn pools (windows, Supreme Command) are not perk AP. Bleeding that kills credits whoever opened the wound.
 
@@ -7027,7 +7087,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - A bow's Aimed shot gets +1 on top of the aimed +2.
 266. *(I2)* **Special Ammo.** One load of each type per rest: armour-piercing, hollow-point, incendiary.
     - Nothing stockpiles.
-    - A bow's quiver holds **12 arrows** (provisional).
+    - A bow's quiver holds **12 arrows** (provisional). *(Special Ammo's load of a type is 12 arrows into the worn quiver; a quiver itself holds its grade's arrows, rules 1.53.)*
     - Flamers, launchers and thrown weapons aren't eligible.
     - Loading a type costs the weapon's reload AP.
     - A partly spent standard magazine goes back to the pouch.
@@ -8967,3 +9027,23 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3708. **What repair costs (rules 1.50 item 7):** 0.1 to 0.3 repairs a character a stage where any were bought, 3 to 6 credits a character a stage on average (a broken Masterwork rifle at most 720): under 0.2% of a stage's income (spec 11.1: 3,861 to 6,864). PROVISIONAL.
 3709. **The curve after repair (rules 1.50 item 7):** the squad of four still ends in stage 3 or 4 (means 3.4, 4.3, 4.4; were 3.4, 4.4, 4.4; one training-route run cleared stage 4 before and fell in it after, the dice of a gun that fires instead of breaking); solo and duo cells unchanged; four casters 2.0 → 2.3; the grade ladder's walk (grades at each Boss, steps a stage) unchanged. No dial moved. PROVISIONAL.
 3710. **Items 3700 to 3710 are rules 1.50's.**
+4000. **Bows and quivers (rules 1.53), Leon 14 Nov 2026:** the revision as built; its numbers are items 4001 to 4007.
+4001. **Nock an arrow was the bow's reload, refused in every fight since rules 1.12** (Weapons point 10, item 949): the
+    shot already drew its arrow at no AP of its own, so its removal freed no AP. The golden tables and the measure show
+    no number of a bow's moved by it.
+4002. **Switch quiver's price is the reload's** (`actions.json costs.reload.ap` 2; reloadAp), no second cost. With one
+    quiver it is not offered. A Last Round kill with a bow still owes no free reload (rules 1.12, Last Round's Drawn
+    line, unchanged): a call for Leon whether it should now make the next Switch quiver free. PROVISIONAL.
+4003. **Arrows held by grade:** Standard 40 (20 + 20, Leon), Fine 50, Masterwork 60, Relic 70, Celestial 80
+    (`items.json quiver.arrows`). Before rules 1.53 every quiver held 20 and grade did nothing to it, so only Standard's
+    40 is Leon's number; the 10-a-grade ladder above it is the builder's, for Leon to confirm. PROVISIONAL.
+4004. **The six enchantments' stages:** Ember Fire 2, Storm 1, Frost 1, Stone 2, Gale 1, Acid 1 (Fire's stage 1 and
+    Stone's stage 1 carry nothing an arrow can use: Stone's armour and bonus damage are the Outburst's own). PROVISIONAL.
+4005. **An enchantment's price:** 400 credits and ×0.9 damage on every arrow from the quiver (the incendiary round's
+    price for its rider). Special rounds and mods are not held by the balance contract yet (contract section 7); the
+    rider is priced as a special round is, so a plain quiver stays the better pure-damage choice. PROVISIONAL.
+4006. **The bow's line, measured** (guns measure, Masterwork, 12 fights a cell, levels 1 / 5 / 10 / 20): the best way
+    before and after are in `docs/design/handoffs/bows-quivers.md`; no dial moved.
+4007. **A quiver's price:** 120 credits at Standard (× the grade's price factor, `priceOf`), 0.6 kg; in Survival a quiver
+    is offered to a character who carries a Drawn weapon. PROVISIONAL.
+4008. **Items 4000 to 4008 are rules 1.53's.**

@@ -5,7 +5,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type PackItem, type Rarity, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf } from '../character';
+import { type Character, type PackItem, type Rarity, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM } from '../character';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
 import { rollTable } from '../loot';
@@ -102,9 +102,11 @@ export function doorOf(c: Character): string | null {
  * stage; or credits instead at instead_rate of the cheapest offer's price. From `rngFor(seed, node + '#pick#' + id)`. */
 export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' | 'elite' | 'boss'; ammo?: number; /** rules 1.48: every weapon at this grade (the vault's chest), not rolled */ grade?: Rarity } = {}): RunOffer {
   const rng = rngFor(seed, node.id + '#pick#' + c.id), band = priceBand(o.rarity === 'elite' && k === 'fight' ? 'elite' : k, node.depth, stage);
-  const fits = PICKABLE.filter((id) => (priceOf(id) || Infinity) <= band);
+  // rules 1.53: a character who carries a Drawn weapon may be offered a quiver, and it counts as an offer for its door
+  const archer = drawnWeapon(c.weapon) || packOf(c).some((x) => !!x.weapon && drawnWeapon(x.weapon)), quiver = archer && (priceOf(QUIVER_ITEM) || Infinity) <= band ? [QUIVER_ITEM] : [];
+  const fits = [...PICKABLE.filter((id) => (priceOf(id) || Infinity) <= band), ...quiver];
   const door = doorOf(c), dk = door ? kindOfDoor(door) : null;
-  const own = [...(dk ? fits.filter((id) => FOCUS_IDS[dk].includes(id)) : []), ...fits.filter((id) => categoryOf(id) === categoryOf(c.weapon))];
+  const own = [...(dk ? fits.filter((id) => FOCUS_IDS[dk].includes(id)) : []), ...fits.filter((id) => categoryOf(id) === categoryOf(c.weapon)), ...quiver];
   const take = (list: string[], have: string[]) => { const l = list.filter((id) => !have.includes(id)); return l.length ? l[die(rng, l.length) - 1] : null; };
   const ids: string[] = [];
   const first = take(own.length ? own : fits, ids); if (first) ids.push(first);
@@ -115,7 +117,7 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
     const rolled = o.grade || (rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([r, w]) => ({ item: r, weight: Number(w) })) })?.item || 'standard') as Rarity;
     let rarity = o.grade || cappedRarity(rolled, stage), prop: string | undefined;
     // rules 1.43 (rule 26): a Relic comes with its named property rolled, worth on the cap; none that fits: Masterwork
-    if (rarity === 'relic') { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
+    if (rarity === 'relic' && id !== QUIVER_ITEM) { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
     return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };
   });
   const cheapest = weapons.length ? Math.min(...weapons.map((w) => w.price)) : 0;

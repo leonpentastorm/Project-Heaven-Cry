@@ -7,7 +7,7 @@
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, magazineSize, maxDurOf } from './character';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, magazineSize, maxDurOf, quiverHolds, quiversOf } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee } from './combat';
 import { priced } from './effects/cost';
 import { rngFor } from './rng';
@@ -114,9 +114,19 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       ...(maxDurOf(id, rarity) ? [{ key: 'dur', label: 'Durability (full)', value: String(maxDurOf(id, rarity)), num: maxDurOf(id, rarity), better: 'higher' as const }] : []), // rules 1.50: a shield wears
     ] };
   }
+  // rules 1.53: a quiver's grade gives arrows held and nothing else; it has one enchantment slot at every grade
+  if (it?.category === 'quiver') {
+    const n = quiverHolds(id, rarity), e = (inst.mods || []).map((m) => ITEM[m] as any).find((m) => m?.mod_slot === 'enchantment');
+    return { ...base, kind: 'item', category: 'Quiver', traits: [], lines: [
+      { key: 'arrows', label: 'Arrows held', value: String(n), num: n, better: 'higher' },
+      { key: 'ench', label: 'Enchantment', value: e ? e.name : 'None (room for one)', num: null },
+      { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
+    ] };
+  }
   if (it?.category === 'mod') {
     return { ...base, kind: 'mod', category: 'Mod · ' + String(it.mod_slot || '').replace(/_/g, ' ') + ' slot', traits: [], lines: [
       { key: 'slot', label: 'Slot', value: cap(String(it.mod_slot || '').replace(/_/g, ' ')), num: null },
+      ...(it.mod_slot === 'enchantment' ? [{ key: 'arrow_dmg', label: 'Damage of each arrow', value: '×' + it.damage_mult, num: it.damage_mult, better: 'higher' as const }, { key: 'rider', label: 'Rider', value: cap(String(it.tone)) + ' tone, stage ' + it.stage, num: null }] : []),
       { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
     ] };
   }
@@ -147,6 +157,7 @@ export function heldAgainst(c: Character, inst: GearInstance): { inst: GearInsta
     const packed = (c.pack || []).find((p: any) => (ITEM[p.item || p.id] as any)?.focus?.door === door);
     const h: any = inHand || packed; return h ? { inst: { id: h.item || h.id, rarity: h.rarity }, slot: 'Focus · ' + cap(kindOfDoor(door) || door) } : null;
   }
+  if (it?.category === 'quiver') { const q = quiversOf(c)[0]; return q ? { inst: { id: q.id, rarity: q.rarity, mods: q.mods }, slot: 'Worn quiver' } : null; } // rules 1.53
   if (it?.slot === 'off_hand') return c.offHand && !WEAPON[c.offHand.id] ? { inst: { id: c.offHand.id }, slot: 'Off hand' } : null;
   if (it?.slot && c.worn?.[it.slot]) return { inst: { id: c.worn[it.slot] }, slot: cap(String(it.slot).replace(/_/g, ' ')) };
   return null;

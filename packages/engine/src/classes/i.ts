@@ -21,7 +21,7 @@ import {
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, hasAttuner, packOf, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
-  classResources, migrateDesign,
+  classResources, migrateDesign, quiversOf, setQuivers, quiverHolds,
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
@@ -209,7 +209,7 @@ register({
         const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
         // A Drawn weapon's arrows are its quiver (Physical 2.0, rules 1.12: physical/ranged/quiver.ts): what it held goes
         // back to the pack, and the quiver is the special arrows, typed (review fix: c.loadedType alone was lost).
-        if (isDrawn(c.weapon)) { loadQuiverWith(c, c.weapon, {}); c.loaded = Math.min(w.magazine!, loadOf(h)); c.loadedType = null; ensurePhys(c).quiver[c.weapon] = { [id]: c.loaded }; postStory(h, c.name + ' fills the quiver with ' + name + ' arrows.'); return; }
+        if (isDrawn(c.weapon)) { loadQuiverWith(c, c.weapon, {}); const qs = quiversOf(c); if (qs[0]) setQuivers(c, qs.map((q, k) => (k ? q : { ...q, arrows: { [id]: Math.min(quiverHolds(q.id, q.rarity || 'standard'), loadOf(h)) } }))); postStory(h, c.name + ' fills the quiver with ' + name + ' arrows.'); return; }
         if (noMag(c.weapon)) { c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' on the ' + w.name + ' for the next fight.'); return; }
         c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, loadOf(h)) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.');
       },

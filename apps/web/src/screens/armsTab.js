@@ -1,9 +1,10 @@
 // The sheet's ARMS tab (Physical 2.0, rules 1.12; docs/design/handoffs/physical-2.0-C-client.md, part 5): the
 // techniques you know (melee and ranged, by kind, each with its property lines), your two ready lists with their caps,
 // a drill bar per weapon you have drilled or hold (its three marks, what each gives, a pick chooser), and the quiver
-// menu for each bow you carry. Every number is the engine's (physOf, readyCap, readyTechniques, drillMarks, picksOwed,
+// menu for each quiver you carry (rules 1.53: two, worn and ready). Every number is the engine's (physOf, readyCap, readyTechniques, drillMarks, picksOwed,
 // pickable); this file is screen glue: state, words and styles. Modelled on faithTab.js; computed only while open.
-import { WEAPON, phys, packOf } from '@engine';
+import { WEAPON, phys, packOf, quiverCards } from '@engine';
+import { enchantMark } from '../game/quiverView';
 import { act, toast } from '../game/store';
 import { gearIconUri } from '../game/gearIcons';
 
@@ -63,20 +64,24 @@ export function armsTabVals(sc, g, c) {
       marks, owed, hasOwed: owed > 0, owedText: owed + (owed === 1 ? ' pick waiting' : ' picks waiting'), open, picks, noPicks: open && !picks.length,
       toggle: () => { if (fight) return toast(lockText); sc.setState({ arPick: open ? null : wid }); }, toggleLabel: open ? 'Close' : 'Pick a technique' };
   });
-  // ---------- quivers: each bow carried, loaded out of a fight from the arrows you carry ----------
+  // ---------- quivers (rules 1.53): the character's, two carried (worn and ready), filled out of a fight from the arrows carried ----------
   const bows = [...new Set([...held, ...packOf(c).filter((it) => it.weapon && WEAPON[it.weapon]).map((it) => it.weapon)])].filter((id) => weaponProps(id).includes('drawn'));
   const arrows = {}; for (const it of packOf(c)) if (it.calibre && /arrow/i.test(it.calibre)) { const t = it.ammoType || 'standard'; arrows[t] = (arrows[t] || 0) + (it.qty || 0); }
-  const quivers = bows.map((wid) => {
-    const w = WEAPON[wid], cap = w.magazine || 0, saved = (P.quiver || {})[wid] || {}, draft = (S.arQuiver && S.arQuiver[wid]) || saved;
+  const bow = bows[0], qc = bow ? quiverCards(c) : [];
+  const quivers = qc.map((q) => {
+    const cap = q.holds, saved = q.arrows, draft = (S.arQuiver && S.arQuiver[q.i]) || saved;
     const types = [...new Set([...Object.keys(arrows), ...Object.keys(saved)])];
-    const total = types.reduce((s, t) => s + (draft[t] || 0), 0);
-    const set = (t, n) => sc.setState({ arQuiver: { ...(sc.state.arQuiver || {}), [wid]: { ...draft, [t]: Math.max(0, n) } } });
-    return { key: wid, name: w.name, icon: gearIconUri(wid), hasIcon: !!gearIconUri(wid), cap: 'Capacity ' + cap, total: total + ' / ' + cap + ' loaded', over: total > cap, totalStyle: 'font-size: 12px; font-weight: 700; color: ' + (total > cap ? '#F65157' : '#E7EBF3'),
-      rows: types.map((t) => { const n = draft[t] || 0, have = arrows[t] || 0;
-        return { key: t, label: (t === 'standard' ? 'Standard' : t.replace(/_/g, ' ')) + ' arrows', have: have + ' carried', n: String(n), dec: () => set(t, n - 1), inc: () => set(t, n + 1), decOff: fight || n <= 0, incOff: fight || n >= have || total >= cap }; }),
-      hasRows: types.length > 0, noRows: !types.length, none: 'You carry no arrows for it.', apply: () => { if (fight) return toast(lockText); run({ type: 'phys/quiver', charId: c.id, weaponId: wid, load: draft }); sc.setState({ arQuiver: null }); },
-      applyOff: fight || total > cap, note: 'A quiver is filled before the fight: in a fight a bow can\'t be reloaded, and you pick each shot\'s arrow from what is loaded.' };
+    const total = types.reduce((n, t) => n + (draft[t] || 0), 0);
+    const set = (t, n) => sc.setState({ arQuiver: { ...(sc.state.arQuiver || {}), [q.i]: { ...draft, [t]: Math.max(0, n) } } });
+    const mark = enchantMark(q.ench);
+    return { key: 'q' + q.i, name: q.name + ' · ' + q.rarity.toUpperCase() + (q.worn ? ' · WORN' : ' · READY'), icon: gearIconUri(bow), hasIcon: !!gearIconUri(bow), cap: 'Holds ' + cap, total: total + ' / ' + cap + ' loaded', over: total > cap, totalStyle: 'font-size: 12px; font-weight: 700; color: ' + (total > cap ? '#F65157' : '#E7EBF3'),
+      hasEnch: !!mark, enchText: mark ? mark.text : '', enchStyle: mark ? mark.style : '',
+      rows: types.map((t) => { const n = draft[t] || 0, have = (arrows[t] || 0) + (saved[t] || 0);
+        return { key: t, label: (t === 'standard' ? 'Standard' : t.replace(/_/g, ' ')) + ' arrows', have: have + ' to hand', n: String(n), dec: () => set(t, n - 1), inc: () => set(t, n + 1), decOff: fight || n <= 0, incOff: fight || n >= have || total >= cap }; }),
+      hasRows: types.length > 0, noRows: !types.length, none: 'You carry no arrows.', apply: () => { if (fight) return toast(lockText); run({ type: 'phys/quiver', charId: c.id, weaponId: bow, load: draft, which: q.i }); sc.setState({ arQuiver: null }); },
+      applyOff: fight || total > cap, note: q.worn ? 'Arrows are drawn from the worn quiver as part of each shot. A quiver is never refilled in a fight.' : 'In a fight, Switch quiver (the bow\'s reload) makes this one the worn quiver.' };
   });
-  return { has: true, fight, lockText, hasLock: fight, known, ready, drill, hasDrill: drill.length > 0, noDrills: !drill.length, noDrill: 'Hold a weapon (or fight with one) to start its drill bar.', quivers, hasQuivers: quivers.length > 0, card,
+  const quiverSwap = { has: qc.length > 1, off: fight, label: 'Swap worn and ready', go: () => { if (fight) return toast(lockText); run({ type: 'phys/quiver', charId: c.id, weaponId: bow, load: {}, swap: true }); } };
+  return { has: true, fight, lockText, hasLock: fight, known, ready, drill, hasDrill: drill.length > 0, noDrills: !drill.length, noDrill: 'Hold a weapon (or fight with one) to start its drill bar.', quivers, hasQuivers: quivers.length > 0, quiverSwap, card,
     headStyle: 'display: flex; flex-direction: column; gap: 8px' };
 }
