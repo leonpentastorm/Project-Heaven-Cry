@@ -187,7 +187,7 @@ describe('rules 1.44: the next tile and stage 2 (spec rules 3, 19, 32)', () => {
     expect(y.run!.world.at(-1)!.setting).toBe(tiles[1].setting);
     expect(refused(g, { type: 'run/go' }, 'p2')).toBe('Only the host sends the squad on before everyone has marked a node.');
   });
-  it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses the stage's lead up, XP and credits x the stage\'s', () => {
+  it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses the stage\'s lead up, XP and credits x the stage\'s', () => {
     const r = new Rec(survivalRoom('PHC-0005', DUO, { test: true }), DUO);
     r.must({ type: 'run/start', seed: 'PHC-0005' });
     playStage(r, 2, { skip: true, through: 2 });

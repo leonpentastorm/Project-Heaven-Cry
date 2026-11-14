@@ -12,7 +12,7 @@
   },
   "stage": {
     "about": "Rules 1.41 (spec rule 19, sections 5.4 and 11.1): what a stage multiplies. Stage s: the bulk target x (1 + bulk x (s - 1)), the pressure cap x (1 + pressure x (s - 1)), credits x (1 + credits x (s - 1)), XP x xp[s - 1] (the last repeats); Elites and Bosses stand min((s - 1) x elite_up.per, elite_up.max) levels above the fight level. Step 3 plays stage 1, where every term is 1.",
-    "bulk": 0.4,
+    "bulk": 0.42,
     "pressure": 0.35,
     "credits": 0.35,
     "xp": [1, 1, 1.1, 1.25, 1.25],
