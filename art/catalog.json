@@ -20583,6 +20583,570 @@
       "collection": "survival-rim-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-rim/native-renders/K216.png"
     },
+    "survival-keeper-ahoc": {
+      "mode": "shopkeeper-portrait",
+      "label": "Chapter quartermaster",
+      "path": "art/portraits/survival/keeper-ahoc.png",
+      "sha256": "9f7a122f6053770a992ae92c1670967a845663a76e7e1e6feb4235aecc4c41f3",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "upscaled": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-ahoc.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-keeper-city": {
+      "mode": "shopkeeper-portrait",
+      "label": "Back-alley dealer",
+      "path": "art/portraits/survival/keeper-city.png",
+      "sha256": "db4762d4b7805a6bdea1b32d998150e586382603b5ff17722cacf80bd93cd032",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "upscaled": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-city.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-keeper-field": {
+      "mode": "shopkeeper-portrait",
+      "label": "Camp sutler",
+      "path": "art/portraits/survival/keeper-field.png",
+      "sha256": "e1d80c2fe204a701d1ecaf128936fda929761cc6a7bb77541354aa00862b5393",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "upscaled": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-field.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-keeper-rim": {
+      "mode": "shopkeeper-portrait",
+      "label": "Rim chandler",
+      "path": "art/portraits/survival/keeper-rim.png",
+      "sha256": "7fc74226c19a3ac716231c05fe0c7cfb62d457123ea80d2206d29f070212ff7b",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "upscaled": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-rim.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-keeper-shrine": {
+      "mode": "shopkeeper-portrait",
+      "label": "Reliquary keeper",
+      "path": "art/portraits/survival/keeper-shrine.png",
+      "sha256": "79a7f54bdebf98030ce4d04310e06b3d017a1605e75372894a29b8d9005f3398",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "upscaled": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-shrine.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-keeper-works": {
+      "mode": "shopkeeper-portrait",
+      "label": "Smetanita trader",
+      "path": "art/portraits/survival/keeper-works.png",
+      "sha256": "1664bd6bc102f9ac70b66956c3dc1cf938204ea568ad2f4d8fc1419814441397",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "upscaled": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/S4-works.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-m001": {
+      "path": "art/maps/survival/ahoc-1.png",
+      "sha256": "2520931cae7c800ecff1ae77c317424af6af1ba1dc01c2bfc58a8b4414f642d8",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "ahoc-1",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-1.png"
+    },
+    "survival-m002": {
+      "path": "art/maps/survival/ahoc-2.png",
+      "sha256": "d5c2de5e8dc8a55f5761431307c52c714f2c67fbabe47a2e1b51c2a1375b24a7",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "ahoc-2",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-2.png"
+    },
+    "survival-m003": {
+      "path": "art/maps/survival/ahoc-3.png",
+      "sha256": "2369a0edb0d11b6365e6180dc3b17af6ceee8f76360ea4a5cb380b3e97c269ec",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "ahoc-3",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-3.png"
+    },
+    "survival-m004": {
+      "path": "art/maps/survival/city-1.png",
+      "sha256": "51ac3add57ca3c4d27f262e48857d6309fb2f43cd8112c0c5ce85fca4de7a58c",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "city-1",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M004.png"
+    },
+    "survival-m005": {
+      "path": "art/maps/survival/city-2.png",
+      "sha256": "052cee7789a54d9eb45ee57b407a0bd61fc8505a0783f54c37eafafb9d5586ec",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "city-2",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M005.png"
+    },
+    "survival-m006": {
+      "path": "art/maps/survival/city-3.png",
+      "sha256": "88cd4cf908441a6a43043c0deb8cec4d728537994bdd050e37b567cb1cab2be7",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "city-3",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M006.png"
+    },
+    "survival-m007": {
+      "path": "art/maps/survival/field-1.png",
+      "sha256": "ef6abb4d45f925e8194d563eed3ffcb196ed07886e2b8717b5ece8817d3dbf86",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "field-1",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M007.png"
+    },
+    "survival-m008": {
+      "path": "art/maps/survival/field-2.png",
+      "sha256": "dc197e30c8daaf83f975a99b0606b8e86dd7efb309b292dde89ef470969afe60",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "field-2",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M008.png"
+    },
+    "survival-m009": {
+      "path": "art/maps/survival/field-3.png",
+      "sha256": "ffbd550a0e083a6803c59145dd18d72b3daf69b862c9a9aba1760630a04ad513",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "field-3",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M009.png"
+    },
+    "survival-m010": {
+      "path": "art/maps/survival/works-1.png",
+      "sha256": "c992c342c72c6a49d042a95a2eb4c33d62aa1b11b0c2efaf32887d8a908e7dc4",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "works-1",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M010.png"
+    },
+    "survival-m011": {
+      "path": "art/maps/survival/works-2.png",
+      "sha256": "bdb9c188a825d9490dc2183e7a5a556c2bfb0e29602ef7ab1a6a8676b5ff0bba",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "works-2",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M011.png"
+    },
+    "survival-m012": {
+      "path": "art/maps/survival/works-3.png",
+      "sha256": "8e176714af858eee20726d5a672395072a3eb23934a706b5ce54d2b4ddca8be1",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "works-3",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M012.png"
+    },
+    "survival-m013": {
+      "path": "art/maps/survival/shrine-1.png",
+      "sha256": "af416bd54c8a9b4dc2157519648f60d08e2256957729bd88b844cc3188021850",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "shrine-1",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M013.png"
+    },
+    "survival-m014": {
+      "path": "art/maps/survival/shrine-2.png",
+      "sha256": "1560ecd14608fb1158bba92b054911ed264ad7968ac195ba774e10c8af2a05f7",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "shrine-2",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M014.png"
+    },
+    "survival-m015": {
+      "path": "art/maps/survival/shrine-3.png",
+      "sha256": "f364a1581546462563ab5470931067117f6ae0a3031ff84e2109f3e6852a25c5",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "shrine-3",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M015.png"
+    },
+    "survival-m016": {
+      "path": "art/maps/survival/rim-1.png",
+      "sha256": "4b8f4f4aacaea7ed504418b46ef1f39eae1b118399129822063647d93aa5ccac",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "rim-1",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M016.png"
+    },
+    "survival-m017": {
+      "path": "art/maps/survival/rim-2.png",
+      "sha256": "b7623ddbd68a8cb4878f6f93bff6734bbbbd9b26d7ba37d3cdcd3f641fe668a9",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "rim-2",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M017.png"
+    },
+    "survival-m018": {
+      "path": "art/maps/survival/rim-3.png",
+      "sha256": "5580caf8d8c575bc6fa943b804a355875ebb6826459ae9407d8a759110492499",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum": [
+        2080,
+        2080
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "painted-map",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "purpose": "style-model training",
+      "label": "rim-3",
+      "width": 2600,
+      "height": 2600,
+      "background": "opaque",
+      "collection": "survival-battle-maps-2026-11-14",
+      "source_path": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M018.png"
+    },
     "survival-p025": {
       "label": "map display",
       "path": "art/illustrations/survival/map/map-display.png",
@@ -21042,6 +21606,225 @@
       ],
       "upscaled": true,
       "native_minimum_met": false
+    },
+    "survival-path-ahoc": {
+      "mode": "path-map-backdrop",
+      "label": "AHOC chapter outpost path-map backdrop",
+      "path": "art/illustrations/survival/map/path-ahoc.png",
+      "sha256": "ae44f9cf75875d7d15d3d26e85c0c6dbd42c9d87696ecd4455029c4a3fe74576",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "upscaled": true,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P061.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-path-city": {
+      "mode": "path-map-backdrop",
+      "label": "Central City path-map backdrop",
+      "path": "art/illustrations/survival/map/path-city.png",
+      "sha256": "1472974d484848edfdf83ae9a5ad86bf6d06f1b0a9be7671fa3b3f16493ec3a0",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "upscaled": true,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P062.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-path-field": {
+      "mode": "path-map-backdrop",
+      "label": "Daggerfall battlefield path-map backdrop",
+      "path": "art/illustrations/survival/map/path-field.png",
+      "sha256": "9beef0503a9834c7fb9711f06726a7991288f91a631c050acfda89e0f639ce55",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "upscaled": true,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P063.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-path-node-markers": {
+      "mode": "path-node-marker-sheet",
+      "label": "Survival path node markers",
+      "path": "art/icons/survival/path-node-markers.png",
+      "sha256": "8c186cb4af4f060994ea1151a4d773fda7602c53e613df0093dd321d4b3dbeeb",
+      "native_dimensions": [
+        1983,
+        793
+      ],
+      "upscaled": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 1280,
+      "height": 512,
+      "background": "transparent",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P067.png",
+      "collection": "survival-path-and-keepers-2026-11-14",
+      "cell_size": [
+        256,
+        256
+      ],
+      "marker_exports": {
+        "fight": {
+          "path": "art/icons/survival/markers/fight.png",
+          "sha256": "d6da4c1b843cb9836e5975777314ee48bd15c406df190a090f8f33ce28cd8108",
+          "cell": [
+            0,
+            0
+          ]
+        },
+        "elite": {
+          "path": "art/icons/survival/markers/elite.png",
+          "sha256": "a75041a766aada2a5fa031ca5376024e223ee1bce8dfc05e33798ab95e4aa446",
+          "cell": [
+            1,
+            0
+          ]
+        },
+        "boss": {
+          "path": "art/icons/survival/markers/boss.png",
+          "sha256": "1e6dc40bdf88ecf328ff2722b98630f62d9d949b36fede53c96711789b2cd8ba",
+          "cell": [
+            2,
+            0
+          ]
+        },
+        "shop": {
+          "path": "art/icons/survival/markers/shop.png",
+          "sha256": "eeba638508bda8c4f6704723990a4c3b1b727f1566196cd77e487210a97df33d",
+          "cell": [
+            3,
+            0
+          ]
+        },
+        "forge": {
+          "path": "art/icons/survival/markers/forge.png",
+          "sha256": "9b4bd85b35ce29ffeaf734a906653871a794c27a612ded51b86de39ad300ad89",
+          "cell": [
+            4,
+            0
+          ]
+        },
+        "training": {
+          "path": "art/icons/survival/markers/training.png",
+          "sha256": "dfc260f7ca71dda00c0e448bbbd834e341edc4b04825f862f43b04a23ed3a2c6",
+          "cell": [
+            0,
+            1
+          ]
+        },
+        "shrine": {
+          "path": "art/icons/survival/markers/shrine.png",
+          "sha256": "cd06362e4dcd18578838883efae20a92051bebce48f378e8a69462e3a8fb6a6c",
+          "cell": [
+            1,
+            1
+          ]
+        },
+        "rest": {
+          "path": "art/icons/survival/markers/rest.png",
+          "sha256": "6a1d54c7e6275cce271f7b616f9656610a82adaaf95407aa0773dc3c2c9b2be7",
+          "cell": [
+            2,
+            1
+          ]
+        },
+        "cache": {
+          "path": "art/icons/survival/markers/cache.png",
+          "sha256": "4d50462bc45446716d9d6a3f6e66ecb680852efec0ba1fb655c46a350baa5310",
+          "cell": [
+            3,
+            1
+          ]
+        },
+        "crossroads": {
+          "path": "art/icons/survival/markers/crossroads.png",
+          "sha256": "289d16a1ed0334efa4ff35672012ff13a3b33b6ea1481925bb625b5617b5f776",
+          "cell": [
+            4,
+            1
+          ]
+        }
+      }
+    },
+    "survival-path-rim": {
+      "mode": "path-map-backdrop",
+      "label": "Rim Station path-map backdrop",
+      "path": "art/illustrations/survival/map/path-rim.png",
+      "sha256": "ae2b61e31feb32ad71eaa4f23460501d7309a07b23ff30b37bd41021d74093bb",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "upscaled": true,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P066.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-path-shrine": {
+      "mode": "path-map-backdrop",
+      "label": "Cathedral district path-map backdrop",
+      "path": "art/illustrations/survival/map/path-shrine.png",
+      "sha256": "4e7c81b20c2aed6dd15c54f0758734d7297ceb345006a9bc8232b76dc831a00c",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "upscaled": true,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P065.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-path-works": {
+      "mode": "path-map-backdrop",
+      "label": "Machine Works path-map backdrop",
+      "path": "art/illustrations/survival/map/path-works.png",
+      "sha256": "a254e4f3d682c0b8771b481e54b1eb2f6ade2ecfd8a1da155e0d3dcaadae94c7",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "upscaled": true,
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P064.png",
+      "collection": "survival-path-and-keepers-2026-11-14"
     }
   }
 }

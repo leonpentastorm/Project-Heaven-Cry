@@ -62,6 +62,18 @@ for mid, a in C.get("maps", {}).items():
 for sid, a in C.get("sprites", {}).items():
     w, h = a.get("dimensions", [256, 256])
     emit("sprite-" + sid, ROOT / a["path"], (w // 2, h // 2), None, 90)
+# Survival's path screen and shop use catalog IDs. The battle-map paintings are training material.
+for key, asset in C.get("survival_art", {}).items():
+    mode = asset.get("mode")
+    if mode in ("path-map", "path-map-backdrop"):
+        name = key if mode == "path-map-backdrop" else f"survival-{pathlib.Path(asset['path']).stem}"
+        emit(name, ROOT / asset["path"], (1600, 900), (2560, 1440), versioned=True)
+    elif mode == "shopkeeper-portrait":
+        emit(pathlib.Path(asset["path"]).stem, ROOT / asset["path"], (480, 600), (800, 1000), versioned=True)
+    elif mode == "path-node-marker-sheet":
+        emit(key, ROOT / asset["path"], (1280, 512), None, 95, versioned=True)
+        for kind, marker in asset["marker_exports"].items():
+            emit("survival-node-" + kind, ROOT / marker["path"], (128, 128), None, 95, versioned=True)
 # Blessing 2.0 (docs/design/handoffs/blessing-art-brief.md): picked up from their folders as they are delivered, so the art
 # drops in with no code change (game/faithArt.ts falls back to code-drawn placeholders for anything missing):
 #   art/portraits/patrons/<id>.png -> patron-<id> (4:5 portrait)
