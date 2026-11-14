@@ -50,7 +50,7 @@ function stage(pts: XY[], pad: number, ms: number, tag: string): { s: SVGSVGElem
   const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad, w = Math.max(1, Math.max(...xs) - x0 + pad), h = Math.max(1, Math.max(...ys) - y0 + pad);
   const s = svg(w, h, ''); s.setAttribute('viewBox', f1(x0) + ' ' + f1(y0) + ' ' + f1(w) + ' ' + f1(h));
   const box = put(s, { x: x0 + w / 2, y: y0 + h / 2 }, w, h, ms);
-  box.setAttribute('data-tech-fx', tag); box.style.zIndex = '2';
+  box.setAttribute('data-tech-fx', tag); box.style.zIndex = '2'; trace('part', { tag });
   s.style.filter = CASING;
   return { s, box };
 }

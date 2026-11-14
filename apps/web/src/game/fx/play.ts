@@ -626,7 +626,7 @@ function projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms
     : look === 'lob' ? 'background:#2A3242;border:2px solid #A3AEC2' : look === 'rocket' ? 'background:linear-gradient(90deg,rgba(255,180,90,0),#FFB45A 40%,#FFFFFF);box-shadow:0 0 8px #FFB45A'
     : 'background:linear-gradient(90deg,rgba(255,243,196,0),' + (color || HOT) + ' 70%,#FFFFFF);box-shadow:0 0 8px ' + (color || '#FFD27A') + ',0 0 2px #FFFFFF');
   const box = put(el, a, len, hgt, ms);
-  box.setAttribute('data-fx-flight', look); // a round in the air (the suites look for it mid-flight)
+  box.setAttribute('data-fx-flight', look); trace('flight', { look }); // a round in the air, drawn (the suites look for it)
   box.style.left = a.x - len + 'px'; box.style.top = a.y - hgt / 2 + 'px'; box.style.transformOrigin = '100% 50%';
   const dx = b.x - a.x, dy = b.y - a.y;
   if (look === 'lob') {

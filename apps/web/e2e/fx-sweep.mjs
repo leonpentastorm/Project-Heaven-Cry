@@ -325,6 +325,12 @@ function judge(c, w, tr0, { tol, k, clock }) {
       if (!s.hit && !s.cover && marks.length) say('a miss left a ' + marks[0].kind);
       if (arrives != null && marks.length && marks[0].t < arrives - tol) say('its ' + marks[0].kind + ' ' + ms(arrives - marks[0].t) + ' before the ' + first.look + ' lands');
     }
+    // 5. the round in flight (Leon, 14 Nov 2026: "i told you to remove the yellow line not the bullet effect"): a gun's
+    //    shot draws its bullet or its pellets in the air, hit or miss; no technique draws a tracer line, a swing arc or
+    //    a miss mark (13 Nov 2026)
+    if (s.k === 'shot' && !s.thrown && !noGun && ['hole', 'pellets'].includes(markOf(WEAPON.get(s.weapon))) && projs.length && !of(s.n, 'flight').length) say('a shot from ' + s.weapon + ' with no round drawn in flight');
+    const gone = of(s.n, 'part').find((e) => ['tracer', 'slash', 'whiff', 'deflect', 'wide'].includes(e.tag));
+    if (gone) say('a removed piece drawn (' + gone.tag + ')');
     // the wounds that follow never come before the shot or swing is seen
     if (launch) for (let j = i + 1; j < evs.length && !starts.test(evs[j].k); j++) if (evs[j].k === 'hurt' && evs[j].t < launch.t - Math.min(1, tol)) say('a wound ' + ms(launch.t - evs[j].t) + ' before the ' + (s.k === 'melee' ? 'swing' : 'shot'));
   }
