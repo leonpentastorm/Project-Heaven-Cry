@@ -5686,7 +5686,10 @@ PROVISIONAL (items 3800 onward) and lives in `data/survival.json` (`start_boon`,
    hit with its door (worth 6), +5% damage with it (5), and a tempo or sustain row (4); the Guard, Shadow, Bonds,
    Figments and Faith rows are worth 4 or 5. **Vigil** reads "your first prayer each fight, if it is a Whisper, costs 0
    AP": the reducer names every prayer `pray` when it is made, so the limit is spent by the fight's first prayer of any
-   kind (a call made for Leon).
+   kind (a call made for Leon). Zeroed and Balanced Grip are terms of the attack (`roll_mod` on `attack`, which knows a melee blow
+   from a shot; the `to_hit` hook does not). A boon on the heals a character gives names `target: any` (the `heal` and
+   `shield` triggers' holder is the healed unit unless `if` names the target): so do Deep Well and the Gentle property,
+   which until now strengthened only the heals a character gave itself (a fix, not a new number).
 4. **Caster boons after a Boss** (`boons`, survival-spec section 13.4): Ward of Script (10), Long Hand (12), Sure Script
    (13), Steady Heart (13), Deep Reserve (10), Mercy's Return (8), each with `doors`. **Bandolier** now doubles the whole
    supply pack: magazines, cores and the MP share.
