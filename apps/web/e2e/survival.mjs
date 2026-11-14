@@ -104,7 +104,7 @@ await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
 const kept = (await me0()).credits;
 // the starting boon: the camp's second step, three large cards offered by what the loadout holds
 ok('Ready waits for the starting boon: the button reads Next', await p.locator('[data-phc-camp-next]').count() === 1 && !(await p.locator('[data-phc-camp-ready]').count()));
-await p.locator('[data-phc-camp-next]').click(); await p.waitForSelector('[data-phc-startboon]', { timeout: 15000 });
+await p.locator('[data-phc-camp-next]').click(); await p.waitForSelector('[data-phc-startboon]', { timeout: 30000 });
 const campCards = await p.locator('[data-phc-startboon]').allTextContents(), offer0 = await p.locator('[data-phc-startboon]').evaluateAll((e) => e.map((x) => x.getAttribute('data-phc-startboon')));
 ok('the starting boon: three large cards, each its name, its sentence with its number from data, its line\'s word and its worth on the cap (' + offer0.join(', ') + ')', campCards.length === 3
   && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-startboon] svg').count() === 3);

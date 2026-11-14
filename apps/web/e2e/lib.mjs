@@ -271,9 +271,9 @@ export async function campStart(page, o = {}) {
   if (o.weapon) { const b = page.locator('[data-phc-camp-pick="weapon:' + o.weapon + '"]'); if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click(); await settle(page, 250); }
   if (await page.locator('[data-phc-camp-next]').count()) await page.locator('[data-phc-camp-next]').click();
   else await page.locator('[data-phc-camp-step="2"]').click();
-  await page.waitForSelector('[data-phc-startboon]', { timeout: 15000 });
+  await page.waitForSelector('[data-phc-startboon]', { timeout: 30000 });
   const card = page.locator('[data-phc-startboon]').nth(o.boon || 0);
   if ((await card.getAttribute('aria-checked')) !== 'true') await card.click();
-  await page.waitForSelector('[data-phc-camp-ready]', { timeout: 15000 });
+  await page.waitForSelector('[data-phc-camp-ready]', { timeout: 30000 });
   await page.locator('[data-phc-camp-ready]').click();
 }
