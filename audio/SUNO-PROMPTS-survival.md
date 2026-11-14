@@ -50,13 +50,28 @@ bars match, and trim to a clean loop. Target lengths are in each row. File names
 
 | Id | Place | Length | Style |
 |---|---|---|---|
-| `surv-shop` | The shop | 1:45 loop | cosy junk-shop shuffle, 92 bpm, upright piano, brushed snare, tuba or bass clarinet, clinking metal as percussion, a little crooked, wry and warm, instrumental, loop |
+| `surv-shop` | The shop | 2:00 loop | safe room ambient, 62 bpm, slow melancholic harp and nylon guitar arpeggio in a minor key, warm analog pad, soft felt piano answering, distant low choir hum, deep hall reverb, tape hiss, calm and lonely, a quiet place between dangers, mysterious trader, no drums, no percussion, instrumental, seamless loop |
 | `surv-forge` | The Forge | 1:45 loop | steady workshop blues, 84 bpm, anvil strikes on the backbeat, slide guitar, low humming bass, bellows breathing, patient craft, instrumental, loop |
 | `surv-training` | Training ground | 1:30 loop | drill-yard cadence, 100 bpm, marching snare, whistle motif, stomping kick, single trumpet, gruff and upbeat, instrumental, loop |
 | `surv-shrine` | Shrine | 1:45 loop | small prayer, 58 bpm, harmonium, one soft voice humming, handbell, long reverb, comfort offered by something far away, instrumental, loop |
 | `surv-crossroads` | Crossroads broker | 1:30 loop | shady deal lounge, 88 bpm, muted trumpet, vibraphone, walking bass, finger snaps, charming and untrustworthy, instrumental, loop |
 | `surv-rest` | Rest | 1:45 loop | campfire lull, 64 bpm, fingerpicked acoustic guitar, soft harmonica, crackling fire texture, crickets, safe for one night, instrumental, loop |
 | `surv-vault-open` | The vault's chest | 0:30 | reward flourish, 80 bpm, music box melody opening into warm strings and a bright bell, wonder, instrumental, clear ending |
+
+### The shop, in full (Leon, 14 Nov: the first take was "goofy"; he wants the feel of a classic survival-horror safe room and its trader)
+
+What that music does, so the prompt can ask for it without naming it: it is SLOW and nearly still (about 60 bpm, no
+drums at all), built on one repeating broken-chord figure in a minor key on a plucked instrument, with a soft pad
+underneath and a lot of reverb; it is sad but safe, the opposite of the fight music; nothing in it is funny. The
+trader is a stranger you are glad to see: a little mystery (a low hum, one odd interval), never a joke.
+
+- **Style:** `safe room ambient, survival horror save theme, 62 bpm, slow melancholic harp and nylon guitar arpeggio in A minor, warm analog synth pad, soft felt piano answering phrases, distant low male choir hum, deep hall reverb, tape hiss, calm, lonely, safe, mysterious trader, no drums, no percussion, instrumental, seamless loop`
+- **Exclude styles** (the field below Style): `comedy, quirky, playful, tuba, clarinet, shuffle, swing, upbeat, jazz, drums, percussion, claps, vocals, lyrics, bright, major key, cartoon`
+- **Lyrics box** (structure only): `[Intro: pad and room tone, 4 bars] [Theme: plucked arpeggio alone] [Theme: felt piano answers] [Low choir hum enters, very quiet] [Theme thins to arpeggio and pad] [End on the opening bar for a loop]`
+- **Sliders, if your version has them:** Weirdness low (about 20%), Style influence high (about 80%).
+- **A second take to try** (more of the trader, less of the church): `desert caravan trader ambient, 66 bpm, slow oud or nylon guitar figure in a minor key, hand-bowed drone, soft glass bells, warm pad, long reverb, hushed, patient, a stranger with good wares, no drums, instrumental, seamless loop`
+- The Forge, the Crossroads and the training ground can stay lighter; if they also read as goofy, drop the tuba,
+  clarinet, whistle and finger snaps from their rows and slow them by 10 bpm.
 
 ## Notes for wiring (for the builder, later)
 
