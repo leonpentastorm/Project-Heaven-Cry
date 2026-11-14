@@ -82,7 +82,7 @@ ok('the camp\'s issue: the soldier\'s kit already wears class 3, so nothing to f
 await shot('startboon-1280'); await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 600); await shot('startboon-1920'); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 await act({ type: 'run/move', node: r.nodes.find((n) => n.depth === 1).id }); await settle(p, 300);
 ok('rules 1.51: the map waits at the camp (a node asked for is refused: the squad stays at the camp)', (await run()).state === 'camp' && (await run()).at === null);
-const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0[0];
+const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0.includes('start.set_feet') ? 'start.set_feet' : offer0[0];
 await p.locator('[data-phc-startboon="' + pickId + '"]').click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 r = await run();
@@ -124,10 +124,13 @@ await p.locator('[data-phc-node="' + lit[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 });
 r = await run();
 ok('a lit node is taken: the fight begins (' + r.stats.fights[0].template + ', ' + r.stats.fights[0].foes.length + ' foe(s))', r.at === lit[0] && r.state === 'fight');
-{ // rules 1.51: the starting boon is felt in the first fight: the engine's to-hit terms of a shot carry it, its number from data
-  const felt = await p.evaluate((name) => { const cb = window.__phc.getState().game.combat, me = cb.units.find((u) => u.charId), foe = cb.units.find((u) => u.side === 'foe' && !u.dead);
-    const terms = window.__phc.attackTerms(me.id, foe.id, 'shot') || []; return terms.find((t) => t.label === name) || null; }, 'Zeroed');
-  ok('rules 1.51: Zeroed is felt in the first fight: a +1 term named for it on every shot (' + JSON.stringify(felt) + ')', pickId !== 'start.zeroed' || (felt && felt.v === 1));
+{ // rules 1.51: the starting boon is felt in the first fight: Zeroed a +1 term named for it on a shot; Set Feet a Guard point
+  // at the fight's start (each its number from data)
+  const felt = await p.evaluate((pick) => { const g = window.__phc.getState().game, cb = g.combat, me = cb.units.find((u) => u.charId && u.side === 'pc');
+    if (pick === 'start.set_feet') return { guard: me?.res?.guard ?? 0 };
+    const foe = cb.units.find((u) => u.side === 'foe' && !u.dead && u.id); if (!me || !foe) return null;
+    return { term: (window.__phc.attackTerms(me.id, foe.id, 'shot') || []).find((t) => t.label === 'Zeroed') || null }; }, pickId);
+  ok('rules 1.51: the starting boon (' + pickId + ') is felt in the first fight (' + JSON.stringify(felt) + ')', pickId === 'start.set_feet' ? (felt?.guard ?? 0) >= 1 : pickId === 'start.zeroed' ? felt?.term?.v === 1 : true);
 }
 for (let i = 0; i < 400; i++) {
   const s = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over || g.phase !== 'combat') return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId ? 'mine' : 'theirs'; });
