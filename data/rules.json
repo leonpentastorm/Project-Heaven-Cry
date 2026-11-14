@@ -1044,6 +1044,145 @@
       "pickup": "a selection of the entries in the pile on your tile or one adjacent tile, everything by default (world_play.json ap.pickup; spec items 674, 675)",
       "load_rounds_per_ap": 5,
       "load_out_of_combat_ap": 0
+    },
+    "fx": {
+      "note": "Presentation only (the engine never reads it): how a weapon looks and sounds when it fires, by its effects family. A weapon's family is by_ammo[its ammo], else by_system[its phys.system] (a melee weapon, a focus blade included, is a blade when thrown), else by_category[its category]; the family's fields, then the weapon's own `fx` block over them (weapons.json), make its effects (apps/web/src/game/fx/weaponFx.ts fxOf). sound: the firing sample (apps/web/src/game/sfx.ts), one per round fired; rate: its pitch. look: what flies (bullet, pellets: a shell's cluster, arrow, lob: a grenade's arc, rocket, flame: a gout of fire, bolt: a charge's bolt, thrown: the weapon itself). mark: what a round that hits leaves (hole, pellets, shaft; none for a blast, a flame or a throw). blast: what goes off where it lands (frag, fire, smoke, flash, zap). shell: the casing thrown out; eject: when (shot: one a round as it fires; reload: all of them at the reload). mag: what drops on a reload. load: how a gun with no magazine takes its rounds (pump, break, cylinder, rounds). cycle: ms before the casing comes out (a pump, lever or bolt worked first). bow: bow (drawn from the quiver before each loose) or crossbow. spent_core: the spent core an Evoker of this weapon ejects (evoker, blade, staff). color: sigil or soul ink for the round. stand_in: the sample is a stand-in until a proper one is sourced (docs/design/handoffs/weapon-fx-table.md lists them).",
+      "families": {
+        "pistol": {
+          "sound": "gun_pistol",
+          "look": "bullet",
+          "mark": "hole",
+          "shell": "pistol",
+          "eject": "shot",
+          "mag": "pistol_mag"
+        },
+        "revolver": {
+          "sound": "gun_revolver",
+          "look": "bullet",
+          "mark": "hole",
+          "shell": "pistol",
+          "eject": "reload",
+          "load": "cylinder"
+        },
+        "smg": {
+          "sound": "gun_smg",
+          "look": "bullet",
+          "mark": "hole",
+          "shell": "pistol",
+          "eject": "shot",
+          "mag": "stick_mag"
+        },
+        "rifle": {
+          "sound": "gun_rifle",
+          "look": "bullet",
+          "mark": "hole",
+          "shell": "rifle",
+          "eject": "shot",
+          "mag": "curved_mag"
+        },
+        "shotgun": {
+          "sound": "gun_shotgun",
+          "look": "pellets",
+          "mark": "pellets",
+          "shell": "hull",
+          "eject": "shot",
+          "load": "pump",
+          "cycle": 210
+        },
+        "heavy": {
+          "sound": "gun_heavy",
+          "look": "bullet",
+          "mark": "hole",
+          "shell": "linked_rifle",
+          "eject": "shot",
+          "mag": "big_box"
+        },
+        "launcher": {
+          "sound": "explosion_boom",
+          "rate": 2.2,
+          "stand_in": "a 40 mm launcher's thump (the low boom pitched up for now)",
+          "look": "lob",
+          "blast": "frag",
+          "shell": "grenade_40",
+          "eject": "shot",
+          "load": "rounds",
+          "cycle": 120
+        },
+        "rocket": {
+          "sound": "rocket_launch",
+          "look": "rocket",
+          "blast": "frag",
+          "shell": "grenade_40",
+          "load": "rounds"
+        },
+        "flamer": {
+          "sound": "el_fire",
+          "rate": 0.8,
+          "look": "flame",
+          "mag": "fuel_can"
+        },
+        "bow": {
+          "sound": "bow_loose",
+          "look": "arrow",
+          "mark": "shaft",
+          "bow": "bow"
+        },
+        "crossbow": {
+          "sound": "crossbow_loose",
+          "look": "arrow",
+          "mark": "shaft",
+          "bow": "crossbow"
+        },
+        "charge": {
+          "sound": "sigil_evoke",
+          "rate": 1.35,
+          "look": "bolt",
+          "color": "sigil",
+          "mark": "hole",
+          "shell": "charge",
+          "eject": "shot",
+          "load": "rounds",
+          "cycle": 120
+        },
+        "thrown": {
+          "sound": "swish",
+          "rate": 0.6,
+          "look": "lob",
+          "blast": "frag"
+        },
+        "blade": {
+          "sound": "swish",
+          "rate": 0.8,
+          "look": "thrown"
+        }
+      },
+      "by_ammo": {
+        "shell": "shotgun",
+        "arrow": "bow",
+        "bolt": "crossbow",
+        "40 mm grenade": "launcher",
+        "rocket": "rocket",
+        "fuel canister": "flamer",
+        "core charge": "charge",
+        "revolver": "revolver"
+      },
+      "by_system": {
+        "melee": "blade"
+      },
+      "by_category": {
+        "pistol": "pistol",
+        "revolver": "revolver",
+        "smg": "smg",
+        "rifle": "rifle",
+        "shotgun": "shotgun",
+        "heavy": "heavy",
+        "bow": "bow",
+        "thrown": "thrown",
+        "mana": "pistol",
+        "light_melee": "blade",
+        "heavy_melee": "blade",
+        "unarmed": "blade"
+      }
     }
   },
   "conditions_rules": {

@@ -35,6 +35,7 @@ import { SKILLS, WEAPONS, hitsWith } from '@engine';
 import type { Sfx } from '../sfx';
 import { type Pt, after, angle, centre, trace } from './dom';
 import { brassOf, ejectShell, whoOf } from './brass';
+import { fxOf } from './weaponFx';
 import { type PartCtx, type PartParams, PART_NAMES, WHITE, HP, playPart } from './techniqueParts';
 
 // Colour = meaning (docs/design/colour-system.md): a technique's ink is its attribute's, read from the weapon's
@@ -153,19 +154,11 @@ export const TECH_FX: Record<string, TechRow> = {
   'move:lumeri_templar.judgement': row([p('ring', { at: 'a', r: 0.5, color: VIRTUE }), p('chop', { color: VIRTUE })], [p('brand', { shape: 'cross', color: VIRTUE }), p('crack', { n: 2 })], [p('star', { n: 12, color: VIRTUE })]),
 };
 
-/** What a weapon's round leaves where it hits, by its ammunition (data/weapons.json `ammo`): a shell's pellets, an
- *  arrow's or a bolt's shaft, nothing for what lands as a blast or a flame; any other cartridge (and a core rifle's
- *  charge) a bullet hole. */
-export const AMMO_MARK: Record<string, string | null> = { shell: 'pellets', arrow: 'shaft', bolt: 'shaft', '40 mm grenade': null, rocket: null, 'fuel canister': null };
-const WEAPON_BY_ID = new Map((WEAPONS as any[]).map((w) => [w.id, w]));
 /** The mark a weapon's round leaves (a part name: 'hole', 'pellets', 'shaft'), or null: a thrown weapon (its landing is
- *  its own: the blade's melee_fx, a grenade's blast), a launcher, a flamer. A weapon not in the data: by its category. */
+ *  its own: the blade's melee_fx, a grenade's blast), a launcher, a flamer. From the weapon's effects family in the data
+ *  (fx/weaponFx.ts fxOf: a shell's pellets, an arrow's or a bolt's shaft, any other cartridge and a charge a hole). */
 export function shotMarkOf(weapon: string | undefined, cat: string | undefined): string | null {
-  const w = weapon ? WEAPON_BY_ID.get(weapon) : null, c = String(w?.category || cat || '');
-  if (c === 'thrown' || /melee|unarmed/.test(c)) return null;
-  const ammo = w ? w.ammo : c === 'shotgun' ? 'shell' : c === 'bow' ? 'arrow' : 'round';
-  if (!ammo) return null;
-  return ammo in AMMO_MARK ? AMMO_MARK[ammo] : 'hole';
+  return fxOf(weapon, cat).mark;
 }
 
 /** The row an event plays, by what the engine says it was (or null: a melee or shot with no technique plays Cut or Shot). */
@@ -248,11 +241,13 @@ export interface TechKit {
   at(k: string | null | undefined): Pt | null;
   posOf(id: string | null | undefined): string | undefined;
   tokOf(id: string | null | undefined, fallback?: string): HTMLElement | null;
-  play(s: Sfx, p: Pt | null, o?: { rate?: number; gain?: number; delay?: number }): void;
+  play(s: Sfx, p: Pt | null, o?: { rate?: number; gain?: number; delay?: number; fire?: boolean }): void;
   sawThen(e: FxEvent): boolean;
   /** when a shot's round lands (ms at Fast from the event's start) */
   landsIn(e: FxEvent): number;
-  gunOf(id: string, cat: string): { sound: Sfx | null; rate?: number; look: string; color?: string };
+  gunOf(id: string, cat: string): { sound: Sfx | null; rate?: number; look: string; color?: string; blast?: string };
+  /** a charge going off (fx/play.ts explosion): at a tile, or at a point (a round that hurt nobody) */
+  explosion?(k: string | undefined, radius: number, kind: any, point?: Pt): void;
   /** wide: a shotgun's blast (a short, wide flash) */
   muzzle(from: Pt, to: Pt, color?: string, wide?: boolean): { x: number; y: number };
   missPoint(from: Pt, to: Pt): { x: number; y: number };
@@ -333,12 +328,15 @@ export function wrapTechFx(H: Record<string, H>, K: TechKit) {
     const key = rowKey(e), mark = e.hit && !(key && TECH_FX[key]?.noRoll) ? shotMarkOf(e.weapon, e.cat) : null, vi = Number(e.vi) || 0;
     for (let i = 1; i <= n; i++) after(() => {
       trace('round', { unit: e.unit, loose: true });
-      if (g.sound) K.play(g.sound, from || toP, { rate: (g.rate || 1) * (0.96 + Math.random() * 0.08) });
+      if (g.sound) K.play(g.sound, from || toP, { rate: (g.rate || 1) * (0.96 + Math.random() * 0.08), fire: true });
       if (tok && br.when === 'shot') ejectShell(whoOf(tok), br.shell, aim);
       if (!from) return;
       const m = g.look === 'bullet' || g.look === 'pellets' || g.look === 'bolt' ? K.muzzle(from, toP, g.color, g.look === 'pellets') : { x: from.x, y: from.y };
       const end = e.hit ? toP : K.missPoint(from, toP), ms = Math.max(60, Math.min(320, Math.hypot(end.x - m.x, end.y - m.y) / 2.2));
       K.projectile(m, end, ms, g.look, toP.s, g.color); // a shell: its pellet cluster
+      // a launcher's round (or a rocket) goes off where it comes down: each grenade fired is its own blast, smaller and
+      // unscorched where the engine hurt nobody with it
+      if (g.blast && K.explosion) after(() => K.explosion!(undefined, 0.6, g.blast!, { x: end.x, y: end.y, s: toP.s }), ms);
       const b = K.at(e.to);
       if (mark && b) after(() => playPart('round', { a: from, b, dir: { x: Math.cos(aim), y: Math.sin(aim) }, s: b.s, ink: WHITE, scale: 1, delay: 0, outcome: 'hit', mark, round: vi + i }), ms);
     }, i * LOOSE_GAP);

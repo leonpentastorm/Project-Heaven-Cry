@@ -65,5 +65,9 @@ export const SFX_CREDITS: Credit[] = [
   // Faith 2.2 (rules 1.6.3): the Miracle cut-in's sting (public/sfx/cb/miracle_sting.ogg). The author asks for nothing
   // beyond the licence's attribution; changes: trimmed to the first rising run (2.8 s), mono, levelled. Master in audio/sfx/.
   { what: '8 Heals and Buffs SFX: 30_revive_03 (the Miracle cut-in\'s sting; trimmed, mono, levelled, loudness normalised)', who: 'leohpaz', licence: 'CC-BY 4.0', url: 'https://opengameart.org/content/8-heals-and-buffs-sfx' },
+  // The weapon effects table (14 Nov 2026): what is not a gun fires with its own sound (public/sfx/cb/shot_bow_*,
+  // shot_crossbow, shot_rocket; trimmed to the loose or the launch, faded, mono, levelled). Both CC0.
+  { what: 'Medieval Sound Effects: Weapon Textures: Scythian Recurve Shoot, English Longbow Shoot and Crossbow Shoot (a bow\'s and a crossbow\'s loose)', who: 'Ben Jaszczak & Brian Nelson (submitted by MedicineStorm)', licence: 'CC0', url: 'https://opengameart.org/content/medieval-sound-effects-weapon-textures' },
+  { what: 'Rocket launch (the breacher tube\'s launch)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/rocket-launch' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
 ];

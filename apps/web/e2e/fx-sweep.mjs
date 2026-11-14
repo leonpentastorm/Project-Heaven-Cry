@@ -18,7 +18,8 @@
 //   REAL=1 ONLY='thumper.*lob' npm run e2e -- fx-sweep    the matching cases at real speed
 //   SWEEP_LOG=1 …                                   one line for every case, and every refusal's reason
 //   SWEEP_TRACE=1 …                                 keep every case's trace in the report (else only the failing ones')
-//   PARTS=real,table,fog,glyphs  which parts to run · JOBS=3  how many pages play the table at once
+//   PARTS=real,counts,table,fog,glyphs  which parts to run (counts: one weapon of every effects family at real speed, the
+//   screen's elements counted against the engine, a picture of each mid-flight in FX_SHOTS) · JOBS=3  how many pages play the table at once
 // One line per failing case, then the counts. The full report: .check/e2e/fx-sweep.json. Exit code 1 on any failure.
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs';
 import { chromium, player, click, BASE, pause, here } from './lib.mjs';
@@ -26,8 +27,11 @@ import { chromium, player, click, BASE, pause, here } from './lib.mjs';
 const ROOT = here('../../../', import.meta.url);
 const WEAPONS = JSON.parse(readFileSync(ROOT + 'data/weapons.json', 'utf8')).items;
 const TECHS = JSON.parse(readFileSync(ROOT + 'data/techniques.json', 'utf8')).items;
+// a weapon's effects family, read from the data as the game reads it (apps/web/src/game/fx/weaponFx.ts fxOf)
+const RULES = JSON.parse(readFileSync(ROOT + 'data/rules.json', 'utf8')), FXR = RULES.weapons_rules.fx;
+const fxOfW = (w) => { const fam = (w.ammo && FXR.by_ammo[w.ammo]) || (w.phys && FXR.by_system[w.phys.system]) || FXR.by_category[w.category] || 'pistol'; return { family: fam, ...FXR.families[fam], ...(w.fx || {}) }; };
 const ONLY = process.env.ONLY ? new RegExp(process.env.ONLY) : null, REAL = !!process.env.REAL, LOG = !!process.env.SWEEP_LOG;
-const PARTS = (process.env.PARTS || 'real,table,fog,glyphs').split(','), JOBS = Number(process.env.JOBS) || 3;
+const PARTS = (process.env.PARTS || 'real,counts,table,fog,glyphs').split(','), JOBS = Number(process.env.JOBS) || 3;
 let failed = 0;
 // How far it has got, as it goes (the runner prints a suite's lines only when it ends): .check/e2e/fx-sweep.progress
 const PROGRESS = ROOT + '.check/e2e/fx-sweep.progress', T0 = Date.now();
@@ -93,6 +97,7 @@ async function openGround(browser, speed) {
       await sleep(settle); return true;
     };
     const dist = (a, b) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
+    const refK = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
     const who = () => { const cb = st().combat; return cb && st().phase === 'combat' ? { cb, me: cb.units.find((u) => u.side === 'pc'), dummy: cb.units.find((u) => u.side === 'foe' && !u.dead) } : {}; };
     /** Stand where the case needs: beside the dummy for a blade, 4 tiles off for anything else (the AP comes back after
      *  every action, so a long walk is a few moves). False: no way there (the room is entered again). */
@@ -112,7 +117,7 @@ async function openGround(browser, speed) {
       for (const [ox, oy] of want) {
         const x = dx + ox, y = dy + oy, k = x + ',' + y; if (x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h) continue;
         // (a long walk is a few moves: the AP comes back after each)
-        for (let i = 0; i < 4 && who().me.pos !== k; i++) if (act({ type: 'combat/move', unitId: me.id, to: k })) break;
+        for (let i = 0; i < 4 && who().me.pos !== k; i++) { const e = act({ type: 'combat/move', unitId: me.id, to: k }); if (e) { window.__sweepWhy = refK(k) + ': ' + e; break; } }
         if (who().me.pos !== k) continue;
         await idle(quick);
         if (inPlace(kind)) return true;
@@ -121,7 +126,26 @@ async function openGround(browser, speed) {
     };
     /** A spotlight cut-in (a crit) still on screen: skip it. */
     const cut = () => { if (document.querySelector('[data-phc-cutin]')) document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); };
-    window.__sweep = { st, act, idle, sleep,
+    /** Walk the fighter back to where it first stood in the room before the room is entered again: the dummy is set
+     *  down four tiles beside the squad, so a squad left elsewhere (a blade's case ends beside the dummy) had its dummy
+     *  set down out of sight, behind a wall, unknown to the screen, and every case after it had "no place to stand"
+     *  (9 of the 19 real-speed cases, 14 Nov 2026). */
+    let home = null;
+    const centre = async () => {
+      for (let n = 0; n < 8; n++) {
+        const { cb, me } = who(); if (!cb || !me) return;
+        if (!home) { home = me.pos; return; }
+        const [x, y] = me.pos.split(',').map(Number), [cx, cy] = home.split(',').map(Number);
+        if (x === cx && y === cy) return;
+        const step = (a, b) => a + Math.max(-3, Math.min(3, b - a));
+        const tries = [[step(x, cx), step(y, cy)], [step(x, cx), y], [x, step(y, cy)], [step(x, cx), step(y, cy) - 1], [step(x, cx), step(y, cy) + 1], [cx, cy]];
+        let moved = false;
+        for (const [tx, ty] of tries) { if (tx === x && ty === y) continue; if (!act({ type: 'combat/move', unitId: me.id, to: tx + ',' + ty })) { moved = true; break; } }
+        if (!moved) return;
+        await idle(60);
+      }
+    };
+    window.__sweep = { st, act, idle, sleep, centre, station, who, sees,
       /** One weapon's cases, from index `from`: each { name, plain?, tech?: { id, aim, pressed }, line? }. Returns the
        *  results so far and, when the room has to be entered again (nowhere to stand, the fight ended), where to go on. */
       async weapon(job) {
@@ -139,7 +163,8 @@ async function openGround(browser, speed) {
         for (let i = job.from; i < job.cases.length; i++) {
           const c = job.cases[i], r = { name: c.name }, t = c.tech;
           const h = hold(); if (h === 'restock') return { out, again: i, restock: true }; if (h) { r.refused = h; out.push(r); continue; }
-          if (!(await station(far, quick))) return { out, again: i, stuck: true };
+          window.__sweepWhy = null;
+          if (!(await station(far, quick))) return { out, again: i, stuck: true, why: window.__sweepWhy || ('stands ' + (who().me ? refK(who().me.pos) : '?') + ', the dummy ' + (who().dummy ? refK(who().dummy.pos) : 'gone') + ', sees it: ' + sees() + ', phase ' + st().phase + ', units ' + ((st().combat && st().combat.units) || []).map((u) => u.side + ':' + u.name + (u.dead ? ':dead' : '') + (u.downed ? ':downed' : '') + '@' + u.pos).join(' ')) };
           let { me, dummy } = who();
           // a technique that draws: the weapon goes back in the pack first, and the technique names it there
           let item = thrown ? weapon : undefined;
@@ -207,9 +232,10 @@ async function sweep(browser, cases, speed) {
   const R = await openGround(browser, speed), { p, A } = R, fast = speed === 'test';
   const settle = fast ? 70 : 1500, tol = fast ? 0.5 : 40, k = fast ? 0.04 : 1 / 0.85, clock = !fast;
   let charId = await enterRoom(R, true), resets = 0;
+  await p.evaluate(() => window.__sweep.centre()); // (the first call notes where the fighter stands: home)
   const results = [];
   /** Leave the room and enter it again (the ground cleared, the fighters as their sheets say; `gear`: an action while gearing up). */
-  const reset = async (gear) => { resets++; await A({ type: 'sandbox/stop' }); await pause(p, fast ? 150 : 700); if (gear) await A(gear); charId = await enterRoom(R, false); };
+  const reset = async (gear) => { resets++; await p.evaluate(() => window.__sweep.centre()).catch(() => {}); await A({ type: 'sandbox/stop' }); await pause(p, fast ? 150 : 700); if (gear) await A(gear); charId = await enterRoom(R, false); };
   for (const id of [...new Set(cases.map((c) => c.weapon))]) {
     const w = WEAPONS.find((x) => x.id === id), mine = cases.filter((c) => c.weapon === id);
     const job = { charId, weapon: id, thrown: w.category === 'thrown', melee: systemOf(w) === 'melee', settle, from: 0, mag: w.magazine ?? null, heatLimit: w.heat_limit || 0,
@@ -223,7 +249,7 @@ async function sweep(browser, cases, speed) {
       got.push(...r.out);
       if (r.again == null) break;
       // the room is entered again; a case that had nowhere to stand twice running is given up
-      if (r.stuck && r.again === job.from && !r.out.length) { got.push({ name: mine[r.again].name, refused: 'no place to stand' }); job.from = r.again + 1; } else job.from = r.again;
+      if (r.stuck && r.again === job.from && !r.out.length) { got.push({ name: mine[r.again].name, refused: 'no place to stand (' + (r.why || 'no tile in reach') + ')' }); job.from = r.again + 1; } else job.from = r.again;
       if (r.restock && ++restocks > 8) { got.push({ name: mine[r.again].name, refused: 'out of them' }); job.from = r.again + 1; }
       await reset(r.restock ? { type: 'sandbox/give', charId, item: id, qty: 3 } : null);
     }
@@ -255,10 +281,10 @@ const summary = (tr) => tr.filter((e) => e.w === 'ev').map((e) => e.k + (e.id ? 
 // ---------- the judge ----------
 const GUN_SOUND = /^(gun_|auto_|burst_)/;
 const WEAPON = new Map(WEAPONS.map((w) => [w.id, w]));
-/** The mark a weapon's round leaves where it hits, from its ammunition in the data (Leon, 13 Nov 2026: a bullet hole
- *  for a shot, and a shotgun is not a rifle): a shell's pellets, an arrow's or a bolt's shaft, nothing for a grenade, a
- *  rocket, fuel or a thrown weapon, a hole for any other cartridge. */
-const markOf = (w) => (!w || w.category === 'thrown' || !w.ammo ? null : w.ammo === 'shell' ? 'pellets' : ['arrow', 'bolt'].includes(w.ammo) ? 'shaft' : ['40 mm grenade', 'rocket', 'fuel canister'].includes(w.ammo) ? null : 'hole');
+/** The mark a weapon's round leaves where it hits (Leon, 13 Nov 2026: a bullet hole for a shot, and a shotgun is not a
+ *  rifle): its effects family's in the data (a shell's pellets, an arrow's or a bolt's shaft, nothing for a grenade, a
+ *  rocket, fuel or a thrown weapon, a hole for any other cartridge). */
+const markOf = (w) => (w ? fxOfW(w).mark || null : null);
 /** The rounds fired to miss on purpose (no roll): they leave no mark. */
 const NO_ROLL = new Set(['warning_shot', 'flush', 'rout', 'cover_me']);
 /** What is wrong with a case's trace (an empty list: nothing). tol: ms of slack on this page's clock; k: its pace. */
@@ -486,6 +512,119 @@ async function glyphPart() {
   ok('glyphs: no page errors' + (p.fxErrors.length ? ': ' + p.fxErrors.join(' | ').slice(0, 300) : ''), p.fxErrors.length === 0);
   await p.context().close();
 }
+// ---------- counts: one weapon of every effects family at real speed, the screen's own elements against the engine ----------
+// (Leon, 14 Nov 2026: "Do all weapon to, if i see another missmatch bullet effect on a flamer or grenade launcher i'm
+// gonna stroke".) Each is fired once at the dummy at the player's speed; what the screen put up over the action is
+// counted from the DOM (a projectile: data-fx-flight, by what it is; a mark: data-tech-fx hole, pellets or shaft; a
+// casing: data-fx-piece shell:…; a thrown blade: data-melee-fx throw) with the firing sounds from the trace, against what
+// the engine spent (the rounds out of the magazine, the grenade out of the pouch). What each should be is the weapon's
+// effects family in the data (rules.json weapons_rules.fx), read here as the game reads it. A picture mid-flight of each
+// goes to FX_SHOTS (default .check/e2e/shots/fx-sweep/weapon-fx/).
+const FAMILY_CASES = [
+  ['service_pistol', { plain: 'shot' }, 'pistol'], ['drifter_revolver', { plain: 'shot' }, 'revolver'], ['decrkm_smg', { plain: 'burst' }, 'smg-burst'],
+  ['hellraiser_service_rifle', { plain: 'shot' }, 'rifle'], ['hellraiser_service_rifle', { tech: 'mag_dump', wait: 260 }, 'rifle-mag-dump'],
+  ['lumeri_scattergun', { plain: 'shot' }, 'shotgun'], ['coach_gun', { tech: 'mag_dump' }, 'shotgun-both-barrels'], ['blackpoint_700', { plain: 'shot' }, 'heavy'],
+  ['recurve_bow', { plain: 'shot' }, 'bow'], ['crossbow', { plain: 'shot' }, 'crossbow'], ['smetanita_thumper', { plain: 'shot', wait: 200 }, 'grenade-launcher'],
+  ['breacher_tube', { plain: 'shot', wait: 120 }, 'rocket-tube'], ['purifier_flamer', { plain: 'shot', wait: 140 }, 'flamer'], ['core_rifle', { plain: 'shot' }, 'core-rifle'],
+  ['frag_grenade', { plain: 'throw', wait: 200 }, 'thrown-grenade'], ['combat_knife', { tech: 'throw', wait: 90 }, 'thrown-blade'],
+];
+async function countsPart() {
+  const dir = process.env.FX_SHOTS ? process.env.FX_SHOTS.replace(/\/?$/, '/') : ROOT + '.check/e2e/shots/fx-sweep/weapon-fx/';
+  mkdirSync(dir, { recursive: true });
+  const R = await openGround(browser, null), { p, A } = R;
+  let charId = await enterRoom(R, true);
+  await p.evaluate(() => window.__sweep.centre());
+  const fams = new Set();
+  for (const [id, how, label] of FAMILY_CASES.filter(([id, , label]) => !ONLY || ONLY.test(id + ' · ' + label))) {
+    const w = WEAPONS.find((x) => x.id === id), fx = fxOfW(w), thrown = w.category === 'thrown', blade = !thrown && systemOf(w) === 'melee';
+    // the weapon in hand (a grenade: three in the pouch, a pistol in the hand), loaded, and a place to stand
+    if (thrown) await A({ type: 'sandbox/give', charId, item: id, qty: 3 }); else await A({ type: 'sandbox/give', charId, item: id, qty: 1, equip: true });
+    await A({ type: 'sandbox/refill', charId });
+    const placed = await p.evaluate(async ({ near }) => { const S = window.__sweep; await S.idle(200); return S.station(near ? 'near' : 'far', 120); }, { near: thrown || blade });
+    if (!placed) { ok('counts · ' + label + ' (' + id + '): a place to stand', false); continue; }
+    if (blade) await p.evaluate(() => { const S = window.__sweep, me = S.who().me; S.act({ type: 'sandbox/meter', unitId: me.id, momentum: 3 }); }); // Throw spends Momentum
+    if ((w.properties || []).includes('requires_braced_or_prone')) { await p.evaluate(() => { const S = window.__sweep, me = S.who().me; S.act({ type: 'combat/prone', unitId: me.id }); }); await p.evaluate(() => window.__sweep.idle(300)); }
+    await p.mouse.move(2, 2); // (no tile's tip over the picture)
+    const start = await p.evaluate(({ id, how, thrown }) => {
+      const S = window.__sweep, { cb, me, dummy } = S.who(); if (!me || !dummy) return { err: 'no dummy' };
+      const held = (u) => (thrown ? (u.throwables || {})[id] || 0 : (u.ammo || 0) + (u.loose || 0));
+      const seen = { flight: {}, hole: 0, holes: [], casing: 0, blade: 0 };
+      const once = new WeakSet();
+      const look = (n) => {
+        if (!(n instanceof Element)) return;
+        for (const e of [n, ...n.querySelectorAll('[data-fx-flight],[data-tech-fx],[data-fx-piece],[data-melee-fx]')]) {
+          if (once.has(e)) continue; once.add(e); // (a shared box put back in its place comes up again with what it holds)
+          const f = e.getAttribute('data-fx-flight'); if (f) seen.flight[f] = (seen.flight[f] || 0) + 1;
+          const t = e.getAttribute('data-tech-fx'); if (t === 'hole' || t === 'pellets' || t === 'shaft') { seen.hole++; seen.holes.push(t); }
+          const pc = e.getAttribute('data-fx-piece'); if (pc && /^shell:/.test(pc)) seen.casing++;
+          if (e.getAttribute('data-melee-fx') === 'throw') seen.blade++;
+        }
+      };
+      // the picture: once the first round is in the air (and `wait` ms more, for a stream, an arc or a gout to fill
+      // out), every animation on the page is held still until the picture is taken, so it shows the flight on any machine
+      window.__frozen = false;
+      // (a bullet is in the air for a few dozen ms, less than a busy machine takes to answer: each round in the air is
+      // held between a third and three fifths of its flight, so the picture shows it in the air whatever the machine)
+      const hold = () => {
+        for (const an of document.getAnimations()) try {
+          an.pause();
+          const el = an.effect && an.effect.target, d = an.effect && Number(an.effect.getTiming().duration);
+          if (el && el.closest && el.closest('[data-fx-flight],[data-melee-fx="throw"]') && d > 0) an.currentTime = Math.max(d * 0.35, Math.min(d * 0.6, Number(an.currentTime) || 0));
+        } catch { /* */ }
+        // the effects' own timers still run and take a round away when its flight is done: a still copy of each round in
+        // the air stays for the picture (no data-fx-flight on it: it is not counted), taken away after
+        for (const el of document.querySelectorAll('[data-fx-flight],[data-melee-fx="throw"]')) try {
+          const c = el.cloneNode(true), cs = getComputedStyle(el), inner = el.firstElementChild, ci = c.firstElementChild;
+          c.removeAttribute('data-fx-flight'); c.removeAttribute('data-melee-fx'); c.setAttribute('data-fx-frozen', '');
+          c.style.transform = cs.transform; c.style.opacity = cs.opacity;
+          if (inner && ci) { const ic = getComputedStyle(inner); ci.style.transform = ic.transform; ci.style.opacity = ic.opacity; }
+          el.parentElement.appendChild(c);
+        } catch { /* */ }
+        window.__frozen = true;
+      };
+      const freeze = () => (how.wait ? setTimeout(hold, how.wait) : hold());
+      let armed = false;
+      const mo = new MutationObserver((ms) => { for (const m of ms) m.addedNodes.forEach(look); if (!armed && document.querySelector('[data-fx-flight],[data-melee-fx="throw"]')) { armed = true; freeze(); } }); mo.observe(document.body, { childList: true, subtree: true });
+      window.__counts = { seen, mo, n0: cb.fx && cb.fx.length ? cb.fx[cb.fx.length - 1].n : 0, before: held(me), me: me.id };
+      window.__phcFxTrace = [];
+      const a = how.plain === 'throw' ? { type: 'combat/throw', unitId: me.id, item: id, tile: dummy.pos } : how.plain ? { type: 'combat/attack', unitId: me.id, targetId: dummy.id, mode: how.plain }
+        : { type: 'combat/technique', unitId: me.id, id: how.tech, hand: 'main', targetId: dummy.id, tile: dummy.pos };
+      return { err: S.act(a) };
+    }, { id, how, thrown });
+    if (start.err) { ok('counts · ' + label + ' (' + id + '): the engine took the action (' + start.err + ')', false); await p.evaluate(() => window.__counts && window.__counts.mo.disconnect()); continue; }
+    // mid-flight: the page holds still once a round is in the air (above); the picture, then everything runs on
+    const t0 = Date.now();
+    while (Date.now() - t0 < 5000 && !(await p.evaluate(() => window.__frozen))) await pause(p, 15);
+    if (process.env.FX_DEBUG) console.log('frozen', label, await p.evaluate(() => [...document.querySelectorAll('[data-fx-frozen]')].map((e) => { const r = e.getBoundingClientRect(); return Math.round(r.left) + ',' + Math.round(r.top) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height) + ' ' + getComputedStyle(e).opacity + ' ' + e.style.transform; }).join(' | ')));
+    await p.screenshot({ path: dir + label + '.png' });
+    await p.evaluate(() => { for (const an of document.getAnimations()) try { if (an.playState === 'paused') an.play(); } catch { /* */ } document.querySelectorAll('[data-fx-frozen]').forEach((e) => e.remove()); });
+    await p.evaluate(() => window.__sweep.idle(1500, 20000));
+    const got = await p.evaluate(({ id, thrown }) => {
+      const S = window.__sweep, C = window.__counts; C.mo.disconnect();
+      const { cb } = S.who(), me = cb.units.find((u) => u.id === C.me);
+      const after = thrown ? (me.throwables || {})[id] || 0 : (me.ammo || 0) + (me.loose || 0);
+      const evs = (cb.fx || []).filter((e) => e.n > C.n0 && e.unit === C.me), T = window.__phcFxTrace || []; window.__phcFxTrace = null;
+      return { spent: C.before - after, shots: evs.filter((e) => e.k === 'volley').reduce((t, e) => t + (Number(e.shots) || 0), 0), rolls: evs.filter((e) => e.k === 'shot' && !e.object).length, hits: evs.filter((e) => e.k === 'shot' && e.hit && !e.object).length,
+        seen: C.seen, fire: T.filter((x) => x.w === 'sfx' && x.fire).map((x) => x.s), booms: T.filter((x) => x.w === 'boom').length, muzzles: T.filter((x) => x.w === 'muzzle').length,
+        miss: T.filter((x) => x.w === 'float' && x.text === 'MISS').length };
+    }, { id, thrown });
+    fams.add(fx.family);
+    // what was fired: the rounds out of the magazine (a crossbow that reloads as it fires: its rolls), the grenade, the blade
+    const fired = blade ? 1 : got.spent > 0 ? got.spent : got.rolls;
+    const flew = fx.look === 'pellets' ? (got.seen.flight.bullet || 0) / 5 : blade ? got.seen.blade : got.seen.flight[fx.look] || 0;
+    const others = Object.keys(got.seen.flight).filter((k) => k !== (fx.look === 'pellets' ? 'bullet' : fx.look));
+    const casings = fx.eject === 'shot' && fx.shell ? fired : 0, marks = fx.mark ? got.seen.holes.every((h) => h === fx.mark) : got.seen.hole === 0;
+    const line = label + ' (' + id + ', ' + fx.family + '): spent ' + got.spent + (got.shots ? ', volley ' + got.shots : '') + ', rolls ' + got.rolls + ' (' + got.hits + ' hit) · flew ' + flew + ' ' + fx.look + (others.length ? ' + ' + others.join(',') : '')
+      + ' · heard ' + got.fire.length + ' ' + [...new Set(got.fire)].join(',') + ' · casings ' + got.seen.casing + ' · marks ' + got.seen.hole + (got.seen.hole ? ' ' + [...new Set(got.seen.holes)].join(',') : '') + ' · blasts ' + got.booms;
+    ok('counts · ' + line, flew === fired && !others.length && got.fire.length === fired && got.fire.every((s) => s === fx.sound) && got.seen.casing === casings && marks
+      && got.seen.hole <= fired && (fx.mark && got.hits ? got.seen.hole > 0 : true) && (fx.blast ? got.booms >= fired : got.booms === 0) && (!got.hits || got.miss === 0 || got.rolls > got.hits));
+  }
+  ok('counts: every effects family fired (' + [...fams].sort().join(', ') + ')', Object.keys(FXR.families).every((f) => fams.has(f)) || !!ONLY);
+  ok('counts: no page errors' + (p.fxErrors.length ? ': ' + p.fxErrors.join(' | ').slice(0, 300) : ''), p.fxErrors.length === 0);
+  await p.context().close();
+}
+if (PARTS.includes('counts')) await countsPart();
+note('counts done');
 note('table done'); if (!ONLY && PARTS.includes('fog')) await fogPart();
 note('fog done');
 if (!ONLY && PARTS.includes('glyphs')) await glyphPart();

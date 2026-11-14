@@ -166,11 +166,12 @@ export function anim(el: Element, frames: Keyframe[], opts: KeyframeAnimationOpt
   try { return (el as any).animate ? el.animate(frames, opts) : null; } catch { return null; }
 }
 /** A sprite burst at a point: scale from a to b and fade, rotated. */
-export function burst(name: string, p: { x: number; y: number }, size: number, ms: number, o: { color?: string; rot?: number; from?: number; to?: number; fade?: number; blend?: string; delay?: number } = {}) {
+export function burst(name: string, p: { x: number; y: number }, size: number, ms: number, o: { color?: string; rot?: number; from?: number; to?: number; fade?: number; blend?: string; delay?: number; flight?: string } = {}) {
   const run = () => {
     trace('burst', { name });
     const el = sprite(name, o.color), box = put(el, p, size, size, ms);
     if (o.blend) box.style.mixBlendMode = o.blend;
+    if (o.flight) box.setAttribute('data-fx-flight', o.flight); // a round in the air drawn as a burst (a flamer's gout): the suites count it
     const r = (o.rot || 0) + 'deg', from = o.from ?? 0.4, to = o.to ?? 1.2;
     anim(box, reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }] : [{ transform: 'rotate(' + r + ') scale(' + from + ')', opacity: 1 }, { transform: 'rotate(' + r + ') scale(' + to + ')', opacity: o.fade ?? 0 }], { duration: ms, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
   };

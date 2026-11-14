@@ -28,7 +28,9 @@ three at a time, prints one line a suite, and stops the server. Logs: `.check/e2
 - `anim`: suites that look at an animation part-way through, or at how long something takes. They run at the
   player's real speed.
 - `all` is `rules` + `anim`. `smoke` is a few of them. `sweep` is `fx-sweep` with its whole table (everywhere else
-  `fx-sweep` plays its real-speed, fog and glyph parts).
+  `fx-sweep` plays its real-speed, counts, fog and glyph parts; counts fires one weapon of every effects family at real
+  speed and checks what the screen drew against what the engine spent, with a picture of each mid-flight in
+  FX_SHOTS).
 
 **Every suite must be in `rules` or in `anim`.** `tools/e2e.py` refuses to run when a `.mjs` file here is in neither,
 and `npm run check` fails for the same reason (`apps/web/src/e2e-groups.test.ts`). A suite nobody runs rots: on 12 Nov
@@ -97,7 +99,7 @@ FAST=1 node apps/web/e2e/tabs.mjs               # a `rules` suite, as the runner
 BASE=https://project-heaven-cry.leonpentastorm.workers.dev node apps/web/e2e/reconnect.mjs
 ```
 
-`PARTS` means one thing to `fx-sweep` (`real,table,fog,glyphs`) and another to `coop-stall` (`ABC`). The runner passes
+`PARTS` means one thing to `fx-sweep` (`real,counts,table,fog,glyphs`) and another to `coop-stall` (`ABC`). The runner passes
 a `PARTS` you set only when you ask for ONE suite (`PARTS=table npm run e2e -- fx-sweep`, `PARTS=BC npm run e2e --
 coop-stall`). (Set for a whole run, it once made `coop-stall` run none of its parts and print `RESULT OK`; a suite that
 prints no `ok` line now fails.)
