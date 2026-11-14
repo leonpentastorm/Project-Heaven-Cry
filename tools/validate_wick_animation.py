@@ -102,6 +102,6 @@ def validate_wick_animation(complete=False):
     checksum_map = {line.split('  ', 1)[1]: line.split('  ', 1)[0] for line in (ROOT / 'art/checksums.sha256').read_text().splitlines()}
     for path in BASE.rglob('*'):
         if path.is_file():
-            rel = str(path.relative_to(ROOT))
+            rel = path.relative_to(ROOT).as_posix()
             require(checksum_map.get(rel) == hashlib.sha256(path.read_bytes()).hexdigest(), f'Missing/stale animation checksum: {rel}')
     print(f'OK: Wick animation {len(m["clips"])}/5 clips, {total}/36 frames; white RGBA, registration, strips, root motion, aliases, timings, reviews, sources and hashes.')

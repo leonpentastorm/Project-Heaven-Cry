@@ -3711,6 +3711,1307 @@
         "x": 0.62,
         "y": 0.15
       }
+    },
+    "foe-human-vermin": {
+      "label": "human vermin",
+      "path": "art/portraits/survival/foes/foe-human-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "699fee1ba2ca2d9ec4dbe8f6f3b963e83489318352ba2b5cb5838a3763d9532c",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.54,
+        "y": 0.15
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-vermin.png"
+    },
+    "foe-human-minion-a": {
+      "label": "human minion a",
+      "path": "art/portraits/survival/foes/foe-human-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "7664bc5eb5aa5f3ace4114b672d54f7dd59dec0e3ea5292be550adb91aee26bc",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-minion-a.png"
+    },
+    "foe-human-minion-b": {
+      "label": "human minion b",
+      "path": "art/portraits/survival/foes/foe-human-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "72728359bed7cae16fbd532429e75d7ab72936e2d933feb42c137c68004f2f31",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-minion-b.png"
+    },
+    "foe-human-soldier-a": {
+      "label": "human soldier a",
+      "path": "art/portraits/survival/foes/foe-human-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "85e44df3b76e2bcca87819da7fec9c23c114797db237718fead9eb3bee947f4e",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.48,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-soldier-a.png"
+    },
+    "foe-human-soldier-b": {
+      "label": "human soldier b",
+      "path": "art/portraits/survival/foes/foe-human-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "d695a93a3418e998c807ba792265f1c66ba5dfd458c97ae8da705fc302eb97b5",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.48,
+        "y": 0.21
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-human-soldier-b.png"
+    },
+    "foe-human-elite": {
+      "label": "human elite",
+      "path": "art/portraits/survival/foes/foe-human-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "0fd0ad6936f193694f9de7ef414d157178cf0334437e5a6efc35afe746182e81",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.48,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-elite.png"
+    },
+    "foe-robot-vermin": {
+      "label": "robot vermin",
+      "path": "art/portraits/survival/foes/foe-robot-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "b090c4e5b5e8031b3eb4808986be92514a6e7c4ee4a58ff086fa168fb8d70be5",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.16
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-vermin.png"
+    },
+    "foe-robot-minion-a": {
+      "label": "robot minion a",
+      "path": "art/portraits/survival/foes/foe-robot-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "bf3c0715d12cf126a77a0c9da0d46586cd7e862acd1268bf704bfe32f8204cff",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-minion-a.png"
+    },
+    "foe-robot-minion-b": {
+      "label": "robot minion b",
+      "path": "art/portraits/survival/foes/foe-robot-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "9053a0f961271a1d543d80720ff2154d563445cb8bf92d9504f9767b3c32ebe2",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.16
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-minion-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-robot-minion-b.png"
+    },
+    "foe-robot-soldier-a": {
+      "label": "robot soldier a",
+      "path": "art/portraits/survival/foes/foe-robot-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "232e1564e18fba5e9c93820fb59ee4168bfc0809433801f7b1abc419f53116eb",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.23
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-soldier-a.png"
+    },
+    "foe-robot-soldier-b": {
+      "label": "robot soldier b",
+      "path": "art/portraits/survival/foes/foe-robot-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "fabf6c96505fd283f436ca502cafc4713aea5614818a0bc94f35fbe15f657310",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.24
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-robot-soldier-b.png"
+    },
+    "foe-robot-elite": {
+      "label": "robot elite",
+      "path": "art/portraits/survival/foes/foe-robot-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "268ef17eddae0570947182f44f6a8a9b052ed575a0346b60f0924dc426fc2ed7",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-elite.png"
+    },
+    "foe-drone-vermin": {
+      "label": "drone vermin",
+      "path": "art/portraits/survival/foes/foe-drone-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "44364e7702085d0b21b0d7f1d3270b53ea3b5631ed58fd8efd6fce67cb3a8ca6",
+      "collection": "survival-foes",
+      "kind": "drone",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.3525,
+        "y": 0.2201
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-vermin.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-vermin.png"
+    },
+    "foe-drone-minion-a": {
+      "label": "drone minion a",
+      "path": "art/portraits/survival/foes/foe-drone-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "585f4fad2a690adfea098030171d9b3430d1dfb34940cd343bbaa15042f612a2",
+      "collection": "survival-foes",
+      "kind": "drone",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.4993,
+        "y": 0.2197
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-minion-a.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-minion-a.png"
+    },
+    "foe-drone-minion-b": {
+      "label": "drone minion b",
+      "path": "art/portraits/survival/foes/foe-drone-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "ae46fb180968dad9a4cc3df9aec114323adba9a239d9bec75c9fe133ea86224b",
+      "collection": "survival-foes",
+      "kind": "drone",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.2198
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-minion-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-minion-b.png"
+    },
+    "foe-drone-soldier-a": {
+      "label": "drone soldier a",
+      "path": "art/portraits/survival/foes/foe-drone-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "e3a3de1dba8b10379441b2662470081c13fa2eb875d02566d79a30a294f672c4",
+      "collection": "survival-foes",
+      "kind": "drone",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.2203
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-soldier-a.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-soldier-a.png"
+    },
+    "foe-drone-soldier-b": {
+      "label": "drone soldier b",
+      "path": "art/portraits/survival/foes/foe-drone-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "fb966234910d9fd33c07717f1333dfb916cf67b1c9b83a0f0c3646292737e60c",
+      "collection": "survival-foes",
+      "kind": "drone",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.4993,
+        "y": 0.2202
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-soldier-b.png"
+    },
+    "foe-drone-elite": {
+      "label": "drone elite",
+      "path": "art/portraits/survival/foes/foe-drone-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "3a44ff13079c91e260dc95343f7f8b02f9d658c3bc16e88c4a2c40e312510fd9",
+      "collection": "survival-foes",
+      "kind": "drone",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.2197
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-elite.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-elite.png"
+    },
+    "foe-crawler-vermin": {
+      "label": "crawler vermin",
+      "path": "art/portraits/survival/foes/foe-crawler-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "fe04800041bcbc76a39c5c59129f82dad4e9cbf495506ef776eb9fb41e26daf9",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.53,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-vermin.png"
+    },
+    "foe-crawler-minion-a": {
+      "label": "crawler minion a",
+      "path": "art/portraits/survival/foes/foe-crawler-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "83df66224bde5235649b5febdb33c9a7e36c7ebdfa7cda1ec8a8f3e3a8929fc0",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.53,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-a.png"
+    },
+    "foe-crawler-minion-b": {
+      "label": "crawler minion b",
+      "path": "art/portraits/survival/foes/foe-crawler-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "2ac05917c5e239bdf21646f82c2224b4b42c5a7fdb7d7ff54a21175cb71490d8",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-b.png"
+    },
+    "foe-crawler-soldier-a": {
+      "label": "crawler soldier a",
+      "path": "art/portraits/survival/foes/foe-crawler-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "4f3e2f8e7a136422eace69e8f286c89b8a3ec26fb997e6294c0a5bf05be5c885",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-a.png"
+    },
+    "foe-crawler-soldier-b": {
+      "label": "crawler soldier b",
+      "path": "art/portraits/survival/foes/foe-crawler-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "52c6b2e26c2027ac5000a1d0503d322603d89d26d3df38057294295ebbd35844",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.22
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-crawler-soldier-b.png"
+    },
+    "foe-crawler-elite": {
+      "label": "crawler elite",
+      "path": "art/portraits/survival/foes/foe-crawler-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "063e6be2375bb5a1d792c2404d64763359f9dfa4c2a4f5b6d9ff51ee169a0a66",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-elite.png"
+    },
+    "foe-ork-vermin": {
+      "label": "ork vermin",
+      "path": "art/portraits/survival/foes/foe-ork-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "3b63f0358267535bc8da6cb4644062d0c87995ef2f41c44315cf14d2fff068aa",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-vermin.png"
+    },
+    "foe-ork-minion-a": {
+      "label": "ork minion a",
+      "path": "art/portraits/survival/foes/foe-ork-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "30b320c4947ed3b84338050727939e0b6ee51f249fd202d0676ce0783158625f",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-minion-a.png"
+    },
+    "foe-ork-minion-b": {
+      "label": "ork minion b",
+      "path": "art/portraits/survival/foes/foe-ork-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "586ebe27c5ae5bf783f8cd78f92a5c772c767e25c7c78b04ddc9eecb9fa97d2f",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.52,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-minion-b.png"
+    },
+    "foe-ork-soldier-a": {
+      "label": "ork soldier a",
+      "path": "art/portraits/survival/foes/foe-ork-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "f1122f721e22997044b064ff95e0eedd9e51854ac0e4e375de2a22e7c0c8d115",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-soldier-a.png"
+    },
+    "foe-ork-soldier-b": {
+      "label": "ork soldier b",
+      "path": "art/portraits/survival/foes/foe-ork-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "7648e128ce9b2553f52ba84e3e31f1acf28706f7cf69ae870d4681f70105f7e9",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-ork-soldier-b.png"
+    },
+    "foe-ork-elite": {
+      "label": "ork elite",
+      "path": "art/portraits/survival/foes/foe-ork-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "39e9435bf42c4553f9b034691ea36773fb19ff00102f373ab7fde3593bd5811c",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-elite.png"
+    },
+    "foe-beast-vermin": {
+      "label": "beast vermin",
+      "path": "art/portraits/survival/foes/foe-beast-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "740454d7c79f460b5d8b0447b63b117339b9adce60b90cd5cbbac330d86496a4",
+      "collection": "survival-foes",
+      "kind": "beast",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.54,
+        "y": 0.21
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-vermin.png"
+    },
+    "foe-beast-minion-a": {
+      "label": "beast minion a",
+      "path": "art/portraits/survival/foes/foe-beast-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "1650edf975b9d03c78192b8fab619f550a1514d0860daee17a3f974c7b0884f1",
+      "collection": "survival-foes",
+      "kind": "beast",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.55,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-minion-a.png"
+    },
+    "foe-beast-minion-b": {
+      "label": "beast minion b",
+      "path": "art/portraits/survival/foes/foe-beast-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "a1a6c4b0a7fe610ca2deb3b4ac3a7fea7835539f092c47d997e522e2a909559d",
+      "collection": "survival-foes",
+      "kind": "beast",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-minion-b.png"
+    },
+    "foe-beast-soldier-a": {
+      "label": "beast soldier a",
+      "path": "art/portraits/survival/foes/foe-beast-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "dd86a21e52aa7493d2bbaaac91b799139a2133c2d2aaa934d4dc28151f775054",
+      "collection": "survival-foes",
+      "kind": "beast",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.47,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-soldier-a.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-beast-soldier-a.png"
+    },
+    "foe-beast-soldier-b": {
+      "label": "beast soldier b",
+      "path": "art/portraits/survival/foes/foe-beast-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "673777a7ebb2849085cd321b3bd939b474b954e4178cbb45b10e11c37a469922",
+      "collection": "survival-foes",
+      "kind": "beast",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.43,
+        "y": 0.22
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-beast-soldier-b.png"
+    },
+    "foe-beast-elite": {
+      "label": "beast elite",
+      "path": "art/portraits/survival/foes/foe-beast-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "058e153fb7c8cf8ca258eaaf5801d631499a210cd75be9a31818660c6443604e",
+      "collection": "survival-foes",
+      "kind": "beast",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.22
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-elite.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-beast-elite.png"
+    },
+    "foe-cursed-vermin": {
+      "label": "cursed vermin",
+      "path": "art/portraits/survival/foes/foe-cursed-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "71345e8fce890d874298960d6857a4bdc4fc0b5ee35f2d8aed47e66be4baeec3",
+      "collection": "survival-foes",
+      "kind": "cursed",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.48,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-vermin.png"
+    },
+    "foe-cursed-minion-a": {
+      "label": "cursed minion a",
+      "path": "art/portraits/survival/foes/foe-cursed-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "3799b16651dda48724ba26c01b948e7efdf3f5ecd4e94465b3bb002d457d8d02",
+      "collection": "survival-foes",
+      "kind": "cursed",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-minion-a.png"
+    },
+    "foe-cursed-minion-b": {
+      "label": "cursed minion b",
+      "path": "art/portraits/survival/foes/foe-cursed-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "73768d74f1cda535d8d3ded082dd66e503552968a1dab4c44aec76010643db15",
+      "collection": "survival-foes",
+      "kind": "cursed",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-minion-b.png"
+    },
+    "foe-cursed-soldier-a": {
+      "label": "cursed soldier a",
+      "path": "art/portraits/survival/foes/foe-cursed-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "389fd520343d4af52eae6aaf4e88349c237392ccf92ceed80afa969e978ceb92",
+      "collection": "survival-foes",
+      "kind": "cursed",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-soldier-a.png"
+    },
+    "foe-cursed-soldier-b": {
+      "label": "cursed soldier b",
+      "path": "art/portraits/survival/foes/foe-cursed-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "68364a47b1e41e63e756b2b585b8487a4dcb0f6a64aa483356c94a43c9d76cf9",
+      "collection": "survival-foes",
+      "kind": "cursed",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-cursed-soldier-b.png"
+    },
+    "foe-cursed-elite": {
+      "label": "cursed elite",
+      "path": "art/portraits/survival/foes/foe-cursed-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "bc7872ede953f9dc6b43e051319eaaf24f2b93bfb9741b3b58ba397d794621d3",
+      "collection": "survival-foes",
+      "kind": "cursed",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-elite.png"
+    },
+    "foe-machine-vermin": {
+      "label": "machine vermin",
+      "path": "art/portraits/survival/foes/foe-machine-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "a229ac8be4706dad141ce9c70d4959b2fc3f9879dd0dbef57903df7783f5163b",
+      "collection": "survival-foes",
+      "kind": "machine",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.22
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-vermin.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-vermin.png"
+    },
+    "foe-machine-minion-a": {
+      "label": "machine minion a",
+      "path": "art/portraits/survival/foes/foe-machine-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "662b8c0a1c69ef36fbedfe9777240bb0b95125fa527100ef582090ce5d05101e",
+      "collection": "survival-foes",
+      "kind": "machine",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-minion-a.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-minion-a.png"
+    },
+    "foe-machine-minion-b": {
+      "label": "machine minion b",
+      "path": "art/portraits/survival/foes/foe-machine-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "3b3d5630aca0f7e178c6f5997770309377d02c3e37e1817076e88a42ab4f7818",
+      "collection": "survival-foes",
+      "kind": "machine",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.4993,
+        "y": 0.2202
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-minion-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-minion-b.png"
+    },
+    "foe-machine-soldier-a": {
+      "label": "machine soldier a",
+      "path": "art/portraits/survival/foes/foe-machine-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "a78403876e970addd3f45aa76beb285561e2f1a655f706afe54d6e058dba8c0b",
+      "collection": "survival-foes",
+      "kind": "machine",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.21
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-soldier-a.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-soldier-a.png"
+    },
+    "foe-machine-soldier-b": {
+      "label": "machine soldier b",
+      "path": "art/portraits/survival/foes/foe-machine-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "1d5b1a7464f6ad10ae808e4dc98abc8b24d07bfe7c5c98fa6a433dd016d0997a",
+      "collection": "survival-foes",
+      "kind": "machine",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-soldier-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-soldier-b.png"
+    },
+    "foe-machine-elite": {
+      "label": "machine elite",
+      "path": "art/portraits/survival/foes/foe-machine-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "a6c1aad02d52e0eafa22250f986ba46c65b6d6c712f342de49047c7bedaa61ac",
+      "collection": "survival-foes",
+      "kind": "machine",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.23
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-elite.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-elite.png"
+    },
+    "foe-upper-realm-vermin": {
+      "label": "upper realm vermin",
+      "path": "art/portraits/survival/foes/foe-upper-realm-vermin.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "f707e0d856adac09fa6502b3dd0797a7c5261f7e9af3f18ff5987589a75c2666",
+      "collection": "survival-foes",
+      "kind": "upper_realm",
+      "tier": "vermin",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-vermin.png"
+    },
+    "foe-upper-realm-minion-a": {
+      "label": "upper realm minion a",
+      "path": "art/portraits/survival/foes/foe-upper-realm-minion-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "ab854ee797628a38cedef45285e2bab67aa20d526c066dafab742d0a102fcd14",
+      "collection": "survival-foes",
+      "kind": "upper_realm",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-minion-a.png"
+    },
+    "foe-upper-realm-minion-b": {
+      "label": "upper realm minion b",
+      "path": "art/portraits/survival/foes/foe-upper-realm-minion-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "97ae555d22524877cee8629ae0900e3a34ded0f088088becfbaf8c7cbebd16e5",
+      "collection": "survival-foes",
+      "kind": "upper_realm",
+      "tier": "minion",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.25
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-minion-b.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-upper-realm-minion-b.png"
+    },
+    "foe-upper-realm-soldier-a": {
+      "label": "upper realm soldier a",
+      "path": "art/portraits/survival/foes/foe-upper-realm-soldier-a.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "2d35013024901c4257c149deaaeff8a42c0bfd194df54445c991daa5b9e88bb2",
+      "collection": "survival-foes",
+      "kind": "upper_realm",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-soldier-a.png"
+    },
+    "foe-upper-realm-soldier-b": {
+      "label": "upper realm soldier b",
+      "path": "art/portraits/survival/foes/foe-upper-realm-soldier-b.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "204fa9e4c5802dadaa2326191144642e82eef49e8025b7949d224ae17938e0a9",
+      "collection": "survival-foes",
+      "kind": "upper_realm",
+      "tier": "soldier",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-soldier-b.png"
+    },
+    "foe-upper-realm-elite": {
+      "label": "upper realm elite",
+      "path": "art/portraits/survival/foes/foe-upper-realm-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "fdd8101983a0c01c8681a4bbf9b0ef7659dabb67b1fa250e5f7e0ba33440bc46",
+      "collection": "survival-foes",
+      "kind": "upper_realm",
+      "tier": "elite",
+      "role": "standard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-elite.png"
+    },
+    "boss-robot-warframe": {
+      "label": "Chapter warframe (robot)",
+      "path": "art/portraits/survival/foes/boss-robot-warframe.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "3a1f7c6729f7967dde1b5e2ef3bf2560c0f33ff7fb32a08cc0906b4aaddbf8ce",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "boss",
+      "role": "boss",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/boss-robot-warframe.png"
+    },
+    "elite-crawler": {
+      "label": "Crawler elder (crawler)",
+      "path": "art/portraits/survival/foes/elite-crawler.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "acb2f4d8501cc40ae695fdcec3ca11c157b2b2772092a8f634bac1e74a9ad59a",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "boss",
+      "role": "boss",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.21
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/elite-crawler.png"
+    },
+    "boss-ork-warlord": {
+      "label": "Ork warlord (ork)",
+      "path": "art/portraits/survival/foes/boss-ork-warlord.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "9526193748819f43d93cae093922b42636480510765a3a78d286b1d1bfd1a84d",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "boss",
+      "role": "boss",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/boss-ork-warlord.png"
+    },
+    "boss-upper-realm-patch": {
+      "label": "Upper-realm patch (upper_realm)",
+      "path": "art/portraits/survival/foes/boss-upper-realm-patch.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "262da00704489369af3d09e63b25753c289ea62f745916cdaabe730ca0b5adaf",
+      "collection": "survival-foes",
+      "kind": "upper_realm",
+      "tier": "boss",
+      "role": "boss",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/boss-upper-realm-patch.png"
+    },
+    "vault-guard-ahoc": {
+      "label": "Strongroom warden (human)",
+      "path": "art/portraits/survival/foes/vault-guard-ahoc.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "17db655a12297a1fd98f17496e23ec00dee9fbe8c98cce51c70185bcaaefc726",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "elite",
+      "role": "vault-guard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.2
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-ahoc.png"
+    },
+    "vault-guard-city": {
+      "label": "The fence's bruiser (crawler)",
+      "path": "art/portraits/survival/foes/vault-guard-city.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "bc1fc3a2d981d8127fdb0852f48b86119e1354e21e1723c3b588aed164d1eb0d",
+      "collection": "survival-foes",
+      "kind": "crawler",
+      "tier": "elite",
+      "role": "vault-guard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-city.png"
+    },
+    "vault-guard-field": {
+      "label": "Ork loot-keeper (ork)",
+      "path": "art/portraits/survival/foes/vault-guard-field.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "34fabe836f23d5001aa5b3609a4f2830740cf0f93487ecc9bcede8be18a0d277",
+      "collection": "survival-foes",
+      "kind": "ork",
+      "tier": "elite",
+      "role": "vault-guard",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-field.png"
+    },
+    "vault-guard-works": {
+      "label": "Vault press (machine)",
+      "path": "art/portraits/survival/foes/vault-guard-works.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "3cdd1ee828747be055a26a1879b64204eaa67a15663f0a648425834474a0ca78",
+      "collection": "survival-foes",
+      "kind": "machine",
+      "tier": "elite",
+      "role": "vault-guard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.22
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-works.png",
+      "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/vault-guard-works.png"
+    },
+    "vault-guard-shrine": {
+      "label": "Reliquary warden (cursed)",
+      "path": "art/portraits/survival/foes/vault-guard-shrine.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "5a02346a219efd58d49324227a99fb89891e77dc06bd7192042172dfd2881041",
+      "collection": "survival-foes",
+      "kind": "cursed",
+      "tier": "elite",
+      "role": "vault-guard",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-shrine.png"
+    },
+    "vault-guard-rim": {
+      "label": "Bonded-store sentinel (robot)",
+      "path": "art/portraits/survival/foes/vault-guard-rim.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "e7e9c6cc4a2414ea773a1c37d847d0696728c546ea7b384195a05eeea6e253c3",
+      "collection": "survival-foes",
+      "kind": "robot",
+      "tier": "elite",
+      "role": "vault-guard",
+      "eye_line": {
+        "x": 0.48,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-rim.png"
+    },
+    "foe-caster-sigil-novice": {
+      "label": "Sigil novice",
+      "path": "art/portraits/survival/foes/foe-caster-sigil-novice.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "e7793c21bd01850cddd74298adc936cc98e1c4ae579447dca2363f210cc8ebf5",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "minion",
+      "role": "caster",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-novice.png"
+    },
+    "foe-caster-sigil-adept": {
+      "label": "Sigil adept",
+      "path": "art/portraits/survival/foes/foe-caster-sigil-adept.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "8d98147d08f73fb08e3f279c90ca6aa0cb196c53003d4be8ea5a0ca7545553f7",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "soldier",
+      "role": "caster",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-adept.png"
+    },
+    "foe-caster-sigil-warden": {
+      "label": "Sigil warden",
+      "path": "art/portraits/survival/foes/foe-caster-sigil-warden.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "b57e32315ffe0dd0351a1b4ed025361cf8512bfa1e85a0c864bb561bbb850f79",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "elite",
+      "role": "caster",
+      "eye_line": {
+        "x": 0.49,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-warden.png"
+    },
+    "foe-caster-sigil-magister": {
+      "label": "Sigil magister",
+      "path": "art/portraits/survival/foes/foe-caster-sigil-magister.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "6e37aff3b1e96d57127245b52f217a45151cabf869f38658343022d29a06522a",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "boss",
+      "role": "caster",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.17
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-magister.png"
+    },
+    "foe-caster-heart-adept": {
+      "label": "Heart adept",
+      "path": "art/portraits/survival/foes/foe-caster-heart-adept.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "b555c6e434b17b67701e758490562534a39f97a50f7eaf00b3714c69766b11d5",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "soldier",
+      "role": "caster",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-heart-adept.png"
+    },
+    "foe-caster-heartfire-elite": {
+      "label": "Heartfire elite",
+      "path": "art/portraits/survival/foes/foe-caster-heartfire-elite.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "a77658cfb8aac9210ce734911b5af00785e28dbd4ae381fbb60887c115138da3",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "elite",
+      "role": "caster",
+      "eye_line": {
+        "x": 0.5,
+        "y": 0.18
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-heartfire-elite.png"
+    },
+    "foe-caster-heart-sovereign": {
+      "label": "Heart sovereign",
+      "path": "art/portraits/survival/foes/foe-caster-heart-sovereign.png",
+      "width": 800,
+      "height": 1000,
+      "sha256": "d8c7425073eb84c4fb26715341b01a2aa22b3c14b5d7e207c5a16eb7fd6eb1d0",
+      "collection": "survival-foes",
+      "kind": "human",
+      "tier": "boss",
+      "role": "caster",
+      "eye_line": {
+        "x": 0.51,
+        "y": 0.19
+      },
+      "status": "review-candidate",
+      "production_approved": false,
+      "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-heart-sovereign.png"
     }
   },
   "traits": {
