@@ -8,6 +8,16 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.27.1 — the shooting effects restored
+
+A hotfix (Leon, 14 Nov 2026: "i told you to remove the yellow line not the bullet effect").
+
+- **The bullet in flight is back,** exactly as it was before the 13 Nov effects cleanup, with its timing against sound, casings and damage numbers.
+- **Techniques keep their own effects:** Heavy Bolt, Punch Through, Dead Centre, Rake, Mag Dump, Flush Arc and every technique's hit parts are restored.
+- **One shot per round fired, heard and seen:** a Burst is three shots, a Mag Dump as many as it spends. No canned burst or full-auto recording plays any more.
+- **Only four things stay removed,** as Leon first asked: the yellow tracer lines, the melee swing arc, the shot-miss effect and the melee-miss effect. A bullet hole marks each round that hit.
+- The aim effect stays a ring on the target: its old form was the yellow line itself.
+
 ## 0.27.0 — Survival mode
 
 The first real game mode, and the roguelike's first piece (rules 1.39 to 1.49; `docs/design/survival-spec.md`; the
