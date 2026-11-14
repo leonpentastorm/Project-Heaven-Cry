@@ -232,7 +232,7 @@ describe('rules 1.43: the Crossroads (rule 42): every trade\'s gain and cost', (
   it('a sealed crate: its price, then a weapon pick at an Elite\'s grade', () => {
     const g = all(at()), t = TRADES.items.find((x) => x.do === 'crate')!;
     const a = apply(g, { type: 'run/trade', charId: 'c1', trade: t.id }, 'host');
-    expect(creditsOf(a.characters.c1)).toBe(10000 - t.price); expect(a.run!.state).toBe('reward'); expect(a.run!.offers!.c1.weapons).toHaveLength(SV.rewards.offer);
+    expect(creditsOf(a.characters.c1)).toBe(10000 - t.price); expect(a.run!.state).toBe('reward'); expect(a.run!.offers!.c1.weapons).toHaveLength(SV.rewards.offer.crate); expect(a.run!.offers!.c1.materials).toBeUndefined(); // rules 1.54: three, no Materials card
     for (const w of a.run!.offers!.c1.weapons) expect(['fine', 'masterwork']).toContain(w.rarity); // stage 1's ceiling caps the Elite's table
     const b = apply(a, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host'); expect(b.run!.state).toBe('map');
   });

@@ -1,9 +1,12 @@
 // Rules 1.54 (survival-spec section 14, rows R6 to R13): the sheet in a run, materials, making, loot and the shop's
 // stock, every case through the one reducer. Numbers are read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, RECIPES, ITEM, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands } from '../src';
+import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits } from '../src';
+import svJ from '../../../data/survival.json';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
-import type { Pc } from './helpers/replay';
+import { Rec, type Pc } from './helpers/replay';
+
+const SV: any = svJ;
 
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
@@ -44,6 +47,41 @@ describe('rules 1.54 item 1: the sheet in a run (R6)', () => {
     const m = started();
     expect(packOf(m.characters.c1).length).toBeGreaterThan(0);
     expect(refused(m, { type: 'gear/load', charId: 'c1' })).not.toMatch(/At the camp/);
+  });
+});
+
+describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Survival\'s foes\' drops', () => {
+  it('after a fight: one weapon or the Materials card for the node\'s credits, whole into the pack; credits instead retired', () => {
+    let g = at('fight');
+    const n = g.run!.nodes.find((x) => x.id === g.run!.at)!;
+    g = apply(g, { type: 'run/skip' }, 'host');
+    const o = g.run!.offers!.c1, C = nodeCredits('fight', n.depth, g.run!.stage);
+    expect(o.weapons).toHaveLength(SV.rewards.offer.fight); expect(o.instead).toBeUndefined();
+    expect(o.materials).toEqual(SV.rewards.materials.items.map((m: any) => ({ item: m.item, n: Math.ceil(C / m.per_credits) })));
+    const had = (cid: string, id: string) => has(g, cid, (x) => (x.item || x.id) === id);
+    const p = apply(g, { type: 'run/pick', charId: 'c1', choice: 'materials' }, 'host');
+    for (const m of o.materials!) expect(has(p, 'c1', (x) => (x.item || x.id) === m.item)).toBe(had('c1', m.item) + m.n);
+    expect(p.story.entries.at(-1)!.text).toMatch(/takes the materials: /);
+    expect(packOf(p.characters.c1).filter((x) => x.weapon === o.weapons[0].id && !x.mags).length).toBe(packOf(g.characters.c1).filter((x) => x.weapon === o.weapons[0].id && !x.mags).length);
+  });
+
+  it('every foe of a Survival fight carries the flag: no weapon or magazines drop, materials are given (gun: gunpowder and casings)', () => {
+    const g = at('fight');
+    const foes = g.combat!.units.filter((u) => u.side === 'foe');
+    expect(foes.length).toBeGreaterThan(0);
+    for (const u of foes) {
+      expect(u.drops!.gear).toBe(false);
+      const gun = (WEAPON as any)[u.weapon]?.ammo && (WEAPON as any)[u.weapon]?.magazine != null && (WEAPON as any)[u.weapon]?.category !== 'thrown';
+      expect((u.drops!.items || []).map((e) => e.item)).toEqual([...(gun ? SV.drops.gun : []), ...(SV.drops.by_table[u.drops!.table!] || [])].map((e: any) => e.item));
+    }
+    // the fight played through the reducer: what dies leaves no gear on its tile
+    const r = new Rec(g, DUO); r.fight(40);
+    const lines = (r.g.combat?.dropLines || []) as { line: string }[];
+    for (const l of lines) for (const u of foes) expect(l.line).not.toContain((WEAPON as any)[u.weapon]?.name + ' (worn)');
+    const piles = (r.g.combat?.objects || []).filter((o: any) => o.kind === 'pile');
+    for (const p of piles) for (const e of p.items || []) { expect(e.pack?.kind).not.toBe('weapon'); expect(e.pack?.mags).toBeUndefined(); }
+    expect(lines.length).toBeGreaterThan(0);
+    expect(piles.flatMap((p: any) => p.items || []).some((e: any) => [...SV.drops.gun, ...Object.values(SV.drops.by_table).flat()].some((d: any) => d.item === e.item))).toBe(true);
   });
 });
 

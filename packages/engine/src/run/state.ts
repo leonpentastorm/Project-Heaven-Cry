@@ -50,9 +50,11 @@ export interface RunEnd { how: 'lost' | 'retired'; stage: number; cleared: numbe
 export interface RunStageLog { stage: number; setting: string; nodes: number; fights: number; won: number; kills: number; credits: number; steps: number; boons: Record<string, string> }
 /** One weapon of a pick (rule 26): the weapon or focus, its rarity, its price at that rarity. */
 export interface RunWeapon { id: string; rarity: 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial'; price: number; /** a Relic's named property (rules 1.43) */ prop?: string }
-/** A character's pick after a won fight (rule 26): three weapons, or credits instead; `ammo`: the node's ammunition
- * pack count (a picked gun takes its share, rule 23). */
-export interface RunOffer { node: string; weapons: RunWeapon[]; instead: number; ammo: number }
+/** A character's pick after a won fight (rule 26; rules 1.54 item 2): its weapons (one after a fight, three at the
+ * vault's chest or a sealed crate), or the Materials card (`materials`, where offered); `instead`: the credits choice of
+ * an offer saved before rules 1.54 (none is made now); `ammo`: the node's ammunition pack count (a picked gun takes its
+ * share, rule 23). */
+export interface RunOffer { node: string; weapons: RunWeapon[]; materials?: { item: string; n: number }[]; instead?: number; ammo: number }
 /** What the node the party stands on gave (its panel): XP and credits each, the ammunition by character, the text of
  * a node without a fight (data), who came back from the dead (rule 5), the fight's result. */
 export interface RunNote { node: string; kind: string; text?: string; xp?: number; credits?: number; ammo?: Record<string, string[]>; back?: string[]; won?: boolean; rounds?: number }

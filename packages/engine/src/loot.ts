@@ -15,8 +15,10 @@ import { type Rng, next, die } from './rng';
  * `rounds:<calibre>`, `personal` for a personal effect, anything else a plot item), a qty or a [min, max] range, a
  * chance (drops lists only; absent: certain) or a weight (tables only). */
 export interface DropEntry { item: string; qty?: number | [number, number]; chance?: number; weight?: number; rarity?: string; name?: string; text?: string; note?: string }
-/** What one enemy drops beyond its weapon and magazines: a table to roll, and a list of its own. */
-export interface Drops { table?: string; items?: DropEntry[] }
+/** What one enemy drops beyond its weapon and magazines: a table to roll, and a list of its own. `gear: false` (rules
+ * 1.54 item 3; every foe a Survival fight makes) turns off what it always drops: its weapon, magazines and loose rounds,
+ * and a Boss's notable thing. */
+export interface Drops { table?: string; items?: DropEntry[]; gear?: false }
 /** A weighted table (`none`: the weight of nothing). */
 export interface LootTable { id: string; name?: string; text?: string; none?: number; entries: DropEntry[] }
 
@@ -151,8 +153,9 @@ function dropLabel(it: PackItem, worn: boolean): string {
  * by noteDeaths. Returns what dropped. */
 export function rollDeathDrops(cb: Combat, rng: Rng, u: Unit): PackItem[] {
   if (!dropsLoot(u)) return [];
-  const tables = tablesOf(cb), always = alwaysDrops(rng, u), given: PackItem[] = [], rolled: PackItem[][] = [], extra: PackItem[] = [];
-  const rolls = LOOT.rolls_by_tier[u.tier || 'minion'] ?? 1, d = u.drops;
+  const d = u.drops, gear = d?.gear !== false; // rules 1.54 item 3: the flag turns off the always-drops and the notable thing
+  const tables = tablesOf(cb), always = gear ? alwaysDrops(rng, u) : [], given: PackItem[] = [], rolled: PackItem[][] = [], extra: PackItem[] = [];
+  const rolls = LOOT.rolls_by_tier[u.tier || 'minion'] ?? 1;
   const roll = (t: LootTable | undefined) => { for (let i = 0; i < rolls; i++) { const e = rollTable(rng, t); if (e) rolled.push(entryPacks(rng, e)); } };
   if (d) {
     if (d.table) roll(tables[d.table]);
@@ -166,7 +169,7 @@ export function rollDeathDrops(cb: Combat, rng: Rng, u: Unit): PackItem[] {
     cb.lootRolled = (cb.lootRolled || 0) + 1; extra.push(...r);
   }
   // A boss always drops one notable thing, outside the cap (item 696).
-  const notable = u.tier === 'boss' ? rollTable(rng, tables[LOOT.boss_table]) : null;
+  const notable = u.tier === 'boss' && gear ? rollTable(rng, tables[LOOT.boss_table]) : null;
   const list = [...always, ...given, ...extra, ...(notable ? entryPacks(rng, notable) : [])].filter((x) => x && (x.qty > 0 || x.mags?.length));
   if (!list.length) return [];
   dropToPile(cb, u.pos, list, 'death');

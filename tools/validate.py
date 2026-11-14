@@ -2753,6 +2753,30 @@ if _rc is not None:
             _worth[_side] = _sum
         if _worth.get("needs") is not None and _worth.get("gives") is not None and _worth["needs"] != _worth["gives"]:
             errors.append(f"{_w}: needs are worth {_worth['needs']} credits and gives {_worth['gives']} (rules 1.54 item 6: a row is worth what it makes, at priceOf)")
+# Rules 1.54 items 2 to 4 (survival.json rewards.offer by where, rewards.materials, drops).
+_sv54 = data.get("survival") or {}
+_rw54 = _sv54.get("rewards") or {}
+_WHERE = {"fight", "elite", "boss", "vault_guard", "vault", "crate"}
+if "offer" in _rw54:
+    _of = _rw54["offer"]
+    if not (isinstance(_of, dict) and set(_of) == _WHERE and all(isinstance(v, int) and v >= 1 for v in _of.values())): errors.append(f"survival:rewards.offer: a whole number of 1 or more for each of {sorted(_WHERE)} (rules 1.54 item 2)")
+    if "instead_rate" in _rw54: errors.append("survival:rewards.instead_rate: credits instead is retired (rules 1.54 item 2)")
+    _ma = _rw54.get("materials") or {}
+    if not set(_ma.get("at") or []) <= _WHERE: errors.append("survival:rewards.materials.at: where a pick is made")
+    for _e in _ma.get("items") or []:
+        if _e.get("item") not in _rimap: errors.append(f"survival:rewards.materials: {_e.get('item')!r} is not an items.json item")
+        if not (_num(_e.get("per_credits")) and _e["per_credits"] > 0): errors.append(f"survival:rewards.materials: {_e.get('item')!r} needs per_credits above 0")
+if _sv54.get("drops") is not None:
+    _dr, _lt = _sv54["drops"], {t.get("id") for t in items("loot_tables")}
+    if _dr.get("provisional") is not True: errors.append("survival:drops: provisional: true")
+    for _w, _rows in [("gun", _dr.get("gun") or [])] + [("by_table." + str(k), v) for k, v in (_dr.get("by_table") or {}).items()]:
+        if _w.startswith("by_table.") and _w[9:] not in _lt: errors.append(f"survival:drops.{_w}: not a loot_tables.json table")
+        for _e in _rows:
+            _q = _e.get("qty")
+            if _e.get("item") not in _rimap: errors.append(f"survival:drops.{_w}: {_e.get('item')!r} is not an items.json item")
+            if not (isinstance(_q, list) and len(_q) == 2 and all(isinstance(x, int) and x >= 1 for x in _q) and _q[0] <= _q[1] <= (data.get("loot_tables") or {}).get("qty_max", 20)): errors.append(f"survival:drops.{_w}: {_e.get('item')!r} qty is a [min, max] range within the loot cap (qty_max)")
+if not (isinstance((data.get("loot_tables") or {}).get("qty_max"), int) and data["loot_tables"]["qty_max"] >= 1): errors.append("loot_tables: qty_max, the most of one thing a loot entry gives (a whole number)")
+
 # Leon 14 Nov 2026: an item a trait grants is not sold in the shop (stock: false, as the armourer's chit), unless it is food.
 for _tr in items("traits") if False else []:
     for _gid in [e.get("item") for e in (_tr.get("effects") or []) if isinstance(e, dict) and e.get("op") == "start_item"]:
