@@ -1135,7 +1135,7 @@ Families: `body`, `brain`, `heart`.
 | `foeCost` | `foeCost(tier: string, level: number, fightLevel: number, n: number): { bulk: number; pressure: number }` | What one foe costs in SE (rules 16, 18 to 20): its tier's bulk and pressure, x lag_factor for each level it stands under the fight level (its inverse for each level above), x its spawn share (HP on bulk, damag… |
 | `targetRounds` | `targetRounds(kind: FightKind, depth: number): number` | A fight's target rounds (rule 17). |
 | `budgetFor` | `budgetFor(n: number, kind: FightKind, depth: number, stage: number): { bulk: number; pressure: number; rounds: number }` | The budget for a party of N at a node (rules 17 and 19): the bulk target and the pressure cap, in SE. |
-| `EncounterFoe` | `interface EncounterFoe { spawn, cost }` | One foe of a composed fight: what `startCombat` takes, and what it cost and where it starts. |
+| `EncounterFoe` | `interface EncounterFoe { spawn, cost, portrait }` | One foe of a composed fight: what `startCombat` takes, and what it cost and where it starts. |
 | `Encounter` | `interface Encounter { template, name, text, kind, level, fightKind, target, spent, scaleHp, ok, foes, map }` | A composed fight (rule 15's output), with its budget asked and spent (rule 35 reports it). |
 | `EncounterIn` | `interface EncounterIn { levels, node, stage, setting, seed, last }` | The fight's inputs (rule 15). |
 | `templatesFor` | `templatesFor(rng: Rng, kind: FightKind, depth: number, n: number, setting: SettingDef, last?: string \| null): EncounterTemplate[]` | The templates a node may take (rule 21 a), in the order they are tried: the rolled one first, then the others by weight (ties by data order). |
@@ -1280,7 +1280,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `light` | `at`, `tiles`, `side` | sigil.ts:1129 | 1 |
 | `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1575 | 1 |
 | `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2470 | 2 |
-| `mana` | `band`, `mana` | game.ts:3944 | 2 |
+| `mana` | `band`, `mana` | game.ts:3945 | 2 |
 | `mask` | `target`, `at`, `fade` | magic.ts:490 | 2 |
 | `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image` | combat.ts:1424 | 6 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:35 | 3 |
