@@ -1,5 +1,6 @@
 // The credits manifest (spec: docs/design/title-screen.md §7, magic-presentation licence rules): every third-party
 // asset the game ships, with its author and licence, shown on the title screen's Credits page.
+import { OST } from '@engine';
 import { SFX_CREDITS } from './sfxCredits';
 import { FX_CREDITS } from './fx/fxCredits';
 
@@ -31,6 +32,9 @@ export const CREDITS: { group: string; items: Credit[] }[] = [
     { what: 'Heaven Falls (elite and boss fights)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
     { what: 'Last Rounds (when half the party is down)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
     { what: 'Gearing Up (the Proving Ground)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' },
+    // Survival mode's tracks, commissioned by Leon (audio/SUNO-PROMPTS-survival.md), 14 Nov 2026; the titles are the engine's OST table.
+    ...Object.values(OST).filter((t) => t.title.startsWith('Survival: '))
+      .map((t) => ({ what: t.title + ' (Survival mode)', who: 'Leon, made with Suno (Pro plan, commercial licence)', licence: 'Project Heaven Cry' })),
     { what: 'Shadows and Dust, I Walk With Ghosts, Decoherence, Machina, Red, Pursuit (M813)', who: 'Scott Buckley', licence: 'CC-BY 4.0', url: 'https://www.scottbuckley.com.au' },
     { what: 'Ossuary 6 – Air (M813)', who: 'Kevin MacLeod', licence: 'CC-BY 4.0', url: 'https://incompetech.com' },
     { what: 'Players\' favourite songs', who: 'their own YouTube links, played from YouTube' },

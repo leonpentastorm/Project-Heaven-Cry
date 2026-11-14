@@ -35,6 +35,20 @@ export const OST_FILES: Record<OstId, { src: string; loopIn: number; loopOut: nu
   // Gearing Up (the Proving Ground): the pass hands over on the second of the three closing hits (171.73 s), where the
   // intro's own first hit lands, and the file's fade-out (from 175 s) is never reached. A longer seam for a slower song.
   gearing_up: { src: '/music/gearing-up.mp3', loopIn: 0.1, loopOut: 173.68, seam: 2.0 },
+  // Survival mode's tracks (audio/README.md): ambient, so not on a beat: each pass runs from where the music starts to where
+  // its fade-out begins (measured from the files), and a 2 s seam hides the join.
+  surv_camp: { src: '/music/surv-camp.mp3', loopIn: 0, loopOut: 119.2, seam: 2.0 },
+  surv_map: { src: '/music/surv-map.mp3', loopIn: 0.1, loopOut: 118.4, seam: 2.0 },
+  surv_map_ahoc: { src: '/music/surv-map-ahoc.mp3', loopIn: 0.95, loopOut: 116.6, seam: 2.0 },
+  surv_map_city: { src: '/music/surv-map-city.mp3', loopIn: 0, loopOut: 112.0, seam: 2.0 },
+  surv_map_field: { src: '/music/surv-map-field.mp3', loopIn: 0.05, loopOut: 113.3, seam: 2.0 },
+  surv_map_works: { src: '/music/surv-map-works.mp3', loopIn: 0.65, loopOut: 116.7, seam: 2.0 },
+  surv_map_shrine: { src: '/music/surv-map-shrine.mp3', loopIn: 0, loopOut: 113.9, seam: 2.0 },
+  surv_map_rim: { src: '/music/surv-map-rim.mp3', loopIn: 0.9, loopOut: 115.3, seam: 2.0 },
+  surv_boon: { src: '/music/surv-boon.mp3', loopIn: 0, loopOut: 115.8, seam: 2.0 },
+  surv_shop: { src: '/music/surv-shop.mp3', loopIn: 0, loopOut: 117.0, seam: 2.0 },
+  surv_forge: { src: '/music/surv-forge.mp3', loopIn: 0.1, loopOut: 160.2, seam: 2.0 },
+  surv_rest: { src: '/music/surv-rest.mp3', loopIn: 0.75, loopOut: 197.1, seam: 2.0 },
 };
 
 /** When the pass that starts at `when` (audio clock) from `offset` (seconds into the file) hands over to the next. */
