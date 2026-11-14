@@ -1,20 +1,21 @@
-// Every safe node but the shop as a full-screen place (rules 1.46; survival-spec 8.3 "The Forge uses this frame"): the
-// Forge (the armourer: Upgrade, Mods and pieces, Armour fitting, Give), a training ground (the drill sergeant), a shrine
-// (its rolled patron's portrait), a crossroads (the broker), a rest (the medic). Drawn in FullScreenFrame: the face on
-// the left with its line, large choice cards in the middle (what you gain, what it costs, the engine's reason when it
-// can't), your character on the right, the visit's log along the bottom. Everything comes from `placeView` (the options
-// are progress.ts's `runOptions`); every action is the engine's own, sent through the store. "To the path map" closes
-// the place on this screen only (the squad walks on from the map; the map's panel opens it again).
+// Every safe node but the shop as a place (rules 1.46; survival-spec 8.3 "The Forge uses this frame"): the Forge (the
+// armourer: Upgrade, Mods and pieces, Armour fitting, Give), a training ground (the drill sergeant), a shrine (its
+// rolled patron's portrait), a crossroads (the broker), a rest (the medic). Rules 1.54 item 11: the play screen's
+// middle (your character is the sheet on the left, the visit's log the run board on the right). Drawn in
+// FullScreenFrame: the face with its line, large choice cards (what you gain, what it costs, the engine's reason when it
+// can't). Everything comes from `placeView` (the options
+// are progress.ts's `runOptions`); every action is the engine's own, sent through the store. "To the path map" (the
+// right panel's phase control) closes the place on this screen only (the squad walks on from the map; the map's panel
+// opens it again).
 import React from 'react';
 import { act, getState } from './store';
-import { placeView, type PlaceCardV, type PlaceViewV, type MeV } from '@engine';
+import { placeView, type PlaceCardV, type PlaceViewV } from '@engine';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import { patronPortrait } from './faithArt';
 import { GiveTab } from './GiveTab';
 import { UpgradeCard } from './UpgradeCard';
-import { WearBar } from './WearBar';
 import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
@@ -54,37 +55,6 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
   );
 }
 
-function You({ m, worth }: { m: MeV | null; worth: string }) {
-  if (!m) return <p style={{ color: I.muted }}>You have no character here.</p>;
-  const pct = Math.min(100, Math.round((m.kg / Math.max(1, m.limit)) * 100)), over = m.kg > m.limit;
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        {m.portrait ? <img src={m.portrait} alt="" width={56} height={70} style={{ objectFit: 'cover', borderRadius: 10, border: '1px solid #3B475D' }} /> : <span style={{ width: 56, height: 70, borderRadius: 10, background: I.raised, display: 'inline-block' }} />}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{m.name}</span>
-          <span style={{ fontSize: 12, color: I.muted }}>Level {m.level} · Armour class {m.armourClass}</span>
-          {worth ? <span data-phc-boon-room="" style={{ fontSize: 12, color: I.muted }}>Boon room: {worth}</span> : null}
-        </div>
-      </div>
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span style={kick}>HANDS AND WORN</span>
-        <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Main · </span>{m.hand}{m.handRarity !== 'standard' ? ' (' + m.handRarity + ')' : ''}</span>
-        {m.handWear ? <span data-phc-hand-wear="main"><WearBar w={m.handWear} label={m.hand} compact /></span> : null}
-        {m.off ? <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Off · </span>{m.off}</span> : null}
-        {m.off && m.offWear ? <span data-phc-hand-wear="off"><WearBar w={m.offWear} label={m.off} compact /></span> : null}
-        {m.worn.map((w) => <span key={w.slot} style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>{w.slot} · </span>{w.name}</span>)}
-      </section>
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span style={kick}>THE PACK</span>
-        <div aria-label={'Carrying ' + m.kg + ' of ' + m.limit + ' kg'} style={{ height: 8, borderRadius: 4, background: I.raised, overflow: 'hidden' }}><div style={{ width: pct + '%', height: '100%', background: over ? I.hp : I.text }} /></div>
-        <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · ' + Math.round((m.kg - m.limit) * 10) / 10 + ' kg over' : ''}</span>
-        {m.pack.map((p, i) => <div key={i} data-phc-pack-line={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}><div style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>{p.wear ? <WearBar w={p.wear} label={p.label} compact /> : null}</div>)}
-      </section>
-    </div>
-  );
-}
-
 /** The groups of a tab, drawn as large cards (the grade steps as upgrade cards with their numbers before and after). */
 function TabBody({ v, tab }: { v: PlaceViewV; tab: string }) {
   const t = v.tabs.find((x) => x.id === tab)!;
@@ -111,7 +81,7 @@ function TabBody({ v, tab }: { v: PlaceViewV; tab: string }) {
 }
 
 /** A safe node's full-screen place (rules 1.46); `onLeave` closes it on this screen (the squad walks on from the map). */
-export function PlaceScreen({ onLeave }: { onLeave: () => void }) {
+export function PlaceScreen(_p: { onLeave: () => void }) {
   const st = getState(), g = st.game, me = st.me.id;
   const v = g ? placeView(g as any, me) : null;
   const [tab, setTab] = React.useState<string>(v?.tabs[0]?.id || 'give');
@@ -124,10 +94,7 @@ export function PlaceScreen({ onLeave }: { onLeave: () => void }) {
   return (
     <div data-phc-place={v.kind}>
       <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.word + ' · ' + v.setting} line={say.text} lineKey={v.node + say.key}
-        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0}
-        party={v.party.map((p) => ({ id: p.id, name: p.name, initials: p.initials, color: p.color, ready: p.marked, online: p.online, mine: p.mine }))} ready={false} isHost={false} waiting={[]} hideClose marks={['NEXT STOP MARKED', 'HERE']}
-        onReady={onLeave} onClose={onLeave} closeTip="" readyWord="To the path map ›" log={v.log} emptyLog="Nothing taken here yet."
-        side={<You m={v.me} worth={v.worth} />}>
+        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0}>
         {on === 'give' ? <GiveTab /> : <TabBody v={v} tab={on} />}
       </FullScreenFrame>
     </div>

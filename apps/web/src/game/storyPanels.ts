@@ -1,36 +1,40 @@
-// The story screen's right column as four movable modules (Leon, 10 Nov 2026: "make the 4 elements in the right panel
+// The play screen's right column as movable modules (Leon, 10 Nov 2026: "make the 4 elements in the right panel
 // modules like the stuff in the combat panel and moveable: mission board, player card, map and mana forecast"). Each has
 // a grip: drag it up or down the column, or focus it and use the arrow keys; Home puts it first, End last. The order is
 // a per-browser preference (localStorage), never game state, as the combat screen's layout is (combatLayout.ts).
+// Rules 1.54 item 11: which modules a column holds is the mode's (panels.ts, from data/modes.json); every function here
+// takes that list (`all`, the story's four when left out), and each list keeps its own stored order.
 // Pure functions first (tested in storyPanels.test.ts), then the pointer handling the screen (screens/main.js) calls.
-export type StoryPanelId = 'mana' | 'map' | 'quests' | 'squad';
+import { PANEL_NAME, type PanelId } from './panels';
+export type StoryPanelId = PanelId;
 export const STORY_PANELS: StoryPanelId[] = ['mana', 'map', 'quests', 'squad'];
-export const STORY_PANEL_NAME: Record<StoryPanelId, string> = { mana: 'Mana forecast', map: 'Map', quests: 'Quest board', squad: 'Player card' };
+export const STORY_PANEL_NAME: Record<string, string> = PANEL_NAME;
 export const STORY_PANELS_KEY = 'phc.storyPanels';
 /** The player card always has room for this many seats: four players and the Narrator. */
 export const SQUAD_SEATS = 5;
+type List = readonly StoryPanelId[];
 
-/** Any stored value, made sound: every panel exactly once, unknown ids dropped, missing ones in their default place. */
-export function normaliseOrder(x: any): StoryPanelId[] {
+/** Any stored value, made sound: every panel of the list exactly once, unknown ids dropped, missing ones in their default place. */
+export function normaliseOrder(x: any, all: List = STORY_PANELS): StoryPanelId[] {
   const seen = new Set<StoryPanelId>();
-  const out = (Array.isArray(x) ? x : []).filter((p: any): p is StoryPanelId => STORY_PANELS.includes(p) && !seen.has(p) && (seen.add(p), true));
-  for (const p of STORY_PANELS) if (!seen.has(p)) out.splice(Math.min(STORY_PANELS.indexOf(p), out.length), 0, p);
+  const out = (Array.isArray(x) ? x : []).filter((p: any): p is StoryPanelId => all.includes(p) && !seen.has(p) && (seen.add(p), true));
+  for (const p of all) if (!seen.has(p)) out.splice(Math.min(all.indexOf(p), out.length), 0, p);
   return out;
 }
-export const isDefaultOrder = (o: StoryPanelId[]) => normaliseOrder(o).join() === STORY_PANELS.join();
+export const isDefaultOrder = (o: StoryPanelId[], all: List = STORY_PANELS) => normaliseOrder(o, all).join() === all.join();
 /** Move a panel to an index (counted among the panels before the move, as a drop gap is). */
-export function moveStoryPanel(order: StoryPanelId[], panel: StoryPanelId, index: number): StoryPanelId[] {
-  const o = normaliseOrder(order), from = o.indexOf(panel), rest = o.filter((p) => p !== panel);
+export function moveStoryPanel(order: StoryPanelId[], panel: StoryPanelId, index: number, all: List = STORY_PANELS): StoryPanelId[] {
+  const o = normaliseOrder(order, all), from = o.indexOf(panel), rest = o.filter((p) => p !== panel);
   rest.splice(Math.max(0, Math.min(index - (from < index ? 1 : 0), rest.length)), 0, panel);
   return rest;
 }
 /** Keyboard on a grip: up and down move the panel one place; Home puts it first, End last. null: nothing to do. */
-export function keyMoveStoryPanel(key: string, panel: StoryPanelId, order: StoryPanelId[]): StoryPanelId[] | null {
-  const o = normaliseOrder(order), i = o.indexOf(panel);
-  if (key === 'ArrowUp' && i > 0) return moveStoryPanel(o, panel, i - 1);
-  if (key === 'ArrowDown' && i < o.length - 1) return moveStoryPanel(o, panel, i + 2);
-  if (key === 'Home' && i > 0) return moveStoryPanel(o, panel, 0);
-  if (key === 'End' && i < o.length - 1) return moveStoryPanel(o, panel, o.length);
+export function keyMoveStoryPanel(key: string, panel: StoryPanelId, order: StoryPanelId[], all: List = STORY_PANELS): StoryPanelId[] | null {
+  const o = normaliseOrder(order, all), i = o.indexOf(panel);
+  if (key === 'ArrowUp' && i > 0) return moveStoryPanel(o, panel, i - 1, all);
+  if (key === 'ArrowDown' && i < o.length - 1) return moveStoryPanel(o, panel, i + 2, all);
+  if (key === 'Home' && i > 0) return moveStoryPanel(o, panel, 0, all);
+  if (key === 'End' && i < o.length - 1) return moveStoryPanel(o, panel, o.length, all);
   return null;
 }
 /** Rows the player card keeps for its seats at two a row (five seats: three rows), and the height that takes. */
@@ -38,20 +42,21 @@ export const squadRows = (seats = SQUAD_SEATS, perRow = 2) => Math.ceil(seats / 
 export const SQUAD_ROW_PX = 40, SQUAD_GAP_PX = 6;
 export const squadMinHeight = (seats = SQUAD_SEATS) => squadRows(seats) * SQUAD_ROW_PX + (squadRows(seats) - 1) * SQUAD_GAP_PX;
 
-// ---------- the stored preference ----------
-export function readStoryPanels(): StoryPanelId[] { try { return normaliseOrder(JSON.parse(localStorage.getItem(STORY_PANELS_KEY) || 'null')); } catch { return normaliseOrder(null); } }
-export function saveStoryPanels(o: StoryPanelId[]) { try { if (isDefaultOrder(o)) localStorage.removeItem(STORY_PANELS_KEY); else localStorage.setItem(STORY_PANELS_KEY, JSON.stringify(normaliseOrder(o))); } catch { /* private mode: kept for this visit */ } }
+// ---------- the stored preference (one for each list: the story's four keep the first key) ----------
+export const storyPanelsKey = (all: List = STORY_PANELS) => (all.join() === STORY_PANELS.join() ? STORY_PANELS_KEY : STORY_PANELS_KEY + '.' + all.join('.'));
+export function readStoryPanels(all: List = STORY_PANELS): StoryPanelId[] { try { return normaliseOrder(JSON.parse(localStorage.getItem(storyPanelsKey(all)) || 'null'), all); } catch { return normaliseOrder(null, all); } }
+export function saveStoryPanels(o: StoryPanelId[], all: List = STORY_PANELS) { const k = storyPanelsKey(all); try { if (isDefaultOrder(o, all)) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(normaliseOrder(o, all))); } catch { /* private mode: kept for this visit */ } }
 
 // ---------- dragging a panel by its grip ----------
 /** Start dragging a panel (pointerdown on its grip). A ghost follows the pointer and a line shows the gap it would
  * drop into; letting go moves it, Escape cancels. onDrop gets the new order. Panels are the column's
  * [data-story-panel] elements; the column is [data-story-zone]. */
-export function startStoryDrag(e: PointerEvent, panel: StoryPanelId, order: StoryPanelId[], onDrop: (o: StoryPanelId[]) => void) {
+export function startStoryDrag(e: PointerEvent, panel: StoryPanelId, order: StoryPanelId[], onDrop: (o: StoryPanelId[]) => void, all: List = STORY_PANELS) {
   if (e.button !== 0) return;
   e.preventDefault();
   const zone = document.querySelector('[data-story-zone]') as HTMLElement | null; if (!zone) return;
   const ghost = document.createElement('div');
-  ghost.textContent = '⠿ ' + STORY_PANEL_NAME[panel];
+  ghost.textContent = '⠿ ' + (STORY_PANEL_NAME[panel] || panel);
   ghost.setAttribute('aria-hidden', 'true');
   Object.assign(ghost.style, { position: 'fixed', zIndex: '90', pointerEvents: 'none', padding: '6px 12px', borderRadius: '8px', background: '#1C2536', border: '1px solid #FFFFFF', color: '#FFFFFF', font: "700 12px 'Chakra Petch', sans-serif", letterSpacing: '0.12em', boxShadow: '0 8px 24px rgba(0,0,0,.5)' });
   const line = document.createElement('div');
@@ -67,7 +72,7 @@ export function startStoryDrag(e: PointerEvent, panel: StoryPanelId, order: Stor
     .map((p) => ({ id: p.dataset.storyPanel as StoryPanelId, r: p.getBoundingClientRect() })).sort((a, b) => a.r.top - b.r.top);
   const move = (x: number, y: number) => {
     ghost.style.left = x + 14 + 'px'; ghost.style.top = y + 10 + 'px';
-    const zr = zone.getBoundingClientRect(), o = normaliseOrder(order), ps = shown();
+    const zr = zone.getBoundingClientRect(), o = normaliseOrder(order, all), ps = shown();
     if (x < zr.left - 40 || x > zr.right + 40 || !ps.length) { target = null; line.style.display = 'none'; return; }
     // the gap nearest the pointer: before the first panel whose middle is under it, else after the last
     let at = o.length, y0 = ps[ps.length - 1].r.bottom + 5;
@@ -89,7 +94,7 @@ export function startStoryDrag(e: PointerEvent, panel: StoryPanelId, order: Stor
     removeEventListener('pointermove', onMove); removeEventListener('pointerup', onUp); removeEventListener('pointercancel', onCancel); removeEventListener('keydown', onKey, true);
     ghost.remove(); line.remove(); src?.classList.remove('phc-rp-src');
     document.documentElement.classList.remove('phc-rp-dragging');
-    if (drop && target != null) onDrop(moveStoryPanel(order, panel, target));
+    if (drop && target != null) onDrop(moveStoryPanel(order, panel, target, all));
   };
   const onMove = (ev: PointerEvent) => { px = ev.clientX; py = ev.clientY; move(px, py); };
   const onUp = () => end(true), onCancel = () => end(false);

@@ -55,7 +55,7 @@ for (let step = 0; step < 40 && fights < 3; step++) {
       await act({ type: 'run/leave' }).catch(() => {});
       // rules 1.48's lanes can lead the walk into a rest or another place, which opens full screen (rules 1.46): walk
       // out of it to the path map, as the survival suite does
-      if (await p.locator('[data-phc-place] [data-phc-leave], [data-phc-leave]').count()) { await p.locator('[data-phc-leave]').first().click(); await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); }
+      if (await p.locator('[data-phc-phase="leave"]').count()) { await p.locator('[data-phc-phase="leave"]').first().click(); await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); }
       continue;
     }
   } else if (r.state === 'fight') {

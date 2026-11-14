@@ -17,7 +17,7 @@
 //    class and rank, skills, perks, traits, armour, refill), Magic (words, schools, modules, designs), Field (host: spawn enemies on a
 //    clicked tile, clear them, enemy AI, endless waves, place or fight any wave, the mana meter, leave).
 import React from 'react';
-import { createPortal } from 'react-dom';
+import { Portal } from './modeCentre';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
 import { moduleGroups, feelingInk, feelingIconSrc, iconStyle, feelingTip } from './feelingsView';
 import { parseStyle } from '../dc/runtime';
@@ -265,12 +265,6 @@ function WaveEnd({ game, isHost }: { game: GameState; isHost: boolean }) {
 // ---------- the tools drawer ----------
 const HINT = 'phc.sbHint';
 type Shared = { tab: Tab; setTab: (t: Tab) => void; cid: string; setCid: (id: string) => void };
-/** Render children into a node of the screen's template (found again after every render: the template remounts it). */
-function Portal({ at, children }: { at: string; children: React.ReactNode }) {
-  const [host, setHost] = React.useState<Element | null>(null);
-  React.useLayoutEffect(() => { const el = document.querySelector(at); if (el !== host) setHost(el); });
-  return host && host.isConnected ? createPortal(children, host) : null;
-}
 /** The tabs, the character picker and the chosen tab's tools: the same in the centre (wide) and in the drawer. */
 function ToolBody({ game, meId, isHost, tab, setTab, cid, setCid, wide }: { game: GameState; meId: string; isHost: boolean; wide: boolean } & Shared) {
   const sb = game.sandbox!;
