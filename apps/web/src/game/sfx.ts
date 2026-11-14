@@ -14,6 +14,8 @@ export type Sfx = 'hover' | 'click' | 'start' | 'back' | 'slide' | 'slide_back' 
 /** Weapons, impacts, reloads, bodies, doors, spells: public/sfx/cb (credits in game/sfxCredits.ts). */
 export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg' | 'gun_rifle' | 'gun_sniper' | 'gun_lever' | 'gun_shotgun' | 'gun_heavy'
   | 'burst_smg' | 'burst_rifle' | 'auto_smg' | 'auto_rifle' | 'auto_heavy'
+  // what is not a gun fires with its own (14 Nov 2026, the weapon effects table): a bow's loose, a crossbow's, a rocket
+  | 'bow_loose' | 'crossbow_loose' | 'rocket_launch'
   | 'reload_pistol' | 'reload_mag' | 'reload_rifle' | 'reload_shells' | 'rack' | 'jam_clear' | 'round_in' | 'mag_in' | 'dry_click'
   | 'hit_flesh' | 'hit_heavy' | 'hit_metal' | 'hit_wood' | 'body_fall' | 'step' | 'swish' | 'whiz' | 'slice' | 'chop'
   // Physical 2.0 B: spent brass tinkling on the floor under a Mag Dump or a full-auto Rake (fx/ranged.ts).
@@ -71,6 +73,7 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   gun_pistol: CB('shot_pistol_1', 'shot_pistol_2', 'shot_pistol_3'), gun_revolver: CB('shot_revolver_1', 'shot_revolver_2'), gun_magnum: CB('shot_magnum'),
   gun_smg: CB('shot_smg'), gun_rifle: CB('shot_rifle_1', 'shot_rifle_2'), gun_sniper: CB('shot_sniper'), gun_lever: CB('shot_lever'),
   gun_shotgun: CB('shot_shotgun_1', 'shot_shotgun_2'), gun_heavy: CB('shot_heavy'),
+  bow_loose: CB('shot_bow_1', 'shot_bow_2'), crossbow_loose: CB('shot_crossbow'), rocket_launch: CB('shot_rocket'),
   burst_smg: CB('burst_smg'), burst_rifle: CB('burst_rifle'), auto_smg: CB('auto_smg'), auto_rifle: CB('auto_rifle'), auto_heavy: CB('auto_heavy'),
   reload_pistol: CB('reload_pistol'), reload_mag: CB('reload_mag', 'reload_mag_2'), reload_rifle: CB('reload_rifle'), reload_shells: CB('reload_shells'),
   brass: CB('brass_1', 'brass_2'),
@@ -108,7 +111,7 @@ const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
 /** Combat names fall back to the old synthesised stand-ins until their file has loaded. */
 const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   reload_pistol: 'reload', reload_mag: 'reload', reload_rifle: 'reload', reload_shells: 'reload', rack: 'reload', jam_clear: 'reload', round_in: 'reload', mag_in: 'reload',
-  brass: 'hit',
+  brass: 'hit', bow_loose: 'melee', crossbow_loose: 'melee', rocket_launch: 'shot',
   hit_flesh: 'hit', hit_heavy: 'hit', hit_metal: 'hit', hit_wood: 'hit', body_fall: 'down', swish: 'melee', slice: 'melee', chop: 'melee', whiz: 'miss',
   explosion: 'shot', explosion_boom: 'hit', sigil_draw: 'draw', sigil_evoke: 'evoke', sigil_overload: 'overload', soul_hold: 'outburst', soul_release: 'release',
   el_fire: 'hit', el_freeze: 'hit', el_shatter: 'miss', el_shock: 'evoke', el_zap: 'draw', el_stone: 'hit', el_stone_rise: 'hit', el_stone_crumble: 'down', el_gale: 'miss', el_spark: 'draw', el_acid: 'hit',
@@ -121,6 +124,7 @@ const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
 /** The mix: how loud each event sits under the master UI volume. */
 const MIX: Partial<Record<Sfx, number>> = {
   gun_pistol: 0.5, gun_revolver: 0.55, gun_magnum: 0.6, gun_smg: 0.45, gun_rifle: 0.55, gun_sniper: 0.6, gun_lever: 0.55, gun_shotgun: 0.6, gun_heavy: 0.65,
+  bow_loose: 0.55, crossbow_loose: 0.55, rocket_launch: 0.6,
   burst_smg: 0.5, burst_rifle: 0.55, auto_smg: 0.5, auto_rifle: 0.55, auto_heavy: 0.6,
   reload_pistol: 0.45, reload_mag: 0.45, reload_rifle: 0.45, reload_shells: 0.45, rack: 0.45, jam_clear: 0.5, round_in: 0.35, mag_in: 0.4, dry_click: 0.35,
   brass: 0.22,
