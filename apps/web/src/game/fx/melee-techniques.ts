@@ -231,7 +231,7 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
       return drawn;
     },
     // ----- Throw: the weapon flies to the target and drops into the pile on its tile. -----
-    throw(e) { return flyWeapon(e.weapon, e.from, e.to, 0, true); },
+    throw(e) { return flyWeapon(e.weapon, e.from, e.to, 0, true, true); }, // quiet: its thrown shot plays the one swish (one throw heard once)
     // ----- Bind (and Bare's grapple): the link snaps from the user to the target. -----
     bind(e) {
       const a = at(e.at), b = at(e.to || K.posOf(e.target)); if (!a || !b) return false;

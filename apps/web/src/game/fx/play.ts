@@ -20,6 +20,7 @@ import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
 import { reloadCard } from './reload';
+import { fxOf, type Look as WeaponLook } from './weaponFx';
 import { bangMark, bangDue, tickDue, noteSight, noteOverwatch, tagChip, aimLine, resetSight, HOSTILE_INK, OTHER_INK } from './sight';
 import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, trace, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
 
@@ -110,9 +111,9 @@ const sawThen = (e: FxEvent) => (e.seen && typeof e.seen.pc === 'number' ? !!e.s
 /** A one-shot combat sound at a point (panned). Its delay follows the combat speed and the tempo (fx/dom.ts fxScale); in
  *  an action slowed after a spotlight cut-in it also plays at the tempo's rate (× 0.85). The combat speed alone never
  *  changes a sound's pitch. */
-const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => {
+const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number; fire?: boolean } = {}) => {
   const tp = fxTempo(), k = fxScale();
-  trace('sfx', { s }, (o.delay || 0) * k);
+  trace('sfx', { s, ...(o.fire ? { fire: true } : {}) }, (o.delay || 0) * k); // fire: a round leaving the weapon (the tests count them against the rounds spent)
   sfx(s, { ...o, pan: panOf(p), ...(tp !== 1 ? { rate: (o.rate || 1) * tp } : {}), ...(o.delay && k !== 1 ? { delay: o.delay * k } : {}) });
 };
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
@@ -526,42 +527,13 @@ function walkUnit(e: FxEvent, path: string[], per: number, seen: boolean[]) {
 }
 
 // ---------- weapons ----------
-type Look = 'bullet' | 'pellets' | 'arrow' | 'lob' | 'rocket' | 'flame' | 'bolt' | 'beam' | 'thrown';
+type Look = WeaponLook;
 interface Gun { sound: Sfx | null; rate?: number; look: Look; color?: string; blast?: 'frag' | 'fire' | 'smoke' | 'flash' | 'zap' }
+/** A weapon's firing sound and what it fires, from its effects family in the data (fx/weaponFx.ts fxOf; no weapon id is
+ *  named here). A thrown melee weapon (Throw, Flurry's Thrown line) is a swish, its flight drawn by its melee_fx. */
 export function gunOf(id: string, cat: string): Gun {
-  switch (id) {
-    case 'magistrate_pistol': return { sound: 'gun_revolver', rate: 1.05, look: 'bullet' };
-    case 'parlour_pistol': return { sound: 'gun_pistol', rate: 1.15, look: 'bullet' };
-    case 'frontier_hand_cannon': return { sound: 'gun_magnum', rate: 0.9, look: 'bullet' };
-    case 'long_rifle': case 'ccec_marksman_rifle': return { sound: 'gun_sniper', look: 'bullet' };
-    case 'lever_carbine': return { sound: 'gun_lever', look: 'bullet' };
-    case 'adamantile_battle_rifle': return { sound: 'gun_rifle', rate: 0.9, look: 'bullet' };
-    case 'sawn_off': return { sound: 'gun_shotgun', rate: 1.05, look: 'pellets' };
-    case 'blackpoint_700': return { sound: 'gun_heavy', rate: 0.85, look: 'bullet' };
-    case 'hellraiser_lmg': case 'hellraiser_rotary': return { sound: 'gun_rifle', rate: 0.85, look: 'bullet' };
-    case 'smetanita_thumper': return { sound: 'explosion_boom', rate: 2.2, look: 'lob', blast: 'frag' };
-    case 'breacher_tube': return { sound: 'vent', rate: 1.6, look: 'rocket', blast: 'frag' };
-    case 'purifier_flamer': return { sound: 'vent', rate: 0.7, look: 'flame', blast: 'fire' };
-    case 'crossbow': case 'repeating_crossbow': return { sound: 'swish', rate: 0.7, look: 'arrow' };
-    case 'frag_grenade': case 'satchel_charge': return { sound: 'swish', rate: 0.6, look: 'lob', blast: 'frag' };
-    case 'incendiary_grenade': return { sound: 'swish', rate: 0.6, look: 'lob', blast: 'fire' };
-    case 'smoke_grenade': return { sound: 'swish', rate: 0.6, look: 'lob', blast: 'smoke' };
-    case 'flashbang': return { sound: 'swish', rate: 0.6, look: 'lob', blast: 'flash' };
-    case 'bot_scrambler': return { sound: 'swish', rate: 0.6, look: 'lob', blast: 'zap' };
-    case 'core_rifle': return { sound: 'sigil_evoke', rate: 1.35, look: 'bolt', color: SIGIL_INK };
-    case 'lumeri_censer_gun': return { sound: 'gun_shotgun', look: 'pellets', color: SOUL_WARM };
-  }
-  if (cat === 'revolver') return { sound: 'gun_revolver', look: 'bullet' };
-  if (cat === 'smg') return { sound: 'gun_smg', look: 'bullet' };
-  if (cat === 'rifle') return { sound: 'gun_rifle', look: 'bullet' };
-  if (cat === 'shotgun') return { sound: 'gun_shotgun', look: 'pellets' };
-  if (cat === 'heavy') return { sound: 'gun_heavy', look: 'bullet' };
-  if (cat === 'bow') return { sound: 'swish', rate: 0.8, look: 'arrow' };
-  if (cat === 'thrown') return { sound: 'swish', rate: 0.7, look: 'lob' };
-  // a thrown melee weapon (Throw, Flurry's Thrown line): a swish, and its flight is drawn by its melee_fx (the weapon's
-  // own icon; fx/melee-techniques.ts), not a tracer. Before this it fell through to a pistol shot.
-  if (/melee|unarmed/.test(cat)) return { sound: 'swish', rate: 0.8, look: 'thrown' };
-  return { sound: 'gun_pistol', look: 'bullet' };
+  const f = fxOf(id, cat);
+  return { sound: f.sound, ...(f.rate ? { rate: f.rate } : {}), look: f.look, ...(f.color ? { color: f.color } : {}), ...(f.blast ? { blast: f.blast } : {}) };
 }
 /** What a reload handles, for its sound: arrows and bolts, a fuel canister, a launcher's shell, shotgun-style shells,
  *  or a gun's rounds and magazines. */
@@ -611,6 +583,8 @@ function projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms
   // without a roll of its own: a double barrel's second)
   if (look === 'pellets') { for (let i = 0; i < 5; i++) { const sp = s * 0.35; projectile(a, { x: b.x + (Math.random() - 0.5) * sp, y: b.y + (Math.random() - 0.5) * sp }, ms * jitter(0.15), 'bullet', s * 0.8, color); } return; }
   trace('proj', { look, ms: Math.round(slow(ms)) });
+  // a flamer's fuel is one gout of fire rolling from the nozzle to where it lands (never a streak: a bullet's look)
+  if (look === 'flame') { trace('flight', { look }); for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } return; }
   if (reducedMotion()) return;
   const ang = Math.atan2(b.y - a.y, b.x - a.x), deg = (ang * 180) / Math.PI;
   const el = document.createElement('div');
@@ -788,7 +762,7 @@ const H: Record<string, Handler> = {
     const g: Gun = shotGun(e), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
     // A bow's shot waits for the draw: the arrow comes from the quiver behind the portrait to the front, then flies.
     const draw = drawsArrow(e) ? DRAW_MS : 0;
-    if (!toP) { if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jitter(0.04), delay: draw }); return; }
+    if (!toP) { if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jitter(0.04), delay: draw, fire: true }); return; }
     const shooterTok = shooterSeen ? tokOf(e.unit, e.from) : null;
     if (e.killed && e.target) tokOrGhost(e.target, e.to, true);
     // a Trick Shot ricochet flies on from the first target: no draw, no casing, no recoil, and the shooter's aim stays
@@ -800,7 +774,7 @@ const H: Record<string, Handler> = {
     } else fire();
     function fire() {
       if (!e.thrown) trace('round', { unit: e.unit }); // one round left the gun (fx/techniqueFx.ts draws any it spent beyond this roll)
-      if (g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
+      if (g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04), fire: true });
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
       if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown') mp = muzzle(from, toP, g.color, g.look === 'pellets');
@@ -815,7 +789,6 @@ const H: Record<string, Handler> = {
       const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
       if (start) {
         if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
-        else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
         else if (!(g.look === 'thrown' && e.thrown)) projectile(start, end, ft, g.look === 'thrown' ? 'arrow' : g.look, toP.s, g.color); // a thrown melee weapon's flight is its melee_fx; any other melee-category shot keeps a tracer
       }
       after(() => {
@@ -830,9 +803,11 @@ const H: Record<string, Handler> = {
         if (e.hit) {
           impact(e, toP, e.target, { crit: e.crit, dmg: e.dmg, color: g.look === 'bolt' ? SIGIL_INK : undefined, sound: g.look === 'arrow' ? 'hit_flesh' : undefined });
           if (e.element) elementImpact(toP, e.element, 'sigil', { power: 0.6, quiet: true, decalKey: e.to }); // rules 1.53: an enchanted arrow's hit is its element's own hit effect
+          // a flamer's hit is fire on the target and a scorch where it stood: no blast (it is no charge going off)
+          if (g.look === 'flame') { burst('flame', toP, toP.s * 1.05, 700, { color: '#F68A38', from: 0.5, to: 1.25 }); decal(e.to, 'scorch', '#111111', 4200, 0.8); }
         } else if (coverP) { burst('spark_burst', coverP, coverP.s * 0.7, 260, { color: '#FFD27A' }); dust(coverP, coverP.s); play('hit_metal', coverP, { rate: jitter() }); floatText('COVER', toP, MUTED, { small: true }); }
         else {
-          if (g.look === 'flame') { burst('flame', end, toP.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 }); play('vent', toP, { rate: 0.6, gain: 0.8 }); }
+          if (g.look === 'flame') { burst('flame', end, toP.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 }); play('el_fire', toP, { rate: 0.6, gain: 0.5 }); }
           else if (!g.blast) play(g.look === 'arrow' ? 'hit_wood' : g.look === 'lob' || g.look === 'rocket' ? 'hit_heavy' : 'whiz', toP, { rate: g.look === 'lob' ? 0.7 : jitter(0.15), delay: 0 });
           floatText(e.fumble ? 'FUMBLE' : e.image ? 'DECOY' : 'MISS', toP, e.image ? SIGIL_INK : MUTED); // through a False Image (it scatters: image_gone)
         }
@@ -867,7 +842,7 @@ const H: Record<string, Handler> = {
       const br = brassOf(e.weapon || '', e.cat || ''), who = br.when === 'shot' ? whoOf(tokOf(e.unit, e.from)) : null, aim = angle(p, toP);
       // as many as the volley spent beyond its rolls (the engine's `loose`); none when the event does not say (an old replay)
       const g = gunOf(e.weapon || '', e.cat || ''), n = Number.isFinite(Number(e.loose)) ? Math.max(0, Number(e.loose)) : 0, look: Look = g.look === 'pellets' ? 'pellets' : 'bullet';
-      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); if (g.sound) play(g.sound, p, { rate: (g.rate || 1) * jitter(0.04) }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, look, toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
+      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); if (g.sound) play(g.sound, p, { rate: (g.rate || 1) * jitter(0.04), fire: true }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, look, toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
     }
   },
   reload(e) {
@@ -878,7 +853,7 @@ const H: Record<string, Handler> = {
       // Arrows or bolts drawn from the quiver and nocked; a crossbow's latch clicks home at the end.
       const k = e.how === 'loose' ? Math.min(3, n) : 1;
       for (let i = 0; i < k; i++) play('swish', p, { delay: each(i, k), rate: 1.5 * jitter(), gain: 0.55 });
-      if (cat === 'bow' && /crossbow/.test(e.weapon || '')) play('dry_click', p, { delay: ms * 0.8, rate: 0.7 });
+      if (brassOf(e.weapon || '', cat).bow === 'crossbow') play('dry_click', p, { delay: ms * 0.8, rate: 0.7 });
     } else if (kind === 'fuel') { play('hit_metal', p, { rate: 0.75, gain: 0.7 }); play('vent', p, { delay: ms * 0.55, rate: 0.9, gain: 0.7 }); play('mag_in', p, { delay: ms * 0.85, rate: 0.8 }); }
     else if (kind === 'launcher') { const k = Math.min(3, e.rounds || 1); for (let i = 0; i < k; i++) play('round_in', p, { delay: each(i, k), rate: 0.7 * jitter() }); play('rack', p, { delay: ms * 0.82, rate: 0.85 }); }
     else if (kind === 'shells') { play('reload_shells', p, { rate: Math.max(0.85, Math.min(1.3, 1250 / ms)) }); play('rack', p, { delay: ms * 0.8 }); }
@@ -1402,9 +1377,9 @@ Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, si
 wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
 // its rolls drawn one by one; it wraps everything above.
-wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose });
+wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose, explosion });
 /** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
-const streamsOwn = (v: FxEvent) => v.mode === 'dump' && gunOf(v.weapon || '', v.cat || '').look === 'bullet' && v.cat !== 'shotgun';
+const streamsOwn = (v: FxEvent) => v.mode === 'dump' && fxOf(v.weapon, v.cat).mark === 'hole' && v.cat !== 'shotgun'; // a stream of rounds that hole (bullets, a charge's bolts): a spray
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */

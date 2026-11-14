@@ -655,6 +655,50 @@ for w in items("weapons"):
     for tg in w.get("tags", []) or []:
         if tg not in WTAGS:
             errors.append(f"weapons:{w.get('id')}: unknown tag {tg}")
+# The weapon effects families (rules.json weapons_rules.fx, presentation only) and each weapon's own fx block: how a weapon
+# looks and sounds when it fires (apps/web/src/game/fx/weaponFx.ts fxOf; the table: docs/design/handoffs/weapon-fx-table.md).
+_REPO = pathlib.Path(__file__).resolve().parent.parent
+_SFX_TS = (_REPO / "apps/web/src/game/sfx.ts").read_text()
+_BRASS_TS = (_REPO / "apps/web/src/game/fx/brass.ts").read_text()
+_SFX_NAMES = set(re.findall(r"\b([a-z0-9_]+): CB\(", _SFX_TS))
+def _union(name):
+    m = re.search(r"export type " + name + r" = ([^;]+);", _BRASS_TS)
+    return set(re.findall(r"'([a-z0-9_]+)'", m.group(1))) if m else set()
+_FX_ENUM = {"look": {"bullet", "pellets", "arrow", "lob", "rocket", "flame", "bolt", "beam", "thrown"}, "mark": {"hole", "pellets", "shaft", None},
+            "blast": {"frag", "fire", "smoke", "flash", "zap", None}, "eject": {"shot", "reload", None}, "bow": {"bow", "crossbow", None},
+            "load": set(_union("Load")) | {None}, "shell": set(_union("Shell")) | {None}, "mag": set(_union("Mag")) | {None},
+            "spent_core": set(_union("Core")) | {None}, "color": {"sigil", "soul"}}
+def _fx_block(where, b):
+    if not isinstance(b, dict):
+        errors.append(f"{where}: fx must be an object"); return
+    for k, v in b.items():
+        if k == "sound":
+            if v not in _SFX_NAMES: errors.append(f"{where}: fx.sound {v!r} is not a sound in apps/web/src/game/sfx.ts SFX_FILES")
+        elif k == "rate":
+            if not (isinstance(v, (int, float)) and 0.2 <= v <= 4): errors.append(f"{where}: fx.rate is a pitch from 0.2 to 4")
+        elif k == "cycle":
+            if not (isinstance(v, int) and 0 <= v <= 1000): errors.append(f"{where}: fx.cycle is whole ms from 0 to 1000")
+        elif k == "stand_in":
+            if not (isinstance(v, str) and v): errors.append(f"{where}: fx.stand_in says what sample is wanted")
+        elif k in _FX_ENUM:
+            if v not in _FX_ENUM[k]: errors.append(f"{where}: fx.{k} {v!r} is not one of {sorted(x for x in _FX_ENUM[k] if x)}")
+        else:
+            errors.append(f"{where}: fx has unknown field {k}")
+_wfx = ((data.get("rules", {}) or {}).get("weapons_rules", {}) or {}).get("fx")
+if _wfx is None:
+    errors.append("rules:weapons_rules.fx: the weapon effects families are missing")
+else:
+    _fams = _wfx.get("families") or {}
+    for fid, b in _fams.items():
+        _fx_block(f"rules:weapons_rules.fx.families.{fid}", b)
+        if not isinstance(b, dict) or "sound" not in b or "look" not in b: errors.append(f"rules:weapons_rules.fx.families.{fid}: a family names its sound and its look")
+    for key in ("by_ammo", "by_system", "by_category"):
+        for k, v in (_wfx.get(key) or {}).items():
+            if v not in _fams: errors.append(f"rules:weapons_rules.fx.{key}.{k}: {v} is not a family")
+    for w in items("weapons"):
+        if w.get("fx") is not None: _fx_block(f"weapons:{w.get('id')}", w["fx"])
+        if w.get("category") not in (_wfx.get("by_category") or {}) and w.get("ammo") not in (_wfx.get("by_ammo") or {}):
+            errors.append(f"weapons:{w.get('id')}: its category {w.get('category')} (or its ammo) has no effects family in rules.weapons_rules.fx")
 ammo_ids = {a.get("id") for a in (data.get("rules", {}).get("weapons_rules", {}) or {}).get("ammo_types", [])}
 for x in items("items"):
     if x.get("ammo_type") and x["ammo_type"] not in ammo_ids:

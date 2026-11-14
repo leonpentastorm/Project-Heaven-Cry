@@ -8,6 +8,7 @@
 import { reducedMotion } from '../sfx';
 import { SIGIL_INK, SOUL_WARM } from '../glyphs';
 import { layerEl, anim, after, slow, fxTempo, withTempo, trace } from './dom';
+import { fxOf } from './weaponFx';
 
 // ---------- what each weapon throws off ----------
 /** The casing a weapon ejects: one per shot, or (revolvers, break-actions) all of them at the reload. */
@@ -22,57 +23,17 @@ export type Core = 'evoker' | 'blade' | 'staff';
 export type Load = 'pump' | 'break' | 'cylinder' | 'rounds';
 export interface Brass { shell: Shell | null; when: 'shot' | 'reload' | null; mag: Mag | null; bow: 'bow' | 'crossbow' | null; load: Load | null; cycle: number }
 
-/** What a weapon throws off (by its id, else its category). cycle: how long after the shot the casing comes out (a
- *  pump, a lever or a bolt is worked first; an automatic throws it at once). Bows and crossbows leave nothing; a bow
- *  draws an arrow from the quiver before each shot. Thrown weapons, rockets, the flamer's jet and melee eject nothing.
- *  Pure (tests). */
+/** What a weapon throws off, from its effects family in the data (fx/weaponFx.ts fxOf: data/rules.json
+ *  weapons_rules.fx and the weapon's own `fx`; no weapon id is named here). cycle: how long after the shot the casing
+ *  comes out (a pump, a lever or a bolt is worked first; an automatic throws it at once). Bows and crossbows leave
+ *  nothing; a bow draws an arrow from the quiver before each shot. Thrown weapons, rockets, the flamer's jet and melee
+ *  eject nothing. Pure (tests). */
 export function brassOf(id: string, cat: string): Brass {
-  const B = (shell: Shell | null, when: 'shot' | 'reload' | null, mag: Mag | null = null, o: { bow?: Brass['bow']; load?: Load; cycle?: number } = {}): Brass =>
-    ({ shell, when: shell ? when : null, mag, bow: o.bow || null, load: o.load || null, cycle: o.cycle || 0 });
-  switch (id) {
-    // revolvers keep their brass in the cylinder and dump it all when they reload
-    case 'drifter_revolver': case 'magistrate_pistol': return B('pistol', 'reload', null, { load: 'cylinder' });
-    case 'frontier_hand_cannon': return B('magnum', 'reload', null, { load: 'cylinder' });
-    // break-actions (two barrels, a two-shot parlour gun): the hulls come out when the action opens to reload
-    case 'coach_gun': case 'sawn_off': return B('hull', 'reload', null, { load: 'break' });
-    case 'parlour_pistol': return B('pistol', 'reload', null, { load: 'break' });
-    // worked by hand: the casing comes out as the lever, the bolt or the pump is worked after the shot
-    case 'lever_carbine': return B('rifle', 'shot', null, { load: 'rounds', cycle: 170 });
-    case 'long_rifle': return B('rifle', 'shot', null, { load: 'rounds', cycle: 260 });
-    case 'lumeri_scattergun': return B('hull', 'shot', null, { load: 'pump', cycle: 210 });
-    case 'smetanita_thumper': return B('grenade_40', 'shot', null, { load: 'rounds', cycle: 120 });
-    case 'blackpoint_700': return B('big_rifle', 'shot', 'big_box');
-    case 'hellraiser_lmg': return B('linked_rifle', 'shot', 'big_box');
-    case 'hellraiser_rotary': return B('linked_rifle', 'shot', 'belt_box');
-    case 'hellraiser_service_rifle': case 'legion_bullpup': return B('rifle', 'shot', 'curved_mag');
-    case 'adamantile_battle_rifle': case 'ccec_marksman_rifle': return B('rifle', 'shot', 'box_mag');
-    case 'mandestra_drum_gun': return B('pistol', 'shot', 'drum');
-    case 'brigade_auto_shotgun': return B('hull', 'shot', 'shotgun_mag');
-    // the tube keeps nothing to eject, but its reload is a rocket slid in by hand: the card shows the round going in
-    // (when: null: no casing on a shot or a reload; before, the card was an empty box with a count)
-    case 'breacher_tube': return B('grenade_40', null, null, { load: 'rounds' });
-    case 'purifier_flamer': return B(null, null, 'fuel_can');
-    // the enchanted guns: a sigil-etched casing, a blessed censer hull (pumped), a spent core charge
-    case 'spellslinger_pistol': return B('etched', 'shot', 'etched_mag');
-    case 'lumeri_censer_gun': return B('censer_hull', 'shot', null, { load: 'pump', cycle: 210 });
-    case 'core_rifle': return B('charge', 'shot', null, { load: 'rounds', cycle: 120 });
-    case 'crossbow': return B(null, null, null, { bow: 'crossbow' });
-    case 'repeating_crossbow': return B(null, null, 'bolt_box', { bow: 'crossbow' });
-    case 'recurve_bow': case 'longbow': return B(null, null, null, { bow: 'bow' });
-  }
-  switch (cat) {
-    case 'pistol': return B('pistol', 'shot', 'pistol_mag');
-    case 'revolver': return B('pistol', 'reload', null, { load: 'cylinder' });
-    case 'smg': return B('pistol', 'shot', 'stick_mag');
-    case 'rifle': return B('rifle', 'shot', 'curved_mag');
-    case 'shotgun': return B('hull', 'shot', null, { load: 'pump', cycle: 210 });
-    case 'heavy': return B('linked_rifle', 'shot', 'big_box');
-    case 'bow': return B(null, null, null, { bow: /crossbow/.test(id) ? 'crossbow' : 'bow' });
-  }
-  return B(null, null);
+  const f = fxOf(id, cat);
+  return { shell: f.shell as Shell | null, when: f.shell ? f.eject : null, mag: f.mag as Mag | null, bow: f.bow, load: f.load as Load | null, cycle: f.cycle };
 }
-/** The Evoker's core by the focus that holds it (the engine's core event names it). */
-export const coreOf = (focus: string | null | undefined): Core => (focus === 'evoker_blade' ? 'blade' : focus === 'grand_staff' ? 'staff' : 'evoker');
+/** The Evoker's core by the focus that holds it (the engine's core event names it; the focus's `fx.core` in the data). */
+export const coreOf = (focus: string | null | undefined): Core => (fxOf(focus, '').core as Core | null) || 'evoker';
 
 // ---------- the pictures ----------
 let uid = 0;

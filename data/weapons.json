@@ -294,6 +294,12 @@
           "agility"
         ],
         "teaches": "walking_fire"
+      },
+      "fx": {
+        "sound": "gun_lever",
+        "mag": null,
+        "load": "rounds",
+        "cycle": 170
       }
     },
     {
@@ -409,7 +415,13 @@
         "teaches": "bead"
       },
       "cycle_ap": 1,
-      "provisional": true
+      "provisional": true,
+      "fx": {
+        "sound": "gun_sniper",
+        "mag": null,
+        "load": "rounds",
+        "cycle": 260
+      }
     },
     {
       "id": "blackpoint_700",
@@ -468,7 +480,11 @@
         ],
         "teaches": "dead_centre"
       },
-      "provisional": true
+      "provisional": true,
+      "fx": {
+        "rate": 0.85,
+        "shell": "big_rifle"
+      }
     },
     {
       "id": "hellraiser_lmg",
@@ -526,6 +542,10 @@
           "agility"
         ],
         "teaches": "brace"
+      },
+      "fx": {
+        "sound": "gun_rifle",
+        "rate": 0.85
       }
     },
     {
@@ -1058,6 +1078,9 @@
           "agility"
         ],
         "teaches": "head_down"
+      },
+      "fx": {
+        "blast": "smoke"
       }
     },
     {
@@ -1111,6 +1134,9 @@
         "scales_with": [
           "agility"
         ]
+      },
+      "fx": {
+        "blast": "flash"
       }
     },
     {
@@ -1223,6 +1249,12 @@
           "agility"
         ],
         "teaches": "crossfire"
+      },
+      "fx": {
+        "rate": 1.15,
+        "eject": "reload",
+        "load": "break",
+        "mag": null
       }
     },
     {
@@ -1281,6 +1313,9 @@
           "agility"
         ],
         "teaches": "stopping_shot"
+      },
+      "fx": {
+        "rate": 1.05
       }
     },
     {
@@ -1338,6 +1373,11 @@
           "agility"
         ],
         "teaches": "last_round"
+      },
+      "fx": {
+        "sound": "gun_magnum",
+        "rate": 0.9,
+        "shell": "magnum"
       }
     },
     {
@@ -1518,6 +1558,9 @@
           "agility"
         ],
         "teaches": "rake"
+      },
+      "fx": {
+        "mag": "drum"
       }
     },
     {
@@ -1578,6 +1621,10 @@
           "agility"
         ],
         "teaches": "punch_through"
+      },
+      "fx": {
+        "rate": 0.9,
+        "mag": "box_mag"
       }
     },
     {
@@ -1634,6 +1681,10 @@
           "agility"
         ],
         "teaches": "called_shot"
+      },
+      "fx": {
+        "sound": "gun_sniper",
+        "mag": "box_mag"
       }
     },
     {
@@ -1755,6 +1806,11 @@
           "agility"
         ],
         "teaches": "mag_dump"
+      },
+      "fx": {
+        "eject": "reload",
+        "load": "break",
+        "cycle": 0
       }
     },
     {
@@ -1811,6 +1867,12 @@
           "agility"
         ],
         "teaches": "storm"
+      },
+      "fx": {
+        "rate": 1.05,
+        "eject": "reload",
+        "load": "break",
+        "cycle": 0
       }
     },
     {
@@ -1874,6 +1936,11 @@
           "agility"
         ],
         "teaches": "burst"
+      },
+      "fx": {
+        "mag": "shotgun_mag",
+        "load": null,
+        "cycle": 0
       }
     },
     {
@@ -1933,6 +2000,11 @@
           "agility"
         ],
         "teaches": "suppress"
+      },
+      "fx": {
+        "sound": "gun_rifle",
+        "rate": 0.85,
+        "mag": "belt_box"
       }
     },
     {
@@ -2279,6 +2351,9 @@
           "agility"
         ],
         "teaches": "burst"
+      },
+      "fx": {
+        "mag": "bolt_box"
       }
     },
     {
@@ -2910,6 +2985,9 @@
         "scales_with": [
           "agility"
         ]
+      },
+      "fx": {
+        "blast": "fire"
       }
     },
     {
@@ -2963,6 +3041,9 @@
         "scales_with": [
           "agility"
         ]
+      },
+      "fx": {
+        "blast": "zap"
       }
     },
     {
@@ -3087,6 +3168,10 @@
       "focus": {
         "door": "brain_power",
         "fuel": "core"
+      },
+      "fx": {
+        "shell": "etched",
+        "mag": "etched_mag"
       }
     },
     {
@@ -3149,6 +3234,9 @@
       "focus": {
         "door": "brain_power",
         "fuel": "core"
+      },
+      "fx": {
+        "spent_core": "blade"
       }
     },
     {
@@ -3324,6 +3412,10 @@
         "scales_with": [
           "agility"
         ]
+      },
+      "fx": {
+        "color": "soul",
+        "shell": "censer_hull"
       }
     },
     {
@@ -3438,6 +3530,9 @@
       "focus": {
         "door": "brain_power",
         "fuel": "core"
+      },
+      "fx": {
+        "spent_core": "staff"
       }
     },
     {

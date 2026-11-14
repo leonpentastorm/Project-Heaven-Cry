@@ -340,7 +340,7 @@ function drawCylinder(well: HTMLElement, g: ReloadGun, S: number, u: number, ms:
 
 /** Arrows (or a bolt) slid down into the quiver, one after another, the count with them. */
 function drawArrows(well: HTMLElement, g: ReloadGun, S: number, u: number, ms: number, t: (f: number) => number, still: boolean, show: (n: number, done?: boolean) => void): number {
-  const bolt = /crossbow/.test(g.weapon), q = div('position:absolute;left:' + S * 0.3 + 'px;top:' + S * 0.34 + 'px;width:' + S * 0.4 + 'px;height:' + S * 0.58 + 'px;border-radius:' + 3 * u + 'px;background:linear-gradient(90deg,#4E3218,#8A5E31 45%,#4E3218);border:1px solid #2A1A0B;box-sizing:border-box');
+  const bolt = brassOf(g.weapon, '').bow === 'crossbow', q = div('position:absolute;left:' + S * 0.3 + 'px;top:' + S * 0.34 + 'px;width:' + S * 0.4 + 'px;height:' + S * 0.58 + 'px;border-radius:' + 3 * u + 'px;background:linear-gradient(90deg,#4E3218,#8A5E31 45%,#4E3218);border:1px solid #2A1A0B;box-sizing:border-box');
   well.appendChild(q);
   if (still) { show(g.to, true); return 0; }
   show(g.from);

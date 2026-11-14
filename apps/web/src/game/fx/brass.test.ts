@@ -103,12 +103,13 @@ describe('the pictures over the grid', () => {
     playFx({ k: 'shot', unit: 'u', target: 't', from: '1,1', to: '5,1', weapon: 'longbow', cat: 'bow', hit: true, dmg: 5 } as any);
     expect(pieces(layer)).toContain('arrow');
     expect(spy.mock.calls.filter((c) => c[0] === 'swish').length).toBe(1); // the draw, not the loose
+    expect(spy.mock.calls.filter((c) => c[0] === 'bow_loose').length).toBe(0);
     vi.advanceTimersByTime(DRAW_MS + 10);
-    expect(spy.mock.calls.filter((c) => c[0] === 'swish').length).toBe(2);
+    expect(spy.mock.calls.filter((c) => c[0] === 'bow_loose').length).toBe(1); // the loose, its own sound (14 Nov 2026)
     // a crossbow has its bolt on: no draw
     spy.mockClear(); const l2 = grid();
     playFx({ k: 'shot', unit: 'u', target: 't', from: '1,1', to: '5,1', weapon: 'crossbow', cat: 'bow', hit: true, dmg: 5 } as any);
-    expect(pieces(l2)).not.toContain('arrow'); expect(spy.mock.calls.filter((c) => c[0] === 'swish').length).toBe(1);
+    expect(pieces(l2)).not.toContain('arrow'); expect(spy.mock.calls.filter((c) => c[0] === 'crossbow_loose').length).toBe(1);
     spy.mockRestore(); clearFx(); vi.advanceTimersByTime(5000); vi.useRealTimers();
   });
   it('reloads: a magazine drops; a revolver dumps its brass and loads; a double barrel kicks its hulls out and takes two; a pump feeds shells', () => {

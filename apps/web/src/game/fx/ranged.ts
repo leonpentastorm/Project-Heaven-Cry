@@ -27,6 +27,7 @@ import type { FxEvent } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
 import { type Pt, after, angle, anim, burst, centre, flash, floatText, lunge, ring, shake, shakeScreen, trace } from './dom';
+import { fxOf } from './weaponFx';
 import { tagChip } from './sight';
 import { DRAW_MS, brassOf, ejectShell, whoOf } from './brass';
 import { physBeat, NAME_DY, NAME_RISE } from './physical';
@@ -45,7 +46,7 @@ export interface RangedKit {
   at(k: string | null | undefined): Pt | null;
   tokOf(id: string | null | undefined, fallback?: string): HTMLElement | null;
   posOf(id: string | null | undefined): string | undefined;
-  play(s: Sfx, p: Pt | null, o?: { rate?: number; gain?: number; delay?: number; lowpass?: number }): void;
+  play(s: Sfx, p: Pt | null, o?: { rate?: number; gain?: number; delay?: number; lowpass?: number; fire?: boolean }): void;
   gunOf(id: string, cat: string): { sound: Sfx | null; rate?: number; look: string; color?: string; blast?: string };
   muzzle(from: Pt, to: Pt, color?: string, wide?: boolean): XY;
   projectile(a: XY, b: XY, ms: number, look: any, s: number, color?: string): void;
@@ -274,7 +275,7 @@ export function smokeTiles(key: string, r: number): string[] {
 /** Does this rec's shots play as one stream (Mag Dump, the 3-target Rake), one recording and chained beats? */
 /** What a weapon fires, as play.ts draws it (set when the handlers are wrapped): only bullets stream, rattle and spray. */
 let gunLook: (id: string, cat: string) => string = () => 'bullet';
-const streams = (e: any, r: TechRec | null) => !!r && gunLook(String(e.weapon || ''), String(e.cat || '')) === 'bullet' && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
+const streams = (e: any, r: TechRec | null) => !!r && fxOf(e.weapon, e.cat).mark === 'hole' && ((r.id === 'mag_dump' && e.cat !== 'shotgun') || (r.id === 'rake' && !r.volleys.some((v) => v.mode === 'auto')));
 /** A gun that fires tracers (bullets, pellets, a core rifle's bolt; not a launcher, a bow, a flamer or a thrown blade):
  *  its Suppress is drawn as a burst of three, the rolled round last. */
 const tracers = (e: any) => !e.thrown && !['lob', 'rocket', 'arrow', 'flame', 'thrown'].includes(gunLook(String(e.weapon || ''), String(e.cat || '')));
@@ -422,11 +423,10 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
    *  launcher's Suppress drew bullet tracers): a launcher's is lobbed, a tube's is a rocket, a bow's an arrow, a flamer's
    *  a gout of fire; everything else is a tracer. */
   const ownLook = (g: { look: string }) => (g.look === 'arrow' || g.look === 'lob' || g.look === 'rocket' || g.look === 'flame' ? g.look : 'bullet');
-  /** Draw one such round from a to b over ms. */
+  /** Draw one such round from a to b over ms, as what the weapon fires (its look in the data: a bullet, a shell's
+   *  pellet cluster, an arrow, a lobbed grenade, a rocket, a gout of fire, a charge's bolt; fx/weaponFx.ts). */
   function fly(g: { look: string; color?: string }, a: XY, b: XY, ms: number, s: number) {
-    const look = ownLook(g);
-    if (look === 'flame') { for (let i = 0; i < 4; i++) { const t = (i + 1) / 4; burst('flame', { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } return; }
-    K.projectile(a, b, ms, g.look === 'pellets' ? 'pellets' : look, s, look === 'bullet' ? g.color : undefined); // a shell: its pellet cluster
+    K.projectile(a, b, ms, g.look === 'thrown' ? 'arrow' : g.look, s, g.color);
   }
   /** Where such a round comes down without hitting anyone: a charge goes off small (as a base shot's miss does), a
    *  bullet or an arrow kicks up dirt. */
@@ -442,7 +442,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
    *  round into the cover (Flush). */
   function loose(e: any, kind: NonNullable<ReturnType<typeof looseKind>>, r: TechRec | null) {
     const g = (e.thrown ? { sound: 'swish' as Sfx, rate: 0.8, look: 'thrown' } : K.gunOf(e.weapon || '', e.cat || '')), from = at(e.from), toP = centre(e.to);
-    if (g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jit(0.04) });
+    if (g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jit(0.04), fire: true });
     if (!toP) return;
     const shooter = from ? tokOf(e.unit, e.from) : null;
     const mp = from && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' ? K.muzzle(from, toP, g.color, g.look === 'pellets') : null;
@@ -486,13 +486,14 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       // its arc over the cover (restored 14 Nov 2026: Flush Arc's own effect, not one of the four Leon had removed)
       P.arcPath(start, toP, Math.max(18, s * 0.6), { color: HOT, ms: ft + 160, dash: '3 3', width: 2 });
       fly(g, start, toP, ft, tracer ? s * 0.8 : s);
-      after(() => K.dust(toP, s * 0.6), ft);
+      after(() => (g.blast ? lands(g, toP, s) : K.dust(toP, s * 0.6)), ft); // a launcher's round goes off where it drops
       return;
     }
     // Flush: the round into the cover, which bursts as it lands (the object that follows only says the damage); then the
     // target flinches away from it
     const ft = flight(start, toP, look);
     fly(g, start, toP, ft, s);
+    if (g.blast) after(() => lands(g, toP, s), ft); // a launcher's grenade or a rocket goes off against the cover it was put into
     const ob: any = r?.objects.find((o: any) => o.at === e.to) || null;
     if (ob && Number(ob.dmg) > 0) {
       thrown.add(ob);
@@ -520,12 +521,12 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     const n = Math.min(STREAM_CAP, Number.isFinite(loose) ? Math.max(0, loose) : Math.max(0, (Number.isFinite(loaded) && loaded > 0 ? loaded : r.shots.length * 3) - r.shots.length)), a = angle(from, toP), s = toP.s;
     const tok = tokOf(e.unit, e.from), br = brassOf(e.weapon || '', e.cat || ''), who = tok && br.when === 'shot' ? whoOf(tok) : null, g = K.gunOf(e.weapon || '', e.cat || '');
     for (let i = 0; i < n; i++) after(() => {
-      if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // each round its own bang (Leon, 14 Nov 2026)
+      if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04), fire: true }); // each round its own bang (Leon, 14 Nov 2026)
       const m = i % 2 === 0 ? K.muzzle(from, toP) : { x: from.x + Math.cos(a) * s * 0.42, y: from.y + Math.sin(a) * s * 0.42 };
       const spread = s * (0.12 + 0.045 * i), climb = s * 0.03 * i;
       const end = { x: toP.x + (Math.random() - 0.5) * spread - Math.sin(a) * (Math.random() - 0.5) * spread, y: toP.y - climb + (Math.random() - 0.5) * spread };
       trace('round', { unit: e.unit, loose: true });
-      K.projectile(m, end, 110, 'bullet', s * 0.9);
+      K.projectile(m, end, 110, g.look, s * 0.9, g.color); // what it fires: a bullet's streak, a charge's bolt
       if (who) ejectShell(who, br.shell, a); // a casing for every round (Leon, 12 Nov 2026: rounds on screen match rounds spent)
     }, i * 45);
     if (tok) for (let k = 0; k < 4; k++) after(() => lunge(tok, -Math.cos(a) * 2.5, -Math.sin(a) * 2.5, 90), k * 110);
@@ -658,7 +659,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
             if (shooter && sbr.when === 'shot') ejectShell(whoOf(shooter), sbr.shell, a); // a casing for each round
             const end = { x: toP.x + Math.cos(a) * s * 0.9 - Math.sin(a) * side * s * 0.42, y: toP.y + Math.sin(a) * s * 0.9 + Math.cos(a) * side * s * 0.42 };
             const start: XY = lead ? K.muzzle(from, toP, g.color, g.look === 'pellets') : from, ft = flight(start, end, own);
-            if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // each round its own bang
+            if (g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04), fire: true }); // each round its own bang
             fly(g, start, end, ft, own === 'bullet' ? s * 0.8 : s);
             if (own === 'bullet' || own === 'arrow') play(own === 'arrow' ? 'swish' : 'whiz', toP, { delay: ft * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
             after(() => lands(g, own === 'bullet' || own === 'arrow' ? { x: toP.x + side * s * 0.42, y: toP.y + s * 0.62 } : end, s, 0.85), ft); // at its feet, below the token
@@ -738,6 +739,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
           // the whole radius clouds over: fewer, larger puffs spread over every tile of the box. The cloud is already in
           // the state, so its own tiles are out of sight when this plays: a cloud seen at all (a tile of it in sight, or
           // its thrower) is drawn whole (live check: only its one visible column puffed)
+          trace('boom', { kind }); // the grenade went off: its cloud is its blast (the tests count one for each)
           const st = smokeStride(rad), tiles = smokeTiles(e.at, rad);
           const seen = cloudSeen(e, r, tiles);
           tiles.forEach((k, i) => { const q = seen ? centre(k) : null; if (q) burst('puff', q, q.s * (st > 1 ? 2.7 : 1.7), 1900, { from: 0.3, to: 1.3, fade: 0, delay: Math.min(8, i) * 50 }); });
