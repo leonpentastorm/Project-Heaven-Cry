@@ -14,6 +14,7 @@ import { FullScreenFrame, FRAME_INK as I, type FrameTab } from './FullScreenFram
 import { patronPortrait } from './faithArt';
 import { GiveTab } from './GiveTab';
 import { UpgradeCard } from './UpgradeCard';
+import { WearBar } from './WearBar';
 import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
@@ -22,7 +23,7 @@ const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing
 const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 28 };
 /** The words over each group of cards (the engine names the group; the client its heading and its note). */
 const HEAD: Record<string, [string, string]> = {
-  grade: ['The grade step', 'one a visit, cheaper than a shop\'s'], relic: ['The Relic step', 'pick one named property: it stays on the weapon and counts on your cap'],
+  grade: ['The grade step', 'one a visit, cheaper than a shop\'s'], repair: ['Repair', 'back to full durability, priced by the wear; cheaper than a shop\'s'], relic: ['The Relic step', 'pick one named property: it stays on the weapon and counts on your cap'],
   forge: ['Mods and worn pieces', 'made for what the squad carries'], fit: ['Armour fitting', 'the next armour class, fitted to you'],
   train: ['Training', 'what you learn here is yours for the run'], shrine: ['The shrine', 'each of you takes one'], trade: ['Trades', 'one each, or walk on'],
 };
@@ -69,14 +70,16 @@ function You({ m, worth }: { m: MeV | null; worth: string }) {
       <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <span style={kick}>HANDS AND WORN</span>
         <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Main · </span>{m.hand}{m.handRarity !== 'standard' ? ' (' + m.handRarity + ')' : ''}</span>
+        {m.handWear ? <span data-phc-hand-wear="main"><WearBar w={m.handWear} label={m.hand} compact /></span> : null}
         {m.off ? <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Off · </span>{m.off}</span> : null}
+        {m.off && m.offWear ? <span data-phc-hand-wear="off"><WearBar w={m.offWear} label={m.off} compact /></span> : null}
         {m.worn.map((w) => <span key={w.slot} style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>{w.slot} · </span>{w.name}</span>)}
       </section>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <span style={kick}>THE PACK</span>
         <div aria-label={'Carrying ' + m.kg + ' of ' + m.limit + ' kg'} style={{ height: 8, borderRadius: 4, background: I.raised, overflow: 'hidden' }}><div style={{ width: pct + '%', height: '100%', background: over ? I.hp : I.text }} /></div>
         <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · over the limit' : ''}</span>
-        {m.pack.map((p, i) => <div key={i} style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>)}
+        {m.pack.map((p, i) => <div key={i} data-phc-pack-line={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}><div style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>{p.wear ? <WearBar w={p.wear} label={p.label} compact /> : null}</div>)}
       </section>
     </div>
   );
@@ -97,8 +100,8 @@ function TabBody({ v, tab }: { v: PlaceViewV; tab: string }) {
             <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
           </div>
           <div style={GRID}>
-            {v.cards.filter((x) => x.o.group === gname).map((x) => gname === 'grade'
-              ? <UpgradeCard key={x.o.key} choice s={{ key: x.o.key, title: x.o.label, id: x.id, price: x.o.price, why: x.o.why, note: x.o.detail, lines: x.lines, action: x.o.action as any }} />
+            {v.cards.filter((x) => x.o.group === gname).map((x) => gname === 'grade' || gname === 'repair'
+              ? <UpgradeCard key={x.o.key} choice s={{ key: x.o.key, title: x.o.label, id: x.id, price: x.o.price, why: x.o.why, note: x.o.detail, lines: x.lines, action: x.o.action as any, wear: x.o.wear || null }} />
               : <ChoiceCard key={x.o.key} x={x} big={gname === 'relic'} />)}
           </div>
         </section>

@@ -13,6 +13,7 @@ import { FullScreenFrame, FRAME_INK as I, type FrameTab } from './FullScreenFram
 import ASSETS from './assets.json';
 import { GiveTab } from './GiveTab';
 import { UpgradeCard } from './UpgradeCard';
+import { WearBar } from './WearBar';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
@@ -116,7 +117,9 @@ function You({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rarity }
       <section style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <span style={kick}>HANDS AND WORN</span>
         <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Main · </span>{m.hand}{m.handRarity !== 'standard' ? ' (' + m.handRarity + ')' : ''}</span>
+        {m.handWear ? <span data-phc-hand-wear="main"><WearBar w={m.handWear} label={m.hand} compact /></span> : null}
         {m.off ? <span style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>Off · </span>{m.off}</span> : null}
+        {m.off && m.offWear ? <span data-phc-hand-wear="off"><WearBar w={m.offWear} label={m.off} compact /></span> : null}
         {m.worn.map((w) => <span key={w.slot} style={{ fontSize: 13.5 }}><span style={{ color: I.muted }}>{w.slot} · </span>{w.name}</span>)}
       </section>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 14, background: 'rgba(16,21,31,0.9)', border: '1px solid ' + I.line }}>
@@ -127,7 +130,7 @@ function You({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rarity }
         <span style={kick}>THE PACK</span>
         <div aria-label={'Carrying ' + m.kg + ' of ' + m.limit + ' kg'} style={{ height: 8, borderRadius: 4, background: I.raised, overflow: 'hidden' }}><div style={{ width: pct + '%', height: '100%', background: over ? I.hp : I.text }} /></div>
         <span style={{ fontSize: 12, color: over ? I.hp : I.muted }}>{m.kg} of {m.limit} kg{over ? ' · over the limit' : ''}</span>
-        {m.pack.map((p, i) => <div key={i} style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>)}
+        {m.pack.map((p, i) => <div key={i} data-phc-pack-line={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}><div style={{ display: 'flex', gap: 8, fontSize: 12.5, lineHeight: 1.35 }}><span style={{ flex: 1, minWidth: 0 }}>{p.label}</span><span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{p.kg} kg</span></div>{p.wear ? <WearBar w={p.wear} label={p.label} compact /> : null}</div>)}
       </section>
     </div>
   );
@@ -144,7 +147,7 @@ export function ShopScreen() {
   const buy = (c: ShopCardV) => act({ type: 'run/buy', charId, key: c.key, qty: q(c.key) });
   const card = (c: ShopCardV, big = false) => <Card key={c.key} c={c} qty={q(c.key)} setQty={setQ(c.key)} onFocus={() => setFocus({ id: c.id, rarity: c.rarity })} onBuy={() => buy(c)} big={big} />;
   const tabs: FrameTab[] = [
-    { id: 'always', label: 'Always in stock' }, { id: 'gear', label: "Today's gear" }, { id: 'upgrade', label: 'Upgrade' }, { id: 'sell', label: 'Sell' },
+    { id: 'always', label: 'Always in stock' }, { id: 'gear', label: "Today's gear" }, { id: 'upgrade', label: 'Repair and upgrade' }, { id: 'sell', label: 'Sell' },
     { id: 'give', label: 'Give' },
   ];
   const portrait = v.face.portraitPending ? (v.face.fallback ? art('char-' + v.face.fallback) : '') : art(v.face.portrait);
@@ -152,8 +155,16 @@ export function ShopScreen() {
   let body: React.ReactNode;
   if (tab === 'always') body = v.shelves.map((s) => <section key={s.shelf} data-phc-shelf={s.shelf}>{shelfHead(s.name, s.shelf === 'guns' ? 'what your squad carries, first' : s.shelf === 'calibres' ? 'never sold out' : undefined)}<div style={GRID}>{s.cards.map((c) => card(c))}</div></section>);
   else if (tab === 'gear') body = <section data-phc-shelf="gear">{shelfHead("Today's gear", 'one of each; the first buyer takes it')}<div style={GRID}>{v.gear.map((c) => card(c, c.rare))}</div></section>;
-  else if (tab === 'upgrade') body = <section data-phc-shelf="upgrade">{shelfHead('Upgrade', 'one grade step a visit, at the full price; cheaper at a Forge')}{v.services.length ? <div style={GRID}>{v.services.map((sv) => <UpgradeCard key={sv.key} s={sv} onFocus={() => sv.id && setFocus({ id: sv.id, rarity: (sv.rarity || 'standard') as Rarity })} />)}</div>
-    : <p data-phc-upgrade-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>Nothing you carry takes a grade step here: a weapon or a focus does.</p>}</section>;
+  else if (tab === 'upgrade') { // rules 1.46 the grade step; rules 1.50 the Repair shelf (the services the engine registered, by service)
+    const svc = (sv: ShopViewV['services'][number]) => <UpgradeCard key={sv.key} s={sv} onFocus={() => sv.id && setFocus({ id: sv.id, rarity: (sv.rarity || 'standard') as Rarity })} />;
+    const grades = v.services.filter((sv) => sv.service !== 'repair'), repairs = v.services.filter((sv) => sv.service === 'repair');
+    body = <>
+      <section data-phc-shelf="repair">{shelfHead('Repair', 'back to full durability, priced by the wear; cheaper at a Forge')}{repairs.length ? <div style={GRID}>{repairs.map(svc)}</div>
+        : <p data-phc-repair-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560, marginBottom: 28 }}>Nothing you carry is worn: every weapon is at full durability.</p>}</section>
+      <section data-phc-shelf="upgrade">{shelfHead('Upgrade', 'one grade step a visit, at the full price; cheaper at a Forge')}{grades.length ? <div style={GRID}>{grades.map(svc)}</div>
+        : <p data-phc-upgrade-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>Nothing you carry takes a grade step here: a weapon or a focus does.</p>}</section>
+    </>;
+  }
   else if (tab === 'give') body = <GiveTab />;
   else body = <section data-phc-shelf="sell">{shelfHead('Sell', 'a quarter of the price at its own grade')}<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{v.sell.map((r) => (
     <div key={r.idx} data-phc-sell={r.idx} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why ? 0.6 : 1 }}>

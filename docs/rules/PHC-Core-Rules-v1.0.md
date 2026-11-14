@@ -690,9 +690,9 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 #### 4. Durability
 
 1. Every weapon, shield and mod has **Durability**. An attack action wears 1 (full auto wears 2); a jam or fumble wears 5 more.
-2. **Worn** (25% or less): guns jam on a natural 1 or 2; melee loses 10% damage.
+2. **Worn** (25% or less): guns jam on a natural 1 or 2; melee loses 10% damage. *(Rules 1.50: the 25% is data, `rules.json weapons_rules.worn.share`, read by the fight and by every screen's WORN mark.)*
 3. **Broken** (0): guns can't fire, melee does half damage, shields stop protecting. Broken things can still be repaired.
-4. **Field Repair** (this defines spec item 22's missing action): 2 AP, Proficiency 3+, uses one charge of a **spare-parts kit**, restores 10% + 5% per Proficiency point above 3. Out of combat, 10 minutes per kit charge restores 50%. A gunsmith restores 100% for 10% of the weapon's price.
+4. **Field Repair** (this defines spec item 22's missing action): 2 AP, Proficiency 3+, uses one charge of a **spare-parts kit**, restores 10% + 5% per Proficiency point above 3. Out of combat, 10 minutes per kit charge restores 50%. A gunsmith restores 100% for 10% of the weapon's price. *(Rules 1.50: in Survival the shop and the Forge are the gunsmith, `run/repair`, priced by the share of durability missing with a floor; see rules 1.50.)*
 5. Durability by family: sidearms 300, SMGs 300, rifles 400, shotguns 300, heavy 500, bows 200, light blades 250, heavy melee 300, unarmed 200, mana arms 250, shields 150 (plus their HP), torches burn 30 minutes.
 
 #### 5. Mods

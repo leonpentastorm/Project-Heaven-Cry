@@ -29,7 +29,14 @@
 // host marks one trail (the guest sees the mark live) and the guest another: the tie goes to the host's; D, solo: the
 // boon clicked at stage 1's Boss is felt on the rifle's card (the engine's gear preview), stage 2 and stage 3 reached,
 // and at a stage 3 Forge the Relic step's three named properties offered, one clicked, the rifle a Relic with it.
+// Rules 1.50 (the repair service): at the shop the rifle is worn by a test hand-off (as the purse is) and the Repair
+// shelf shows its card (the bar now → full, the price from data, the short purse's reason in words); the purse topped
+// up, it is repaired by a click: the purse down by the card's price, the rifle at full, the card gone; the Repair shelf
+// saved at 1280 and 1920; leaving with the rifle worn again, the path map's squad panel shows the WORN mark.
+import { readFileSync } from 'node:fs';
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE } from './lib.mjs';
+const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
+const SVD = DATA('survival.json'), WPN = Object.fromEntries(DATA('weapons.json').items.map((w) => [w.id, w])), RAR = DATA('rules.json').rarity;
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SEED = 'PHC-0046'; // rules 1.48: a seed whose stage 1 has a lane route from its first node (a swarm, which the pinned shots can reach) through a training ground, a shrine, a Forge, a crossroads and a rest
@@ -214,7 +221,35 @@ async function shopChecks() {
   // rules 1.46: the Upgrade tab is 4a's grade step at the full price (a weapon in the pack; the Forge grades the one in hand)
   await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0]; c.credits += 5000; }); // a test purse, so the step is affordable
   await p.locator('[data-phc-tab="upgrade"]').click();
-  const ups = await p.locator('[data-phc-service]').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-service'), why: e.hasAttribute('data-phc-service-why'), price: Number(e.querySelector('[data-phc-price]')?.textContent.replace(/\D/g, '') || 0), lines: e.querySelectorAll('[data-phc-upgrade-lines] b').length })));
+  // rules 1.50: the Repair shelf, a worn rifle repaired at the shop
+  {
+    const hold = await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0], was = c.credits; c.weaponState = { ...(c.weaponState || {}), dur: 60 }; c.credits = 3; return was; });
+    await p.locator('[data-phc-tab="sell"]').click(); await p.locator('[data-phc-tab="upgrade"]').click(); // drawn again from the state
+    const card = p.locator('[data-phc-repair="repair:main"]');
+    await card.waitFor({ timeout: 30000 }).catch(() => {});
+    const me0 = Object.values((await G()).characters)[0], w = WPN[me0.weapon], rar = me0.weaponState?.rarity || 'standard';
+    const full = Math.round(w.durability * RAR[rar].dur), R = SVD.repair, want = Math.ceil(Math.max(R.floor, R.rate * Math.round(w.price_credits * RAR[rar].price) * ((full - 60) / full)) * R.places.shop);
+    const price = Number(((await card.locator('[data-phc-price]').textContent().catch(() => '')) || '').replace(/\D/g, ''));
+    const bar = await card.locator('[data-phc-wear]').evaluate((e) => ({ state: e.getAttribute('data-phc-wear'), now: e.getAttribute('data-phc-wear-now'), max: e.getAttribute('data-phc-wear-max'), mark: e.querySelector('[data-phc-wear-mark]')?.textContent || '' })).catch(() => null);
+    ok('the Repair shelf: the worn rifle\'s card, its bar 60 → ' + full + ' marked WORN, its price from data (' + price + ' = ' + want + ')', !!bar && bar.state === 'worn' && bar.now === '60' && bar.max === String(full) && /WORN/.test(bar.mark) && price === want);
+    const status = (await card.locator('[data-phc-status]').textContent().catch(() => '')) || '';
+    ok('a purse too short for the repair says by how much ("' + status + '")', (await card.getAttribute('data-phc-service-why')) === '' && status.includes('short ' + (want - 3) + ' credits'));
+    ok('the "you" panel marks the rifle in hand WORN', await p.locator('[data-phc-hand-wear="main"] [data-phc-wear="worn"]').count() === 1);
+    await p.evaluate((h) => { Object.values(window.__phc.getState().game.characters)[0].credits = h; }, hold);
+    await p.locator('[data-phc-tab="sell"]').click(); await p.locator('[data-phc-tab="upgrade"]').click();
+    await settle(p, 500); await p.screenshot({ path: OUT + 'survival-repair-1280.png' });
+    await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 700); await p.screenshot({ path: OUT + 'survival-repair-1920.png' });
+    ok('the Repair shelf at 1920: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
+    await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 400);
+    const r0 = Object.values((await G()).characters)[0].credits;
+    await card.locator('[data-phc-upgrade-go]').click();
+    await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, r0, { timeout: 30000 }).catch(() => {});
+    const me1 = Object.values((await G()).characters)[0];
+    ok('Repair clicked: the purse down by the card\'s price (' + (r0 - me1.credits) + '), the rifle at full (' + me1.weaponState?.dur + '), logged, the card gone',
+      r0 - me1.credits === want && me1.weaponState?.dur === full && /repaired to full/.test(await p.locator('[data-phc-visit-log]').textContent())
+      && await p.locator('[data-phc-repair]').count() === 0 && await p.locator('[data-phc-repair-empty]').count() === 1 && await p.locator('[data-phc-hand-wear="main"] [data-phc-wear="sound"]').count() === 1);
+  }
+  const ups = await p.locator('[data-phc-service]:not([data-phc-repair])').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-service'), why: e.hasAttribute('data-phc-service-why'), price: Number(e.querySelector('[data-phc-price]')?.textContent.replace(/\D/g, '') || 0), lines: e.querySelectorAll('[data-phc-upgrade-lines] b').length })));
   const up = ups.find((x) => !x.why && x.key !== 'grade:main') || ups.find((x) => !x.why);
   ok('the Upgrade tab: a card per weapon or focus, each with its price here and what changes (' + ups.map((x) => x.key + ' ' + x.price + (x.why ? ' refused' : '')).join(', ') + ')', !!up && up.lines > 0);
   await settle(p, 400); await p.screenshot({ path: OUT + 'survival-shop-upgrade-1280.png' });
@@ -241,9 +276,12 @@ async function shopChecks() {
   ok('at 1920: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
   await p.locator('[data-phc-tab="gear"]').click(); await settle(p, 500); await p.screenshot({ path: OUT + 'survival-shop-gear-1920.png' });
   await p.setViewportSize({ width: 1280, height: 720 });
+  await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0]; c.weaponState = { ...(c.weaponState || {}), dur: 60 }; }); // rules 1.50: worn again, for the map's mark
   await p.locator('[data-phc-leave]').click();
   await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
   ok('Leave the shop: back on the path map', await p.locator('[data-phc-pathmap]').count() === 1);
+  ok('rules 1.50: the path map\'s squad panel marks the worn rifle before a lane is chosen', await p.locator('[data-phc-member] [data-phc-wear="worn"] [data-phc-wear-mark]').count() === 1);
+  await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0]; delete c.weaponState.dur; }); // back to full for the rest of the walk
 }
 const WEAPONISH = /^(?!.*(kit|ration|parts|torch|flare|beads|chalk|toolbox|spirits|cigarettes|plate|shield|buckler|pavise|essence|stim|core$|musek))/;
 let sawLevelUp = false, guard = 0;
