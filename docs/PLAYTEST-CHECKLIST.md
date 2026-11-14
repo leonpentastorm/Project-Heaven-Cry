@@ -339,6 +339,30 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
 114. **The gunner's gain is the starting boon's:** 29 of 36 with every lever, 25 of 36 with the starting boon off; the
      supply pack and the run policies move a gunner by nothing (identical runs). Nothing was shrunk.
 
+**The side panels, materials and the slower climb (rules 1.54, 0.28.0; specified, not built yet)**
+115. **Every mode keeps the sheet on the left and a right panel;** the fight screen, level-up and creation stay without them.
+116. **Survival plays on the play screen,** its screens in the middle, as the Proving Ground's tools do; the shop is no longer full screen.
+117. **Survival's right panel:** mana forecast, Run (stage, stop, seed, a small map of the stage), Run board, Squad with one Go / Ready / Leave button.
+118. **The shop's "You" panel is gone:** the sheet's GEAR tab is the one place for your gear.
+119. **The path map keeps its size and scrolls sideways** in the middle; the small map on the right shows the whole stage.
+120. **Bigger icons:** stops 48 to 76 px (were 36 to 64), labels 12 px, boon icons 24 px, the reward weapon 72 px.
+121. **At the camp the GEAR tab is read-only;** between fights you may equip, load, swap quivers, fit mods and give.
+122. **A run rests only at a Rest stop:** a free long rest the host could call anywhere is now refused.
+123. **After a fight: Materials or One weapon;** no more "credits instead". The vault's chest and a sealed crate keep three weapons.
+124. **Materials for a fight worth C credits:** C/2 gunpowder, C/2 casings, C/20 mana residue (50, 50, 5 at stage 1, depth 1).
+125. **Survival's enemies drop no guns:** gunpowder and casings 2 to 5 each from gunmen, mana residue 1 to 2 from casters and machines.
+126. **Making costs exactly the shop's price** (half gunpowder, half casings); never cheaper, so it is ammunition away from a shop.
+127. **Arrows and bolts are made from gunpowder and casings too** (your "all ammo types" read literally).
+128. **No recipe for the core charge or enhanced rounds;** cores come from 10 mana residue and a focus in hand.
+129. **The core charge and enhanced rounds cost 10** (were 15), scaled with the core's 100.
+130. **Making is free** (no AP, no credits) and only between fights, never at 0 HP.
+131. **XP: you reach level 3 with stage 1's Boss** (level 2 at the gate); about two levels a stage after (3, 5, 7, 9, 11, 12 to 13).
+132. **The supply pack after a fight is unchanged;** its size against making waits for Balance 2.0.
+133. **Rest training doubled or near it** (drill 200, study 5, practice 8, Devotion 4); the training ground's 400 / 10 / 15; the shrine's rite 10.
+134. **Each training card shows a bar** to the next mark.
+135. **Skill texts are short rows** ("Every 2 points · ..."), one line on the creation row; Will Power's eight copies are gone.
+136. **The trait cards no longer trap the mouse wheel.**
+
 ## B. Bows and quivers (rules 1.53, in 0.27.0)
 
 Sources: rules 1.53 (items 4000 to 4008), `docs/design/handoffs/bows-quivers.md`. Leon's rulings of 14 Nov 2026.
