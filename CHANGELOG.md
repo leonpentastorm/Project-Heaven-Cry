@@ -8,6 +8,52 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.0 — materials, making, a slower climb and the side panels back
+
+Survival's second pass, on Leon's 14 Nov rulings (rules 1.54; `docs/design/survival-spec.md` section 14). Built, **not
+live until Leon's word**. Every number is provisional but the core's 100 credits.
+
+- **The side panels in every mode.** The character sheet stays on the left and a right panel stays on the right in
+  every mode, Survival included; the mode plays in the middle. In Survival every screen (the path map, the camp, the
+  shop, the Forge, every place, the rewards, the stage screen) is in the middle; the right panel holds the mana forecast,
+  the run, the run board and the squad (no area map, no quest board), with the one control for what is yours to do
+  next (Ready, Leave the shop, To the path map, Go now, To the fight). Icons on the path map are larger.
+- **Materials and making.** Survival's foes no longer drop their guns: a gunner leaves gunpowder and casings, a caster
+  or a machine leaves mana residue. After a fight each character picks **Materials** (gunpowder, casings and mana
+  residue together) or **One weapon**; "credits instead" is gone. The **ammo maker** (a tool, always on the shop's
+  counter, and found as loot) makes every calibre and the three special rounds from gunpowder and casings, at the
+  shop's price, between fights and for free. Making is never cheaper than buying: it is ammunition where there is no
+  shop.
+- **The mana core costs 100 credits** (was 150), and **ten mana residue with any focus in hand make one**. The core
+  charge's round and enhanced rounds cost 10 (was 15).
+- **Levels come slower.** A run's first stage is played before the class: level 2 at the gate, level 3 from the first
+  Boss, then about two levels a stage. A squad of four's fights were eased to match.
+- **Trainings give more.** A rest's small training: drill 200, study 5, practice 8, Devotion 4 XP. The training ground:
+  drill 400, study 10, practice 15. The shrine's rite gives 10 Devotion XP.
+- **The skill road map.** Creation's skill cards, the "?" text and level-up show each skill as rows tied to points:
+  what you have, what the next point gives, and what is further on. Will Power's wall of text is ten short rows.
+- **The fight cards.** A fight opens with FIGHT and who goes first, and ends with VICTORY or DEFEAT; in Survival the
+  end card says what comes next.
+- **The title screen comes up at once;** its art loads behind it (the loading screen is gone).
+- **Survival's music:** the camp, the path map (a track for each setting), the shop, the Forge, the rest and the boon
+  pick each have their own track; fights keep theirs.
+- **What a trait gives is not sold in the shop** (food and drink excepted), and the Essence of Experience is neither
+  sold nor dropped by a Survival Boss.
+- **Fixes:** a host can no longer take a free long rest between nodes in a run (a run rests only at a Rest); at the
+  camp the sheet's gear is read-only and says why; the mouse wheel scrolls the trait list when it is over a card;
+  Will Power's Pump sentence is written once.
+
+Known and left open: in a run fight a red "refused" toast can show when the narrator readies (store.ts); the music's
+"Now playing" card can sit over the left sheet for 30 s after a fight; the header's Area map button still shows in a
+run; the browser suites survival.mjs and kit-map.mjs still click "credits instead" and were not run; the sheet's pop-up
+still shows the Essence of Experience as selling for 300; the sheet's skill pop-up lights no row (it is given no
+points); hovering a skill does not open its road map ("?" or the portrait does); a solo gunner on one seed clears stage
+4 (the guard was not refitted); level 3 comes before the first Boss on 42% of most-fights routes, not on every one; a
+party of three is not measured; the Crossroads' trades are not scaled with the trainings; no screen draws the training
+bar yet; most of a skill's per-point numbers are still also written in engine code; the Proving Ground has no fight
+cards and an Extraction no end card; Survival's fight tracks are not delivered; the canvas boards are not rebuilt; the
+crossfade between screens is not checked in a browser.
+
 ## 0.27.3 — a hit no longer says MISS
 
 A fix, and the every-weapon effects work it came with.
