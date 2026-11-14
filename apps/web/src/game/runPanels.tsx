@@ -83,6 +83,7 @@ function RunBoard({ g, me }: { g: GameState; me: string }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={kick}>THIS STOP</span>
         <span data-phc-board-stop="" style={{ fontSize: 14 }}>{v.note ? v.note.title : here ? here.word : 'The camp'}</span>
+        {(v.note?.picks || []).map((l, i) => <span key={i} data-phc-board-pick="" style={{ fontSize: 12, lineHeight: 1.35, color: '#C9D3E3' }}>{l}</span>)}
       </div>
       {v.party.filter((p) => p.boons.length).map((p) => (
         <div key={p.id} data-phc-member-boons={p.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

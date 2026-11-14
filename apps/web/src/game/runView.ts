@@ -29,7 +29,8 @@ export interface RunViewV {
   nodes: RunNodeV[]; links: RunLinkV[]; party: PartyV[];
   /** "Waiting for 1 player" while the leans are not all in; null when nobody has leaned or it is solo. */
   waiting: string | null; canGo: boolean; isHost: boolean; solo: boolean;
-  note: { kicker: string; title: string; text: string; lines: string[] } | null;
+  /** the stop's note; `picks`: what each took from the pick, in the engine's words (also among `lines`) */
+  note: { kicker: string; title: string; text: string; lines: string[]; picks: string[] } | null;
   offers: OfferV[]; pending: string[];
   /** Rules 1.43: what the safe node offers each character (and the picks of kit), from the engine (runOptions). */
   choices: ChoiceCharV[]; kits: ChoiceCharV[];
@@ -103,6 +104,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
       ...(n.back || []).map((cid) => (g.characters[cid]?.name || cid) + ' is back on their feet at ' + survivalRun.dead_return_hp + ' HP.'),
       ...Object.values(n.picks || {}), // rules 1.54 item 2: what each took from the pick, in the engine's words
     ],
+    picks: Object.values(n.picks || {}),
   } : null;
   const setting = SETTING[runSetting(r)]?.name || runSetting(r);
   return {
