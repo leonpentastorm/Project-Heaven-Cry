@@ -84,8 +84,8 @@ await p.locator('[data-phc-camp-pick="weapon:hellraiser_service_rifle"]').click(
 const fp = (await pick0()).focus; if (fp) { await p.locator('[data-phc-camp-pick="focus:' + fp + '"]').click(); await settle(p, 300); }
 ok('the rifle free (a loaded magazine and a spare), the focus declined', (await me0()).weapon === 'hellraiser_service_rifle' && !(await pick0()).focus && (await me0()).pack.some((x) => x.weapon === 'hellraiser_service_rifle' && x.mags));
 const left0 = await numIn('[data-phc-camp-left]');
-await p.locator('[data-phc-camp-more="stock:armour:2"]').click(); await settle(p, 400);
-ok('a refusal in words: Class 2 body armour is over the budget, nothing changes', /^Over the budget by \d+ credits/.test(await p.locator('[data-phc-camp-card="stock:armour:2"] [data-phc-camp-why]').textContent()) && (await me0()).armourClass === 0 && await numIn('[data-phc-camp-left]') === left0);
+await p.locator('[data-phc-camp-more="stock:visualizer"]').click(); await settle(p, 400);
+ok('a refusal in words: a second focus (a Visualizer, 1,000) is over the budget, nothing changes', /^Over the budget by \d+ credits/.test(await p.locator('[data-phc-camp-card="stock:visualizer"] [data-phc-camp-why]').textContent()) && !(await pick0()).take['stock:visualizer'] && await numIn('[data-phc-camp-left]') === left0);
 const stim = await numIn('[data-phc-camp-card="stim_injector"] [data-phc-camp-price]');
 const had = (await pick0()).take.stim_injector || 0;
 if (left0 >= stim) { await p.locator('[data-phc-camp-more="stim_injector"]').click(); await settle(p, 300); }
@@ -160,7 +160,7 @@ await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 r = await run();
 const c = Object.values(g.characters)[0];
-ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === 150 + r.note.credits && (r.note.ammo[c.id] || []).length > 0
+ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
   && /100 XP/.test(await p.locator('[data-phc-note]').textContent()));
 ok('a pick of three weapons, each with its rarity word and price, and credits instead', await p.locator('[data-phc-pick]').count() === 3 && /Take \d+ credits instead/.test(await p.locator('[data-phc-instead]').textContent())
   && (await p.locator('[data-phc-pick]').allTextContents()).every((t) => /(STANDARD|FINE)/.test(t) && /\d+ credits/.test(t)));
@@ -383,7 +383,7 @@ while (guard++ < 40) {
       const b = before.characters[cid], a = after.characters[cid];
       done.forge = !!key && (a.weaponState?.rarity === 'fine') && b.credits - a.credits === 1200;
       ok('a Forge: the grade step clicked (' + key + '): Fine, 1,200 credits (' + b.credits + ' → ' + a.credits + ')', done.forge);
-      ok('… and a second step this visit is shown refused in words', /One grade step a visit/.test(await p.locator('[data-phc-choices]').first().textContent()));
+      ok('… and a second step this visit is shown refused in words', /One grade step a visit/.test((await p.locator('[data-phc-choices]').allTextContents()).join(' ')));
     } else if (k === 'event' && !done.event) {
       const { after, key } = await choose('');
       done.event = !!key && after.run.visit.did[cid] === 1;
