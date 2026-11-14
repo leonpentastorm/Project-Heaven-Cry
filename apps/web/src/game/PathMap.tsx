@@ -13,6 +13,7 @@ import ASSETS from './assets.json';
 import { nodeIconSvg } from './runIcons';
 import { tipProps } from './actionTip';
 import type { RunNodeV, RunViewV } from './runView';
+import { ICON, markerSize, glyphSize } from './runIconSizes';
 
 const A = ASSETS as Record<string, string>;
 /** The map's own coordinates (a 16:9 box; the backdrop's 2560 x 1440 scaled). */
@@ -104,7 +105,7 @@ function FieldChart({ setting }: { setting: string }) {
 
 function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: number }; onPick: (n: RunNodeV, el: HTMLElement) => void; /** the vault's fork: its label on the side away from the spur */ labelBelow?: boolean }) {
   const lit = n.state === 'reachable', here = n.state === 'here', walked = n.state === 'walked', passed = n.state === 'passed';
-  const big = n.kind === 'boss' ? 64 : n.gate ? 50 : n.junction ? 42 : n.spur ? 40 : 36;
+  const big = markerSize(n);
   const col = here || lit ? ink.white : walked ? ink.text : passed ? ink.muted : '#D9DCE3';
   const ring = here ? '3px solid ' + ink.white : lit ? '2px solid ' + ink.white : walked ? '2px solid ' + ink.text : n.spur ? '2px dashed rgba(231,235,243,0.55)' : '1.5px solid rgba(214,200,170,0.55)';
   const label = n.word + (here ? ', you are here' : lit ? ', open now' : walked ? ', walked' : '') + (n.junction && !n.gate ? ', a fork' : '') + (n.spur ? ', off the trail' : '') + (n.leans.length ? ', marked by ' + n.leans.map((l) => l.name).join(' and ') : '');
@@ -115,8 +116,8 @@ function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: 
       style={{ position: 'absolute', left: (p.x / W) * 100 + '%', top: (p.y / H) * 100 + '%', width: big, height: big, transform: 'translate(-50%, -50%)', padding: 0, border: 0, background: 'transparent', fontFamily: 'inherit', cursor: lit ? 'pointer' : 'default', opacity: passed ? 0.45 : 1, zIndex: here || lit ? 4 : 3 }}>
       {here ? <span aria-hidden="true" className="phc-pm-here" style={{ position: 'absolute', inset: -9, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.55)' }} /> : null}
       <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', borderRadius: n.junction ? 10 : '50%', transform: n.junction ? 'rotate(45deg)' : undefined, border: ring, background: walked || here ? ink.discWalked : ink.disc, boxShadow: lit ? '0 0 0 5px rgba(255,255,255,0.14), 0 0 18px rgba(255,255,255,0.25)' : '0 2px 6px rgba(0,0,0,0.6)' }} />
-      <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: col }}><NodeGlyph kind={n.gate ? 'gate' : n.kind} size={Math.round(big * (n.kind === 'boss' ? 0.62 : 0.6))} /></span>
-      <span style={{ position: 'absolute', ...(n.spur ? { left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: 5 } : { left: '50%', [below ? 'top' : 'bottom']: '100%', transform: 'translateX(-50%)', marginTop: below ? 3 : 0, marginBottom: below ? 0 : 3 }), fontSize: n.kind === 'boss' ? 12 : 10, fontWeight: 700, letterSpacing: '0.04em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000, 0 0 6px #000' }}>{n.word}</span>
+      <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: col }}><NodeGlyph kind={n.gate ? 'gate' : n.kind} size={glyphSize(n, big)} /></span>
+      <span style={{ position: 'absolute', ...(n.spur ? { left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: 5 } : { left: '50%', [below ? 'top' : 'bottom']: '100%', transform: 'translateX(-50%)', marginTop: below ? 3 : 0, marginBottom: below ? 0 : 3 }), fontSize: n.kind === 'boss' ? ICON.bossLabel : ICON.label, fontWeight: 700, letterSpacing: '0.04em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000, 0 0 6px #000' }}>{n.word}</span>
       {n.leans.length ? <span style={{ position: 'absolute', top: -10, right: -14, display: 'flex', gap: 2 }}>{n.leans.map((l) => <span key={l.initials} style={{ display: 'grid', placeItems: 'center', width: 20, height: 20, borderRadius: '50%', fontSize: 9, fontWeight: 700, background: l.color, color: '#0A0D13' }}>{l.initials}</span>)}</span> : null}
     </button>
   );
@@ -130,7 +131,7 @@ function Legend({ v }: { v: RunViewV }) {
   const kinds = order.filter((k) => seen.has(k));
   const item = (icon: string, word: string) => (
     <span key={word} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-      <span aria-hidden="true" style={{ display: 'inline-grid', placeItems: 'center', color: ink.text }}><NodeGlyph kind={icon} size={16} /></span>{word}
+      <span aria-hidden="true" style={{ display: 'inline-grid', placeItems: 'center', color: ink.text }}><NodeGlyph kind={icon} size={ICON.legend} /></span>{word}
     </span>
   );
   return (
@@ -144,9 +145,17 @@ function Legend({ v }: { v: RunViewV }) {
   );
 }
 
-/** The path map (rules 1.48): the backdrop, the trails, the camp, the markers and the legend. */
+/** The path map (rules 1.48): the backdrop, the trails, the camp, the markers and the legend. Rules 1.54 (survival-spec
+ * 14.6 item 4): in the play screen's middle it keeps its size (ICON.pathMap) and scrolls sideways when the middle is
+ * narrower, the stop the squad stands on (or the camp) scrolled into view; the right panel's small map shows the whole. */
 export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: HTMLElement) => void }) {
   const { pos, camp } = React.useMemo(() => layoutPathMap(v), [v.nodes, v.rows, v.lanes]);
+  const scroller = React.useRef<HTMLDivElement>(null), standing = v.nodes.find((n) => n.state === 'here')?.id || 'camp';
+  React.useLayoutEffect(() => {
+    const el = scroller.current; if (!el) return;
+    const at = standing === 'camp' ? camp : pos[standing]; if (!at) return;
+    el.scrollLeft = Math.max(0, (at.x / W) * el.scrollWidth - el.clientWidth / 3);
+  }, [standing, v.stage, v.seed]);
   const art = A['survival-map-' + v.settingId + '-lg'] || A['survival-map-' + v.settingId];
   const byId: Record<string, RunNodeV> = {}; for (const n of v.nodes) byId[n.id] = n;
   const firsts = v.nodes.filter((n) => n.depth === 1 && !n.spur);
@@ -158,12 +167,12 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
       className={kind === 'lit' ? 'phc-pm-lit' : undefined} data-phc-trail={kind} />
   );
   return (
-    <div style={{ flex: 1, minHeight: 380, display: 'flex', flexDirection: 'column', gap: 8 }}>
-    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', flex: 1, minHeight: 0, display: 'grid', placeItems: 'center', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', overflow: 'hidden', containerType: 'size' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
+    <div ref={scroller} data-phc-pathmap-scroll="" style={{ overflowX: 'auto', overflowY: 'hidden', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F' }}>
+    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', width: ICON.pathMap, display: 'grid', placeItems: 'center' }}>
       <style>{'@keyframes phc-pm-dash{to{stroke-dashoffset:-26}}.phc-pm-lit{animation:phc-pm-dash 1.2s linear infinite}@keyframes phc-pm-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:.25}}.phc-pm-here{animation:phc-pm-pulse 2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pm-lit,.phc-pm-here{animation:none}}'}</style>
-      {/* the 16:9 map fits the frame both ways (the frame is a size container): as wide as the frame, or as wide as its
-          height allows, whichever is smaller, so nothing on it is ever cut off at 1280 x 720 (survival suite) */}
-      <div data-phc-pathmap-box="" style={{ position: 'relative', width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
+      {/* the 16:9 map at its own size (the frame scrolls sideways over it), so nothing on it is ever cut off */}
+      <div data-phc-pathmap-box="" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9' }}>
         {art ? <img src={art} alt="" loading="lazy" decoding="async" data-phc-pathmap-art="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : <FieldChart setting={v.settingId} />}
         {art && SCRIM[v.settingId] ? <div aria-hidden="true" data-phc-pathmap-scrim="" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 4%, rgba(8,7,5,' + SCRIM[v.settingId] + ') 22%, rgba(8,7,5,' + SCRIM[v.settingId] + ') 78%, transparent 96%)' }} /> : null}
         {/* on a painting the trails carry a dark edge (a drop shadow), so a dotted quiet trail still reads on lit ground */}
@@ -172,13 +181,14 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
           {v.links.filter((l) => !l.back && pos[l.from] && pos[l.to]).map((l) => trail(l.from + '>' + l.to, pos[l.from], pos[l.to], l.walked ? 'walked' : l.lit ? 'lit' : byId[l.to]?.spur ? 'spur' : 'quiet'))}
         </svg>
         <span data-phc-node-camp="" aria-label={v.atStart ? 'The camp, you are here' : 'The camp'} {...tipProps('Camp. Every trail starts here.')}
-          style={{ position: 'absolute', left: (camp.x / W) * 100 + '%', top: (camp.y / H) * 100 + '%', width: 44, height: 44, transform: 'translate(-50%, -50%)', display: 'grid', placeItems: 'center', borderRadius: '50%', border: v.atStart ? '3px solid #FFFFFF' : '2px solid ' + ink.text, background: ink.discWalked, color: ink.white, zIndex: 3 }}>
-          <NodeGlyph kind="start" size={26} />
-          <span style={{ position: 'absolute', top: '100%', marginTop: 3, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', textShadow: '0 1px 2px #000' }}>Camp</span>
+          style={{ position: 'absolute', left: (camp.x / W) * 100 + '%', top: (camp.y / H) * 100 + '%', width: ICON.marker.camp, height: ICON.marker.camp, transform: 'translate(-50%, -50%)', display: 'grid', placeItems: 'center', borderRadius: '50%', border: v.atStart ? '3px solid #FFFFFF' : '2px solid ' + ink.text, background: ink.discWalked, color: ink.white, zIndex: 3 }}>
+          <NodeGlyph kind="start" size={ICON.campGlyph} />
+          <span style={{ position: 'absolute', top: '100%', marginTop: 3, fontSize: ICON.label, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', textShadow: '0 1px 2px #000' }}>Camp</span>
         </span>
         {v.nodes.map((n) => { const sp = v.nodes.find((x) => x.spur === 'guard' && x.from === n.id);
           return pos[n.id] ? <Marker key={n.id} n={n} p={pos[n.id]} onPick={onPick} labelBelow={sp && pos[sp.id] ? pos[sp.id].y < pos[n.id].y : undefined} /> : null; })}
       </div>
+    </div>
     </div>
     <Legend v={v} />
     </div>

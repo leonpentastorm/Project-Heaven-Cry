@@ -17,6 +17,8 @@ export const ICON = {
   reward: 72,
   /** a held boon's icon in the run board */
   boonHeld: 24,
+  /** the path map's width in the middle column (its height is 16:9 of it); a narrower middle scrolls it sideways */
+  pathMap: 900,
   /** the Boss's glyph on the right panel's small map */
   miniGlyph: 14,
 } as const;

@@ -22,6 +22,7 @@ import { tipProps } from './actionTip';
 import { Portal } from './modeCentre';
 import { placeClosedAt, closePlace } from './RunScreen';
 import { ICON } from './runIconSizes';
+import { WearBar } from './WearBar';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
@@ -85,7 +86,7 @@ function RunBoard({ g, me }: { g: GameState; me: string }) {
       </div>
       {v.party.filter((p) => p.boons.length).map((p) => (
         <div key={p.id} data-phc-member-boons={p.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <span style={kick}>{(mine.length && p.mine ? 'YOUR BOONS' : p.name.toUpperCase() + '\'S BOONS')} · {p.worth}</span>
+          <span style={kick}>{(mine.length && p.mine ? 'YOUR BOONS' : p.name.toUpperCase() + '\'S BOONS')} · <span data-phc-member-cap={p.id}>{p.worth}</span></span>
           <span style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {p.boons.map((b) => <span key={b.id} data-phc-held={b.id} {...tipProps(b.name + (b.camp ? ' (from the camp)' : '') + '. ' + b.text + ' Worth ' + b.worth + '.')}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px 2px 3px', borderRadius: 8, background: ink.raised, fontSize: 12 }}>
@@ -147,6 +148,8 @@ function RunSquad({ g, me }: { g: GameState; me: string }) {
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
               <span style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}{p.mine ? ' (you)' : ''}</span>
               <span style={{ fontSize: 11.5, color: ink.muted }}>Level {p.level} · <span style={{ color: p.hp < p.maxHp ? ink.hp : ink.muted }}>HP {p.hp}/{p.maxHp}</span> · <span data-phc-credits={p.id} style={{ color: ink.white }}>{p.credits} credits</span></span>
+              {p.wear && p.wear.state !== 'sound' ? <span data-phc-member-wear="main" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{p.weapon}</span><WearBar w={p.wear} label={p.weapon} compact /></span> : null}
+              {p.worn.map((x, i) => <span key={i} data-phc-member-wear="other" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{x.name}</span><WearBar w={x.w} label={x.name} compact /></span>)}
             </span>
             {marks[p.id] ? <span data-phc-mark={p.id} style={{ flex: 'none', fontSize: 10.5, fontWeight: 700, color: marks[p.id].startsWith('✓') ? ink.white : ink.muted }}>{marks[p.id]}</span> : null}
             {p.levelUp && p.mine ? <button type="button" data-phc-levelup={p.id} onClick={() => go('levelup', { levelupChar: p.id })} {...tipProps('Level up: spend your points')} style={{ ...btn(true), minHeight: 28, padding: '0 8px', fontSize: 12 }}>★</button> : null}
