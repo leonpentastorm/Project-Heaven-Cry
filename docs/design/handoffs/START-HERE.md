@@ -1,5 +1,65 @@
 # Start here (14 Nov 2026)
 
+> # READ THIS BLOCK FIRST: the final state from the cloud session (14 Nov 2026, 15:30 UTC)
+>
+> Everything under "UPDATE" below this block is older; where they disagree, this block is right.
+>
+> **LIVE: 0.27.2** at https://project-heaven-cry.leonpentastorm.workers.dev. `main` = `develop` =
+> `backup/live-0.27.2` = 3a9a0370. Backups on the remote: `backup/live-0.27.2`, `-0.27.1`, `-0.27.0`, `-0.26.0`,
+> and kept for good `-0.23.0`, `-0.22.0`. The working branch `claude/charming-gauss-hbq4n0` is at the same code
+> (plus this note). Start new work from `develop`.
+>
+> **How 0.27.2 was checked, honestly:** `npm run check` ALL GREEN on its code. The browser run was STOPPED at Leon's
+> word ("stop it just push 0.27.2") with 59 suites passed, 2 that failed beside the others and were not re-run
+> alone (`coop-stall`, `fx-room`), and about 9 not yet run. The join's own builder had run every suite green
+> (14 only alone, on an overloaded machine). So: run `npm run e2e -- all` on your quiet machine first thing, and
+> fix what fails alone.
+>
+> **What is in live:** Survival mode whole (see section 1), bows with two quivers, the player-text pass, the
+> shooting effects restored (0.27.1), creation without a kit, the camp (one free weapon and focus, the rest from
+> the shop's menu out of 300 credits), starting boons, the supply pack.
+>
+> **KNOWN BUGS IN LIVE, in order of pain:**
+> 1. **A stray "MISS" label on every plain ranged hit** (since the bows merge). FIXED, not merged: branch
+>    `wip/worktree-agent-a202ef14f498e698e` on the remote (local name without `wip/`), head 77a3eea9: the
+>    every-weapon effects work (a machine-built table of 1,552 weapon x action rows, 0 failing; 52 per-weapon
+>    `case` labels moved into data; flamer, launcher, rocket, bows, core rifle each with their own sound and
+>    projectile; a test that fails if effects code names a weapon id). FIRST JOB: merge it onto `develop` (expect
+>    small conflicts in apps/web/src/game/fx and data/rules.json), run `npm run check` and the shooting suites
+>    (brass, fx-sweep, fx-room, combat-speed, physical, physical-pack, quivers, melee-fx) plus smoke, ship as
+>    0.27.3 on Leon's word. Open for him: the grenade launcher's thump is a stand-in sample; the flamer draws one
+>    gout per unit caught; the core rifle ejects its spent charge; Heavy Bolt's streak is yellowish; aim is a ring.
+> 2. **No side menus in Survival** (Leon: "where is the 2 side menu in survival mode?"): the run's screens (path
+>    map, shop and other places, camp, picks) show only a small squad list, so between fights a player cannot open
+>    the character sheet or the backpack: cannot equip the weapon just picked, swap a quiver, use a stim, read
+>    perks or boons. NOT STARTED (an agent was launched and stopped with nothing written). Build: mount the SAME
+>    two side menus the play screen has (the character panel; the right panels with backpack and equipment), by
+>    reusing those components, not a second copy: side columns on the path map when wide, drawers otherwise;
+>    "Sheet" and "Backpack" buttons in the full-screen places; boons, credits, grades, durability shown there.
+> 3. **The free list picks badly in two archetypes** (rule: the cheapest weapon of each archetype): the free pistol
+>    is the 2-shot parlour pistol; the light blades' "next one up" is the throwing knives. Recommended fix: a hand
+>    mark in data for an archetype's basic weapon. Waiting on Leon.
+> 4. Two keeper portraits do not match their names (`keeper-works`, `keeper-rim`): swap the names or repaint.
+>
+> **THEN, in Leon's order:** the CONSOLIDATION REVIEW (the "No rebuild" rule in CLAUDE.md; nothing written yet; the
+> brief is in section 5), then BALANCE 2.0 (its notes have their own section below: more levers, recoil shown,
+> hand-made focus and weapon variants by modifiers, every weapon measured, casters in Survival: solo Sigilist and
+> Channeler clear stage 1 about 3 times in 12 against the gunner's 9), then the roguelike.
+>
+> **Requests written today, not acted on:** `art/briefs/GPT-PROMPTS-2026-11-14-portraits.md` (145 portraits
+> repainted as different people, with a tag file for class fantasy, gender, species); `audio/SUNO-PROMPTS-survival.md`
+> (33 music prompts; none wired); `art/briefs/ART-REQUESTS.md` (what art is still wanted).
+>
+> **WHY THE CLOUD SESSION WAS SLOW, and what to do differently on a real PC** (Leon: "so you do not take 4 hour for
+> one task anymore"): the cloud container had about 4 cores. Four builders each running the test suites pushed the
+> load to 25 to 30, so a 3-minute check took 20, a 30-minute browser run took over an hour, suites failed "beside
+> the others" and were re-run, and every builder waited on tests most of its life. On a PC: (1) give each builder
+> ONLY the tests for what it touched (named files, named suites), and run the full check and `e2e all` ONCE, by the
+> lead, on the merged result, with nothing else running; (2) raise `--jobs` for e2e to half your cores; (3) keep
+> builders to separate files so merges are trivial; (4) small pieces: one ruling, one builder, one merge, one
+> patch; do not let four long-lived branches drift and need integrators; (5) look at the screen early: one
+> screenshot of the actual flow (not one screen) would have caught the missing side menus and the stray MISS.
+
 > **UPDATE, 14 Nov 2026, 15:05 UTC. A real gap in live Survival (Leon: "where is the 2 side menu in survival
 > mode?"):** the run's screens (path map, shop and the other places, the camp, the picks) show only a small squad
 > list, so between fights a player cannot open the character sheet or the backpack (cannot equip the weapon just
