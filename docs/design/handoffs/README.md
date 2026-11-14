@@ -6,6 +6,9 @@ Notes one session (or one person) left for the next. The project-wide hand-off i
 
 | Hand-off | What it covers | Why it is still current |
 | --- | --- | --- |
+| [SURVIVAL-PICKUP.md](SURVIVAL-PICKUP.md) | **Start here for Survival:** what is built (rules 1.39 to 1.49, 0.27.0), what is open by step, how to tune it (which dial in `data/survival.json` does what), how to run the simulated runs, what the roguelike will reuse | Survival is built and waits for Leon's word to go live |
+| [survival-steps-9-10.md](survival-steps-9-10.md) | Survival build steps 9 and 10 (rules 1.49, items 3600 onward): the run simulator (`test/balance/survival-run.ts`), the measured tables before and after the fit, every dial moved, what is still off target; the path map fitted to its frame; the `survival` browser suite completed | The fit's numbers and the calls made for Leon |
+| [survival-step-4.md](survival-step-4.md) | Survival build step 4 (rules 1.42, items 2900 onward): prices for everything, `priceOf`, the full-screen shop, the faces, the gear preview | Its calls are in `docs/PLAYTEST-CHECKLIST.md` section S |
 | [survival-step-1.md](survival-step-1.md) | Survival build step 1 (rules 1.39, items 2600 to 2612): the lobby's mode picker, `data/modes.json`, `settings.play`, `g.run`, `run/start` and `run/retire`, old saves as Campaign | Built on a worktree branch, 13 Nov 2026; steps 2 to 10 build on its state and its open list |
 | [survival-step-2.md](survival-step-2.md) | Survival build step 2 (rules 1.40, items 2700 to 2715): the path map generator, `rngFor`, `data/survival.json map`, the 1,000-seed test; rule 9 (c)(d) read "on at least one route". |
 | [survival-step-3.md](survival-step-3.md) | Survival build step 3 (rules 1.41, items 2800 to 2832): steps 1 and 2 merged and wired; the encounter generator, credits, rewards and the weapon pick, death and loss, rests and caches, the path map screen; ONE stage playable; browser suite `survival`. |

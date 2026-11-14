@@ -1,4 +1,4 @@
-# Starting a local session: the total hand-off (rewritten 13 Nov 2026, at the close of Classes 3.0)
+# Starting a local session: the total hand-off (rewritten 13 Nov 2026, at the close of Classes 3.0; brought up to date 14 Nov, at the close of Survival)
 
 For Leon, and for the **Fable-class Claude Code session he starts on his own Windows PC (WSL2)**. Written by the cloud
 lead's builder at the close of Classes 3.0. Read this top to bottom once; after that the standing documents (section
@@ -6,11 +6,10 @@ lead's builder at the close of Classes 3.0. Read this top to bottom once; after 
 
 ## 1. Where everything is
 
-- **Live:** 0.25.0 when this was written (`backup/live-0.25.0`). **0.26.0 is Classes 3.0**: Leon's word of 13 Nov is to
-  deploy it as 0.26.0 once `npm run check` and `npm run e2e -- all` are green with nothing failing alone (the word and
-  its conditions: the top of `CLASSES-3.0-PICKUP.md`). Find out which happened: `git log -1 origin/main` and the top of
-  `CHANGELOG.md`; a `backup/live-0.26.0` branch on the remote means it went live. If it did not, the report of what was
-  red is in `SESSION-HANDOFF.md` and the work waits on `claude/charming-gauss-hbq4n0`.
+- **Live:** 0.26.0 (Classes 3.0, `backup/live-0.26.0`). **0.27.0 is Survival mode** (rules 1.39 to 1.49), built on
+  `claude/charming-gauss-hbq4n0` and **not deployed without Leon's word** for it; its pick-up is
+  `docs/design/handoffs/SURVIVAL-PICKUP.md` and what to try is `docs/PLAYTEST-CHECKLIST.md` section S. Find out what
+  is live: `git log -1 origin/main`, the top of `CHANGELOG.md`, and the `backup/live-*` branches on the remote.
 - **The site:** https://project-heaven-cry.leonpentastorm.workers.dev (the title shows the version, bottom right).
 - **Branches:** `main` = live. `develop` = `main` plus docs (from the first Classes 3.0 code commit `develop` was kept
   equal to live so a hotfix could be made from it). `claude/charming-gauss-hbq4n0` is the Classes 3.0 working branch;
@@ -143,15 +142,12 @@ docs/design/handoffs/LOCAL-SESSION-START.md, and continue from its section 6."
 
 ## 6. What is next, in order
 
-1. **Leon's playtest of 0.26.0** with `docs/PLAYTEST-CHECKLIST.md` section 0 (fourteen blocks of about ten minutes);
-   he names which of the 53 calls to reverse. Each reversal: spec line, data field, validator, the test that pins it.
-   If 0.26.0 did not go live, first make it green (`npm run check`, `npm run e2e -- all`) and deploy on his word.
-2. **Survival mode**, `docs/design/survival-spec.md` (draft 4), **stage 1 first**, every open question defaulting to its
-   recommendation (Leon's word of 13 Nov; Survival is not deployed without a new word). Its build plan is section 10:
-   the mode picker and `g.run`, the path map, the encounter generator and ONE playable stage, then prices and the
-   full-screen shop, in-run progression, gives, stages and boons, the tally, the layout generator, kit drawing,
-   simulated runs, the browser suite. Its "Built from" table is section 4.1; its new primitives (4.2) get the lead's
-   consolidation pass before any is built.
+1. **Leon's word on Survival (0.27.0)** and his playtest with `docs/PLAYTEST-CHECKLIST.md` section S (seven blocks;
+   the calls made for him are numbered at its end). Each reversal: spec line, data field, validator, the test that
+   pins it. On his word: merge, deploy, `backup/live-0.27.0`. Classes 3.0's own checklist (section 0, 53 calls) still
+   stands.
+2. **Survival's open items** (`SURVIVAL-PICKUP.md` section 2) and what the fit could not reach with data dials
+   (`survival-steps-9-10.md` section 5); how to tune and measure it is `SURVIVAL-PICKUP.md` section 3.
 3. **The Forge art run on Leon's GPU,** `art/briefs/FORGE-PHC.md`: one LoRA per art mode (Wick first, then gear,
    portraits, scenes only if the count supports it), `D:\LocalAI\Forge.bat` from WSL (`/mnt/d/LocalAI`); the tool's own
    `CLAUDE.md` wins over the brief. `Forge.bat doctor` first; one GPU job at a time; report run times to Leon before the

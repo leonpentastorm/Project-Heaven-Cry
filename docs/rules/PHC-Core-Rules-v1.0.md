@@ -5574,6 +5574,47 @@ run reducer's `run/move` and `runEnter` (`game.ts`), `run/encounter.ts` (the gua
    lit; nodes as inked markers (the camp a tent, the junctions diamonds, the vault a chest and its guard a horned skull,
    the Boss the largest); a legend under the map.
 
+## Rules revision 1.49: Survival's curve fitted by simulated runs (Survival, build steps 9 and 10)
+
+Built on 14 Nov 2026 (`docs/design/handoffs/survival-steps-9-10.md`). Whole runs were played through the reducer by a
+run simulator (`packages/engine/test/balance/survival-run.ts`: the reference builds levelled by their plans, the
+balance simulator's fight policies, spending by survival-spec 11.5, three ways of choosing lanes) for parties of one,
+two and four, and the curve was fitted to Leon's accepted targets (a squad of four ends in stage 3 or 4; solo is viable
+through stage 1 and into stage 2; stage 1 is clearable by a careful party most of the time; level 20 early in stage 6;
+one grade step a stage per character; nothing a build runs on runs dry) by `data/survival.json` dials alone. Every
+number is PROVISIONAL (items 3600 onward). No rule's text changes but the numbers below; where survival-spec draft 4
+and the earlier revisions give the old numbers, this revision rules.
+
+1. **What the measure found before the fit** (rules 1.48's numbers, 6 seeds a cell, stages capped at 5): every party
+   with a gunner cleared stage 1 every time and reached stage 5 (squads of four: cleared 4 or 5 stages in 18 of 18
+   runs; solo gunners 5 in 13 of 18); a squad started almost every fight past stage 1 at full HP and lost under 5% of
+   it to a Boss. Two causes, both in the numbers: (a) **ordinary foes lag the party** (Vermin and Minions 3 levels,
+   Soldiers 1 to 2) and a lagging hit loses most of itself to the party's level-scaled armour, so the pressure the
+   budget prices at ×0.83 a level of lag is far less in play; only Elites and Bosses threaten, and they stood only
+   min(s − 1, 3) levels up; (b) **income was about twice the plan** (spec 11.1): "credits instead" of a weapon pick
+   (`rewards.instead_rate` 0.5 of an offer priced on a band that rises 1,000 a stage) paid as much as the nodes.
+2. **Elites and Bosses pull ahead faster:** `stage.elite_up` per 1, max 3 → **per 2, max 4** (stage 2 two
+   levels up, stage 3 on four). The spec's mechanism ("ordinary enemies fall behind as you level; Elites and
+   Bosses keep pace and, stage by stage, pull ahead") is unchanged; its rate is.
+3. **Fights a little longer and the danger cap rising with them:** `stage.bulk` 0.35 → **0.42** a stage;
+   `stage.pressure` 0.15 → **0.35** a stage (the cap no longer stops the escort of an Elite that stands further up).
+   At 0.42 a solo Boss of stage 3 (its required anchor alone, four levels up) stays inside the bulk band; at 0.35 it
+   passed it.
+4. **Small parties:** `pressure_per_char` [1.2, 1.25, 1.3, 1.3] → **[2.0, 1.7, 1.3, 1.3]**; the solo Elite's share
+   (`share.elite`) HP 0.7 → **0.75** and damage 0.55 → **0.75**; the duo's Elite share HP 0.9 → **1** and damage 0.8 →
+   **1**; the duo's Boss damage share 0.6 → **0.8** (its HP share stays 0.5). A small party's Elite was being scaled down
+   to the old cap (rules 1.44 item 2814) and solo gunners and duos cleared four or five stages; now solo runs end in
+   stage 2 or 3 and duos in stage 2 to 4. The solo Boss's share (28% HP, 40% damage; Leon's settled ruling 5) is
+   unchanged.
+5. **Income:** `rewards.instead_rate` 0.5 → **0.1** of the cheapest offer's price: a pick passed by still pays (a stage
+   1 Fine rifle's worth is about 270), and a stage's income comes back near spec 11.1's.
+6. **Levels:** `stage.xp` [1, 0.8, 0.9, 1, 1] → **[1, 1, 1.1, 1.25, 1.25]**: an average route (rules 1.48: about 5.8
+   fights, fewer than the spec's reference path) reaches level 19 by the end of stage 5 and level 20 early in stage 6.
+7. **The path map fits its frame** (rules 1.48 item 7): the 16:9 map is sized to the frame both ways and the vault's
+   spur kept inside the map's own box, so no marker is cut off at 1280 × 720, 1280 × 800 or 1920 × 1080.
+8. **What the measure found after the fit, and what data cannot reach,** is items 3608 to 3612; the tables are in the
+   hand-off.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8863,3 +8904,16 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3512. **Fights on a route (rules 1.48; measured):** 5.75 a route on average, 85% of routes in the spec's 5 to 8; the stage-1 reference route about 2,500 XP and 2,560 credits, an average route about 2,750 and 2,720 (spec 11.1 had 3,026 and 2,860); the vault adds about 380 XP and 845 credits, optional. PROVISIONAL.
 3513. **The map's backdrop (rules 1.48 item 7):** `survival-map-<setting>`, 2560 × 1440, the art contract in survival-spec 4.3; the field chart drawn in code until it lands. PROVISIONAL.
 3514. **Items 3500 to 3514 are rules 1.48's.**
+3600. **The run simulator (rules 1.49):** `packages/engine/test/balance/survival-run.ts`; the players' choices in `docs/design/handoffs/survival-steps-9-10.md` section 2; a fight not over at round 20 counts won when the squad standing holds more than twice the foes' HP, else the run ends "stalled". Measuring only. PROVISIONAL.
+3601. **The Elites' and Bosses' lead (rules 1.49 item 2):** `stage.elite_up` per 2, max 4 (was 1 and 3). PROVISIONAL.
+3602. **The stage term (rules 1.49 item 3):** `stage.bulk` 0.42 (was 0.35), `stage.pressure` 0.35 (was 0.15). PROVISIONAL.
+3603. **The small parties' cap (rules 1.49 item 4):** `pressure_per_char` [2.0, 1.7, 1.3, 1.3] (was [1.2, 1.25, 1.3, 1.3]). PROVISIONAL.
+3604. **The small parties' share (rules 1.49 item 4):** solo Elite HP 0.75 and damage 0.75 (was 0.7 / 0.55); duo Elite 1 / 1 (was 0.9 / 0.8); duo Boss damage 0.8 (was 0.6). The solo Boss (0.28 / 0.4) as Leon settled it. PROVISIONAL.
+3605. **Credits instead of a pick (rules 1.49 item 5):** `rewards.instead_rate` 0.1 (was 0.5). PROVISIONAL.
+3606. **XP by stage (rules 1.49 item 6):** `stage.xp` [1, 1, 1.1, 1.25, 1.25] (was [1, 0.8, 0.9, 1, 1]). PROVISIONAL.
+3607. **The path map fits its frame (rules 1.49 item 7):** the 16:9 box sized by its frame's both sides (`containerType: size`); the vault's spur at least 48 map units from the top and bottom edges. PROVISIONAL.
+3608. **Measured after the fit (rules 1.49 item 8; 4 seeds a cell, stages capped at 5):** squads of four (a gunner, a Faith rifle, a Sigil caster, a healer) end in stage 3 or 4 on every route (means 3.4 to 4.4; every squad clears stage 1); duos (a gunner and a healer) in stage 2 to 4 (3.6 to 4.1); solo gunners in stage 2 or 3 (2.6 to 3.1; stage 1 cleared in 9 of 12). Before: every party with a gunner reached stage 5. PROVISIONAL.
+3609. **Not reached by data (rules 1.49 item 8):** a Sigil caster alone falls in stage 1 and a party of four casters in stage 1 or 2 (their fights run 8 to 13 rounds; Sigil and Outburst sustain over a long fight, and the simulator's caster policies, are the limit, not the budget); guns wear out (durability 400 a Standard weapon) by stage 3 to 4 and Survival has no repair but a grade step (Field Repair needs Proficiency 3 and works only in a fight): a repair line at the shop or the Forge is the general thing missing. PROVISIONAL.
+3610. **Income after the fit (rules 1.49 item 5):** a character earns about 2,450 to 4,600 in stage 1 (the gear route takes the vault; credits instead of a pick about 300 to 700 of it) and 2,800 to 5,800 a stage after (spec 11.1: 3,010 then 3,861 to 5,863); the Relic step lands in stage 3 on the richer routes, stage 4 otherwise. PROVISIONAL.
+3611. **Levels after the fit (rules 1.49 item 6):** about level 6 to 7.5 after stage 1's Boss, 9 to 11 after stage 2, 11.5 to 13.5 after stage 3, 15 after stage 4 and 17 after stage 5 on the slowest (training) route: level 20 in stage 6, earlier on the gear route. PROVISIONAL.
+3612. **Items 3600 to 3612 are rules 1.49's.**

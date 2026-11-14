@@ -24,6 +24,11 @@
 // for clipping) and "To the path map" walks out of it; the path map's hover card covers no reachable node. Then C, two
 // browsers: a host and a guest walk to a shop, the host gives credits and a graded weapon with a mod, the guest sees each
 // arrive (a toast, the purse, the pack line whole), the guest marks Ready and the host closes the shop for both.
+// Rules 1.49 (build step 10): the path map fits its frame (every marker, its word and the vault's spur inside it) at
+// 1280 x 720, 1280 x 800 and 1920 x 1080, on stage 1's map and stage 2's; C2, the two browsers walk on to a fork, the
+// host marks one trail (the guest sees the mark live) and the guest another: the tie goes to the host's; D, solo: the
+// boon clicked at stage 1's Boss is felt on the rifle's card (the engine's gear preview), stage 2 and stage 3 reached,
+// and at a stage 3 Forge the Relic step's three named properties offered, one clicked, the rifle a Relic with it.
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -77,6 +82,16 @@ const covers = await p.evaluate(() => { const t = document.querySelector('.phc-a
   return [...document.querySelectorAll('[data-phc-node][data-phc-state="reachable"]')].map((n) => [n.getAttribute('data-phc-node'), n.getBoundingClientRect()]).filter(([, b]) => t.left < b.right && b.left < t.right && t.top < b.bottom && b.top < t.bottom).map(([id]) => id); });
 ok('rules 1.46: the path map\'s hover card sits beside its node and covers no reachable node (' + covers.join(', ') + ')', !covers.length);
 await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
+// rules 1.49 (build step 10): the map always fits its frame: every marker, its word and the camp inside the map's frame
+// (the vault's guard and chest were clipped by the frame's bottom at 1280 x 720), at three screen sizes
+const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800], [1920, 1080]]) {
+  await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
+  const out = await p.evaluate(() => { const f = document.querySelector('[data-phc-pathmap]')?.getBoundingClientRect(); if (!f) return ['no map'];
+    const bad = []; for (const n of document.querySelectorAll('[data-phc-node], [data-phc-node-camp]')) for (const e of [n, ...n.querySelectorAll('span')]) { const b = e.getBoundingClientRect(); if (!b.width) continue;
+      if (b.left < f.left - 0.5 || b.right > f.right + 0.5 || b.top < f.top - 0.5 || b.bottom > f.bottom + 0.5) { bad.push(n.getAttribute('data-phc-node') || 'camp'); break; } } return bad; });
+  ok('rules 1.49: ' + when + ' at ' + w + ' x ' + hh + ': every marker and its word inside the map\'s frame, the vault\'s spur too' + (out.length ? ' (outside: ' + out.join(', ') + ')' : ''), !out.length); }
+  await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); };
+await mapFits('stage 1\'s map');
 
 // ---------- node 1 by hand ----------
 await p.locator('[data-phc-node="' + lit[0] + '"]').click();
@@ -368,6 +383,7 @@ r = await run();
 ok('stage 2 on the tile picked (' + tile.setting + '): a fresh map of its own, the first row lit, "Stage 2" on the header', r.state === 'map' && r.world.at(-1).setting === tile.setting && r.nodes.every((n) => n.id.startsWith('s2.'))
   && /Stage 2/.test(await p.locator('[data-phc-run-where]').textContent()) && await p.locator('[data-phc-node][data-phc-state="reachable"]').count() === r.nodes.filter((n) => n.depth === 1).length);
 await shot('survival-stage-2-map');
+await mapFits('stage 2\'s map');
 // ---------- rules 1.48: stage 2 walked along its lanes by clicking the map: a lane, a junction, the vault and back ----------
 // (fights won by the tests-only run/skip, picks taken by the engine's actions; every move is a click on a lit marker)
 const s2 = r, s2by = Object.fromEntries(s2.nodes.map((n) => [n.id, n])), vg = s2.nodes.find((n) => n.kind === 'vault_guard'), vc = s2.nodes.find((n) => n.kind === 'vault'), fork = s2by[vg.from];
@@ -512,5 +528,110 @@ ok('C: the guest marks Ready to leave; the host sees READY and the shop stays op
 await h.locator('[data-phc-close]').click();
 await gu.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }).catch(() => {});
 ok('C: the host closes the shop: both browsers are back on the path map', (await HG()).run.state === 'map' && await gu.locator('[data-phc-pathmap]').count() === 1 && await h.locator('[data-phc-pathmap]').count() === 1);
+// ---------- C2. rules 1.49 (build step 10): a lean and a tie where the way forks (rules 1.48, spec rule 11) ----------
+// Both walk on along the lane (the first click walks the squad on: one way forward) to the next fork; there the host
+// clicks one trail and the guest another: the guest sees the host's mark live, and the tie goes to the host's.
+for (let i = 0; i < 80; i++) {
+  hr = (await HG()).run; if (hr.state === 'over') break;
+  const here = hr.nodes.find((n) => n.id === hr.at), nexts = here ? here.links : [];
+  if (hr.state === 'map' && nexts.length >= 2) break;
+  let e = null;
+  if (hr.state === 'map') e = await actOn(h, { type: 'run/move', node: nexts[0] });
+  else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
+  else if (hr.state === 'shop') { e = await actOn(h, { type: 'run/leave', close: true }); }
+  else if (hr.state === 'reward') { for (const id of Object.keys(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
+  if (e) { ok('C2: walked on to a fork: ' + e, false); break; }
+  await settle(h, 120);
+}
+hr = (await HG()).run;
+const forkN = hr.nodes.find((n) => n.id === hr.at), [tA, tB] = forkN ? forkN.links : [];
+ok('C2: the squad stands where the way forks (' + (forkN && forkN.id) + ': ' + (forkN ? forkN.links.join(', ') : '-') + ')', !!tA && !!tB && hr.state === 'map');
+if (tA && tB) {
+  // each browser on its path map (a place still open on a screen is walked out of, as the stage 2 walk does)
+  for (const x of [h, gu]) {
+    if (!(await x.locator('[data-phc-pathmap]').count())) await x.evaluate(() => window.__phc.go('run')).catch(() => {});
+    await x.waitForSelector('[data-phc-pathmap], [data-phc-place], [data-phc-fullscreen]', { timeout: 30000, state: 'attached' });
+    if (!(await x.locator('[data-phc-pathmap]').count()) && await x.locator('[data-phc-leave]').count()) await x.locator('[data-phc-leave]').first().click();
+    await x.waitForSelector('[data-phc-pathmap]', { timeout: 30000 });
+  }
+  await h.locator('[data-phc-node="' + tA + '"]').click();
+  const marked = await until(gu, (id) => /marked by Leon/.test(document.querySelector('[data-phc-node="' + id + '"]')?.getAttribute('aria-label') || '') || null, tA, 15000).catch(() => false);
+  ok('C2: the host\'s mark shows live on the guest\'s map (' + tA + ': "marked by Leon"), the squad waits for the guest', !!marked && (await GG()).run.at === forkN.id);
+  await h.screenshot({ path: OUT + 'survival-lean-1280.png' });
+  await gu.locator('[data-phc-node="' + tB + '"]').click();
+  await h.waitForFunction((id) => window.__phc.getState().game.run.at !== id, forkN.id, { timeout: 30000 }).catch(() => {});
+  ok('C2: one mark each is a tie, and it goes to the host\'s trail (' + tA + ', not ' + tB + ')', (await HG()).run.at === tA && (await GG()).run.at === tA);
+}
 ok('C: no page errors (' + [...h.errors, ...gu.errors].slice(0, 3).join(' | ') + ')', !h.errors.length && !gu.errors.length);
+await h.context().close(); await gu.context().close();
+
+// ---------- D. rules 1.49 (build step 10): a boon felt, stage 2 and 3 reached, a Relic step at a Forge in stage 3 ----------
+// Solo, the run walked by the engine's actions (fights won by run/skip). At stage 1's Boss the boon is clicked on its
+// card; the gear card's own numbers (the engine's gear preview) show it felt. In stage 3 the rifle is made Masterwork and
+// the purse topped up (a test hand-off, as section C's graded rifle), the squad walks to a Forge, and the Relic step is
+// clicked: three named properties offered, one taken, the rifle a Relic with it, 6,500 credits paid.
+const d = await player(browser, 'host-d', { play: 'survival' });
+await d.context().addInitScript((seed) => { try { localStorage.setItem('phc.testRoom', '1'); localStorage.setItem('phc.testSeed', seed); } catch { /* */ } }, SEED);
+await d.setViewportSize({ width: 1280, height: 720 });
+const DG = () => d.evaluate(() => window.__phc.getState().game), dAct = (a) => actOn(d, a);
+await hostAs(d, 'Leon'); await create(d, 'Ash');
+await d.locator('button[data-phc-start]').click();
+await d.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
+const dcid = Object.keys((await DG()).characters)[0];
+/** Walk by the engine's actions until `stop` says so (fights skipped, picks as credits, shops left, the first trail). */
+const walkD = async (stop, why) => { for (let i = 0; i < 400; i++) {
+  const dr = (await DG()).run; if (!dr || dr.state === 'over' || await stop(dr)) return true;
+  let e = null;
+  if (dr.state === 'map') { const here = dr.nodes.find((n) => n.id === dr.at), nx = here ? here.links.filter((l) => dr.nodes.find((n) => n.id === l)?.kind !== 'vault_guard') : dr.nodes.filter((n) => n.depth === 1).map((n) => n.id); e = await dAct({ type: 'run/move', node: nx[0] }); }
+  else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
+  else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
+  else if (dr.state === 'reward') { for (const id of Object.keys(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
+  else if (dr.state === 'boon') e = await dAct({ type: 'run/boon', charId: dcid, choice: 0 });
+  else if (dr.state === 'tile') e = await dAct({ type: 'run/tile', tile: dr.tiles[0].id });
+  if (e) { ok('D: ' + why + ': ' + e, false); return false; }
+} return false; };
+await walkD((dr) => dr.state === 'boon', 'stage 1 walked to its Boss');
+let dg = await DG(); const dOffer = dg.run.boons[dcid];
+const felt = ['boon.true_aim', 'boon.edge'].find((b) => dOffer.includes(b));
+const wpn = () => ({ id: dg.characters[dcid].weapon, rarity: dg.characters[dcid].weaponState?.rarity || 'standard' });
+const before = await d.evaluate(([cid, w]) => window.__phc.gearPreview(cid, w), [dcid, wpn()]);
+await d.evaluate(() => window.__phc.go('run')).catch(() => {});
+await d.waitForSelector('[data-phc-boon]', { timeout: 30000 });
+await d.locator('[data-phc-boon="' + (felt || dOffer[0]) + '"]').click();
+await d.waitForFunction(() => window.__phc.getState().game.run.state === 'tile', null, { timeout: 30000 });
+dg = await DG();
+const after = await d.evaluate(([cid, w]) => window.__phc.gearPreview(cid, w), [dcid, wpn()]);
+const line = (pv, k) => pv?.lines?.find((l) => l.key === k)?.num;
+ok('D: a boon felt: ' + (felt || dOffer[0]) + ' clicked, and the rifle\'s card reads it (to hit ' + line(before, 'hit') + ' → ' + line(after, 'hit') + '%, damage ' + line(before, 'dmg') + ' → ' + line(after, 'dmg') + ')',
+  !!felt && (dg.characters[dcid].relics || []).includes(felt) && (felt === 'boon.true_aim' ? line(after, 'hit') > line(before, 'hit') : line(after, 'dmg') > line(before, 'dmg')));
+await walkD((dr) => dr.stage === 2 && dr.state === 'map', 'the next tile');
+ok('D: stage 2 reached with the boon carried', (await DG()).run.stage === 2 && ((await DG()).characters[dcid].relics || []).includes(felt));
+await walkD((dr) => dr.stage === 3 && dr.state === 'map', 'stage 2 walked');
+dg = await DG(); let dr = dg.run;
+ok('D: stage 3 reached (its fresh map: ' + dr.nodes.length + ' nodes)', dr.stage === 3 && dr.nodes.every((n) => n.id.startsWith('s3.')));
+// the way to the first Forge stage 3's map can reach (a path through the links from the camp)
+const dby = Object.fromEntries(dr.nodes.map((n) => [n.id, n]));
+const toForge = (() => { const back = (id) => { const n = dby[id]; if (n.depth === 1) return [id]; for (const x of dr.nodes) if (x.links.includes(id) && !x.spur) { const b = back(x.id); if (b) return [...b, id]; } return null; };
+  for (const f of dr.nodes.filter((n) => n.kind === 'forge').sort((a, b) => a.depth - b.depth)) { const b = back(f.id); if (b) return b; } return []; })();
+await d.evaluate((cid) => { const c = window.__phc.getState().game.characters[cid]; c.weaponState = { ...(c.weaponState || {}), rarity: 'masterwork' }; c.credits = Math.max(c.credits || 0, 8000); }, dcid);
+for (let i = 0; i < 80; i++) {
+  dr = (await DG()).run; if (dr.at === toForge.at(-1) || dr.state === 'over') break;
+  let e = null;
+  if (dr.state === 'map') e = await dAct({ type: 'run/move', node: toForge[dr.path.filter((x) => x.startsWith('s3.')).length] });
+  else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
+  else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
+  else if (dr.state === 'reward') { for (const id of Object.keys(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
+  if (e) { ok('D: the way to the Forge: ' + e, false); break; }
+}
+await d.evaluate(() => window.__phc.go('run')).catch(() => {});
+await d.waitForSelector('[data-phc-choices] [data-phc-choice^="relic:main:"]', { timeout: 30000 }).catch(() => {});
+const relics = await d.locator('[data-phc-choices] [data-phc-choice^="relic:main:"]').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-choice'), why: e.hasAttribute('data-phc-why'), text: e.textContent })));
+ok('D: at stage 3\'s Forge the Relic step offers three named properties, each with its worth against the cap (' + relics.map((x) => x.key.split(':')[2]).join(', ') + ')', relics.length === 3 && relics.every((x) => !x.why && /Worth \d+ of 50/.test(x.text)));
+await d.screenshot({ path: OUT + 'survival-relic-step-1280.png' });
+const c0 = (await DG()).characters[dcid];
+if (relics[0]) await d.locator('[data-phc-choice="' + relics[0].key + '"]').click();
+await d.waitForFunction((cid) => window.__phc.getState().game.characters[cid].weaponState?.rarity === 'relic', dcid, { timeout: 30000 }).catch(() => {});
+const c1 = (await DG()).characters[dcid], prop = relics[0] && relics[0].key.split(':')[2];
+ok('D: the Relic step taken: the rifle is a Relic with ' + prop + ', 6,500 credits paid (' + c0.credits + ' → ' + c1.credits + ')', c1.weaponState?.rarity === 'relic' && c1.weaponState?.prop === prop && c0.credits - c1.credits === 6500);
+ok('D: no page errors (' + d.errors.slice(0, 3).join(' | ') + ')', !d.errors.length);
 await browser.close();

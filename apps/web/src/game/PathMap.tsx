@@ -14,6 +14,8 @@ import type { RunNodeV, RunViewV } from './runView';
 const A = ASSETS as Record<string, string>;
 /** The map's own coordinates (a 16:9 box; the backdrop's 2560 x 1440 scaled). */
 const W = 1600, H = 900;
+/** How far from the top and bottom edges the vault's spur may sit (map units: half a marker and its label). */
+const SPUR_MARGIN = 48;
 const ink = { white: '#FFFFFF', text: '#E7EBF3', muted: '#A3AEC2', trail: 'rgba(231,235,243,0.42)', quiet: 'rgba(214,200,170,0.30)', disc: '#14110C', discWalked: '#221D15' };
 
 /** A number from a string, the same every time (the jitter's seed): FNV-1a. */
@@ -36,7 +38,10 @@ export function layoutPathMap(v: Pick<RunViewV, 'nodes' | 'rows' | 'lanes'>): { 
     if (!n.spur) continue;
     const at = n.from ? pos[n.from] : null, from = n.from ? byId[n.from] : null; if (!at || !from) continue;
     const side = Math.sign(n.col - from.col) || 1, off = Math.min(gap * 1.1, 95);
-    pos[n.id] = n.spur === 'guard' ? { x: at.x + dx * 0.6, y: at.y + side * off * 0.85 } : { x: at.x + dx * 1.25, y: at.y + side * off * 1.25 };
+    // the spur leaves its edge lane outward; it is kept inside the map's own box (a marker's half and its label's height
+    // from the edge: SPUR_MARGIN), so the frame never clips the guard or the chest (rules 1.48; survival suite)
+    const y = (k: number) => Math.max(SPUR_MARGIN, Math.min(H - SPUR_MARGIN, at.y + side * off * k));
+    pos[n.id] = n.spur === 'guard' ? { x: at.x + dx * 0.6, y: y(0.85) } : { x: at.x + dx * 1.25, y: y(1.25) };
   }
   return { pos, camp: { x: 62, y: H / 2 }, dx };
 }
@@ -133,9 +138,11 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
   );
   return (
     <div style={{ flex: 1, minHeight: 380, display: 'flex', flexDirection: 'column', gap: 8 }}>
-    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', flex: 1, minHeight: 0, display: 'grid', placeItems: 'center', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', overflow: 'hidden' }}>
+    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', flex: 1, minHeight: 0, display: 'grid', placeItems: 'center', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', overflow: 'hidden', containerType: 'size' }}>
       <style>{'@keyframes phc-pm-dash{to{stroke-dashoffset:-26}}.phc-pm-lit{animation:phc-pm-dash 1.2s linear infinite}@keyframes phc-pm-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:.25}}.phc-pm-here{animation:phc-pm-pulse 2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pm-lit,.phc-pm-here{animation:none}}'}</style>
-      <div data-phc-pathmap-box="" style={{ position: 'relative', width: '100%', maxHeight: '100%', aspectRatio: '16 / 9' }}>
+      {/* the 16:9 map fits the frame both ways (the frame is a size container): as wide as the frame, or as wide as its
+          height allows, whichever is smaller, so nothing on it is ever cut off at 1280 x 720 (survival suite) */}
+      <div data-phc-pathmap-box="" style={{ position: 'relative', width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
         {art ? <img src={art} alt="" data-phc-pathmap-art="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : <FieldChart setting={v.settingId} />}
         <svg viewBox={'0 0 ' + W + ' ' + H} preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} aria-hidden="true">
           {firsts.map((n) => trail('camp>' + n.id, camp, pos[n.id], walkedFirst ? (walkedFirst.id === n.id ? 'walked' : 'quiet') : v.atStart && n.state === 'reachable' ? 'lit' : 'quiet'))}

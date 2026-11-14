@@ -3,14 +3,17 @@
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
 `CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.
 
-## Now (13 Nov 2026, at the close of Classes 3.0)
+## Now (14 Nov 2026, at the close of Survival)
 
-1. **Classes 3.0 is built** (0.26.0; rules 1.28 to 1.38; `docs/design/handoffs/CLASSES-3.0-PICKUP.md`): nine doors,
+1. **Survival mode is built** (0.27.0 on the branch; rules 1.39 to 1.49; `docs/design/handoffs/SURVIVAL-PICKUP.md`):
+   the mode picker, the path map as lanes with one guarded vault, generated fights and maps, rewards, the full-screen
+   shop, the Forge, trainings, shrines, the Crossroads, gives, endless stages with boons and tiles, the tally and Report
+   a run, and the curve fitted by simulated runs (`survival-steps-9-10.md`). **It waits for Leon's word to go live.**
+   His playtest with `docs/PLAYTEST-CHECKLIST.md` section S comes first; he names which of its calls to reverse.
+2. **Classes 3.0 is live** (0.26.0; rules 1.28 to 1.38; `docs/design/handoffs/CLASSES-3.0-PICKUP.md`): nine doors,
    nine renamed base classes, Shadow, Bonds and Tending, Figments, the Chaplain's prayers, reactions made real, the
-   enemy acting on what it sees, the level scale ×7.5 with heals in percent of HP. **Leon's playtest** with
-   `docs/PLAYTEST-CHECKLIST.md` section 0 comes first; he names which of its 53 calls to reverse.
-2. **Survival mode** (`docs/design/survival-spec.md`, draft 4): the first real game mode and the roguelike's first piece.
-   Stage 1 first (the build plan is its section 10), open questions on their recommendations.
+   enemy acting on what it sees, the level scale ×7.5 with heals in percent of HP. Its checklist is section 0 (53
+   calls).
 3. **The Forge art run** on Leon's GPU (`art/briefs/FORGE-PHC.md`): LoRAs per art mode, then the Classes 3.0 icons and
    the Figment portraits (`art/briefs/ART-REQUESTS.md` section 5, C6).
 4. **What Classes 3.0 left:** gathered in `docs/design/handoffs/LOCAL-SESSION-START.md` section 6 item 4 (Parting Cut and
@@ -332,7 +335,9 @@ before this mode, as the performance notes say.
 Leon: "I just want a mode you can play with progression and combat. Our combat system is sick, but M813 is not
 written well and is very outdated now, you barely have any combat in it, and the only place to do anything in this
 game is the Proving Ground, which is a glorified tester tool." Name: **Survival** *(his: "survival mode or
-something")*. Nothing is designed in detail or built; the spec is written when Classes 3.0 closes.
+something")*. **Built** (14 Nov 2026, 0.27.0 on the branch, rules 1.39 to 1.49; the spec is
+`docs/design/survival-spec.md`, the pick-up `docs/design/handoffs/SURVIVAL-PICKUP.md`); waiting for Leon's word to go
+live. The notes below are the first proposal, kept for the record.
 
 **The shape (the lead's proposal, accepted, with Leon's map):** make or pick a character at level 1; **a simple map
 of paths you choose between** ("this path leads to a shop, that path to a boss, that one to a free rest"): each

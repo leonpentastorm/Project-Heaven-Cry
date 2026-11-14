@@ -31,7 +31,8 @@ describe('Survival encounters (rules 1.41)', () => {
     expect([1, 9, 10, 20].map((L) => tierLag('soldier', L))).toEqual([1, 1, 2, 2]);
     expect(tierLag('minion', 5)).toBe(3); expect(tierLag('vermin', 5)).toBe(3); expect(tierLag('elite', 12)).toBe(0); expect(tierLag('boss', 12)).toBe(0);
     expect(foeLevel('minion', 2, 1)).toBe(1); expect(foeLevel('soldier', 10, 1)).toBe(8); expect(foeLevel('elite', 6, 1)).toBe(6);
-    expect(foeLevel('elite', 6, 2)).toBe(7); expect(foeLevel('boss', 19, 4)).toBe(20); // rule 19: stage s puts them min(s - 1, 3) above, never past 20
+    // rule 19 (rules 1.49: the lead from data): stage s puts them min((s - 1) x elite_up.per, elite_up.max) above, never past 20
+    expect(foeLevel('elite', 6, 2)).toBe(6 + Math.min(B.stage.elite_up.per, B.stage.elite_up.max)); expect(foeLevel('boss', 19, 4)).toBe(20);
   });
 
   it('the lag factor matches the enemy level table within 3% (spec 5.2: HP and damage a level, one point to hit each way)', () => {
@@ -59,11 +60,11 @@ describe('Survival encounters (rules 1.41)', () => {
     expect(budgetFor(3, 'gate', 8, 2).pressure).toBeCloseTo(B.pressurePerChar[2] * 3 * (1 + B.stage.pressure), 6);
   });
 
-  it('the worked example (spec section 1): two players at level 1, depth 1, is inside 2.0 bulk +-15% and a 2.5 pressure cap', () => {
+  it('the worked example (spec section 1): two players at level 1, depth 1, is inside 2.0 bulk +-15% and the pressure cap of a duo (rules 1.49: 1.4 a character, so 2.8; the example in the spec had 2.5)', () => {
     const e = composeEncounter({ levels: [1, 1], node: { id: 's1.d1.0', depth: 1, kind: 'fight' }, stage: 1, setting: 'ahoc', seed: 'PHC-0001' });
-    expect(e.target.bulk).toBeCloseTo(2, 6); expect(e.target.pressure).toBeCloseTo(2.5, 6);
+    expect(e.target.bulk).toBeCloseTo(2, 6); expect(e.target.pressure).toBeCloseTo(B.pressurePerChar[1] * 2, 6);
     expect(Math.abs(e.spent.bulk - 2) / 2).toBeLessThanOrEqual(B.bulkBand + 1e-9);
-    expect(e.spent.pressure).toBeLessThanOrEqual(2.5 * (1 + B.pressureBand) + 1e-9);
+    expect(e.spent.pressure).toBeLessThanOrEqual(B.pressurePerChar[1] * 2 * (1 + B.pressureBand) + 1e-9);
   });
 
   // Stages 1 to 3 are asserted. Stage 3 had one gap (item 2814: a solo party's Elite or Boss two levels up passed the
@@ -81,7 +82,9 @@ describe('Survival encounters (rules 1.41)', () => {
     const bad = cases.filter((c) => c.stage === 3).map(outOfBand).filter(Boolean) as string[];
     expect(bad).toEqual([]);
     const scaled = cases.filter((c) => c.stage === 3 && c.n === 1 && c.e.foes.some((f) => (f.tier === 'elite' || f.tier === 'boss') && (f.scale?.damage ?? 1) < shareOf(f.tier, 1).damage - 1e-9));
-    expect(scaled.length).toBeGreaterThan(0);
+    // rules 1.49: with the solo cap at 1.5 a character no solo anchor of stage 3 passes the band any more, so none may be
+    // scaled (the scale-down itself is pinned by the anchorDamage test below); every one that is sits exactly at the cap
+    expect(cases.filter((c) => c.stage === 3 && c.n === 1).length).toBeGreaterThan(0);
     for (const c of scaled) expect(c.e.spent.pressure).toBeCloseTo(c.e.target.pressure, 6);
   });
   it('anchorDamage (rules 1.44, item 2814): 1 inside the band; else the big units\' pressure brought down so the fight\'s is the cap', () => {
