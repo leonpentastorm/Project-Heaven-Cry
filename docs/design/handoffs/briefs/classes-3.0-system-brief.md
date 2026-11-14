@@ -69,3 +69,12 @@ measurement, every place the spec was wrong or silent and what you did (conserva
 the pick-up guide's section 6), what is left for the enemy step and the screen step, "How to add" one more thing of
 this kind. If a part cannot be built as written, stop that part, say exactly why, and go on. Final report under 220
 words: branch; what is built and what is not; the measured line; the calls made; what the lead must rule on.
+
+
+## No rebuild, ever again (Leon, 14 Nov 2026; binding on every builder)
+
+Read `CLAUDE.md`, "No rebuild, ever again", before you write a line. In short: you do not add a trigger, predicate, op,
+hook, resource, stat, cost site or exported primitive on your own word (list the need in your hand-off and build the
+rest; the lead approves); content is data (no id or number of a specific item in code); one copy of every rule and
+price; tests go through the reducer and real actions; lint baselines only shrink (if you need to raise one, stop and
+hand back). If the hundredth item of a kind would need a code change, the first was built wrong: stop and say so.

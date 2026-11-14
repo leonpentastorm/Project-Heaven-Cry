@@ -2,6 +2,8 @@
 
 ## Stop: before you build
 
+> **No rebuild, ever again** (Leon, 14 Nov 2026): the six hard rules are in `CLAUDE.md` under that name. A builder never adds to the closed lists on its own word; content is data; one copy of every rule and price; a consolidation pass before every release that added primitives; tests through the real path; lint baselines only shrink.
+
 Leon (13 Nov 2026): *"Write into the engine hand-off all the hooks so Opus stops inventing things on its own. If I use
 only Opus, I want it to spot by itself if it builds a new system instead of using the formula we already had."* And:
 it is forbidden to write custom code for a system or an item where the engine already has a primitive.
