@@ -46,6 +46,8 @@
 > hand-made focus and weapon variants by modifiers, every weapon measured, casters in Survival: solo Sigilist and
 > Channeler clear stage 1 about 3 times in 12 against the gunner's 9), then the roguelike.
 >
+> **No Survival enemy has a portrait** (tokens show a letter): the request is `art/briefs/GPT-PROMPTS-2026-11-14-survival-foes.md`; when art lands, pick it from data by kind and tier with a fallback.
+>
 > **Requests written today, not acted on:** `art/briefs/GPT-PROMPTS-2026-11-14-portraits.md` (145 portraits
 > repainted as different people, with a tag file for class fantasy, gender, species); `audio/SUNO-PROMPTS-survival.md`
 > (33 music prompts; none wired); `art/briefs/ART-REQUESTS.md` (what art is still wanted).
