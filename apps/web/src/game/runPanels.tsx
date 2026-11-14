@@ -90,7 +90,7 @@ function RunBoard({ g, me }: { g: GameState; me: string }) {
           <span style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {p.boons.map((b) => <span key={b.id} data-phc-held={b.id} {...tipProps(b.name + (b.camp ? ' (from the camp)' : '') + '. ' + b.text + ' Worth ' + b.worth + '.')}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px 2px 3px', borderRadius: 8, background: ink.raised, fontSize: 12 }}>
-              <span style={{ display: 'inline-grid', color: ink.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(b.id, ICON.boonHeld) }} />{b.name}</span>)}
+              <span style={{ display: 'inline-grid', color: ink.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(b.id, ICON.boonHeld) }} />{b.name}{b.camp ? <span style={{ color: ink.muted }}>· Camp</span> : null}</span>)}
           </span>
         </div>))}
       {log.length ? <div data-phc-visit-log="" style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -118,9 +118,9 @@ function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   if (r.state === 'shop') { // rules 1.42: Ready to leave (Leave the shop, solo)
     const sv = shopView(g as any, me); if (!sv) return null;
     const solo = sv.party.length <= 1, word = solo ? 'Leave the shop' : 'Ready to leave';
-    return sv.ready ? { key: 'leave', label: '✓ ' + word, attr: { 'data-phc-phase': 'leave', 'data-phc-leave': '' }, why: 'Waiting for ' + sv.waiting.join(', ') + '.' } : { key: 'leave', label: word, attr: { 'data-phc-phase': 'leave', 'data-phc-leave': '' }, go: () => act({ type: 'run/leave' }) };
+    return sv.ready ? { key: 'leave', label: '✓ ' + word, attr: { 'data-phc-phase': 'leave' }, why: 'Waiting for ' + sv.waiting.join(', ') + '.' } : { key: 'leave', label: word, attr: { 'data-phc-phase': 'leave' }, go: () => act({ type: 'run/leave' }) };
   }
-  if (placeOpen(g as any) && placeClosedAt() !== r.visit?.node) return { key: 'leave', label: 'To the path map ›', attr: { 'data-phc-phase': 'leave', 'data-phc-leave': '' }, go: () => closePlace(r.visit?.node || null) };
+  if (placeOpen(g as any) && placeClosedAt() !== r.visit?.node) return { key: 'leave', label: 'To the path map ›', attr: { 'data-phc-phase': 'leave' }, go: () => closePlace(r.visit?.node || null) };
   if (r.state === 'tile') { const sv = stageView(g, me); return sv && sv.canGo ? { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) } : null; }
   if (r.state === 'map' && v.canGo) return { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) };
   if (r.state === 'fight' && g.combat) return { key: 'fight', label: 'To the fight', attr: { 'data-phc-phase': 'fight' }, go: () => go('combat') };
