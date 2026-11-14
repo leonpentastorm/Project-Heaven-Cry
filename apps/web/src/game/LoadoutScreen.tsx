@@ -78,7 +78,7 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
         <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 16, fontWeight: 600, lineHeight: 1.15 }}>{c.name}</span>
           {tag ? <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>{tag}</span> : null}
-          {!compare ? <span style={{ fontSize: 12, color: I.muted }}>{c.preview.lines.slice(0, 2).map((l) => l.label + ' ' + l.value).join(' · ') || c.preview.category}</span> : null}
+          {!compare ? <span style={{ fontSize: 12, color: I.muted }}>{c.preview.lines.slice(0, 2).map((l) => l.label.replace(/ \(.*\)$/, '') + ' ' + l.value).join(' · ') || c.preview.category}</span> : null}
         </span>
       </div>
       {compare && compare.length ? (
@@ -250,7 +250,7 @@ export function LoadoutScreen() {
                 style={{ flex: 1, minHeight: 46, borderRadius: 12, border: '1px solid #3B475D', background: 'transparent', color: v.ready ? I.muted : I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: v.ready ? 'default' : 'pointer' }}>Recommended</button>
               {!v.boon.chosen && !v.ready && v.boon.cards.length ? (
                 <button type="button" data-phc-camp-next="" onClick={() => setStep(2)} disabled={step === 2} {...tipProps(step === 2 ? 'Choose one of the three.' : null)}
-                  style={{ flex: 1.3, minHeight: 46, borderRadius: 12, border: 0, background: step === 2 ? I.raised : I.text, color: step === 2 ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: step === 2 ? 'default' : 'pointer' }}>{step === 2 ? 'Choose a starting boon' : 'Next: starting boon'}</button>
+                  style={{ flex: 1.3, minHeight: 46, borderRadius: 12, border: 0, background: step === 2 ? I.raised : I.text, color: step === 2 ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: step === 2 ? 'default' : 'pointer' }}>{step === 2 ? 'Choose a boon' : 'Starting boon ›'}</button>
               ) : (
                 <button type="button" data-phc-camp-ready="" onClick={() => act({ type: 'run/ready', ...(v.ready ? { undo: true } : {}) } as any)}
                   style={{ flex: 1.3, minHeight: 46, borderRadius: 12, border: 0, background: v.ready ? I.raised : I.ok, color: v.ready ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>{solo ? 'Start the run' : v.ready ? '✓ Ready (undo)' : 'Ready'}</button>
