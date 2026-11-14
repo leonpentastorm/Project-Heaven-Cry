@@ -2279,6 +2279,30 @@ if _sv is not None:
         _sv = {}
     _SV_KINDS = {"fight", "elite", "boss", "shop", "forge", "training", "shrine", "rest", "cache", "event", "vault_guard", "vault"}
     _LANE_KINDS = _SV_KINDS - {"boss", "vault_guard", "vault"}  # the kinds a lane or a junction node may take (rules 1.48)
+    # Rules 1.54: `music`, the track a run plays in each situation. Every id is one of the engine's OstId list.
+    _mu = _sv.get("music")
+    if _mu is not None:
+        _w = "survival:music"
+        _ost_file = root.parent / "packages" / "engine" / "src" / "music.ts"
+        _ost_m = re.search(r"export type OstId =(.*?);", _ost_file.read_text(encoding="utf-8"), re.S) if _ost_file.exists() else None
+        _ost_ids = set(re.findall(r"'([a-z0-9_]+)'", _ost_m.group(1))) if _ost_m else None
+        _sids = {s.get("id") for s in _sv.get("settings") or []}
+        def _mtrack(path, v):
+            if not isinstance(v, str) or (_ost_ids is not None and v not in _ost_ids):
+                errors.append(f"{_w}.{path}: {v!r} is not a track in the engine's OstId list (packages/engine/src/music.ts)")
+        if not isinstance(_mu, dict) or set(_mu) - {"about", "camp", "map", "place", "boon"} or not {"camp", "map", "place", "boon"} <= set(_mu):
+            errors.append(f"{_w}: an object of camp, map, place and boon (and about)")
+        else:
+            _mtrack("camp", _mu["camp"]); _mtrack("boon", _mu["boon"])
+            _mm = _mu["map"] if isinstance(_mu["map"], dict) else {}
+            if "default" not in _mm: errors.append(f"{_w}.map: needs a `default` track")
+            for _k, _v in _mm.items():
+                if _k != "default" and _k not in _sids: errors.append(f"{_w}.map.{_k}: not a setting id")
+                _mtrack("map." + _k, _v)
+            _mpl = _mu["place"] if isinstance(_mu["place"], dict) else {}
+            for _k, _v in _mpl.items():
+                if _k not in _SV_KINDS: errors.append(f"{_w}.place.{_k}: not a node kind")
+                _mtrack("place." + _k, _v)
     _mp = _sv.get("map")
     if _mp is not None:
         _w = "survival:map"
