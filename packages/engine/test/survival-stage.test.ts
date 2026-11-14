@@ -136,7 +136,7 @@ describe('rules 1.44: the boon pick after the Boss (spec rules 30, 31)', () => {
     let x = apply(g, { type: 'run/boon', charId: 'c1', choice: 1 }, 'host');
     expect(x.characters.c1.relics).toContain(offer[1]); expect(runWorth(x.characters.c1)).toBe(worthOf(offer[1]));
     expect(x.run!.state).toBe('boon');
-    expect(refused(x, { type: 'run/boon', charId: 'c2', choice: 0 }, 'p3')).toBe('Only Player 2\'s player picks for Player 2 (or the host, for an away player).'.replace(/Player 2/g, x.characters.c2.name));
+    expect(refused(x, { type: 'run/boon', charId: 'c2', choice: 0 }, 'p3')).toBe('Only Player 2\'s player picks for Player 2, or the host while they are away.'.replace(/Player 2/g, x.characters.c2.name));
     x = apply(x, { type: 'run/boon', charId: 'c2', choice: 0 }, 'p2');
     expect(x.run!.state).toBe('tile'); expect(x.run!.boons).toBeNull();
     expect(x.run!.stages![0].boons).toEqual({ c1: offer[1], c2: g.run!.boons!.c2[0] });
@@ -151,7 +151,7 @@ describe('rules 1.44: the boon pick after the Boss (spec rules 30, 31)', () => {
     }
     expect(boonProblem(c, ['boon.lifeline', 'boon.true_aim'], 'boon.true_aim')).toBeNull();
     c.relics.push('boon.lifeline'); // 48 of 50
-    expect(boonProblem(c, ['boon.true_aim'], 'boon.true_aim')).toBe('True Aim is worth ' + worthOf('boon.true_aim') + ' of the run\'s ' + BOON_CAP + '; Nine has ' + (BOON_CAP - 48) + ' left.');
+    expect(boonProblem(c, ['boon.true_aim'], 'boon.true_aim')).toBe('Nine has ' + (BOON_CAP - 48) + ' boon room left; True Aim needs ' + worthOf('boon.true_aim') + '.');
     expect(boonProblem(c, ['boon.edge'], 'boon.edge')).toBe('Nine already has Honed.');
     expect(boonOffer(c, 'discipline', 'CAP-0', 's1.d15.0').every((id) => worthOf(id) === 0)).toBe(true);
   });
@@ -185,7 +185,7 @@ describe('rules 1.44: the next tile and stage 2 (spec rules 3, 19, 32)', () => {
     expect(x.run!.state).toBe('map'); expect(x.run!.at).toBeNull(); expect(x.run!.stages).toHaveLength(2);
     const y = apply(apply(g, { type: 'run/tile', tile: tiles[1].id }, 'p2'), { type: 'run/go' }, 'host');
     expect(y.run!.world.at(-1)!.setting).toBe(tiles[1].setting);
-    expect(refused(g, { type: 'run/go' }, 'p2')).toBe('Only the host sends the squad on before everyone has marked a node.');
+    expect(refused(g, { type: 'run/go' }, 'p2')).toBe('Only the host can send the squad on before everyone has marked a stop.');
   });
   it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses the stage\'s lead up, XP and credits x the stage\'s', () => {
     const r = new Rec(survivalRoom('PHC-0005', DUO, { test: true }), DUO);

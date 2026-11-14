@@ -35,6 +35,7 @@ differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule)
 | 9, 10 | 1.49 | The run simulator and the fit; the map fitted to its frame; the browser suite completed; the docs; 0.27.0 | `survival-steps-9-10.md` |
 | repair | 1.50 | The repair service (`run/repair` at a shop and a Forge; the Repair shelf; wear bars and the WORN mark on the places and the path map); the simulator repairs | `survival-repair.md` |
 | loadout | 1.52 | Creation without a kit (gear by mode: `modes.json loadout`); the camp before node 1 (`run/loadout`, `run/ready`; one free weapon, one free focus, a budget of 300 at the shop's prices (Leon's "like 200", raised by the measure); Recommended); the camp's full screen (`LoadoutScreen.tsx`, `loadoutView`); the fit for the bare start | `survival-loadout.md` |
+| text | none | Every Survival string written to the player (Leon, 14 Nov: "write to the PLAYER"): keepers' lines by tab, the shrine's votaries, boon room, stops and forks, refusals by name; the rules in `ui-screens.md` "Writing for the player" | `survival-text-pass.md` |
 
 Code: `packages/engine/src/run/` (`map.ts`, `state.ts`, `encounter.ts`, `rewards.ts`, `shop.ts`, `shopview.ts`,
 `progress.ts`, `placeview.ts`, `power.ts`, `stage.ts`, `tally.ts`, `loadout.ts`; the mode's gear `src/loadout.ts`), the run reducer in `game.ts` (`runAction`,

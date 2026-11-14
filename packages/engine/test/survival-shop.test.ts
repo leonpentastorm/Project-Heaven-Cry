@@ -34,7 +34,7 @@ describe('Survival shop (rules 1.42)', () => {
     expect(sh.face).toBe(face.id); expect(face.lines.greet).toContain(sh.line.text);
     const S = SHOP_DATA.stock; expect(sh.stock.length).toBe(S.weapons + S.items + S.rare);
     expect(reachable(g.run!)).toEqual([]);
-    expect(runMoveProblem(g, 'host', g.run!.nodes[0].id)).toBe('Leave the shop first: everyone marks Ready to leave, or the host closes it.');
+    expect(runMoveProblem(g, 'host', g.run!.nodes[0].id)).toBe('Leave the shop first: everyone marks ready, or the host closes it.');
   });
 
   it('the stock is the seed\'s (same seed, same stock), capped at Fine in stage 1, priced by priceOf at the face\'s price', () => {
@@ -88,15 +88,15 @@ describe('Survival shop (rules 1.42)', () => {
 
   it('refusals in words: short credits (and the keeper\'s line), quantity, not your character, not sold here, no shop', () => {
     const g = inShop(DUO, 'PHC-0001', 10), l = counterLines(Object.values(g.characters)).find((x) => x.id === 'field_kit')!;
-    expect(refused(g, { type: 'run/buy', charId: 'c1', key: l.key })).toBe('Short ' + (linePrice(l) - 10) + ' credits.');
-    expect(refused(g, { type: 'run/buy', charId: 'c1', key: l.key, qty: 0 })).toBe('Buy 1 to ' + SHOP_DATA.max_qty + ' at a time.');
-    expect(refused(g, { type: 'run/buy', charId: 'c1', key: l.key, qty: SHOP_DATA.max_qty + 1 })).toBe('Buy 1 to ' + SHOP_DATA.max_qty + ' at a time.');
+    expect(refused(g, { type: 'run/buy', charId: 'c1', key: l.key })).toBe(g.characters.c1.name + ' is ' + (linePrice(l) - 10) + ' credits short.');
+    expect(refused(g, { type: 'run/buy', charId: 'c1', key: l.key, qty: 0 })).toBe('You can buy 1 to ' + SHOP_DATA.max_qty + ' at a time.');
+    expect(refused(g, { type: 'run/buy', charId: 'c1', key: l.key, qty: SHOP_DATA.max_qty + 1 })).toBe('You can buy 1 to ' + SHOP_DATA.max_qty + ' at a time.');
     expect(refused(g, { type: 'run/buy', charId: 'c2', key: l.key }, 'host')).toBe('Only ' + g.characters.c2.name + '\'s player spends ' + g.characters.c2.name + '\'s credits.');
-    expect(refused(g, { type: 'run/buy', charId: 'c1', key: 'grimoire' })).toBe('The shop doesn\'t sell that.');
+    expect(refused(g, { type: 'run/buy', charId: 'c1', key: 'grimoire' })).toBe('This shop does not sell that.');
     expect(refused(g, { type: 'run/buy', charId: 'zz', key: l.key })).toBe('No such character.');
-    const p = g.run!.shop!.stock[0]; expect(refused(g, { type: 'run/buy', charId: 'c1', key: p.key, qty: 2 })).toBe('One of a kind: buy it once.');
+    const p = g.run!.shop!.stock[0]; expect(refused(g, { type: 'run/buy', charId: 'c1', key: p.key, qty: 2 })).toBe('There is only one of these.');
     expect(refused(started(DUO), { type: 'run/buy', charId: 'c1', key: l.key })).toBe('No shop is open here.');
-    expect(refused(g, { type: 'run/restock', charId: 'c1', res: 'toxins' })).toBe('The shop doesn\'t sell that.');
+    expect(refused(g, { type: 'run/restock', charId: 'c1', res: 'toxins' })).toBe('This shop does not sell that.');
   });
 
   it('sell at sell_rate of the price at the item\'s own rarity with its mods; a plot item can\'t be sold; stacks sell by quantity', () => {
@@ -124,7 +124,7 @@ describe('Survival shop (rules 1.42)', () => {
     expect(one.run!.state).toBe('shop'); expect(one.run!.ready).toEqual({ host: true });
     const both = apply(one, { type: 'run/leave' }, 'p2');
     expect(both.run!.state).toBe('map'); expect(both.run!.shop).toBeNull(); expect(reachable(both.run!).length).toBeGreaterThan(0);
-    expect(refused(g, { type: 'run/leave', close: true }, 'p2')).toBe('Only the host closes the shop for everyone: mark Ready to leave.');
+    expect(refused(g, { type: 'run/leave', close: true }, 'p2')).toBe('Only the host can close the shop for everyone. Mark yourself ready to leave instead.');
     const closed = apply(g, { type: 'run/leave', close: true }, 'host');
     expect(closed.run!.state).toBe('map');
     expect(refused(closed, { type: 'run/leave' })).toBe('No shop is open here.');

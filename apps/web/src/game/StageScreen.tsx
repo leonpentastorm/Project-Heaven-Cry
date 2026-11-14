@@ -21,7 +21,7 @@ const title: React.CSSProperties = { margin: 0, fontFamily: "'Spectral', serif",
 function BoonPick({ b }: { b: BoonPickV }) {
   return (
     <section data-phc-boons={b.charId} aria-label={'Boons for ' + b.name} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <span style={kick}>{(b.mine ? 'YOUR BOON · ' : '') + b.name.toUpperCase()} · RUN POWER {b.worth}{!b.canPick ? ' · ' + b.name.toUpperCase() + '\'S PLAYER PICKS' : !b.mine ? ' · AWAY? YOU MAY PICK FOR THEM' : ''}</span>
+      <span style={kick}>{(b.mine ? 'YOUR BOON · ' : '') + b.name.toUpperCase()} · BOON ROOM {b.worth}{!b.canPick ? ' · ' + b.name.toUpperCase() + '\'S PLAYER PICKS' : !b.mine ? ' · YOU MAY PICK FOR THEM' : ''}</span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 'clamp(12px, 1.4vw, 24px)' }}>
         {b.cards.map((c) => (
           <button key={c.id} type="button" data-phc-boon={c.id} data-phc-why={c.why ? '' : undefined} aria-disabled={!b.canPick || c.why ? 'true' : undefined}
@@ -43,7 +43,7 @@ function BoonPick({ b }: { b: BoonPickV }) {
 
 function TileCard({ t, mine }: { t: TileCardV; mine: boolean }) {
   return (
-    <button type="button" data-phc-tile={t.id} data-phc-setting={t.setting} aria-pressed={mine ? 'true' : 'false'} {...tipProps(t.name + '. ' + t.line + ' Boons: ' + t.boons.join(', ') + '.' + (t.awaiting.length ? ' Still waiting for ' + t.awaiting.join('; ') + '.' : ''))}
+    <button type="button" data-phc-tile={t.id} data-phc-setting={t.setting} aria-pressed={mine ? 'true' : 'false'} {...tipProps(t.name + '. ' + t.line + ' Boons: ' + t.boons.join(', ') + '.')}
       onClick={() => act({ type: 'run/tile', tile: t.id })}
       style={{ position: 'relative', display: 'flex', flexDirection: 'column', minWidth: 0, padding: 0, overflow: 'hidden', textAlign: 'left', borderRadius: 16, border: mine ? '2px solid ' + ink.white : '2px solid ' + ink.line, background: ink.panel, color: ink.text, fontFamily: 'inherit', cursor: 'pointer' }}>
       <span aria-hidden="true" style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', background: t.art ? 'center / cover no-repeat url("' + t.art + '")' : 'radial-gradient(ellipse at 50% 35%, #1C2536 0%, #10151F 80%)', borderBottom: '1px solid ' + ink.line }}>
@@ -53,7 +53,6 @@ function TileCard({ t, mine }: { t: TileCardV; mine: boolean }) {
         <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(22px, 1.6vw, 28px)', fontWeight: 600 }}>{t.name}</span>
         <span style={{ fontSize: 'clamp(14px, 0.95vw, 16px)', lineHeight: 1.5, color: '#DCE2EC' }}>{t.line}</span>
         <span style={{ fontSize: 13, color: ink.muted }}>Boss: <span style={{ color: ink.text }}>{t.boss}</span> · Boons: <span style={{ color: ink.white }}>{t.theme}</span> ({t.boons.join(', ')})</span>
-        {t.awaiting.length ? <span style={{ fontSize: 12, color: ink.muted }}>Placeholder: {t.awaiting.join('; ')}.</span> : null}
         <span style={{ display: 'flex', gap: 6, alignItems: 'center', minHeight: 22 }}>
           {mine ? <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>✓ YOUR MARK</span> : null}
           {t.leans.map((l) => <span key={l.initials} aria-label={l.name} style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 10, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}
@@ -77,7 +76,7 @@ function Summary({ s }: { s: SummaryV }) {
       </div>
       <div style={{ overflowX: 'auto' }}>
         <table data-phc-stages="" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 15 }}>
-          <thead><tr>{['Stage', 'Tile', 'Nodes', 'Fights', 'Foes dropped', 'Credits earned', 'Grade steps', 'Boons'].map((h) => <th key={h} style={{ ...kick, textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid ' + ink.line }}>{h.toUpperCase()}</th>)}</tr></thead>
+          <thead><tr>{['Stage', 'Tile', 'Stops', 'Fights', 'Foes dropped', 'Credits earned', 'Upgrades', 'Boons'].map((h) => <th key={h} style={{ ...kick, textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid ' + ink.line }}>{h.toUpperCase()}</th>)}</tr></thead>
           <tbody>{s.stages.map((r) => (
             <tr key={r.stage} data-phc-stage-row={r.stage}>
               {[r.stage, r.setting, r.nodes, r.fights, r.kills, r.credits, r.steps, r.boons].map((v, i) => <td key={i} style={{ padding: '10px', borderBottom: '1px solid ' + ink.line, color: i === 7 ? '#DCE2EC' : ink.text }}>{v}</td>)}
@@ -123,7 +122,7 @@ export function StageScreen() {
           </div>
           {v.state === 'boon' ? v.boons.map((b) => <BoonPick key={b.charId} b={b} />) : (
             <section aria-label="The next tile" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <span style={kick}>STAGE {v.stage + 1} · {v.solo ? 'CLICK A TILE TO GO' : 'MARK A TILE: THE SQUAD GOES WHEN EVERYONE HAS; A TIE GOES TO THE HOST'}</span>
+              <span style={kick}>STAGE {v.stage + 1} · {v.solo ? 'CLICK A TILE TO GO' : 'MARK A TILE. THE SQUAD GOES WHEN EVERYONE HAS'}</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(' + Math.max(2, v.tiles.length) + ', minmax(0, 1fr))', gap: 'clamp(14px, 1.6vw, 28px)' }}>
                 {v.tiles.map((t) => <TileCard key={t.id} t={t} mine={v.myTile === t.id} />)}
               </div>
@@ -131,7 +130,7 @@ export function StageScreen() {
             </section>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingTop: 8, borderTop: '1px solid ' + ink.line }}>
-            {v.canRetire ? <button type="button" data-phc-retire="" onClick={() => act({ type: 'run/retire' })} style={btn(false)}>Retire the run · keep the score</button> : <span style={{ fontSize: 13, color: ink.muted }}>The host may retire the run here and keep the score.</span>}
+            {v.canRetire ? <button type="button" data-phc-retire="" onClick={() => act({ type: 'run/retire' })} style={btn(false)}>Retire the run · keep the score</button> : <span style={{ fontSize: 13, color: ink.muted }}>The host can retire the run here and keep the score.</span>}
           </div>
         </>}
       </main>

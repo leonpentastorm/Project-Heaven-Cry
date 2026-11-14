@@ -289,7 +289,7 @@ const COMBAT: Record<string, Maker> = {
 /** Field Fix's three ways (engine combat.ts REPAIR_WAYS: the one Field Repair, rules 1.34). */
 const FIX_OPTS: Opt[] = [{ id: 'clear_jam', label: 'Clear the jam', title: 'Their jammed weapon fires again (the Heat goes too).' },
   { id: 'restore_durability', label: 'Restore durability', title: 'Their weapon\'s durability back, as a Field Repair (no spare parts).' },
-  { id: 'repair', label: 'Repair', title: 'A robot, drone, turret, Factory Made squadmate or Figment repaired (rules 1.34: the Field Repair amount, no part).' }];
+  { id: 'repair', label: 'Repair', title: 'Repair a robot, drone, turret, Factory Made squadmate or Figment by a Field Repair (no spare parts).' }];
 
 /** The key a picker is filed under: "itemKey#actionId", else the bare action id (shared ones like extra_mod). */
 const keyOf = (e: Pick<PerkActionEntry, 'id' | 'actionId'>) => e.id + '#' + e.actionId;

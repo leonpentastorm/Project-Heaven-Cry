@@ -100,15 +100,15 @@ describe('rules 1.50: run/repair through the reducer', () => {
   });
   it('every refusal is in words, and nothing changes', () => {
     const full = at('shop');
-    expect(refused(full, { type: 'run/repair', charId: 'c1', where: 'main', place: 'shop' })).toMatch(/in full repair \(\d+ of \d+\): there is nothing to repair/);
+    expect(refused(full, { type: 'run/repair', charId: 'c1', where: 'main', place: 'shop' })).toMatch(/is already in full repair\.$/);
     const g = at('shop', { dur: 0, credits: 5 }), price = repairPrice(wearAt(c1(g), 'main')!, 'shop');
-    expect(refused(g, { type: 'run/repair', charId: 'c1', where: 'main', place: 'shop' })).toBe(c1(g).name + ' is short ' + (price - 5) + ' credits (has 5, needs ' + price + ').');
+    expect(refused(g, { type: 'run/repair', charId: 'c1', where: 'main', place: 'shop' })).toBe(c1(g).name + ' is ' + (price - 5) + ' credits short.');
     expect(refused(g, { type: 'run/repair', charId: 'c1', where: 'main', place: 'forge' })).toBe('This is not a Forge.');
     expect(refused(g, { type: 'run/repair', charId: 'c1', where: 42, place: 'shop' })).toBe('There is nothing there to repair.');
     const rest = at('rest', { dur: 0 });
     expect(refused(rest, { type: 'run/repair', charId: 'c1', where: 'main', place: 'shop' })).toMatch(/^You are not at a shop or a Forge/);
     const focus = at('shop', { prep: (g0) => { c1(g0).pack = [{ id: 'evoker', item: 'evoker', name: 'Evoker', qty: 1, kind: 'focus' } as any]; } });
-    expect(refused(focus, { type: 'run/repair', charId: 'c1', where: 0, place: 'shop' })).toMatch(/does not wear: there is nothing to repair/);
+    expect(refused(focus, { type: 'run/repair', charId: 'c1', where: 0, place: 'shop' })).toMatch(/never wears out/);
     expect(refused(g, { type: 'run/repair', charId: 'nobody', where: 'main', place: 'shop' })).toBe('No such character.');
     expect(creditsOf(c1(g))).toBe(5);
   });
@@ -122,11 +122,11 @@ describe('rules 1.50: the screens read the engine', () => {
       expect(cards.length).toBe(1);
       const k = cards[0], w = wearAt(c1(g), 'main')!;
       expect(k).toMatchObject({ id: c1(g).weapon, price: repairPrice(w, 'shop'), why: null, wear: { now: 100, max: w.max, state: 'worn' }, action: { type: 'run/repair', charId: 'c1', where: 'main', place: 'shop' } });
-      expect(k.note).toContain('at a Forge: ' + repairPrice(w, 'forge'));
+      expect(k.note).not.toContain('Forge'); // the shop's card says its own price only (docs/design/ui-screens.md, Writing for the player)
       expect(v.services.some((s) => s.service === 'grade_step')).toBe(true);
       expect(v.me!.handWear).toEqual({ now: 100, max: w.max, state: 'worn' });
       const poor = at('shop', { dur: 0, credits: 1 }), pc = shopView(poor as any, 'host')!.services.find((s) => s.service === 'repair')!;
-      expect(pc.why).toMatch(/is short \d+ credits/);
+      expect(pc.why).toMatch(/is \d+ credits short/);
       expect(shopView(at('shop') as any, 'host')!.services.filter((s) => s.service === 'repair')).toEqual([]); // nothing worn: no card
     } finally { bindGame(was); }
   });

@@ -20,8 +20,8 @@ export function GiveTab() {
   const st = getState(), g = st.game, me = st.me.id;
   const v = g ? giveView(g as any, me) : null;
   const [to, setTo] = React.useState<string | null>(null), [sel, setSel] = React.useState<string>('credits'), [n, setN] = React.useState(1);
-  if (!v || !v.from) return <p style={{ color: I.muted }}>Bring a character to give.</p>;
-  if (v.none) return <section data-phc-give="" data-phc-give-none=""><h2 style={{ margin: '6px 0 12px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2><p style={{ fontSize: 16, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>{v.none} Gives are for a squad: credits and pack items handed to a friend at any safe node.</p></section>;
+  if (!v || !v.from) return <p style={{ color: I.muted }}>You have no character here.</p>;
+  if (v.none) return <section data-phc-give="" data-phc-give-none=""><h2 style={{ margin: '6px 0 12px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2><p style={{ fontSize: 16, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>{v.none}</p></section>;
   const who = to && v.to.find((t) => t.id === to) ? to : v.to[0].id, target = v.to.find((t) => t.id === who)!;
   const row = v.rows.find((r) => r.key === sel) || v.rows[0];
   const most = row.kind === 'credits' ? Math.max(1, row.qty) : Math.max(1, row.qty), amount = Math.min(n, most);
@@ -32,7 +32,7 @@ export function GiveTab() {
     setN(1); if (row.kind === 'pack') setSel('credits');
   };
   const word = row.kind === 'credits' ? 'Give ' + amount.toLocaleString('en') + (amount === 1 ? ' credit' : ' credits') + ' to ' + target.name
-    : row.kind === 'held' ? 'Put it in the pack' : row.kind === 'never' ? 'Not given' : 'Give ' + (most > 1 ? amount + ' × ' : '') + row.label + ' to ' + target.name;
+    : row.kind === 'held' ? 'Put it in the pack' : row.kind === 'never' ? 'Yours to keep' : 'Give ' + (most > 1 ? amount + ' × ' : '') + row.label + ' to ' + target.name;
   const line = (r: GiveRowV) => {
     const w = r.why[who], on = r.key === row.key, icon = r.kind === 'pack' || r.kind === 'held' ? gearIconUri(r.id, undefined, { large: true }) : '';
     return (
@@ -42,7 +42,7 @@ export function GiveTab() {
         <span style={{ width: 40, height: 40, flexShrink: 0, display: 'grid', placeItems: 'center' }}>{icon ? <img src={icon} alt="" width={36} height={36} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 18, color: I.muted }}>{r.kind === 'credits' ? '¤' : '—'}</span>}</span>
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.label}{r.kind === 'held' ? <span style={{ fontSize: 11.5, color: I.muted, fontWeight: 700, letterSpacing: '0.1em' }}> · IN HAND OR WORN</span> : null}</span>
-          {r.kind === 'never' || (w && r.kind !== 'held') ? <span style={{ fontSize: 12.5, color: I.muted }}>{w}</span> : r.kind === 'held' ? <span style={{ fontSize: 12.5, color: I.muted }}>Put in the pack and give.</span> : null}
+          {r.kind === 'never' || (w && r.kind !== 'held') ? <span style={{ fontSize: 12.5, color: I.muted }}>{w}</span> : r.kind === 'held' ? <span style={{ fontSize: 12.5, color: I.muted }}>Put it in your pack first.</span> : null}
         </span>
         <span style={{ fontSize: 15, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: I.white }}>{r.kind === 'credits' ? r.qty.toLocaleString('en') : r.qty > 1 ? '×' + r.qty : ''}</span>
       </button>
@@ -52,7 +52,7 @@ export function GiveTab() {
     <section data-phc-give="" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
         <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2>
-        <span style={{ fontSize: 12.5, color: I.muted }}>a plain give: it arrives at once, nobody is asked</span>
+        <span style={{ fontSize: 12.5, color: I.muted }}>It arrives at once.</span>
       </div>
       <div>
         <span style={kick}>TO</span>
@@ -82,7 +82,7 @@ export function GiveTab() {
         {v.rows.filter((r) => r.kind !== 'never').map(line)}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <span style={kick}>NEVER GIVEN</span>
+        <span style={kick}>YOURS TO KEEP</span>
         {v.rows.filter((r) => r.kind === 'never').map(line)}
       </div>
     </section>

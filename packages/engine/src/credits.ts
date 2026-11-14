@@ -17,7 +17,7 @@ export function earnCredits(c: Character, n: number): number {
 /** Why a character can't pay `n` credits, in words, or null when it can. */
 export function cantPay(c: Character, n: number): string | null {
   const need = Math.max(0, Math.round(Number(n) || 0)), have = creditsOf(c);
-  return have >= need ? null : c.name + ' is short ' + (need - have) + ' credits (has ' + have + ', needs ' + need + ').';
+  return have >= need ? null : c.name + ' is ' + (need - have) + ' credits short.';
 }
 /** Take `n` credits out of a character's purse. Returns null when paid, else the refusal in words (nothing is taken). */
 export function payCredits(c: Character, n: number): string | null {

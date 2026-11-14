@@ -29,9 +29,9 @@ export function giveWhereProblem(g: GameState): string | null {
   const r = g.run;
   if (r && r.state !== 'over') {
     if (r.state === 'fight') return 'Hand things over after the fight.';
-    if (!r.at) return GIVE.at_start ? null : 'Gives are made at a node with no fight.';
+    if (!r.at) return GIVE.at_start ? null : 'Hand things over at a stop with no fight.';
     const n = r.nodes.find((x) => x.id === r.at), k = n?.kind || '';
-    if (!GIVE.where.includes(k)) return 'Gives are made at a node with no fight (a shop, a Forge, a training ground, a shrine, a rest, a cache or a crossroads), not here.';
+    if (!GIVE.where.includes(k)) return 'Hand things over at a stop with no fight: a shop, a Forge, a drill yard, a shrine, a rest, a cache or a crossroads.';
   }
   return null;
 }
@@ -46,14 +46,14 @@ export function giveProblem(g: GameState, by: string, a: GiveAction): string | n
   const c = g.characters[a.charId]; if (!c) return 'No such character.';
   if (c.owner !== by) return 'Only ' + c.name + '\'s player gives what ' + c.name + ' carries.';
   const others = Object.values(g.characters).filter((x) => x.id !== c.id);
-  if (!others.length) return 'There is nobody to give to: ' + c.name + ' is alone.';
+  if (!others.length) return 'No one to hand anything to.';
   const where = giveWhereProblem(g); if (where) return where;
   const to = g.characters[a.to]; if (!to || to.id === c.id) return 'Give it to whom?';
   if (to.dead) return to.name + ' is dead.';
   if (c.dead) return 'The dead give nothing.';
-  if (a.relic != null) { const row = relicRow(a.relic); return (row ? row.name : 'A boon') + ' is ' + c.name + '\'s own: boons, tokens and grafts are never given.'; }
-  if (a.train != null) return 'Training is ' + c.name + '\'s own: drill, study, practice and Devotion are never given.';
-  if (a.armour) return 'The armour class is fitted to ' + c.name + '\'s body, not carried: it is not given.';
+  if (a.relic != null) { const row = relicRow(a.relic); return (row ? row.name : 'A boon') + ' is ' + c.name + '\'s own: boons, tokens and grafts can\'t be handed over.'; }
+  if (a.train != null) return 'What ' + c.name + ' has learned can\'t be handed over.';
+  if (a.armour) return c.name + '\'s armour fitting is made for ' + c.name + ' alone.';
   if (a.credits != null) {
     const n = Math.round(Number(a.credits));
     if (!(n >= 1)) return 'Give 1 credit or more.';
@@ -64,7 +64,7 @@ export function giveProblem(g: GameState, by: string, a: GiveAction): string | n
   const most = it.mags ? it.mags.length : it.qty;
   if (a.qty != null && !(Math.round(a.qty) >= 1 && Math.round(a.qty) <= most)) return 'Give 1 to ' + most + ' of those.';
   if (it.prop && g.run) { const w = worthOf(it.prop), now = runWorth(to);
-    if (now + w > BOON_CAP) return 'The ' + itemLabel(it) + '\'s ' + (relicRow(it.prop)?.name || 'property') + ' (' + w + ') would take ' + to.name + ' past the run\'s cap (' + now + ' of ' + BOON_CAP + ' used).'; }
+    if (now + w > BOON_CAP) return to.name + ' has ' + (BOON_CAP - now) + ' boon room left; the ' + itemLabel(it) + '\'s ' + (relicRow(it.prop)?.name || 'property') + ' needs ' + w + '.'; }
   return null;
 }
 /** Make a give (rules 1.46): the credits from one purse to the other, or the pack entry (its part) out of the giver's
@@ -104,7 +104,7 @@ export function giveView(g: GameState, me: string, charId?: string | null): Give
   const c = (charId && g.characters[charId]) || Object.values(g.characters).find((x) => x.owner === me) || null;
   if (!c) return { from: null, to: [], rows: [], none: 'Bring a character to give.' };
   const to = Object.values(g.characters).filter((x) => x.id !== c.id).map((x) => ({ id: x.id, name: x.name, owner: x.owner, portrait: x.portrait || '' }));
-  const none = to.length ? null : 'There is nobody to give to: ' + c.name + ' is alone.';
+  const none = to.length ? null : 'No one to hand anything to.';
   const whys = (a: Omit<GiveAction, 'to'>) => Object.fromEntries(to.map((t) => [t.id, giveProblem(g, me, { ...a, to: t.id } as GiveAction)]));
   const rows: GiveRowV[] = [];
   const cr = { type: 'gear/give' as const, charId: c.id, credits: 1 };
@@ -117,7 +117,7 @@ export function giveView(g: GameState, me: string, charId?: string | null): Give
     why: Object.fromEntries(to.map((t) => [t.id, giveWhereProblem(g) || none])), action: { type: 'gear/give', charId: c.id } });
   for (const id of c.relics || []) { const a = { type: 'gear/give' as const, charId: c.id, relic: id }; rows.push({ key: 'relic:' + id, kind: 'never', label: relicRow(id)?.name || id, id, rarity: 'relic', qty: 1, why: whys(a), action: a }); }
   const tr = { type: 'gear/give' as const, charId: c.id, train: 'drill' };
-  rows.push({ key: 'train', kind: 'never', label: 'Trainings (drill, study, practice, Devotion)', id: 'train', rarity: 'standard', qty: 1, why: whys(tr), action: tr });
-  if (c.armourClass) { const a = { type: 'gear/give' as const, charId: c.id, armour: true }; rows.push({ key: 'armour', kind: 'never', label: 'Armour class ' + c.armourClass + ' (fitted)', id: 'armour', rarity: 'standard', qty: 1, why: whys(a), action: a }); }
+  rows.push({ key: 'train', kind: 'never', label: 'What you have learned (drill, study, practice, Devotion)', id: 'train', rarity: 'standard', qty: 1, why: whys(tr), action: tr });
+  if (c.armourClass) { const a = { type: 'gear/give' as const, charId: c.id, armour: true }; rows.push({ key: 'armour', kind: 'never', label: 'Your armour fitting (class ' + c.armourClass + ')', id: 'armour', rarity: 'standard', qty: 1, why: whys(a), action: a }); }
   return { from: { id: c.id, name: c.name, credits: creditsOf(c) }, to, rows, none };
 }

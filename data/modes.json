@@ -30,7 +30,7 @@
       "narrator": "optional",
       "start": "run",
       "loadout": { "kind": "camp", "about": "Rules 1.52: as Survival's camp, until the roguelike has its own." },
-      "coming": "Coming after the advanced classes.",
+      "coming": "Not open yet.",
       "provisional": true
     },
     {
@@ -42,7 +42,7 @@
       "narrator": "required",
       "start": "session",
       "loadout": { "kind": "kit", "about": "Rules 1.52: a campaign gives each character its starting gear when the session starts (or when a character joins mid-session): the campaign's own `loadout` when it names one (same shape), else this. A fixed default built from the old creation kits (engine character.ts KITS), chosen by the door skill with most points (by_door, in this order; a tie goes to the first), else `default`. A call for Leon (PROVISIONAL): campaigns name their own loadouts when they are rewritten. The Proving Ground gives the same to a character that comes to it with nothing.", "by_door": { "brain_power": "sigil", "will_power": "soul", "empathy": "medic" }, "default": "soldier", "provisional": true },
-      "coming": "Coming when the campaigns are rewritten.",
+      "coming": "Not open yet.",
       "provisional": true
     }
   ]

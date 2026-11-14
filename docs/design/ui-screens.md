@@ -4,6 +4,21 @@ Prototypes live in `design/canvas/` as Design Component files (`.dc.html`), the 
 
 Shared visual language: near-black ground; skills in their attribute's colour (9 hues), cores in Body amber, Mind cyan, Soul violet; Spectral for prose, Chakra Petch for UI. Every colour rule and token is in [`colour-system.md`](colour-system.md). Trait and perk icons are white Wick ink.
 
+## Writing for the player
+
+Leon, 14 Nov 2026, on a shop shelf headed "Every calibre" with the note "never sold out": "write to the PLAYER bruv not me". Every word a player reads is written to the player, never to the designer. A note that restates a design ruling or a rule's reason does not go on a screen. The Survival text pass (`handoffs/survival-text-pass.md`) has the full list of what changed.
+
+1. **Say what the player can do or what they get**, in the fewest plain words. A label names the thing: "Ammunition", not "Every calibre — never sold out".
+2. **Anything said in a place is said by its keeper**, in character and short, each keeper in their own voice, with a few lines each in data so they vary (`data/survival.json` faces `lines`, one bank for each tab, such as `stock` or `gear`). The quartermaster: "Rounds I always have. The good stuff, you take what's on the table." The shrine speaks as its patron's people do (`votaries`).
+3. **State a rule once, where it applies, as a consequence**: "One upgrade per visit", "Can't carry more: 2.1 kg over". Never write it as a design note or a comparison with another screen. "Cheaper than a shop's" becomes the price, with the saving shown where you pay it: "960 · 240 less than a shop".
+4. **No developer words**: node, stage cap, seam, provisional, spec, placeholder, step, "later", run power. Don't name lean or tie mechanics as such. Use the world's words (trail, camp, stop, fork, the Gate, the vault, boon room) and the game's own terms (credits, the grade names, HP, Echo).
+5. **Empty and unbuilt things are hidden**, not labelled "later". A solo player has no Give tab. A tab with nothing in it says so in one plain line ("No one to hand anything to.").
+6. **A refusal says what is wrong and what to do**, and names the character: "Kade is 74 credits short.", "Kade needs Brain Power 1 to study the Sigil words."
+7. **System text has one voice**: second person, present tense, no exclamation marks, no jokes on buttons. Humour belongs to the keepers' lines.
+8. **Numbers come from data**. A data text uses `{=placeholders}` (`tools/text_numbers.py`); never type a digit where the item has the field.
+9. **Every label fits its box at 1280** (the screenshots of a text change are taken at 1280 wide).
+10. **Tests read data, not sentences.** A browser check reads a data attribute or the data's own text (`data/modes.json` `coming`, a face's `lines`). It does not read a typed copy of a sentence that the next text pass will change.
+
 ## Story mode — `Main.dc.html`
 
 - **Header:** wordmark, Story/Combat switch, Narrator chip ("AI · your key"), room code, settings.

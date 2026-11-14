@@ -3,7 +3,7 @@
 // (stages cleared, nodes, the score, each stage's log, each character's level, class and boons). Everything is read from
 // the engine: the offers (g.run.boons, g.run.tiles), the boons' words and worth (relicRow, worthOf, runWorth), why a
 // pick is refused (boonProblem), the settings' cards (settingCard), the score (g.run.end). StageScreen.tsx draws it.
-import { type GameState, type RunStageLog, relicRow, worthOf, runWorth, capRoom, BOON_CAP, boonProblem, settingCard, SETTING, keptDraft, runRetireProblem, CLASS } from '@engine';
+import { type GameState, type RunStageLog, relicRow, worthOf, capRoom, BOON_CAP, boonProblem, settingCard, SETTING, keptDraft, runRetireProblem, CLASS } from '@engine';
 import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
@@ -28,9 +28,9 @@ export function stageView(g: GameState, me: string): StageViewV | null {
   const isHost = me === g.hostId, pl = (id: string) => g.players.find((p) => p.id === id), online = g.players.filter((p) => p.online), solo = online.length <= 1;
   const boons: BoonPickV[] = Object.entries(r.boons || {}).map(([cid, offer]) => {
     const c = g.characters[cid];
-    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, worth: (c ? runWorth(c) : 0) + ' of ' + BOON_CAP,
+    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, worth: (c ? capRoom(c) : 0) + ' left',
       cards: offer.map((id, i) => { const row = relicRow(id)!, w = worthOf(id);
-        return { i, id, name: row?.name || id, text: row?.text || '', worth: w, worthLine: w ? w + ' of your ' + BOON_CAP + ' · ' + Math.max(0, (c ? capRoom(c) : 0) - w) + ' left after' : 'No run power: it takes none of your ' + BOON_CAP, why: c ? boonProblem(c, offer, id) : null }; }) };
+        return { i, id, name: row?.name || id, text: row?.text || '', worth: w, worthLine: w ? 'Uses ' + w + ' boon room · ' + Math.max(0, (c ? capRoom(c) : 0) - w) + ' left after' : 'Uses no boon room', why: c ? boonProblem(c, offer, id) : null }; }) };
   }).sort((a, b) => Number(b.mine) - Number(a.mine));
   const tiles: TileCardV[] = (r.tiles || []).map((t) => {
     const s = settingCard(t.setting)!, art = s?.backdrop && A[s.backdrop] ? A[s.backdrop] : '';
@@ -38,7 +38,7 @@ export function stageView(g: GameState, me: string): StageViewV | null {
       leans: Object.entries(r.leans).filter(([, id]) => id === t.id).map(([pid]) => ({ initials: pl(pid)?.initials || '?', color: pl(pid)?.color || '#A3AEC2', name: pl(pid)?.name || '?' })) };
   });
   const leaned = online.filter((p) => r.leans[p.id]).length;
-  const waiting = r.state === 'tile' && !solo && leaned > 0 && leaned < online.length ? 'Waiting for ' + plural(online.length - leaned, 'player') : r.state === 'boon' && boons.some((b) => !b.mine) && !boons.some((b) => b.mine) ? 'Waiting for the others\' boons' : null;
+  const waiting = r.state === 'tile' && !solo && leaned > 0 && leaned < online.length ? 'Waiting for ' + plural(online.length - leaned, 'player') : r.state === 'boon' && boons.some((b) => !b.mine) && !boons.some((b) => b.mine) ? 'Waiting for the others to pick' : null;
   let summary: SummaryV | null = null;
   const e = r.end;
   if (r.state === 'over' && e) {
@@ -47,7 +47,7 @@ export function stageView(g: GameState, me: string): StageViewV | null {
     const members: MemberV[] = Object.values(g.characters).map((c) => ({ id: c.id, name: c.name, level: e.levels[c.id] ?? c.level, mine: c.owner === me,
       classLine: c.classId ? ((CLASS as any)[c.classId]?.name || cap(c.classId)) : 'no class yet', boons: (e.boons?.[c.id] || []).map((id) => relicRow(id)?.name || id).join(', ') || 'none' }));
     summary = { how: e.how, kicker: 'SURVIVAL · SEED ' + r.seed, title: e.how === 'retired' ? 'The squad retired' : 'The squad fell',
-      lines: [plural(e.cleared, 'stage') + ' cleared', plural(e.nodes, 'node') + ' walked', (e.how === 'lost' ? 'fell at stage ' + e.stage : 'retired after stage ' + e.stage), 'renown ' + (e.renown || 0)], stages, members };
+      lines: [plural(e.cleared, 'stage') + ' cleared', plural(e.nodes, 'stop') + ' walked', (e.how === 'lost' ? 'fell at stage ' + e.stage : 'retired after stage ' + e.stage), 'renown ' + (e.renown || 0)], stages, members };
   }
   return { stage: r.stage, state: r.state, isHost, solo, boons, tiles, waiting, canGo: isHost && !solo && leaned > 0 && r.state === 'tile', canRetire: !runRetireProblem(g, me), myTile: r.leans[me] || null, summary };
 }

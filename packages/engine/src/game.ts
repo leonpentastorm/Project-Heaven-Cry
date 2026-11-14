@@ -3140,7 +3140,7 @@ function runAction(g: GameState, a: Action, by: string) {
       for (const c of Object.values(g.characters)) { c.credits = 0; earnCredits(c, survivalRun.start_credits); }
       // rules 1.52: the camp before node 1: everyone builds a loadout (gear is given by the mode)
       openCamp(g.run, Object.values(g.characters));
-      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. At the camp, each of you takes one weapon and a focus free, and ' + LOADOUT.budget + ' credits to spend; the rest is kept.' });
+      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. At the camp, take one weapon and one focus free, and spend up to ' + LOADOUT.budget + ' credits; what you don\'t spend, you keep.' });
       if (a.camp === 'recommended') { if (!g.settings.test) fail('Skipping the camp is for the test room only.'); campClose(g); }
       return;
     }
@@ -3163,16 +3163,16 @@ function runAction(g: GameState, a: Action, by: string) {
       return;
     }
     case 'run/go': { // the host takes the squad at once: the node most marked, a tie to the host's own mark
-      if (!isHost(g, by)) fail('Only the host sends the squad on before everyone has marked a node.');
+      if (!isHost(g, by)) fail('Only the host can send the squad on before everyone has marked a stop.');
       if (g.run?.state === 'tile') { const w = leanWinner(g, true, (g.run.tiles || []).map((t) => t.id)); if (!w) fail('Mark a tile first.'); runTile(g, w!); return; } // rules 1.44: a tile goes like a node
-      const w = leanWinner(g, true); if (!w) fail('Mark a node first.');
+      const w = leanWinner(g, true); if (!w) fail('Mark a stop first.');
       const no = runMoveProblem(g, by, w!); if (no) fail(no);
       runEnter(g, w!); return;
     }
     case 'run/pick': { // rules 1.41 (spec rule 26): one weapon of three, or the credits instead
       const r = g.run!, o = r.offers?.[a.charId], c = g.characters[a.charId];
       if (r.state !== 'reward' || !o || !c) fail('There is nothing to pick for that character now.');
-      if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ' (or the host, for an away player).');
+      if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ', or the host while they are away.');
       if (a.choice === 'credits') { earnCredits(c!, o!.instead); stageLog(r).credits += o!.instead; push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.' }); }
       else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
@@ -3203,7 +3203,7 @@ function runAction(g: GameState, a: Action, by: string) {
     case 'run/sell': { const res = shopSell(g, by, a); if ('no' in res) fail(res.no); return; } // rules 1.42 (spec rule 27)
     case 'run/leave': { // rules 1.42 (spec rule 11, 8.3): Ready to leave; the party goes when everyone is, or when the host closes
       const res = leaveShop(g, by, !!a.close); if ('no' in res) fail(res.no);
-      if ('left' in res && res.left) push(g, { kind: 'system', head: 'THE SHOP', text: (res.line ? res.line + ' ' : '') + 'The squad is back on the road.' });
+      if ('left' in res && res.left) push(g, { kind: 'system', head: 'THE SHOP', text: (res.line ? res.line + ' ' : '') + 'The squad is back on the trail.' });
       return;
     }
     case 'run/skip': { // tests only (the browser suites' room): the fight under way is won at once
@@ -3215,7 +3215,7 @@ function runAction(g: GameState, a: Action, by: string) {
     case 'run/boon': { // rules 1.44 (spec rules 30, 31): one boon of the character's offer, a relic for the rest of the run
       const r = g.run!, c = g.characters[a.charId], offer = r.boons?.[a.charId];
       if (r.state !== 'boon' || !offer || !c) fail('There is no boon to pick for that character now.');
-      if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ' (or the host, for an away player).');
+      if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ', or the host while they are away.');
       const id = offer![Number(a.choice)], no = boonProblem(c!, offer, id); if (no) fail(no);
       c!.relics = [...(c!.relics || []), id!];
       stageLog(r).boons = { ...stageLog(r).boons, [c!.id]: id! };
@@ -3238,7 +3238,7 @@ function runAction(g: GameState, a: Action, by: string) {
       closeVisit(g.run!);
       g.run = endRun(g.run!, 'retired', levels, runScore(g)); g.phase = 'lobby'; // rules 1.41: the room is back in its lobby, the score kept in g.run
       const e = g.run.end!;
-      push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad retires: ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' node' : ' nodes') + ' walked. The score is kept.' });
+      push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad retires: ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' stop' : ' stops') + ' walked. The score is kept.' });
       return;
     }
     default: fail('No such run action: ' + a.type + '.');
@@ -3250,7 +3250,7 @@ function campClose(g: GameState) { const res = campReady(g, g.hostId, { close: t
 function campDone(g: GameState) {
   const r = g.run!; r.state = 'map';
   for (const c of Object.values(g.characters)) push(g, { kind: 'system', charId: c.id, text: c.name + ' sets out with ' + (c.weapon === 'fists' ? 'bare fists' : 'the ' + (WEAPON[c.weapon]?.name || c.weapon)) + (c.offHand ? ' and the ' + ((ITEM as any)[c.offHand.id]?.name || WEAPON[c.offHand.id]?.name || c.offHand.id) : '') + ', ' + creditsOf(c) + ' credits kept.' });
-  push(g, { kind: 'system', head: 'SURVIVAL', text: 'The squad leaves the camp. Pick the first node.' });
+  push(g, { kind: 'system', head: 'SURVIVAL', text: 'The squad leaves the camp. Choose your first stop.' });
 }
 /** Rules 1.46: a line of the visit's log at the safe node the party stands on (the shop's log and its face's line of
  * that kind, or the visit's own log), so every full-screen place shows what was done there, a give included. */
@@ -3286,7 +3286,7 @@ function runTile(g: GameState, id: string) {
   closeVisit(r);
   g.run = enterStage(r, t!);
   newScene(g, 'Stage ' + g.run.stage + ' · ' + (SETTING[t!.setting]?.name || t!.setting));
-  push(g, { kind: 'system', head: 'STAGE ' + g.run.stage, text: 'Stage ' + g.run.stage + ' begins on ' + (SETTING[t!.setting]?.name || t!.setting) + ': a fresh path, harder fights. Pick the first node.' });
+  push(g, { kind: 'system', head: 'STAGE ' + g.run.stage, text: 'Stage ' + g.run.stage + ' begins on ' + (SETTING[t!.setting]?.name || t!.setting) + ': a fresh map, harder fights. Choose your first stop.' });
 }
 /** Rules 1.44: a safe node's visit is over: the grade steps bought there go into the stage's log. */
 function closeVisit(r: RunState) {
@@ -3304,7 +3304,7 @@ function runEnter(g: GameState, id: string) {
   const r = g.run!, n = runNode(r, id)!, word = (MAP_DATA.words as any)[n.kind] || n.kind;
   closeVisit(r); stageLog(r).nodes++; // rules 1.44: the stage's log
   r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null; r.visit = null;
-  newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The gate' : word) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows);
+  newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The Gate' : word) + ' · stop ' + n.depth + ' of ' + MAP_DATA.rows);
   if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss' || n.kind === 'vault_guard') { runFight(g, n); return; }
   if (n.kind === 'shop') { // rules 1.42 (spec 8.3): no node card: the shop opens full screen at once
     const sh = openShop(r, n, runSetting(r)), f = FACES.find((x) => x.id === sh.face);
@@ -3373,7 +3373,7 @@ function runFightOver(g: GameState) {
     const levels: Record<string, number> = {}; for (const c of chars) levels[c.id] = c.level;
     g.run = endRun(r, 'lost', levels, runScore(g)); g.phase = 'lobby';
     const e = g.run.end!;
-    push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad falls at stage ' + e.stage + ', node ' + n.depth + ': ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' node' : ' nodes') + ' walked. The score is kept.' });
+    push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad falls at stage ' + e.stage + ', stop ' + n.depth + ': ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' stop' : ' stops') + ' walked. The score is kept.' });
     return;
   }
   const back: string[] = [];
@@ -3385,8 +3385,8 @@ function runFightOver(g: GameState) {
     ammo[c.id] = runAmmo(c, packCount(k));
     offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
   }
-  if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP: the squad won.' });
-  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the ammunition pack, and a weapon to pick (or credits instead).' });
+  if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits and ammunition, and a weapon to pick or credits instead.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'reward'; r.offers = offers;
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit

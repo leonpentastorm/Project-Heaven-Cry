@@ -48,7 +48,7 @@ export function modeCards(g: GameState, isHost: boolean, send: (play: PlayMode) 
   const play = playOf(g), lobby = g.phase === 'lobby';
   return MODES.map((m) => {
     const selected = m.id === play, locked = !isOpen(m);
-    const why = locked ? m.coming || 'Coming later.' : !isHost ? 'Only the host picks this.' : !lobby ? 'The mode is picked in the lobby.' : '';
+    const why = locked ? m.coming || 'Not open yet.' : !isHost ? 'Only the host picks the mode.' : !lobby ? 'The mode is picked in the lobby.' : '';
     return {
       key: m.id, name: m.name.toUpperCase(), line: m.line, art: m.art_pending ? '' : m.art || '',
       selected, locked, checked: selected ? 'true' : 'false',

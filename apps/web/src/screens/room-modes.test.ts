@@ -42,7 +42,7 @@ describe('the mode picker: three cards from data', () => {
     expect(c.map((m: any) => m.checked)).toEqual(['true', 'false', 'false']);
     expect(c.map((m: any) => m.status)).toEqual(['Selected', 'Coming', 'Coming']);
     expect(c.map((m: any) => m.locked)).toEqual([false, true, true]);
-    expect(c[1].tip).toBe('Coming after the advanced classes.'); expect(c[2].tip).toBe('Coming when the campaigns are rewritten.');
+    expect(c[1].tip).toBe('Not open yet.'); expect(c[2].tip).toBe('Not open yet.');
     expect(c[1].aria).toBe('Roguelike, locked, coming');
   });
   it('a locked card picks nothing: its click opens its own hover card with the reason (no toast, no action)', () => {
@@ -62,7 +62,7 @@ describe('the mode picker: three cards from data', () => {
     store['phc.testPlay'] = 'campaign'; // even with Campaign open on this page
     G.settings.play = 'campaign';
     const c = vals().modeCards;
-    expect(c[2].checked).toBe('true'); expect(c[0].tip).toBe('Only the host picks this.');
+    expect(c[2].checked).toBe('true'); expect(c[0].tip).toBe('Only the host picks the mode.');
     c[0].onClick({ currentTarget: {} }); expect(act).not.toHaveBeenCalled(); expect(openTipOn).toHaveBeenCalled();
     expect(vals().modeWho).toBe('THE HOST PICKS');
   });
