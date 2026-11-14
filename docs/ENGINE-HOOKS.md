@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 491 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 490 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1169,7 +1169,6 @@ Families: `body`, `brain`, `heart`.
 | `stageCeiling` | `stageCeiling(stage: number): Rarity` | The highest grade a stage reaches (rule 26, rules 1.43): `rewards.ceiling` by stage (stage 1 Fine, stage 2 Masterwork, from stage 3 Relic): what its picks give and what its shops and Forges grade to. |
 | `cappedRarity` | `cappedRarity(r: Rarity, stage: number): Rarity` | A rolled rarity capped by the stage's ceiling (rule 26): a Celestial roll is a Relic (Celestial is a Relic and a quirk, and no quirk is in data yet). |
 | `doorOf` | `doorOf(c: Character): string \| null` | The door a character leans on (rule 28's preselection): the focus kind whose door skill has the most points (1 or more), else null. |
-| `OfferWhere` | `type OfferWhere = PayKind \| 'crate'` | Where a pick is made (rules 1.54, `rewards.offer` by where): a node kind that pays, or a sealed crate. |
 | `runFoeDrops` | `runFoeDrops(u: Unit): Drops` | Rules 1.54 item 3 (spec R8): what a foe of a Survival fight drops: the loot door's flag off (no weapon, magazines, loose rounds or Boss's notable thing), its kind's table rolled as before, and given materials… |
 | `weaponOffer` | `weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' \| 'elite' \| 'boss'; ammo?: number; /** rule…` | The pick at a node (rule 26; rules 1.54 item 2): `offerSize(where)` weapons within the price band, the first for the character's own door (a focus of its kind) or the category of the weapon in its hand, the re… |
 | `pickedItem` | `pickedItem(w: RunWeapon): PackItem[]` | A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove as a focus, as the creation kits and the Proving Ground's give pack one). |

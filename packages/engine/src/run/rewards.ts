@@ -122,7 +122,7 @@ export function doorOf(c: Character): string | null {
   return best;
 }
 /** Where a pick is made (rules 1.54, `rewards.offer` by where): a node kind that pays, or a sealed crate. */
-export type OfferWhere = PayKind | 'crate';
+type OfferWhere = PayKind | 'crate';
 /** Rules 1.54 item 2 (spec R7): how many weapons a pick holds where it is made (`rewards.offer`; the gate reads the
  * Elite's, as every table does). */
 const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; return t[w === 'gate' ? 'elite' : w] ?? t.fight; };
