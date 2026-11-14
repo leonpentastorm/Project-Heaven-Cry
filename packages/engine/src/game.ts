@@ -69,6 +69,7 @@ import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays 
 import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutAction, type CampBoons } from './run/loadout';
 import { gearIfBare, campaignLoadout } from './loadout';
 import { type GiveAction, giveNow } from './give';
+import { type MakeAction, makeNow } from './recipes';
 import { earnCredits, creditsOf } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -373,7 +374,7 @@ export type Action =
   | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/ask-rest'; charId: string; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string; choice?: string }
   | { type: 'gear/ammo'; charId: string; ammo: string }
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
-  | GiveAction | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
+  | GiveAction | MakeAction | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   /** Classes 3.0 P9: the owner gives one of its turn-less owned units a verb (owned.ts runOwned; paid by the owner) */
   | { type: 'combat/owned'; unitId: string; owned: string; verb: string; targetId?: string; tile?: any }
@@ -1051,6 +1052,11 @@ function reduce(g: GameState, a: Action, by: string) {
       push(g, { kind: 'system', head: 'A GIVE', text: done.ok, charId: done.to.id });
       visitNote(g, done.ok.replace(/\.$/, ''), 'gave');
       if (g.phase === 'story' && !g.run) canon(g, done.ok.replace(/\.$/, '') + ' (scene ' + g.story.scene.n + ').', [], 1);
+      return;
+    }
+    case 'gear/make': { // rules 1.54 item 5 (recipes.ts): one converter for every recipe; free, between fights only
+      const res = makeNow(g, by, a); if ('no' in res) fail(res.no);
+      push(g, { kind: 'system', text: (res as { ok: string }).ok, charId: a.charId });
       return;
     }
     case 'gear/drop': {
@@ -4192,6 +4198,7 @@ function sandboxGear(g: GameState, a: Action, by: string) {
     'magic/pick': () => ({ type: 'sandbox/learn', charId, module: (a as any).module }),
   };
   if (a.type === 'gear/load') { sbChange(g, c!, () => { if (!loadAll(c!)) fail('Nothing to load: no part-empty magazines with matching loose rounds.'); }); return; }
+  if (a.type === 'gear/make') { sbChange(g, c!, () => { const res = makeNow(g, by, a); if ('no' in res) fail(res.no); sbLog(g, (res as { ok: string }).ok); }); return; } // rules 1.54: as gear/load
   const to = m[a.type]; if (!to) fail('Unknown action.');
   sandboxAction(g, to(), by);
 }

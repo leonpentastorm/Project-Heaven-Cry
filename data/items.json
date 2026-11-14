@@ -1133,6 +1133,7 @@
     {
       "id": "casing",
       "name": "Casing",
+      "plural": "Casings",
       "category": "loot",
       "weight_kg": 0.01,
       "price_credits": 1,

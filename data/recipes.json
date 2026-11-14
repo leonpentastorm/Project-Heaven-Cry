@@ -1,0 +1,395 @@
+{
+  "$schema_version": "1.0",
+  "kind": "recipes",
+  "source": "PHC Core Rules v1.0, rules revision 1.54 items 5 to 7 (Core Rules items 4108 to 4110); docs/design/survival-spec.md section 14.3",
+  "about": "One converter for every recipe (packages/engine/src/recipes.ts; the reducer's gear/make {charId, recipe, times}). A row takes `needs` x times out of the pack and puts `gives` x times in it: free (no AP, no credits), only `where` (between_fights: never in a fight, never at 0 HP). `tool`: an item carried (a hand or the pack) or {focus: any}, any focus in a hand. `does`: the words after the tool in the refusal (\"Kade needs an ammo maker to make rounds.\"). A `gives` id is an item or `rounds:<calibre>`. The validator holds every row's needs worth what it gives at priceOf (rules 1.54 item 6: V/2 gunpowder and V/2 casings for rounds worth V).",
+  "provisional": true,
+  "items": [
+    {
+      "id": "make_32_decrkm",
+      "name": ".32 Decrkm",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 1
+        },
+        {
+          "item": "casing",
+          "n": 1
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:.32 decrkm",
+          "n": 2
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_revolver",
+      "name": "Revolver rounds",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 1
+        },
+        {
+          "item": "casing",
+          "n": 1
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:revolver",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_rifle",
+      "name": "Rifle rounds",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 1
+        },
+        {
+          "item": "casing",
+          "n": 1
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:rifle",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_shell",
+      "name": "Shell",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 3
+        },
+        {
+          "item": "casing",
+          "n": 3
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:shell",
+          "n": 2
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_700",
+      "name": ".700 Blackpoint",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 20
+        },
+        {
+          "item": "casing",
+          "n": 20
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:.700",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_arrow",
+      "name": "Arrow",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 3
+        },
+        {
+          "item": "casing",
+          "n": 3
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:arrow",
+          "n": 2
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_bolt",
+      "name": "Bolt",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 2
+        },
+        {
+          "item": "casing",
+          "n": 2
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:bolt",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_50_frontier",
+      "name": ".50 Frontier",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 2
+        },
+        {
+          "item": "casing",
+          "n": 2
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:.50 frontier",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_40_mm_grenade",
+      "name": "40 mm grenade",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 30
+        },
+        {
+          "item": "casing",
+          "n": 30
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:40 mm grenade",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_rocket",
+      "name": "Rocket",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 200
+        },
+        {
+          "item": "casing",
+          "n": 200
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:rocket",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_fuel_canister",
+      "name": "Fuel canister",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 25
+        },
+        {
+          "item": "casing",
+          "n": 25
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "rounds:fuel canister",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_armor_piercing",
+      "name": "Armour-piercing rounds",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 3
+        },
+        {
+          "item": "casing",
+          "n": 3
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "ammo_armor_piercing",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_hollow_point",
+      "name": "Hollow-point rounds",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 2
+        },
+        {
+          "item": "casing",
+          "n": 2
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "ammo_hollow_point",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "make_incendiary",
+      "name": "Incendiary rounds",
+      "needs": [
+        {
+          "item": "gunpowder",
+          "n": 3
+        },
+        {
+          "item": "casing",
+          "n": 3
+        }
+      ],
+      "tool": {
+        "item": "ammo_maker"
+      },
+      "does": "to make rounds",
+      "gives": [
+        {
+          "item": "ammo_incendiary",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    },
+    {
+      "id": "core_from_residue",
+      "name": "Standard mana core",
+      "needs": [
+        {
+          "item": "mana_residue",
+          "n": 10
+        }
+      ],
+      "tool": {
+        "focus": "any"
+      },
+      "does": "to press a core",
+      "gives": [
+        {
+          "item": "standard_core",
+          "n": 1
+        }
+      ],
+      "where": "between_fights",
+      "provisional": true
+    }
+  ]
+}
