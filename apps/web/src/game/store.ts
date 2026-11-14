@@ -318,6 +318,9 @@ const narratorSetUp = () => S.narrator.scripted || !notReadyReason(S.narrator);
 async function maybeFightRule() {
   const g = hostState;
   if (S.role !== 'host' || !g || g.phase !== 'combat' || !g.combat || g.settings.mode !== 'ai') return;
+  // A Survival run has no Narrator (rules 1.54 item 1): the engine refuses every narrator/ action while the run lives,
+  // so nothing is asked or told here (it showed a refusal toast at each run fight's start).
+  if (g.run && g.run.state !== 'over') return;
   // The engine refuses attempts while no Narrator is connected: tell it when that changes (only in a fight).
   if (!g.sandbox && !!g.narrator.offline === narratorSetUp()) { runHost({ type: 'narrator/ready', ready: narratorSetUp() }, S.me.id, null); return; }
   const r = fightRulingOf(g.combat); if (!r || fightAsked === r.id) return;

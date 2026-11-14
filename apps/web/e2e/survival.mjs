@@ -187,6 +187,11 @@ await mapFits('stage 1\'s map');
 // ---------- node 1 by hand ----------
 await p.locator('[data-phc-node="' + lit[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 });
+{ // the host's browser asks no Narrator in a run (rules 1.54 item 1): no narrator/ action is sent, so no refusal toast
+  await settle(p, 1500);
+  const seen = await p.evaluate(() => ({ mode: window.__phc.getState().game.settings.mode, toast: window.__phc.getState().toast?.text || '' }));
+  ok('a run fight starts with no refusal toast (settings.mode ' + seen.mode + ', toast "' + seen.toast + '")', !/no Narrator and no story|refused/i.test(seen.toast));
+}
 r = await run();
 ok('a lit node is taken: the fight begins (' + r.stats.fights[0].template + ', ' + r.stats.fights[0].foes.length + ' foe(s))', r.at === lit[0] && r.state === 'fight');
 { // rules 1.51: the starting boon is felt in the first fight: Zeroed a +1 term named for it on a shot; Set Feet a Guard point
