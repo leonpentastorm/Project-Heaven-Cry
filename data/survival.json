@@ -16,7 +16,7 @@
     "pressure": 0.35,
     "credits": 0.35,
     "xp": [1, 1, 1.1, 1.25, 1.25],
-    "elite_up": { "per": 2, "max": 5 },
+    "elite_up": { "per": 2, "max": 4 },
     "provisional": true
   },
   "rounds": { "about": "Rules 1.41 (spec rule 17): the target rounds R of a fight by node kind; a plain fight at depth early_depth or less is fight_early.", "fight": 5, "fight_early": 4, "early_depth": 2, "elite": 6.5, "gate": 6.5, "boss": 9, "vault_guard": 6.5, "provisional": true },
