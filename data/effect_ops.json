@@ -4277,7 +4277,7 @@
     {
       "id": "mend_mult",
       "tier": "core",
-      "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing: a prayer's, perk...). Runs on the triggers heal and shield.",
+      "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk...). Runs on the triggers heal and shield.",
       "count": 0,
       "params": [
         "and",
@@ -4701,7 +4701,7 @@
       },
       "how": {
         "arg": "words",
-        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing: every prayer's, perk, stim, leech, thread)"
+        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread)"
       },
       "ap_above": {
         "arg": "number",
@@ -5255,7 +5255,7 @@
           "value"
         ],
         "changes_state": false,
-        "about": "multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing: a prayer's, perk…)"
+        "about": "multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk…)"
       },
       "floor": {
         "on": [

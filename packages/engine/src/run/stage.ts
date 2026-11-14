@@ -7,7 +7,7 @@
 // changes the state. Every pick comes from a named stream of the run's seed (rule 12), never the fight's dice.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { type Character, xpForLevel, holds, isGunId, FOCUS_DOOR } from '../character';
+import { type Character, xpForLevel, holds, isGunId, inHands, FOCUS_DOOR } from '../character';
 import { SKILL, WEAPON } from '../data';
 import { rngFor, die, type Rng } from '../rng';
 import { SETTING, SETTINGS, type SettingDef } from './encounter';
@@ -36,7 +36,7 @@ export const poolBoons = (pool: string): RelicRow[] => BOONS.filter((b) => (b.po
 /** Does this character hold this boon already (as a boon, a shrine's token or a graft of it)? No boon twice (rule 31). */
 export const holdsBoon = (c: Character, id: string): boolean => (c.relics || []).some((r) => r === id || r === graftOf(id));
 /** Does a boon do anything for this character (its `doors`: the door skills it serves, one point in any; none: all)? */
-export const boonServes = (c: Character, b: RelicRow & { doors?: string[] }): boolean => !b.doors || b.doors.some((k) => (c.skills[k] || 0) >= 1);
+export const boonServes = (c: Character, b: RelicRow & { doors?: string[] }): boolean => (!b.doors || b.doors.some((k) => (c.skills[k] || 0) >= 1)) && boonWorks(c, b);
 
 const draw = <T>(rng: Rng, from: T[], n: number, out: T[] = []): T[] => { const p = [...from]; while (out.length < n && p.length) out.push(p.splice(die(rng, p.length) - 1, 1)[0]); return out; };
 /** The boons offered to a character after the Boss of a tile of this pool (rules 30, 31): `BOON_PICK.offer` distinct,
@@ -64,7 +64,21 @@ export const START_BOON: { offer: number; main: number; second: number; max_wort
  * spare magazines the gun in hand is topped up to. */
 export const CAMP: { issue_armour: number; spare_mags: number } = SV.camp;
 const ORDER = Object.keys(START_BOON.lines); // the alpha skills in the lines' order (the tie-break)
-const weaponLine = (id: string | null | undefined): string => { const w: any = id ? WEAPON[id] : null; return w && w.category !== 'unarmed' && !isGunId(id) && (/melee/.test(w.category) || w.phys?.system === 'melee') ? 'blades' : 'guns'; };
+/** A weapon's line: a melee weapon or empty hands (fists) blades; anything else (a gun, a bow, a crossbow) guns. */
+const weaponLine = (id: string | null | undefined): string => { const w: any = id ? WEAPON[id] : null; return !w || w.category === 'unarmed' || (!isGunId(id) && (/melee/.test(w.category) || w.phys?.system === 'melee')) ? 'blades' : 'guns'; };
+const doorHeld = (c: Character, k: string): boolean => holds(c, { slot: 'hand', door: k }) && (c.skills[FOCUS_DOOR[k as keyof typeof FOCUS_DOOR]] || 0) >= 1;
+/** Does this boon do anything for this character as it stands (its `needs`, BoonNeeds; rules 1.51 item 2)? The offer
+ * serves only rows that work: a Sigil row needs an Evoker in hand with Brain Power, a gun row a gun in hand, and so on. */
+export function boonWorks(c: Character, b: RelicRow): boolean {
+  const n = b.needs; if (!n) return true;
+  if (n.door && ![n.door].flat().some((k) => doorHeld(c, k))) return false;
+  if (n.weapon) {
+    const hands = inHands(c);
+    const ok = n.weapon === 'gun' ? hands.some((id) => isGunId(id)) : n.weapon === 'melee' ? weaponLine(c.weapon) === 'blades' || hands.slice(1).some((id) => weaponLine(id) === 'blades' && !!WEAPON[id]) : hands.some((id) => !!WEAPON[id] && weaponLine(id) === 'guns');
+    if (!ok) return false;
+  }
+  return Object.entries(n.skill || {}).every(([k, v]) => (c.skills[k] || 0) >= v);
+}
 /** The alpha skills a character has 1 point or more in, best first: by the attribute's value, then the skill's points,
  * then the lines' order (rule 49 b). */
 const alphaOrder = (c: Character): string[] => ORDER.filter((k) => (c.skills[k] || 0) >= 1)
@@ -74,10 +88,11 @@ const alphaOrder = (c: Character): string[] => ORDER.filter((k) => (c.skills[k] 
  * line), else the best alpha skill's line, else the main hand's weapon (guns; a melee weapon blades). `second`: the main
  * hand's weapon if it differs, else the next alpha skill's line, else the other weapon line. */
 export function lineOf(c: Character): { main: string; second: string } {
-  const held = Object.keys(START_BOON.focus_lines).find((k) => holds(c, { slot: 'hand', door: k }) && (c.skills[FOCUS_DOOR[k as keyof typeof FOCUS_DOOR]] || 0) >= 1);
-  const alpha = alphaOrder(c).map((k) => START_BOON.lines[k]), weapon = weaponLine(c.weapon);
-  const main = held ? START_BOON.focus_lines[held] : alpha[0] || weapon;
-  const second = weapon !== main ? weapon : alpha.find((l) => l !== main) || (weapon === 'guns' ? 'blades' : 'guns');
+  const works = (l: string) => lineBoons(l).some((b) => boonWorks(c, b));
+  const held = Object.keys(START_BOON.focus_lines).filter((k) => doorHeld(c, k)).map((k) => START_BOON.focus_lines[k]);
+  const alpha = alphaOrder(c).map((k) => START_BOON.lines[k]).filter(works), weapon = weaponLine(c.weapon);
+  const main = held[0] || alpha[0] || weapon;
+  const second = held.find((l) => l !== main) || (weapon !== main && works(weapon) ? weapon : alpha.find((l) => l !== main) || (weapon !== main ? weapon : weapon === 'guns' ? 'blades' : 'guns'));
   return { main, second };
 }
 /** The starting boons of a line (data order). */
@@ -87,7 +102,7 @@ export const lineBoons = (line: string): RelicRow[] => START_BOONS.filter((b) =>
  * too few rows is filled from the second line, then from every row, so the offer always holds `START_BOON.offer`. */
 export function startOffer(c: Character, seed: string): string[] {
   const rng = rngFor(seed, 'camp#start#' + c.id), l = lineOf(c), out: RelicRow[] = [];
-  const from = (list: RelicRow[], n: number) => draw(rng, list.filter((b) => !out.includes(b) && b.worth <= START_BOON.max_worth), out.length + n, out);
+  const from = (list: RelicRow[], n: number) => draw(rng, list.filter((b) => !out.includes(b) && b.worth <= START_BOON.max_worth && boonWorks(c, b)), out.length + n, out);
   from(lineBoons(l.main), START_BOON.main);
   from(lineBoons(l.second), START_BOON.offer - out.length);
   from(START_BOONS, START_BOON.offer - out.length);

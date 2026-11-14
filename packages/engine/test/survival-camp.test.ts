@@ -6,7 +6,7 @@
 // (magazines, the cores burnt back between 1 and 2 x n, the MP share, Bandolier on all of it, Flux 0 after a run's
 // fight, the loaded charge full at a Rest).
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, START_BOONS, START_BOON, CAMP, BOONS, BOON_CAP, runWorth, capRoom, worthOf, relicRow, lineOf, lineBoons, startOffer, isStartBoon,
+import { type GameState, apply, RuleError, boonWorks, boonServes, FOCUS_IDS, START_BOONS, START_BOON, CAMP, BOONS, BOON_CAP, runWorth, capRoom, worthOf, relicRow, lineOf, lineBoons, startOffer, isStartBoon,
   ammoPack, supplyMp, chargeHeld, coresBurnt, maxMp, mpNow, previewAttack, toHitTerms, applyDamage, price, emit, bindGame, glyphCost, packOf, magazineWorth, KITS, newCharacter, CORE_CHARGE, VIS_CHARGE, healUnit, FAITH_PATRON } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
@@ -57,7 +57,7 @@ describe('rules 1.51: the offer by line (spec rule 49)', () => {
     for (const l of Object.values(START_BOON.lines)) expect(lineBoons(l).length, l).toBeGreaterThanOrEqual(2);
     for (const l of ['guns', 'blades', 'sigil', 'outburst']) expect(lineBoons(l).map((b) => b.worth).sort(), l).toEqual([4, 5, 6]);
     for (const b of START_BOONS) expect(BOONS.some((x) => x.id === b.id)).toBe(false);
-    expect(START_BOONS).toHaveLength(24);
+    expect(START_BOONS).toHaveLength(SV.start_boons.length); expect(START_BOONS.length).toBeGreaterThanOrEqual(24);
   });
 });
 
@@ -197,9 +197,61 @@ describe('rules 1.51: each starting boon through its door (survival-spec 13.3), 
     const hymn = (FAITH_PATRON as any).mother_ember.hymns.find((h: any) => h.effects.some((e: any) => e.op === 'heal')).id;
     const h0 = prayed([], 'hymn', hymn), h1 = prayed(['start.shelter'], 'hymn', hymn);
     expect(h0).toBeGreaterThan(0); expect(h1).toBeGreaterThan(h0);
+    // Covering Prayer (the Faith line's third row): a real Whisper of Protection's shield, with and without it
+    const shielded = (relics: string[]) => {
+      const f = fightWith([{ name: 'Priest', skills: { faith: 5 }, relics }, { name: 'Ally' }], [{ at: 'F6' }]);
+      const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'mother_ember' }; c.patron = 'mother_ember'; c.devotion = 6;
+      const [pr, al] = f.pcs; pr.pos = '2,5'; al.pos = '2,6'; f.turn(pr); const a = f.unit(al.id); a.shield = 0; delete (a as any).shields;
+      f.act({ type: 'faith/pray', unitId: pr.id, kind: 'whisper', id: 'protection', targetId: al.id } as any);
+      return f.unit(al.id).shield || 0;
+    };
+    const s0 = shielded([]), s1 = shielded(['start.covering_prayer']);
+    expect(s0).toBeGreaterThan(0); expect(s1).toBe(Math.floor(s0 * row('start.covering_prayer').effects[0].value));
+    expect(shielded(['start.shelter'])).toBe(s0); // Shelter is the heals', not the shields'
   });
   it('every starting boon\'s worth lands on the cap when it is taken', () => {
     for (const b of START_BOONS) { const c: any = { relics: [b.id], weapon: 'service_pistol', pack: [] }; expect(runWorth(c)).toBe(b.worth); expect(capRoom(c)).toBe(BOON_CAP - b.worth); expect(relicRow(b.id)!.text).not.toMatch(/\{=/); }
+  });
+});
+
+describe('rules 1.51 (the review): the offer serves only cards a character can use', () => {
+  const mk = (kit: string, skills: Record<string, number>, attrs: Record<string, number> = {}): any => newCharacter('x', 'host', { name: 'X', portrait: '', origin: '', kit, traits: [], skills, attrs, cores: { body: 1, mind: 1, soul: 1 }, identity: {} } as any);
+  const seeds = Array.from({ length: 40 }, (_, i) => 'S' + i);
+  const usable = (c: any) => { for (const s of seeds) { const o = startOffer(c, s); expect(new Set(o).size).toBe(START_BOON.offer); for (const id of o) expect(boonWorks(c, row(id)), id + ' on seed ' + s).toBe(true); } };
+  it('a Mender (Attuner, no Emanator) is never offered an Outburst card; its Bonds line has three rows that work with the Attuner', () => {
+    const c = mk('mender', { empathy: 2, dexterity: 1 });
+    usable(c);
+    for (const s of seeds) expect(startOffer(c, s)).not.toContain('start.clear_pulse');
+    expect(lineBoons('bonds').filter((b) => boonWorks(c, b))).toHaveLength(3);
+  });
+  it('Brain Power with no Evoker in hand opens no Sigil card (a soldier with Brain Power 3)', () => {
+    const c = mk('soldier', { brain_power: 3, dexterity: 1 }, { intelligence: 4 });
+    expect(lineOf(c).main).not.toBe('sigil');
+    usable(c);
+    for (const s of seeds) expect(startOffer(c, s).some((id) => row(id).lines.includes('sigil'))).toBe(false);
+  });
+  it('a character with two doors (an Evoker and an Emanator, both door skills) is offered from both', () => {
+    const c = mk('sigil', { brain_power: 2, will_power: 2 });
+    c.weapon = FOCUS_IDS.emanator.find((id: string) => !/katana|gauntlet/.test(id)) || FOCUS_IDS.emanator[0];
+    const l = lineOf(c); expect([l.main, l.second].sort()).toEqual(['outburst', 'sigil']);
+    usable(c);
+    for (const s of seeds.slice(0, 10)) { const lines = startOffer(c, s).flatMap((id) => row(id).lines); expect(lines).toContain('sigil'); expect(lines).toContain('outburst'); }
+  });
+  it('the Faith line has three rows that work for a praying character; a Faith 3 soldier sees three real cards', () => {
+    const c = mk('soldier', { faith: 3 }, { virtue: 4 });
+    expect(lineOf(c).main).toBe('faith');
+    expect(lineBoons('faith').filter((b) => boonWorks(c, b))).toHaveLength(3);
+    usable(c);
+  });
+  it('every kit and reference build is offered three distinct cards that all work for it', () => {
+    for (const kit of Object.keys(KITS)) usable(mk(kit, { dexterity: 1 }));
+    for (const b of BUILDS) { const g = camp([{ build: b.id, level: 1 }]), c = g.characters.c1; for (const id of g.run!.boons!.c1) expect(boonWorks(c, row(id)), b.id + ' ' + id).toBe(true); }
+  });
+  it('after a Boss: Steady Heart is not served to an Attuner with Empathy alone; Sure Script needs the Evoker in hand', () => {
+    expect(boonServes(mk('mender', { empathy: 3 }), row('boon.steady_heart'))).toBe(false);
+    expect(boonServes(mk('soul', { will_power: 3 }), row('boon.steady_heart'))).toBe(true);
+    expect(boonServes(mk('soldier', { brain_power: 3 }), row('boon.sure_script'))).toBe(false);
+    expect(boonServes(mk('sigil', { brain_power: 3 }), row('boon.sure_script'))).toBe(true);
   });
 });
 

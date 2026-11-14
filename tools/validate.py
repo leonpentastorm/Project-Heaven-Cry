@@ -2500,6 +2500,18 @@ if _sv is not None:
             for _ei, _e in enumerate(_it.get("effects") or []): check_trigger_effect(_e, f"{_w} effect {_ei}")
         for _l, _n in _per_line.items():
             if _n < 2: errors.append(f"survival:start_boons: the line {_l!r} has {_n} rows (at least two)")
+        # a boon's needs (run/power.ts BoonNeeds): a focus kind in hand, a weapon kind, skill points; general rows (none)
+        # are the offer's filler, so at least three must work for anyone
+        _skill_ids = {k["id"] for k in data["skills"]["items"]}
+        for _it in (_sv.get("start_boons") or []) + (_sv.get("boons") or []):
+            _nd = _it.get("needs")
+            if _nd is None: continue
+            _w = f"survival:{_it.get('id')}.needs"
+            if not isinstance(_nd, dict) or not set(_nd) <= {"door", "weapon", "skill"}: errors.append(f"{_w}: an object of door, weapon, skill"); continue
+            if "door" in _nd and not set([_nd["door"]] if isinstance(_nd["door"], str) else _nd["door"]) <= {"evoker", "emanator", "attuner", "visualizer"}: errors.append(f"{_w}.door: focus kinds")
+            if "weapon" in _nd and _nd["weapon"] not in ("gun", "ranged", "melee"): errors.append(f"{_w}.weapon: gun, ranged or melee")
+            if "skill" in _nd and not (isinstance(_nd["skill"], dict) and set(_nd["skill"]) <= _skill_ids and all(_num(v) and v >= 1 for v in _nd["skill"].values())): errors.append(f"{_w}.skill: skill ids to points (1 or more)")
+        if sum(1 for _it in _sv.get("start_boons") or [] if not _it.get("needs")) < 2: errors.append("survival:start_boons: at least two rows with no needs (the filler every character can use)")
     _ap = _sv.get("ammo_pack") or {}
     if "cores_max" in _ap and not (_num(_ap["cores_max"]) and _num(_ap.get("cores")) and _ap["cores_max"] >= _ap["cores"]): errors.append("survival:ammo_pack.cores_max: a number at least cores")
     if "mp_share" in _ap and not (_num(_ap["mp_share"]) and 0 <= _ap["mp_share"] <= 1): errors.append("survival:ammo_pack.mp_share: a share of max MP from 0 to 1")

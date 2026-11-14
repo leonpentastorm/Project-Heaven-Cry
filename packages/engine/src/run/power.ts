@@ -15,7 +15,11 @@ import { die, type Rng } from '../rng';
 
 const SV: any = svJ;
 /** One relic row of survival.json (a Relic property, a boon or a graft): an item with its worth. */
-export interface RelicRow { id: string; kind: 'relic'; name: string; worth: number; text: string; effects: any[]; fits?: string[]; pools?: string[]; adjudication: string; provisional?: boolean }
+/** What a boon needs to do anything for its holder (survival.json `needs` on a starting or Boss boon; rules 1.51 item 2):
+ * a focus in a hand whose door skill has 1 point or more (`door`, any of a list), a weapon in a hand (`weapon`: gun, ranged
+ * or melee; empty hands are melee), and skill points (`skill`). A row with no `needs` works for anyone. */
+export interface BoonNeeds { door?: string | string[]; weapon?: 'gun' | 'ranged' | 'melee'; skill?: Record<string, number> }
+export interface RelicRow { id: string; kind: 'relic'; name: string; worth: number; text: string; effects: any[]; fits?: string[]; pools?: string[]; adjudication: string; provisional?: boolean; needs?: BoonNeeds }
 /** The run's cap (survival.json boon_cap.cap): the most run power a character carries, in percent of a rifle-turn. */
 export const BOON_CAP: number = SV.boon_cap.cap;
 /** The Relic properties (survival.json relic_props): a Relic step's choice, a picked Relic's roll. */
