@@ -44,7 +44,24 @@ write it the same way) and none other. Lint baselines unchanged. `docs/ENGINE-HO
 
 ## 3. Proof
 
-(filled at the close; see section 7)
+- Engine: `test/survival-camp.test.ts` (28): the offer by line (a Sigilist two Sigil cards and a gun card; a level 1
+  gunner two of its main line and its rifle's; a focus names the line; every reference build three distinct real cards,
+  the same on a seed; every line two rows or more, every damage line the 6 / 5 / 4 shape, no row in both pools); the
+  camp through the reducer (the map waits; a player's pick; refusals in words; the host picks for an away player; the
+  host's go and the first card; the cap); the camp's issue (class 3 free, once, refused after; three spare magazines);
+  each starting boon through its own door with its number from data, and its worth on the cap; the six caster boons
+  likewise; the supply pack per resource (cores 1 to 2 x n by what was burnt, none without the focus; MP 30% x n,
+  Bandolier doubling all of it; through the reducer: the burnt core back, Flux 0, the MP share landed and named; a Rest
+  fills the loaded core; magazines as before); a seeded run through the camp twice the same.
+- The Survival suites updated for the camp (`survival-run`, `-stage`, `-progress`, `-shop`, `-give`, `-repair`,
+  `-vault`, `-tally`, `run-state`, `old-save`); the tally's opening-turn fix; nineteen boons.
+- Pins: golden tables and `replays.json` **did not move** (nothing re-recorded); lint baselines unchanged.
+- Web: `campView.test.ts` (3; the cards, the issue, the marks, the squad panel's held boons), `runTally.test.ts`.
+- Browser (port 9021, `--base`): `survival` **109 checks green** (the camp's cards and lines, the issue, the map waiting,
+  the pick, the squad panel's "Camp" and cap, the boon felt in the first fight, the supply pack after it, two browsers'
+  "Chosen" marks and the host's go, then everything before); `room` and the smoke group green; `kit-map` green alone
+  (beside the others its character creation timed out once on a loaded machine).
+- Screenshots of the camp (deviceScaleFactor 2): the session scratchpad's `startboon-1280.png`, `startboon-1920.png`.
 
 ## 4. The measure (before and after)
 
