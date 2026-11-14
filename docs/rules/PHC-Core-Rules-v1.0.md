@@ -5716,6 +5716,13 @@ PROVISIONAL (items 3800 onward) and lives in `data/survival.json` (`start_boon`,
    the Outburst caster Releases at the stage that drops its target (stage 0 or 1 on Vermin and Minions); the caster
    builds take the camp's armour; every build picks its starting boon (+1 to hit, else +5% damage, else the first card).
    Echo stays unplayed for every build.
+9. **What the measure found** (survival-starting-boons.md section 4; 3 routes x 4 seeds, stages capped at 5; before is
+   rules 1.50's run): the solo Channeler clears stage 1 in 9 of 12 (was 2), four casters reach stage 3 in half their runs
+   (was 1 in 4), the Rigger pictures a Figment in every fight, squads of four still end in stage 3 or 4; the solo
+   Sigilist clears stage 1 in 3 of 12 (was 0; target 7: the Sigil Line at low Brain Power, survival-spec 13.9.3) and a
+   healer alone stalls in 5 of 12; the solo gunner clears stage 1 in 11 of 12 (was 9; 32 of 36 against 28 on three
+   times the seeds), which the forced cell shows is the seeded dice of a changed turn, not a boon's size. One lever at
+   a time, the camp's armour is the one that moves a caster at stage 1. No dial was moved.
 
 ## Maps (rules 1.16)
 
@@ -9045,3 +9052,6 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3812. **The rigger and mender kits (rules 1.51 item 6):** `rigger` (Visualizer, service pistol, 4 standard cores, padded coat class 1) and `mender` (Attuner, service pistol, a field kit, medic plate class 2). PROVISIONAL.
 3813. **Primed (rules 1.51 item 7):** "Flux −2" and "Strain −1" struck; Guard +2, Momentum +1, Shadow +1 as built. PROVISIONAL.
 3814. **The simulator's caster policies (rules 1.51 item 8):** as rules 1.51 item 8 says (survival-spec 13.6). PROVISIONAL.
+3815. **The measure of rules 1.51 (rules 1.51 item 9):** solo Channeler stage 1 in 9 of 12 (was 2), solo Sigilist 3 of 12 (was 0), solo healer 8 of 12 with 5 stalled, solo Rigger 4 of 12 with a Picture in every fight, four casters reach stage 3 in 2 of 4 (was 1), squads of four end at 3.7, 4.2, 3.9 (were 3.4, 4.3, 4.4), solo gunner 11 of 12 (was 9). PROVISIONAL.
+3816. **Not reached (rules 1.51 item 9):** the solo Sigilist's 7 of 12 (a Sigil fix at levels 1 to 5, its own revision) and the healer's stalls at most 2 of 12 (the Mender's damage). PROVISIONAL.
+3817. **Items 3800 to 3817 are rules 1.51's.**

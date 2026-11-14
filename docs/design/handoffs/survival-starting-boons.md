@@ -48,13 +48,66 @@ write it the same way) and none other. Lint baselines unchanged. `docs/ENGINE-HO
 
 ## 4. The measure (before and after)
 
-(filled when the measure has run)
+`packages/engine/test/balance/survival-run.ts`, stages capped at 5, the steps 9-10 cells (3 routes x seeds SIM-1 to 4)
+and the caster cells. **Before** is this branch with `SIM_LEVERS=none` (rules 1.50's run: the balance pass's caster
+policies, no supply share, no camp armour, the starting boon taken off; it reproduces survival-steps-9-10.md's solo
+gunner exactly: 2.6, 3.1, 3.0). **After** is every lever on. Stage-1 clears are of 12 runs (4 a route) unless named.
+
+| Cell | Before | After | Target (spec 13.7) |
+| --- | --- | --- | --- |
+| Solo gunner: stage 1 cleared; mean end (gear, training, safest) | 9 of 12; 2.6, 3.1, 3.0 | 11 of 12; 2.8, 3.0, 3.4 | within ±1 of 9; means ±0.3: **over by one** (see below) |
+| Solo gunner, 12 seeds a route (SIM-1 to 12) | 28 of 36; 2.4, 3.6, 3.1 | 32 of 36; 2.9, 3.6, 3.5 | +1.3 a 12 |
+| Solo Sigilist | 0 of 12; 1.2, 1.4, 1.2 | **3 of 12**; 1.3, 1.7, 1.8 | 7 of 12: **missed** (13.9.3) |
+| Solo Channeler (Outburst) | 2 of 12; 1.5, 1.6, 1.7 | **9 of 12**; 2.7, 3.1, 2.8 | 7 of 12: met |
+| Solo healer (the Mender's policy) | gear 0 of 4, 2 stalled | 8 of 12; 3.7, 3.1, 2.8; **5 of 12 stalled** | stalls at most 2 of 12: missed |
+| Solo Rigger | gear 0 of 4 (no Figment ever) | 4 of 12; a Picture in **89 of 89** fights | pictures in 80%: met |
+| Four casters, gear: stage 1 / reach stage 3; median end | 2 of 4 / 1 of 4; 1.7 | 3 of 4 / **2 of 4**; 2.7 (mean 4.1, two capped at stage 5) | half reach stage 3: met; median 3.0: just under |
+| Mixed (gunner, Sigil, Outburst, healer), gear | not measured | 4 of 4 clear stage 5 | stage 1 in 10 of 12: met (4 of 4) |
+| Squad of four (gunner, Faith rifle, Sigil, healer): mean end | 3.4, 4.3, 4.4 (rules 1.50) | 3.7, 4.2, 3.9 | stage 3 or 4: met |
+| Duo (gunner, healer): mean end | 3.6, 4.0, 4.1 (rules 1.49) | 4.5, 4.0, 3.6 | stage 3 to 4 |
+
+**One lever at a time** (solo, gear route, SIM-1 to 8; stage 1 cleared of 8, mean end):
+
+| Levers on | Sigilist | Channeler |
+| --- | --- | --- |
+| none (rules 1.50) | 0, 1.2 | 0, 1.4 |
+| + the run's policies | 0, 1.2 | 0, 1.4 |
+| + the supply pack | 0, 1.2 | 0, 1.4 |
+| + the camp's armour (class 3) | 0, 1.4 | **5**, 2.8 |
+| + the starting boon | 0, 1.5 | 5, 2.8 |
+| + the caster boons | 0, 1.5 | 5, 2.8 |
+
+The armour is the lever (as the diagnosis found: casters took 14 to 19 damage a round in class 1). The supply pack and
+the policies move nothing at stage 1 on their own (the policies' worth shows in the squads: the duo's gear route 3.6 →
+4.5); the caster boons come after a Boss, so a stage-1 measure cannot see them.
+
+**The forced cell** (spec 13.7: each starting boon forced on its line's build, gear, SIM-1 to 8; stage 1 cleared of 8):
+gunner Zeroed 7, Hot Loads 7, Quick Magazine 7 (5 with none); Sigilist Steady Line 0, Bright Script 0, Quick Chalk 1;
+Channeler Clear Pulse 5, Hot Blood 5, Second Breath 4. No row dominates its line by more than a run in eight.
+
+**The fit: no dial moved.** Two targets are missed and one is over, and none of them has a dial the rules allow:
+1. **The gunner (+2 of 12 on the spec's cells, +1.3 a 12 over 36 runs).** The forced cell shows why it is not the
+   boons' size: Quick Magazine (a first reload at 0 AP, about nothing in a 3-round fight) lifts the gear route from 5
+   to 7 of 8 exactly as Zeroed does. Any change to a turn moves the seeded dice that follow it, so a different boon,
+   or none, deals the run a different hand; at 4 seeds a route that is two runs. The rule says shrink every row
+   together if it moves past noise; a +1 to hit cannot shrink, and the change is the dice's, so nothing was shrunk.
+   Call 93 for Leon.
+2. **The Sigilist (3 of 12).** As the design foresaw (13.9.3): no resource fix moves it (it never ran short of cores),
+   and its own rows forced give 0 to 1 of 8. Growing the Sigil rows alone is forbidden by the rule; the gap is the
+   Line at Brain Power 1 to 3. Recommended: a Sigil fix at levels 1 to 5 against the balance contract, in its own
+   revision (call 82).
+3. **The healer stalls (5 of 12).** A healer alone deals a third of a gunner's damage (rules), so a long fight past its
+   heals runs to round 20; the run's policy no longer heals at 75% HP (it fell from 80% of turns to the low-HP ones).
+   No dial: the Mender's damage is the class's, measured in Classes 3.0.
+
+The guard (`survival-run.test.ts`, in `npm run check`) is unchanged: its bands (a solo gunner clears stage 1 on two
+seeds of three, never stage 4, levels 5 to 8 after stage 1, never dry) hold on the new numbers.
 
 ## 5. Calls made for Leon
 
-`docs/PLAYTEST-CHECKLIST.md` section S, calls 80 to 92 (the spec's section 13.9 built as recommended, and four of the
+`docs/PLAYTEST-CHECKLIST.md` section S, calls 80 to 93 (the spec's section 13.9 built as recommended, and the
 builder's: Vigil spent by the first prayer of any kind; the gun and melee to-hit rows on the attack; heals given to
-anyone for Deep Well and Gentle; the simulator's run policies).
+anyone for Deep Well and Gentle; the simulator's run policies; 93, the gunner's +1.3 a 12 left as the dice's).
 
 ## 6. Open
 

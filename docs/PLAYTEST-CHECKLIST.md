@@ -267,6 +267,13 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
     are built the same way.
 92. **The simulator's caster policies are the run's own** (`run-policies.ts`); the balance pass's policies, which the
     golden tables and replays play, are unchanged.
+93. **The solo gunner gained a little and nothing was shrunk:** stage 1 in 11 of 12 on the spec's cells (was 9; the
+    band was ±1) and 32 of 36 over three times the seeds (was 28). Every starting boon, the near-null Quick Magazine
+    too, gives the same lift on the gear route: a changed turn deals the seeded dice differently. The rule's dial (all
+    rows smaller) cannot shrink a +1 to hit; if you want it held, make the to-hit rows something else for every line.
+94. **Missed, reported:** the Sigilist clears stage 1 in 3 of 12 (target 7): the Sigil fix of call 82; the healer
+    alone stalls in 5 of 12 (target 2): the Mender's damage is the class's. The Channeler (9 of 12), four casters (half
+    reach stage 3), the Rigger (a Figment every fight) and the squads (stage 3 to 4) are on target.
 
 ## 0. Classes 3.0 (0.26.0)
 
