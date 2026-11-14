@@ -5943,7 +5943,9 @@ standard core's 150 credits (Magic, "Mana cores").
    it drops instead is materials, given (not rolled, so outside the fight's loot cap) onto its death tile's pile as any
    drop: **gunpowder 2 to 5 and casings 2 to 5** from a foe whose weapon is a gun (a weapon with a calibre), **mana
    residue 1 to 2** from a caster or a machine (a foe whose kind's table is `machine`), both when it is both. The numbers
-   are `survival.json drops`. Campaign and Proving Ground foes drop as before.
+   are `survival.json drops`. Campaign and Proving Ground foes drop as before. The drops are set on each foe once the
+   fight has started, on the unit the fight built (`runFoeDrops`), not in the composed encounter: which table a foe
+   rolls (its kind's, a machine's) is read from the built unit.
 4. **Three materials and a tool** (`items.json`): **Gunpowder** (`gunpowder`, 1 credit, 0.01 kg), **Casing** (`casing`,
    1 credit, 0.01 kg), **Mana residue** (`mana_residue`, 10 credits, 0.02 kg; its name is never "residue" alone, which
    names a feeling's tiles, rules 1.8), and the **Ammo maker** (`ammo_maker`, a tool, 2 kg, 300 credits). The three
