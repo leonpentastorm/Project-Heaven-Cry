@@ -538,7 +538,8 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
   return 'Collector (Gun Nut): the ' + (it.name || WEAPON[id]?.name || id) + ' is in ' + c.name + '\'s collection. Parting with it takes a Dexterity check (TN 12), the Narrator\'s call; on a fail it stays until the next rest.';
 }
 
-/** The four starting kits from the creation screen: what's held, worn and packed (spec: Reloading, Item weights). */
+/** The starting kits from the creation screen (the campaign's four; rules 1.51 added `rigger` and `mender`): what's held,
+ * worn and packed (spec: Reloading, Item weights). */
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
 export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
 const gear = (id: string, qty = 1, note?: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty, kind: id === 'evoker' || id === 'emanator' ? 'focus' : id === 'standard_core' ? 'ammo' : id === 'ration_pack' ? 'food' : 'tool', ...(note ? { note } : {}) });
@@ -552,6 +553,11 @@ export const KITS: Record<string, { weapon: string; weaponName?: string; armourC
     pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('standard_core', 4), gear('chalk_and_wax')] },
   soul: { weapon: 'drifter_revolver', armourClass: 1, armourName: 'Padded coat', stims: 0, offHand: 'emanator',
     pack: [magsOf('drifter_revolver', 2), roundsOf('revolver', 12), gear('prayer_beads')] },
+  // Rules 1.51 (survival-spec rule 28): the Figments and the Bonds and Tending kits, each with its focus in the off hand.
+  rigger: { weapon: 'service_pistol', armourClass: 1, armourName: 'Padded coat', stims: 0, offHand: 'visualizer',
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('standard_core', 4)] },
+  mender: { weapon: 'service_pistol', armourClass: 2, armourName: 'Medic plate', stims: 0, offHand: 'attuner',
+    pack: [magsOf('service_pistol', 2), roundsOf('.32 decrkm', 24), gear('field_kit', 1, 'Bandages, splints, a suture set')] },
 };
 /** The pack, with saves from before magazines were tracked brought up to date. */
 export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit] || KITS.medic).pack).map((it) => {

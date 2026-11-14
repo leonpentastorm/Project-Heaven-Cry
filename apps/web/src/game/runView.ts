@@ -2,7 +2,7 @@
 // engine: the map's nodes and links (g.run), what the party can reach and why a node can't be taken (`reachable`,
 // `runMoveProblem`), what a node gives (`NODE_TIP`, `nodeXp`, `nodeCredits`), the panel's words (`NODE_TEXT`), the picks
 // (g.run.offers, priced by the engine), who has a level-up waiting (`levelUpDue`). RunScreen.tsx only draws it.
-import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, relicRow, gearPreview } from '@engine';
+import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, runWorth, BOON_CAP, relicRow, gearPreview, isStartBoon } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
 export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null;
@@ -11,6 +11,7 @@ export interface RunNodeV { id: string; depth: number; col: number; kind: string
 /** A link of the map; `back`: the vault chest's way back onto its lane (walked, never drawn as a trail). */
 export interface RunLinkV { from: string; to: string; walked: boolean; lit: boolean; back: boolean }
 export interface PartyV { id: string; name: string; level: number; hp: number; maxHp: number; credits: number; initials: string; color: string; mine: boolean; levelUp: boolean; classLine: string;
+  /** rules 1.51: the boons held (the starting one marked `camp`), and the run power against the cap */ boons: { id: string; name: string; text: string; worth: number; camp: boolean }[]; worth: string;
   /** rules 1.50: the main hand's wear (null: nothing there wears), and every other carried thing Worn or Broken, by name */
   wear: WearV | null; weapon: string; worn: { name: string; w: WearV }[] }
 export interface OfferCardV { i: number; id: string; name: string; rarity: string; rarityWord: string; marks: number; category: string; price: number; tip: string; lines: { key: string; label: string; value: string }[] }
@@ -68,6 +69,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
   const party: PartyV[] = Object.values(g.characters).map((c) => {
     const p = pl(c.owner);
     return { id: c.id, name: c.name, level: c.level, hp: Math.max(0, c.hp), maxHp: maxHp(c), credits: creditsOf(c), initials: p?.initials || '?', color: p?.color || '#A3AEC2', mine: c.owner === me, levelUp: levelUpDue(c),
+      boons: (c.relics || []).map((id) => relicRow(id) as any).filter((x) => x && /^(boon|start|graft|token)\./.test(x.id)).map((x) => ({ id: x.id, name: x.name, text: x.text, worth: x.worth, camp: isStartBoon(x.id) })), worth: runWorth(c) + ' of ' + BOON_CAP,
       classLine: 'Level ' + c.level + (c.classId ? '' : ' · classless'), wear: wearView(c, 'main'), weapon: itemName(c.weapon),
       worn: (['off', ...packOf(c).map((_, i) => i)] as ('off' | number)[]).map((where) => ({ x: wearAt(c, where), w: wearView(c, where) })).filter((q) => q.x && q.w && q.w.state !== 'sound').map((q) => ({ name: q.x!.name, w: q.w! })) };
   });

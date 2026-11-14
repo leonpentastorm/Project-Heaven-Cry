@@ -2,7 +2,7 @@
 // holds every source of run power a character carries: its boons, a shrine's token, the Crossroads graft (all `relic`
 // items in `c.relics`) and the named property of every Relic weapon or focus it carries (`GearState.prop`, character.ts
 // gearProps). Each is priced in percent of a rifle-turn (`worth`), and their sum stays under `boon_cap.cap`.
-// The relic items themselves (data/survival.json `relic_props`, `boons`, and a graft made of each boon) are loaded at run
+// The relic items themselves (data/survival.json `relic_props`, `boons`, `start_boons`, and a graft made of each boon) are loaded at run
 // time as `relic` items (effects/collect.ts), so the item-op runner runs them like any other item: nothing here deals,
 // heals or rolls.
 import '../datatext';
@@ -29,8 +29,11 @@ export const graftOf = (boonId: string): string => 'graft.' + boonId.replace(/^b
 export const GRAFTS: RelicRow[] = BOONS.map((b) => ({ ...b, id: graftOf(b.id), name: b.name + ' (grafted)',
   effects: [{ op: 'stat_mult', stat: 'hp', value: SV.graft.hp_mult }, ...b.effects],
   text: b.text + ' Grafted: your max HP is ' + fmtNumber(SV.graft.hp_mult, 'less') + '% lower for the run.' }));
-addItems('relic', [...RELIC_PROPS, ...BOONS, ...GRAFTS]);
-const ROW: Record<string, RelicRow> = Object.fromEntries([...RELIC_PROPS, ...BOONS, ...GRAFTS].map((r) => [r.id, r]));
+/** Rules 1.51 (spec rules 48 to 50): the starting boons (survival.json start_boons), one picked at the camp before node 1,
+ * offered by the character's line (run/stage.ts startOffer); their own pool, never a Boss's, a shrine's or the graft's. */
+export const START_BOONS: (RelicRow & { lines: string[] })[] = SV.start_boons || [];
+addItems('relic', [...RELIC_PROPS, ...BOONS, ...GRAFTS, ...START_BOONS]);
+const ROW: Record<string, RelicRow> = Object.fromEntries([...RELIC_PROPS, ...BOONS, ...GRAFTS, ...START_BOONS].map((r) => [r.id, r]));
 /** A relic row by id (a property, a boon, a graft), or undefined. */
 export const relicRow = (id: string): RelicRow | undefined => ROW[id];
 /** What one relic item is worth on the cap (0 for one that is not run power: a campaign's relic). */

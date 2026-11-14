@@ -23,8 +23,8 @@ import { rngFor, die } from '../rng';
 import { type RunState, type RunVisit, type RunLasting, type RunStock, runNode, runSetting } from './state';
 import { SETTING } from './encounter';
 import { stageCeiling, weaponOffer } from './rewards';
-import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf } from './power';
-import { nextPools } from './stage';
+import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
+import { nextPools, CAMP } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
 import { gearPreview } from '../gearpreview';
@@ -206,6 +206,11 @@ export function forgeProblem(g: GameState, c: Character, slot: number): string |
 }
 /** The next armour class the Forge fits for this character, and why it can't now (rule 44), or null when none is next. */
 export function fitOf(g: GameState, c: Character): { cls: number; price: number; why: string | null } | null {
+  if (g.run?.state === 'camp') { // rules 1.51 (spec rule 53): the camp's issue: the heaviest class up to camp.issue_armour its gates allow, for nothing
+    const cap = armourCap(c); let cls = 0;
+    for (let k = (c.armourClass || 0) + 1; k <= CAMP.issue_armour; k++) if ((cap == null || k <= cap) && !armourGateWhy(c, k)) cls = k;
+    return cls ? { cls, price: 0, why: null } : null;
+  }
   const next = (c.armourClass || 0) + 1, price = FIT[String(next)];
   if (price == null) return null;
   const h = here(g), cap = armourCap(c);
@@ -347,9 +352,11 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       say(c.name + ' buys the ' + nameOf(s.id) + ' from the armourer: ' + s.price + ' credits.', c.id); return null;
     }
     case 'run/fit': {
-      const f = fitOf(g, c); if (!f) return c.name + ' wears the heaviest class the Forge fits.'; if (f.why) return f.why;
+      const camp = r.state === 'camp', f = fitOf(g, c);
+      if (!f) return camp ? c.name + ' already wears class ' + (c.armourClass || 0) + ': the camp issues up to class ' + CAMP.issue_armour + '.' : c.name + ' wears the heaviest class the Forge fits.';
+      if (f.why) return f.why;
       payCredits(c, f.price); c.armourClass = f.cls;
-      say(c.name + ' is fitted for armour class ' + f.cls + ': ' + f.price + ' credits.', c.id); return null;
+      say(c.name + ' is fitted for armour class ' + f.cls + (camp ? ' at the camp, free (the camp\'s issue).' : ': ' + f.price + ' credits.'), c.id); return null;
     }
     case 'run/train': {
       const no = trainProblem(g, c, a); if (no) return no;
@@ -405,6 +412,10 @@ export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fi
   /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] } }
 /** Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). */
 export function runOptions(g: GameState, charId: string): RunOption[] {
+  if (g.run?.state === 'camp') { // rules 1.51 (spec rule 53): the camp's issue, its one choice
+    const c0 = g.characters[charId], f = c0 ? fitOf(g, c0) : null;
+    return f ? [{ group: 'fit', key: 'fit', label: 'Armour class ' + c0.armourClass + ' to ' + f.cls, detail: 'The camp\'s issue: fitted free, once, before the first node.', price: 0, why: f.why, action: { type: 'run/fit', charId } }] : [];
+  }
   const c = g.characters[charId], h = here(g); if (!c || !h) return [];
   const out: RunOption[] = [], k = h.n.kind, word = (r: Rarity) => GRADE_WORD[r];
   const wheres: GearWhere[] = ['main', 'off', ...packOf(c).map((_, i) => i), ...quiversOf(c).map((_, i) => ('quiver:' + i) as GearWhere)]; // rules 1.53: the carried quivers too

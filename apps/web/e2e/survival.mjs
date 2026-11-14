@@ -67,9 +67,28 @@ await click(p, 'Next ›'); await lockIn(p);
 await p.waitForSelector('text=✓ LOCKED IN');
 ok('a test room (settings.test, from the test hook)', (await G()).settings.test === true);
 await click(p, 'Start the run');
-await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
+// ---------- rules 1.51: the camp, before node 1: a starting boon of three, the camp's issue ----------
+await p.waitForSelector('[data-phc-camp-screen]', { timeout: 60000 });
 let r = await run();
-ok('Start the run opens the path map, seed ' + r.seed + ', stage 1', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'run');
+ok('rules 1.51: Start the run opens the camp, seed ' + r.seed + ', stage 1', r.seed === SEED && r.stage === 1 && r.state === 'camp' && await screen() === 'run');
+const kid = Object.keys((await G()).characters)[0], offer0 = r.boons[kid];
+const campCards = await p.locator('[data-phc-camp="' + kid + '"] [data-phc-startboon]').allTextContents();
+ok('the camp: three large cards, each its name, its sentence with its number from data, its line\'s word and its worth on the cap (' + offer0.join(', ') + ')', campCards.length === 3 && offer0.length === 3
+  && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-camp] [data-phc-startboon] svg').count() === 3
+  && /THE CAMP/.test(await p.locator('[data-phc-camphead]').textContent()));
+{ const lines = await p.locator('[data-phc-camp="' + kid + '"] [data-phc-startboon] [data-phc-line]').evaluateAll((e) => e.map((x) => x.getAttribute('data-phc-line')));
+  ok('the offer by line: two cards from its main line and one from its second, the rifle in hand\'s guns among them (' + lines.join(', ') + ')', lines.length === 3 && lines.some((l) => lines.filter((x) => x === l).length >= 2) && lines.includes('guns')); }
+ok('the camp\'s issue: the soldier\'s kit already wears class 3, so nothing to fit (the line says so)', /class 3/i.test(await p.locator('[data-phc-camp-fit="' + kid + '"]').textContent()) && !(await p.locator('[data-phc-fit]').count()));
+await shot('startboon-1280'); await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 600); await shot('startboon-1920'); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
+await act({ type: 'run/move', node: r.nodes.find((n) => n.depth === 1).id }); await settle(p, 300);
+ok('rules 1.51: the map waits at the camp (a node asked for is refused: the squad stays at the camp)', (await run()).state === 'camp' && (await run()).at === null);
+const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0.includes('start.set_feet') ? 'start.set_feet' : offer0[0];
+await p.locator('[data-phc-startboon="' + pickId + '"]').click();
+await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
+r = await run();
+ok('a starting boon clicked (' + pickId + '): it is the character\'s relic for the run, and the path map opens', r.state === 'map' && ((await G()).characters[kid].relics || []).includes(pickId));
+ok('the squad panel shows the held boon, marked Camp, and the run power against the cap', await p.locator('[data-phc-held="' + pickId + '"]').count() === 1 && /Camp/.test(await p.locator('[data-phc-held="' + pickId + '"]').textContent())
+  && /of 50/.test(await p.locator('[data-phc-member-cap="' + kid + '"]').textContent()));
 
 // ---------- the path map ----------
 const drawn = await p.locator('[data-phc-node]').count();
@@ -111,6 +130,14 @@ await p.locator('[data-phc-node="' + lit[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 });
 r = await run();
 ok('a lit node is taken: the fight begins (' + r.stats.fights[0].template + ', ' + r.stats.fights[0].foes.length + ' foe(s))', r.at === lit[0] && r.state === 'fight');
+{ // rules 1.51: the starting boon is felt in the first fight: Zeroed a +1 term named for it on a shot; Set Feet a Guard point
+  // at the fight's start (each its number from data)
+  const felt = await p.evaluate((pick) => { const g = window.__phc.getState().game, cb = g.combat, me = cb.units.find((u) => u.charId && u.side === 'pc');
+    if (pick === 'start.set_feet') return { guard: me?.res?.guard ?? 0 };
+    const foe = cb.units.find((u) => u.side === 'foe' && !u.dead && u.id); if (!me || !foe) return null;
+    return { term: (window.__phc.attackTerms(me.id, foe.id, 'shot') || []).find((t) => t.label === 'Zeroed') || null }; }, pickId);
+  ok('rules 1.51: the starting boon (' + pickId + ') is felt in the first fight (' + JSON.stringify(felt) + ')', pickId === 'start.set_feet' ? (felt?.guard ?? 0) >= 1 : pickId === 'start.zeroed' ? felt?.term?.v === 1 : true);
+}
 for (let i = 0; i < 400; i++) {
   const s = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over || g.phase !== 'combat') return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId ? 'mine' : 'theirs'; });
   if (s === 'over') break;
@@ -133,7 +160,7 @@ await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 r = await run();
 const c = Object.values(g.characters)[0];
-ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === 150 + r.note.credits && (r.note.ammo[c.id] || []).length > 0
+ok('the rewards: XP and credits each, the supply pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === 100 && c.xp === 100 && c.credits === 150 + r.note.credits && (r.note.ammo[c.id] || []).length > 0
   && /100 XP/.test(await p.locator('[data-phc-note]').textContent()));
 ok('a pick of three weapons, each with its rarity word and price, and credits instead', await p.locator('[data-phc-pick]').count() === 3 && /Take \d+ credits instead/.test(await p.locator('[data-phc-instead]').textContent())
   && (await p.locator('[data-phc-pick]').allTextContents()).every((t) => /(STANDARD|FINE)/.test(t) && /\d+ credits/.test(t)));
@@ -528,6 +555,12 @@ const code = (await h.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).
 await gu.goto(BASE + '/?room=' + code); await gu.getByPlaceholder('Leon').fill('Mai'); await click(gu, 'Join ›'); await gu.waitForSelector('text=The squad');
 await create(h, 'Kade'); await create(gu, 'Ha');
 await h.locator('button[data-phc-start]').click();
+await until(gu, () => !!document.querySelector('[data-phc-camp-screen]'), null, 30000).catch(() => false); // rules 1.51: the camp first
+{ const gcid = await gu.evaluate(() => { const g = window.__phc.getState().game, me = window.__phc.getState().me.id; return Object.values(g.characters).find((c) => c.owner === me).id; });
+  await gu.locator('[data-phc-camp="' + gcid + '"] [data-phc-startboon]').first().click();
+  await until(h, () => [...document.querySelectorAll('[data-phc-camp-mark]')].some((e) => /Chosen/.test(e.textContent || '') && !/Leon/.test(e.textContent || '')), null, 15000).catch(() => false);
+  ok('rules 1.51: two browsers at the camp: the guest\'s pick shows "Chosen" on the host\'s screen live, the map still waits for the host', /Chosen/.test(await h.locator('[data-phc-camp-mark]').allTextContents().then((l) => l.join(' '))) && (await h.evaluate(() => window.__phc.getState().game.run.state)) === 'camp');
+  await h.locator('[data-phc-camp-go]').click(); } // the host goes on: its own character takes the first card
 await until(gu, () => !!document.querySelector('[data-phc-run-screen]'), null, 30000).catch(() => false);
 const HG = () => h.evaluate(() => window.__phc.getState().game), GG = () => gu.evaluate(() => window.__phc.getState().game);
 const actOn = (page, a) => page.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
@@ -625,6 +658,7 @@ await d.setViewportSize({ width: 1280, height: 720 });
 const DG = () => d.evaluate(() => window.__phc.getState().game), dAct = (a) => actOn(d, a);
 await hostAs(d, 'Leon'); await create(d, 'Ash');
 await d.locator('button[data-phc-start]').click();
+await d.waitForSelector('[data-phc-camp-screen]', { timeout: 60000 }); await dAct({ type: 'run/go' }); // rules 1.51: out of the camp with the first card
 await d.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 const dcid = Object.keys((await DG()).characters)[0];
 /** Walk by the engine's actions until `stop` says so (fights skipped, picks as credits, shops left, the first trail). */

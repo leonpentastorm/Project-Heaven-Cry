@@ -2467,7 +2467,48 @@ if _sv is not None:
             if not (isinstance(_st.get("backdrop"), str) and _st["backdrop"].startswith("survival-backdrop-")): errors.append(f"{_w}: backdrop is the catalog id its tile card draws (survival-backdrop-<setting>-<a..d>)")
             if not isinstance(_st.get("awaiting"), list): errors.append(f"{_w}: awaiting lists what it still waits for (art, its own enemies), [] when nothing")
             if not any(_st.get("pool") in (_b.get("pools") or []) for _b in _sv.get("boons") or []): errors.append(f"{_w}: its pool {_st.get('pool')!r} has no boon")
-    for _k in ("grade_up", "forge", "armour_fit", "boon_cap", "graft", "train", "training", "shrine", "lasting", "trades", "boon_pick", "world"):
+    # Rules 1.51 (spec rules 48 to 53): the starting boons (relic items on the closed lists, each on one or two lines from
+    # start_boon.lines, worth at most start_boon.max_worth, every line with at least two rows, no id in both pools), the
+    # offer's counts, the supply pack's new fields and the camp's issue.
+    _sb = _sv.get("start_boon")
+    if _sb is not None:
+        _alpha = {k["id"] for k in data["skills"]["items"] if k.get("slot") == "alpha"}
+        _lines = _sb.get("lines") or {}
+        if set(_lines) != _alpha: errors.append(f"survival:start_boon.lines: one line for each alpha skill ({sorted(_alpha)})")
+        _LN = set(_lines.values())
+        if set((_sb.get("names") or {}).keys()) != _LN: errors.append("survival:start_boon.names: words for every line")
+        if not set((_sb.get("focus_lines") or {}).values()) <= _LN or set(_sb.get("focus_lines") or {}) != {"evoker", "emanator", "attuner", "visualizer"}: errors.append("survival:start_boon.focus_lines: the four focus kinds, each to a line")
+        for _x in ("offer", "main", "second", "max_worth"):
+            if not _num(_sb.get(_x)) or _sb[_x] < 1: errors.append(f"survival:start_boon.{_x}: a number of 1 or more")
+        if _num(_sb.get("offer")) and _num(_sb.get("main")) and _num(_sb.get("second")) and _sb["main"] + _sb["second"] != _sb["offer"]: errors.append("survival:start_boon: main + second is the offer")
+        if _sb.get("provisional") is not True: errors.append("survival:start_boon: provisional: true (rules 1.51)")
+        _boon_ids = {b.get("id") for b in _sv.get("boons") or []}
+        _per_line = {l: 0 for l in _LN}
+        _seen = set()
+        for _it in _sv.get("start_boons") or []:
+            _w = f"survival:start_boons.{_it.get('id')}"
+            if _it.get("id") in _seen: errors.append(f"{_w}: an id twice")
+            _seen.add(_it.get("id"))
+            if _it.get("id") in _boon_ids: errors.append(f"{_w}: also a Boss boon (the two pools never share a row)")
+            if _it.get("kind") != "relic": errors.append(f"{_w}: a relic item (kind relic)")
+            if not _num(_it.get("worth")) or not 0 < _it["worth"] <= (_sb.get("max_worth") or 0): errors.append(f"{_w}: a worth above 0 and at most start_boon.max_worth")
+            if _it.get("provisional") is not True or _it.get("adjudication") != "engine": errors.append(f"{_w}: provisional, adjudication engine")
+            if not _it.get("lines") or not set(_it["lines"]) <= _LN: errors.append(f"{_w}: lines names start_boon.lines' lines ({sorted(_LN)})")
+            for _l in _it.get("lines") or []:
+                if _l in _per_line: _per_line[_l] += 1
+            if not _it.get("effects"): errors.append(f"{_w}: its effects (item ops)")
+            for _ei, _e in enumerate(_it.get("effects") or []): check_trigger_effect(_e, f"{_w} effect {_ei}")
+        for _l, _n in _per_line.items():
+            if _n < 2: errors.append(f"survival:start_boons: the line {_l!r} has {_n} rows (at least two)")
+    _ap = _sv.get("ammo_pack") or {}
+    if "cores_max" in _ap and not (_num(_ap["cores_max"]) and _num(_ap.get("cores")) and _ap["cores_max"] >= _ap["cores"]): errors.append("survival:ammo_pack.cores_max: a number at least cores")
+    if "mp_share" in _ap and not (_num(_ap["mp_share"]) and 0 <= _ap["mp_share"] <= 1): errors.append("survival:ammo_pack.mp_share: a share of max MP from 0 to 1")
+    if "mp_doors" in _ap and not set(_ap["mp_doors"]) <= {"emanator", "attuner"}: errors.append("survival:ammo_pack.mp_doors: MP focus kinds (emanator, attuner)")
+    _cp = _sv.get("camp")
+    if _cp is not None:
+        if not (_num(_cp.get("issue_armour")) and str(_cp["issue_armour"]) in ((_sv.get("armour_fit") or {}).get("price") or {})): errors.append("survival:camp.issue_armour: an armour class the Forge fits (armour_fit.price)")
+        if not _num(_cp.get("spare_mags")) or _cp["spare_mags"] < 0: errors.append("survival:camp.spare_mags: a number, 0 or more")
+    for _k in ("grade_up", "forge", "armour_fit", "boon_cap", "graft", "train", "training", "shrine", "lasting", "trades", "boon_pick", "world", "camp"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
     # Rules 1.42 (spec rules 25, 27, section 3.4): every always-stocked id has a price through credits.ts priceOf's doors
     # (a weapon's or item's price_credits, a special round's price_mult, a calibre's round price, a magazine's), and every

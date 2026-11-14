@@ -1,7 +1,7 @@
 // Survival test helpers (rules 1.41): a Survival room with a squad of the simulator's reference builds (one player
 // each, as the mode asks), and a policy that walks a stage through the reducer: every player marks the same node, fights
 // are played by the simulator's policies (Rec.fight), each character takes the first weapon of its pick.
-import { reachable, type RunNode } from '../../src';
+import { reachable, apply, isStartBoon, type RunNode, type GameState } from '../../src';
 import { Rec, lobby, type Pc } from './replay';
 
 /** A Survival room in its lobby: `pcs` level 1 builds, the first the host's, the others one player each (p2, p3, p4). */
@@ -10,6 +10,16 @@ export function survivalRoom(seed: string, pcs: Pc[], o: { test?: boolean } = {}
   g.settings.play = 'survival'; if (o.test) g.settings.test = true;
   pcs.forEach((_, i) => { if (!i) return; const id = 'p' + (i + 1); g.players.push({ id, name: 'Player ' + (i + 1), initials: 'P' + (i + 1), color: '#A3AEC2', online: true }); g.characters['c' + (i + 1)].owner = id; });
   return g;
+}
+/** `run/start` and (rules 1.51) out of the camp at once: the host's `run/go` gives every character the first card of its
+ * starting offer. For the tests that start at the map and measure other rules, the starting boon is then taken off
+ * again (`keep: true` leaves it on), so their numbers are the rules' own; the camp's own tests are survival-camp.test.ts. */
+export function startRun(g: any, seed: string, o: { by?: string; keep?: boolean } = {}): GameState {
+  const by = o.by || 'host', s = apply(g, { type: 'run/start', seed }, by);
+  if (s.run?.state !== 'camp') return s;
+  const out: any = apply(s, { type: 'run/go' }, by);
+  if (!o.keep) for (const c of Object.values(out.characters) as any[]) c.relics = (c.relics || []).filter((id: string) => !isStartBoon(id));
+  return out;
 }
 /** Who plays each character (the host, then p2, p3, p4). */
 export const ownerOf = (i: number) => (i ? 'p' + (i + 1) : 'host');
@@ -24,6 +34,10 @@ export function chooseNode(g: any, prefer: string[] = ['fight', 'elite', 'rest',
 export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: boolean; prefer?: string[]; /** rules 1.44: play on through this stage (boons: each the first offered; the tile: everyone marks the first) */ through?: number } = {}) {
   for (let guard = 0; guard < 200 * (o.through || 1); guard++) {
     const run = r.g.run; if (!run || run.state === 'over' || r.g.phase === 'lobby') break;
+    if (run.state === 'camp') { // rules 1.51: each character takes the first card of its starting offer
+      for (let i = 0; i < n; i++) if (r.g.run.state === 'camp' && r.g.run.boons?.['c' + (i + 1)]) r.must({ type: 'run/boon', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i));
+      continue;
+    }
     if (run.state === 'boon' || run.state === 'tile') {
       if (!o.through || run.stage >= o.through) break;
       if (run.state === 'boon') { for (let i = 0; i < n; i++) if (run.boons?.['c' + (i + 1)]) r.must({ type: 'run/boon', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); }

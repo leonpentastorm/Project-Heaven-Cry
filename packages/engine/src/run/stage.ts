@@ -7,10 +7,11 @@
 // changes the state. Every pick comes from a named stream of the run's seed (rule 12), never the fight's dice.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { type Character, xpForLevel } from '../character';
+import { type Character, xpForLevel, holds, isGunId, FOCUS_DOOR } from '../character';
+import { SKILL, WEAPON } from '../data';
 import { rngFor, die, type Rng } from '../rng';
 import { SETTING, SETTINGS, type SettingDef } from './encounter';
-import { BOONS, BOON_CAP, capRoom, graftOf, relicRow, worthOf, type RelicRow } from './power';
+import { BOONS, BOON_CAP, START_BOONS, capRoom, graftOf, relicRow, worthOf, type RelicRow } from './power';
 import { type RunState, type RunTile, type RunStageLog, runSetting } from './state';
 import { mapNodes, pathMap, MAP_DATA } from './map';
 
@@ -54,6 +55,53 @@ export function boonOffer(c: Character, pool: string, seed: string, nodeId: stri
   }
   return out;
 }
+// ---------------------------------------------------------------------------------------------- the camp (rules 1.51)
+/** The starting boon's numbers (survival.json `start_boon`, rules 1.51; spec rules 48 to 50): the offer (`main` from the
+ * main line and `second` from the second), the most a starting boon is worth, each alpha skill's line, each focus kind's
+ * line, each line's words. */
+export const START_BOON: { offer: number; main: number; second: number; max_worth: number; lines: Record<string, string>; focus_lines: Record<string, string>; names: Record<string, string> } = SV.start_boon;
+/** The camp's issue (survival.json `camp`, rules 1.51; spec rule 53): the armour class fitted free at the camp, and the
+ * spare magazines the gun in hand is topped up to. */
+export const CAMP: { issue_armour: number; spare_mags: number } = SV.camp;
+const ORDER = Object.keys(START_BOON.lines); // the alpha skills in the lines' order (the tie-break)
+const weaponLine = (id: string | null | undefined): string => { const w: any = id ? WEAPON[id] : null; return w && w.category !== 'unarmed' && !isGunId(id) && (/melee/.test(w.category) || w.phys?.system === 'melee') ? 'blades' : 'guns'; };
+/** The alpha skills a character has 1 point or more in, best first: by the attribute's value, then the skill's points,
+ * then the lines' order (rule 49 b). */
+const alphaOrder = (c: Character): string[] => ORDER.filter((k) => (c.skills[k] || 0) >= 1)
+  .sort((a, b) => ((c.attrs as any)[SKILL[b]?.attribute] || 0) - ((c.attrs as any)[SKILL[a]?.attribute] || 0) || (c.skills[b] || 0) - (c.skills[a] || 0) || ORDER.indexOf(a) - ORDER.indexOf(b));
+/** A character's two lines (rule 49; rules 1.51 item 2): what it runs on, read from the sheet and the hands (no class at
+ * level 1, and the archetype is not saved). `main`: a focus in a hand whose door skill has 1 point or more (its door's
+ * line), else the best alpha skill's line, else the main hand's weapon (guns; a melee weapon blades). `second`: the main
+ * hand's weapon if it differs, else the next alpha skill's line, else the other weapon line. */
+export function lineOf(c: Character): { main: string; second: string } {
+  const held = Object.keys(START_BOON.focus_lines).find((k) => holds(c, { slot: 'hand', door: k }) && (c.skills[FOCUS_DOOR[k as keyof typeof FOCUS_DOOR]] || 0) >= 1);
+  const alpha = alphaOrder(c).map((k) => START_BOON.lines[k]), weapon = weaponLine(c.weapon);
+  const main = held ? START_BOON.focus_lines[held] : alpha[0] || weapon;
+  const second = weapon !== main ? weapon : alpha.find((l) => l !== main) || (weapon === 'guns' ? 'blades' : 'guns');
+  return { main, second };
+}
+/** The starting boons of a line (data order). */
+export const lineBoons = (line: string): RelicRow[] => START_BOONS.filter((b) => b.lines.includes(line));
+/** The starting boons offered to a character at the camp (rules 48 to 50): `START_BOON.main` drawn from its main line and
+ * `START_BOON.second` from its second, never the same row twice, from `rngFor(seed, 'camp#start#' + id)`; a line with
+ * too few rows is filled from the second line, then from every row, so the offer always holds `START_BOON.offer`. */
+export function startOffer(c: Character, seed: string): string[] {
+  const rng = rngFor(seed, 'camp#start#' + c.id), l = lineOf(c), out: RelicRow[] = [];
+  const from = (list: RelicRow[], n: number) => draw(rng, list.filter((b) => !out.includes(b) && b.worth <= START_BOON.max_worth), out.length + n, out);
+  from(lineBoons(l.main), START_BOON.main);
+  from(lineBoons(l.second), START_BOON.offer - out.length);
+  from(START_BOONS, START_BOON.offer - out.length);
+  return out.map((b) => b.id);
+}
+/** Is this a starting boon (rules 1.51)? */
+export const isStartBoon = (id: string): boolean => START_BOONS.some((b) => b.id === id);
+/** Why this character can't take this starting boon now, or null: it is not on its offer, or it took one already. */
+export function startBoonProblem(c: Character, offer: string[] | undefined, id: string | undefined): string | null {
+  if (!offer || !id || !offer.includes(id)) return 'That boon is not on ' + c.name + '\'s offer.';
+  if ((c.relics || []).some(isStartBoon)) return c.name + ' already carries a starting boon.';
+  return null;
+}
+
 /** Why this character can't take this boon now, or null: it is not on its offer, it holds it, or it passes the cap. */
 export function boonProblem(c: Character, offer: string[] | undefined, id: string | undefined): string | null {
   if (!offer || !id || !offer.includes(id)) return 'That boon is not on ' + c.name + '\'s offer.';
@@ -100,8 +148,9 @@ export function enterStage(r: RunState, t: RunTile): RunState {
 }
 /** The run's renown (rule 6): the XP its characters took past level 20, which counts only to the score. */
 export const renownOf = (chars: Character[]): number => chars.reduce((t, c) => t + Math.max(0, (c.xp || 0) - xpForLevel(20)), 0);
-/** Each character's boons (the relics that are boons, grafts and tokens included), for the score. */
-export const boonsOf = (chars: Character[]): Record<string, string[]> => Object.fromEntries(chars.map((c) => [c.id, (c.relics || []).filter((id) => BOONS.some((b) => b.id === id || graftOf(b.id) === id))]));
+/** Each character's boons (the relics that are boons, grafts and tokens included, and rules 1.51's starting boon), for
+ * the score. */
+export const boonsOf = (chars: Character[]): Record<string, string[]> => Object.fromEntries(chars.map((c) => [c.id, (c.relics || []).filter((id) => isStartBoon(id) || BOONS.some((b) => b.id === id || graftOf(b.id) === id))]));
 
 /** A character kept as a draft after a run (rule 4, Leon 13 Nov): the whole sheet at the level it reached, with its
  * gear, perks and class, for other rooms; marked `draft` (a run takes level 1 only) and `kept` (where it came from). The

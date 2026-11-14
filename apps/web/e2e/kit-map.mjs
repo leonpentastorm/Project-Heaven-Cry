@@ -29,6 +29,8 @@ await p.waitForSelector('text=✓ LOCKED IN');
 await click(p, 'Start the run');
 // the music's "now playing" card floats over the map's corner for a few seconds: hidden here, so the pictures compare
 await p.addStyleTag({ content: 'div[role="status"][style*="position: fixed"]{display:none!important}' });
+await p.waitForSelector('[data-phc-camp-screen]', { timeout: 60000 }); // rules 1.51: the camp first
+await p.locator('[data-phc-startboon]').first().click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 
 /** What the grid shows, read from the page: kit layers by kind, tiles with the kit ground, sprites by source. */

@@ -81,10 +81,17 @@ await create(guest, 'Ha');
 const label = (await host.locator('button[data-phc-start]').textContent()).trim();
 ok('Start reads "Start the run" and needs no key (' + label + ')', label === 'Start the run' && await host.locator('button[data-phc-start]').isEnabled());
 await host.locator('button[data-phc-start]').click();
+// rules 1.51: the run opens at the camp; each player takes a starting boon for its own character; then the path map
+const hostCamp = await until(host, () => !!document.querySelector('[data-phc-camp-screen]'), null, 15000).catch(() => false);
+const guestCamp = await until(guest, () => !!document.querySelector('[data-phc-camp-screen]'), null, 15000).catch(() => false);
+const camp = await host.evaluate(() => window.__phc.getState().game.run?.state);
+ok('rules 1.51: the host starts the run and both see the camp (' + camp + ')', !!hostCamp && !!guestCamp && camp === 'camp');
+await guest.locator('[data-phc-camp] [data-phc-startboon]:not([aria-disabled])').first().click();
+await host.locator('[data-phc-camp] [data-phc-startboon]:not([aria-disabled])').first().click();
 const hostRun = await until(host, () => !!document.querySelector('[data-phc-run-screen]'), null, 15000).catch(() => false);
 const guestRun = await until(guest, () => !!document.querySelector('[data-phc-run-screen]'), null, 15000).catch(() => false);
 const run = await host.evaluate(() => { const r = window.__phc.getState().game.run; return r && { state: r.state, stage: r.stage, seed: r.seed }; });
-ok('the host starts the run: g.run at stage 1 on the map (' + JSON.stringify(run) + '), shown to host and guest on the path map (rules 1.41)', !!hostRun && !!guestRun && run && run.state === 'map' && run.stage === 1 && /^PHC-/.test(run.seed));
+ok('both picked: g.run at stage 1 on the map (' + JSON.stringify(run) + '), shown to host and guest on the path map (rules 1.41)', !!hostRun && !!guestRun && run && run.state === 'map' && run.stage === 1 && /^PHC-/.test(run.seed));
 ok('the cards are gone while the run is on', !(await cards(host).count()) && !(await cards(guest).count()));
 const errsA = [host, guest].flatMap((p) => p.errors || []);
 await host.context().close(); await guest.context().close();
