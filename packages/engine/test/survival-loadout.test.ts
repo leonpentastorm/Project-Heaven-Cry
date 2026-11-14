@@ -167,7 +167,7 @@ describe('the camp (rules 1.52)', () => {
     const blade = rec({ raw_power: 3, dexterity: 1 });
     expect(blade.c.weapon).toBe(FREE('heavy_melee')); expect(blade.c.armourClass).toBe(1); expect(creditsOf(blade.c)).toBe(LOADOUT.budget - loadoutSpent(blade.c, blade.p));
     const sig = rec({ brain_power: 3, dexterity: 1 });
-    expect(sig.c.weapon).toBe(FREE('pistols')); expect(sig.c.offHand).toEqual({ id: 'evoker' });
+    expect(sig.c.weapon).toBe(FREE('revolvers')); expect(sig.c.offHand).toEqual({ id: 'evoker' });
     expect(packOf(sig.c).find((x) => x.id === 'standard_core')!.qty).toBe(LOADOUT.focus_with.evoker[0].qty + 1);
     const heal = rec({ empathy: 3 });
     expect(heal.c.offHand).toEqual({ id: 'attuner' }); expect(packOf(heal.c).some((x) => x.id === 'field_kit')).toBe(true); expect(heal.c.armourClass).toBe(1);
