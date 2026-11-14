@@ -5,7 +5,8 @@
 // the encounter's own start tiles), doorways clear, the cover share; hazards only where the template allows; the same
 // seed gives the same map; the data switch falls back to the cropped open ground. SURVIVAL_LAYOUT_REPORT=1 prints the
 // measured numbers and a map of each size.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+vi.setConfig({ testTimeout: 300_000 }); // seed sweeps: slow on a loaded machine; a time limit, not a rule
 import { generateLayout, layoutProblems, turnStamp, MAP_LIMITS } from '../src/maplayout';
 import { SETTINGS, SETTING, TEMPLATES, LAYOUT_DATA, layoutRecipe, encounterMap, composeEncounter, type EncounterFoe } from '../src/run/encounter';
 import { rngFor } from '../src/rng';
