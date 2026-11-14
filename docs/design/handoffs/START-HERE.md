@@ -1,5 +1,15 @@
 # Start here (14 Nov 2026)
 
+> **UPDATE, 14 Nov 2026, 10:15 UTC: 0.27.0 (Survival mode) IS LIVE.** Deployed on Leon's word; `main` = `develop` =
+> `backup/live-0.27.0` = 024c9aab. Release run: `npm run check` ALL GREEN; 69 browser suites green, three passing only
+> alone under load (`survival`, `brass`, `resources`: fix the suites); live verified with old-save, creation-points,
+> survival and room. Where this file below says 0.26.0 is live and 0.27.0 is "about to deploy", read: 0.27.0 is
+> live. **Known wrong in live 0.26.0 and 0.27.0, being fixed as a hotfix:** the effects cleanup removed more than
+> Leon asked (the bullet in flight, several techniques' own effects such as Heavy Bolt's, and shots play a generic
+> count instead of one sound and one bullet per round fired); the fix is on branch `worktree-agent-a359cef1740b969f1`
+> (also `wip/` on the remote when pushed). **Not in 0.27.0:** the loadout with creation without a kit, and the
+> starting boons; they are being joined on `worktree-agent-ab79122edee03fa74` for the next version.
+
 The current entry point for a fresh Claude Code session, or for Leon. Five minutes to read, then act. Where this file and
 an older hand-off disagree, this file is newer (`LOCAL-SESSION-START.md` and `SESSION-HANDOFF.md` are partly stale).
 
