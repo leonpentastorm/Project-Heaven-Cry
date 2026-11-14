@@ -111,6 +111,7 @@ const rankOf = (r: string) => RANK.indexOf(r || 'standard');
 const doorWhere = (c: any): 'main' | 'off' => { const off = c.offHand?.id; return off && (ITEM[off] as any)?.category === 'focus' ? 'off' : 'main'; };
 /** Rounds carried for the gun in the main hand (loaded, in magazines, loose), or null for no magazine gun. */
 export function roundsFor(c: any): number | null {
+  if (!c) return null; // a character the run no longer holds
   const w: any = WEAPON[c.weapon]; if (!w?.magazine || !w.ammo) return null;
   let n = c.loaded || 0;
   for (const it of packOf(c)) { if (it.mags && it.weapon === c.weapon) n += it.mags.reduce((t: number, q: number) => t + q, 0); else if (w.reload === 'loose' && it.calibre === w.ammo) n += it.qty || 0; } // a magazine gun fires what is in its magazines (loose rounds load into them out of a fight)
