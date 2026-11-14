@@ -44,7 +44,7 @@ G = json.load(open(os.path.join(E2E, 'groups.json')))
 ANIM, RULES = G['anim'], G['rules']
 GROUPS = {'smoke': G['smoke'], 'anim': ANIM, 'rules': RULES, 'all': RULES + ANIM, 'sweep': ['fx-sweep']}
 # fx-sweep plays these parts; asked for as `sweep`, it plays everything (the table too).
-SWEEP_SHORT = 'real,fog,glyphs'
+SWEEP_SHORT = 'real,counts,fog,glyphs'
 
 def group_errors():
     """Every .mjs in the folder (but lib.mjs) is in exactly one of rules / anim; every name in a group is a file."""

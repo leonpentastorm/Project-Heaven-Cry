@@ -584,7 +584,7 @@ function projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms
   if (look === 'pellets') { for (let i = 0; i < 5; i++) { const sp = s * 0.35; projectile(a, { x: b.x + (Math.random() - 0.5) * sp, y: b.y + (Math.random() - 0.5) * sp }, ms * jitter(0.15), 'bullet', s * 0.8, color); } return; }
   trace('proj', { look, ms: Math.round(slow(ms)) });
   // a flamer's fuel is one gout of fire rolling from the nozzle to where it lands (never a streak: a bullet's look)
-  if (look === 'flame') { trace('flight', { look }); for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } return; }
+  if (look === 'flame') { trace('flight', { look }); for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen', ...(i ? {} : { flight: 'flame' }) }); } return; }
   if (reducedMotion()) return;
   const ang = Math.atan2(b.y - a.y, b.x - a.x), deg = (ang * 180) / Math.PI;
   const el = document.createElement('div');
