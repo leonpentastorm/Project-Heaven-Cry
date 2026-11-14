@@ -29,8 +29,8 @@ describe('the modes (data/modes.json)', () => {
   });
   it('the host picks an open mode in the lobby; a locked one is refused with its data\'s words; a guest is refused', () => {
     let g = join(room(), P2, 'Mai');
-    expect(refused(g, { type: 'settings', patch: { play: 'campaign' } })).toBe('Campaign is not open yet. ' + modeOf('campaign')!.coming);
-    expect(refused(g, { type: 'settings', patch: { play: 'roguelike' } })).toBe('Roguelike is not open yet. ' + modeOf('roguelike')!.coming);
+    expect(refused(g, { type: 'settings', patch: { play: 'campaign' } })).toBe('Campaign is not open yet.');
+    expect(refused(g, { type: 'settings', patch: { play: 'roguelike' } })).toBe('Roguelike is not open yet.');
     expect(refused(g, { type: 'settings', patch: { play: 'nonsense' as any } })).toBe('No such mode: nonsense.');
     expect(refused(g, { type: 'settings', patch: { play: 'survival' } }, P2)).toBe('Only the host changes room settings.');
     g = apply(g, { type: 'settings', patch: { play: 'survival' } }, HOST);
@@ -58,7 +58,7 @@ describe('run/start', () => {
       stages: [{ stage: 1, setting: 'ahoc', nodes: 0, fights: 0, won: 0, kills: 0, credits: 0, steps: 0, boons: {} }] }); // rules 1.44: the stage's log
     expect(g.run!.nodes.length).toBeGreaterThan(0); expect(g.run!.world).toHaveLength(1);
     expect(g.sessionN).toBe(1); expect(g.story.await).toBe('none'); expect(g.story.work).toBeNull(); expect(g.narrator.busy).toBe(false);
-    expect(g.story.entries.at(-1)!.text).toBe('The run begins at stage 1 (seed PHC-0001) on AHOC chapter outpost. Pick the first node.');
+    expect(g.story.entries.at(-1)!.text).toBe('The run begins at stage 1 (seed PHC-0001) on AHOC chapter outpost. Choose your first stop.');
     for (const c of Object.values(g.characters)) { expect(c.level).toBe(1); expect(c.echo).toBe(1); }
     expect(g0.run).toBeUndefined(); // the state given is untouched
   });
@@ -75,16 +75,16 @@ describe('run/start', () => {
     const g = squad();
     expect(refused(g, { type: 'run/start' }, P2)).toBe('Only the host starts the run.');
     expect(refused(join(room(), P2, 'Mai'), { type: 'run/start' })).toBe('Lock in a character to start.');
-    expect(refused(add(join(room(), P2, 'Mai'), HOST, 'Kade'), { type: 'run/start' })).toBe('Everyone plays: Mai has no character locked in yet.');
+    expect(refused(add(join(room(), P2, 'Mai'), HOST, 'Kade'), { type: 'run/start' })).toBe('Mai has no character locked in yet.');
     // an offline player without a character doesn't hold the room up
     expect(start(apply(add(join(room(), P2, 'Mai'), HOST, 'Kade'), { type: 'player/online', id: P2, online: false }, HOST)).run).toBeTruthy();
-    expect(refused(add(add(room(), HOST, 'Kade'), HOST, 'Kade 2'), { type: 'run/start' })).toBe('Survival is one character a player: Leon has 2. Take one back.');
+    expect(refused(add(add(room(), HOST, 'Kade'), HOST, 'Kade 2'), { type: 'run/start' })).toBe('In Survival each player brings one character. Leon has 2: take one back.');
     const high: GameState = JSON.parse(JSON.stringify(g)); Object.values(high.characters)[1].level = 4;
-    expect(refused(high, { type: 'run/start' })).toBe('Survival starts at level 1: Ha is level 4.');
+    expect(refused(high, { type: 'run/start' })).toBe('Survival starts at level 1. Ha is level 4: bring a new character.');
     const camp: GameState = JSON.parse(JSON.stringify(g)); camp.settings.play = 'campaign';
-    expect(refused(camp, { type: 'run/start' })).toBe('This room plays Campaign: pick Survival to start a run.');
+    expect(refused(camp, { type: 'run/start' })).toBe('This room plays Campaign. Pick Survival to start a run.');
     const old: GameState = JSON.parse(JSON.stringify(g)); delete old.settings.play; // a save from before modes: a campaign
-    expect(refused(old, { type: 'run/start' })).toBe('This room plays Campaign: pick Survival to start a run.');
+    expect(refused(old, { type: 'run/start' })).toBe('This room plays Campaign. Pick Survival to start a run.');
     expect(refused(start(g), { type: 'run/start' })).toBe('The run is under way.');
   });
   it('a Survival room has no story: session/start is refused (and an old room with no mode still starts its story)', () => {
@@ -110,14 +110,14 @@ describe('run/retire', () => {
       expect(g.run!.state).toBe('over');
       const ids = Object.keys(g.characters);
       expect(g.run!.end).toMatchObject({ how: 'retired', stage: 1, cleared: 1, nodes: 3, levels: { [ids[0]]: 1, [ids[1]]: 1 }, renown: 0 }); // rules 1.44: and the boons and the stages' log
-      expect(g.story.entries.at(-1)!.text).toBe('The squad retires: 1 stage cleared, 3 nodes walked. The score is kept.');
+      expect(g.story.entries.at(-1)!.text).toBe('The squad retires: 1 stage cleared, 3 stops walked. The score is kept.');
       expect(g.run!.leans).toEqual({}); expect(g.run!.offers).toBeNull();
     }
   });
   it('refusals, in words', () => {
     expect(refused(squad(), { type: 'run/retire' })).toBe('No run is under way.');
     const g = start(squad());
-    expect(refused(g, { type: 'run/retire' })).toBe('You retire after a Boss: beat this stage\'s Boss first.');
+    expect(refused(g, { type: 'run/retire' })).toBe('You can retire only after beating a stage\'s Boss.');
     expect(refused(afterBoss(g), { type: 'run/retire' }, P2)).toBe('Only the host retires the run.');
     const over = apply(afterBoss(g), { type: 'run/retire' }, HOST);
     expect(refused(over, { type: 'run/retire' })).toBe('The run is over.');
