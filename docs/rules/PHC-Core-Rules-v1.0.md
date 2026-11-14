@@ -5600,10 +5600,12 @@ and the earlier revisions give the old numbers, this revision rules.
    `stage.pressure` 0.15 → **0.35** a stage (the cap no longer stops the escort of an Elite that stands further up).
    At 0.42 a solo Boss of stage 3 (its required anchor alone, four levels up) stays inside the bulk band; at 0.35 it
    passed it.
-4. **Small parties:** `pressure_per_char` [1.2, 1.25, 1.3, 1.3] → **[2.0, 1.4, 1.3, 1.3]** and the solo Elite's share
-   (`share.elite`, index 1) HP 0.7 → **0.75**, damage 0.55 → **0.75**: a solo's Elite was being scaled down to the old
-   cap (rules 1.44 item 2814) and a solo gunner cleared four stages; now a solo Elite hits at its share and solo runs
-   end in stage 2 or 3. The solo Boss's share (28% HP, 40% damage; Leon's settled ruling 5) is unchanged.
+4. **Small parties:** `pressure_per_char` [1.2, 1.25, 1.3, 1.3] → **[2.0, 1.7, 1.3, 1.3]**; the solo Elite's share
+   (`share.elite`) HP 0.7 → **0.75** and damage 0.55 → **0.75**; the duo's Elite share HP 0.9 → **1** and damage 0.8 →
+   **1**; the duo's Boss damage share 0.6 → **0.8** (its HP share stays 0.5). A small party's Elite was being scaled down
+   to the old cap (rules 1.44 item 2814) and solo gunners and duos cleared four or five stages; now solo runs end in
+   stage 2 or 3 and duos in stage 2 to 4. The solo Boss's share (28% HP, 40% damage; Leon's settled ruling 5) is
+   unchanged.
 5. **Income:** `rewards.instead_rate` 0.5 → **0.1** of the cheapest offer's price: a pick passed by still pays (a stage
    1 Fine rifle's worth is about 270), and a stage's income comes back near spec 11.1's.
 6. **Levels:** `stage.xp` [1, 0.8, 0.9, 1, 1] → **[1, 1, 1.1, 1.25, 1.25]**: an average route (rules 1.48: about 5.8

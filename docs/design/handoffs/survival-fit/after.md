@@ -3,10 +3,10 @@
 | four · gear | 4 | 3.5, 3.4 ± 0.6 | 100% | 75% | 0% | 0% | 4 / 0 / 0 | 4.9, 8.4, 10.6 |
 | four · training | 4 | 3.5, 4.4 ± 1.6 | 100% | 75% | 50% | 50% | 3 / 0 / 1 | 5, 9.5, 12.6 |
 | four · safest | 4 | 4, 4.4 ± 0.7 | 100% | 100% | 50% | 0% | 4 / 0 / 0 | 5.3, 9.3, 12.5 |
-| duo · gear | 4 | 5.4, 4.8 ± 1.6 | 100% | 75% | 75% | 75% | 1 / 3 / 0 | 5.9, 10.6, 13.1 |
 | four_casters · gear | 4 | 1.5, 2 ± 0.5 | 50% | 0% | 0% | 0% | 2 / 2 / 0 | 8.1, 10.6, 9 |
-| duo · training | 4 | 5, 5.5 ± 0.6 | 100% | 100% | 100% | 50% | 0 / 2 / 2 | 6.1, 10.1, 12.1 |
-| duo · safest | 4 | 5.5, 5.3 ± 1.2 | 100% | 100% | 75% | 75% | 2 / 0 / 2 | 6.7, 11.7, 13.9 |
+| duo · gear | 4 | 2.5, 3.6 ± 1.4 | 100% | 50% | 50% | 0% | 3 / 1 / 0 | 5.9, 9, 12.9 |
+| duo · training | 4 | 4, 4 ± 1.1 | 100% | 75% | 50% | 0% | 3 / 1 / 0 | 5.8, 10.6, 10.7 |
+| duo · safest | 4 | 3.5, 4.1 ± 0.9 | 100% | 75% | 50% | 0% | 2 / 2 / 0 | 6.4, 12.6, 12.6 |
 | solo_gunner · gear | 4 | 1.7, 2.6 ± 1.4 | 50% | 25% | 25% | 0% | 4 / 0 / 0 | 3.7, 5.4, 7.8 |
 | solo_gunner · training | 4 | 3.5, 3.1 ± 0.9 | 75% | 75% | 0% | 0% | 4 / 0 / 0 | 3.2, 6.2, 7.3 |
 | solo_gunner · safest | 4 | 2.5, 3 ± 0.6 | 100% | 50% | 0% | 0% | 4 / 0 / 0 | 3.5, 7.1, 5.2 |
@@ -42,18 +42,6 @@ Ends: L 3.15, L 3.10, L 4.15, L 4.15
 | 4 | 2 | 0% | 15 (13) | 6.3, 13, 15 | 90%, 39% | 234 | 0 / 5 / 0 | 3835 (360, 0) / 2049 | - | - | 0.3 | 3.5, 2, 1.5 | 0/0 |
 Fell at: 3.15 boss, 3.10 fight, 4.15 boss, 4.15 boss
 
-### duo · gear (4 runs)
-Ends: L 2.5, S 5.12, S 5.7, S 5.6
-Errors (3): SIM-2: a fight did not end in 20 rounds (stage 5, depth 12): pc:Plain gun 1 2061hp@0,9 ammo 23 w hellraiser_service_rifle jam false ap 7 rounds 285; pc:Outburst caster || SIM-3: a fight did not end in 20 rounds (stage 5, depth 7): pc:Plain gun 1 940hp@1,9 ammo 17 w legion_bullpup jam false ap 0 rounds 450; pc:Outburst caster 2 1044hp@1, || SIM-4: a fight did not end in 20 rounds (stage 5, depth 6): pc:Plain gun 1 1558hp@13,10 ammo 7 w hellraiser_service_rifle jam false ap 7 rounds 247; pc:Outburst caster
-| Stage | Reached | Boss won | Fights (won) | Rounds: plain, Elite, Boss | HP before a fight (mean, min) | Rounds carried, min | Dry / broken / capped | Earned (of it: instead of a pick, sales) / spent, a character | XP, level at the Boss | Grade at the Boss | Steps | Rests, shops, Forges | Vault taken (pick) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 4 | 100% | 42 (42) | 4.8, 8.1, 8.5 | 96%, 76% | 12 | 0 / 0 / 0 | 4577 (728, 222) / 887 | 3542, 7.5 | fine 7, masterwork 1 | 0.1 | 1, 2.5, 1.3 | 2/2 (credits; masterwork emanator) |
-| 2 | 4 | 100% | 30 (29) | 5.6, 9.9, 11.7 | 98%, 82% | 168 | 0 / 0 / 0 | 3818 (801, 202) / 1770 | 6237, 10.7 | masterwork 6 | 0.4 | 1, 2.3, 0.8 | 0/0 |
-| 3 | 3 | 100% | 24 (24) | 6.6, 10.8, 14.7 | 96%, 52% | 234 | 0 / 0 / 0 | 5630 (1023, 0) / 5832 | 9146, 14.3 | relic 5, masterwork 1 | 0.8 | 1.3, 3.3, 1.3 | 0/0 |
-| 4 | 3 | 100% | 29 (29) | 6.4, 13.3, 19 | 99%, 86% | 216 | 0 / 0 / 1 | 7935 (1280, 0) / 1577 | 13080, 17.7 | relic 6 | 0.2 | 1, 2.7, 1.7 | 1/1 (credits) |
-| 5 | 3 | - | 14 (14) | 6.9, 14.7, NaN | 97%, 85% | 187 | 0 / 2 / 0 | 2522 (370, 0) / 0 | - | - | 0 | 0.7, 1, 1 | 1/1 |
-Fell at: 2.5 elite, 5.12 fight, 5.7 fight, 5.6 fight
-
 ### four_casters · gear (4 runs)
 Ends: S 1.8, L 1.8, S 2.7, L 2.7
 Errors (2): SIM-1: a fight did not end in 20 rounds (stage 1, depth 8): pc:Sigil caster 1 131hp@0,8 ammo 4 w service_pistol jam false ap 6 rounds 168; pc:Outburst caster 2 0hp@1,1 || SIM-3: a fight did not end in 20 rounds (stage 2, depth 7): pc:Sigil caster 1 253hp@0,13 ammo 0 w service_pistol jam false ap 7 rounds 252; pc:Outburst caster 2 267hp@
@@ -63,28 +51,38 @@ Errors (2): SIM-1: a fight did not end in 20 rounds (stage 1, depth 8): pc:Sigil
 | 2 | 2 | - | 8 (7) | 10.4, 15, NaN | 96%, 78% | 125 | 0 / 4 / 1 | 975 (219, 0) / 1284 | - | - | 0.4 | 0.5, 1.5, 0.5 | 0/0 |
 Fell at: 1.8 fight, 1.8 gate, 2.7 fight, 2.7 fight
 
-### duo · training (4 runs)
-Ends: C 5.15, S 4.15, S 4.15, C 5.15
-Errors (2): SIM-2: a fight did not end in 20 rounds (stage 4, depth 15): pc:Plain gun 1 1hp@1,7 ammo 20 w hellraiser_service_rifle jam false ap 7 rounds 203; pc:Outburst caster 2  || SIM-3: a fight did not end in 20 rounds (stage 4, depth 15): pc:Plain gun 1 739hp@0,6 ammo 25 w legion_bullpup jam false ap 7 rounds 301; pc:Outburst caster 2 76hp@0,8
+### duo · gear (4 runs)
+Ends: L 2.5, L 4.8, S 4.15, L 2.8
+Errors (1): SIM-3: a fight did not end in 20 rounds (stage 4, depth 15): pc:Plain gun 1 718hp@2,7 ammo 3 w legion_bullpup jam false ap 7 rounds 400; pc:Outburst caster 2 0hp@5,15 
 | Stage | Reached | Boss won | Fights (won) | Rounds: plain, Elite, Boss | HP before a fight (mean, min) | Rounds carried, min | Dry / broken / capped | Earned (of it: instead of a pick, sales) / spent, a character | XP, level at the Boss | Grade at the Boss | Steps | Rests, shops, Forges | Vault taken (pick) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 4 | 100% | 28 (28) | 5.1, 5.8, 7.5 | 99%, 93% | 12 | 0 / 0 / 0 | 2850 (420, 116) / 657 | 2406, 6 | standard 4, fine 4 | 0 | 2.5, 1.5, 1 | 0/2 |
-| 2 | 4 | 100% | 27 (27) | 5.5, 9.3, 10.8 | 97%, 80% | 114 | 0 / 0 / 0 | 3973 (840, 223) / 1716 | 4694, 9 | masterwork 8 | 0.4 | 2.3, 1.3, 0.8 | 0/1 |
-| 3 | 4 | 100% | 26 (26) | 6.3, 10, 13.3 | 99%, 90% | 174 | 0 / 0 / 0 | 5011 (944, 272) / 3780 | 7179, 11.8 | masterwork 4, relic 4 | 0.5 | 3.3, 1.3, 1 | 0/2 |
-| 4 | 4 | 100% | 27 (27) | 6.6, 12.3, 14 | 98%, 87% | 202 | 0 / 0 / 0 | 5574 (525, 0) / 1583 | 10416, 15.5 | relic 4 | 0.1 | 2.3, 1.3, 1.3 | 0/1 |
-| 5 | 2 | 100% | 15 (15) | 7.5, 16, 19.5 | 98%, 73% | 147 | 0 / 0 / 1 | 7990 (922, 0) / 410 | 13521, 18 | relic 4 | 0 | 4, 1.5, 0.5 | 0/0 |
-Fell at: 4.15 fight, 4.15 fight
+| 1 | 4 | 100% | 42 (42) | 5.8, 8.4, 11.8 | 90%, 25% | 12 | 0 / 0 / 0 | 4577 (728, 222) / 900 | 3542, 7.5 | fine 7, masterwork 1 | 0.1 | 1, 2.5, 1.3 | 2/2 (credits; masterwork emanator) |
+| 2 | 4 | 100% | 26 (24) | 5.7, 8, 13.5 | 96%, 67% | 168 | 0 / 0 / 0 | 2783 (650, 0) / 1733 | 6091, 10.5 | masterwork 4 | 0.4 | 0.8, 2, 0.8 | 0/0 |
+| 3 | 2 | 100% | 14 (14) | 6, 12.5, 14.5 | 88%, 48% | 234 | 0 / 0 / 0 | 5235 (934, 0) / 5118 | 8663, 13.5 | relic 3, masterwork 1 | 0.8 | 2, 3, 1 | 0/0 |
+| 4 | 2 | - | 14 (13) | 6.1, 11, NaN | 97%, 77% | 300 | 0 / 0 / 0 | 3891 (529, 0) / 2195 | - | - | 0.3 | 1, 1.5, 1 | 0/0 |
+Fell at: 2.5 elite, 4.8 gate, 4.15 fight, 2.8 gate
+
+### duo · training (4 runs)
+Ends: L 3.15, L 4.8, S 4.15, L 2.8
+Errors (1): SIM-3: a fight did not end in 20 rounds (stage 4, depth 15): pc:Plain gun 1 379hp@5,10 ammo 18 w legion_bullpup jam false ap 7 rounds 236; pc:Outburst caster 2 0hp@3,1
+| Stage | Reached | Boss won | Fights (won) | Rounds: plain, Elite, Boss | HP before a fight (mean, min) | Rounds carried, min | Dry / broken / capped | Earned (of it: instead of a pick, sales) / spent, a character | XP, level at the Boss | Grade at the Boss | Steps | Rests, shops, Forges | Vault taken (pick) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 4 | 100% | 28 (28) | 5, 8, 8.8 | 99%, 91% | 12 | 0 / 0 / 0 | 2850 (420, 116) / 657 | 2406, 6 | standard 4, fine 4 | 0 | 2.5, 1.5, 1 | 0/2 |
+| 2 | 4 | 100% | 24 (23) | 5.8, 8.8, 11 | 97%, 74% | 114 | 0 / 0 / 0 | 3230 (684, 223) / 2058 | 4757, 9 | masterwork 6 | 0.4 | 2.3, 1.3, 1 | 0/1 |
+| 3 | 3 | 67% | 20 (19) | 6.1, 14.7, 13 | 92%, 17% | 174 | 0 / 0 / 0 | 4445 (733, 125) / 2262 | 7106, 11.5 | relic 1, masterwork 3 | 0.3 | 3.3, 1.3, 1 | 0/1 |
+| 4 | 2 | - | 9 (8) | 7.1, 13.5, NaN | 98%, 85% | 242 | 0 / 0 / 0 | 2543 (252, 0) / 450 | - | - | 0 | 1.5, 1, 0.5 | 0/0 |
+Fell at: 3.15 boss, 4.8 gate, 4.15 fight, 2.8 gate
 
 ### duo · safest (4 runs)
-Ends: C 5.15, L 3.8, L 5.8, C 5.15
+Ends: S 3.8, L 2.15, L 4.15, S 4.10
+Errors (2): SIM-1: a fight did not end in 20 rounds (stage 3, depth 8): pc:Plain gun 1 432hp@0,6 ammo 15 w legion_bullpup jam false ap 7 rounds 323; pc:Outburst caster 2 374hp@1,8 || SIM-4: a fight did not end in 20 rounds (stage 4, depth 10): pc:Plain gun 1 779hp@8,6 ammo 24 w hellraiser_service_rifle jam false ap 7 rounds 635; pc:Outburst caster 
 | Stage | Reached | Boss won | Fights (won) | Rounds: plain, Elite, Boss | HP before a fight (mean, min) | Rounds carried, min | Dry / broken / capped | Earned (of it: instead of a pick, sales) / spent, a character | XP, level at the Boss | Grade at the Boss | Steps | Rests, shops, Forges | Vault taken (pick) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 4 | 100% | 33 (33) | 6.6, 6.5, 7.8 | 98%, 86% | 12 | 0 / 0 / 0 | 3314 (433, 116) / 810 | 2792, 6.3 | fine 8 | 0 | 3, 2.3, 1 | 0/2 |
-| 2 | 4 | 100% | 26 (26) | 6, 13.3, 14 | 99%, 90% | 78 | 0 / 0 / 1 | 4054 (737, 434) / 2049 | 5060, 9.5 | masterwork 8 | 0.4 | 3.8, 2.8, 0.8 | 0/2 |
-| 3 | 4 | 100% | 24 (23) | 6.4, 11, 16.3 | 97%, 73% | 168 | 0 / 0 / 1 | 4203 (754, 194) / 2589 | 7744, 12.3 | masterwork 3, relic 3 | 0.4 | 3.5, 2, 0.5 | 0/2 |
-| 4 | 3 | 100% | 21 (21) | 7.5, 13.3, 18.7 | 100%, 93% | 234 | 0 / 0 / 1 | 6227 (774, 0) / 418 | 10720, 15.7 | relic 4, masterwork 2 | 0 | 3, 2.3, 0.7 | 0/1 |
-| 5 | 3 | 100% | 19 (18) | 7.2, 16, 15 | 98%, 75% | 300 | 0 / 0 / 0 | 5156 (688, 404) / 1323 | 14023, 18.5 | relic 4 | 0.2 | 3, 2, 0.7 | 0/0 |
-Fell at: 3.8 gate, 5.8 gate
+| 1 | 4 | 100% | 33 (33) | 6.2, 11, 10.3 | 97%, 75% | 12 | 0 / 0 / 1 | 3314 (433, 116) / 810 | 2792, 6.3 | fine 8 | 0 | 3, 2.3, 1 | 0/2 |
+| 2 | 4 | 75% | 26 (25) | 5.9, 14.3, 13.3 | 99%, 75% | 78 | 0 / 0 / 0 | 3708 (647, 434) / 2049 | 5198, 9.7 | masterwork 6 | 0.4 | 3.8, 2.8, 0.8 | 0/2 |
+| 3 | 3 | 100% | 15 (15) | 7.2, 11.5, 15 | 91%, 35% | 168 | 0 / 0 / 0 | 3910 (694, 258) / 3452 | 7515, 12 | relic 3, masterwork 1 | 0.5 | 3.3, 2, 0.7 | 0/1 |
+| 4 | 2 | 0% | 11 (10) | 6.8, 13.5, 15 | 99%, 86% | 234 | 0 / 0 / 0 | 2904 (352, 0) / 270 | - | - | 0 | 2.5, 2, 0.5 | 0/0 |
+Fell at: 3.8 fight, 2.15 boss, 4.15 boss, 4.10 gate
 
 ### solo_gunner · gear (4 runs)
 Ends: L 1.9, L 1.10, L 4.8, L 2.6

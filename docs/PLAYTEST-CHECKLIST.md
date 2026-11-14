@@ -205,7 +205,8 @@ number; most are one data field or one line. Sources: each step's hand-off, the 
 70. **`stage.bulk` 0.42** (was 0.35) and **`stage.pressure` 0.35** (was 0.15): fights a little longer each stage, and the
     danger cap rising with the Elites' lead.
 71. **The solo cap 2.0 a character and the solo Elite's share 0.75 HP and damage** (were 1.2 and 0.7 / 0.55); **the
-    duo cap 1.4** (was 1.25). The solo Boss's share (your 28% / 40%) is unchanged.
+    duo cap 1.7, the duo's Elite share 1 and its Boss's damage share 0.8** (were 1.25, 0.9 / 0.8 and 0.6). The solo
+    Boss's share (your 28% / 40%) is unchanged.
 72. **`rewards.instead_rate` 0.1** (was 0.5): credits instead of a weapon pick paid as much as the nodes and put the
     Relic in stage 3.
 73. **`stage.xp` [1, 1, 1.1, 1.25, 1.25]** (was [1, 0.8, 0.9, 1, 1]): level 20 early in stage 6 on an average route.
