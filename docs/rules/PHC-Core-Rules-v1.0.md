@@ -241,7 +241,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 **Social.** Leadership comes from Authority: 0 Unfit, 1–2 Squad, 3–4 Platoon, 5+ Command. Each point of Authority moves Karma 1 further every time it changes, more when it is awarded and more when it is taken (rules 1.13: it was Conscience).
 
-**What a point gives, skill by skill** (rules 1.13; the lines the skill cards and the level-up screen show, from `skills.json` `per_point.text`).
+**What a point gives, skill by skill** (rules 1.13; superseded as the source by rules 1.54 item 4119: the screens show `skills.json` `per_point.rows`, the same rules written as rows tied to points; this table is the 1.13 wording and is not kept in step).
 
 | Skill | Attribute | Slot | A point gives |
 |---|---|---|---|
@@ -9443,7 +9443,11 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 4118. **Larger icons on Survival's screens:** path markers (a plain stop, a junction, the vault's spur, the gate, the
     Boss, the camp) 36 / 42 / 40 / 50 / 64 / 44 → 48 / 52 / 48 / 60 / 76 / 52 px, no marker or its glyph under 32 px,
     labels 10 → 12 px, boon icons 16 → 24 px, the reward weapon's icon 52 → 72 px. PROVISIONAL.
-4119. **Skill texts (ui-screens "The three columns"):** a skill's per-point text as rows (`per_point.rows`: each a `when`
-    and a text, numbers by placeholders), one copy (`epccg.effect` removed); rules text never under 13 px; a row at most
-    60 characters where it can be. PROVISIONAL.
+4119. **Skill texts: the road map (ui-screens "Skill texts on the three skill screens"; the lead's design of 14 Nov 2026
+    replaces the plainer text layout first written here):** a skill's gains as rows tied to points (`per_point.rows`:
+    each an `at` of each, each from n, every 2, every 3, from n or at n, and a text whose numbers are placeholders into
+    `per_point.numbers`), one copy (`epccg.effect` and the prose `per_point.text` removed). One helper places them on ten
+    steps, points 1 to 10, with the skill's unlocks, perk steps (M1 to M4 at 3, 5, 7, 9) and Mastered perk (10) from its
+    data; the "?" pop-up shows the ten steps, creation and level-up show the next point's line. Rules text never under
+    13 px; a row at most about 60 characters. No rule changed. PROVISIONAL (the layout).
 4120. **Items 4100 to 4120 are rules 1.54's.**

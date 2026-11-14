@@ -908,7 +908,7 @@ The spec for 0.28.0, from Leon's nine sentences of 14 Nov (the seventh "Settled 
 | R13: amounts | `nodeCredits`; `cleanQty` (a drop's range); `lootToPack` (its cap moved into data, 14.2 item 7) |
 | R14: XP | `nodeXp`, `stageXp` (`run/rewards.ts`), `giveXp`, `xp_total` (untouched); the run simulator `survival-run.ts`; a Boss's notable thing in `rollDeathDrops`, off with R8's flag |
 | R15: rest training and its bar | `trainDo` (`run/progress.ts`), `addDrill`, `addStudy`, `addPractice`, `shiftDevotion`; `DEVOTION_XP` (the shrine reads `shrine.rite` instead); `runOptions` and `placeView` (`run/placeview.ts`, a bar on each training row read from `drillMarks`, `sigilGrowthView`, `nextPickAt` and `practiceOf`, `devotionThreshold`); `WearBar.tsx` (the bar's pattern) |
-| R16: skill texts | perPoint (`screens/shared.js`, the one helper for creation, the "?" pop-up and level-up), `tipAttrs` (`actionTip.ts`), `text_numbers.py` (numbers by placeholders), `validate.py` (the repeated-sentence check), `skills.json` `per_point`; `tending_data.py`'s guard; `skeleton-perks.test.ts` (pins the copies equal today) |
+| R16: skill texts (the road map, lead's design of 14 Nov 2026; ui-screens "Skill texts on the three skill screens") | `roadMap` and `perPoint` (`screens/shared.js`, the one helper for creation, the "?" pop-up and level-up: rows placed on points 1 to 10, the head line, the perk steps and the Mastered perk read from the skill's `unlocks` and the screen data's perks), `text_numbers.py` (numbers by placeholders into `per_point.numbers`), `validate.py` (the rows check beside the repeated-sentence check; `per_point.numbers` that the engine also holds in data are checked equal to it), `skills.json` `per_point.rows`; `tending_data.py`'s guard (it writes rows); `skeleton-perks.test.ts` (its copies check goes: there is one copy) |
 | R17: trait cards scroll the page | the creation screen's CSS rule in `create.js`; the browser check apps/web/e2e/creation-layout.mjs |
 
 ### 14.2 Needs a new primitive (exactly the lead's approved list; nothing else)
@@ -922,7 +922,7 @@ The spec for 0.28.0, from Leon's nine sentences of 14 Nov (the seventh "Settled 
 7. **The pack's quantity cap moved from a literal into data** (the 20 in `containers.ts`): content numbers live in data. Its value stays 20 (Core Rules item 4111).
 8. **`panels` on `data/modes.json` items** (and the mode row's type, and the validator's mode check), read by **one panel registry** in the client (an id to its renderer): the right panel's modules are a hard list of four in code today.
 
-**Data fields, not primitives** (each read by the code that already reads its block): `rewards.offer` by where (a number becomes {fight, elite, boss, vault_guard, vault, crate}; the gate reads the Elite's, as every table does); `survival.json drops` (the materials a foe drops); `shrine.rite`; `per_point.rows` in `skills.json`. **No new trigger, predicate, op, hook, stat or cost site.**
+**Data fields, not primitives** (each read by the code that already reads its block): `rewards.offer` by where (a number becomes {fight, elite, boss, vault_guard, vault, crate}; the gate reads the Elite's, as every table does); `survival.json drops` (the materials a foe drops); `shrine.rite`; `per_point.rows` and `per_point.numbers` in `skills.json`. **No new trigger, predicate, op, hook, stat or cost site.**
 
 ### 14.3 The recipes (`data/recipes.json`; rules 1.54 items 6 and 7)
 
