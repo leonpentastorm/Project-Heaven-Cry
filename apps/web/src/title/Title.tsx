@@ -52,6 +52,9 @@ const STOP_MS = Math.round((4 / 12) * 1000), HELLO_APEX_MS = Math.round((6 / 20)
 /** Wick idles this long on one item before waving at you (once per item). */
 const WAVE_AFTER_MS = 14000;
 const hasStrips = () => !!ART('wick-run') && !!ART('wick-idle');
+/** What the title itself draws (asset names): its layers at the base size (the srcset's larger sizes come with the rest)
+ *  and Wick's strips and mark. The preloader fetches these first and the rest behind the title (game/preload.ts). */
+export const TITLE_ART = (): string[] => [...LAYERS.map(([l]) => 'title-' + l), ...(Object.keys(FRAMES) as Clip[]).map((c) => 'wick-' + c), 'wick-welcome'];
 
 export function Title() {
   const st = React.useSyncExternalStore(subscribe, getState);

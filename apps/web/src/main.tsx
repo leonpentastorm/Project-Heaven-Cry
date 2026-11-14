@@ -1,11 +1,12 @@
 import './game/debug'; // first, so it hears every error
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { mountActionTips } from './game/actionTip';
 mountActionTips(); // the one hover card of the game (every [data-tip] / [data-tip-text] element)
 import PD from './game/protodata.json';
-import ASSETS from './game/assets.json';
+import { startPreload } from './game/preload';
+import { TITLE_ART } from './title/Title';
 
 // The prototypes' shared CSS (keyframes, icon hover zoom, reduced motion), from design/canvas-build/build.py HELMET.
 const style = document.createElement('style');
@@ -63,51 +64,8 @@ gearLift.textContent = 'img[src^="/assets/gear-"]{background:radial-gradient(clo
 document.head.appendChild(gearLift);
 const motion = document.createElement('style'); motion.id = 'phc-global-motion'; motion.textContent = MOTION; document.head.appendChild(motion);
 
-// Every image the game uses: thumbnails first, then the large (zoom) sizes. Failed loads count as done.
-// The painted gear icons (gear-<item id>, game/gearIcons.ts) don't hold the title: the small ones (about 260 KB) load
-// after the zoom sizes, and their -lg sizes (hand cards, hover cards; about 1.5 MB) load only when a screen shows one.
-const isGear = (k: string) => k.startsWith('gear-');
-const all = Object.entries(ASSETS as Record<string, string>).filter(([k]) => !(isGear(k) && k.endsWith('-lg')));
-const URLS = [...all.filter(([k]) => !k.endsWith('-lg') && !isGear(k)), ...all.filter(([k]) => k.endsWith('-lg')), ...all.filter(([k]) => isGear(k))].map(([, u]) => u);
-/** The title opens once the small sizes are in; the large (zoom) sizes keep loading in the background. */
-const SMALL = all.filter(([k]) => !k.endsWith('-lg') && !isGear(k)).length;
-const MARK = (ASSETS as Record<string, string>)['wick-welcome'];
+// The game's art loads behind the title, which comes up at once (game/preload.ts; docs/design/title-screen.md section 8):
+// the title's own pictures first, then the rest in the order a player meets it. Nothing waits on it.
+startPreload(TITLE_ART());
 
-function preload(onTick: (n: number) => void): Promise<void> {
-  let next = 0, done = 0;
-  const one = (): Promise<void> => {
-    if (next >= URLS.length) return Promise.resolve();
-    const url = URLS[next++], img = new Image();
-    img.src = url;
-    return (img.decode ? img.decode() : new Promise<void>((ok, bad) => { img.onload = () => ok(); img.onerror = bad; }))
-      .catch(() => {}).then(() => { onTick(++done); return one(); });
-  };
-  return Promise.all(Array.from({ length: 16 }, one)).then(() => {});
-}
-
-function Loader() {
-  const [n, setN] = useState(0), [ready, setReady] = useState(false);
-  useEffect(() => { let open = false; const go = () => { if (!open) { open = true; setTimeout(() => setReady(true), 250); } }; preload((k) => { setN(k); if (k >= SMALL) go(); }).then(go); }, []);
-  if (ready) return <App />;
-  const total = SMALL || URLS.length, pct = total ? Math.min(100, Math.round((n / total) * 100)) : 100;
-  return (
-    <div role="progressbar" aria-label="Loading the game's art" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}
-      style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, width: 'min(420px, 100%)' }}>
-        {MARK && <img src={MARK} alt="" style={{ width: 120, height: 120, objectFit: 'contain' }} />}
-        <div style={{ fontFamily: 'Spectral, serif', fontSize: 28, fontWeight: 600, letterSpacing: '0.04em', textAlign: 'center' }}>Project Heaven Cry</div>
-        <div style={{ width: '100%', height: 8, borderRadius: 999, background: '#1C2536', border: '1px solid #232D3F', overflow: 'hidden' }}>
-          <div style={{ width: pct + '%', height: '100%', background: '#FFFFFF', transition: 'width 120ms linear' }} />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: '#A3AEC2' }}>
-          <span>LOADING ART · {Math.min(n, total)} / {total}</span><span>{pct}%</span>
-        </div>
-        <button onClick={() => setReady(true)} style={{ minHeight: 42, padding: '0 16px', borderRadius: 10, border: '1px solid #232D3F', background: 'transparent', color: '#A3AEC2', fontFamily: 'inherit', fontWeight: 600, cursor: 'pointer' }}>
-          Skip, load as I go
-        </button>
-      </div>
-    </div>
-  );
-}
-
-createRoot(document.getElementById('root')!).render(<Loader />);
+createRoot(document.getElementById('root')!).render(<App />);
