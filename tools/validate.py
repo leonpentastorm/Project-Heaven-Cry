@@ -80,6 +80,26 @@ for s in items("skills"):
     if at != ["attr:" + str(s.get("attribute"))]:
         errors.append(f"skills: {s.get('id')} has attr tags {at}, its attribute is {s.get('attribute')} (want exactly ['attr:{s.get('attribute')}'])")
 
+# a skill's text never says the same sentence twice (14 Nov 2026: will_power's Pump sentence was appended eight times
+# by a guard that never matched); the sentence must be 30 characters or more to count
+def _skill_texts(o, path):
+    if isinstance(o, str):
+        yield path, o
+    elif isinstance(o, dict):
+        for k, v in o.items():
+            yield from _skill_texts(v, path + "/" + str(k))
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            yield from _skill_texts(v, path + "/" + str(i))
+
+for s in items("skills"):
+    if not isinstance(s, dict):
+        continue
+    for path, text in _skill_texts(s, str(s.get("id"))):
+        sents = [x.strip() for x in re.split(r"(?<=[.!?])\s+", text) if len(x.strip()) >= 30]
+        for x in sorted({x for x in sents if sents.count(x) > 1}):
+            errors.append(f"skills: {path} says the same sentence {sents.count(x)} times: {x[:60]}")
+
 new_ops = collections.Counter()
 
 def walk(obj, where):
