@@ -19,7 +19,7 @@ const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 
 const W = <T,>(g: GameState, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const boon = (id: string) => BOONS.find((b) => b.id === id)! as any;
-const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed, camp: 'recommended' }, 'host');
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
 const take = (g: GameState, id: string, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
@@ -189,7 +189,7 @@ describe('rules 1.44: the next tile and stage 2 (spec rules 3, 19, 32)', () => {
   });
   it('stage 2\'s fights are composed with the stage term: the budget x the stage\'s bulk and pressure, Elites and Bosses the stage\'s lead up, XP and credits x the stage\'s', () => {
     const r = new Rec(survivalRoom('PHC-0005', DUO, { test: true }), DUO);
-    r.must({ type: 'run/start', seed: 'PHC-0005' });
+    r.must({ type: 'run/start', seed: 'PHC-0005', camp: 'recommended' });
     playStage(r, 2, { skip: true, through: 2 });
     expect(r.errors).toEqual([]);
     const s2 = r.g.run.stats.fights.filter((f: any) => f.stage === 2);
@@ -242,7 +242,7 @@ describe('rules 1.44: the end of a run and its score (spec rules 4, 6, 35)', () 
 
 describe('rules 1.44: the replay guard over two stages', () => {
   it('a seeded two-stage run through the reducer gives the same hash twice, and a save and load in the middle changes nothing', () => {
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0006', DUO, { test: true }), DUO, reload); r.must({ type: 'run/start', seed: 'PHC-0006' }); playStage(r, 2, { skip: true, through: 2 }); return r; };
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0006', DUO, { test: true }), DUO, reload); r.must({ type: 'run/start', seed: 'PHC-0006', camp: 'recommended' }); playStage(r, 2, { skip: true, through: 2 }); return r; };
     const a = play(), b = play(), c = play([30]);
     expect(a.errors).toEqual([]);
     expect(a.g.run.stage).toBe(2); expect(a.g.run.state).toBe('boon');

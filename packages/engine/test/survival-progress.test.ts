@@ -18,7 +18,7 @@ const SV: any = svJ;
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const W = <T,>(g: GameState, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
-const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed, camp: 'recommended' }, 'host');
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** The squad at a node of this kind: a node of depth 3 or more made that kind, its way in walked (every player marks it). */
 function visit(kind: string, o: { pcs?: Pc[]; stage?: number; credits?: number; prep?: (g: GameState) => void } = {}): GameState {
@@ -249,6 +249,8 @@ describe('rules 1.43: the Crossroads (rule 42): every trade\'s gain and cost', (
   });
   it('a salvage buyer: a pack line for its share of its price', () => {
     const g = all(at()), t = TRADES.items.find((x) => x.do === 'salvage')!, c0 = g.characters.c1;
+    // rules 1.52: the camp's Recommended loadout carries nothing salvageable but its gun: a knife in the pack to sell
+    c0.pack = [...packOf(c0), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }];
     const i = packOf(c0).findIndex((x) => !x.mags && !x.calibre && x.kind !== 'ammo' && priceOf(x.weapon || x.item || x.id, x.rarity || 'standard') != null);
     const it = packOf(c0)[i], n = Math.round(priceOf(it.weapon || it.item || it.id, it.rarity || 'standard')! * t.rate);
     const a = apply(g, { type: 'run/trade', charId: 'c1', trade: t.id, pick: i }, 'host');

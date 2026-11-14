@@ -13,6 +13,7 @@ import { seedFrom } from '../rng';
 import type { FightTally } from './tally';
 import { type PathNode, pathMap, mapNodes, MAP_DATA } from './map';
 import type { ShopState } from './shop';
+import type { LoadoutPick } from './loadout';
 
 /** The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41). */
 export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string } = (survivalJ as any).run;
@@ -32,11 +33,11 @@ export const modeOf = (id: string | null | undefined): ModeDef | undefined => MO
 /** The mode a room plays: its `settings.play`, or the old-save mode when the room was saved before there were modes. */
 export const playOf = (g: { settings: { play?: PlayMode } }): PlayMode => g.settings.play || OLD_SAVE_PLAY;
 
-/** Where a run stands. `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
+/** Where a run stands. `loadout`: the camp before node 1 (rules 1.52, run/loadout.ts); `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
  * after a won fight (offers); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:
  * after a Boss (the stage is cleared; rules 1.44: each character picks a boon, then the squad picks the next tile);
  * `over`: lost or retired. */
-export type RunPhase = 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
+export type RunPhase = 'loadout' | 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
 /** A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. */
 export type RunNode = PathNode;
 /** A tile of the world the party walks (rule 32): a stage's setting and its boon pool. */
@@ -118,6 +119,8 @@ export interface RunState {
   tiles?: RunTile[] | null;
   /** Rules 1.44: each stage's log (the summary), the stage under way last. */
   stages?: RunStageLog[];
+  /** Rules 1.52: the camp's loadouts by character id while the camp is open (null after). */
+  loadout?: Record<string, LoadoutPick> | null;
 }
 
 /** A fresh run at stage 1 with nothing walked: stage 1's tile and its path map from the run's seed (rules 10, 12). */
@@ -141,6 +144,7 @@ export function reachable(r: RunState): RunNode[] {
 export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by: string, nodeId: string): string | null {
   const r = g.run; if (!r) return 'No run is under way.';
   if (!g.players.some((p) => p.id === by)) return 'Only a player in the room picks the way.';
+  if (r.state === 'loadout') return 'Finish your loadout at the camp first: everyone marks Ready, or the host starts the run.';
   if (r.state === 'fight') return 'The fight is on.';
   if (r.state === 'reward') return 'Take your picks first: the squad moves on when everyone has.';
   if (r.state === 'shop') return 'Leave the shop first: everyone marks Ready to leave, or the host closes it.';

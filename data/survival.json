@@ -4,10 +4,131 @@
   "source": "docs/design/survival-spec.md (draft 4); rules 1.40, 1.41",
   "note": "Survival mode's numbers (spec section 7). Built so far: `map`, the path map of a stage (rules 1.40; spec rules 7 to 12; build step 2); the run's start, the encounter generator, the fights' rewards and the node panels (rules 1.41; spec rules 2, 5, 13 to 24, 26; build step 3). The other keys of section 7 are added by the later build steps. Every number is provisional.",
   "run": {
-    "about": "Rules 1.41 (spec rules 2, 5, 10): the credits each character starts a run with, the HP a character dead in a won fight comes back at, the first stage's setting.",
-    "start_credits": 150,
+    "about": "Rules 1.41 (spec rules 2, 5, 10): the credits each character starts a run with (rules 1.52: 0; the loadout's unspent budget is the starting purse; it was 150), the HP a character dead in a won fight comes back at, the first stage's setting.",
+    "start_credits": 0,
     "dead_return_hp": 1,
     "first_setting": "ahoc",
+    "provisional": true
+  },
+  "loadout": {
+    "about": "Rules 1.52 (Leon, 14 Nov 2026: 'Survival will give you one low level melee, one low level gun, a bow, one of the 4 focus and a budget'; corrected the same day: 'only one weapon'). The camp before node 1: each character takes ONE free weapon from `weapons` (melee, gun or bow), ONE free focus from `focuses` (either may be declined; declining gives nothing back), and spends `budget` credits on the shop's menu (`counter`, `stock`) at shop prices (credits.ts priceOf, the one price door). What is not spent is the character's starting purse. A gun comes with `gun.loaded` magazine loaded and `gun.spare` spare (a gun loaded round by round: that many magazines' worth of loose rounds); a bow with its quiver full (its own magazine in weapons.json). A core-fuelled focus comes with `focus_with`. Everything else is bought from the shop's own menu (`counter`, `stock`).",
+    "budget": 200,
+    "weapons": {
+      "melee": [
+        "combat_knife",
+        "hatchet",
+        "ork_machete"
+      ],
+      "gun": [
+        "service_pistol",
+        "drifter_revolver",
+        "sawn_off",
+        "hellraiser_service_rifle"
+      ],
+      "bow": [
+        "recurve_bow",
+        "crossbow"
+      ]
+    },
+    "gun": {
+      "loaded": 1,
+      "spare": 1
+    },
+    "bow": {
+      "spare": 0
+    },
+    "focuses": [
+      "evoker",
+      "emanator",
+      "attuner",
+      "visualizer"
+    ],
+    "focus_with": {
+      "evoker": [
+        {
+          "id": "standard_core",
+          "qty": 1
+        }
+      ],
+      "visualizer": [
+        {
+          "id": "standard_core",
+          "qty": 1
+        }
+      ]
+    },
+    "counter": {
+      "about": "The paid shelves are the shop's own menu (Leon, 14 Nov 2026: '1 weapon for free, take anything else with cost from the shop menu'): every shelf of `shop.always` but the restock (run/shop.ts counterLines, its prices, its keys), then `stock`.",
+      "skip": [
+        "restock"
+      ]
+    },
+    "stock": {
+      "about": "The camp's gear shelf: the stage-1 shop's low-grade gear as a FIXED list (a shop rolls its gear; the camp shows everyone the same choices: a call for Leon). Second weapons (the free list at shop price), a second focus, body armour (`armour:<class>`, rules.json armor.classes prices) and worn pieces, standard grade.",
+      "ids": [
+        "combat_knife",
+        "hatchet",
+        "ork_machete",
+        "service_pistol",
+        "drifter_revolver",
+        "sawn_off",
+        "hellraiser_service_rifle",
+        "recurve_bow",
+        "crossbow",
+        "evoker",
+        "emanator",
+        "attuner",
+        "visualizer",
+        "armour:1",
+        "armour:2",
+        "work_gloves",
+        "padded_undershirt",
+        "utility_belt",
+        "field_helmet",
+        "field_boots"
+      ]
+    },
+    "max_qty": 10,
+    "recommended": {
+      "about": "The Recommended button (and the host's Start for an away player): the focus of the character's door skill with the most points (none without one); the first `weapon` row that fits (a caster with a focus takes the one-handed gun, so the focus sits in the off hand; Raw Power above Dexterity takes the blade; else the rifle); then its profile's `buys` in order while the budget pays (profile: the focus's fuel, core or mp; else gun or melee by the weapon), then the weapon's ammunition while it pays.",
+      "focus_by_door": {
+        "brain_power": "evoker",
+        "visualization": "visualizer",
+        "will_power": "emanator",
+        "empathy": "attuner"
+      },
+      "weapon": [
+        {
+          "when": "focus",
+          "id": "service_pistol"
+        },
+        {
+          "skill": "raw_power",
+          "over": "dexterity",
+          "id": "ork_machete"
+        },
+        {
+          "id": "hellraiser_service_rifle"
+        }
+      ],
+      "buys": {
+        "core": [
+          "standard_core"
+        ],
+        "mp": [
+          "field_kit",
+          "stim_injector"
+        ],
+        "gun": [
+          "stim_injector",
+          "stim_injector"
+        ],
+        "melee": [
+          "armour:1"
+        ]
+      },
+      "fill": "ammo"
+    },
     "provisional": true
   },
   "stage": {
@@ -151,8 +272,8 @@
     "provisional": true
   },
   "armour_fit": {
-    "about": "Rules 1.43 (spec rule 44): the Forge fits the next armour class for its price, until body armour becomes items (Equipment 2.0). The class's own gate (Pain Threshold, a trait's cap) holds.",
-    "price": { "2": 250, "3": 600, "4": 1200 },
+    "about": "Rules 1.43 (spec rule 44): the Forge fits the next armour class for its price, until body armour becomes items (Equipment 2.0). Rules 1.52: Class 1 added (100), now that a Survival character may set out with no body armour. The class's own gate (Pain Threshold, a trait's cap) holds.",
+    "price": { "1": 100, "2": 250, "3": 600, "4": 1200 },
     "provisional": true
   },
   "boon_cap": {

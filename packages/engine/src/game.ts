@@ -66,8 +66,10 @@ import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, r
 import { relicRow, worthOf, BOON_CAP } from './run/power';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
 import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays } from './run/shop';
+import { openCamp, loadoutAction, campReady, LOADOUT, type LoadoutAction } from './run/loadout';
+import { gearIfBare, campaignLoadout } from './loadout';
 import { type GiveAction, giveNow } from './give';
-import { earnCredits } from './credits';
+import { earnCredits, creditsOf } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -327,7 +329,9 @@ export type Action =
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
   /** Rules 1.39: the host starts a Survival run (seed: a shared seed, else one from the room); the host retires it after a Boss. */
-  | { type: 'run/start'; seed?: string } | { type: 'run/retire' }
+  | { type: 'run/start'; seed?: string; /** tests only (a test room): skip the camp, every character on the Recommended loadout */ camp?: 'recommended' } | { type: 'run/retire' }
+  // rules 1.52 (run/loadout.ts): the camp's loadout before node 1, and Ready (the host's close starts the run for everyone)
+  | ({ type: 'run/loadout' } & LoadoutAction) | { type: 'run/ready'; close?: boolean; undo?: boolean }
   // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
@@ -646,6 +650,8 @@ function reduce(g: GameState, a: Action, by: string) {
       // Locked in mid-session: the session's start counts for them too ('session_start' for this character only: Old
       // Timer's Echo, start items; hooks gap A14).
       if (g.phase !== 'lobby') { c.echo = 1; if (!g.sandbox) emitStory(g, 'session_start', { g, n: g.sessionN, late: true }, [c]); }
+      // rules 1.52: locked in mid-play: the mode gives the gear now (a campaign's loadout; the Proving Ground's the same)
+      if (g.phase !== 'lobby' && !g.run && gearIfBare(c, campaignLoadout(g.campaign as any))) c.hp = maxHp(c);
       return;
     }
     case 'session/next': {
@@ -669,6 +675,8 @@ function reduce(g: GameState, a: Action, by: string) {
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
       g.story.round = 1; g.story.await = 'narrator'; g.story.work = { kind: 'opening' };
       if (!g.campaign || g.campaign.id !== g.settings.start) g.campaign = builtInCampaign(g.settings.start) || builtInCampaign('own');
+      // rules 1.52: gear is given by the mode: a campaign gives each bare character its loadout (the campaign's own, else the mode's)
+      for (const c of Object.values(g.characters)) if (gearIfBare(c, campaignLoadout(g.campaign as any))) c.hp = maxHp(c);
       placeBoardNpc(g);
       g.story.zone = g.campaign!.startZone; g.story.positions = {}; g.story.objects = defaultObjects(zoneMap(g)); positionsOf(g);
       for (const pin of g.campaign!.pins || []) applyMemOp(g, { op: 'pin', text: pin });
@@ -3123,9 +3131,21 @@ function runAction(g: GameState, a: Action, by: string) {
       const seed = typeof a.seed === 'string' && a.seed.trim() ? a.seed.trim().slice(0, 40) : runSeed(g.code, g.seq);
       g.run = newRun(seed); g.phase = 'story'; g.combat = null; beginSession(g);
       g.story.round = 1; g.story.await = 'none'; g.story.work = null;
-      // rules 1.41 (spec rule 2): each character's own purse starts at start_credits
+      // rules 1.41 (spec rule 2): each character's own purse starts at start_credits (rules 1.52: 0; the camp's budget)
       for (const c of Object.values(g.characters)) { c.credits = 0; earnCredits(c, survivalRun.start_credits); }
-      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. Pick the first node.' });
+      // rules 1.52: the camp before node 1: everyone builds a loadout (gear is given by the mode)
+      openCamp(g.run, Object.values(g.characters));
+      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. At the camp, each of you takes one weapon and a focus free, and ' + LOADOUT.budget + ' credits to spend; the rest is kept.' });
+      if (a.camp === 'recommended') { if (!g.settings.test) fail('Skipping the camp is for the test room only.'); campClose(g); }
+      return;
+    }
+    case 'run/loadout': { // rules 1.52 (run/loadout.ts): a pick, a take, Recommended or clear, for the player's own character
+      const res = loadoutAction(g, by, a as any); if ('no' in res) fail(res.no);
+      return;
+    }
+    case 'run/ready': { // rules 1.52: Ready at the camp; when everyone is (or the host closes), the run goes on to node 1
+      const res = campReady(g, by, { close: !!a.close, undo: !!a.undo }); if ('no' in res) fail(res.no);
+      if ('closed' in res && res.closed) campDone(g);
       return;
     }
     case 'run/move': { // rules 1.41 (spec rules 8, 11): a player's mark on a reachable node; when everyone has marked, the squad goes
@@ -3218,6 +3238,14 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     default: fail('No such run action: ' + a.type + '.');
   }
+}
+/** Rules 1.52: the host closes the camp at once (tests: run/start's camp 'recommended'). */
+function campClose(g: GameState) { const res = campReady(g, g.hostId, { close: true }); if ('closed' in res && res.closed) campDone(g); }
+/** Rules 1.52: the camp is closed: each character's loadout in a line, and the squad on its map. */
+function campDone(g: GameState) {
+  const r = g.run!; r.state = 'map';
+  for (const c of Object.values(g.characters)) push(g, { kind: 'system', charId: c.id, text: c.name + ' sets out with ' + (c.weapon === 'fists' ? 'bare fists' : 'the ' + (WEAPON[c.weapon]?.name || c.weapon)) + (c.offHand ? ' and the ' + ((ITEM as any)[c.offHand.id]?.name || WEAPON[c.offHand.id]?.name || c.offHand.id) : '') + ', ' + creditsOf(c) + ' credits kept.' });
+  push(g, { kind: 'system', head: 'SURVIVAL', text: 'The squad leaves the camp. Pick the first node.' });
 }
 /** Rules 1.46: a line of the visit's log at the safe node the party stands on (the shop's log and its face's line of
  * that kind, or the visit's own log), so every full-screen place shows what was done there, a give included. */
@@ -3745,7 +3773,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     g.story.entries = []; g.story.journal = []; g.story.scene = { title: PROVING_GROUND.title, n: 0, hooks: [], revealed: [], asked: {}, fired: {} };
     g.story.zone = PROVING_GROUND.startZone; g.story.positions = {}; g.story.npcs = []; g.story.mana = MANA_START;
     g.story.glyphs = []; g.story.zones = []; g.story.magic = {}; g.story.fx = []; g.story.objects = defaultObjects(zoneMap(g));
-    for (const c of Object.values(g.characters)) sbRefill(c);
+    for (const c of Object.values(g.characters)) { gearIfBare(c, campaignLoadout(null)); sbRefill(c); } // rules 1.52: a bare character gets the default loadout here
     positionsOf(g);
     // Gearing up: the squad on the map, wave 1 standing idle across it, the tools open. The fight starts from here.
     g.phase = 'story'; g.story.round = 1; g.story.await = 'players'; g.story.work = null;

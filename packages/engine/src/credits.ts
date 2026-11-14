@@ -3,7 +3,7 @@
 // the shop, the Forge and the trades of later steps pay out of it through `payCredits`, whose refusal is in words.
 // General: a campaign's rewards and a roguelike's missions use the same purse. (The shelved advanced class in
 // classes/j.ts keeps its own class-state credits; it moves here when it returns.)
-import { WEAPON, ITEM, RULES } from './data';
+import { WEAPON, ITEM, RULES, ARMOUR_CLASSES } from './data';
 import { RARITY, type Character, type Rarity } from './character';
 
 /** The credits a character holds (0 when it has never had any). */
@@ -40,6 +40,8 @@ export function emptyMagPrice(weaponId: string): number | null {
  * sale, picks, loot value. */
 export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = []): number | null {
   const r = /^rounds:(.+)$/.exec(id); if (r) return ROUND_PRICE[r[1]] > 0 ? ROUND_PRICE[r[1]] : null;
+  // rules 1.52: body armour of a class (`armour:<class>`) at the class's own price (rules.json combat armor.classes)
+  const ac = /^armour:(\d)$/.exec(id); if (ac) { const p = Number(ARMOUR_CLASSES[Number(ac[1])]?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; }
   const m = /^mag:(.+)$/.exec(id);
   if (m) { const w: any = WEAPON[m[1]], e = emptyMagPrice(m[1]), rp = w ? ROUND_PRICE[w.ammo] : 0; return e == null || !rp ? null : e + rp * (w.magazine || 0); }
   const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false) return null;

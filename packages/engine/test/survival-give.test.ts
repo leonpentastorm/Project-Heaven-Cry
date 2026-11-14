@@ -10,7 +10,7 @@ import type { Pc } from './helpers/replay';
 
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
-const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed, camp: 'recommended' }, 'host');
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** The squad at a node of this kind (depth 5), every player marking it. */
 function at(kind: string, o: { pcs?: Pc[]; credits?: number; prep?: (g: GameState) => void } = {}): GameState {

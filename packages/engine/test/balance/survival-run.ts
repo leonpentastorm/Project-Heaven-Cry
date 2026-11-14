@@ -134,7 +134,7 @@ export function simRun(cfg: RunCfg): RunResult {
   const credits = () => ids.map((id) => creditsOf(C(id)));
   let st: StageRow; const stepsAt: Record<string, number> = {};
   const newStage = () => { st = { stage: r.g.run?.stage || 1, setting: r.g.run?.world?.[r.g.run.world.length - 1]?.setting, earned: ids.map(() => 0), spent: ids.map(() => 0), instead: ids.map(() => 0), sold: ids.map(() => 0), xp: [], level: [], steps: ids.map(() => 0), grades: [], cleared: false, nodes: [], vault: 'none', vaultPick: null, rests: 0, shops: 0, forges: 0, repairs: ids.map(() => 0), repairSpent: ids.map(() => 0) }; res.stages.push(st); };
-  r.must({ type: 'run/start', seed: cfg.seed });
+  r.must({ type: 'run/start', seed: cfg.seed, camp: 'recommended' }); // rules 1.52: the camp's Recommended loadout for every member
   newStage();
   // every action through Rec, the credits it moved counted to the stage (earned or spent)
   const act = (a: any, who = 'host') => r.act(a, who);

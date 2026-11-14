@@ -10,7 +10,7 @@ import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
-const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
+const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed, camp: 'recommended' }, 'host');
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 const standOn = (g: GameState, id: string): GameState => { const x = clone(g); x.run!.at = id; x.run!.state = 'map'; return x; };
 
