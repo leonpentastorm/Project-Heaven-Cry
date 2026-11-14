@@ -5654,6 +5654,66 @@ shop and the Forge that gunsmith. Every number is PROVISIONAL (items 3700 onward
    repair whatever is Worn or Broken at each shop and Forge, when affordable, before a grade step): items 3707 to 3709.
    No dial was moved.
 
+## Rules revision 1.51: starting boons, caster boons and the supply pack (Survival)
+
+Built on 14 Nov 2026 (`docs/design/handoffs/survival-starting-boons.md`; design: `docs/design/survival-spec.md` section
+13, rules 48 to 54). Leon, 14 Nov 2026: *"if caster keep getting wreck, we should give them some boons"*. The run measure
+of rules 1.49 had every solo caster fall in stage 1, before the first Boss and so before any boon. This revision gives
+every character a small boon from the camp, adds caster boons to the Boss's pool, refills what casters burn between
+fights as rounds are refilled, and gives the casters the armour the soldier kit already has. Every number is
+PROVISIONAL (items 3800 onward) and lives in `data/survival.json` (`start_boon`, `start_boons`, `boons`, `ammo_pack`,
+`camp`).
+
+1. **The camp and the starting boon.** `run/start` opens the **camp** (the run's state `camp`) before node 1. Every
+   character is offered **three starting boons** (`start_boon.offer` 3) and takes one with `run/boon` (the Boss's boon
+   pick's action; its player, or the host for an away player). The path map opens when every character has taken one;
+   the host's `run/go` at the camp sends the squad on at once, and every character that has not picked takes **the first
+   card of its offer**. A starting boon is a `relic` item in `c.relics`, worth at most `start_boon.max_worth` **6** on the
+   run's cap of 50. The starting boons are their own pool (`start_boons`, 24 rows): never offered after a Boss, at a
+   shrine or by the graft, and no Boss boon is a starting boon.
+2. **The offer, by line.** A line is what a character runs on, one for each attribute's alpha skill
+   (`start_boon.lines`): Guard (Durability), blades (Raw Power), guns (Dexterity), Shadow (Ingenuity), Sigil (Brain
+   Power), Figments (Visualization), Bonds and Tending (Empathy), Outburst (Will Power), Faith (Faith). **The main line:**
+   a focus in a hand whose door skill has 1 point or more gives its door's line (Evoker Sigil, Emanator Outburst, Attuner
+   Bonds and Tending, Visualizer Figments); else the line of the highest attribute's alpha skill when it has 1 point or
+   more (a tie: the alpha skill with more points, then the order above); else the main-hand weapon's (a gun or empty
+   hands: guns; a melee weapon: blades). **The second line:** the main-hand weapon's line if it differs; else the next
+   attribute's alpha skill line (by the same order, 1 point or more) if it differs; else the other weapon line. **The
+   cards:** `start_boon.main` **2** from the main line and `start_boon.second` **1** from the second, never the same row
+   twice, from `rngFor(seed, 'camp#start#' + character id)`; a line with too few rows is filled from the second line,
+   then from every row, so the offer is always three real cards.
+3. **The starting pool** (`start_boons`; survival-spec section 13.3): every damage line has the same three shapes, +1 to
+   hit with its door (worth 6), +5% damage with it (5), and a tempo or sustain row (4); the Guard, Shadow, Bonds,
+   Figments and Faith rows are worth 4 or 5. **Vigil** reads "your first prayer each fight, if it is a Whisper, costs 0
+   AP": the reducer names every prayer `pray` when it is made, so the limit is spent by the fight's first prayer of any
+   kind (a call made for Leon).
+4. **Caster boons after a Boss** (`boons`, survival-spec section 13.4): Ward of Script (10), Long Hand (12), Sure Script
+   (13), Steady Heart (13), Deep Reserve (10), Mercy's Return (8), each with `doors`. **Bandolier** now doubles the whole
+   supply pack: magazines, cores and the MP share.
+5. **The supply pack** (replaces rules 1.41's ammunition pack; spec rule 52). After a won fight, and at a
+   cache and the vault's chest, with n = `ammo_pack` by the node (a fight 1, an Elite, the gate or the vault's guard 2,
+   a Boss 3, a cache or the vault 1) × the stat `run_ammo`: (a) n magazines' worth for every gun carried; (b) a character
+   carrying an Evoker or a Visualizer gets back **the cores it burnt**, at least `ammo_pack.cores` **1** × n and at most
+   `ammo_pack.cores_max` **2** × n, where burnt = (its spare cores × 10 plus each carried focus's loaded charge before the
+   fight, minus the same after) ÷ 10, rounded up, never below 0; (c) a character carrying an Emanator or an Attuner gets
+   `ammo_pack.mp_share` **0.3** × n of its max MP back, never above the max; (d) **Flux is 0 after every fight** of a run,
+   and **a Rest node fills the loaded charge** of every carried Evoker and Visualizer to full (10); (e) everything else
+   (HP, Strain, the meters, prayer waits, Echo, toxins, Supplies, stims, field kits, spare parts) is as before.
+6. **The camp's issue** (spec rule 53). At the camp each character may have its armour fitted up to class
+   `camp.issue_armour` **3** at no cost (`run/fit`, the Forge's fitting, price 0 at the camp; the class's own gates
+   hold), and every gun a character holds in hand is topped up to `camp.spare_mags` **3** spare magazines (or 3 ×
+   capacity of loose rounds). **Two kits are added** (`character.ts KITS`): `rigger` (a Visualizer in the off hand, the
+   service pistol, 4 standard cores) and `mender` (an Attuner in the off hand, the service pistol, a field kit). The
+   campaign's four kits are unchanged: the third magazine is the camp's issue, in Survival only (a call made for Leon).
+7. **Primed** (spec rule 54): its "Flux −2" and "Strain −1" are struck from the design (they were never built; with Flux
+   and Strain 0 at every fight's start they would do nothing). Its Guard, Momentum and Shadow stay.
+8. **The simulator's players** (`packages/engine/test/balance/survival-run.ts`, `policies.ts`; spec section 13.6): the
+   Rigger plays a Figment policy; the healer heals an ally under 60% HP (itself alone under 50%); the Sigil caster
+   Evokes a whole Line at once, draws its Lines near the foe and spends spare AP shooting, venting or stepping to cover;
+   the Outburst caster Releases at the stage that drops its target (stage 0 or 1 on Vermin and Minions); the caster
+   builds take the camp's armour; every build picks its starting boon (+1 to hit, else +5% damage, else the first card).
+   Echo stays unplayed for every build.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8967,3 +9027,18 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3708. **What repair costs (rules 1.50 item 7):** 0.1 to 0.3 repairs a character a stage where any were bought, 3 to 6 credits a character a stage on average (a broken Masterwork rifle at most 720): under 0.2% of a stage's income (spec 11.1: 3,861 to 6,864). PROVISIONAL.
 3709. **The curve after repair (rules 1.50 item 7):** the squad of four still ends in stage 3 or 4 (means 3.4, 4.3, 4.4; were 3.4, 4.4, 4.4; one training-route run cleared stage 4 before and fell in it after, the dice of a gun that fires instead of breaking); solo and duo cells unchanged; four casters 2.0 → 2.3; the grade ladder's walk (grades at each Boss, steps a stage) unchanged. No dial moved. PROVISIONAL.
 3710. **Items 3700 to 3710 are rules 1.50's.**
+3800. **The camp (rules 1.51 item 1):** `run/start` opens the run's state `camp`; each character takes one starting boon of `start_boon.offer` 3 with `run/boon`; the map opens when all have; the host's `run/go` gives every character that has not picked the first card of its offer. PROVISIONAL.
+3801. **A starting boon's size (rules 1.51 item 1):** worth at most `start_boon.max_worth` 6 of the run's cap of 50; its own pool `start_boons` (24 rows), never offered after a Boss, at a shrine or by the graft. PROVISIONAL.
+3802. **The line (rules 1.51 item 2):** `start_boon.lines` maps each alpha skill to its line; main line: a held focus with its door skill 1+, else the highest attribute's alpha skill with 1+, else the main hand's weapon (guns, blades); second line: the main hand's weapon, else the next attribute's alpha skill, else the other weapon line. PROVISIONAL.
+3803. **The offer's cards (rules 1.51 item 2):** `start_boon.main` 2 from the main line, `start_boon.second` 1 from the second, distinct, from `rngFor(seed, 'camp#start#' + id)`; short lines filled from the second line, then from every row. PROVISIONAL.
+3804. **The starting pool's shape (rules 1.51 item 3):** on each damage line (guns, blades, Sigil, Outburst) +1 to hit (worth 6), +5% damage (5), a tempo or sustain row (4); Guard, Shadow, Bonds and Tending, Figments, Faith rows worth 4 or 5 (survival-spec 13.3 lists all 24 and their numbers). PROVISIONAL.
+3805. **Vigil (rules 1.51 item 3):** the first prayer each fight, if it is a Whisper, costs 0 AP (the limit is spent by the first prayer of any kind). PROVISIONAL.
+3806. **Caster boons (rules 1.51 item 4):** Ward of Script (a shield of 10% of max HP at the first round; worth 10), Long Hand (once a turn a glyph drawn gives back 1 AP; 12), Sure Script (+2 to hit with Sigils; 13), Steady Heart (+2 to hit with Outbursts; 13), Deep Reserve (2 MP a point of Will Power each round; 10), Mercy's Return (half of each heal given back as MP; 8); each served only to its `doors`. PROVISIONAL.
+3807. **Bandolier (rules 1.51 item 4):** doubles the whole supply pack (magazines, the cores' floor and ceiling, the MP share). PROVISIONAL.
+3808. **The supply pack's cores (rules 1.51 item 5):** the cores burnt in the fight back, at least `ammo_pack.cores` 1 × n and at most `ammo_pack.cores_max` 2 × n; burnt = charge before minus after (spare cores × 10 + each carried Evoker's and Visualizer's loaded charge) ÷ 10, rounded up. PROVISIONAL.
+3809. **The supply pack's MP (rules 1.51 item 5):** an Emanator or Attuner carried: `ammo_pack.mp_share` 0.3 × n of max MP back after a won fight, a cache and the vault, never above the max. PROVISIONAL.
+3810. **Flux and charge in a run (rules 1.51 item 5):** Flux 0 after every fight of a run; a Rest node fills each carried Evoker's and Visualizer's loaded charge to 10. PROVISIONAL.
+3811. **The camp's issue (rules 1.51 item 6):** armour fitted up to `camp.issue_armour` 3 for 0 credits at the camp (the class's gates hold); the gun in hand topped up to `camp.spare_mags` 3 spare magazines; Survival only. PROVISIONAL.
+3812. **The rigger and mender kits (rules 1.51 item 6):** `rigger` (Visualizer, service pistol, 4 standard cores, padded coat class 1) and `mender` (Attuner, service pistol, a field kit, medic plate class 2). PROVISIONAL.
+3813. **Primed (rules 1.51 item 7):** "Flux −2" and "Strain −1" struck; Guard +2, Momentum +1, Shadow +1 as built. PROVISIONAL.
+3814. **The simulator's caster policies (rules 1.51 item 8):** as rules 1.51 item 8 says (survival-spec 13.6). PROVISIONAL.
