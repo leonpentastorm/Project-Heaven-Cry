@@ -77,3 +77,11 @@ a piece with `use: false` is held back with its reason). `npm run assets` builds
 same id (a ground in four quarter turns, `-r0` to `-r3`); `apps/web/src/game/kitMap.ts` picks pieces per tile from the
 map's `skin` and draws the plain fallback for any piece that has no asset. Check grounds with
 `python3 tools/art/kit_seams.py --sheet <dir>` (each must print "clean") before taking a delivery in.
+
+**Survival's path screen and shops (14 Nov 2026).** By catalog id from `catalog.survival_art`: a `path-map-backdrop`
+is built as its own id, `survival-map-<setting>`, and `apps/web/src/game/PathMap.tsx` draws it (the field chart in code
+when missing; a dark band under the lanes for the backdrops listed in its `SCRIM`); a `shopkeeper-portrait` is built as
+its own id, `survival-keeper-<setting>`, the id a face's `portrait` names in `data/survival.json` (the validator accepts
+`survival_art` ids there); the marker sheet's `marker_exports` are built as `survival-node-<kind>` and drawn by
+`PathMap.tsx`'s `NodeGlyph` (a CSS mask, so the state colours apply; the line icon of `runIcons.ts` for any kind
+without one). `painted-map` entries are style-model training material and are never built.

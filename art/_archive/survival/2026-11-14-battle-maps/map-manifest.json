@@ -1,0 +1,650 @@
+[
+  {
+    "id": "M001",
+    "path": "art/maps/survival/ahoc-1.png",
+    "filename": "ahoc-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "2520931cae7c800ecff1ae77c317424af6af1ba1dc01c2bfc58a8b4414f642d8",
+    "source": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-1.png",
+    "native_sha256": "14b1b799a693b0cb5e58c270f44e09bb9f7444782ced24b7eea1b685ef956cb7",
+    "prompt": "One tactical battle map for Project Heaven Cry, Heavenprint opaque gouache and ink, broken brushwork, dry brush, restrained hatching. The outpost yard and gatehouse: walled compound seen from above; a gate in the south wall, a loading yard of packed gravel with crates and drums in two stacks (cover), a gatehouse and a guard shed on the left, a watchtower base on the right, a long barracks block across the north with two doors; lanes run left and right of a central parked cargo hauler. Straight overhead orthographic, perfectly vertically down, no tilt, horizon, perspective or vertical faces. Wall tops as flat bands, roofs flat. Invented 39m square area fills frame edge to edge. Use the largest square native output available, ideally 2600 px square with 2080 px native minimum. Low-contrast walkable floor and sharp clear cover edges; subtle short shadows lower right. 26 tiles of 1.5m across; doors about 1–2 tiles, corridors 2–4. No grid, UI, figures, sky, letters, labels, border or watermark. First two references for overhead paint, third for AHOC colors and materials, fourth for brush style.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M002",
+    "path": "art/maps/survival/ahoc-2.png",
+    "filename": "ahoc-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "d5c2de5e8dc8a55f5761431307c52c714f2c67fbabe47a2e1b51c2a1375b24a7",
+    "source": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-2.png",
+    "native_sha256": "b376cda8b9caf92ee6803dcb095c953226216126ded2882c67595a9ab1766ecc",
+    "prompt": "One tactical battle map for Project Heaven Cry, Heavenprint opaque gouache and ink, broken brushwork, dry brush, restrained hatching. The corridor grid: a plan of ceramic-grey panelled corridors, four rooms around a central junction hall; each room has a door onto the hall and one back door; pipe runs and filing racks as cover inside the rooms, a bare 4 tile central hall with two pillars. Straight overhead orthographic, perfectly vertically down, no tilt, horizon, perspective or vertical faces. Wall tops as flat bands, roofs flat. Invented 39m square area fills frame edge to edge. Use the largest square native output available, ideally 2600 px square with 2080 px native minimum. Low-contrast walkable floor and sharp clear cover edges; subtle short shadows lower right. 26 tiles of 1.5m across; doors about 1–2 tiles, corridors 2–4. No grid, UI, figures, sky, letters, labels, border or watermark. First two references for overhead paint, third for AHOC colors and materials, fourth for brush style.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M003",
+    "path": "art/maps/survival/ahoc-3.png",
+    "filename": "ahoc-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "2369a0edb0d11b6365e6180dc3b17af6ceee8f76360ea4a5cb380b3e97c269ec",
+    "source": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-3.png",
+    "native_sha256": "0550a8fb7cade5eb9522511756cfa2c92f95af2b918186bd4a4fcad4a7ab2684",
+    "prompt": "One tactical battle map for Project Heaven Cry, Heavenprint opaque gouache and ink, broken brushwork, dry brush, restrained hatching. The records vault: a large circular hall with a ring of dark machine banks and cabinets as cover around a bare central floor, four entrances at the compass points, a raised catwalk platform in the north, and two side alcoves. Straight overhead orthographic, perfectly vertically down, no tilt, horizon, perspective or vertical faces. Wall tops as flat bands, roofs flat. Invented 39m square area fills frame edge to edge. Use the largest square native output available, ideally 2600 px square with 2080 px native minimum. Low-contrast walkable floor and sharp clear cover edges; subtle short shadows lower right. 26 tiles of 1.5m across; doors about 1–2 tiles, corridors 2–4. No grid, UI, figures, sky, letters, labels, border or watermark. First two references for overhead paint, third for AHOC colors and materials, fourth for brush style.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M004",
+    "path": "art/maps/survival/city-1.png",
+    "filename": "city-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "51ac3add57ca3c4d27f262e48857d6309fb2f43cd8112c0c5ce85fca4de7a58c",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M004.png",
+    "native_sha256": "4723324744a2e86d5abf4c51d54c2e677e1efaea8d3c8fdcbc1d77f4127f651d",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. A crossing of alleys: two alleys crossing in the middle between building roofs (roofs are solid), market stalls and crates along one alley, a dry fountain bay at the crossing, three alley mouths and a locked yard in the corner.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M005",
+    "path": "art/maps/survival/city-2.png",
+    "filename": "city-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "052cee7789a54d9eb45ee57b407a0bd61fc8505a0783f54c37eafafb9d5586ec",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M005.png",
+    "native_sha256": "11a55c725c58c06a9a0757894f7aaabaae9e125018007801faaad7f39504751b",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The rooftop terrace: several rooftops of different heights joined by plank bridges (shown as narrow walkable bands), water tanks, stair housings and chimney stacks as cover, an open central gravel roof, a roof edge (void) on two sides.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M006",
+    "path": "art/maps/survival/city-3.png",
+    "filename": "city-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "88cd4cf908441a6a43043c0deb8cec4d728537994bdd050e37b567cb1cab2be7",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M006.png",
+    "native_sha256": "60154d57c7069f0c5e729876b8daac33162dfd1760deb25450611227e29bd0a1",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The plaza: a small square with a stopped clock-tower base on the north side, a dry fountain in the centre as cover, shuttered cafe fronts on three sides with doors, and four streets entering at the corners.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M007",
+    "path": "art/maps/survival/field-1.png",
+    "filename": "field-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "ef6abb4d45f925e8194d563eed3ffcb196ed07886e2b8717b5ece8817d3dbf86",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M007.png",
+    "native_sha256": "7eebc03f8f01f43c8f68157a451f40965a07124f4d133f57b27f6c6fb025209f",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The trench line: two parallel trench systems (dark cut bands with sandbag edges) crossed by two spurs, a no-man's-land of craters between them, a wrecked field gun at the east end as cover; open lanes along the north and south edges.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M008",
+    "path": "art/maps/survival/field-2.png",
+    "filename": "field-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "dc197e30c8daaf83f975a99b0606b8e86dd7efb309b292dde89ef470969afe60",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M008.png",
+    "native_sha256": "9e02ff1475c3be645b9925219da1e0728ac641557d05fd5f26967c3ffcbcd0ee",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The crater field: open cracked mud broken by about a dozen craters of different sizes (low cover), two wrecked tank hulls, a line of burnt stumps; no walls; entry from the west, a dry gully along the east.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M009",
+    "path": "art/maps/survival/field-3.png",
+    "filename": "field-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "ffbd550a0e083a6803c59145dd18d72b3daf69b862c9a9aba1760630a04ad513",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M009.png",
+    "native_sha256": "26855027074557f742be7dff39aaba009d4446dd44962b67dddc445c528995e0",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The crashed hull: the broken ribs of a huge fallen war machine lying diagonally across the map as large solid cover, a ring of open ash ground around it, scattered plates, two lanes passing either end.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M010",
+    "path": "art/maps/survival/works-1.png",
+    "filename": "works-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "c992c342c72c6a49d042a95a2eb4c33d62aa1b11b0c2efaf32887d8a908e7dc4",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M010.png",
+    "native_sha256": "55b12a8fa6c666bc3d5ce77876b7030a50db9fe7f1d39a48b57a49407de263fd",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The assembly hall: two long parallel conveyor lines (solid, crossable at three bridges), unfinished shells on the lines as cover, a clear walkway down the middle, a loading door at each end.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M011",
+    "path": "art/maps/survival/works-2.png",
+    "filename": "works-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "bdb9c188a825d9490dc2183e7a5a556c2bfb0e29602ef7ab1a6a8676b5ff0bba",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M011.png",
+    "native_sha256": "7bed4e8a3da28ef6459120663209b30feca60827012b6e533ba3cc19a7f90d2c",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The scrap yard: a fenced yard of heaps of broken parts (cover), a gantry crane's rails along the edges, a magnet pad in the centre, a gate in the south fence and a hole in the west fence.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M012",
+    "path": "art/maps/survival/works-3.png",
+    "filename": "works-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "8e176714af858eee20726d5a672395072a3eb23934a706b5ce54d2b4ddca8be1",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M012.png",
+    "native_sha256": "38ed10c884a36458e66187dc2b92d771f13335dc7ff4e3451bfa1f6651a976f3",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The casting hall: a furnace mouth in the north wall, slag channels cutting the floor into three lanes (with plank crossings), pillars in two rows, catwalk supports at the edges, a bare dark iron plate centre.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M013",
+    "path": "art/maps/survival/shrine-1.png",
+    "filename": "shrine-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "af416bd54c8a9b4dc2157519648f60d08e2256957729bd88b844cc3188021850",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M013.png",
+    "native_sha256": "e3e1edfb7888d176d060bd53f9b21d2a39b6ddf3ed2371d1d445239e84416563",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The nave: a long hall seen from above, a bare central aisle of flagstones, two rows of pillars and pushed-back pews as cover, a chancel step at the north end and a west door; side chapels as alcoves.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M014",
+    "path": "art/maps/survival/shrine-2.png",
+    "filename": "shrine-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "1560ecd14608fb1158bba92b054911ed264ad7968ac195ba774e10c8af2a05f7",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M014.png",
+    "native_sha256": "eec526ad75036e418c74389fc9589f6a395b6617d85bb7c2dbfec69bcd598896",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The cloister: an arcaded square walkway (pillars along the inner edge) around an open courtyard garden with a covered well as central cover, four doors at the compass points.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M015",
+    "path": "art/maps/survival/shrine-3.png",
+    "filename": "shrine-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "f364a1581546462563ab5470931067117f6ae0a3031ff84e2109f3e6852a25c5",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M015.png",
+    "native_sha256": "5e20f0295f3d8987eefed07e127014220db1489627731e2db42e2ffc0e233a4f",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The altar apse: a semicircular apse with a raised bare dais, a ring of candle stands as cover, two stairs, a round gold floor pool of light (a lighter painted patch, walkable), and two side vestries.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M016",
+    "path": "art/maps/survival/rim-1.png",
+    "filename": "rim-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "4b8f4f4aacaea7ed504418b46ef1f39eae1b118399129822063647d93aa5ccac",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M016.png",
+    "native_sha256": "48ddf40091f65fd287638d52368e66a4cbae236468d8155b6ec340757c6e4d21",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The hangar bay: an open painted bay floor with gantry feet and empty cradles as cover, a gutted shuttle in the east, a large airlock door in the south and a small door in each corner.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M017",
+    "path": "art/maps/survival/rim-2.png",
+    "filename": "rim-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "b7623ddbd68a8cb4878f6f93bff6734bbbbd9b26d7ba37d3cdcd3f641fe668a9",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M017.png",
+    "native_sha256": "8e0fd40a8943f61faefd893f5c0fcf91f65d900287c6707c3b39ba7350308e27",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The rear landing pad: an open circular pad with a scorch ring, loose crates and a mast base as cover, a low parapet around the edge (solid), two ramps in the south and a sealed hatch in the north.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "M018",
+    "path": "art/maps/survival/rim-3.png",
+    "filename": "rim-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "native_minimum_met": false,
+    "upscaled": true,
+    "resize_method": "Lanczos",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "purpose": "style-model training",
+    "sha256": "5580caf8d8c575bc6fa943b804a355875ebb6826459ae9407d8a759110492499",
+    "source": "art/_archive/survival/2026-11-14-battle-maps/native-renders/M018.png",
+    "native_sha256": "c0a74a74d4435bdce5d38a67a2dfd4decc593ad874c42fa328fc5b5982fbcfbd",
+    "prompt": "Paint one Project Heaven Cry tactical battle map. The power core chamber: a ring of resonant conduits (solid) around a dim central well (void), catwalk rails and four bridge crossings, two generators in the corners as cover, entrances at north and south.\n\nAbsolutely straight overhead orthographic plan, looking vertically down. Flat wall caps and rooftop footprints, no visible facades, perspective, skyline or horizon. Square, opaque, edge to edge. The depicted area is about 39 metres square, equivalent to 26 tiles of 1.5 metres without showing a grid. Keep doors about 1–2 tiles wide and corridors 2–4. Make walkable lanes distinct from solid cover and void. Quiet lower-contrast floor, strong clear obstacle edges, no dramatic vignetting. Light from upper left, short subtle shadows down-right. Heavenprint matte opaque gouache and ink, broken broad directional brushwork, restrained hatching and small ivory accents. Local materials and palette from the third reference. First two references are for orthographic camera and obstacle treatment, fourth is brushwork. Do not copy a reference layout. No characters, figures, lettering, labels, UI, border or watermark. Request the largest native square available.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/rim-a-airlock.png",
+      "art/illustrations/m813/outpost813.png"
+    ],
+    "imagegen": "built-in"
+  }
+]

@@ -2503,7 +2503,7 @@ if _sv is not None:
         _catp = root.parent / "art" / "catalog.json"
         _cat = json.loads(_catp.read_text()) if _catp.exists() else {}
         _ids_all = set()
-        for _sec in ("characters", "illustrations", "patrons", "gear", "maps", "sprites", "emblems"):
+        for _sec in ("characters", "illustrations", "patrons", "gear", "maps", "sprites", "emblems", "survival_art"):  # survival_art: the keepers (S4)
             if isinstance(_cat.get(_sec), dict): _ids_all |= set(_cat[_sec].keys())
         _chars = set((_cat.get("characters") or {}).keys()); _ills = set((_cat.get("illustrations") or {}).keys())
         _setids = {s.get("id") for s in _sv.get("settings") or []}
