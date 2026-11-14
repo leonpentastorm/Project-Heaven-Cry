@@ -8,6 +8,18 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.27.2 — the camp: your loadout and a starting boon
+
+Built beside 0.27.0 and shipped after it (its detailed lines are in the 0.27.0 entry below, where its builders wrote them).
+
+- **Characters are made without a kit.** Creation ends at the character; what they carry is given by the mode. Old drafts and saves that hold a kit keep it. Campaigns and the Proving Ground give the old default kit.
+- **The Survival camp, one screen:** pick ONE free weapon (the most basic of each weapon archetype) and one free focus, then buy anything else from the shop's own menu out of a 300-credit budget; what you do not spend is your purse. Beside each free weapon the rack offers the same one again (to dual wield) and the next one up. Ammunition and cores are for sale there.
+- **A starting boon:** each character picks one of three, offered by what they can actually use.
+- **The supply pack:** after a fight, spare cores burnt come back and casters regain part of their MP, as gunners get rounds.
+- Caster boons join the Boss pool; Bandolier doubles magazines only; a new boon doubles cores and MP.
+
+Known and left for Balance 2.0: a solo Channeler or Sigilist clears stage 1 about 3 times in 12 (a solo gunner 9); a duo on the training route runs past stage 4.
+
 ## 0.27.1 — the shooting effects restored
 
 A hotfix (Leon, 14 Nov 2026: "i told you to remove the yellow line not the bullet effect").
