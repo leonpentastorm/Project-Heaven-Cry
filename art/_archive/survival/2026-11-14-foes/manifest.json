@@ -1,0 +1,2244 @@
+[
+  {
+    "id": "foe-human-vermin",
+    "prompt_number": 1,
+    "label": "human vermin",
+    "path": "art/portraits/survival/foes/foe-human-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "699fee1ba2ca2d9ec4dbe8f6f3b963e83489318352ba2b5cb5838a3763d9532c",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.54,
+      "y": 0.15
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "b6346db30ff8f25e62097cefbd149301b9beead31cbf5d6fb2d96b9c303e46e1",
+    "prompt": "One Project Heaven Cry Survival portrait. A human vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: bony sunburnt older man, patched hood.  Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-human-minion-a",
+    "prompt_number": 2,
+    "label": "human minion a",
+    "path": "art/portraits/survival/foes/foe-human-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "7664bc5eb5aa5f3ace4114b672d54f7dd59dec0e3ea5292be550adb91aee26bc",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "29e53613bd84b97b1144dfa84319ea9e9580686d37d02af075f25c6e46738db1",
+    "prompt": "One Project Heaven Cry Survival portrait. A human minion: a line fighter, poorly armed. Specific design: young brown woman, long jaw, buzz cut.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-human-minion-b",
+    "prompt_number": 3,
+    "label": "human minion b",
+    "path": "art/portraits/survival/foes/foe-human-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "72728359bed7cae16fbd532429e75d7ab72936e2d933feb42c137c68004f2f31",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "221f2ea54a0a5b55e346969ff9a9737c84b9fbdf38d5bce45d51306141f20404",
+    "prompt": "One Project Heaven Cry Survival portrait. A human minion: a line fighter, poorly armed. A second individual: different age, build and gear from the first. Specific design: stocky pale older man, wide nose, grey mustache.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-human-soldier-a",
+    "prompt_number": 4,
+    "label": "human soldier a",
+    "path": "art/portraits/survival/foes/foe-human-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "85e44df3b76e2bcca87819da7fec9c23c114797db237718fead9eb3bee947f4e",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.48,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "5bde8271023c5326a110807999d6d52f0fa71af3e9634bb00b5f942ac1eea176",
+    "prompt": "One Project Heaven Cry Survival portrait. A human soldier: a trained, properly armed fighter. Specific design: broad deep-brown woman, square jaw, small braids, oxide-red.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-human-soldier-b",
+    "prompt_number": 5,
+    "label": "human soldier b",
+    "path": "art/portraits/survival/foes/foe-human-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "d695a93a3418e998c807ba792265f1c66ba5dfd458c97ae8da705fc302eb97b5",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.48,
+      "y": 0.21
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-human-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "e91f1595ec58151d335ac65daaecafba52636008756d91e93d0b74240163590a",
+    "prompt": "One Project Heaven Cry Survival portrait. A human soldier: a trained, properly armed fighter. A second individual: different age, build and gear from the first. Specific design: tan wiry man, cropped curls, long pointed chin, petrol blue.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. IMPORTANT: Exactly one single adult man appears in the entire painting. The canvas is one single portrait, no companion, no second face, no faint human figure anywhere behind him. His narrow chin, petrol-blue shoulder panel and level eyes are the focus. Eye-level camera, no upward head tilt.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-human-elite",
+    "prompt_number": 6,
+    "label": "human elite",
+    "path": "art/portraits/survival/foes/foe-human-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "0fd0ad6936f193694f9de7ef414d157178cf0334437e5a6efc35afe746182e81",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.48,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-human-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "1628ba72336e7fbe8b7893f0d312b34a53e72d15a6daafab6d626c2ada73fdbd",
+    "prompt": "One Project Heaven Cry Survival portrait. A human elite: a named veteran or a heavy unit: bigger, better armoured, with a distinguishing mark (a banner, a trophy, a commander plate). Specific design: older East Asian woman, asymmetric grey fringe, ivory command plate.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-robot-vermin",
+    "prompt_number": 7,
+    "label": "robot vermin",
+    "path": "art/portraits/survival/foes/foe-robot-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "b090c4e5b5e8031b3eb4808986be92514a6e7c4ee4a58ff086fa168fb8d70be5",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.16
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "5bd6d0350f0278ff4c80c8d8093a6dc112098573ba0e5c05b65b419ddc9764c3",
+    "prompt": "One Project Heaven Cry Survival portrait. A robot vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: little broken oval salvage bot.  Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-robot-minion-a",
+    "prompt_number": 8,
+    "label": "robot minion a",
+    "path": "art/portraits/survival/foes/foe-robot-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "bf3c0715d12cf126a77a0c9da0d46586cd7e862acd1268bf704bfe32f8204cff",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "29a5289ae34d2231fefd12714c2d49e432d5ec9633feb05b83a0c717d8b1bb13",
+    "prompt": "One Project Heaven Cry Survival portrait. A robot minion: a line fighter, poorly armed. Specific design: thin rectangular service robot, three eye apertures.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-robot-minion-b",
+    "prompt_number": 9,
+    "label": "robot minion b",
+    "path": "art/portraits/survival/foes/foe-robot-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "9053a0f961271a1d543d80720ff2154d563445cb8bf92d9504f9767b3c32ebe2",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.16
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-minion-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-robot-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "6dd258b2a4d1cd0e48174c931ee8ba1855cce24a38d5ea3b2f6337959656c3d3",
+    "prompt": "Heavenprint matte opaque gouache and ink on dark plain painted charcoal. Project Heaven Cry Survival bestiary single portrait of one small pear-shaped copper robot as the sole subject, oval green sensor centered 22% down, stooping exposed mechanical shoulders, no meat or human companions. Exactly one discrete machine. Real constructed ceramic-and-metal biped, visibly mechanical lens, one figure alone. Side lit with a distinct profile and focal sensor. 4:5 opaque, high centered lens readable at 40 px. No text, other subject, border, insignia or UI.",
+    "references": [
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-robot-soldier-a",
+    "prompt_number": 10,
+    "label": "robot soldier a",
+    "path": "art/portraits/survival/foes/foe-robot-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "232e1564e18fba5e9c93820fb59ee4168bfc0809433801f7b1abc419f53116eb",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.23
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "a6d268c81ab1db11467179be0556f5321d5fc14a8800c9bc01cd4ce6c58b7b37",
+    "prompt": "One Project Heaven Cry Survival portrait. A robot soldier: a trained, properly armed fighter. Specific design: square ivory biped, twin dark lenses, red chin guard.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-robot-soldier-b",
+    "prompt_number": 11,
+    "label": "robot soldier b",
+    "path": "art/portraits/survival/foes/foe-robot-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "fabf6c96505fd283f436ca502cafc4713aea5614818a0bc94f35fbe15f657310",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.24
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-robot-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "c630781d637f90e9cf57356cbac1def513ea8a2d73029d92d3879b21b49869c3",
+    "prompt": "Paint one isolated bipedal machine automaton as a Project Heaven Cry bestiary portrait. tall blue-grey wedge-head, vertical cream lenses. The machine's housing is the only subject. Show only its constructed head and upper torso; no organic elements. Absolutely no people, organic faces, crew, pilot, companions, bystanders, second subject or anthropomorphic organic body. High eye-level viewpoint, clearly visible machine lens 22% from the top and in the middle horizontally. Opaque 4:5, deep charcoal backdrop, single directional sidelight. Matte Heavenprint layered angular gouache and ink wear, crisp practical silhouette and readable lens at 40 pixels. No text, badge or border. The first reference establishes mechanical construction. The second is for brushwork only.",
+    "references": [
+      "art/portraits/m813/mpat.png",
+      "art/portraits/survival/keeper-works.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-robot-elite",
+    "prompt_number": 12,
+    "label": "robot elite",
+    "path": "art/portraits/survival/foes/foe-robot-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "268ef17eddae0570947182f44f6a8a9b052ed575a0346b60f0924dc426fc2ed7",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-robot-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "9f1fe21d777bcbf8defd38e8011ab02b158dc52ab41dfff00d13eb90de8002d4",
+    "prompt": "One Project Heaven Cry Survival portrait. A robot elite: a named veteran or a heavy unit: bigger, better armoured, with a distinguishing mark (a banner, a trophy, a commander plate). Specific design: round ceramic robot, segmented face, amber lens.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-drone-vermin",
+    "prompt_number": 13,
+    "label": "drone vermin",
+    "path": "art/portraits/survival/foes/foe-drone-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "44364e7702085d0b21b0d7f1d3270b53ea3b5631ed58fd8efd6fce67cb3a8ca6",
+    "collection": "survival-foes",
+    "kind": "drone",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.3525,
+      "y": 0.2201
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-vermin.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "0fa37c0816806bae7de1ca7e71471f1c9c0c8f9d8a64aa413ffd79dda23a8cff",
+    "prompt": "Heavenprint matte opaque gouache and ink on dark plain painted charcoal. Project Heaven Cry Survival bestiary single portrait of one tiny flying oval scrap drone hovering on a bent lens bracket, a single eye 22% down, no human or animal. Exactly one discrete machine. The only subject in frame is explicitly a free floating unmanned aircraft machine, no biped, torso, human skin, mechanical humanoid or hand in the image. Show arms/legs only as winglets or appendages physically part of the drone. Side lit with a distinct profile and focal sensor. 4:5 opaque, high centered lens readable at 40 px. No text, other subject, border, insignia or UI.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-drone-minion-a",
+    "prompt_number": 14,
+    "label": "drone minion a",
+    "path": "art/portraits/survival/foes/foe-drone-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "585f4fad2a690adfea098030171d9b3430d1dfb34940cd343bbaa15042f612a2",
+    "collection": "survival-foes",
+    "kind": "drone",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.4993,
+      "y": 0.2197
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-minion-a.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "8386ed816cd904d622d8f506531234428515100efd176f7ac710d50f5939a0d2",
+    "prompt": "Heavenprint matte opaque gouache and ink on dark plain painted charcoal. Project Heaven Cry Survival bestiary single portrait of one compact nonhumanoid two-rotor unmanned flying drone, an oval main housing, two visible lenses, no people. Exactly one discrete machine. The only subject in frame is explicitly a free floating unmanned aircraft machine, no biped, torso, human skin, mechanical humanoid or hand in the image. Show arms/legs only as winglets or appendages physically part of the drone. Side lit with a distinct profile and focal sensor. 4:5 opaque, high centered lens readable at 40 px. No text, other subject, border, insignia or UI.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-drone-minion-b",
+    "prompt_number": 15,
+    "label": "drone minion b",
+    "path": "art/portraits/survival/foes/foe-drone-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "ae46fb180968dad9a4cc3df9aec114323adba9a239d9bec75c9fe133ea86224b",
+    "collection": "survival-foes",
+    "kind": "drone",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.2198
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-minion-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "402a937708d3050f48ccbcebe9c129b6f64656b482c422095ff99975ec64c710",
+    "prompt": "Paint one isolated unmanned in-world drone as a Project Heaven Cry bestiary portrait. tripod drone, rectangular inspection window, olive shell. The machine's housing is the only subject. Show its free-floating rotor or leg assembly and sensor housing, with an empty black gap beneath it. This machine has no torso or person carrying it. Absolutely no people, organic faces, crew, pilot, companions, bystanders, second subject or anthropomorphic organic body. High eye-level viewpoint, clearly visible machine lens 22% from the top and in the middle horizontally. Opaque 4:5, deep charcoal backdrop, single directional sidelight. Matte Heavenprint layered angular gouache and ink wear, crisp practical silhouette and readable lens at 40 pixels. No text, badge or border. The first reference establishes mechanical construction. The second is for brushwork only.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-drone-soldier-a",
+    "prompt_number": 16,
+    "label": "drone soldier a",
+    "path": "art/portraits/survival/foes/foe-drone-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "e3a3de1dba8b10379441b2662470081c13fa2eb875d02566d79a30a294f672c4",
+    "collection": "survival-foes",
+    "kind": "drone",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.2203
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-soldier-a.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "d3d4e0f37036d786dd9c6366359514731d9529ec29cd37eb14d3513639045845",
+    "prompt": "Paint one isolated unmanned in-world drone as a Project Heaven Cry bestiary portrait. armored wedge rotor drone, cyan circular lens. The machine's housing is the only subject. Show its free-floating rotor or leg assembly and sensor housing, with an empty black gap beneath it. This machine has no torso or person carrying it. Absolutely no people, organic faces, crew, pilot, companions, bystanders, second subject or anthropomorphic organic body. High eye-level viewpoint, clearly visible machine lens 22% from the top and in the middle horizontally. Opaque 4:5, deep charcoal backdrop, single directional sidelight. Matte Heavenprint layered angular gouache and ink wear, crisp practical silhouette and readable lens at 40 pixels. No text, badge or border. The first reference establishes mechanical construction. The second is for brushwork only.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-drone-soldier-b",
+    "prompt_number": 17,
+    "label": "drone soldier b",
+    "path": "art/portraits/survival/foes/foe-drone-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "fb966234910d9fd33c07717f1333dfb916cf67b1c9b83a0f0c3646292737e60c",
+    "collection": "survival-foes",
+    "kind": "drone",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.4993,
+      "y": 0.2202
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "e0775428a2e664a1d1c57aaa6d54b44e7711ba0e6c761bc8d428ae9e664be132",
+    "prompt": "Paint one isolated unmanned in-world drone as a Project Heaven Cry bestiary portrait. broad ivory hovering machine, three eyes, rust-red strip. The machine's housing is the only subject. Show its free-floating rotor or leg assembly and sensor housing, with an empty black gap beneath it. This machine has no torso or person carrying it. Absolutely no people, organic faces, crew, pilot, companions, bystanders, second subject or anthropomorphic organic body. High eye-level viewpoint, clearly visible machine lens 22% from the top and in the middle horizontally. Opaque 4:5, deep charcoal backdrop, single directional sidelight. Matte Heavenprint layered angular gouache and ink wear, crisp practical silhouette and readable lens at 40 pixels. No text, badge or border. The first reference establishes mechanical construction. The second is for brushwork only.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-drone-elite",
+    "prompt_number": 18,
+    "label": "drone elite",
+    "path": "art/portraits/survival/foes/foe-drone-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "3a44ff13079c91e260dc95343f7f8b02f9d658c3bc16e88c4a2c40e312510fd9",
+    "collection": "survival-foes",
+    "kind": "drone",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.2197
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-drone-elite.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-drone-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "3edaff75823c987d384734d4b038d2bf3557dfcb6394785dc6f3b20d7f869df5",
+    "prompt": "Heavenprint matte opaque gouache and ink on dark plain painted charcoal. Project Heaven Cry Survival bestiary single portrait of one huge flattened four-fan mechanical drone with one amber central ocular sensor, ivory shield fins and separate rotor bays, no human, no torso. Exactly one discrete machine. The only subject in frame is explicitly a free floating unmanned aircraft machine, no biped, torso, human skin, mechanical humanoid or hand in the image. Show arms/legs only as winglets or appendages physically part of the drone. Side lit with a distinct profile and focal sensor. 4:5 opaque, high centered lens readable at 40 px. No text, other subject, border, insignia or UI.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-crawler-vermin",
+    "prompt_number": 19,
+    "label": "crawler vermin",
+    "path": "art/portraits/survival/foes/foe-crawler-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "fe04800041bcbc76a39c5c59129f82dad4e9cbf495506ef776eb9fb41e26daf9",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.53,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "bb6c177d8e9ca77483c8b33a8c1095f1e1c56da3b8cc50e815e53d91626b1bb6",
+    "prompt": "One Project Heaven Cry Survival portrait. A crawler vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: caved-in figure, frightened round human eyes.  Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/elite-crawler.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-crawler-minion-a",
+    "prompt_number": 20,
+    "label": "crawler minion a",
+    "path": "art/portraits/survival/foes/foe-crawler-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "83df66224bde5235649b5febdb33c9a7e36c7ebdfa7cda1ec8a8f3e3a8929fc0",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.53,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "0bdc1e4873bdfa67e8b2d517e1d922ecadabdaf8dd3042418727867c096620e9",
+    "prompt": "One Project Heaven Cry Survival portrait. A crawler minion: a line fighter, poorly armed. Specific design: tired human eyes through angular bony brow.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/elite-crawler.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-crawler-minion-b",
+    "prompt_number": 21,
+    "label": "crawler minion b",
+    "path": "art/portraits/survival/foes/foe-crawler-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "2ac05917c5e239bdf21646f82c2224b4b42c5a7fdb7d7ff54a21175cb71490d8",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "f4fa1d7de9dc43ce4adf509cd299bf11f99a59e05fb18f70d6830054afa642e6",
+    "prompt": "One Project Heaven Cry Survival portrait. A crawler minion: a line fighter, poorly armed. A second individual: different age, build and gear from the first. Specific design: older woman's eyes under asymmetric pale ridge.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/elite-crawler.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-crawler-soldier-a",
+    "prompt_number": 22,
+    "label": "crawler soldier a",
+    "path": "art/portraits/survival/foes/foe-crawler-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "4f3e2f8e7a136422eace69e8f286c89b8a3ec26fb997e6294c0a5bf05be5c885",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "8a4c2818f11fa75be53c2214ad9295a745eadab457548a40bdd5128a03f5aed8",
+    "prompt": "One Project Heaven Cry Survival portrait. A crawler soldier: a trained, properly armed fighter. Specific design: deep-set grey eyes, shovel-like temples, slate wraps.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/elite-crawler.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-crawler-soldier-b",
+    "prompt_number": 23,
+    "label": "crawler soldier b",
+    "path": "art/portraits/survival/foes/foe-crawler-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "52c6b2e26c2027ac5000a1d0503d322603d89d26d3df38057294295ebbd35844",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.22
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-crawler-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "53697eb88e88b0727a52c63c6405bcef860a2469da7a208433aa82271bafe973",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: round human eyes under broad manta-shaped head, green cloth. One single person only. No secondary face, companion or distant figure. Level camera, do not repeat head tilt from the style reference. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-crawler-elite",
+    "prompt_number": 24,
+    "label": "crawler elite",
+    "path": "art/portraits/survival/foes/foe-crawler-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "063e6be2375bb5a1d792c2404d64763359f9dfa4c2a4f5b6d9ff51ee169a0a66",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-crawler-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "057a645e85f7afed37d3bfcf362667fc4355b6737eb7ccded9a1d423489f9f4b",
+    "prompt": "One Project Heaven Cry Survival portrait. A crawler elite: a named veteran or a heavy unit: bigger, better armoured, with a distinguishing mark (a banner, a trophy, a commander plate). Specific design: weary human eyes, branching bony collar, muted plum and ivory.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/elite-crawler.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-ork-vermin",
+    "prompt_number": 25,
+    "label": "ork vermin",
+    "path": "art/portraits/survival/foes/foe-ork-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "3b63f0358267535bc8da6cb4644062d0c87995ef2f41c44315cf14d2fff068aa",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "f970694b5519f6c20192f1d44b79b801e4bcf8628dbad1302fee41fcbbe1b831",
+    "prompt": "One Project Heaven Cry Survival portrait. A ork vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: tiny wiry grey-green scavenger with one thin tusk.  Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-ork-warlord.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-ork-minion-a",
+    "prompt_number": 26,
+    "label": "ork minion a",
+    "path": "art/portraits/survival/foes/foe-ork-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "30b320c4947ed3b84338050727939e0b6ee51f249fd202d0676ce0783158625f",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "4ca5da71c4e4955836871b9726d5b042a42916a3becdcba3af36f2c8708fbd1b",
+    "prompt": "One Project Heaven Cry Survival portrait. A ork minion: a line fighter, poorly armed. Specific design: lean olive young ork, sharp jaw and straw knots.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-ork-warlord.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-ork-minion-b",
+    "prompt_number": 27,
+    "label": "ork minion b",
+    "path": "art/portraits/survival/foes/foe-ork-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "586ebe27c5ae5bf783f8cd78f92a5c772c767e25c7c78b04ddc9eecb9fa97d2f",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.52,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "e13e5f1d7ce36783e2a4e52c7168794991a41c751d6291583d7b604581078d67",
+    "prompt": "One Project Heaven Cry Survival portrait. A ork minion: a line fighter, poorly armed. A second individual: different age, build and gear from the first. Specific design: hunched older grey-green ork, crooked tusks and coarse stubble.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-ork-warlord.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-ork-soldier-a",
+    "prompt_number": 28,
+    "label": "ork soldier a",
+    "path": "art/portraits/survival/foes/foe-ork-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "f1122f721e22997044b064ff95e0eedd9e51854ac0e4e375de2a22e7c0c8d115",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "05f02e4bead7c9fa148859096ee1fc032b00e96d21b765576a0424b7c46d3b8e",
+    "prompt": "One Project Heaven Cry Survival portrait. A ork soldier: a trained, properly armed fighter. Specific design: barrel-necked dark green ork, smooth-shaven, bright ochre cheek marks.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-ork-warlord.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-ork-soldier-b",
+    "prompt_number": 29,
+    "label": "ork soldier b",
+    "path": "art/portraits/survival/foes/foe-ork-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "7648e128ce9b2553f52ba84e3e31f1acf28706f7cf69ae870d4681f70105f7e9",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-ork-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "7c5558e976c75ce4e31ca941d9fd70c3eacfb837e2d71834b281fd6e6ca458b4",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: long lean pale green ork, squared jaw and double braid. One single person only. No secondary face, companion or distant figure. Level camera, do not repeat head tilt from the style reference. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-ork-elite",
+    "prompt_number": 30,
+    "label": "ork elite",
+    "path": "art/portraits/survival/foes/foe-ork-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "39e9435bf42c4553f9b034691ea36773fb19ff00102f373ab7fde3593bd5811c",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-ork-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "98d180ee98c7a0070140eaa7ce6f232c8dd7ee104bf3f1a5d2493b0ad4c27a5c",
+    "prompt": "One Project Heaven Cry Survival portrait. A ork elite: a named veteran or a heavy unit: bigger, better armoured, with a distinguishing mark (a banner, a trophy, a commander plate). Specific design: large ash-green ork woman, curved tusk and ivory trophy disc.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-ork-warlord.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-beast-vermin",
+    "prompt_number": 31,
+    "label": "beast vermin",
+    "path": "art/portraits/survival/foes/foe-beast-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "740454d7c79f460b5d8b0447b63b117339b9adce60b90cd5cbbac330d86496a4",
+    "collection": "survival-foes",
+    "kind": "beast",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.54,
+      "y": 0.21
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "063f2c8c7bed83e43492b78bb931dc42dd7579a146021fd1b7cc3def26e75de7",
+    "prompt": "One Project Heaven Cry Survival portrait. A beast vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: tiny wan carrion hound, large bat ears. Animal entirely, no tools or weapons. Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-beast-mana-warped.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-beast-minion-a",
+    "prompt_number": 32,
+    "label": "beast minion a",
+    "path": "art/portraits/survival/foes/foe-beast-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "1650edf975b9d03c78192b8fab619f550a1514d0860daee17a3f974c7b0884f1",
+    "collection": "survival-foes",
+    "kind": "beast",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.55,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "a1fbdd6d88b698490e3e084a39d5b4391aac5d7c1de5a54f9476a9ed65a69a22",
+    "prompt": "One Project Heaven Cry Survival portrait. A beast minion: a line fighter, poorly armed. Specific design: sinewy dun foxlike hound, sloping temples. Animal entirely, no tools or weapons. Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-beast-mana-warped.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-beast-minion-b",
+    "prompt_number": 33,
+    "label": "beast minion b",
+    "path": "art/portraits/survival/foes/foe-beast-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "a1a6c4b0a7fe610ca2deb3b4ac3a7fea7835539f092c47d997e522e2a909559d",
+    "collection": "survival-foes",
+    "kind": "beast",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "2dc1eb52deb418fb9fb82428305bee06881431c11f5ac9f9fa81f7313e6038da",
+    "prompt": "One Project Heaven Cry Survival portrait. A beast minion: a line fighter, poorly armed. A second individual: different age, build and gear from the first. Specific design: thick brindled boar-hound, damaged ear. Animal entirely, no tools or weapons. Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-beast-mana-warped.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-beast-soldier-a",
+    "prompt_number": 34,
+    "label": "beast soldier a",
+    "path": "art/portraits/survival/foes/foe-beast-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "dd86a21e52aa7493d2bbaaac91b799139a2133c2d2aaa934d4dc28151f775054",
+    "collection": "survival-foes",
+    "kind": "beast",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.47,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-soldier-a.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-beast-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "516d9fc461c2018dd08d11a2d58566a1c5a06b1412ba68f229df91b4dd230a75",
+    "prompt": "Paint one expressive bestiary portrait of a unique Project Heaven Cry Daggerfall battlefield wild animal. A lean ash-white war hound with a narrow elongated skull and black spotted nose, two bone chips fused below the cheek. Its muzzle angles left, watchful blue eye. Fine short fur, long canine neck. This is a lone natural quadruped beast, showing only the head, neck and shoulder against a charcoal painted ground. Irregular tactile Heavenprint gouache and disciplined ink, angular matte paint and warm ivory edge under single side lighting. Upper center eyes within the top quarter of a 4:5 tall frame, silhouette readable at 40 px. No canine features for the big cat or bear. No armour, clothes, people, horns unless specified, text, lettering, background landscape or border.",
+    "references": [
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-beast-soldier-b",
+    "prompt_number": 35,
+    "label": "beast soldier b",
+    "path": "art/portraits/survival/foes/foe-beast-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "673777a7ebb2849085cd321b3bd939b474b954e4178cbb45b10e11c37a469922",
+    "collection": "survival-foes",
+    "kind": "beast",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.43,
+      "y": 0.22
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-beast-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "f8c06c09e3fa7159370b64e6dc5aa048b8797db2578a55754678f47d924a2b9e",
+    "prompt": "Paint one expressive bestiary portrait of a unique Project Heaven Cry Daggerfall battlefield wild animal. A stocky broad-headed wild cat with smoky rust fur in blotches, broad cheekbones, small rounded ears and a wide short pink-brown muzzle. Head in left-facing three quarters. Small jade glints in eyes, dark bone rim above one eye. This is a lone natural quadruped beast, showing only the head, neck and shoulder against a charcoal painted ground. Irregular tactile Heavenprint gouache and disciplined ink, angular matte paint and warm ivory edge under single side lighting. Upper center eyes within the top quarter of a 4:5 tall frame, silhouette readable at 40 px. No canine features for the big cat or bear. No armour, clothes, people, horns unless specified, text, lettering, background landscape or border.",
+    "references": [
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-beast-elite",
+    "prompt_number": 36,
+    "label": "beast elite",
+    "path": "art/portraits/survival/foes/foe-beast-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "058e153fb7c8cf8ca258eaaf5801d631499a210cd75be9a31818660c6443604e",
+    "collection": "survival-foes",
+    "kind": "beast",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.22
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-beast-elite.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-beast-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "5f9a1f10de64622f05aed51e347fc004fa4190e33e6de43aeacf775cd7989507",
+    "prompt": "Paint one expressive bestiary portrait of a unique Project Heaven Cry Daggerfall battlefield wild animal. A large dark charcoal bear with a broad high forehead, small rounded separated ears, very short blunt rounded muzzle, coarse black fur and a broad grey fur mane, deep amber eyes. Straight frontal gaze with powerful calm posture, pale bone fragments embedded at shoulder. No horns. This is a lone natural quadruped beast, showing only the head, neck and shoulder against a charcoal painted ground. Irregular tactile Heavenprint gouache and disciplined ink, angular matte paint and warm ivory edge under single side lighting. Upper center eyes within the top quarter of a 4:5 tall frame, silhouette readable at 40 px. No canine features for the big cat or bear. No armour, clothes, people, horns unless specified, text, lettering, background landscape or border.",
+    "references": [
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-cursed-vermin",
+    "prompt_number": 37,
+    "label": "cursed vermin",
+    "path": "art/portraits/survival/foes/foe-cursed-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "71345e8fce890d874298960d6857a4bdc4fc0b5ee35f2d8aed47e66be4baeec3",
+    "collection": "survival-foes",
+    "kind": "cursed",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.48,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "1f0ba74271fde431e22772fbc149385d3d7f174af51117f920704165f3197bdc",
+    "prompt": "One Project Heaven Cry Survival portrait. A cursed vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: old pale narrow pilgrim, dull cheek fissures.  Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-cursed-minion-a",
+    "prompt_number": 38,
+    "label": "cursed minion a",
+    "path": "art/portraits/survival/foes/foe-cursed-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "3799b16651dda48724ba26c01b948e7efdf3f5ecd4e94465b3bb002d457d8d02",
+    "collection": "survival-foes",
+    "kind": "cursed",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "7f144206994191a0143c136a390ab687d7bb015bf27f9ad4ff0ea0e6a6d84949",
+    "prompt": "One Project Heaven Cry Survival portrait. A cursed minion: a line fighter, poorly armed. Specific design: long-limbed pale man, wide eyes, charcoal muffler.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-cursed-minion-b",
+    "prompt_number": 39,
+    "label": "cursed minion b",
+    "path": "art/portraits/survival/foes/foe-cursed-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "73768d74f1cda535d8d3ded082dd66e503552968a1dab4c44aec76010643db15",
+    "collection": "survival-foes",
+    "kind": "cursed",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "8150bea2a043ebbe65599b7ffba60c978f6d7405f55ae02ccc29447106e419b5",
+    "prompt": "One Project Heaven Cry Survival portrait. A cursed minion: a line fighter, poorly armed. A second individual: different age, build and gear from the first. Specific design: pale broad woman, hooked nose, chipped glazed brow.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-cursed-soldier-a",
+    "prompt_number": 40,
+    "label": "cursed soldier a",
+    "path": "art/portraits/survival/foes/foe-cursed-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "389fd520343d4af52eae6aaf4e88349c237392ccf92ceed80afa969e978ceb92",
+    "collection": "survival-foes",
+    "kind": "cursed",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "70ebf4152794a625c5aa8b720b4cae2a922a1ac105e3dab273b440163f62987b",
+    "prompt": "One Project Heaven Cry Survival portrait. A cursed soldier: a trained, properly armed fighter. Specific design: wide shaved-headed man, red coat and gold forehead cracks.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-cursed-soldier-b",
+    "prompt_number": 41,
+    "label": "cursed soldier b",
+    "path": "art/portraits/survival/foes/foe-cursed-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "68364a47b1e41e63e756b2b585b8487a4dcb0f6a64aa483356c94a43c9d76cf9",
+    "collection": "survival-foes",
+    "kind": "cursed",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-cursed-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "b51face57b53cc44d1aa7c7c20e5ba7abab1e1bb6763301235638dda0b9baf2a",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: angular woman in dark blues, braids and a radiant split temple. One single person only. No secondary face, companion or distant figure. Level camera, do not repeat head tilt from the style reference. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-cursed-elite",
+    "prompt_number": 42,
+    "label": "cursed elite",
+    "path": "art/portraits/survival/foes/foe-cursed-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "bc7872ede953f9dc6b43e051319eaaf24f2b93bfb9741b3b58ba397d794621d3",
+    "collection": "survival-foes",
+    "kind": "cursed",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-cursed-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "cda566efa7b688b8fff933be9932794a468e042cdd610fed007314ded7453250",
+    "prompt": "One Project Heaven Cry Survival portrait. A cursed elite: a named veteran or a heavy unit: bigger, better armoured, with a distinguishing mark (a banner, a trophy, a commander plate). Specific design: ancient pale woman, plum stole and amber crown of fissures.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-machine-vermin",
+    "prompt_number": 43,
+    "label": "machine vermin",
+    "path": "art/portraits/survival/foes/foe-machine-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "a229ac8be4706dad141ce9c70d4959b2fc3f9879dd0dbef57903df7783f5163b",
+    "collection": "survival-foes",
+    "kind": "machine",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.22
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-vermin.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "92ab408c830989e195034508be8129f79f592fc5e3d76b5e68650d8411bd6e12",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: small mustard loader pod, round gray inspection port. One nonhumanoid industrial machine front with actual pistons, structural panels, tool housings and an integrated inspection lens. No mannequin, soldier armor, torso shaped like a person, helmet or fabric. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/illustrations/survival/backdrops/works-b-assembly.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-machine-minion-a",
+    "prompt_number": 44,
+    "label": "machine minion a",
+    "path": "art/portraits/survival/foes/foe-machine-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "662b8c0a1c69ef36fbedfe9777240bb0b95125fa527100ef582090ce5d05101e",
+    "collection": "survival-foes",
+    "kind": "machine",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-minion-a.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "06b54a25d709af652fb23408414a97099dabd2edc175af23855caab9226a84f7",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: thin welding rig, cut-out steel hood, tiny rectangular sensor. One nonhumanoid industrial machine front with actual pistons, structural panels, tool housings and an integrated inspection lens. No mannequin, soldier armor, torso shaped like a person, helmet or fabric. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/illustrations/survival/backdrops/works-b-assembly.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-machine-minion-b",
+    "prompt_number": 45,
+    "label": "machine minion b",
+    "path": "art/portraits/survival/foes/foe-machine-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "3b3d5630aca0f7e178c6f5997770309377d02c3e37e1817076e88a42ab4f7818",
+    "collection": "survival-foes",
+    "kind": "machine",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.4993,
+      "y": 0.2202
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-minion-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "8e66dc127d7a57c79c3e707e25ff6266615a7f11cf8e1bf2dbbe0680e1906f57",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: low tracked cutter, drum housing and split ceramic brow. One nonhumanoid industrial machine front with actual pistons, structural panels, tool housings and an integrated inspection lens. No mannequin, soldier armor, torso shaped like a person, helmet or fabric. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/illustrations/survival/backdrops/works-b-assembly.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-machine-soldier-a",
+    "prompt_number": 46,
+    "label": "machine soldier a",
+    "path": "art/portraits/survival/foes/foe-machine-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "a78403876e970addd3f45aa76beb285561e2f1a655f706afe54d6e058dba8c0b",
+    "collection": "survival-foes",
+    "kind": "machine",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.21
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-soldier-a.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "f7b1d3cfa1091bcde6e9222ef7f224315947bfa7543ddbb2d60fb7d3d61f401b",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: inverted trapezoid loader front, square sapphire sensor. One nonhumanoid industrial machine front with actual pistons, structural panels, tool housings and an integrated inspection lens. No mannequin, soldier armor, torso shaped like a person, helmet or fabric. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/illustrations/survival/backdrops/works-b-assembly.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-machine-soldier-b",
+    "prompt_number": 47,
+    "label": "machine soldier b",
+    "path": "art/portraits/survival/foes/foe-machine-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "1d5b1a7464f6ad10ae808e4dc98abc8b24d07bfe7c5c98fa6a433dd016d0997a",
+    "collection": "survival-foes",
+    "kind": "machine",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-soldier-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "966cc6121caf75ce7d46477f9a2c0cd20cef354bf25e8b66b00f4461e9c7f7e2",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: round press carriage with green slit and yellow curved side plates. One nonhumanoid industrial machine front with actual pistons, structural panels, tool housings and an integrated inspection lens. No mannequin, soldier armor, torso shaped like a person, helmet or fabric. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/illustrations/survival/backdrops/works-b-assembly.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-machine-elite",
+    "prompt_number": 48,
+    "label": "machine elite",
+    "path": "art/portraits/survival/foes/foe-machine-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "a6c1aad02d52e0eafa22250f986ba46c65b6d6c712f342de49047c7bedaa61ac",
+    "collection": "survival-foes",
+    "kind": "machine",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.23
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-machine-elite.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-machine-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "74348fad6ffeb78872aeca789c1ab8ca89bdec8543b9f63ad092910a439c36c4",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: huge forge press with heavy ochre cowl and amber inspection glass. One nonhumanoid industrial machine front with actual pistons, structural panels, tool housings and an integrated inspection lens. No mannequin, soldier armor, torso shaped like a person, helmet or fabric. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/illustrations/survival/backdrops/works-b-assembly.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-upper-realm-vermin",
+    "prompt_number": 49,
+    "label": "upper realm vermin",
+    "path": "art/portraits/survival/foes/foe-upper-realm-vermin.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "f707e0d856adac09fa6502b3dd0797a7c5261f7e9af3f18ff5987589a75c2666",
+    "collection": "survival-foes",
+    "kind": "upper_realm",
+    "tier": "vermin",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-vermin.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "f0cebe48a979ef077103b823629142cc2d9f1ed394eacc3d7ca85ee40319c291",
+    "prompt": "One Project Heaven Cry Survival portrait. A upper realm vermin: the smallest and weakest of its kind: a scavenger, a runt, a broken unit. Specific design: tiny chipped pinched ivory face and ash hood.  Tier colors: dull grey. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-upper-realm-patch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-upper-realm-minion-a",
+    "prompt_number": 50,
+    "label": "upper realm minion a",
+    "path": "art/portraits/survival/foes/foe-upper-realm-minion-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "ab854ee797628a38cedef45285e2bab67aa20d526c066dafab742d0a102fcd14",
+    "collection": "survival-foes",
+    "kind": "upper_realm",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-minion-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "35f8141d764ac006b48d2f3bafe3e07f8fdc9ad6f47a983944196861ed9c11d4",
+    "prompt": "One Project Heaven Cry Survival portrait. A upper realm minion: a line fighter, poorly armed. Specific design: long narrow pale mask and folded ivory fabric.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-upper-realm-patch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-upper-realm-minion-b",
+    "prompt_number": 51,
+    "label": "upper realm minion b",
+    "path": "art/portraits/survival/foes/foe-upper-realm-minion-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "97ae555d22524877cee8629ae0900e3a34ded0f088088becfbaf8c7cbebd16e5",
+    "collection": "survival-foes",
+    "kind": "upper_realm",
+    "tier": "minion",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.25
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-minion-b.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/foe-upper-realm-minion-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "b9a3139d830e29116c9147118e9826b2c9bb58d5bc703accc11a5b4758b086bf",
+    "prompt": "Single Project Heaven Cry Upper Realm pale enamel walker, minion tier. Only one construct in the picture. The light-made figure has a round ceramic face with two dark narrow horizontal eyes and no visible hair, and a rigid low torso collar made of folded pale slate porcelain with quiet ivory highlights. Single bust, full bleed 4:5, eyes placed centrally 22 percent from top. An ominously tranquil expression like a mask, matte painted flat angular luminous china face, Heavenprint gouache, restrained ink, soft simple dark background. Side daylight from the left. No humans, duplicate figures, second head, distant shapes, lettering or watermark. The reference is the material and setting, design a different round face.",
+    "references": [
+      "art/portraits/survival/boss-upper-realm-patch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-upper-realm-soldier-a",
+    "prompt_number": 52,
+    "label": "upper realm soldier a",
+    "path": "art/portraits/survival/foes/foe-upper-realm-soldier-a.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "2d35013024901c4257c149deaaeff8a42c0bfd194df54445c991daa5b9e88bb2",
+    "collection": "survival-foes",
+    "kind": "upper_realm",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-soldier-a.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "a791d09fe7b3da3d5da4acb5fbc006d92a474eea16a539c7cf060fa7dac6a8e9",
+    "prompt": "One Project Heaven Cry Survival portrait. A upper realm soldier: a trained, properly armed fighter. Specific design: high narrow face with plum narrow eyes and chalk robes.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-upper-realm-patch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-upper-realm-soldier-b",
+    "prompt_number": 53,
+    "label": "upper realm soldier b",
+    "path": "art/portraits/survival/foes/foe-upper-realm-soldier-b.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "204fa9e4c5802dadaa2326191144642e82eef49e8025b7949d224ae17938e0a9",
+    "collection": "survival-foes",
+    "kind": "upper_realm",
+    "tier": "soldier",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-soldier-b.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "49a52b1b9b418db1ed72e3c2df5801621e6f39b7bbc097fc3ddaf154344590ae",
+    "prompt": "One Project Heaven Cry Survival portrait. A upper realm soldier: a trained, properly armed fighter. A second individual: different age, build and gear from the first. Specific design: wide serene face with gold chin panel.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-upper-realm-patch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-upper-realm-elite",
+    "prompt_number": 54,
+    "label": "upper realm elite",
+    "path": "art/portraits/survival/foes/foe-upper-realm-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "fdd8101983a0c01c8681a4bbf9b0ef7659dabb67b1fa250e5f7e0ba33440bc46",
+    "collection": "survival-foes",
+    "kind": "upper_realm",
+    "tier": "elite",
+    "role": "standard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-upper-realm-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "9b37f1d7c7a3c4ba260af1222c70ed407435d0eb981b774b49a94459bb0a37f5",
+    "prompt": "One Project Heaven Cry Survival portrait. A upper realm elite: a named veteran or a heavy unit: bigger, better armoured, with a distinguishing mark (a banner, a trophy, a commander plate). Specific design: massive calm enamel mask and skewed gold shard, rose-ivory robe.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-upper-realm-patch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "boss-robot-warframe",
+    "prompt_number": 55,
+    "label": "Chapter warframe (robot)",
+    "path": "art/portraits/survival/foes/boss-robot-warframe.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "3a1f7c6729f7967dde1b5e2ef3bf2560c0f33ff7fb32a08cc0906b4aaddbf8ce",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "boss",
+    "role": "boss",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/boss-robot-warframe.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "eb4785d3cc90275f458b39ac0042fb1a4445d7c82535c2c6dabb953944e3e13b",
+    "prompt": "One Project Heaven Cry Survival portrait. A war machine of the chapter: twice the height of a man, slab armour with the seal ground off, a belt-fed gun for an arm, one cracked amber lens, old kill marks. Tireless. Specific design: wide cracked amber lens at single amber face, ancient scored slabs.  Tier colors: rich colours and the largest bust. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "elite-crawler",
+    "prompt_number": 56,
+    "label": "Crawler elder (crawler)",
+    "path": "art/portraits/survival/foes/elite-crawler.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "acb2f4d8501cc40ae695fdcec3ca11c157b2b2772092a8f634bac1e74a9ad59a",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "boss",
+    "role": "boss",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.21
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/elite-crawler.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "6ac87b88fd1d8c9c4d66fb4b85937457c144fa964a90cf0a54fc12862c3800e7",
+    "prompt": "One Project Heaven Cry Survival portrait. The oldest of a Crawler brood, as ordinary people see it: vast, many-jointed, a crown of something like antlers or hands, and in the middle of it a small, old, very human face that is weeping. Specific design: weeping old face inside a dark crown of spidery hands.  Tier colors: rich colours and the largest bust. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/elite-crawler.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "boss-ork-warlord",
+    "prompt_number": 57,
+    "label": "Ork warlord (ork)",
+    "path": "art/portraits/survival/foes/boss-ork-warlord.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "9526193748819f43d93cae093922b42636480510765a3a78d286b1d1bfd1a84d",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "boss",
+    "role": "boss",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/boss-ork-warlord.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "7225eaa685238b1e7be33106e38b8a308f86265500fa38fc810fa0d170aa4861",
+    "prompt": "One Project Heaven Cry Survival portrait. An Ork warlord: enormous, one tusk broken, ochre and white war paint, a cloak of stitched banners, a rip-saw greatsword over the shoulder, laughing. Specific design: broad laughing face, huge damaged tusk, asymmetric layered banners.  Tier colors: rich colours and the largest bust. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-ork-warlord.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "boss-upper-realm-patch",
+    "prompt_number": 58,
+    "label": "Upper-realm patch (upper_realm)",
+    "path": "art/portraits/survival/foes/boss-upper-realm-patch.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "262da00704489369af3d09e63b25753c289ea62f745916cdaabe730ca0b5adaf",
+    "collection": "survival-foes",
+    "kind": "upper_realm",
+    "tier": "boss",
+    "role": "boss",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/boss-upper-realm-patch.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "96f13ff72ed6f036c02a43939cba28f7581457317378bac169b63610d2a68428",
+    "prompt": "One Project Heaven Cry Survival portrait. A hero made by a Celestial to fix its own mistake: radiant, symmetrical, beautiful and blank, enamel-white and gold, a greatsword of light, a halo slightly off-centre. Wrong by being too right. Specific design: serene androgynous pearl-white enamel and subtly off-axis halo.  Tier colors: rich colours and the largest bust. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-upper-realm-patch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "vault-guard-ahoc",
+    "prompt_number": 59,
+    "label": "Strongroom warden (human)",
+    "path": "art/portraits/survival/foes/vault-guard-ahoc.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "17db655a12297a1fd98f17496e23ec00dee9fbe8c98cce51c70185bcaaefc726",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "elite",
+    "role": "vault-guard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.2
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-ahoc.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "5c3a63a314a26792cf44b60a4890c41763537abddb8925bfa45ca82dda4636e5",
+    "prompt": "One Project Heaven Cry Survival portrait. Strongroom warden: a human of AHOC chapter outpost, heavier and better kept than its fellows, standing before a strongroom door; keys, a seal or a chain as its mark. Specific design: brawny shaven stern mature East Asian man with heavy brass vault key.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "vault-guard-city",
+    "prompt_number": 60,
+    "label": "The fence's bruiser (crawler)",
+    "path": "art/portraits/survival/foes/vault-guard-city.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "bc1fc3a2d981d8127fdb0852f48b86119e1354e21e1723c3b588aed164d1eb0d",
+    "collection": "survival-foes",
+    "kind": "crawler",
+    "tier": "elite",
+    "role": "vault-guard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-city.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "064b30a568aac78acfe9f0dba0dabe1724ed349cc8fad4e5a2aafff1ccfe4f29",
+    "prompt": "One Project Heaven Cry Survival portrait. The fence's bruiser: a crawler of Central City back streets, heavier and better kept than its fellows, standing before a strongroom door; keys, a seal or a chain as its mark. Specific design: asymmetrical human eyes under a curling bone brow, old iron key chain.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/elite-crawler.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "vault-guard-field",
+    "prompt_number": 61,
+    "label": "Ork loot-keeper (ork)",
+    "path": "art/portraits/survival/foes/vault-guard-field.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "34fabe836f23d5001aa5b3609a4f2830740cf0f93487ecc9bcede8be18a0d277",
+    "collection": "survival-foes",
+    "kind": "ork",
+    "tier": "elite",
+    "role": "vault-guard",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-field.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "99beb56faa2fae740e8c4caf06bd18132e1e2382fdaa8c430c689b4bcb88201e",
+    "prompt": "One Project Heaven Cry Survival portrait. Ork loot-keeper: a ork of The old battlefield, heavier and better kept than its fellows, standing before a strongroom door; keys, a seal or a chain as its mark. Specific design: large dimpled green old ork, two chipped tusks, iron keys.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/survival/boss-ork-warlord.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "vault-guard-works",
+    "prompt_number": 62,
+    "label": "Vault press (machine)",
+    "path": "art/portraits/survival/foes/vault-guard-works.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "3cdd1ee828747be055a26a1879b64204eaa67a15663f0a648425834474a0ca78",
+    "collection": "survival-foes",
+    "kind": "machine",
+    "tier": "elite",
+    "role": "vault-guard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.22
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-works.png",
+    "superseded_render": "art/_archive/survival/2026-11-14-foes/superseded/vault-guard-works.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "fc0a4ebeb4e6f47f597f98838f63a59bcd293b63213d79550081cc37145f9850",
+    "prompt": "A single Project Heaven Cry Survival portrait. Design: vast industrial yellow stamping press with round inspection lens and a brass vault seal. One nonhumanoid industrial machine front with actual pistons, structural panels, tool housings and an integrated inspection lens. No mannequin, soldier armor, torso shaped like a person, helmet or fabric. Plain dark painted charcoal background, opaque 4:5. The face, animal eyes or inspection lens is centered high, between 19 and 25% down. Gouache silhouettes with visible bold brushwork, muted local hues, one hard directional sidelight and restrained charcoal ink. One large focal subject easily read in a 40 px circular portrait. No labels, UI, border, recognisable insignia or landscape. References guide brushwork and materials.",
+    "references": [
+      "art/portraits/m813/scavenger-drone.png",
+      "art/illustrations/survival/backdrops/works-b-assembly.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "vault-guard-shrine",
+    "prompt_number": 63,
+    "label": "Reliquary warden (cursed)",
+    "path": "art/portraits/survival/foes/vault-guard-shrine.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "5a02346a219efd58d49324227a99fb89891e77dc06bd7192042172dfd2881041",
+    "collection": "survival-foes",
+    "kind": "cursed",
+    "tier": "elite",
+    "role": "vault-guard",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-shrine.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "3750947053983180dd852d467df93f27d41133c37d3e5b88733463410ade86ba",
+    "prompt": "One Project Heaven Cry Survival portrait. Reliquary warden: a cursed of Shrine and cathedral district, heavier and better kept than its fellows, standing before a strongroom door; keys, a seal or a chain as its mark. Specific design: tall pale man with braided beard and powdered skin, saffron metal reliquary chain.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "vault-guard-rim",
+    "prompt_number": 64,
+    "label": "Bonded-store sentinel (robot)",
+    "path": "art/portraits/survival/foes/vault-guard-rim.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "e7e9c6cc4a2414ea773a1c37d847d0696728c546ea7b384195a05eeea6e253c3",
+    "collection": "survival-foes",
+    "kind": "robot",
+    "tier": "elite",
+    "role": "vault-guard",
+    "eye_line": {
+      "x": 0.48,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/vault-guard-rim.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "44fc16fbf2b434f45252a4ddd377b00ef6ba6c5b34675e26192d386d8624ff32",
+    "prompt": "One Project Heaven Cry Survival portrait. Bonded-store sentinel: a robot of Rim station, heavier and better kept than its fellows, standing before a strongroom door; keys, a seal or a chain as its mark. Specific design: tall dented ivory robot with narrow burgundy visor and black iron key.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only. Final reference is creature anatomy and world materials only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/portraits/m813/mpat.png"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-caster-sigil-novice",
+    "prompt_number": 65,
+    "label": "Sigil novice",
+    "path": "art/portraits/survival/foes/foe-caster-sigil-novice.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "e7793c21bd01850cddd74298adc936cc98e1c4ae579447dca2363f210cc8ebf5",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "minion",
+    "role": "caster",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-novice.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "1c816d64bdd0e0e5d388c980a7a9ccc76016c1420b4779b9b6cec344b180ffee",
+    "prompt": "One Project Heaven Cry Survival portrait. Sigil novice: a Sigil user: an Evoker glove with lit knuckles raised, a glyph burning in the air by the hand (a shape, not a letter), chalk or ink on the sleeves. Specific design: young light-skinned person with cinnamon curls and oversized coat.  Tier colors: muted cloth or metal. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-caster-sigil-adept",
+    "prompt_number": 66,
+    "label": "Sigil adept",
+    "path": "art/portraits/survival/foes/foe-caster-sigil-adept.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "8d98147d08f73fb08e3f279c90ca6aa0cb196c53003d4be8ea5a0ca7545553f7",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "soldier",
+    "role": "caster",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-adept.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "7fc6f750072a55bd034f17924f47584b7bab23689e18a79082472e4ba9550ff2",
+    "prompt": "One Project Heaven Cry Survival portrait. Sigil adept: a Sigil user: an Evoker glove with lit knuckles raised, a glyph burning in the air by the hand (a shape, not a letter), chalk or ink on the sleeves. Specific design: middle aged dark skinned woman, aquiline nose, black cap and red stitched cuffs.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-caster-sigil-warden",
+    "prompt_number": 67,
+    "label": "Sigil warden",
+    "path": "art/portraits/survival/foes/foe-caster-sigil-warden.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "b57e32315ffe0dd0351a1b4ed025361cf8512bfa1e85a0c864bb561bbb850f79",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "elite",
+    "role": "caster",
+    "eye_line": {
+      "x": 0.49,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-warden.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "c7910c87d24905086efdeff20d11ac5adaeb47766785c64ac621d4af0336e9b8",
+    "prompt": "One Project Heaven Cry Survival portrait. Sigil warden: a Sigil user: an Evoker glove with lit knuckles raised, a glyph burning in the air by the hand (a shape, not a letter), chalk or ink on the sleeves. Specific design: stocky pale bald man with pepper beard and teal coat.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-caster-sigil-magister",
+    "prompt_number": 68,
+    "label": "Sigil magister",
+    "path": "art/portraits/survival/foes/foe-caster-sigil-magister.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "6e37aff3b1e96d57127245b52f217a45151cabf869f38658343022d29a06522a",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "boss",
+    "role": "caster",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.17
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-sigil-magister.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "8277cfc2547c02543150287f9f05db7cc461d339c68ec046a2ab88b673c6a3db",
+    "prompt": "One Project Heaven Cry Survival portrait. Sigil magister: a Sigil user: an Evoker glove with lit knuckles raised, a glyph burning in the air by the hand (a shape, not a letter), chalk or ink on the sleeves. Specific design: older warm brown woman, swept-back white hair, ivory and red coat.  Tier colors: rich colours and the largest bust. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-caster-heart-adept",
+    "prompt_number": 69,
+    "label": "Heart adept",
+    "path": "art/portraits/survival/foes/foe-caster-heart-adept.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "b555c6e434b17b67701e758490562534a39f97a50f7eaf00b3714c69766b11d5",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "soldier",
+    "role": "caster",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-heart-adept.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "23578313abca44d34b1a33bcc268b0684a4a24f0201134f3b29890b57bad160f",
+    "prompt": "One Project Heaven Cry Survival portrait. Heart adept: a Soul user: an Emanator glove with a glowing palm held to the chest, light gathering there, hair and cloth lifting as if in a wind from inside. Specific design: young olive-skinned man, diamond face and heavy brows with indigo collar.  Tier colors: one clear accent. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-caster-heartfire-elite",
+    "prompt_number": 70,
+    "label": "Heartfire elite",
+    "path": "art/portraits/survival/foes/foe-caster-heartfire-elite.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "a77658cfb8aac9210ce734911b5af00785e28dbd4ae381fbb60887c115138da3",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "elite",
+    "role": "caster",
+    "eye_line": {
+      "x": 0.5,
+      "y": 0.18
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-heartfire-elite.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "f6239943707c95eef548466ee85de1aa6159f7e364f82b7f6e39acc75f375f83",
+    "prompt": "One Project Heaven Cry Survival portrait. Heartfire elite: a Soul user: an Emanator glove with a glowing palm held to the chest, light gathering there, hair and cloth lifting as if in a wind from inside. Specific design: tall athletic dark-skinned woman, broad jaw, sculpted braid and burnt orange eye paint.  Tier colors: two accents and a distinguishing mark. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  },
+  {
+    "id": "foe-caster-heart-sovereign",
+    "prompt_number": 71,
+    "label": "Heart sovereign",
+    "path": "art/portraits/survival/foes/foe-caster-heart-sovereign.png",
+    "width": 800,
+    "height": 1000,
+    "sha256": "d8c7425073eb84c4fb26715341b01a2aa22b3c14b5d7e207c5a16eb7fd6eb1d0",
+    "collection": "survival-foes",
+    "kind": "human",
+    "tier": "boss",
+    "role": "caster",
+    "eye_line": {
+      "x": 0.51,
+      "y": 0.19
+    },
+    "status": "review-candidate",
+    "production_approved": false,
+    "source_path": "art/_archive/survival/2026-11-14-foes/native-renders/foe-caster-heart-sovereign.png",
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "native_sha256": "ca7b6533e3202d8d509d1235187f3b639d70c6e94f3902033b7c544853d4d93a",
+    "prompt": "One Project Heaven Cry Survival portrait. Heart sovereign: a Soul user: an Emanator glove with a glowing palm held to the chest, light gathering there, hair and cloth lifting as if in a wind from inside. Specific design: older East Asian woman, tapered chin, cropped white hair and cobalt collar.  Tier colors: rich colours and the largest bust. Heavenprint painted gouache and restrained ink, matte broad expressive brushwork, single hard sidelight, dark plain painted background. One 4:5 opaque bust. Eyes or lens very high in frame, centered horizontally, 19 to 25 percent of canvas height from the top, readable at 40 px. Strong clear face silhouette, enough clearance above, shoulder details below, no obscuring props. No text, marks that resemble real-world insignia, logos, frames or UI. First two references are style only.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in"
+  }
+]
