@@ -324,7 +324,7 @@ The full account, part by part: `docs/design/handoffs/technique-fx.md` ("What Le
 
 | The report | The cause | The fix |
 | --- | --- | --- |
-| "Please disable the yellow lines effect when shooting" | Two things drew a line per round from the muzzle: the `tracer` part (a stroke in the technique's ink, Agility yellow for every Dexterity gun, held for its whole beat) and the bullet's drawn flight (`projectile`, a pale glowing streak); `aim`, `heavy` and `cone` were also lines from the shooter | `tracer` deleted from the parts and every row; a bullet's and pellets' flight is traced and timed but not drawn; `aim` is now a sight closing on the target, `heavy` the round leaving the target's far side, `cone` only its far band over the target; Flush Arc's drop only over the last tile and a half |
+| "Please disable the yellow lines effect when shooting" | Two things drew a line per round from the muzzle: the `tracer` part (a stroke in the technique's ink, Agility yellow for every Dexterity gun, held for its whole beat) and the bullet's drawn flight (`projectile`, a pale glowing streak); `aim`, `heavy` and `cone` were also lines from the shooter | `tracer` deleted from the parts and every row; ~~a bullet's and pellets' flight is traced and timed but not drawn~~ (wrong: restored 14 Nov, see below); `aim` is now a sight closing on the target, `heavy` the round leaving the target's far side, `cone` only its far band over the target; Flush Arc's drop only over the last tile and a half |
 | "the half circle effect when meleeing" | The `slash` part (an arc swept across the target's front on every Cut, Draw Cut, Flurry, Hamstring, Riposte, Cleave) and a bright arc sprite in front of every swinging attacker (`play.ts` melee) | both deleted; the swing is the attacker's lunge; the cut on a hit (`cross`) is unchanged |
 | "the miss shot effect and the melee miss effect" | every row's `miss` result: `wide` (a tick past the target and dust), `whiff` (the stroke passing wide), `deflect` (a bounce tick), muted rings, stamps and pips; and the dust kicked up where a missed bullet went | the parts and the `miss` column are gone; a miss shows the word MISS and nothing else |
 | "change the effect for shots to a bullet hole" | (new) | `hole`: a small dark puncture, ragged pale edge, a few cracks, on the lower half of the token clear of the number, put down as its round lands, one a round that hit (a Burst's three one after another), gone in about a second; on an object or the cover that stopped the round too. The rule is now **bullet holes drawn = rounds that hit; casings = rounds spent** (`rounds.test.ts`, every gun × every shooting technique through the engine) |
@@ -334,3 +334,49 @@ Suites changed: `brass` (a Burst's three hits leave three holes in rhythm; three
 the cut and no arc; a miss draws nothing but MISS), `fx-room` (the six attacks: a mark for each shot that hit, none
 for a miss), `fx-sweep` (a fourth judgement: the family's mark, never before its round lands, none for a miss or a
 swing). None was deleted or weakened.
+
+### Found by Leon on the live build, 14 Nov: the bullet in flight was taken with the yellow line
+
+"FUCK i told you to remove the yellow line not the bullet effect"; "the yellow line was added in a later effect
+update, the gun always got bullets shot VFX, we even spent many token making sure the shot sycn perfectly, now it's
+all gone". The cleanup above read "the yellow lines" as two things: the `tracer` part (right: added with the technique
+table, 8a3e981d, 12 Nov) and the bullet's own drawn flight (wrong: `projectile` in fx/play.ts, there since bb16e06e and
+synced round by round afterwards). The flight is restored from history as it was; the rest of the cleanup stands.
+
+What a shot drew before the cleanup (`git show 1f918427^:apps/web/src/game/fx/play.ts`, techniqueParts.ts), one by one:
+
+| Piece | Where | Now |
+| --- | --- | --- |
+| (a) the muzzle flash | play.ts `muzzle` (a `muzzle` sprite and a `flare`) | kept (a shotgun's is the wide blast since 13 Nov) |
+| (b) the round in flight | play.ts `projectile` (a streak 0.8 tile long, pale #FFF3C4 to white, a #FFD27A glow, flying at 2.2 px/ms; a bow's shaft, a lobbed grenade, a rocket, a bolt); play.ts `shot` five pellets a shell; drawn for the extra rounds by ranged.ts `fly`, techniqueFx.ts `looseRounds`, play.ts `volley` (full auto's spray) | **restored** (removed 13 Nov) |
+| (c) the yellow tracer line | techniqueParts.ts `tracer` (a stroke from the muzzle to the target in the technique's ink, Agility yellow, held its beat), in the rows of Shot, Snap Shot, Burst, Aimed Shot, Called Shot, Walking Fire and others | stays removed |
+| (d) the miss marks | the rows' `miss` column (`wide`, `whiff`, `deflect`); play.ts `shot`'s `dust(end)` where a missed round went | stay removed |
+| (e) the casings | brass.ts `ejectShell` from play.ts `shot`, ranged.ts, techniqueFx.ts | unchanged |
+| (f) the hit mark | play.ts `impact` (flash, sparks or blood, decal, the number); since 13 Nov the weapon's mark (`hole`, `pellets`, `shaft`) | unchanged; an enchanted arrow keeps its element's hit |
+
+The cleanup merge's hunks in play.ts and ranged.ts, and what became of each:
+
+| File: hunk | What it did | Verdict |
+| --- | --- | --- |
+| play.ts `muzzle` | `wide`: a shotgun's short, wide blast | keep (the shotgun family fix) |
+| play.ts `projectile` | doc comment; `if (… look === 'bullet' \|\| look === 'pellets') return`; the streak's colour from the pale yellow to white | **restore**: the early return removed, the colour back to #FFF3C4 / #FFD27A as it was |
+| play.ts `shot` | the muzzle's `wide` for a shotgun | keep |
+| play.ts `shot` | the five-pellet cluster a shell (`projectile` × 5) deleted | **restore**, as it was |
+| play.ts `shot` miss | `dust(end, …)` where a missed round landed | stays removed (a miss mark; the round still flies there) |
+| play.ts `melee` | the arc sprites in front of the swinging attacker | stays removed |
+| play.ts `playFx` | `cover` added to the `ev` trace | keep |
+| ranged.ts imports, `HOT` | the mark's imports; the yellow constant dropped | keep |
+| ranged.ts `RangedKit.muzzle`, `fire`, loose rounds | the `wide` flag passed | keep |
+| ranged.ts Flush Arc | the dashed arc from the shooter cut to the last tile and a half, white | keep (a line from the shooter) |
+| ranged.ts Punch Through Heavy | its hole in the next one | keep (its round's flight there came back with `projectile`) |
+
+Also, since the cleanup: a shotgun shell fired without its own roll (a double barrel's second, a shotgun's Suppress,
+Rake or full auto) flew as a single streak before and now flies as its five pellets (`projectile(…, 'pellets')`),
+so every shell looks the same. Not changed: a loose round of a technique beat (ranged.ts `lands`) that misses still
+kicks a little dirt where it falls, as it did before and after the cleanup; flagged for Leon, not removed on my word.
+
+Proof: rounds.test.ts (every gun × every shooting technique through the engine: one flight a round fired, five
+pellets a shell, a shaft an arrow, no removed part), ranged.test.ts ("the round in flight": hit, miss, shotgun, bow;
+R9's flight check, deleted on 13 Nov, back), and the suites `brass` (a Burst's three bullets in the air, no tracer),
+`fx-room` (every shot of the six attacks drawn in flight), `fx-sweep` (a fifth judgement: a gun's shot draws its round
+in flight, no removed part is drawn).

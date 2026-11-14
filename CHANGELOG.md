@@ -48,6 +48,7 @@ pick-up is `docs/design/handoffs/SURVIVAL-PICKUP.md`). Built, **not live until L
   grade step. Wear bars on the shop's and every place's hands and pack and on the path map's squad panel, with a
   ⚠ WORN / ✕ BROKEN mark, so a worn gun is seen before a lane is chosen.
 - **The browser suite `survival`** walks all of it, two browsers included.
+- **Effects: the bullet in flight is back; the yellow tracer lines stay removed** (Leon, 14 Nov: the 13 Nov cleanup took the bullet's own flight along with the tracer lines). Every round fired flies from the muzzle to where it lands as before, hit or miss (a shotgun shell as its five pellets, an arrow as its shaft); a hit still leaves its hole, a miss no dust.
 - **Bows and quivers (rules 1.53, Leon 14 Nov).** No more Nock an arrow (it was the bow's reload, and a quiver could
   never be refilled in a fight, so it could never be taken): a shot draws its arrow from the worn quiver. Every archer
   may carry **two quivers**, worn and ready; **Switch quiver** is the bow's reload (2 AP, a reload's price). A quiver is
