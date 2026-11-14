@@ -119,7 +119,9 @@ describe('the brass keeps step with a slowed shot (tempo 0.85)', () => {
     const swish = () => spy.mock.calls.filter((c) => c[0] === 'swish').length;
     expect(swish()).toBe(1);
     vi.advanceTimersByTime(DRAW_MS / CUTIN_TEMPO - DRAW_MS * 0.5 / CUTIN_TEMPO - 30); expect(swish()).toBe(1); // DRAW_MS has passed: still drawing
-    vi.advanceTimersByTime(60); expect(swish()).toBe(2); // the loose, at DRAW_MS / 0.85
+    const loose = () => spy.mock.calls.filter((c) => c[0] === 'bow_loose').length; // the loose has its own sound (14 Nov 2026)
+    expect(loose()).toBe(0);
+    vi.advanceTimersByTime(60); expect(loose()).toBe(1); expect(swish()).toBe(1); // the loose, at DRAW_MS / 0.85
     spy.mockRestore(); clearFx(); vi.advanceTimersByTime(5000); delete (Element.prototype as any).animate; vi.useRealTimers();
   });
 });
