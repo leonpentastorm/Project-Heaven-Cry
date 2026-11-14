@@ -996,6 +996,10 @@ The ground stays twice a rest or more, as section 11.3 wants. The pull against t
 - **The Proving Ground's panel list:** the Proving Ground is not a row of the modes file's items (it is a tool, section 8.1 item 7); its list keeps today's four and needs a home in data (a top-level entry beside the items is the spec's suggestion). The Roguelike row takes Survival's list until it has its own, as its loadout does.
 - **The ammo maker on the counter or only in the rolled gear:** the brief says "the shop's stock"; as a tool it is rolled, so a shop may not have one. The counter would make it certain.
 
+### 14.8 Music by situation (built from existing pieces; no new primitive)
+
+`data/survival.json` `music`: `camp`, `map` (a track per setting id, else `default`), `place` (a track per node kind: shop, forge, rest), `boon`. One lookup, `runMusic` (`music.ts`), is read by `musicFor` for a run: the camp plays camp; the boon pick plays boon; a place (the shop's or Forge's screen, or a full-screen place open: `placeOpen`) plays its kind's track, and one with none (training, shrine, Crossroads, cache, the vault's chest) plays the setting's map track; the path map, a reward and the next-tile pick play the map track. A fight keeps the existing fight selection and the summary keeps what plays today. A new track is a line of data and its id in `OstId`; `tools/validate.py` checks the ids against that list.
+
 ### 14.7 The screens, in short (the rest is section 8.2, rules 1.54 and `ui-screens.md`)
 
 - **Making** is in the sheet's GEAR tab (the one place for gear), a "Make" group shown when the character carries a tool or holds a focus: each recipe from the engine's view with what it needs, what it gives, a `‹ n ›` stepper and **Make**, or the engine's reason in words. At the camp it is hidden (the GEAR tab is read-only there).

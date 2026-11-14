@@ -1,5 +1,5 @@
 // The game's own music (spec: Music; the engine's musicFor / fightTheme picks the track): the nine songs of the
-// ordinary fight's pool (Gunline and the rest), Heaven Falls, Last Rounds, and the Proving Ground's Gearing Up, played
+// ordinary fight's pool (Gunline and the rest), Heaven Falls, Last Rounds, the Proving Ground's Gearing Up and Survival's twelve (camp, path maps, places, the boon pick: data/survival.json `music`), played
 // from the game's files through Web Audio. Each track loops seamlessly: a pass crossfades into
 // the next one at its loop points (the files end on Suno's hard cut, so a plain loop would click). Changing track
 // crossfades the two (about 1.2 s); stopping fades out. music.tsx drives it and sets the volume (Settings x panel x

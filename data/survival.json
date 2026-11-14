@@ -752,5 +752,12 @@
       "path": { "fight": [5, 8], "elite": [1, 3], "shop": [2, 3], "forge": [1, 2], "training": [0, 2], "shrine": [0, 1], "rest": [1, 2], "cache": [0, 2], "event": [0, 2], "boss": [1, 1] }
     },
     "provisional": true
+  },
+  "music": {
+    "about": "Rules 1.54 (survival-spec section 14): what plays in a run, by situation, read by musicFor. camp: the loadout camp; map: the path map, one track per setting id, else `default`; place: a node's own track by its kind (shop, forge, rest); a place with none (training, shrine, Crossroads, cache, the vault's chest) plays the setting's map track; boon: the boon pick. A fight keeps the fight music. A new track is one line here (and its id in the engine's OstId list).",
+    "camp": "surv_camp",
+    "map": { "default": "surv_map", "ahoc": "surv_map_ahoc", "city": "surv_map_city", "field": "surv_map_field", "works": "surv_map_works", "shrine": "surv_map_shrine", "rim": "surv_map_rim" },
+    "place": { "shop": "surv_shop", "forge": "surv_forge", "rest": "surv_rest" },
+    "boon": "surv_boon"
   }
 }

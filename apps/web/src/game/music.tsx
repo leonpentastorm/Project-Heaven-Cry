@@ -104,6 +104,11 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   const proving = !!game?.sandbox;
   React.useEffect(() => { if (proving) ostPreload(GEARING_UP); }, [proving]);
 
+  // A Survival run's own track (camp, map, a place, the boon pick) is fetched as soon as it is wanted, so the change of
+  // screen is not silent while the file comes.
+  const runTrack = game?.run ? want?.track?.ost : undefined;
+  React.useEffect(() => { if (runTrack) ostPreload(runTrack); }, [runTrack]);
+
   function fadeTo(target: number, then?: () => void, ms = FADE_MS) {
     const pl = player.current; if (!pl?.getVolume) { then?.(); return; }
     const from = pl.getVolume(), t0 = performance.now();
