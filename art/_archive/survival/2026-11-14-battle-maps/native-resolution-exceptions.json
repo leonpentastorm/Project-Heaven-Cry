@@ -1,0 +1,992 @@
+[
+  {
+    "id": "B01",
+    "path": "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B02",
+    "path": "art/illustrations/survival/backdrops/ahoc-b-corridor.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B03",
+    "path": "art/illustrations/survival/backdrops/ahoc-c-yard.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B04",
+    "path": "art/illustrations/survival/backdrops/ahoc-d-vault.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B05",
+    "path": "art/illustrations/survival/backdrops/city-a-archway.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B06",
+    "path": "art/illustrations/survival/backdrops/city-b-passage.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B07",
+    "path": "art/illustrations/survival/backdrops/city-c-rooftops.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B08",
+    "path": "art/illustrations/survival/backdrops/city-d-square.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B09",
+    "path": "art/illustrations/survival/backdrops/field-a-ridge.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B10",
+    "path": "art/illustrations/survival/backdrops/field-b-trench.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B11",
+    "path": "art/illustrations/survival/backdrops/field-c-craters.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B12",
+    "path": "art/illustrations/survival/backdrops/field-d-wreck.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B13",
+    "path": "art/illustrations/survival/backdrops/works-a-dock.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B14",
+    "path": "art/illustrations/survival/backdrops/works-b-assembly.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B15",
+    "path": "art/illustrations/survival/backdrops/works-c-scrapyard.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B16",
+    "path": "art/illustrations/survival/backdrops/works-d-furnace.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B17",
+    "path": "art/illustrations/survival/backdrops/shrine-a-steps.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B18",
+    "path": "art/illustrations/survival/backdrops/shrine-b-nave.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B19",
+    "path": "art/illustrations/survival/backdrops/shrine-c-cloister.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B20",
+    "path": "art/illustrations/survival/backdrops/shrine-d-altar.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B21",
+    "path": "art/illustrations/survival/backdrops/rim-a-airlock.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B22",
+    "path": "art/illustrations/survival/backdrops/rim-b-hangar.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B23",
+    "path": "art/illustrations/survival/backdrops/rim-c-pad.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "B24",
+    "path": "art/illustrations/survival/backdrops/rim-d-core.png",
+    "mode": "backdrop",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P025",
+    "path": "art/illustrations/survival/map/map-display.png",
+    "mode": "path-map",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P026",
+    "path": "art/illustrations/survival/map/map-aerial.png",
+    "mode": "path-map",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "native_minimum": [
+      1920,
+      1080
+    ],
+    "export_dimensions": [
+      2560,
+      1440
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P027",
+    "path": "art/illustrations/survival/nodes/shop-quartermaster.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P028",
+    "path": "art/illustrations/survival/nodes/shop-alley-dealer.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P029",
+    "path": "art/illustrations/survival/nodes/shop-faction-trader.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P030",
+    "path": "art/illustrations/survival/nodes/rest-safe-room.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P031",
+    "path": "art/illustrations/survival/nodes/rest-campfire.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P032",
+    "path": "art/illustrations/survival/nodes/elite-lair.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P033",
+    "path": "art/illustrations/survival/nodes/boss-door.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P034",
+    "path": "art/illustrations/survival/nodes/reward-cache.png",
+    "mode": "node-scene",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P058",
+    "path": "art/illustrations/survival/cards/title-survival.png",
+    "mode": "card",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P059",
+    "path": "art/illustrations/survival/cards/run-over.png",
+    "mode": "card",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "P060",
+    "path": "art/illustrations/survival/cards/run-won.png",
+    "mode": "card",
+    "native_dimensions": [
+      1448,
+      1086
+    ],
+    "native_minimum": [
+      1600,
+      1200
+    ],
+    "export_dimensions": [
+      2048,
+      1536
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M001",
+    "path": "art/maps/survival/ahoc-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M002",
+    "path": "art/maps/survival/ahoc-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M003",
+    "path": "art/maps/survival/ahoc-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M004",
+    "path": "art/maps/survival/city-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M005",
+    "path": "art/maps/survival/city-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M006",
+    "path": "art/maps/survival/city-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M007",
+    "path": "art/maps/survival/field-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M008",
+    "path": "art/maps/survival/field-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M009",
+    "path": "art/maps/survival/field-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M010",
+    "path": "art/maps/survival/works-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M011",
+    "path": "art/maps/survival/works-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M012",
+    "path": "art/maps/survival/works-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M013",
+    "path": "art/maps/survival/shrine-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M014",
+    "path": "art/maps/survival/shrine-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M015",
+    "path": "art/maps/survival/shrine-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M016",
+    "path": "art/maps/survival/rim-1.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M017",
+    "path": "art/maps/survival/rim-2.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  },
+  {
+    "id": "M018",
+    "path": "art/maps/survival/rim-3.png",
+    "mode": "painted-map",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": [
+      2080,
+      2080
+    ],
+    "export_dimensions": [
+      2600,
+      2600
+    ],
+    "upscaled": true
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "commission_total": 294,
+  "review_candidates": 294,
+  "remaining_planned_renders": 0,
+  "painted_battle_maps": 18,
+  "map_export_dimensions": [
+    2600,
+    2600
+  ],
+  "native_resolution_exceptions": 55,
+  "resolution_decision": "The user chose locally upscaled exports in place of paid native rerenders."
+}
