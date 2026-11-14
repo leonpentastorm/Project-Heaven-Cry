@@ -208,6 +208,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **15 Nov 2026:** everything still missing, found by machine (catalog, built assets and every data file against what each screen draws): `art/briefs/GPT-PROMPTS-2026-11-15-everything-missing.md`, **66 new images** (8 items with no icon: the quiver, six enchantments, the armourer's chit; 5 for 0.28.0's materials, ammo maker and Materials card; 29 boon and starting-boon-line icons; 3 path-map markers; 3 keeper portraits and 12 backdrops; 2 panel icons and 3 flash marks for 0.28.0; the Roguelike card), with the three files already requested (foes 71, portraits 145, Classes 3.0 51) and the map kit and fight maps: 339 in all. The same file lists what has art but is not wired (Contraband, three magazines, the restock lines, the lobby card).
 - **14 Nov 2026:** E2c opened: the quiver and its six enchantments (rules 1.53, bows and quivers).
 - **14 Nov 2026:** the art branch's 9fbb08e9 merged: S9's six path backdrops and ten markers (S3) wired; S4's six keepers wired (two names to settle; four faces and ten backdrops still wanted); S1's 18 painted battle maps catalogued as LoRA training material, not shipped (site assets 61.9 MB to 66.3 MB, +34 files, the paintings none of it). Still wanted: three markers (horned skull, chest, tent).
 - **14 Nov 2026:** S10 opened: Survival's starting boons (nine line icons) and caster boons (six), and the camp's backdrop (rules 1.51); line glyphs and the rest's backdrop stand in.
