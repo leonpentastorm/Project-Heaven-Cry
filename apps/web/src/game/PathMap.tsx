@@ -5,6 +5,9 @@
 // trail. Under it the setting's painted backdrop (`survival-map-<setting>`, 2560 x 1440, the artist's: the art contract
 // in survival-spec 4.3) or, while it is missing, a dark field chart drawn here (a parchment-toned panel and faint
 // contour lines). Every action is the caller's (`onPick`); every word and number is the engine's (runView.ts).
+// The markers are the artist's inked node markers (`survival-node-<kind>`, catalog survival_art's marker sheet, white flat
+// ink on transparent), drawn as a mask in the marker's state colour; a kind with no marker (the camp, the vault's guard
+// and its chest) keeps its SVG line icon (runIcons.ts), as does every kind while its marker is missing.
 import React from 'react';
 import ASSETS from './assets.json';
 import { nodeIconSvg } from './runIcons';
@@ -16,11 +19,29 @@ const A = ASSETS as Record<string, string>;
 const W = 1600, H = 900;
 /** How far from the top and bottom edges the vault's spur may sit (map units: half a marker and its label). */
 const SPUR_MARGIN = 48;
-const ink = { white: '#FFFFFF', text: '#E7EBF3', muted: '#A3AEC2', trail: 'rgba(231,235,243,0.42)', quiet: 'rgba(214,200,170,0.30)', disc: '#14110C', discWalked: '#221D15' };
+/** The backdrops too busy across the lanes' band for the trails to read (looked at in the game, 14 Nov: rooftops,
+ * gantries and lit windows run through the middle): a dark band under the trails, this strong in its middle. The calm
+ * ones (field, shrine) have none. A new backdrop is drawn without one until someone looks at it. */
+const SCRIM: Record<string, number> = { city: 0.42, rim: 0.38, ahoc: 0.3, works: 0.3 };
+const ink = { white: '#FFFFFF', text: '#E7EBF3', muted: '#A3AEC2', trail: 'rgba(231,235,243,0.42)', quiet: 'rgba(214,200,170,0.30)', quietArt: 'rgba(236,226,204,0.62)', disc: '#14110C', discWalked: '#221D15' };
 
 /** A number from a string, the same every time (the jitter's seed): FNV-1a. */
 function hash(s: string): number { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 const jit = (id: string, k: string, amp: number) => ((hash(id + k) % 1000) / 1000 - 0.5) * 2 * amp;
+
+/** The artist's marker for each node kind (art/icons/survival/markers/<file>.png, built as survival-node-<file>); the
+ * gate is an Elite. Kinds not here (start, vault_guard, vault) have no inked marker yet: the line icon draws them. */
+const MARKER: Record<string, string> = { fight: 'fight', elite: 'elite', gate: 'elite', boss: 'boss', shop: 'shop', forge: 'forge', training: 'training', shrine: 'shrine', rest: 'rest', cache: 'cache', event: 'crossroads' };
+/** A node kind's glyph at `size` css px in the current colour: the inked marker (a CSS mask, so the state colours still
+ * apply) or, with none, the SVG line icon. `data-phc-marker` says which ("art" or "line"). */
+export function NodeGlyph({ kind, size }: { kind: string; size: number }) {
+  const url = MARKER[kind] ? A['survival-node-' + MARKER[kind]] : undefined;
+  if (url) {
+    const m = 'url("' + url + '") center / contain no-repeat';
+    return <span aria-hidden="true" data-phc-marker="art" style={{ display: 'block', width: size, height: size, background: 'currentColor', WebkitMask: m, mask: m }} />;
+  }
+  return <span aria-hidden="true" data-phc-marker="line" style={{ display: 'inline-grid', placeItems: 'center' }} dangerouslySetInnerHTML={{ __html: nodeIconSvg(kind === 'gate' ? 'elite' : kind, size) }} />;
+}
 
 /** Where every node sits on the map, by its depth and column (rules 1.48), with the jitter; the camp's spot too. */
 export function layoutPathMap(v: Pick<RunViewV, 'nodes' | 'rows' | 'lanes'>): { pos: Record<string, { x: number; y: number }>; camp: { x: number; y: number }; dx: number } {
@@ -94,7 +115,7 @@ function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: 
       style={{ position: 'absolute', left: (p.x / W) * 100 + '%', top: (p.y / H) * 100 + '%', width: big, height: big, transform: 'translate(-50%, -50%)', padding: 0, border: 0, background: 'transparent', fontFamily: 'inherit', cursor: lit ? 'pointer' : 'default', opacity: passed ? 0.45 : 1, zIndex: here || lit ? 4 : 3 }}>
       {here ? <span aria-hidden="true" className="phc-pm-here" style={{ position: 'absolute', inset: -9, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.55)' }} /> : null}
       <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', borderRadius: n.junction ? 10 : '50%', transform: n.junction ? 'rotate(45deg)' : undefined, border: ring, background: walked || here ? ink.discWalked : ink.disc, boxShadow: lit ? '0 0 0 5px rgba(255,255,255,0.14), 0 0 18px rgba(255,255,255,0.25)' : '0 2px 6px rgba(0,0,0,0.6)' }} />
-      <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: col }} dangerouslySetInnerHTML={{ __html: nodeIconSvg(n.gate ? 'elite' : n.kind, Math.round(big * (n.kind === 'boss' ? 0.62 : 0.6))) }} />
+      <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: col }}><NodeGlyph kind={n.gate ? 'gate' : n.kind} size={Math.round(big * (n.kind === 'boss' ? 0.62 : 0.6))} /></span>
       <span style={{ position: 'absolute', ...(n.spur ? { left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: 5 } : { left: '50%', [below ? 'top' : 'bottom']: '100%', transform: 'translateX(-50%)', marginTop: below ? 3 : 0, marginBottom: below ? 0 : 3 }), fontSize: n.kind === 'boss' ? 12 : 10, fontWeight: 700, letterSpacing: '0.04em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000, 0 0 6px #000' }}>{n.word}</span>
       {n.leans.length ? <span style={{ position: 'absolute', top: -10, right: -14, display: 'flex', gap: 2 }}>{n.leans.map((l) => <span key={l.initials} style={{ display: 'grid', placeItems: 'center', width: 20, height: 20, borderRadius: '50%', fontSize: 9, fontWeight: 700, background: l.color, color: '#0A0D13' }}>{l.initials}</span>)}</span> : null}
     </button>
@@ -109,13 +130,13 @@ function Legend({ v }: { v: RunViewV }) {
   const kinds = order.filter((k) => seen.has(k));
   const item = (icon: string, word: string) => (
     <span key={word} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-      <span aria-hidden="true" style={{ display: 'inline-grid', placeItems: 'center', color: ink.text }} dangerouslySetInnerHTML={{ __html: nodeIconSvg(icon, 16) }} />{word}
+      <span aria-hidden="true" style={{ display: 'inline-grid', placeItems: 'center', color: ink.text }}><NodeGlyph kind={icon} size={16} /></span>{word}
     </span>
   );
   return (
     <div data-phc-pathmap-legend="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', alignItems: 'center', padding: '6px 10px', borderRadius: 8, background: '#10151F', border: '1px solid #232D3F', fontSize: 11, color: ink.text }}>
       {item('start', 'Camp')}
-      {kinds.map((k) => item(k === 'gate' ? 'elite' : k, seen.get(k)!))}
+      {kinds.map((k) => item(k, seen.get(k)!))}
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke={ink.text} strokeWidth="3" strokeLinecap="round" /></svg>walked</span>
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke={ink.white} strokeWidth="3" strokeDasharray="6 5" strokeLinecap="round" /></svg>open now</span>
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="14" height="14" aria-hidden="true"><rect x="3" y="3" width="8" height="8" transform="rotate(45 7 7)" fill="none" stroke={ink.text} strokeWidth="1.5" /></svg>junction: trails meet and part</span>
@@ -132,7 +153,7 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
   const walkedFirst = firsts.find((n) => n.state === 'walked' || n.state === 'here');
   const trail = (key: string, a: { x: number; y: number }, b: { x: number; y: number }, kind: 'walked' | 'lit' | 'quiet' | 'spur') => (
     <path key={key} d={trailPath(a, b, key)} fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke"
-      stroke={kind === 'walked' ? ink.text : kind === 'lit' ? ink.white : kind === 'spur' ? 'rgba(231,235,243,0.38)' : ink.quiet}
+      stroke={kind === 'walked' ? ink.text : kind === 'lit' ? ink.white : kind === 'spur' ? 'rgba(231,235,243,0.38)' : art ? ink.quietArt : ink.quiet}
       strokeWidth={kind === 'walked' ? 3.5 : kind === 'lit' ? 3 : 2} strokeDasharray={kind === 'walked' ? undefined : kind === 'lit' ? '7 6' : '2 8'}
       className={kind === 'lit' ? 'phc-pm-lit' : undefined} data-phc-trail={kind} />
   );
@@ -143,14 +164,16 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
       {/* the 16:9 map fits the frame both ways (the frame is a size container): as wide as the frame, or as wide as its
           height allows, whichever is smaller, so nothing on it is ever cut off at 1280 x 720 (survival suite) */}
       <div data-phc-pathmap-box="" style={{ position: 'relative', width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
-        {art ? <img src={art} alt="" data-phc-pathmap-art="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : <FieldChart setting={v.settingId} />}
-        <svg viewBox={'0 0 ' + W + ' ' + H} preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} aria-hidden="true">
+        {art ? <img src={art} alt="" loading="lazy" decoding="async" data-phc-pathmap-art="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : <FieldChart setting={v.settingId} />}
+        {art && SCRIM[v.settingId] ? <div aria-hidden="true" data-phc-pathmap-scrim="" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 4%, rgba(8,7,5,' + SCRIM[v.settingId] + ') 22%, rgba(8,7,5,' + SCRIM[v.settingId] + ') 78%, transparent 96%)' }} /> : null}
+        {/* on a painting the trails carry a dark edge (a drop shadow), so a dotted quiet trail still reads on lit ground */}
+        <svg viewBox={'0 0 ' + W + ' ' + H} preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', filter: art ? 'drop-shadow(0 0 1.5px rgba(0,0,0,0.95)) drop-shadow(0 0 3px rgba(0,0,0,0.6))' : undefined }} aria-hidden="true">
           {firsts.map((n) => trail('camp>' + n.id, camp, pos[n.id], walkedFirst ? (walkedFirst.id === n.id ? 'walked' : 'quiet') : v.atStart && n.state === 'reachable' ? 'lit' : 'quiet'))}
           {v.links.filter((l) => !l.back && pos[l.from] && pos[l.to]).map((l) => trail(l.from + '>' + l.to, pos[l.from], pos[l.to], l.walked ? 'walked' : l.lit ? 'lit' : byId[l.to]?.spur ? 'spur' : 'quiet'))}
         </svg>
         <span data-phc-node-camp="" aria-label={v.atStart ? 'The camp, you are here' : 'The camp'} {...tipProps('The camp. The stage starts here: every trail can be taken from it.')}
           style={{ position: 'absolute', left: (camp.x / W) * 100 + '%', top: (camp.y / H) * 100 + '%', width: 44, height: 44, transform: 'translate(-50%, -50%)', display: 'grid', placeItems: 'center', borderRadius: '50%', border: v.atStart ? '3px solid #FFFFFF' : '2px solid ' + ink.text, background: ink.discWalked, color: ink.white, zIndex: 3 }}>
-          <span aria-hidden="true" dangerouslySetInnerHTML={{ __html: nodeIconSvg('start', 26) }} />
+          <NodeGlyph kind="start" size={26} />
           <span style={{ position: 'absolute', top: '100%', marginTop: 3, fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', textShadow: '0 1px 2px #000' }}>Camp</span>
         </span>
         {v.nodes.map((n) => { const sp = v.nodes.find((x) => x.spur === 'guard' && x.from === n.id);

@@ -98,6 +98,23 @@ for bid, a in C.get("survival_art", {}).items():
         continue
     setting, letter = pathlib.Path(a["path"]).stem.split("-")[:2]
     emit(f"survival-backdrop-{setting}-{letter}", ROOT / a["path"], (800, 450), (1600, 900), 80)
+# The path screen and the shop (the artist's 14 Nov delivery, catalog `survival_art`; ART-REQUESTS S4 and S9), by catalog id:
+#   mode "path-map-backdrop"   survival-map-<setting>     1600 x 900 and 2560 x 1440 (PathMap.tsx; the field chart in code
+#                              while one is missing). Fetched only when a run's path map shows that setting.
+#   mode "shopkeeper-portrait" survival-keeper-<setting>  4:5, the id a face's `portrait` names (data/survival.json faces)
+#   mode "path-node-marker-sheet": each cut marker as survival-node-<kind> (128 px: drawn at 22 to 40 css px, sharp at 2x);
+#                              the sheet itself is not shipped. A kind with no marker keeps its SVG line icon (runIcons.ts).
+# Not built: mode "painted-map" (the 18 painted battle maps: LoRA training material and reference, rules 1.16 and 1.45:
+# fight maps are assembled from kits) and mode "path-map" (S1's two superseded path-map directions).
+for key, a in C.get("survival_art", {}).items():
+    mode = a.get("mode")
+    if mode == "path-map-backdrop":
+        emit(key, ROOT / a["path"], (1600, 900), (2560, 1440), versioned=True)
+    elif mode == "shopkeeper-portrait":
+        emit(key, ROOT / a["path"], (480, 600), (800, 1000), versioned=True)
+    elif mode == "path-node-marker-sheet":
+        for kind, marker in a["marker_exports"].items():
+            emit("survival-node-" + kind, ROOT / marker["path"], (128, 128), None, 95, versioned=True)
 # Blessing 2.0 (docs/design/handoffs/blessing-art-brief.md): picked up from their folders as they are delivered, so the art
 # drops in with no code change (game/faithArt.ts falls back to code-drawn placeholders for anything missing):
 #   art/portraits/patrons/<id>.png -> patron-<id> (4:5 portrait)
