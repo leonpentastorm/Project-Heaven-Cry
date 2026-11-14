@@ -107,7 +107,7 @@
       "adjudication": "engine",
       "provisional": true,
       "text": "A core of condensed mana. An Evoker burns it for Sigils.",
-      "price_credits": 150
+      "price_credits": 100
     },
     {
       "id": "sigil_plate",
@@ -1112,12 +1112,56 @@
       "category": "ammo",
       "ammo_type": "enhanced",
       "weight_kg": 0.015,
-      "price_credits": 15,
+      "price_credits": 10,
       "price_mult": null,
       "effects": [],
       "adjudication": "engine",
       "text": "Enhanced rounds for any gun. Load them outside a fight to fill the magazine in the gun. They ignore armour, deal Elemental damage, and each hit raises the mana meter by 1.",
       "provisional": true
+    },
+    {
+      "id": "gunpowder",
+      "name": "Gunpowder",
+      "category": "loot",
+      "weight_kg": 0.01,
+      "price_credits": 1,
+      "effects": [],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A measure of propellant. With casings and an ammo maker it becomes rounds for any gun."
+    },
+    {
+      "id": "casing",
+      "name": "Casing",
+      "category": "loot",
+      "weight_kg": 0.01,
+      "price_credits": 1,
+      "effects": [],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "An empty brass casing, picked up and kept. With gunpowder and an ammo maker it becomes a round."
+    },
+    {
+      "id": "mana_residue",
+      "name": "Mana residue",
+      "category": "loot",
+      "weight_kg": 0.02,
+      "price_credits": 10,
+      "effects": [],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Mana left behind where a spell or a machine burnt out, caught in a vial. Pressed with any focus in hand, enough of it makes a standard core."
+    },
+    {
+      "id": "ammo_maker",
+      "name": "Ammo maker",
+      "category": "tool",
+      "weight_kg": 2,
+      "price_credits": 300,
+      "effects": [],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A hand press with dies for every calibre. Between fights it turns gunpowder and casings into rounds."
     }
   ]
 }

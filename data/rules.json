@@ -924,7 +924,6 @@
         "ignores_armor": true,
         "damage_type": "elemental",
         "meter_per_hit": 1,
-        "rounds_per_core": 10,
         "rarity": "rare"
       }
     ],
@@ -1000,7 +999,7 @@
         "id": "core charge",
         "name": "Core charge",
         "round_kg": 0.02,
-        "price_credits": 15
+        "price_credits": 10
       }
     ],
     "calibres_provisional": true,
@@ -1290,8 +1289,7 @@
     },
     "cores": {
       "standard": {
-        "charge": 10,
-        "price_credits": 150
+        "charge": 10
       },
       "small": {
         "charge": 5,
