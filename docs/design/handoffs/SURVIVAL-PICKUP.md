@@ -1,6 +1,6 @@
 # Survival: the pick-up (14 Nov 2026, at the close of build steps 9 and 10)
 
-**Start here for Survival.** Survival is built (rules 1.39 to 1.49; version 0.27.0 on the branch) and **waits for
+**Start here for Survival.** Survival is built (rules 1.39 to 1.50; version 0.27.0 on the branch) and **waits for
 Leon's word to go live**: nothing of it is deployed. 0.26.0 (Classes 3.0) is live. Read `CLAUDE.md`, then this file,
 then the spec `docs/design/survival-spec.md` (draft 4 and its three "Settled by Leon" blocks; where the built revisions
 differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule). What to try by hand:
@@ -21,6 +21,7 @@ differ from its text, the revisions in `docs/rules/PHC-Core-Rules-v1.0.md` rule)
 | 7, 8 | 1.45 | The fight map's layout generator (stamps, cover, hazards) and kit drawing with fallbacks (`kit-<setting>-<piece>`) | `survival-steps-7-8.md` |
 | lanes | 1.48 | The path map as lanes, junctions and one guarded vault; the themed overland map (`PathMap.tsx`) | `survival-lanes.md` |
 | 9, 10 | 1.49 | The run simulator and the fit; the map fitted to its frame; the browser suite completed; the docs; 0.27.0 | `survival-steps-9-10.md` |
+| repair | 1.50 | The repair service (`run/repair` at a shop and a Forge; the Repair shelf; wear bars and the WORN mark on the places and the path map); the simulator repairs | `survival-repair.md` |
 
 Code: `packages/engine/src/run/` (`map.ts`, `state.ts`, `encounter.ts`, `rewards.ts`, `shop.ts`, `shopview.ts`,
 `progress.ts`, `placeview.ts`, `power.ts`, `stage.ts`, `tally.ts`), the run reducer in `game.ts` (`runAction`,
@@ -54,7 +55,10 @@ Each hand-off's own "open" section has the detail; the calls made for Leon are n
   lies; the backdrop behind a fight map is not drawn (the combat screen has no layer for it).
 - **Lanes:** no small junction after the gate (segments 2 to 4 leave none; widen `junction.segment` to 1 to 4 for one);
   the marker sheet and the six map backdrops are wanted (`ART-REQUESTS.md` S9).
-- **Steps 9 and 10:** what the fit could not reach with data dials, and why: `survival-steps-9-10.md` section 5.
+- **Steps 9 and 10:** what the fit could not reach with data dials, and why: `survival-steps-9-10.md` section 5 (its
+  durability finding is answered by rules 1.50's repair service).
+- **Repair:** a gun above the worn share at one shop can wear out before the next (one fight in 44 runs); the policy
+  repairs only Worn or Broken. The casters' sustain (rules 1.49 item 3609) is still open.
 
 ## 3. How to tune it (every dial is a field of `data/survival.json`, PROVISIONAL)
 
@@ -68,6 +72,7 @@ Each hand-off's own "open" section has the detail; the calls made for Leon are n
 | How rich a party is | `credits` (c(d)), `stage.credits` (by stage), `rewards.instead_rate` (credits instead of a weapon), `run.start_credits`, `sell_rate` | Income against the grade ladder |
 | How fast gear grows | `grade_up.price`, `grade_up.places.forge`, `grade_up.relic_from_stage`, `rewards.ceiling` (picks capped by stage), `rewards.rarity` | One grade step a stage, the Relic in stage 4 |
 | The vault | `vault.guard_factor`, `vault.grade_up`, `map.vault` | Its fight and its prize |
+| Repairs dearer or cheaper | `repair.rate`, `repair.floor`, `repair.places` | The gunsmith's share of the price, the least a repair costs, the Forge's factor |
 | What lanes hold | `map.themes`, `map.junction_kinds`, `map.every_route`, `map.shop_gap` | The node mix on a route (rests and shops a route) |
 | Run power | `boon_cap`, `boons[].worth`, `shrine.token_max_worth` | How far boons and Relic properties go past the balance ceilings |
 | Trainings | `train`, `training` | The rest's small and the training ground's big trainings |

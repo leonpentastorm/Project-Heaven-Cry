@@ -13,7 +13,7 @@ export const WEAR_MARK: Record<WearData['state'], string> = { sound: '', worn: '
 /** The bar: `to` draws the restored part (a repair to full); `label` names the thing for a screen reader. */
 export function WearBar({ w, to, label, compact }: { w: WearData; to?: number; label?: string; compact?: boolean }) {
   const pct = (n: number) => Math.max(0, Math.min(100, (100 * n) / Math.max(1, w.max)));
-  const bad = w.state !== 'sound', ink = bad ? I.hp : I.text;
+  const bad = w.state !== 'sound', ink = bad ? I.hp : '#7A879E'; // sound: a quiet bar; Worn and Broken in the complication red with their word
   return (
     <span data-phc-wear={w.state} data-phc-wear-now={w.now} data-phc-wear-max={w.max} role="img"
       aria-label={(label ? label + ': ' : '') + 'durability ' + w.now + ' of ' + w.max + (bad ? ', ' + w.state : '') + (to != null ? ', repaired to ' + to : '')}
