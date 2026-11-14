@@ -9,6 +9,13 @@
 > count instead of one sound and one bullet per round fired); the fix is on branch `worktree-agent-a359cef1740b969f1`
 > (also `wip/` on the remote when pushed). **Not in 0.27.0:** the loadout with creation without a kit, and the
 > starting boons; they are being joined on `worktree-agent-ab79122edee03fa74` for the next version.
+> **Leon's word for 0.27.1 (14 Nov 2026): "Auto deploy the other 2 as 0.27.1 when its out."** The two are the effects
+> hotfix and the loadout + starting boons join. When both are merged into the working branch (the effects fix first:
+> it is small; if the join is far behind, deploy the effects fix alone as 0.27.1 and the join as 0.27.2), bump all
+> four `package.json` versions and the lockfile, add the CHANGELOG entry, run `npm run check` and
+> `npm run e2e -- all` on a QUIET machine (no agents running), and deploy if green with nothing failing alone
+> (develop, main, `backup/live-0.27.1`, assets, build.py --web, build, deploy_site.py, wrangler deploy; verify live
+> with old-save, creation-points, survival, room). Red: no deploy, a fixer, a report.
 
 The current entry point for a fresh Claude Code session, or for Leon. Five minutes to read, then act. Where this file and
 an older hand-off disagree, this file is newer (`LOCAL-SESSION-START.md` and `SESSION-HANDOFF.md` are partly stale).
