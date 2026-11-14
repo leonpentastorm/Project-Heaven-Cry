@@ -143,7 +143,7 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
 export interface ShieldLayer { layer: string; n: number; by: string; s: number }
 /** How a shield is given: on a layer above the base (layer), at most `holders` units carrying one giver's layer at once
  * (a new one ends the oldest), or added to what stands (stack). */
-export interface ShieldOpts { layer?: string; holders?: number; stack?: boolean; /** the shield's kind for 'shield_grant' (tending, prayer, perk…: the `how` predicate) */ kind?: string }
+export interface ShieldOpts { layer?: string; holders?: number; stack?: boolean; /** the shield's kind for 'shield_grant' (tending, blessing, perk…: the `how` predicate) */ kind?: string }
 /** A unit's shield in all: the base and every layer. */
 export const shieldTotal = (t: Unit): number => (t.shield || 0) + (t.shields || []).reduce((a, l) => a + l.n, 0);
 /** Give a shield through the hooks ('shield_grant' {by, t, n, layer, kind} may change n). Shields don't stack: the larger

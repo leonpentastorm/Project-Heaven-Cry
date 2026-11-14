@@ -7,7 +7,7 @@
 // fight, the loaded charge full at a Rest).
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, START_BOONS, START_BOON, CAMP, BOONS, BOON_CAP, runWorth, capRoom, worthOf, relicRow, lineOf, lineBoons, startOffer, isStartBoon,
-  ammoPack, supplyMp, chargeHeld, coresBurnt, maxMp, mpNow, previewAttack, toHitTerms, applyDamage, price, emit, bindGame, glyphCost, packOf, magazineWorth, KITS, newCharacter, CORE_CHARGE, VIS_CHARGE, healUnit } from '../src';
+  ammoPack, supplyMp, chargeHeld, coresBurnt, maxMp, mpNow, previewAttack, toHitTerms, applyDamage, price, emit, bindGame, glyphCost, packOf, magazineWorth, KITS, newCharacter, CORE_CHARGE, VIS_CHARGE, healUnit, FAITH_PATRON } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
 import { BUILDS } from './balance/builds';
@@ -179,11 +179,24 @@ describe('rules 1.51: each starting boon through its door (survival-spec 13.3), 
     W(r.g, () => emit(r.cb, 'round_start', { cb: r.cb, round: 2 })); expect(r.pc.mg!.vcharge).toBe(5); // once a fight
     expect(row('start.extra_doses').effects[0]).toMatchObject({ op: 'resource', when: 'combat_start', resource: 'toxins' });
   });
-  it('heals given: Gentle Hands on heals and shields, Shelter on prayer heals only', () => {
+  it('heals given: Gentle Hands on heals and shields; Shelter on the heals a real prayer gives, not on tending', () => {
     const healed = (relics: string[], kind: string) => { const f = fightWith([{ kit: 'mender', relics }, { kit: 'soldier' }], [{ tier: 'soldier' }]), t = f.pcs[1]; t.hp = 10; return W(f.g, () => healUnit(f.cb, t, 50, f.pc, kind).restored); };
     expect(healed(['start.gentle_hands'], 'tending')).toBe(Math.floor(50 * row('start.gentle_hands').effects[0].value));
-    expect(healed(['start.shelter'], 'prayer')).toBe(Math.floor(50 * row('start.shelter').effects[0].value));
     expect(healed(['start.shelter'], 'tending')).toBe(50);
+    // the reviewer's defect: Shelter named a heal kind no prayer gives. A real Whisper of Health and a real Hymn, with and without it
+    const prayed = (relics: string[], kind: 'whisper' | 'hymn', id: string) => {
+      const f = fightWith([{ name: 'Priest', skills: { faith: 5 }, relics }, { name: 'Ally' }], [{ at: 'F6' }]);
+      const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'mother_ember' }; c.patron = 'mother_ember'; c.devotion = 6;
+      const [pr, al] = f.pcs; pr.pos = '2,5'; al.pos = '2,6'; f.turn(pr); f.unit(al.id).hp = 20; f.unit(pr.id).hp = 20;
+      f.act({ type: 'faith/pray', unitId: pr.id, kind, id, targetId: al.id } as any);
+      return f.unit(al.id).hp - 20;
+    };
+    const k = row('start.shelter').effects[0].value;
+    const w0 = prayed([], 'whisper', 'health'), w1 = prayed(['start.shelter'], 'whisper', 'health');
+    expect(w0).toBeGreaterThan(0); expect(w1).toBe(Math.floor(w0 * k));
+    const hymn = (FAITH_PATRON as any).mother_ember.hymns.find((h: any) => h.effects.some((e: any) => e.op === 'heal')).id;
+    const h0 = prayed([], 'hymn', hymn), h1 = prayed(['start.shelter'], 'hymn', hymn);
+    expect(h0).toBeGreaterThan(0); expect(h1).toBeGreaterThan(h0);
   });
   it('every starting boon\'s worth lands on the cap when it is taken', () => {
     for (const b of START_BOONS) { const c: any = { relics: [b.id], weapon: 'service_pistol', pack: [] }; expect(runWorth(c)).toBe(b.worth); expect(capRoom(c)).toBe(BOON_CAP - b.worth); expect(relicRow(b.id)!.text).not.toMatch(/\{=/); }

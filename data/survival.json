@@ -332,7 +332,7 @@
       "effects": [ { "op": "cost_mod", "when": "cost", "if": {"action": ["whisper"]}, "set": 0, "limit": {"per": "per_combat", "n": 1, "key": "vigil", "peek": true} }, { "op": "use", "when": "acted", "if": {"action": ["pray"]}, "limit": {"per": "per_combat", "n": 1, "key": "vigil"} } ],
       "text": "Your first prayer each fight, if it is a Whisper, costs {=effects.0.set} AP." },
     { "id": "start.shelter", "kind": "relic", "name": "Shelter", "lines": ["faith"], "worth": 4, "adjudication": "engine", "provisional": true,
-      "effects": [ { "op": "mend_mult", "when": "heal", "if": {"actor": "self", "target": "any", "how": ["prayer"]}, "value": 1.15 } ],
+      "effects": [ { "op": "mend_mult", "when": "heal", "if": {"actor": "self", "target": "any", "how": ["blessing"]}, "value": 1.15 } ],
       "text": "The heals you give by prayer are {=effects.0.value|more}% stronger." }
   ],
   "camp": { "about": "Rules 1.51 (spec rule 53): the camp's issue, Survival only: each character's armour fitted up to class `issue_armour` for nothing (the class's own gates hold), and the gun in its hand topped up to `spare_mags` spare magazines.", "issue_armour": 3, "spare_mags": 3, "provisional": true },
