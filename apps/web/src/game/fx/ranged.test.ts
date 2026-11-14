@@ -357,10 +357,12 @@ describe('review: a technique\'s record ends with its action', () => {
   it('R9: Punch Through Heavy: the round carries on into the next in line, and its hurt waits for it', () => {
     const layer = grid();
     const t = tech('punch_through'); tagOf(t); tagOf(shot());
-    // (a bullet is not drawn in flight since 13 Nov 2026: the round arrives as its hole in the next one, with the hurt)
+    // the round flies on into the next one (drawn in flight: Leon, 14 Nov 2026) and leaves its hole there, with the hurt
+    const proj = () => layer.querySelectorAll('[data-fx-flight]').length;
     const holes = () => layer.querySelectorAll('[data-tech-fx="hole"]').length;
-    const before = holes();
+    const before = holes(), flying = proj();
     playFx({ k: 'hurt', n: n(), target: 'f2', at: '7,4', dmg: 6, why: 'weapon' } as any);
+    expect(proj()).toBe(flying + 1);
     vi.advanceTimersByTime(40); expect(text(layer)).not.toMatch(/6/); expect(holes()).toBe(before);
     vi.advanceTimersByTime(200); expect(text(layer)).toMatch(/6/); expect(holes()).toBe(before + 1);
   });
@@ -533,5 +535,38 @@ describe('the engine\'s events', () => {
     queueFx([etech('last_round', { group: 'take' }), shot({ tech: 'last_round', vi: 0, killed: true }), { k: 'free_reload', n: n(), unit: 'pc-a', at: '1,3', tech: 'last_round' }] as any);
     let most = 0; for (let t = 0; t < 2000; t += 25) { vi.advanceTimersByTime(25); most = Math.max(most, (text(layer).match(/FREE RELOAD/g) || []).length); }
     expect(most).toBe(1);
+  });
+});
+
+describe('the round in flight (Leon, 14 Nov 2026: "i told you to remove the yellow line not the bullet effect")', () => {
+  /** Play one plain shot and record what was put on the layer while it played. */
+  function one(extra: Record<string, unknown>) {
+    const layer = grid(), seen = new MutationObserver(() => undefined); seen.observe(layer, { childList: true });
+    (window as any).__phcFxTrace = [];
+    playFx(shot(extra) as any);
+    const mid: string[] = [...layer.querySelectorAll('[data-fx-flight]')].map((b) => b.getAttribute('data-fx-flight') || '');
+    vi.advanceTimersByTime(3000);
+    const added = seen.takeRecords().flatMap((m) => [...m.addedNodes]) as HTMLElement[]; seen.disconnect();
+    const T: any[] = (window as any).__phcFxTrace; (window as any).__phcFxTrace = undefined;
+    return { mid, flights: added.map((b) => b.getAttribute?.('data-fx-flight')).filter(Boolean), tags: added.map((b) => b.getAttribute?.('data-tech-fx')).filter(Boolean), bursts: T.filter((x) => x.w === 'burst').map((x) => x.name), holes: T.filter((x) => x.w === 'hole').length };
+  }
+  it('a rifle shot that hits: its bullet is in the air as it leaves the muzzle, then lands in a hole; no tracer line', () => {
+    const r = one({});
+    expect(r.mid).toEqual(['bullet']); expect(r.flights).toEqual(['bullet']);
+    expect(r.tags).not.toContain('tracer'); expect(r.holes).toBe(1);
+  });
+  it('a rifle shot that misses still flies (past the target), and leaves no dust, no hole, no miss mark', () => {
+    const r = one({ hit: false, dmg: 0 });
+    expect(r.flights).toEqual(['bullet']);
+    expect(r.holes).toBe(0); expect(r.bursts).not.toContain('dust'); expect(r.bursts).not.toContain('dirt');
+    for (const k of ['tracer', 'wide', 'whiff', 'deflect']) expect(r.tags).not.toContain(k);
+  });
+  it('a shotgun shell: a cluster of five pellets in flight, and its pellet marks where it hits', () => {
+    const r = one({ weapon: 'sawn_off', cat: 'shotgun' });
+    expect(r.flights).toEqual(['bullet', 'bullet', 'bullet', 'bullet', 'bullet']); expect(r.holes).toBe(1);
+  });
+  it('a bow: the shaft in flight (after the draw), stuck in the target when it hits', () => {
+    const r = one({ weapon: 'recurve_bow', cat: 'bow' });
+    expect(r.flights).toEqual(['arrow']); expect(r.holes).toBe(1);
   });
 });

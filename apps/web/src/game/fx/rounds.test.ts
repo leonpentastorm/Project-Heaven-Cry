@@ -32,13 +32,17 @@ function grid(w = 16, h = 11) {
     scr.appendChild(b);
   }
   const layer = document.createElement('div'); document.body.appendChild(layer); setLayer(layer);
+  return layer;
 }
 const GUN_CATS = ['pistol', 'revolver', 'smg', 'rifle', 'shotgun', 'heavy', 'bow'];
 const guns = (WEAPONS as any[]).filter((w) => w.magazine != null && (GUN_CATS.includes(w.category) || (w.category === 'mana' && (w.phys?.system === 'ranged'))));
 /** The shooting techniques: ranged, firing rounds now (a Watch fires later, a Set fires none, a Lob is a grenade's). */
 const SHOOTING = (TECHNIQUES as any[]).filter((t) => t.system === 'ranged' && ['fire', 'press', 'take'].includes(t.group) && t.rounds !== 0 && t.id !== 'lob').map((t) => t.id);
 
-interface Run { label: string; spent: number; rounds: number; shells: number; perShot: boolean; holes: number; hits: number }
+interface Run { label: string; spent: number; rounds: number; shells: number; perShot: boolean; holes: number; hits: number; flights: Record<string, number>; gone: string[] }
+/** The pieces Leon had removed on 13 Nov 2026 (the yellow tracer lines, the melee half circle, the miss marks): none may
+ *  be drawn. The round in flight (a bullet's streak, a shell's pellets, an arrow) is drawn: Leon, 14 Nov 2026. */
+const REMOVED = ['tracer', 'slash', 'whiff', 'deflect', 'wide'];
 /** Fire `what` with this gun (a character's technique, or a plain attack mode by a character or an enemy) and play it. */
 function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean }): Run | null {
   const f = fightWith([{ weapon: gun.id, level: 6, skills: { dexterity: 5, raw_power: 5, athletics: 3 }, attrs: { agility: 5, strength: 5 } }], [{ weapon: what.enemy ? gun.id : 'service_pistol' }, {}, {}]);
@@ -56,10 +60,15 @@ function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean })
   const u1 = f.unit(shooter.id), spent = ammo0 - ((u1.ammo || 0) + (u1.loose || 0));
   const evs = (f.cb.fx || []).filter((e: any) => e.n > n0);
   if (!evs.some((e: any) => e.k === 'shot' || e.k === 'volley')) return null;
-  grid(); setContext(f.g, 'combat'); setInBattle(true);
+  const layer = grid(); setContext(f.g, 'combat'); setInBattle(true);
   (window as any).__phcFxTrace = [];
+  const seen = new MutationObserver(() => undefined); seen.observe(layer, { childList: true });
   queueFx(evs as any, 'test:' + gun.id + ':' + (what.tech || what.mode));
   vi.advanceTimersByTime(30000);
+  const added = seen.takeRecords().flatMap((m) => [...m.addedNodes]) as HTMLElement[]; seen.disconnect();
+  const flights: Record<string, number> = {};
+  for (const b of added) { const k = b.getAttribute?.('data-fx-flight'); if (k) flights[k] = (flights[k] || 0) + 1; }
+  const gone = added.map((b) => b.getAttribute?.('data-tech-fx') || '').filter((k) => REMOVED.includes(k));
   const T: any[] = (window as any).__phcFxTrace;
   clearFx();
   // the rounds that hit, from the events: each roll that hit (or struck the cover in the way), and the rounds it carries
@@ -72,7 +81,7 @@ function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean })
       if (e.hit) hits += 1 + (e.tech === 'suppress' ? 0 : Number(e._loose) || 0); else if (e.cover && !e.object) hits += 1;
     }
   }
-  return { label: gun.id + ' · ' + (what.tech || what.mode) + (what.enemy ? ' (enemy)' : ''), spent, rounds: T.filter((x) => x.w === 'round' && x.unit === u1.id).length, shells: T.filter((x) => x.w === 'shell').length, perShot: brassOf(gun.id, gun.category).when === 'shot', holes: T.filter((x) => x.w === 'hole').length, hits };
+  return { label: gun.id + ' · ' + (what.tech || what.mode) + (what.enemy ? ' (enemy)' : ''), spent, rounds: T.filter((x) => x.w === 'round' && x.unit === u1.id).length, shells: T.filter((x) => x.w === 'shell').length, perShot: brassOf(gun.id, gun.category).when === 'shot', holes: T.filter((x) => x.w === 'hole').length, hits, flights, gone };
 }
 
 beforeEach(() => { vi.useFakeTimers(); resetRanged(); clearFx(); });
@@ -96,6 +105,12 @@ describe('shots on screen match rounds spent (every gun × every shooting techni
         else expect(r.rounds, r.label + ': rounds drawn vs spent').toBe(r.spent);
         expect(r.shells, r.label + ': casings').toBe(r.perShot ? r.rounds : 0);
         expect(r.holes, r.label + ': marks drawn vs rounds that hit').toBe(r.hits);
+        expect(r.gone, r.label + ': a removed piece was drawn (tracer, arc, miss mark)').toEqual([]);
+        // every round fired is drawn in flight (hit or miss): a bullet's streak, a shell's five pellets, an arrow
+        const mark = shotMarkOf(gun.id, gun.category);
+        if (mark === 'hole') expect((r.flights.bullet || 0) + (r.flights.bolt || 0) + (r.flights.beam || 0), r.label + ': bullets in flight vs rounds fired').toBe(r.rounds);
+        if (mark === 'pellets') expect(r.flights.bullet || 0, r.label + ': pellets in flight vs shells fired × 5').toBe(r.rounds * 5);
+        if (mark === 'shaft') expect(r.flights.arrow || 0, r.label + ': shafts in flight vs arrows loosed').toBe(r.rounds);
       }
       if (shotMarkOf(gun.id, gun.category)) expect(runs.some((r) => r.holes > 0), gun.id + ': no round of any run hit (the walk would prove nothing)').toBe(true);
     }, 120000);

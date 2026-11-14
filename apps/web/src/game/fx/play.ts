@@ -608,21 +608,25 @@ function muzzle(from: Pt, to: Pt, color = MUZZLE, wide = false) {
   burst('flare', p, from.s * (wide ? 1.5 : 1.15), 150, { color: HOT, from: 0.6, to: wide ? 1.7 : 1.5 });
   return p;
 }
-/** A round's flight from a to b over ms (straight, or lobbed). Traced for every round (its time is what the landing
- *  waits for); drawn for what is seen in the air: an arrow, a bolt of energy, a rocket, a lobbed grenade. A bullet's
- *  and a shotgun's pellets are not drawn in flight (Leon, 13 Nov 2026, live 0.25.0: the tracer lines "look SO BAD"):
- *  the shot is its muzzle flash, then the hole where it lands. */
+/** A projectile from a to b over ms (straight, or lobbed): every round fired is drawn in flight, a bullet's streak, a
+ *  shotgun's pellets, an arrow, a bolt of energy, a rocket, a lobbed grenade. Leon, 14 Nov 2026: the bullet in flight
+ *  stays ("i told you to remove the yellow line not the bullet effect"); the yellow lines he had removed on 13 Nov were
+ *  the technique `tracer` part (fx/techniqueParts.ts), drawn from shooter to target, which stays gone. */
 function projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms: number, look: Look, s: number, color?: string) {
+  // a shotgun's shell is its cluster of pellets, each its own streak (the shot handler's own cluster, for a shell fired
+  // without a roll of its own: a double barrel's second)
+  if (look === 'pellets') { for (let i = 0; i < 5; i++) { const sp = s * 0.35; projectile(a, { x: b.x + (Math.random() - 0.5) * sp, y: b.y + (Math.random() - 0.5) * sp }, ms * jitter(0.15), 'bullet', s * 0.8, color); } return; }
   trace('proj', { look, ms: Math.round(slow(ms)) });
-  if (reducedMotion() || look === 'bullet' || look === 'pellets') return;
+  if (reducedMotion()) return;
   const ang = Math.atan2(b.y - a.y, b.x - a.x), deg = (ang * 180) / Math.PI;
   const el = document.createElement('div');
   const len = look === 'arrow' ? s * 0.55 : look === 'bolt' || look === 'beam' ? s * 0.7 : look === 'rocket' ? s * 0.35 : look === 'lob' ? s * 0.18 : s * 0.8;
   const hgt = look === 'lob' ? s * 0.18 : look === 'rocket' ? 5 : look === 'arrow' ? 2 : 4;
   el.style.cssText = 'width:100%;height:100%;border-radius:' + (look === 'lob' ? '50%' : '2px') + ';' + (look === 'arrow' ? 'background:linear-gradient(90deg,rgba(201,183,156,0),#C9B79C 30%,#E7EBF3)'
     : look === 'lob' ? 'background:#2A3242;border:2px solid #A3AEC2' : look === 'rocket' ? 'background:linear-gradient(90deg,rgba(255,180,90,0),#FFB45A 40%,#FFFFFF);box-shadow:0 0 8px #FFB45A'
-    : 'background:linear-gradient(90deg,rgba(255,255,255,0),' + (color || WHITE) + ' 70%,#FFFFFF);box-shadow:0 0 8px ' + (color || WHITE) + ',0 0 2px #FFFFFF'); // a core rifle's bolt, a beam: in its own colour
+    : 'background:linear-gradient(90deg,rgba(255,243,196,0),' + (color || HOT) + ' 70%,#FFFFFF);box-shadow:0 0 8px ' + (color || '#FFD27A') + ',0 0 2px #FFFFFF');
   const box = put(el, a, len, hgt, ms);
+  box.setAttribute('data-fx-flight', look); // a round in the air (the suites look for it mid-flight)
   box.style.left = a.x - len + 'px'; box.style.top = a.y - hgt / 2 + 'px'; box.style.transformOrigin = '100% 50%';
   const dx = b.x - a.x, dy = b.y - a.y;
   if (look === 'lob') {
@@ -817,7 +821,8 @@ const H: Record<string, Handler> = {
       const coverP = e.cover ? centre(e.cover) : null;
       const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
       if (start) {
-        if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
+        if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
+        else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
         else if (!(g.look === 'thrown' && e.thrown)) projectile(start, end, ft, g.look === 'thrown' ? 'arrow' : g.look, toP.s, g.color); // a thrown melee weapon's flight is its melee_fx; any other melee-category shot keeps a tracer
       }
       after(() => {
@@ -867,8 +872,8 @@ const H: Record<string, Handler> = {
       const toP = centre(e.to); if (!toP || !visible(e.from)) return;
       const br = brassOf(e.weapon || '', e.cat || ''), who = br.when === 'shot' ? whoOf(tokOf(e.unit, e.from)) : null, aim = angle(p, toP);
       // as many as the volley spent beyond its rolls (the engine's `loose`); seven before it was sent
-      const n = Number.isFinite(Number(e.loose)) ? Math.max(0, Number(e.loose)) : 7;
-      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, 'bullet', toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
+      const n = Number.isFinite(Number(e.loose)) ? Math.max(0, Number(e.loose)) : 7, look: Look = gunOf(e.weapon || '', e.cat || '').look === 'pellets' ? 'pellets' : 'bullet';
+      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, look, toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
     }
   },
   reload(e) {

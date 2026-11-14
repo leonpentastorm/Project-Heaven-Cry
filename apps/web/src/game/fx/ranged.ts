@@ -428,7 +428,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
   function fly(g: { look: string; color?: string }, a: XY, b: XY, ms: number, s: number) {
     const look = ownLook(g);
     if (look === 'flame') { for (let i = 0; i < 4; i++) { const t = (i + 1) / 4; burst('flame', { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } return; }
-    K.projectile(a, b, ms, look, s, look === 'bullet' ? g.color : undefined);
+    K.projectile(a, b, ms, g.look === 'pellets' ? 'pellets' : look, s, look === 'bullet' ? g.color : undefined); // a shell: its pellet cluster
   }
   /** Where such a round comes down without hitting anyone: a charge goes off small (as a base shot's miss does), a
    *  bullet or an arrow kicks up dirt. */

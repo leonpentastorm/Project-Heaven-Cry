@@ -337,7 +337,7 @@ export function wrapTechFx(H: Record<string, H>, K: TechKit) {
       if (!from) return;
       const m = g.look === 'bullet' || g.look === 'pellets' || g.look === 'bolt' ? K.muzzle(from, toP, g.color, g.look === 'pellets') : { x: from.x, y: from.y };
       const end = e.hit ? toP : K.missPoint(from, toP), ms = Math.max(60, Math.min(320, Math.hypot(end.x - m.x, end.y - m.y) / 2.2));
-      K.projectile(m, end, ms, g.look === 'pellets' ? 'bullet' : g.look, toP.s, g.color);
+      K.projectile(m, end, ms, g.look, toP.s, g.color); // a shell: its pellet cluster
       const b = K.at(e.to);
       if (mark && b) after(() => playPart('round', { a: from, b, dir: { x: Math.cos(aim), y: Math.sin(aim) }, s: b.s, ink: WHITE, scale: 1, delay: 0, outcome: 'hit', mark, round: vi + i }), ms);
     }, i * LOOSE_GAP);
