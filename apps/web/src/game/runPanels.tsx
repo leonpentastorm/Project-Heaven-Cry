@@ -112,8 +112,8 @@ function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   const r = g.run!;
   if (r.state === 'loadout') { // rules 1.52: the camp: Ready (or Start, solo) once a starting boon is chosen
     const lv = loadoutView(g as any, me); if (!lv) return null;
-    const solo = lv.party.length <= 1;
-    if (!lv.boon.chosen && !lv.ready && lv.boon.cards.length) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', attr: { 'data-phc-phase': 'ready' }, why: 'Choose a starting boon first.' };
+    const solo = lv.solo;
+    if (lv.readyWhy) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', attr: { 'data-phc-phase': 'ready' }, why: lv.readyWhy }; // the engine's refusal, in its words
     return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any) };
   }
   if (r.state === 'shop') { // rules 1.42: Ready to leave (Leave the shop, solo)

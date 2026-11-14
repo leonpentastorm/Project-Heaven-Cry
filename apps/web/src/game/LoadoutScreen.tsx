@@ -141,7 +141,7 @@ export function LoadoutScreen() {
   const groups: { name: string; cards: LoadoutCardV[] }[] = [];
   for (const s of v.shelves) for (const c of s.cards) { let gr = groups.find((x) => x.name === c.group); if (!gr) groups.push(gr = { name: c.group, cards: [] }); gr.cards.push(c); }
   const carryGroups: string[] = []; for (const r of v.carrying) if (!carryGroups.includes(r.group)) carryGroups.push(r.group);
-  const solo = v.party.length <= 1;
+  const solo = v.solo;
   return (
     <div className="phc-camp" data-phc-camp="" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: I.ground, color: I.text, fontFamily: "'Chakra Petch', sans-serif" }}>
       <style>{CSS}</style>
