@@ -18,7 +18,7 @@ Status: **a spec for the patch after Classes 3.0; being built (not live); rules 
 2. **The Relic step costs about 6,500** (not 9,000), so it lands in stage 4: accepted (`grade_up.price.relic` 6,500; the ladder against income and every table that used 9,000 are redone, sections 11.1, 11.2, 11.4).
 3. **The healer grows least from gear:** accepted for the first version (section 11.4; measured, never patched with a new rarity effect).
 4. **Boons go over the balance ceilings on purpose:** accepted. The line to add to `docs/design/balance-contract.md` is a build to-do (section 10, step 9; text in section 11.6 item 5). This spec does not edit that file.
-5. **New, the shop screen.** *"remember the shop UI and shop NPC is a full screen replacement that pops up when you click so make the UI readable and fancy, no need to conserve space"*. So a shop is a full-screen showpiece that replaces the play screen: the shopkeeper, large item cards, shelves, your purse and pack, a compare panel (section 8.3; the faces and their art, section 3.4).
+5. *(Superseded by Leon's ruling of 14 Nov, the side panels (the seventh block, item 4; rules 1.54 item 11): the shop plays in the middle of the play screen, the sheet on its left and the run's right panel on its right; its "You" panel goes.)* **New, the shop screen.** *"remember the shop UI and shop NPC is a full screen replacement that pops up when you click so make the UI readable and fancy, no need to conserve space"*. So a shop is a full-screen showpiece that replaces the play screen: the shopkeeper, large item cards, shelves, your purse and pack, a compare panel (section 8.3; the faces and their art, section 3.4).
 6. **New, loot is per player and can be traded.** *"loot are separated for each player so at the shop or town or whatever point we decide to put the shop in they can trade money and items."* Every reward is the character's own; at a safe node players give each other credits and items: **a plain give, no confirm from the receiver** (rule 47).
 7. **New, progression lives in special nodes.** *"The progression systems are spread out into special nodes in the map so that you actually have choices each turn."* Each axis of growth has its own node kind (the Forge, the training ground, the shrine beside the shop, the rest, the cache, the Crossroads), and the generator guarantees a choice between kinds of gain at 12 of a stage's 14 steps (rules 7 to 9, 13; section 3.1; two paths compared in section 11.4).
 
@@ -41,6 +41,34 @@ Status: **a spec for the patch after Classes 3.0; being built (not live); rules 
 3. **Ammunition and cores at the camp**: the counter's shelves (every calibre, the gun in hand's magazines, quivers for an archer, cores, supplies). What was bought goes back at its full price before Ready; the free spare magazine or core may be left behind for nothing; nothing free sells.
 4. **One camp, three steps** (rule 48 and the loadout joined): the loadout, then the starting boon (offered by what the loadout holds), then Ready. No free armour or magazines (rule 53's issue withdrawn). The host's Go gives an away player the Recommended loadout and the first card.
 5. **Recommended** takes its archetype's free weapon (a focus-holder the revolver, six rounds in one hand; Raw Power above Dexterity the heavy blade; else the rifle), armour first, then ammunition and cores.
+
+**Settled by Leon (14 Nov, the side panels, materials and the slower climb; binding; rules 1.54 records it; section 14 is the spec for 0.28.0):** in his words:
+1. *"Make a rule that every mode from now on must maintain the left and right UI, each mode have different function in the right UI yes, but never erase them like Survival mode update just did. (Picture attached is left and right UI for Proving ground mode. The content and playing space of the mode is the middle part of the screen and that can be entirely different things but the side panels stay."*
+2. *"Add the left and right panel fuctions back to survival mode. check what special feature survival mode need and place it in the right panel. there is no area map in this mode or mission. Every screen of the current survival mode go to the middle screen. enlarger icons if too hard to see"*
+3. *"Loot gain menu move to middle screen. Add Gunpowder and casing into the loot table as well as the ammo maker into loot table, ammo maker make all ammo types using Gunpowder and casing, balance by weapon power."*
+4. *"Way too many weapon in the loot menu, make it gunpowder-casing-mana residue or one weapon instead."*
+5. *"Price of manacore to 100 credit, mana residue is another new item, use any focus to combine x amount of it into a manacore"*
+6. *"you level up way too fast now that the whole game is combat, rebalance is so you only get to level 3 as you are about to take on the first boss ,if your whole first run you focus on taking as many fight as possible."*
+7. *"Light rest training give so little, buff it"*
+8. *"Redo skill menu in character creation, ? menu text, and level up menu text, especially will power what the fuck are those text, i'm literally going blind trying to look at that text wall with no proper line break."*
+9. *"in trait selection in creation screen you cannot scroll with mouse if your mouse touches the trait card"*
+
+The lead's rulings on them (calls made for Leon, each reversible; every number PROVISIONAL but the core's 100):
+1. **Every mode keeps its side panels** (the standing rule: `CLAUDE.md`, `ui-screens.md` "The three columns (every mode)"). A mode chooses what its right panel holds, never whether it has one. Excepted today: the fight screen in every mode, and the full-screen level-up and creation flows.
+2. **Survival plays on the play screen** (`main`), the way the Proving Ground already does: its screens are mounted in the middle column through the existing centre slot and portal, generalised to "the mode's centre". No second copy of the sheet. The play screen's own logic is made safe when a run is set, as it is for the Proving Ground.
+3. **The right panel by mode is data** (`modes.json` items gain `panels`, read by one panel registry). Survival: the mana forecast, **Run** (stage and stop, seed, a small whole-stage path map), **Run board** (this stop, boons held, the visit log, Report a run, Retire), **Squad** (seats with ready marks, credits; one phase control at the bottom: Go / Ready / Leave). No area map, no quest board.
+4. **Every Survival screen is in the middle:** the path map, the camp, the shop, the Forge, every place, the rewards, the stage screen. This **supersedes the second batch's item 5 and section 8.3's full screen** (marked, not deleted). The shop's own "You" panel goes (the sheet's GEAR tab is the one place for gear). The path map keeps its size and scrolls sideways in the middle; the right panel's small map shows the whole stage.
+5. **Larger icons:** path markers 36 / 42 / 40 / 50 / 64 / 44 → 48 / 52 / 48 / 60 / 76 / 52 px, nothing under 32 px, labels 10 → 12 px, boon icons 16 → 24, the reward weapon's icon 52 → 72.
+6. **The sheet in a run:** between fights equip, unequip, load, swap a quiver, mods and give are allowed; at the camp the GEAR tab is read-only and the engine refuses `gear/*` there in words; Ask and Rest never show. A bug fixed with a test first: the reducer's `rest` was not refused in a run. No healing between fights but a rest.
+7. **After a fight, one of two cards:** Materials (gunpowder, casings and mana residue together) or One weapon. Credits instead is retired. The vault's chest and a sealed crate keep three weapons. XP, credits and the supply pack as today (the supply pack against making is a Balance 2.0 question, 14 (f)).
+8. **Survival's foes leave no guns:** their always-drops are off (a flag on the mode's foes); they drop gunpowder and casings if armed with a gun, mana residue if a caster or a machine.
+9. **Three new items and a tool:** gunpowder (1 credit), casing (1 credit), mana residue (10 credits; never "residue" alone, which names a feeling's tiles), the ammo maker (300 credits).
+10. **One converter, data-driven:** `data/recipes.json` and one action, `gear/make`; the approved general additions are section 14 (b), and only those.
+11. **Ammunition at the shop's price:** a recipe makes rounds worth V from V/2 gunpowder and V/2 casings; one recipe per calibre but the core charge, and per special round.
+12. **Cores 100 credits** (Leon, firm); 10 mana residue and any focus in hand make one; the core charge 15 → 10 a round, enhanced rounds the same.
+13. **Amounts:** the Materials card gives ⌈C/2⌉ gunpowder, ⌈C/2⌉ casings, ⌈C/20⌉ mana residue for a node worth C credits; a foe drops 2 to 5 of each, or 1 to 2 residue.
+14. **XP slower** (survival.json only): base 10, per depth 2, the Boss × 5, `stage.xp` [1, 2.6, 4, 4, 4.5]: level 3 comes with stage 1's Boss, about two levels a stage after. The Essence of Experience leaves Survival's Boss drops. Rules 1.49's fit is measured again before release.
+15. **Rest training stronger:** a rest's drill 200, study 5, practice 8, Devotion 4; the training ground's drill 400, study 10, practice 15; the shrine's rite its own 10; each card shows a bar.
 
 ## 1. The fantasy and the loop
 
@@ -377,8 +405,9 @@ All through the engine's view: the client builds no cost, price, legality, numbe
 
 - **Path map** (rules 1.48: a themed overland map): the setting's backdrop (`survival-map-<setting>`, section 4.3) or the field chart; the camp at the left, the Boss at the right; the lanes as dashed trails curving between inked markers, the walked trail solid and bright, the node the party stands on ringed, the reachable node(s) lit with an animated dash, everything else readable but quiet; junctions drawn as diamonds where trails meet; the vault's spur leaving its edge lane outward, the guard a horned skull and the chest a chest; a legend under the map (each kind on it, walked, open now, junction); the hover card beside a node, never over a reachable one (`data-tip-avoid`). Before rules 1.48: the painting Leon picks (`survival-map-display` or `survival-map-aerial`) under nodes and paths drawn by the UI; each node **its kind's icon and its word** (Fight, Elite, Boss, Shop, Forge, Training, Shrine, Rest, Cache, Crossroads; section 3.1); walked paths solid, reachable nodes lit, the party's tokens; the next step's choices read as kinds of gain (hovering a node shows through the one hover card what it gives and costs, from the engine's view); in co-op each player's lean as a small portrait and "Waiting for 1 player" / the host's Go. Along the edge: "Stage 2 · Node 6 of 15", the tile's name, each character's level, HP, credits and boons.
 - **Node card:** the scene painting (`nodes/`: rest, training ground, shrine, Elite lair, Boss door, cache, Crossroads; a fight: a backdrop of its setting), kind and setting; "Enter". **A shop and a Forge have no node card:** entering one opens its full screen at once (section 8.3; Leon: it "pops up when you click").
-- **Rewards:** XP and credits with numbers; the ammunition gained, per gun; **three weapon cards per character** through the one hover card (icon, rarity, price, the door it serves, the engine's numbers, item 14) and **"Take N credits instead"**; an Elite or cache adds the armour-or-item row. Co-op: each picks their own; the host can skip an away player.
-- **Shop and Forge:** full screen, section 8.3.
+- **Rewards** (rules 1.54; in the middle of the play screen, not the right column): XP and credits with numbers; the supply pack, per gun; then, per character, **two large cards side by side**: **Materials** ("50 gunpowder · 50 casings · 5 mana residue", the numbers from the engine's offer, each with its line icon) and **One weapon** (the weapon's icon at 72 px, its name and grade word, the door it serves and the engine's numbers, item 14, through the one hover card). One click takes a card. No "credits instead". The vault's chest and a sealed crate show three weapon cards and no Materials card. An Elite or cache adds the armour-or-item row. Co-op: each picks their own; the host can skip an away player.
+- **The right panel** (rules 1.54 item 11; section 14): the mana forecast; **Run** (the stage and the stop, "Stage 2 · Stop 6 of 15", the seed, a small path map of the whole stage with the party's stop marked); **Run board** (this stop's name and what it holds, the boons each character holds as 24 px icons with "17 of 50", the visit's log, **Report a run**, and **Retire** for the host when the engine allows it, greyed with its reason otherwise); **Squad** (each seat's portrait, level, HP, credits and its ready mark with the word, and at the bottom the one phase control where End turn sits on a campaign's screen: **Go** at a fork for the host, **Ready** at a place, **Leave** in a shop, as the engine's view offers). The left panel is the character sheet, every tab, as in a campaign.
+- **Shop and Forge:** ~~full screen, section 8.3~~ in the middle of the play screen (rules 1.54; section 8.3 below is superseded where it says full screen).
 - **Rest:** the medic, what the rest gives (`REST_INFO.long`); **"And one training"**: per character, the small trainings it can take (rule 39) with the bar each moves (drill toward its next mark, study toward the next word, practice toward the next module, Devotion toward the next level); **"Give"** opens the Give panel of 8.3; Rest.
 - **Training ground:** the sergeant and a line; per character, the big trainings (rule 45) as large cards, each with its bar and the mark, word or module it reaches; "A second training: 300 credits" with the engine's reason when it can't; Give; "Done" (a ready mark in co-op).
 - **Shrine:** the patron's portrait and mark (rolled for the shrine), its name; per character the three offers (rule 46): the rite with the Devotion bar, a knowledge piece for an Atheist with the Hymn it unlocks, the token as a boon card with its worth against the cap; Give; "Done".
@@ -389,6 +418,8 @@ All through the engine's view: the client builds no cost, price, legality, numbe
 - **Level-up:** the existing screen, opened from the map when a character has points.
 
 ### 8.3 The shop screen (Leon, 13 Nov, second batch: a full-screen showpiece)
+
+> **Superseded where it says "full screen"** by Leon's ruling of 14 Nov (the seventh "Settled by Leon" block; rules 1.54 item 11): the shop and the Forge play **in the middle of the play screen**, the character sheet on their left and the run's right panel on their right; nothing replaces the play screen. Region 4, **"You"**, is removed (the sheet's GEAR tab is the one place for hands, worn, pack, carry and wear bars); the compare panel moves under the shelves; the party strip and "Ready to leave" / "Close the shop" are the right panel's Squad and its phase control. The keeper, the tabs, the shelves, the cards, the log, co-op and access below stand, sized to the middle column (about 640 px at 1280: the keeper becomes the band across the top, as "Smaller screens" says for under 1000 px). Kept as written for the record.
 
 *"remember the shop UI and shop NPC is a full screen replacement that pops up when you click so make the UI readable and fancy, no need to conserve space"*. The shop **replaces the play screen** (the path map goes away; nothing of it shows behind); it is the run's showpiece, built for reading, not for density. The Forge uses the same frame with its own face and tabs (end of this section).
 
@@ -851,3 +882,122 @@ Measured with `survival-run.ts` on spec 5.6's cells (3 routes × 4 seeds) and th
 7. **An away player's starting boon:** the host's skip gives the first card. **Recommend yes,** so no character starts a run without one.
 8. **Figments' Boss boons wait** until the Rigger is measured with its own policy (13.6, 1). **Recommend yes;** two rows are written once the measure prices the door.
 9. **The lines are read from the sheet, not the archetype** (the archetype is not saved). **Recommend as written:** the focus in hand first, then the highest attribute's alpha skill, then the weapon; a player who wants another line's boons holds that line's focus or weapon at the camp.
+
+## 14. Materials, making and the side panels (rules 1.54)
+
+The spec for 0.28.0, from Leon's nine sentences of 14 Nov (the seventh "Settled by Leon" block) and the lead's rulings on them; the rules are rules 1.54 (items 4100 to 4120 of the Core Rules' section 14). Every number is PROVISIONAL except the standard core's 100 credits (Leon, firm). Nothing here is built. The standing rule is `ui-screens.md` "The three columns (every mode)".
+
+### 14.1 Built from (each rule against the primitive that carries it; names checked against the code on 14 Nov)
+
+| Rule | Primitive |
+| --- | --- |
+| R2: Survival on the play screen, its screens in the middle | the Proving Ground's centre slot and portal: Portal and CentreView (`sandbox.tsx`) mounted in the middle column of `main.template.html`, generalised to the mode's centre; MainLogic.renderVals (`screens/main.js`) made safe when a run is set, as it is for `g.sandbox`; `screenFor` (`store.ts`) sends a run's room to the play screen; makeScreen (`dc/runtime.tsx`) unchanged |
+| R3: the right panel by mode | `STORY_PANELS`, `StoryPanelId`, `normaliseOrder`, `moveStoryPanel` (`storyPanels.ts`: the movable modules and their drag order, a per-browser preference); `MODES` and `ModeDef` (`run/state.ts`) reading `data/modes.json`; new: the `panels` field (14.2 item 8) |
+| R3: the Run panel (stage, stop, seed, a small whole-stage map) | `runView` (`runView.ts`), layoutPathMap and NodeGlyph (`PathMap.tsx`) drawn small |
+| R3: the Run board (this stop, boons held, the visit log, Report a run, Retire) | `runView`; `boonIcons.ts`; `downloadRunReport` (`runReport.ts`); the reducer's `run/retire` |
+| R3: the Squad and its one phase control | `PartyV` (`runView.ts`); `RunState` `ready` and `leans`; the reducer's `run/go`, `run/ready`, `run/leave` |
+| R4: every Survival screen in the middle | `RunScreen.tsx`, `PlaceScreen.tsx`, `ShopScreen.tsx`, `LoadoutScreen.tsx`, `StageScreen.tsx`, mounted through the centre slot in place of `FullScreenFrame.tsx`; the shop's "You" panel removed (the sheet's GEAR tab draws hands, worn, pack, carry and the wear bars of `WearBar.tsx`); `lastFightTally` on the rewards |
+| R5: larger icons | the marker sizes and NodeGlyph in `PathMap.tsx`, `runIcons.ts`, `boonIcons.ts` |
+| R6: the sheet in a run | `RUN_REFUSED` and `runAction` (`game.ts`): the action type `rest` added; the camp's `commit` and `rebuild` (`run/loadout.ts`) are why every `gear/*` action is refused in run state `loadout`; `useStim` through `combat/stim` (the only use of a stim, in a fight) |
+| R7: Materials or One weapon | `weaponOffer` (`run/rewards.ts`; how many by where from `rewards.offer`), `RunOffer` (new: `materials`), the reducer's `run/pick` (new value: `materials`), `nodeCredits`, `packAdd`, `sellValue` and `priceOf` for the sale, `ammoPack` unchanged; `OfferV` (`runView.ts`) |
+| R8: Survival's foes leave no guns | `rollDeathDrops` and `alwaysDrops` (`loot.ts`, the one loot door), `Drops` (`items` with a quantity range and `chance` 1: given, outside the cap), `FoeSpec` `drops`, `composeEncounter` (`run/encounter.ts`) setting each foe's drops from `survival.json`, `defaultTable` (a machine's kind); new: the flag (14.2 item 5) |
+| R9: three materials and the ammo maker | `items.json` rows; `ITEM_POOL` (`run/shop.ts`: rolls a `tool` by its category, inside the price band); `loot_tables.json` row `person`; `lootToPack` |
+| R10: one converter | `packAdd`, `roundsOf`, `holds` and `HoldSpec` (the one hold test), `FOCUS_IDS`; `giveProblem`, `giveNow`, `giveView` (`give.ts`: the shape to copy, a problem in words, the doing, the view); `sbChange` (the Proving Ground's `gear/load` path); new: `packTake`, `makeProblem`, `makeNow`, `makeView` (14.2 items 1 and 2) |
+| R11: ammunition at the shop's price | `priceOf` (a `rounds:<calibre>` line at the calibre's `price_credits`; a special round at its `price_mult` × `special_round_price`); `validate.py` (the recipe check) |
+| R12: cores | the `standard_core` row's `price_credits`; `calibres` `price_credits` (the core charge); `ammo_enhanced`; `priceOf`; `sell_rate` |
+| R13: amounts | `nodeCredits`; `cleanQty` (a drop's range); `lootToPack` (its cap moved into data, 14.2 item 7) |
+| R14: XP | `nodeXp`, `stageXp` (`run/rewards.ts`), `giveXp`, `xp_total` (untouched); the run simulator `survival-run.ts`; a Boss's notable thing in `rollDeathDrops`, off with R8's flag |
+| R15: rest training and its bar | `trainDo` (`run/progress.ts`), `addDrill`, `addStudy`, `addPractice`, `shiftDevotion`; `DEVOTION_XP` (the shrine reads `shrine.rite` instead); `runOptions` and `placeView` (`run/placeview.ts`, a bar on each training row read from `drillMarks`, `sigilGrowthView`, `nextPickAt` and `practiceOf`, `devotionThreshold`); `WearBar.tsx` (the bar's pattern) |
+| R16: skill texts | perPoint (`screens/shared.js`, the one helper for creation, the "?" pop-up and level-up), `tipAttrs` (`actionTip.ts`), `text_numbers.py` (numbers by placeholders), `validate.py` (the repeated-sentence check), `skills.json` `per_point`; `tending_data.py`'s guard; `skeleton-perks.test.ts` (pins the copies equal today) |
+| R17: trait cards scroll the page | the creation screen's CSS rule in `create.js`; the browser check apps/web/e2e/creation-layout.mjs |
+
+### 14.2 Needs a new primitive (exactly the lead's approved list; nothing else)
+
+1. **`packTake(pack, id, n)`** beside packAdd (`containers.ts`): taking n of an id from a pack across its stacks. Nothing takes a counted amount out of a pack today; each spender would write its own loop.
+2. **The recipes module** (`recipes.ts`: `RECIPES` read from `data/recipes.json`, `makeProblem` the refusal in words, `makeNow` the doing, `makeView` the list a screen draws) and **one reducer action, gear/make {charId, recipe, times}**, with the Proving Ground taking it as it takes gear/load. No converter exists; per-recipe code is forbidden (`CLAUDE.md`, "No rebuild" rule 2).
+3. **"Any focus" as a form of the one hold test:** the hold test gains door "any", answered by the focus test it already keeps privately (`character.ts`), exported, not written again. Today the test answers a named kind or an item, never "any focus".
+4. **The run offer's optional `materials`** ([{item, n}]) **and the pick's value** "materials": the offer holds weapons and a credits figure only.
+5. **A flag on a foe's drops that turns off its always-drops** (`Drops.gear`, false for every foe a Survival fight makes): the loot door always drops a foe's weapon, its magazines and a Boss's notable thing, and no field turns that off.
+6. **An item field `pack_kind`**, replacing the three places that choose a pack line's kind by an item's id (`character.ts` the kit's gear, `containers.ts` the loot entry, `game.ts` adding items: the core, the two focus gloves, the ration pack; the same kinds as today).
+7. **The pack's quantity cap moved from a literal into data** (the 20 in `containers.ts`): content numbers live in data. Its value stays 20 (Core Rules item 4111).
+8. **`panels` on `data/modes.json` items** (and the mode row's type, and the validator's mode check), read by **one panel registry** in the client (an id to its renderer): the right panel's modules are a hard list of four in code today.
+
+**Data fields, not primitives** (each read by the code that already reads its block): `rewards.offer` by where (a number becomes {fight, elite, boss, vault_guard, vault, crate}; the gate reads the Elite's, as every table does); `survival.json drops` (the materials a foe drops); `shrine.rite`; `per_point.rows` in `skills.json`. **No new trigger, predicate, op, hook, stat or cost site.**
+
+### 14.3 The recipes (`data/recipes.json`; rules 1.54 items 6 and 7)
+
+Prices read from `data/rules.json weapons_rules.calibres` and `items.json` (`special_round_price.calibre` rifle, 2 a round) on 14 Nov. A recipe makes rounds worth V from V/2 gunpowder and V/2 casings (both 1 credit), with the ammo maker carried; 2 rounds where one round's price is odd, else 1. Each row's needs are worth what it gives, so the validator can check every row against `priceOf`.
+
+| Makes | Gives | Price a round (credits) | Gunpowder | Casings | Rounds made |
+| --- | --- | --- | --- | --- | --- |
+| .32 Decrkm | `rounds:.32 decrkm` | 1 | 1 | 1 | 2 |
+| Revolver | `rounds:revolver` | 2 | 1 | 1 | 1 |
+| Rifle | `rounds:rifle` | 2 | 1 | 1 | 1 |
+| Shell | `rounds:shell` | 3 | 3 | 3 | 2 |
+| .700 Blackpoint | `rounds:.700` | 40 | 20 | 20 | 1 |
+| Arrow | `rounds:arrow` | 3 | 3 | 3 | 2 |
+| Bolt | `rounds:bolt` | 4 | 2 | 2 | 1 |
+| .50 Frontier | `rounds:.50 frontier` | 4 | 2 | 2 | 1 |
+| 40 mm grenade | `rounds:40 mm grenade` | 60 | 30 | 30 | 1 |
+| Rocket | `rounds:rocket` | 400 | 200 | 200 | 1 |
+| Fuel canister | `rounds:fuel canister` | 50 | 25 | 25 | 1 |
+| Armour-piercing rounds | `ammo_armor_piercing` | 6 | 3 | 3 | 1 |
+| Hollow-point rounds | `ammo_hollow_point` | 4 | 2 | 2 | 1 |
+| Incendiary rounds | `ammo_incendiary` | 6 | 3 | 3 | 1 |
+
+**The core:** `core_from_residue`: 10 mana residue (10 credits each) and any focus in hand → 1 standard core (100 credits). **Not made:** the core charge (now 10 a round; a core's) and enhanced rounds (now 10). The lead's brief says "all 12" calibres and "not the core charge": the data has twelve calibres counting the core charge, so the rows are eleven calibres and three special rounds (a question for the lead, 14.6).
+
+A worked fight: a stage 1 fight at depth 1 (C 100) gives 50 gunpowder, 50 casings and 5 mana residue: 50 rifle rounds (a rifle's 24-round magazine twice over), or 100 .32 rounds, or 32 shells, and half a core.
+
+### 14.4 Levels by stage (rules 1.54 item 9)
+
+f(d) = 10 + 2 × (d − 1); an Elite and the gate × 1.5, the Boss × 5; × `stage.xp` [1, 2.6, 4, 4, 4.5] (the last repeats). **The reference path** (section 5.4: fights at depths 1, 2, 3, 4, 6, 9, 13; Elites at 8, the gate, and 10; the Boss at 15): 10, 12, 14, 16, 20, 26, 34 = 132 from fights, 36 + 42 = 78 from Elites, **210 at the Boss's door** (level 2 since the gate), 190 from the Boss. Levels from the shared `xp_total` (3 at 250, 5 at 1,300, 7 at 2,800, 9 at 4,300, 11 at 5,950, 13 at 7,750).
+
+| Stage | `stage.xp` | XP in the stage (reference path) | XP after its Boss | Level after its Boss | The scout's count (its routes, 0.28) | Before 1.54 (the same path, old numbers) |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 1 | 400 | 400 | **3** | 3 | 3,026: level 7 |
+| 2 | 2.6 | 1,040 | 1,440 | 5 | 5 | 6,052: 11 |
+| 3 | 4 | 1,600 | 3,040 | 7 | 7 | 9,381: 14 |
+| 4 | 4 | 1,600 | 4,640 | 9 | 9 | 13,163: 18 |
+| 5 | 4.5 | 1,800 | 6,440 | 11 | 11 | 16,946: 20 |
+| 6 | 4.5 | 1,800 | 8,240 | 13 | 12 | 20,728: 20 |
+
+**The routes** (the scout's count for 0.28, from the lanes generator; not re-run for this spec): the most-fights route reaches 250 at depth 12 or 13, before the Boss; every other route reaches level 3 from the Boss (99.97% of the routes counted). The reference path above reaches it from the Boss. Today's party stands at level 5 to 7 at stage 1's Boss. The scout's stage 6 is a level under the reference path's (its routes hold fewer fights than the reference path's seven).
+
+**The measure before release** (rules 1.54 item 9, Core Rules item 4114): rules 1.49's fit was made with a party at levels 6 to 7 after stage 1 and with three weapons a pick; both move. The run simulator runs rules 1.49's cells again (section 5.6; about 90 runs). The dials that move, in rules 1.49's order: `stage.elite_up`, `stage.bulk`, `stage.pressure`, `pressure_per_char`, `share` (the Elite's and the Boss's for small parties); then the XP dials themselves if a class at stage 1's Boss proves too late for the fights before it. `xp_total` is never one of them (campaigns share it).
+
+### 14.5 Rest training before and after (rules 1.54 item 10), as a share of the next step
+
+The next step: drill, mark I at 300 (marks 300, 900, 1,800; `techniques.json`); study, the first word at 6, then every 8 (`sigils.json grammar.study`); practice, the first module pick at 5, the second at 15, then every 15 (`soul_modules.json practice`); Devotion, level 1 at 10 XP, level 2 at 25, level 3 (Hymn I) at 45 (`patrons.json`).
+
+| Training | Next step | A rest, before | A rest, after | The training ground, before | The training ground, after |
+| --- | --- | --- | --- | --- | --- |
+| Drill | 300 (mark I) | 100: 33% | **200: 67%** | 300: 100% | **400: 133%** |
+| Study | 6 (then 8) | 3: 50% | **5: 83%** | 8: 133% | **10: 167%** |
+| Practice | 5 (then 10, then 15) | 5: 100% (half of the next 10) | **8: 160%** (80% of 10) | 10: 200% | **15: 300%** (one whole later step) |
+| Devotion | 10 (then 15, then 20) | 2: 20% | **4: 40%** | the shrine's rite 4: 40% | **`shrine.rite` 10: 100%** |
+
+The ground stays twice a rest or more, as section 11.3 wants. The pull against the slower levels (a training-heavy stage 1 now holds about 1,600 drill against 1,100, the scout's figure) is measured with 14.4's run.
+
+**The card's bar** (section 8.2's Rest and Training ground bullets): each training card draws one bar from the engine's view: where the character stands (its drill on that weapon, its study, its practice, its Devotion XP), what this training adds (a brighter segment), and the mark it reaches or comes nearer to, in words ("Mark I at 300: the rifle's signature move"; "A new word at 6"). The client computes none of it.
+
+### 14.6 Open for Leon (each with the lead's recommendation; built as recommended if unanswered)
+
+1. **The fight screen stays without side panels for now.** It has none in any mode, the Proving Ground included, and it needs its width for the map. **Recommend yes**, as a recorded exception to the standing rule; a later change gives it panels in every mode at once.
+2. **The free supply pack against making.** After a fight the supply pack still refills magazines and cores for nothing, so making is ammunition for a long stretch without a shop more than an economy. **Recommend unchanged in 0.28**, its size against making a Balance 2.0 question once a run has been played.
+3. **Stage 1 without a class.** With level 3 at stage 1's Boss, a whole stage is played on levels 1 and 2 with no class moves. **Recommend as you asked;** the measure (14.4) says whether stage 1's fights must ease for it.
+4. **The middle column at 1280 wide is about 640 px**; the path map needs more. **Recommend the map keeps its size and scrolls sideways in the middle**, the right panel's small map showing the whole stage; the map is not redrawn smaller.
+
+**For the lead (stopped or open in this spec; not Leon's):**
+- **The Essence of Experience out of Survival's shop is stopped.** The shop's rolled items are every priced item of the categories `stock.item_categories` names; the Essence is a consumable, as are the Sigil and Heart plates, so taking the category out drops them too, and a field that excludes one id is not on the approved list (14.2). It leaves the Boss's drops through 14.2 item 5. The lead approves a field or rules otherwise.
+- **The cap (Core Rules item 4111):** the brief says amounts above 20 go through the data cap; credits grow 0.35 a stage with no ceiling, so the spec keeps the cap at 20 and puts the Materials card in through packAdd (as the counter's buys go in).
+- **"All 12" calibres:** the data's twelve include the core charge; the table has eleven and the three special rounds.
+- **Arrows and bolts from gunpowder and casings** follow Leon's "all ammo types" literally; a call for Leon (Core Rules item 4109).
+- **The Proving Ground's panel list:** the Proving Ground is not a row of the modes file's items (it is a tool, section 8.1 item 7); its list keeps today's four and needs a home in data (a top-level entry beside the items is the spec's suggestion). The Roguelike row takes Survival's list until it has its own, as its loadout does.
+- **The ammo maker on the counter or only in the rolled gear:** the brief says "the shop's stock"; as a tool it is rolled, so a shop may not have one. The counter would make it certain.
+
+### 14.7 The screens, in short (the rest is section 8.2, rules 1.54 and `ui-screens.md`)
+
+- **Making** is in the sheet's GEAR tab (the one place for gear), a "Make" group shown when the character carries a tool or holds a focus: each recipe from the engine's view with what it needs, what it gives, a `‹ n ›` stepper and **Make**, or the engine's reason in words. At the camp it is hidden (the GEAR tab is read-only there).
+- **Icons:** the markers and labels of R5; a marker's glyph is at least 32 px (at 48 px the glyph's 0.6 share would be 29). The legend's 16 px glyphs are not named by R5 and stay.
+- **The shop's grid** in the middle is two cards across at 1280 (section 8.3's own rule for 1280), its compare panel under the shelves.
