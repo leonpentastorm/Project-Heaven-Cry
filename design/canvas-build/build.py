@@ -49,9 +49,14 @@ CORE_TEXT = {
 def epccg(x):
     """The skill's EPCCG write-up for the "?" pop-up, with its First-Patch Revival portrait."""
     e = x["epccg"]
-    return {"entry": e["entry"], "speaker": e["speaker"], "portrait": e["portrait"], "img": BLOBS["char-" + e["portrait_id"]],
-            "quote": e["quote"], "intro": e["intro"], "effect": e["effect"], "high": e["high_levels"],
-            "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"]), "mastered": skill_mastered(x["id"]), "combos": skill_combos(x["id"])}
+    out = {"entry": e["entry"], "speaker": e["speaker"], "portrait": e["portrait"], "img": BLOBS["char-" + e["portrait_id"]],
+           "quote": e["quote"], "intro": e["intro"], "high": e["high_levels"],
+           "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"]), "mastered": skill_mastered(x["id"]), "combos": skill_combos(x["id"])}
+    # What a point gives is the skill's per_point.rows (rules 1.54 item 4119). The web game reads them from the engine's
+    # skill data (shared.js roadMap); the canvas prototype has no engine, so its boards get the rows here.
+    if not WEB:
+        out["rows"] = [{"at": r["at"], "text": r["text"]} for r in x["per_point"]["rows"]]
+    return out
 
 PERK_TYPE = {"active_skill": "Active skill", "combat_interaction": "Combat interaction", "passive": "Passive", "ap_mod": "AP modifier", "combat_starter": "Combat starter", "conversation_quirk": "Conversation quirk"}
 

@@ -283,20 +283,13 @@ save("tending.json", tj)
 # ---------------------------------------------------------------------------------------------- skills.json
 sj = load("skills.json")
 for s in sj["items"]:
+    # What a point gives is per_point.rows (rules 1.54 item 4119: the road map), written by hand in skills.json: this tool
+    # no longer writes a skill's per-point text or a second copy of it (epccg.effect is gone). It once appended Will
+    # Power's Pump sentence eight times, behind a guard that never matched.
     if s["id"] == "empathy":
-        s["per_point"]["text"] = "Healing given grows with every point. With an Attuner in hand it opens Bonds and Tending: more Bonds held, and more verbs, as it grows."
         s["gates"] = ["focus:attuner"]
-        s["epccg"]["effect"] = s["per_point"]["text"]
         s["summary"] = "Feeling what the other side feels, enemies included."
-    if s["id"] == "will_power":
-        s["per_point"]["text"] = s["per_point"]["text"].rstrip()
-        PUMP = "From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain."
-        if PUMP not in s["per_point"]["text"]:
-            s["per_point"]["text"] += " " + PUMP
-        s["epccg"]["effect"] = s["per_point"]["text"]
     if s["id"] == "camaraderie":
-        s["per_point"]["text"] = "+10% healing received. Share a Hit, a protective reaction, from the first point."
-        s["epccg"]["effect"] = s["per_point"]["text"]
         un = {"1": {"name": "Share a Hit", "category": "Reaction", "mastery": 0,
           "text": "Your reaction, when an ally next to you is hit (from {=unlocks.1.effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=unlocks.1.effects.0.share.base|pct}% of the damage instead, +{=unlocks.1.effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=unlocks.1.effects.0.share.max|pct}%). It needs no focus.",
           "effects": [

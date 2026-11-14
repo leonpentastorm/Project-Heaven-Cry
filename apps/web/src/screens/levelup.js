@@ -13,7 +13,7 @@
 // waiting: one click takes it), locked (until the next step), and the Mastered perk. Every number is the engine's
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, perPoint, ceilingLine } from './shared';
+import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine } from './shared';
 import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
@@ -23,14 +23,13 @@ D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ICON[p.id] = p.icon; 
 // A skill's perks (perks.json): its two acquired perks (Tier I, then II) and its Mastered perk.
 const ACQUIRED = {}, MASTERED = {};
 for (const p of PERKS) { const sk = p.skills && p.skills[0]; if (!sk) continue; if (p.tier === 'acquired') (ACQUIRED[sk] ||= []).push(p); else if (p.tier === 'mastered') MASTERED[sk] = p; }
-const STEP_AT = [3, 5, 7, 9];
 /** The engine's refusal, with the attribute's name ("Needs agility 5" → "Needs Agility 5"). */
 const nice = (why) => (why ? why.replace(/Needs (\w+) (\d+)/, (m, a, n) => 'Needs ' + (ATTR[a] ? ATTR[a].name : a) + ' ' + n) : '');
 const OWNED = '#6FEA77', LOCKED = '#7F8BA1';
 const dia = (n, filled, color) => Array.from({ length: n }, (_, i) => ({ style: 'width: 8px; height: 8px; transform: rotate(45deg); box-sizing: border-box; ' + (i < filled ? 'background: ' + color : 'border: 1px solid #3B475D') }));
 const chip = (ok) => 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (ok ? '#6FEA77' : '#FFFFFF') + '; color: ' + (ok ? '#6FEA77' : '#FFFFFF');
-const MASTERY = [[3, 'M1'], [5, 'M2'], [7, 'M3'], [9, 'M4'], [10, 'Mastered']];
-const mLevel = (p) => MASTERY.filter(([n]) => p >= n).map(([, w]) => w).pop() || '';
+/** A skill's mastery steps (M1 to M4, then the Mastered perk) where its data puts them: the road map's steps (shared.js). */
+const masteryOf = (id) => roadMap(id).steps.filter((s) => s.step);
 // Who runs it, always in words (colour pairs with the word): solid for the engine, dashed for the Narrator.
 const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
 const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
@@ -90,7 +89,7 @@ export class LevelUpLogic extends DCLogic {
     const raiseStyle = (ok, ink) => 'flex: none; min-width: 34px; min-height: 30px; padding: 0 8px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: ' + (ok ? 'pointer' : 'not-allowed') + '; border: 1px solid ' + (ok ? ink : '#2E3A50') + '; background: transparent; color: ' + (ok ? ink : LOCKED);
     const chipStyle = (ink, solid) => 'flex: none; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; border: 1px ' + (solid ? 'solid' : 'dashed') + ' ' + ink + '; color: ' + ink;
     const perkRow = (pk, x, p) => {
-      const h = held(pk.id), ch = x ? x.choices.find((y) => y.id === pk.id) : null, nextAt = STEP_AT.find((n) => n > p);
+      const h = held(pk.id), ch = x ? x.choices.find((y) => y.id === pk.id) : null, nextAt = (masteryOf(pk.skills[0]).find((s) => s.step !== 'mastered' && s.n > p) || {}).n;
       const tier = ch ? ch.tier : h && h.tier === 'II' ? 'II' : 'I', t = (pk.tiers[tier] || pk.tiers.I || {}).text || pk.text || '', v = verdictFor('perk:' + pk.id, tier);
       // What you hold always shows (✓ Tier I / II); a waiting step adds its button beside it (Take, or Upgrade to II).
       const state = h ? 'owned' : ch ? 'available' : 'locked';
@@ -103,7 +102,7 @@ export class LevelUpLogic extends DCLogic {
         // What it does shows for a waiting step and for what you hold (readable on touch and by keyboard, not only on
         // hover); a locked perk keeps it in the title and the skill's "?" EPCCG entry.
         text: ch || h ? t.charAt(0).toUpperCase() + t.slice(1) : '', hasText: !!(ch || h),
-        textStyle: 'grid-column: 2 / -1; font-size: 11.5px; line-height: 1.4; color: ' + (ch ? '#C9D3E3' : '#A3AEC2'),
+        textStyle: 'grid-column: 2 / -1; font-size: 13px; line-height: 1.4; color: ' + (ch ? '#C9D3E3' : '#A3AEC2'),
         pick: () => act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }),
         nameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (state === 'locked' ? LOCKED : '#E7EBF3'),
         iconStyle: 'width: 22px; height: 22px; object-fit: contain' + (state === 'locked' ? '; opacity: 0.4; filter: grayscale(1)' : ''),
@@ -112,15 +111,17 @@ export class LevelUpLogic extends DCLogic {
     };
     const skillCard = (s) => {
       const p = c.skills[s.id] || 0, ink = ATTR[s.attr].ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], free = x ? x.free || 1 : 0;
-      const m = MASTERED[s.id], mh = m ? held(m.id) : null, un = (SKILL[s.id] && SKILL[s.id].unlocks) || {}, np = p + 1;
-      const brings = np > 10 ? '' : [STEP_AT.includes(np) ? 'M' + (STEP_AT.indexOf(np) + 1) + ': a perk step' : np === 10 ? 'Mastered: ' + (m ? m.name : 'its Mastered perk') : '', un[np] && un[np].name && np <= 5 ? 'unlocks ' + un[np].name : ''].filter(Boolean).join(' · ');
+      const m = MASTERED[s.id], mh = m ? held(m.id) : null, np = p + 1, steps = masteryOf(s.id), reach = steps.find((t) => t.n > p);
+      // The next point, from the road map (rules 1.54 item 4119); the mastery pips, with the perks of the next one in reach.
+      const nxt = nextLine(s.id, p);
       const [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
-      return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + ink, give: 'Each point: ' + perPoint(s.id), mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
+      return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + ink, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (free ? ' phc-lu-step' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }), raiseStyle: raiseStyle(!why, ink), raiseLabel: 'Raise ' + s.name,
-        hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!(c.unspent.skill && !why && brings), next: 'Next point (' + np + '): ' + brings,
-        marks: [...STEP_AT, 10].map((n, i) => ({ key: n, label: i < 4 ? 'M' + (i + 1) : '★', title: (i < 4 ? 'M' + (i + 1) + ' (a perk step)' : 'Mastered (the Mastered perk)') + ' at ' + n + ' points',
-          style: 'flex: 1; text-align: center; padding: 1px 0; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; ' + (p >= n ? 'background: ' + ink + '; color: #0A0D13' : 'border: 1px solid #2E3A50; color: ' + LOCKED) })),
+        hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'Next point (' + np + '): ' + nxt, nextAt: np,
+        marks: steps.map((t) => ({ key: t.n, label: t.step === 'mastered' ? '★' : t.step, title: (t.step === 'mastered' ? 'Mastered: ' + t.perks.map((q) => q.name).join('') : t.step + ': a perk step, ' + t.perks.map((q) => q.name).join(' or ')) + ' at ' + t.n + ' points',
+          style: 'flex: 1; text-align: center; padding: 1px 0; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; ' + (p >= t.n ? 'background: ' + ink + '; color: #0A0D13' : t === reach ? 'border: 1px solid ' + ink + '; color: ' + ink : 'border: 1px solid #2E3A50; color: ' + LOCKED) })),
+        hasReach: !!reach, reachAt: reach ? reach.n : 0, reach: reach ? (reach.step === 'mastered' ? '★ at ' + reach.n + ': ' : reach.step + ' at ' + reach.n + ': ') + reach.perks.map((q) => q.name).join(reach.step === 'mastered' ? '' : ' or ') : '',
         hasSteps: free > 0, stepsLine: '◆ ' + free + ' PERK STEP' + (free > 1 ? 'S' : '') + ' TO TAKE',
         perks: (ACQUIRED[s.id] || []).map((pk) => perkRow(pk, x, p)),
         hasMastered: !!m, mName: m ? m.name : '', mIcon: m ? PERK_ICON[m.id] || IMG['wick-mind-without-fog'] : '', mHeld: !!mh, mLabel: mh ? '✓ MASTERED' : 'AT 10 PTS',
@@ -179,7 +180,7 @@ export class LevelUpLogic extends DCLogic {
     const owed = pendingPerkSteps(c).reduce((n, x) => n + (x.free || 1), 0); // steps owed, not skills (a 2→5 jump owes two)
     const allDone = !left && !c.unspent.attr && !choosing && !steps.length;
     return {
-      ...epccgVals(this), ...lightboxVals(this), zoomPc: zoomer(this, c.portrait, c.name, 'portrait'), pc: c.portrait, name: c.name,
+      ...epccgVals(this, (id) => c.skills[id] || 0), ...lightboxVals(this), zoomPc: zoomer(this, c.portrait, c.name, 'portrait'), pc: c.portrait, name: c.name,
       kicker: 'LEVEL ' + c.level + ' · ' + c.xp.toLocaleString() + ' XP', title: c.name + (choosing ? ' reaches level ' + c.level : ' grows'), hpChip: 'MAX HP ' + maxHp(c),
       pointChip: left ? '◆ ' + left + ' SKILL POINT' + (left > 1 ? 'S' : '') : '✓ SKILL POINTS SPENT', pointChipStyle: chip(!left),
       stepChip: owed ? '◆ ' + owed + ' PERK STEP' + (owed > 1 ? 'S' : '') : '✓ NO PERK STEPS', stepChipStyle: chip(!steps.length),

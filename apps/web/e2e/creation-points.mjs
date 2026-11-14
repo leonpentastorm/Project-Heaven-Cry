@@ -75,7 +75,14 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'lowering Agility under Dexterity is refused, naming the skill: ' + await note(), (await note()) === '✗ Agility can\'t drop to 3 while Dexterity is 4: lower Dexterity first.' && (await val('attr', 'agility')) === '4');
   // What the next point gives, on the screen.
   ok(at + 'Agility shows what its next point gives', (await text('[data-attr-next="agility"]')) === 'Next point: +0.5 tile of movement an AP, +1 Initiative.');
-  ok(at + 'Dexterity shows its place, its roll and what a point gives', /^FIGHT\s*·\s*TAKES AGILITY TO 5\s*·\s*Roll \+3, next \+4\. Next point: \+1 to hit with guns/.test((await text('[data-skill="dexterity"] .phc-pt-line')).replace(/\s+/g, ' ')));
+  // The skill card (rules 1.54 item 4119): its portrait, its tag, its roll as a chip, and ONE line: what the next point gives.
+  const card = await p.evaluate(() => { const k = document.querySelector('[data-skill="dexterity"]'), img = k.querySelector('[data-skill-face] img'), r = img.getBoundingClientRect();
+    return { tag: k.querySelector('[data-skill-tag]').textContent, need: (k.querySelector('[data-skill-need]') || {}).textContent || '', mod: k.querySelector('[data-skill-mod]').textContent,
+      lines: k.querySelectorAll('.phc-pt-line').length, nextAt: k.querySelector('[data-skill-next]').getAttribute('data-next-at'), next: k.querySelector('[data-skill-next]').textContent,
+      face: img.complete && img.naturalWidth > 0, fw: Math.round(r.width), fh: Math.round(r.height), font: parseFloat(getComputedStyle(k.querySelector('[data-skill-next]')).fontSize) }; });
+  ok(at + 'Dexterity\'s card: portrait ' + card.fw + '×' + card.fh + ', tag ' + card.tag + ', roll chip ' + card.mod + ', one next-point line for point ' + card.nextAt + ' at ' + card.font + ' px',
+    card.face && card.fw >= 44 && card.fh >= 56 && card.tag === 'FIGHT' && /TAKES AGILITY TO 5/.test(card.need) && card.mod === '+3' && card.lines === 1 && card.nextAt === '5' && /^Next point: \S/.test(card.next) && card.font >= 13);
+  ok(at + 'every skill card has a portrait and one next-point line', await p.evaluate(() => [...document.querySelectorAll('[data-points] [data-skill]')].every((k) => k.querySelectorAll('[data-skill-face] img').length === 1 && k.querySelectorAll('[data-skill-next]').length === 1)));
   // Keyboard: Tab reaches the stepper, Enter presses it, the arrow keys step it; focus stays on the stepper.
   await down('skill', 'athletics').focus();
   await p.keyboard.press('Tab');
@@ -120,6 +127,31 @@ ok('Mind Without Fog shows its 2 extra Attribute points (' + await budgets() + '
 await up('skill', 'faith').click();
 ok('and they can be spent: ' + await note(), (await note()) === '✓ Faith 4 needs Virtue 4: 1 Attribute point spent.');
 await p.screenshot({ path: SHOTS + '/creation-points-1440-fog.png' });
+// The road map (rules 1.54 item 4119): Will Power's "?" shows ten rows, its own points lit, no line twice in a row.
+await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 200);
+for (let i = 0; i < 2; i++) await up('skill', 'will_power').click();
+ok('Will Power raised to 2 (' + await val('skill', 'will_power') + ')', (await val('skill', 'will_power')) === '2');
+await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(1276, 716); await settle(p, 150);
+if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-creation-skills.png' });
+await p.locator('[data-skill="will_power"] [data-skill-face]').click(); await settle(p, 350);
+const road = await p.evaluate(() => { const steps = [...document.querySelectorAll('.phc-ep-road .phc-ep-step')];
+  return { n: steps.map((s) => s.getAttribute('data-step')).join(), now: steps.filter((s) => s.getAttribute('data-state') === 'now').map((s) => s.getAttribute('data-step')).join(),
+    owned: steps.filter((s) => s.getAttribute('data-state') === 'owned').map((s) => s.getAttribute('data-step')).join(),
+    repeats: steps.filter((s) => { const t = [...s.querySelectorAll('.phc-ep-row')].map((x) => x.textContent); return new Set(t).size !== t.length; }).length,
+    perkSteps: steps.filter((s) => s.querySelectorAll('img.phc-icon').length > 0).map((s) => s.getAttribute('data-step')).join(),
+    small: [...document.querySelectorAll('.phc-ep-road .phc-ep-row, .phc-ep-head')].filter((x) => parseFloat(getComputedStyle(x).fontSize) < 13).length,
+    head: (document.querySelector('.phc-ep-head') || {}).textContent || '', old: document.querySelectorAll('.phc-ep-give').length }; });
+ok('Will Power\'s "?" shows ten rows (' + road.n + '), point ' + road.now + ' lit, ' + road.owned + ' owned, no line twice in a row (' + road.repeats + ')',
+  road.n === '1,2,3,4,5,6,7,8,9,10' && road.now === '2' && road.owned === '1' && road.repeats === 0 && road.old === 0);
+ok('…the head line says what every point gives, the perk steps show their icons (' + road.perkSteps + '), no rules text under 13 px (' + road.small + ')', /^Every point: \S/.test(road.head) && road.small === 0 && /3/.test(road.perkSteps));
+ok('no sideways page scroll with the pop-up open (' + await sideways() + ' px over)', (await sideways()) <= 1);
+// the pop-up scrolls inside itself: the shot shows its road map, as a player scrolling down to it sees it
+await p.evaluate(() => document.querySelector('.phc-ep-road').scrollIntoView({ block: 'start' })); await settle(p, 150);
+ok('the road map fits the 1280×720 window once scrolled to (its ten rows all in view)', await p.evaluate(() => [...document.querySelectorAll('.phc-ep-road .phc-ep-step')].every((s) => { const r = s.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })));
+if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-popup-willpower.png' });
+await p.getByRole('button', { name: 'Close the EPCCG entry' }).click(); await settle(p, 200);
+for (let i = 0; i < 2; i++) { await p.locator('[data-points-undo]').click(); await settle(p, 60); }
+ok('Undo twice puts Will Power back (' + await val('skill', 'will_power') + ')', (await val('skill', 'will_power')) === '0');
 // The Lock in step's summary: no Core numbers.
 await step('Lock in');
 const lock = await p.locator('[data-phc-create]').innerText();

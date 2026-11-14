@@ -52,7 +52,7 @@
 <div class="phc-lu-guide" style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline"><span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{spendHead}}</span><span class="phc-lu-spend" style="font-size: 15px; font-weight: 700; color: #FFFFFF">{{spend}}</span><span class="phc-lu-ceiling" style="font-size: 12px; color: #C9D3E3; margin-left: auto">{{ceil}}</span></span>
 <sc-if value="{{hasSteps}}" hint-placeholder-val="{{true}}"><div class="phc-lu-steps-panel" aria-label="Perk steps" style="display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center"><span style="font-size: 11px; letter-spacing: 0.16em; color: #FFFFFF">{{stepsHead}}</span><sc-for list="{{steps}}" as="st" hint-placeholder-count="2"><button type="button" class="phc-lu-jump" data-skill="{{st.key}}" onClick="{{st.go}}" style="{{st.style}}">{{st.name}} ›</button></sc-for></div></sc-if>
-<span style="font-size: 12px; line-height: 1.5; color: #A3AEC2">{{rules}}</span>
+<span style="font-size: 13px; line-height: 1.5; color: #A3AEC2">{{rules}}</span>
 <span aria-hidden="true" style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 11px; color: #A3AEC2"><span><span style="color: #6FEA77; font-weight: 700">✓ TIER I / II</span> yours</span><span><span style="color: #FFFFFF; font-weight: 700">Take</span> a step is waiting</span><span><span style="color: #7F8BA1; font-weight: 700">LOCKED</span> until the next step</span><span><span style="color: #F2C46A; font-weight: 700">★</span> the Mastered perk</span></span>
 </div>
 
@@ -67,17 +67,17 @@
 <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 2px">
 <span style="display: flex; align-items: center; gap: 8px"><button type="button" class="phc-lu-attrname" data-attr-page="{{at.key}}" onClick="{{at.open}}" aria-label="{{at.openLabel}}" tip="{{at.openLabel}}" style="{{at.openStyle}}">{{at.name}}</button><span style="{{at.valStyle}}">{{at.val}}</span><sc-if value="{{at.canRaise}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-raise" data-raise="attr" onClick="{{at.raise}}" disabled="{{at.blocked}}" aria-label="{{at.raiseLabel}}" tip="{{at.why}}" style="{{at.raiseStyle}}">+1</button></sc-if></span>
 <span aria-hidden="true" style="display: flex; gap: 3px"><sc-for list="{{at.pips}}" as="d" hint-placeholder-count="10"><span style="{{d.style}}"></span></sc-for></span>
-<span class="phc-lu-attr-next" style="font-size: 11.5px; line-height: 1.4; color: #C9D3E3">{{at.next}}</span>
+<span class="phc-lu-attr-next" style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{at.next}}</span>
 <span style="font-size: 11px; color: #A3AEC2">{{at.cap}}</span>
 <sc-if value="{{at.hasWhy}}" hint-placeholder-val="{{false}}"><span class="phc-lu-attr-why" style="font-size: 11.5px; font-weight: 600; color: #FFFFFF">{{at.why}}</span></sc-if>
 </div>
 <sc-for list="{{at.skills}}" as="s" hint-placeholder-count="3">
 <div class="{{s.cls}}" data-skill="{{s.key}}" style="{{s.style}}">
-<span style="display: flex; gap: 8px; align-items: center"><img src="{{s.img}}" alt="" style="width: 30px; height: 38px; object-fit: cover; border-radius: 4px; background: #000; flex: none"><span style="display: flex; flex-direction: column; min-width: 0; flex: 1"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2"><span class="phc-lu-slot" tip="{{s.tagTitle}}" style="{{s.tagStyle}}">{{s.tag}}</span> · roll {{s.mod}}</span></span><span class="phc-lu-pts" style="font-size: 20px; font-weight: 700">{{s.pts}}</span><sc-if value="{{s.canRaise}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-raise" data-raise="skill" onClick="{{s.raise}}" disabled="{{s.blocked}}" aria-label="{{s.raiseLabel}}" tip="{{s.why}}" style="{{s.raiseStyle}}">+1</button></sc-if><button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Read its EPCCG entry" tip="Read the EPCCG entry" style="{{s.helpStyle}}">?</button></span>
-<span class="phc-lu-give" style="font-size: 11.5px; line-height: 1.4; color: #A3AEC2">{{s.give}}</span>
+<span style="display: flex; gap: 8px; align-items: center"><img src="{{s.img}}" alt="" style="width: 30px; height: 38px; object-fit: cover; border-radius: 4px; background: #000; flex: none"><span style="display: flex; flex-direction: column; min-width: 0; flex: 1"><span style="{{s.nameStyle}}">{{s.name}}</span><span style="font-size: 11px; color: #A3AEC2"><span class="phc-lu-slot" tip="{{s.tagTitle}}" style="{{s.tagStyle}}">{{s.tag}}</span><span style="white-space: nowrap; padding-left: 4px">· roll {{s.mod}}</span></span></span><span class="phc-lu-pts" style="font-size: 20px; font-weight: 700">{{s.pts}}</span><sc-if value="{{s.canRaise}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-raise" data-raise="skill" onClick="{{s.raise}}" disabled="{{s.blocked}}" aria-label="{{s.raiseLabel}}" tip="{{s.why}}" style="{{s.raiseStyle}}">+1</button></sc-if><button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Read its EPCCG entry" tip="Read the EPCCG entry" style="{{s.helpStyle}}">?</button></span>
+<sc-if value="{{s.hasNext}}" hint-placeholder-val="{{true}}"><span class="phc-lu-next" data-next-at="{{s.nextAt}}" style="font-size: 13px; line-height: 1.4; color: #E7EBF3">{{s.next}}</span></sc-if>
 <sc-if value="{{s.hasWhy}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; color: #A3AEC2">{{s.why}}</span></sc-if>
-<sc-if value="{{s.hasNext}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; color: #C9D3E3">{{s.next}}</span></sc-if>
-<span aria-label="Mastery" style="display: flex; gap: 3px"><sc-for list="{{s.marks}}" as="mk" hint-placeholder-count="5"><span tip="{{mk.title}}" style="{{mk.style}}">{{mk.label}}</span></sc-for></span>
+<span class="phc-lu-marks" aria-label="Mastery" style="display: flex; gap: 3px"><sc-for list="{{s.marks}}" as="mk" hint-placeholder-count="5"><span data-mark="{{mk.key}}" tip="{{mk.title}}" style="{{mk.style}}">{{mk.label}}</span></sc-for></span>
+<sc-if value="{{s.hasReach}}" hint-placeholder-val="{{true}}"><span class="phc-lu-reach" data-reach="{{s.reachAt}}" style="font-size: 12px; line-height: 1.35; color: #A3AEC2">{{s.reach}}</span></sc-if>
 <sc-if value="{{s.hasSteps}}" hint-placeholder-val="{{false}}"><span class="phc-lu-stepline" style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; color: #FFFFFF">{{s.stepsLine}}</span></sc-if>
 <div class="phc-lu-perks" style="display: flex; flex-direction: column; gap: 4px">
 <sc-for list="{{s.perks}}" as="pk" hint-placeholder-count="2">
@@ -93,7 +93,7 @@
 </div>
 </section>
 </sc-for>
-<span style="font-size: 12px; line-height: 1.5; color: #A3AEC2">{{pointsNote}}</span>
+<span style="font-size: 13px; line-height: 1.5; color: #A3AEC2">{{pointsNote}}</span>
 </section>
 
 <aside aria-label="Your class" class="phc-slide-in-right phc-lu-class" style="min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">

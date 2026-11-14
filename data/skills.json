@@ -45,7 +45,31 @@
       "slot": "alpha",
       "summary": "The tank.",
       "per_point": {
-        "text": "Your Guard pool holds 1 more (5 at most). The Guard technique gives you more Guard: 1, plus 1 for every point here after the first (Brace gives a flat 2, whatever your points)."
+        "numbers": {
+          "pool": 1,
+          "pool_max": 5,
+          "guard_base": 1,
+          "guard_per_point": 1,
+          "brace": 2
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "Your Guard pool holds {=per_point.numbers.pool} more ({=per_point.numbers.pool_max} at most)"
+          },
+          {
+            "at": "at 1",
+            "text": "The Guard technique gives you {=per_point.numbers.guard_base} Guard"
+          },
+          {
+            "at": "at 1",
+            "text": "Brace gives a flat {=per_point.numbers.brace} Guard, whatever your points"
+          },
+          {
+            "at": "each from 2",
+            "text": "The Guard technique gives {=per_point.numbers.guard_per_point} more Guard"
+          }
+        ]
       },
       "gates": [
         "armor:heavy"
@@ -168,7 +192,6 @@
           "Yeah, I take hits for a living. Men these days are weak one way or another, and I mostly make my money off the ones who are weak in the heart."
         ],
         "intro": "Durability is your metabolism and circulation; what commoners call \"being in good shape.\" Who cares if you can shoot fire from your palms when you can inhale the fireball they just threw and breathe it back in their faces?",
-        "effect": "Your Guard pool holds 1 more (5 at most). The Guard technique gives you more Guard: 1, plus 1 for every point here after the first (Brace gives a flat 2, whatever your points).",
         "high_levels": "you look like a pro wrestler and weaker folk start trembling. Not sure they'll dare talk to a walking marble statue, though.",
         "good_for": "gym rats, tomboys, brawlers who tank for the team.",
         "bad_for": "scholars, exam crammers, light-armour fans.",
@@ -184,7 +207,20 @@
       "slot": "beta",
       "summary": "Wounds don't slow you down.",
       "per_point": {
-        "text": "−10% elemental damage taken. +2 HP every level."
+        "numbers": {
+          "elemental_taken": 0.1,
+          "hp_per_level": 2
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "\u2212{=per_point.numbers.elemental_taken|pct}% elemental damage taken"
+          },
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.hp_per_level} HP every level"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -303,7 +339,6 @@
           "Want to test if your poison's strong enough? Coat a blade and go poke Knight Jiren in the arm. No, I'm serious. Once he sleepwalked into the snake pen, slept there all night and walked out with a dozen Crobar still hanging off his back. THEN HE WENT AND MADE BREAKFAST. Sometimes I wonder if anyone around here is still normal."
         ],
         "intro": "Pain Threshold is why you can take an arrow and still get up. Or change a lightbulb without flipping the breaker? Who knows. Just remember: not feeling pain doesn't mean you can't die. Don't get delusional.",
-        "effect": "−10% elemental damage taken. +2 HP every level.",
         "high_levels": "the \"threshold\" part disappears and you go numb to anything that hurts. And again: A KNIFE YOU CAN'T FEEL CAN STILL STOP YOUR HEART.",
         "good_for": "bushido duellists the sneaky types keep poisoning, people who hate pain, the last survivor of a house fire, masochists.",
         "bad_for": "anyone who still likes their limbs and doesn't want to lose one because they \"forgot fire is hot.\"",
@@ -319,7 +354,25 @@
       "slot": "gamma",
       "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilance.",
       "per_point": {
-        "text": "You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "sense": 1,
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "You sense what you can't see {=per_point.numbers.sense} better (ear, smell, touch)"
+          },
+          {
+            "at": "each",
+            "text": "Your Warn Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -443,7 +496,6 @@
           "She can feel it, trust me. Even a single sigh. Back when her eyes still worked and her legs hadn't given out, Grandma Marry was already the Grandma Marry she is now. What I always admired most was how she could read the temperature of the air with one finger raised to the sky. Or the way she sits in her deck chair, eyes closed, smelling the morning, with a smile on her lips. Sometimes she makes a twenty-year-old girl like me jealous."
         ],
         "intro": "Sensory is how sensitive your skin and senses are to the world: a cold breeze, a scent you can't name, a faint tremor underground. With high Sensory it feels like nature itself is shaking your hand.",
-        "effect": "You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you become one with every movement around you, a little too well. If your ears are that sharp, stay away from concerts. Those speakers don't hit gently.",
         "good_for": "people who stroll for the breeze, travellers who go somewhere just to breathe it, scouts and rogues listening for footsteps.",
         "bad_for": "death metal fans, people who can't take the cold, elves of every kind.",
@@ -459,7 +511,29 @@
       "slot": "alpha",
       "summary": "Hit harder, bend further, lift higher.",
       "per_point": {
-        "text": "+1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks."
+        "numbers": {
+          "hit": 1,
+          "damage": 0.05,
+          "counter": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.hit} to hit with heavy melee weapons and bare hands"
+          },
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.damage|pct}% physical damage"
+          },
+          {
+            "at": "each",
+            "text": "Your melee techniques are harder to save against"
+          },
+          {
+            "at": "each from 2",
+            "text": "+{=per_point.numbers.counter} to your counter-attacks"
+          }
+        ]
       },
       "gates": [
         "weapon:heavy_melee",
@@ -585,7 +659,6 @@
           "Back in the army they kept saying my arms were bigger than my brain. Yeah, maybe. Maybe. If I pulled my brain out and measured it with a ruler, my arm probably is bigger. But you can't arm-wrestle with a brain, and when it comes to arm-wrestling I'm the best there is. So I used my arms to wrestle their brains, and a few concrete tables. Nobody said anything after that."
         ],
         "intro": "Just saying the name makes you feel the strength rising. Raw Power isn't technique, calm or authority. It's STRENGTH: hit harder, bend further, lift higher. Things only muscle can do.",
-        "effect": "+1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks.",
         "high_levels": "you break locks, doors and bones, and laugh at people who can't. But that much muscle makes it easy to hurt the things you never meant to.",
         "good_for": "martial artists, berserkers, competitive lifters, guys going for the record on the bar's punching machine.",
         "bad_for": "mages, cat and bunny lovers, high nobility who don't want to be called thugs.",
@@ -601,7 +674,15 @@
       "slot": "beta",
       "summary": "Fear doesn't get a vote.",
       "per_point": {
-        "text": "+1 on Body saves (poison, knock-downs, being pushed or pinned)."
+        "numbers": {
+          "save": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.save} on Body saves: poison, knock-downs, pushes and pins"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -719,7 +800,6 @@
           "Why has no one else uncovered the secret of Arganzaz? Because they are a pack of faint hearts, that's why. I saw a jade-inlaid door twenty yards wide slowly opening. I heard a thousand wandering ghosts wailing and smelled ten thousand walking corpses. What they did was scream and run. What I did was hold my breath and walk in. That is why they now call me the Keeper of the secret of Arganzaz."
         ],
         "intro": "Guts is your tolerance for anything spooky or scary: a door with a skull over it, or a pitch-black hole with a sign saying \"Hole of Pain.\" What it is doesn't matter. What matters is that you're not scared of it.",
-        "effect": "+1 on Body saves (poison, knock-downs, being pushed or pinned).",
         "high_levels": "you feel like an impregnable fortress. But people don't label things \"dangerous\" for fun, and you not being scared doesn't stop it from chewing your bones.",
         "good_for": "thrill-seekers, manly men, manly women, holo-streamers filming viral reels in abandoned graveyards.",
         "bad_for": "horror-movie fans, delicate ladies, team leaders and scouts.",
@@ -740,7 +820,24 @@
       "slot": "gamma",
       "summary": "You run the conversation through fear.",
       "per_point": {
-        "text": "Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "Your Threaten Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "each",
+            "text": "Your Threaten is harder to shake off"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -866,7 +963,6 @@
           "Have you ever had the pleasure of tasting animal marrow? Oh, who am I kidding. A merchant from Mandestra must have tasted every pleasure under the sun. Forgive my peasant manners. And you know what, Mr. Galon? If the shipment I'm waiting for doesn't arrive on time, then with these two peasant hands I'll treat you to a very special marrow broth, made from the bones of your arm. Understand? Snap that dainty hand of yours like a chicken neck, and then we savour that faintly sweet flavour together, like business partners sharing a milkshake. Slurp. Slurp. Slurp."
         ],
         "intro": "Intimidation is your control over the fear of whoever stands in front of you. One piercing look, one commanding cough: the person running this conversation is you.",
-        "effect": "Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
         "high_levels": "everyone sees a demon in human skin, whether you want it or not. Whether that's good or bad is up to you.",
         "good_for": "people done with smooth talkers' bullshit, people who want every conversation to open with the other guy's trousers turning brown, serial killers.",
         "bad_for": "upstanding middle-class citizens, anyone keeping an angelic image, heartbreakers.",
@@ -882,7 +978,28 @@
       "slot": "alpha",
       "summary": "The quick hand. Guns, bows, thrown weapons and light blades; reloads, recoil, quick-draw.",
       "per_point": {
-        "text": "+1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against."
+        "numbers": {
+          "hit": 1,
+          "crit": 0.02
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.hit} to hit with guns, light blades and thrown weapons"
+          },
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.crit|pct}% critical damage"
+          },
+          {
+            "at": "each",
+            "text": "You throw half a tile further"
+          },
+          {
+            "at": "each",
+            "text": "Your shots' techniques are harder to save against"
+          }
+        ]
       },
       "gates": [
         "weapon:guns",
@@ -1009,7 +1126,6 @@
           "No tricks here. I don't even need to open my eyes. I've carried this revolver since the years before Operation Daggerfall, stranger. Call me old-fashioned, call me outdated, but don't take this old body lightly in a gunfight. Wander within 500 metres and if your head doesn't vanish, your hat will need a big patch. These eyes aren't what they were, but these hands have never left the gunbelt. Identify. Squeeze. Breathe the powder smoke. Dig the grave."
         ],
         "intro": "Dexterity measures how reliable you are at anything that needs precision. Anyone can reload a gun or throw a dart. Nobody does it as fast or as clean as you.",
-        "effect": "+1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
         "high_levels": "your hands work like a machine and your trained skills fire almost on their own. So you want to use them even when it's the wrong moment, and announcing your habits to the whole world is never a good idea.",
         "good_for": "gunslingers, snipers, blade masters, point strikers.",
         "bad_for": "gamblers, magic users, anyone who doesn't want to be called \"hands faster than brain.\"",
@@ -1025,7 +1141,15 @@
       "slot": "beta",
       "summary": "Armour just slows you down.",
       "per_point": {
-        "text": "+1 Defense (you are harder to hit), from 2 points."
+        "numbers": {
+          "defense": 1
+        },
+        "rows": [
+          {
+            "at": "each from 2",
+            "text": "+{=per_point.numbers.defense} Defense: you are harder to hit"
+          }
+        ]
       },
       "gates": [
         "armor:light",
@@ -1146,7 +1270,6 @@
           "Armour? What armour? Oh, I left the vest at base. First-floor locker room, locker 16, key's under the red flowerpot if you want it. Natalia still grumbles every time I deploy: 'Are those two banners on your back for a burial shroud or what?' But the armoury boys lean on tech way too much. What I'm fighting out here are Orks. ORKS. They swing junk machetes, and the gunners aren't any better, aiming with both eyes open. If you can dodge everything they throw at you, armour just slows you down!"
         ],
         "intro": "Athletics is how nimble and supple you are. It decides how well you pull off anything that needs flexibility: flips, swimming, dodging.",
-        "effect": "+1 Defense (you are harder to hit), from 2 points.",
         "high_levels": "your body is light as a feather and limber as a cat. Until someone ties you down. Then you aren't a person who lost a leg, you're a bird that lost its wings. Prepare for the trauma.",
         "good_for": "gymnasts, dancers, guys who spam crouch after every kill.",
         "bad_for": "slow-living types, high nobility, heavy-armour users.",
@@ -1162,7 +1285,25 @@
       "slot": "gamma",
       "summary": "Spotting danger is one thing. Moving in time is another.",
       "per_point": {
-        "text": "+1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "init": 1,
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.init} Initiative: you act earlier in the round"
+          },
+          {
+            "at": "each",
+            "text": "Your Cue Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -1282,7 +1423,6 @@
           "I shoot first. Honestly, you don't need fancy gear out here. Want it harder? Hand me a couple of daggers. Surviving the lowlands is tough because it has the one thing the desert doesn't: dead buildings. Wherever you go in here, you're swimming through a concrete forest. If they poke out of some dark corner and you don't react in time, a hundred percent you end up strung on a pole. Me, I just throw a knife and duck before they pull the trigger."
         ],
         "intro": "Reaction Speed is the time between your eyes firing and your body moving: a glint from an enemy scope, or a strange blink from a partner right before the handshake. Spotting danger is one thing. Reacting in time is another.",
-        "effect": "+1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you're frighteningly fast and never caught flat-footed. But reacting that fast makes you look plainly impatient, and plenty of times reacting fast just makes things go wrong faster.",
         "good_for": "gamers, sailors, gunners, every other kind of -er, gamblers.",
         "bad_for": "calm people, people who need to save face, anyone who doesn't want to look like they're on speed.",
@@ -1298,7 +1438,19 @@
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "per_point": {
-        "text": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons, and what you do unseen, are harder to save against."
+        "numbers": {
+          "spot": 1
+        },
+        "rows": [
+          {
+            "at": "every 2",
+            "text": "Enemies need {=per_point.numbers.spot} more to spot you while you sneak"
+          },
+          {
+            "at": "each",
+            "text": "Your traps, poisons and unseen acts: harder to save against"
+          }
+        ]
       },
       "gates": [
         "gear:stealth"
@@ -1642,7 +1794,6 @@
           "A thousand gold for two rocks. The number of people still paying in gold coins outside Central City is baffling. Back when I worked the city, I'd swipe a bank card out of some guy's pocket and that was dinner sorted. Back then I still had Travis to crack the cards... People call it petty theft, but the trade takes real skill. First you learn to walk in step with the crowd and spot which pocket bulges most. Then you work out how much weight to slip back in so they don't notice the coins have flown. If you don't know how, don't mess around. The old men at the guard post started carrying shock batons last week, and it hurts like you wouldn't believe."
         ],
         "intro": "Ingenuity is the finesse in everything you do: staying unseen while sneaking, picking pockets, that sort of thing.",
-        "effect": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons, and what you do unseen, are harder to save against.",
         "high_levels": "you turn into a cosplayer of the sneaking-soldier legend, flickering in and out of the shadows. But all that shifty behaviour makes it hard to look a cop in the eye.",
         "good_for": "rogues, scouts, bandits, gamblers.",
         "bad_for": "model citizens, uniformed (not undercover) cops, anyone trying to romance a uniformed (not undercover) cop.",
@@ -1663,7 +1814,28 @@
       "slot": "beta",
       "summary": "Seeing how a thing works: a lock, a mechanism, a crime scene, an enemy. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
       "per_point": {
-        "text": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it is quicker (Quick Read), and at 5 it also shows the target's weak point."
+        "numbers": {
+          "crit_taken": 0.05,
+          "range": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "\u2212{=per_point.numbers.crit_taken|pct}% critical damage taken"
+          },
+          {
+            "at": "each",
+            "text": "Analyse reaches {=per_point.numbers.range} tile further"
+          },
+          {
+            "at": "at 3",
+            "text": "Analyse is quicker (Quick Read)"
+          },
+          {
+            "at": "at 5",
+            "text": "Analyse also shows the target's weak point (Read Them)"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -1782,7 +1954,6 @@
           "Yes, yes, a watchmaker and a gunsmith aren't far apart. Lay every part of a pendulum clock on the table and odds are your brain starts shorting out. Guns are the same: picking one up and shooting is a world away from stripping every screw and putting it back. Anyone can read a clock, but how many can fix one? What you need is someone who sees every piece of the puzzle and joins them into one. Like me! Unless you use a digital clock or one of those toy guns from the carnival stalls, in which case: scram. Shoo, shoo."
         ],
         "intro": "Acuity is your grasp of complex mechanisms, from something as small as a stopwatch to something as huge as a transcontinental cannon. All of it can be taken apart by you.",
-        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it is quicker (Quick Read), and at 5 it also shows the target's weak point.",
         "high_levels": "you see how everything works, man-made or not: a lock, a network, a crime scene, the way an enemy guards itself. That helps with a lot, but the first answer that fits is the one you keep, and you lose interest in anything that can't be taken apart, people included.",
         "good_for": "detectives, locksmiths, slicers, clockmakers, anyone who reads an enemy before the shooting starts.",
         "bad_for": "enchanters, party people, therapists, anyone who has to act before they understand.",
@@ -1809,7 +1980,30 @@
       "slot": "gamma",
       "summary": "Sight, sound and hostile intent.",
       "per_point": {
-        "text": "You notice traps, hidden things and hidden enemies 1 better, and 1 tile further off. Your Spot Call reaches 1 tile further. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "notice": 1,
+          "notice_range": 1,
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "You notice traps, hidden things and hidden enemies {=per_point.numbers.notice} better"
+          },
+          {
+            "at": "each",
+            "text": "You notice them {=per_point.numbers.notice_range} tile further off"
+          },
+          {
+            "at": "each",
+            "text": "Your Spot Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -1926,7 +2120,6 @@
           "They keep saying I can dodge bullets. As if any human could. They've got a few knives in the neck before they can pull the trigger, that's all. Run enough jobs for old Rourigaz and you'll get used to it: every time someone aims at you, even from the dark, your spine goes cold. Just remember to cut their spine out in return, as a thank-you gift."
         ],
         "intro": "Vigilant is the survival instinct your ancestors handed down. An enemy in the bushes, a prying gaze in the dark: with eyes and ears tuned to detail, you notice what's off before anyone else.",
-        "effect": "You notice traps, hidden things and hidden enemies 1 better, and 1 tile further off. Your Spot Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you're hyper-aware of everything you see and hear and can sense danger in a heartbeat. But that alert, you're never sure if the danger is real or you're just imagining things.",
         "good_for": "debtors on the run from loan sharks, husbands afraid of wives in high heels, grunts terrified of punji traps, snipers.",
         "bad_for": "anyone who doesn't want to be called jumpy or a coward.",
@@ -1942,7 +2135,35 @@
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
       "per_point": {
-        "text": "+10% Sigil power. You know 1 more Sigil word. Every 2 points: Sigils reach 1 tile further and last 1 round longer. Every 3 points: a Sigil burns 1 less core charge. Your Sigils' conditions are harder to save against."
+        "numbers": {
+          "sigil": 0.1,
+          "words": 1,
+          "range": 1,
+          "rounds": 1,
+          "charge": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.sigil|pct}% Sigil power"
+          },
+          {
+            "at": "each",
+            "text": "You know {=per_point.numbers.words} more Sigil word"
+          },
+          {
+            "at": "each",
+            "text": "Your Sigils' conditions are harder to save against"
+          },
+          {
+            "at": "every 2",
+            "text": "Sigils reach {=per_point.numbers.range} tile further and last {=per_point.numbers.rounds} round longer"
+          },
+          {
+            "at": "every 3",
+            "text": "A Sigil burns {=per_point.numbers.charge} less core charge"
+          }
+        ]
       },
       "gates": [
         "focus:evoker"
@@ -2072,7 +2293,6 @@
           "Stop flailing and concentrate. In nearly twenty years of using an Evoker I have never needed to dance a single kata to trigger a sigil. If you want martial arts in your magic, kindly go south and join a sect. I may be a spellcaster, but I am a scientist and they are philosophers. Now breathe deep, memorise the sigil's path, draw it, and press the blue button on the right-hand grip. If you burn through your MagiCore before finishing a Fireball, I'm done teaching you."
         ],
         "intro": "Brain Power is your brain's processing speed. In PC-parts terms, it's the difference between two graphics cards. It lets you handle information faster than others, and helps a lot with Sigils and Evokers.",
-        "effect": "+10% Sigil power. You know 1 more Sigil word. Every 2 points: Sigils reach 1 tile further and last 1 round longer. Every 3 points: a Sigil burns 1 less core charge. Your Sigils' conditions are harder to save against.",
         "high_levels": "your brain is always hunting detail, almost hyperactive. Look at a rock and instead of \"where's it from\" and \"why is it here\", you're on \"its chemical composition\" and \"a hundred ways to arrange rocks into a code.\" Training a brain that big isn't always smart.",
         "good_for": "Evoker users, scientists, researchers.",
         "bad_for": "Emanator users, healers, melee fighters.",
@@ -2088,7 +2308,15 @@
       "slot": "beta",
       "summary": "The scientist's library. Mirrors Lore Master.",
       "per_point": {
-        "text": "+1 on Brain saves (confusion, illusions, having your mind turned)."
+        "numbers": {
+          "save": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.save} on Brain saves: confusion, illusions, your mind turned"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -2218,7 +2446,6 @@
           "The knowledge you need to become a Keeper of Books? Seven hundred and forty-five reigns. Two hundred thousand years of history. Five hundred and forty thousand inventions, great and small. Nine million three hundred and fifty thousand species of plant and animal, and hundreds of millions of pages turned. Now kindly erase your presence from my library."
         ],
         "intro": "Rumination is how well you absorb and retain scientific knowledge: history, politics, maths, physics, chemistry. It also lets you look at an object and pull up the theory behind it.",
-        "effect": "+1 on Brain saves (confusion, illusions, having your mind turned).",
         "high_levels": "you always side with science, experiment and hard data. Great in a lab; uncomfortable with anything science can't explain, like incantations, charms, souls or spiritual links.",
         "good_for": "bookworms, hackermen, tech professionals of every field.",
         "bad_for": "lifters who only care about strength, students of the surreal, the devout, conspiracy preachers on the pirate bands.",
@@ -2239,7 +2466,24 @@
       "slot": "gamma",
       "summary": "Logic as a weapon.",
       "per_point": {
-        "text": "Persuading an enemy in a fight is harder to resist. Your Brief Call reaches 1 tile further. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "Persuading an enemy in a fight is harder to resist"
+          },
+          {
+            "at": "each",
+            "text": "Your Brief Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -2361,7 +2605,6 @@
           "Fine, if you insist, I'll review all the evidence. Aaaand there's nothing worth reviewing. The dashcam at 11:45 shows, plain as day, the defendant stabbing a man to death. And I'm sick of your take-the-punch-take-the-bribe attitude, Your Honour, and your jury's too. The evidence is right there, so why no arrest? Because the defendant comes from a good family? Or because the pile of cash under the table is just too hard to pass up? You know what? As counsel for the plaintiff, I'm going to walk outside and tell the world I won. There is only one truth, and if you disagree it's because you're a pack of nitpicking self-servers. I WIN. BYE-BYE. CLOSE THE COURT."
         ],
         "intro": "Eloquence is your power to argue and debate logically, whether you're stuck in a battle of wits or a high courtroom. Believe in yourself, pick apart every word out of your opponent's mouth, cook up something clever and fire it back with confidence.",
-        "effect": "Persuading an enemy in a fight is harder to resist. Your Brief Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you must win EVERY conversation, and you'll use every trick there is, whether the other side meant harm or not. Good or bad? Depends.",
         "good_for": "lawyers, preachers, politicians, keyboard warriors.",
         "bad_for": "quiet types, people who hate arguing, people who'd rather argue with their fists.",
@@ -2377,8 +2620,20 @@
       "slot": "alpha",
       "summary": "Shapes thought into images; pictures the Figments the bots build.",
       "per_point": {
-        "text": "One more tile of projection range; Figment accuracy (the modifier).",
-        "source": "rules 1.34: the elemental line went with rules 1.26's slope; Visualization is Figments' door"
+        "source": "rules 1.34: the elemental line went with rules 1.26's slope; Visualization is Figments' door",
+        "numbers": {
+          "range": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "Your Figments reach {=per_point.numbers.range} more tile (projection range)"
+          },
+          {
+            "at": "each",
+            "text": "Your Figments are more accurate (the roll modifier)"
+          }
+        ]
       },
       "gates": [
         "gear:projector",
@@ -2501,7 +2756,6 @@
           "Thinking it in your head is not enough! Master Sakamoto once spent four months mixing just 200 grams of watercolour. He called it 'Thousand-Autumn Red.' And if you must know: I've watched the video of him mixing it over a thousand times, and I still can't make that colour. No one can guess what you might do with a few rose stems, glue and an egg yolk. I wonder what 'Afternoon of Blood' looked like inside his mind. But the undeniable truth is that the way he carried that thought from his head onto paper is irresistible. A beauty only he could paint."
         ],
         "intro": "Visualization is your power to picture the world: to take the shapeless thoughts in your head and express them outward as images.",
-        "effect": "One more tile of projection range; Figment accuracy (the modifier).",
         "high_levels": "you see the story behind every landscape and make landscapes out of every story. You risk sinking into faraway worlds and forgetting this one.",
         "good_for": "critics, painters, Projector Gear® users.",
         "bad_for": "the near-sighted, people who'd rather feel than describe.",
@@ -2517,7 +2771,19 @@
       "slot": "beta",
       "summary": "Making a thing work now with what is at hand. Fixes guns, gear and machines in the field, robot squadmates included.",
       "per_point": {
-        "text": "−10% ambush damage taken. Field Repair restores more for each point from 3 up."
+        "numbers": {
+          "ambush_taken": 0.1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "\u2212{=per_point.numbers.ambush_taken|pct}% ambush damage taken"
+          },
+          {
+            "at": "each from 3",
+            "text": "Field Repair restores more"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -2649,7 +2915,6 @@
           "The manual says a servo-hand wants a clean bench, a calibrated driver and four hours. I had a ditch, a soup spoon, and as long as it takes an Ork to cross a field. He still has the hand. Plans are lovely things. I have had hundreds, and every one of them died in the first minute, most of them louder than I did. What you have after that is whatever is in your pockets, and how fast you stop mourning the plan. The spoon is still in there, by the way. Load-bearing. Nobody tell him."
         ],
         "intro": "Improvisation is what you do when the plan is gone: making the thing in front of you work with whatever is at hand, right now, and working out why later.",
-        "effect": "−10% ambush damage taken. Field Repair restores more for each point from 3 up.",
         "high_levels": "nothing catches you flat and nothing stays broken near you. But you stop making plans at all, and the people who depend on you can never tell what you will do next.",
         "good_for": "field mechanics, ditch medics, smugglers, anyone who performs for a living.",
         "bad_for": "planners, quartermasters, whoever signed for the equipment.",
@@ -2667,7 +2932,24 @@
       "slot": "gamma",
       "summary": "Warmth, persuasion, and lying with a smile.",
       "per_point": {
-        "text": "An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "An offer of terms is harder to refuse"
+          },
+          {
+            "at": "each",
+            "text": "Your Rally Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -2789,7 +3071,6 @@
           "I asked whether he'd like a glass of water or anything. Honestly, officers, that afternoon was the first time I'd met Mr. Duboi, and everything in my statement is true. Granted, keeping an electric chair in one's office isn't for everyone, but I'm a lover of the arts. I adore bold, satirical work; how could I not display one of the masterpieces of my collection? It was a regrettable accident. That chair was never used until Mr. Duboi volunteered himself into it. How was I to know he would switch the power on himself and die so needlessly? Tell the court I'll be there. A gentleman like me never passes up a conversation he is certain to win."
         ],
         "intro": "Charisma is the power of words: how well you persuade and steer a conversation, and how warm you come across while doing it. Extremely handy for lying and making things up.",
-        "effect": "An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you can talk anyone into anything, but all that warmth makes some people see you as a spineless bootlicker. Depends who you're talking to.",
         "good_for": "politicians, merchants, lawyers.",
         "bad_for": "antiheroes, the antisocial, anyone who hates looking soft in a conversation.",
@@ -2805,7 +3086,20 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "per_point": {
-        "text": "Healing given grows with every point. With an Attuner in hand it opens Bonds and Tending: more Bonds held, and more verbs, as it grows."
+        "rows": [
+          {
+            "at": "each",
+            "text": "Healing you give grows"
+          },
+          {
+            "at": "from 1",
+            "text": "With an Attuner in hand, it opens Bonds and Tending"
+          },
+          {
+            "at": "each",
+            "text": "With an Attuner: more Bonds held and more verbs as it grows"
+          }
+        ]
       },
       "gates": [
         "focus:attuner"
@@ -2930,7 +3224,6 @@
           "I saw. Horror... horror and pain, grief and helplessness. Oh, I'd give my whole fortune to forget, you understand? Forget the horror in their eyes, the horror I still feel in my chest, the horror no words can describe. The horror of an empty face hanging above an iron stake."
         ],
         "intro": "Empathy is the bridge between one person and another: feeling what someone else is going through, putting yourself where they stand, and understanding at least partly why they do what they do.",
-        "effect": "Healing given grows with every point. With an Attuner in hand it opens Bonds and Tending: more Bonds held, and more verbs, as it grows.",
         "high_levels": "you become one with humanity. You understand everyone's circumstances, and everyone's story gets into you. You cry other people's tears and stick your nose into business that isn't yours.",
         "good_for": "therapists, human lie detectors, good alignments.",
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
@@ -2946,7 +3239,19 @@
       "slot": "beta",
       "summary": "The squad is a world of its own.",
       "per_point": {
-        "text": "+10% healing received. Share a Hit, a protective reaction, from the first point."
+        "numbers": {
+          "heal": 0.1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.heal|pct}% healing received"
+          },
+          {
+            "at": "from 1",
+            "text": "Share a Hit, a protective reaction"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -3143,7 +3448,6 @@
           "If you don't want to get brainwashed, I'd stay away from that Souji. 'The power of friendship,' then 'the bond of hearts'; he says that stuff without a shred of embarrassment. He wants to befriend everyone he meets and goes around calling people 'comrade' before he's even graduated. Go into a fight with him and before you know it half the enemy team are on our side. Last week he talked that platinum-haired girl from the rival school onto our team, just like that. Is that insane or what? Jealous? Why on earth would I be jealous? Completely ridiculous!"
         ],
         "intro": "Camaraderie is your teamwork and your solidarity with your squad, plus your knack for making friends and building factions.",
-        "effect": "+10% healing received. Share a Hit, a protective reaction, from the first point.",
         "high_levels": "you become the heart of any team you join. You start seeing the team as its own little world and judge outsiders harder than you mean to.",
         "good_for": "captains, team players.",
         "bad_for": "lone wolves, edgelords, murder hobos.",
@@ -3159,7 +3463,24 @@
       "slot": "gamma",
       "summary": "Metaphor, subtext, poetry and flirting.",
       "per_point": {
-        "text": "Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "Your Taunt Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "each",
+            "text": "Your Taunt is harder to shake off"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -3279,7 +3600,6 @@
           "I've lived alone between earth and sky too long for one or two more haters to matter. But Jazmine is something else. Coarse as an old man from Chezknov, and yet sometimes... gentle as a golden lotus in a stinking marsh. Can your smile melt my heart? Hard to say. The one thing I know for certain: you make me want to be a better man."
         ],
         "intro": "Implication is your command of metaphor. You catch people's meaning when they talk in figures, you understand difficult poetry and literature, and it helps a great deal with lying and with flirting. (With literature. It can't generate a credit card.)",
-        "effect": "Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
         "high_levels": "you drown in the meaning behind every word. Every metaphor lands, but you fall into the \"yes means no, no means yes\" trap.",
         "good_for": "poets, writers, artists, the hopelessly lovestruck.",
         "bad_for": "the antisocial, blunt people, paladins.",
@@ -3295,7 +3615,45 @@
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "per_point": {
-        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain."
+        "numbers": {
+          "soul": 0.1,
+          "syphon": 0.1,
+          "strain": 1,
+          "reach": 1,
+          "designs": 1,
+          "slots": 1,
+          "pumps": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.soul|pct}% Soul power, +{=per_point.numbers.syphon|pct}% mana syphoned"
+          },
+          {
+            "at": "each",
+            "text": "Your Outbursts' conditions are harder to save against"
+          },
+          {
+            "at": "every 2",
+            "text": "+{=per_point.numbers.strain} Strain limit, Outbursts reach {=per_point.numbers.reach} tile further"
+          },
+          {
+            "at": "every 2",
+            "text": "You keep {=per_point.numbers.designs} more design ready"
+          },
+          {
+            "at": "every 3",
+            "text": "{=per_point.numbers.slots} more module slot"
+          },
+          {
+            "at": "from 3",
+            "text": "{=per_point.numbers.pumps} Pump of an Outburst each round is free"
+          },
+          {
+            "at": "from 7",
+            "text": "A held Outburst swells without Strain"
+          }
+        ]
       },
       "gates": [
         "focus:emanator"
@@ -3430,7 +3788,6 @@
           "Yes, your heart can shatter like silken tofu. Connecting to the twin world is no joke. Pulling a few little sparks over ten minutes, anyone with a cheap Emanator can do that. A bolt over ten thousand volts in two seconds? Try it and you'll learn what a Mana Short is. There was a Linker once who didn't just bleed internally; he shorted so hard his heart burst on the spot and left a hole in his chest. Outburst craft needs a pure heart, the strength to resist temptation, and the understanding to hold the connection. Now breathe deep and meditate until your doubts fall away!"
         ],
         "intro": "Will Power is the strength of your heart: generosity and spiritual sharpness. A person's soul lives in the heart, and Will Power measures both your mental strength and the strength of the soul inside you. Essential for Outbursts and Emanators.",
-        "effect": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain.",
         "high_levels": "your heart and soul turn hard and strong. You connect easily with the supernatural, but you slip easily into delusion, because the link to your upper-realm soul is so strong you can't tell this world from that one.",
         "good_for": "Emanator users, monks, crusaders, Bonders.",
         "bad_for": "Evoker users, scientists, melee users.",
@@ -3446,7 +3803,15 @@
       "slot": "beta",
       "summary": "A face that never moves.",
       "per_point": {
-        "text": "+1 on Heart saves (fear, despair, losing your nerve)."
+        "numbers": {
+          "save": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.save} on Heart saves: fear, despair, losing your nerve"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -3573,7 +3938,6 @@
           "In the ring, kid, the first punch you throw doesn't come from your fist. What you need is your eyes! When he walks at you, arms up and chest out, you stand still. When your lips feel his boozy breath, you stand still. When his bloodthirsty stare locks on yours, you stand stiller. Only when his eyes slip off yours do you get to move. The only problem is, the fight ended long before that."
         ],
         "intro": "Composure is your ability to stay calm in any situation. Neither a monster at midnight nor the woman waiting at the end of the alley can move your face an inch.",
-        "effect": "+1 on Heart saves (fear, despair, losing your nerve).",
         "high_levels": "your face goes stone in every situation. Great when someone threatens or interrogates you; terrible for anyone who just wants to be friendly.",
         "good_for": "security guards, police, iron men, lead men.",
         "bad_for": "small bois, shy bois, studs and sluts.",
@@ -3589,7 +3953,20 @@
       "slot": "gamma",
       "summary": "The occultist's library: old scripts, curses, relics and the names of things.",
       "per_point": {
-        "text": "Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "Your Name It Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -3715,7 +4092,6 @@
           "Mother wanted to know, to understand, to hold the chance to prove it true. And after more than a hundred years of study, they chose Mother for this seat. The one who makes the unreal real."
         ],
         "intro": "Lore Master is how well you adapt to and absorb supernatural knowledge, the kind science dismisses as baseless. You understand how it works without leaning on dangerous shortcuts like charms or spiritual links.",
-        "effect": "Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "you can tell at once whether something is the work of the supernatural and how to deal with it. Comfortable among mages, but you start rejecting proven science because you see the supernatural threads behind it.",
         "good_for": "dreamers, divine casters, spellswords.",
         "bad_for": "scientists, hackers, barbarians.",
@@ -3731,7 +4107,25 @@
       "slot": "alpha",
       "summary": "The saints judge. You deliver.",
       "per_point": {
-        "text": "+10% Blessing power. Hymns come back sooner: each point takes three quarters of a round off the wait, down to 3 rounds. Your Blessings' conditions are harder to save against."
+        "numbers": {
+          "blessing": 0.1,
+          "hymn_cut": 0.75,
+          "hymn_floor": 3
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.blessing|pct}% Blessing power"
+          },
+          {
+            "at": "each",
+            "text": "Hymns come back {=per_point.numbers.hymn_cut} round sooner, {=per_point.numbers.hymn_floor} rounds at least"
+          },
+          {
+            "at": "each",
+            "text": "Your Blessings' conditions are harder to save against"
+          }
+        ]
       },
       "gates": [
         "gear:holy_relic"
@@ -3862,7 +4256,6 @@
           "*heavy metal plays*"
         ],
         "intro": "Faith is your ability to place your trust in higher powers. In a world where anything can happen, plenty of people face life's cruelty on the strength of belief. And unlike real life, here the odds of a prayer coming true are better than 1%.",
-        "effect": "+10% Blessing power. Hymns come back sooner: each point takes three quarters of a round off the wait, down to 3 rounds. Your Blessings' conditions are harder to save against.",
         "high_levels": "your bond with your faith tightens and amplifies everything your religion gives you. Everyone else sees an insufferable zealot, or worse, a heretic.",
         "good_for": "crusaders, divine classes, cultists, missionaries.",
         "bad_for": "atheists, scientists, smartasses.",
@@ -3878,7 +4271,15 @@
       "slot": "beta",
       "summary": "Seeing where an act leads.",
       "per_point": {
-        "text": "+10% to every shield you are given."
+        "numbers": {
+          "shield": 0.1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "+{=per_point.numbers.shield|pct}% to every shield you are given"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -3999,7 +4400,6 @@
           "It is not a question of right or wrong. Nor of left or right. In a world of upheaval and chaos, the only thing that makes a God or a Demon is conscience."
         ],
         "intro": "Conscience is your ability to tell right from wrong, and to see the good or harm in an act not just now but far into the future, not just for you but for all of humanity.",
-        "effect": "+10% to every shield you are given.",
         "high_levels": "you understand the consequences of everything you're about to do. But you think from one angle only, good or evil, right or wrong, and yours is the only one that counts.",
         "good_for": "lawful alignments, living saints, Satan in human skin.",
         "bad_for": "neutral alignments, emotionless robots, weathervanes.",
@@ -4015,7 +4415,25 @@
       "slot": "gamma",
       "summary": "The measure of cool, and your Leadership rating.",
       "per_point": {
-        "text": "Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say."
+        "numbers": {
+          "karma": 1,
+          "call_range": 1,
+          "check": 1
+        },
+        "rows": [
+          {
+            "at": "each",
+            "text": "Karma moves {=per_point.numbers.karma} further each time it changes, up or down"
+          },
+          {
+            "at": "each",
+            "text": "Your Order Call reaches {=per_point.numbers.call_range} tile further"
+          },
+          {
+            "at": "from 1",
+            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+          }
+        ]
       },
       "gates": [],
       "unlocks": {
@@ -4133,7 +4551,6 @@
           "A skinny frame in a plain, no-frills uniform. Easy stance, warm laugh. Nobody would guess Hank Ladan outranks a marshal, and nobody dares look him in the eye, or at the five stars on his shoulder. Not even a guy like me who won three straight wrestling tournaments in the Marine mess hall. Something comes off him that makes your knees want to buckle, out of respect or fear. He has the nepo babies over in the Air branch falling in line, and every agent in the enforcement bureau bows when he passes. A busted-up marine like me? Honestly, I'd rather hunt ten Ork fangs in one afternoon than hear one word of criticism from him."
         ],
         "intro": "Authority is the measure of cool. Anyone can put on a suit; Authority decides whether you look cool in it. Be the groomsman and still draw more of the bride's eyes and respect than the groom. Oh, so dignified.",
-        "effect": "Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
         "high_levels": "people mistake you for a general, a leader or a top CEO, which raises the odds you get investigated and make the news for buying apples at the market instead of the supermarket.",
         "good_for": "soldiers, police, security, teachers, anyone who has to be cool.",
         "bad_for": "sugar babies, fuckboys (you risk ending up married instead of a one-night stand).",
@@ -4149,5 +4566,5 @@
     "mastered": 2
   },
   "voice_cards_note": "Each skill's voice is the player's own inner voice. Its register is borrowed from the skill's EPCCG speaker (tone_from), never their identity. 'pushes' lines are how the skill sounds when it urges an Overreach or a bad idea.",
-  "epccg_note": "epccg blocks are the EPCCG's own skill write-ups (Article 5) as game text: the in-world quote, its speaker, the portrait (First-Patch Revival, the EPCCG cast) and the explanation. Real-Earth names are swapped for in-world ones (game_text_edits) under the Unspoken Name; the source Markdown keeps the original wording. Since rules 1.13 'effect' is the skill's per_point.text (what a point gives now), so the page can't contradict the rules; the 2020 effect wording is in the source Markdown. Two entries changed in rules 1.13 and are provisional: Acuity (id analysis) carries Demitri Kortev's entry, and Improvisation (id proficiency) a new one, Drava Keel (Suggested); D12.9.6's entry moved to docs/lore/D12-9-6.md."
+  "epccg_note": "epccg blocks are the EPCCG's own skill write-ups (Article 5) as game text: the in-world quote, its speaker, the portrait (First-Patch Revival, the EPCCG cast) and the explanation. Real-Earth names are swapped for in-world ones (game_text_edits) under the Unspoken Name; the source Markdown keeps the original wording. There is no 'effect' field: what a point gives is the skill's per_point.rows, the one copy (rules 1.54 item 4119; it was a second copy of per_point.text); the 2020 effect wording is in the source Markdown. Two entries changed in rules 1.13 and are provisional: Acuity (id analysis) carries Demitri Kortev's entry, and Improvisation (id proficiency) a new one, Drava Keel (Suggested); D12.9.6's entry moved to docs/lore/D12-9-6.md."
 }

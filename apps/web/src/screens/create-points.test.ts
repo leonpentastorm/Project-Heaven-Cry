@@ -7,7 +7,7 @@ import { validateSheet, BUDGET, FOG_CORE, SKILL, checkModOf } from '@engine';
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' } });
 vi.stubGlobal('location', { search: '', hash: '' });
 const { CreateLogic, _setSkill, _setAttr, _resetAttr, _pointsTodo } = await import('./create.js');
-const { D } = await import('./shared');
+const { D, nextLine } = await import('./shared');
 
 function screen(props: any = { startStep: 'skills' }) {
   const l: any = new CreateLogic(props);
@@ -191,18 +191,24 @@ describe('the points step: what the next point gives', () => {
     expect(attrOf(v, 'virtue').next).toBe('Next point: Hymns come back a little sooner.'); // rules 1.24: Max MP left Virtue
     expect(attrOf(v, 'endurance').upAria).toBe('Raise Endurance from 1 to 2 for 1 Attribute point. Gives +15 max HP, +10% chance to ignore an injury.');
   });
-  it('a skill shows the roll it gives (the engine\'s check modifier) and the data\'s per-point text', () => {
+  it('a skill shows the roll it gives as a chip (the engine\'s check modifier) and one line: what its next point gives (the road map)', () => {
     const l = screen();
     let k = skillOf(l.renderVals(), 'durability');
-    expect(k.line).toBe('Roll −2, next 0. Next point: ' + (SKILL.durability as any).per_point.text);
-    expect(k.incAria).toBe('Raise Durability from 0 to 1 for 1 Skill point. Roll 0. ' + (SKILL.durability as any).per_point.text);
+    expect(k.modChip).toBe('−2'); expect(k.modTitle).toBe('Roll −2 now, 0 with the next point'); expect(k.nextAt).toBe(1);
+    expect(k.line).toBe('Next point: ' + nextLine('durability', 0));
+    expect(k.incAria).toBe('Raise Durability from 0 to 1 for 1 Skill point. Roll 0. ' + nextLine('durability', 0));
     // the third skill under an attribute rolls checks one better
     k = skillOf(l.renderVals(), 'sensory');
     expect(checkModOf('sensory', 1)).toBe(1);
-    expect(k.line).toMatch(/^Roll −2, next \+1\. Next point: /);
+    expect(k.modTitle).toBe('Roll −2 now, +1 with the next point');
     press(l, 'durability', 2);
-    expect(skillOf(l.renderVals(), 'durability').line).toMatch(/^Roll \+1, next \+2\. .* A perk at 3\.$/);
-    for (const s of D.skills as any[]) expect(skillOf(l.renderVals(), s.id).line).toContain((SKILL[s.id] as any).per_point.text);
+    k = skillOf(l.renderVals(), 'durability');
+    expect(k.nextAt).toBe(3); expect(k.line).toBe('Next point: ' + nextLine('durability', 2)); expect(k.line).toContain('M1: a perk step');
+    const fresh = screen().renderVals();
+    for (const s of D.skills as any[]) {
+      const line = skillOf(fresh, s.id).line;
+      expect(nextLine(s.id, 0).length, s.id).toBeGreaterThan(0); expect(line, s.id).toBe('Next point: ' + nextLine(s.id, 0)); expect(line, s.id).not.toContain('{=');
+    }
   });
   it('every stepper has a label saying what it changes and its value', () => {
     const v = screen({ sampleName: 'T', sampleArch: 'bulwark', startStep: 'skills' }).renderVals();
