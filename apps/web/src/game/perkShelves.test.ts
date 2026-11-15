@@ -12,7 +12,7 @@ const CORE_WIRED: string[] = PERK_CARDS.core_wired, PRIVATE_COUNT: string[] = PE
 
 const charWith = (o: Partial<Character> = {}, id = 'c1', name = 'Tester'): Character => {
   const a = ARCHETYPES.find((x: any) => x.id === 'sharpshooter') || ARCHETYPES[0];
-  const c = newCharacter(id, 'p1', { name, portrait: '', origin: 'x', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} });
+  const c = newCharacter(id, 'p1', { name, portrait: '', origin: 'x', kit: 'soldier', traits: [], skills: { ...a.preset, dexterity: 0 /* no Pressure door (rules 1.56): its Slide and its passive would sit on every shelf */ }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} });
   return Object.assign(c, o);
 };
 const fight = (c: Character, mate?: Character) => {

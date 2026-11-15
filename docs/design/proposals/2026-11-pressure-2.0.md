@@ -1,5 +1,45 @@
 # Pressure 2.0: the Skirmisher decides where the enemy stands (proposal, full size)
 
+## Build status (15 Nov 2026, lane/0.29-pressure-2, pushed as wip/lane-0.29-pressure-2)
+
+Built tonight from the consolidated plan's brief B (`three-doors-build-plan.md`), on existing primitives only; spec
+rules 1.56 "Pressure 2.0 (the Skirmisher)", items 4440 to 4452. Nothing marked P8 to P18 below was built.
+
+| # | Item | Built | Where | Built from (exact names) |
+|---|---|---|---|---|
+| 1 | States named | yes | `techniques.json rules.pressure.states` (word, says, text, text_pc); `physView` reads them (the typed cost strings are gone) | data rows; `physView` (`physical/core.ts`); fx event `pressure` |
+| 2 | Tracers and dust | yes | `apps/web/src/game/fx/pressure.ts` | fx events `pressure` (`by`, `now`, `was`, `state`) |
+| 3 | They duck | yes | token pose from physView's `state` (`techView.ts pressureLook` `pose`, `shared.js tokenVals` `opt.pose`); a state tag under the pips | physView |
+| 4 | The card says it | yes (existing `pv.pressure`); the ranged block's `meterHint` is the door line | `techView.ts` | physView `hint` |
+| 5 | Fire lanes | yes (drawn when set: Deny's dashed line and boxed tiles, Cover Me's arc, Dead to Rights' line and ring, Overwatch's field; the lane flashes on `watch_fire`) | fx/pressure.ts | fx `watch_set` (`tiles`, `allyId`, `targetId`), `watch_fire` |
+| 6 | Shaken Nerves | yes, capped +2 | `skills.json dexterity.unlocks.1` effects.1 | trigger `save`, op `roll_mod` (`roll: tn`), number block `target:pressure` `max`, predicates `actor`, `target`, `self_skill` |
+| 7 | Flush Out | yes | effects.2 | trigger `acted` (`action: [flush]`), op `condition` (`fear`, `via: dexterity`, `rounds`), `self_skill` |
+| 8 | Break Them | yes | `classes.json marksman gain break_them` | trigger `cost` (Rout is flat: priced at `technique:rout`, `mode` reads ctx.tech), op `cost_mod` (`min`), `own_turn` |
+| 13 | Fire and Move | yes | `marksman gain fire_and_move` | `mark` on `attack_roll` (`melee: false`), `cost_mod` `set` on `cost` (`action: [move]`, `flag`, `ap_above`, `path_tiles_at_most`), `limit` (`key: step`), `condition slipping` |
+| 14 | Relocated | yes | `marksman gain relocated` | `mark` on `moved` (`how`), `roll_mod` on `to_hit`, `resource pressure` on `hit`, `mark clear` on `miss`/`turn_end` |
+| 15 | Slide | yes (no refusal: P16) | `data/pressure.json pressure.slide` (a door verb, `requires dexterity 1`) | `grant_action` (`uses: per_turn`), `condition slipping`, `displace {to: cover, tiles}`, `resource pressure -1` |
+| 16 | Near Miss | yes, **changed**: a shot off your own turn (a held shot) only | effects.0 | trigger `miss`, `resource`, `own_turn: false`, `limit {each: target}` |
+| 17, 18 | Run and Gun kept; the door ladder | yes | | `self_skill` |
+| 9-12, 19-21 | Hug cover, Breaking, Open, Pin the Suppressed, the fork, Broken Line, Pins | **no** (P10, P9, P8, P1, P2) | | |
+
+**Changes from the brief, with the reason.** Near Miss on every ranged miss lifted the all-in gun ceiling (the plain
+gun build is a Skirmisher) from 165/158/163/148 to 165/161/166/154 (% of the rifle at levels 1/5/10/20; the balance
+contract's band is 145 ± 12) and failed the contract. Scoped to held shots (`own_turn: false`) it measures exactly the
+base line again, and it is what the lead's "Hold" asked for: a held lane pins even when the round goes wide. Slide is a
+door verb in its own data file (`data/pressure.json`, registered beside shadow/tending/figments in `collect.ts`
+`DATA_VERBS` and in `datatext.ts`): a grant_action inside a skill unlock would also run that unlock's other rows (the
+grant's target inference reads them), so the door's passives stay on Dexterity's unlock 1 and the action is a verb.
+
+**Events with no effect of their own** (nothing invented in the engine): Relocated's term has no fx event (it is a
+to-hit term in the roll's log line and the preview); Break Them is a price; Shaken Nerves is a TN term (the save's log
+line shows it). Slide is drawn from the engine's `cond slipping` then `shove` (a willing step) pair, Fire and Move from
+`cond slipping` then `move`.
+
+**Onboarding.** Slide is listed for every character with Dexterity (the Perks tab: a door verb with no `tab` in its
+file goes there; greyed with the engine's refusal once used this turn). The ranged weapon block's line (`meterHint`) and
+one `TIPS` row `pressure` ("SHOOT TO PIN", the first time a character of mine with Dexterity and a ranged weapon has the
+turn) read `skills.json dexterity.door_line`.
+
 15 Nov 2026, first draft. Status: **design, nothing built**. Every number below is PROVISIONAL and a data field
 (`data/techniques.json rules.pressure` for the meter, `data/classes.json` `marksman` for the class, `data/skills.json`
 `dexterity` for the door; named where different). If accepted, the spec (rules 1.12, Physical 2.0) changes first, as a
