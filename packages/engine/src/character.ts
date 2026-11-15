@@ -1407,9 +1407,6 @@ export function unequip(c: Character, slot: string): string | null {
   else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
   c.pack = pack; return null;
 }
-/** Fit a mod from the pack (line `idx`) onto a carried weapon: the main hand (default), the off hand, or a pack line
- * holding a weapon (rules 1.56 L3 item 2; one of a stack is split off to take it). A mod already in that slot comes off
- * into the pack. */
 /** Where a gun is carried: a hand, or a pack line by its index. */
 export type GunWhere = 'main' | 'off' | number;
 /** Every weapon a character carries with its fitted mods, the main hand first: the main hand (not bare fists), the off
@@ -1433,6 +1430,9 @@ export function setGunMods(c: Character, where: GunWhere, mods: string[], pack?:
   if (t.qty > 1) { t.qty--; p.push({ ...t, qty: 1, mods }); } else t.mods = mods;
   if (!pack) c.pack = p;
 }
+/** Fit a mod from the pack (line `idx`) onto a carried weapon: the main hand (default), the off hand, or a pack line
+ * holding a weapon (rules 1.56 L3 item 2; one of a stack is split off to take it). A mod already in that slot comes off
+ * into the pack. */
 export function fitMod(c: Character, idx: number, where: GunWhere = 'main'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx], m = it && (ITEM[it.item || it.id] as any);
   if (!m || m.category !== 'mod') return 'That isn\'t a mod.';
