@@ -67,7 +67,7 @@ export function loadoutLines(c: Character, take: Record<string, number> = {}): L
   return out;
 }
 /** Rules 1.55: a further weapon or focus is offered only when it can be used beside what the character holds: no
- * second focus; a weapon only when none is held, or when it and every weapon held are one-handed (twoHands). `bought`:
+ * second focus; no second two-handed weapon (twoHands: a second copy is offered only of a one-handed weapon). `bought`:
  * how many of this id the line itself has already given (they are not counted against it). */
 function usableBeside(c: Character, id: string, bought = 0): boolean {
   const held = [c.weapon, c.offHand?.id, ...packOf(c).flatMap((x) => Array(x.weapon && !x.mags ? Math.max(1, x.qty || 1) : 1).fill(x.weapon || x.item || x.id))].filter((x): x is string => !!x && x !== 'fists');
@@ -75,7 +75,7 @@ function usableBeside(c: Character, id: string, bought = 0): boolean {
   if ((ITEM[id] as any)?.focus) return !held.some((h) => !!(ITEM[h] as any)?.focus);
   if (!WEAPON[id]) return true;
   const weapons = held.filter((h) => !!WEAPON[h] && (WEAPON[h] as any).category !== 'thrown');
-  return !weapons.length || (!twoHands(c, id) && weapons.every((h) => !twoHands(c, h)));
+  return !twoHands(c, id) || !weapons.some((h) => twoHands(c, h));
 }
 const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if (a) return 'Class ' + a[1] + ' body armour';
   const rd = /^rounds:(.+)$/.exec(id); if (rd) return (CALIBRE_NAME[rd[1]] || rd[1]) + ' rounds';

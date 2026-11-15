@@ -91,7 +91,7 @@ describe('the camp (rules 1.52)', () => {
     for (const f of LOADOUT.focuses) { const x = Object.values(lo(camp(), 'Kade', { op: 'pick', slot: 'focus', id: f }).characters)[0];
       expect(loadoutLines(x).some((l) => l.id === 'standard_core'), f).toBe((ITEM[f] as any).focus.fuel === (ITEM.standard_core as any).fuel); }
   });
-  it('rules 1.55: the camp offers what the character can use: nothing over the budget, no second focus or two-hander, no line twice, ammunition for what it holds', () => {
+  it('rules 1.55: the camp offers what the character can use: nothing over the budget, no second focus, no second two-hander (another one only of a one-hander), no line twice, ammunition for what it holds', () => {
     const picks: any[] = [...RACK.map((r) => ({ slot: 'weapon', id: r.free })), ...LOADOUT.focuses.map((f) => ({ slot: 'focus', id: f }))];
     for (const pk of picks) {
       const c = Object.values(lo(camp(), 'Kade', { op: 'pick', ...pk }).characters)[0], ls = loadoutLines(c);
@@ -99,8 +99,8 @@ describe('the camp (rules 1.52)', () => {
       expect(new Set(ls.map((l) => l.id + '#' + l.per)).size, pk.id).toBe(ls.length);
       if (pk.slot === 'focus') expect(ls.filter((l) => (ITEM[l.id] as any)?.focus), pk.id).toEqual([]);
       const held = c.weapon !== 'fists' ? c.weapon : null, wl = ls.filter((l) => (l.shelf === 'rack' || l.shelf === 'stock') && WEAPON[l.id]);
-      if (held && twoHands(c, held)) expect(wl, pk.id).toEqual([]);
-      if (held) for (const l of wl) expect(twoHands(c, l.id), l.id).toBe(false);
+      if (held && twoHands(c, held)) { for (const l of wl) expect(twoHands(c, l.id), pk.id + ' ' + l.id).toBe(false); expect(wl.some((l) => l.id === held), pk.id).toBe(false); }
+      if (held && !twoHands(c, held) && RACK.find((r) => r.free === held)!.free && priceOf(held)! <= LOADOUT.budget) expect(ls.some((l) => l.key === 'stock:' + held) || ls.some((l) => l.id === held && l.shelf !== 'rack'), pk.id).toBe(true); // another one of a one-hander
       const cals = new Set([held, ...packOf(c).map((x) => x.weapon)].map((id) => (WEAPON[id || ''] as any)?.ammo).filter(Boolean));
       for (const l of ls) { const r = /^rounds:(.+)$/.exec(l.id); if (r) expect(cals.has(r[1]), pk.id + ' ' + l.id).toBe(true); }
     }

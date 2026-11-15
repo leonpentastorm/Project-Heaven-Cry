@@ -111,8 +111,9 @@ await p.locator('[data-phc-camp-pick="weapon:' + GUN + '"]').click(); await sett
 const fp = (await pick0()).focus; if (fp) { await p.locator('[data-phc-camp-pick="focus:' + fp + '"]').click(); await settle(p, 300); }
 ok('the free gun (a loaded magazine and a spare), the focus declined', (await me0()).weapon === GUN && !(await pick0()).focus && (await me0()).pack.some((x) => x.weapon === GUN && x.mags));
 const left0 = await numIn('[data-phc-camp-left]');
-await p.locator('[data-phc-camp-more="stock:visualizer"]').click(); await settle(p, 400);
-ok('a refusal in words: a second focus (a Visualizer) is over the budget, nothing changes', /^Over the budget by \d+ credits/.test(await p.locator('[data-phc-camp-card="stock:visualizer"] [data-phc-camp-why]').textContent()) && !(await pick0()).take['stock:visualizer'] && await numIn('[data-phc-camp-left]') === left0);
+// rules 1.55: the camp lists nothing over its budget (a second focus at 1000 is not on the menu), nothing changes
+const campPrices = await p.locator('[data-phc-camp-card] [data-phc-camp-price]').evaluateAll((l) => l.map((e) => Number((e.textContent.match(/\d+/g) || ['0']).pop())));
+ok('rules 1.55: no line over the budget on the camp menu (' + campPrices.length + ' priced), no second focus (the Visualizer is not sold)', campPrices.length > 0 && campPrices.every((n) => n <= LO.budget) && await p.locator('[data-phc-camp-card="stock:visualizer"]').count() === 0 && await numIn('[data-phc-camp-left]') === left0);
 const stim = await numIn('[data-phc-camp-card="stim_injector"] [data-phc-camp-price]');
 const had = (await pick0()).take.stim_injector || 0;
 if (left0 >= stim) { await p.locator('[data-phc-camp-more="stim_injector"]').click(); await settle(p, 300); }
@@ -304,18 +305,21 @@ async function shopChecks() {
     ok('the keeper says one of its own "gear" lines as Today\'s gear opens ("' + said + '")', !!face && (face.lines.gear || []).includes(said));
   }
   await p.locator('[data-phc-tab="always"]').click();
-  const cal = await p.locator('[data-phc-shelf="calibres"] [data-phc-card]').count();
-  ok('Always in stock: every calibre on its own shelf (' + cal + ')', cal === 12);
+  const cal = await p.locator('[data-phc-shelf="calibres"] [data-phc-card]').count(), m0 = Object.values((await G()).characters)[0];
+  const cals = new Set([m0.weapon, m0.offHand?.id, ...(m0.pack || []).map((x) => x.weapon)].map((id) => WPN[id || '']).filter((w) => w && w.magazine != null && w.ammo && w.category !== 'thrown').map((w) => w.ammo));
+  ok('rules 1.55: the calibres of the guns carried on their own shelf (' + cal + ' of ' + cals.size + ')', cal === cals.size);
+  const magShelf = WPN[m0.weapon]?.reload === 'magazine' ? await p.locator('[data-phc-shelf="magazines"] [data-phc-card]').count() : 2;
+  ok('rules 1.55: a Magazines shelf: a full and an empty magazine for the gun in hand (' + magShelf + ' cards)', magShelf >= 2 && (WPN[m0.weapon]?.reload !== 'magazine' || await p.locator('[data-phc-card="mag:' + m0.weapon + ':0"]').count() === 1));
   await settle(p, 1400); await p.screenshot({ path: OUT + 'survival-shop-1280.png' });
   ok('at 1280: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
   // buy ammunition
   const me = Object.values((await G()).characters)[0];
-  const c0 = me.credits, rifle = p.locator('[data-phc-card="rounds:rifle"]');
+  const c0 = me.credits, rifle = p.locator('[data-phc-shelf="calibres"] [data-phc-card]').first(); // rules 1.55: the rounds of the gun carried
   const price = Number((await rifle.locator('[data-phc-price]').textContent()).replace(/\D/g, ''));
   await rifle.locator('[data-phc-buy]').click();
   await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, c0, { timeout: 30000 });
   const c1 = Object.values((await G()).characters)[0].credits;
-  ok('buy rifle rounds at the card\'s price (' + price + '): ' + c0 + ' → ' + c1 + ', logged', c0 - c1 === price && /bought/.test(await p.locator('[data-phc-visit-log]').textContent()));
+  ok('buy rounds at the card\'s price (' + price + '): ' + c0 + ' → ' + c1 + ', logged', c0 - c1 === price && /bought/.test(await p.locator('[data-phc-visit-log]').textContent()));
   // today's gear: a card's numbers are the engine's
   await p.locator('[data-phc-tab="gear"]').click();
   const gear = await p.locator('[data-phc-shelf="gear"] [data-phc-card]').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-card'), id: e.getAttribute('data-phc-card-id'), hit: e.querySelector('[data-phc-num="hit"]')?.textContent || null, dmg: e.querySelector('[data-phc-num="dmg"]')?.textContent || null, price: Number(e.querySelector('[data-phc-price]').textContent.replace(/\D/g, '')) })));
