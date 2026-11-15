@@ -17,6 +17,8 @@ import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { ICON } from './runIconSizes';
 import { ShopScreen } from './ShopScreen';
+import { PlaceBar, BarNumber } from './PlaceBar';
+import { MoveOn } from './runPanels';
 import { LoadoutScreen } from './LoadoutScreen';
 import { StageScreen } from './StageScreen';
 import { boonIconSvg } from './boonIcons';
@@ -139,14 +141,14 @@ export function RunScreen() {
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary
   const pick = (n: RunNodeV, el: HTMLElement) => { if (n.state === 'reachable') act({ type: 'run/move', node: n.id }); else openTipOn(el); };
   const mine = v.offers.filter((o) => o.mine), others = v.offers.filter((o) => !o.mine), tally = lastFightTally(g);
-  const rewards = v.offers.length > 0;
+  const rewards = v.offers.length > 0, myself = v.party.find((x) => x.mine);
   return (
-    <div data-phc-run-screen="" data-phc-run-state={v.state} style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', gap: 14, padding: '16px 20px 28px', background: ink.ground, color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxSizing: 'border-box' }}>
+    <div data-phc-run-screen="" data-phc-run-state={v.state} style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: ink.ground, color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxSizing: 'border-box' }}>
       <style>{PULSE}</style>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-        <h1 style={{ margin: 0, fontFamily: "'Spectral', serif", fontSize: 26, fontWeight: 600 }}>{v.title}</h1>
-        {v.waiting ? <span data-phc-waiting="" style={{ fontSize: 13, color: ink.white }}>{v.waiting}</span> : null}
-      </div>
+      {/* the place header (PlaceBar, the visibility standard): what this is, your credits, the button that moves on */}
+      <PlaceBar name={v.title} money={myself ? <BarNumber label="CREDITS" n={myself.credits} mark={{ 'data-phc-bar-credits': '' }} /> : null} actions={<MoveOn />}
+        foot={v.waiting ? <span data-phc-waiting="" style={{ fontSize: 14, color: ink.white }}>{v.waiting}</span> : null} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '16px 20px 28px' }}>
       {/* the node's panel first when it holds something to do (the rewards, a safe node's choices): it is what is asked now */}
       {v.note || tally || v.kits.length || v.choices.length || rewards || place ? (
         <section aria-label={rewards ? 'Rewards' : 'This stop'} data-phc-rewards={rewards ? '' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -169,6 +171,7 @@ export function RunScreen() {
         <PathMap v={v} onPick={pick} />
         <span data-phc-map-hint="" style={{ fontSize: 13, color: ink.muted, textAlign: 'center' }}>{v.solo ? 'Click a lit stop to go there. Hover any stop to see what it holds.' : 'Click a lit stop. At a fork it marks your choice, and the squad goes when everyone has marked. Hover any stop to see what it holds.'}</span>
       </section>
+      </div>
     </div>
   );
 }

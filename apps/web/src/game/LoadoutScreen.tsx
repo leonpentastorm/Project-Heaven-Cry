@@ -12,14 +12,15 @@
 // Every number and reason is the engine's (`loadoutView`: priceOf, the gear preview, the reducer's own refusals tried on
 // a copy, startOffer); every action is `run/loadout`, `run/boon` or `run/ready`.
 import React from 'react';
-import { act, getState, toast } from './store';
+import { act, getState } from './store';
 import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, type CarryRowV } from '@engine';
 import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
 import { boonCards } from './campView';
 import { boonIconSvg } from './boonIcons';
-import { campPhase } from './runPanels';
+import { MoveOn } from './runPanels';
+import { PlaceBar, BarNumber } from './PlaceBar';
 
 const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: I.muted };
 /** Names wrap inside their card, never over the next one. */
@@ -214,45 +215,34 @@ export function LoadoutScreen() {
   const charId = v.me.id, last = (st as any).error as string | undefined;
   const groups: { name: string; cards: LoadoutCardV[] }[] = [];
   for (const s of v.shelves) for (const c of s.cards) { let gr = groups.find((x) => x.name === c.group); if (!gr) groups.push(gr = { name: c.group, cards: [] }); gr.cards.push(c); }
-  const solo = v.solo, ph = (v.boon.chosen || v.ready) ? campPhase(g, me) : null;
+  const solo = v.solo;
   const go = (n: 1 | 2) => { setStep(n); const sc = document.querySelector('[data-phc-camp]')?.parentElement; if (sc && sc.scrollTop) sc.scrollTop = 0; };
   const pill = (on: boolean): React.CSSProperties => ({ minHeight: 42, padding: '0 16px', borderRadius: 10, border: 0, background: on ? I.text : I.raised, color: on ? I.ground : I.muted, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: on ? 'pointer' : 'default' });
   return (
     <div className="phc-camp" data-phc-camp="" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: I.ground, color: I.text, fontFamily: "'Chakra Petch', sans-serif" }}>
       <style>{CSS}</style>
-      {/* the one bar: sticky at the top of the middle column's scroll, opaque, over the cards */}
-      <header data-phc-camp-bar="" style={{ position: 'sticky', top: 0, zIndex: 6, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px 18px', padding: '12px 20px', background: I.ground, borderBottom: '1px solid ' + I.line, boxShadow: '0 6px 14px rgba(0,0,0,0.35)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <h1 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 28, lineHeight: 1 }}>The camp</h1>
-          <nav aria-label="The camp's steps" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {([[1, '1 · Loadout'], [2, '2 · Starting boon' + (v.boon.chosen ? ' ✓' : '')]] as const).map(([n, lab]) => (
-              <button key={n} type="button" data-phc-camp-step={n} aria-current={step === n ? 'step' : undefined} onClick={() => go(n)}
-                style={{ minHeight: 32, padding: '0 14px', borderRadius: 99, border: '1px solid ' + (step === n ? I.white : '#3B475D'), background: step === n ? I.raised : 'transparent', color: step === n ? I.white : I.muted, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{lab}</button>))}
-          </nav>
-        </div>
-        <div data-phc-camp-budget="" style={{ display: 'flex', alignItems: 'center', gap: '10px 18px', flexWrap: 'wrap' }}>
-          <div data-phc-camp-left="" style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={kick}>BUDGET LEFT</span>
-            <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: I.white, fontVariantNumeric: 'tabular-nums' }}>{v.left}</span>
-          </div>
-          <div data-phc-camp-used="" style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={kick}>BUDGET USED</span>
-            <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>{v.spent}</span>
-          </div>
+      {/* the place header (PlaceBar, the visibility standard): sticky at the top of the middle column's scroll, over the cards */}
+      <PlaceBar marks={{ 'data-phc-camp-bar': '' }} name="The camp"
+        tabs={<nav aria-label="The camp's steps" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '0 0 10px' }}>
+          {([[1, '1 · Loadout'], [2, '2 · Starting boon' + (v.boon.chosen ? ' ✓' : '')]] as const).map(([n, lab]) => (
+            <button key={n} type="button" data-phc-camp-step={n} aria-current={step === n ? 'step' : undefined} onClick={() => go(n)}
+              style={{ minHeight: 34, padding: '0 14px', borderRadius: 99, border: '1px solid ' + (step === n ? I.white : '#3B475D'), background: step === n ? I.raised : 'transparent', color: step === n ? I.white : I.muted, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>{lab}</button>))}
+        </nav>}
+        money={<div data-phc-camp-budget="" style={{ display: 'flex', alignItems: 'center', gap: '10px 18px', flexWrap: 'wrap' }}>
+          <BarNumber label="BUDGET LEFT" n={v.left} mark={{ 'data-phc-camp-left': '' }} />
+          <BarNumber label="BUDGET USED" n={v.spent} muted mark={{ 'data-phc-camp-used': '' }} />
           <span style={{ fontSize: 13, color: I.muted, maxWidth: 170, lineHeight: 1.35 }}>of {v.budget} credits · what you don't spend, you keep</span>
-        </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        </div>}
+        actions={<>
           <button type="button" data-phc-camp-recommended="" disabled={v.ready} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)} {...tipProps('A loadout for your skills: the focus you can use, the weapon for your best weapon skill, armour, then ammunition.')}
             style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: v.ready ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: v.ready ? 'default' : 'pointer' }}>Recommended</button>
           {!v.boon.chosen && !v.ready && v.boon.cards.length ? (
             <button type="button" data-phc-camp-next="" onClick={() => go(2)} disabled={step === 2} {...tipProps(step === 2 ? 'Choose one of the three.' : null)} style={pill(step !== 2)}>{step === 2 ? 'Choose a boon' : 'Starting boon ›'}</button>
-          ) : null}
-          {ph ? <button type="button" data-phc-camp-bar-ready="" aria-disabled={ph.go ? undefined : 'true'} {...tipProps(ph.why || null)} onClick={() => { if (ph.go) ph.go(); else if (ph.why) toast(ph.why); }} style={pill(!!ph.go)}>{ph.label}</button> : null}
+          ) : <MoveOn />}
           {!solo && v.isHost ? <button type="button" data-phc-camp-close="" onClick={() => act({ type: 'run/ready', close: true } as any)} {...tipProps('Everyone sets out now. Anyone still away gets the Recommended loadout and the first starting boon.')}
             style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Start for everyone{v.waiting.length ? ' (waiting: ' + v.waiting.join(', ') + ')' : ''}</button> : null}
-        </div>
-        {last ? <span data-phc-camp-refusal="" role="status" style={{ flexBasis: '100%', fontSize: 14, color: I.white }}>{last}</span> : null}
-      </header>
+        </>}
+        foot={last ? <span data-phc-camp-refusal="" role="status" style={{ fontSize: 14, color: I.white }}>{last}</span> : null} />
       <main aria-label={step === 1 ? 'Loadout' : 'Starting boon'} data-phc-camp-take="" data-phc-camp-on={step} style={{ padding: '18px 20px 20px' }}>
         {step === 1 ? <>
           <section data-phc-camp-row="weapon" style={{ marginBottom: 26 }}>

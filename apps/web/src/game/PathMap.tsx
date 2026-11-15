@@ -162,7 +162,7 @@ function useFill(outer: React.RefObject<HTMLDivElement | null>, legend: React.Re
       const avail = el.clientWidth - 2; // the frame's border
       let sc = avail / ICON.pathMap;
       if (centre && screen) {
-        const above = Math.min(80, el.getBoundingClientRect().top - screen.getBoundingClientRect().top); // the title row (a node's panel above scrolls away)
+        const above = Math.min(130, el.getBoundingClientRect().top - screen.getBoundingClientRect().top); // the place header and its gap (a node's panel above scrolls away)
         const below = (legend.current?.offsetHeight || 0) + 8 + 18 + 8 + 28; // the legend, the hint, the gaps and the screen's foot
         sc = Math.min(sc, (centre.clientHeight - above - below - 2) / (ICON.pathMap * 9 / 16));
       }
