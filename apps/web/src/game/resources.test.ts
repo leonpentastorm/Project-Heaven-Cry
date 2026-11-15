@@ -235,8 +235,9 @@ describe('resource panel fixes', () => {
     u.ammo = 0; expect(row(resourcesOf(u, c, g), 'ammo').warn).toBe('RELOAD');
   });
   it('Reload AP is the engine\'s: a quick-release magazine shows 1 AP', () => {
-    const { u, c, g } = fight((c) => { c.weapon = 'hellraiser_service_rifle'; });
-    u.ammo = 2; u.mags = [30]; u.mods = ['mod_quick_release'];
+    // rules 1.56: the mod is fitted to the character's gun (its item op rides the instance it is on)
+    const { u, c, g } = fight((c) => { c.weapon = 'hellraiser_service_rifle'; c.weaponState = { ...(c.weaponState || {}), mods: ['mod_quick_release'] }; });
+    u.ammo = 2; u.mags = [30]; expect(u.mods).toEqual(['mod_quick_release']);
     const r = row(resourcesOf(u, c, g), 'ammo');
     expect(r.hint).toMatch(/Reload \(1 AP\)/);
   });
