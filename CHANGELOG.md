@@ -8,6 +8,17 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3
+
+- **Bond can pick enemies again** (Leon on 0.28.2: "bond cannot select enemies"). With Bond picked, a click on an enemy
+  outside its reach turned the action into a plain Shot with no word (`apps/web/src/game/actionFlow.ts` click: a unit
+  not in the step's choices fell through to `screens/combat.js` tileClick's "a foe clicked is an attack"). Now, while a
+  unit pick is open, a click on a unit is always that pick: in its choices it is picked; otherwise the screen says the
+  engine's reason for that unit ("✕ Soldier B: Out of range (6 tiles).") and the action stays picked. The same held for
+  every unit pick whose choices are narrowed by reach: the Tending and Shadow verbs, class moves with a reach, Stim and
+  Stim throw, ally prayers and Calls, Pull free. Tests: `screens/combat-unit-pick.test.ts` (the real tileClick, a
+  Survival fight at level 1 with the Empath's Attuner), `packages/engine/test/bond-reach.test.ts` (the reducer).
+
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP
