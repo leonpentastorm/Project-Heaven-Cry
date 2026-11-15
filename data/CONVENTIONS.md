@@ -206,3 +206,7 @@ Every rule-bearing item carries both:
 - A move's `uses` may also be `reaction` (it spends your reaction; the engine counts it as at will) and `per_combat`.
 
 English, in-universe where the doc is in-universe. No pop-culture references. Keep numbers exactly as the source doc states them; if the source conflicts with the Core Rules spec, the spec wins and you log the conflict in your report.
+
+## Variants (variants.json, rules 1.56 L4)
+
+- Mode-neutral. `kinds` is the closed list of modifier kinds: each has `neutral` and `forms` (`id`, `fits`: guns, magazine_guns, heat_guns, recoil_guns, melee, foci or a focus id; `worth_per`; `sentence`, a template filled per variant with `{value}` / `{value|more}`; and either `field` + `sign`, the base row's number field it changes, or `effects` with `puts`, the paths in them the value is written to; `value_fixed` for a form with no number). `items` are the variants: `id`, `name`, `base` (a weapon or a focus), `rarity` (its grade), `mods` (one or two `{kind, form?, value?}`). `worth_cap` caps a variant's worth. Read by `packages/engine/src/variants.ts` at load (data.ts); checked by `tools/validate.py`.

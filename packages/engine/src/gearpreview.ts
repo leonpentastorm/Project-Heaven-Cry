@@ -81,13 +81,13 @@ function attackLines(cb: Combat, u: Unit, foe: Unit, mode: AttackMode) {
   return p.ok ? { pct: p.pct, dmg: p.dmg?.total ?? 0 } : null;
 }
 
+/** Rules 1.56 L4: a variant's modifiers (data/variants.json), one line each, its kind's sentence (the field kinds' numbers
+ * are already in the lines above: the variant's row carries them). */
+const variantLines = (row: any): PreviewLine[] => ((row?.variant_lines || []) as any[]).map((l) => ({ key: 'variant:' + l.kind, label: l.name, value: l.text, num: null }));
 /** The numbers a card shows for `inst` in `c`'s hands (rules 1.42, spec item 14): for a weapon, to hit against the
  * reference foe of the character's level, damage per hit, the AP of each mode, magazine, range, traits; for a focus its
  * door and the door skill's modifier; for armour and shields what the character's Defense, armour and injury resistance
  * become; for ammunition and items their numbers in data. */
-/** Rules 1.56 L4: a variant's modifiers (data/variants.json), one line each, its kind's sentence (the field kinds' numbers
- * are already in the lines above: the variant's row carries them). */
-const variantLines = (row: any): PreviewLine[] => ((row?.variant_lines || []) as any[]).map((l) => ({ key: 'variant:' + l.kind, label: l.name, value: l.text, num: null }));
 export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   const id = inst.id, rarity: Rarity = inst.rarity || 'standard', w: any = WEAPON[id], it: any = ITEM[id];
   const base = { id, name: nameOf(id), rarity, text: String(w?.text || it?.text || '') };

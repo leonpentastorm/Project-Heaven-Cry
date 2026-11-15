@@ -195,7 +195,7 @@ MAP OBJECTS AND POINTS OF INTEREST
 
 LOOT
 - Give things with loot[] (an empty array otherwise): charId, an item id (a weapon id or an item id below), qty, and for weapons a rarity (standard, fine, masterwork, relic, celestial) and an optional in-world name. Be sparing: loot is earned (a locker opened, a reward); what the dead carry is the engine's (piles). Relic and celestial are rare events.
-- Item ids: ${Object.keys(ITEM).join(', ')}.
+- Item ids: ${Object.keys(ITEM).filter((k) => !(ITEM[k] as any).variant_of).join(', ')}.
 - Plates teach magic: a sigil_plate has one Sigil word id in note (fire); a heart_plate has one Outburst lesson in note: a tone (fire, storm, frost, stone, gale, acid), a school or a module id. The player studies it for a scene to learn it. note is "" for anything else.
 - ground[] puts things on a tile (at, items[] in the loot shape plus mag:<weapon id> and rounds:<calibre>, hidden; at most 6 a turn, 12 items each): they join its pile.
 - The engine rolls what the dead drop (weapon, ammo, a table). To change it, give an enemy or npc drops: {table} or {items} (at most 4). See loot:rules.
