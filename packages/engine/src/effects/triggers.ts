@@ -34,7 +34,7 @@ import { isStatId } from './stats';
 import type { ItemInfo } from './types';
 import { charOfUnit } from './hooks';
 import patronsJ from '../../../../data/patrons.json';
-import techniquesJ from '../../../../data/techniques.json';
+import { TECHNIQUES, PHYS_RULES as TECH_RULES, techGroupOf, techSystemOf } from '../physical/data';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp, weaponOwnSite } from './cost';
@@ -258,16 +258,11 @@ P('toggle', 'words', 'one of the holder\'s item\'s data toggles (its ids) is on 
 // Classes 3.0 step 3 (rules 1.30): Run and Gun's 2-tile cap (reactions-spec.md 10), the Breaker's Momentum-priced rider
 /** The free techniques (techniques.json `free`: everyone's, whatever they have readied: Shot, Aimed Shot, Cut,
  * Overwatch, Pull Out): rules 1.30, Fire Discipline's dear technique is any other. */
-const FREE_TECH: string[] = ((techniquesJ as any).items || []).filter((t: any) => t.free).map((t: any) => t.id);
-/** Rules 1.56 (the alpha perks, Keep Swinging): THE reading of a technique's group: its row's (techniques.json `group`), or,
- *  for an action that is no technique row but counts as one of a group (the Breaker's Launch: a Finisher), techniques.json
- *  rules.group_actions. Its system (melee, ranged) is the one whose rules.groups list holds the group. */
-const TECH_ROW: Record<string, any> = Object.fromEntries(((techniquesJ as any).items || []).map((t: any) => [t.id, t]));
-const techGroupOf = (id: string | null | undefined): string | null => (id ? TECH_ROW[id]?.group ?? (techniquesJ as any).rules?.group_actions?.[id] ?? null : null);
-const techSystemOf = (id: string | null | undefined): string | null => { const g = techGroupOf(id); return g ? Object.keys((techniquesJ as any).rules?.groups || {}).find((k) => ((techniquesJ as any).rules.groups[k] || []).includes(g)) || null : null; };
+const FREE_TECH: string[] = TECHNIQUES.filter((t) => t.free).map((t) => t.id);
+// Rules 1.56 (the alpha perks, Keep Swinging): a technique's group and system are physical/data.ts techGroupOf / techSystemOf (the one index).
 /** The technique an event is made with: the attack's (ctx.tech), its damage source's (src.tech), or an action's own id (`acted`: ctx.action). */
 const evTech = (ev: Ev): string | null => ev.ctx.tech ?? ev.ctx.src?.tech ?? (ev.trig.hook === 'acted' ? ev.ctx.action ?? null : null);
-P('tech_group', 'words', "the technique the event is made with (the attack's, its damage source's, an action's own) is in one of these technique groups (techniques.json group: opener, strike, link, finisher, answer, fire, press, set, take, watch; rules.group_actions: an action that counts as one)", (ev, v) => { const g = techGroupOf(evTech(ev)); return !!g && list(v).includes(g); }, () => Object.values((techniquesJ as any).rules?.groups || {}).flat() as string[]);
+P('tech_group', 'words', "the technique the event is made with (the attack's, its damage source's, an action's own) is in one of these technique groups (techniques.json group: opener, strike, link, finisher, answer, fire, press, set, take, watch; rules.group_actions: an action that counts as one)", (ev, v) => { const g = techGroupOf(evTech(ev)); return !!g && list(v).includes(g); }, () => Object.values(TECH_RULES.groups || {}).flat() as string[]);
 P('free_tech', 'bool', 'the attack is (true) or is not (false) made with a free technique, everyone\'s (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands)', (ev, v) => { const t = ev.ctx.tech ?? ev.ctx.src?.tech, m = ev.ctx.mode ?? ev.ctx.src?.mode, vo = ev.ctx.volley ?? ev.ctx.src?.volley; return (t ? FREE_TECH.includes(t) : !vo && ['shot', 'aimed', 'melee', 'thrown'].includes(m)) === v; }); // (on damage, a kill or a downing: its source's, as mode)
 P('tech_ap_at_least', 'number', 'the attack\'s own price is at least this many AP: its technique\'s cost with the weapon before any item (ctx.techAp), or with no technique the attack\'s base AP', (ev, v) => typeof ev.ctx.techAp === 'number' && ev.ctx.techAp >= v);
 P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at most this many tiles', (ev, v) => typeof ev.ctx.tiles === 'number' && ev.ctx.tiles <= v);

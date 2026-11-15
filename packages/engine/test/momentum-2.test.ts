@@ -5,6 +5,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import './helpers/yard16';
 import { CLASSES, enemyTurn, makeObject, PHYS_RULES, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
+import { chainOf } from '../src/physical/core';
 import { withGame } from './helpers/perkfight';
 import { onHook } from '../src/effects/hooks';
 import PERKSJ from '../../../data/perks.json';
@@ -184,5 +185,17 @@ describe('Keep Swinging counts every Breaker Finisher by its group: Cleave, Brea
     const a = drop(how, true), b = drop(how, false);
     expect(a.down).toBe(true); expect(b.down).toBe(true);
     expect(a.m - b.m).toBe(gain);
+  });
+});
+
+// The 0.29 consolidation (MF1): ONE reading of "is a Finisher" (physical/data.ts techGroupOf): a Launch that drops its
+// foe is a Finisher for Follow Through (Raw Power 5) and ends the melee chain, as Cleave, Break and Coup do.
+describe('a Launch kill is a Finisher everywhere: Follow Through and the end of the chain', () => {
+  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ': Follow Through keeps 1 Momentum and the chain has ended', () => {
+    const f = fight({ m: 3 }); weak(f.foe); f.foe.hp = 1; rig({ hit: true, die: 12 });
+    if (how === 'launch') launch(f, f.foe); else f.tech(how, { targetId: f.foe.id });
+    rig(null);
+    expect(f.cb.log.some((l: any) => /Follow Through/.test(typeof l === 'string' ? l : l?.text || ''))).toBe(true);
+    expect(chainOf(f.cb, f.unit(f.pc.id)).ended).toBe(true);
   });
 });

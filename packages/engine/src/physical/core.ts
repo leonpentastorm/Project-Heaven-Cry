@@ -20,7 +20,7 @@ import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
-import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName, given } from './data';
+import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName, given, techGroupOf, techSystemOf, actionTechOf } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 import { setBraced, setNailed, bracedAs } from '../unitstate';
 import { condsAside } from '../magic';
@@ -74,6 +74,14 @@ export function chainOf(cb: Combat, u: Unit): { t: string; n: number; last: stri
 }
 /** The chain to write to (kept on the unit). */
 function chainFor(cb: Combat, u: Unit) { const c = chainOf(cb, u); u.chain = c; return c; }
+/** A melee technique (or an action counted in a melee group: the Breaker's Launch) joins the chain; a Finisher ends it
+ *  (techGroupOf, the one reading). */
+function noteChain(cb: Combat, u: Unit, id: string) {
+  if (techSystemOf(id) !== 'melee') return;
+  const ch = chainFor(cb, u); ch.n++; ch.last = id; if (techGroupOf(id) === 'finisher') ch.ended = true;
+}
+// An action that is no technique row but counts in a group (techniques.json rules.group_actions) joins the chain when done.
+onHook('action_done', (ctx: any, cb) => { if (ctx.world || !ctx.u || ctx.a?.type === 'combat/technique') return; const id = actionTechOf(ctx.a); if (id && techGroupOf(id)) noteChain(cb, ctx.u, id); });
 /** Per-technique state on a unit (plain JSON, saved with the fight). */
 export const techState = (u: Unit, id: string): Record<string, any> => ((u.tech ||= {})[id] ||= {});
 /** The same, for reading: nothing is created. */
@@ -932,7 +940,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   for (const n of t.pv.notes) say(cb, '  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
-  if (def.system === 'melee') { const ch = chainFor(cb, u); ch.n++; ch.last = id; if (def.group === 'finisher') ch.ended = true; }
+  noteChain(cb, u, id);
   if (def.group === 'take' && t.tgt) { techState(u, '_take').t = turnStamp(cb); lowerPressureOf(cb, t.tgt, PHYS_RULES.pressure.take_cost, def.name, u); }
   u.attackedTurn = u.attackedTurn || def.system === 'melee';
   checkOver(cb);

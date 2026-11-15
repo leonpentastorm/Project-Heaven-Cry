@@ -16,7 +16,7 @@ import { type Combat, type Unit, dist, alive, emitFx, checkOver, previewAttack, 
 import { WEAPON } from '../data';
 import { resGain, resOf } from '../tactics';
 import { condSource } from '../magic';
-import { TECHNIQUE } from '../physical/data';
+import { TECHNIQUE, techGroupOf, actionTechOf } from '../physical/data';
 import { ensureMomentum } from '../physical/core';
 import { overworld, say } from '../kit';
 
@@ -51,7 +51,7 @@ register({
     turn_start: (ctx, h) => { if (ctx.u === h.u && peek(h).out) stateOf(h).out = false; },
     action_done: (ctx, h) => {
       if (ctx.u !== h.u || !h.u || !h.cb) return; const st = stateOf(h), out = st.out; st.out = false;
-      if (!out || ctx.a?.type !== 'combat/technique' || TECHNIQUE[ctx.a.id]?.group !== 'finisher' || !alive(h.u)) return;
+      if (!out || techGroupOf(actionTechOf(ctx.a)) !== 'finisher' || !alive(h.u)) return; // a Finisher by THE reading (Launch included)
       if (giveMomentum(h.cb, h.u)) say(h.cb, h.u.name + ' follows through: 1 Momentum kept (Follow Through).');
     },
   },

@@ -25,6 +25,15 @@ export const weaponTeaches = (weaponId: string | null | undefined): string | nul
 /** A property's name and one-line meaning, for a "?" (rules.props). */
 export const propText = (prop: string): string => PHYS_RULES.props?.[prop] || '';
 export const groupsOf = (system: TechSystem): TechGroup[] => PHYS_RULES.groups[system];
+/** Rules 1.56: THE reading of a technique's group, used by everything that asks "is it a Finisher" (the predicate
+ *  tech_group, Follow Through, the melee chain): its row's (techniques.json `group`), or, for an action that is no
+ *  technique row but counts as one of a group (the Breaker's Launch: a Finisher), techniques.json rules.group_actions. */
+export const techGroupOf = (id: string | null | undefined): TechGroup | null => (id ? TECHNIQUE[id]?.group ?? PHYS_RULES.group_actions?.[id] ?? null : null);
+/** The technique (or group action) a reducer action is made with: a technique's id, or a perk action's granted id
+ *  (combat/perk actionId: the Breaker's Launch); null for anything else. */
+export const actionTechOf = (a: any): string | null => (a?.type === 'combat/technique' ? a.id ?? null : a?.type === 'combat/perk' ? a.actionId ?? null : null);
+/** Its system (melee, ranged): the one whose rules.groups list holds its group. */
+export const techSystemOf = (id: string | null | undefined): TechSystem | null => { const g = techGroupOf(id); return g ? ((Object.keys(PHYS_RULES.groups) as TechSystem[]).find((k) => groupsOf(k).includes(g)) ?? null) : null; };
 export const groupName = (g: TechGroup): string => PHYS_RULES.group_names[g] || g;
 
 // ---------- the character ----------
