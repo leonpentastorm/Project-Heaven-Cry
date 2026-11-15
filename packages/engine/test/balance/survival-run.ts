@@ -108,6 +108,8 @@ export const MEMBER: Record<string, Pc> = {
   melee: { build: 'opt_blade', level: 1, policy: 'optimised' },
   smg: { build: 'plain_gun', level: 1, policy: 'gunner', camp: 'decrkm_smg' } as any,
   smgTac: { build: 'plain_gun', level: 1, policy: 'gunnerTac', camp: 'decrkm_smg' } as any,
+  // rules 1.56, the unarmed fighter: the melee build with the camp's free fist weapon (the Hand wraps) instead of a blade
+  monk: { build: 'opt_blade', level: 1, policy: 'optimised', camp: 'hand_wraps' } as any,
 };
 /** The parties measured (section 10 row 9: sizes 1, 2 and 4; gunners, casters and a healer; rules 1.51: every caster
  * alone, and a mixed squad). */
@@ -121,6 +123,7 @@ export const PARTIES: Record<string, string[]> = {
   solo_melee: ['melee'], duo_gunner: ['gunner', 'gunner'], duo_melee: ['melee', 'melee'], duo_sigil: ['sigil', 'sigil'],
   four_gunner: ['gunner', 'gunner', 'gunner', 'gunner'], four_melee: ['melee', 'melee', 'melee', 'melee'], four_sigil: ['sigil', 'sigil', 'sigil', 'sigil'],
   solo_smg: ['smg'], solo_smg_tac: ['smgTac'],
+  solo_monk: ['monk'],
 };
 /** Rules 1.51: the caster boons (survival.json boons with a caster door), left out of the pick without the lever `caster`. */
 const CASTER_DOORS = new Set(['brain_power', 'will_power', 'empathy', 'visualization']);

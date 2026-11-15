@@ -230,3 +230,59 @@ placeholders until delivered.
    yes; a free extra reaction would put the monk over the shield fighter.
 4. **Sweep's Prone has no save** (the Prone row has none; it costs +1 AP and ×0.4 instead)? Recommended: yes for now;
    a saved Prone would need the Trip technique's handler, which is code.
+
+## Slice 1, built (15 Nov 2026, wip/lane-0.29-monk-1)
+
+Spec: "Rules 1.56 (Balance 2.0), the unarmed fighter (slice 1)", items 4360 to 4364. Changed from the draft by the lead's
+plan: the Open Hand's Slip is **Sway** (Shadow has a Slip), and Sway, Counter, Open guard and Breath wait for P14 (a
+carried modifier is a whole item and may answer its holder's own defence) and P15 (`self_holds` hands `{props, only}`
+and body `{armour_at_most}`). Built:
+
+| # | Item | Built | Where |
+|---|---|---|---|
+| 1-4 | Hand wraps 14/30c, Knuckledusters 20/120c, Iron mitts 25/500c, Striking gloves 17/120c, Kemizuchi strikers 21/500c; every glove and the servo-fist carry `variant_mods: [open_hand]` | yes | `data/weapons.json` |
+| 9-12 | Jab, Palm, Sweep, Snatch as data toggles on `combat/attack`, every effect `with_this`; one hold a turn (`limit {per_turn, n 1, key form}`); each names itself (`fx {k: stance, what, word}`) | yes | `data/items.json open_hand` |
+| 13 | Flurry, Trip, Grapple come with Bare (`comes_with`); a perk's technique (Grapple) honours its row's `comes_with` | yes | `data/techniques.json`, `physical/core.ts usable` |
+| — | Rabbit Punch's and the fists' Grapple's narrator ops retired | yes | `data/weapons.json` |
+| — | The camp's free fist weapon is the Hand wraps (cheapest by price, no code) | yes | `run/loadout.ts archetypeWeapons` |
+| 6-8, 16 | Open guard (Leon's light-armour dodge), Sway, Counter, Breath | no: P14, P15 | slice 2 |
+| 14-15 | Flow, Closing Strike | no: P18 | slice 3 |
+| 5, 17 | One attribute on bare hands, bare hands in the family | no: P10, P19 | slice 4 |
+
+Effects (`apps/web/src/game/fx/openhand.ts`, wired in `play.ts` before the Figments' wrapper): two impact rings on a
+glove's hit (Strength ink), afterimages of the striker on a Flurry's strikes, each form's shape (Palm's bar and pushed
+arc, Sweep's floor arc in Agility ink, Snatch's hook, Jab's small ring) and its word on the target, PRONE when Sweep's
+Prone lands, OFF BALANCE / DISARMED / RESISTED from the existing `cond` events. Off under Reduce motion (words stay).
+**Events with no effect of their own:** Sweep's Prone draws no `cond` event (a flag condition), so the data's
+`fx {what: swept}` names it and the client finds its target as the striker's last blow (P13, `fx.on: target`, makes it
+direct).
+
+## Slice 1, measured
+
+**The melee measure** (`MELEE_MEASURE=1`, all in, Masterwork, the optimised blade build; N 8 to 12; percent of the plain
+rifle at levels 1 / 5 / 10 / 20). Before: Knuckledusters 76 / 78 / 104 / 97, Servo-fist 128 / 128 / 156 / 178; the
+Legion gladius (light melee comparator) 179 / 172 / 208 / 153.
+
+| Glove (after) | Hits with | L1 | L5 | L10 | L20 |
+|---|---|---|---|---|---|
+| Hand wraps (14) | Raw Power | 63 | 71 | 71 | 65 |
+| Knuckledusters (20, was 16) | Raw Power | 95 | 91 | 110 | 102 |
+| Striking gloves (17) | Dexterity | 90 | 115 | 136 | 110 |
+| Iron mitts (25) | Raw Power | 116 | 104 | 133 | 126 |
+| Kemizuchi strikers (21; 24 read 139 / 173 / 194 / 168) | Dexterity | 122 | 148 | 168 | 140 |
+| Hellraiser servo-fist (30, unchanged) | Raw Power | 128 | 128 | 156 | 178 |
+
+The best glove of each line sits at the melee line (125 percent, the ceiling 165) and under the maul's 203 to 235. The
+measure's policy does not use the forms (they trade damage for AP or control). The refit-measure contract's melee
+system does not read these rows (`npm run check` balance contract green).
+
+**The Survival simulator** (new cell `solo_monk`: the melee build with the camp's free Hand wraps; gear route, 6 seeds,
+3 stages at most): solo_monk clears stage 1 on 0 of 6 (lost at depth 4 to 11, mean 7.8); solo_melee (the heavy blade)
+clears it on 2 of 6 (mean depth 9.3). Slice 1 gives the fist fighter its weapons and its choices, not its survival:
+an unarmoured monk is still a Soldier's two turns (HP 130, Defense 12; section 3's table is unchanged). The defence is
+slice 2 (P14, P15), and it is the slice that decides whether the monk lives.
+
+**Hand-back (the brief's stop rule):** a bare-handed enemy of a tier with a technique list (Soldier and up) now takes
+Flurry, Trip and Grapple (they come with Bare): `npm run try` with an Elite holding `fists` opens with Lunge then
+Flurry. No enemy in data carries fists (only a companion row, which makes plain attacks), a Disarmed enemy picks no
+technique, and the replay guard is unchanged; the lead rules whether `comes_with` should reach an enemy's own list.

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Striking gloves: a slim open glove, two seam lines -->
+  <g transform="translate(0 -2)">
+    <path d="M22 60 L22 47 Q16 43 16 34 L16 18 Q16 14 19.5 14 Q23 14 23 18 Q23 13 27 13 Q31 13 31 17
+             Q31 12 35 12 Q39 12 39 16 Q39 13 43 13 Q47 13 47 17 L47 37 Q47 44 42 47.5 L42 60 Z"/>
+    <path d="M27 22 L27 44 M37 21 L37 44"/>
+    <path d="M22 51 L42 51"/>
+    <path d="M16 29 L33 29 Q37 29 37 33.5 Q37 38 33 38 L24 38 Q20 38 18 42.5"/>
+  </g>
+</svg>
