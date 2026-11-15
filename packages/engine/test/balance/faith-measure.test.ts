@@ -11,7 +11,7 @@
 //     FAITH_MEASURE_PATRONS=old_overcast,nerukhan
 //     FAITH_MEASURE_VOW=0.4             the chance a round that the vow is fulfilled (rules 1.22; default 0.4)
 import { describe, it, expect } from 'vitest';
-import { F_LEVELS, PATRON_IDS, DEVOTION_BY_LEVEL, SESSION_AT, SOLDIER_TURN, faithBuild, dabblerBuild, faithSheet, rifleTurn, prayerRow, fline, soldierTurn, inventory, supportWorth } from './faith-measure';
+import { F_LEVELS, PATRON_IDS, DEVOTION_BY_LEVEL, SESSION_AT, SOLDIER_TURN, faithBuild, chaplainBuild, dabblerBuild, faithSheet, rifleTurn, prayerRow, fline, soldierTurn, inventory, supportWorth } from './faith-measure';
 import { prayerHarms } from './policies';
 import { FAITH_PATRON, WHISPER, DEVOTION_XP, TAG_CAPS } from '../../src';
 
@@ -140,5 +140,17 @@ describe('the Faith measurements', () => {
     let md = '\n| Level | Devotion | Hymn cooldown | Hymns in 3 fights of 5 rounds | with the vow fulfilled every wait | Whispers | Interventions at most | Miracles |\n|---|---|---|---|---|---|---|---|\n';
     for (const lv of LEVELS) { const s = faithSheet('old_overcast', 'normal', lv); md += '| ' + lv + ' | ' + s.devotion + ' | ' + s.cooldown + ' | ' + 3 * Math.ceil(5 / s.cooldown) + ' | ' + 3 * Math.ceil(5 / Math.max(2, s.cooldown - 1)) + ' | 15 | ' + (s.faith >= 5 ? 3 * (s.devotion >= 7 ? 2 : 1) : 0) + ' | ' + (s.devotion >= 10 && s.faith >= 7 ? '1 (then Devotion 5: about 19 sessions to the next)' : '0') + ' |\n'; }
     console.log(md);
+  });
+});
+
+// Rules 1.56 prayer 2.0: the Chaplain's own turn with the Canticle sung every turn against the same turn unsung (the
+// class's line, balance.ceilings.chaplain_turn), patron by patron. FAITH_MEASURE=1 FAITH_MEASURE_PARTS=canticle.
+describe("the Canticle (rules 1.56 prayer 2.0): the singer's own turn", () => {
+  part('canticle')('a Chaplain sung and unsung, each patron, at the measured levels', () => {
+    for (const lv of LEVELS.filter((l) => l >= 3)) for (const pt of PATRONS) {
+      const b = chaplainBuild(pt), y = yard(lv);
+      const off = prayerRow('chaplain', b, 'normal', lv, N, y), on = prayerRow('chaplain+canticle', b, 'normal', lv, N, y, { opts: { sing: true } });
+      out('canticle L' + lv + ' ' + pt + ': unsung ' + off.pctRifle + '% of the rifle, sung ' + on.pctRifle + '% (Canticles a turn ' + (on.actions['Canticle'] ?? 0) + ' a fight)' + (on.errors ? ' ERRORS ' + on.errors : ''));
+    }
   });
 });

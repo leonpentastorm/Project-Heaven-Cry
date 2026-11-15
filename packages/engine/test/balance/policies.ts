@@ -415,6 +415,7 @@ export const prayerHarms = (e: any) => (e?.effects || []).some((f: any) => (f.op
  *                 prayer-led turn spends it, its worth is not damage); 'none'; or one Hymn's id
  *   opts.whisper  the Whisper prayed each turn (default 'rebuke' when the data has it); 'none'
  *   opts.order    'weapon' : the weapon first, a Whisper only with the AP the weapon left (the dabbler); default: prayers first
+ *   opts.sing     a Chaplain sings its Canticle first each turn (rules 1.56 prayer 2.0)
  * It never asks above its Devotion and never prays by dice. */
 export const prayer: Policy = (x) => {
   const o = x.opts || {}, p = W(x.g, () => patronOf(x.c));
@@ -440,6 +441,8 @@ export const prayer: Policy = (x) => {
     return null;
   };
   if (o.order === 'weapon') { const s = plain(x); if (s && s.kind === 'attack') return s; }
+  // rules 1.56 prayer 2.0 (opts.sing): a Chaplain sings its Canticle first every turn (1 AP), as the measure's Chaplain does
+  if (o.sing) { const s = allowed(x, { action: { type: 'combat/perk', id: 'class:guardian.canticle', actionId: 'canticle' }, kind: 'other', label: 'Canticle' }); if (s) return s; }
   if (p && x.peak && p.miracle) { const s = pray('miracle', p.miracle.id, p.miracle, 'Miracle: ' + p.miracle.name); if (s) return s; }
   if (p && o.hymn !== 'none') {
     const hs = [...(p.hymns || [])].reverse().filter((h) => (o.hymn && o.hymn !== 'damage' && o.hymn !== 'any' ? h.id === o.hymn : o.hymn === 'any' || prayerHarms(h)));
