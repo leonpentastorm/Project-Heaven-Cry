@@ -8,12 +8,13 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
-## 0.28.3 — the field is the fight
+## 0.28.3 — the field is the fight, and the Durability tank
 
-A patch release from Leon's playtest of 0.28.2 (rules 1.55 items 45 to 70, every number PROVISIONAL). Leon on live
+A patch release from Leon's playtest of 0.28.2 (rules 1.55 items 45 to 75, every number PROVISIONAL). Leon on live
 0.28.2: "cannot bond in field map after battle" and "ZERO effect are played in field map". The field after a won
 Survival fight is now the same fight, still running with no enemies left (items 61 to 70), not a second "field" mode
-beside it.
+beside it. And the Durability tank works (items 71 to 75; the measure is
+`docs/design/proposals/2026-11-tank-fit.md`).
 
 ### Survival
 
@@ -58,6 +59,15 @@ beside it.
 
 - **Bond can pick enemies again**: with a unit pick open, a click on a unit outside its choices shows the engine's reason ("Out of range (6 tiles).") and the action stays picked, instead of turning into a Shot. The same for every reach-narrowed pick (Tending, Shadow, class moves, stims, ally prayers, Pull free).
 - **Bonds and Tending have effects** on the fight map (`fx/bonds.ts`): a Bond tied or resisted, a heal down a Bond, a Guide, a Bond breaking. No new engine event.
+- **The Durability tank** (rules 1.55 items 71 to 75; Leon: "durability tank is crazy weak"). The Guard technique is
+  Durability's own: on the pad with any weapon from Durability 1 (a tank with the camp's rifle could only Brace, once
+  until it moved); still learned for a melee weapon without the points. Guard soaks 6 a point (was 10) and the pool
+  holds 4 at most (was 5): in Survival stage 1 an all-in tank's Guard now takes 35% of the damage aimed at it beside a
+  gunner (9% before), 58% alone (13%).
+- **The tank hits through its door** (item 73): while you hold Guard, weapon attacks roll with Durability's modifier in
+  place of the weapon's skill when it is higher, never on top: the all-in tank hits 56-59% (39% before; the gunner
+  63%). The attack's preview and the gear card say "Hits with: Durability (holding Guard)". The camp's recommended
+  one-hander for a tank now hits with Durability while Guard is held.
 
 ### Classes
 
@@ -72,6 +82,11 @@ beside it.
   `apFor` and `pay` (AP), `endTurn`, `runEnemies` and `checkOver`, `growthHeld` and `harmHeld`. Removed: the field's
   area-map translation, `fieldCombat`, the write-back, `fieldActs`, the field's own use counters and
   `survival.json field.carried_res`. Two replays moved by Syphon's floor were re-recorded.
+- **A new general item op, `roll_with`** {skill, if_higher} on the attack (item 75): any item may make an attack roll
+  with another skill (one choice, `combat.ts rollWithPick`, read by the roll, the preview and the card). Golden tables
+  and replay hashes re-recorded on purpose for the tank (Guard on the pad of every Durability holder, the soak, the
+  pool, the roll); the hiding replay's scripted plain gun also goes to ground from its third turn, so the coverage bar
+  (2 units to ground) holds.
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 

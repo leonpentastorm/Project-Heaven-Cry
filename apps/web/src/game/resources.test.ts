@@ -174,7 +174,7 @@ describe('class resources, named from the data', () => {
   });
   it('a Bulwark (defender) sees Guard; a Mender (bard) has no Supplies (rules 1.33: they left the class)', () => {
     const d = fight((c) => { c.classId = 'defender'; });
-    expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: ((CLASS_MOVE_POOL['defender.brace'].effects as any[]).find((e) => e.when === 'combat_start')?.value ?? 0) + ' / 5' }); // Classes 3.0: a fight starts with the Bulwark's Guard
+    expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: ((CLASS_MOVE_POOL['defender.brace'].effects as any[]).find((e) => e.when === 'combat_start')?.value ?? 0) + ' / ' + phys.PHYS_RULES.guard.max }); // Classes 3.0: a fight starts with the Bulwark's Guard (the pool: rules.guard.max, 4 since rules 1.55 item 74)
     const m = fight((c) => { c.classId = 'bard'; });
     const story = resourcesOf(null, m.c, { phase: 'story', story: { magic: {} } });
     expect(row(story, 'res-supplies')).toBeUndefined();

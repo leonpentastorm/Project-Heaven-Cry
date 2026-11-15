@@ -1072,11 +1072,12 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 
 Guard is a pool of points that takes hits for you. Anyone with Durability has one. Every number here is provisional (techniques.json `rules.guard`; items 991 to 1003).
 
-1. **The pool.** Its size is your Durability points, 5 at most. A fight starts with 0 Guard and what you hold is lost when the fight ends. The Defender's own pool (5) stands when it is the larger, and the Defender's class moves are unchanged.
-2. **Gaining Guard.** The **Guard technique** gives 1 Guard, +1 for each Durability point above the first, +1 more with a shield in the off hand: Durability 1 gives 1, Durability 3 gives 3, Durability 3 with a shield 4 (the pool of 3 holds 3 of it). The **Brace action** (1 AP) gives a flat 2 Guard, 3 with a shield. Never above the pool. With a Guard pool you may Brace with any weapon; Brace is still once until you move.
+1. **The pool.** Its size is your Durability points, 5 at most *(4 since rules 1.55 item 74)*. A fight starts with 0 Guard and what you hold is lost when the fight ends. The Defender's own pool (5; the same `rules.guard.max`, so 4 since rules 1.55 item 74) stands when it is the larger, and the Defender's class moves are unchanged.
+2. **Gaining Guard.** The **Guard technique** gives 1 Guard, +1 for each Durability point above the first, +1 more with a shield in the off hand: Durability 1 gives 1, Durability 3 gives 3, Durability 3 with a shield 4 (the pool of 3 holds 3 of it). The **Brace action** (1 AP) gives a flat 2 Guard, 3 with a shield. Never above the pool. With a Guard pool you may Brace with any weapon; Brace is still once until you move. *(Rules 1.55 item 71: the Guard technique is Durability's own and is yours with any weapon in the hand, so a tank with a gun can take Guard every turn.)*
 3. **Bracing for Guard is not bracing the weapon.** A weapon that had the Brace action before rules 1.13 (one that must be braced, one at −2 unbraced, one whose skill is a braced bonus) is set as before: Recoil halved, its penalties gone, its techniques' Braced lines open. With any other weapon, Brace sets only you: you gain the Guard and stand in the braced stance that class moves ask for, and nothing else. The Brace technique (ranged, 16) still sets such a weapon where its own rule allows.
-4. **Guard soaks.** When a hit would take HP, each Guard point takes 10 damage off it and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
+4. **Guard soaks.** When a hit would take HP, each Guard point takes 6 damage off it *(rules 1.55 item 72; was 10)* and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
 5. **Pressure comes off Guard first:** each point of Pressure that would land on you costs 1 Guard instead, with no reaction, while you have any.
+5a. **The tank hits through its door** *(rules 1.55 item 73)*: while you hold Guard, your weapon attacks roll with Durability's modifier in place of the weapon's own skill modifier when Durability's is higher. It replaces the weapon skill's modifier, never adds to it.
 6. **Momentum.** A hit on a unit that holds Guard points costs it no Momentum. *(See item 1004: the engine asks that Guard soaked part of the hit.)*
 7. **Interpose (Durability 3).** An Answer everyone with Durability 3 has, whatever is in the hands: when an ally next to you is hit by an enemy's attack, spend 1 Guard and your reaction to take the hit instead. The damage is worked out again against you, so your armour applies; your shield and the Guard you have left then soak it. A critical hit's injury follows the hit to you. It works while Suppressed (it protects). You switch it off like any Answer.
 8. **The Defender.** A Defender Interposes by the class move (and that move's policy), not by the Answer. A Defender with Reactive Plate spends Guard through the plate and its policy (spend what it takes, keep 1, off); the soak of rule 4 stands aside for that unit, so Guard is never spent twice on one hit.
@@ -6392,6 +6393,38 @@ state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
 70. **AP on the field** (0.28.3): where the AP pips stand, the field shows the word "free" (AP never limits there,
    item 63), not the AP left when the last enemy fell.
 
+### The Durability tank (release 0.28.3)
+
+**Leon on live 0.28.2, co-op Survival: "durability tank is crazy weak … the tank can't hit
+shit due to all skill point being in durability and his shield points block NOTTHING"; the measure and the fit:
+`docs/design/proposals/2026-11-tank-fit.md`.** Every number PROVISIONAL.
+
+71. **Guard is Durability's own technique, with any weapon.** The Guard technique (techniques.json `guard`,
+   1 AP, once a turn) is given by the skill (`innate`: Durability 1), as Interpose is, and is on the pad whatever the
+   hands hold (a gun's pad draws it after its own groups). Before, it was a melee Link: a tank with the camp's rifle
+   could only Brace, once until it moved, so Guard came 2 points a fight and Pressure ate them. A character with no
+   Durability still learns and readies it for a melee weapon, as before. Amends Guard rule 2.
+72. **Guard soaks 6 a point** (`rules.guard.soak` 10 → 6, × the level scale as before). With Guard taken every
+   turn, 10 a point took about four fifths of everything aimed at a level 1 all-in tank alone; 6 brings it to the
+   lead's band beside a partner (measured in Survival stage 1, level 1: 70% alone, 45% beside a gunner; Durability 3:
+   54% and 28%). Amends Guard rule 4 and item 993.
+73. **The tank hits through its door.** While you hold Guard (1 point or more), your weapon attacks roll with
+   Durability's modifier in place of the weapon's own skill modifier when Durability's is higher (skills.json
+   `durability.1`: op `roll_with` {skill durability, if_higher} on the attack, `if self_has_res guard`). It replaces,
+   never stacks: an all-in Durability 7 with 0 in the weapon's skill rolls +6 where it rolled −2; a character with 7 in
+   both rolls as before; Durability 1 with 0 in the weapon's skill rolls +0 (the better of the two). Damage is
+   unchanged. The attack's preview names it ("Hits with: Durability (holding Guard)") and the gear card adds the line
+   "Hits with: Durability (holding Guard) · +6" when it would apply. *(The lead's ruling, 15 Nov 2026: replaces the
+   first form, a `roll_mod` of +1 a Durability point above 3, at most +4, which stacked on the weapon's own skill.)*
+74. **Guard's pool holds 4 at most** (`rules.guard.max` 5 → 4; skills.json `durability.per_point.numbers.pool_max`
+   with it). The lead's lever to bring a solo tank nearer a solo gunner on stage 1 (measured in the proposal). Amends
+   Guard rule 1 and item 991.
+75. **The roll_with op** (`data/effect_ops.json`, a core item op on the trigger `attack`: fields `skill` (a skill
+   id, or a list: the best of them) and `if_higher`). While its `if` holds, the attack rolls with that skill's modifier
+   in place of the weapon's own skill modifier (with `if_higher`, only when it is higher; never added on top). One place
+   chooses the roll's skill (`combat.ts rollWithPick`): the roll, the attack's preview and the gear card read it. Any
+   item may carry it.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8874,9 +8907,9 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 988. **Nothing Gets Past** leaves the Spot mark of the holder's own level (at 10 points: two allies, +1 to hit, not Hidden to them), takes no Call slot on the enemy, and doesn't replace a Spot the enemy already carries. Not while the holder is Silenced or Stunned.
 989. **Into the Dark I** is once a fight: from the first walk onto a tile your side hasn't seen until your next turn starts. II is round 1 of a fight in a place that causes Fear. The area-map discount of item 121 is gone with the AP.
 990. **Open after the pass:** Siege Engine said "Shove and Break cost 1 AP less" when both had become techniques, priced by the technique core (the discount reached neither; settled in item 1005). Proven Formula counts conditions only (a spell's damage has no save). You Get Used to It's bonus is for the save against a condition, not a technique's or a story save. Chain Smoker's Light Up (+2 Composure for the scene) is a real Heart save bonus again: to watch.
-991. **Guard pool:** Durability points, 5 at most (`rules.guard.max`, `per_durability`).
+991. **Guard pool:** Durability points, 5 at most *(4 since rules 1.55 item 74, PROVISIONAL)* (`rules.guard.max`, `per_durability`).
 992. **Guard gained:** by the Guard technique 1, +1 a Durability point above the first, +1 with a shield (`gain_base`, `gain_per_point`, `shield_gain`); by Brace a flat 2, 3 with a shield (`brace_gain`, `brace_shield_gain`; the lead's tuning of 10 Nov 2026: Brace first gave the scaling gain, and at Durability 5 one Brace for 1 AP filled the pool, 50 damage soaked). Brace is once until you move and the Guard technique once a turn; nothing else limits it.
-993. **Guard soaks 10 a point** (`soak`), after armour and after the shield of HP, with no reaction and no choice. **The last point is kept back** (`keep_back` 1; the lead's tuning) so a reaction is still payable, unless what gets through would take the unit down: then every point the hit needs is spent, whether or not that saves it.
+993. **Guard soaks 10 a point** *(6 since rules 1.55 item 72)* (`soak`), after armour and after the shield of HP, with no reaction and no choice. **The last point is kept back** (`keep_back` 1; the lead's tuning) so a reaction is still payable, unless what gets through would take the unit down: then every point the hit needs is spent, whether or not that saves it.
 994. **What a hit is for Guard:** anything that takes HP but a condition's tick and self-harm; friendly fire, traps, hazards and explosions are hits.
 995. **Anyone with a Guard pool may Brace with any weapon** (it was a heavy weapon's action). **The weapon's own benefits stay with the weapons that could brace before:** a unit that braces only for Guard gets the Guard and the braced stance (which class moves and the patron's "hold" tag read), not Recoil halved and not a technique's Braced line (`Unit.guardBrace`). A class move that braces (the Defender's Brace, Dig In) sets the weapon as it did before.
 996. **Interpose at Durability 3, 1 Guard** (`interpose_durability`, `interpose_cost`); a hit is an enemy's weapon attack on an ally within 1 tile; it may be used on your own turn (an enemy's reaction hitting an ally).
@@ -9892,7 +9925,7 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
-4128. **Items 4121 to 4139 are rules 1.55's** (4134 to 4139: release 0.28.3: 4134 Guide's tile, 4135 healing's MP, 4136 and 4137 Syphon, 4138 and 4139 the field as the fight; 4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
+4128. **Items 4121 to 4140 are rules 1.55's** (4134 to 4140: release 0.28.3: 4134 Guide's tile, 4135 healing's MP, 4136 and 4137 Syphon, 4138 and 4139 the field as the fight, 4140 the Durability tank; 4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
 4129. **XP a node pays (rules 1.55 item 27, 0.28.2; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
     `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
     simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
@@ -9928,3 +9961,6 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     write-back and its use counters) is removed.
 4139. **The field's gates and screen (rules 1.55 items 68 to 70, 0.28.3):** no number. On the field Syphon and
     Crystallise are bounded by the meter alone (items 4136 and the Crystallise row: 10 a core), not by AP.
+4140. **The Durability tank (rules 1.55 items 71 to 75, 0.28.3; PROVISIONAL):** `rules.guard.soak` 10 → 6 (amends item
+    993), `rules.guard.max` 5 → 4 (amends item 991), Guard given by Durability 1 (`innate`), and the new core item op
+    `roll_with` on `durability.1`. The measure: `docs/design/proposals/2026-11-tank-fit.md`.

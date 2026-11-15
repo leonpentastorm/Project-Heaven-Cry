@@ -332,6 +332,9 @@ O('roll_mod', ['attack', 'to_hit', 'cond_incoming', 'save', 'spot'], false, ['va
   else if (ev.trig.hook === 'spot') { if (e.roll === 'tn') ev.ctx.tn += e.value; else ev.ctx.mod += e.value; }
   else if (e.roll === 'tn') ev.ctx.tnAdd = (ev.ctx.tnAdd || 0) + e.value; else ev.ctx.saveAdd = (ev.ctx.saveAdd || 0) + e.value;
 });
+O('roll_with', ['attack'], false, ['skill', 'if_higher'], 'the attack rolls with this skill\'s modifier (skill: a skill id, or a list: the best of them) in place of the weapon\'s own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll\'s skill is chosen, read by the roll, the attack\'s preview and the gear card)', (ev, e, label) => {
+  (ev.ctx.rollWith ||= []).push({ skill: e.skill, ifHigher: !!e.if_higher, label });
+});
 O('cost_mod', ['cost', 'swap', 'reload', 'attack', 'glyph_cost'], false, ['value', 'set', 'min', 'at_least', 'res'], 'change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that', (ev, e) => {
   const c = ev.ctx, r = e.res, box = r && ev.trig.hook === 'cost' ? (c.res ||= {}) : c, f = r || 'ap', cur = box[f] ?? 0;
   let n = typeof e.set === 'number' ? e.set : cur + (e.value || 0);

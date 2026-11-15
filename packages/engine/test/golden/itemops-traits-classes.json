@@ -34,7 +34,7 @@
 "class/defender@II/taken": "turn:1>3, P1 hp:201/335>186/335 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",
 "class/defender@II/taken-bloodied": "turn:1>3, P1 hp:201/335>86/335 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",
 "class/defender@II/taken-crit": "turn:1>3, P1 hp:201/335>179/335 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",
-"class/defender@II/taken-lethal": "turn:1>3, P1 hp:201/335>1/335 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",
+"class/defender@II/taken-lethal": "turn:1>3, P1 hp:201/335>1/335 res:{\"guard\":1,\"shadow\":0}>{\"guard\":2,\"shadow\":0}, F2 ap:0>7",
 "class/defender@II/taken-then-turn": "round:1>2, P1 hp:201/335>186/335 ap:9>6 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",
 "class/defender@II/taken-twice": "turn:1>2, P1 hp:201/335>185/335 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F1 ap:0>7, F2 ap:0>7",
 "class/defender@III/ally-lethal": "turn:1>3, P1 hp:474/789>470/789 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, P2 hp:126/315>3/315, F2 ap:0>7",

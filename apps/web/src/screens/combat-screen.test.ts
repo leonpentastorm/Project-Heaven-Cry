@@ -25,10 +25,11 @@ const Screen = makeScreen(expand(tpl), CombatLogic as any);
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 const sheetFrom = (archId: string, name: string): Sheet => { const a = ARCHETYPES.find((x) => x.id === archId)!;
   return { name, portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as any; };
-function fight(seed: string, weapon = 'drifter_revolver') {
+function fight(seed: string, weapon = 'drifter_revolver', noDoor = false) {
   snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, seed);
   doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
   const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).weapon = weapon;
+  if (noDoor) (G.characters[c.id] as any).skills.durability = 0; // no passive to read: Guard's door (rules 1.55 item 73) would add a Perks tab
   doAct({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Keel', tier: 'soldier', weapon: 'drifter_revolver' }] } } });
   return c;
 }
@@ -112,7 +113,7 @@ describe('combat screen', () => {
   });
 
   it('action tabs: one per family with its count, a default on your turn, the tab follows the action, keys, remembered per character', () => {
-    fight('tabs', 'service_pistol');
+    fight('tabs', 'service_pistol', true);
     const L = new CombatLogic({}) as any;
     const sel = (r: any) => r.turnPanels[0].tabs.find((t: any) => t.selected === 'true')?.key;
     let r = L.renderVals();
@@ -398,7 +399,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     await React.act(async () => { vi.advanceTimersByTime(15000); });
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab).toBeTruthy();
     // the badge and the tab's label count Use now only
-    expect(tab.textContent).toMatch(/Perks\s*1$/); expect(tab.getAttribute('aria-label')).toMatch(/^Perks, 1 action, 2 to read/);
+    expect(tab.textContent).toMatch(/Perks\s*1$/); expect(tab.getAttribute('aria-label')).toMatch(/^Perks, 1 action, 3 to read/); // 3 since rules 1.55 item 73: the sheet's Durability (Guard's door, Always on)
     await React.act(async () => { tab.click(); });
     const panel = el.querySelector('#phc-tabpanel') as HTMLElement;
     // three labelled shelves, in that order
@@ -413,7 +414,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     const rides = panel.querySelector('[data-shelf="rides"] ul[role="list"]') as HTMLElement, always = panel.querySelector('[data-shelf="always"] ul[role="list"]') as HTMLElement;
     expect(rides.getAttribute('aria-labelledby')).toBe('phc-shelf-rides'); expect(panel.querySelector('#phc-shelf-rides')!.textContent).toBe('RIDES AN ACTION');
     expect(Array.from(rides.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:running_reload']);
-    expect(Array.from(always.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:used_to_the_pain']);
+    expect(Array.from(always.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:used_to_the_pain', 'pki:skill:durability.1']); // the sheet's Durability: Guard's door (rules 1.55 item 73)
     expect(panel.querySelectorAll('li .phc-cb-act').length).toBe(0); expect(panel.querySelectorAll('li [aria-pressed]').length).toBe(0);
     // a perk that rides a move is listed with where its switch is; a passive shows a live line
     expect(rides.querySelector('[data-perk-line]')!.textContent).toBe('on a move');
@@ -444,8 +445,9 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     await React.act(async () => { root.render(React.createElement(App)); });
     await React.act(async () => { vi.advanceTimersByTime(15000); });
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; await React.act(async () => { tab.click(); });
-    expect(Array.from(el.querySelectorAll('#phc-tabpanel [data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['use']);
-    expect(el.querySelectorAll('#phc-tabpanel [data-perk-row]').length).toBe(0);
+    // the sheet's Durability holds Guard's door (Always on, rules 1.55 item 73); Rides an action is empty and doesn't show
+    expect(Array.from(el.querySelectorAll('#phc-tabpanel [data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['use', 'always']);
+    expect(el.querySelectorAll('#phc-tabpanel [data-perk-row]').length).toBe(1);
     // another tab carries no shelf heading
     await React.act(async () => { (el.querySelector('#phc-tab-move') as HTMLElement).click(); });
     expect(el.querySelectorAll('#phc-tabpanel [data-shelf]').length).toBe(0);

@@ -2351,7 +2351,7 @@
         "name": "Brace",
         "ap_cost": 2,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP. You gain Guard equal to your Durability points (at least 1; you hold 5 at most) and become Braced: +{=effects.2.value} Defense until you move, are pushed or are knocked Prone. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend 1 Guard and your reaction and take the hit yourself, with your own armour. A fight starts with {=effects.4.value} Guard for you (the Bulwark's).",
+        "text": "Costs {=ap_cost} AP. You gain Guard equal to your Durability points (at least 1; at most your Guard pool's limit) and become Braced: +{=effects.2.value} Defense until you move, are pushed or are knocked Prone. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend 1 Guard and your reaction and take the hit yourself, with your own armour. A fight starts with {=effects.4.value} Guard for you (the Bulwark's).",
         "effects": [
           {
             "op": "resource",

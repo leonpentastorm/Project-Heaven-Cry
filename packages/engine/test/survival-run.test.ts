@@ -187,7 +187,11 @@ describe('Survival, one stage (rules 1.41)', () => {
   }, 1_200_000);
 
   it('the replay guard: a seeded stage played by the simulator\'s policies gives the same hash twice, and a save and load in the middle changes nothing', () => {
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0003', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0003', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0007 since the 0.28.3 merge (rules 1.55 items 50, 51 and 71 to 75: the tank's kit and Guard on its gun's pad):
+    // PHC-0003's squad now kills the Boss and stalls on its last Trooper with every gun of both sides empty, a stall of
+    // the simulator's policies (no gun-butt strike when out of ammunition), not of the game; PHC-0007 plays the stage
+    // through to the boon on the release, on the field branch and on the tank branch alike.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0007', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0007', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

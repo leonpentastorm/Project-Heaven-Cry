@@ -3912,6 +3912,34 @@
       "example": null
     },
     {
+      "id": "roll_with",
+      "tier": "core",
+      "summary": "Item op (rules 1.55): the attack rolls with this skill's modifier (or the best of a list) in place of the weapon's own skill modifier, never added on top; if_higher: only when it is higher. One choice (combat.ts rollWithPick) read by the roll, the attack's preview and the gear card's \"Hits with\". Runs on a trigger (`when`): attack.",
+      "count": 1,
+      "params": [
+        "if",
+        "if_higher",
+        "label",
+        "skill",
+        "when"
+      ],
+      "used_by": [
+        "skills:durability"
+      ],
+      "example": {
+        "op": "roll_with",
+        "when": "attack",
+        "if": {
+          "self_has_res": [
+            "guard"
+          ]
+        },
+        "label": "holding Guard",
+        "skill": "durability",
+        "if_higher": true
+      }
+    },
+    {
       "id": "grant_ap",
       "tier": "core",
       "summary": "Item op (engine foundations 3): AP: at turn_ap, to this turn (a negative value takes); elsewhere perk AP now (bank: true, next turn). Runs on a trigger (`when`): turn_ap, combat_start, combat_end, round_start, turn_start, turn_end, attack, attack_roll ….",
@@ -5010,6 +5038,17 @@
         ],
         "changes_state": false,
         "about": "a to-hit term on an attack (to_hit: on any roll to hit, weapon, Sigil or Outburst); on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"); on a spot roll, its modifier or (roll: \"tn\") its TN"
+      },
+      "roll_with": {
+        "on": [
+          "attack"
+        ],
+        "fields": [
+          "skill",
+          "if_higher"
+        ],
+        "changes_state": false,
+        "about": "the attack rolls with this skill's modifier (skill: a skill id, or a list: the best of them) in place of the weapon's own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll's skill is chosen, read by the roll, the attack's preview and the gear card)"
       },
       "cost_mod": {
         "on": [
