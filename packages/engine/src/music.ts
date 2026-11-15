@@ -62,7 +62,7 @@ export const RUN_MUSIC: { camp: OstId; map: Record<string, OstId>; place: Record
  * the party stands in plays its node kind's track, and a place with none (and the map, a reward, the next tile) plays
  * the setting's map track, else the default.
  */
-export function runMusic(g: Pick<GameState, 'run'>): { id: OstId; why: string } | null {
+function runMusic(g: Pick<GameState, 'run'>): { id: OstId; why: string } | null {
   const r = g.run; if (!r || r.state === 'over' || r.state === 'fight') return null;
   if (r.state === 'loadout') return { id: RUN_MUSIC.camp, why: 'Survival: the camp' };
   if (r.state === 'boon') return { id: RUN_MUSIC.boon, why: 'Survival: the boon pick' };

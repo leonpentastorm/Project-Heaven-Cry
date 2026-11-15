@@ -66,7 +66,7 @@ function stateProblem(g: GameState, c: Character): string | null {
   return null;
 }
 /** Why `by` can't make this (rules 1.54 item 5), in words naming the character, or null. */
-export function makeProblem(g: GameState, by: string, a: MakeAction): string | null {
+function makeProblem(g: GameState, by: string, a: MakeAction): string | null {
   const c = g.characters[a.charId]; if (!c) return 'No such character.';
   if (c.owner !== by) return 'Only ' + c.name + '\'s player makes things for ' + c.name + '.';
   const r = recipeOf(a.recipe); if (!r) return 'There is no such recipe.';
@@ -92,11 +92,11 @@ export function makeNow(g: GameState, by: string, a: MakeAction): { ok: string }
 /** One recipe as the sheet's Make group draws it (rules 1.54, survival-spec 14.7): what it needs (with what the
  * character has), what it gives, how many times it can be made now (`most`), and the engine's reason when it can't
  * (null: it can). The client sends `action` with `times` (1 to `most`). */
-export interface MakeRowV { recipe: string; name: string; needs: { item: string; name: string; n: number; have: number }[]; gives: { item: string; name: string; n: number }[];
+interface MakeRowV { recipe: string; name: string; needs: { item: string; name: string; n: number; have: number }[]; gives: { item: string; name: string; n: number }[];
   tool: { label: string; held: boolean }; most: number; why: string | null; action: MakeAction }
 /** The Make group for one character: shown when it carries a recipe's tool and no fight is on (null: nobody to make
  * for, or at the camp, where the GEAR tab is read-only). */
-export interface MakeViewV { charId: string; name: string; shown: boolean; rows: MakeRowV[] }
+interface MakeViewV { charId: string; name: string; shown: boolean; rows: MakeRowV[] }
 /** The Make group's view (rules 1.54) for player `me`'s character (or `charId`). */
 export function makeView(g: GameState, me: string, charId?: string | null): MakeViewV | null {
   const c = (charId && g.characters[charId]) || Object.values(g.characters).find((x) => x.owner === me) || null;

@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 658 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 655 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1226,10 +1226,7 @@ Families: `body`, `brain`, `heart`.
 | `RECIPES` | `RECIPES: Recipe[]` | Every recipe, in the data's order. |
 | `MakeAction` | `interface MakeAction { type, charId, recipe, times }` | gear/make (rules 1.54 item 5): make `times` of a recipe for a character. |
 | `recipesWords` | `recipesWords(): string` | What the recipes make, in words, from data (consolidation 0.28 S9): one sentence for each tool and deed ("With an ammo maker you make rounds from gunpowder and casings."), the recipes' order. |
-| `makeProblem` | `makeProblem(g: GameState, by: string, a: MakeAction): string \| null` | Why `by` can't make this (rules 1.54 item 5), in words naming the character, or null. |
 | `makeNow` | `makeNow(g: GameState, by: string, a: MakeAction): { ok: string } \| { no: string }` | Make it (rules 1.54 item 5): the needs x times out of the pack, the gives x times into it. |
-| `MakeRowV` | `interface MakeRowV { recipe, name, needs, gives, tool, most, why, action }` | One recipe as the sheet's Make group draws it (rules 1.54, survival-spec 14.7): what it needs (with what the character has), what it gives, how many times it can be made now (`most`), and the engine's reason w… |
-| `MakeViewV` | `interface MakeViewV { charId, name, shown, rows }` | The Make group for one character: shown when it carries a recipe's tool and no fight is on (null: nobody to make for, or at the camp, where the GEAR tab is read-only). |
 | `makeView` | `makeView(g: GameState, me: string, charId?: string \| null): MakeViewV \| null` | The Make group's view (rules 1.54) for player `me`'s character (or `charId`). |
 
 #### The pack, holds and gear of a character (`character.ts`)
