@@ -6,8 +6,10 @@
 //                                  next `momentum` event of the same unit in the batch: noteBreaker), cracks at crack_at
 //   technique {id, group, unit, target}   Charge: a chevron at the runner; Cleave: a wide arc; Break: a hexagon that
 //                                  splits over its target; Coup: a vertical slash
-//   shove {unit, target, from, to, path}  a push of 2 tiles or more (Launch): the pusher's heave first, then a dashed
-//                                  arc along the path and a landing ring, "LAUNCHED n"
+//   shove {unit, target, from, to, path, source}  the Launch's own flight (source: the item that did it, matched to
+//                                  techniques.json rules.momentum.show.launch_source; 2 tiles or more): the pusher's
+//                                  heave first, then a dashed arc along the path and a landing ring, "LAUNCHED n".
+//                                  Any other shove (a Gale, a knockback, a push that names no cause) is the neutral one
 //   object {at, dmg, broken}       the grid gives way: line shards from the struck piece, a dust ring
 //   cond {id: exposed}             a bracket over the unit, "EXPOSED"
 // Sizes are data: techniques.json rules.momentum.show (ring_base, ring_per, crack_at). Under Reduce motion only the
@@ -23,9 +25,9 @@ const WHITE = '#FFFFFF', MUTED = '#A3AEC2', HP = '#F65157';
 export const BRK_MS = { heave: 140, flight: 360, ring: 240, pop: 160, smash: 420 } as const;
 
 /** The counter's and the ring's sizes, from the data (techniques.json rules.momentum.show). */
-export function breakerShow(): { counter_min: number; ring_base: number; ring_per: number; crack_at: number } {
+export function breakerShow(): { counter_min: number; ring_base: number; ring_per: number; crack_at: number; launch_source: string } {
   const s = (phys as any).PHYS_RULES?.momentum?.show || {};
-  return { counter_min: Number(s.counter_min ?? 1), ring_base: Number(s.ring_base ?? 0), ring_per: Number(s.ring_per ?? 0), crack_at: Number(s.crack_at ?? Infinity) };
+  return { counter_min: Number(s.counter_min ?? 1), ring_base: Number(s.ring_base ?? 0), ring_per: Number(s.ring_per ?? 0), crack_at: Number(s.crack_at ?? Infinity), launch_source: String(s.launch_source ?? '') };
 }
 /** The impact ring's radius for a striker's Momentum `now`, in the data's units (a tile is 40). */
 export const impactRadius = (now: number): number => { const s = breakerShow(); return s.ring_base + s.ring_per * Math.max(0, now); };
@@ -42,7 +44,7 @@ export function breakerFxOf(e: Partial<FxEvent> & { k: string }): 'gain' | 'loss
   switch (e.k) {
     case 'momentum': return Number(e.now) > Number(e.was) ? 'gain' : Number(e.now) < Number(e.was) ? 'loss' : null;
     case 'melee': return e.hit && typeof (e as any)._mom === 'number' ? 'impact' : null;
-    case 'shove': return e.ok && e.unit && !e.magic && !e.pull && launchTiles(e) >= 2 ? 'launch' : null;
+    case 'shove': { const src = breakerShow().launch_source; return e.ok && e.unit && !e.magic && !e.pull && !!src && (e as any).source === src && launchTiles(e) >= 2 ? 'launch' : null; }
     case 'technique': return (e as any).refused ? null : (['charge', 'cleave', 'break', 'coup'] as const).find((x) => x === e.id) || null;
     case 'object': return Number((e as any).dmg) > 0 || (e as any).broken ? 'smash' : null;
     case 'cond': return e.id === 'exposed' && !e.resisted ? 'exposed' : null;

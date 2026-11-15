@@ -6367,8 +6367,10 @@ melee weapon, a shield or bare hands, never with a gun or a throw (a gun-holder 
 2. **The impact ring** (item 4401). A melee hit draws a ring on its target of radius `ring_base + ring_per x` the
    striker's Momentum after the blow (a tile is 40), cracking at `crack_at`. Presentation only.
 3. **The Charge carries** (item 4402; row `charge_carries`). A Breaker's Charge that hits gives 2 Momentum on top of
-   closing in, and knocks its target Prone (Prone has no save; with any weapon). The Charge's own blunt and heavy line
-   stays.
+   closing in, and tries to bowl its target over with any weapon: the target makes the Body save Launch uses (against
+   the Breaker's Raw Power, carried by Off Balance), and on a failure it is Off Balance and falls Prone. A Boss is never
+   bowled over (`target_not_tier: [boss]`). The Charge's own blunt and heavy line stays. (Review fix, 16 Nov 2026: it
+   was Prone on every hit, no save, Bosses included.)
 4. **Four ways to finish** (item 4403; row `breaker_finishers`). A Breaker knows Cleave, Break and Coup with any melee
    weapon or bare hands (stat `technique:<id>`, which now gives a technique of any group, as its meaning says; before,
    only an Answer). Its Cleave is +2 to hit (it cancels the off-home penalty: every weapon is its home). Its Break
@@ -6377,8 +6379,9 @@ melee weapon, a shield or bare hands, never with a gun or a throw (a gun-holder 
 5. **Launch** (item 4404; row `launch`; 2 AP, needs 2 Momentum, spends all). Heave an enemy next to you (not a Boss):
    it takes the `launch` amount (profile melee: base 22, +5.5 for each Momentum left after the 2 are paid; 0.6 and
    0.15 of a sabre's blow at the all-in Strength), then a Body save against your Raw Power: failed, it is Off Balance,
-   flies 3 tiles and lands Prone; saved, it staggers back 1 tile. The tiles it crosses act on it (a trap, fire). No
-   roll to hit.
+   flies 3 tiles and lands Prone; saved, it staggers back 1 tile, whatever conditions it had (the throw first shakes
+   off an Off Balance it already carried, so the 3 tiles read this save alone; review fix, 16 Nov 2026). The tiles it
+   crosses act on it (a trap, fire). No roll to hit.
 6. **Wrecker** (item 4405; row `wrecker`). Each blow or shot a Breaker lands on cover, a barricade or a door (the
    action `shoot_cover`) gives 1 Momentum. Its AP cut waits for the cost site `smash` (P15).
 7. **Breach** (item 4406; row `breach`). When a Breaker strikes cover, a barricade or a door, every enemy it can see

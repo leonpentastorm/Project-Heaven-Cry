@@ -13,8 +13,6 @@ export function resetTips() { seen.clear(); save(); }
 
 type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);
-/** The unit whose turn it is in the fight, when it is one of this player's characters (null otherwise). */
-const myTurnUnit = (st: St): any => { const cb: any = st.game?.combat, u = cb?.units?.find((x: any) => x.id === cb.order?.[cb.turn]); return u && u.charId && (st.game as any)?.characters?.[u.charId]?.owner === st.me.id ? u : null; };
 /** A door's one line on how it works (skills.json `door_line` of its alpha skill): data, never typed here. */
 export const doorLine = (skill: string): string => String((SKILL as any)[skill]?.door_line || '');
 const lines = (st: St, k: string) => (st.game?.story.entries || []).filter((e: any) => e.kind === k && !e.rerolled).length;
@@ -31,9 +29,6 @@ export const TIPS: { id: string; title: string; text: string; when: (st: St) => 
     text: '⟲ and ✎ under a Narrator line suggest a reroll or a rewording. The host puts it to a vote; everyone must say yes, or nothing changes.' },
   { id: 'combat', title: 'COMBAT', when: (st) => st.screen === 'combat',
     text: '6 AP a turn. Pick an action, then a tile or a target: the cost and the odds show before you commit. One reaction per round. End your turn when you\'re done.' },
-  // Rules 1.56 (the Momentum chain 2.0): the first time one of your characters with a Momentum meter starts a turn in a fight
-  { id: 'momentum', title: 'MOMENTUM', when: (st) => st.screen === 'combat' && myTurnUnit(st)?.resMax?.momentum != null && !!doorLine('raw_power'),
-    text: doorLine('raw_power') },
   { id: 'report', title: 'SOMETHING BROKE?', when: (st) => st.screen === 'main' && seen.has('round'),
     text: '⚑ Report (top bar) downloads one file with what happened, for Leon. Nothing is sent from here, and your API key is never in it.' },
 ];

@@ -346,7 +346,7 @@
           "name": "The Charge Carries",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "A Charge of yours that hits gives {=effects.0.value} Momentum on top of closing in, and knocks its target Prone, with any weapon.",
+          "text": "A Charge of yours that hits gives {=effects.0.value} Momentum on top of closing in, with any weapon, and tries to bowl its target over: it makes a Body save against your Raw Power (the save Launch uses), and on a failure it is Off Balance and falls Prone. A Boss is never bowled over.",
           "effects": [
             {
               "op": "resource",
@@ -361,9 +361,25 @@
               }
             },
             {
+              "op": "cleanse",
+              "when": "hit",
+              "condition": "off_balance",
+              "target": "target",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "charge"
+                ],
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ]
+              }
+            },
+            {
               "op": "condition",
               "when": "hit",
-              "condition": "prone",
+              "condition": "off_balance",
               "target": "target",
               "via": "raw_power",
               "if": {
@@ -371,7 +387,30 @@
                 "mode": [
                   "charge"
                 ],
-                "target_alive": true
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ]
+              }
+            },
+            {
+              "op": "condition",
+              "when": "hit",
+              "condition": "prone",
+              "skip_save": true,
+              "target": "target",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "charge"
+                ],
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ],
+                "target_has": [
+                  "off_balance"
+                ]
               }
             }
           ],
@@ -501,7 +540,7 @@
               "provisional": true
             }
           },
-          "text": "{=effects.0.ap} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.2.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.3.tiles} tile. Whatever it lands on (fire, a trap) acts on it. Not a Boss.",
+          "text": "{=effects.0.ap} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. Not a Boss.",
           "effects": [
             {
               "op": "grant_action",
@@ -527,6 +566,12 @@
                 }
               },
               "effects": [
+                {
+                  "op": "cleanse",
+                  "when": "acted",
+                  "condition": "off_balance",
+                  "target": "target"
+                },
                 {
                   "op": "deal",
                   "when": "acted",

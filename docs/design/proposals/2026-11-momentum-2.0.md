@@ -298,3 +298,21 @@ normal pace): `momentum-01` the fight's start with the MOMENTUM tip (the door li
 chip, `momentum-03` to `07` a Cut that kills (the swing, "−70", then the counter's arc segments and "x2"),
 `momentum-09` the action column. At level 1 the character has no class yet: Launch and the four finishers are the
 Breaker's, from level 3 (their descriptor through the reducer: `old-save.test.ts`, the Momentum chain block).
+
+## Integrator
+
+Review fixes (16 Nov 2026), for whoever combines this branch:
+
+1. **The first-fight hint comes from the general door tip.** This lane's own `momentum` row in `apps/web/src/game/tips.tsx`
+   is removed; only the text stays, as `skills.json raw_power.door_line`. The general reader (one tip for every skill
+   with a `door_line`, `tips.tsx` + `doorView.ts` `DOORS`, built on `wip/lane-0.29-door-will_power` and merged into
+   `lane/0.29-prayer-2`) shows it; this branch has no general reader, so until the combine the line shows nowhere.
+2. **The Charge Carries' save.** Prone has no save of its own (conditions.json `save: false`) and no op forces one, so
+   the save is carried as Launch's is: an Off Balance against Raw Power, then Prone if the target is Off Balance. A
+   Charge that bowls a foe over therefore also leaves it Off Balance (-1 AP), as a failed Launch does. Both rows first
+   shake off an Off Balance the target already had, so the Prone and the 3 tiles read this save alone (a made save
+   also clears an older Off Balance). A cleaner piece, for the lead: a predicate on the outcome of the row's own save
+   (`saved` / `save_failed`), which would let Prone ride the save without Off Balance. Not built (no new primitive).
+3. **LAUNCHED is drawn only for the Launch.** The `shove` effect now names its cause (`source`: displace's own
+   `source`, the item key that did it), and `fx/breaker.ts` draws the flight and the word only when it equals
+   `techniques.json rules.momentum.show.launch_source`; every other shove is the neutral one.

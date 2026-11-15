@@ -3,11 +3,15 @@
 // reducer (a technique, a perk action, a cover smash) and reads the numbers from the data.
 import { describe, it, expect, beforeEach } from 'vitest';
 import './helpers/yard16';
-import { CLASSES, enemyTurn, makeObject, type Unit } from '../src';
+import { CLASSES, enemyTurn, makeObject, PHYS_RULES, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { withGame } from './helpers/perkfight';
+import { onHook } from '../src/effects/hooks';
 
-beforeEach(() => rig(null));
+// Forced saves (the dice of a save are not the attack's rig): 'pass' or 'fail' decides every save until reset.
+let SAVE: 'pass' | 'fail' | null = null;
+onHook('save', (ctx: any) => { if (SAVE === 'pass') ctx.pass = true; if (SAVE === 'fail') ctx.fail = true; });
+beforeEach(() => { rig(null); SAVE = null; });
 
 const FIGHTER: any = (CLASSES as any[]).find((b) => b.id === 'fighter');
 const row = (id: string): any => FIGHTER.gain.find((m: any) => m.id === id);
@@ -27,8 +31,8 @@ function fight(o: { weapon?: string; known?: string[]; foes?: { at: string; tier
   f.momentum(f.pc, o.m ?? 1);
   return f;
 }
-const weak = (u: Unit) => { (u as any).sv = { body: -50, brain: -50, heart: -50 }; };
-const strong = (u: Unit) => { (u as any).sv = { body: 90, brain: 90, heart: 90 }; };
+const weak = (u: Unit) => { (u as any).sv = { body: -50, brain: -50, heart: -50 }; SAVE = 'fail'; };
+const strong = (u: Unit) => { (u as any).sv = { body: 90, brain: 90, heart: 90 }; SAVE = 'pass'; };
 const launch = (f: F, t: Unit, by = 'host') => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:fighter.launch', actionId: LAUNCH.action, targetId: t.id } as any, by);
 const refusal = (fn: () => unknown): string => { try { fn(); return ''; } catch (e: any) { return String(e?.message || e); } };
 
@@ -41,14 +45,30 @@ describe('every blow counts: held (measured over the melee band at level 20; the
 });
 
 describe('the Charge carries, and bowls over', () => {
-  it('a Charge that hits: the row\'s +2, the blow\'s +1 and closing in; its target falls Prone', () => {
-    const f = fight({ known: ['charge'], foes: [{ at: 'H5' }], m: 0 }); rig({ hit: true, die: 12 });
+  const charge = (o: { tier?: string; save?: (u: Unit) => void; offBalance?: boolean } = {}) => {
+    const f = fight({ known: ['charge'], foes: [{ at: 'H5', tier: o.tier }], m: 0 }); rig({ hit: true, die: 12 });
+    if (o.save) o.save(f.foe);
+    if (o.offBalance) (f.unit(f.foe.id).conds ||= {}).off_balance = 2;
     f.walk(f.pc, 'G5'); f.momentum(f.pc, 0);
     const before = f.fx('momentum').length;
     expect(f.tech('charge', { targetId: f.foe.id })).toBeNull();
+    return { f, t: f.unit(f.foe.id), before };
+  };
+  it("a Charge that hits: the row's +2, the blow's +1 and closing in; a failed Body save: Prone (and Off Balance)", () => {
+    const { f, t, before } = charge({ save: weak });
     expect(f.momentum(f.pc)).toBe(Math.min(f.pc.resMax!.momentum, 2 + row('charge_carries').effects[0].value)); // closing in (up to 2) + the Charge's row
-    expect(f.unit(f.foe.id).prone).toBe(true);
+    expect(t.prone).toBe(true); expect(t.conds?.off_balance).toBeTruthy();
     expect(f.fx('momentum').length).toBeGreaterThan(before); // the counter's moment (fx/breaker.ts) has its event
+  });
+  it('a made Body save: the target stays standing, even when it was already Off Balance', () => {
+    expect(charge({ save: strong }).t.prone).toBeFalsy();
+    expect(charge({ save: strong, offBalance: true }).t.prone).toBeFalsy();
+  });
+  it("a Boss is never bowled over, however it saves (the row's own tier filter)", () => {
+    const { f, t } = charge({ tier: 'boss', save: weak });
+    expect(row('charge_carries').effects.every((e: any) => e.op === 'resource' || e.if?.target_not_tier?.includes('boss'))).toBe(true);
+    expect(t.prone).toBeFalsy(); expect(t.conds?.off_balance).toBeFalsy();
+    expect(f.momentum(f.pc)).toBeGreaterThan(0); // the Momentum still comes
   });
 });
 
@@ -98,6 +118,18 @@ describe('Launch', () => {
     const f = fight({ m: 2 }); strong(f.foe);
     launch(f, f.foe);
     const t = f.unit(f.foe.id); expect(t.pos).toBe(f.tile('E5')); expect(t.prone).toBeFalsy();
+  });
+  it('a saved Launch is the short push even when the target was already Off Balance', () => {
+    const f = fight({ m: 2 }); strong(f.foe); (f.unit(f.foe.id).conds ||= {}).off_balance = 2;
+    launch(f, f.foe);
+    const t = f.unit(f.foe.id); expect(t.pos).toBe(f.tile('E5')); expect(t.prone).toBeFalsy();
+  });
+  it("the Launch's flight names its cause (the shove effect's source: the data's launch_source), so a screen draws LAUNCHED for it alone", () => {
+    const f = fight({ m: 4 }); weak(f.foe);
+    launch(f, f.foe);
+    const sh = f.fx('shove').filter((e: any) => e.target === f.foe.id && e.ok);
+    expect(sh.length).toBeGreaterThan(0);
+    expect(sh.every((e: any) => e.source === (PHYS_RULES as any).momentum.show.launch_source)).toBe(true);
   });
   it('more Momentum, a harder blow (the amount reads what is left after the 2 are paid)', () => {
     const dmg = (m: number) => { const f = fight({ m }); weak(f.foe); const hp = f.foe.hp; launch(f, f.foe); return hp - f.unit(f.foe.id).hp; };

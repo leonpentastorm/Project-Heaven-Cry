@@ -17,6 +17,7 @@
         "ring_base": 10,
         "ring_per": 4,
         "crack_at": 5,
+        "launch_source": "class:fighter.launch",
         "provisional": true
       },
       "texts": {

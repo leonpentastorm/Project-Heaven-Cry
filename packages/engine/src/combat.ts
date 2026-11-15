@@ -2053,7 +2053,7 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
   if (o.preview || !path.length) { res.path = path; res.moved = path.length; if (path.length) res.to = path[path.length - 1]; return res; }
   // 2. It goes. The effect first (the screen slides it there), then the tiles act on it.
   const last = path[path.length - 1];
-  const ev: any = o.fx === false ? null : emitFx(cb, 'shove', { ...(o.by && !(o.fx && o.fx.magic) ? { unit: o.by.id } : {}), target: u.id, from, to: last, ok: true, ...(path.length > 1 ? { path: [from, ...path] } : {}), ...(o.how === 'pull' ? { pull: true } : {}), ...(o.fx || {}) });
+  const ev: any = o.fx === false ? null : emitFx(cb, 'shove', { ...(o.by && !(o.fx && o.fx.magic) ? { unit: o.by.id } : {}), target: u.id, from, to: last, ok: true, ...(path.length > 1 ? { path: [from, ...path] } : {}), ...(o.how === 'pull' ? { pull: true } : {}), ...(o.source ? { source: o.source } : {}), ...(o.fx || {}) }); // source: what did it (a screen draws a Launch's flight only for the Launch)
   setBraced(u, false);
   if (rule.tiles === 'landing') u.pos = last;
   if (o.drawn) o.drawn();

@@ -71,13 +71,24 @@ describe('the Momentum chain on the fight map', () => {
   });
   it('Launch: a push of 2 tiles or more by a unit heaves first (its own beat), then flies; a 1-tile push is the old shove', () => {
     setContext(game([PC, FOE]), 'combat');
-    const e: any = { k: 'shove', unit: PC.id, target: FOE.id, from: '2,1', to: '5,1', ok: true, path: ['2,1', '3,1', '4,1', '5,1'], n: 6 };
+    const e: any = { k: 'shove', unit: PC.id, target: FOE.id, from: '2,1', to: '5,1', ok: true, path: ['2,1', '3,1', '4,1', '5,1'], n: 6, source: breakerShow().launch_source };
     expect(launchTiles(e)).toBe(3); expect(breakerFxOf(e)).toBe('launch'); expect(breakerBeat(e)).toBeGreaterThan(BRK_MS.heave);
     playFx(e);
     expect(traces().map((t) => t.what)).toEqual(['launch']);
     expect(breakerFxOf({ k: 'shove', unit: PC.id, target: FOE.id, from: '2,1', to: '3,1', ok: true })).toBeNull();
     expect(breakerFxOf({ ...e, magic: true })).toBeNull();
     vi.advanceTimersByTime(3000); expect(g.layer.childElementCount).toBe(0);
+  });
+  it('a shove of 3 tiles that is not the Launch (a knockback, or one that names no cause) is the neutral shove: no LAUNCHED', () => {
+    setContext(game([PC, FOE]), 'combat');
+    const far: any = { k: 'shove', unit: PC.id, target: FOE.id, from: '2,1', to: '5,1', ok: true, path: ['2,1', '3,1', '4,1', '5,1'], n: 7 };
+    expect(breakerShow().launch_source).not.toBe('');
+    expect(breakerFxOf({ ...far, source: 'knockback' })).toBeNull();
+    expect(breakerFxOf(far)).toBeNull();
+    expect(breakerBeat({ ...far, source: 'knockback' })).toBeUndefined();
+    playFx({ ...far, source: 'knockback' });
+    expect(traces().map((t) => t.what)).not.toContain('launch');
+    vi.advanceTimersByTime(3000);
   });
   it('the finishers and the smash have their own lines; an Exposed foe its bracket', () => {
     for (const id of ['charge', 'cleave', 'break', 'coup']) expect(breakerFxOf({ k: 'technique', id, unit: PC.id })).toBe(id);
@@ -86,12 +97,8 @@ describe('the Momentum chain on the fight map', () => {
     expect(breakerFxOf({ k: 'cond', id: 'exposed', at: '2,1' } as any)).toBe('exposed');
     expect(breakerFxOf({ k: 'cond', id: 'exposed', at: '2,1', resisted: true } as any)).toBeNull();
   });
-  it('the first-fight hint: the door line from data, when one of my characters with the meter has the turn', () => {
-    const tip = TIPS.find((t) => t.id === 'momentum')!;
-    expect(tip.text).toBe((SKILL as any).raw_power.door_line); expect(doorLine('raw_power')).toBeTruthy();
-    const st = (u: any, owner = 'me') => ({ screen: 'combat', me: { id: 'me' }, game: { characters: { c1: { owner } }, combat: { units: [u], order: [u.id], turn: 0 } } } as any);
-    expect(tip.when(st({ id: 'a', charId: 'c1', resMax: { momentum: 5 } }))).toBe(true);
-    expect(tip.when(st({ id: 'a', charId: 'c1', resMax: {} }))).toBe(false);
-    expect(tip.when(st({ id: 'a', charId: 'c1', resMax: { momentum: 5 } }, 'other'))).toBe(false);
+  it("the first-fight hint is the general door tip's (skills.json raw_power.door_line): no lane row of its own", () => {
+    expect(TIPS.find((t) => t.id === 'momentum')).toBeUndefined();
+    expect(doorLine('raw_power')).toBe((SKILL as any).raw_power.door_line); expect(doorLine('raw_power')).toBeTruthy();
   });
 });
