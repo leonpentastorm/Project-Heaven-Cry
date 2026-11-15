@@ -981,7 +981,8 @@ const H: Record<string, Handler> = {
     const p = at(e.tile); if (!p) return;
     // The caster leans in over its own tile, then the stroke draws (fx/sigilBody.ts; nothing to wait for under Reduce motion).
     const lead = leanIn(tokOf(e.unit, e.at), p);
-    if (lead) after(() => drawStroke(e, p), lead); else drawStroke(e, p);
+    if (lead) { ring(p, SIGIL_INK, lead + 160, { from: 0.5, to: 0.85, width: 2 }); after(() => drawStroke(e, p), lead); } // the tile lights under the lean
+    else drawStroke(e, p);
   },
   // Sigil 1.5 (rules 1.10): an Evoke's study crossed a threshold, or a word became Mastered and its inflection came on.
   sigil_growth(e) {
