@@ -11,7 +11,7 @@ import { type GameState, apply, RuleError, boonWorks, boonServes, FOCUS_IDS, STA
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
 import { BUILDS } from './balance/builds';
-import { survivalRoom, ownerOf } from './helpers/survival';
+import { survivalRoom, ownerOf, leaveField } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -348,11 +348,11 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     const sig = g.combat!.units.find((u) => u.charId === 'c1')!, out = g.combat!.units.find((u) => u.charId === 'c2')!;
     const before = cores(packOf(g.characters.c1)), g2 = clone(g);
     sig.mg!.charge = 1; sig.mg!.cores -= 1; sig.mg!.flux = 3; out.mg!.mp = 5; // one spare core swapped in and most of the loaded one spent: one core burnt
-    const done = apply(g, { type: 'run/skip' }, 'host');
+    const done = leaveField(apply(g, { type: 'run/skip' }, 'host')); // rules 1.55 item 49: the supply pack comes as the field is left
     expect(SV.ammo_pack.supply.fight).toBe(1); expect(SV.ammo_pack.mags.fight).toBe(0); // the 0.28.0 count for cores and MP; no magazines
     expect(cores(packOf(done.characters.c1))).toBe(before); // the one burnt comes back
     g2.combat!.units.find((u) => u.charId === 'c1')!.mg!.charge = 1; // nothing burnt: the loaded core's 9 charge is not a spare core
-    const none = apply(g2, { type: 'run/skip' }, 'host');
+    const none = leaveField(apply(g2, { type: 'run/skip' }, 'host'));
     expect(cores(packOf(none.characters.c1))).toBe(before);
     expect(done.story.magic!.c1.flux).toBe(0);
     expect(mpNow(done.characters.c2)).toBe(Math.min(maxMp(done.characters.c2), 5 + supplyMp(done.characters.c2, 1))); expect(mpNow(done.characters.c2)).toBeGreaterThan(5);

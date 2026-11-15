@@ -15,25 +15,21 @@ let G: any = null;
 export function bindGame(g: any): any { const was = G; G = g; return was; }
 /** The game bound for this action (bindGame), or null: how items reach the characters. */
 export const boundGame = (): any => G;
-/** Rules 1.55 item 37: is growth held for what happens on this map? The one gate every "learned by doing" writer reads
- * (practice, study and word uses, feelings, Devotion XP and patron tags, drill, deeds): true in the area map's dry run
- * (cb.dry) and on a won run fight's field (the area map's throwaway fight while the run's state is 'field'): growth
- * comes only from a real fight. A story-side gain with no map (cb null) is never held here. */
-/** Rules 1.55 item 38: on the field nothing a character does may harm a friend. The one check where harm is applied
- * (applyDamage, applyCond): true when `by` is another unit of `t`'s side on the field's map; the blow or the condition
- * is held (nobody is hurt) and the map is marked (cb.fieldHarm: who did it and the words), so the area map's action of
- * that character refuses as a whole (game.ts worldAct); a lingering harm of someone else's (a field they left, walked
- * into) is only held. Your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. */
+/** Rules 1.55 item 38 (item 48): on the field (Combat.field) nothing a character does may harm a friend. The one check
+ * where harm is applied (applyDamage, applyCond): true when `by` is another unit of `t`'s side on the field; the blow or
+ * the condition is held (nobody is hurt) and the fight is marked (cb.fieldHarm: who did it and the words), so that
+ * unit's action refuses as a whole (game.ts combatAction); a lingering harm of someone else's (a trap walked into) is
+ * only held. Your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. */
 export function harmHeld(cb: any, by: any, t: any): boolean {
-  if (!cb?.overworld || G?.run?.state !== 'field' || !by || !t || by === t || by.side !== t.side) return false;
+  if (!cb?.field || !by || !t || by === t || by.side !== t.side) return false;
   cb.fieldHarm ||= { by: by.id, text: t.name + ' is a friend: the fight is over, and on the field nothing you do may hurt them.' };
   return true;
 }
-/** Rules 1.55 item 39: the won fight's field as a fight state (game.ts fieldCombat sets it), so the fight screen's
- * descriptors (descriptors.ts ctxOf) list and preview on the field as in a fight; null off the field. */
-export const fieldDoor: { f: ((g: any) => Combat | null) | null } = { f: null };
-/** Rules 1.55 item 37: growth held on this map (the dry run, the won fight's field): the gate described above harmHeld. */
-export const growthHeld = (cb: any): boolean => !!cb && (!!cb.dry || (!!cb.overworld && G?.run?.state === 'field'));
+/** Rules 1.55 item 37 (item 48): is growth held for what happens in this fight? The one gate every "learned by doing"
+ * writer reads (practice, study and word uses, feelings, Devotion XP and patron tags, drill, deeds): true in the area
+ * map's dry run (cb.dry) and on a won run fight's field (Combat.field): growth comes only from a real fight. A
+ * story-side gain with no map (cb null) is never held here. */
+export const growthHeld = (cb: any): boolean => !!cb && (!!cb.dry || !!cb.field);
 
 // ---------- registry ----------
 const REG = new Map<string, ItemHandler>();

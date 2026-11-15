@@ -28,7 +28,7 @@ export interface GiveAction { type: 'gear/give'; charId: string; to: string; idx
  * keeps rules 1.46's where (the node kinds of `give.where`, the start); an item is given anywhere in a run that no fight
  * is on (rules 1.55 item 30). */
 export function giveWhereProblem(g: GameState, credits = true): string | null {
-  if (g.phase === 'combat' && g.combat && !g.combat.over) return 'Hand things over after the fight.';
+  if (g.phase === 'combat' && g.combat && !g.combat.over && !g.combat.field) return 'Hand things over after the fight.'; // rules 1.55 item 45: the field is no fight to hand things over in
   const r = g.run;
   if (r && r.state !== 'over') {
     if (r.state === 'fight') return 'Hand things over after the fight.';
@@ -114,7 +114,9 @@ export interface GiveRowV { key: string; kind: 'credits' | 'pack' | 'count' | 'h
    * character's id; `why` per character of the party (yourself included), the engine's reason it can't now, or null. */
   use?: UseRowV }
 /** A Give line's "Use on…" (rules 1.55 item 32). */
-export interface UseRowV { label: string; action: Record<string, unknown>; why: Record<string, string | null> }
+export interface UseRowV { label: string; action: Record<string, unknown>; why: Record<string, string | null>;
+  /** Rules 1.55 item 45: the `targetId` to send for each character, when it is not the character's id (on the field:
+   * its unit's). */ targets?: Record<string, string> }
 /** The reducer's door for using a counted item on a character out of a fight (game.ts registers it as it loads: this
  * file can't import game.ts): the action for it, or null when the item has no use on a friend. */
 let USE_DOOR: ((g: GameState, me: string, from: string, item: string) => UseRowV | null) | null = null;

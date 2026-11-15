@@ -95,10 +95,12 @@ describe('rules 1.44: the thirteen boons, each through the item-op runner (spec 
     const g = inFight((g0) => { g0.characters.c1.relics = ['boon.mending']; });
     const u = g.combat!.units.find((x) => x.charId === 'c1')!, u2 = g.combat!.units.find((x) => x.charId === 'c2')!;
     u.hp = 10; u2.hp = 10;
-    const done = apply(g, { type: 'run/skip' }, 'host'), units = done.combat!.units, at = (id: string) => units.find((x) => x.charId === id)!;
-    expect(at('c1').hp).toBe(10 + Math.floor(u.maxHp * boon('boon.mending').effects[0].amount.per[0].value)); // the fight's end, before the write-back
-    expect(at('c2').hp).toBe(10);
-    expect(done.characters.c1.hp).toBe(at('c1').hp + (maxHp(done.characters.c1) - u.maxHp)); // it went home (the level-up after the pay adds its own HP)
+    // rules 1.55 item 49: the fight ends as its field is left (the level the pay brought is already on the units)
+    const f = apply(g, { type: 'run/skip' }, 'host'), fu = (id: string) => f.combat!.units.find((x) => x.charId === id)!, h1 = fu('c1').hp, h2 = fu('c2').hp, m1 = fu('c1').maxHp;
+    const done = leaveField(f), units = done.combat!.units, at = (id: string) => units.find((x) => x.charId === id)!;
+    expect(at('c1').hp).toBe(Math.min(m1, h1 + Math.floor(m1 * boon('boon.mending').effects[0].amount.per[0].value))); // the fight's end, before the write-back
+    expect(at('c2').hp).toBe(h2); expect(h1).toBe(10 + m1 - u.maxHp); // the level's rise went on the unit as it was paid
+    expect(done.characters.c1.hp).toBe(at('c1').hp); // it went home
   });
   it('Bandolier: the supply pack\'s magazines x2 (the stat run_ammo); its cores are Deep Satchel\'s (run_supply)', () => {
     const g = started(DUO), c: any = clone(g).characters.c2;
@@ -117,7 +119,7 @@ describe('rules 1.44: the thirteen boons, each through the item-op runner (spec 
   });
   it('Devout: +1 Devotion XP at each fight\'s end for the Faithful, inside the session\'s cap (the resource devotion_xp)', () => {
     const g = inFight((g0) => { const c: any = g0.characters.c1; c.relics = ['boon.devout']; c.belief = { kind: 'faithful', patron: 'mother_ember' }; c.patron = 'mother_ember'; setDevotionXp(c, devotionThreshold(3)); });
-    const was = devotionXpOf(g.characters.c1), done = apply(g, { type: 'run/skip' }, 'host');
+    const was = devotionXpOf(g.characters.c1), done = leaveField(apply(g, { type: 'run/skip' }, 'host')); // the fight's end: as its field is left
     expect(devotionXpOf(done.characters.c1) - was).toBe(boon('boon.devout').effects[0].value);
   });
   it('every boon\'s worth lands on the cap when it is taken', () => {

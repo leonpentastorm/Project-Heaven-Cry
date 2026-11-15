@@ -1,9 +1,10 @@
-// Rules 1.55: a won Survival fight's field. After the win the run stands at `field`: the fight's map, the squad where it
-// stood, the piles as the fight left them (a speed reload's dropped magazine among them); the squad walks and picks up
-// with the Proving Ground's free movement (no rounds, AP always full); everyone marks Leave (run/leave, the shop's vote)
-// or the host closes it, and then the rewards are as before. Everything through the reducer.
+// Rules 1.55: a won Survival fight's field. After the win the run stands at `field`, and the field is the fight itself,
+// still running with no enemies left (rules 1.55 item 45, 0.28.3): the fight's map, its units, its piles (a speed
+// reload's dropped magazine among them); the squad walks and picks up with the fight's own actions, no AP taken, no
+// turns; everyone marks Leave (run/leave, the shop's vote) or the host closes it, and then the fight ends and the
+// rewards are as before. Everything through the reducer.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, reachable, nodeXp, runNode, standable, zoneMap, magazineWorth } from '../src';
+import { type GameState, apply, RuleError, reachable, nodeXp, runNode, magazineWorth, paths, NO_TURNS } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 
@@ -20,8 +21,7 @@ function inFight(): GameState {
   expect(g.run!.state).toBe('fight');
   return g;
 }
-const magsIn = (g: GameState, id: string) => (g.characters[id].pack || []).filter((p: any) => p.mags).reduce((t: number, p: any) => t + p.mags.length, 0);
-const piles = (g: GameState) => (g.story.objects || []).filter((o: any) => o.kind === 'pile' && (o.items || []).length);
+const piles = (g: GameState) => (g.combat!.objects || []).filter((o: any) => o.kind === 'pile' && (o.items || []).length);
 
 describe('rules 1.55: the field after a won Survival fight', () => {
   it('a speed reload\'s magazine lies on the field; a walk and a pickup bring it back with no AP spent and no round; the vote leaves; the pay is as before', () => {
@@ -33,33 +33,30 @@ describe('rules 1.55: the field after a won Survival fight', () => {
     g = apply(g, { type: 'combat/reload', unitId: u.id } as any, owner);
     const dropped = g.combat!.objects!.find((o: any) => o.kind === 'pile' && o.pos === u.pos)!;
     expect(dropped.items!.some((e: any) => e.pack?.mags)).toBe(true);
-    g = apply(g, { type: 'run/skip' }, 'host');
-    const packMags = magsIn(g, u.charId!);
-    // the field: the map is the fight's, the squad stands where it stood, the magazine's pile is on the area map
-    expect(g.run!.state).toBe('field'); expect(g.phase).toBe('story'); expect(zoneMap(g)).toEqual(g.combat!.map);
-    const at = g.story.positions![u.charId!]; expect(at).toBe(g.combat!.units.find((x) => x.id === u.id)!.pos);
-    const pile = piles(g).find((o: any) => o.pos === dropped.pos)!; expect(pile).toBeTruthy();
+    g = clone(apply(g, { type: 'run/skip' }, 'host'));
+    // the field: the fight itself, still running (its phase, its units where they stood), the magazine's pile on its map
+    expect(g.run!.state).toBe('field'); expect(g.phase).toBe('combat'); expect(g.combat!.field).toBe(true); expect(g.combat!.over).toBeNull();
+    const me = () => g.combat!.units.find((x) => x.id === u.id)!;
+    expect(piles(g).some((o: any) => o.pos === dropped.pos)).toBe(true);
     // the pay is given as the fight is won (as before rules 1.55); the picks wait for the field to be left
     const n = runNode(g.run!, g.run!.at)!; expect(g.characters.c1.xp).toBe(nodeXp('fight', n.depth, 1)); expect(g.run!.offers!.c1).toBeTruthy();
     expect(refused(g, { type: 'run/pick', charId: 'c1', choice: 0 })).toBe('There is nothing to pick for that character now.');
     expect(refused(g, { type: 'run/move', node: g.run!.nodes[0].id })).toBe('Leave the field first: everyone marks Leave, or the host closes it.');
-    // a step off the pile and back onto it: free movement, no rounds
-    const map = zoneMap(g), [x0, y0] = at.split(',').map(Number), taken = new Set(Object.values(g.story.positions!));
-    const step = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (x0 + dx) + ',' + (y0 + dy)).find((k) => standable(map, k) && !taken.has(k) && !(g.story.objects || []).some((o: any) => o.pos === k && o.kind !== 'pile'))!;
-    const round = g.story.round;
-    g = apply(g, { type: 'world/act', charId: u.charId!, act: 'move', to: step } as any, owner);
-    expect(g.story.positions![u.charId!]).toBe(step); expect(g.story.ap).toEqual({}); expect(g.story.round).toBe(round);
-    g = apply(g, { type: 'world/act', charId: u.charId!, act: 'pickup', objId: pile.id } as any, owner);
-    expect(magsIn(g, u.charId!)).toBeGreaterThan(packMags); expect(g.story.ap).toEqual({}); expect(g.story.round).toBe(round);
-    expect(piles(g).some((o: any) => o.id === pile.id)).toBe(false); // the whole pile in one action
-    // the story's own actions are not done on the field (rules 1.55 item 33)
-    expect(refused(g, { type: 'world/act', charId: u.charId!, act: 'search', objId: 'x' } as any, owner)).toMatch(/^The fight is over: on the field you walk, pick things up and use what you carry/);
-    // leaving: one of two ready waits; a guest may not close; both ready: the rewards
+    // a step off the pile and back onto it: the fight's own move, no AP taken, no round
+    const at = me().pos, P = paths(g.combat!, at, u.id), taken = new Set(g.combat!.units.filter((x) => !x.dead).map((x) => x.pos));
+    const step = Object.keys(P.dist).find((k) => P.dist[k] === 1 && !taken.has(k))!;
+    const round = g.combat!.round, ap = me().ap, mags0 = (me().mags || []).length;
+    g = apply(g, { type: 'combat/move', unitId: u.id, to: step } as any, owner); expect(me().pos).toBe(step);
+    g = apply(g, { type: 'combat/move', unitId: u.id, to: at } as any, owner);
+    g = apply(g, { type: 'combat/pickup', unitId: u.id, tile: dropped.pos } as any, owner);
+    expect((me().mags || []).length).toBeGreaterThan(mags0); expect(me().ap).toBe(ap); expect(g.combat!.round).toBe(round);
+    expect(refused(g, { type: 'combat/end-turn', unitId: u.id } as any, owner)).toBe(NO_TURNS);
+    // leaving: one of two ready waits; a guest may not close; both ready: the fight ends, the rewards
     const one = apply(g, { type: 'run/leave' }, 'host');
     expect(one.run!.state).toBe('field'); expect(one.run!.ready).toEqual({ host: true });
     expect(refused(g, { type: 'run/leave', close: true } as any, 'p2')).toMatch(/^Only the host can close the field/);
     const both = apply(one, { type: 'run/leave' }, 'p2');
-    expect(both.run!.state).toBe('reward'); expect(both.run!.ready).toEqual({}); expect(both.story.positions).toEqual({});
+    expect(both.run!.state).toBe('reward'); expect(both.run!.ready).toEqual({}); expect(both.phase).toBe('story'); expect(both.combat!.over).toBe('win');
     expect(both.characters.c1.xp).toBe(g.characters.c1.xp); expect(both.run!.offers).toEqual(g.run!.offers);
     expect(apply(g, { type: 'run/leave', close: true } as any, 'host').run!.state).toBe('reward'); // the host closes for everyone
     // the picks as before: then back on the path map

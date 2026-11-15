@@ -307,8 +307,11 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       // marked capped; else the run ends here, stalled
       const left = (side: string) => (cb?.units || []).filter((u: any) => (side === 'pc' ? u.side === 'pc' : u.side !== 'pc') && !u.companion && !u.dead && !u.downed).reduce((t: number, u: any) => t + Math.max(0, u.hp), 0);
       let capped = false;
-      if (cb && !cb.over && r.g.phase === 'combat' && left('pc') > 2 * left('foe')) { capped = true; must({ type: 'run/skip' }); }
-      else if (cb && !cb.over && r.g.phase === 'combat') { r.errors.push('a fight did not end in ' + (cfg.maxFightRounds ?? 20) + ' rounds (stage ' + run.stage + ', depth ' + node.depth + '): ' + cb.units.map((u: any) => u.side + ':' + u.name + ' ' + u.hp + 'hp@' + u.pos + (u.hidden ? ' hidden' : '') + (u.dead ? ' dead' : u.downed ? ' down' : '') + (u.side === 'pc' ? ' ammo ' + u.ammo + ' w ' + u.weapon + ' jam ' + u.jammed + ' ap ' + u.ap + ' rounds ' + roundsFor(C(u.charId)) : '')).join('; ') + ' LOG ' + cb.log.slice(-12).join(' / ') + ' REFUSED ' + refusals.join(' / ')); res.how = 'stalled'; res.stage = run.stage; res.depth = node.depth; break; }
+      if (cb && !cb.over && !cb.field && r.g.phase === 'combat' && left('pc') > 2 * left('foe')) { capped = true; must({ type: 'run/skip' }); }
+      else if (cb && !cb.over && !cb.field && r.g.phase === 'combat') { r.errors.push('a fight did not end in ' + (cfg.maxFightRounds ?? 20) + ' rounds (stage ' + run.stage + ', depth ' + node.depth + '): ' + cb.units.map((u: any) => u.side + ':' + u.name + ' ' + u.hp + 'hp@' + u.pos + (u.hidden ? ' hidden' : '') + (u.dead ? ' dead' : u.downed ? ' down' : '') + (u.side === 'pc' ? ' ammo ' + u.ammo + ' w ' + u.weapon + ' jam ' + u.jammed + ' ap ' + u.ap + ' rounds ' + roundsFor(C(u.charId)) : '')).join('; ') + ' LOG ' + cb.log.slice(-12).join(' / ') + ' REFUSED ' + refusals.join(' / ')); res.how = 'stalled'; res.stage = run.stage; res.depth = node.depth; break; }
+      // rules 1.55 item 49: the fight is closed (its fighters written back) when the party leaves its field: the walker
+      // leaves at once, before anything is measured
+      if (r.g.run?.state === 'field') for (let i = 0; i < n && r.g.run.state === 'field'; i++) must({ type: 'run/leave' }, ownerOf(i));
       const won = r.g.phase !== 'lobby';
       const after = ids.map((id) => roundsFor(C(id)));
       const sf = (r.g.run?.stats?.fights || []).slice(-1)[0] || (r.g.run?.end ? null : null);

@@ -2846,14 +2846,12 @@ if _sv is not None:
         if not _gv.get("where") or not set(_gv["where"]) <= _kinds - {"fight", "elite", "boss"}: errors.append("survival:give.where: node kinds with no fight")
         if not isinstance(_gv.get("at_start"), bool): errors.append("survival:give.at_start: true or false")
         if _gv.get("provisional") is not True: errors.append("survival:give: provisional: true")
-    # Rules 1.55 items 33 to 35 (0.28.2): what the field refuses (resource ids of actions.json, item ops of effect_ops.json)
+    # Rules 1.55 items 35 and 48 (0.28.3): what the field refuses (item ops of effect_ops.json)
     _fd = _sv.get("field")
     if _fd is not None:
-        _resids = set(((data.get("actions") or {}).get("resources") or {}).keys())
         _opids = set((((data.get("effect_ops") or {}).get("item_ops") or {}).get("ops") or {}).keys())
-        if not _fd.get("carried_res") or not _fd.get("lasting_ops"): errors.append("survival:field: carried_res and lasting_ops, each a list")
-        for _x in _fd.get("carried_res") or []:
-            if _x not in _resids: errors.append(f"survival:field.carried_res: {_x!r} is not a resource of actions.json")
+        if not _fd.get("lasting_ops"): errors.append("survival:field: lasting_ops, a list")
+        if "carried_res" in _fd: errors.append("survival:field.carried_res: gone in rules 1.55 item 48 (the field's units pay what they spend)")
         for _x in _fd.get("lasting_ops") or []:
             if _x not in _opids: errors.append(f"survival:field.lasting_ops: {_x!r} is not an item op")
         if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")

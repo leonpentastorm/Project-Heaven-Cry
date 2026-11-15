@@ -125,7 +125,7 @@ export class Rec {
     const round0 = this.g.combat?.round || 1;
     const cur = (cb: any) => cb.window?.queue?.[0]?.unitId ?? cb.order[cb.turn];
     for (let guard = 0; guard < 4000; guard++) {
-      const cb = this.g.combat; if (!cb || cb.over || this.g.phase !== 'combat') break;
+      const cb = this.g.combat; if (!cb || cb.over || cb.field || this.g.phase !== 'combat') break; // rules 1.55 item 45: a won run fight's field is not fought
       if (cb.round - round0 >= maxRounds) break;
       const uid = cur(cb), u = cb.units.find((q: any) => q.id === uid); if (!u) break;
       if (cb.window) { if (this.act({ type: 'combat/decline', unitId: u.id }, this.byOf(u)) && this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('stuck in a window'); break; } continue; }
@@ -134,7 +134,7 @@ export class Rec {
       const pol = POLICIES[sp.policy || BUILD[sp.build].policy], banned = new Set<string>(); let fails = 0; memo[u.id] ||= {};
       const scripted = script ? script(this, u.id, u.charId, (turns[u.id] = (turns[u.id] || 0) + 1)) : undefined;
       for (let k = 0; k < 30 && scripted !== 'done'; k++) {
-        const c1 = this.g.combat; if (!c1 || c1.over || this.g.phase !== 'combat' || c1.window || cur(c1) !== u.id) break;
+        const c1 = this.g.combat; if (!c1 || c1.over || c1.field || this.g.phase !== 'combat' || c1.window || cur(c1) !== u.id) break;
         const m1 = c1.units.find((q: any) => q.id === u.id); if (!m1 || m1.downed || m1.dead || m1.ap <= 0) break;
         // the policy reads a copy: the recorded game changes through apply() and nothing else
         const before = this.checkReads ? withoutPs(this.g) : '', full = this.checkReads ? JSON.stringify(this.g) : '';
@@ -152,7 +152,7 @@ export class Rec {
         if (err) { banned.add(JSON.stringify(step.action)); if (++fails > 6) break; }
       }
       const c4 = this.g.combat;
-      if (c4 && !c4.over && this.g.phase === 'combat' && !c4.window && c4.order[c4.turn] === u.id) { if (this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('could not end the turn of ' + u.name); break; } }
+      if (c4 && !c4.over && !c4.field && this.g.phase === 'combat' && !c4.window && c4.order[c4.turn] === u.id) { if (this.act({ type: 'combat/end-turn', unitId: u.id }, this.byOf(u))) { this.errors.push('could not end the turn of ' + u.name); break; } }
     }
   }
 }
@@ -240,7 +240,7 @@ function look<T>(r: Rec, unitId: string, f: (cb: any, me: any, g: any) => T): T 
   const was = bindGame(g); try { return f(cb, me, g); } finally { bindGame(was); }
 }
 const unit = (r: Rec, id: string) => r.g.combat?.units.find((q: any) => q.id === id);
-const myTurn = (r: Rec, id: string) => { const cb = r.g.combat, u = unit(r, id); return !!cb && !cb.over && r.g.phase === 'combat' && !cb.window && cb.order[cb.turn] === id && !!u && !u.dead && !u.downed; };
+const myTurn = (r: Rec, id: string) => { const cb = r.g.combat, u = unit(r, id); return !!cb && !cb.over && !cb.field && r.g.phase === 'combat' && !cb.window && cb.order[cb.turn] === id && !!u && !u.dead && !u.downed; };
 /** Walk towards a tile: the route the engine's own search gives, tried from its far end back (a move the unit cannot
  * pay for is refused, and the refusal is in the stream), at most `tries` times and `maxTiles` tiles far. A tile that
  * cannot be stood on (a doorway's wall side, someone on it): the reachable tile nearest to it. */
