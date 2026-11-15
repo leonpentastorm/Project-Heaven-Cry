@@ -6282,6 +6282,18 @@ state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
    and is refused when the meter cannot pay it; the meter is the limit (item 4135). On the field the same floor bounds
    what is gathered after a fight: AP is free there, the meter is not.
 53. **Any MP focus can Syphon** (0.28.3): an Emanator or an Attuner in hand (item 4136).
+54. **Nothing harms a surrendered foe on the field; nobody moves a friend by force** (0.28.3; the lead's ruling, 15 Nov
+   2026): the field's one harm gate (item 48) also holds a unit that has surrendered, whatever its side: the action
+   that would hurt it is refused in the words "They have surrendered." A push, pull, shove or other forced move of a
+   friend, or of a surrendered unit, is harm there too and is refused the same way (a unit's own willing move, a swap
+   it chose, is not forced).
+55. **Two characters, one player** (0.28.3): on the field a player acts as the character they pick: a click on one of
+   their own tokens, or its card in the squad panel, makes it the one acting (the action bar, the sheet and the ring
+   follow it), unless the action being aimed takes that unit as its target. A Downed character can be picked for
+   what a Downed character may do (on the field, nothing: a friend's stim). The default is the player's first
+   character that can act, by the engine's own list of its actions.
+56. **AP on the field** (0.28.3): where the AP pips stand, the field shows the word "free" (AP never limits there,
+   item 47), not the AP left when the last enemy fell.
 
 ## Maps (rules 1.16)
 
@@ -9815,3 +9827,5 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
    (`data/actions.json`: an Emanator or an Attuner in hand), so a Mender with an Attuner Syphons; the gain goes through
    `resGive`, capped at Max MP. With the focus only in the pack the row is greyed ("Needs an MP focus in hand (an
    Emanator or an Attuner)."). Crystallise still needs an Emanator. PROVISIONAL.
+4137. **The field's gates and screen (rules 1.55 items 54 to 56, 0.28.3):** no number. On the field Syphon and
+    Crystallise are bounded by the meter alone (items 4135 and the Crystallise row: 10 a core), not by AP.

@@ -14,7 +14,7 @@ import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverW
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
-import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard } from './effects/hooks';
+import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard, harmHeld } from './effects/hooks';
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
 import type { ShieldLayer } from './effects/damage';
@@ -2005,7 +2005,9 @@ export interface DisplaceResult {
 }
 /** May this unit be moved against its will? null: yes. Otherwise why not (and `tiles`, which an item may have changed). */
 function forcedRefusal(cb: Combat, rng: Rng | null | undefined, u: Unit, o: DisplaceOpts, tiles: number, to?: string): { stoppedBy: 'nailed' | 'immune' | 'held' | null; why?: string; tiles: number } {
-  if (o.willing || !FORCED[o.how].immunity) return { stoppedBy: null, tiles };
+  if (o.willing) return { stoppedBy: null, tiles };
+  if (harmHeld(cb, o.by, u, !o.preview)) return { stoppedBy: 'held', why: 'on the field', tiles }; // rules 1.55 item 54: on the field nobody moves a friend or a surrendered unit by force (the one harm gate, effects/hooks.ts)
+  if (!FORCED[o.how].immunity) return { stoppedBy: null, tiles };
   if (u.nailed) return { stoppedBy: 'nailed', why: 'nailed in place', tiles };
   const im = immune({ u }, 'knockback'); if (im) return { stoppedBy: 'immune', why: im, tiles };
   // 'forced_move' {u, by, tiles, to, how, kind, pull, cancel}: an item may stop it (cancel) or change the distance (tiles).

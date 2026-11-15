@@ -19,10 +19,15 @@ export const boundGame = (): any => G;
  * where harm is applied (applyDamage, applyCond): true when `by` is another unit of `t`'s side on the field; the blow or
  * the condition is held (nobody is hurt) and the fight is marked (cb.fieldHarm: who did it and the words), so that
  * unit's action refuses as a whole (game.ts combatAction); a lingering harm of someone else's (a trap walked into) is
- * only held. Your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. */
-export function harmHeld(cb: any, by: any, t: any): boolean {
-  if (!cb?.field || !by || !t || by === t || by.side !== t.side) return false;
-  cb.fieldHarm ||= { by: by.id, text: t.name + ' is a friend: the fight is over, and on the field nothing you do may hurt them.' };
+ * only held. Your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. Rules 1.55 item 54:
+ * a unit that has surrendered is held the same way, whatever its side ("They have surrendered."), and a forced move of a
+ * friend or of a surrendered unit (combat.ts forcedRefusal) is harm here too. `mark` false: only ask (a preview), the
+ * fight is not marked. */
+export function harmHeld(cb: any, by: any, t: any, mark = true): boolean {
+  if (!cb?.field || !by || !t || by === t) return false;
+  const friend = by.side === t.side;
+  if (!friend && !t.surrendered) return false;
+  if (mark) cb.fieldHarm ||= { by: by.id, text: t.surrendered && !friend ? 'They have surrendered.' : t.name + ' is a friend: the fight is over, and on the field nothing you do may hurt them.' };
   return true;
 }
 /** Rules 1.55 item 37 (item 48): is growth held for what happens in this fight? The one gate every "learned by doing"

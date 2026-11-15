@@ -34,6 +34,13 @@ PROVISIONAL), not a second "field" mode beside it.
 
 - **Syphon through the Attuner** (rules 1.55 item 53): any MP focus in hand can Syphon, so a Mender refills MP from the air with its Attuner, in a fight and on the area map. With the Attuner in the pack the button is greyed and says why. Stowing the Attuner in a fight now stops what it gives at once.
 - **Syphon has a floor** (rules 1.55 item 52): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). From a fight's start of 15 that is at most 7 Syphons, shared by the party; deaths raise the meter. PROVISIONAL.
+- **On the field, gathering is bounded by the air:** Syphon and Crystallise cost no AP there, but the mana meter still
+  pays for each, and once it is spent neither gives anything.
+- **Nothing harms a foe that surrendered on the field** ("They have surrendered."), and a shove or any other forced move
+  of a friend there is refused like harm (rules 1.55 item 54).
+- **A player with two characters on the field acts as either:** click one of your tokens, or its card in the squad
+  panel; a Downed one is never the default (rules 1.55 item 55).
+- **The field shows "free" where the AP pips were** (rules 1.55 item 56).
 
 ### Under the hood
 

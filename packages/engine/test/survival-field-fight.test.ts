@@ -7,7 +7,7 @@
 // a once-a-turn use is usable once; an Evoke on a friend harms nobody; nothing grows; a pile is picked up; both vote and
 // the fight closes (magicOut, Flux, the supply pack), then the picks.
 import { describe, it, expect } from 'vitest';
-import { apply, newGame, ARCHETYPES, reachable, RuleError, nodeXp, runNode, magazineWorth, paths, NO_TURNS, setDevotionXp, devotionThreshold, packOf } from '../src';
+import { apply, newGame, ARCHETYPES, reachable, RuleError, nodeXp, runNode, magazineWorth, paths, NO_TURNS, setDevotionXp, devotionThreshold, packOf, AIR_SPENT, SYPHON_DRAW } from '../src';
 import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
 
 const clone = (g: any) => JSON.parse(JSON.stringify(g));
@@ -196,6 +196,67 @@ describe('rules 1.55 item 48: nothing harms a friend, nothing grows', () => {
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const d of [3, 2, 4]) { if (rel) break; try { rel = apply(h, { type: 'combat/release', unitId: u.id, aim: (x0 + dx * d) + ',' + (y0 + dy * d) }, 'host'); } catch { /* not there */ } }
     expect(rel).toBeTruthy(); expect(rel.characters.c1.soulPractice || 0).toBe(p0);
     void cores0;
+  });
+});
+
+/** A Soul caster (Emanator) and a gunner on the won fight's field. */
+function soulField(seed: string) {
+  let g: any = clone(startRun(survivalRoom(seed, [{ build: 'outburst', level: 1 }, { build: 'plain_gun', level: 1 }], { test: true }), seed));
+  const n = reachable(g.run).find((x: any) => x.kind === 'fight');
+  for (let i = 0; i < 2 && g.run.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+  return toField(g);
+}
+
+describe('rules 1.55 item 52 (spec item 4135): the field\'s gathering is bounded by the meter, not by AP', () => {
+  it('Crystallise until the meter cannot pay; Syphon until it is spent; then neither gives anything, however often tried', () => {
+    let g = soulField('PHC-FARM1'); const uid = g.combat.units.find((x: any) => x.charId === 'c1').id;
+    g.combat.mana = 40; const made0 = U(g, uid).mg.coresMade || 0;
+    let cores = 0;
+    for (let k = 0; k < 20; k++) { try { g = apply(g, { type: 'combat/crystallise', unitId: uid }, 'host'); cores++; } catch (e) { expect(e).toBeInstanceOf(RuleError); expect((e as Error).message).toMatch(/too thin/); break; } }
+    expect(cores).toBe(4); expect(g.combat.mana).toBe(0); expect(U(g, uid).mg.coresMade - made0).toBe(4);
+    // Syphon from a meter of 9: each takes the data's draw; it stops when the meter cannot pay it.
+    g.combat.mana = 9; let sy = 0;
+    for (let k = 0; k < 50; k++) {
+      U(g, uid).mg.mp = 0;
+      try { g = apply(g, { type: 'combat/syphon', unitId: uid }, 'host'); sy++; } catch (e) { expect((e as Error).message).toBe(AIR_SPENT); break; }
+    }
+    expect(sy).toBe(Math.floor(9 / SYPHON_DRAW)); expect(g.combat.mana).toBe(9 % SYPHON_DRAW);
+    const mp0 = U(g, uid).mg.mp, made = U(g, uid).mg.coresMade;
+    for (let k = 0; k < 30; k++) {
+      expect(refused(g, { type: 'combat/syphon', unitId: uid })).toBe(AIR_SPENT);
+      expect(refused(g, { type: 'combat/crystallise', unitId: uid })).toMatch(/too thin/);
+    }
+    expect(U(g, uid).mg.mp).toBe(mp0); expect(U(g, uid).mg.coresMade).toBe(made);
+  });
+});
+
+describe('rules 1.55 item 54: on the field nothing harms a surrendered foe, nobody shoves a friend', () => {
+  it('a shove of a friend never moves them, on every side (open ground or a wall behind): refused in words', () => {
+    const g0 = toField(inFight()), { mu, gu } = ids(g0), [x0, y0] = U(g0, mu).pos.split(',').map(Number); let toFriend = 0;
+    U(g0, mu).strength = 20; // the shove always wins its roll: only the field's gate can stop it
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (let k = 0; k < 2; k++) {
+      const x = clone(g0), at = (x0 + dx) + ',' + (y0 + dy); x.rng.state = (x.rng.state + k * 7919) >>> 0;
+      if (x.combat.units.some((v: any) => v.pos === at && !v.dead && v.id !== gu)) continue;
+      U(x, gu).pos = at;
+      try { const r = apply(x, { type: 'combat/shove', unitId: mu, targetId: gu }, 'host'); expect(U(r, gu).pos).toBe(at); expect(!!U(r, gu).prone).toBe(false); }
+      catch (e) { expect(e).toBeInstanceOf(RuleError); expect((e as Error).message).toMatch(/is a friend/); toFriend++; }
+    }
+    expect(toFriend).toBeGreaterThanOrEqual(6);
+  });
+
+  it('an Outburst released on a foe that surrendered never hurts it: refused "They have surrendered.", or a miss', () => {
+    const g0 = soulField('PHC-SURR1'), u = g0.combat.units.find((x: any) => x.charId === 'c1'), c = g0.characters.c1;
+    const foe = g0.combat.units.find((x: any) => x.side === 'foe'), [x0, y0] = u.pos.split(',').map(Number);
+    let surr = 0;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const d of [2, 3]) for (let k = 0; k < 4; k++) {
+      const g = clone(g0), f = g.combat.units.find((x: any) => x.id === foe.id), at = (x0 + dx * d) + ',' + (y0 + dy * d);
+      if (g.combat.units.some((x: any) => x.pos === at && !x.dead && x.id !== f.id)) continue;
+      Object.assign(f, { pos: at, dead: false, downed: false, hp: 40, surrendered: true }); delete f.hidden; g.rng.state = (g.rng.state + k * 7919) >>> 0;
+      let h: any; try { h = apply(g, { type: 'combat/outburst', unitId: u.id, design: c.outbursts[0].id, hold: true }, 'host'); } catch { continue; }
+      try { const r = apply(h, { type: 'combat/release', unitId: u.id, aim: at }, 'host'); expect(r.combat.units.find((x: any) => x.id === foe.id).hp).toBe(40); }
+      catch (e) { expect(e).toBeInstanceOf(RuleError); if ((e as Error).message === 'They have surrendered.') surr++; }
+    }
+    expect(surr).toBeGreaterThan(0);
   });
 });
 
