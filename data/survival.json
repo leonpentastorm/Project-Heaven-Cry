@@ -694,7 +694,7 @@
           "train": ["Pick your drill. I'll make you hate it.", "Once on me, again on your coin."],
           "give": ["Good. A squad shares."]
         }, "provisional": true },
-      { "id": "medic", "name": "Mallow", "role": "Field medic", "node": "rest", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "rest-medic", "portrait_pending": true, "fallback": "mallow-3", "backdrop": "rest-safe-room", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0,
+      { "id": "medic", "name": "Mallow", "role": "Field medic", "node": "rest", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "rest-medic", "portrait_pending": false, "fallback": "mallow-3", "backdrop": "rest-safe-room", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0,
         "lines": {
           "greet": ["Sit. Breathe. Let me look at that.", "Everyone's patched. Rest while you can.", "Nobody leaves until I've seen them."],
           "bought": ["Use it well.", "Good. Now sit still."],

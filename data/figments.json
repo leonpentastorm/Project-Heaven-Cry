@@ -251,7 +251,7 @@
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "glimmer", "name": "Glimmer", "icon": "", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
+      "id": "glimmer", "name": "Glimmer", "icon": "figment-glimmer", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP, no charge: the bots paint you in light on a free tile your side sees within your projection range. Every enemy that sees it is fooled as by a Double (Minions and Vermin always; Soldiers, Elites and Bosses make a Brain save) and takes it for you until it is struck or fades (at your turn start {=numbers.fade_rounds} rounds on). One false image of you at a time: a new one (a Double's too) replaces the old. Needs the Visualizer in hand.",
       "effects": [{ "op": "grant_action", "action": "glimmer", "site": "figment_order", "ap": 1, "uses": "at_will", "reach": { "tile": true } }],
       "numbers": { "fade_rounds": 2 },

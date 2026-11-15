@@ -324,7 +324,7 @@ def validate_ui_colours(catalog, palette):
     require(palette['wick']['trait_ink'] == palette['wick']['perk_ink'] == '#FFFFFF', 'Trait and perk ink must both be white')
     for family in ['traits', 'perks']:
         for asset_id, asset in catalog[family].items():
-            require(asset['ink'] == '#FFFFFF', f'Icon ink must be white: {asset_id}')
+            require(asset['ink'] == '#FFFFFF' or asset.get('placeholder') is True, f'Icon ink must be white: {asset_id}')
 
 def validate_archetype_cards(catalog):
     """Validate the complete player-card commission independently of older art."""
@@ -457,6 +457,7 @@ def validate():
     validate_campaign_art(catalog)
     validate_map_kits(catalog)
     validate_figment_icons(catalog)
+    validate_placeholders(catalog)
     sys.path.insert(0, str(ROOT / 'tools/art'))
     from export_nov12_icons import validate_delivery
     validate_delivery(PIXEL_ASSET)
@@ -473,6 +474,40 @@ def validate():
           f'{len(catalog.get("emblems", {}))} emblems; '
           f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
           f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
+
+PNG_MAGIC = bytes([0x89]) + b'PNG' + bytes([13, 10, 26, 10])
+
+def validate_placeholders(catalog):
+    """Placeholders (tools/art/make_placeholders.py; art/briefs/placeholders-2026-11-16.json): an entry of any catalog map
+    with `placeholder: true` is a labelled stand-in for art that is wanted. ONE general, reported exception: the art rules of
+    its family (white ink, palette, the line-icon content rules) are not applied to it; its file, format, size, checksum and
+    status still are, and the art it replaced (`previous_revision_path`) must still exist."""
+    by_map = {}
+    for family, entries in catalog.items():
+        if not isinstance(entries, dict):
+            continue
+        for asset_id, asset in entries.items():
+            if not (isinstance(asset, dict) and asset.get('placeholder') is True):
+                continue
+            path = asset['path']
+            require(path.startswith('art/') and path == path.lower() and ' ' not in path, f'Placeholder path: {family}/{asset_id}')
+            data = local(path).read_bytes()
+            require(hashlib.sha256(data).hexdigest() == asset['sha256'], f'Placeholder checksum mismatch: {path}')
+            require(asset.get('status') == 'placeholder' and asset.get('production_approved') is False, f'Placeholder status: {family}/{asset_id}')
+            if path.endswith('.png'):
+                require(data[:8] == PNG_MAGIC and struct.unpack('>II', data[16:24]) == (asset['width'], asset['height']), f'Placeholder PNG size: {path}')
+            else:
+                require(path.endswith('.svg') and b'PLACEHOLDER' in data and b'>PH<' in data, f'Placeholder SVG must carry its PH mark: {path}')
+            if asset.get('previous_revision_path'):
+                local(asset['previous_revision_path'])
+            by_map.setdefault(family, [0, 0])
+            by_map[family][0] += 1
+            by_map[family][1] += bool(asset.get('slot'))
+    if by_map:
+        total = sum(v[0] for v in by_map.values())
+        drawn = sum(v[1] for v in by_map.values())
+        print(f'OK: {total} placeholders ({drawn} drawn by a screen today), the allowed exception to the ink, palette and line-icon rules: '
+              + ', '.join(f'{k} {v[0]}' for k, v in sorted(by_map.items())) + '.')
 
 SVG_LINE_ROOT = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
 
@@ -492,6 +527,8 @@ def validate_figment_icons(catalog):
         require(path == f'art/icons/figments/{asset_id}.svg', f'Figment icon path must be art/icons/figments/<id>.svg: {asset_id}')
         data_bytes = local(path).read_bytes()
         require(hashlib.sha256(data_bytes).hexdigest() == asset['sha256'], f'Checksum mismatch: {path}')
+        if asset.get('placeholder') is True:
+            continue  # its labelled stand-in draws text: the reported placeholder exception (validate_placeholders)
         text = data_bytes.decode('utf-8')
         require(text.lstrip().startswith(SVG_LINE_ROOT), f'Figment icon root is not the line-icon root: {path}')
         require('fill="#' not in text and '<text' not in text and '<image' not in text and 'filter' not in text, f'Figment icon draws fills, text, images or filters: {path}')

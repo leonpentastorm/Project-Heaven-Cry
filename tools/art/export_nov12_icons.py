@@ -221,8 +221,11 @@ def validate_delivery(selected=None):
     manifest = json.loads(mp.read_text())
     for a in manifest['icons']:
         entry = catalog[a['family']][a['id']]
-        assert entry['sha256'] == a['sha256'] == sha(ROOT / a['path']), a['id'] + ' hash'
-        assert entry['status'] == 'review-candidate' and entry['production_approved'] is False, a['id'] + ' approval'
+        if entry.get('placeholder'):  # the icon was retired behind a placeholder (validate_art.py validate_placeholders)
+            assert entry.get('previous_revision_path') == a['path'] and entry.get('previous_sha256') == a['sha256'] == sha(ROOT / a['path']), a['id'] + ' retired hash'
+        else:
+            assert entry['sha256'] == a['sha256'] == sha(ROOT / a['path']), a['id'] + ' hash'
+            assert entry['status'] == 'review-candidate' and entry['production_approved'] is False, a['id'] + ' approval'
         for rec in [a['source'], a['master'], a['prompt'], *a['references']]:
             assert sha(ROOT / rec['path']) == rec['sha256'], rec['path']
         if selected and selected != a['id']:

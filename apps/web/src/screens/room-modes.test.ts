@@ -93,9 +93,9 @@ describe('the room around the picker', () => {
     h = await html({ ...vals(), hostAI: true });
     expect(h).toContain('WHERE IT STARTS'); expect(h).toContain('Load a campaign file');
   });
-  it('a card with no painting yet draws the plain panel with the AHOC seal', async () => {
+  it('every card draws its painting now (the Survival card was wired 16 Nov 2026); the AHOC seal stays for a card with none', async () => {
     const v = vals();
-    expect(v.modeCards[0].noArt).toBe(true); // survival-card-title is art_pending
+    expect(v.modeCards.every((c: any) => !c.noArt)).toBe(true); // survival-card-title landed: art_pending dropped
     expect(v.seal).toBeTruthy();
   });
   it('the Narrator panel is collapsed, not hidden, in Survival; the host can open it; Campaign opens it as before', async () => {
