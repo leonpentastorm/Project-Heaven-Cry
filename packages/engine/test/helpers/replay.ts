@@ -301,7 +301,10 @@ const sightGame = (name: string, pcs: Pc[], o: { wave?: number; maxRounds?: numb
     // (n === 5 added 13 Nov 2026, Classes 3.0 step 11, under the lead's ruling, to add and never remove: Mag Dump's 4 rounds
     // a roll (rules 1.38) keeps rounds in the guns, the fight changed, and the Hidden count fell to 20; the blade also goes
     // to ground on its fifth turn)
-    if (charId === 'c1' && (n % 2 === 0 || n === 3 || n === 5)) {
+    // (c3 from its third turn added 16 Nov 2026, rules 1.55 0.28.3-T, under the same leave to add and never remove: the tank
+    // rolls with Durability while it holds Guard, the fight ends sooner, and c1 stayed Hidden from its first hide to the
+    // end, so only one unit went to ground; the plain gun now also goes to ground from its third turn)
+    if (charId === 'c1' && (n % 2 === 0 || n === 3 || n === 5) || charId === 'c3' && n >= 3) {
       const to = unseenTile(rec, id);
       if (to && besetBy(rec, id).length) rec.act({ type: 'combat/move', unitId: id, to }); // straight out of reach: no Disengage
       else if (to) walkTowards(rec, id, to, { tries: 2 });

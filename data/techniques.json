@@ -14,7 +14,7 @@
       "hit_loss": 1
     },
     "guard": {
-      "max": 5,
+      "max": 4,
       "per_durability": 1,
       "gain_base": 1,
       "gain_per_point": 1,

@@ -1,5 +1,5 @@
 // Rules 1.13, Durability's door (docs/design/proposals/2026-11-nine-doors.md, section 19). One block per rule:
-//   1. the pool: anyone with Durability (its points, 5 at most); the Defender keeps its own; a client's view carries it
+//   1. the pool: anyone with Durability (its points, rules.guard.max at most: 4 since rules 1.55, 0.28.3-T.4); the Defender keeps its own; a client's view carries it
 //   2. gained by Brace and by the Guard technique: 1, +1 a Durability point above 1, +1 with a shield, never above the pool
 //   3. it soaks: rules.guard.soak damage a point (6 since rules 1.55, 0.28.3-T.2), on what would reach HP (after armour and the shield); not a condition's tick
 //   4. Pressure comes off Guard first
@@ -30,18 +30,18 @@ const hit = (f: F, tgt: Unit = f.pc, mode: 'melee' | 'shot' = 'shot') => { rig({
 
 describe('1. the pool', () => {
   it('the numbers are in the data, provisional', () => {
-    expect(G).toMatchObject({ max: 5, per_durability: 1, gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: 6, keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
+    expect(G).toMatchObject({ max: 4, per_durability: 1, gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: 6, keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
   });
-  it('no Durability, no pool; the pool is the Durability points, 5 at most', () => {
-    expect(guardPool({ skills: {} })).toBe(0); expect(guardPool({ skills: { durability: 2 } })).toBe(2); expect(guardPool({ skills: { durability: 9 } })).toBe(5);
+  it('no Durability, no pool; the pool is the Durability points, rules.guard.max at most', () => {
+    expect(guardPool({ skills: {} })).toBe(0); expect(guardPool({ skills: { durability: 2 } })).toBe(2); expect(guardPool({ skills: { durability: 9 } })).toBe(G.max);
     expect(fight([{ dur: 0 }]).pc.resMax?.guard).toBeUndefined();
     const f = fight([{ dur: 2 }]); expect(f.pc.resMax!.guard).toBe(2); expect(f.pc.res!.guard).toBe(0); // a fight starts with none
-    expect(fight([{ dur: 7 }]).pc.resMax!.guard).toBe(5);
+    expect(fight([{ dur: 7 }]).pc.resMax!.guard).toBe(G.max);
   });
-  it('the Defender keeps its own pool: 5 with 1 Durability point, and with none', () => {
-    expect(fight([{ dur: 1, classId: 'defender' }]).pc.resMax!.guard).toBe(5);
-    const f = fight([{ dur: 0, classId: 'defender' }]); expect(f.pc.resMax!.guard).toBe(5);
-    expect(classResources(f.char(f.pc)).filter((r) => r.id === 'guard')).toEqual([{ id: 'guard', max: 5, persist: false }]);
+  it('the Defender keeps its own pool: rules.guard.max with 1 Durability point, and with none', () => {
+    expect(fight([{ dur: 1, classId: 'defender' }]).pc.resMax!.guard).toBe(G.max);
+    const f = fight([{ dur: 0, classId: 'defender' }]); expect(f.pc.resMax!.guard).toBe(G.max);
+    expect(classResources(f.char(f.pc)).filter((r) => r.id === 'guard')).toEqual([{ id: 'guard', max: G.max, persist: false }]);
   });
   it('a client\'s view carries the pool, and the engine\'s own view of it', () => {
     const f = fight([{ dur: 3 }]); guard(f, f.pc, 2);
@@ -95,7 +95,7 @@ describe('2. gained by Brace and by the Guard technique', () => {
     const pv = f.pv('guard'); expect(pv.ok).toBe(true); expect(pv.guard).toEqual({ now: 0, after: 2 }); expect(pv.notes.join(' ')).toMatch(/\+2 Guard/);
     expect(guard(f)).toBe(0);
     expect(f.tech('guard')).toBeNull(); expect(guard(f)).toBe(2); expect(phys.guardUp(f.pc)).toBe(true);
-    const five = fight([{ dur: 5, known: ['guard'] }]); expect(five.tech('guard')).toBeNull(); expect(guard(five)).toBe(5); // where Brace gives 2
+    const five = fight([{ dur: 5, known: ['guard'] }]); expect(five.tech('guard')).toBeNull(); expect(guard(five)).toBe(Math.min(G.max, G.gain_base + 4 * G.gain_per_point)); // where Brace gives 2 (the pool's cap since 0.28.3-T.4)
     const n = fight([{ dur: 0, known: ['guard'] }]); expect(n.pv('guard').guard).toBeUndefined(); expect(n.tech('guard')).toBeNull(); expect(guard(n)).toBe(0);
   });
 });

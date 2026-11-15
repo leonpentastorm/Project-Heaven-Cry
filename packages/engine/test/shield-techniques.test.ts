@@ -116,7 +116,7 @@ describe('Raise Shield', () => {
     expect(f.tech('raise_shield')).toBe('Your shield is already raised.');
     const one = fight({ m: 3, guard: 0 }); expect(one.pv('raise_shield', { opt: '1' }).guard).toEqual({ now: 0, after: 1 });
     expect(one.tech('raise_shield', { opt: '1' })).toBeNull(); expect([one.momentum(one.pc), guard(one)]).toEqual([2, 1]);
-    const full = fight({ m: 3, guard: 4 }); expect(full.tech('raise_shield')).toBeNull(); expect([full.momentum(full.pc), guard(full)]).toEqual([2, 5]);
+    const top = phys.PHYS_RULES.guard.max, full = fight({ m: 3, guard: top - 1 }); expect(full.tech('raise_shield')).toBeNull(); expect([full.momentum(full.pc), guard(full)]).toEqual([2, top]); // the pool's cap (4 since rules 1.55, 0.28.3-T.4)
     const none = fight({ m: 2, dur: 0 }); expect(none.tech('raise_shield')).toBeNull(); expect(none.momentum(none.pc)).toBe(2); // no pool: nothing is turned, the shield is still raised
   });
   it('ranged attacks from the front are at −2 until your next turn; melee and shots from behind are not', () => {
