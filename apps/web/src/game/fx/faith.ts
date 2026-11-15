@@ -217,14 +217,15 @@ function hexSeal(p: Pt, color: string, ms: number) {
 function notes(p: Pt, color: string, n: number, ms: number) {
   if (reducedMotion()) return;
   for (let i = 0; i < n; i++) after(() => {
-    const s = svg(10, 14, '<circle cx="3" cy="11" r="2.2" fill="' + color + '"/><line x1="5" y1="11" x2="5" y2="2" stroke="' + color + '" stroke-width="1.3"/><line x1="5" y1="2" x2="9" y2="4" stroke="' + color + '" stroke-width="1.3"/>');
-    const box = put(s, { x: p.x + (i - 1) * p.s * 0.25, y: p.y - p.s * 0.4 }, 10, 14, ms); box.style.zIndex = '4';
+    const s = svg(16, 22, '<circle cx="5" cy="17" r="3.4" fill="' + color + '"/><line x1="8.2" y1="17" x2="8.2" y2="3" stroke="' + color + '" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="3" x2="14" y2="6.5" stroke="' + color + '" stroke-width="1.8" stroke-linecap="round"/>');
+    s.style.filter = 'drop-shadow(0 0 3px ' + color + ')';
+    const box = put(s, { x: p.x + (i - 1) * p.s * 0.3, y: p.y - p.s * 0.45 }, 16, 22, ms); box.style.zIndex = '4';
     anim(box, [{ opacity: 0, transform: 'translate(0,0)' }, { opacity: 1, offset: 0.2 }, { opacity: 0, transform: 'translate(' + ((i - 1) * 6) + 'px,' + (-p.s * 0.8) + 'px)' }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
   }, i * 110);
 }
 /** The song's ground: a dotted square outline of the tiles within `r` of a point (dashes that break when the song does). */
 function songGround(p: Pt, r: number, color: string, ms: number, broken = false) {
-  const side = (2 * r + 1) * p.s, s = svg(side + 4, side + 4, '<rect x="2" y="2" width="' + side + '" height="' + side + '" fill="none" stroke="' + color + '" stroke-width="1" stroke-dasharray="' + (broken ? '6 10' : '2 4') + '" rx="3"/>');
+  const side = (2 * r + 1) * p.s, s = svg(side + 4, side + 4, '<rect x="2" y="2" width="' + side + '" height="' + side + '" fill="' + color + '" fill-opacity="' + (broken ? 0 : 0.08) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="' + (broken ? '6 10' : '5 4') + '" rx="4"/>');
   const box = put(s, p, side + 4, side + 4, ms); box.style.zIndex = '2';
   anim(box, broken ? [{ opacity: 0.8 }, { opacity: 0, transform: 'scale(1.06)' }] : [{ opacity: 0 }, { opacity: 0.85, offset: 0.25 }, { opacity: 0.85, offset: 0.7 }, { opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
 }
@@ -365,10 +366,10 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       const p = where(e), acc = accOf(patronOf(e)); if (!p) return;
       tokenMove(K.tokOf ? K.tokOf(e.target, e.at) : null, 'sway', 360);
       play('crystal', p, { rate: 1 + 0.12 * (Number(e.verse) || 1), gain: 0.35 });
-      notes(p, acc, 3, 900);
-      songGround(p, Number(e.verse) >= 3 ? 3 : 2, acc, 1400);
+      notes(p, acc, 4, 1100);
+      songGround(p, Number(e.verse) >= 3 ? 3 : 2, acc, 1700);
       if (Number(e.verse) >= 3 && !reducedMotion()) ring(p, acc, 700, { from: 0.6, to: 1.5, width: 2 });
-      floatText(chaplainWord(e), { ...p, y: p.y - p.s * 0.6 }, FAITH_INK, { small: true, delay: 160 });
+      floatText(chaplainWord(e), { ...p, y: p.y - p.s * 0.6 }, FAITH_INK, { delay: 160 });
     },
     canticle_break(e: any) {
       const p = where(e), acc = accOf(patronOf(e)); if (!p) return;
