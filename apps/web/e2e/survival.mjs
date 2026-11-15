@@ -873,22 +873,26 @@ ok('C: both browsers stand in the shop (node ' + shopN.id + ')', (await HG()).ru
 let hg = await HG(); const kade = Object.values(hg.characters).find((c) => c.owner === hg.hostId), ha = Object.values(hg.characters).find((c) => c.id !== kade.id);
 await h.evaluate(([cid, gun]) => { const c = window.__phc.getState().game.characters[cid]; c.pack = [...(c.pack || []), { id: gun, weapon: gun, name: 'Kade\'s old rifle', qty: 1, kind: 'weapon', rarity: 'fine', mods: ['mod_red_dot'] }]; c.credits += 400; }, [kade.id, kade.weapon]);
 await h.locator('[data-phc-tab="give"]').click();
-await h.waitForSelector('[data-phc-give-to]');
-ok('C: the Give tab: the party as cards (' + (await h.locator('[data-phc-give-to]').allTextContents()).join(', ') + '), what can\'t be given greyed with its reason', await h.locator('[data-phc-give-to="' + ha.id + '"]').count() === 1
-  && /can't be handed over/.test(await h.locator('[data-phc-give-row="train"]').textContent()));
+await h.waitForSelector('[data-phc-give]:not([data-phc-give-compact]) [data-phc-give-to]');
+// the place's own Give tab; the Survival right panel holds a compact Give module too (rules 1.55: modes.json panels `give`),
+// so every locator below is scoped to the tab, and the module is checked to be there beside it
+const GV = h.locator('[data-phc-give]:not([data-phc-give-compact])');
+ok('C: the Give tab is one, and the right panel keeps its compact Give module beside it', await GV.count() === 1 && await h.locator('[data-phc-give-compact] [data-phc-give-to="' + ha.id + '"]').count() === 1);
+ok('C: the Give tab: the party as cards (' + (await GV.locator('[data-phc-give-to]').allTextContents()).join(', ') + '), what can\'t be given greyed with its reason', await GV.locator('[data-phc-give-to="' + ha.id + '"]').count() === 1
+  && /can't be handed over/.test(await GV.locator('[data-phc-give-row="train"]').textContent()));
 const haC0 = (await GG()).characters[ha.id].credits;
-await h.locator('[data-phc-give-row="credits"]').click();
-for (let i = 0; i < 3; i++) await h.locator('[data-phc-give-send] [aria-label="More"]').click(); // 100 → 130 → 140 → 150? (steps of 10 above 10)
-const n = Number((await h.locator('[data-phc-give-n]').textContent()).replace(/\D/g, ''));
-ok('C: the button reads what it does ("' + (await h.locator('[data-phc-give-go]').textContent()) + '")', new RegExp('^Give ' + n + ' credits to Ha$').test(await h.locator('[data-phc-give-go]').textContent()));
+await GV.locator('[data-phc-give-row="credits"]').click();
+for (let i = 0; i < 3; i++) await GV.locator('[data-phc-give-send] [aria-label="More"]').click(); // 100 → 130 → 140 → 150? (steps of 10 above 10)
+const n = Number((await GV.locator('[data-phc-give-n]').textContent()).replace(/\D/g, ''));
+ok('C: the button reads what it does ("' + (await GV.locator('[data-phc-give-go]').textContent()) + '")', new RegExp('^Give ' + n + ' credits to Ha$').test(await GV.locator('[data-phc-give-go]').textContent()));
 await h.screenshot({ path: OUT + 'survival-shop-give-1280.png' });
-await h.locator('[data-phc-give-go]').click();
+await GV.locator('[data-phc-give-go]').click();
 const toastC = await until(gu, () => { const t = window.__phc.getState().toast?.text || ''; return /gives Ha \d+ credits/.test(t) ? t : null; }, null, 15000).catch(() => ''); // the give's own toast
 await gu.waitForFunction(([cid, want]) => window.__phc.getState().game.characters[cid].credits === want, [ha.id, haC0 + n], { timeout: 15000 }).catch(() => {}); // and the purse at its new number
 ok('C: the guest sees the credits arrive: a toast ("' + toastC + '") and the purse (' + haC0 + ' → ' + (await GG()).characters[ha.id].credits + ')', /gives Ha \d+ credits/.test(toastC) && (await GG()).characters[ha.id].credits === haC0 + n);
 const idx = (await HG()).characters[kade.id].pack.findIndex((x) => x.name === 'Kade\'s old rifle');
-await h.locator('[data-phc-give-row="pack:' + idx + '"]').click();
-await h.locator('[data-phc-give-go]').click();
+await GV.locator('[data-phc-give-row="pack:' + idx + '"]').click();
+await GV.locator('[data-phc-give-go]').click();
 await gu.waitForFunction((cid) => (window.__phc.getState().game.characters[cid].pack || []).some((x) => x.name === 'Kade\'s old rifle'), ha.id, { timeout: 30000 }).catch(() => {});
 const got = ((await GG()).characters[ha.id].pack || []).find((x) => x.name === 'Kade\'s old rifle');
 ok('C: the graded weapon arrives whole on the guest\'s side (Fine, its mod, its own pack line)', !!got && got.rarity === 'fine' && JSON.stringify(got.mods) === '["mod_red_dot"]' && got.qty === 1);
