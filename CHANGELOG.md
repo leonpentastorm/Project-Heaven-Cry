@@ -8,9 +8,13 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
-## 0.28.2 — the Sigil word cap says why
+## 0.28.2 — the Sigil word cap says why, and Survival XP pace
 
-A hotfix (15 Nov 2026). No rule changed; only the words.
+A hotfix (15 Nov 2026): the Sigil words, and one number change, Survival's XP (rules 1.55 item 27, PROVISIONAL).
+
+- **Survival XP pace.** Every stage-1 fight now pays 35 XP (an Elite or the gate about 52, the Boss 175), the same
+  at every stop (was 10 plus 2 a stop). A character is usually level 2 around stops 5 to 7 and level 3 by the first
+  Boss. The measure is in `docs/design/proposals/2026-11-xp-fit-0.29.md`.
 
 - **A Line past your Max Sigil words now says why.** Drawing a glyph that would make a Line longer than your Max Sigil
   words says how long the Line would be, your Max Sigil words at your Intelligence, and which Intelligence raises it
