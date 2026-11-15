@@ -40,11 +40,13 @@ export const talkOf = (cb: Combat): Combat & FightTalk => cb as Combat & FightTa
 export const fightRulingOf = (cb: Combat | null | undefined): FightRuling | null => (cb ? talkOf(cb).ruling || null : null);
 const current = (cb: Combat) => cb.units.find((u) => u.id === cb.order[cb.turn]);
 
-/** Why no Narrator can answer in this game now, or null. A human Narrator is the host, at the table. An AI Narrator is
- *  connected while the host's browser says its key is set up (narrator/ready). */
+/** Why no Narrator can answer in this game now, or null: the one test of it. A human Narrator is the host, at the table.
+ *  An AI Narrator is connected while the host's browser says its key is set up (narrator/ready). The Proving Ground and a
+ *  live Survival run have none. */
 export function narratorOff(g: any): string | null {
   if (!g) return 'No Narrator is connected.';
   if (g.sandbox) return 'There is no Narrator in the Proving Ground.';
+  if (g.run && g.run.state !== 'over') return 'No Narrator in this mode: say it, but nobody rules on an attempt.'; // rules 1.54 item 1: a Survival run has none
   if (g.settings?.mode === 'human') return g.players?.find((p: any) => p.id === g.hostId)?.online === false ? 'The Narrator is away.' : null;
   if (g.narrator?.offline) return 'No Narrator is connected.';
   return null;
@@ -54,11 +56,11 @@ export function narratorOff(g: any): string | null {
 export function attemptWhy(g: any, cb: Combat | null | undefined, u: Unit | null | undefined, ap = ATTEMPT_AP): string | null {
   if (!cb || !u || cb.over) return 'No fight is on.';
   const t = talkOf(cb);
+  const off = narratorOff(g); if (off) return off;
   if (t.ruling) return 'The Narrator is deciding.';
   if (cb.window || current(cb)?.id !== u.id) return 'Only on your own turn.';
   if (!u.charId || u.companion) return 'Only a character can attempt something.';
   if (t.attempted?.[u.id] === cb.round) return 'You already made an attempt this turn.';
-  const off = narratorOff(g); if (off) return off;
   { const no = whyNot(cb, u, ap); if (no) return no; }
   return null;
 }

@@ -1550,7 +1550,9 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (cb!.over) fail('The fight is over.');
   const u = active(cb!)!;
   // rules 1.14: the fight waits for the Narrator's answer to an attempt (nobody acts, the turn can't end)
-  if (fightRulingOf(cb)) fail('The Narrator is deciding. The fight waits for the answer.');
+  // A ruling left pending with no Narrator to answer it (a Survival run, the Proving Ground, an AI Narrator gone, a human
+  // Narrator away) never holds the fight: it is given back at once and the action goes on.
+  { const r = fightRulingOf(cb); if (r) { const off = narratorOff(g); if (!off) fail('The Narrator is deciding. The fight waits for the answer.'); giveBackRuling(g, cb!, r, off!); } }
   // rules 1.13: a Call made as a reaction comes from a unit whose turn it isn't (from 9 points, once a round)
   if (a.type === 'combat/call' && a.react && a.unitId !== u.id) { callReaction(g, cb!, a, by); return; }
   if (!('unitId' in a) || a.unitId !== u.id) fail('It\'s ' + u.name + '\'s turn.');
@@ -1724,9 +1726,13 @@ function refundFight(g: GameState, cb: Combat, r: FightRuling): string {
  *  and the turn's attempt with it. */
 function fightSkip(g: GameState, id?: string, note?: string) {
   const cb = g.combat, r = fightRulingOf(cb); if (!cb || !r || (id && id !== r.id)) fail('Nothing is waiting for the Narrator.');
-  const u = cb!.units.find((x) => x.id === r!.unit), back = refundFight(g, cb!, r!), t = talkOf(cb!);
-  delete t.ruling; if (t.attempted) delete t.attempted[r!.unit];
-  sayOf(cb!, [], (String(note || '').trim().slice(0, 160) || 'The Narrator didn\'t answer.') + (back ? ' ' + (u?.name || 'The speaker') + ' gets ' + back + ' back.' : ''));
+  giveBackRuling(g, cb!, r!, note);
+}
+/** End a pending fight ruling with no answer: what it cost comes back, and the turn's attempt with it; the log says so. */
+function giveBackRuling(g: GameState, cb: Combat, r: FightRuling, note?: string) {
+  const u = cb.units.find((x) => x.id === r.unit), back = refundFight(g, cb, r), t = talkOf(cb);
+  delete t.ruling; if (t.attempted) delete t.attempted[r.unit];
+  sayOf(cb, [], (String(note || '').trim().slice(0, 160) || 'The Narrator didn\'t answer.') + (back ? ' ' + (u?.name || 'The speaker') + ' gets ' + back + ' back.' : ''));
 }
 const UNYIELDING = ['machine', 'robot', 'turret', 'drone'];
 /** A unit the speaker may name in a fight ruling: an enemy of theirs still in the fight (by its id, or its name when
