@@ -48,7 +48,7 @@
 <sc-if value="{{t.hasMark}}"><span aria-hidden="true" class="phc-plan" style="{{t.markStyle}}"></span></sc-if>
 <sc-if value="{{t.hasSg}}"><sc-for list="{{t.sg}}" as="sm"><span aria-hidden="true" class="phc-plan" tip="{{sm.title}}" style="{{sm.style}}">{{sm.text}}</span></sc-for></sc-if>
 <sc-if value="{{t.hasSprite}}" hint-placeholder-val="{{false}}"><img src="{{t.sprite}}" alt="" style="{{t.spriteStyle}}"></sc-if>
-<sc-if value="{{t.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{t.img}}" alt="" style="{{t.imgStyle}}"></sc-if>
+<sc-if value="{{t.hasShade}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" data-shadow-pool="1" style="{{t.shadeStyle}}"></span></sc-if><sc-if value="{{t.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{t.img}}" alt="" style="{{t.imgStyle}}"></sc-if><sc-if value="{{t.hasWisps}}" hint-placeholder-val="{{false}}"><img src="{{t.wisps}}" alt="" aria-hidden="true" data-shadow-wisps="{{t.wispTitle}}" tip="{{t.wispTitle}}" style="{{t.wispStyle}}"></sc-if>
 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="{{t.badgeStyle}}">{{t.badge}}</span></sc-if>
 <sc-if value="{{t.hasPress}}"><span aria-hidden="true" data-pressure-pips="1" tip="{{t.pressTitle}}" style="{{t.pressStyle}}"><sc-for list="{{t.press}}" as="pp"><span style="{{pp.style}}"></span></sc-for></span></sc-if>
 <sc-if value="{{t.hasWatchChip}}"><span aria-hidden="true" data-watch-chip="1" tip="{{t.watchChipTitle}}" style="{{t.watchChipStyle}}">{{t.watchChip}}</span></sc-if>

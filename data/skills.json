@@ -1583,6 +1583,11 @@
                   "op": "mark",
                   "flag": "cover",
                   "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "ghost",
+                  "clear": true
                 }
               ]
             },

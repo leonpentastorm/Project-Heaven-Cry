@@ -54,7 +54,7 @@ import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
 import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
-import { fadeStyle } from '../game/tokenFade';
+import { fadeStyle, SHADE_POOL, shadowHeld, wispsUri, wispStyle } from '../game/tokenFade';
 import { tieLayerVals } from '../game/tieLayer';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
@@ -1186,9 +1186,13 @@ export class CombatLogic extends DCLogic {
         // the fog and the dark stay above the kit: a tile out of sight (or unlit) dims its kit layers as its own shade does
         hasKit: !!(KL && KL.get(k) && KL.get(k).layers.length), kit: KL && KL.get(k) ? ((dim) => (dim ? KL.get(k).layers.map((l) => ({ ...l, style: l.style + '; filter: brightness(' + dim + ')' })) : KL.get(k).layers))(!vis.tiles.has(k) ? (cb.map.dark && !litAt(cb, k) ? 0.28 : 0.5) : cb.map.dark && !litAt(cb, k) ? 0.75 : 0) : [],
         hasImg: !!faceOf(u), img: faceOf(u),
-        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + figIdle(u), // tokenFade.ts: held, Downed, Hidden, in that order
+        // Rules 1.56, Shadow 2.0 (game/tokenFade.ts): a Hidden token darkens to its outline over a pool of shadow (an
+        // ally's dashed), and the Shadow it holds shows as wisps on its corner (the engine's u.res and u.resMax)
+        hasShade: !!u && !isHeld && !!u.hidden && !u.downed, shadeStyle: SHADE_POOL,
+        ...(() => { const sh = u && !isHeld ? shadowHeld(u) : null; return sh && (sh.n > 0 || u.hidden) ? { hasWisps: true, wisps: wispsUri(sh.n, sh.max), wispStyle: wispStyle(sh.max), wispTitle: 'Shadow ' + sh.n + ' / ' + sh.max } : { hasWisps: false, wisps: '', wispStyle: '', wispTitle: '' }; })(),
+        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld, ally: !!u && u.side === 'pc' && owner(u) !== me }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + figIdle(u), // tokenFade.ts: held, Downed, Hidden, in that order
         hasBadge: !!(u && !faceOf(u)), badge: u ? u.short : '',
-        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld }) + figIdle(u),
+        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld, ally: !!u && u.side === 'pc' && owner(u) !== me }) + figIdle(u),
         hasText: ((diff.has(k) && !mapArt && !(KL && (KL.get(k) || {}).decal)) || !!cv) && !u,
         // a kit object's HALF / FULL and HP: a small quiet label, shown on hover (CSS) or always once it is damaged
         textCls: kitObj && cv && cv.hp >= cv.max ? 'phc-kitlbl' : '', textStyle: kitObj ? KIT_LABEL : TEXT_STYLE, text: cv ? (ob ? fmtNum(cv.hp) : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + fmtNum(cv.hp)) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',

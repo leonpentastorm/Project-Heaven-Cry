@@ -79,7 +79,7 @@
 "perk/rounding_up@II/end-turn": "Tester 1 banks 1 AP for next turn (Rounding Up).",
 "perk/rounding_up@II/round": "Tester 1 banks 1 AP for next turn (Rounding Up). / Tester 1 +1 AP (banked).",
 "perk/scar_tissue@II/taken-crit": "Tester 1 has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Tester 1: d20 20 +2 = 22 vs 14 · CRITICAL, 22 damage · injury resisted (d100 28 ≤ 45%)",
-"perk/siege_engine@achieved/prices": "PRICES attack? reload2 swap_weapon? shove1 break? vent1 swap_core2 stim1 stabilise? prone1 stand? hide2 overwatch? brace1 analyze2 disengage1 sprint2 pickup1 clear? load1",
+"perk/siege_engine@achieved/prices": "PRICES attack? reload2 swap_weapon? shove1 break? vent1 swap_core2 stim1 stabilise? prone1 stand? hide1 overwatch? brace1 analyze2 disengage1 sprint2 pickup1 clear? load1",
 "perk/siege_engine@achieved/pushed": "",
 "perk/siege_engine@achieved/shove": "Tester 1 shoves Soldier: d20 11 +4 = 15 vs 14 · pushed to F7.",
 "perk/siege_engine@achieved/stats": "STATS never_jams:1x1 shove_guard:1x1 never_jams:1x1",

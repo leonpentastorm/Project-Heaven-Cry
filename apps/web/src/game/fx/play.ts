@@ -16,6 +16,7 @@ import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments } from './figments';
+import { wrapShadow, shadowBeat, resetShadow } from './shadow';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
@@ -1386,6 +1387,8 @@ wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, pr
 wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose, explosion });
 // Figments (fx/figments.ts): the summon (the caster, a thread, the forming), their orders and attacks, their unmaking.
 wrapFigments(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, release: (id) => releaseMover(id), ghost: (id, key, life) => ghostOf(id, key, life) });
+// Shadow (fx/shadow.ts, rules 1.56): going Hidden, the wisps of Shadow gained and lost, a Break's AMBUSH cut, Tag.
+wrapShadow(H, { at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen });
 /** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
 const streamsOwn = (v: FxEvent) => v.mode === 'dump' && fxOf(v.weapon, v.cat).mark === 'hole' && v.cat !== 'shotgun'; // a stream of rounds that hole (bullets, a charge's bolts): a spray
 
@@ -1398,6 +1401,7 @@ function baseBeat(e: FxEvent): number {
   if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
   if (e.k === 'roll') return 0; // a roll's numbers (engine rolls.ts): data for the dice read-out, no beat of its own
   const gb = figmentBeat(e); if (gb !== undefined) return gb;
+  const shb = shadowBeat(e); if (shb !== undefined) return shb;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
@@ -1787,7 +1791,7 @@ export function hurryFx(ms: number) {
   clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, queueEnd - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden), a closed gate and every cut-in with it. */
-export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); }
+export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); resetShadow(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */

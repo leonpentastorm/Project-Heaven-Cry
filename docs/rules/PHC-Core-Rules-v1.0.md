@@ -6352,6 +6352,41 @@ and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded in
    (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
    and the validator refuses it. Giving, picking up, granting, the carried weight and the sheet's lines read it.
 
+## Rules 1.56 (Balance 2.0), Shadow 2.0
+
+Slice 1 of Shadow 2.0 (`docs/design/proposals/2026-11-shadow-2.0.md`): Perception's door through Ingenuity (rules
+1.32) is found, seen and started from level 1. Leon, 15 Nov 2026: a player who picked the door "don't even know how to
+go to stealth in survival mode". Every number below is PROVISIONAL and a data field; everything is `adjudication:
+engine`. Nothing else of rules 1.32 changes (Hide stays 2 AP for everyone without the door; Plant, Long Dark and the
+Shadow Step perk are untouched).
+
+1. **Hide on the door's tab** (item 4330). From Ingenuity 1 the SHADOW tab exists (Tag, item 5, opens there) and its
+   first row is Hide, the same action as on Utility (`shadow.json tab_also`), with its price and refusal. Hide stays on
+   the bar while Hidden, greyed. Its refusals are data, each with what to do (`actions.json hide.why`): seen "An enemy
+   can see you: break line of sight or get behind cover first", Marked, a Boss in the open, already Hidden.
+2. **How it works, on the tab** (item 4331). One line atop the SHADOW tab (`shadow.json tab_note`): what Hidden gives,
+   how to get it, what ends it. The first fight of a character holding the door shows one tip pointing at Hide
+   (`shadow.json hint`), once per browser as every tip.
+3. **Go to Ground** (item 4332). Holding the door, Hide costs 1 AP less, at least 1 (`ingenuity.unlocks.1`,
+   `cost_mod` on the cost site `hide`).
+4. **First Shade** (item 4333). The first Hide of a fight made holding no Shadow gives 1 Shadow at once (`resource` on
+   `acted`, once a fight). It is outside the turn's gain cap; the meter's cap still binds. The Operative, who starts
+   holding Shadow, gets none from it on that Hide. So a door at Ingenuity 1 can move, Hide and Break in one turn.
+5. **Tag** (item 4334). A Shadow verb at Ingenuity 1 (`shadow.json shadow.tag`, group Mark): 1 AP, once a turn, from
+   Hidden: a foe within 8 tiles that can't see you is Marked (the Operative's own condition: its squad +1 to hit it, it
+   can't hide; a Break's Marked term).
+6. **Tagged** (item 4335). Holding the door, an attack from Hidden on a Marked foe gets +1 to hit (`roll_mod` on
+   `to_hit`).
+7. **Ghost Kill** (item 4336). Holding the door: an attack that drops a foe, made while no enemy's eyes reach your tile
+   and you are not Marked, sinks you back into Hidden after the action (the same entry: no fresh ambush; once a turn).
+   It is checked after a Break's reveal, and its mark never outlives the action.
+8. **Seen on the map** (item 4337). Each of these moments carries an effect from its data row (`fx`): going Hidden,
+   Shadow gained and lost, a Break, Tag, Ghost Kill; a Hidden token darkens to its outline over a pool of shadow, with
+   its Shadow held as wisps (the client's one effect system; the word always with the colour).
+9. **The Hide-spot measure** (item 4338). In at least 80% of seeded stage-1 Survival first fights, a character with
+   the door has, at the start of its first turn, a tile in reach out of every foe's eyes with Hide's price still paid
+   (`test/shadow-2.test.ts`).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9952,3 +9987,16 @@ Items 4148 to 4150.
 4159. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
     (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
     `{essence, last}`. No number.
+
+### Rules 1.56 (Balance 2.0), Shadow 2.0
+
+4330. **Hide on the door's tab, its refusals as data (rules 1.56 Shadow 2.0 item 1):** `shadow.json tab_also: ["hide"]`; `actions.json hide.why` (hidden, marked, boss, seen). No number.
+4331. **The tab's note and the first-fight hint (item 2):** `shadow.json tab_note`, `hint`. No number.
+4332. **Go to Ground (item 3):** Hide −1 AP for the door, at least 1 (`skills.json ingenuity.unlocks.1` effect 8). PROVISIONAL (Leon's question 1 in the draft: the door only, recommended and built).
+4333. **First Shade (item 4):** +1 Shadow on the first Hide of a fight made with none held (effect 9), once a fight. PROVISIONAL.
+4334. **Tag (item 5):** 1 AP, once a turn, reach 8 tiles (`shadow.json shadow.tag`). PROVISIONAL.
+4335. **Tagged (item 6):** +1 to hit from Hidden on a Marked foe (effect 10; the lead's softening from the draft's +2). PROVISIONAL.
+4336. **Ghost Kill (item 7):** once a turn, priority 110 (after the Break's reveal at 100), its mark cleared at 120 (effects 11 to 13). PROVISIONAL.
+4337. **The effects (item 8):** the `fx` rows `stance` `hide`, `shadow_gain`, `shadow_loss`, `break`, `tag`, `ghost`. No number.
+4338. **The Hide-spot measure (item 9):** at least 80% of stage-1 first fights. PROVISIONAL (measured: see the draft's "Slice 1, measured").
+4339. **Items 4330 to 4339 are rules 1.56 Shadow 2.0's.**
