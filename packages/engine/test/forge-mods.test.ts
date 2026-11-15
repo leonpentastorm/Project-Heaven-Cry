@@ -3,7 +3,7 @@
 // takes off a mod for a fee (survival.json forge.fit: rate x the mod's price, at least min); outside a run the fit stays
 // free. Every step goes through the one reducer; the numbers are read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, creditsOf, priceOf, packOf, runOptions, unitFromCharacter, opticBands, ITEM, WEAPON, rollStock, openVisit, lastingOffer } from '../src';
+import { type GameState, apply, RuleError, creditsOf, priceOf, packOf, runOptions, unitFromCharacter, opticBands, ITEM, WEAPON, rollStock, openVisit, lastingOffer, weaponOffer, priceBand } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { storyWith } from './helpers/perkfight';
 import type { Pc } from './helpers/replay';
@@ -89,5 +89,85 @@ describe('rules 1.55: outside a run the fit stays free', () => {
     const m = ['mod_red_dot', 'mod_extended_mag', 'mod_suppressor'].find((x) => slots.includes((ITEM[x] as any).mod_slot))!;
     const was = creditsOf(c), a = apply(g, { type: 'gear/mod', charId: 'c1', idx: give(g, m) }, 'host');
     expect(a.characters.c1.weaponState?.mods).toContain(m); expect(creditsOf(a.characters.c1)).toBe(was);
+  });
+});
+
+// Rules 1.56 (Balance 2.0), L3: a mod as a reward pick; the armourer fits to any gun carried; the extra slot for the fee.
+const MR: any = SV.rewards.mods;
+const gunLine = (g: GameState, id: string, more: any = {}) => { const c = g.characters.c1; c.pack = [...packOf(c), { id, name: (WEAPON[id] as any).name, qty: 1, kind: 'weapon', weapon: id, ...more } as any]; return packOf(c).length - 1; };
+const slotOf = (m: string) => (ITEM[m] as any).mod_slot;
+const isMod = (id: string) => (ITEM[id] as any)?.category === 'mod';
+
+describe('rules 1.56 L3: the armourer fits to any gun carried', () => {
+  it('a pack gun takes a mod at the Forge for the fee; the card names it; unfit takes it off for the fee again', () => {
+    const g = visit('forge'), j = gunLine(g, 'service_pistol'), i = give(g, 'mod_suppressor');
+    const o = runOptions(g, 'c1').find((x) => x.group === 'mod' && (x.action as any).idx === i && (x.action as any).where === j)!;
+    expect(o).toBeTruthy(); expect(o.why).toBeNull(); expect(o.price).toBe(fee('mod_suppressor')); expect(o.label).toMatch(/in your pack/); expect(o.verb).toBe('Fit');
+    const a = apply(g, o.action as any, 'host'), c = a.characters.c1, gun = packOf(c).find((x) => x.weapon === 'service_pistol')!;
+    expect(gun.mods).toEqual(['mod_suppressor']); expect(c.weaponState?.mods || []).not.toContain('mod_suppressor');
+    expect(packOf(c).some((x) => (x.item || x.id) === 'mod_suppressor')).toBe(false); expect(creditsOf(c)).toBe(10000 - fee('mod_suppressor'));
+    const k = packOf(c).indexOf(gun), off = runOptions(a, 'c1').find((x) => x.group === 'mod' && (x.action as any).type === 'run/unfit_mod' && (x.action as any).where === k)!;
+    expect(off.verb).toBe('Take off');
+    const b = apply(a, off.action as any, 'host');
+    expect(packOf(b.characters.c1).find((x) => x.weapon === 'service_pistol')!.mods || []).toEqual([]);
+    expect(packOf(b.characters.c1).some((x) => (x.item || x.id) === 'mod_suppressor')).toBe(true); expect(creditsOf(b.characters.c1)).toBe(10000 - 2 * fee('mod_suppressor'));
+  });
+  it('one of a stack of guns is split off to take the mod; a mod with no slot on that gun is refused in words naming it', () => {
+    const g = visit('forge'), j = gunLine(g, 'service_pistol', { qty: 2 }), i = give(g, 'mod_extended_mag');
+    const a = apply(g, { type: 'run/fit_mod', charId: 'c1', idx: i, where: j } as any, 'host');
+    const lines = packOf(a.characters.c1).filter((x) => x.weapon === 'service_pistol');
+    expect(lines.map((x) => x.qty).sort()).toEqual([1, 1]); expect(lines.filter((x) => (x.mods || []).includes('mod_extended_mag')).length).toBe(1);
+    const g2 = visit('forge'), j2 = gunLine(g2, 'service_pistol'), k = give(g2, 'mod_serrated');
+    expect(refused(g2, { type: 'run/fit_mod', charId: 'c1', idx: k, where: j2 })).toBe('The ' + (WEAPON.service_pistol as any).name + ' has no edge slot.');
+  });
+  it('the extra slot (Gun Nut): refused free in a run, fitted by the armourer for the same fee beside the one there', () => {
+    const g = visit('forge', 'PHC-0001', (x) => { const c = x.characters.c1; c.traits = [...(c.traits || []), 'gun_nut']; c.weaponState = { ...(c.weaponState || {}), mods: ['mod_red_dot'] }; });
+    const i = give(g, 'mod_scope');
+    expect(refused(g, { type: 'story/perk', charId: 'c1', id: 'gun_nut', actionId: 'extra_mod', choice: 'mod_scope' })).toMatch(/Survival run/);
+    const o = runOptions(g, 'c1').find((x) => x.key === 'mod:extra:' + i)!;
+    expect(o.why).toBeNull(); expect(o.price).toBe(fee('mod_scope'));
+    const a = apply(g, o.action as any, 'host'), c = a.characters.c1;
+    expect([...(c.weaponState?.mods || [])].sort()).toEqual(['mod_red_dot', 'mod_scope']); expect(creditsOf(c)).toBe(10000 - fee('mod_scope'));
+    // the slot is used now: refused in the perk's own words
+    const again = give(a, 'mod_red_dot');
+    expect(refused(a, { type: 'run/fit_mod', charId: 'c1', idx: again, extra: true })).toMatch(/already fitted|No extra slot/);
+    // a character without the perk is not offered it, and is refused in words
+    const plain = visit('forge', 'PHC-0001', (x) => { x.characters.c1.weaponState = { ...(x.characters.c1.weaponState || {}), mods: ['mod_red_dot'] }; }), pi = give(plain, 'mod_scope');
+    expect(runOptions(plain, 'c1').some((x) => x.key === 'mod:extra:' + pi)).toBe(false);
+    expect(refused(plain, { type: 'run/fit_mod', charId: 'c1', idx: pi, extra: true })).toMatch(/no extra mod slot/);
+  });
+});
+
+describe('rules 1.56 L3: a mod can be a reward pick', () => {
+  it('the data: rare, PROVISIONAL, never at the vault or a crate', () => {
+    expect(MR.provisional).toBe(true); expect(MR.chance.vault).toBe(0); expect(MR.chance.crate).toBe(0);
+    for (const p of Object.values(MR.chance) as number[]) expect(p).toBeLessThan(0.5);
+  });
+  it('a pick offers a mod only for a free slot of a gun carried, only inside the band, and taken (run/pick) it goes in the pack', () => {
+    const g = visit('forge'), c = g.characters.c1, free = new Set(((WEAPON[c.weapon] as any).mod_slots as string[]));
+    let mods = 0, picked: GameState | null = null;
+    for (let s = 0; s < 300; s++) {
+      const seed = 'MODREW-' + s, depth = 1 + (s % 14), node = { id: 'n' + s, depth }, k = (['boss', 'vault_guard', 'elite', 'fight'] as const)[s % 4];
+      const o = weaponOffer(c, node, k, 1, seed), band = priceBand(k, depth, 1) * MR.band;
+      for (const w of o.weapons) if (isMod(w.id)) {
+        mods++; expect(free.has(slotOf(w.id))).toBe(true); expect(priceOf(w.id)!).toBeLessThanOrEqual(band); expect(UNBUILT).not.toContain(w.id);
+        if (!picked) {
+          const x = clone(g); x.run!.offers = { c1: o }; x.run!.state = 'reward';
+          picked = apply(x, { type: 'run/pick', charId: 'c1', choice: o.weapons.indexOf(w) }, 'host');
+          expect(packOf(picked.characters.c1).some((y) => (y.item || y.id) === w.id)).toBe(true);
+        }
+      }
+      expect(weaponOffer(c, node, k, 1, seed, { where: 'crate' }).weapons.some((w) => isMod(w.id))).toBe(false);
+    }
+    expect(mods).toBeGreaterThan(5); expect(picked).not.toBeNull();
+  });
+  it('no free slot on any gun carried: never a mod; a pistol in the pack opens its slots again', () => {
+    const g = visit('forge'), c = g.characters.c1, slots: string[] = (WEAPON[c.weapon] as any).mod_slots;
+    const fill = slots.map((sl) => (Object.values(ITEM) as any[]).find((it) => it.category === 'mod' && it.mod_slot === sl && priceOf(it.id) != null)!.id);
+    c.weaponState = { ...(c.weaponState || {}), mods: fill };
+    for (let s = 0; s < 200; s++) expect(weaponOffer(c, { id: 'n' + s, depth: 15 }, 'boss', 1, 'FULL-' + s).weapons.some((w) => isMod(w.id))).toBe(false);
+    gunLine(g, 'service_pistol'); let any = false;
+    for (let s = 0; s < 200 && !any; s++) any = weaponOffer(c, { id: 'n' + s, depth: 15 }, 'boss', 1, 'FULL-' + s).weapons.some((w) => isMod(w.id));
+    expect(any).toBe(true);
   });
 });
