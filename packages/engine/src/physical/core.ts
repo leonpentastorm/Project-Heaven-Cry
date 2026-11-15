@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
+import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, dist, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { scaleOf } from '../effects/output';
@@ -262,7 +262,10 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
-    if (d.system !== sys) continue;
+    // Rules 1.56 (Leon's ruling B): a technique that needs something stuck (Pull Out) is offered only while there is one
+    // to pull, and then with any weapon in the main hand (what is in the hand does not wrench a blade out of a body).
+    if (d.needs.stuck) { if (hand !== 'main' || wield || !cb || !stuckToPull(cb, u)) continue; }
+    else if (d.system !== sys) continue;
     // A technique that draws its weapon is used with a stowed one, never with the one in the hand; with a carried
     // throwable as the weapon, only what the throwable lends and what has a line for one of its properties, and never
     // a Watch (a held shot is held with the weapon in the hand).
@@ -277,7 +280,10 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   }
   return out;
 }
-const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' | 'throwable') => usable(null, u, hand, wield).some((x) => x.id === id);
+const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' | 'throwable', cb: Combat | null = null) => usable(cb, u, hand, wield).some((x) => x.id === id);
+/** Rules 1.56: is something stuck for this unit to pull (Unit.stuck): one of its own weapons in any living unit, or any
+ * weapon in a living unit next to it (the Pull Out handler takes its own first, else the first one there). */
+const stuckToPull = (cb: Combat, u: Unit): boolean => cb.units.some((v) => v !== u && alive(v) && ((v.stuck || []) as any[]).some((x) => x.by === u.id || dist(v.pos, u.pos) <= 1));
 /** The Momentum a Finisher needs to start (2 unless its data says otherwise), less what the unit's items take off it
  * ('momentum_needed:<id>': Iron Grip II's Throw Down on a held target needs none). It still spends all there is. */
 export const finisherNeed = (cb: Combat, u: Unit, def: TechDef): number => Math.max(0, (def.needs.momentum || 2) + statQuery({ u, cb }, `momentum_needed:${def.id}`).add);
@@ -287,9 +293,9 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   const props = shieldHand(u, hand) ? ['shield'] : weaponProps(weaponId);
   const wield = (args as any)._w as 'stowed' | 'throwable' | undefined;
   if (def.needs.shield && !shieldHand(u, hand)) return 'Needs a shield in your off hand.';
-  if (weaponSystem(weaponId) !== def.system && !def.innate && !def.perk) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
+  if (weaponSystem(weaponId) !== def.system && !def.innate && !def.perk && !def.needs.stuck) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
   if (def.needs.stowed && wield !== 'stowed') return 'Pick the weapon to draw.';
-  if (!hasUsable(u, hand, def.id, wield)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
+  if (!hasUsable(u, hand, def.id, wield, cb)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
   const bad = (def.not_with || []).find((p) => props.includes(p)); if (bad) return 'Not available with ' + (/^[aeiou]/.test(bad) ? 'an ' : 'a ') + bad + ' weapon.';
   if (def.group === 'answer') return def.name + ' is a reaction: it fires on its trigger.';
   // Disarmed, or the weapon lowered: only the plain attacks (they fall back to fists) and a weapon drawn or thrown fresh
@@ -938,7 +944,8 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
   const more = shieldHand(u, hand) && weaponSystem(u.weapon) !== 'melee' ? usable(cb, u, 'main').filter((x) => TECHNIQUE[x.id].innate) : [];
   const sys = weaponSystem(weaponId), have = [...usable(cb, u, hand), ...more], c = u.companion ? null : charOfUnit(u), knownSig = new Set(((c as any)?.phys?.known as string[]) || []);
   const taught = new Set(Object.values(WEAPON).map((w) => weaponTeaches(w.id)).filter(Boolean) as string[]);
-  return groupsOf(sys).map((group) => ({
+  // the hand's system's groups, then the group of a technique offered with any weapon (needs.stuck, rules 1.56: Pull Out with a gun)
+  return [...new Set([...groupsOf(sys), ...have.filter((x) => TECHNIQUE[x.id].needs.stuck).map((x) => TECHNIQUE[x.id].group)])].map((group) => ({
     group, label: groupName(group),
     entries: have.filter((x) => TECHNIQUE[x.id].group === group).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);
