@@ -6386,6 +6386,9 @@ Shadow Step perk are untouched).
 9. **The Hide-spot measure** (item 4338). In at least 80% of seeded stage-1 Survival first fights, a character with
    the door has, at the start of its first turn, a tile in reach out of every foe's eyes with Hide's price still paid
    (`test/shadow-2.test.ts`).
+10. **The Break's dial** (item 4340; overrides rules 1.36's `shadow.per_point` 0.7, item 2330): 0.6 a Shadow
+    (`rules.json shadow.per_point`, `ingenuity.unlocks.1` Break), the plan's softening because the door's first window
+    measured above 125 with Go to Ground and First Shade.
 
 ## Maps (rules 1.16)
 
@@ -9998,5 +10001,7 @@ Items 4148 to 4150.
 4335. **Tagged (item 6):** +1 to hit from Hidden on a Marked foe (effect 10; the lead's softening from the draft's +2). PROVISIONAL.
 4336. **Ghost Kill (item 7):** once a turn, priority 110 (after the Break's reveal at 100), its mark cleared at 120 (effects 11 to 13). PROVISIONAL.
 4337. **The effects (item 8):** the `fx` rows `stance` `hide`, `shadow_gain`, `shadow_loss`, `break`, `tag`, `ghost`. No number.
-4338. **The Hide-spot measure (item 9):** at least 80% of stage-1 first fights. PROVISIONAL (measured: see the draft's "Slice 1, measured").
-4339. **Items 4330 to 4339 are rules 1.56 Shadow 2.0's.**
+4338. **The Hide-spot measure (item 9):** at least 80% of stage-1 first fights. PROVISIONAL (measured 59 of 60: see the draft's "Slice 1, measured").
+4339. **No number:** the Tag verb's fx row and Ghost Kill's turn-start clear.
+4340. **The Break's `per` 0.6 (item 10; was 0.7, item 2330):** the door's first window measured 129 (four levels' mean) with it at 0.7 and 0.6 alike: the extra plain shots of the faster first turn carry it, not the Break; to be refitted in slice 5. PROVISIONAL.
+4341. **Items 4330 to 4341 are rules 1.56 Shadow 2.0's.**

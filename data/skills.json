@@ -1726,7 +1726,7 @@
                     "per": [
                       {
                         "of": "res:shadow",
-                        "value": 0.7
+                        "value": 0.6
                       },
                       {
                         "of": "event:ambush",

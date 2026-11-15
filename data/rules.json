@@ -2561,7 +2561,7 @@
     "operative_cap_add": 1,
     "operative_start": 1,
     "ambush_bonus": 0.5,
-    "per_point": 0.7,
+    "per_point": 0.6,
     "marked_bonus": 0.15,
     "door_gains_per_turn": 2,
     "provisional": true

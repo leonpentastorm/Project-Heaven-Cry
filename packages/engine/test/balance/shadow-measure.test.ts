@@ -67,9 +67,7 @@ describe('Shadow: the window (rules 1.32, item 1962)', () => {
   it.runIf((globalThis as any).process?.env?.SHADOW_MEASURE === '1')('Shadow 2.0 slice 1: the first window before and after (door_1, door_2)', () => {
     const n = Number((globalThis as any).process?.env?.SHADOW_N) || 40, rows: string[] = [];
     for (const L of [1, 5, 10, 20]) rows.push('L' + L + ': door_1 ' + firstWindow(L, false, n) + ', door_2 ' + firstWindow(L, true, n));
-    (globalThis as any).console.log('Shadow first window (line: door all in ' + C.shadow.door_allin + ', Operative ' + C.shadow.allin + ')
-' + rows.join('
-'));
+    (globalThis as any).console.log('Shadow first window (line: door all in ' + C.shadow.door_allin + ', Operative ' + C.shadow.allin + ')' + String.fromCharCode(10) + rows.join(String.fromCharCode(10)));
   });
   it.runIf((globalThis as any).process?.env?.SHADOW_MEASURE === '1')('measures the door and the Operative at levels 1, 5, 10, 20', () => {
     const n = Number((globalThis as any).process?.env?.SHADOW_N) || 40, rows: string[] = [];
