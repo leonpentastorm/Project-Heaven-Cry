@@ -510,6 +510,7 @@
       "core": "body",
       "slot": "alpha",
       "summary": "Hit harder, bend further, lift higher.",
+      "door_line": "Momentum: land melee hits and Charge to build it (the number on your token), then spend it on a Finisher: Cleave a crowd, Break a guard, Coup the hurt, or (the Breaker) Launch a foe across the room.",
       "per_point": {
         "numbers": {
           "hit": 1,

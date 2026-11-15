@@ -339,7 +339,398 @@
             }
           ]
         }
-      }
+      },
+      "gain": [
+        {
+          "id": "charge_carries",
+          "name": "The Charge Carries",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "A Charge of yours that hits gives {=effects.0.value} Momentum on top of closing in, with any weapon, and tries to bowl its target over: it makes a Body save against your Raw Power (the save Launch uses), and on a failure it is Off Balance and falls Prone. A Boss is never bowled over.",
+          "effects": [
+            {
+              "op": "resource",
+              "when": "hit",
+              "resource": "momentum",
+              "value": 2,
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "charge"
+                ]
+              }
+            },
+            {
+              "op": "cleanse",
+              "when": "hit",
+              "condition": "off_balance",
+              "target": "target",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "charge"
+                ],
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ]
+              }
+            },
+            {
+              "op": "condition",
+              "when": "hit",
+              "condition": "off_balance",
+              "target": "target",
+              "via": "raw_power",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "charge"
+                ],
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ]
+              }
+            },
+            {
+              "op": "condition",
+              "when": "hit",
+              "condition": "prone",
+              "skip_save": true,
+              "target": "target",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "charge"
+                ],
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ],
+                "target_has": [
+                  "off_balance"
+                ]
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "momentum",
+            "charge"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56, the Momentum chain 2.0 (docs/design/proposals/2026-11-momentum-2.0.md)"
+        },
+        {
+          "id": "breaker_finishers",
+          "name": "Four Ways to Finish",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "You know Cleave, Break and Coup with any melee weapon or bare hands. Your Cleave has {=effects.3.value|signed} to hit (any weapon is its home). Your Break leaves its target Exposed. Your Coup against a foe under {=effects.5.if.target_hp_below|pct}% HP is {=effects.5.value|signed} to hit and deals {=effects.6.value|more}% more: an Execute.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "technique:cleave",
+              "value": 1
+            },
+            {
+              "op": "stat_mod",
+              "stat": "technique:break",
+              "value": 1
+            },
+            {
+              "op": "stat_mod",
+              "stat": "technique:coup",
+              "value": 1
+            },
+            {
+              "op": "roll_mod",
+              "when": "attack",
+              "value": 2,
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "cleave"
+                ]
+              },
+              "label": "Cleave (Breaker)"
+            },
+            {
+              "op": "condition",
+              "when": "hit",
+              "condition": "exposed",
+              "skip_save": true,
+              "target": "target",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "break"
+                ],
+                "target_alive": true
+              }
+            },
+            {
+              "op": "roll_mod",
+              "when": "attack",
+              "value": 2,
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "coup"
+                ],
+                "target_hp_below": 0.5
+              },
+              "label": "Execute"
+            },
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "value": 1.2,
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "coup"
+                ],
+                "target_hp_below": 0.5
+              },
+              "label": "Execute"
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "momentum",
+            "finisher"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56, the Momentum chain 2.0 (docs/design/proposals/2026-11-momentum-2.0.md)"
+        },
+        {
+          "id": "launch",
+          "name": "Launch",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "amounts": {
+            "launch": {
+              "kind": "damage",
+              "base": 22,
+              "per": [
+                {
+                  "of": "res:momentum",
+                  "value": 5.5
+                }
+              ],
+              "profile": "melee",
+              "provisional": true
+            }
+          },
+          "text": "{=effects.0.ap} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. Not a Boss.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "breaker_launch",
+              "label": "Launch",
+              "ap": 2,
+              "uses": "at_will",
+              "res": {
+                "momentum": 2
+              },
+              "reach": {
+                "tiles": 1,
+                "side": "foe",
+                "if": {
+                  "target_alive": true,
+                  "target_not_tier": [
+                    "boss"
+                  ]
+                },
+                "why": {
+                  "target_alive": "{target} is already down.",
+                  "target_not_tier": "{target} is too big to throw."
+                }
+              },
+              "effects": [
+                {
+                  "op": "cleanse",
+                  "when": "acted",
+                  "condition": "off_balance",
+                  "target": "target"
+                },
+                {
+                  "op": "deal",
+                  "when": "acted",
+                  "amount": "launch",
+                  "target": "target",
+                  "via": "raw_power",
+                  "say": "{self} launches {target}{then}."
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "off_balance",
+                  "target": "target",
+                  "via": "raw_power",
+                  "say": "The throw{then}."
+                },
+                {
+                  "op": "displace",
+                  "when": "acted",
+                  "how": "push",
+                  "tiles": 3,
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "off_balance"
+                    ]
+                  },
+                  "say": "{target} flies{then}."
+                },
+                {
+                  "op": "displace",
+                  "when": "acted",
+                  "how": "push",
+                  "tiles": 1,
+                  "target": "target",
+                  "if": {
+                    "target_lacks": [
+                      "off_balance"
+                    ]
+                  },
+                  "say": "{target} staggers back{then}."
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "prone",
+                  "skip_save": true,
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "off_balance"
+                    ],
+                    "target_alive": true
+                  }
+                },
+                {
+                  "op": "resource",
+                  "when": "acted",
+                  "resource": "momentum",
+                  "value": "all"
+                }
+              ]
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "momentum",
+            "push",
+            "finisher"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56, the Momentum chain 2.0 (docs/design/proposals/2026-11-momentum-2.0.md)"
+        },
+        {
+          "id": "wrecker",
+          "name": "Wrecker",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Each blow or shot you land on cover, a barricade or a door gives you {=effects.0.value} Momentum.",
+          "effects": [
+            {
+              "op": "resource",
+              "when": "acted",
+              "resource": "momentum",
+              "value": 1,
+              "if": {
+                "action": [
+                  "shoot_cover"
+                ]
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "momentum",
+            "demolition"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56, the Momentum chain 2.0 (docs/design/proposals/2026-11-momentum-2.0.md)"
+        },
+        {
+          "id": "breach",
+          "name": "Breach",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "When you strike cover, a barricade or a door, every enemy you can see within {=effects.0.targets.within} tiles of it is Exposed for a round: the squad's shots find the gap.",
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "condition": "exposed",
+              "skip_save": true,
+              "if": {
+                "action": [
+                  "shoot_cover"
+                ]
+              },
+              "targets": {
+                "of": "tile",
+                "within": 2,
+                "side": "foe",
+                "seen": true
+              },
+              "say": "{self} breaches: the enemy behind it is exposed."
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "demolition",
+            "squad"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56, the Momentum chain 2.0 (docs/design/proposals/2026-11-momentum-2.0.md)"
+        }
+      ]
     },
     {
       "id": "marksman",

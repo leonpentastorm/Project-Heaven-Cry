@@ -275,8 +275,9 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     else if (ready.has(d.id)) out.push({ id: d.id, how: 'ready' });
     else if (lent === d.id) out.push({ id: d.id, how: 'lent' });
     else if (!plainOnly && d.comes_with.some((p) => props.includes(p))) out.push({ id: d.id, how: 'comes' });
-    // an item gives the technique with any weapon of its system (stat 'technique:<id>': the Breaker's Riposte, rules 1.30)
-    else if (!plainOnly && hand === 'main' && !wield && d.group === 'answer' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' });
+    // an item gives the technique with any weapon of its system (stat 'technique:<id>': the Breaker's Riposte, rules 1.30;
+    // its Cleave, Break and Coup, rules 1.56 the Momentum chain 2.0: any group, as the stat's own meaning says)
+    else if (!plainOnly && hand === 'main' && !wield && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' });
   }
   return out;
 }
@@ -986,8 +987,8 @@ export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
 /** A unit's meters as one side may see them (the screen draws this; it compares nothing itself). Pips a Silent weapon
  * put on a unit are hidden from that unit's own side. */
 export function physView(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe', g?: any): ReturnType<typeof physViewOf> { return g ? withG(g, () => physViewOf(cb, u, viewerSide)) : physViewOf(cb, u, viewerSide); }
-/** The Momentum rule in two plain sentences (the meter's hint on the screen). */
-export const MOMENTUM_HINT = 'A plain attack that hits gives 1. A Strike or an Opener spends 1; each tile you walk and each hit you take costs 1.';
+/** The Momentum rule in plain sentences (the meter's hint on the screen): data, techniques.json rules.momentum.texts.how. */
+export const MOMENTUM_HINT: string = String(PHYS_RULES.momentum?.texts?.how || '');
 /** The Guard rule in plain sentences (the pool's hint on the screen). */
 /** Guard's rule in words, every number from rules.guard (its soak at this unit's level, rules 1.36). */
 export function guardHint(u: Pick<Unit, 'level'>): string {
