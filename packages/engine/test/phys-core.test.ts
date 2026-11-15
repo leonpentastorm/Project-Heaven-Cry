@@ -10,7 +10,7 @@ const BUILT = ['cut', 'lunge', 'coup', 'riposte', 'shot', 'aimed_shot', 'suppres
 beforeEach(() => rig(null));
 
 describe('the data', () => {
-  it('has 65 techniques, 33 melee (28 learned, Guard among them; 3 a shield gives, 2 a skill gives: Interpose, and Guard with any weapon, rules 1.55 0.28.3-T.1) and 32 ranged, each in a group of its system', () => {
+  it('has 65 techniques, 33 melee (28 learned, Guard among them; 3 a shield gives, 2 a skill gives: Interpose, and Guard with any weapon, rules 1.55 item 71) and 32 ranged, each in a group of its system', () => {
     expect(TECHNIQUES.length).toBe(65);
     expect(TECHNIQUES.filter((t) => t.system === 'melee').length).toBe(33);
     expect(TECHNIQUES.filter((t) => t.needs.shield || t.innate).map((t) => t.id).sort()).toEqual(['guard', 'interpose', 'raise_shield', 'shield_bash', 'shield_wall']);

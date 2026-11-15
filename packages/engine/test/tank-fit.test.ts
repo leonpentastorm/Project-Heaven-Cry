@@ -1,4 +1,4 @@
-// Rules 1.55, 0.28.3-T (the Durability tank; docs/design/proposals/2026-11-tank-fit.md). Through the reducer:
+// Rules 1.55 items 71 to 75 (the Durability tank; docs/design/proposals/2026-11-tank-fit.md). Through the reducer:
 //   T.1 the Guard technique is Durability's own: with a gun in the hand it is on the pad and the reducer takes it
 //   T.2 Guard soaks techniques.json rules.guard.soak a point (against a real enemy attack)
 //   T.3 while Guard is held, a weapon attack rolls with Durability's modifier in place of the weapon skill's when it is

@@ -12,7 +12,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME, COUNTED } from '../data';
-import { type Character, type PackItem, packOf, packKindOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName } from '../character';
+import { type Character, type PackItem, packOf, packKindOf, twoHands, equip, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName } from '../character';
 import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
@@ -29,10 +29,14 @@ const SV: any = svJ;
 export const LOADOUT: {
   budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string> }; gun: { loaded: number; spare: number }; bow: { spare: number };
   focuses: string[]; focus_with: Record<string, { id: string; qty: number }[]>; counter: { skip: string[] }; stock: { ids: string[] }; max_qty: number;
-  recommended: { focus_by_door: Record<string, string>; weapon: { when?: 'focus'; skill?: string; over?: string; archetype: string }[]; buys: Record<string, string[]>; fill: string };
+  recommended: { focus_by_door: Record<string, string>; weapon: RecRow[]; buys: Record<string, string[]>; fill: string };
   /** The camp screen's backdrop, an art catalog id (optional; consolidation 0.29 ruling i, plan 10.D item 5). */
   backdrop?: string;
 } = SV.loadout;
+/** A row of the Recommended weapon table (survival.json `loadout.recommended.weapon`): when it fits (`when` focus, `skill`
+ * over `over`, `top` an alpha skill on top), and what it gives: an archetype's free weapon, or (rules 1.55 item 51) the
+ * best free weapon of `hands`; `focus` false takes no free focus; `profile` names its buys. */
+export interface RecRow { when?: 'focus'; skill?: string; over?: string; top?: string; /** the character's own archetype (archetypes.json id) */ character?: string; archetype?: string; hands?: '1H' | '2H'; focus?: boolean; profile?: string }
 /** A weapon archetype (survival.json `loadout.archetypes`; Leon, 14 Nov 2026): a weapons.json family as the data groups
  * it (its mastery_family and category), less `skip`. */
 export interface Archetype { id: string; name: string; family: string; category: string; skip?: string[] }
@@ -93,9 +97,11 @@ export function loadoutSpent(c: Character, p: LoadoutPick): number {
  * then half-built: callers rebuild on a copy), or null. Lines the menu no longer has (ammunition for a gun put back)
  * are dropped from `p.take`. */
 function rebuild(c: Character, p: LoadoutPick): string | null {
+  const was = c.offHand?.id || null; // what the off hand held before this change (the refusal's words, rules 1.55 item 52)
   c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete c.quivers;
   c.pack = p.base.pack.map((x) => ({ ...x })); c.worn = { ...p.base.worn };
-  const pack = c.pack, add = (its: PackItem[]) => grantGoods(c, pack, its);
+  // (c.pack itself, read each time: equip (an off-hand item, below) puts a new pack on the character)
+  const add = (its: PackItem[]) => { grantGoods(c, c.pack!, its); };
   if (p.weapon) {
     const w: any = WEAPON[p.weapon]; c.weapon = p.weapon;
     // rules 1.53: a bow shoots from a quiver: ONE plain quiver, full (quiverHolds: the data's arrows for its grade)
@@ -125,6 +131,13 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
       if (q > 1) return nameOf(l.id) + ': one is worn at a time.';
       if (c.worn![it.slot]) return 'The ' + it.slot.replace(/_/g, ' ') + ' slot already has ' + nameOf(c.worn![it.slot]) + '.';
       c.worn![it.slot] = l.id;
+    } else if (it?.slot === 'off_hand' && !it.focus) {
+      // rules 1.55 item 50: an off-hand item (a shield) goes in the off hand, through the one equip rule (character.ts equip)
+      if (q > 1) return nameOf(l.id) + ': one is held at a time.';
+      // rules 1.55 item 52: the refusal says what the player can do; a focus taken while this item held the off hand is the change refused
+      if (c.offHand) return was === l.id && p.focus && c.offHand.id === p.focus ? 'Your off hand holds the ' + nameOf(l.id) + '. Put it back to take a focus.' : nameOf(l.id) + ': the off hand already holds the ' + nameOf(c.offHand.id) + '.';
+      add(lineGoods(l.id, 1));
+      const no = equip(c, packOf(c).findIndex((x) => (x.item || x.id) === l.id), 'off'); if (no) return nameOf(l.id) + ': ' + no.charAt(0).toLowerCase() + no.slice(1);
     } else if (it?.focus) { for (let i = 0; i < q; i++) add([focusEntry(l.id)]); }
     else add(lineGoods(l.id, l.per * q));
   }
@@ -212,17 +225,35 @@ export type CampBoons = Record<string, { id: string; first: boolean }>;
 
 /** The Recommended loadout for a character (data `recommended`): the focus of its door skill with most points; the first
  * weapon row that fits; its profile's buys while the budget pays; then its weapon's cheapest ammunition while it pays. */
+/** The free focus a character's doors open (data `recommended.focus_by_door`): the focus of its door skill with most
+ * points, or null when no door has a point (the character can use no focus: the camp's view hides the focus step). */
+export function doorFocus(c: Character): string | null {
+  let focus: string | null = null, top = 0;
+  for (const [door, f] of Object.entries(LOADOUT.recommended.focus_by_door)) { const n = c.skills?.[door] || 0; if (n > top) { top = n; focus = f; } }
+  return focus;
+}
+/** Rules rules 1.55 item 51: this alpha skill (a door) has points and no other alpha skill (skills.json slot) has more. */
+const isTop = (c: Character, skill: string): boolean => { const n = c.skills?.[skill] || 0;
+  return n > 0 && Object.keys(SKILL).every((id) => (SKILL[id] as any)?.slot !== 'alpha' || (c.skills?.[id] || 0) <= n); };
+/** A Recommended row's free weapon: its archetype's, or (rules 1.55 item 51, `hands`) the free weapon of that many hands the
+ * character may carry whose skill it has most points in, a tie to the dearer by priceOf (the archetype's next step up). */
+function rowWeapon(c: Character, row: RecRow): string | null {
+  if (row.archetype) return RACK.find((x) => x.id === row.archetype)?.free || null;
+  const two = row.hands === '2H', pts = (id: string) => c.skills?.[String((WEAPON[id] as any)?.skill || '')] || 0;
+  const ok = RACK.map((x) => x.free).filter((id) => twoHands(c, id) === two && !requiresWhy(c, (WEAPON[id] as any)?.requires));
+  return ok.sort((a, b) => pts(b) - pts(a) || (priceOf(b) || 0) - (priceOf(a) || 0) || (a < b ? -1 : 1))[0] || null;
+}
 export function recommendedPick(c: Character, base: LoadoutPick['base']): Pick<LoadoutPick, 'weapon' | 'focus' | 'take'> {
   const R = LOADOUT.recommended, sk = (s: string) => c.skills?.[s] || 0;
-  let focus: string | null = null, top = 0;
-  for (const [door, f] of Object.entries(R.focus_by_door)) if (sk(door) > top) { top = sk(door); focus = f; }
-  const row = R.weapon.find((w) => (w.when === 'focus' ? !!focus : w.skill ? sk(w.skill) > sk(w.over || '') : true));
-  const p: LoadoutPick = { weapon: (row && RACK.find((x) => x.id === row.archetype)?.free) || null, focus, take: {}, base };
+  const door = doorFocus(c);
+  const fits = (w: RecRow): boolean => (w.character ? c.archetype === w.character : true) && (w.top ? isTop(c, w.top) : true) && (w.when === 'focus' ? !!door : w.skill ? sk(w.skill) > sk(w.over || '') : true);
+  const row = R.weapon.find(fits), focus = row?.focus === false ? null : door;
+  const p: LoadoutPick = { weapon: row ? rowWeapon(c, row) : null, focus, take: {}, base };
   const t: Character = JSON.parse(JSON.stringify(c));
   const tryTake = (key: string): boolean => { const q: LoadoutPick = JSON.parse(JSON.stringify(p)); q.take[key] = (q.take[key] || 0) + 1; if (q.take[key] > LOADOUT.max_qty || rebuild(t, q)) return false; p.take = q.take; return true; };
   rebuild(t, p);
   const fuel = focus ? (ITEM[focus] as any)?.focus?.fuel : null, w: any = p.weapon ? WEAPON[p.weapon] : null;
-  const profile = fuel === 'core' ? 'core' : fuel ? 'mp' : w?.ammo ? 'gun' : 'melee';
+  const profile = row?.profile || (fuel === 'core' ? 'core' : fuel ? 'mp' : w?.ammo ? 'gun' : 'melee');
   for (const id of R.buys[profile] || []) { const l = loadoutLines(t).find((x) => x.id === id || x.key === id); if (l) tryTake(l.key); }
   if (R.fill === 'ammo' && w?.ammo) {
     const ammo = loadoutLines(t).filter((l) => l.id === 'rounds:' + w.ammo || l.id === 'mag:' + p.weapon).sort((a, b) => a.price - b.price)[0];
@@ -271,7 +302,10 @@ export const campWaiting = (g: G): string[] => (g.run?.state === 'loadout' ? g.p
 // ---------------------------------------------------------------------------------------------- the camp's view
 /** A card of the camp's screen: a free pick or a menu line, with the engine's gear preview numbers, its price (0 for a
  * free pick), how many are taken, and the reason one more can't be taken (null: it can). */
-export interface LoadoutCardV { key: string; id: string; name: string; group: string; price: number; per: number; taken: number; picked: boolean; why: string | null; preview: GearPreview; text: string }
+export interface LoadoutCardV { key: string; id: string; name: string; group: string; price: number; per: number; taken: number; picked: boolean; why: string | null; preview: GearPreview; text: string;
+  /** rules 1.55 item 49: a free pick (the free weapon or focus: costs nothing), not a line bought from the budget */ free: boolean }
+/** A free pick's state (rules 1.55 item 49, the camp's checklist): offered to this character, what is taken, still open. */
+export interface FreePickV { offered: boolean; id: string | null; name: string | null; open: boolean }
 /** One line of the Carrying panel: what it is, its weight, and the action that puts it back (null: it comes with a pick). */
 export interface CarryRowV { group: string; label: string; kg: number; free: boolean; put: { type: 'run/loadout'; [k: string]: unknown } | null; /** the button's word (default Remove) */ putLabel?: string }
 /** A row of the rack's compare: the better weapon's number against the free one's. */
@@ -295,6 +329,11 @@ export interface LoadoutViewV {
   readyWhy: string | null;
   /** one player in the room: Ready starts the run */
   solo: boolean;
+  /** rules 1.55 item 49: the free picks, the checklist's first two steps (the focus offered only to a character with a door) */
+  freePicks: { weapon: FreePickV; focus: FreePickV };
+  /** what the Recommended loadout gives this character, a line a thing in words (free picks marked), and what it leaves */
+  recommended: { lines: string[]; left: number;
+    /** rules 1.55 item 53: why the reducer would refuse this kit now (the button greyed with it), or null */ why: string | null };
 }
 /** The skills a loadout reads (the weapons' skills, the doors, the armour gate). */
 const GEAR_SKILLS = ['dexterity', 'raw_power', 'brain_power', 'visualization', 'will_power', 'empathy', 'pain_threshold'];
@@ -319,11 +358,11 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
     return gearPreview(c, { id, rarity: 'standard' });
   };
   const pickCard = (slot: 'weapon' | 'focus', id: string, group: string): LoadoutCardV => { const pv = preview(id), on = p[slot] === id;
-    return { key: slot + ':' + id, id, name: pv.name, group, price: 0, per: 1, taken: on ? 1 : 0, picked: on, why: on ? null : why((q) => { q[slot] = id; }), preview: pv, text: pv.text }; };
+    return { key: slot + ':' + id, id, name: pv.name, group, price: 0, per: 1, taken: on ? 1 : 0, picked: on, why: on ? null : why((q) => { q[slot] = id; }), preview: pv, text: pv.text, free: true }; };
   const lines = loadoutLines(c, p.take), shelves: LoadoutViewV['shelves'] = [];
   const lineCard = (l: LoadoutLine, group: string): LoadoutCardV => { const pv = preview(l.id), n = p.take[l.key] || 0;
     return { key: l.key, id: l.id, name: pv.name, group, price: l.price, per: l.per, taken: n, picked: n > 0,
-      why: n >= LOADOUT.max_qty ? 'At most ' + LOADOUT.max_qty + ' of a line.' : why((q) => { q.take[l.key] = n + 1; }), preview: pv, text: pv.text }; };
+      why: n >= LOADOUT.max_qty ? 'At most ' + LOADOUT.max_qty + ' of a line.' : why((q) => { q.take[l.key] = n + 1; }), preview: pv, text: pv.text, free: false }; };
   const rack: LoadoutViewV['rack'] = RACK.map((a) => {
     const free = pickCard('weapon', a.free, a.name), againL = lines.find((l) => l.key === 'stock:' + a.free), betterL = a.better ? lines.find((l) => l.key === 'stock:' + a.better) : null;
     const better = betterL ? lineCard(betterL, a.name) : null;
@@ -350,6 +389,17 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
   for (const it of packOf(c)) carrying.push({ group: 'In the pack', label: itemLabel(it), kg: kgOf(it), free: true, put: null });
   for (const [id, f] of Object.entries(COUNTED)) if (c[f]) carrying.push({ group: 'In the pack', label: c[f] + ' × ' + nameOf(id), kg: Math.round(c[f] * ((ITEM[id] as any)?.weight_kg || 0) * 100) / 100, free: true, put: null }); // items.json `counts_into`
   const spent = loadoutSpent(c, p), chars = Object.values(g.characters), owner = (pid: string) => chars.find((x) => x.owner === pid) || null;
+  const recommendedBlock = (): LoadoutViewV['recommended'] => {
+    // the Recommended loadout built on a copy (as the reducer would), its lines read from the menu that copy sees
+    const rec = recommendedPick(c, p.base), q: LoadoutPick = { ...JSON.parse(JSON.stringify(p)), ...rec }, t: Character = JSON.parse(JSON.stringify(c)); rebuild(t, q);
+    const all = loadoutLines(t, q.take), out: string[] = [];
+    // rules 1.55 item 53: the reducer's own refusal for this kit (the same trial the cards use), shown on the greyed button
+    const no = r.ready[c.owner] ? null : why((x) => { x.weapon = rec.weapon; x.focus = rec.focus; x.take = JSON.parse(JSON.stringify(rec.take)); });
+    if (q.weapon) out.push(nameOf(q.weapon) + ' (free)');
+    if (q.focus) out.push(nameOf(q.focus) + ' (free)');
+    for (const [k, n] of Object.entries(q.take)) { const l = all.find((x) => x.key === k); if (l) out.push((n > 1 ? n + ' × ' : '') + nameOf(l.id) + (l.per > 1 ? ' (' + l.per * n + ')' : '')); }
+    return { lines: out, left: LOADOUT.budget - loadoutSpent(t, q), why: no };
+  };
   const boonBlock = (): LoadoutViewV['boon'] => {
     const offer = startOffer(c, r.seed);
     const cards = offer.map((id, i) => { const row: any = relicRow(id); return { i, id, name: row?.name || id, text: row?.text || '', worth: worthOf(id), cap: BOON_CAP, lines: row?.lines || [], chosen: p.boon === id }; });
@@ -364,5 +414,10 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
     party: g.players.map((pl: any) => ({ id: pl.id, charName: owner(pl.id)?.name || pl.name, initials: pl.initials || '?', color: pl.color || '#A3AEC2', ready: !!r.ready[pl.id], online: pl.online, mine: pl.id === me })),
     ready: !!r.ready[me], isHost: me === g.hostId, waiting: campWaiting(g), seed: r.seed,
     readyWhy: r.ready[me] ? null : boonFirst(g, me), solo: g.players.length <= 1,
+    freePicks: {
+      weapon: { offered: true, id: p.weapon, name: p.weapon ? nameOf(p.weapon) : null, open: !p.weapon },
+      focus: { offered: !!p.focus || !!doorFocus(c), id: p.focus, name: p.focus ? nameOf(p.focus) : null, open: !p.focus && !!doorFocus(c) },
+    },
+    recommended: recommendedBlock(),
   };
 }

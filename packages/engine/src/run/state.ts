@@ -82,6 +82,7 @@ export interface RunFight { node: string; stage: number; depth: number; kind: st
   target: { bulk: number; pressure: number; rounds: number }; spent: { bulk: number; pressure: number }; scaleHp: number;
   foes: { name: string; tier: string; level: number; weapon: string; kind?: string; caster?: string; scale?: { hp?: number; damage?: number } }[];
   /** rules 1.51: each character's spare cores as the fight began (coresCarried), for the supply pack's cores */ cores?: Record<string, number>;
+  /** rules 1.55 item 65: each character's cores burnt in the fight, counted as it was won (the supply pack comes at the leave; cores made on the field do not lower it) */ burnt?: Record<string, number>;
   /** an older build's record (the charge held); not read */ charge?: Record<string, number>;
   outcome?: 'win' | 'loss'; rounds?: number; /** rules 1.44: the foes dropped (dead, Downed or given up) */ kills?: number; /** rules 1.47: what each character did (run/tally.ts) */ tally?: FightTally }
 /** One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. */

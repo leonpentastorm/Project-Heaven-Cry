@@ -17,10 +17,10 @@ import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, ty
 import { gearIconUri, magGearId } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
-import { boonCards, campBackdrop } from './campView';
+import { boonCards, campBackdrop, campChecklist, campHelp, campGuard, freeAction, type CampCheckV } from './campView';
 import { boonIconSvg } from './boonIcons';
 import { MoveOn } from './runPanels';
-import { PlaceBar, BarNumber } from './PlaceBar';
+import { PlaceBar } from './PlaceBar';
 import { shownLines } from './previewLines';
 
 const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: I.muted };
@@ -82,38 +82,29 @@ function Stepper({ c, charId, big }: { c: LoadoutCardV; charId: string; big?: bo
 }
 const Why = ({ c }: { c: LoadoutCardV }) => <span data-phc-camp-why="" style={{ fontSize: 13, lineHeight: 1.35, color: c.why ? I.muted : I.ok, ...wrap }}>{c.why || '✓ You can take this'}</span>;
 
-/** A free pick (the free Weapon or Focus): the pick itself is the card's top (a button); a rack's "same again" at its
- * price sits at its foot, a compact line with its own stepper. */
-function PickCard({ c, slot, charId, again }: { c: LoadoutCardV; slot: 'weapon' | 'focus'; charId: string; again?: LoadoutCardV | null }) {
-  const off = !c.picked && !!c.why;
+/** A free pick (the free weapon or focus; rules 1.55 item 49): FREE where a price would be (in green, with the word), and a
+ * button that says what pressing it does: Take (free), Swap to this (free), or ✓ YOURS (press again to put it back). */
+function PickCard({ c, slot, charId, v }: { c: LoadoutCardV; slot: 'weapon' | 'focus'; charId: string; v: LoadoutViewV }) {
+  const off = !c.picked && !!c.why, word = freeAction(c, v, slot);
   return (
-    <article data-phc-camp-free={c.key} style={{ ...cardBox(c.picked), padding: 0, gap: 0 }}>
-      <button type="button" data-phc-camp-pick={slot + ':' + c.id} aria-pressed={c.picked} onClick={() => act({ type: 'run/loadout', charId, op: 'pick', slot, id: c.picked ? null : c.id } as any)} {...tipProps(c.why || c.text || c.name)}
+    <article data-phc-camp-free={c.key} style={{ ...cardBox(c.picked), padding: 0, gap: 0, ...(c.picked ? { border: '2px solid ' + I.ok } : {}) }}>
+      <button type="button" data-phc-camp-pick={slot + ':' + c.id} aria-pressed={c.picked} onClick={() => act({ type: 'run/loadout', charId, op: 'pick', slot, id: c.picked ? null : c.id } as any)}
+        {...tipProps(c.why || (c.picked ? 'Yours, free. Press again to put it back.' : (c.text || c.name)))}
         style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, padding: 14, minWidth: 0, textAlign: 'left', fontFamily: 'inherit', color: I.text, cursor: 'pointer', background: 'transparent', border: 0, borderRadius: 14, opacity: off ? 0.6 : 1 }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0, width: '100%' }}>
           <Icon src={iconOf(c.id)} />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
             <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{label(c.name)}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: c.picked ? I.white : I.muted }}>{c.picked ? '✓ TAKEN · FREE' : 'FREE'}</span>
+            <span data-phc-camp-freetag="" style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.12em', color: I.ok }}>{c.picked ? '✓ YOURS · FREE' : 'FREE'}</span>
           </span>
         </div>
         <dl className="phc-camp-stats" data-phc-camp-stats="" style={{ width: '100%', gridTemplateColumns: 'minmax(6.5em, 1fr) minmax(0, auto)' }}>
           {shownLines(c.preview.lines, 4).map((l) => <React.Fragment key={l.key}><dt {...tipProps(l.label)}>{label(l.label)}</dt><dd>{l.value}</dd></React.Fragment>)}
         </dl>
-        {off ? <span style={{ marginTop: 'auto', fontSize: 13, color: I.muted, ...wrap }}>{c.why}</span> : null}
+        {off ? <span style={{ fontSize: 13, color: I.muted, ...wrap }}>{c.why}</span> : null}
+        <span data-phc-camp-take-free={word} aria-hidden="true" style={{ marginTop: 'auto', alignSelf: 'stretch', minHeight: 40, display: 'grid', placeItems: 'center', borderRadius: 10, fontSize: 15, fontWeight: 700,
+          ...(c.picked ? { border: '2px solid ' + I.ok, color: I.ok } : off ? { border: '1px solid ' + I.line, color: I.muted } : { background: I.text, color: I.ground }) }}>{word}</span>
       </button>
-      {again ? (
-        <div data-phc-camp-card={again.key} {...tipProps(again.text ? again.name + '. ' + again.text : again.name)} style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 14px 12px', borderTop: '1px solid ' + I.line }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-            <span style={{ display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap', ...wrap }}>
-              <span style={{ fontSize: 14, fontWeight: 700 }}>Another ·</span>
-              <span style={{ whiteSpace: 'nowrap' }}><span data-phc-camp-price="" style={{ fontSize: 20, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{again.price}</span>
-              <span style={{ fontSize: 13, color: I.muted }}> credits</span></span>
-            </span>
-            <Stepper c={again} charId={charId} />
-          </div>
-          <Why c={again} />
-        </div>) : null}
     </article>
   );
 }
@@ -211,6 +202,32 @@ function Carrying({ v, wide }: { v: LoadoutViewV; wide?: boolean }) {
   );
 }
 
+/** A chip of the checklist (rules 1.55 item 49): its number and title, its state in words (white with an open circle while
+ * still to do, green with a tick and the name once done), a thin meter for the budget; a click opens its section. */
+function CheckChip({ k, on, mark }: { k: CampCheckV; on: () => void; mark?: Record<string, string> }) {
+  const tone = k.done ? I.ok : I.white;
+  return (
+    <button type="button" data-phc-camp-check={k.key} data-phc-done={k.done ? '1' : '0'} onClick={on} {...(mark || {})} {...tipProps(k.n + ' · ' + k.title + ': ' + k.hint)}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, minWidth: 0, maxWidth: 260, minHeight: 52, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (k.done ? I.ok : '#3B475D'), background: I.panel, color: I.text, fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
+      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: I.muted, whiteSpace: 'nowrap' }}>{k.n + ' · ' + k.title}</span>
+      {k.meter ? (
+        <span data-phc-camp-budget="" style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}><span data-phc-camp-left="">{k.meter.left}</span> of {k.meter.total} cr left</span>
+          <span aria-hidden="true" style={{ display: 'block', height: 4, width: '100%', minWidth: 110, borderRadius: 2, background: I.raised }}><span style={{ display: 'block', height: 4, borderRadius: 2, width: Math.round(100 * k.meter.left / Math.max(1, k.meter.total)) + '%', background: I.white }} /></span>
+        </span>) : (
+        <span data-phc-camp-state="" style={{ fontSize: 15, fontWeight: 700, color: tone, ...wrap }}>{(k.glyph ? k.glyph + ' ' : '') + k.state}</span>)}
+    </button>
+  );
+}
+
+/** A step's big plain header: "Step 1 · Your free weapon", and what to do in one sentence. */
+const stepHead = (n: number, title: string, say: string) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, margin: '4px 0 14px' }}>
+    <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 26 }}>{'Step ' + n + ' · ' + title}</h2>
+    <span style={{ fontSize: 15, lineHeight: 1.4, color: '#DCE2EC' }}>{say}</span>
+  </div>
+);
+
 export function LoadoutScreen() {
   const st = getState(), g = st.game, me = st.me.id;
   const [step, setStep] = React.useState<1 | 2>(1);
@@ -219,29 +236,33 @@ export function LoadoutScreen() {
   const charId = v.me.id, last = (st as any).error as string | undefined;
   const groups: { name: string; cards: LoadoutCardV[] }[] = [];
   for (const s of v.shelves) for (const c of s.cards) { let gr = groups.find((x) => x.name === c.group); if (!gr) groups.push(gr = { name: c.group, cards: [] }); gr.cards.push(c); }
-  const solo = v.solo;
-  const go = (n: 1 | 2) => { setStep(n); const sc = document.querySelector('[data-phc-camp]')?.parentElement; if (sc && sc.scrollTop) sc.scrollTop = 0; };
+  const bought = v.rack.filter((a) => a.again || a.better);
+  const solo = v.solo, checks = campChecklist(v), focusStep = v.freePicks.focus.offered;
+  const scroller = () => document.querySelector('[data-phc-camp]')?.parentElement || null;
+  const go = (n: 1 | 2) => { setStep(n); const sc = scroller(); if (sc && sc.scrollTop) sc.scrollTop = 0; };
+  /** Open a section of the loadout (the checklist's click): the page first, then scroll it under the header. */
+  const open = (key: string) => {
+    if (key === 'boon') { go(2); return; }
+    setStep(1);
+    requestAnimationFrame(() => { const el = document.querySelector('[data-phc-camp-row="' + key + '"]') as HTMLElement | null, sc = scroller(), bar = document.querySelector('[data-phc-camp-bar]') as HTMLElement | null;
+      if (el && sc && sc.scrollHeight > sc.clientHeight) sc.scrollTop += el.getBoundingClientRect().top - sc.getBoundingClientRect().top - (bar?.offsetHeight || 0) - 8; else el?.scrollIntoView({ block: 'start' }); });
+  };
+  // rules 1.55 item 49: a free pick still open asks first (Go back and pick opens its section)
+  const toBoon = () => campGuard(v, true, () => go(2), open);
   const pill = (on: boolean): React.CSSProperties => ({ minHeight: 42, padding: '0 16px', borderRadius: 10, border: 0, background: on ? I.text : I.raised, color: on ? I.ground : I.muted, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: on ? 'pointer' : 'default' });
   return (
     <div className="phc-camp" data-phc-camp="" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: I.ground, color: I.text, fontFamily: "'Chakra Petch', sans-serif" }}>
       <style>{CSS}</style>
-      {/* the place header (PlaceBar, the visibility standard): sticky at the top of the middle column's scroll, over the cards */}
-      <PlaceBar marks={{ 'data-phc-camp-bar': '' }} name="The camp" backdrop={campBackdrop()}
-        tabs={<nav aria-label="The camp's steps" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '0 0 10px' }}>
-          {([[1, '1 · Loadout'], [2, '2 · Starting boon' + (v.boon.chosen ? ' ✓' : '')]] as const).map(([n, lab]) => (
-            <button key={n} type="button" data-phc-camp-step={n} aria-current={step === n ? 'step' : undefined} onClick={() => go(n)}
-              style={{ minHeight: 34, padding: '0 14px', borderRadius: 99, border: '1px solid ' + (step === n ? I.white : '#3B475D'), background: step === n ? I.raised : 'transparent', color: step === n ? I.white : I.muted, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>{lab}</button>))}
+      {/* the place header (PlaceBar, the visibility standard): sticky at the top of the middle column's scroll; rules
+          rules 1.55 item 49: it is the checklist of what to do here, and the button that moves on */}
+      <PlaceBar marks={{ 'data-phc-camp-bar': '' }} name="The camp" backdrop={campBackdrop()} sub={<span data-phc-camp-help="">{campHelp(v)}</span>}
+        tabs={<nav aria-label="What to do at the camp" data-phc-camp-checklist="" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '10px 0' }}>
+          {checks.map((k) => <CheckChip key={k.key} k={k} on={() => open(k.key)} mark={k.key === 'weapon' ? { 'data-phc-camp-step': '1' } : k.key === 'boon' ? { 'data-phc-camp-step': '2', ...(step === 2 ? { 'aria-current': 'step' } : {}) } : undefined} />)}
+          <span style={{ alignSelf: 'center', fontSize: 13, color: I.muted }}>used <span data-phc-camp-used="">{v.spent}</span> · what you don't spend, you keep</span>
         </nav>}
-        money={<div data-phc-camp-budget="" style={{ display: 'flex', alignItems: 'center', gap: '10px 18px', flexWrap: 'wrap' }}>
-          <BarNumber label="BUDGET LEFT" n={v.left} mark={{ 'data-phc-camp-left': '' }} />
-          <BarNumber label="BUDGET USED" n={v.spent} muted mark={{ 'data-phc-camp-used': '' }} />
-          <span style={{ fontSize: 13, color: I.muted, maxWidth: 170, lineHeight: 1.35 }}>of {v.budget} credits · what you don't spend, you keep</span>
-        </div>}
         actions={<>
-          <button type="button" data-phc-camp-recommended="" disabled={v.ready} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)} {...tipProps('A loadout for your skills: the focus you can use, the weapon for your best weapon skill, armour, then ammunition.')}
-            style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: v.ready ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: v.ready ? 'default' : 'pointer' }}>Recommended</button>
           {!v.boon.chosen && !v.ready && v.boon.cards.length ? (
-            <button type="button" data-phc-camp-next="" onClick={() => go(2)} disabled={step === 2} {...tipProps(step === 2 ? 'Choose one of the three.' : null)} style={pill(step !== 2)}>{step === 2 ? 'Choose a boon' : 'Starting boon ›'}</button>
+            <button type="button" data-phc-camp-next="" onClick={toBoon} disabled={step === 2} {...tipProps(step === 2 ? 'Choose one of the three.' : null)} style={pill(step !== 2)}>{step === 2 ? 'Choose a boon' : 'Next: starting boon ›'}</button>
           ) : <MoveOn />}
           {!solo && v.isHost ? <button type="button" data-phc-camp-close="" onClick={() => act({ type: 'run/ready', close: true } as any)} {...tipProps('Everyone sets out now. Anyone still away gets the Recommended loadout and the first starting boon.')}
             style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Start for everyone{v.waiting.length ? ' (waiting: ' + v.waiting.join(', ') + ')' : ''}</button> : null}
@@ -249,30 +270,51 @@ export function LoadoutScreen() {
         foot={last ? <span data-phc-camp-refusal="" role="status" style={{ fontSize: 14, color: I.white }}>{last}</span> : null} />
       <main aria-label={step === 1 ? 'Loadout' : 'Starting boon'} data-phc-camp-take="" data-phc-camp-on={step} style={{ padding: '18px 20px 20px' }}>
         {step === 1 ? <>
-          <section data-phc-camp-row="weapon" style={{ marginBottom: 26 }}>
-            {head('Weapon', 'one free')}
-            <div className="phc-camp-families">
+          {/* the one-click way through (rules 1.55 item 49) */}
+          {/* rules 1.55 item 53: greyed with the engine's reason when the reducer would refuse the kit */}
+          <button type="button" data-phc-camp-recommended="" disabled={v.ready || !!v.recommended.why} aria-disabled={v.ready || !!v.recommended.why} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, width: '100%', maxWidth: 760, marginBottom: 26, padding: '14px 18px', borderRadius: 12, border: 0, background: v.ready || v.recommended.why ? I.raised : I.text, color: v.ready || v.recommended.why ? I.muted : I.ground, fontFamily: 'inherit', textAlign: 'left', cursor: v.ready || v.recommended.why ? 'default' : 'pointer' }}>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>Not sure? Take the recommended kit</span>
+            <span data-phc-camp-rec-line="" style={{ fontSize: 14, lineHeight: 1.4, ...wrap }}>{(v.recommended.lines.length ? v.recommended.lines.join(' · ') : 'Nothing') + ' · keeps ' + v.recommended.left + ' credits'}</span>
+            {v.recommended.why ? <span data-phc-camp-rec-why="" style={{ fontSize: 14, lineHeight: 1.4, color: I.white, ...wrap }}>{"Can't take it: " + v.recommended.why}</span> : null}
+          </button>
+          <section data-phc-camp-row="weapon" style={{ marginBottom: 30 }}>
+            {stepHead(1, 'Your free weapon', 'Pick one. It costs nothing and you can swap it freely here.')}
+            <div className="phc-camp-pick" role="radiogroup" aria-label="Free weapon">
               {v.rack.map((a) => (
-                <div key={a.id} data-phc-camp-rack={a.id} style={{ minWidth: 0 }}>
-                  <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
-                  <div className="phc-camp-pair" role="group" aria-label={a.name}>
-                    <PickCard c={a.free} slot="weapon" charId={charId} again={a.again} />
-                    {a.better ? <ShelfCard c={a.better} charId={charId} tag="THE BETTER ONE" compare={a.better.compare} /> : null}
-                  </div>
+                <div key={a.id} data-phc-camp-rack={a.id} style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+                  <span style={{ ...kick, display: 'flex', alignItems: 'flex-end', minHeight: '2.7em', lineHeight: 1.35 }}>{a.name.toUpperCase()}</span>
+                  <PickCard c={a.free} slot="weapon" charId={charId} v={v} />
                 </div>))}
             </div>
           </section>
-          <section data-phc-camp-row="focus" style={{ marginBottom: 26 }}>
-            {head('Focus', 'one free, or none')}
-            <div className="phc-camp-pick" role="radiogroup" aria-label="Focus">{v.focus.map((c) => <PickCard key={c.key} c={c} slot="focus" charId={charId} />)}</div>
+          {focusStep ? <section data-phc-camp-row="focus" style={{ marginBottom: 30 }}>
+            {stepHead(2, 'Your free focus', 'Pick one if you cast. It costs nothing and goes in your off hand.')}
+            <div className="phc-camp-pick" role="radiogroup" aria-label="Free focus">{v.focus.map((c) => <PickCard key={c.key} c={c} slot="focus" charId={charId} v={v} />)}</div>
+          </section> : null}
+          <section data-phc-camp-row="budget">
+            {stepHead(focusStep ? 3 : 2, 'Spend your budget', 'Everything here costs credits. What you don\'t spend, you keep.')}
+            {bought.length ? <section data-phc-camp-shelf="Weapons" style={{ marginBottom: 22 }}>
+              {head('Weapons', 'another one, or the better one')}
+              <div className="phc-camp-families">
+                {bought.map((a) => (
+                  <div key={a.id} data-phc-camp-family={a.id} style={{ minWidth: 0 }}>
+                    <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
+                    <div className="phc-camp-pair" role="group" aria-label={a.name}>
+                      {a.again ? <ShelfCard c={a.again} charId={charId} tag="ANOTHER ONE" /> : null}
+                      {a.better ? <ShelfCard c={a.better} charId={charId} tag="THE BETTER ONE" compare={a.better.compare} /> : null}
+                    </div>
+                  </div>))}
+              </div>
+            </section> : null}
+            <div className="phc-camp-shelves">
+              {groups.map((gr) => (
+                <section key={gr.name} data-phc-camp-shelf={gr.name} style={{ marginBottom: 22, minWidth: 0 }}>
+                  {head(gr.name)}
+                  <div className="phc-camp-shelf">{gr.cards.map((c) => <ShelfCard key={c.key} c={c} charId={charId} />)}</div>
+                </section>))}
+            </div>
           </section>
-          <div className="phc-camp-shelves">
-            {groups.map((gr) => (
-              <section key={gr.name} data-phc-camp-shelf={gr.name} style={{ marginBottom: 22, minWidth: 0 }}>
-                {head(gr.name)}
-                <div className="phc-camp-shelf">{gr.cards.map((c) => <ShelfCard key={c.key} c={c} charId={charId} />)}</div>
-              </section>))}
-          </div>
         </> : <>
           {head('Starting boon', 'yours for the whole run')}
           <BoonStep v={v} charId={charId} />

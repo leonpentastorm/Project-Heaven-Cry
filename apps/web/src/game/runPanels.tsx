@@ -24,6 +24,7 @@ import { Portal } from './modeCentre';
 import { placeClosed, closePlace } from './placeMark';
 import { ICON } from './runIconSizes';
 import { WearBar } from './WearBar';
+import { campGuard } from './campView';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
@@ -115,7 +116,7 @@ export function campPhase(g: GameState, me: string): Phase | null {
   const lv = loadoutView(g as any, me); if (!lv) return null;
   const solo = lv.solo;
   if (lv.readyWhy) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', attr: { 'data-phc-phase': 'ready' }, why: lv.readyWhy }; // the engine's refusal, in its words
-  return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any) };
+  return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => campGuard(lv, false, () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any)) }; // rules 1.55 item 49: a free pick still open asks first
 }
 function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   const r = g.run!;

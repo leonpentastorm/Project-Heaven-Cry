@@ -42,7 +42,7 @@ import { resOf, resGain, resSpend, canReact, react, loseReactions, payHeldShot, 
 import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround } from '../kit';
-import { price, whyNot, canPay, pay, refund, grantAp, loseAp, setAp, freely, withAp } from '../effects/cost';
+import { price, whyNot, canPay, pay, refund, grantAp, loseAp, setAp, freely, withAp, needs } from '../effects/cost';
 import { setBraced } from '../unitstate';
 import { condMods } from '../condtable';
 
@@ -501,7 +501,7 @@ register({
 // (choose one, PROVISIONAL), once an ally a scene. Robot medics repairing machines: the Narrator rules which.
 const surgeryTarget = (h: Holder, args: ActionArgs) => charNamed(h, args) || h.c || null;
 const surgeryMp = (): number => Number(rawItem('verb:tend.field_surgery')?.effects?.[0]?.res?.mp ?? 0);
-const surgeryWhy = (h: Holder): string | true => (!h.c ? 'No one to do it.' : !hasAttuner(h.c) ? 'Needs an Attuner in hand.' : !packOf(h.c).some((x) => (x.item || x.id) === 'field_kit' && x.qty > 0) ? 'Needs a field kit.' : mpNow(h.c) < surgeryMp() ? 'Needs ' + surgeryMp() + ' MP.' : true);
+const surgeryWhy = (h: Holder): string | true => (!h.c ? 'No one to do it.' : !hasAttuner(h.c) ? 'Needs an Attuner in hand.' : !packOf(h.c).some((x) => (x.item || x.id) === 'field_kit' && x.qty > 0) ? 'Needs a field kit.' : mpNow(h.c) < surgeryMp() ? needs(surgeryMp(), 'MP', undefined, Math.floor(mpNow(h.c))) : true);
 const surgeryPay = (h: Holder, t: Character): string | null => { if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.'; h.c!.mp = mpNow(h.c!) - surgeryMp(); return null; };
 register({
   id: 'tend.field_surgery', kind: 'verb', claims: 'all',

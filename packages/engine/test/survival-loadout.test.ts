@@ -4,7 +4,7 @@
 // close; a campaign gives a bare character its loadout; a character made with a kit (an old draft, a test) keeps it.
 import { describe, expect, it } from 'vitest';
 import { type GameState, newGame, apply, RuleError, newCharacter, validateSheet, creditsOf, packOf, priceOf, roundsIdOf, carriedKg, carryLimit, viewFor,
-  LOADOUT, RACK, archetypeWeapons, loadoutLines, loadoutSpent, recommendedPick, startOffer, kitFor, campaignLoadout, KITS, WEAPON, quiversOf, quiverHolds, ITEM, twoHands, emptyMagPrice } from '../src';
+  LOADOUT, RACK, archetypeWeapons, loadoutLines, loadoutSpent, recommendedPick, loadoutView, startOffer, kitFor, campaignLoadout, KITS, WEAPON, quiversOf, quiverHolds, ITEM, twoHands, emptyMagPrice } from '../src';
 import { sheetOf } from './helpers/perkfight';
 import svJ from '../../../data/survival.json';
 
@@ -211,5 +211,108 @@ describe('the camp (rules 1.52)', () => {
     expect(heal.c.offHand).toEqual({ id: 'attuner' }); expect(packOf(heal.c).some((x) => x.id === 'field_kit')).toBe(true); expect(heal.c.armourClass).toBe(1);
     for (const x of [gun, blade, sig, heal]) { expect(loadoutSpent(x.c, x.p)).toBeLessThanOrEqual(LOADOUT.budget); expect(carriedKg(x.c).total).toBeLessThanOrEqual(carryLimit(x.c)); }
     expect(SV.run.start_credits).toBe(0); // the old flat purse (150) is replaced by the unspent budget
+  });
+});
+
+describe('the camp as a checklist and a shield for a tank (rules 1.55 items 49 to 53)', () => {
+  /** A camp with one bare character of an archetype (archetypes.json), the host's. */
+  const campOf = (archetype: string) => { let g = newGame('LOAD02', { id: HOST, name: 'Leon' }, 'seed-load'); g.settings.play = 'survival';
+    const s: any = { ...sheetOf({ name: 'Kade', archetype } as any) }; delete s.kit; g = apply(g, { type: 'char/add', sheet: s }, HOST); return apply(g, { type: 'run/start', seed: 'PHC-0001' }, HOST); };
+  const view = (g: GameState) => loadoutView(g as any, HOST)!;
+  /** The camp's off-hand items (a shield): the fixed stock's items that go in the off hand and are not a focus (data). */
+  const SHIELDS = LOADOUT.stock.ids.filter((id) => (ITEM[id] as any)?.slot === 'off_hand' && !(ITEM[id] as any)?.focus);
+  it('rules 1.55 item 49: the view says which cards are free, what each free pick holds and whether it is still open', () => {
+    let g = campOf('sharpshooter'), v = view(g);
+    expect(v.rack.every((a) => a.free.free && a.free.price === 0)).toBe(true);
+    expect(v.rack.every((a) => (!a.again || !a.again.free) && (!a.better || !a.better.free))).toBe(true);
+    expect(v.shelves.every((s) => s.cards.every((k) => !k.free && k.price > 0))).toBe(true);
+    expect(v.focus.every((k) => k.free)).toBe(true);
+    expect(v.freePicks.weapon).toEqual({ offered: true, id: null, name: null, open: true });
+    expect(v.freePicks.focus.offered).toBe(false); expect(v.freePicks.focus.open).toBe(false); // no door skill: no focus step
+    g = lo(g, 'Kade', { op: 'pick', slot: 'weapon', id: FREE('rifles') }); v = view(g);
+    expect(v.freePicks.weapon.open).toBe(false); expect(v.freePicks.weapon.id).toBe(FREE('rifles')); expect(v.freePicks.weapon.name).toBe((WEAPON[FREE('rifles')] as any).name);
+    // a caster: the focus step is offered and open until taken; Recommended closes both
+    g = campOf('sigilist'); v = view(g);
+    expect(v.freePicks.focus).toEqual({ offered: true, id: null, name: null, open: true });
+    const rec = recommendedPick(Object.values(g.characters)[0], g.run!.loadout![Object.values(g.characters)[0].id].base);
+    expect(v.recommended.lines[0]).toBe((WEAPON[rec.weapon!] as any).name + ' (free)'); expect(v.recommended.lines[1]).toBe(ITEM[rec.focus!].name + ' (free)');
+    expect(v.recommended.lines.length).toBe(2 + Object.keys(rec.take).length);
+    g = lo(g, 'Kade', { op: 'recommended' }); v = view(g);
+    expect(v.freePicks.weapon.open).toBe(false); expect(v.freePicks.focus.open).toBe(false); expect(v.recommended.left).toBe(v.left);
+  });
+  it('rules 1.55 item 50: a tank\'s camp offers the shield at priceOf; bought with a one-hander it is in the off hand; with a two-hander it is refused in words', () => {
+    expect(SHIELDS.length).toBeGreaterThan(0);
+    const S = SHIELDS[0], oneH = RACK.find((r) => !twoHands({ skills: {} } as any, r.free) && (WEAPON[r.free] as any).category !== 'bow')!.free, twoH = RACK.find((r) => twoHands({ skills: {} } as any, r.free))!.free;
+    let g = campOf('bulwark');
+    const card = view(g).shelves.flatMap((s) => s.cards).find((k) => k.id === S)!;
+    expect(card.price).toBe(priceOf(S)); expect(card.price).toBeLessThanOrEqual(LOADOUT.budget); expect(card.why).toBeNull(); expect(card.free).toBe(false);
+    g = lo(g, 'Kade', { op: 'pick', slot: 'weapon', id: oneH });
+    g = lo(g, 'Kade', { op: 'take', key: card.key });
+    const c = Object.values(g.characters)[0];
+    expect(c.offHand?.id).toBe(S); expect(c.weapon).toBe(oneH); expect(creditsOf(c)).toBe(LOADOUT.budget - priceOf(S)!);
+    expect(packOf(c).some((x) => (x.item || x.id) === S)).toBe(false);
+    expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: card.key })).toMatch(/one is held at a time/);
+    expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'pick', slot: 'weapon', id: twoH })).toBe(ITEM[S].name + ': your main-hand weapon needs both hands.');
+    // the card says so before it is pressed, with the two-hander held
+    const g2 = lo(campOf('bulwark'), 'Kade', { op: 'pick', slot: 'weapon', id: twoH });
+    expect(view(g2).shelves.flatMap((s) => s.cards).find((k) => k.id === S)!.why).toBe(ITEM[S].name + ': your main-hand weapon needs both hands.');
+  });
+  it("rules 1.55 item 51: a Durability all-in's Recommended kit is a one-hander and the shield, accepted by the reducer; a gunner's is unchanged", () => {
+    const row = LOADOUT.recommended.weapon.find((w) => w.top === 'durability')!;
+    expect(row.hands).toBe('1H'); expect(LOADOUT.recommended.buys[row.profile!][0]).toBe(SHIELDS[0]);
+    let g = campOf('living_wall'); const id = Object.values(g.characters)[0].id;
+    g = lo(g, 'Kade', { op: 'recommended' }); const c = g.characters[id], p = g.run!.loadout![id];
+    expect(c.weapon).toBe(p.weapon); expect(RACK.some((r) => r.free === c.weapon)).toBe(true); expect(twoHands(c, c.weapon)).toBe(false);
+    expect(c.offHand?.id).toBe(SHIELDS[0]); expect(p.focus).toBeNull();
+    expect(creditsOf(c)).toBe(LOADOUT.budget - loadoutSpent(c, p)); expect(carriedKg(c).total).toBeLessThanOrEqual(carryLimit(c));
+    // the weapon is the scoring's (the most points in its skill, a tie to the dearer), not a named one
+    const pts = (w: string) => c.skills?.[(WEAPON[w] as any).skill] || 0, ones = RACK.map((r) => r.free).filter((w) => !twoHands(c, w));
+    expect(ones.every((w) => pts(w) < pts(c.weapon) || (pts(w) === pts(c.weapon) && (priceOf(w) || 0) <= (priceOf(c.weapon) || 0)))).toBe(true);
+    // a gunner keeps the rifle, its armour and no shield
+    const d = lo(campOf('deadeye'), 'Kade', { op: 'recommended' }), dc = Object.values(d.characters)[0];
+    expect(dc.weapon).toBe(FREE('rifles')); expect(dc.armourClass).toBe(1); expect(dc.offHand ?? null).toBeNull();
+  });
+  it("rules 1.56 (the 0.28.3 merge): an Operative's Recommended kit is the pistol and the shadow buys, no focus, accepted by the reducer", () => {
+    const row = LOADOUT.recommended.weapon.find((w) => w.top === 'ingenuity')!;
+    expect(row.archetype).toBe('pistols'); expect(row.focus).toBe(false); expect(row.profile).toBe('shadow');
+    let g = campOf('phantom'); const id = Object.values(g.characters)[0].id;
+    g = lo(g, 'Kade', { op: 'recommended' }); const c = g.characters[id], p = g.run!.loadout![id];
+    expect(c.weapon).toBe(FREE('pistols')); expect(p.focus).toBeNull();
+    // the profile's buys in order while the budget pays: the first (a smoke grenade) is taken
+    const first = LOADOUT.recommended.buys.shadow[0];
+    expect(Object.keys(p.take).some((k) => loadoutLines(c).find((l) => l.key === k)?.id === first)).toBe(true);
+    expect(creditsOf(c)).toBe(LOADOUT.budget - loadoutSpent(c, p)); expect(carriedKg(c).total).toBeLessThanOrEqual(carryLimit(c));
+    expect(view(g).recommended.why).toBeNull();
+  });
+  it("rules 1.56 (the 0.28.3 merge): the Monk's Recommended weapon is the unarmed rack's free one (the Hand wraps), by its own archetype", () => {
+    const row = LOADOUT.recommended.weapon.find((w) => w.character === 'monk')!;
+    expect(row.archetype).toBe('unarmed');
+    // the creation screen keeps its pick on the sheet (charfile.ts `archetype`): a sheet that names the Monk
+    const monkCamp = (keep: boolean) => { let r = newGame('LOAD03', { id: HOST, name: 'Leon' }, 'seed-load'); r.settings.play = 'survival';
+      const s: any = { ...sheetOf({ name: 'Kade', archetype: 'monk' } as any), ...(keep ? { archetype: 'monk' } : {}) }; delete s.kit;
+      r = apply(r, { type: 'char/add', sheet: s }, HOST); return apply(r, { type: 'run/start', seed: 'PHC-0001' }, HOST); };
+    let g = monkCamp(true); const id = Object.values(g.characters)[0].id;
+    expect(g.characters[id].archetype).toBe('monk');
+    g = lo(g, 'Kade', { op: 'recommended' }); const c = g.characters[id];
+    expect(c.weapon).toBe(FREE('unarmed')); expect((WEAPON[c.weapon] as any).category).toBe('unarmed');
+    expect((WEAPON[c.weapon] as any).variant_mods).toContain('open_hand'); // the Open Hand family's glove
+    // the same skills without the Monk's archetype do not take the row
+    let h = monkCamp(false); const hid = Object.values(h.characters)[0].id;
+    h = lo(h, 'Kade', { op: 'recommended' }); expect(h.characters[hid].weapon).not.toBe(FREE('unarmed'));
+  });
+  it('rules 1.55 item 52: with the shield in the off hand a free focus is refused in words that say what to do', () => {
+    let g = lo(campOf('living_wall'), 'Kade', { op: 'recommended' });
+    const want = 'Your off hand holds the ' + ITEM[SHIELDS[0]].name + '. Put it back to take a focus.';
+    expect(refused(g, { type: 'run/loadout', charId: idOf(g, 'Kade'), op: 'pick', slot: 'focus', id: LOADOUT.focuses[0] })).toBe(want);
+    expect(view(g).focus.find((k) => k.id === LOADOUT.focuses[0])!.why).toBe(want);
+  });
+  it('rules 1.55 item 53: when the reducer would refuse the Recommended kit, the view says why (and nothing when it would not)', () => {
+    let g = campOf('deadeye'); const id = idOf(g, 'Kade');
+    expect(view(g).recommended.why).toBeNull();
+    // a base pack over the carry limit (what the character brought from its traits): every kit is too heavy
+    g.run!.loadout![id].base.pack.push({ id: SHIELDS[0], item: SHIELDS[0], name: ITEM[SHIELDS[0]].name, qty: 200, kind: 'gear' } as any);
+    const why = view(g).recommended.why;
+    expect(why).toMatch(/^Too heavy: /);
+    expect(refused(g, { type: 'run/loadout', charId: id, op: 'recommended' })).toBe(why);
   });
 });

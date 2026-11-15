@@ -29,7 +29,7 @@ function fight(seed: string, weapon = 'drifter_revolver', noDoor = false) {
   snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, seed);
   doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
   const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).weapon = weapon;
-  if (noDoor) (G.characters[c.id] as any).skills.durability = 0; // no passive to read: Guard's door (rules 1.55, 0.28.3-T.3) would add a Perks tab
+  if (noDoor) (G.characters[c.id] as any).skills.durability = 0; // no passive to read: Guard's door (rules 1.55 item 73) would add a Perks tab
   doAct({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Keel', tier: 'soldier', weapon: 'drifter_revolver' }] } } });
   return c;
 }

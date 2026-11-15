@@ -1060,6 +1060,8 @@ export const carriesMpFocus = (c: Character) => MP_FOCUS_KINDS.some((k) => carri
 /** Why a character can't cast now, by focus (null: it can). */
 export const focusWhy = (c: Character, kind: 'evoker' | 'emanator'): string | null => ((kind === 'evoker' ? hasEvoker(c) : hasEmanator(c)) ? null : kind === 'evoker' ? NEEDS_EVOKER : NEEDS_EMANATOR);
 export const NEEDS_EVOKER = 'Needs an Evoker in hand.', NEEDS_EMANATOR = 'Needs an Emanator in hand.';
+/** Syphon's refusal (rules 1.33: the mp row's needs, data/actions.json: any focus whose fuel is MP). */
+export const NEEDS_MP_FOCUS = 'Needs an MP focus in hand (an Emanator or an Attuner).';
 export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0);
 /** MP now: the MP focus's charge (an Emanator or, rules 1.33, an Attuner; full when first carried); no MP focus, no MP. */
 export const mpNow = (c: Character) => (carriesMpFocus(c) ?Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);

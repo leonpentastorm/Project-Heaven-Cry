@@ -14,6 +14,7 @@ import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import ASSETS from './assets.json';
 import { GiveTab } from './GiveTab';
+import { AmountField } from './AmountField';
 import { UpgradeCard } from './UpgradeCard';
 import { shownLines } from './previewLines';
 
@@ -109,7 +110,7 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
 export function ShopScreen() {
   const st = getState(), g = st.game, me = st.me.id;
   const [tab, setTab] = React.useState('always'), [focus, setFocus] = React.useState<{ id: string; rarity: Rarity } | null>(null);
-  const [qty, setQtyMap] = React.useState<Record<string, number>>({}), [confirm, setConfirm] = React.useState<number | null>(null);
+  const [qty, setQtyMap] = React.useState<Record<string, number>>({}), [confirm, setConfirm] = React.useState<string | null>(null);
   const v = g ? shopView(g as any, me) : null;
   const say = useKeeperLine(v?.face.says || {}, tab === 'always' ? 'stock' : tab, v?.face.line || '', v?.log.length || 0); // (before any return: a hook)
   if (!g || !v) return <div style={{ padding: 40, color: I.muted }}>No shop is open.</div>;
@@ -138,22 +139,20 @@ export function ShopScreen() {
   }
   else if (tab === 'give') body = <GiveTab />;
   else body = <section data-phc-shelf="sell">{shelfHead('Sell')}<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{v.sell.map((r) => {
-    // How many to sell: one by default (rules 1.55), stepped up to the whole stack; the value and the refusal come from the view.
-    const k = 'sell:' + r.idx, n = Math.min(q(k), r.totals.length), val = r.totals[n - 1] ?? r.value, why = r.why && r.totals.length <= 1 ? r.why : (r.whys[n - 1] ?? null);
-    const sellIt = () => { setConfirm(null); setQ(k)(1); act({ type: 'run/sell', charId, idx: r.idx, qty: n }); };
-    const step = (m: number) => setQ(k)(Math.max(1, Math.min(r.totals.length, m)));
-    const stepBtn = (label: string, aria: string, m: number) => <button type="button" aria-label={aria} onClick={() => step(m)} style={{ minWidth: 28, height: 38, border: 0, background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: label.length > 1 ? 13 : 18, fontWeight: 700, cursor: 'pointer' }}>{label}</button>;
+    // How many to sell: one by default (rules 1.55), chosen with the one amount control (AmountField.tsx, rules 1.55 item 54) up to
+    // the whole stack; the value and the refusal come from the view. A counted item's line (a stim, an Essence) sells by
+    // `count` (rules 1.55 item 56).
+    const id = r.count ? 'count:' + r.count : String(r.idx), k = 'sell:' + id, n = Math.min(q(k), r.totals.length), val = r.totals[n - 1] ?? r.value, why = r.why && r.totals.length <= 1 ? r.why : (r.whys[n - 1] ?? null);
+    const sellIt = () => { setConfirm(null); setQ(k)(1); act({ type: 'run/sell', charId, ...(r.count ? { count: r.count } : { idx: r.idx }), qty: n }); };
     return (
-    <div key={r.idx} data-phc-sell={r.idx} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why && r.totals.length <= 1 ? 0.6 : 1 }}>
+    <div key={id} data-phc-sell={id} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why && r.totals.length <= 1 ? 0.6 : 1 }}>
       <img src={iconOf(r.id)} alt="" width={40} height={40} style={{ objectFit: 'contain', visibility: iconOf(r.id) ? 'visible' : 'hidden' }} />
       <span style={{ flex: 1, minWidth: 0, fontSize: 14 }}>{r.label}</span>
-      {r.totals.length > 1 ? <div role="group" aria-label="How many to sell" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
-        {stepBtn('‹', 'One fewer', n - 1)}<span data-phc-sell-qty="" style={{ minWidth: 26, textAlign: 'center', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{n}</span>{stepBtn('›', 'One more', n + 1)}{stepBtn('All', 'All of them', r.totals.length)}
-      </div> : null}
+      {r.totals.length > 1 ? <AmountField value={n} max={r.totals.length} min={1} onChange={setQ(k)} onEnter={() => { if (!why && !r.ask) sellIt(); }} label={'How many ' + r.label + ' to sell'} /> : null}
       {why ? <span style={{ fontSize: 13, color: I.muted }}>{why}</span> : <>
         <span data-phc-sell-value="" style={{ fontSize: 18, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{(val || 0).toLocaleString('en')} <span style={{ fontSize: 13, color: I.muted }}>CREDITS</span></span>
-        {confirm === r.idx && r.ask ? <><span style={{ fontSize: 13 }}>{r.ask}</span><button type="button" data-phc-sell-yes="" onClick={sellIt} style={{ minHeight: 38, padding: '0 14px', borderRadius: 10, border: 0, background: I.text, color: I.ground, fontFamily: 'inherit', fontWeight: 700 }}>Yes, sell</button></>
-          : <button type="button" data-phc-sell-btn="" onClick={() => (r.ask ? setConfirm(r.idx) : sellIt())} style={{ minHeight: 38, padding: '0 16px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontWeight: 700 }}>Sell</button>}
+        {confirm === id && r.ask ? <><span style={{ fontSize: 13 }}>{r.ask}</span><button type="button" data-phc-sell-yes="" onClick={sellIt} style={{ minHeight: 38, padding: '0 14px', borderRadius: 10, border: 0, background: I.text, color: I.ground, fontFamily: 'inherit', fontWeight: 700 }}>Yes, sell</button></>
+          : <button type="button" data-phc-sell-btn="" onClick={() => (r.ask ? setConfirm(id) : sellIt())} style={{ minHeight: 38, padding: '0 16px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontWeight: 700 }}>Sell</button>}
       </>}
     </div>); })}</div></section>;
   return (

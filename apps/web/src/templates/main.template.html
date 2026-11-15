@@ -186,7 +186,7 @@
 <span data-phc-pack-name="" style="font-size: 13px; font-weight: 600; min-width: 0; overflow-wrap: anywhere">{{r.name}}</span>
 <span data-phc-pack-qty="" style="font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums">{{r.qty}}</span>
 <span style="font-size: 13px; color: #A3AEC2; text-align: right; white-space: nowrap">{{r.kg}}</span></button>
-<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 13px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
+<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.hasGive}}"><sc-mount is="give-inline" props="{{r.give}}"></sc-mount></sc-if><sc-if value="{{r.noActs}}"><span style="font-size: 13px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div>
 <sc-if value="{{hasPlot}}" hint-placeholder-val="{{false}}"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 4px">PLOT ITEMS</span>
 <div role="list" aria-label="Plot items" style="display: flex; flex-direction: column; gap: 4px">
@@ -197,10 +197,6 @@
 <span style="font-size: 13px; color: #A3AEC2; text-align: right; white-space: nowrap">{{r.kg}}</span></button>
 <sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 13px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div></sc-if>
-<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-<span style="font-size: 13px; line-height: 1.4; color: #7F8BA1; flex: 1 1 160px">{{eoe.why}}</span>
-<button type="button" disabled="{{eoe.locked}}" tip="{{eoe.why}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #232D3F; background: transparent; color: #7F8BA1; font-family: inherit; font-size: 13px; font-weight: 600">Crack the Essence</button>
-</div>
 </sc-if>
 </section>
 <sc-if value="{{mk.has}}" hint-placeholder-val="{{false}}"><section aria-label="Make" data-phc-make="{{mk.charId}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D">

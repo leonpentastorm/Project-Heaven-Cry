@@ -161,10 +161,10 @@ A **Legendary Deed**, at the Narrator's call, grants **1 Attribute point**, and 
 | Essence: one Essence of Experience absorbed | 100 |
 | Bond: your rival reaches a new level (Rival trait, both ways) | 50 |
 
-**Essence of Experience** is experience sealed in mana: an item worth 100 XP to whoever absorbs it. It weighs nothing, sells for 300 credits, and every character starts with one.
+**Essence of Experience** is experience sealed in mana: an item worth 100 XP to whoever absorbs it. It weighs nothing, sells for 300 credits, and every character starts with one. *(rules 1.55 item 57: its price is 600 PROVISIONAL and it sells at the shop's sell rate like anything else.)*
 
-- **Cracking it** takes someone with Mastery 2 (5 points) in the skill that drives their focus: **Brain Power with an Evoker**, or **Will Power with an Emanator**. It takes 10 minutes out of combat.
-- **Absorbing it:** whoever cracks it chooses who takes the XP: themselves or a party member present. A character can absorb **one per long rest**.
+- **Cracking it** takes someone with Mastery 2 (5 points) in the skill that drives their focus: **Brain Power with an Evoker**, or **Will Power with an Emanator**. It takes 10 minutes out of combat. *(Superseded by rules 1.55 item 59: any focus in a hand, no skill minimum.)*
+- **Absorbing it:** whoever cracks it chooses who takes the XP: themselves or a party member present. A character can absorb **one per long rest**. *(rules 1.55 item 59: one per rest, the engine's per-rest window.)*
 - Essence XP counts toward the Narrator's pacing target. It is tagged `essence`, so traits that change combat or dialogue XP don't touch it.
 
 ## Derived stats
@@ -959,8 +959,8 @@ Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanc
 | Standard mana core (spec) | 150 (small 75, heavy 300) |
 | Chalk and wax | 15 |
 | Prayer beads and incense | 20 |
-| Essence of Experience (spec) | 300 |
-| Selling | Shops buy at 40% of price; the Essence sells for its full 300 (spec) |
+| Essence of Experience (spec) | 300 *(rules 1.55 item 57: 600 PROVISIONAL)* |
+| Selling | Shops buy at 40% of price; the Essence sells for its full 300 (spec) *(superseded: rules 1.42's sell rate for everything, the Essence included; rules 1.55 item 57)* |
 
 
 ### Weapon mastery
@@ -1076,12 +1076,12 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 
 Guard is a pool of points that takes hits for you. Anyone with Durability has one. Every number here is provisional (techniques.json `rules.guard`; items 991 to 1003).
 
-1. **The pool.** Its size is your Durability points, 5 at most *(4 since rules 1.55, 0.28.3-T.4)*. A fight starts with 0 Guard and what you hold is lost when the fight ends. The Defender's own pool (5; the same `rules.guard.max`, so 4 since 0.28.3-T.4) stands when it is the larger, and the Defender's class moves are unchanged.
-2. **Gaining Guard.** The **Guard technique** gives 1 Guard, +1 for each Durability point above the first, +1 more with a shield in the off hand: Durability 1 gives 1, Durability 3 gives 3, Durability 3 with a shield 4 (the pool of 3 holds 3 of it). The **Brace action** (1 AP) gives a flat 2 Guard, 3 with a shield. Never above the pool. With a Guard pool you may Brace with any weapon; Brace is still once until you move. *(Rules 1.55, 0.28.3-T.1: the Guard technique is Durability's own and is yours with any weapon in the hand, so a tank with a gun can take Guard every turn.)*
+1. **The pool.** Its size is your Durability points, 5 at most *(4 since rules 1.55 item 74)*. A fight starts with 0 Guard and what you hold is lost when the fight ends. The Defender's own pool (5; the same `rules.guard.max`, so 4 since rules 1.55 item 74) stands when it is the larger, and the Defender's class moves are unchanged.
+2. **Gaining Guard.** The **Guard technique** gives 1 Guard, +1 for each Durability point above the first, +1 more with a shield in the off hand: Durability 1 gives 1, Durability 3 gives 3, Durability 3 with a shield 4 (the pool of 3 holds 3 of it). The **Brace action** (1 AP) gives a flat 2 Guard, 3 with a shield. Never above the pool. With a Guard pool you may Brace with any weapon; Brace is still once until you move. *(Rules 1.55 item 71: the Guard technique is Durability's own and is yours with any weapon in the hand, so a tank with a gun can take Guard every turn.)*
 3. **Bracing for Guard is not bracing the weapon.** A weapon that had the Brace action before rules 1.13 (one that must be braced, one at −2 unbraced, one whose skill is a braced bonus) is set as before: Recoil halved, its penalties gone, its techniques' Braced lines open. With any other weapon, Brace sets only you: you gain the Guard and stand in the braced stance that class moves ask for, and nothing else. The Brace technique (ranged, 16) still sets such a weapon where its own rule allows.
-4. **Guard soaks.** When a hit would take HP, each Guard point takes 6 damage off it *(rules 1.55, 0.28.3-T.2; was 10)* and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
+4. **Guard soaks.** When a hit would take HP, each Guard point takes 6 damage off it *(rules 1.55 item 72; was 10)* and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
 5. **Pressure comes off Guard first:** each point of Pressure that would land on you costs 1 Guard instead, with no reaction, while you have any.
-5a. **The tank hits through its door** *(rules 1.55, 0.28.3-T.3)*: while you hold Guard, your weapon attacks roll with Durability's modifier in place of the weapon's own skill modifier when Durability's is higher. It replaces the weapon skill's modifier, never adds to it.
+5a. **The tank hits through its door** *(rules 1.55 item 73)*: while you hold Guard, your weapon attacks roll with Durability's modifier in place of the weapon's own skill modifier when Durability's is higher. It replaces the weapon skill's modifier, never adds to it.
 6. **Momentum.** A hit on a unit that holds Guard points costs it no Momentum. *(See item 1004: the engine asks that Guard soaked part of the hit.)*
 7. **Interpose (Durability 3).** An Answer everyone with Durability 3 has, whatever is in the hands: when an ally next to you is hit by an enemy's attack, spend 1 Guard and your reaction to take the hit instead. The damage is worked out again against you, so your armour applies; your shield and the Guard you have left then soak it. A critical hit's injury follows the hit to you. It works while Suppressed (it protects). You switch it off like any Answer.
 8. **The Defender.** A Defender Interposes by the class move (and that move's policy), not by the Answer. A Defender with Reactive Plate spends Guard through the plate and its policy (spend what it takes, keep 1, off); the soak of rule 4 stands aside for that unit, so Guard is never spent twice on one hit.
@@ -1492,7 +1492,7 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 | A Sigil mage vents | + the Flux vented |
 | A Defender loses 3 Guard to reactive plate | +2 |
 | An enhanced round hits | +1 |
-| Syphon | −2 |
+| Syphon | −2 (refused when the meter can't pay it: rules 1.55 item 47) |
 | A Soul spell is cast | − its final mana cost ÷ 10, rounded up |
 | Crystallise | −10 |
 | A prayer | −5 |
@@ -1796,7 +1796,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
    3. **Tending others:** your first heal, stim, shield or cleanse given to an ally each turn: −1. Only the first counts, even one given at Strain 0.
    4. **Let it go** (free, on your turn): drop the held Outburst without releasing it: Strain falls by **its stage**, but **never by more than the Strain its swells cost** (stages bought with AP, free Pumps, Feeding or a perk give nothing back: Pump-then-let-go would otherwise be a vent; item 541); the built power is lost (a harmless violet sigh, the mana meter +1).
    5. **Steady the heart** (1 AP, only while holding): −1 Strain, and the held Outburst **doesn't swell** at the start of your next turn. Growth traded for safety: keep a charged heart ready (for Heart Overwatch or the right moment) without drifting over the limit. (Leon, 8 Nov 2026: the first draft, Breathe for 2 AP with a Strain debt, was a net zero for 2 AP.)
-6. Strain and a held Outburst reset after combat. **Syphon** (1 AP) still draws the air into MP (see the meter table, × your Mana Syphon bonus). **Crystallise** (3 AP, the meter at 10 or more) still turns the air into a core (the meter −10).
+6. Strain and a held Outburst reset after combat. **Syphon** (1 AP) still draws the air into MP (see the meter table, × your Mana Syphon bonus); any MP focus in hand can (an Emanator or an Attuner), and the meter must be able to pay its −2: an empty meter gives nothing (Superseded in part by rules 1.55 items 47 and 48). **Crystallise** (3 AP, the meter at 10 or more) still turns the air into a core (the meter −10).
 
 #### 4. Designs, schools and the second school
 
@@ -4625,15 +4625,15 @@ profile: Insight and Empathy, 0.06 a point each, k 1.573) × the level factor (`
 | --- | --- | --- | --- |
 | Bond | 1 AP | Empathy 1 | section 2, rule 1 |
 | Let go | 0 AP | Empathy 1 | end one of your Bonds |
-| Mend | 2 AP, 8 MP (6 from Empathy 9) | Empathy 1 | R3 heal 3.75; on yourself once a turn (no through, no Trace) |
-| Touch | 2 AP, 8 MP (6 from Empathy 9) | Empathy 1 | an adjacent ally: heal 4.3 |
-| Settle | 1 AP, 5 MP | Empathy 1 | R3 or yourself: +2 on Body, Brain and Heart saves until your next turn |
-| Soothe | 1 AP, 6 MP | Empathy 1 | R3 or yourself: end the newest harmful Body condition (Heart too from Empathy 5; two from Empathy 7) |
-| Shield | 2 AP, 10 MP (8 from Empathy 9) | Empathy 2 | R3: a shield of 4.5 on the base layer (the larger stands) |
-| Raise | 1 AP, 12 MP | Empathy 3 | a Downed ally adjacent or Bonded in sight stands at 1.9 (at least 1 HP); once a turn |
-| Guide | 1 AP, 5 MP | Empathy 4 | R3: the ally steps up to 2 tiles (3 from Empathy 7) to a tile you pick; willing; provokes nothing |
+| Mend | 2 AP, 24 MP (18 from Empathy 9; rules 1.55 item 46) | Empathy 1 | R3 heal 3.75; on yourself once a turn (no through, no Trace) |
+| Touch | 2 AP, 24 MP (18 from Empathy 9) | Empathy 1 | an adjacent ally: heal 4.3 |
+| Settle | 1 AP, 15 MP | Empathy 1 | R3 or yourself: +2 on Body, Brain and Heart saves until your next turn |
+| Soothe | 1 AP, 18 MP | Empathy 1 | R3 or yourself: end the newest harmful Body condition (Heart too from Empathy 5; two from Empathy 7) |
+| Shield | 2 AP, 30 MP (24 from Empathy 9) | Empathy 2 | R3: a shield of 4.5 on the base layer (the larger stands) |
+| Raise | 1 AP, 36 MP | Empathy 3 | a Downed ally adjacent or Bonded in sight stands at 1.9 (at least 1 HP); once a turn |
+| Guide | 1 AP, 15 MP | Empathy 4 | R3: the ally steps up to 2 tiles (3 from Empathy 7) to a tile you pick (a second pick after the ally; rules 1.55 item 45); willing; provokes nothing |
 | Share a Hit | reaction (protect) | Camaraderie 1 | an adjacent ally (a Bonded ally in sight from Camaraderie 5) is hit: you take 25% + 5% a point of Camaraderie of it (at most 50%); no focus |
-| Field Surgery | out of a fight, a field kit, 15 MP | Empathy 3 | treat one limb injury or clear every Body condition; once an ally a scene |
+| Field Surgery | out of a fight, a field kit, 45 MP | Empathy 3 | treat one limb injury or clear every Body condition; once an ally a scene |
 
 Stim Throw is a gear action anyone has (1 AP, a stim, an ally within 4 you see). Songs stay gear and traits. Items
 2015 to 2024.
@@ -4642,7 +4642,7 @@ Stim Throw is a gear action anyone has (1 AP, a stim, an ally within 4 you see).
 
 Empathy: the door at 1 (Bond, 1 Bond held, Mend, Touch, Settle, Soothe, the passives of section 2); Shield at 2; Raise,
 Field Surgery and Feel Their Pain at 3; Guide at 4; 2 Bonds, Soothe reaches Heart, Mercy at 5; Bond made within 9 at 6;
-Soothe ends 2, Guide 3 tiles, a perk step at 7; 3 Bonds at 8; Mend, Touch and Shield 2 MP cheaper and a perk step at
+Soothe ends 2, Guide 3 tiles, a perk step at 7; 3 Bonds at 8; Mend, Touch and Shield 6 MP cheaper (rules 1.55 item 46; it was 2) and a perk step at
 9; the Mastered perk and ally Bonds that hold while Downed at 10. Healing given grows 0.06 a point throughout.
 **Empathy's free Pump (from 3) and the held Outburst's swell without Strain (from 7) move to Will Power** at the same
 points (`soul_modules.json cycle`). Anyone with Empathy 1 can feel (rules 1.8's feelings); a character who first gains
@@ -4657,12 +4657,12 @@ unit it sees); six moves. Supplies are no longer the class's resource; its resou
 
 | Rank | Move (key) | Cost | Effect |
 | --- | --- | --- | --- |
-| I | Triage (`medic.triage`) | 2 AP, 6 MP | an adjacent or Bonded ally in sight: heal 4.3 and end Bleeding; once an ally a turn; out of a fight ×3, once an ally a scene |
+| I | Triage (`medic.triage`) | 2 AP, 18 MP (rules 1.55 item 46; it was 6) | an adjacent or Bonded ally in sight: heal 4.3 and end Bleeding; once an ally a turn; out of a fight ×3, once an ally a scene |
 | I | The Ledger (`bard.ledger`) | passive | every heal you give that restores HP and every shield you give, to an ally or yourself, is counted (at most 15.5 × Healing given × level); your next damage to an enemy by your own blow, any weapon or door, adds 0.7 × the Ledger before armour and empties it; a miss spends nothing; it empties at a fight's end |
-| II | Inspire (`bard.inspire`) | 1 AP, 10 MP | a Bonded unit in sight: give it a feeling you have felt (section 6) |
+| II | Inspire (`bard.inspire`) | 1 AP, 30 MP (rules 1.55 item 46; it was 10) | a Bonded unit in sight: give it a feeling you have felt (section 6) |
 | II | Take the Weight (`bard.take_the_weight`) | reaction (protect) | a Bonded ally in sight would go Down: it stays at 1 HP and you lose 15% of your max HP (true damage), only while above a quarter of your max HP; or a Bonded ally would be Stunned, Dazed or Afraid: you take it instead |
 | III | Brimming (`bard.mend`) | passive | Tending you give that heals past an ally's max HP leaves half the excess as a shield on it |
-| III | Rally (`bard.rally`) | 2 AP, 20 MP, once a scene | every Bonded ally wherever it is and every ally within 4 heals 3.1 and loses Fear and Shaken |
+| III | Rally (`bard.rally`) | 2 AP, 60 MP (rules 1.55 item 46; it was 20), once a scene | every Bonded ally wherever it is and every ally within 4 heals 3.1 and loses Fear and Shaken |
 
 `medic.stim_throw` and `medic.field_surgery` held by a Mender are dropped (both are everyone's); `res.supplies` is
 dropped; a Mender at rank I has Triage and the Ledger, Inspire comes at rank II. Items 2028 to 2034.
@@ -6037,12 +6037,12 @@ Leon (15 Nov 2026, before the playtest): *"lot's of the things like extra emmana
 
 ### The field after a won fight (Survival; Leon: "let people roam in the combat map to pick up stuff before voting to go back")
 
-7. **The field.** A won Survival fight does not go straight to its rewards: the run's state is **`field`**, between
+7. *(Partly superseded by rules 1.55 item 61 (0.28.3): the field is the fight still running; a character dead in the fight stands up when the field is left.)* **The field.** A won Survival fight does not go straight to its rewards: the run's state is **`field`**, between
    `fight` and `reward`. The fight's map stays, every character stands where its unit stood (a character dead in the
    fight stands up at 1 HP where it fell), and the piles stay as the fight left them: dropped magazines, thrown
    or stuck weapons (dropped where their target stood, rules 1.12), and whatever foes dropped (in Survival, materials:
    rules 1.54 item 3). PROVISIONAL.
-8. **Roaming is the Proving Ground's gearing up.** On the field the squad uses the same world actions with free
+8. *(Superseded by rules 1.55 items 61 to 64 (0.28.3).)* **Roaming is the Proving Ground's gearing up.** On the field the squad uses the same world actions with free
    movement: walk (`world/act` move, `story/move`), open a door, and pick up (`world/act` pickup, a whole pile in one
    action by default, a selection if given). No rounds, no turn order, AP always full after each action (a walk is
    still one action's reach). Nothing else is done on the field (an attack, a search, a carried body: refused in
@@ -6174,18 +6174,18 @@ in combat so you can reload, stim your friend, syphon, shit like that"*. The lea
    its heal and its stabilise, one copy), from the user's count, as if the two stood side by side; a Downed character
    is stabilised at 1 HP, anyone else healed as by a stim in a fight. On the field it is used as in a fight: walk next
    to the friend.
-33. **The field is a free fight without enemies (R3).** While the squad walks the field (item 7), every action a
+33. *(Superseded by rules 1.55 items 61 to 64 (0.28.3): every action is the fight's own.)* **The field is a free fight without enemies (R3).** While the squad walks the field (item 7), every action a
    character has on an area map is offered and works as there: reload (speed or tactical, one hand or both), load a
    magazine, clear a jam, Field Repair, prone, stim a friend, Analyze and read a glyph, every Sigil and Soul action
    (draw, Evoke, scuff, vent, swap a core, Begin, Pump, Release, Let go, Steady, Feed, Heart Overwatch, Syphon,
    Crystallise), prayers, and the perks', traits' and class moves' actions (`world/act` perk), paying what they cost
    (rounds, items, cores, MP, Flux, Strain, Echo, the mana meter). AP never limits: it is full after every action. An
    attack has no target (nothing hostile is left): it is refused in words. Gear changes work as anywhere in a run.
-34. **What stays spent.** A once-a-fight use spent in the fight stays spent on its field; a once-a-scene, once-a-session
+34. *(Superseded by rules 1.55 items 62 and 64 (0.28.3).)* **What stays spent.** A once-a-fight use spent in the fight stays spent on its field; a once-a-scene, once-a-session
    or once-a-rest use stays as it was (they live on the character). A wait counted in rounds (a Hymn's wait, a
    cooldown) does not count down on the field: the rounds a fight's wait had left are what it has left on the field.
    A once-a-round or once-a-turn use can be made once on the field (its round never ends there).
-35. **What is refused on the field.** An action that would be free without limit on the field is refused, in words:
+35. *(Its resource test superseded by rules 1.55 item 64 (0.28.3).)* **What is refused on the field.** An action that would be free without limit on the field is refused, in words:
    one whose use is at will (no once-a-fight, once-a-round or longer limit), whose every cost besides AP is one the
    area map does not carry back to the character (a resource not in `survival.json field.carried_res`), and which
    either gives something lasting (an op of `field.lasting_ops`: healing, a resource, a taken item) or states no
@@ -6193,7 +6193,7 @@ in combat so you can reload, stim your friend, syphon, shit like that"*. The lea
    to rule (0.28.2 hand-off). Prayers are not refused by this item (their own slots and waits limit them). The lead
    (0.28.2 review): the actions this rule refuses as doubtful (37 in 0.28.2) stay refused for now; an explicit field
    flag on each action in the data, read in place of this guess, is planned for 0.29.
-36. **What the fight's end clears is cleared when the field closes.** When the squad leaves the field, what a fight's end
+36. *(Superseded by rules 1.55 item 65 (0.28.3): the fight itself ends when the field is left.)* **What the fight's end clears is cleared when the field closes.** When the squad leaves the field, what a fight's end
    clears is cleared for what was done on the field (Strain, a held Outburst, conditions, shields: `magicOut` after a
    fight; Flux, rules 1.51), and the field's use counters go; the field's piles stay behind as before. *(What the fight
    itself left is still cleared as the field opens, as in 0.28.1: deferring the fight's own end to the field's close is
@@ -6215,7 +6215,7 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    attack is; nobody is hurt. One check, where harm is applied to a unit (`harmHeld`, effects/hooks.ts, read by
    applyDamage and applyCond); your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. A
    spell that misses hurts nobody and is not refused.
-39. **The field has the fight screen's actions.** Walking the field, the fight screen's own action bar and cards are
+39. *(Superseded by rules 1.55 items 61 and 67 (0.28.3).)* **The field has the fight screen's actions.** Walking the field, the fight screen's own action bar and cards are
    the field's: the same descriptors (descriptors.ts) read the field as a fight state (`fieldCombat`: the squad where
    it stands on the fight's map, AP full, no turns), with their targets and tile picks; the action a card sends is
    done as the area map's action (item 33), and the reducer's field verdict (items 33 to 38) is the refusal the card
@@ -6223,7 +6223,8 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    words. There are no turns: End turn is not offered.
 40. **The Give control.** On the path map the right panel has a Give module (data/modes.json `panels`: `give`), the
    places' Give tab; the backpack line's Give has the same stepper (how many, one at a time) before the button.
-41. **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 34): there
+   *(Superseded by rules 1.55 item 54: the amount control, a typed number with −100 to +100 steps and MAX.)*
+41. *(Superseded by rules 1.55 item 66 (0.28.3).)* **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 34): there
    every once-a-fight use counts as spent (the safe side). Read in the one counter door (effects/uses.ts).
 42. **Counted items are data.** Which items a character keeps as a count (item 31) is `counted` on the item's row of
    items.json (the count's field: `stims`, `essence`), read once (`COUNTED`, data.ts; the validator checks it).
@@ -6236,12 +6237,201 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    side would have their chips' words run into each other, the chip shows the rung's short form (`short` on each rung
    of `combat.health_look.ladder`, PROVISIONAL: ok, scr, hurt, bad, dying; down and dead are short already); the
    engine's `healthView` gives both, and the screen picks by measured width only. The full word everywhere else.
-44. **The field's token is the character** (item 4133; the two-player playtest, 15 Nov 2026: a stim used on a friend
+44. *(Superseded by rules 1.55 item 61 (0.28.3): the field's tokens are the fight's units.)* **The field's token is the character** (item 4133; the two-player playtest, 15 Nov 2026: a stim used on a friend
    on the field healed the character, but the friend's token kept the old HP: the field wrote to the character, and a
    token not walked onto the field read the finished fight's unit). The field's one door for its actions
    (`fieldWorld`, game.ts) now writes back to that unit after every action what a token draws (HP, Max HP, Downed,
    conditions, shields, MP), read from the character as the field builds it (`storyCb`), so the token, its bar and the
    sheet agree; the fight's record (initiative, kills) stays.
+45. **Guide picks the tile** (item 4134; Leon's playtest on 0.28.2: "Guide does not work"). Guide (rules 1.33) moves
+   the ally to a tile its Bonder picks, but its card asked only for the ally and sent no tile: the engine took the AP
+   and the MP and nobody moved, with nothing said. A verb aimed at a unit whose own op moves that unit to the event's
+   tile (`displace` with `to: "tile"`) now takes the tile as a second pick after the unit: the tiles it may step to are
+   shaded (free to stand on, no trap, seen by you, at most the op's `tiles` from the ally), and until a legal one is
+   picked the action is refused in words ("Now click the tile Kade steps to.", "Too far for Kade (2 tiles).", "No room
+   there.", "You can't see that tile.") before anything is paid. The step is said in the log. No new number.
+46. **Healing costs three times the MP** (item 4135; Leon's playtest on 0.28.2, as the Empath with the Attuner: "Bond
+   healing is good but MP is tiny, need to be raise at least 3x", and then what he meant: "by mp is tiny i meant bond
+   healer have way too many fucking heal, they carry the weak as shit tank in my run"). The cost of healing is what was
+   tiny: every Tending verb's MP and every Mender move that spends MP is three times its 0.28.2 price, so a full bar
+   holds a third as many heals and no cheap heal is left as the obvious pick: Mend, Mend Yourself and Touch 24 (were
+   8), 18 from Empathy 9 (was 6); Shield 30 (was 10), 24 from Empathy 9 (was 8); Settle 15 (was 5); Soothe 18 (was 6);
+   Raise 36 (was 12); Guide 15 (was 5); Field Surgery 45 (was 15); Triage 18 (was 6); Inspire 30 (was 10); Rally 60
+   (was 20). AP costs, heal and shield sizes and Max MP (rules 1.24) are unchanged. Every action card and bar button
+   of these shows its MP beside its AP, from the engine's cost site, and a bar too low is refused "Needs N MP (you
+   have M)." PROVISIONAL (`data/tending.json` each verb's `res.mp`; `data/classes.json` Triage's, Inspire's and
+   Rally's `res.mp`).
+47. **Syphon has a floor** (item 4136; the lead's ruling, 15 Nov 2026): Syphon takes its draw from the ambient meter
+   (`rules.json mana.meter.events`, the `syphon` row) and is refused when the meter can't pay it ("The air here is
+   spent: nothing to Syphon."). The meter is the limit, shared by the party. PROVISIONAL.
+48. **Any MP focus can Syphon** (item 4137): Syphon reads the mp resource row's `needs` (an Emanator or an Attuner in
+   hand), so a Mender with an Attuner Syphons; with the focus only in the pack the button is greyed and says why.
+   Crystallise still needs an Emanator.
+49. **The camp reads as a checklist** (Leon, 15 Nov 2026: "nobody understand shit, i have players only realizing
+   you can take a free weapon 3 runs in"). The camp's screen is three steps in order: STEP 1 the free weapon, STEP 2 the
+   free focus (only for a character with a point in a focus's door skill: the same test the Recommended loadout uses),
+   STEP 3 the budget. The free picks are no longer drawn among priced shelves: their cards carry FREE where a price
+   would be. The place header is the checklist (each step's state in words: NOT PICKED or the name taken; the budget
+   left of the total) and the button that moves on. "Not sure? Take the recommended kit" is the first thing in the body,
+   with one line naming what it gives. Moving on (to the starting boon, or Ready) with a free pick not taken asks first
+   in plain words ("You have not taken your free weapon. It costs nothing."); starting without one stays allowed. The
+   engine's camp view says which cards are free (`free` on a card), what each free pick holds and whether it is still
+   open (`freePicks`), and what the Recommended loadout gives (`recommended`). No rule changed. PROVISIONAL (the layout).
+50. **A shield at the camp** (Leon, 15 Nov 2026: "first weapon shop have no shield for tanks"). The camp's gear
+   shelf (`survival.json loadout.stock`) lists the Buckler at its shop price (priceOf, within the budget; the Legion
+   riot shield and the Pavise cost more than the budget and are not listed, rule 1.55). A bought off-hand item goes in
+   the off hand through the one equip rule (character.ts `equip`, 'off'): one at a time; refused in words beside a
+   two-handed weapon ("Buckler: your main-hand weapon needs both hands.") or when the free focus already holds the off
+   hand. The Recommended loadout is data by profile (focus fuel, gun or melee), not by archetype, so it does not add a
+   shield (superseded by item 51). PROVISIONAL.
+51. **The tank's Recommended kit** (Leon, 15 Nov 2026: "durability tank is crazy weak ... survival do not give
+   you one"). The Recommended table (`survival.json loadout.recommended.weapon`) is read top down and its first fitting
+   row gives the kit. A row may be keyed by `top`: an alpha skill (a door) with points and no fewer than any other
+   alpha skill. A row may give `hands` (1H or 2H) instead of an archetype: its weapon is the free weapon of that many
+   hands the character may carry whose skill it has the most points in, a tie to the dearer by priceOf. `focus: false`
+   takes no free focus; `profile` names the row's buys. The first row: Durability on top, a one-hander, no focus, the
+   `tank` buys (the Buckler, then Class 1 armour, then a stim, each while the budget pays; at a budget of 300 the
+   Buckler at 200 leaves no room for the armour at 150). Every other character's kit is unchanged. PROVISIONAL (the row,
+   the buys).
+52. **A focus behind a shield, in words that help.** With an off-hand item held, taking the free focus is refused
+   with "Your off hand holds the Buckler. Put it back to take a focus." (run/loadout.ts rebuild, the one place the
+   camp's refusals are worded); the other way round keeps "Buckler: the off hand already holds the Evoker."
+53. **The Recommended button tells the truth.** The camp view's `recommended.why` is the reducer's own refusal
+   for that kit (the same trial the cards use), or null; with one, the button is greyed and shows the reason.
+
+Items 54 to 60, release 0.28.3 (Leon, playing live 0.28.2, 15 Nov 2026: *"Give menu need +10, +100, max and editable number, giving
+credit is nightmare"* and *"Essense of esperience need to be crackable by all 4 focus type and sellable currently it is
+not"*; the lead's rulings), PROVISIONAL:
+
+54. **The amount control.** Every place an amount is chosen for a give (the places' Give tab, the path map's
+   Give module, the backpack line's Give; credits and quantities alike) and the shop's Sell quantity use one control: a
+   number field you type into (kept between 0 and what you hold; anything not a number is ignored; Enter confirms),
+   buttons −100, −10, −1, +1, +10, +100 and MAX (one that cannot apply is greyed), and the total held ("of 1,240"). In
+   the narrow right panel it wraps to two rows. The client sends the same give (or sale) with the amount; the engine
+   judges it (a whole number from 1 to what is held: 0, a negative, more than is held, not a number and an absurd
+   amount are refused in words; a fraction is rounded to the nearest whole) and its refusal shows under the field.
+   Supersedes item 40's stepper.
+55. **Never stocked and never sold are two facts.** `stock: false` on an item row: no counter, rolled stock,
+   reward, loot or camp pool holds it (it has no price to buy at). `sell: false`: no shop buys it. A sale is priced by
+   the one price door (credits.ts `priceOf`) in its sale mode, which reads `sell: false` and not `stock: false`; a row
+   with no price is never sold either. Every row that was `stock: false` before keeps `sell: false` (the armourer's
+   chit, the items traits grant, the documents, the contraband, the grimoire) except the Essence of Experience. An item
+   a trait grants is never sold (the validator checks it).
+56. **Counted items are sold.** A sale (`run/sell`) takes a counted item (item 31: `count`, its item id, as a
+   give does) and a quantity; the shop's Sell list shows every counted item the character holds that has a price (a
+   stim, an Essence), each at the shop's sell rate (`survival.json sell_rate`).
+57. **The Essence's price.** `price_credits` 600 (PROVISIONAL; it was 300): it sells for 150 at the sell rate of
+   0.25. It is never on a shelf (`stock: false`): it comes from a Boss's notable table and the one a character starts
+   with.
+58. **Using a counted item is one action.** `gear/use {charId, item, targetId}` uses one of a counted item the
+   character holds on itself or on a party member, out of a fight (the path map, a place, the field, the rewards; in a
+   fight it is refused in words; at the camp gear is the loadout's, rules 1.54 item 1). The item's row says how
+   (`use`: the button's `label` and `via`): `via: "stim"` is item 32's stim (the same `world/act` stim and its one rule,
+   `useStim`: off a map as if the two stood side by side; on the field, which is the fight still running (item 61),
+   the fight's own `combat/stim` next to the friend); `via: "effects"` runs the
+   row's `effects` through the use ops (today `xp_grant`: the one XP door, `giveXp`, with the effect's value and
+   source). `requires_to_use` on the row is what the user needs, each entry must hold (`holds`: a hand or person spec,
+   as a recipe's tool; `skill` and `min`; `any_of`), its `why` the refusal; an effect's `limit` (`per`, `n`: a scope
+   of effects/uses.ts) is counted on the one who receives it. The Give view's "Use on…" sends it.
+59. **Cracking the Essence.** Any focus in a hand cracks it (`holds` door `any`: an Evoker, an Emanator, a
+   Visualizer, an Attuner, and any focus row added later), with no skill minimum (the Brain Power 5 and Will Power 5
+   lines are dropped). The cracker picks who absorbs it, themselves or a party member, and that one gains its XP
+   (`effects.0.value`, 100, tagged `essence`), at most one per character per rest (`per_rest`: the window every rest
+   opens, short or long, and a new session). A character with no focus can still give it or sell it.
+60. **The money loops** (checked for 0.28.3): an Essence is never bought (no price in the buy mode: no shelf,
+   reward, camp or Crossroads line holds it), so selling it at 150 creates nothing beyond the drop it came from; a
+   give moves the count from one character to the other (nothing is copied); a sale and a crack each take one from
+   the count, so one Essence pays either 150 credits or 100 XP, once. A stim sells for 20 of its 80.
+
+### The field is the fight, still running (release 0.28.3)
+
+Leon (15 Nov 2026, playing live 0.28.2), verbatim: *"cannot bond in field map after battle"* and *"ZERO effect are
+played in field map afftle battle please just write it like a normal battle why do we have to invent bullshit
+state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
+
+61. **The field is the same fight, still running, with no enemies left.** When the last enemy of a Survival fight
+   falls, the fight is not closed and nothing is translated into the area map's actions: the run's state is `field`
+   (item 7), the game stays on the fight screen in the fight's own state (`Combat.field`, the one flag), and every
+   action is the fight's own (`combat/*`, the one combat reducer path), so every effect, animation, sound, log line
+   and number plays exactly as in a fight; Bond, every class move, technique, Call and prayer works; the tokens are the
+   fight's units. Only items 62 to 65 differ, each decided in one place.
+62. **No turn order** (game.ts `combatAction`). Any player's character, or a unit it owns, acts at any time (the acting
+   unit is the one the action names; the owner check stays). Ending the turn is refused in words ("No turns here:
+   act freely, then vote to leave."). Turns and rounds do not advance (`endTurn` and the enemies' turns do nothing), so
+   nothing that happens at a turn's or a round's start or end happens on the field: no death saves (a Downed character
+   stays Downed until a stim raises them), no held Outburst swelling, no Strain falling, no bleeding, no condition
+   ticking down, no hazard at a turn's start (stepping into one still hurts: it is the ground), no Overwatch or Heart
+   Overwatch going off (nothing hostile moves); a wait counted in rounds (a Hymn's wait, a cooldown) does not count
+   down. A once-a-turn or once-a-round use is usable once on the field: its turn and round are the killing turn's and
+   round's, so one already spent there stays spent (the lead accepts this). An off-turn window still open at the kill
+   is closed as the field opens.
+63. **AP never limits** (effects/cost.ts, the one cost site: `apFor` and `pay`). An action's cost is shown as listed
+   and is never refused for AP, and no AP is taken; a walk goes anywhere reachable in one move. Syphon and Crystallise
+   stay bounded by the meter (items 47 and 48): AP is free there, the meter is not.
+64. **What stays guarded, at the same gates.** A once-a-fight, once-a-scene or once-a-session use stays spent (the same
+   fight). Nothing learned by doing grows (item 37: `growthHeld` reads `Combat.field`). Nothing harms a friend (item
+   38: `harmHeld` reads `Combat.field`; the whole action is refused in words in `combatAction`). An item's action that
+   would be free without limit is refused in words (item 35, `fieldRefusal`, read in the fight's perk action): at will,
+   no resource cost at all (the fight's units really pay what they spend, so `field.carried_res` is gone), and a
+   lasting op (`field.lasting_ops`) or no effects the data states. An attack has nothing hostile to go at.
+65. **The fight ends when the party leaves** (`run/leave` and the vote, item 9, unchanged). The pay stays where item 10
+   puts it: XP and credits as the last enemy falls, the pick (`run/pick`, `run/take`) after leaving. The fight's
+   technical end moves to the leave: the fighters written back to their characters, vows and the fight's end hooks,
+   `magicOut` (Strain, a held Outburst, conditions, shields), Flux 0 (rules 1.51), a character dead in the fight
+   standing up at `dead_return_hp` (a level its XP brought while it lay dead adds no HP: it was dead when the level
+   came; it was 1 HP plus the level's rise), and the supply pack (it is written to the pack the fight writes back, so it comes
+   with the leave). A lost fight closes at once as before.
+66. **A save from 0.28.2's field** (the run at `field` with the story phase and no running fight) loads and can be left
+   (its old close: `magicOut` on the area map, Flux 0, the picks); every other action there is refused in words
+   ("Leave this field: ..."). This bridge (and the area map's reading of the old field, `zoneMap`) goes in 0.30.
+67. **The screen.** The field is the fight screen: the same action bar, cards and effect player, fed by the same
+   effects. End turn is not offered; in its place the words "No turns here: act freely, then vote to leave." The
+   initiative strip shows the party with no "NOW". The header holds what lies on the ground, Take all (the fight's
+   pickup) and the Leave vote, where they were.
+68. **Nothing harms a surrendered foe on the field; nobody moves a friend by force** (0.28.3; the lead's ruling, 15 Nov
+   2026): the field's one harm gate (item 64) also holds a unit that has surrendered, whatever its side: the action
+   that would hurt it is refused in the words "They have surrendered." A push, pull, shove or other forced move of a
+   friend, or of a surrendered unit, is harm there too and is refused the same way (a unit's own willing move, a swap
+   it chose, is not forced).
+69. **Two characters, one player** (0.28.3): on the field a player acts as the character they pick: a click on one of
+   their own tokens, or its card in the squad panel, makes it the one acting (the action bar, the sheet and the ring
+   follow it), unless the action being aimed takes that unit as its target. A Downed character can be picked for
+   what a Downed character may do (on the field, nothing: a friend's stim). The default is the player's first
+   character that can act, by the engine's own list of its actions.
+70. **AP on the field** (0.28.3): where the AP pips stand, the field shows the word "free" (AP never limits there,
+   item 63), not the AP left when the last enemy fell.
+
+### The Durability tank (release 0.28.3)
+
+**Leon on live 0.28.2, co-op Survival: "durability tank is crazy weak … the tank can't hit
+shit due to all skill point being in durability and his shield points block NOTTHING"; the measure and the fit:
+`docs/design/proposals/2026-11-tank-fit.md`.** Every number PROVISIONAL.
+
+71. **Guard is Durability's own technique, with any weapon.** The Guard technique (techniques.json `guard`,
+   1 AP, once a turn) is given by the skill (`innate`: Durability 1), as Interpose is, and is on the pad whatever the
+   hands hold (a gun's pad draws it after its own groups). Before, it was a melee Link: a tank with the camp's rifle
+   could only Brace, once until it moved, so Guard came 2 points a fight and Pressure ate them. A character with no
+   Durability still learns and readies it for a melee weapon, as before. Amends Guard rule 2.
+72. **Guard soaks 6 a point** (`rules.guard.soak` 10 → 6, × the level scale as before). With Guard taken every
+   turn, 10 a point took about four fifths of everything aimed at a level 1 all-in tank alone; 6 brings it to the
+   lead's band beside a partner (measured in Survival stage 1, level 1: 70% alone, 45% beside a gunner; Durability 3:
+   54% and 28%). Amends Guard rule 4 and item 993.
+73. **The tank hits through its door.** While you hold Guard (1 point or more), your weapon attacks roll with
+   Durability's modifier in place of the weapon's own skill modifier when Durability's is higher (skills.json
+   `durability.1`: op `roll_with` {skill durability, if_higher} on the attack, `if self_has_res guard`). It replaces,
+   never stacks: an all-in Durability 7 with 0 in the weapon's skill rolls +6 where it rolled −2; a character with 7 in
+   both rolls as before; Durability 1 with 0 in the weapon's skill rolls +0 (the better of the two). Damage is
+   unchanged. The attack's preview names it ("Hits with: Durability (holding Guard)") and the gear card adds the line
+   "Hits with: Durability (holding Guard) · +6" when it would apply. *(The lead's ruling, 15 Nov 2026: replaces the
+   first form, a `roll_mod` of +1 a Durability point above 3, at most +4, which stacked on the weapon's own skill.)*
+74. **Guard's pool holds 4 at most** (`rules.guard.max` 5 → 4; skills.json `durability.per_point.numbers.pool_max`
+   with it). The lead's lever to bring a solo tank nearer a solo gunner on stage 1 (measured in the proposal). Amends
+   Guard rule 1 and item 991.
+75. **The roll_with op** (`data/effect_ops.json`, a core item op on the trigger `attack`: fields `skill` (a skill
+   id, or a list: the best of them) and `if_higher`). While its `if` holds, the attack rolls with that skill's modifier
+   in place of the weapon's own skill modifier (with `if_higher`, only when it is higher; never added on top). One place
+   chooses the roll's skill (`combat.ts rollWithPick`): the roll, the attack's preview and the gear card read it. Any
+   item may carry it.
 
 ## Rules 1.56 (Balance 2.0), L1: the modifier carrier, Recoil 2.0 and weapon mods as data
 
@@ -6250,14 +6440,14 @@ Leon (15 Nov 2026), on the Balance 2.0 draft: Recoil 2.0 *"ok display them right
 hard a bullet hits"* (nothing here adds gun damage from the user). The lead's rulings of 15 Nov (build plan 0.29
 sections 9 and 10): fitted mods are held like a Relic's property; one helper reads a weapon instance's numbers; mods
 act on the gun they are fitted to in either hand; the foregrip is redesigned. A later revision overrides the body and
-the earlier ones; every new number here is PROVISIONAL (items 4134 to 4140).
+the earlier ones; every new number here is PROVISIONAL (items 4160 to 4166).
 
 1. **Recoil 2.0.** Every gun names its **Recoil** (`weapons.json` `recoil`): each shot after the first in a turn is at
    minus the gun's Recoil (with its mods') for each earlier shot, cumulative, reduced by floor(Dexterity ÷ 2)
    (`rules.json weapons_rules.recoil.dex_relief_per`), halved toward 0 while braced or Emplaced (`braced_mult` 0.5);
    none in a volley (a Burst's or full auto's own penalty stands instead), a reaction or full auto. Every gun 1 (as
    the old rule's −1), bows, crossbows and the core rifle 0; the draft's 2 for the long rifle, the battle rifle, the
-   hand cannon, the shotguns and the heavy weapons is a number for the P3 refit (item 4134), not set here. The old
+   hand cannon, the shotguns and the heavy weapons is a number for the P3 refit (item 4160), not set here. The old
    `no_recoil` property is retired into it (a bow is Recoil 0). The weapon card shows **Recoil a shot** (the gun's with
    its mods'). Overrides item 88, the Modifiers line (−1 a shot), and the Recoil paragraph of the attack rules. The
    Emplaced row's own recoil number is removed: the one formula halves it.
@@ -6355,7 +6545,7 @@ Leon (15 Nov 2026): *"weapon can be under or over the line, depends on their pri
 Release 0.28.2 (live) merged into 0.29. Its rules 1.55 items 27 to 44 stand as written; the XP of rules 1.55 items 27
 and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded into it). One change of form:
 
-1. **The counted items' field** (overrides rules 1.55 item 42's field name; item 4159). Which items a character keeps
+1. **The counted items' field** (overrides rules 1.55 item 42's field name; item 4185). Which items a character keeps
    as a count is `counts_into` on the item's row of items.json: `{count: stims | essence, at: first | last}` (the
    count's field on the character, and where the sheet lists it, before or after the pack lines), read once
    (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
@@ -6404,7 +6594,7 @@ Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 p
 
 Leon (15 Nov 2026, playtest): *"anything to spice up that class aside from some funny big number when you link more bond ?"* The design is `docs/design/proposals/2026-11-bonds-2.0.md` (with Leon's rulings of 15 Nov 2026 at its end); this is its first slice. Every number is PROVISIONAL and a field of `data/tending.json`; every item is `adjudication: engine`. A later revision overrides the body and the earlier ones.
 
-1. **Tug** (`tend.tug`; Empathy 1; 1 AP and 4 MP, with an Attuner in hand): pull a unit Bonded to you, anywhere you see, toward you. An enemy makes a Body save against your Empathy (the condition Reeled, which ends as the pull is made) and, failing, is pulled 2 tiles (a Boss 1); an ally comes willing, 3 tiles, with no save. It is forced movement like any pull (rules.json `forced_movement`): a hazard on the way works as for any pull, and what is immune to knockback is not moved.
+1. **Tug** (`tend.tug`; Empathy 1; 1 AP and 12 MP (4 before the 0.28.3 merge: three times, as rules 1.55 item 46 did for every Tending verb), with an Attuner in hand): pull a unit Bonded to you, anywhere you see, toward you. An enemy makes a Body save against your Empathy (the condition Reeled, which ends as the pull is made) and, failing, is pulled 2 tiles (a Boss 1); an ally comes willing, 3 tiles, with no save. It is forced movement like any pull (rules.json `forced_movement`): a hazard on the way works as for any pull, and what is immune to knockback is not moved.
 2. **Snap** (`tend.snap`; Empathy 1; 1 AP, no MP, once a turn, with an Attuner in hand): break one of your Bonds on purpose, anywhere you see. A Bonded enemy takes 3.0 × your Healing given (the `tend` profile, more as you level) as Soul damage, no armour, and is Dazed for a round (its own save, Body, against your Empathy); a Bonded ally heals 3.0 × your Healing given (Tending, so ×1.2 through the Bond it is breaking). Then the Bond ends.
 3. **The Mender's Snap.** The Ledger empties into a Snap first. Into an enemy it is a blow of its own, flat (not scaled by your Healing given or your level: `ledger_blow`, base 0, Soul, no armour), that the Ledger's rule (rules 1.33) fills at its own share and empties: one rule, not a second; the Bonds' bonus rides it as any blow of yours. Into an ally, the Ledger empties as a heal of 50% of it (`snap_ledger`, flat). The Snap's own heal comes after and is a heal you give, so it fills the Ledger as any does. (A Ledger cashed into the Snap's own `tend`-profile blow would be multiplied by the Healing given and the Level term: measured at 363% to 1163% of a rifle-turn for one Snap, so it is kept apart.)
 4. **Heartbeat, the no-Hide half: not built.** Hiding is not a condition put on through the condition door (tactics.ts `hide` sets the state directly), so the design's `cancel` on `cond_incoming` never hears it, and Traced's `always_seen` would also keep an enemy Bond alive out of sight. It waits for the lead's ruling on one general piece (see item 4246).
@@ -6722,36 +6912,6 @@ created; merged into the lane on 16 Nov 2026), every one `adjudication: engine`,
 Not in slice 1 (each needs a piece the engine lacks; the draft lists them): Weather the Volley (a blow's volley and its
 round are not on the damage), the shield's own swing and its follow-up (P9, P11), cover behind the tank (P10), the
 growth paths (P8), Hold the Gap (P9).
-
-**The Durability tank (0.28.3; Leon on live 0.28.2, co-op Survival: "durability tank is crazy weak … the tank can't hit
-shit due to all skill point being in durability and his shield points block NOTTHING"; the measure and the fit:
-`docs/design/proposals/2026-11-tank-fit.md`).** Every number PROVISIONAL.
-
-0.28.3-T.1. **Guard is Durability's own technique, with any weapon.** The Guard technique (techniques.json `guard`,
-   1 AP, once a turn) is given by the skill (`innate`: Durability 1), as Interpose is, and is on the pad whatever the
-   hands hold (a gun's pad draws it after its own groups). Before, it was a melee Link: a tank with the camp's rifle
-   could only Brace, once until it moved, so Guard came 2 points a fight and Pressure ate them. A character with no
-   Durability still learns and readies it for a melee weapon, as before. Amends Guard rule 2.
-0.28.3-T.2. **Guard soaks 6 a point** (`rules.guard.soak` 10 → 6, × the level scale as before). With Guard taken every
-   turn, 10 a point took about four fifths of everything aimed at a level 1 all-in tank alone; 6 brings it to the
-   lead's band beside a partner (measured in Survival stage 1, level 1: 70% alone, 45% beside a gunner; Durability 3:
-   54% and 28%). Amends Guard rule 4 and item 993.
-0.28.3-T.3. **The tank hits through its door.** While you hold Guard (1 point or more), your weapon attacks roll with
-   Durability's modifier in place of the weapon's own skill modifier when Durability's is higher (skills.json
-   `durability.1`: op `roll_with` {skill durability, if_higher} on the attack, `if self_has_res guard`). It replaces,
-   never stacks: an all-in Durability 7 with 0 in the weapon's skill rolls +6 where it rolled −2; a character with 7 in
-   both rolls as before; Durability 1 with 0 in the weapon's skill rolls +0 (the better of the two). Damage is
-   unchanged. The attack's preview names it ("Hits with: Durability (holding Guard)") and the gear card adds the line
-   "Hits with: Durability (holding Guard) · +6" when it would apply. *(The lead's ruling, 15 Nov 2026: replaces the
-   first form, a `roll_mod` of +1 a Durability point above 3, at most +4, which stacked on the weapon's own skill.)*
-0.28.3-T.4. **Guard's pool holds 4 at most** (`rules.guard.max` 5 → 4; skills.json `durability.per_point.numbers.pool_max`
-   with it). The lead's lever to bring a solo tank nearer a solo gunner on stage 1 (measured in the proposal). Amends
-   Guard rule 1 and item 991.
-0.28.3-T.5. **The roll_with op** (`data/effect_ops.json`, a core item op on the trigger `attack`: fields `skill` (a skill
-   id, or a list: the best of them) and `if_higher`). While its `if` holds, the attack rolls with that skill's modifier
-   in place of the weapon's own skill modifier (with `if_higher`, only when it is higher; never added on top). One place
-   chooses the roll's skill (`combat.ts rollWithPick`): the roll, the attack's preview and the gear card read it. Any
-   item may carry it.
 
 ## Maps (rules 1.16)
 
@@ -7253,7 +7413,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 43. **Weapon mastery thresholds** (5 / 15 / 40 / 80 / 140 kills), the attack bonus (+1 at level 2, +2 at level 4), a boss counting as 3 kills, and only XP-awarding fights counting. Check the pacing (Master around session 35 for a one-family character).
 44. **The 30 weapon perks** are all new.
-45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest.
+45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest. *(rules 1.55 items 57 and 59: price 600, sold at the sell rate; any focus in a hand cracks it, no skill minimum; one per rest.)*
 46. **One Blade** (Blade Recluse trait): "weapon mastery levels 25% faster" now means each kill with the named weapon's family counts as 1.25. *(Retired with weapon mastery by rules 1.12, item 947: the trait no longer promises it; the engine keeps the 1.25 as a record nothing reads (13 Nov 2026, item 1743).)*
 47. **Creation budgets restored** (archetypes spend all of them; their extra Attribute and Core placements are provisional too) (the 2020 EPCCG's 6 Core, 10 Attribute, 10 Skill points), with skills spending the Attribute and Core points they need automatically, no creation caps beyond the tree's own (so up to 7 in one Core, Attribute or skill), and (until rules 1.11 removed it, item 928) the exchange rate of 1 unspent Core point for 2 Attribute points (the 2020 line "one Core point represents two Attribute points", read as an exchange rate). Replaces 1.1's free automatic rise, which let builds spread across three Cores finish with up to 4 more Core points than single-Core builds.
 48. **Movement is tiles per AP** (Leon: moving 4 tiles costs 4 AP unless you have good Agility). Restores the 2020 rule: Movement 1 + 0.5 × (Agility − 1) tiles per AP, never below 0.5, paid-for tiles carry over within the turn. Replaces 1.1's "3 + 0.5 × (Agility − 1) tiles for 1 AP". Check the pace in playtest (an Agility 1 character spending 4 of 6 AP to cross 4 tiles), and the converted armour penalties (−0.5 / −0.5 / −1 Movement).
@@ -9235,9 +9395,9 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 988. **Nothing Gets Past** leaves the Spot mark of the holder's own level (at 10 points: two allies, +1 to hit, not Hidden to them), takes no Call slot on the enemy, and doesn't replace a Spot the enemy already carries. Not while the holder is Silenced or Stunned.
 989. **Into the Dark I** is once a fight: from the first walk onto a tile your side hasn't seen until your next turn starts. II is round 1 of a fight in a place that causes Fear. The area-map discount of item 121 is gone with the AP.
 990. **Open after the pass:** Siege Engine said "Shove and Break cost 1 AP less" when both had become techniques, priced by the technique core (the discount reached neither; settled in item 1005). Proven Formula counts conditions only (a spell's damage has no save). You Get Used to It's bonus is for the save against a condition, not a technique's or a story save. Chain Smoker's Light Up (+2 Composure for the scene) is a real Heart save bonus again: to watch.
-991. **Guard pool:** Durability points, 5 at most *(4 since rules 1.55, 0.28.3-T.4, PROVISIONAL)* (`rules.guard.max`, `per_durability`).
+991. **Guard pool:** Durability points, 5 at most *(4 since rules 1.55 item 74, PROVISIONAL)* (`rules.guard.max`, `per_durability`).
 992. **Guard gained:** by the Guard technique 1, +1 a Durability point above the first, +1 with a shield (`gain_base`, `gain_per_point`, `shield_gain`); by Brace a flat 2, 3 with a shield (`brace_gain`, `brace_shield_gain`; the lead's tuning of 10 Nov 2026: Brace first gave the scaling gain, and at Durability 5 one Brace for 1 AP filled the pool, 50 damage soaked). Brace is once until you move and the Guard technique once a turn; nothing else limits it.
-993. **Guard soaks 10 a point** *(6 since rules 1.55, 0.28.3-T.2)* (`soak`), after armour and after the shield of HP, with no reaction and no choice. **The last point is kept back** (`keep_back` 1; the lead's tuning) so a reaction is still payable, unless what gets through would take the unit down: then every point the hit needs is spent, whether or not that saves it.
+993. **Guard soaks 10 a point** *(6 since rules 1.55 item 72)* (`soak`), after armour and after the shield of HP, with no reaction and no choice. **The last point is kept back** (`keep_back` 1; the lead's tuning) so a reaction is still payable, unless what gets through would take the unit down: then every point the hit needs is spent, whether or not that saves it.
 994. **What a hit is for Guard:** anything that takes HP but a condition's tick and self-harm; friendly fire, traps, hazards and explosions are hits.
 995. **Anyone with a Guard pool may Brace with any weapon** (it was a heavy weapon's action). **The weapon's own benefits stay with the weapons that could brace before:** a unit that braces only for Guard gets the Guard and the braced stance (which class moves and the patron's "hold" tag read), not Recoil halved and not a technique's Braced line (`Unit.guardBrace`). A class move that braces (the Defender's Brace, Dig In) sets the weapon as it did before.
 996. **Interpose at Durability 3, 1 Guard** (`interpose_durability`, `interpose_cost`); a hit is an enemy's weapon attack on an ally within 1 tile; it may be used on your own turn (an enemy's reaction hitting an ally).
@@ -10253,7 +10413,7 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
-4128. **Items 4121 to 4133 are rules 1.55's** (4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
+4128. **Items 4121 to 4140 are rules 1.55's** (4134 to 4140: release 0.28.3: 4134 Guide's tile, 4135 healing's MP, 4136 and 4137 Syphon, 4138 and 4139 the field as the fight, 4140 the Durability tank; 4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
 4129. **XP a node pays (rules 1.55 item 27, 0.28.2; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
     `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
     simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
@@ -10269,88 +10429,111 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
    (PROVISIONAL). The engine's view (`healthView`) is the one place it is worked out; the screen draws its word.
 4132. **The token's short health word (rules 1.55 item 43):** `short` on each rung of `combat.health_look.ladder`: ok,
    scr, hurt, bad, dying (PROVISIONAL); a token at full HP shows no chip on the map.
-4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number).
+4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number). *(Superseded by item 4138.)*
+4134. **Guide's tile (rules 1.55 item 45):** a unit-aimed verb whose own `displace` goes `to: "tile"` asks for the tile after the unit; the legal tiles are at most the op's `tiles` from the unit, free, trap-free and seen. No number.
+4135. **Healing's MP (rules 1.55 item 46):** three times 0.28.2's: Mend, Mend Yourself, Touch 24 MP (18 from Empathy 9); Shield 30 (24); Settle 15; Soothe 18; Raise 36; Guide 15; Field Surgery 45; Triage 18; Inspire 30; Rally 60. Supersedes items 2015, 2016, 2029, 2031 and 2034's MP and the tables of rules 1.33 sections 3 and 4 as they were. PROVISIONAL.
+4136. **Syphon has a floor (rules 1.55 item 47; the lead's ruling, 15 Nov 2026):** Syphon takes its draw from the ambient
+   meter (`rules.json mana.meter.events`, the `syphon` row: 2) and is refused when the meter can't pay it ("The air here
+   is spent: nothing to Syphon."; the button greyed with that reason). No yield at an empty meter; no once-a-turn
+   limit: the meter is the limit (a Survival fight starts at 15, deaths raise it, the party shares it). For every MP
+   focus, the Emanator included. Measured (a Mender, 5 turns, no deaths): from 15 at most 7 Syphons, 120 MP for an
+   Empath (Insight 7, Determination 3); from 25 at most 12, 276 MP. Enemy Soul casters Syphon when short of MP
+   (`ai-soul.ts`); refused, they walk or shoot instead. PROVISIONAL.
+4137. **Any MP focus can Syphon (rules 1.55 item 48):** Syphon and its action row read the mp resource row's `needs`
+   (`data/actions.json`: an Emanator or an Attuner in hand), so a Mender with an Attuner Syphons; the gain goes through
+   `resGive`, capped at Max MP. With the focus only in the pack the row is greyed ("Needs an MP focus in hand (an
+   Emanator or an Attuner)."). Crystallise still needs an Emanator. PROVISIONAL.
+4138. **The field is the fight (rules 1.55 items 61 to 67, 0.28.3; PROVISIONAL):** no number changes. `survival.json
+    field.carried_res` is removed (item 64). The supply pack is given when the field is left (item 65), not as it
+    opens; XP, credits and the offers are given as before. The old field's machinery (the area-map translation, its
+    write-back and its use counters) is removed.
+4139. **The field's gates and screen (rules 1.55 items 68 to 70, 0.28.3):** no number. On the field Syphon and
+    Crystallise are bounded by the meter alone (items 4136 and the Crystallise row: 10 a core), not by AP.
+4140. **The Durability tank (rules 1.55 items 71 to 75, 0.28.3; PROVISIONAL):** `rules.guard.soak` 10 → 6 (amends item
+    993), `rules.guard.max` 5 → 4 (amends item 991), Guard given by Durability 1 (`innate`), and the new core item op
+    `roll_with` on `durability.1`. The measure: `docs/design/proposals/2026-11-tank-fit.md`.
+
 
 ### Rules 1.56 (Balance 2.0), L1
 
 The modifier carrier, Recoil 2.0 and the weapon mods as data (rules 1.56 body, items 1 to 5). Every number is
 PROVISIONAL.
 
-4134. **Recoil by gun** (rules 1.56 item 1): every gun 1 (the old −1 a shot), the four bows and the core rifle 0
+4160. **Recoil by gun** (rules 1.56 item 1): every gun 1 (the old −1 a shot), the four bows and the core rifle 0
     (`weapons.json recoil`, `rules.json weapons_rules.gear_fields.recoil` provisional). The draft's 2 for the long
     rifle, the battle rifle, the hand cannon, the four shotguns and the six heavy weapons is left to the P3 refit: set
     on L1 it turned the Survival replay guard red (seed PHC-0003, the stage-1 Boss: a braced Boss with no target in
     sight stands still and an Outburst caster Mana-Shorts itself every turn, 40 rounds), an enemy-AI and policy dead
     end the new dice reached, not a recoil rule. PROVISIONAL.
-4135. **The Dexterity relief and the braced share** (rules 1.56 item 1): floor(Dexterity ÷ 2) and ×0.5 toward 0, as
+4161. **The Dexterity relief and the braced share** (rules 1.56 item 1): floor(Dexterity ÷ 2) and ×0.5 toward 0, as
     before, now `weapons_rules.recoil.dex_relief_per` 2 and `braced_mult` 0.5. PROVISIONAL.
-4136. **The compensator** (rules 1.56 item 3; Leon "ok"): `recoil` −1 (was: all Recoil). PROVISIONAL.
-4137. **The foregrip** (rules 1.56 item 3): +1 to hit on Bursts and full auto with its gun (an item op), built and sold
+4162. **The compensator** (rules 1.56 item 3; Leon "ok"): `recoil` −1 (was: all Recoil). PROVISIONAL.
+4163. **The foregrip** (rules 1.56 item 3): +1 to hit on Bursts and full auto with its gun (an item op), built and sold
     at 150 (was not run, `built: false`). PROVISIONAL.
-4138. **The extended magazine** (rules 1.56 item 3): `magazine_pct` 50, every magazine of its gun (was the first one
+4164. **The extended magazine** (rules 1.56 item 3): `magazine_pct` 50, every magazine of its gun (was the first one
     only). PROVISIONAL.
-4139. **The scope's +1** is its own to-hit term, "Scope", on aimed shots with its gun; **the suppressor's −2** is on its
+4165. **The scope's +1** is its own to-hit term, "Scope", on aimed shots with its gun; **the suppressor's −2** is on its
     gun's shots only; **mods act in either hand** (rules 1.56 items 3 and 4). PROVISIONAL.
-4140. **Items 4134 to 4140 are rules 1.56 L1's.**
+4166. **Items 4160 to 4166 are rules 1.56 L1's.**
 
 ### Rules 1.56 (Balance 2.0), L2 special rounds by calibre
 
 Release 0.29 item D3 (the 0.28 review's leftover: "special rounds made at 2 gunpowder + 2 casings fit heavy guns").
-Lane L2 of the 0.29 build plan; items 4141 to 4147. Every number here is PROVISIONAL.
+Lane L2 of the 0.29 build plan; items 4167 to 4173. Every number here is PROVISIONAL.
 
-4141. **Special rounds belong to a calibre.** Armour-piercing, hollow-point and incendiary rounds (the items with an
+4167. **Special rounds belong to a calibre.** Armour-piercing, hollow-point and incendiary rounds (the items with an
     `ammo_type` and a `price_mult`) are carried, bought, made and loaded as rounds of one calibre: a pack line of that
     calibre with the round's type (`rounds:<calibre>:<type>`, the shape a typed arrow line already has). A gun loads
     and chambers (Load Special, `gear/ammo`) only special rounds of its own calibre. Enhanced rounds (no `price_mult`)
     are unchanged: their own item, their own price, any gun. Supersedes the body's "Special rounds are carried as items"
     and rules 1.42's "they fit any gun". PROVISIONAL.
-4142. **The calibres** special rounds come in: `rules.json weapons_rules.special_round_price.calibres` (.32 Decrkm,
+4168. **The calibres** special rounds come in: `rules.json weapons_rules.special_round_price.calibres` (.32 Decrkm,
     revolver, rifle, shell, .700 Blackpoint, .50 Frontier: every gun's calibre but bows' and crossbows' (their arrows
     have their own types), the 40 mm grenade, the rocket, the fuel canister and the core charge). PROVISIONAL.
-4143. **The price** of a special round is its type's `price_mult` x that calibre's round, through the one `priceOf`:
+4169. **The price** of a special round is its type's `price_mult` x that calibre's round, through the one `priceOf`:
     an armour-piercing .700 round is 3 x 40 = 120 credits (was 3 x a rifle round, 6, for every gun). A sale is the sell
     rate of that price. PROVISIONAL.
-4144. **The shop** lists each special round, for each character, as rounds of every calibre in item 4142 that a gun it
+4170. **The shop** lists each special round, for each character, as rounds of every calibre in item 4168 that a gun it
     holds or carries (not a bow) takes, `per` a purchase as the special shelf's row (10). PROVISIONAL.
-4145. **Making** (rules 1.54 items 5 to 7): a recipe row with `each_calibre: true` (`data/recipes.json`) is read as one
-    row for each calibre of item 4142 (id `<row>:<calibre>`): it makes rounds of that calibre and type, in the fewest rounds
+4171. **Making** (rules 1.54 items 5 to 7): a recipe row with `each_calibre: true` (`data/recipes.json`) is read as one
+    row for each calibre of item 4168 (id `<row>:<calibre>`): it makes rounds of that calibre and type, in the fewest rounds
     whose worth at `priceOf` splits into whole needs, each need its `share` of the worth (half gunpowder, half casings:
     V/2 + V/2). An armour-piercing .700 round needs 60 gunpowder and 60 casings; the rifle's rows make what the old rows
     made (armour-piercing and incendiary 3 + 3 a round, hollow-point 2 + 2). The validator holds every expanded row to
     the parity. PROVISIONAL.
-4146. **Old saves.** A 0.28 pack line of a bare special-round item (`ammo_armor_piercing`, `ammo_hollow_point`,
+4172. **Old saves.** A 0.28 pack line of a bare special-round item (`ammo_armor_piercing`, `ammo_hollow_point`,
     `ammo_incendiary`) reads as the same count of rounds of the reference calibre (`special_round_price.calibre`,
     rifle), at the price it had; so does a loot or shop row that names the bare item.
-4147. **Items 4141 to 4147 are rules 1.56 L2's.**
+4173. **Items 4167 to 4173 are rules 1.56 L2's.**
 
 ### Rules 1.56 (Balance 2.0), L3 mods in Survival
 
-Items 4148 to 4150.
+Items 4174 to 4176.
 
-4148. **A mod as a reward (rules 1.56 L3 item 1):** `survival.json rewards.mods.chance` fight 0.05, elite 0.1, vault_guard
+4174. **A mod as a reward (rules 1.56 L3 item 1):** `survival.json rewards.mods.chance` fight 0.05, elite 0.1, vault_guard
     0.35, boss 0.35, vault 0, crate 0 (the gate reads the Elite's, a cache the fight's); `rewards.mods.band` 0.5 of the
     node's price band. PROVISIONAL (to fit in P3: mods held per character by the end of stage 2, target 1 to 2).
-4149. **Fit to any gun, the extra slot for the fee (rules 1.56 L3 items 2 and 3):** `forge.fit` rate 0.2, min 25,
+4175. **Fit to any gun, the extra slot for the fee (rules 1.56 L3 items 2 and 3):** `forge.fit` rate 0.2, min 25,
     unchanged. PROVISIONAL.
-4150. **Items 4148 to 4150 are rules 1.56 L3's.**
+4176. **Items 4174 to 4176 are rules 1.56 L3's.**
 
 ### Rules 1.56 (Balance 2.0), L6
 
-4151. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
-4152. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, hatchet, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. Ruled by the lead (15 Nov 2026): the list stands except the hatchet, which scales with Strength (Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not).
-4153. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
-4154. **Items 4151 to 4154 are rules 1.56 L6's.**
+4177. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
+4178. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, hatchet, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. Ruled by the lead (15 Nov 2026): the list stands except the hatchet, which scales with Strength (Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not).
+4179. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
+4180. **Items 4177 to 4180 are rules 1.56 L6's.**
 
 ### Rules 1.56 (Balance 2.0), L4 variants
 
-4155. **The kinds' worth (rules 1.56 L4 item 3; `variants.json kinds[].forms[].worth_per`):** Harder 100 a unit of multiplier (10% = 10), True 5 a point, Quick hands 6 an AP of reload, 3 an AP of core swap, 3 for the free Vent, Rider (Bleed) 8, Kind 40 a unit of multiplier (15% = 6), Deep magazine 0.5 a round, Long reach 2 a tile, Runs cool 1 a Heat, Kicks less 5 a point, Holds more Flux 3 a point, Deep cell 3 a charge, Steady heart 5 a point. Estimates from the Relic properties' worth; to be fitted with the gun and melee loops (each variant's id in the loop). PROVISIONAL.
-4156. **The worth cap (rules 1.56 L4 item 3; `variants.json worth_cap`):** 20% of a rifle-turn (Leon). PROVISIONAL.
-4157. **The twenty variant lines (rules 1.56 L4 item 6; `variants.json items`):** their grades (Fine; the rotary's and the Visualizer's 'Steady Eye' Masterwork) and values. PROVISIONAL.
-4158. **Items 4155 to 4158 are rules 1.56 L4's.**
+4181. **The kinds' worth (rules 1.56 L4 item 3; `variants.json kinds[].forms[].worth_per`):** Harder 100 a unit of multiplier (10% = 10), True 5 a point, Quick hands 6 an AP of reload, 3 an AP of core swap, 3 for the free Vent, Rider (Bleed) 8, Kind 40 a unit of multiplier (15% = 6), Deep magazine 0.5 a round, Long reach 2 a tile, Runs cool 1 a Heat, Kicks less 5 a point, Holds more Flux 3 a point, Deep cell 3 a charge, Steady heart 5 a point. Estimates from the Relic properties' worth; to be fitted with the gun and melee loops (each variant's id in the loop). PROVISIONAL.
+4182. **The worth cap (rules 1.56 L4 item 3; `variants.json worth_cap`):** 20% of a rifle-turn (Leon). PROVISIONAL.
+4183. **The twenty variant lines (rules 1.56 L4 item 6; `variants.json items`):** their grades (Fine; the rotary's and the Visualizer's 'Steady Eye' Masterwork) and values. PROVISIONAL.
+4184. **Items 4181 to 4184 are rules 1.56 L4's.**
 
 ### Rules 1.56 (Balance 2.0), the 0.28.2 merge
 
-4159. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
+4185. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
     (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
     `{essence, last}`. No number.
 
@@ -10389,7 +10572,7 @@ Items 4148 to 4150.
 
 Items 4240 to 4247.
 
-4240. **Tug (rules 1.56 Bonds 2.0 slice 1 item 1; `tending.json tend.tug`):** 1 AP, 4 MP; an enemy pulled 2 tiles on a failed Body save (a Boss 1), an ally 3 tiles. PROVISIONAL (the lead fits).
+4240. **Tug (rules 1.56 Bonds 2.0 slice 1 item 1; `tending.json tend.tug`):** 1 AP, 12 MP (4 → 12 at the 0.28.3 merge: rules 1.55 item 46's three times, item 4135; Snap has no MP cost and is unchanged); an enemy pulled 2 tiles on a failed Body save (a Boss 1), an ally 3 tiles. PROVISIONAL (the lead fits).
 4241. **Reeled (`conditions.json reeled`):** the Tug's save, Body family, against the Bonder's Empathy; no effect of its own; ends as the pull is made. PROVISIONAL.
 4242. **Snap (item 2; `tend.snap`):** 1 AP, 0 MP, once a turn; `amounts.snap` damage base 3.0 on the `tend` profile, Soul, no armour; Dazed 1 round (Body save); `amounts.snap_heal` heal base 3.0 on the `tend` profile. PROVISIONAL (the lead fits with `test/balance/tending-measure.ts`).
 4243. **The Mender's Snap (item 3):** on an enemy, a flat blow (`amounts.ledger_blow`, base 0) that the Ledger's own rule fills (classes.json `bard.ledger`, factor 0.7) and empties; into an ally, `amounts.snap_ledger` 0.5 of the Ledger as a heal, no profile. Measured: one Snap with a full Ledger is 80 / 84 / 92 / 159% of a rifle-turn at levels 1 / 5 / 10 / 20 (against 32 / 33 / 36 / 63% without). PROVISIONAL (the lead fits).

@@ -37,18 +37,19 @@ export function emptyMagPrice(weaponId: string): number | null {
 }
 /** Rules 1.56 (L2): one special round of a calibre: its type's `price_mult` (SPECIAL_ROUND_ITEM) x that calibre's round
  * (a calibre of `special_round_price.calibres`), or null (no such round is made or sold). */
-function specialRoundPrice(cal: string, type: string): number | null {
+function specialRoundPrice(cal: string, type: string, o: { sale?: boolean } = {}): number | null {
   const it = SPECIAL_ROUND_ITEM[type], rp = ROUND_PRICE[cal] || 0;
-  return it && it.stock !== false && it.built !== false && rp > 0 && SPECIAL_CALIBRES.includes(cal) ? Number(it.price_mult) * rp : null;
+  return it && (o.sale ? it.sell !== false : it.stock !== false) && it.built !== false && rp > 0 && SPECIAL_CALIBRES.includes(cal) ? Number(it.price_mult) * rp : null;
 }
 /** What a weapon or an item costs at a rarity (its `price_credits` x `rules.json rarity.<r>.price`), with its fitted mods
  * at their own price; or null when it has no price (a plot item, a natural weapon, `stock: false` things). Also prices
  * the counter's shapes (rules 1.42): `rounds:<calibre>` (one round), `mag:<weapon>` (one full magazine: the empty
  * magazine and its rounds), `rounds:<calibre>:<type>` (a special round: `price_mult` x that calibre's round, rules 1.56)
  * and a bare special-round item (the same, at the reference calibre). The one price door: shop,
- * sale, picks, loot value. */
-export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = []): number | null {
-  const r = roundsIdOf(id); if (r) return r.type ? specialRoundPrice(r.calibre, r.type) : ROUND_PRICE[r.calibre] > 0 ? ROUND_PRICE[r.calibre] : null;
+ * sale, picks, loot value. `o.sale` (rules 1.55 item 55): the price a SALE starts from: `stock: false` (never
+ * bought) does not stop it, `sell: false` (never sold) does. */
+export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = [], o: { sale?: boolean } = {}): number | null {
+  const r = roundsIdOf(id); if (r) return r.type ? specialRoundPrice(r.calibre, r.type, o) : ROUND_PRICE[r.calibre] > 0 ? ROUND_PRICE[r.calibre] : null;
   // rules 1.52: body armour of a class (`armour:<class>`) at the class's own price (rules.json combat armor.classes)
   const ac = /^armour:(\d)$/.exec(id); if (ac) { const p = Number(ARMOUR_CLASSES[Number(ac[1])]?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; }
   // rules 1.55: `mag:<weapon>:<rounds>` is a magazine holding that many rounds (`:0` an empty one), the same formula
@@ -57,13 +58,13 @@ export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly 
     const cap = w.magazine || 0, n = m[2] != null ? Math.min(cap, Number(m[2])) : cap; return e + rp * n; }
   // rules 1.55: a row the engine does not run yet (`built: false`) has no price, so no stock, reward, loot or camp pool that
   // asks for a price (every one does) can hold it
-  const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false || def.built === false) return null;
+  const def: any = WEAPON[id] || ITEM[id]; if (!def || def.built === false || (o.sale ? def.sell === false : def.stock === false)) return null;
   let p = Number(def.price_credits);
-  if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = specialRoundPrice(WR.special_round_price?.calibre, def.ammo_type) ?? NaN;
+  if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = specialRoundPrice(WR.special_round_price?.calibre, def.ammo_type, o) ?? NaN;
   // rules 1.56 L4: a variant (data/variants.json) is its base's price x (1 + its modifiers' worth / 100), and never under
   // its own grade (a direct upgrade comes at a rarer grade and costs more)
   if (def.variant_of) { p = p * (1 + Number(def.variant_worth || 0) / 100); const order = rarityOrder(); if (order.indexOf(def.variant_grade) > order.indexOf(rarity)) rarity = def.variant_grade; }
   if (!Number.isFinite(p) || p <= 0) return null;
   const base = Math.round(p * (RARITY[rarity]?.price ?? 1));
-  return base + mods.reduce((t, x) => t + (priceOf(x) || 0), 0);
+  return base + mods.reduce((t, x) => t + (priceOf(x, 'standard', [], o) || 0), 0);
 }

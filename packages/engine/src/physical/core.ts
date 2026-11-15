@@ -284,7 +284,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // the hand that has it, and only while the holder holds what its row's `comes_while` names (P15, character.ts holds:
     // only the family's gloves in the hands; a unit with no character holds nothing, so an enemy has it only on its list)
     if (d.perk) { if (!wield && !plainOnly && (hand === 'main' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0 || comes(d))) out.push({ id: d.id, how: 'comes' }); continue; }
-    if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) { out.push({ id: d.id, how: 'comes' }); continue; } if (given(d)) continue; } // a skill's pressed technique: learned as before without the points (rules 1.55, 0.28.3-T.1)
+    if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) { out.push({ id: d.id, how: 'comes' }); continue; } if (given(d)) continue; } // a skill's pressed technique: learned as before without the points (rules 1.55 item 71)
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     // Rules 1.56 (Leon's ruling B): a technique that needs something stuck (Pull Out) is offered only while there is one
     // to pull, and then with any weapon in the main hand (what is in the hand does not wrench a blade out of a body).

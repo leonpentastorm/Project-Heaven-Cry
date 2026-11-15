@@ -4,7 +4,7 @@ Leon, co-op Survival on live 0.28.2: "durability tank is crazy weak, maybe we te
 survival do not give you one, but the tank can't hit shit due to all skill point being in durability and his shield
 points block NOTTHING", and "they [the Bond healer] carry the weak as shit tank in my run".
 
-Spec: rules 1.55, items 0.28.3-T.1 to T.5 (the integrator renumbers). Every number PROVISIONAL.
+Spec: rules 1.55, items 71 to 75 (the integrator renumbers). Every number PROVISIONAL.
 
 **The lead's rulings (15 Nov 2026), built:** T.3 is the new general op `roll_with` (not the stacking `roll_mod`
 fallback); Guard's pool `max` 5 → 4; the replay coverage bar back at 2; G3 not built. Section 3b holds the

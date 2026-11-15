@@ -20,7 +20,7 @@ import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange } from './combat';
 import { kindOf } from './objects';
-import { apFor, canPay } from './effects/cost';
+import { apFor, canPay, RESOURCES, resGive } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith } from './preview';
@@ -32,11 +32,10 @@ import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COS
 import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleEntry } from './effects/actions';
 import type { PerkActionEntry } from './effects/actions';
 import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, fluxMaxOf, coreChargeOf, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
-  steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
-import { focusHand, NEEDS_EVOKER, NEEDS_EMANATOR } from './character';
+  steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE, SYPHON_DRAW, AIR_SPENT } from './magic';
+import { focusHand, carriesMpFocus, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS } from './character';
 import { PILE, isPile } from './containers';
 import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
-import { fieldDoor } from './effects/hooks';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
@@ -176,7 +175,7 @@ export function registerActions(s: ActionSystem): () => void {
 }
 
 function ctxOf(g: GameState, unitId: string, viewer?: string | null): DescCtx | null {
-  const cb = ((fieldDoor.f && g ? fieldDoor.f(g) : null) || g?.combat) as Combat | undefined; if (!cb) return null;
+  const cb = g?.combat as Combat | undefined; if (!cb) return null;
   const u = cb.units.find((x) => x.id === unitId); if (!u) return null;
   const c = u.charId && !u.companion ? (g.characters as any)?.[u.charId] || null : null;
   const side = (u.side === 'foe' ? 'foe' : 'pc') as 'pc' | 'foe';
@@ -310,7 +309,9 @@ function prayPicks(target: string, valid: string[], seenTiles?: string[]): PickS
 export const PK = 'pk:';
 export const perkId = (e: { id: string; actionId: string }) => PK + e.id + '#' + e.actionId;
 export function parsePerkId(id: string | null | undefined): { id: string; actionId: string } | null { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; }
-export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : priceOf(e) + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
+/** What an entry costs besides AP, from the cost site's figures (0.28.3, rules 1.55 item 46: "24 MP"). */
+const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + (RESOURCES[k]?.name || k));
+export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : [priceOf(e) + ' AP', ...perkResText(e)].join(' · ')) + (e.uses.label ? ' · ' + e.uses.label : '');
 /** An on/off policy pair names the one in force; Eye of the Storm reads ARMED once armed. */
 export function perkState(e: PerkActionEntry): { tag: string; why: string | null } {
   const pol = /^(.*)_(on|off)$/.exec(e.actionId);
@@ -611,15 +612,16 @@ const PERKS: ActionSystem = {
       if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: e.choices ? seenOf(x, e.choices) : allyIds(x, true) });
       else if (['unit', 'enemy', 'npc'].includes(e.target as string)) picks.push({ key: 'targetId', kind: e.target === 'enemy' ? 'enemy' : 'unit', prompt: 'Click a target.', choices: e.choices ? seenOf(x, e.choices) : others(x) });
       else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' });
+      if (e.thenTile) picks.push({ key: 'tile', kind: 'tile', prompt: 'Now click the tile they step to.' }); // 0.28.3: Guide's second pick (the engine's preview shades the legal tiles)
       if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label, ...(o.off ? { why: o.off } : {}) })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules
-      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.sub ? { sub: e.sub } : {}), ...(e.arm ? { available: true } : {}) });
+      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.res ? { cost: { ap: priceOf(e), text: perkCost(e), res: e.res } } : {}), ...(e.sub ? { sub: e.sub } : {}), ...(e.arm ? { available: true } : {}) });
     });
   },
   send(x, d, p) {
     const k = parsePerkId(d.id); if (!k) return null;
     const e = perkEntriesOf(x).find((y) => y.id === k.id && y.actionId === k.actionId);
-    return { type: 'combat/perk', unitId: x.u.id, id: k.id, actionId: k.actionId, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile && e?.target === 'tile' ? { tile: p.tile } : {}), ...(p.form && typeof p.form === 'object' ? p.form : {}), ...(e?.arm ? { arm: true } : {}) } as any;
+    return { type: 'combat/perk', unitId: x.u.id, id: k.id, actionId: k.actionId, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile && (e?.target === 'tile' || e?.thenTile) ? { tile: p.tile } : {}), ...(p.form && typeof p.form === 'object' ? p.form : {}), ...(e?.arm ? { arm: true } : {}) } as any;
   },
   preview(x, d, p) {
     const k = parsePerkId(d.id)!, args: any = { actionId: k.actionId, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile ? { tile: p.tile } : {}), ...(p.form && typeof p.form === 'object' ? p.form : {}) };
@@ -730,8 +732,11 @@ const MAGIC: ActionSystem = {
   list(x) {
     const { cb, u, c } = x, mg: any = u.mg; if (!mg) return [];
     const words: string[] = mg.words || [], designs: any[] = mg.designs || [];
-    if (!(words.length || designs.length || mg.evoker || mg.emanator)) return [];
-    const out: ActionDescriptor[] = [], evoWhy = mg.evoker ? null : NEEDS_EVOKER, emaWhy = mg.emanator ? null : NEEDS_EMANATOR;
+    // Syphon: the mp resource row's needs (data/actions.json: any MP focus in hand), asked through resGive; shown greyed
+    // while an MP focus is only carried.
+    const mpHeld = !Number.isNaN(safe(() => resGive(cb, u, 'mp', 0, { ask: true }), NaN)), sypShow = mpHeld || (!!c && carriesMpFocus(c));
+    if (!(words.length || designs.length || mg.evoker || mg.emanator || sypShow)) return [];
+    const out: ActionDescriptor[] = [], evoWhy = mg.evoker ? null : NEEDS_EVOKER, emaWhy = mg.emanator ? null : NEEDS_EMANATOR, sypWhy = mpHeld ? null : NEEDS_MP_FOCUS;
     const apNote = (a: 'vent' | 'core', n: number) => { const base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux' : 'Core Change') + ' lowers the cost from ' + base + ' to ' + n + ' AP. ' : ''; };
     if (words.length || mg.evoker) {
       const gAp = glyphApOf(u), vAp = safe(() => ventAp(u, cb), SPELL_AP.vent), cAp = safe(() => coreAp(u, cb), SPELL_AP.core);
@@ -744,7 +749,7 @@ const MAGIC: ActionSystem = {
       out.push(D('vent', 'sigils', 'Vent Flux · ' + mg.flux + '/' + fluxMaxOf(u, cb), vAp, apT(vAp), 'Pour all your Flux into the air. The mana meter rises by the same amount. If your Flux goes past ' + fluxMaxOf(u, cb) + ', the Evoker overloads.' + apNote('vent', vAp), evoWhy, { preview: 'sigil' }));
       out.push(D('core', 'sigils', 'Swap core', cAp, apT(cAp), apNote('core', cAp) + 'Load a fresh mana core with ' + coreChargeOf({ u, cb }) + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy, { preview: 'sigil' }));
     }
-    if (designs.length || mg.emanator) {
+    if (designs.length || mg.emanator || sypShow) {
       const held = mg.held;
       if (designs.length && !held) {
         const ap0 = designAp(mg, designs[0]);
@@ -770,9 +775,9 @@ const MAGIC: ActionSystem = {
         out.push(D('heartwatch', 'outbursts', held.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 0, 'free', held.watch ? 'On: you Release at the first enemy that comes into your reach, as your reaction. Click to turn it off.' : 'Hold the Outburst and Release it as your reaction when an enemy comes into your reach.', wt.err || null, { preview: 'outburst' }));
         out.push(D('revert', 'outbursts', 'Revert Pump', 0, 'free', 'Take back your last Pump this turn: its stage, its feeling, and the AP, MP and Strain it cost.', null, { preview: 'outburst', hidden: true }));
       }
+      const band: any = manaBand(cb.mana ?? MANA_START);
+      if (sypShow) out.push(D('syphon', 'outbursts', 'Syphon', SPELL_AP.syphon, apT(SPELL_AP.syphon), 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops by ' + SYPHON_DRAW + ', and an empty meter gives nothing.', sypWhy || ((cb.mana ?? MANA_START) < SYPHON_DRAW ? AIR_SPENT : null), { preview: 'outburst' }));
       if (mg.emanator || (c && focusHand(c, 'emanator'))) {
-        const band: any = manaBand(cb.mana ?? MANA_START);
-        out.push(D('syphon', 'outbursts', 'Syphon', SPELL_AP.syphon, apT(SPELL_AP.syphon), 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops.', emaWhy, { preview: 'outburst' }));
         out.push(D('crystallise', 'outbursts', 'Crystallise', SPELL_AP.crystallise, apT(SPELL_AP.crystallise), 'Squeeze the air into one standard mana core. Needs ambient mana of 10 or more (Normal air or richer). The mana meter drops by 10.', emaWhy, { preview: 'outburst' }));
       }
     }
@@ -902,7 +907,7 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {
     const vd = safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any);
-    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok && (g as any).run?.state !== 'field') out.ap = vd.ap; out.action = vd.ok ? action : null; // the field's AP is always full (rules 1.55): its cost is the action's own
+    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok && !x.cb.field) out.ap = vd.ap; out.action = vd.ok ? action : null; // rules 1.55 item 63: on the field no AP is taken, so the cost shown is the action's listed one
   }
   if (!out.ok && !need && !out.why) out.why = 'Not now.';
   out.cost = out.ap === d.cost.ap ? d.cost.text : apT(out.ap);

@@ -120,9 +120,9 @@ describe('Survival, one stage (rules 1.41)', () => {
   it('rule 5: a character dead in a won fight stands at 1 HP and takes its full share', () => {
     const g0 = take(started(DUO), reachable(started(DUO).run!)[0], 2), x: GameState = JSON.parse(JSON.stringify(g0));
     const u = x.combat!.units.find((v) => v.charId === 'c2')!; u.dead = true; u.hp = 0;
-    const g = apply(x, { type: 'run/skip' }, 'host');
-    // back at 1 HP, then the level its share of XP gives adds its HP as any level does
-    expect(g.characters.c2.dead).toBe(false); expect(g.characters.c2.hp).toBe(SV.run.dead_return_hp + maxHp(g.characters.c2) - maxHp(g0.characters.c2));
+    const g = leaveField(apply(x, { type: 'run/skip' }, 'host'));
+    // rules 1.55 item 65: back at 1 HP as the field is left (a level its share of XP gave while it lay dead adds no HP)
+    expect(g.characters.c2.dead).toBe(false); expect(g.characters.c2.hp).toBe(SV.run.dead_return_hp);
     expect(g.characters.c2.xp).toBe(g.characters.c1.xp); expect(g.run!.offers!.c2).toBeTruthy(); expect(g.run!.note!.back).toEqual(['c2']);
   });
 
@@ -187,7 +187,11 @@ describe('Survival, one stage (rules 1.41)', () => {
   }, 1_200_000);
 
   it('the replay guard: a seeded stage played by the simulator\'s policies gives the same hash twice, and a save and load in the middle changes nothing', () => {
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0003', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0003', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0007 since the 0.28.3 merge (rules 1.55 items 50, 51 and 71 to 75: the tank's kit and Guard on its gun's pad):
+    // PHC-0003's squad now kills the Boss and stalls on its last Trooper with every gun of both sides empty, a stall of
+    // the simulator's policies (no gun-butt strike when out of ammunition), not of the game; PHC-0007 plays the stage
+    // through to the boon on the release, on the field branch and on the tank branch alike.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0007', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0007', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

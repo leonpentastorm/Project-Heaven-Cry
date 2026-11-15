@@ -346,15 +346,17 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   }, [roundKey, screen]);
 
   // ----- the end of a fight: VICTORY or DEFEAT, once its last effect has played -----
-  const anyCb = game?.combat || null;
-  const overKey = anyCb && anyCb.over && screen === 'combat' ? (combatStreamKey(game) || '') + '|' + anyCb.over : '';
+  // Rules 1.55 item 61: a won Survival fight goes on as its field (Combat.field, no `over` until the party leaves): the
+  // field opening is the win, so VICTORY comes up then, once.
+  const anyCb = game?.combat || null, endOf = (cb: any) => (cb?.over || (cb?.field ? 'win' : null));
+  const overKey = anyCb && endOf(anyCb) && screen === 'combat' ? (combatStreamKey(game) || '') + '|' + endOf(anyCb) : '';
   React.useEffect(() => {
     if (!overKey || !game || !anyCb) return;
-    const stream = combatStreamKey(game)!, won = anyCb.over === 'win';
+    const stream = combatStreamKey(game)!, won = endOf(anyCb) === 'win';
     if ((!won && anyCb.over !== 'loss') || !carded(game, anyCb) || !liveFights.current.has(stream) || cardShown(stream + '|end')) return; // an Extraction is neither
     const efx = (anyCb.fx || []) as any[], lastFx = anyCb.fxSeq || (efx.length ? efx[efx.length - 1].n : 0), clock = fxClock.current;
     const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
-    const still = () => { const { game: g2, screen: sc } = live.current; return !!g2?.combat?.over && sc === 'combat' && combatStreamKey(g2) === stream; };
+    const still = () => { const { game: g2, screen: sc } = live.current; return !!endOf(g2?.combat) && sc === 'combat' && combatStreamKey(g2) === stream; };
     const tryShow = () => {
       if (!still()) return;
       const waitFx = (clock.on || hasLayer()) && clock.at < lastFx;

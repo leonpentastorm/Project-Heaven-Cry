@@ -58,7 +58,7 @@ export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: bool
       for (let i = 0; i < marks; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
     } else if (run.state === 'fight') {
       if (o.skip) r.must({ type: 'run/skip' });
-      else { r.fight(40); if (r.g.combat && !r.g.combat.over && r.g.phase === 'combat') { r.errors.push('a fight did not end in 40 rounds'); break; } }
+      else { r.fight(40); if (r.g.combat && !r.g.combat.over && !r.g.combat.field && r.g.phase === 'combat') { r.errors.push('a fight did not end in 40 rounds'); break; } }
     } else if (run.state === 'field') { // rules 1.55: the walker leaves the won fight's field at once (every player marks Leave)
       for (let i = 0; i < n && r.g.run?.state === 'field'; i++) r.must({ type: 'run/leave' }, ownerOf(i));
     } else if (run.state === 'reward') {

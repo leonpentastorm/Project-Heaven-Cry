@@ -20,7 +20,7 @@ export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal
 /** [id, label, cost text, explanation, why not now (the engine's reason; undefined: work it out from the cost)] */
 /** [id, label, cost, text, why, meta]: meta is the descriptor's hand (the Attack tab's areas) and a technique's text in
  *  parts (the hover card's lines). */
-export interface ActionMeta { /** the row's group inside its tab (the descriptor's sub) */ sub?: string; hand?: 'main' | 'off' | 'both'; parts?: { needs: string; text: string; line: string; traits: { label: string; text: string }[] } }
+export interface ActionMeta { /** the row's group inside its tab (the descriptor's sub) */ sub?: string; /** its MP, the engine's cost site's figure (0.28.3: drawn in the MP blue) */ mp?: number; hand?: 'main' | 'off' | 'both'; parts?: { needs: string; text: string; line: string; traits: { label: string; text: string }[] } }
 export type ActionItem = [string, string, string, string, (string | null)?, ActionMeta?];
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
@@ -118,7 +118,7 @@ export function hideHelp(cb: any, cur: any, ch: any, g: any): { spots: string[] 
 export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
   if (!cb || !cur) return [];
   const list = listFor(cb, cur, ch, opts.g);
-  const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { ...(d.hand ? { hand: d.hand } : {}), ...(d.parts ? { parts: d.parts } : {}), ...(d.sub ? { sub: d.sub } : {}) }]);
+  const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { ...(d.hand ? { hand: d.hand } : {}), ...(d.parts ? { parts: d.parts } : {}), ...(d.sub ? { sub: d.sub } : {}), ...(d.cost.res?.mp ? { mp: d.cost.res.mp } : {}) }]);
   const w: any = (WEAPON as any)[cur.weapon];
   const out: ActionGroup[] = [['MOVEMENT', by('move'), null, 'move'], ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), by('attack'), HOSTILE_INK, 'attack'], ['UTILITY', by('utility'), null, 'utility']];
   // Rules 1.14, the perk card in a fight: USE NOW is the buttons; RIDES AN ACTION and ALWAYS ON are rows to read.

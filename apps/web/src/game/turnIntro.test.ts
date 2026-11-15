@@ -108,7 +108,7 @@ describe('turn banners', () => {
     expect(cmds[0].custom).toBeUndefined();
     // Every action the panel offers is in the catalogue, with its tab.
     const cat = C.catalogue(cb, pc, g.characters.c1);
-    // (a Perks tab row to read, an Always on passive, is not a command: Durability's door since rules 1.55, 0.28.3-T.3)
+    // (a Perks tab row to read, an Always on passive, is not a command: Durability's door since rules 1.55 item 73)
     expect(cat.map((e) => e.action)).toEqual(C.actionGroups(cb, pc, g.characters.c1).flatMap((gr) => gr[1].map((x) => x[0])).filter((a) => !C.isPerkInfo(a)));
     expect(cat.find((e) => e.action === 'move')!.tab).toBe('move');
     // Reset: nothing kept, the smart default again.

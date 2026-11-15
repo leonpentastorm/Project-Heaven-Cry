@@ -1,7 +1,7 @@
 // Rules 1.13, Durability's door (docs/design/proposals/2026-11-nine-doors.md, section 19). One block per rule:
-//   1. the pool: anyone with Durability (its points, rules.guard.max at most: 4 since rules 1.55, 0.28.3-T.4); the Defender keeps its own; a client's view carries it
+//   1. the pool: anyone with Durability (its points, rules.guard.max at most: 4 since rules 1.55 item 74); the Defender keeps its own; a client's view carries it
 //   2. gained by Brace and by the Guard technique: 1, +1 a Durability point above 1, +1 with a shield, never above the pool
-//   3. it soaks: rules.guard.soak damage a point (6 since rules 1.55, 0.28.3-T.2), on what would reach HP (after armour and the shield); not a condition's tick
+//   3. it soaks: rules.guard.soak damage a point (6 since rules 1.55 item 72), on what would reach HP (after armour and the shield); not a condition's tick
 //   4. Pressure comes off Guard first
 //   5. Interpose from Durability 3
 //   6. lost when the fight ends; a hit on a unit holding Guard costs no Momentum
@@ -97,7 +97,7 @@ describe('2. gained by Brace and by the Guard technique', () => {
     const pv = f.pv('guard'); expect(pv.ok).toBe(true); expect(pv.guard).toEqual({ now: 0, after: 2 }); expect(pv.notes.join(' ')).toMatch(/\+2 Guard/);
     expect(guard(f)).toBe(0);
     expect(f.tech('guard')).toBeNull(); expect(guard(f)).toBe(2); expect(phys.guardUp(f.pc)).toBe(true);
-    const five = fight([{ dur: 5, known: ['guard'] }]); expect(five.tech('guard')).toBeNull(); expect(guard(five)).toBe(Math.min(G.max, G.gain_base + 4 * G.gain_per_point)); // where Brace gives 2 (the pool's cap since 0.28.3-T.4)
+    const five = fight([{ dur: 5, known: ['guard'] }]); expect(five.tech('guard')).toBeNull(); expect(guard(five)).toBe(Math.min(G.max, G.gain_base + 4 * G.gain_per_point)); // where Brace gives 2 (the pool's cap since rules 1.55 item 74)
     const n = fight([{ dur: 0, known: ['guard'] }]); expect(n.pv('guard').guard).toBeUndefined(); expect(n.tech('guard')).toBeNull(); expect(guard(n)).toBe(0);
   });
 });

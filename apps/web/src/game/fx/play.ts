@@ -1,7 +1,7 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, WEAPON, condName, fightSight, phys, refOf } from '@engine';
+import { type FxEvent, type GameState, type TieLine, SIGIL, WEAPON, condName, fightSight, phys, refOf, tieLines } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
@@ -22,6 +22,7 @@ import { wrapBreaker, breakerBeat, noteBreaker } from './breaker';
 import { wrapPressure, pressureBeat, resetPressure } from './pressure';
 import { wrapShadow, shadowBeat, resetShadow } from './shadow';
 import { wrapOpenHand, openHandBeat } from './openhand';
+import { wrapBonds, bondExtra, noteTies, resetBonds } from './bonds';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
@@ -59,6 +60,7 @@ export function setContext(g: GameState | null, screen: string) {
   for (const c of Object.values(g.characters || {})) if (c && (c as any).id) charNames.set((c as any).id, String((c as any).name || ''));
   if (screen === 'combat' && g.combat) {
     noteFigments(g.combat.units); // fx/figments.ts: which units are Figments, of what form, whose
+    try { noteTies(fightStream(g), g.combat); } catch { /* the effects never stop the game */ } // fx/bonds.ts: a tie gone since the last view parts on the map
     for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name) || MACHINE_KIND.has((u as any).kind), dead: !!u.dead, charId: u.charId || undefined });
     // The view is already fogged by the engine (fog.ts): every unit in it is one this side sees (or its own, or a body);
     // the human Narrator's view holds everything and plays everything.
@@ -1421,6 +1423,11 @@ wrapFigments(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, releas
 // Pressure 2.0 (fx/pressure.ts): pins (tracer, dust, +1 PRESSURE), the states named from data, the held shots' lanes,
 // Flush's crack, Afraid's turn away, the Skirmisher's slide; it wraps everything above.
 wrapPressure(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play });
+// Bonds and Tending (fx/bonds.ts): a tie made (the Bonder's wind-up, a thread, the line drawing in), a reach resisted,
+// a heal's pulse down a tie, a Guide; the parting of a tie is noteTies (setContext). Wraps everything above but Shadow (which must see the attacks last).
+let viewLines: { g: GameState | null; lines: TieLine[] } = { g: null, lines: [] };
+const linesNow = (): TieLine[] => { const g = ctxGame; if (viewLines.g !== g) { let l: TieLine[] = []; try { l = g?.combat ? tieLines(g.combat) : []; } catch { l = []; } viewLines = { g, lines: l }; } return viewLines.lines; };
+wrapBonds(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, lines: linesNow, actor: () => { const cb: any = ctxGame?.combat; return (cb && Array.isArray(cb.order) && cb.order[cb.turn]) || null; }, busyFor: () => fxBusyUntil() - performance.now() });
 // Shadow (fx/shadow.ts, rules 1.56): going Hidden, the wisps of Shadow gained and lost, a Break's AMBUSH cut, Tag. It runs
 // after every other wrapper (it only notes the attacks' aim and passes them on), so the attacks' own drawing is the one noted.
 wrapShadow(H, { at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen });
@@ -1429,7 +1436,7 @@ const streamsOwn = (v: FxEvent) => v.mode === 'dump' && fxOf(v.weapon, v.cat).ma
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
-const beatOf = (e: FxEvent): number => { const b = baseBeat(e) + (mineOnly(e) ? techExtraBeat(e, !drawsOwnLoose(e)) + figmentExtraBeat(e) : 0); return b ? b * fxPace() : b; };
+const beatOf = (e: FxEvent): number => { const b = baseBeat(e) + (mineOnly(e) ? techExtraBeat(e, !drawsOwnLoose(e)) + figmentExtraBeat(e) + bondExtra(e) : 0); return b ? b * fxPace() : b; };
 /** The beat at Fast (the written timings). */
 function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
@@ -1832,7 +1839,7 @@ export function hurryFx(ms: number) {
   clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, queueEnd - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden), a closed gate and every cut-in with it. */
-export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); resetPressure(); resetShadow(); }
+export function clearFx() { resetBonds(); moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); resetPressure(); resetShadow(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */

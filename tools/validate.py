@@ -2618,8 +2618,23 @@ if _sv is not None:
         _covered = {(a.get("family"), a.get("category")) for a in _ar.get("list") or []}
         for _f in sorted(_fams, key=str):
             if _f not in _covered and _f[0] not in (_ar.get("left_out") or {}): errors.append(f"{_w}.archetypes: the family {_f[0]!r} ({_f[1]!r}) is neither an archetype nor left_out with its reason")
-        for _rw in (_lo.get("recommended") or {}).get("weapon") or []:
-            if _rw.get("archetype") not in _seen_ar: errors.append(f"{_w}.recommended.weapon: {_rw.get('archetype')!r} is not an archetype")
+        _rec = _lo.get("recommended") or {}
+        _ralpha = {s.get("id") for s in (data.get("skills") or {}).get("items", []) if s.get("slot") == "alpha"}
+        for _rw in _rec.get("weapon") or []:
+            # rules 1.55 item 51: a row names its archetype, or the hands its free weapon takes (scored by the engine)
+            if "hands" in _rw:
+                if _rw.get("hands") not in ("1H", "2H"): errors.append(f"{_w}.recommended.weapon: hands {_rw.get('hands')!r} is not 1H or 2H")
+                if "archetype" in _rw: errors.append(f"{_w}.recommended.weapon: a row names an archetype or hands, not both")
+            elif _rw.get("archetype") not in _seen_ar: errors.append(f"{_w}.recommended.weapon: {_rw.get('archetype')!r} is not an archetype")
+            if "top" in _rw and _rw["top"] not in _ralpha: errors.append(f"{_w}.recommended.weapon: top {_rw['top']!r} is not an alpha skill")
+            # rules 1.56 (the 0.28.3 merge): `character`, the character's own archetype (archetypes.json)
+            if "character" in _rw and _rw["character"] not in {a.get("id") for a in (data.get("archetypes") or {}).get("items", [])}: errors.append(f"{_w}.recommended.weapon: character {_rw['character']!r} is not an archetypes.json archetype")
+            for _rk in _rw:
+                if _rk not in ("when", "skill", "over", "top", "character", "archetype", "hands", "focus", "profile"): errors.append(f"{_w}.recommended.weapon: unknown row key {_rk!r}")
+            if "profile" in _rw and _rw["profile"] not in (_rec.get("buys") or {}): errors.append(f"{_w}.recommended.weapon: profile {_rw['profile']!r} has no buys")
+        for _k, _ids in (_rec.get("buys") or {}).items():
+            for _x in _ids:
+                if _x not in (_lo.get("stock") or {}).get("ids", []) and _x not in _iid and _x not in _wid and not _x.startswith(("armour:", "rounds:")): errors.append(f"{_w}.recommended.buys.{_k}: {_x!r} is neither stock, an item nor a weapon")
         for _x in _lo.get("focuses") or []:
             if not (_iid.get(_x) or {}).get("focus"): errors.append(f"{_w}.focuses: {_x!r} is not a focus (items.json focus)")
         def _armour_classes(o):
@@ -3005,14 +3020,12 @@ if _sv is not None:
         if not _gv.get("where") or not set(_gv["where"]) <= _kinds - {"fight", "elite", "boss"}: errors.append("survival:give.where: node kinds with no fight")
         if not isinstance(_gv.get("at_start"), bool): errors.append("survival:give.at_start: true or false")
         if _gv.get("provisional") is not True: errors.append("survival:give: provisional: true")
-    # Rules 1.55 items 33 to 35 (0.28.2): what the field refuses (resource ids of actions.json, item ops of effect_ops.json)
+    # Rules 1.55 items 35 and 64 (0.28.3): what the field refuses (item ops of effect_ops.json)
     _fd = _sv.get("field")
     if _fd is not None:
-        _resids = set(((data.get("actions") or {}).get("resources") or {}).keys())
         _opids = set((((data.get("effect_ops") or {}).get("item_ops") or {}).get("ops") or {}).keys())
-        if not _fd.get("carried_res") or not _fd.get("lasting_ops"): errors.append("survival:field: carried_res and lasting_ops, each a list")
-        for _x in _fd.get("carried_res") or []:
-            if _x not in _resids: errors.append(f"survival:field.carried_res: {_x!r} is not a resource of actions.json")
+        if not _fd.get("lasting_ops"): errors.append("survival:field: lasting_ops, a list")
+        if "carried_res" in _fd: errors.append("survival:field.carried_res: gone in rules 1.55 item 64 (the field's units pay what they spend)")
         for _x in _fd.get("lasting_ops") or []:
             if _x not in _opids: errors.append(f"survival:field.lasting_ops: {_x!r} is not an item op")
         if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")
@@ -3160,6 +3173,35 @@ for _tr in items("traits"):
         _gi = _rimap.get(_gid)
         if _gi and _gi.get("category") != "food" and _gi.get("stock") is not False:
             errors.append(f"items:{_gid}: the trait {_tr.get('id')} grants it, so it is not sold (stock: false; food and drink are the exception)")
+        # rules 1.55 item 55: never stocked and never sold are two facts; a granted item is neither bought nor sold
+        if _gi and _gi.get("category") != "food" and _gi.get("sell") is not False:
+            errors.append(f"items:{_gid}: the trait {_tr.get('id')} grants it, so no shop buys it either (sell: false; food and drink are the exception)")
+
+# rules 1.55 items 55 and 58: `sell` is false or left out; a usable counted item (counts_into) says how it is used (an ITEM's `use`: label,
+# via stim or effects) and what its user needs (`requires_to_use`: entries of holds, skill and min, or any_of, each
+# with its refusal `why`).
+for _it in items("items"):
+    _w = f"items:{_it.get('id')}"
+    if "sell" in _it and _it["sell"] is not False: errors.append(f"{_w}: sell is false or left out (rules 1.55 item 55)")
+    _u = _it.get("use")
+    if _u is not None:
+        if not (isinstance(_u, dict) and isinstance(_u.get("label"), str) and _u["label"].strip() and _u.get("via") in ("stim", "effects")):
+            errors.append(f"{_w}: use is {{label, via: stim or effects}} (rules 1.55 item 58)")
+        if not _it.get("counts_into"): errors.append(f"{_w}: an item's use is for a counted item (counts_into; rules 1.55 item 58)")
+        if isinstance(_u, dict) and _u.get("via") == "effects" and not any(isinstance(e, dict) and e.get("op") == "xp_grant" for e in (_it.get("effects") or [])):
+            errors.append(f"{_w}: use via effects needs an effect the use runs (xp_grant; rules 1.55 item 58)")
+    for _e in (_it.get("effects") or []):
+        if isinstance(_e, dict) and _e.get("op") == "xp_grant" and _u is not None and isinstance(_e.get("limit"), dict):
+            if _e["limit"].get("per") not in ("per_scene", "per_session", "per_rest", "per_campaign") or not (isinstance(_e["limit"].get("n"), int) and _e["limit"]["n"] >= 1):
+                errors.append(f"{_w}: xp_grant limit is {{per: a character's scope (per_scene, per_session, per_rest, per_campaign), n >= 1}}")
+    def _req_ok(r):
+        if not isinstance(r, dict): return False
+        if "any_of" in r: return isinstance(r["any_of"], list) and bool(r["any_of"]) and all(_req_ok(x) for x in r["any_of"])
+        if "holds" in r: return isinstance(r["holds"], dict) and (r["holds"].get("door") or r["holds"].get("item")) and r["holds"].get("slot", "hand") in ("hand", "person")
+        return r.get("skill") in {k.get("id") for k in items("skills")} and isinstance(r.get("min"), int)
+    for _r in (_it.get("requires_to_use") or []):
+        if not (_req_ok(_r) and isinstance(_r.get("why"), str) and _r["why"].strip()):
+            errors.append(f"{_w}: requires_to_use entries are holds {{slot, door or item}}, skill and min, or any_of, each with its refusal why (rules 1.55 item 58)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

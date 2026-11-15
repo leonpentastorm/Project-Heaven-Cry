@@ -83,7 +83,7 @@ export function recipesWords(): string {
   return out.join(' ');
 }
 /** A fight is on (making is between fights only; the sheet hides the Make group then). */
-const inFight = (g: GameState) => g.phase === 'combat' && !!g.combat && !g.combat.over;
+const inFight = (g: GameState) => g.phase === 'combat' && !!g.combat && !g.combat.over && !g.combat.field; // rules 1.55 item 61: on the field you make things
 /** Why the character can't make this now (not counting what it carries), in words, or null. */
 function stateProblem(g: GameState, c: Character): string | null {
   if (inFight(g)) return c.name + ' can\'t make anything in a fight.';

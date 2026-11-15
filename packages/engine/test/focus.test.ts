@@ -79,7 +79,7 @@ describe('a focus counts only in a hand', () => {
     // In the pack: Syphon refused; Begin costs no MP and +2 Strain more (item 631).
     const p = fight((_, b) => { b.offHand = null; b.pack = [...packOf(b), tool('emanator')]; b.mp = 100; });
     let v = p.turn(p.soul); expect(v.mg!.emanator).toBe(false); expect(carriesEmanator(p.char(p.soul))).toBe(true);
-    expect(refused(p.g, { type: 'combat/syphon', unitId: v.id })).toBe('Needs an Emanator in hand.');
+    expect(refused(p.g, { type: 'combat/syphon', unitId: v.id })).toBe('Needs an MP focus in hand (an Emanator or an Attuner).');
     const mp1 = v.mg!.mp, st0 = v.mg!.strain;
     p.act({ type: 'combat/outburst', unitId: v.id, design: p.char(p.soul).outbursts![0].id, hold: true }); v = p.unit(p.soul);
     expect(v.mg!.held).toBeTruthy(); expect(v.mg!.mp).toBe(mp1); expect(v.mg!.strain).toBeGreaterThanOrEqual(st0 + 3);

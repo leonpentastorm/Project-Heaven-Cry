@@ -14,7 +14,7 @@ import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverW
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
-import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard } from './effects/hooks';
+import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard, harmHeld } from './effects/hooks';
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
 import type { ShieldLayer } from './effects/damage';
@@ -217,6 +217,10 @@ export interface Unit {
   drops?: import('./loot').Drops;
 }
 export interface Combat { /** Rules 1.47: the effects a run's fight keeps for its tally (run/tally.ts); absent in every other fight. */ tape?: import('./run/tally').TapeEv[]; /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; /** Rules 1.15: the fight's level (the squad's average, rounded down, unless set); absent in a fight saved before it. */ level?: number; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
+  /** Rules 1.55 item 61: a won Survival fight's field: the same fight, still running, with no enemies left. No turn
+   * order (game.ts combatAction), AP never limits (effects/cost.ts apFor, pay), turns and rounds do not advance (endTurn),
+   * the fight does not end by itself (checkOver): it ends when the party leaves (game.ts run/leave). */
+  field?: true;
   /** Retired in rules 1.9: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -1673,6 +1677,7 @@ export function closeTurn(cb: Combat, rng: Rng | null, u: Unit) {
 }
 
 export function checkOver(cb: Combat) {
+  if (cb.field) return cb.over; // rules 1.55 item 65: the field ends when the party leaves, never by itself
   const foes = cb.units.filter((u) => u.side === 'foe'), pcs = cb.units.filter((u) => u.side === 'pc' && !u.companion);
   if (!foes.length) return cb.over; // a fight with no foes never ends as a win
   // Surrendered and subdued foes count as defeated (rules 1.3); companions don't keep a lost fight going.
@@ -1685,6 +1690,7 @@ export function checkOver(cb: Combat) {
 
 /** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). */
 export function endTurn(cb: Combat, rng: Rng) {
+  if (cb.field) return; // rules 1.55 item 62: on the field no turn passes and no round begins
   if (cb.window) { windowStep(cb, true); return; } // ending a window's turn hands it on, not the round
   if (checkOver(cb)) return;
   { const u0 = active(cb); if (u0) { emit(cb, 'turn_end', { u: u0, cb, rng }); closeTurn(cb, rng, u0); } } // 'turn_end' {u}: before the turn passes
@@ -2041,7 +2047,9 @@ const BOSS_HOLDS: { except: string[]; why: string } = (RULES as any).forced_move
 const bossHolds = (u: Unit, o: DisplaceOpts): boolean => isBoss(u) && !!o.by && o.by.side !== u.side && !BOSS_HOLDS.except.some((id) => o.source === id || o.source?.endsWith(':' + id));
 /** May this unit be moved against its will? null: yes. Otherwise why not (and `tiles`, which an item may have changed). */
 function forcedRefusal(cb: Combat, rng: Rng | null | undefined, u: Unit, o: DisplaceOpts, tiles: number, to?: string): { stoppedBy: 'nailed' | 'immune' | 'held' | null; why?: string; tiles: number } {
-  if (o.willing || !FORCED[o.how].immunity) return { stoppedBy: null, tiles };
+  if (o.willing) return { stoppedBy: null, tiles };
+  if (harmHeld(cb, o.by, u, !o.preview)) return { stoppedBy: 'held', why: 'on the field', tiles }; // rules 1.55 item 68: on the field nobody moves a friend or a surrendered unit by force (the one harm gate, effects/hooks.ts)
+  if (!FORCED[o.how].immunity) return { stoppedBy: null, tiles };
   if (u.nailed) return { stoppedBy: 'nailed', why: 'nailed in place', tiles };
   if (bossHolds(u, o)) return { stoppedBy: 'immune', why: BOSS_HOLDS.why, tiles };
   const im = immune({ u }, 'knockback'); if (im) return { stoppedBy: 'immune', why: im, tiles };

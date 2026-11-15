@@ -92,7 +92,17 @@ Every rule-bearing item carries both:
   Never name a counted item's id in code. (0.28.2's `counted` field is retired into it; the validator refuses it.)
 - `stock: false` (items.json): the item has no price (`priceOf`), so no counter, rolled stock or sale holds it (the
   armourer's chit). Leon, 14 Nov 2026: every item a trait grants (`start_item`, the Musek Blestor) is `stock: false`
-  unless it is `food`; the validator checks the `start_item` ones.
+  unless it is `food`; the validator checks the `start_item` ones. rules 1.55 item 55: `stock: false` says only
+  "never bought"; a sale reads `priceOf`'s sale mode, which ignores it.
+- `sell: false` (items.json; rules 1.55 item 55): no shop buys the item (a sale is refused in words). An item a
+  trait grants carries it too (the validator checks it). A row with no price is never sold either.
+- `use` on an ITEM row (items.json, counted items only, `counts_into`; rules 1.55 item 58; not the data verb's `use`
+  below, which names an actions.json row): how `gear/use` uses one: `label` (the button's
+  words, "Crack for", "Stim") and `via`: `stim` (the stim's own rule, combat.ts `useStim`, as the `world/act` stim) or
+  `effects` (the row's `effects` run by the use ops: `xp_grant` {value, source, limit {per, n}}, the limit counted on
+  the receiver). `requires_to_use`: what the user needs, every entry holding: `holds` (a `HoldSpec`: `slot` hand or
+  person, `door` (a skill, a focus kind or `any`) or `item`), `skill` and `min`, or `any_of`; each with its refusal
+  `why`. Never name a usable item's id in code.
 - `recipes.json`: one row a recipe, `{id, name, needs: [{item, n}], tool: {item} or {focus: "any"}, does, gives: [{item
   or rounds:<calibre>, n}], where: "between_fights", provisional}`, made by the one converter (`recipes.ts`, the reducer's
   `gear/make {charId, recipe, times}`). `does` is the end of the no-tool refusal ("to make rounds"). The validator holds
@@ -201,7 +211,8 @@ checks every key, and an unknown key is an error:
   straight run of up to that many free tiles to the target first).
 - `effects`: item ops run with the owned unit as the actor (and `amounts` they read).
 - `unmake: true` with `refund_share` (0 to 1): it is let go, that share of its made charge back.
-- `use`: one of its OWNER's item uses, named by its actions.json row id (`stim`: the Hand's Hand over), run through
+- `use` on a data VERB (figments.json verbs; not an item row's `use` above, which says how `gear/use` spends a
+  counted item): one of its OWNER's item uses, named by its actions.json row id (`stim`: the Hand's Hand over), run through
   that use's one engine door with the owned unit as the hand (owned.ts `OWNER_USES`, by the row's reducer type;
   today `combat/stim`, hand to hand). It goes with `reach.side: ally`.
 
