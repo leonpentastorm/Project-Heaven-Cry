@@ -106,6 +106,8 @@ export const MEMBER: Record<string, Pc> = {
   // P2 (0.29): the melee build (Raw Power: the Recommended loadout gives it the heavy blade), and the reload pair on a
   // magazine-fed gun (the camp's Recommended rifle loads round by round, so it drops no magazine)
   melee: { build: 'opt_blade', level: 1, policy: 'optimised' },
+  // rules 1.56, the Momentum chain 2.0: the Breaker's cell (the melee build: Strength first, so the Breaker at level 3)
+  breaker: { build: 'opt_blade', level: 1, policy: 'optimised' },
   smg: { build: 'plain_gun', level: 1, policy: 'gunner', camp: 'decrkm_smg' } as any,
   smgTac: { build: 'plain_gun', level: 1, policy: 'gunnerTac', camp: 'decrkm_smg' } as any,
 };
@@ -121,6 +123,8 @@ export const PARTIES: Record<string, string[]> = {
   solo_melee: ['melee'], duo_gunner: ['gunner', 'gunner'], duo_melee: ['melee', 'melee'], duo_sigil: ['sigil', 'sigil'],
   four_gunner: ['gunner', 'gunner', 'gunner', 'gunner'], four_melee: ['melee', 'melee', 'melee', 'melee'], four_sigil: ['sigil', 'sigil', 'sigil', 'sigil'],
   solo_smg: ['smg'], solo_smg_tac: ['smgTac'],
+  // rules 1.56, the Momentum chain 2.0: the Breaker alone and beside a gunner
+  solo_breaker: ['breaker'], breaker: ['breaker', 'gunner'],
 };
 /** Rules 1.51: the caster boons (survival.json boons with a caster door), left out of the pick without the lever `caster`. */
 const CASTER_DOORS = new Set(['brain_power', 'will_power', 'empathy', 'visualization']);

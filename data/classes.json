@@ -342,44 +342,6 @@
       },
       "gain": [
         {
-          "id": "every_blow",
-          "name": "Every Blow Counts",
-          "ap_cost": 0,
-          "uses": "at_will",
-          "text": "Any melee technique of yours that hits gives {=effects.0.value} Momentum, at most {=effects.0.limit.n} a turn (Cut and the lone blows keep their own).",
-          "effects": [
-            {
-              "op": "resource",
-              "when": "hit",
-              "resource": "momentum",
-              "value": 1,
-              "if": {
-                "actor": "self",
-                "melee": true,
-                "free_tech": false
-              },
-              "limit": {
-                "per": "per_turn",
-                "n": 3
-              }
-            }
-          ],
-          "adjudication": "engine",
-          "provisional": true,
-          "origin": "fighter",
-          "new": true,
-          "fantasy_tags": [
-            "melee",
-            "momentum"
-          ],
-          "attributes": [
-            "strength"
-          ],
-          "status": "active",
-          "surface": "combat",
-          "source": "rules 1.56, the Momentum chain 2.0 (docs/design/proposals/2026-11-momentum-2.0.md)"
-        },
-        {
           "id": "charge_carries",
           "name": "The Charge Carries",
           "ap_cost": 0,

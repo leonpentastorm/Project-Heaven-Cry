@@ -299,3 +299,23 @@ describe('consolidation 0.29 M5: a 0.28.1 fight saved with a modded gun keeps it
     expect(() => viewFor(g, 'host')).not.toThrow();
   }, 60_000);
 });
+
+// Rules 1.56 (the Momentum chain 2.0): the Breaker's new rows are read live from the class's `gain`, so an old save's
+// level 9 Breaker has them at its next fight, with nothing saved changed.
+describe('the Momentum chain 2.0 on an old save', () => {
+  it('save-develop-cb40e92-after-fight: its Breaker keeps its class and moves, and holds Launch and the finishers at the next fight', async () => {
+    const { actionsFor } = await import('../src');
+    const g0 = load('save-develop-cb40e92-after-fight');
+    const cid = Object.keys(g0.characters).find((id) => g0.characters[id].classId === 'fighter')!;
+    const keys = itemsOf(heldOfChar(g0.characters[cid])).filter((i) => i.kind === 'class').map((i) => i.key);
+    for (const k of ['class:fighter.launch', 'class:fighter.breaker_finishers', 'class:fighter.charge_carries', 'class:fighter.wrecker', 'class:fighter.breach']) expect(keys).toContain(k);
+    const r = new Rec(g0, GUNS);
+    r.must({ type: 'narrator/turn', turn: { narration: 'More of them.' } });
+    r.must(fightTurn(GUNS, ['minion', 'soldier', 'minion'], 'cover', 'The second fight'));
+    expect(r.errors).toEqual([]);
+    const u = r.g.combat.units.find((x: any) => x.charId === cid);
+    const launch = actionsFor(r.g, u.id, null).find((d: any) => /launch/.test(d.id));
+    expect(launch).toBeTruthy();
+    r.fight(6); expect(r.errors).toEqual([]);
+  }, 60_000);
+});

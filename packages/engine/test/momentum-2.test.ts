@@ -32,15 +32,10 @@ const strong = (u: Unit) => { (u as any).sv = { body: 90, brain: 90, heart: 90 }
 const launch = (f: F, t: Unit, by = 'host') => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:fighter.launch', actionId: LAUNCH.action, targetId: t.id } as any, by);
 const refusal = (fn: () => unknown): string => { try { fn(); return ''; } catch (e: any) { return String(e?.message || e); } };
 
-describe('every blow counts (a melee technique that hits)', () => {
-  it('a Strike that hits gives the row\'s value; a Breaker gets at most the row\'s cap a turn', () => {
-    const v = row('every_blow').effects[0].value, cap = row('every_blow').effects[0].limit.n;
-    const f = fight({ known: ['bash'], m: 5 }); rig({ hit: true, die: 12 });
-    let m = f.momentum(f.pc);
-    for (let i = 0; i < cap + 2; i++) { f.pc.ap = 9; f.momentum(f.pc, 3); m = 3; expect(f.tech('bash', { targetId: f.foe.id })).toBeNull(); const got = f.momentum(f.pc) - (m - 1); expect(got).toBe(i < cap ? v : 0); }
-  });
-  it('a classless fighter\'s Strike gives none (the rule is the Breaker\'s)', () => {
-    const f = fight({ known: ['bash'], m: 2, cls: null, level: 1 }); rig({ hit: true, die: 12 });
+describe('every blow counts: held (measured over the melee band at level 20; the draft, Measured)', () => {
+  it('a Breaker Strike that hits gives none of its own (only the plain attack engine +1 stands)', () => {
+    expect(row('every_blow')).toBeUndefined();
+    const f = fight({ known: ['bash'], m: 2 }); rig({ hit: true, die: 12 });
     expect(f.tech('bash', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1);
   });
 });
@@ -51,8 +46,7 @@ describe('the Charge carries, and bowls over', () => {
     f.walk(f.pc, 'G5'); f.momentum(f.pc, 0);
     const before = f.fx('momentum').length;
     expect(f.tech('charge', { targetId: f.foe.id })).toBeNull();
-    // closing in gives up to 2 (classes/i.ts), every blow 1, the Charge's row 2: from 0, capped at the Breaker's 5
-    expect(f.momentum(f.pc)).toBe(Math.min(f.pc.resMax!.momentum, 2 + row('every_blow').effects[0].value + row('charge_carries').effects[0].value));
+    expect(f.momentum(f.pc)).toBe(Math.min(f.pc.resMax!.momentum, 2 + row('charge_carries').effects[0].value)); // closing in (up to 2) + the Charge's row
     expect(f.unit(f.foe.id).prone).toBe(true);
     expect(f.fx('momentum').length).toBeGreaterThan(before); // the counter's moment (fx/breaker.ts) has its event
   });
@@ -66,10 +60,9 @@ describe('four ways to finish', () => {
     const g = fight({ weapon: 'fists', m: 2, cls: null, level: 1 });
     expect(g.pad().flatMap((x) => x.entries).map((e) => e.id)).not.toContain('cleave');
   });
-  it('Cleave: the hits it lands give at most the turn\'s cap', () => {
-    const f = fight({ foes: [{ at: 'D5' }, { at: 'D4' }, { at: 'D6' }, { at: 'C4' }, { at: 'C6' }], m: 5 }); rig({ hit: true, die: 12 });
-    expect(f.tech('cleave', { targetId: f.foe.id })).toBeNull();
-    expect(f.momentum(f.pc)).toBeLessThanOrEqual(row('every_blow').effects[0].limit.n);
+  it('Cleave: the Breaker to-hit term cancels the off-home penalty with any weapon', () => {
+    const f = fight({ weapon: 'fists', m: 2 });
+    expect(JSON.stringify((f.pv('cleave', { targetId: f.foe.id }) as any).attacks?.[0]?.pv?.terms || [])).toMatch(/Cleave \(Breaker\)/);
   });
   it('Break leaves its target Exposed', () => {
     const f = fight({ m: 2 }); rig({ hit: true, die: 12 }); strong(f.foe);

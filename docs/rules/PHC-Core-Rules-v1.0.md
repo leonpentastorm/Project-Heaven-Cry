@@ -6352,6 +6352,46 @@ and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded in
    (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
    and the validator refuses it. Giving, picking up, granting, the carried weight and the sheet's lines read it.
 
+## Rules 1.56 (Balance 2.0), the Momentum chain 2.0 (the Breaker)
+
+The Strength door's class, the Breaker (`classes.json fighter`), breaks things and throws weight around. Design and
+measure: `docs/design/proposals/2026-11-momentum-2.0.md`. Every rule below is a data row on the class's `gain` (held
+from rank I, read live, so an old save's Breaker has them at its next fight), run by the item-op runner; every number
+is a field of its row, PROVISIONAL, items 4400 to 4409. Weapon-neutral: Momentum is the melee door, built with any
+melee weapon, a shield or bare hands, never with a gun or a throw (a gun-holder has no meter).
+
+1. **The counter** (item 4400). A unit's Momentum is shown on its token as "x1" to "x5" in Strength's ink, from
+   `techniques.json rules.momentum.show.counter_min`; at its maximum the ring doubles. The meter's one-line rule is
+   `rules.momentum.texts.how` (the hint the engine sends with the meter), and the door's line is
+   `skills.json raw_power.door_line` (the first-fight hint).
+2. **The impact ring** (item 4401). A melee hit draws a ring on its target of radius `ring_base + ring_per x` the
+   striker's Momentum after the blow (a tile is 40), cracking at `crack_at`. Presentation only.
+3. **The Charge carries** (item 4402; row `charge_carries`). A Breaker's Charge that hits gives 2 Momentum on top of
+   closing in, and knocks its target Prone (Prone has no save; with any weapon). The Charge's own blunt and heavy line
+   stays.
+4. **Four ways to finish** (item 4403; row `breaker_finishers`). A Breaker knows Cleave, Break and Coup with any melee
+   weapon or bare hands (stat `technique:<id>`, which now gives a technique of any group, as its meaning says; before,
+   only an Answer). Its Cleave is +2 to hit (it cancels the off-home penalty: every weapon is its home). Its Break
+   leaves the target Exposed (no save). Its Coup against a foe under half HP is +2 to hit and x1.2 damage: an Execute.
+   The Break's "Guard to 0" waits until enemies hold Guard.
+5. **Launch** (item 4404; row `launch`; 2 AP, needs 2 Momentum, spends all). Heave an enemy next to you (not a Boss):
+   it takes the `launch` amount (profile melee: base 22, +5.5 for each Momentum left after the 2 are paid; 0.6 and
+   0.15 of a sabre's blow at the all-in Strength), then a Body save against your Raw Power: failed, it is Off Balance,
+   flies 3 tiles and lands Prone; saved, it staggers back 1 tile. The tiles it crosses act on it (a trap, fire). No
+   roll to hit.
+6. **Wrecker** (item 4405; row `wrecker`). Each blow or shot a Breaker lands on cover, a barricade or a door (the
+   action `shoot_cover`) gives 1 Momentum. Its AP cut waits for the cost site `smash` (P15).
+7. **Breach** (item 4406; row `breach`). When a Breaker strikes cover, a barricade or a door, every enemy it can see
+   within 2 tiles of that tile is Exposed for a round (no save): the squad's shots find the gap.
+8. **The hit and the blow carry their technique** (item 4407). The hooks `on_hit` and `damage_out` carry `tech` (the
+   technique the blow is made with), as `attack_roll` already did, so the predicates `mode` and `free_tech` read it on
+   the triggers `hit` and `dealing`. No new trigger, predicate or op.
+9. **Held, measured** (item 4408). "Every blow counts" (a melee technique that hits gives 1, at most 3 a turn) is not
+   built: all in, it lifted the blade line from 158 / 149 / 194% to 173 / 170 / 218% at levels 5 / 10 / 20, outside
+   the melee band at 20 (124 to 206%). It waits for a fit. Idle bleeds waits for the run carries (P12).
+10. **Not tonight** (item 4409). The run carries (P12), Into the Wall (P13), Hurl (P14), Wrecker's AP (P15), the
+    Demolisher and the Duelist (P8): each waits for its general piece (the draft's list).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9952,3 +9992,17 @@ Items 4148 to 4150.
 4159. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
     (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
     `{essence, last}`. No number.
+
+
+### Rules 1.56 (Balance 2.0), the Momentum chain 2.0 (the Breaker)
+
+4400. **The counter (the Momentum chain 2.0 item 1):** `techniques.json rules.momentum.show.counter_min` 1. PROVISIONAL.
+4401. **The impact ring (item 2):** `ring_base` 10, `ring_per` 4, `crack_at` 5 (a tile is 40). PROVISIONAL.
+4402. **The Charge carries (item 3):** +2 Momentum on a Charge's hit; Prone on its target. PROVISIONAL.
+4403. **Four ways to finish (item 4):** Cleave +2 to hit; Break: Exposed; Coup as Execute under 0.5 of max HP: +2 to hit, x1.2 (softened from 1.25). PROVISIONAL.
+4404. **Launch (item 5):** 2 AP, 2 Momentum, spends all; the `launch` block base 22 and 5.5 a Momentum left (melee profile); 3 tiles on a failed Body save, 1 on a success; not a Boss. PROVISIONAL.
+4405. **Wrecker (item 6):** +1 Momentum on `shoot_cover`. PROVISIONAL.
+4406. **Breach (item 7):** Exposed (1 round) on seen enemies within 2 tiles of the struck tile. PROVISIONAL.
+4407. **`tech` on `on_hit` and `damage_out` (item 8):** no number.
+4408. **Every blow counts, held (item 9):** measured, not built (blade all in L5 / L10 / L20: 158 / 149 / 194% without it, 173 / 170 / 218% with it). Needs a fit before it ships.
+4409. **Items 4400 to 4409 are the Momentum chain 2.0's.**
