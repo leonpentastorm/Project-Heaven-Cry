@@ -2519,14 +2519,14 @@ export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null;
  * it is worked out. The squad's own and an Analyzed foe read exactly (`known`: the bar, `pct` 0 to 100, and the HP
  * number); any other creature reads as one word of the data's ladder and nothing else (`pct` null: no bar). `tone` is
  * the word's colour family (calm, hurt, dire). */
-export interface HealthView { known: boolean; pct: number | null; word: string; tone: string }
+export interface HealthView { known: boolean; pct: number | null; word: string; tone: string; /** the rung's short form (rules 1.55 item 43: the map token's chip when the word would run into a neighbour's) */ short: string; /** at full HP (rules 1.55 item 43: no chip on the map) */ full: boolean }
 export function healthView(u: Unit): HealthView {
   const L: any = (RULES as any).combat.health_look, known = u.side === 'pc' || !!u.analyzedBy;
   const share = Math.max(0, Math.min(1, u.hp / Math.max(1, u.maxHp))), ladder: any[] = L.ladder;
   const pct = known ? (u.dead || u.downed ? 0 : share * 100) : null;
-  if (u.dead || u.downed) return { known, pct, word: u.dead ? L.dead : L.down, tone: 'dire' };
+  if (u.dead || u.downed) { const w = u.dead ? L.dead : L.down; return { known, pct, word: w, short: w, tone: 'dire', full: false }; }
   const rung = u.hp >= u.maxHp ? ladder.find((r) => r.full) : ladder.find((r) => !r.full && share > r.above) || ladder[ladder.length - 1];
-  return { known, pct, word: rung.word, tone: rung.tone };
+  return { known, pct, word: rung.word, short: rung.short || rung.word, tone: rung.tone, full: !!rung.full };
 }
 /** How far Analyze reads: 4 tiles + Analysis. */
 export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);

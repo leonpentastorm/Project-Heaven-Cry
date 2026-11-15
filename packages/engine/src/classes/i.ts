@@ -135,7 +135,7 @@ function strainUp(cb: Combat, rng: Rng, u: Unit, n: number): string {
 }
 const soulAim = (h: Holder, tile: string, range: number): string | null => {
   const u = h.u!, cb = h.cb!;
-  if (dist(u.pos, tile) > range) return 'Out of reach (' + range + ' tiles).';
+  if (dist(u.pos, tile) > range) return 'Out of reach (' + range + (range === 1 ? ' tile' : ' tiles') + ').';
   if (tile !== u.pos && !lineOfSight(cb, u.pos, tile)) return 'No line of sight.';
   return null;
 };

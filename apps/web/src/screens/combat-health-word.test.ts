@@ -60,4 +60,38 @@ describe("an un-Analyzed foe shows the engine's word, not a bar (rules 1.55 item
     expect(tok().querySelector('[data-health-look]')).toBeNull(); expect(parseFloat((tok().querySelector('.phc-hp-fill') as HTMLElement).style.width)).toBeCloseTo(11 / 140 * 100, 3);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   });
+  it('rules 1.55 item 43: no chip at full HP; two hurt foes side by side show the short words; the kind badge sits above', async () => {
+    vi.useFakeTimers();
+    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
+    fight('bar-b');
+    await React.act(async () => { root.render(React.createElement(App)); });
+    await React.act(async () => { vi.advanceTimersByTime(15000); });
+    const units = () => G.combat!.units, keel = () => units().find((t) => t.name === 'Keel')!, eng = () => units().find((t) => t.name === 'Engineer')!;
+    const tok = (name: string) => Array.from(el.querySelectorAll('button.phc-tok')).find((x) => (x.getAttribute('aria-label') || '').includes(name)) as HTMLElement;
+    const word = (name: string) => (tok(name)?.querySelector('[data-health-look]') as HTMLElement | null)?.textContent || null;
+    const redraw = async () => { snap = view(); await React.act(async () => { listeners.forEach((f) => f()); }); };
+    // both unhurt, apart: no chip on the map (the target card and the turn strip still say UNHURT)
+    for (const u of [keel(), eng()] as any[]) { u.hp = u.maxHp; delete u.analyzedBy; }
+    await redraw();
+    expect(word('Keel')).toBeNull(); expect(word('Engineer')).toBeNull();
+    // side by side (x, y) and (x + 1, y), both badly hurt: the long words would run into each other, so the short form
+    const free = (k: string) => !units().some((t) => t.pos === k) && !G.combat!.map.solid.includes(k);
+    let spot = ''; for (let y = 0; y < G.combat!.map.h && !spot; y++) for (let x = 0; x + 1 < G.combat!.map.w && !spot; x++) if (free(x + ',' + y) && free((x + 1) + ',' + y)) spot = x + ',' + y;
+    const [sx, sy] = spot.split(',').map(Number);
+    (keel() as any).pos = sx + ',' + sy; (eng() as any).pos = (sx + 1) + ',' + sy;
+    (keel() as any).hp = Math.floor(keel().maxHp * 0.4); (eng() as any).hp = Math.floor(eng().maxHp * 0.4);
+    await redraw();
+    expect(word('Keel')).toBe(healthView(keel()).short.toUpperCase()); expect(word('Engineer')).toBe(healthView(eng()).short.toUpperCase());
+    expect(healthView(keel()).short).not.toBe(healthView(keel()).word);
+    // apart again: the full word
+    (eng() as any).pos = spot; (keel() as any).pos = (sx + 1) + ',' + sy;
+    for (let y = sy + 2; y < G.combat!.map.h; y++) if (free('0,' + y)) { (eng() as any).pos = '0,' + y; break; }
+    (keel() as any).pos = sx + ',' + sy;
+    await redraw();
+    expect(word('Keel')).toBe(healthView(keel()).word.toUpperCase());
+    // the chip never covers a kind badge: the badge is drawn above it (and lifted off the bottom edge)
+    const chip = tok('Keel').querySelector('[data-health-look]') as HTMLElement, kind = tok('Keel').querySelector('[data-kind]') as HTMLElement | null;
+    if (kind) expect(Number(kind.style.zIndex)).toBeGreaterThan(Number(chip.style.zIndex));
+    await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
+  });
 });

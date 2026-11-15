@@ -31,9 +31,11 @@ describe("rules 1.55 item 29: an un-Analyzed creature's health is one word of th
   });
   it('a 140 HP foe hit for 43 three times reads hurt (69%), badly hurt (39%), near death (8%); no bar', () => {
     const f = fightWith([{}], [{ tier: 'soldier' }]); const foe = f.foe; foe.maxHp = 140; foe.hp = 140; delete (foe as any).analyzedBy;
-    expect(healthView(foe)).toEqual({ known: false, pct: null, word: 'unhurt', tone: 'calm' });
+    expect(healthView(foe)).toEqual({ known: false, pct: null, word: 'unhurt', short: 'ok', tone: 'calm', full: true });
     const seen = [97, 54, 11].map((hp) => { foe.hp = hp; return healthView(foe); });
     expect(seen.map((v) => v.word)).toEqual(['hurt', 'badly hurt', 'near death']);
+    // rules 1.55 item 43: each rung's short form is the data's (the map token's chip when two would collide)
+    expect(seen.map((v) => v.short)).toEqual(L.ladder.slice(2).map((r: any) => r.short)); expect(seen.some((v) => v.full)).toBe(false);
     expect(seen.every((v) => v.pct === null && !v.known)).toBe(true);
     // the thresholds are the data's: each rung's own edge, and full HP only for the first
     const at = (hp: number) => { foe.hp = hp; return healthView(foe).word; };

@@ -3806,7 +3806,23 @@ function fieldWorld(g: GameState, a: Action, by: string) {
   if (FIELD_NOT.includes(w.act)) fail('The fight is over: on the field you walk, pick things up and use what you carry. Leave the field for the rewards.');
   if (w.unit) fail('On the field only the squad walks.');
   if (w.act === 'perk') { const c = g.characters[w.charId]; const no = c && w.id ? fieldRefusal(g, c, w.id, w.actionId) : null; if (no) fail(no); }
-  freshRound(g, w.charId); worldAct(g, w, by); freeAgain(g);
+  freshRound(g, w.charId); worldAct(g, w, by); fieldWriteBack(g); freeAgain(g);
+}
+/** What a squad token draws from its unit (its bar, its chips, its MP): what the field's write-back refreshes. */
+const FIELD_SHOWN = ['hp', 'maxHp', 'downed', 'conds', 'shield', 'shields'] as const;
+/** Rules 1.55 item 44: the field's one write-back to the fight it shows. Every field action writes to the characters
+ * (worldAct); the finished fight's squad units, which the field's tokens draw, are then read again from the characters
+ * as the field builds them (storyCb), so a token, its bar and the sheet agree (a stim on a friend, a heal, MP spent,
+ * a condition). Only what a token shows is copied; the fight's record (initiative, kills) stays. */
+function fieldWriteBack(g: GameState) {
+  if (!g.combat) return;
+  const fresh = storyCb(g).units;
+  for (const u of g.combat.units) {
+    const f = u.charId && !u.companion ? fresh.find((x) => x.charId === u.charId && !x.companion) : null; if (!f) continue;
+    const x = u as any, y = f as any;
+    for (const k of FIELD_SHOWN) { if (JSON.stringify(x[k]) === JSON.stringify(y[k])) continue; if (y[k] === undefined) delete x[k]; else x[k] = JSON.parse(JSON.stringify(y[k])); }
+    if (u.mg && f.mg && u.mg.mp !== f.mg.mp) u.mg.mp = f.mg.mp;
+  }
 }
 /** Rules 1.55 item 39: the fight screen's own action (its descriptors' combat/* action, descriptors.ts, which reads
  * the field through fieldCombat) as the area map's world/act on the field: the same fields, the unit as its character.

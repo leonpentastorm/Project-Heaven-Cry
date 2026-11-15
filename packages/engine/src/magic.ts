@@ -866,7 +866,7 @@ function aimError(cb: Combat, u: Unit, d: OutburstDesign, aim?: string, range?: 
   if (!aim) return 'Pick a target tile.';
   if (f === 'wave' || f === 'lance') return aim === u.pos ? 'Pick a direction (a tile away from you).' : null;
   const r = range ?? designRange(u.mg!, d);
-  if (dist(u.pos, aim) > r) return 'Out of reach (' + r + ' tiles).';
+  if (dist(u.pos, aim) > r) return 'Out of reach (' + r + (r === 1 ? ' tile' : ' tiles') + ').';
   if (!d.modules.includes('ether') && aim !== u.pos && !lineOfSight(cb, u.pos, aim) && !bankShot(cb, d, aim)) return 'No line of sight.';
   return null;
 }

@@ -6218,6 +6218,21 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    every once-a-fight use counts as spent (the safe side). Read in the one counter door (effects/uses.ts).
 42. **Counted items are data.** Which items a character keeps as a count (item 31) is `counted` on the item's row of
    items.json (the count's field: `stims`, `essence`), read once (`COUNTED`, data.ts; the validator checks it).
+43. **The health word on the map token** (item 4132; the lead's ruling on the two-player playtest, 15 Nov 2026: the
+   word sat under a foe's kind badge and read "UNH BOT T"). On the fight map the word is a chip at the token's bottom
+   edge, centred where the bar was, on one line, dark backed, in the word's tone, 13 px; it may be wider than the tile
+   (it overhangs evenly) and is drawn above neighbouring tiles' art, never over a kind badge (the badge keeps its
+   bottom-right corner, drawn above the chip). A creature at full HP shows no chip on the map (a chip there always
+   means "this one is hurt"); the target card and the turn strip still say unhurt. Where two hurt creatures side by
+   side would have their chips' words run into each other, the chip shows the rung's short form (`short` on each rung
+   of `combat.health_look.ladder`, PROVISIONAL: ok, scr, hurt, bad, dying; down and dead are short already); the
+   engine's `healthView` gives both, and the screen picks by measured width only. The full word everywhere else.
+44. **The field's token is the character** (item 4133; the two-player playtest, 15 Nov 2026: a stim used on a friend
+   on the field healed the character, but the friend's token kept the old HP: the field wrote to the character, and a
+   token not walked onto the field read the finished fight's unit). The field's one door for its actions
+   (`fieldWorld`, game.ts) now writes back to that unit after every action what a token draws (HP, Max HP, Downed,
+   conditions, shields, MP), read from the character as the field builds it (`storyCb`), so the token, its bar and the
+   sheet agree; the fight's record (initiative, kills) stays.
 
 ## Maps (rules 1.16)
 
@@ -9719,7 +9734,7 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
-4128. **Items 4121 to 4131 are rules 1.55's** (4129 to 4131: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word).
+4128. **Items 4121 to 4133 are rules 1.55's** (4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
 4129. **XP a node pays (rules 1.55 item 27, 0.28.2; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
     `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
     simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
@@ -9733,3 +9748,6 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
 4131. **The health word (rules 1.55 item 29):** a 140 HP foe nobody has Analyzed, hit for 43 three times, reads hurt
    (97, 69%), badly hurt (54, 39%), near death (11, 8%); the ladder is `rules.json combat.health_look.ladder`
    (PROVISIONAL). The engine's view (`healthView`) is the one place it is worked out; the screen draws its word.
+4132. **The token's short health word (rules 1.55 item 43):** `short` on each rung of `combat.health_look.ladder`: ok,
+   scr, hurt, bad, dying (PROVISIONAL); a token at full HP shows no chip on the map.
+4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number).

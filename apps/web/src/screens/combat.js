@@ -393,7 +393,34 @@ const witnessedTitle = (u, g) => 'Witnessed: until the fight ends or ' + (patron
 export const lookChip = (hv, pos = '') => 'display: inline-block; padding: 1px 6px; border-radius: 999px; font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; '
   + (hv.tone === 'dire' ? 'border: 1px solid #F65157; background: #F65157; color: #0A0D13' : hv.tone === 'hurt' ? 'border: 1px solid #F65157; background: rgba(10, 13, 19, 0.92); color: #F65157' : 'border: 1px solid #2E3A50; background: rgba(10, 13, 19, 0.92); color: #A3AEC2') + (pos ? '; ' + pos : '');
 export const lookWord = (hv) => hv.word.toUpperCase();
-const TOKEN_LOOK_POS = 'position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); z-index: 4';
+/** Rules 1.55 item 43: on the map the chip sits on the token's bottom edge, centred where the bar was, one line (it may
+ *  overhang the tile evenly), above the neighbouring tiles' art (z 5) and under a kind badge (TOKEN_KIND_POS, z 6). */
+const TOKEN_LOOK_POS = 'position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%); z-index: 5; padding: 0 5px; line-height: 12px';
+/** The kind badge keeps its bottom-right corner, lifted off the bottom edge so the health chip never runs under it. */
+const TOKEN_KIND_POS = '; bottom: 9px; z-index: 6';
+/** The map grid's tile pitch (46 px tiles, 2 px gap: gridStyle below), the room a token's chip has before a neighbour's. */
+const TILE_PITCH = 48;
+let measureCtx;
+/** A chip's drawn width (13 px bold, 0.06em letter spacing, 5 px padding, 1 px border): measured where a canvas can
+ *  measure, else estimated (tests). */
+export const chipWidth = (text) => {
+  if (measureCtx === undefined) measureCtx = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(1, 1).getContext('2d') : null;
+  let w = text.length * 13 * 0.62;
+  if (measureCtx) { measureCtx.font = '700 13px "Chakra Petch", sans-serif'; w = measureCtx.measureText(text).width; }
+  return w + text.length * 13 * 0.06 + 12;
+};
+/** Rules 1.55 item 43: which units' tokens carry a health chip on the map, and its words: none at full HP or read
+ *  exactly (the bar); the engine's long word, or its `short` where two side-by-side chips' words would run into each
+ *  other. The client picks only by width; the words are the engine's (healthView). Map of unit id to { text, style }. */
+export function tokenWords(units) {
+  const shown = units.filter((u) => u && u.pos && !u.unseen).map((u) => ({ u, hv: healthView(u) })).filter((o) => !o.hv.known && !o.hv.full);
+  const byPos = new Map(shown.map((o) => [o.u.pos, o])), short = new Set();
+  for (const o of shown) {
+    const [x, y] = String(o.u.pos).split(',').map(Number), n = byPos.get((x + 1) + ',' + y);
+    if (n && (chipWidth(lookWord(o.hv)) + chipWidth(lookWord(n.hv))) / 2 > TILE_PITCH) { short.add(o.u.id); short.add(n.u.id); }
+  }
+  return new Map(shown.map((o) => [o.u.id, { text: short.has(o.u.id) ? o.hv.short.toUpperCase() : lookWord(o.hv), style: lookChip(o.hv, TOKEN_LOOK_POS) }]));
+}
 const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; ';
 /** Witnessed is your patron watching (a boon), not a harm: the faith light and the eye, a short label (the how-long is in
  *  its title and the FAITH tab's header), and gone once the fight is over (it never outlives the fight). */
@@ -964,6 +991,7 @@ export class CombatLogic extends DCLogic {
     const condWord = (u) => healthView(u).word; // the engine's view (rules 1.55 item 29): the look's word
 
     const at = {}; cb.units.filter((u) => !u.dead).forEach((u) => { at[u.pos] = u; });
+    const tokWords = tokenWords(Object.values(at)); // rules 1.55 item 43: the map tokens' health chips, long or short
     // Combat clarity (fx/play.ts): a unit whose walk or coming-into-sight has not played yet (or is playing now) is drawn
     // see-through where the state already has it; the effects layer walks a copy of it there. The layer also learns
     // every unit's token look, to draw a walk whose unit has no token on screen (it fell at the end of it).
@@ -976,7 +1004,7 @@ export class CombatLogic extends DCLogic {
       return { box: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)' + (known ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.5)'),
         chip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #FFFFFF', fill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #F65157' + (known ? '' : '; opacity: 0.6') };
     };
-    setTokenLooks(cb.units.map((u) => { const kb = u.side === 'foe' ? kindBadge(u.kind, true) : null; return { id: u.id, src: faceOf(u) || '', style: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157'), kind: kb && kb.has ? { text: kb.text, style: kb.style } : null, hp: hpLook(u), word: healthView(u).known ? null : { text: lookWord(healthView(u)), style: lookChip(healthView(u), TOKEN_LOOK_POS) } }; }));
+    setTokenLooks(cb.units.map((u) => { const kb = u.side === 'foe' ? kindBadge(u.kind, true) : null; return { id: u.id, src: faceOf(u) || '', style: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157'), kind: kb && kb.has ? { text: kb.text, style: kb.style + TOKEN_KIND_POS } : null, hp: hpLook(u), word: tokWords.get(u.id) || null }; }));
     const sensedAt = {}; vis.sensed.forEach((k) => { sensedAt[k] = true; }); // a presence, no unit (spec: Vision, Sensory)
     const solid = new Set(cb.map.solid), diff = difficultOf(cb);
     // ---------- the chosen attack's reach in red (as on the area map): where it can land from here, as the engine allows ----------
@@ -1112,7 +1140,7 @@ export class CombatLogic extends DCLogic {
         unseen: !vis.tiles.has(k), sensed: !!sensedAt[k], dark: !!cb.map.dark && !litAt(cb, k),
         hasHzd: !!wc.hz, hzdLayer: wc.hz ? wc.hz.layer : '', hzdGlyph: wc.hz ? wc.hz.glyph : '', hzdGlyphStyle: wc.hz ? wc.hz.glyphStyle : '', hzdKind: wc.hz ? wc.hz.kind + (wc.hz.safe ? ' safe' : '') : '',
         hasCache: !!wc.cache && !u, hasCacheGlyph: !!wc.cache && !u && !spr, cacheGlyph: wc.cache ? wc.cache.glyph : '', cacheStyle: wc.cache ? wc.cache.style : '', cacheChip: wc.cache ? wc.cache.chip : '', cacheChipStyle: wc.cache ? wc.cache.chipStyle : '',
-        hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style : '', kindTitle: kb ? kb.title : '',
+        hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style + TOKEN_KIND_POS : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',
         hasPresence: !!prs, presence: prs || {},
         hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines }) : null, hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
@@ -1136,7 +1164,7 @@ export class CombatLogic extends DCLogic {
             shieldFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + Math.max(8, Math.min(100, sh / Math.max(1, u ? u.maxHp : 1) * 100)) + '%; background: #8BDEEE',
             hasGuard: gd > 0, guardBox: 'position: absolute; left: 5px; bottom: ' + (sh > 0 ? 10 : 6) + 'px; z-index: 3; display: flex; gap: 2px; pointer-events: none',
             guardPips: Array.from({ length: Math.min(5, gd) }, (_, i) => ({ key: 'g' + i, style: 'width: 5px; height: 5px; border-radius: 1px 1px 3px 3px; background: #E7EBF3; box-shadow: 0 0 0 1px rgba(5, 7, 11, 0.9)' })) }; })(),
-        hasLook: !!u && !isHeld && !known, lookText: hv && !known ? lookWord(hv) : '', lookStyle: hv && !known ? lookChip(hv, TOKEN_LOOK_POS) : '',
+        hasLook: !!u && !isHeld && tokWords.has(u.id), lookText: u && tokWords.has(u.id) ? tokWords.get(u.id).text : '', lookStyle: u && tokWords.has(u.id) ? tokWords.get(u.id).style : '',
         hasHp: !!u && !isHeld && known, hpBox: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)' + (known ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.5)'),
         hpChip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #FFFFFF', hpFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #F65157' + (known ? '' : '; opacity: 0.6'),
         hasJoin: !!(SL.tiles[k] && SL.tiles[k].length), join: SL.tiles[k] ? joinUri(SL.tiles[k], { size: 44, pad: 26, anchor: [9, 9], pitch: 48 }) : '',
@@ -1227,7 +1255,7 @@ export class CombatLogic extends DCLogic {
       draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise',
       pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch' }[S.action] || '';
     // The selected action's panel: on the flow, the descriptor's name and cost and the engine's preview in words.
-    const sel = { name: isMove ? actName + ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + ' tiles') : flow ? flow.sel.name : actName,
+    const sel = { name: isMove ? actName + ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + (mv === 1 ? ' tile' : ' tiles')) : flow ? flow.sel.name : actName,
       text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? (MO && MO.why ? MO.why : 'Hover a highlighted tile to see the path and its AP cost; click to move.')
         : flow ? flow.sel.text : S.action === 'analyze' && readSel ? readText : S.action === 'pickup' ? '' : 'Click a hostile to target it.',
       hasPick: false, pickFields: [], extra: flow ? flow.sel.extra : mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };

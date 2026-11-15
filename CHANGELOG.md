@@ -10,9 +10,9 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
-A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 42, every number PROVISIONAL): Survival XP
+A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP
 (items 27 and 28), the health word (item 29), hand-overs and the field's actions (items 30 to 36, and the lead's rulings
-on the review, items 37 to 42), Figments shown, and the Sigil words.
+on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words.
 
 ### Survival
 
@@ -65,6 +65,15 @@ on the review, items 37 to 42), Figments shown, and the Sigil words.
   heals 34"); the Bond card says what a Bond does and what heals, solo through an enemy Bond too, and no longer says
   "The Narrator decides the rest" (Bond, Let Go, Guide are the engine's); the echo's line names the Bonded enemies
   instead of the healer.
+- **The health word on a map token** (rules 1.55 item 43): the chip sits on the token's bottom edge, centred, one line,
+  and never runs under a kind badge (the badge sits above it, lifted off the edge; "UNH BOT T" is gone). An unhurt foe
+  shows no chip on the map (the target card and the turn strip still say UNHURT), so a chip means "hurt". Two hurt foes
+  side by side whose words would run together show the short words (SCR, HURT, BAD, DYING: `short` in
+  `rules.json combat.health_look`, provisional).
+- **A stim on the field shows on the token** (rules 1.55 item 44): the friend's token on the field kept the old HP after
+  a stim; every field action now refreshes the squad's tokens from the characters (HP, conditions, shields, MP).
+- **Small words:** "1 AP per 1 tile", "Out of reach (1 tile from Hound)"; the sheet's level-up button says "pick a perk"
+  when a perk step is all that is due (a level 1 character with a skill at Mastery 1 from creation), not "spend points".
 
 ### Figments
 

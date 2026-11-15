@@ -4,7 +4,7 @@
 // the fight spent kept spent, a Hymn's wait not counting down, the doubtful actions refused. Everything through the
 // reducer with real actions; numbers are read from the state and the data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, reachable, packOf, giveView, magazineWorth, maxHp, setDevotionXp, devotionThreshold, fieldRefusal, fieldActs, PERK } from '../src';
+import { type GameState, apply, RuleError, reachable, packOf, giveView, magazineWorth, maxHp, setDevotionXp, devotionThreshold, fieldRefusal, fieldActs, fieldCombat, PERK } from '../src';
 import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 import survivalJ from '../../../data/survival.json';
@@ -72,6 +72,19 @@ describe('rules 1.55 item 32: a stim on a friend with no map under the squad', (
     expect(refused(me, { type: 'world/act', charId: 'c1', act: 'stim', targetId: 'c2' } as any)).toBe('No stims left.');
     expect(giveView(healed, 'host').rows.find((r) => r.kind === 'count' && r.use)!.use!.why.c2).toBeNull();
     expect(refused(healed, { type: 'world/act', charId: 'c2', act: 'stim', targetId: 'c1' } as any)).toBe('Not your character.');
+  });
+});
+
+describe("rules 1.55 item 44: the field's token is the character", () => {
+  it("a stim on a friend on the field heals the friend's unit the field draws, not only the sheet", () => {
+    let g = besides(toField(inFight(DUO, (x) => { x.characters.c1.stims = 2; })));
+    const unitOf = (x: GameState) => x.combat!.units.find((u) => u.charId === 'c2' && !u.companion)!;
+    g.characters.c2.hp = 10; unitOf(g).hp = 10;
+    g = apply(g, { type: 'world/act', charId: 'c1', act: 'stim', targetId: 'c2' } as any, 'host');
+    expect(g.characters.c2.hp).toBeGreaterThan(10);
+    // the fight the field shows (its squad's tokens, walked into or not) reads the character's HP
+    expect(unitOf(g).hp).toBe(g.characters.c2.hp);
+    expect(fieldCombat(g)!.units.find((u) => u.charId === 'c2')!.hp).toBe(g.characters.c2.hp);
   });
 });
 
