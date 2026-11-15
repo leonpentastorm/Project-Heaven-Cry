@@ -16,6 +16,7 @@ import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments } from './figments';
+import { wrapBreaker, breakerBeat, noteBreaker } from './breaker';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
@@ -1384,6 +1385,8 @@ wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, pr
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
 // its rolls drawn one by one; it wraps everything above.
 wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose, explosion });
+// The Momentum chain 2.0 (fx/breaker.ts): the counter's moments, the impact ring, the finishers' lines, Launch, the smash.
+wrapBreaker(H, { at, tokOf, posOf: (id) => unit(id)?.pos, maxOf: (id) => unit(id)?.resMax?.momentum ?? null, play });
 // Figments (fx/figments.ts): the summon (the caster, a thread, the forming), their orders and attacks, their unmaking.
 wrapFigments(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, release: (id) => releaseMover(id), ghost: (id, key, life) => ghostOf(id, key, life) });
 /** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
@@ -1397,6 +1400,7 @@ function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
   if (e.k === 'roll') return 0; // a roll's numbers (engine rolls.ts): data for the dice read-out, no beat of its own
+  const bb = breakerBeat(e); if (bb !== undefined) return bb;
   const gb = figmentBeat(e); if (gb !== undefined) return gb;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
@@ -1585,6 +1589,7 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
   if (!evs.length) return;
   evs = meleePrepass(evs); // the melee techniques' movement beats over their moves, quick later strikes, Thrown Flurry flights
   evs = techPrepass(evs, streamsOwn); // a volley's rounds beyond its rolls on its last roll; a use technique's outcome (fx/techniqueFx.ts)
+  evs = noteBreaker(evs); // each melee hit learns its striker's Momentum after the blow (fx/breaker.ts: the impact ring)
   evs = feltAfterAttack(evs); // a feeling's unlock card after the attack it was felt in, never between its rattle and its rounds
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);

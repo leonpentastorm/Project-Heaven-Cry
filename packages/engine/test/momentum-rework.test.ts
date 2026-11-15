@@ -280,6 +280,6 @@ describe('11. the card and the hint', () => {
     const f = fight('sabre', []);
     const m = f.bound(() => phys.physView(f.cb, f.pc, 'pc')).momentum!;
     expect(m).toMatchObject({ now: 1, max: 3 });
-    expect(m.hint).toBe('A plain attack that hits gives 1. A Strike or an Opener spends 1; each tile you walk and each hit you take costs 1.');
+    expect(m.hint).toBe(phys.PHYS_RULES.momentum.texts.how); // rules 1.56: the hint is data (techniques.json rules.momentum.texts.how)
   });
 });

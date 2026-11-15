@@ -11,7 +11,17 @@
       "opener_cost": 1,
       "first_opener_free": true,
       "step_loss": 1,
-      "hit_loss": 1
+      "hit_loss": 1,
+      "show": {
+        "counter_min": 1,
+        "ring_base": 10,
+        "ring_per": 4,
+        "crack_at": 5,
+        "provisional": true
+      },
+      "texts": {
+        "how": "A plain melee attack that hits builds Momentum; a Strike or an Opener spends some, a Finisher spends it all; each tile you walk and each hit you take costs some. The number on your token is your Momentum."
+      }
     },
     "guard": {
       "max": 5,

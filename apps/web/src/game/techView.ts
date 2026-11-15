@@ -226,6 +226,18 @@ export function pressureLook(v: PhysView | null): { has: boolean; pips: { key: s
   return { has: true, pips, word, title: 'Pressure ' + p.now + ' / ' + p.max + ' · ' + word + (p.cost ? ': ' + p.cost : ''),
     style: 'position: absolute; left: 50%; top: 0; transform: translateX(-50%); z-index: 4; display: flex; gap: 2px; padding: 1px 2px; border-radius: 4px; pointer-events: none; background: rgba(5, 7, 11, 0.6)' };
 }
+/** Rules 1.56 (the Momentum chain 2.0): the counter on a token, "x3", in Strength's ink, from the engine's physView
+ *  (its now and max) and the data's `techniques.json rules.momentum.show.counter_min`. Full: a double ring and "MAX" in
+ *  its title. Nothing is worked out here: the number is the engine's. */
+export const STRENGTH_INK = '#F68A38';
+export function momentumLook(v: PhysView | null): { has: boolean; text: string; title: string; style: string; full: boolean } {
+  const m = v?.momentum, min = Number((phys as any).PHYS_RULES?.momentum?.show?.counter_min ?? 1);
+  if (!m || m.now < min) return { has: false, text: '', title: '', style: '', full: false };
+  const full = m.now >= m.max;
+  return { has: true, full, text: 'x' + m.now, title: 'Momentum ' + m.now + ' / ' + m.max + (full ? ' · MAX' : '') + (m.hint ? ' · ' + m.hint : ''),
+    style: 'position: absolute; left: -5px; bottom: -4px; z-index: 4; min-width: 18px; padding: 0 3px; border-radius: 7px; box-sizing: border-box; pointer-events: none; font: 700 10px/13px Chakra Petch, sans-serif; text-align: center; color: ' + STRENGTH_INK + '; background: rgba(5, 7, 11, 0.85); '
+      + (full ? 'border: 3px double ' + STRENGTH_INK : 'border: 1px solid ' + STRENGTH_INK) };
+}
 /** The hover card's lines for a unit: its Pressure and state, and that it can't be stopped again this round. */
 export function physLines(v: PhysView | null): string[] {
   if (!v) return [];
