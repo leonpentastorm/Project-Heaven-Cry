@@ -10,12 +10,13 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.28.3
 
-### The Durability tank (lane T; rules 1.55 items 0.28.3-T.1 to T.3, PROVISIONAL; `docs/design/proposals/2026-11-tank-fit.md`)
+### The Durability tank (lane T; rules 1.55 items 0.28.3-T.1 to T.5, PROVISIONAL; `docs/design/proposals/2026-11-tank-fit.md`)
 
 - The Guard technique is Durability's own: on the pad with any weapon from Durability 1 (a tank with the camp's rifle could only Brace, once until it moved). Still learned for a melee weapon without the points.
-- Guard soaks 6 a point (was 10): in Survival stage 1 an all-in tank's Guard now takes 45% of the damage aimed at it beside a gunner (9% before), 70% alone (13%).
-- While you hold Guard, weapon attacks roll +1 a Durability point above 3, at most +4 (skills.json `durability.1`): the all-in tank hits 49-50% (39% before; the gunner 63%).
-- Golden tables and replay hashes re-recorded on purpose (Guard on the pad of every Durability holder, the soak, the to-hit door).
+- Guard soaks 6 a point (was 10) and the pool holds 4 at most (was 5): in Survival stage 1 an all-in tank's Guard now takes 35% of the damage aimed at it beside a gunner (9% before), 58% alone (13%).
+- While you hold Guard, weapon attacks roll with Durability's modifier in place of the weapon's skill when it is higher, never on top (skills.json `durability.1`): the all-in tank hits 56-59% (39% before; the gunner 63%). The attack's preview and the gear card say "Hits with: Durability (holding Guard)".
+- A new general item op, `roll_with` {skill, if_higher} on the attack: any item may make an attack roll with another skill (one choice, `combat.ts rollWithPick`, read by the roll, the preview and the card).
+- Golden tables and replay hashes re-recorded on purpose (Guard on the pad of every Durability holder, the soak, the pool, the roll). The hiding replay's scripted plain gun also goes to ground from its third turn, so the coverage bar (2 units to ground) holds.
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 

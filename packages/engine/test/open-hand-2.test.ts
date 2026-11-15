@@ -9,12 +9,14 @@ import { actionsFor, previewDescriptor, sendDescriptor, previewAttack, resolveAt
 import { usable } from '../src/physical/core';
 import { fightWith, withGame } from './helpers/perkfight';
 import { dice } from './golden/harness';
+import ITEMSJ from '../../../data/items.json';
+import { SKILL } from '../src';
 
 const HIT = { die: 10, hit: true };
-type Spec = { weapon?: string; offHand?: string | null; armourClass?: number; tier?: string; foeWeapon?: string };
+type Spec = { weapon?: string; offHand?: string | null; armourClass?: number; tier?: string; foeWeapon?: string; skills?: Record<string, number> };
 /** A monk next to one foe, on the monk's turn. */
 function monk(o: Spec = {}) {
-  const f = fightWith([{ archetype: 'monk', weapon: o.weapon || 'hand_wraps', offHand: o.offHand === undefined ? null : o.offHand, armourClass: o.armourClass ?? 1 }],
+  const f = fightWith([{ archetype: 'monk', weapon: o.weapon || 'hand_wraps', offHand: o.offHand === undefined ? null : o.offHand, armourClass: o.armourClass ?? 1, ...(o.skills ? { skills: o.skills } : {}) }],
     [{ at: 'F6', tier: o.tier || 'soldier', weapon: o.foeWeapon }]);
   const [x, y] = f.foe.pos.split(',').map(Number);
   f.g.combat!.units.find((u) => u.side === 'pc')!.pos = (x - 1) + ',' + y;
@@ -119,5 +121,36 @@ describe('the small fixes', () => {
     expect(() => f.act({ type: 'sandbox/give', charId: c.id, item: 'open_hand' } as any)).toThrow();
     const line = (gearPreview as any)(c, { id: 'iron_mitts', rarity: 'standard' }).lines.find((l: any) => l.key === 'carried:open_hand');
     expect(line.value).toContain('Open guard'); expect(line.value).toContain('−2');
+  });
+});
+
+// Rules 1.56 with rules 1.55's roll_with (the 0.29 integration): one attribute is enough. The family's carried modifier
+// (items.json open_hand) lets a glove's attack roll with the better of Raw Power and Dexterity, in place of the glove's own
+// skill: a Strength-only and an Agility-only monk each hit with their own skill on the same glove.
+describe('One attribute is enough: a glove hits with the better of Raw Power and Dexterity (op roll_with on the Open Hand)', () => {
+  const ROW: any = (ITEMSJ as any).items.find((x: any) => x.id === 'open_hand').effects.find((e: any) => e.op === 'roll_with');
+  /** The blow's modifier as the reducer rolls it (the log's d20 line), and the preview's skill term's label. */
+  const blow = (skills: Record<string, number>, weapon: string) => {
+    const { f, u } = monk({ weapon, skills });
+    const terms = withGame(f.g, () => (previewAttack(f.cb, f.unit(u.id), f.unit(f.foe.id), 'melee', { free: true }) as any).terms || []);
+    const n0 = f.cb.log.length;
+    dice({ die: 10, hit: true }, () => f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'melee' } as any));
+    const line = f.cb.log.slice(n0).find((l: string) => /d20 10/.test(l)) || '', m = /d20 10 ([−+-]\s?\d+)/.exec(line);
+    return { mod: m ? Number(m[1].replace('−', '-').replace(/\s/g, '')) : NaN, hitsWith: terms.find((t: any) => /^Hits with/.test(t.label))?.label || null };
+  };
+  it('the data: roll_with [raw_power, dexterity], if higher, with only the family in the hands', () => {
+    expect(ROW).toMatchObject({ op: 'roll_with', when: 'attack', skill: ['raw_power', 'dexterity'], if_higher: true });
+  });
+  for (const weapon of ['knuckledusters', 'striking_gloves']) it(weapon + ': Strength-only and Agility-only hit with the same modifier, each through its own skill', () => {
+    const str = blow({ raw_power: 6, dexterity: 0 }, weapon), agi = blow({ raw_power: 0, dexterity: 6 }, weapon);
+    expect(Number.isNaN(str.mod)).toBe(false); expect(agi.mod).toBe(str.mod);
+    const own = weapon === 'knuckledusters' ? 'raw_power' : 'dexterity', other = own === 'raw_power' ? 'dexterity' : 'raw_power';
+    const byOwn = own === 'raw_power' ? str : agi, byOther = own === 'raw_power' ? agi : str;
+    expect(byOwn.hitsWith).toBeNull(); // the glove's own skill is the better: it stands
+    expect(byOther.hitsWith).toBe('Hits with: ' + (SKILL as any)[other].name + ' (' + ROW.label + ')');
+  });
+  it('never on top: with both at 6 the glove rolls its own skill, no higher', () => {
+    const both = blow({ raw_power: 6, dexterity: 6 }, 'knuckledusters'), str = blow({ raw_power: 6, dexterity: 0 }, 'knuckledusters');
+    expect(both.mod).toBe(str.mod); expect(both.hitsWith).toBeNull();
   });
 });

@@ -4,7 +4,12 @@ Leon, co-op Survival on live 0.28.2: "durability tank is crazy weak, maybe we te
 survival do not give you one, but the tank can't hit shit due to all skill point being in durability and his shield
 points block NOTTHING", and "they [the Bond healer] carry the weak as shit tank in my run".
 
-Spec: rules 1.55, items 0.28.3-T.1 to T.3 (the integrator renumbers). Every number PROVISIONAL.
+Spec: rules 1.55, items 0.28.3-T.1 to T.5 (the integrator renumbers). Every number PROVISIONAL.
+
+**The lead's rulings (15 Nov 2026), built:** T.3 is the new general op `roll_with` (not the stacking `roll_mod`
+fallback); Guard's pool `max` 5 → 4; the replay coverage bar back at 2; G3 not built. Section 3b holds the
+re-measure. **16 Nov 2026:** the solo tank clearing stage 1 on 16 of 16 seeds is accepted for this release (section 5
+item 1, a call made for Leon).
 
 ## How it was measured
 
@@ -66,7 +71,9 @@ Wall). Survival's camp gives none (the camp shield is another lane's).
 | --- | --- | --- | --- |
 | T.1 | the Guard technique is Durability's own: on the pad and usable with **any** weapon from Durability 1; still learned for a melee weapon by anyone without the points | `techniques.json guard.innate` | (none) → `{skill: durability, min: 1}` |
 | T.2 | Guard soaks 6 a point | `techniques.json rules.guard.soak` | 10 → 6 |
-| T.3 | while you hold Guard, weapon attacks roll +1 a Durability point above 3, at most +4 (Living Wall: −2 → +2, as 3 points in the weapon's skill) | `skills.json durability.unlocks.1` (new, `item`) | a `roll_mod` on `attack`, `if self_has_res [guard]`, value `{base −3, per skill:durability 1, min 0, max 4}` |
+| T.3 | while you hold Guard, weapon attacks roll with Durability's modifier in place of the weapon skill's when it is higher, never on top (Living Wall: −2 → +6) | `skills.json durability.unlocks.1` (new, `item`) | op `roll_with` {skill durability, if_higher} on `attack`, `if self_has_res [guard]` (first built as a stacking `roll_mod`, +1 a point above 3, at most +4: replaced by the lead's ruling) |
+| T.4 | Guard's pool holds 4 at most | `techniques.json rules.guard.max` (and `skills.json durability.per_point.numbers.pool_max`) | 5 → 4 |
+| T.5 | the op `roll_with` (general: any item may carry it) | `effect_ops.json`, `effects/triggers.ts`, `combat.ts rollWithPick` | new core item op |
 
 T.1 is general code, not a new primitive: `innate` (a skill gives the technique, as Interpose) now also serves a pressed
 technique: `physical/data.ts given` (only an innate **Answer** is never learned), `physical/core.ts usable` (an innate
@@ -96,6 +103,30 @@ Trials of Guard's numbers (12 seeds, Wall alone / beside a gunner; Holdfast alon
 52%, 60% / 39%; soak 7: 72% / 45%; soak 6: 69% / 44%, 38% / 24% (with `gain_base` 0); soak 5: 65% / 39%, 47% / 25%;
 soak 6 and `max` 4: 58% / 36%; soak 8 and `max` 3: 48% / 32%.
 
+## 3b. After the lead's rulings: roll_with and the pool at 4 (16 seeds a party, same seeds)
+
+| party · who | to hit | Guard took (share) | reached it / fight | Guard AP / fight | stage 1 cleared |
+| --- | --- | --- | --- | --- | --- |
+| solo Living Wall | **59%** | 17.0 (**58%**) | 12.3 | 3.4 | **16/16** |
+| Wall + gunner · Wall | 56% | 18.7 (**35%**) | 35.1 | 3.0 | **9/16** |
+| Wall + gunner · gunner | 63% | | 32.4 | | |
+| Wall + healer · Wall | 55% | 31.1 (31%) | 70.3 | 4.0 | 5/16 |
+| solo Holdfast (Durability 3) | 48% | 20.6 (49%) | 21.4 | 4.1 | 13/16 |
+| Holdfast + gunner · Holdfast | 49% | 12.6 (**24%**) | 39.7 | 2.6 | 5/16 |
+| references (unchanged): solo gunner 11/16; gunner + healer 8/16; two gunners 6/16 | | | | | |
+
+The trial of the second lever, `soak` 5 with `max` 4 (`TANK_GUARD='{"soak":5}'`): solo Wall 60% to hit, 54% absorbed,
+**16/16**; Wall + gunner 28%, 5/16; Wall + healer 30%, 8/16; solo Holdfast 43%, 10/16; Holdfast + gunner 23%, 5/16.
+
+**What was chosen: `max` 4, `soak` 6.** Neither lever brings a solo tank into 9 to 13 of 16: it clears 16 of 16 with
+either, because what carries it now is the hit, not the Guard (`roll_with` rolls Durability 7 at +6 where the stacking
+fallback gave −2 + 4 = +2: 59% to hit, against the gunner's 63%, and it still takes about half of what is aimed at it).
+`soak` 5 cuts co-op (Wall + gunner 9/16 → 5/16, Guard 35% → 28%) and leaves solo where it is, so it was not taken.
+As ruled, the levers were not chased further: the solo figure is for the lead (the next levers would be the hit
+itself, a cap below Durability's full modifier, or G3's pressure on the tank). Wall + healer fell from 11/16 (the
+first fit) to 5/16: the healer's pair now loses more to the pool's smaller cap; 8/16 with `soak` 5, so it is noisy
+at 16 seeds.
+
 ## 4. Against the lead's targets
 
 - **G1, Guard must block.** Met beside a partner (45%, in the 40-50 band; the control shows the same character not
@@ -114,23 +145,28 @@ soak 6 and `max` 4: 58% / 36%; soak 8 and `max` 3: 48% / 32%.
 
 1. **Solo strength.** A solo all-in tank now clears stage 1 on 16 of 16 seeds (the solo gunner: 11). Leave it (a tank
    alone is slow but safe), or `max` 5 → 4 (solo 58%, co-op 36%), or soak 6 → 5.
+   **Ruled by the lead (16 Nov 2026), a call made for Leon, to reverse if he wants:** accepted for 0.28.3 as it is (with
+   `max` 4, `soak` 6). The solo tank wins slowly; its number fit comes with Balance 2.0.
 2. **The dabbler** sits above the 20% target (28% beside a gunner). `gain_base` 1 → 0 brings it to 24% and leaves the
    all-in tank unchanged, but the Guard technique's text and skills.json `durability.per_point.numbers.guard_base`
    (a second copy of `rules.guard.gain_base`) carry the 1 as typed numbers: both texts would change with it.
-3. **The exact door rule** (G2 as written) needs a primitive (below). The fallback stacks: a character with 7 in both
-   Dexterity and Durability adds +4 on top of its own skill; the exact rule would not.
-4. **The card.** The gear card's "Hits with" line still names the weapon's skill (it is drawn outside a fight, where
-   nobody holds Guard); the attack's own preview lists the term "Guard (Durability) +N".
-5. A replay guard's coverage count moved: units that went to ground in the default replay set 2 → 1 (the tank build
-   now spends its last AP on Guard); the bar is now "at least 1".
+3. **The exact door rule** (G2 as written): **built** as the op `roll_with` (ruled; replaces the stacking fallback).
+4. **The card.** The gear card keeps "Hits with: Dexterity · −2" and adds "Hits with: Durability (holding Guard) · +6"
+   when an item's `roll_with` would roll with a higher skill; the attack's preview names the skill term "Hits with:
+   Durability (holding Guard)" in place of "skill" while Guard is held.
+5. The replay coverage bar for units that went to ground is back at 2 (ruled). Re-recorded, the default set's
+   `proving-doors-hiding-watches` had one: its blade (c1) went to ground on its second turn and was never found
+   again before the fight ended (the squad's tank hits harder, the fight is shorter). Under the leave to add actions
+   and never remove one, the scripted plain gun (c3) now also goes to ground from its third turn
+   (`test/helpers/replay.ts`); the set has 3.
 
 ## Needs a new primitive
 
-- **The attack's skill replaced** (G2 exactly): an op `roll_with` on trigger `attack`, fields `skill`, `if_higher`:
-  the attack's skill term (`att.attack`'s check modifier part) becomes this skill's check modifier while its `if` holds;
-  read also by `gearpreview.ts skillLines` so the card says "Hits with: Durability (holding Guard)". Alternatively a
-  predicate `weapon_skill` (the attack's weapon hits with one of these skills) so a number block can subtract the
-  weapon skill's modifier; the op is the cleaner one.
+- ~~**The attack's skill replaced**~~ **approved and built** (the lead, 15 Nov 2026): op `roll_with` {skill (an id or a
+  list: the best), if_higher} on `attack`. The op files an offer on the attack's preview; `combat.ts rollWithPick` is
+  the one choice (the skill term becomes `att.attack` − the weapon skill's `mod` + the offered skill's `mod`), read by
+  `previewAttack` (so the roll, which reads the preview's to-hit, and the attack's preview) and by
+  `gearpreview.ts skillLines` (the card). A unit with no character behind it (an enemy) is never changed.
 - **G3, a foe next to a Guarding tank who attacks someone else is worse off:** either a `condition` op field `within`
   (put the condition on every foe within N tiles of the holder: the Guard technique's acted effects would put the
   existing Taunted, or a lighter "Held" condition, on adjacent foes), or a predicate `target_is_source` on a condition

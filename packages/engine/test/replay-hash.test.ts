@@ -102,9 +102,7 @@ describe('whole-game replays (enemy AI on) play exactly as recorded', () => {
     expect(games('lines', 'opportunity'), 'games with an opportunity attack').toBeGreaterThanOrEqual(2);
     expect(total('lines', 'answer'), '"answers with" lines').toBeGreaterThan(8); // 11 since rules 1.26 (fights end sooner where the squad hits harder early); 16 or more before
     expect(games('lines', 'answer', 3), 'games with three Answers or more').toBeGreaterThanOrEqual(2);
-    // 1 since rules 1.55, 0.28.3-T.1 (the Guard technique is Durability's with any weapon: the tank build spends the AP
-    // it went to ground with on Guard instead); 2 before
-    expect(total('lines', 'hides'), 'units that went to ground').toBeGreaterThanOrEqual(1);
+    expect(total('lines', 'hides'), 'units that went to ground').toBeGreaterThan(1);
   });
   it('what the policies read changes only the items\' bags, never the recorded game, and never the play', () => {
     // Reading a preview creates an item's bag on the unit it read, and some items fill theirs on a read (effects/index.ts
