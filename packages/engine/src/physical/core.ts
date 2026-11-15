@@ -999,6 +999,10 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
     pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
       cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,
+    // rules 1.55: the thrown weapons stuck in this unit, and the ones this unit has stuck in others (the sheet's line)
+    stuck: ((u.stuck || []) as any[]).map((x) => ({ weapon: x.weapon as string, name: WEAPON[x.weapon]?.name || 'weapon', by: x.by as string, byName: cb.units.find((y) => y.id === x.by)?.name || '' })),
+    thrown: viewerSide !== u.side ? [] : cb.units.filter((v) => alive(v) && v.id !== u.id).flatMap((v) => ((v.stuck || []) as any[]).filter((x) => x.by === u.id).map((x) => ({ weapon: x.weapon as string, name: WEAPON[x.weapon]?.name || 'weapon', in: v.id, inName: v.name,
+      text: 'Your ' + (WEAPON[x.weapon]?.name || 'weapon').toLowerCase() + ' is stuck in ' + v.name + ': Pull Out from next to it brings it back, or it falls when ' + v.name + ' does.' }))),
     nailed: u.nailed ? { ap: u.nailed.ap, by: cb.units.find((x) => x.id === u.nailed!.by)?.name || '', text: 'Nailed in place until ' + u.nailed.ap + ' AP is spent to pull free' } : null,
     watch: w && (viewerSide === u.side || sideSees(cb, viewerSide, u)) ? { id: w.id, name: TECHNIQUE[w.id]?.name || w.id, trigger: w.trigger, tile: w.tile || null, tiles: w.tiles || (w.tile ? [w.tile] : []), mine: viewerSide === u.side } : null,
   };

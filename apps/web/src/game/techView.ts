@@ -233,6 +233,7 @@ export function physLines(v: PhysView | null): string[] {
   if (v.pressure && v.pressure.now) out.push((v.pressure.word || 'Under fire') + ' (Pressure ' + v.pressure.now + ' / ' + v.pressure.max + ')' + (v.pressure.cost ? ': ' + v.pressure.cost : ''));
   if (v.stopped) out.push('Stopped once: ' + v.stopped.text.charAt(0).toLowerCase() + v.stopped.text.slice(1));
   if (v.watch) out.push('Holding ' + v.watch.name + (v.watch.tile ? ' on ' + v.watch.tile : ''));
+  for (const x of v.stuck || []) out.push('A ' + x.name.toLowerCase() + ' is stuck in it' + (x.byName ? ' (' + x.byName + ''s)' : '')); // rules 1.55
   return out;
 }
 /** The You card's chips (key, k: the short word, t: what it means, style): your Pressure with its state, cost and who
@@ -246,6 +247,8 @@ export function physChips(v: PhysView | null, refOf: (k: string) => string, styl
   if (v.watch && v.watch.mine) out.push({ key: 'watch', k: v.watch.name.toUpperCase() + (v.watch.tile ? ' · ' + refOf(v.watch.tile) : ''), style,
     t: 'Holding ' + v.watch.name + ': it fires when ' + ({ moves: 'an enemy moves in your sight', enters_tile: 'someone steps onto the tile', attacks_ally: 'someone attacks the ally you cover', acts: 'the target acts' } as Record<string, string>)[v.watch.trigger] + '.' });
   if (v.stopped) out.push({ key: 'stopped', k: 'STOPPED ONCE', style, t: v.stopped.text + '.' });
+  // rules 1.55: each weapon you threw that is stuck in someone (the engine's words)
+  (v.thrown || []).forEach((x, i) => out.push({ key: 'thrown' + i, k: x.name.toUpperCase() + ' STUCK IN ' + x.inName.toUpperCase(), style, t: x.text }));
   return out;
 }
 /** Every held Watch your side can see, on the map: its tiles tinted (red for an enemy's, white for your side's), a

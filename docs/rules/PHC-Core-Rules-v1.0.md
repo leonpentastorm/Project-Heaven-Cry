@@ -1145,8 +1145,8 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 11 | **Hamstring** | weapon | Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. | **Edge:** no save. **Hook:** Prone instead of Slowed. **Point:** it also can't Sprint or Disengage while Slowed. |
 | 12 | **Bind** | weapon | No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding. | **Hook:** Brain save or it is Disarmed. **Bare:** it is Grappled. **Heavy:** the −2 becomes −4. |
 | 13 | **Half-Sword** | weapon | A short, driven thrust: ×0.8 damage, ignores 10 armour. | **Point:** ignores all armour. **Heavy:** full damage. **Bare or Blunt:** not available (greyed, with the reason). |
-| 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or **Pull Out** from next to it brings it back. On a miss it lands on the target's tile. | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
-| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum. Everyone knows it. | |
+| 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or **Pull Out** from next to it brings it back. On a miss it lands on the target's tile. **Comes with a Thrown weapon** (rules 1.55: the combat knife, throwing knives, the hatchet; any other weapon only when readied). | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
+| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum. Everyone knows it. *(Rules 1.55: the stuck weapon is drawn on the target's token, and the thrower's sheet says where it is.)* | |
 
 **Links**
 
@@ -1263,7 +1263,7 @@ Melee:
 | Lance | Heavy, Point, Reach | Raw Power | Strength | Charge |
 | Gloves or bare fists | Light, Bare | Raw Power | Strength, Raw Power, Dexterity | Bind |
 | Throwing knives | Light, Point, Thrown | Dexterity | Agility | Flurry |
-| Hatchet | Light, Edge, Hook, Thrown | Dexterity | Agility | Throw |
+| Hatchet | Light, Edge, Hook, Thrown | Dexterity | Agility | Drag *(rules 1.55; it lent Throw, which now comes with Thrown)* |
 | Legion gladius | Light, Point, Edge | Dexterity | Agility | Parry |
 | Kemizuchi duelling blade | Light, Point | Dexterity | Agility | Lunge |
 | War axe | Heavy, Edge, Hook | Raw Power | Strength | Sunder |
@@ -6012,6 +6012,19 @@ standard core's 150 credits (Magic, "Mana cores").
    shop, the Forge, every place, the rewards, the stage screen); its right panel is the mana forecast, the run, the run
    board and the squad, with no area map and no quest board. Every "full screen" of rules 1.42 to 1.52 is superseded by
    it.
+
+## Rules 1.55 (15 Nov 2026)
+
+Release 0.28.1, the playtest fixes. A later revision overrides the body and the earlier ones.
+
+### Throw, Pull Out and the stuck weapon (Leon, 15 Nov 2026, ruling B)
+
+Leon: a weapon stuck in someone after a Throw needs a mark, and any weapon with Pull Out needs Throw with it "or it's useless". Ruled B: Throw comes with throwable weapons only, and Pull Out is for a weapon that is actually stuck.
+
+1. **Throw (technique 14) comes with the Thrown property** (`comes_with: ["thrown"]`, data): every melee weapon with Thrown offers it with nothing readied (today the combat knife, the throwing knives and the hatchet); a new Thrown weapon offers it with no code change, and the validator refuses a Thrown melee weapon that no technique comes with. Any other weapon still throws only when Throw is readied, at −2 to hit and ×0.7 as before. PROVISIONAL.
+2. **The hatchet lends Drag** (its Hook line) in place of Throw, which it now has by its Thrown property. PROVISIONAL.
+3. **The stuck weapon is shown.** Each weapon stuck in a unit (up to three drawn) is drawn in its token at an angle, outlined in its thrower's side colour; it goes when Pull Out takes it or the unit falls. The thrower's sheet carries one line a weapon: "Your <weapon> is stuck in <name>", and the target's hover card says a weapon is stuck in it and whose. The words are the engine's (`physView`: `stuck`, `thrown`).
+4. **Pull Out (technique 28) is unchanged in rule:** next to the unit, a free hand, 1 AP, no roll; the reducer refuses it with nothing stuck ("No weapon is stuck in …") or from further off. *Open (needs a primitive):* it is still listed on every melee pad; listing it only when a weapon is stuck within reach needs a technique availability field the engine doesn't have (0.28.1 hand-off).
 
 ## Maps (rules 1.16)
 

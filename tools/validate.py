@@ -1703,6 +1703,11 @@ if isinstance(tq, dict):
             errors.append(f"{where}: teaches '{tch}', which a weapon with its properties can't use (not_with)")
         if tch and techs.get(tch, {}).get("free"):
             warns.append(f"{where}: teaches '{tch}', which everyone already knows")
+        # rules 1.55: a melee weapon with the thrown property offers a technique that comes with it (Throw), by data
+        if sysm == "melee" and "thrown" in (ph.get("props") or []) and not any(
+                t.get("system") == "melee" and "thrown" in (t.get("comes_with") or [])
+                and not set(t.get("not_with") or []) & set(ph.get("props") or []) for t in techs.values()):
+            errors.append(f"{where}: has the thrown property, but no melee technique comes with it (rules 1.55: Throw)")
 
 # ---------------------------------------------------------------------------------------------- amount blocks
 # Step a6 of the damage-formula migration (docs/design/proposals/2026-11-unified-damage.md 2.5; data/CONVENTIONS.md):

@@ -2462,7 +2462,7 @@
         "scales_with": [
           "agility"
         ],
-        "teaches": "throw"
+        "teaches": "drag"
       }
     },
     {
