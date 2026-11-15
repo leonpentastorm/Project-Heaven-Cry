@@ -41,4 +41,12 @@ describe('the camp\'s screen (rules 0.28.3-C.1)', () => {
     expect(h).not.toContain('NOT PICKED'); expect(count(h, /data-phc-done="1"/g)).toBeGreaterThanOrEqual(2);
     expect(h).toContain('✓ YOURS · FREE'); expect(h).toContain('data-phc-camp-take-free="Swap to this (free)"');
   });
+  it('0.28.3-C.5: a kit the reducer would refuse greys the Recommended button and says why', () => {
+    ME = 'host'; expect(draw()).not.toContain('data-phc-camp-rec-why');
+    const was = G; G = JSON.parse(JSON.stringify(G));
+    G.run!.loadout!.c1.base.pack.push({ id: 'buckler', item: 'buckler', name: 'Buckler', qty: 200, kind: 'gear' } as any); // over any carry limit
+    const h = draw(), btn = h.slice(h.indexOf('data-phc-camp-recommended'), h.indexOf('</button>', h.indexOf('data-phc-camp-recommended')));
+    expect(btn).toContain('disabled=""'); expect(btn).toMatch(/data-phc-camp-rec-why=""[^>]*>Can(&#x27;|')t take it: Too heavy: /);
+    G = was;
+  });
 });

@@ -6249,7 +6249,21 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    the off hand through the one equip rule (character.ts `equip`, 'off'): one at a time; refused in words beside a
    two-handed weapon ("Buckler: your main-hand weapon needs both hands.") or when the free focus already holds the off
    hand. The Recommended loadout is data by profile (focus fuel, gun or melee), not by archetype, so it does not add a
-   shield. PROVISIONAL.
+   shield (superseded by 0.28.3-C.3). PROVISIONAL.
+0.28.3-C.3. **The tank's Recommended kit** (Leon, 15 Nov 2026: "durability tank is crazy weak ... survival do not give
+   you one"). The Recommended table (`survival.json loadout.recommended.weapon`) is read top down and its first fitting
+   row gives the kit. A row may be keyed by `top`: an alpha skill (a door) with points and no fewer than any other
+   alpha skill. A row may give `hands` (1H or 2H) instead of an archetype: its weapon is the free weapon of that many
+   hands the character may carry whose skill it has the most points in, a tie to the dearer by priceOf. `focus: false`
+   takes no free focus; `profile` names the row's buys. The first row: Durability on top, a one-hander, no focus, the
+   `tank` buys (the Buckler, then Class 1 armour, then a stim, each while the budget pays; at a budget of 300 the
+   Buckler at 200 leaves no room for the armour at 150). Every other character's kit is unchanged. PROVISIONAL (the row,
+   the buys).
+0.28.3-C.4. **A focus behind a shield, in words that help.** With an off-hand item held, taking the free focus is refused
+   with "Your off hand holds the Buckler. Put it back to take a focus." (run/loadout.ts rebuild, the one place the
+   camp's refusals are worded); the other way round keeps "Buckler: the off hand already holds the Evoker."
+0.28.3-C.5. **The Recommended button tells the truth.** The camp view's `recommended.why` is the reducer's own refusal
+   for that kit (the same trial the cards use), or null; with one, the button is greyed and shows the reason.
 
 ## Maps (rules 1.16)
 

@@ -29,8 +29,12 @@ const SV: any = svJ;
 export const LOADOUT: {
   budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string> }; gun: { loaded: number; spare: number }; bow: { spare: number };
   focuses: string[]; focus_with: Record<string, { id: string; qty: number }[]>; counter: { skip: string[] }; stock: { ids: string[] }; max_qty: number;
-  recommended: { focus_by_door: Record<string, string>; weapon: { when?: 'focus'; skill?: string; over?: string; archetype: string }[]; buys: Record<string, string[]>; fill: string };
+  recommended: { focus_by_door: Record<string, string>; weapon: RecRow[]; buys: Record<string, string[]>; fill: string };
 } = SV.loadout;
+/** A row of the Recommended weapon table (survival.json `loadout.recommended.weapon`): when it fits (`when` focus, `skill`
+ * over `over`, `top` an alpha skill on top), and what it gives: an archetype's free weapon, or (rules 0.28.3-C.3) the
+ * best free weapon of `hands`; `focus` false takes no free focus; `profile` names its buys. */
+export interface RecRow { when?: 'focus'; skill?: string; over?: string; top?: string; archetype?: string; hands?: '1H' | '2H'; focus?: boolean; profile?: string }
 /** A weapon archetype (survival.json `loadout.archetypes`; Leon, 14 Nov 2026): a weapons.json family as the data groups
  * it (its mastery_family and category), less `skip`. */
 export interface Archetype { id: string; name: string; family: string; category: string; skip?: string[] }
@@ -91,6 +95,7 @@ export function loadoutSpent(c: Character, p: LoadoutPick): number {
  * then half-built: callers rebuild on a copy), or null. Lines the menu no longer has (ammunition for a gun put back)
  * are dropped from `p.take`. */
 function rebuild(c: Character, p: LoadoutPick): string | null {
+  const was = c.offHand?.id || null; // what the off hand held before this change (the refusal's words, rules 0.28.3-C.4)
   c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete c.quivers;
   c.pack = p.base.pack.map((x) => ({ ...x })); c.worn = { ...p.base.worn };
   // (c.pack itself, read each time: equip (an off-hand item, below) puts a new pack on the character)
@@ -127,7 +132,8 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
     } else if (it?.slot === 'off_hand' && !it.focus) {
       // rules 0.28.3-C.2: an off-hand item (a shield) goes in the off hand, through the one equip rule (character.ts equip)
       if (q > 1) return nameOf(l.id) + ': one is held at a time.';
-      if (c.offHand) return nameOf(l.id) + ': the off hand already holds the ' + nameOf(c.offHand.id) + '.';
+      // rules 0.28.3-C.4: the refusal says what the player can do; a focus taken while this item held the off hand is the change refused
+      if (c.offHand) return was === l.id && p.focus && c.offHand.id === p.focus ? 'Your off hand holds the ' + nameOf(l.id) + '. Put it back to take a focus.' : nameOf(l.id) + ': the off hand already holds the ' + nameOf(c.offHand.id) + '.';
       add(lineGoods(l.id, 1));
       const no = equip(c, packOf(c).findIndex((x) => (x.item || x.id) === l.id), 'off'); if (no) return nameOf(l.id) + ': ' + no.charAt(0).toLowerCase() + no.slice(1);
     } else if (it?.focus) { for (let i = 0; i < q; i++) add([focusEntry(l.id)]); }
@@ -224,16 +230,28 @@ export function doorFocus(c: Character): string | null {
   for (const [door, f] of Object.entries(LOADOUT.recommended.focus_by_door)) { const n = c.skills?.[door] || 0; if (n > top) { top = n; focus = f; } }
   return focus;
 }
+/** Rules 0.28.3-C.3: this alpha skill (a door) has points and no other alpha skill (skills.json slot) has more. */
+const isTop = (c: Character, skill: string): boolean => { const n = c.skills?.[skill] || 0;
+  return n > 0 && Object.keys(SKILL).every((id) => (SKILL[id] as any)?.slot !== 'alpha' || (c.skills?.[id] || 0) <= n); };
+/** A Recommended row's free weapon: its archetype's, or (rules 0.28.3-C.3, `hands`) the free weapon of that many hands the
+ * character may carry whose skill it has most points in, a tie to the dearer by priceOf (the archetype's next step up). */
+function rowWeapon(c: Character, row: RecRow): string | null {
+  if (row.archetype) return RACK.find((x) => x.id === row.archetype)?.free || null;
+  const two = row.hands === '2H', pts = (id: string) => c.skills?.[String((WEAPON[id] as any)?.skill || '')] || 0;
+  const ok = RACK.map((x) => x.free).filter((id) => twoHands(c, id) === two && !requiresWhy(c, (WEAPON[id] as any)?.requires));
+  return ok.sort((a, b) => pts(b) - pts(a) || (priceOf(b) || 0) - (priceOf(a) || 0) || (a < b ? -1 : 1))[0] || null;
+}
 export function recommendedPick(c: Character, base: LoadoutPick['base']): Pick<LoadoutPick, 'weapon' | 'focus' | 'take'> {
   const R = LOADOUT.recommended, sk = (s: string) => c.skills?.[s] || 0;
-  const focus = doorFocus(c);
-  const row = R.weapon.find((w) => (w.when === 'focus' ? !!focus : w.skill ? sk(w.skill) > sk(w.over || '') : true));
-  const p: LoadoutPick = { weapon: (row && RACK.find((x) => x.id === row.archetype)?.free) || null, focus, take: {}, base };
+  const door = doorFocus(c);
+  const fits = (w: RecRow): boolean => (w.top ? isTop(c, w.top) : true) && (w.when === 'focus' ? !!door : w.skill ? sk(w.skill) > sk(w.over || '') : true);
+  const row = R.weapon.find(fits), focus = row?.focus === false ? null : door;
+  const p: LoadoutPick = { weapon: row ? rowWeapon(c, row) : null, focus, take: {}, base };
   const t: Character = JSON.parse(JSON.stringify(c));
   const tryTake = (key: string): boolean => { const q: LoadoutPick = JSON.parse(JSON.stringify(p)); q.take[key] = (q.take[key] || 0) + 1; if (q.take[key] > LOADOUT.max_qty || rebuild(t, q)) return false; p.take = q.take; return true; };
   rebuild(t, p);
   const fuel = focus ? (ITEM[focus] as any)?.focus?.fuel : null, w: any = p.weapon ? WEAPON[p.weapon] : null;
-  const profile = fuel === 'core' ? 'core' : fuel ? 'mp' : w?.ammo ? 'gun' : 'melee';
+  const profile = row?.profile || (fuel === 'core' ? 'core' : fuel ? 'mp' : w?.ammo ? 'gun' : 'melee');
   for (const id of R.buys[profile] || []) { const l = loadoutLines(t).find((x) => x.id === id || x.key === id); if (l) tryTake(l.key); }
   if (R.fill === 'ammo' && w?.ammo) {
     const ammo = loadoutLines(t).filter((l) => l.id === 'rounds:' + w.ammo || l.id === 'mag:' + p.weapon).sort((a, b) => a.price - b.price)[0];
@@ -312,7 +330,8 @@ export interface LoadoutViewV {
   /** rules 0.28.3-C.1: the free picks, the checklist's first two steps (the focus offered only to a character with a door) */
   freePicks: { weapon: FreePickV; focus: FreePickV };
   /** what the Recommended loadout gives this character, a line a thing in words (free picks marked), and what it leaves */
-  recommended: { lines: string[]; left: number };
+  recommended: { lines: string[]; left: number;
+    /** rules 0.28.3-C.5: why the reducer would refuse this kit now (the button greyed with it), or null */ why: string | null };
 }
 /** The skills a loadout reads (the weapons' skills, the doors, the armour gate). */
 const GEAR_SKILLS = ['dexterity', 'raw_power', 'brain_power', 'visualization', 'will_power', 'empathy', 'pain_threshold'];
@@ -370,12 +389,14 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
   const spent = loadoutSpent(c, p), chars = Object.values(g.characters), owner = (pid: string) => chars.find((x) => x.owner === pid) || null;
   const recommendedBlock = (): LoadoutViewV['recommended'] => {
     // the Recommended loadout built on a copy (as the reducer would), its lines read from the menu that copy sees
-    const q: LoadoutPick = { ...JSON.parse(JSON.stringify(p)), ...recommendedPick(c, p.base) }, t: Character = JSON.parse(JSON.stringify(c)); rebuild(t, q);
+    const rec = recommendedPick(c, p.base), q: LoadoutPick = { ...JSON.parse(JSON.stringify(p)), ...rec }, t: Character = JSON.parse(JSON.stringify(c)); rebuild(t, q);
     const all = loadoutLines(t, q.take), out: string[] = [];
+    // rules 0.28.3-C.5: the reducer's own refusal for this kit (the same trial the cards use), shown on the greyed button
+    const no = r.ready[c.owner] ? null : why((x) => { x.weapon = rec.weapon; x.focus = rec.focus; x.take = JSON.parse(JSON.stringify(rec.take)); });
     if (q.weapon) out.push(nameOf(q.weapon) + ' (free)');
     if (q.focus) out.push(nameOf(q.focus) + ' (free)');
     for (const [k, n] of Object.entries(q.take)) { const l = all.find((x) => x.key === k); if (l) out.push((n > 1 ? n + ' × ' : '') + nameOf(l.id) + (l.per > 1 ? ' (' + l.per * n + ')' : '')); }
-    return { lines: out, left: LOADOUT.budget - loadoutSpent(t, q) };
+    return { lines: out, left: LOADOUT.budget - loadoutSpent(t, q), why: no };
   };
   const boonBlock = (): LoadoutViewV['boon'] => {
     const offer = startOffer(c, r.seed);

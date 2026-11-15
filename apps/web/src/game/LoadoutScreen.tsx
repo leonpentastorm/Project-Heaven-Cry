@@ -271,10 +271,12 @@ export function LoadoutScreen() {
       <main aria-label={step === 1 ? 'Loadout' : 'Starting boon'} data-phc-camp-take="" data-phc-camp-on={step} style={{ padding: '18px 20px 20px' }}>
         {step === 1 ? <>
           {/* the one-click way through (rules 0.28.3-C.1) */}
-          <button type="button" data-phc-camp-recommended="" disabled={v.ready} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, width: '100%', maxWidth: 760, marginBottom: 26, padding: '14px 18px', borderRadius: 12, border: 0, background: v.ready ? I.raised : I.text, color: v.ready ? I.muted : I.ground, fontFamily: 'inherit', textAlign: 'left', cursor: v.ready ? 'default' : 'pointer' }}>
+          {/* rules 0.28.3-C.5: greyed with the engine's reason when the reducer would refuse the kit */}
+          <button type="button" data-phc-camp-recommended="" disabled={v.ready || !!v.recommended.why} aria-disabled={v.ready || !!v.recommended.why} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, width: '100%', maxWidth: 760, marginBottom: 26, padding: '14px 18px', borderRadius: 12, border: 0, background: v.ready || v.recommended.why ? I.raised : I.text, color: v.ready || v.recommended.why ? I.muted : I.ground, fontFamily: 'inherit', textAlign: 'left', cursor: v.ready || v.recommended.why ? 'default' : 'pointer' }}>
             <span style={{ fontSize: 18, fontWeight: 700 }}>Not sure? Take the recommended kit</span>
             <span data-phc-camp-rec-line="" style={{ fontSize: 14, lineHeight: 1.4, ...wrap }}>{(v.recommended.lines.length ? v.recommended.lines.join(' · ') : 'Nothing') + ' · keeps ' + v.recommended.left + ' credits'}</span>
+            {v.recommended.why ? <span data-phc-camp-rec-why="" style={{ fontSize: 14, lineHeight: 1.4, color: I.white, ...wrap }}>{"Can't take it: " + v.recommended.why}</span> : null}
           </button>
           <section data-phc-camp-row="weapon" style={{ marginBottom: 30 }}>
             {stepHead(1, 'Your free weapon', 'Pick one. It costs nothing and you can swap it freely here.')}
