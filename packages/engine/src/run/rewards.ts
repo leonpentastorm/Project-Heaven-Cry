@@ -25,8 +25,16 @@ export const NODE_TEXT: Record<string, string> = SV.nodes;
 export const NODE_TIP: Record<string, string> = SV.tips;
 /** The node kinds that pay: the fights, a cache, and (rules 1.48) the vault's chest. */
 export type PayKind = FightKind | 'cache' | 'vault';
-/** A kind's multiplier in a table of them (the gate pays as an Elite; a kind the table does not name, x 1). */
-const mult = (o: Record<string, number>, k: PayKind) => (k === 'gate' ? o.elite : k === 'fight' ? 1 : o[k] ?? 1);
+/** The row a node kind (or where a pick is made) reads in a table keyed by kind (consolidation 0.28 M3): its own row
+ * when the table names it, else the row `rewards.reads` points it to when the table names that (the gate and the vault's
+ * guard read the Elite's, a cache and the vault's chest the fight's), else null (the caller's default). */
+export function rowKind(k: string, table: Record<string, unknown>): string | null {
+  if (table[k] !== undefined) return k;
+  const to: string | undefined = SV.rewards.reads?.[k];
+  return to != null && table[to] !== undefined ? to : null;
+}
+/** A kind's multiplier in a table of them (rowKind; a kind it does not reach, x 1). */
+const mult = (o: Record<string, number>, k: PayKind) => { const row = rowKind(k, o); return row == null ? 1 : o[row]; };
 const stageXp = (s: number) => { const l: number[] = ENC_BUDGET.stage.xp; return l[Math.max(0, Math.min(l.length - 1, s - 1))]; };
 /** XP each character takes at a node (section 3.1): f(d) = base + per_depth x (d - 1), x the kind, x the stage's. */
 export const nodeXp = (k: PayKind, depth: number, stage: number): number =>
@@ -35,7 +43,7 @@ export const nodeXp = (k: PayKind, depth: number, stage: number): number =>
 export const nodeCredits = (k: PayKind, depth: number, stage: number): number =>
   Math.round((SV.credits.base + SV.credits.per_depth * depth) * mult(SV.credits, k) * (1 + ENC_BUDGET.stage.credits * (Math.max(1, stage) - 1)));
 /** The ammunition pack's count at a node (rule 23): magazines' worth for each gun. */
-export const packCount = (k: PayKind): number => (k === 'gate' ? SV.ammo_pack.elite : SV.ammo_pack[k] ?? SV.ammo_pack.fight);
+export const packCount = (k: PayKind): number => SV.ammo_pack[rowKind(k, SV.ammo_pack) ?? 'fight'];
 /** Rules 1.48: the grade of the vault's weapon in a stage: `vault.grade_up` above the stage's pick ceiling, at most
  * `vault.grade_max` (stage 1 Masterwork, from stage 2 Relic). */
 export const vaultGrade = (stage: number): Rarity => {
@@ -123,14 +131,14 @@ export function doorOf(c: Character): string | null {
 }
 /** Where a pick is made (rules 1.54, `rewards.offer` by where): a node kind that pays, or a sealed crate. */
 type OfferWhere = PayKind | 'crate';
-/** Rules 1.54 item 2 (spec R7): how many weapons a pick holds where it is made (`rewards.offer`; the gate reads the
- * Elite's, as every table does). */
-const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; return t[w === 'gate' ? 'elite' : w] ?? t.fight; };
+/** Rules 1.54 item 2 (spec R7): how many weapons a pick holds where it is made (`rewards.offer`, through rowKind; else
+ * the fight's). */
+const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; return t[rowKind(w, t) ?? 'fight']; };
 /** Rules 1.54 item 4 (Core Rules item 4107): the Materials card of a node worth C credits (nodeCredits): each of
- * `rewards.materials.items` at ceil(C / per_credits); none where `rewards.materials.at` does not name it (the vault's
- * chest, a sealed crate). */
+ * `rewards.materials.items` at ceil(C / per_credits); none where `rewards.materials.at` (through rowKind) is not true
+ * (the vault's chest, a sealed crate). */
 function materialsCard(w: OfferWhere, credits: number): { item: string; n: number }[] | null {
-  const m = SV.rewards.materials; if (!m || !(m.at as string[]).includes(w === 'gate' ? 'elite' : w)) return null;
+  const m = SV.rewards.materials, row = m ? rowKind(w, m.at) : null; if (!m || row == null || m.at[row] !== true) return null;
   return (m.items as { item: string; per_credits: number }[]).map((x) => ({ item: x.item, n: Math.ceil(credits / x.per_credits) })).filter((x) => x.n > 0);
 }
 /** Rules 1.54 item 3 (spec R8): what a foe of a Survival fight drops: the loot door's flag off (no weapon, magazines,
@@ -156,7 +164,7 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
   const ids: string[] = [];
   const first = take(own.length ? own : fits, ids); if (first) ids.push(first);
   while (ids.length < offerSize(where)) { const x = take(fits, ids); if (!x) break; ids.push(x); }
-  const table = SV.rewards.rarity[o.rarity || (k === 'gate' || k === 'vault_guard' ? 'elite' : k === 'cache' || k === 'vault' ? 'fight' : k)];
+  const table = SV.rewards.rarity[o.rarity || (rowKind(k, SV.rewards.rarity) ?? k)];
   let room = capRoom(c);
   const weapons: RunWeapon[] = ids.map((id) => {
     const rolled = o.grade || (rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([r, w]) => ({ item: r, weight: Number(w) })) })?.item || 'standard') as Rarity;

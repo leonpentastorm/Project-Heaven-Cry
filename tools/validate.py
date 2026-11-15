@@ -2884,7 +2884,9 @@ if "offer" in _rw54:
     if not (isinstance(_of, dict) and set(_of) == _WHERE and all(isinstance(v, int) and v >= 1 for v in _of.values())): errors.append(f"survival:rewards.offer: a whole number of 1 or more for each of {sorted(_WHERE)} (rules 1.54 item 2)")
     if "instead_rate" in _rw54: errors.append("survival:rewards.instead_rate: credits instead is retired (rules 1.54 item 2)")
     _ma = _rw54.get("materials") or {}
-    if not set(_ma.get("at") or []) <= _WHERE: errors.append("survival:rewards.materials.at: where a pick is made")
+    if not (isinstance(_ma.get("at"), dict) and set(_ma["at"]) <= _WHERE and all(isinstance(v, bool) for v in _ma["at"].values())): errors.append("survival:rewards.materials.at: true or false by where a pick is made")
+    _rd = _rw54.get("reads") or {}
+    if not (isinstance(_rd, dict) and set(_rd) <= _SV_KINDS | {"gate"} and set(_rd.values()) <= _SV_KINDS and not set(_rd) & set(_rd.values())): errors.append("survival:rewards.reads: a node kind to the kind whose row it reads (one step)")
     for _e in _ma.get("items") or []:
         if _e.get("item") not in _rimap: errors.append(f"survival:rewards.materials: {_e.get('item')!r} is not an items.json item")
         if not (_num(_e.get("per_credits")) and _e["per_credits"] > 0): errors.append(f"survival:rewards.materials: {_e.get('item')!r} needs per_credits above 0")

@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 651 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 652 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1152,6 +1152,7 @@ Families: `body`, `brain`, `heart`.
 | `NODE_TEXT` | `NODE_TEXT: Record<string, string>` | What each kind of node without a fight says on its panel (`survival.json nodes`; the shop, Forge, training ground, shrine and Crossroads until build steps 4 and 4a). |
 | `NODE_TIP` | `NODE_TIP: Record<string, string>` | The path map's hover card for each kind of node (`survival.json tips`; the gate has its own). |
 | `PayKind` | `type PayKind = FightKind \| 'cache' \| 'vault'` | The node kinds that pay: the fights, a cache, and (rules 1.48) the vault's chest. |
+| `rowKind` | `rowKind(k: string, table: Record<string, unknown>): string \| null` | The row a node kind (or where a pick is made) reads in a table keyed by kind (consolidation 0.28 M3): its own row when the table names it, else the row `rewards.reads` points it to when the table names that (t… |
 | `nodeXp` | `nodeXp(k: PayKind, depth: number, stage: number): number` | XP each character takes at a node (section 3.1): f(d) = base + per_depth x (d - 1), x the kind, x the stage's. |
 | `nodeCredits` | `nodeCredits(k: PayKind, depth: number, stage: number): number` | Credits each character takes at a node (section 3.1, 11.1): c(d) = base + per_depth x d, x the kind, x the stage's. |
 | `packCount` | `packCount(k: PayKind): number` | The ammunition pack's count at a node (rule 23): magazines' worth for each gun. |
