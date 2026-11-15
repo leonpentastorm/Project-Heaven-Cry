@@ -28,10 +28,35 @@
 //             whose magazine is no smaller (so the ammunition it carries still feeds it); else the credits. An Elite's or cache's
 //             kit: a mod for a free slot or a better worn piece, fitted; else nothing. Boons: the most worth that fits.
 //
+// P2 (build plan 0.29, the lead's rule "no number refitted before the simulator makes and sells materials and uses
+// mods"): the players' choices added on 0.28.1's rules, every one through the reducer's own actions:
+//   the field   after a won fight each character walks to every pile on the field (world/act move, the engine's
+//               own path and AP, free there) and picks it up whole (world/act pickup): its dropped magazines and what
+//               the foes left; then everyone marks Leave (cfg.pickup false, SIM_PICKUP=0: it leaves at once, as before);
+//   making      whenever no fight is on, every recipe of the make view (makeView, gear/make) whose gives feed what it
+//               carries: rounds of a calibre a gun in hand fires, cores for a core user, as many times as it can;
+//               loose rounds then go into the magazines (gear/load), and an empty magazine is bought for rounds
+//               that have nowhere to go;
+//   the maker   at a shop, the ammo maker is bought when it pays: the rounds the materials held and the next ten
+//               fights' materials (at this character's own rate so far) would make, at the shop's round price, are
+//               worth its price, and the purse keeps a reserve after it;
+//   selling     at a shop, before buying: weapons in the pack, magazines and rounds no gun it carries takes,
+//               gunpowder and casings without a maker (and none worth buying), mana residue for a character that
+//               makes no cores (run/sell, the one sell rule);
+//   reloads     speed (the policies' default: the magazine drops, the field brings it back) or tactical for the
+//               members whose policy says so (run-policies.ts tactical);
+//   the camp    a member may name a free weapon other than the Recommended one (`camp`): the Recommended loadout,
+//               then that weapon, then its cheapest ammunition while the budget pays.
+// Measured besides (P2): each stop entered (stage, depth, levels, HP, rounds, cores), each fight's template, damage
+// dealt as the effects stream says it (uncapped) beside the HP it removed (overkill apart), materials got, made and
+// sold, and credits by what they bought.
+//
 // What a run measures (RunResult): where it ended, every fight (stage, depth, kind, rounds, won, HP and rounds of
 // ammunition carried before it), each stage's credits earned and spent, XP and level, grade steps, the vault.
 import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, wearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
-  counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf, startOffer } from '../../src';
+  counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf, startOffer,
+  dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds } from '../../src';
+import { fxTaps } from '../../src/fxtap';
 import svJ from '../../../../data/survival.json';
 import { RIG } from './run-policies';
 import { Rec, type Pc } from '../helpers/replay';
@@ -53,7 +78,7 @@ export const healer: Policy = (x) => {
 Object.assign(POLICIES, { healer });
 
 // ---------------------------------------------------------------------------------------------- the squads
-export type RoutePolicy = 'gear' | 'training' | 'safest';
+export type RoutePolicy = 'gear' | 'training' | 'safest' | 'fights';
 /** Rules 1.51 (survival-spec 13.7): the levers of the measure, each on unless SIM_LEVERS names the ones on (a comma
  * list; "none" for rules 1.50's run): `policies` the run's caster policies (run-policies.ts), `supply` the supply pack's
  * cores back by what was burnt and its MP share (off: cores_max = cores and mp_share 0, as before), `start` the starting
@@ -78,6 +103,11 @@ export const MEMBER: Record<string, Pc> = {
   healer: { build: 'outburst', level: 1, policy: 'healerRun' },
   outburst: { build: 'outburst', level: 1, policy: 'outburstRun' },
   rigger: { build: 'rigger', level: 1, policy: 'rigger' },
+  // P2 (0.29): the melee build (Raw Power: the Recommended loadout gives it the heavy blade), and the reload pair on a
+  // magazine-fed gun (the camp's Recommended rifle loads round by round, so it drops no magazine)
+  melee: { build: 'opt_blade', level: 1, policy: 'optimised' },
+  smg: { build: 'plain_gun', level: 1, policy: 'gunner', camp: 'decrkm_smg' } as any,
+  smgTac: { build: 'plain_gun', level: 1, policy: 'gunnerTac', camp: 'decrkm_smg' } as any,
 };
 /** The parties measured (section 10 row 9: sizes 1, 2 and 4; gunners, casters and a healer; rules 1.51: every caster
  * alone, and a mixed squad). */
@@ -87,6 +117,10 @@ export const PARTIES: Record<string, string[]> = {
   four: ['gunner', 'faith', 'sigil', 'healer'],
   four_casters: ['sigil', 'outburst', 'rigger', 'healer'],
   mixed: ['gunner', 'sigil', 'outburst', 'healer'],
+  // P2 (0.29): a gunner, a melee and a caster build alone, in twos and in fours; the reload pair
+  solo_melee: ['melee'], duo_gunner: ['gunner', 'gunner'], duo_melee: ['melee', 'melee'], duo_sigil: ['sigil', 'sigil'],
+  four_gunner: ['gunner', 'gunner', 'gunner', 'gunner'], four_melee: ['melee', 'melee', 'melee', 'melee'], four_sigil: ['sigil', 'sigil', 'sigil', 'sigil'],
+  solo_smg: ['smg'], solo_smg_tac: ['smgTac'],
 };
 /** Rules 1.51: the caster boons (survival.json boons with a caster door), left out of the pick without the lever `caster`. */
 const CASTER_DOORS = new Set(['brain_power', 'will_power', 'empathy', 'visualization']);
@@ -101,9 +135,13 @@ export function startPick(offer: string[], c: any): number {
 }
 
 // ---------------------------------------------------------------------------------------------- what is measured
-export interface FightRow { /** rules 1.51: Pictures the Rigger policy asked for in it */ figs?: number; stage: number; depth: number; kind: string; rounds: number; won: boolean; hpBefore: number; hpAfter: number; ammo: (number | null)[]; dry: number; broken: number; capped?: boolean; /** rules 1.50: the lowest share of full durability among the squad's main-hand weapons before it, and how many were Worn or Broken */ durMin?: number; wornBefore?: number; /** the composed fight: foes, their tiers and levels, the bulk asked and spent, the HP scale */ foes?: string[]; bulk?: [number, number]; pressure?: [number, number]; scaleHp?: number; level?: number; /** rules 1.54: each character's level before it */ lvl?: number[] }
-export interface StageRow { stage: number; setting: string; earned: number[]; spent: number[]; /** of earned: the credits taken instead of a weapon pick, and sales */ instead: number[]; sold: number[]; xp: number[]; level: number[]; steps: number[]; grades: string[]; cleared: boolean; nodes: string[]; vault: 'taken' | 'skipped' | 'none'; vaultPick: string | null; rests: number; shops: number; forges: number; /** rules 1.50: repairs bought, and their credits, a character */ repairs?: number[]; repairSpent?: number[] }
-export interface RunResult { party: string; route: RoutePolicy; seed: string; how: string; stage: number; depth: number; cleared: number; fights: FightRow[]; stages: StageRow[]; errors: string[]; boons: string[][]; /** rules 1.51: each character's starting boon, and the levers on */ start?: (string | null)[]; levers?: string[] }
+export interface FightRow { /** rules 1.51: Pictures the Rigger policy asked for in it */ figs?: number; stage: number; depth: number; kind: string; rounds: number; won: boolean; hpBefore: number; hpAfter: number; ammo: (number | null)[]; dry: number; broken: number; capped?: boolean; /** P2: the encounter's template; damage dealt (the effects stream, uncapped) and HP removed from the foes; standard cores carried by each character before it */ template?: string; dealt?: number; removed?: number; cores?: number[]; ammoAfter?: (number | null)[]; coresAfter?: number[]; /** P2: cores the focus burnt in the fight (its own count, start less end; null: no core focus) */ burnt?: (number | null)[]; /** rules 1.50: the lowest share of full durability among the squad's main-hand weapons before it, and how many were Worn or Broken */ durMin?: number; wornBefore?: number; /** the composed fight: foes, their tiers and levels, the bulk asked and spent, the HP scale */ foes?: string[]; bulk?: [number, number]; pressure?: [number, number]; scaleHp?: number; level?: number; /** rules 1.54: each character's level before it */ lvl?: number[] }
+export interface StageRow { stage: number; setting: string; earned: number[]; spent: number[]; /** of earned: the credits taken instead of a weapon pick, and sales */ instead: number[]; sold: number[]; xp: number[]; level: number[]; steps: number[]; grades: string[]; cleared: boolean; nodes: string[]; vault: 'taken' | 'skipped' | 'none'; vaultPick: string | null; rests: number; shops: number; forges: number; /** rules 1.50: repairs bought, and their credits, a character */ repairs?: number[]; repairSpent?: number[];
+  /** P2: materials got (picks, field) / made into / sold, a character: {item: n}; rounds and cores made; credits spent by action type; pickups on the field */
+  got?: Record<string, number>[]; made?: Record<string, number>[]; soldMat?: Record<string, number>[]; spentOn?: Record<string, number>; earnedOn?: Record<string, number>; makers?: number; pickups?: number; fieldMags?: number }
+/** P2: a stop entered (after the move, before what is there): its stage and depth (1 to 15, the Boss at 15), kind, each character's level, the squad's HP share, rounds for the gun in hand and standard cores carried, each character. */
+export interface StopRow { stage: number; depth: number; kind: string; lvl: number[]; hp: number; hpEach: number[]; rounds: (number | null)[]; cores: number[] }
+export interface RunResult { party: string; route: RoutePolicy; seed: string; how: string; stage: number; depth: number; cleared: number; fights: FightRow[]; stages: StageRow[]; errors: string[]; boons: string[][]; /** rules 1.51: each character's starting boon, and the levers on */ start?: (string | null)[]; levers?: string[]; /** P2 */ stops?: StopRow[]; members?: string[]; camp?: { credits: number[]; rounds: (number | null)[]; cores: number[]; armour: number[] } }
 
 const RANK = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 const rankOf = (r: string) => RANK.indexOf(r || 'standard');
@@ -136,14 +174,17 @@ const SCORE: Record<RoutePolicy, Record<string, number>> = {
   gear: { elite: 3, forge: 3, cache: 2.5, shop: 1, fight: 1, rest: 0.5, training: 0.3, shrine: 0.3, event: 0.5 },
   training: { training: 3, shrine: 2, rest: 1.5, forge: 1, shop: 0.5, fight: 0.3, event: 0.5, cache: 0.5, elite: -1 },
   safest: { rest: 3, shop: 2, forge: 0.5, cache: 0.5, training: 0.5, shrine: 0.5, event: 0.3, fight: -1, elite: -3 },
+  // P2 (0.29): the most-fights route (rules 1.54 item 9, Leon: "if your whole first run you focus on taking as many
+  // fight as possible"): fights and Elites first, the vault's guard taken, no detour to a rest when hurt
+  fights: { fight: 3, elite: 3, cache: 0.3, shop: 0.2, forge: 0.2, rest: 0.1, training: 0.1, shrine: 0.1, event: 0.1 },
 };
 /** The node to take where the way forks. */
 function chooseNode(g: any, route: RoutePolicy): any {
   const run = g.run, can = reachable(run); if (can.length <= 1) return can[0] || null;
-  const hurt = hpShare(g) < 0.55;
+  const hurt = route !== 'fights' && hpShare(g) < 0.55;
   let best: any = null, bestV = -Infinity;
   for (const n of can) {
-    if (n.kind === 'vault_guard') { if (route === 'gear' && !hurt) return n; continue; }
+    if (n.kind === 'vault_guard') { if ((route === 'gear' || route === 'fights') && !hurt) return n; continue; }
     const s = stretch(run, n.id); let v = 0;
     s.forEach((q, i) => { v += (SCORE[route][q.kind] ?? 0) * (1 - i * 0.12); if (hurt && q.kind === 'rest') v += 6 - i; });
     v /= Math.max(1, s.length * 0.5);
@@ -152,8 +193,24 @@ function chooseNode(g: any, route: RoutePolicy): any {
   return best || can[0];
 }
 
+// ---------------------------------------------------------------------------------------------- the damage tap
+/** P2 (Balance 2.0 section 6 fix 4): damage dealt to the foes as the effects stream reports it (a shot's or blow's
+ * damage, a hurt; not cut at the target's last HP), summed while a run's fight is played; set against the HP the foes
+ * lost, the rest is overkill. */
+// the effect itself is kept (a shot's damage is written on it after it is emitted, as run/tally.ts says) and read when
+// the fight is over
+const TAP: { on: boolean; evs: any[] } = { on: false, evs: [] };
+if (!(fxTaps as any).__survivalRun) { (fxTaps as any).__survivalRun = true; fxTaps.push((_cb: any, ev: any) => { if (TAP.on && ev && ev.target && (ev.k === 'shot' || ev.k === 'melee' || ev.k === 'hurt')) TAP.evs.push(ev); }); }
+const tapDealt = (cb: any): number => { const foe = new Set((cb?.units || []).filter((u: any) => u.side !== 'pc' && !u.companion).map((u: any) => u.id));
+  return TAP.evs.reduce((t, ev) => t + (foe.has(ev.target) ? ((ev.k === 'hurt' || ev.hit) ? Math.max(0, ev.dmg || 0) : 0) : 0), 0); };
+const MATS = ['gunpowder', 'casing', 'mana_residue'];
+const matsOf = (c: any): Record<string, number> => { const o: Record<string, number> = {}; for (const m of MATS) o[m] = packOf(c).filter((x: any) => (x.item || x.id) === m).reduce((t: number, x: any) => t + (x.qty || 0), 0); return o; };
+const addTo = (a: Record<string, number>, b: Record<string, number>, sign = 1) => { for (const [k, v] of Object.entries(b)) if (v) a[k] = (a[k] || 0) + sign * v; };
+/** The guns in a character's hands that fire rounds (main, off). */
+const gunsHeld = (c: any): string[] => [c.weapon, c.offHand?.id].filter((w: any) => !!w && !!(WEAPON[w] as any)?.ammo);
+
 // ---------------------------------------------------------------------------------------------- the run
-export interface RunCfg { party: string; route: RoutePolicy; seed: string; maxStages?: number; maxFightRounds?: number; /** rules 1.50: buy repairs (default on; SIM_REPAIR=0 in the measure turns it off) */ repair?: boolean; /** rules 1.51: the levers on (default: SIM_LEVERS, else all) */ levers?: string[] }
+export interface RunCfg { /** P2: walk the field and pick up (default on; SIM_PICKUP=0 off) */ pickup?: boolean; /** P2: make rounds and cores, buy the maker, sell (default on; SIM_MAKE=0 off) */ make?: boolean; party: string; route: RoutePolicy; seed: string; maxStages?: number; maxFightRounds?: number; /** rules 1.50: buy repairs (default on; SIM_REPAIR=0 in the measure turns it off) */ repair?: boolean; /** rules 1.51: the levers on (default: SIM_LEVERS, else all) */ levers?: string[] }
 export function simRun(cfg: RunCfg): RunResult {
   const L = cfg.levers ? new Set(cfg.levers) : leversOn(), AP: any = (svJ as any).ammo_pack, was = { cores_max: AP.cores_max, mp_share: AP.mp_share };
   if (!L.has('supply')) { AP.cores_max = AP.cores; AP.mp_share = 0; }
@@ -165,17 +222,24 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   // every action, the fights' own included, goes through Rec.act: the refusals kept for a stalled fight's report, the
   // credits it moved counted to the stage (earned, of which instead of a pick and sales; or spent)
   const refusals: string[] = []; { const a0 = r.act.bind(r); r.act = (a: any, who?: string) => { const was = st ? credits() : null, e = a0(a, who); if (e) { refusals.push(a.type + (a.id ? ' ' + a.id : '') + ': ' + e); if (refusals.length > 12) refusals.shift(); }
-    if (was) credits().forEach((v, i) => { const d = v - was[i]; if (d > 0) { st.earned[i] += d; if (a.type === 'run/pick') st.instead[i] += d; if (a.type === 'run/sell') st.sold[i] += d; } else st.spent[i] -= d; }); return e; }; }
+    if (was) credits().forEach((v, i) => { const d = v - was[i]; if (d > 0) { st.earned[i] += d; st.earnedOn![a.type] = (st.earnedOn![a.type] || 0) + d; if (a.type === 'run/pick') st.instead[i] += d; if (a.type === 'run/sell') st.sold[i] += d; } else if (d < 0) { st.spent[i] -= d; const k = a.type === 'run/buy' ? 'run/buy ' + String(a.key).replace(/^(guns:rounds|mag|restock|stock):.*$/, '$1') : a.type; st.spentOn![k] = (st.spentOn![k] || 0) - d; } }); return e; }; }
   const ids = pcs.map((_, i) => 'c' + (i + 1)), C = (id: string) => r.g.characters[id], by = (id: string) => ownerOf(ids.indexOf(id));
-  const res: RunResult = { party: cfg.party, route: cfg.route, seed: cfg.seed, how: 'running', stage: 1, depth: 0, cleared: 0, fights: [], stages: [], errors: r.errors, boons: [], levers: [...L] };
+  const res: RunResult = { party: cfg.party, route: cfg.route, seed: cfg.seed, how: 'running', stage: 1, depth: 0, cleared: 0, fights: [], stages: [], errors: r.errors, boons: [], levers: [...L], stops: [], members: names };
+  const env = (globalThis as any).process?.env || {}, PICKUP = cfg.pickup ?? env.SIM_PICKUP !== '0', MAKE = cfg.make ?? env.SIM_MAKE !== '0';
   const credits = () => ids.map((id) => creditsOf(C(id)));
   let st: StageRow; const stepsAt: Record<string, number> = {};
-  const newStage = () => { st = { stage: r.g.run?.stage || 1, setting: r.g.run?.world?.[r.g.run.world.length - 1]?.setting, earned: ids.map(() => 0), spent: ids.map(() => 0), instead: ids.map(() => 0), sold: ids.map(() => 0), xp: [], level: [], steps: ids.map(() => 0), grades: [], cleared: false, nodes: [], vault: 'none', vaultPick: null, rests: 0, shops: 0, forges: 0, repairs: ids.map(() => 0), repairSpent: ids.map(() => 0) }; res.stages.push(st); };
+  const newStage = () => { st = { stage: r.g.run?.stage || 1, setting: r.g.run?.world?.[r.g.run.world.length - 1]?.setting, earned: ids.map(() => 0), spent: ids.map(() => 0), instead: ids.map(() => 0), sold: ids.map(() => 0), xp: [], level: [], steps: ids.map(() => 0), grades: [], cleared: false, nodes: [], vault: 'none', vaultPick: null, rests: 0, shops: 0, forges: 0, repairs: ids.map(() => 0), repairSpent: ids.map(() => 0), got: ids.map(() => ({})), made: ids.map(() => ({})), soldMat: ids.map(() => ({})), spentOn: {}, earnedOn: {}, makers: 0, pickups: 0, fieldMags: 0 }; res.stages.push(st); };
   // rules 1.51, 1.52: the camp's one flow for every member, as a sensible player: the Recommended loadout (Class 1 armour
   // first for every build, casters included), then the starting boon by its line (startPick), then Ready
   r.must({ type: 'run/start', seed: cfg.seed });
   for (const id of ids) {
     r.must({ type: 'run/loadout', charId: id, op: 'recommended' } as any, by(id));
+    // P2: a member's own free weapon (`camp`), then its cheapest ammunition while the budget pays
+    const camp = (pcs[ids.indexOf(id)] as any).camp;
+    if (camp) { r.must({ type: 'run/loadout', charId: id, op: 'pick', slot: 'weapon', id: camp } as any, by(id));
+      const w: any = WEAPON[camp];
+      for (let k = 0; k < 12; k++) { const l = loadoutLines(C(id), r.g.run.loadout[id].take).filter((q: any) => q.id === 'rounds:' + w.ammo || q.id === 'mag:' + camp).sort((a: any, b: any) => a.price - b.price)[0];
+        if (!l || r.act({ type: 'run/loadout', charId: id, op: 'take', key: l.key } as any, by(id))) break; } }
     const offer = startOffer(C(id), cfg.seed); if (offer.length) r.must({ type: 'run/boon', charId: id, choice: startPick(offer, C(id)) }, by(id));
   }
   for (const id of ids) if (r.g.run?.state === 'loadout') r.must({ type: 'run/ready' } as any, by(id));
@@ -185,12 +249,73 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   { const force = (globalThis as any).process?.env?.SIM_START_FORCE;
     if (force && L.has('start')) for (const id of ids) C(id).relics = [...(C(id).relics || []).filter((x: string) => !isStartBoon(x)), force]; }
   res.start = ids.map((id) => (C(id).relics || []).find(isStartBoon) || null);
+  res.camp = { credits: ids.map((id) => creditsOf(C(id))), rounds: ids.map((id) => roundsFor(C(id))), cores: ids.map((id) => coresCarried(C(id))), armour: ids.map((id) => C(id).armourClass || 0) };
   newStage();
   // every action through Rec, the credits it moved counted to the stage (earned or spent)
   const act = (a: any, who = 'host') => r.act(a, who);
   const must = (a: any, who = 'host') => { const e = act(a, who); if (e) r.errors.push(a.type + ': ' + e); return e; };
   const opts = (id: string) => runOptions(r.g, id);
   const sell = { pending: {} as Record<string, string[]> };
+  const coreUser = (id: string) => ['sigil', 'rigger'].includes(pcs[ids.indexOf(id)].build);
+  /** P2: what a character got of the materials, fights won (its rate of materials a fight, for the maker's worth). */
+  const gotAll: Record<string, Record<string, number>> = Object.fromEntries(ids.map((id) => [id, {}])), wonN = { n: 0 };
+  const noteGot = (id: string, before: Record<string, number>) => { const d: Record<string, number> = {}, now = matsOf(C(id)); for (const m of MATS) if (now[m] > before[m]) d[m] = now[m] - before[m]; addTo(st.got![ids.indexOf(id)], d); addTo(gotAll[id], d); };
+
+  // ---- P2: making (gear/make through the make view): rounds for the guns in hand, cores for a core user
+  const makeAll = (id: string) => {
+    if (!MAKE) return; const c = C(id); if (!c || c.dead || c.hp <= 0) return;
+    const want = new Set([...gunsHeld(c).map((w) => 'rounds:' + (WEAPON[w] as any).ammo), ...(coreUser(id) ? ['standard_core'] : [])]);
+    for (const row of makeView(r.g, by(id), id)?.rows || []) {
+      if (!(row.most > 0) || row.why || !row.gives.some((q: any) => want.has(q.item))) continue;
+      const was = matsOf(C(id));
+      if (!act({ ...row.action, times: row.most }, by(id))) { const now = matsOf(C(id)), i = ids.indexOf(id);
+        for (const m of MATS) if (was[m] > now[m]) st.made![i][m + ' used'] = (st.made![i][m + ' used'] || 0) + was[m] - now[m];
+        for (const q of row.gives) st.made![i][q.item] = (st.made![i][q.item] || 0) + q.n * row.most; }
+    }
+    act({ type: 'gear/load', charId: id }, by(id));
+  };
+  /** P2: the ammo maker pays (survival-run.ts header): the rounds the materials held and the next ten fights' would make. */
+  const makerPays = (id: string): boolean => {
+    const c = C(id), w: any = WEAPON[c.weapon]; if (!w?.ammo) return false;
+    const rec = RECIPES.find((q: any) => q.tool.item === 'ammo_maker' && q.gives.some((g: any) => g.item === 'rounds:' + w.ammo)); if (!rec) return false;
+    const have = matsOf(c), times = (m: Record<string, number>) => Math.min(...rec.needs.map((l: any) => (m[l.item] || 0) / l.n));
+    const ahead = 10 * times(gotAll[id]) / Math.max(1, wonN.n), give = rec.gives.find((g: any) => g.item === 'rounds:' + w.ammo).n;
+    return (Math.floor(times(have)) + ahead) * give * (ROUND_PRICE[w.ammo] || 0) >= (priceOf('ammo_maker') || Infinity);
+  };
+  const hasMaker = (id: string) => holds(C(id), { slot: 'person', item: 'ammo_maker' });
+  /** P2: sell what the character cannot use (survival-run.ts header), from the end of the pack so the indices hold. */
+  const sellJunk = (id: string) => {
+    if (!MAKE) return; const keepMats = hasMaker(id) || makerPays(id), guns = new Set(gunsHeld(C(id))), cals = new Set([...guns].map((w) => (WEAPON[w] as any).ammo));
+    for (let i = packOf(C(id)).length - 1; i >= 0; i--) {
+      const x: any = packOf(C(id))[i], it = x.item || x.id;
+      const junk = (x.weapon && !x.mags && !guns.has(x.weapon) && (WEAPON[x.weapon] as any)?.category !== 'thrown') || (x.mags && !guns.has(x.weapon)) || (x.calibre && !cals.has(x.calibre))
+        || ((it === 'gunpowder' || it === 'casing') && !keepMats) || (it === 'mana_residue' && !coreUser(id));
+      if (!junk || !(sellValue(x) > 0)) continue;
+      const q = x.mags ? x.mags.length : x.qty;
+      if (!act({ type: 'run/sell', charId: id, idx: i, qty: q }, by(id)) && MATS.includes(it)) st.soldMat![ids.indexOf(id)][it] = (st.soldMat![ids.indexOf(id)][it] || 0) + q;
+    }
+  };
+  // ---- P2: the field after a won fight: every pile walked to and picked up whole, then Leave
+  const fieldWalk = () => {
+    if (!PICKUP) return;
+    for (const id of ids) {
+      const c = C(id); if (!c || c.dead || c.hp <= 0) continue;
+      const before = matsOf(c), magsBefore = packOf(c).filter((x: any) => x.mags).reduce((t: number, x: any) => t + x.mags.length, 0), skip = new Set<string>();
+      for (let k = 0; k < 60 && r.g.run?.state === 'field'; k++) {
+        const pos = r.g.story.positions?.[id]; if (!pos) break;
+        const pile = (r.g.story.objects || []).filter((o: any) => o.kind === 'pile' && !o.hidden && (o.items || []).length && !skip.has(o.id)).sort((a: any, b: any) => dist(pos, a.pos) - dist(pos, b.pos))[0];
+        if (!pile) break;
+        if (dist(pos, pile.pos) <= 1) { if (act({ type: 'world/act', charId: id, act: 'pickup', objId: pile.id }, by(id))) skip.add(pile.id); else st.pickups!++; continue; }
+        // a walk toward it: the free tile nearest it within 6 tiles, the farthest the engine accepts (its own path and AP)
+        const map = zoneMap(r.g), taken = new Set(Object.values(r.g.story.positions || {})), [x0, y0] = pos.split(',').map(Number), tiles: string[] = [];
+        for (let dx = -6; dx <= 6; dx++) for (let dy = -6; dy <= 6; dy++) { const t = (x0 + dx) + ',' + (y0 + dy); if (t !== pos && standable(map, t) && !taken.has(t)) tiles.push(t); }
+        tiles.sort((a, b) => dist(a, pile.pos) - dist(b, pile.pos) || dist(pos, a) - dist(pos, b));
+        let moved = false; for (const t of tiles.slice(0, 10)) { if (dist(t, pile.pos) >= dist(pos, pile.pos)) break; if (!act({ type: 'world/act', charId: id, act: 'move', to: t, how: 'move' }, by(id))) { moved = true; break; } }
+        if (!moved) skip.add(pile.id);
+      }
+      noteGot(id, before); st.fieldMags! += Math.max(0, packOf(C(id)).filter((x: any) => x.mags).reduce((t: number, x: any) => t + x.mags.length, 0) - magsBefore);
+    }
+  };
 
   const levelUp = () => { for (const id of ids) { const c = C(id), def = BUILD[pcs[ids.indexOf(id)].build];
     if (!(c.unspent?.skill > 0 || c.unspent?.attr > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length)) continue;
@@ -218,6 +343,19 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   };
   // ---- the counter: upkeep first (section 11.5)
   const upkeep = (id: string) => {
+    // P2: sell what it cannot use, buy the ammo maker when it pays (a reserve of 60 credits kept), make, and an empty
+    // magazine for each magazine's worth of loose rounds with nowhere to go
+    sellJunk(id);
+    if (MAKE && !hasMaker(id) && makerPays(id)) { const l = counterLines([C(id)]).find((q: any) => q.id === 'ammo_maker'); if (l && creditsOf(C(id)) >= (priceOf('ammo_maker') || 0) + 60 && !act({ type: 'run/buy', charId: id, key: l.key, qty: 1 }, by(id))) st.makers!++; }
+    makeAll(id);
+    { const c = C(id), w: any = WEAPON[c.weapon];
+      if (MAKE && w?.reload === 'magazine' && w.ammo) for (let k = 0; k < 4; k++) {
+        const loose = packOf(C(id)).filter((x: any) => x.calibre === w.ammo && !x.mags).reduce((t: number, x: any) => t + (x.qty || 0), 0);
+        const room = packOf(C(id)).filter((x: any) => x.mags && x.weapon === c.weapon).reduce((t: number, x: any) => t + x.mags.reduce((s: number, q: number) => s + (w.magazine - q), 0), 0);
+        if (loose - room < w.magazine) break;
+        const l = counterLines([C(id)]).find((q: any) => q.key === 'mag:' + c.weapon + ':0'); if (!l || act({ type: 'run/buy', charId: id, key: l.key, qty: 1 }, by(id))) break;
+        act({ type: 'gear/load', charId: id }, by(id));
+      } }
     const c = C(id), lines = counterLines([c]), w: any = WEAPON[c.weapon];
     // sell what a better pick replaced
     for (const it of sell.pending[id] || []) { const i = packOf(C(id)).findIndex((x) => (x.weapon || x.item || x.id) === it && !x.mags); if (i >= 0 && sellValue(packOf(C(id))[i]) != null) act({ type: 'run/sell', charId: id, idx: i }, by(id)); }
@@ -225,8 +363,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
     act({ type: 'gear/load', charId: id }, by(id));
     if (w?.magazine && w.ammo) { const line = lines.find((l) => l.key === 'mag:' + c.weapon) || lines.find((l) => l.key === 'guns:rounds:' + w.ammo);
       for (let k = 0; line && k < 16 && (roundsFor(C(id)) ?? 0) < Math.max(5 * w.magazine, 120); k++) if (act({ type: 'run/buy', charId: id, key: line.key, qty: 1 }, by(id))) break; }
-    const coreUser = ['sigil', 'rigger'].includes(pcs[ids.indexOf(id)].build);
-    if (coreUser) { const have = () => packOf(C(id)).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0), line = lines.find((l) => l.id === 'standard_core');
+    if (coreUser(id)) { const have = () => packOf(C(id)).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0), line = lines.find((l) => l.id === 'standard_core');
       for (let k = 0; line && k < 6 && have() < 4; k++) if (act({ type: 'run/buy', charId: id, key: line.key, qty: 1 }, by(id))) break; }
     for (const l of lines.filter((q) => q.res)) { const room = restockRoom(C(id), l.res!); if (room > 0) act({ type: 'run/buy', charId: id, key: l.key, qty: room }, by(id)); }
   };
@@ -292,16 +429,19 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       continue;
     }
     if (run.state === 'tile') { const t = run.tiles[0].id; for (let i = 0; i < n && r.g.run.state === 'tile'; i++) must({ type: 'run/tile', tile: t }, ownerOf(i)); newStage(); continue; }
-    if (run.state === 'field') { for (let i = 0; i < n && r.g.run.state === 'field'; i++) must({ type: 'run/leave' }, ownerOf(i)); continue; } // rules 1.55: the walker leaves the field at once
-    if (run.state === 'reward') { picks(); for (const id of ids) act({ type: 'gear/load', charId: id }, by(id)); continue; } // loose rounds into the magazines (free out of a fight; a refusal: nothing to load)
+    if (run.state === 'field') { fieldWalk(); for (let i = 0; i < n && r.g.run.state === 'field'; i++) must({ type: 'run/leave' }, ownerOf(i)); continue; } // rules 1.55: the field (P2: walked and picked up first)
+    if (run.state === 'reward') { const was = ids.map((id) => matsOf(C(id))); picks(); ids.forEach((id, i) => noteGot(id, was[i])); for (const id of ids) makeAll(id); for (const id of ids) act({ type: 'gear/load', charId: id }, by(id)); continue; } // P2: the Materials card counted, then making // loose rounds into the magazines (free out of a fight; a refusal: nothing to load)
     if (run.state === 'shop') { atShop(); continue; }
     if (run.state === 'fight') {
       const node = runNode(run, run.at), hp = hpShare(r.g), ammo = ids.map((id) => roundsFor(C(id)));
       const wears = ids.map((id) => wearAt(C(id), 'main')).filter((w: any) => w && w.max > 0) as any[];
       const durMin = wears.length ? Math.min(...wears.map((w) => w.now / w.max)) : null, wornBefore = wears.filter((w) => w.state !== 'sound').length;
-      const pic0 = RIG.pictures, lvl = ids.map((id) => C(id)?.level ?? 0);
-      r.fight(cfg.maxFightRounds ?? 20);
-      const cb = r.g.combat;
+      const pic0 = RIG.pictures, lvl = ids.map((id) => C(id)?.level ?? 0), cores = ids.map((id) => (C(id) ? coresCarried(C(id)) : 0));
+      // the cores in the focus (the Evoker's or Visualizer's own count in the fight), at its start and end: the burn, before the supply pack gives any back
+      const unitCores = (id: string) => { const u = (r.g.combat?.units || []).find((q: any) => q.charId === id && !q.companion); return u?.mg ? (u.mg.cores ?? 0) + (u.mg.vcores ?? 0) : null; }, cores0 = ids.map(unitCores);
+      TAP.on = true; TAP.evs = [];
+      try { r.fight(cfg.maxFightRounds ?? 20); } finally { TAP.on = false; }
+      const cb = r.g.combat, removed = (cb?.units || []).filter((u: any) => u.side !== 'pc' && !u.companion).reduce((t: number, u: any) => t + Math.max(0, (u.maxHp || 0) - Math.max(0, u.hp)), 0);
       // a fight still on at the round cap: when the squad standing holds more than twice the HP of the foes standing (most
       // often one foe left, hidden, which the fight policies never hunt), it is counted won (the test room's run/skip) and
       // marked capped; else the run ends here, stalled
@@ -312,7 +452,8 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       const won = r.g.phase !== 'lobby';
       const after = ids.map((id) => roundsFor(C(id)));
       const sf = (r.g.run?.stats?.fights || []).slice(-1)[0] || (r.g.run?.end ? null : null);
-      res.fights.push({ ...(sf ? { foes: sf.foes.map((q: any) => q.tier[0] + q.level), bulk: [Math.round(sf.target.bulk * 100) / 100, Math.round(sf.spent.bulk * 100) / 100], pressure: [Math.round(sf.target.pressure * 100) / 100, Math.round(sf.spent.pressure * 100) / 100], scaleHp: sf.scaleHp, level: sf.level } : {}), stage: run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, rounds: cb?.round || 0, won, hpBefore: hp, hpAfter: won ? hpShare(r.g) : 0, ammo, dry: after.filter((q) => q === 0).length, ...(durMin != null ? { durMin: Math.round(durMin * 1000) / 1000, wornBefore } : {}), broken: (cb?.units || []).filter((u: any) => u.side === 'pc' && u.maxDur && (u.dur ?? 1) <= 0).length, capped, figs: RIG.pictures - pic0, lvl });
+      res.fights.push({ ...(sf ? { foes: sf.foes.map((q: any) => q.tier[0] + q.level), bulk: [Math.round(sf.target.bulk * 100) / 100, Math.round(sf.spent.bulk * 100) / 100], pressure: [Math.round(sf.target.pressure * 100) / 100, Math.round(sf.spent.pressure * 100) / 100], scaleHp: sf.scaleHp, level: sf.level } : {}), stage: run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, rounds: cb?.round || 0, won, hpBefore: hp, hpAfter: won ? hpShare(r.g) : 0, ammo, dry: after.filter((q) => q === 0).length, ...(durMin != null ? { durMin: Math.round(durMin * 1000) / 1000, wornBefore } : {}), broken: (cb?.units || []).filter((u: any) => u.side === 'pc' && u.maxDur && (u.dur ?? 1) <= 0).length, capped, figs: RIG.pictures - pic0, lvl, template: sf?.template, dealt: Math.round(tapDealt(cb)), removed: Math.round(removed), cores, ammoAfter: after, coresAfter: ids.map((id) => (C(id) ? coresCarried(C(id)) : 0)), burnt: ids.map((id, i) => (cores0[i] != null && unitCores(id) != null ? Math.max(0, cores0[i]! - unitCores(id)!) : null)) });
+      if (won) wonN.n++;
       if (!won) { res.how = 'lost'; res.stage = run.stage; res.depth = node.depth; break; }
       continue;
     }
@@ -331,7 +472,10 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       else if (reachable(run).some((q: any) => q.kind === 'vault_guard')) st.vault = 'skipped';
       st.nodes.push(node.kind + (node.gate ? '*' : ''));
       const marks = reachable(run).length === 1 ? 1 : n;
+      for (const id of ids) makeAll(id); // P2: whatever was got since, made before walking on
       for (let i = 0; i < marks && r.g.run.state === 'map' && r.g.run.at !== node.id; i++) must({ type: 'run/move', node: node.id }, ownerOf(i));
+      if (r.g.run?.at === node.id) res.stops!.push({ stage: r.g.run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, lvl: ids.map((id) => C(id)?.level ?? 0), hp: Math.round(hpShare(r.g) * 1000) / 1000,
+        hpEach: ids.map((id) => (C(id) ? Math.round(1000 * Math.max(0, C(id).hp) / maxHp(C(id))) / 1000 : 0)), rounds: ids.map((id) => roundsFor(C(id))), cores: ids.map((id) => (C(id) ? coresCarried(C(id)) : 0)) });
       continue;
     }
     r.errors.push('unknown state ' + run.state); break;

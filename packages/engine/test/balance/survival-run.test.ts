@@ -9,10 +9,10 @@
 import { describe, expect, it } from 'vitest';
 import { writeFileSync, readFileSync } from 'node:fs';
 import { simRun, PARTIES, type RoutePolicy } from './survival-run';
-import { tabulate } from './survival-run-report';
+import { tabulate, baseline } from './survival-run-report';
 
 const env = (globalThis as any).process?.env || {};
-const ROUTES: RoutePolicy[] = ['gear', 'training', 'safest'];
+const ROUTES: RoutePolicy[] = ['gear', 'training', 'safest', 'fights'];
 
 describe('Survival, simulated runs (rules 1.49): the guard', () => {
   // A solo gunner on the gear route, three seeds: stage 1 is clearable alone (spec: solo viable through stage 1 and
@@ -34,10 +34,11 @@ describe('Survival, simulated runs (rules 1.49): the guard', () => {
     expect(runs.filter((r) => r.cleared >= 4).length, ends).toBeLessThanOrEqual(Math.floor(SEEDS.length / 4));
     // levels per stage (rules 1.54 item 9, survival-spec 14.4: level 3 after stage 1's Boss; 139 of 139 measured)
     for (const r of runs) if (r.stages[0].cleared) expect(r.stages[0].level[0]).toBe(3);
-    // a gunner on Bursts never runs dry between shops
-    // SKIPPED (rules 1.55 item 19: no magazines after a fight): the simulator never makes rounds from materials nor picks
-    // magazines up, so it cannot measure the new ammunition economy; restore with the 0.29 simulator item (making and pickup).
-    // for (const r of runs) expect(r.fights.every((f) => f.ammo.every((a) => a == null || a > 0)), r.seed).toBe(true);
+    // a gunner on Bursts never runs dry between shops (restored in 0.29 P2: rules 1.55 item 19 gives no magazines after a
+    // fight, and the simulator now walks the field for its dropped magazines, makes rounds from materials once it holds
+    // the ammo maker, buys rounds and magazines and sells what it cannot use; measured 15 Nov on the eight seeds: no fight
+    // entered with an empty gun)
+    for (const r of runs) expect(r.fights.every((f) => f.ammo.every((a) => a == null || a > 0)), r.seed + JSON.stringify(r.fights.map((f) => f.stage + "." + f.depth + ":" + f.ammo.join("/")))).toBe(true);
   }, 900_000);
 });
 
@@ -45,8 +46,12 @@ describe.runIf(env.SURVIVAL_SIM)('Survival, simulated runs: the measure', () => 
   it('plays the cells and writes every run', () => {
     const cells = (env.SIM_CELLS ? String(env.SIM_CELLS).split(',') : Object.keys(PARTIES).flatMap((p) => ROUTES.map((r) => p + ':' + r))).map((x) => x.split(':'));
     const seeds = Number(env.SIM_SEEDS || 8), from = Number(env.SIM_FROM || 1), out: any[] = [];
-    for (const [party, route] of cells) for (let i = from; i < from + seeds; i++) {
-      const t = Date.now(), r = simRun({ party, route: route as RoutePolicy, seed: 'SIM-' + i, maxStages: Number(env.SIM_MAX_STAGES || 7), repair: env.SIM_REPAIR !== '0' });
+    // a cell may carry flags after its route (P2): "party:route:nopickup" (the field left at once), ":nomake" (no
+    // making, selling or maker); the party is then reported as "party+flags"
+    for (const [party, route, flags] of cells) for (let i = from; i < from + seeds; i++) {
+      const t = Date.now(), r = simRun({ party, route: route as RoutePolicy, seed: 'SIM-' + i, maxStages: Number(env.SIM_MAX_STAGES || 7), repair: env.SIM_REPAIR !== '0',
+        ...(flags && /nopickup/.test(flags) ? { pickup: false } : {}), ...(flags && /nomake/.test(flags) ? { make: false } : {}) });
+      if (flags) r.party = party + '+' + flags;
       out.push({ ...r, ms: Date.now() - t });
       (globalThis as any).console.log(party + ':' + route + ' SIM-' + i + ' ' + r.how + ' stage ' + r.stage + ' depth ' + r.depth + ' cleared ' + r.cleared + ' (' + Math.round((Date.now() - t) / 1000) + ' s)' + (r.errors.length ? ' ERR ' + r.errors.slice(0, 2).join(' | ') : ''));
       if (env.SIM_OUT) writeFileSync(env.SIM_OUT, JSON.stringify(out));
@@ -57,7 +62,7 @@ describe.runIf(env.SURVIVAL_SIM)('Survival, simulated runs: the measure', () => 
 describe.runIf(env.SIM_REPORT)('Survival, simulated runs: the tables', () => {
   it('reads the runs written by the measure and prints the tables', () => {
     const runs = String(env.SIM_REPORT).split(',').flatMap((f) => JSON.parse(readFileSync(f, 'utf8')));
-    const text = tabulate(runs);
+    const text = env.SIM_BASELINE ? baseline(runs) : tabulate(runs);
     if (env.SIM_REPORT_OUT) writeFileSync(env.SIM_REPORT_OUT, text); else (globalThis as any).console.log(text);
   });
 });

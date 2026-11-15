@@ -16,17 +16,37 @@
 //               the nearest foe and a Wall (else a Double) when the charge allows, swap a core when the charge is short,
 //               strike with the Figment (it walks to the foe first), then the pistol with the AP left.
 // Echo stays unplayed by every policy (survival-spec 13.9.6).
-import { previewAttack, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, ladderAt, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit } from '../../src';
-import { POLICIES, sigil, sigilAfter, outburst, plain, type Policy, type Ctx, type Step } from './policies';
+import { SIGIL, previewAttack, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, ladderAt, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit } from '../../src';
+import { POLICIES, sigil, sigilAfter, outburst, plain, gunner, optimised, type Policy, type Ctx, type Step } from './policies';
 import { obHeal } from './heal-measure';
 
 const W = <T>(g: any, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 const ok = (x: Ctx, s: Step | null) => (s && !x.banned.has(JSON.stringify(s.action)) ? s : null);
 
 // ---------------------------------------------------------------------------------------------- Sigil
+/** Balance 2.0 section 6 fix 1 (P2, 0.29): the area words. When the Sigil policy starts a new Line of 3 or 4 glyphs
+ * (its first draw) and two or more foes stand within the area word's reach of one another, the Line is rewritten to
+ * carry SPREAD (radius 2), else CHAIN (its jump radius), in place of a repeated element or CONDENSE: [element, the
+ * element repeated as the length needs, the area word, SEEK]. The Evoke then picks its aim by the engine's own preview
+ * (planEvoke: every foe the shape catches), as before. A Line of 2 glyphs has no room for it and stays as it is. */
+const AREA = ['spread', 'chain'];
+const areaReach = (w: string) => Number((SIGIL[w] as any)?.radius ?? (SIGIL[w] as any)?.jump_radius ?? 2);
+export const AREA_LINES = { rewritten: 0 };
+function areaLine(x: Ctx, words: string[]): string[] | null {
+  const known: string[] = x.u.mg?.words || [], n = words.length; if (n < 3) return null;
+  const w = AREA.find((q) => known.includes(q)); if (!w) return null;
+  const r = areaReach(w), cluster = x.foes.some((a) => x.foes.some((b) => b !== a && dist(a.pos, b.pos) <= r)); if (!cluster) return null;
+  const el = words.find((q) => Number((SIGIL[q] as any)?.damage) > 0); if (!el) return null;
+  return [el, ...Array(n - 3).fill(el), w, 'seek'];
+}
 /** The Sigil caster that never passes a turn with AP left (spec 13.6 (3)). */
 export const sigilRun: Policy = (x) => {
-  const s = sigil(x); if (s) return s;
+  const s = sigil(x), plan = x.memo.plan;
+  if (s && s.action.type === 'combat/draw' && s.seq === 'start' && plan && plan.i === 0 && !plan.area) {
+    plan.area = true; const a = areaLine(x, plan.words);
+    if (a) { plan.words = a; AREA_LINES.rewritten++; return { ...s, action: { ...s.action, word: a[0] }, label: 'draw ' + a[0].toUpperCase() }; }
+  }
+  if (s) return s;
   const u = x.u, m = u.mg; if (u.ap < 1 || !x.foes.length) return null;
   // a Line under way waits where it is for the next turn's AP (spare AP still shoots); with none, it may walk to shoot
   const p = plain(x); if (p && (p.kind === 'attack' || (p.kind === 'move' && !x.memo.plan && u.ap >= 3))) return p;
@@ -117,4 +137,13 @@ export const rigger: Policy = (x) => {
   return plain(x);
 };
 
-Object.assign(POLICIES, { sigilRun, outburstRun, healerRun, rigger });
+// ---------------------------------------------------------------------------------------------- the tactical reload
+/** P2 (0.29): a policy whose reloads are tactical (rules 1.9: +1 AP, the magazine goes back in the pack) instead of
+ * speed (the magazine drops on the tile); when the tactical one is refused (AP short), the speed one. */
+export const tactical = (pol: Policy): Policy => (x) => {
+  const s = pol(x); if (!s || s.action?.type !== 'combat/reload' || s.action.tactical) return s;
+  const t = { ...s, action: { ...s.action, tactical: true }, label: 'tactical reload' };
+  return x.banned.has(JSON.stringify(t.action)) ? s : t;
+};
+export const gunnerTac = tactical(gunner), optimisedTac = tactical(optimised);
+Object.assign(POLICIES, { sigilRun, outburstRun, healerRun, rigger, gunnerTac, optimisedTac });
