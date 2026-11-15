@@ -243,6 +243,7 @@ function rowWeapon(c: Character, row: RecRow): string | null {
   const ok = RACK.map((x) => x.free).filter((id) => twoHands(c, id) === two && !requiresWhy(c, (WEAPON[id] as any)?.requires));
   return ok.sort((a, b) => pts(b) - pts(a) || (priceOf(b) || 0) - (priceOf(a) || 0) || (a < b ? -1 : 1))[0] || null;
 }
+/** The Recommended kit for a character (survival.json `loadout.recommended`): the door's focus, the first weapon row that fits, the profile's buys while the budget pays, then ammunition. */
 export function recommendedPick(c: Character, base: LoadoutPick['base']): Pick<LoadoutPick, 'weapon' | 'focus' | 'take'> {
   const R = LOADOUT.recommended, sk = (s: string) => c.skills?.[s] || 0;
   const door = doorFocus(c);
