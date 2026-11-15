@@ -8,6 +8,13 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3 (unreleased)
+
+- **A held hit says 0 damage.** A roll that a protection holds at its floor (a Burst's later rolls at an Elite or Boss the
+  guard already left on 1 HP, Hold the Gate, the Toll Keeper) reported the roll's own number ("63834 damage · no damage")
+  in the log and on the shot's floating number while the target lost nothing; it now reports 0 (`effects/damage.ts`).
+  Test: `packages/engine/test/last-shot-0283.test.ts` (a real Burst through the reducer).
+
 ## 0.28.2 — the Sigil word cap says why
 
 A hotfix (15 Nov 2026). No rule changed; only the words.
