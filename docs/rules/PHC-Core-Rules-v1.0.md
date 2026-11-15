@@ -586,7 +586,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 **Guns.**
 
 - **Heat:** a single shot adds 1, a burst 2 (one a roll: rules 1.18), full auto 4. Each 2 Heat is −1 to hit. When Heat reaches the weapon's limit, it jams (2 AP to clear). Heat drops by 2 at the start of each of your turns.
-- **Recoil:** each shot after the first in the same turn is −1 to hit, cumulative, reduced by floor(Dexterity ÷ 2).
+- **Recoil:** each shot after the first in the same turn is −1 to hit, cumulative, reduced by floor(Dexterity ÷ 2). *(Superseded by rules 1.56 item 1: minus the gun's own Recoil, 0 to 2.)*
 - **Range:** each weapon has an effective range in tiles. Each further band of the same length is −2 to hit, out to two bands.
 - **Modes:** a weapon lists which of single, burst and auto it supports.
 
@@ -707,7 +707,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 | Muzzle | Compensator | Recoil −1 per shot | 0.2 | 250 |
 | Magazine | Extended magazine | +50% capacity (round down) | 0.2 | 300 |
 | Magazine | Quick-release | Reload costs 1 AP | 0.1 | 350 |
-| Underbarrel | Foregrip | First burst each turn ignores recoil | 0.2 | 150 |
+| Underbarrel | Foregrip | First burst each turn ignores recoil *(superseded by rules 1.56 item 3: +1 to hit on Bursts and full auto)* | 0.2 | 150 |
 | Underbarrel | Bayonet | Melee strike 15 damage, Dexterity, 2 AP | 0.4 | 120 |
 | Underbarrel | Underslung launcher | Holds 1 grenade round (Heavy: grenade launcher, single) | 1.5 | 900 |
 | Edge (melee) | Serrated edge | Crits also cause Bleeding | 0.1 | 250 |
@@ -2324,7 +2324,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type.
 
-**Recoil** (spec: Modifiers, now run by the engine): −1 to hit for each earlier shot this turn, reduced by floor(Dexterity ÷ 2); halved while braced or Emplaced; none for bows and weapons marked no_recoil; the compensator removes it. Shots inside one burst, full auto or weapon skill use the burst's own penalty instead, and reactions take none.
+**Recoil** (spec: Modifiers, now run by the engine): −1 to hit for each earlier shot this turn, reduced by floor(Dexterity ÷ 2); halved while braced or Emplaced; none for bows and weapons marked no_recoil; the compensator removes it. *(Superseded by rules 1.56 items 1 and 3: the gun's own Recoil, bows 0; the compensator −1.)* Shots inside one burst, full auto or weapon skill use the burst's own penalty instead, and reactions take none.
 
 **Guns that can't jam.** Only weapons with a Heat limit jam. Bows, crossbows, the flamer, the breacher tube and the core rifle build no Heat; a natural 1 is a fumble (−1 AP next turn).
 
@@ -6119,6 +6119,43 @@ make what rare actually rare". The numbers and the arithmetic are in section 14,
 26. **What a killed foe leaves** (item 4127): in Survival the kind's loot table is not rolled (`drops.kind_table`
    false); a gun foe leaves gunpowder or casings and a caster residue only with a small chance.
 
+## Rules 1.56 (Balance 2.0), L1: the modifier carrier, Recoil 2.0 and weapon mods as data
+
+Leon (15 Nov 2026), on the Balance 2.0 draft: Recoil 2.0 *"ok display them rightly"*; the compensator *"ok"* (Recoil
+−1); weapon damage: *"guns comes from the gun and the ammo it self notthing from the user can really change what how
+hard a bullet hits"* (nothing here adds gun damage from the user). The lead's rulings of 15 Nov (build plan 0.29
+sections 9 and 10): fitted mods are held like a Relic's property; one helper reads a weapon instance's numbers; mods
+act on the gun they are fitted to in either hand; the foregrip is redesigned. A later revision overrides the body and
+the earlier ones; every new number here is PROVISIONAL (items 4130 to 4136).
+
+1. **Recoil 2.0.** Every gun names its **Recoil** (`weapons.json` `recoil`): each shot after the first in a turn is at
+   minus the gun's Recoil (with its mods') for each earlier shot, cumulative, reduced by floor(Dexterity ÷ 2)
+   (`rules.json weapons_rules.recoil.dex_relief_per`), halved toward 0 while braced or Emplaced (`braced_mult` 0.5);
+   none in a volley (a Burst's or full auto's own penalty stands instead), a reaction or full auto. Every gun 1 (as
+   the old rule's −1), bows, crossbows and the core rifle 0; the draft's 2 for the long rifle, the battle rifle, the
+   hand cannon, the shotguns and the heavy weapons is a number for the P3 refit (item 4130), not set here. The old
+   `no_recoil` property is retired into it (a bow is Recoil 0). The weapon card shows **Recoil a shot** (the gun's with
+   its mods'). Overrides item 88, the Modifiers line (−1 a shot), and the Recoil paragraph of the attack rules. The
+   Emplaced row's own recoil number is removed: the one formula halves it.
+2. **Mods are data.** A weapon mod is one row of `items.json` (category `mod`): its **effects** are item ops (the closed
+   lists of `effect_ops.json item_ops`) that act only with the gun it is fitted to (`if.with_this`: the event made with
+   that instance, in whichever hand it is), and its **number fields** are the closed list of
+   `rules.json weapons_rules.gear_fields`: `recoil` (summed with the gun's), `magazine_pct` (summed), `bands`
+   (the largest; `bands_modes` limits it to attack modes), `silent` and `melee_damage` (the largest). No mod is named
+   in the engine's code: a mod written as one data line is fitted, shown and played with no code.
+3. **Each mod, as data says it:** red dot `bands` 1; scope `bands` 1 on aimed shots and **+1 to hit on aimed shots
+   as its own term, "Scope"** (it was inside the weapon-skill term); suppressor `silent` and −2 damage on **this gun's
+   shots only** (a thrown grenade or a gun-melee blow is untouched); compensator **Recoil −1 a shot** (it took all of
+   it: on a Recoil 1 gun the same, on a Recoil 2 gun 1 is left); extended magazine `magazine_pct` 50: **every magazine
+   of that gun** is that size (the one in it, a spare loaded or refilled, a fight's first magazine); quick-release:
+   reloading this gun costs 1 AP (an item op on the price; the old typed reload price is gone); **foregrip (built):
+   Bursts and full auto with this gun +1 to hit** (it was not run); bayonet `melee_damage` 15; serrated edge: a melee
+   critical with this weapon puts on Bleeding (no save); weighted head +3 damage to this weapon's blows. The wrapped
+   grip, the underslung launcher and the sigil-etched magazine stay `built: false` (rules 1.55).
+4. **Either hand.** The mods on an off-hand gun act with that gun (its bands, Recoil, silence, terms and damage), as
+   the main hand's do with the main hand's.
+5. **Old School** refuses a mod tagged `electronic` (the red dot), by the mod's own name.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -6665,7 +6702,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 85. **Target-specific damage bonuses add, capped at ×2.0** (plan 6a-1: True Name + Judgement Day + Case Closed + Weak Point reached about ×3.7 on one boss). Self multipliers still multiply.
 86. **Derived damage stats now run:** Critical, Elemental and Ambush damage taken (each capped at 60%), Healing and shields received (+10% × Sensory), the air's Healing given multiplier on magical healing.
 87. **Special ammo:** the five ammo types' effects as listed, one type per magazine, special rounds bought or found as items (ammo_*) and loaded out of combat; Enhanced and mana-arm hits put +1 on the meter.
-88. **Recoil runs** (−1 a shot after the first, less floor(Dexterity ÷ 2), halved braced or Emplaced, none in a volley or a reaction). Emplaced: +2 to attacks with the weapon.
+88. *(Superseded by rules 1.56 item 1: the gun's own Recoil.)* **Recoil runs** (−1 a shot after the first, less floor(Dexterity ÷ 2), halved braced or Emplaced, none in a volley or a reaction). Emplaced: +2 to attacks with the weapon.
 89. **Reactions are counted** (1 a round; items add; none while Suppressed or Stunned *(Superseded by rules 1.28: Suppressed forbids attacking and moving ones only, item 1751)*); Overwatch can hold several shots on one reaction (class moves).
 90. **The walk is tile by tile:** opportunity attacks and Overwatch on every step; a walk cut short keeps its unwalked tiles in the bank; **one Sprint per turn for everyone** (plan 6a-12, the Drill Echo fix). Path options (wall running, a 2-tile jump, passing allies, rough ground) are opened by items. Traps a side set itself or spotted are known to that side only.
 91. **Hidden in a fight:** Hide is 2 AP, only out of every enemy's sight; the ambush (crit 19–20, × Ambush) applies to the first attack of each time you hide (plan 6a-8); silent weapons don't reveal; spotting at the end of every turn (d20 + notice, enemies +0/+2/+4/+6 by tier, against 10 + Ingenuity modifier + Stealth); adjacency reveals. *Still to do (lane B): the stay-hidden TN rising +2 per success for Shadow Step II.*
@@ -9620,3 +9657,25 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
 4128. **Items 4121 to 4128 are rules 1.55's.**
+
+### Rules 1.56 (Balance 2.0), L1
+
+The modifier carrier, Recoil 2.0 and the weapon mods as data (rules 1.56 body, items 1 to 5). Every number is
+PROVISIONAL.
+
+4130. **Recoil by gun** (rules 1.56 item 1): every gun 1 (the old −1 a shot), the four bows and the core rifle 0
+    (`weapons.json recoil`, `rules.json weapons_rules.gear_fields.recoil` provisional). The draft's 2 for the long
+    rifle, the battle rifle, the hand cannon, the four shotguns and the six heavy weapons is left to the P3 refit: set
+    on L1 it turned the Survival replay guard red (seed PHC-0003, the stage-1 Boss: a braced Boss with no target in
+    sight stands still and an Outburst caster Mana-Shorts itself every turn, 40 rounds), an enemy-AI and policy dead
+    end the new dice reached, not a recoil rule. PROVISIONAL.
+4131. **The Dexterity relief and the braced share** (rules 1.56 item 1): floor(Dexterity ÷ 2) and ×0.5 toward 0, as
+    before, now `weapons_rules.recoil.dex_relief_per` 2 and `braced_mult` 0.5. PROVISIONAL.
+4132. **The compensator** (rules 1.56 item 3; Leon "ok"): `recoil` −1 (was: all Recoil). PROVISIONAL.
+4133. **The foregrip** (rules 1.56 item 3): +1 to hit on Bursts and full auto with its gun (an item op), built and sold
+    at 150 (was not run, `built: false`). PROVISIONAL.
+4134. **The extended magazine** (rules 1.56 item 3): `magazine_pct` 50, every magazine of its gun (was the first one
+    only). PROVISIONAL.
+4135. **The scope's +1** is its own to-hit term, "Scope", on aimed shots with its gun; **the suppressor's −2** is on its
+    gun's shots only; **mods act in either hand** (rules 1.56 items 3 and 4). PROVISIONAL.
+4136. **Items 4130 to 4136 are rules 1.56 L1's.**
