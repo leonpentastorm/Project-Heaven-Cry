@@ -1,0 +1,52 @@
+{
+  "$schema_version": 1,
+  "kind": "pressure",
+  "source": "docs/rules/PHC-Core-Rules-v1.0.md rules 1.56, Pressure 2.0 (the Skirmisher); docs/design/proposals/2026-11-pressure-2.0.md",
+  "about": "Agility's door: Pressure, opened by Dexterity. `items`: the door's verbs (kind verb, P6). The door's passives (Near Miss, Shaken Nerves, Flush Out) are Dexterity's unlock 1 in skills.json; the Skirmisher's own rows are classes.json marksman gain.",
+  "groups": {
+    "move": "Move"
+  },
+  "items": [
+    {
+      "id": "pressure.slide",
+      "name": "Slide",
+      "kind": "verb",
+      "group": "move",
+      "requires": [
+        {
+          "skill": "dexterity",
+          "min": 1
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP, once a turn: dive to the nearest tile by cover within {=effects.0.effects.1.tiles} tiles, drawing no opportunity attack, and shed {=effects.0.effects.2.value|abs} of your own Pressure. With no cover in reach you stay put and still shed it.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "slide",
+          "ap": 1,
+          "uses": "per_turn",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "slipping",
+              "skip_save": true
+            },
+            {
+              "op": "displace",
+              "to": "cover",
+              "tiles": 3,
+              "say": "{self} slides for cover{then}."
+            },
+            {
+              "op": "resource",
+              "resource": "pressure",
+              "value": -1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

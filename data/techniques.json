@@ -55,7 +55,26 @@
       "kill_spill": 1,
       "kill_spill_range": 3,
       "take_cost": 2,
-      "unseen_silent_hit": 2
+      "unseen_silent_hit": 2,
+      "id": "pressure",
+      "states": {
+        "pressed": {
+          "word": "Pressed",
+          "says": "aims worse",
+          "text": "{=pressed_ranged_hit} to hit with ranged attacks; no held shots"
+        },
+        "suppressed": {
+          "word": "Suppressed",
+          "says": "loses AP",
+          "text": "−{=suppressed_ap} AP; no reactions that attack or move it",
+          "text_pc": "No reactions that attack or move you"
+        },
+        "broken": {
+          "word": "Broken",
+          "says": "loses more AP",
+          "text": "−{=broken_ap} AP; it must reach cover or drop Prone first"
+        }
+      }
     },
     "ready": {
       "base": 3,
