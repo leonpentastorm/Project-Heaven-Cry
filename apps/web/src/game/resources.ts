@@ -291,10 +291,10 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const held = emanator ? emaHeld : attHeld;
     const row: ResRow = { key: 'mp', label: 'MP', value: mp + ' / ' + mpMax, now: mp, max: mpMax, kind: 'bar', colour: RES_INK.mp,
       ...(!emanator ? { sub: 'Attuner · ' + (attHeld ? (attHand === 'off' ? 'off hand' : 'main hand') : 'in the pack') } : {}),
-      hint: emanator ? 'Your Emanator\'s mana: a Begin spends it, and so does every Pump. Syphon (1 AP) draws more from the air.' : 'Your Attuner\'s mana (Insight\'s door): Tending spends it (Mend, Touch, Shield, Raise, Settle, Soothe, Guide). Bonds need the Attuner in hand.' };
+      hint: emanator ? 'Your Emanator\'s mana: a Begin spends it, and so does every Pump. Syphon (1 AP) draws more from the air.' : 'Your Attuner\'s mana (Insight\'s door): Tending spends it (Mend, Touch, Shield, Raise, Settle, Soothe, Guide), and Syphon (1 AP) draws more from the air. Bonds need the Attuner in hand.' };
     if (!held) Object.assign(row, emanator ? { warn: 'STOWED', level: 'caution', hint: NEEDS_EMANATOR + ' Your Emanator is in the pack: it keeps its MP, but Outbursts draw on the air (+2 Strain) and Syphon waits until you hold it.' }
-      : { warn: 'STOWED', level: 'caution', hint: 'Your Attuner is in the pack: it keeps its MP and your Bonds hold, but the threads are quiet and Tending waits until you hold it.' });
-    else if (mp <= 0) Object.assign(row, { warn: 'EMPTY', level: 'alert', hint: 'No MP: Syphon (1 AP) from the air, or your Outbursts draw on your heart.' });
+      : { warn: 'STOWED', level: 'caution', hint: 'Your Attuner is in the pack: it keeps its MP and your Bonds hold, but the threads are quiet and Tending and Syphon wait until you hold it.' });
+    else if (mp <= 0) Object.assign(row, { warn: 'EMPTY', level: 'alert', hint: emanator ? 'No MP: Syphon (1 AP) from the air, or your Outbursts draw on your heart.' : 'No MP: Syphon (1 AP) from the air to Tend again.' });
     else if (mp < mpMax * 0.25) Object.assign(row, { warn: 'LOW', level: 'caution', hint: 'Low MP: Syphon (1 AP) draws mana from the air.' });
     rows.push(row);
   }

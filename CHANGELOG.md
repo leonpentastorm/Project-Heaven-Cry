@@ -32,6 +32,9 @@ PROVISIONAL), not a second "field" mode beside it.
 - **Give, make and level up on the field** as anywhere out of a fight; the fight's tokens take it.
 - **A save made on 0.28.2's field** loads and can only be left (the vote).
 
+- **Syphon through the Attuner** (rules 1.55 item 53): any MP focus in hand can Syphon, so a Mender refills MP from the air with its Attuner, in a fight and on the area map. With the Attuner in the pack the button is greyed and says why. Stowing the Attuner in a fight now stops what it gives at once.
+- **Syphon has a floor** (rules 1.55 item 52): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). From a fight's start of 15 that is at most 7 Syphons, shared by the party; deaths raise the meter. PROVISIONAL.
+
 ### Under the hood
 
 - One flag, `Combat.field`, read in one place per rule: `combatAction` (no turn order), effects/cost.ts `apFor` and
@@ -45,7 +48,7 @@ PROVISIONAL), not a second "field" mode beside it.
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP
 (items 27 and 28), the health word (item 29), hand-overs and the field's actions (items 30 to 36, and the lead's rulings
-on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words.
+on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words. **Live since 15 Nov 2026**.
 
 ### Survival
 

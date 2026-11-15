@@ -99,17 +99,21 @@ const SETTERS: Record<string, ResSetter> = {};
 /** Register a resource row's setter (data/actions.json resources.<id>.setter): the system that owns the meter gives it
  * (physical/pressure.ts: addPressureTo). */
 export function setResSetter(name: string, fn: ResSetter): void { SETTERS[name] = fn; }
+/** Is a row's `needs` met on its holder (one path set, or one of a list; a row with no `needs`: always)? */
+const needsMet = (d: ResDef, root: any): boolean => !d.needs || (Array.isArray(d.needs) ? d.needs : [d.needs]).some((p) => { const x = cell({ ...d, path: p }, root); return !!x && !!x.o[x.k]; });
 /** GIVE (or with a negative n take) a resource of data/actions.json `resources` to a unit outside an action's price
- * (the item op `resource`): through its row's setter, else its path, never under 0 nor over its `max`; nothing when
- * the row's `needs` is not met. Returns what really changed. */
-export function resGive(cb: Combat | null | undefined, u: Unit, id: string, n: number, o: { by?: Unit | null; c?: Character | null; why?: string } = {}): number {
+ * (the item op `resource`, Syphon's MP): through its row's setter, else its path, never under 0 nor over its `max`;
+ * nothing when the row's `needs` is not met. Returns what really changed.
+ * o.ask: ASK only, nothing changes: NaN when the row's `needs` is not met (it can't be given at all: Syphon's gate and
+ * its descriptor row read the mp row's needs this way), else what would change. A row with a setter can't be asked. */
+export function resGive(cb: Combat | null | undefined, u: Unit, id: string, n: number, o: { by?: Unit | null; c?: Character | null; why?: string; ask?: boolean } = {}): number {
   const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
   const root = holderOfRes(d, u, o.c);
-  if (d.needs && !(Array.isArray(d.needs) ? d.needs : [d.needs]).some((p) => { const x = cell({ ...d, path: p }, root); return !!x && !!x.o[x.k]; })) return 0;
-  if (d.setter) { const f = SETTERS[d.setter]; if (!f) throw new Error('No setter "' + d.setter + '" for the resource ' + id + '.'); return f(cb, u, n, o.by ?? null, o.why || ''); }
-  const x = cell(d, root); if (!x) return 0;
+  if (!needsMet(d, root)) return o.ask ? NaN : 0;
+  if (d.setter) { if (o.ask) throw new Error('The resource ' + id + ' is given through a setter: it can\'t be asked.'); const f = SETTERS[d.setter]; if (!f) throw new Error('No setter "' + d.setter + '" for the resource ' + id + '.'); return f(cb, u, n, o.by ?? null, o.why || ''); }
+  const x = cell(d, root); if (!x) return o.ask ? NaN : 0;
   const was = Number(x.o[x.k]) || 0, mx = d.max ? cell({ ...d, path: d.max }, root) : null, top = mx ? Number(mx.o[mx.k]) : Infinity;
-  const to = Math.max(0, Math.min(Number.isFinite(top) ? Math.max(top, was) : Infinity, was + n)); x.o[x.k] = to; return to - was;
+  const to = Math.max(0, Math.min(Number.isFinite(top) ? Math.max(top, was) : Infinity, was + n)); if (!o.ask) x.o[x.k] = to; return to - was;
 }
 
 // ---------------------------------------------------------------------------------------------- the price

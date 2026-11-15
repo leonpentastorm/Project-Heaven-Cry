@@ -26,9 +26,9 @@ const eoeSells = () => { const v = sellValue({ id: 'eoe', item: 'essence_of_expe
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
-import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
+import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, hasMpFocus, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
-  vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
+  vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, SYPHON_DRAW, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
 import { gearIconUri, GEAR_INK, magGearId, roundsGearId, torsoGearId } from '../game/gearIcons';
 import { glyphKeyNav } from '../game/glyphKeys';
@@ -846,7 +846,8 @@ export class MainLogic extends DCLogic {
     const moveTo = (k) => () => { if (!mover) return toast(inFight ? 'A fight is on: move on the combat grid.' : 'You have no character to move.'); act({ type: 'story/move', charId: mover.id, to: k }); };
     // ---------- magic on the area map (spec: Mana; Sigils rules 1.4): glyphs, placed magic, held hearts, and the spell actions ----------
     const MN = magicNow(g, c), myWords = c ? (c.sigils || []).filter((w) => SIGIL[w]) : [], myDesigns = c ? c.outbursts || [] : [];
-    const evoW = !!c && hasEvoker(c), emaW = !!c && hasEmanator(c), hasMagic = !!c && (myWords.length > 0 || myDesigns.length > 0 || !!MN.held || evoW || emaW);
+    // Syphon: any MP focus in hand (the engine's hasMpFocus, from items' focus.fuel: the same fact the mp row's needs reads on a unit)
+    const evoW = !!c && hasEvoker(c), emaW = !!c && hasEmanator(c), sypW = !!c && hasMpFocus(c), hasMagic = !!c && (myWords.length > 0 || myDesigns.length > 0 || !!MN.held || evoW || emaW || sypW);
     const HEART_W = ['pump', 'steady', 'letgo', 'feed', 'heartwatch'], MAGIC_W = ['draw', 'evoke', 'scuff', 'vent', 'core', 'outburst', 'release', 'syphon', 'crystallise', ...HEART_W], M_INSTANT = ['scuff', 'vent', 'core', 'syphon', 'crystallise'], isMagicW = MAGIC_W.includes(W);
     const sameMap = !g.story.glyphMap || g.story.glyphMap === map.id;
     const GLY = inFight ? g.combat?.glyphs || [] : sameMap ? g.story.glyphs || [] : [], ZON = inFight ? g.combat?.zones || [] : sameMap ? g.story.zones || [] : [];
@@ -923,7 +924,7 @@ export class MainLogic extends DCLogic {
       } else if (M_INSTANT.includes(W)) {
         const run = { scuff: mgScuff, vent: mgVent, core: mgSwapCore, syphon: mgSyphon, crystallise: mgCrystallise }[W], why = dryMagic(g, cbx, u.id, (cc, uu) => run(cc, uu)).err;
         const say = { scuff: 'Wipe out the glyphs on your own tile (1 AP).', vent: 'Let ' + MN.flux + ' Flux out of the Evoker into the air (1 AP): it thickens the mana.', core: 'Load a fresh core: charge back to ' + CORE_CHARGE + ' (2 AP, ' + MN.cores + ' spare).',
-          syphon: 'Pull MP from the air (1 AP): about ' + Math.round(MN.band.syphon_mp * (u.mg?.syphon || 1)) + ' MP in ' + bandName(MN.band) + ' air; the air thins by 2.', crystallise: 'Crystallise a mana core out of the air (3 AP): needs mana 10 or more, and drops it by 10.' }[W];
+          syphon: 'Pull MP from the air (1 AP): about ' + Math.round(MN.band.syphon_mp * (u.mg?.syphon || 1)) + ' MP in ' + bandName(MN.band) + ' air; the air thins by ' + SYPHON_DRAW + ' (nothing to draw from an empty meter).', crystallise: 'Crystallise a mana core out of the air (3 AP): needs mana 10 or more, and drops it by 10.' }[W];
         mHint = say + (why ? ' Not now: ' + why : ''); mReady = !why; mLabel = { scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', syphon: 'Syphon', crystallise: 'Crystallise' }[W] + ' · ' + { scuff: 1, vent: 1, core: 2, syphon: 1, crystallise: 3 }[W] + ' AP';
       }
     }
@@ -1303,10 +1304,10 @@ export class MainLogic extends DCLogic {
       ...(wPk.some((e) => e.tab === 'class') ? [['CLASS · ' + (wKlass ? wKlass.name.toUpperCase() : 'MOVES'), wPk.filter((e) => e.tab === 'class').map((e) => [pkId(e), e.label, pkCost(e)]), wKlass ? wKlass.ink : null]] : []),
       // Magic, only for those who have it: Sigils in cyan, Outbursts in violet (never mixed).
       ...(hasMagic && (myWords.length || evoW) ? [['MAGIC · SIGILS', [['draw', 'Draw a glyph', glyphAp(c) + ' AP'], ['evoke', 'Evoke', '1 AP'], ['scuff', 'Scuff', '1 AP'], ['vent', 'Vent Flux', '1 AP'], ['core', 'Swap core', '2 AP']], SIG_CYAN]] : []),
-      ...(hasMagic && (myDesigns.length || MN.held || emaW) ? [['MAGIC · OUTBURSTS', [...(myDesigns.length && !MN.held ? [['outburst', 'Outburst', 'Begin ' + (() => { const aps = myDesigns.map((d) => (d.modules || []).includes('swift') ? 1 : 2), lo = Math.min(...aps), hi = Math.max(...aps); return (lo === hi ? lo : lo + '–' + hi); })() + ' · Snap +1']] : []),
+      ...(hasMagic && (myDesigns.length || MN.held || emaW || sypW) ? [['MAGIC · OUTBURSTS', [...(myDesigns.length && !MN.held ? [['outburst', 'Outburst', 'Begin ' + (() => { const aps = myDesigns.map((d) => (d.modules || []).includes('swift') ? 1 : 2), lo = Math.min(...aps), hi = Math.max(...aps); return (lo === hi ? lo : lo + '–' + hi); })() + ' · Snap +1']] : []),
         ...(MN.held ? (() => { const x = scb(), uu = sU(x), hp0 = x && uu ? heartPanel(x, uu) : null; return [['pump', 'Pump · stage ' + MN.held.stage, hp0 ? hp0.pump.cost : '1 AP'], ['release', 'Release', hp0 ? hp0.release.cost : '1 AP'], ['steady', 'Steady the heart', '1 AP'], ['letgo', 'Let it go' + (hp0 && hp0.letgo.strainOff ? ' · −' + hp0.letgo.strainOff + ' Strain' : ''), 'free'],
           ...(hp0 && hp0.feedShow ? [['feed', 'Feed the glyph', '1 AP']] : []), ['heartwatch', MN.held.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 'free']]; })() : []),
-        ...(emaW ? [['syphon', 'Syphon', '1 AP'], ['crystallise', 'Crystallise', '3 AP']] : [])], SOUL_VIOLET]] : []),
+        ...(sypW ? [['syphon', 'Syphon', '1 AP']] : []), ...(emaW ? [['crystallise', 'Crystallise', '3 AP']] : [])], SOUL_VIOLET]] : []),
     ];
     const canAct = !!mover && mover.hp > 0 && g.story.await === 'players' && !(g.story.ended || {})[c.id];
     const wGroups = W_ITEMS.map(([name, items, ink]) => ({ name, style: 'margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + (ink || '#A3AEC2'), items: items.map(([id, label, cost]) => ({ key: id, name: label, cost, locked: !canAct, pressed: W === id ? 'true' : 'false',
