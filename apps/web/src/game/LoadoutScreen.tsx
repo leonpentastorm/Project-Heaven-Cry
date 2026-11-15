@@ -21,6 +21,7 @@ import { boonCards } from './campView';
 import { boonIconSvg } from './boonIcons';
 import { MoveOn } from './runPanels';
 import { PlaceBar, BarNumber } from './PlaceBar';
+import { shownLines } from './previewLines';
 
 const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: I.muted };
 /** Names wrap inside their card, never over the next one. */
@@ -94,7 +95,7 @@ function PickCard({ c, slot, charId, again }: { c: LoadoutCardV; slot: 'weapon' 
           </span>
         </div>
         <dl className="phc-camp-stats" data-phc-camp-stats="" style={{ width: '100%', gridTemplateColumns: 'minmax(6.5em, 1fr) minmax(0, auto)' }}>
-          {c.preview.lines.slice(0, 4).map((l) => <React.Fragment key={l.key}><dt {...tipProps(l.label)}>{label(l.label)}</dt><dd>{l.value}</dd></React.Fragment>)}
+          {shownLines(c.preview.lines, 4).map((l) => <React.Fragment key={l.key}><dt {...tipProps(l.label)}>{label(l.label)}</dt><dd>{l.value}</dd></React.Fragment>)}
         </dl>
         {off ? <span style={{ marginTop: 'auto', fontSize: 13, color: I.muted, ...wrap }}>{c.why}</span> : null}
       </button>
@@ -136,7 +137,7 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
           </React.Fragment>)}
         </dl>) : c.preview.lines.length ? (
         <dl className="phc-camp-stats" data-phc-camp-stats="" style={{ gridTemplateColumns: 'minmax(6.5em, 1fr) minmax(0, auto)' }}>
-          {c.preview.lines.slice(0, 2).map((l) => <React.Fragment key={l.key}><dt {...tipProps(l.label)}>{label(l.label)}</dt><dd>{l.value}</dd></React.Fragment>)}
+          {shownLines(c.preview.lines, 2).map((l) => <React.Fragment key={l.key}><dt {...tipProps(l.label)}>{label(l.label)}</dt><dd>{l.value}</dd></React.Fragment>)}
         </dl>) : <span style={{ fontSize: 14, color: I.muted }}>{c.preview.category}</span>}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>

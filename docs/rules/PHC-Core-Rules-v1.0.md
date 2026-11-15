@@ -6081,6 +6081,22 @@ as a reward pick, and mods moved into data, are 0.29).
    Brigade auto-shotgun (150 at level 6) pass the 145% ceiling. The numbers that do it (the red dot's band, the extended
    magazine's +50%) are typed in engine code, not data, so they are left for 0.29, when mods move into data.
 
+### Weapon cards: what a weapon hits with
+
+Leon (15 Nov 2026), verbatim: "on weapons ui, list out what skill it scale it's hit with too".
+
+18. **Every weapon's numbers say what it is aimed with.** The gear preview (rules 1.42) of a weapon, a thrown weapon or
+   a focus gains two lines: **Hits with**, the skill its roll to hit is made with, as the attack itself resolves it (a
+   weapon's `skill`, a focus's door), with the character's own check modifier ("Dexterity · +3"); and **Damage scales
+   with**, only the inputs of its damage multiplier whose slope is not 0 in the profile the damage reads (a weapon:
+   `phys.scales_with` for the profile's attribute slope, the skill it hits with or `also_scales` for its skill slope;
+   a focus: its damage profile's pair). **A card never names a scaling that changes nothing** (lead's ruling, 15 Nov
+   2026): when every slope is 0 the line is left out. Today, since rules 1.26 (level buys damage), the weapon, Sigil,
+   Soul and Figment profiles have no slope, so no weapon or focus shows the line; it comes back by itself when a slope
+   does. A weapon with more than one way of use shows its default (a melee weapon in melee, any other as a shot or a
+   throw). Every card that shows a weapon's numbers shows them (`docs/design/ui-screens.md`). The magazine line reads
+   rounds, a middle dot and the calibre ("30 · .32 Decrkm"). No number changes.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.

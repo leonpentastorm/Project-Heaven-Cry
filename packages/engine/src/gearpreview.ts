@@ -6,10 +6,11 @@
 //
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
-import { WEAPON, ITEM, RULES, SKILL } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, magazineSize, maxDurOf, quiverHolds, quiversOf } from './character';
-import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee } from './combat';
+import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, maxDurOf, quiverHolds, quiversOf } from './character';
+import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia } from './combat';
 import { priced } from './effects/cost';
+import { PROFILES, pairOf } from './effects/output';
 import { rngFor } from './rng';
 import { focusAccTerm } from './rolls';
 import { bindGame } from './effects/hooks';
@@ -49,6 +50,31 @@ function doorAcc(c: Character, inst: GearInstance, door: string): number {
   const was = bindGame({ characters: { [x.id]: x } }); try { return focusAccTerm({ charId: x.id } as Unit, door)?.v ?? 0; } finally { bindGame(was); }
 }
 const pct = (n: number) => n + '%';
+const signed = (n: number) => (n >= 0 ? '+' : '') + n;
+/** Rules 1.55 (Leon, 15 Nov 2026: "list out what skill it scale it's hit with"): the skill a weapon rolls to hit with, as
+ * the attack itself resolves it (combat.ts weaponVia, the skill the attack is delivered by), with the character's own
+ * check modifier (checkMod), and what its damage multiplier reads, in the words the damage breakdown labels it with
+ * (character.ts weaponMultLabel). A melee weapon is read in melee, anything else as a shot or a throw. */
+function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
+  const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot'), sc = weaponMultLabel(w.id, { live: true });
+  return [
+    { key: 'hits_with', label: 'Hits with', value: (SKILL[sk]?.name || sk) + ' · ' + signed(checkMod(c, sk)), num: null },
+    // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
+    ...(sc ? [{ key: 'scales_with', label: 'Damage scales with', value: sc, num: null }] : []),
+  ];
+}
+/** A focus hits through its door skill (the door its rolls to hit are made through, rolls.ts toHitTerms); its damage
+ * reads the pair of the damage profile (output.profiles, level `deal`) whose pair holds that door; none: no such line. */
+function focusSkillLines(c: Character, door: string): PreviewLine[] {
+  const nm = (id: string) => ATTRS.find((a) => a.id === id)?.name || SKILL[id]?.name || id;
+  const prof = Object.keys(PROFILES).find((id) => PROFILES[id].level === 'deal' && pairOf(id).skills.includes(door)), pr = prof ? pairOf(prof) : null;
+  // only the inputs whose slope is not 0 (lead's ruling, 15 Nov 2026): none, no line
+  const live = pr ? [...(PROFILES[prof!].attr ? pr.attrs : []), ...(PROFILES[prof!].skill ? pr.skills : [])] : [];
+  return [
+    { key: 'hits_with', label: 'Hits with', value: nm(door) + ' · ' + signed(checkMod(c, door)), num: null },
+    ...(live.length ? [{ key: 'scales_with', label: 'Damage scales with', value: live.map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1'), num: null }] : []),
+  ];
+}
 /** The attack's numbers in this mode, or null when the weapon has no such mode or can't attack (its words in `why`). */
 function attackLines(cb: Combat, u: Unit, foe: Unit, mode: AttackMode) {
   const p = previewAttack(cb, u, foe, mode, { free: true });
@@ -67,6 +93,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       ...(Number(w.damage) ? [{ key: 'damage', label: 'Damage', value: String(w.damage), num: Number(w.damage), better: 'higher' as const }] : []),
       ...(typeof w.range_tiles === 'number' ? [{ key: 'range', label: 'Range', value: w.range_tiles + ' tiles', num: w.range_tiles, better: 'higher' as const }] : []),
       ...(w.ap_cost?.single != null ? [{ key: 'ap', label: 'AP to throw', value: String(w.ap_cost.single), num: Number(w.ap_cost.single), better: 'lower' as const }] : []),
+      ...skillLines(c, scratch(c, inst, 1).u, w),
     ] };
   }
   if (w) {
@@ -85,10 +112,11 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       lines.push({ key: 'ap', label: 'AP a shot', value: String(s), num: s, better: 'lower' });
       if ((w.modes || []).includes('burst')) { const b = apOf('burst', volleyBaseAp(u, 'burst')); lines.push({ key: 'ap_burst', label: 'AP a Burst', value: String(b), num: b, better: 'lower' }); }
       const mag = magazineSize(id, inst.mods);
-      if (mag != null) lines.push({ key: 'mag', label: 'Magazine', value: mag + ' ' + (CALIBRE_NAME[w.ammo] || w.ammo || ''), num: mag, better: 'higher' });
+      if (mag != null) lines.push({ key: 'mag', label: 'Magazine', value: mag + (CALIBRE_NAME[w.ammo] || w.ammo ? ' · ' + (CALIBRE_NAME[w.ammo] || w.ammo) : ''), num: mag, better: 'higher' });
       lines.push({ key: 'range', label: 'Range', value: effectiveRange(w) + ' tiles', num: effectiveRange(w), better: 'higher' });
     }
     { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
+    lines.push(...skillLines(c, u, w));
     const traits = [...(w.properties || []), ...((w.phys?.props as string[]) || [])].map((t) => cap(String(t).replace(/_/g, ' ')));
     return { ...base, kind: 'weapon', category: cap(String(w.category).replace(/_/g, ' ')), traits: [...new Set(traits)], lines };
   }
@@ -100,6 +128,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       // rules 1.46: the grade's bonus to the door's rolls, read by the fight's own term (rolls.ts focusAccTerm, rules 1.43)
       { key: 'door_acc', label: 'Grade on ' + (sk?.name || door) + ' rolls', value: '+' + doorAcc(c, inst, door), num: doorAcc(c, inst, door), better: 'higher' },
       { key: 'fuel', label: 'Runs on', value: it.focus.fuel === 'core' ? 'mana cores' : 'MP', num: null },
+      ...focusSkillLines(c, door),
     ] };
   }
   if (it && (it.category === 'armour' || it.category === 'shield')) {
