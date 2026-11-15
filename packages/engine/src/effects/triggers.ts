@@ -41,6 +41,7 @@ import { loseAp } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { deal, mend, amountOf, type AmountSpec } from './output';
+import { mendShown } from './core'; // (a cycle core ↔ triggers: used at run time only)
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
 import { resOf } from '../tactics';
 import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
@@ -395,7 +396,8 @@ O('deal', ANY, true, ['amount', 'via', 'nonlethal', 'by'], 'deal an amount block
 });
 O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
-  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
+  const r = mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
+  return mendShown(ev.cb, t, b.kind, r);
 });
 O('displace', ANY, true, ['tiles', 'how', 'to'], 'push the target away from the holder (how: push) or pull it closer (pull); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens; to: "tile" (rules 1.33, Guide) moves it, willing, to the event\'s tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow\'s Vault, rules 1.32)', (ev, e) => {
   if (e.to === 'cover') return toCover(ev, pick(ev, e), e);
