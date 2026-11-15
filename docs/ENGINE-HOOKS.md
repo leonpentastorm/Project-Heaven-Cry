@@ -362,7 +362,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `strain_change` | a unit's Strain changed (from, to, why) | `u`, `from`, `to`, `why`, `limit` | classes/k.ts:1429 (+4) | perks/d.ts:816 |  |
 | `held_turn_start` | a unit holding an Outburst starts its turn | `u`, `held` | magic.ts:1686 | none |  |
 | `strain` | Strain is about to be added to a unit (the amount may change) | `u`, `n`, `why`, `limit` | magic.ts:888 | classes/k.ts:535 (+6) |  |
-| `death_save` | a Downed unit rolls its death save: items may add to it | `u`, `add`, `die` | combat.ts:1605 | magic.ts:1879 (+1) |  |
+| `death_save` | a Downed unit rolls its death save: items may add to it | `u`, `add`, `die` | combat.ts:1605 | magic.ts:1886 (+1) |  |
 | `injury` | an injury is about to be rolled on a unit (cancel, no daze, no halving) | `t`, `by`, `d`, `loc`, `side`, `cancel`, `noDaze`, `noHalve`, `why`, `called` | combat.ts:1507 | classes/i.ts:408 (+4) | `injury` |
 | `unit_built` | a unit was built from its character (the area map rebuilds units every action) | `u`, `c`, `world` | game.ts:2607 | classes/i.ts:670 (+4) |  |
 | `action_done` | a reducer action finished (any action, any unit) | `u`, `a`, `world` | game.ts:1688 (+2) | calls/rules.ts:80 (+15) |  |
@@ -432,7 +432,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `cond_resisted` | a condition's save was passed | `by`, `t`, `id` | magic.ts:349 | feelings.ts:188 |  |
 | `call` | a Call is about to be made (its step, TN, a refusal) | `u`, `t`, `id`, `kind`, `step`, `react`, `tnAdd`, `cancel` | calls/core.ts:136 | none |  |
 | `call_cost` | a Call is priced (its AP) | `u`, `id`, `ap`, `react`, `preview` | calls/core.ts:47 | none |  |
-| `cost` | every priced action: its AP, its resources, its floor, free (effects/cost.ts price) | `u`, `c`, `action`, `row`, `base`, `ap`, `res`, `min`, `free`, `labels` | effects/cost.ts:134 (+1) | none | `cost` |
+| `cost` | every priced action: its AP, its resources, its floor, free (effects/cost.ts price) | `u`, `c`, `action`, `row`, `base`, `ap`, `res`, `min`, `free`, `labels` | effects/cost.ts:138 (+1) | none | `cost` |
 
 ## (c) The primitives
 
@@ -695,7 +695,7 @@ Families: `body`, `brain`, `heart`.
 | `RESOURCES` | `RESOURCES: Record<string, ResDef>` | Every resource an action can cost (data/actions.json `resources`). |
 | `resLeft` | `resLeft(u: Unit \| null \| undefined, id: string, c?: Character \| null): number` | How much of a resource the unit has now (0 when it has no such thing: no Evoker, no class meter). |
 | `setResSetter` | `setResSetter(name: string, fn: ResSetter): void` | Register a resource row's setter (data/actions.json resources.<id>.setter): the system that owns the meter gives it (physical/pressure.ts: addPressureTo). |
-| `resGive` | `resGive(cb: Combat \| null \| undefined, u: Unit, id: string, n: number, o: { by?: Unit \| null; c?: Character \| null; why?: string } = {}): number` | GIVE (or with a negative n take) a resource of data/actions.json `resources` to a unit outside an action's price (the item op `resource`): through its row's setter, else its path, never under 0 nor over its `m… |
+| `resGive` | `resGive(cb: Combat \| null \| undefined, u: Unit, id: string, n: number, o: { by?: Unit \| null; c?: Character \| null; why?: string; ask?: boolean } = {}): number` | GIVE (or with a negative n take) a resource of data/actions.json `resources` to a unit outside an action's price (the item op `resource`, Syphon's MP): through its row's setter, else its path, never under 0 no… |
 | `price` | `price(x: Who, action: string, base?: number \| Cost \| null, ctx: Record<string, unknown> = {}): Priced` | What `action` costs this unit now. base: its AP (or `{ ap, res }`) before items; left out, the data's (data/actions.json). ctx: what the action knows that an item may ask about (the hand, the target, the word). |
 | `priced` | `priced(x: Who, action: string, ap: number, res?: Record<string, number>, ctx?: Record<string, unknown>): Priced` | An action whose AP its own pipeline has already worked out (an attack's preview, a glyph's, an Outburst's): the number as a Priced, through the `cost` hook like every other. |
 | `bill` | `bill(action: string, ap: number, res: Record<string, number> = {}): Priced` | A cost that is already final (its pipeline priced it, hook and all): what pay() takes. |

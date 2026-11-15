@@ -3,7 +3,7 @@
 // Bonds its squadmate for 1 AP, Triages and Mends it through the Bond (the Ledger fills), gives the Soldier a felt
 // feeling, and its next shot calls in the Ledger. Every action through the engine's descriptors (the TEND verbs on the
 // action panel, the class moves on the CLASS tab), the state checked after each. Screenshots: e2e/shots/tending-*.png.
-import { chromium, player, click, BASE, OUT, settle, tipOf } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, settle, tipOf, pickAction } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai'); // a friend: the Mender's squadmate (an ally to Bond)
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -169,6 +169,18 @@ if (mate) {
   await until((s) => !document.querySelector(s), tieSel(m.id), 30000).catch(() => {});
   ok('Let Go ends the Bond and its line (' + (r || 'let go') + ')', !r && !(await lineOf(m.id)));
 }
+// ---------- 0.28.3: Syphon through the Attuner (the mp row's needs: any MP focus in hand) ----------
+if (await toMe()) {
+  let u = await unit(me); const mp0 = Math.round(u.mg?.mp ?? 0), top = u.mg?.mpMax ?? 0;
+  if (mp0 >= top) { await host.evaluate(({ id }) => { const v = window.__phc.getState().game.combat.units.find((x) => x.id === id); v.mg.mp = 0; }, { id: u.id }); }
+  const before = Math.round((await unit(me)).mg?.mp ?? 0);
+  await pickAction(host, /^Syphon/); await settle(host, 150);
+  const cv = host.getByRole('button', { name: /^Confirm/ }).first();
+  if (await cv.count() && await cv.isEnabled()) await cv.click();
+  await until((b) => { const g = window.__phc.getState().game, v = g.combat.units.find((x) => x.charId === b.me); return (v?.mg?.mp ?? 0) > b.before; }, { me, before }, 15000).catch(() => {});
+  u = await unit(me);
+  ok('Syphon with the Attuner in hand: MP ' + before + ' → ' + Math.round(u.mg?.mp ?? 0) + ' (' + ((await log()).split('\n').filter((l) => /syphons/.test(l)).at(-1) || 'no line') + ')', (u.mg?.mp ?? 0) > before && /syphons \d+ MP/.test(await log()));
+} else ok('Syphon: my turn', false);
 await snap('02-tended');
 
 // ---------- Inspire the Bonded Soldier with a felt feeling ----------

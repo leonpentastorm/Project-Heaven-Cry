@@ -1942,8 +1942,8 @@ function refitUnit(g: GameState, u: Combat['units'][number], c: Character, base:
   if (dVis) { if (u.baseVision != null) u.baseVision += dVis; else u.vision = Math.max(1, (u.vision || 12) + dVis); }
   // A focus counts only in a hand (item 630): what the hands hold now decides what this fighter can cast. Its store
   // (core charge, MP) stays with it either way; an Outburst already held stays held (item 632).
-  if (fresh.mg) { if (!u.mg) u.mg = fresh.mg; else { u.mg.evoker = fresh.mg.evoker; u.mg.emanator = fresh.mg.emanator; } }
-  else if (u.mg) { u.mg.evoker = false; u.mg.emanator = false; }
+  if (fresh.mg) { if (!u.mg) u.mg = fresh.mg; else { u.mg.evoker = fresh.mg.evoker; u.mg.emanator = fresh.mg.emanator; if (fresh.mg.attuner) u.mg.attuner = true; else delete u.mg.attuner; } }
+  else if (u.mg) { u.mg.evoker = false; u.mg.emanator = false; delete u.mg.attuner; }
   ensureMomentum(u); // rules 1.12: a blade just drawn has its meter at once
 }
 /** A gear change in a fight (rules 1.9, World Play: Gear in a fight; items 684–690): 1 AP a hand, Hot-Swap on the hand
