@@ -135,7 +135,7 @@
       "actions": ["move"], "verbs": ["figment_interpose", "figment_redraw", "figment_cash_in", "let_go"],
       "effects": [{ "op": "redirect", "when": "taking", "share": 0.5, "if": { "target": "ally", "target_within": 1, "by_hit": true }, "limit": { "per": "per_round", "n": 1 } }],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-ward", "glyph": "⛉",
-      "text": "A bodyguard: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. The first hit each round on an ally next to it lands {=effects.0.share|pct} on the Ward. Interpose: it steps to a free tile next to an ally.", "adjudication": "engine", "provisional": true
+      "text": "A bodyguard: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. The first hit each round on an ally next to it lands {=effects.0.share|pct}% of it on the Ward. Interpose: it steps to a free tile next to an ally.", "adjudication": "engine", "provisional": true
     },
     {
       "id": "husk", "name": "Husk", "icon": "figment-husk", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,

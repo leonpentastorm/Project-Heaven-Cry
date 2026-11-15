@@ -196,6 +196,9 @@ def binding_errors(data, errors):
                         errors.append(f"text numbers: {where} placeholder {m.group(0)} states a cost but reads a discount ({v})")
                     if NATURAL_BEFORE.search(before):
                         errors.append(f"text numbers: {where} placeholder {m.group(0)} binds a die face (a natural roll has no field)")
+                    # 0.29 wave-2 review MF6: a `pct` share prints the bare number (0.5 -> 50); the text says the % sign
+                    if m.group(2) == "pct" and not after.lstrip().startswith("%"):
+                        errors.append(f"text numbers: {where} placeholder {m.group(0)} is a percentage with no % after it (it would read as a plain number)")
 
 def bare_numbers(text):
     """{number as written: count} for the digits typed into a text (placeholders taken out first)."""
