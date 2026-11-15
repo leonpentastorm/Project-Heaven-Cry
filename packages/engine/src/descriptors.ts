@@ -20,7 +20,7 @@ import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange } from './combat';
 import { kindOf } from './objects';
-import { apFor } from './effects/cost';
+import { apFor, resGive } from './effects/cost';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
 import type { Action, GameState } from './game';
@@ -32,7 +32,7 @@ import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleE
 import type { PerkActionEntry } from './effects/actions';
 import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
-import { focusHand, NEEDS_EVOKER, NEEDS_EMANATOR } from './character';
+import { focusHand, carriesMpFocus, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS } from './character';
 import { PILE, isPile } from './containers';
 import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
 import { fieldDoor } from './effects/hooks';
@@ -706,8 +706,11 @@ const MAGIC: ActionSystem = {
   list(x) {
     const { cb, u, c } = x, mg: any = u.mg; if (!mg) return [];
     const words: string[] = mg.words || [], designs: any[] = mg.designs || [];
-    if (!(words.length || designs.length || mg.evoker || mg.emanator)) return [];
-    const out: ActionDescriptor[] = [], evoWhy = mg.evoker ? null : NEEDS_EVOKER, emaWhy = mg.emanator ? null : NEEDS_EMANATOR;
+    // Syphon: the mp resource row's needs (data/actions.json: any MP focus in hand), asked through resGive; shown greyed
+    // while an MP focus is only carried.
+    const mpHeld = !Number.isNaN(safe(() => resGive(cb, u, 'mp', 0, { ask: true }), NaN)), sypShow = mpHeld || (!!c && carriesMpFocus(c));
+    if (!(words.length || designs.length || mg.evoker || mg.emanator || sypShow)) return [];
+    const out: ActionDescriptor[] = [], evoWhy = mg.evoker ? null : NEEDS_EVOKER, emaWhy = mg.emanator ? null : NEEDS_EMANATOR, sypWhy = mpHeld ? null : NEEDS_MP_FOCUS;
     const apNote = (a: 'vent' | 'core', n: number) => { const base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux' : 'Core Change') + ' lowers the cost from ' + base + ' to ' + n + ' AP. ' : ''; };
     if (words.length || mg.evoker) {
       const gAp = glyphApOf(u), vAp = safe(() => ventAp(u, cb), SPELL_AP.vent), cAp = safe(() => coreAp(u, cb), SPELL_AP.core);
@@ -720,7 +723,7 @@ const MAGIC: ActionSystem = {
       out.push(D('vent', 'sigils', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, vAp, apT(vAp), 'Pour all your Flux into the air. The mana meter rises by the same amount. If your Flux goes past ' + FLUX_MAX + ', the Evoker overloads.' + apNote('vent', vAp), evoWhy, { preview: 'sigil' }));
       out.push(D('core', 'sigils', 'Swap core', cAp, apT(cAp), apNote('core', cAp) + 'Load a fresh mana core with ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy, { preview: 'sigil' }));
     }
-    if (designs.length || mg.emanator) {
+    if (designs.length || mg.emanator || sypShow) {
       const held = mg.held;
       if (designs.length && !held) {
         const again = safe(() => togglesFor({ u, cb } as any, 'combat/outburst', {}, cb.mods || []).some((t) => t.id === 'perk:heart_overload#again' && !t.why), false);
@@ -748,9 +751,9 @@ const MAGIC: ActionSystem = {
         out.push(D('heartwatch', 'outbursts', held.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 0, 'free', held.watch ? 'On: you Release at the first enemy that comes into your reach, as your reaction. Click to turn it off.' : 'Hold the Outburst and Release it as your reaction when an enemy comes into your reach.', wt.err || null, { preview: 'outburst' }));
         out.push(D('revert', 'outbursts', 'Revert Pump', 0, 'free', 'Take back your last Pump this turn: its stage, its feeling, and the AP, MP and Strain it cost.', null, { preview: 'outburst', hidden: true }));
       }
+      const band: any = manaBand(cb.mana ?? MANA_START);
+      if (sypShow) out.push(D('syphon', 'outbursts', 'Syphon', SPELL_AP.syphon, apT(SPELL_AP.syphon), 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops.', sypWhy, { preview: 'outburst' }));
       if (mg.emanator || (c && focusHand(c, 'emanator'))) {
-        const band: any = manaBand(cb.mana ?? MANA_START);
-        out.push(D('syphon', 'outbursts', 'Syphon', SPELL_AP.syphon, apT(SPELL_AP.syphon), 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops.', emaWhy, { preview: 'outburst' }));
         out.push(D('crystallise', 'outbursts', 'Crystallise', SPELL_AP.crystallise, apT(SPELL_AP.crystallise), 'Squeeze the air into one standard mana core. Needs ambient mana of 10 or more (Normal air or richer). The mana meter drops by 10.', emaWhy, { preview: 'outburst' }));
       }
     }
