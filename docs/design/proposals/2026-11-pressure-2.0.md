@@ -35,6 +35,19 @@ to-hit term in the roll's log line and the preview); Break Them is a price; Shak
 line shows it). Slide is drawn from the engine's `cond slipping` then `shove` (a willing step) pair, Fire and Move from
 `cond slipping` then `move`.
 
+**Measured** (15 Nov, this worktree, before = 31e49beb's data, after = this lane):
+
+| Measure | Before | After |
+|---|---|---|
+| All-in gun ceiling, % of the plain rifle at L1 / L5 / L10 / L20 (`REFIT_SYSTEMS=gun`, allin; the plain and optimised gun builds are Skirmishers) | 165 / 158 / 163 / 148 | 165 / 158 / 163 / 148 |
+| Same, with the brief's Near Miss on every ranged miss (rejected) | | 165 / 161 / 166 / 154 (balance contract failed: 168 vs 145 ± 12) |
+| Survival `solo_gunner:gear`, 6 seeds, stages cleared | 0, 3, 0, 1, 0, 1 (mean 0.83) | 0, 1, 0, 1, 0, 1 (mean 0.5; one seed's dice stream moved) |
+| Survival `duo_gunner:gear`, 6 seeds, stages cleared | 0, 0, 0, 0, 1, 0 | 0, 0, 0, 0, 1, 0 |
+
+At level 1 (no class yet) only the door acts; the gain starts at level 3. The control column (enemy AP lost, attacks
+refused, foes broken) waits for P10 (the AI reading the states): today Pressure's effect on the AI is the AP loss and
+Afraid only.
+
 **Onboarding.** Slide is listed for every character with Dexterity (the Perks tab: a door verb with no `tab` in its
 file goes there; greyed with the engine's refusal once used this turn). The ranged weapon block's line (`meterHint`) and
 one `TIPS` row `pressure` ("SHOOT TO PIN", the first time a character of mine with Dexterity and a ranged weapon has the
