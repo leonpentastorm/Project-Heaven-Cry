@@ -548,8 +548,63 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
 /** The starting kits from the creation screen (the campaign's four; rules 1.51 added `rigger` and `mender`): what's held,
  * worn and packed (spec: Reloading, Item weights). */
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
-/** A pack line of loose rounds of a calibre (the one shape of a rounds line). */
-export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
+/** A pack line of loose rounds of a calibre (the one shape of a rounds line); with `type`, special rounds of that
+ * calibre (rules 1.56, L2: `ammoType` on the line, as a typed arrow line has). */
+export const roundsOf = (calibre: string, n: number, type?: string | null): PackItem => ({ id: 'rounds:' + calibre + (type ? ':' + type : ''), name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre, ...(type ? { ammoType: type } : {}) });
+// ---------- special rounds by calibre (rules 1.56, L2) ----------
+const SRP: any = (RULES as any).weapons_rules?.special_round_price || {};
+/** The calibres special rounds are made and sold in (`weapons_rules.special_round_price.calibres`). */
+export const SPECIAL_CALIBRES: readonly string[] = SRP.calibres || [];
+/** The reference calibre: a bare special-round item (a 0.28 line, a loot row) reads as rounds of it. */
+export const SPECIAL_REF_CALIBRE: string = SRP.calibre || '';
+/** The special-round item of each type that is made and sold by calibre (items.json: an `ammo_type` with a
+ * `price_mult`), by type. An `ammo_type` item without one (enhanced rounds) is its own item and fits any gun. */
+export const SPECIAL_ROUND_ITEM: Readonly<Record<string, any>> = Object.fromEntries(Object.values(ITEM).filter((it: any) => it?.ammo_type && Number(it.price_mult) > 0).map((it: any) => [it.ammo_type, it]));
+/** The parts of a rounds id: `rounds:<calibre>` (type null) or `rounds:<calibre>:<type>` (a special round of that
+ * calibre); null for any other id. The one reader of the shape (a calibre id holds no colon). */
+export function roundsIdOf(id: string): { calibre: string; type: string | null } | null {
+  const r = /^rounds:([^:]+)(?::([^:]+))?$/.exec(id || ''); return r ? { calibre: r[1], type: r[2] || null } : null;
+}
+/** A bare special-round item id (`ammo_armor_piercing`: a 0.28 pack line, a loot or shop row) as the rounds id it
+ * reads as: that type in the reference calibre. Null for any other id. */
+export function legacySpecialId(id: string): string | null {
+  const it: any = ITEM[id]; return it?.ammo_type && SPECIAL_ROUND_ITEM[it.ammo_type] === it && SPECIAL_REF_CALIBRE ? 'rounds:' + SPECIAL_REF_CALIBRE + ':' + it.ammo_type : null;
+}
+/** A pack line of plain (standard) loose rounds of calibre `cal`: what a magazine is filled from and a round-by-round
+ * gun reloads from. A special-rounds line of the calibre (`ammoType`) is not one: it is loaded as its type. */
+export const plainRounds = (it: PackItem, cal: string | null | undefined): boolean => !!cal && it.calibre === cal && !it.mags && !it.ammoType;
+const specialTypeOf = (it: PackItem, cal: string | null | undefined): string | null => {
+  if (it.mags) return null;
+  if (it.calibre) return cal && it.calibre === cal && it.ammoType && it.ammoType !== 'standard' ? it.ammoType : null;
+  const d: any = ITEM[it.item || it.id]; return d?.ammo_type && !(Number(d.price_mult) > 0) && d.ammo_type !== 'standard' ? d.ammo_type : null;
+};
+/** The special rounds a pack holds for a gun of calibre `cal`, by type: the rounds lines of that calibre with a type,
+ * and the items of a type that fit any gun (an `ammo_type` item with no `price_mult`: enhanced rounds). */
+export function specialRoundsFor(pack: readonly PackItem[], cal: string | null | undefined): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const it of pack) { const t = specialTypeOf(it, cal); if (t && it.qty > 0) out[t] = (out[t] || 0) + it.qty; }
+  return out;
+}
+/** Take up to `n` special rounds of `type` for a gun of calibre `cal` out of a pack (a new list; emptied lines go).
+ * Returns the pack and how many were taken. */
+export function takeSpecialRounds(pack: readonly PackItem[], cal: string | null | undefined, type: string, n: number): { pack: PackItem[]; took: number } {
+  let left = Math.max(0, n), took = 0;
+  const out = pack.map((x) => { if (!left || specialTypeOf(x, cal) !== type || x.qty <= 0) return x; const k = Math.min(left, x.qty); left -= k; took += k; return { ...x, qty: x.qty - k }; }).filter((x) => x.qty > 0 || x.mags);
+  return { pack: out, took };
+}
+/** Rules 1.56 (L2): a 0.28 pack's bare special-round lines become rounds of the reference calibre (in place; merged
+ * with a line of the same calibre and type). Returns whether anything changed. */
+function migrateSpecialRounds(c: Character): boolean {
+  const pack = c.pack; if (!Array.isArray(pack) || !pack.some((x) => !x.calibre && !x.mags && legacySpecialId(x.item || x.id))) return false;
+  const out: PackItem[] = [];
+  for (const x of pack) {
+    const rid = !x.calibre && !x.mags ? legacySpecialId(x.item || x.id) : null, p = rid ? roundsIdOf(rid) : null;
+    if (!p) { out.push(x); continue; }
+    const same = out.find((y) => y.calibre === p.calibre && !y.mags && (y.ammoType || null) === p.type);
+    if (same) out[out.indexOf(same)] = { ...same, qty: same.qty + x.qty }; else out.push(roundsOf(p.calibre, x.qty, p.type));
+  }
+  c.pack = out; return true;
+}
 /** Rules 1.54 (survival-spec 14.2 item 6): the kind of pack line an item makes, the ONE rule for every place that puts
  * an item in a pack (a loadout, a kit, loot, a purchase, stowing, a trait's start item), so the same item always makes
  * the same line and stacks: its `pack_kind` in items.json, else by its category (a focus a focus, a consumable a med,
@@ -587,7 +642,7 @@ export function loadAll(c: Character): number {
   let moved = 0;
   for (const m of pack) if (m.mags && m.weapon) {
     const cap = WEAPON[m.weapon]?.magazine || 0, cal = WEAPON[m.weapon]?.ammo;
-    for (const r of pack) if (r.calibre && r.calibre === cal) for (let i = 0; i < m.mags.length && r.qty > 0; i++) { const take = Math.min(cap - m.mags[i], r.qty); m.mags[i] += take; r.qty -= take; moved += take; }
+    for (const r of pack) if (plainRounds(r, cal)) for (let i = 0; i < m.mags.length && r.qty > 0; i++) { const take = Math.min(cap - m.mags[i], r.qty); m.mags[i] += take; r.qty -= take; moved += take; }
   }
   c.pack = pack.filter((it) => it.qty > 0 || it.mags);
   return moved;
@@ -1156,6 +1211,7 @@ export function migrateCharacterItems(c: Character): string[] {
     c.perks = out;
   }
   if ((c.traits || []).some((t) => !knownTrait(t))) c.traits = c.traits.filter(knownTrait);
+  if (migrateSpecialRounds(c)) notes.push(c.name + ': special rounds are carried by calibre now; the old ones are ' + (CALIBRE_NAME[SPECIAL_REF_CALIBRE] || SPECIAL_REF_CALIBRE) + ' rounds.');
   return notes;
 }
 export function migrateCharacterFocus(c: Character): string[] {

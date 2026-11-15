@@ -4,7 +4,7 @@
 // General: a campaign's rewards and a roguelike's missions use the same purse. (The shelved advanced class in
 // classes/j.ts keeps its own class-state credits; it moves here when it returns.)
 import { WEAPON, ITEM, RULES, ARMOUR_CLASSES } from './data';
-import { RARITY, type Character, type Rarity } from './character';
+import { RARITY, type Character, type Rarity, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from './character';
 
 /** The credits a character holds (0 when it has never had any). */
 export const creditsOf = (c: { credits?: number } | null | undefined): number => Math.max(0, Math.floor(Number(c?.credits) || 0));
@@ -33,13 +33,20 @@ export function emptyMagPrice(weaponId: string): number | null {
   const w: any = WEAPON[weaponId], t = WR.magazine_prices || {}; if (!w || w.reload !== 'magazine' || w.magazine == null) return null;
   return Number(t.by_unit?.[w.reload_unit] ?? t.by_category?.[w.category] ?? t.default) || 0;
 }
+/** Rules 1.56 (L2): one special round of a calibre: its type's `price_mult` (SPECIAL_ROUND_ITEM) x that calibre's round
+ * (a calibre of `special_round_price.calibres`), or null (no such round is made or sold). */
+function specialRoundPrice(cal: string, type: string): number | null {
+  const it = SPECIAL_ROUND_ITEM[type], rp = ROUND_PRICE[cal] || 0;
+  return it && it.stock !== false && it.built !== false && rp > 0 && SPECIAL_CALIBRES.includes(cal) ? Number(it.price_mult) * rp : null;
+}
 /** What a weapon or an item costs at a rarity (its `price_credits` x `rules.json rarity.<r>.price`), with its fitted mods
  * at their own price; or null when it has no price (a plot item, a natural weapon, `stock: false` things). Also prices
  * the counter's shapes (rules 1.42): `rounds:<calibre>` (one round), `mag:<weapon>` (one full magazine: the empty
- * magazine and its rounds) and a special round (`price_mult` x the reference calibre's round). The one price door: shop,
+ * magazine and its rounds), `rounds:<calibre>:<type>` (a special round: `price_mult` x that calibre's round, rules 1.56)
+ * and a bare special-round item (the same, at the reference calibre). The one price door: shop,
  * sale, picks, loot value. */
 export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = []): number | null {
-  const r = /^rounds:(.+)$/.exec(id); if (r) return ROUND_PRICE[r[1]] > 0 ? ROUND_PRICE[r[1]] : null;
+  const r = roundsIdOf(id); if (r) return r.type ? specialRoundPrice(r.calibre, r.type) : ROUND_PRICE[r.calibre] > 0 ? ROUND_PRICE[r.calibre] : null;
   // rules 1.52: body armour of a class (`armour:<class>`) at the class's own price (rules.json combat armor.classes)
   const ac = /^armour:(\d)$/.exec(id); if (ac) { const p = Number(ARMOUR_CLASSES[Number(ac[1])]?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; }
   // rules 1.55: `mag:<weapon>:<rounds>` is a magazine holding that many rounds (`:0` an empty one), the same formula
@@ -50,7 +57,7 @@ export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly 
   // asks for a price (every one does) can hold it
   const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false || def.built === false) return null;
   let p = Number(def.price_credits);
-  if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = Number(def.price_mult) * (ROUND_PRICE[WR.special_round_price?.calibre] || 0);
+  if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = specialRoundPrice(WR.special_round_price?.calibre, def.ammo_type) ?? NaN;
   if (!Number.isFinite(p) || p <= 0) return null;
   const base = Math.round(p * (RARITY[rarity]?.price ?? 1));
   return base + mods.reduce((t, x) => t + (priceOf(x) || 0), 0);

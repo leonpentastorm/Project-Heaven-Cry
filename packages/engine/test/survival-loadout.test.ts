@@ -3,7 +3,7 @@
 // price door (priceOf), the unspent budget kept as credits, a declined focus, the weight refusal, Recommended, the host's
 // close; a campaign gives a bare character its loadout; a character made with a kit (an old draft, a test) keeps it.
 import { describe, expect, it } from 'vitest';
-import { type GameState, newGame, apply, RuleError, newCharacter, validateSheet, creditsOf, packOf, priceOf, carriedKg, carryLimit, viewFor,
+import { type GameState, newGame, apply, RuleError, newCharacter, validateSheet, creditsOf, packOf, priceOf, roundsIdOf, carriedKg, carryLimit, viewFor,
   LOADOUT, RACK, archetypeWeapons, loadoutLines, loadoutSpent, recommendedPick, startOffer, kitFor, campaignLoadout, KITS, WEAPON, quiversOf, quiverHolds, ITEM, twoHands, emptyMagPrice } from '../src';
 import { sheetOf } from './helpers/perkfight';
 import svJ from '../../../data/survival.json';
@@ -102,7 +102,7 @@ describe('the camp (rules 1.52)', () => {
       if (held && twoHands(c, held)) { for (const l of wl) expect(twoHands(c, l.id), pk.id + ' ' + l.id).toBe(false); expect(wl.some((l) => l.id === held), pk.id).toBe(false); }
       if (held && !twoHands(c, held) && RACK.find((r) => r.free === held)!.free && priceOf(held)! <= LOADOUT.budget) expect(ls.some((l) => l.key === 'stock:' + held) || ls.some((l) => l.id === held && l.shelf !== 'rack'), pk.id).toBe(true); // another one of a one-hander
       const cals = new Set([held, ...packOf(c).map((x) => x.weapon)].map((id) => (WEAPON[id || ''] as any)?.ammo).filter(Boolean));
-      for (const l of ls) { const r = /^rounds:(.+)$/.exec(l.id); if (r) expect(cals.has(r[1]), pk.id + ' ' + l.id).toBe(true); }
+      for (const l of ls) { const r = roundsIdOf(l.id); if (r) expect(cals.has(r.calibre), pk.id + ' ' + l.id).toBe(true); } // rules 1.56: a special round's calibre too
     }
     // taking a pistol brings its rounds and both magazines (full and empty) onto the menu
     let g = lo(camp(), 'Kade', { op: 'pick', slot: 'weapon', id: FREE('light_blades') });

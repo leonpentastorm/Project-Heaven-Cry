@@ -9,8 +9,9 @@
 // recipe has code of its own and no item id is named here.
 import './datatext';
 import recipesJ from '../../../data/recipes.json';
-import { ITEM, WEAPON } from './data';
-import { type Character, type PackItem, packOf, holds } from './character';
+import { ITEM, WEAPON, CALIBRE_NAME } from './data';
+import { type Character, type PackItem, packOf, holds, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from './character';
+import { priceOf } from './credits';
 import { packTake, grantGoods, itemLabel, calName } from './containers';
 import { lineGoods } from './run/shop';
 import { gearLockWhy } from './run/state';
@@ -21,8 +22,30 @@ export interface RecipeLine { item: string; n: number }
 /** A recipe (`data/recipes.json` items): what it needs, the tool, what it gives, where it is made, the words after the
  * tool in its refusal (`does`). */
 export interface Recipe { id: string; name: string; needs: RecipeLine[]; tool: { item?: string; focus?: 'any' }; does: string; gives: RecipeLine[]; where: 'between_fights'; text?: string }
-/** Every recipe, in the data's order. */
-export const RECIPES: Recipe[] = (recipesJ as any).items;
+/** Rules 1.56 (L2): a row with `each_calibre: true` is a special round made by calibre: its one `gives` line names the
+ * round's item (an `ammo_type` with a `price_mult`), each need a `share` of the worth. It becomes one row for every
+ * calibre of `special_round_price.calibres` (id `<id>:<calibre>`), giving `rounds:<calibre>:<type>` in the fewest
+ * rounds n whose worth (priceOf) splits into whole needs: each need is share x n x the round's price / its own price.
+ * A calibre with no such n up to `EACH_CALIBRE_MOST` rounds gets no row (the validator says so). */
+const EACH_CALIBRE_MOST = 100;
+function expandRow(r: any): Recipe[] {
+  if (!r.each_calibre) return [r];
+  const sp: any = ITEM[r.gives?.[0]?.item], type = sp?.ammo_type; if (!type || SPECIAL_ROUND_ITEM[type] !== sp) return [];
+  const out: Recipe[] = [];
+  for (const cal of SPECIAL_CALIBRES) {
+    const id = 'rounds:' + cal + ':' + type, v = priceOf(id); if (!v) continue;
+    for (let n = 1; n <= EACH_CALIBRE_MOST; n++) {
+      const needs = (r.needs || []).map((l: any) => ({ item: l.item, n: (Number(l.share) * v * n) / (priceOf(l.item) || NaN) }));
+      if (!needs.every((l: RecipeLine) => Math.abs(l.n - Math.round(l.n)) < 1e-9 && Math.round(l.n) >= 1)) continue;
+      const { each_calibre: _e, ...rest } = r; void _e;
+      out.push({ ...rest, id: r.id + ':' + cal, name: r.name + ' (' + (CALIBRE_NAME[cal] || cal) + ')', needs: needs.map((l: RecipeLine) => ({ item: l.item, n: Math.round(l.n) })), gives: [{ item: id, n }] });
+      break;
+    }
+  }
+  return out;
+}
+/** Every recipe, in the data's order (an `each_calibre` row as its rows by calibre, in the calibres' order). */
+export const RECIPES: Recipe[] = ((recipesJ as any).items as any[]).flatMap(expandRow);
 const recipeOf = (id: string) => RECIPES.find((r) => r.id === id);
 /** gear/make (rules 1.54 item 5): make `times` of a recipe for a character. */
 export interface MakeAction { type: 'gear/make'; charId: string; recipe: string; times?: number }
@@ -30,11 +53,13 @@ export interface MakeAction { type: 'gear/make'; charId: string; recipe: string;
 /** A line's thing in words, for `n` of it: "20 gunpowder", "12 casings", "2 × .32 Decrkm" (an item's `plural` when it
  * has one; rounds by their calibre's name). */
 function countWords(id: string, n: number): string {
-  const r = /^rounds:(.+)$/.exec(id); if (r) return n + ' × ' + calName(r[1]);
+  const r = roundsIdOf(id); if (r) return n + ' × ' + roundsWords(r);
   const it: any = ITEM[id] || WEAPON[id], name = String((n === 1 ? it?.name : it?.plural || it?.name) || id);
   return n + ' ' + name.charAt(0).toLowerCase() + name.slice(1);
 }
-const nameOfId = (id: string): string => { const r = /^rounds:(.+)$/.exec(id); return r ? calName(r[1]) : String((ITEM[id] as any)?.name || (WEAPON[id] as any)?.name || id); };
+/** Rounds in words: ".32 Decrkm", or a special round "Armour-piercing rounds (.700 Blackpoint)" (rules 1.56). */
+const roundsWords = (r: { calibre: string; type: string | null }): string => (r.type && SPECIAL_ROUND_ITEM[r.type] ? SPECIAL_ROUND_ITEM[r.type].name + ' (' + (CALIBRE_NAME[r.calibre] || r.calibre) + ')' : calName(r.calibre));
+const nameOfId = (id: string): string => { const r = roundsIdOf(id); return r ? roundsWords(r) : String((ITEM[id] as any)?.name || (WEAPON[id] as any)?.name || id); };
 /** How many of a need's id the character carries (packTake counting). */
 const hasOf = (c: Character, id: string) => packTake(packOf(c).map((x) => ({ ...x })), id, 0);
 const timesOf = (t: unknown) => Math.round(Number(t ?? 1));

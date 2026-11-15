@@ -6,7 +6,7 @@
 // The gear preview (spec item 14) gives the card's numbers from the fight's own unit build. Numbers read from data.
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, shopView, RuleError, reachable, creditsOf, priceOf, counterLines, linePrice, sellValue, rollStock, faceFor, FACES, SHOP_DATA, SELL_RATE, ROUND_PRICE, emptyMagPrice,
-  gearPreview, compareGear, registerShopService, shopServices, packOf, WEAPON, ITEM, RARITY, runMoveProblem, magazineWorth, type RunNode } from '../src';
+  gearPreview, compareGear, registerShopService, shopServices, packOf, WEAPON, ITEM, RARITY, runMoveProblem, magazineWorth, SPECIAL_ROUND_ITEM, type RunNode } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { type Pc } from './helpers/replay';
 import svJ from '../../../data/survival.json';
@@ -49,12 +49,15 @@ describe('Survival shop (rules 1.42)', () => {
 
   it('the counter: every calibre (twelve), the special rounds, thrown, cores, supplies, priced; the guns shelf for every gun carried', () => {
     const g = inShop(); g.characters.c1.weapon = 'hellraiser_service_rifle'; // a magazine-fed gun in hand (rules 1.52: the camp's free rifle loads round by round)
+    const gun0 = g.characters.c1.weapon;
     const lines = counterLines(Object.values(g.characters));
     // rules 1.55: ammunition follows the characters: the calibres of the guns carried, no other
     const cal = lines.filter((l) => l.shelf === 'calibres').map((l) => l.id.slice('rounds:'.length));
     const takes = new Set(Object.values(g.characters).flatMap((c) => [c.weapon, ...packOf(c).map((x) => x.weapon)]).map((id) => (WEAPON[id || ''] as any)?.ammo).filter(Boolean));
     expect(cal.sort()).toEqual(RJ.weapons_rules.calibres.map((c: any) => c.id).filter((c: string) => takes.has(c)).sort());
-    for (const id of ['ammo_armor_piercing', 'ammo_hollow_point', 'ammo_incendiary', 'ammo_enhanced', 'frag_grenade', 'smoke_grenade', 'flashbang', 'incendiary_grenade', 'standard_core', 'spare_parts', 'stim_injector', 'field_kit', 'ration_pack'])
+    // rules 1.56: the special rounds made by calibre are listed as rounds of the held gun's calibre; enhanced as its item
+    for (const t of Object.keys(SPECIAL_ROUND_ITEM)) expect(lines.some((l) => l.id === 'rounds:' + (WEAPON[gun0] as any).ammo + ':' + t)).toBe(true);
+    for (const id of ['ammo_enhanced', 'frag_grenade', 'smoke_grenade', 'flashbang', 'incendiary_grenade', 'standard_core', 'spare_parts', 'stim_injector', 'field_kit', 'ration_pack'])
       expect(lines.some((l) => l.id === id)).toBe(true);
     for (const l of lines) if (!l.res) expect(linePrice(l)).toBeGreaterThan(0);
     const gun = g.characters.c1.weapon; expect(lines.some((l) => l.shelf === 'magazines' && l.id === 'mag:' + gun)).toBe(true);

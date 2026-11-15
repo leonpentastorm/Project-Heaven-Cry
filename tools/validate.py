@@ -2760,6 +2760,10 @@ if _sv is not None:
     if _sv.get("shop") is not None:
         if not (_num(_mp.get("default")) and isinstance(_mp.get("by_unit"), dict) and isinstance(_mp.get("by_category"), dict)): errors.append("rules:weapons_rules.magazine_prices: by_unit, by_category and a default price")
         if (_wr.get("special_round_price") or {}).get("calibre") not in _cal: errors.append("rules:weapons_rules.special_round_price.calibre: not a calibre")
+        # rules 1.56 (L2): special rounds by calibre: every listed calibre is a calibre, the reference among them
+        _spc = (_wr.get("special_round_price") or {}).get("calibres")
+        if not (isinstance(_spc, list) and _spc and all(_x in _cal for _x in _spc)): errors.append("rules:weapons_rules.special_round_price.calibres: a list of calibres")
+        elif (_wr.get("special_round_price") or {}).get("calibre") not in _spc: errors.append("rules:weapons_rules.special_round_price.calibres: must hold the reference calibre")
         def _priced(_id):
             if _id.startswith("rounds:"): return _num(_cal.get(_id[7:])) and _cal[_id[7:]] > 0
             _d = _wmap.get(_id) or _imap.get(_id)
@@ -2860,21 +2864,62 @@ _PACK_KINDS = {"weapon", "ammo", "tool", "focus", "food", "med", "loot", "plot"}
 for _i in _rimap.values():
     if "pack_kind" in _i and _i["pack_kind"] not in _PACK_KINDS: errors.append(f"items:{_i.get('id')}: pack_kind {_i['pack_kind']!r} is not a pack line's kind ({', '.join(sorted(_PACK_KINDS))})")
     if "plural" in _i and not (isinstance(_i["plural"], str) and _i["plural"].strip()): errors.append(f"items:{_i.get('id')}: plural must be a name")
+# rules 1.56 (L2): the special round of each type made and sold by calibre (an ammo_type with a price_mult), and the
+# calibres it comes in (credits.ts specialRoundPrice; character.ts SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES)
+_rspc = (_rw.get("special_round_price") or {}).get("calibres") or []
+_rsp = {_i.get("ammo_type"): _i for _i in _rimap.values() if _i.get("ammo_type") and _num(_i.get("price_mult")) and _i["price_mult"] > 0}
+def _rspecial(_cal, _type):
+    _d, _p = _rsp.get(_type), _rcal.get(_cal)
+    if not _d or _d.get("stock") is False or _d.get("built") is False or not (_num(_p) and _p > 0) or _cal not in _rspc: return None
+    return _d["price_mult"] * _p
 def _rprice(_id):
     """credits.ts priceOf at the standard grade, or None (unpriced or stock: false)."""
-    if _id.startswith("rounds:"): _p = _rcal.get(_id[7:]); return _p if _num(_p) and _p > 0 else None
+    if _id.startswith("rounds:"):
+        _parts = _id[7:].split(":")
+        if len(_parts) == 2: return _rspecial(_parts[0], _parts[1])
+        _p = _rcal.get(_id[7:]); return _p if _num(_p) and _p > 0 else None
     _d = _rwmap.get(_id) or _rimap.get(_id)
     if not _d or _d.get("stock") is False: return None
     if _num(_d.get("price_credits")) and _d["price_credits"] > 0: return _d["price_credits"]
-    if _num(_d.get("price_mult")) and _d["price_mult"] > 0 and _num(_rref): return _d["price_mult"] * _rref
+    if _num(_d.get("price_mult")) and _d["price_mult"] > 0: return _rspecial((_rw.get("special_round_price") or {}).get("calibre"), _d.get("ammo_type"))
     return None
+_EACH_CALIBRE_MOST = 100  # recipes.ts EACH_CALIBRE_MOST
+def _rexpand(_r):
+    """recipes.ts expandRow: an each_calibre row as one row per calibre of special_round_price.calibres (changed together)."""
+    if not _r.get("each_calibre"): return [_r]
+    _w = f"recipes:{_r.get('id')}"
+    _g = _r.get("gives") or []
+    if not (isinstance(_g, list) and len(_g) == 1 and (_g[0] or {}).get("item") in _rimap and set(_g[0]) == {"item"}):
+        errors.append(f"{_w}: an each_calibre row gives one line, {{item}}: the special round's item"); return []
+    _sp = _rimap[_g[0]["item"]]; _type = _sp.get("ammo_type")
+    if _rsp.get(_type) is not _sp: errors.append(f"{_w}: an each_calibre row gives a special round made by calibre (an ammo_type with a price_mult)"); return []
+    _nd = _r.get("needs") or []
+    if not (isinstance(_nd, list) and _nd and all(isinstance(_l, dict) and set(_l) == {"item", "share"} and _num(_l.get("share")) and _l["share"] > 0 for _l in _nd)):
+        errors.append(f"{_w}: an each_calibre row's needs are {{item, share}} lines"); return []
+    if abs(sum(_l["share"] for _l in _nd) - 1) > 1e-9: errors.append(f"{_w}: the needs' shares add up to 1 (a row is worth what it makes)")
+    _out = []
+    for _cal in _rspc:
+        _id = f"rounds:{_cal}:{_type}"; _v = _rspecial(_cal, _type)
+        if not _v: continue
+        for _n in range(1, _EACH_CALIBRE_MOST + 1):
+            _ns = []
+            for _l in _nd:
+                _pp = _rprice(_l["item"])
+                _ns.append(None if not _pp else _l["share"] * _v * _n / _pp)
+            if all(_x is not None and abs(_x - round(_x)) < 1e-9 and round(_x) >= 1 for _x in _ns):
+                _row = {k: v for k, v in _r.items() if k != "each_calibre"}
+                _row.update(id=f"{_r.get('id')}:{_cal}", needs=[{"item": _l["item"], "n": int(round(_x))} for _l, _x in zip(_nd, _ns)], gives=[{"item": _id, "n": _n}])
+                _out.append(_row); break
+        else: errors.append(f"{_w}: no whole making of {_id} within {_EACH_CALIBRE_MOST} rounds")
+    return _out
 _rc = data.get("recipes")
 if _rc is not None:
     if _rc.get("provisional") is not True: errors.append("recipes: provisional: true")
-    _seen = collections.Counter(r.get("id") for r in items("recipes"))
+    _rows = [_x for _r in items("recipes") for _x in _rexpand(_r)]
+    _seen = collections.Counter(r.get("id") for r in _rows)
     for _k, _n in _seen.items():
         if _n > 1: errors.append(f"recipes: id {_k!r} is used {_n} times")
-    for _r in items("recipes"):
+    for _r in _rows:
         _w = f"recipes:{_r.get('id')}"
         for _f in ("id", "name", "does"):
             if not (isinstance(_r.get(_f), str) and _r[_f].strip()): errors.append(f"{_w}: needs a {_f}")
@@ -2890,7 +2935,7 @@ if _rc is not None:
                 _id, _n = (_e or {}).get("item", ""), (_e or {}).get("n")
                 if not (isinstance(_n, int) and _n >= 1): errors.append(f"{_w}.{_side}: {_id!r} needs n, a whole number of 1 or more")
                 if _side == "needs" and _id not in _rimap: errors.append(f"{_w}.needs: {_id!r} is not an items.json item")
-                if _side == "gives" and not (_id in _rimap or (_id.startswith("rounds:") and _id[7:] in _rcal)): errors.append(f"{_w}.gives: {_id!r} is not an item or rounds:<calibre>")
+                if _side == "gives" and not (_id in _rimap or (_id.startswith("rounds:") and (_id[7:] in _rcal or _rprice(_id) is not None))): errors.append(f"{_w}.gives: {_id!r} is not an item, rounds:<calibre> or rounds:<calibre>:<type>")
                 _p = _rprice(_id)
                 if _p is None: errors.append(f"{_w}.{_side}: {_id!r} has no price (priceOf), so the row can't be held to it"); _sum = None
                 elif _sum is not None and isinstance(_n, int): _sum += _p * _n

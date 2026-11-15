@@ -7,8 +7,8 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import ltJ from '../../../data/loot_tables.json';
-import { WEAPON, ITEM, CALIBRE_NAME } from './data';
-import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf, packKindOf } from './character';
+import { WEAPON, ITEM, CALIBRE_NAME, RULES } from './data';
+import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf, packKindOf, legacySpecialId } from './character';
 import { type MapObject, type CacheItem, makeObject } from './objects';
 
 const WP: any = wpJ;
@@ -152,6 +152,8 @@ export function pileEntries(o: MapObject): { key: string; label: string; item: s
 }
 
 // ---------- the loot shape as pack items ----------
+/** The round types (`weapons_rules.ammo_types`): a `rounds:<calibre>:<type>` id names one of them. */
+const AMMO_TYPE_IDS = new Set<string>(((RULES as any).weapons_rules?.ammo_types || []).map((a: any) => a.id));
 const calibreId = (s: string) => Object.keys(CALIBRE_NAME).find((k) => k.toLowerCase() === s.toLowerCase() || CALIBRE_NAME[k].toLowerCase() === s.toLowerCase());
 /** Things the character keeps as counts, not pack entries (rules 1.9 review fix): a stim injector joins c.stims (what
  * combat/stim spends) and an Essence of Experience joins c.essence. True when it was counted. */
@@ -177,19 +179,23 @@ export function grantGoods(c: Character, pack: PackItem[], its: PackItem[]): Pac
 }
 /** One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3),
  * an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an empty one; a weapon
- * loaded round by round gives its rounds loose), `rounds:<calibre>` (at most 120), and anything else a plot item. */
+ * loaded round by round gives its rounds loose), `rounds:<calibre>` (at most 120), `rounds:<calibre>:<type>` (special
+ * rounds of that calibre; a bare special-round item reads as the reference calibre's, rules 1.56), and anything else a
+ * plot item. */
 export function lootToPack(l: { item?: string; qty?: number; rarity?: string; name?: string; text?: string; note?: string }): PackItem[] {
   if (!l || typeof l !== 'object') return [];
   const id = String(l.item || '').trim(), label = String(l.name || '').trim().slice(0, 60), q = Number(l.qty);
   const n = Math.max(1, Math.min(LOOT_QTY_MAX, Math.round(Math.abs(q) || 1)));
   const rarity = ['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? (l.rarity as any) : 'standard';
-  const m = /^mag:(.+)$/i.exec(id), r = /^rounds:(.+)$/i.exec(id);
+  const lg = legacySpecialId(id); if (lg) return lootToPack({ ...l, item: lg }); // rules 1.56 (L2): a bare special round is rounds of the reference calibre
+  const m = /^mag:(.+)$/i.exec(id), r = /^rounds:([^:]+)(?::([^:]+))?$/i.exec(id), rt = r?.[2] && AMMO_TYPE_IDS.has(r[2]) && r[2] !== 'standard' ? r[2] : null;
+  if (r?.[2] && !rt) return [];
   if (m && WEAPON[m[1]] && WEAPON[m[1]].magazine != null) {
     const w = WEAPON[m[1]], cap = w.magazine || 0, rounds = !Number.isFinite(q) || q === 1 ? cap : Math.max(0, Math.min(cap, Math.round(q)));
     if (w.reload === 'loose' && w.ammo) return rounds > 0 ? [roundsOf(w.ammo, rounds)] : [];
     if (w.reload === 'magazine') return [magItem(w.id, rounds)];
   }
-  if (r && calibreId(r[1])) return [roundsOf(calibreId(r[1])!, Math.max(1, Math.min(PILE.rounds_max, Math.round(Math.abs(q) || 1))))];
+  if (r && calibreId(r[1])) return [roundsOf(calibreId(r[1])!, Math.max(1, Math.min(PILE.rounds_max, Math.round(Math.abs(q) || 1))), rt)];
   if (WEAPON[id] && !m && !r) {
     const name = label || WEAPON[id].name;
     if (WEAPON[id].category === 'thrown') return [{ id, name, qty: n, kind: 'weapon', weapon: id }];

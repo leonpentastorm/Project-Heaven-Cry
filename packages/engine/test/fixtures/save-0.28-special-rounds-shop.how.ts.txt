@@ -1,0 +1,23 @@
+// Writes test/fixtures/save-0.28-special-rounds-shop.json with the engine at 4dcd8ed0 (origin/wip/feature-0.29, the
+// commit before rules 1.56's special rounds by calibre): a Survival run of two (plain_gun, sigil) standing in a shop;
+// c1 holds the service rifle, buys armour-piercing rounds at the counter (the old one id for every gun,
+// `ammo_armor_piercing`), and makes hollow-point rounds with an ammo maker (the old `make_hollow_point`). Run once (as a
+// vitest file in that engine's test/ folder, OUT=<path>); never regenerate.
+import { it } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { apply, packOf, ITEM, type GameState } from '../src';
+import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+it('writes the fixture', () => {
+  const pcs: any = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
+  const g0: GameState = JSON.parse(JSON.stringify(startRun(survivalRoom('PHC-0001', pcs, { test: true }), 'PHC-0001'))), r = g0.run!;
+  const n = r.nodes.find((x) => x.depth === 5 && !x.gate)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
+  n.kind = 'shop' as any; r.at = prev.id; r.state = 'map';
+  for (const c of Object.values(g0.characters)) c.credits = 2000;
+  const c1 = g0.characters.c1; c1.weapon = 'hellraiser_service_rifle';
+  const line = (item: string, qty: number) => ({ id: item, item, name: (ITEM as any)[item].name, qty, kind: 'loot' } as any);
+  c1.pack = [...packOf(c1), line('ammo_maker', 1), line('gunpowder', 4), line('casing', 4)];
+  let g = g0; for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+  g = apply(g, { type: 'run/buy', charId: 'c1', key: 'ammo_armor_piercing', qty: 1 } as any, 'host');
+  g = apply(g, { type: 'gear/make', charId: 'c1', recipe: 'make_hollow_point', times: 2 } as any, 'host');
+  writeFileSync(process.env.OUT!, JSON.stringify(g));
+});

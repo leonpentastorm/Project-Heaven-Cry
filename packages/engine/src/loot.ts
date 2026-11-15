@@ -38,7 +38,7 @@ const calibreOk = (s: string) => Object.keys(CALIBRE_NAME).some((k) => k.toLower
 export function knownDropId(id: string): boolean {
   if (WEAPON[id] || ITEM[id] || id === 'personal') return true;
   const m = /^mag:(.+)$/i.exec(id); if (m) return !!WEAPON[m[1]] && WEAPON[m[1]].magazine != null;
-  const r = /^rounds:(.+)$/i.exec(id); if (r) return calibreOk(r[1]);
+  const r = /^rounds:([^:]+)(?::[^:]+)?$/i.exec(id); if (r) return calibreOk(r[1]); // rules 1.56: `:<type>` a special round of it
   return false;
 }
 const ammoId = (id: string) => /^(mag|rounds):/i.test(id);

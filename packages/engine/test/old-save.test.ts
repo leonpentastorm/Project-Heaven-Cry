@@ -17,6 +17,10 @@
 //       1.39 (modes and the Survival run): a room saved in its lobby, two players, one character each, start and tone
 //       picked. The script beside it (save-pre-modes-lobby.how.ts.txt) wrote it. It has no settings.play: it loads as a
 //       campaign (run-state.test.ts reads it).
+//   save-0.28-special-rounds-shop.json     written by origin/wip/feature-0.29 at 4dcd8ed0, the commit before rules 1.56's
+//       special rounds by calibre (the script beside it, save-0.28-special-rounds-shop.how.ts.txt): a Survival run in a
+//       shop, c1 with the service rifle carrying `ammo_armor_piercing` (bought) and `ammo_hollow_point` (made), the old
+//       one-id-for-every-gun lines.
 //
 // Each is loaded the way the client loads a save (parsed, migrateLoaded) and played on. NEVER regenerate these files:
 // they are what an old save looks like. When the saved shape changes, add a NEW fixture beside them (written by the
@@ -24,7 +28,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf, quiversOf } from '../src';
+import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf, quiversOf, packOf, legacySpecialId, specialRoundsFor, SPECIAL_REF_CALIBRE, priceOf, sellValue, WEAPON } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
 const load = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
@@ -237,5 +241,33 @@ describe('rules 1.53: a save from before quivers were gear loads and plays on', 
     if (!r.g.combat.over) { const n = Object.values(u.quiver || {}).reduce((t: number, k: any) => t + k, 0); expect(n).toBe(u.ammo); expect(n).toBeLessThanOrEqual(19); }
     else { const qs = quiversOf(r.g.characters[archer.id]); expect(qs.length).toBe(1); expect(Object.values(qs[0].arrows).reduce((t: number, k: any) => t + k, 0)).toBe(r.g.characters[archer.id].loaded); }
     expect(() => viewFor(r.g, 'host')).not.toThrow();
+  }, 60_000);
+});
+
+// Rules 1.56 (L2, special rounds by calibre): save-0.28-special-rounds-shop.json was written by origin/wip/feature-0.29
+// at 4dcd8ed0 (the script beside it). Its c1 carries the old bare special-round lines; they read as rounds of the
+// reference calibre (weapons_rules.special_round_price.calibre), keep their count, load into the gun and sell.
+describe('rules 1.56: a 0.28 save holding the old special-round ids loads and plays on', () => {
+  const NAME = 'save-0.28-special-rounds-shop';
+  const raw = () => JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + NAME + '.json', import.meta.url)), 'utf8'));
+  it('the old lines become rounds of the reference calibre, same count; the rifle loads them; the shop buys them back', () => {
+    const old = raw(), oldPack = old.characters.c1.pack as any[];
+    const was = (id: string) => oldPack.filter((x) => (x.item || x.id) === id).reduce((t, x) => t + x.qty, 0);
+    expect(was('ammo_armor_piercing')).toBeGreaterThan(0); expect(was('ammo_hollow_point')).toBeGreaterThan(0);
+    const g0 = load(NAME), c = g0.characters.c1;
+    expect(packOf(c).some((x: any) => legacySpecialId(x.item || x.id))).toBe(false); // no bare line is left
+    const cal = SPECIAL_REF_CALIBRE; expect((WEAPON[c.weapon] as any).ammo).toBe(cal);
+    const typed = specialRoundsFor(packOf(c), cal);
+    expect(typed.armor_piercing).toBe(was('ammo_armor_piercing')); expect(typed.hollow_point).toBe(was('ammo_hollow_point'));
+    // the price is the one it had: a bare item at the reference calibre is the same as rounds:<ref>:<type>
+    expect(priceOf(legacySpecialId('ammo_armor_piercing')!)).toBe(priceOf('ammo_armor_piercing'));
+    const i = packOf(c).findIndex((x: any) => x.ammoType === 'armor_piercing');
+    expect(sellValue(packOf(c)[i])).toBeGreaterThan(0);
+    // played on through the reducer: sell one line back at the shop, leave, and load the rest into the rifle
+    let g = apply(g0, { type: 'run/sell', charId: 'c1', idx: packOf(g0.characters.c1).findIndex((x: any) => x.ammoType === 'hollow_point') } as any, 'host');
+    expect(specialRoundsFor(packOf(g.characters.c1), cal).hollow_point || 0).toBe(0);
+    g = apply(g, { type: 'gear/ammo', charId: 'c1', ammo: 'armor_piercing' } as any, 'host');
+    expect(g.characters.c1.loadedType).toBe('armor_piercing'); expect(g.characters.c1.loaded).toBeGreaterThan(0);
+    expect(() => viewFor(g, 'host')).not.toThrow();
   }, 60_000);
 });
