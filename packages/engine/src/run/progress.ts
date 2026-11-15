@@ -53,7 +53,7 @@ const TRADE: Record<string, TradeRow> = Object.fromEntries(TRADES.items.map((t) 
 /** The Forge's stock size and the armour fitting's prices (survival.json forge, armour_fit). */
 const FORGE_SLOTS: number = SV.forge.slots, FIT: Record<string, number> = SV.armour_fit.price;
 /** Rules 1.55: the Forge's fee to fit, swap or take off a weapon mod (survival.json forge.fit): `rate` x the mod's price, at least `min`. */
-const MOD_FIT: { rate: number; min: number } = SV.forge.fit;
+const MOD_FIT: { rate: number; min: number; extra_action: string } = SV.forge.fit;
 const LADDER: Rarity[] = ['standard', 'fine', 'masterwork', 'relic'];
 const GRADE_WORD: Record<string, string> = { standard: 'Standard', fine: 'Fine', masterwork: 'Masterwork', relic: 'Relic', celestial: 'Celestial' };
 const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
@@ -226,7 +226,7 @@ const gunWord = (c: Character, where: ModWhere) => { const n = nameOf(gunAt(c, w
 const whereOf = (a: { where?: 'off' | number }): ModWhere => a.where ?? 'main';
 /** The perk action that fits a second mod in a slot type the main weapon already fills (Gun Nut, Blade Recluse,
  * Overhaul: perks/c.ts `extra_mod`), as the character holds it, or null. Its own rules answer (the one copy). */
-const EXTRA_MOD = 'extra_mod';
+const EXTRA_MOD = MOD_FIT.extra_action; // survival.json forge.fit.extra_action (consolidation 0.29 should-fix 5)
 const extraEntry = (g: GameState, c: Character) => { const l = perkActionsFor({ c, g } as any, 'story').filter((e) => e.actionId === EXTRA_MOD); return l.find((e) => !e.why) || l[0] || null; };
 /** Why the armourer can't fit the mod at pack line `idx` now, in words, or null (rules 1.55, 1.56 L3: at a Forge; the
  * fit's own rules are fitMod's (the gun's slot, an equip ban) or, into an extra slot, the perk action's; then the fee). */
