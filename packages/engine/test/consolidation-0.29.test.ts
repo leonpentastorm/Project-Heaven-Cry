@@ -18,3 +18,16 @@ describe('M3: one reader of the modifiers on a held instance, with the two-hande
   it('an off-hand focus variant answers its stat beside a one-handed weapon', () => { expect(flux('service_pistol')).toBeGreaterThan(0); });
   it('a two-handed weapon fills both hands: the off-hand variant\'s stat does not answer (as with_this says)', () => { expect(flux('lever_carbine')).toBe(0); });
 });
+
+describe('ruling iii: the reload AP out of a fight is the one cost site with the mods\' item ops, as in a fight', () => {
+  it('a quick-release magazine reads 1 AP with no fight at hand, the same as the fight charges', () => {
+    const g = modRoom({ weapon: 'hellraiser_service_rifle', mods: ['mod_quick_release'] });
+    const unit = { weapon: 'hellraiser_service_rifle', mods: ['mod_quick_release'], charId: 'c1' } as any;
+    const f = modFight({ weapon: 'hellraiser_service_rifle', mods: ['mod_quick_release'] });
+    const inFight = A.withGame(f, () => A.reloadAp(pcs(f)[0], f.combat));
+    expect(inFight).toBe(1);
+    expect(A.withGame(g, () => A.reloadAp(unit))).toBe(inFight);
+    const bare = modRoom({ weapon: 'hellraiser_service_rifle' });
+    expect(A.withGame(bare, () => A.reloadAp({ ...unit, mods: [] }))).toBe(A.WEAPON.hellraiser_service_rifle.reload_ap ?? A.costOf('reload'));
+  });
+});

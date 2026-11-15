@@ -122,10 +122,14 @@ const ammoName = (t?: string | null) => { const id = ammoId(t || null); return !
 const magWord = (w: any) => String(w.reload_unit || 'mag').replace(/^magazine$/, 'mag');
 const plural = (n: number, one: string, many = one + 's') => n + ' ' + (n === 1 ? one : many);
 /** Reload AP as the engine charges it: reloadAp(u) (1 with a quick-release magazine, then items); out of a fight the
- *  character's weapon and mods stand in for the unit. */
-function reloadApOf(u: any, c: any, w: any, cb?: any): number {
+ *  character's weapon and mods stand in for the unit, with the game bound so the character's items (its fitted mods'
+ *  item ops on the cost hook) answer the one cost site the same way (consolidation 0.29, ruling iii). */
+function reloadApOf(u: any, c: any, w: any, g?: any): number {
   // in a fight, the fight: a mod's price is its item op on the cost hook (rules 1.56)
-  try { if (u) return E.reloadAp(u, cb || null); if (c) return E.reloadAp({ weapon: w.id, mods: c.weaponState?.mods || [], charId: c.id } as any); } catch { /* the weapon's own number */ }
+  try {
+    if (u) return E.reloadAp(u, g?.combat || null);
+    if (c) { const unit = { weapon: w.id, mods: c.weaponState?.mods || [], charId: c.id } as any; return g ? E.withGame(g, () => E.reloadAp(unit)) : E.reloadAp(unit); }
+  } catch { /* the weapon's own number */ }
   return w.reload_ap ?? 2;
 }
 
@@ -183,7 +187,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   // rules 1.53: a bow's worn quiver (arrows left of what it holds, its enchantment's mark in words) and the ready one
   const qcs = w && !infinite && (w.phys?.props || []).includes('drawn') ? (u ? unitQuiverCards(u) : c ? quiverCards(c) : []) : [];
   if (qcs.length) {
-    const q = qcs[0], r = qcs[1], mark = enchantMark(q.ench), rAp = reloadApOf(u, c, w, g?.combat);
+    const q = qcs[0], r = qcs[1], mark = enchantMark(q.ench), rAp = reloadApOf(u, c, w, g);
     const row: ResRow = { key: 'ammo', label: 'Quiver', value: q.total + ' / ' + q.holds + ' arrows' + (r ? ' · ready ' + r.total + (r.ench ? ' (' + r.ench.name + ')' : '') : ''), now: q.total, max: q.holds, kind: 'bar', colour: mark ? mark.ink : RES_INK.body,
       sub: (w.name || wid) + ' · ' + q.rarity + ' quiver' + (mark ? ' · ' + mark.text : ''),
       hint: 'Arrows in the worn quiver: each shot draws one. A quiver is never refilled in a fight.' + (r ? ' Switch quiver (' + rAp + ' AP, the bow\'s reload) wears the other.' : '') };
@@ -201,7 +205,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     } else if (c) {
       if (loose) { spare = packOf(c).filter((x: any) => x.calibre && x.calibre === w.ammo).reduce((t: number, x: any) => t + x.qty, 0); spareTxt = plural(spare, 'loose round'); } else { spare = spareMags(c).filter((n: number) => n > 0).length; spareTxt = plural(spare, 'spare ' + magWord(w)); }
     }
-    const rAp = reloadApOf(u, c, w, g?.combat), type = ammoName(u ? u.ammoType : c?.loadedType);
+    const rAp = reloadApOf(u, c, w, g), type = ammoName(u ? u.ammoType : c?.loadedType);
     const low = now > 0 && now < cap && now <= Math.max(1, Math.ceil(cap * 0.25));
     const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + ' loaded' + (spareTxt ? ' · ' + spareTxt : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
       sub: (w.name || wid) + (type ? ' · ' + type + ' rounds' : ''),

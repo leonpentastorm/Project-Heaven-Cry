@@ -2981,7 +2981,12 @@ export function canJam(w: WeaponDef | undefined): boolean {
   return w.heat_limit != null;
 }
 /** Reload AP: the weapon's reload_ap (default 2; the breacher tube 3), 1 with a quick-release magazine, then items. */
-export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb, u }, 'reload', w.reload_ap ?? costOf('reload')).ap; }; // a mod's cost (the quick-release) is its item op on the cost hook (rules 1.56)
+/** A bare fight around one unit (a card's, with no fight at hand): what a view prices or dry-runs an action against so
+ * the item ops (combat only) answer as they would in a fight. Nothing is written to it that anyone keeps. */
+export const cardFight = (u: Unit): Combat => ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
+// a mod's cost (the quick-release) is its item op on the cost hook (rules 1.56); with no fight at hand (a view: the
+// sheet's ammo row) it is priced on a card fight, so the one cost site answers as the fight will (consolidation 0.29, iii)
+export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb: cb || cardFight(u), u }, 'reload', w.reload_ap ?? costOf('reload')).ap; };
 const RELOAD_LABEL: Record<string, string> = { magazine: 'Swap magazine', speedloader: 'Speedloader', drum: 'Swap drum', belt: 'Feed belt' };
 const LOOSE_LABEL: Record<string, string> = { bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
 export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'repair' | 'overwatch' | 'burst' | 'auto' | 'skill'; label: string; ap: number; why: string | null; text: string;

@@ -241,6 +241,13 @@ describe('resource panel fixes', () => {
     const r = row(resourcesOf(u, c, g), 'ammo');
     expect(r.hint).toMatch(/Reload \(1 AP\)/);
   });
+  it('out of a fight too, the reload AP is the one cost site with the mod item op: 1 AP (consolidation 0.29, ruling iii)', () => {
+    const c: any = newCharacter('c1', 'p1', sheetFrom('Vale'));
+    c.weapon = 'hellraiser_service_rifle'; c.weaponState = { ...(c.weaponState || {}), mods: ['mod_quick_release'] }; c.loaded = 2;
+    c.pack = [...(c.pack || []), { id: 'mag', name: 'Magazine', qty: 1, kind: 'ammo', weapon: 'hellraiser_service_rifle', mags: [30] }];
+    const g: any = { phase: 'story', combat: null, characters: { c1: c }, players: [{ id: 'p1', name: 'Leon' }], story: { magic: {} } };
+    expect(row(resourcesOf(null, c, g), 'ammo').hint).toMatch(/Reload(:| \()1 AP/);
+  });
   it('a broken or worn melee weapon says it still swings, and never mentions jams', () => {
     const { u, c, g } = fight((c) => { c.weapon = 'combat_knife'; });
     expect(u.maxDur).toBeGreaterThan(0);

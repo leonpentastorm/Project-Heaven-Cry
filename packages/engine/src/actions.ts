@@ -20,7 +20,7 @@ import type { Character } from './character';
 import { isMedicChar, magazineSize } from './character';
 import { WEAPON } from './data';
 import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadOffAp, reloadHands, loadMagazine, clearJam, coverOffAp, canJam, moveBlock, moveHowBlock, movePlan,
-  sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, twoJammingGuns, type MoveHow } from './combat';
+  sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, twoJammingGuns, cardFight, type MoveHow } from './combat';
 import { price, whyNot, needs, creditFor, setAp } from './effects/cost';
 import { COST_SITE_IDS, type CostSite } from './effects/stats';
 import { emitStory } from './effects/hooks';
@@ -120,7 +120,7 @@ export function reloadBothRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): B
   if (!w || !ow || w.magazine == null || ow.magazine == null) return [];
   const d = ACTION.reload2, ap = reloadBothAp(u, cb), tac = ap + PILE.tactical_reload_extra_ap, loose = ow.reload === 'loose';
   // (with no fight at hand, a card on the area map: a bare one around the unit, enough for the engine to rule on the guns)
-  const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
+  const fight = cb || cardFight(u);
   const whyOf = (tactical: boolean, _n: number) => dryRun(x.g || null, fight, u.id, (c2, u2) => reloadHands(c2, u2, 'both', tactical)).err;
   const out: BasicAction[] = [{ id: 'reload2', label: d.name + (loose ? '' : ' (speed)'), tab: d.tab, ap, cost: apText(ap) + (loose ? '' : ' · the magazines drop'), text: d.text, why: whyOf(false, ap) }];
   if (!loose && w.reload !== 'loose' && Array.isArray(u.mags)) out.push({ id: 'reload2-tac', label: d.name_tactical, tab: d.tab, ap: tac, cost: apText(tac) + ' · the magazines go in your pack', text: d.text_tactical, why: whyOf(true, tac) });
@@ -134,7 +134,7 @@ export function reloadOffRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): Ba
   const ow: any = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return [];
   const ap = reloadOffAp(u, cb), tac = ap + PILE.tactical_reload_extra_ap, loose = ow.reload === 'loose', unit = ow.reload_unit || 'magazine';
-  const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
+  const fight = cb || cardFight(u);
   const whyOf = (tactical: boolean) => dryRun(x.g || null, fight, u.id, (c2, u2) => reloadHands(c2, u2, 'off', tactical)).err;
   const now = ' ' + (u.offAmmo ?? 0) + ' / ' + magazineSize(ow.id, u.offMods) + ' loaded now.';
   if (loose) return [{ id: 'reload-off', label: 'Load the off-hand gun', tab: 'attack', ap, cost: apText(ap), text: 'Top up the off-hand gun from loose rounds. Nothing drops.' + now, why: whyOf(false) }];
@@ -155,7 +155,7 @@ export function offHandRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): Basi
     const hd: any = ow.handling || {};
     if ((canJam(ow) || (hd.grant || []).includes('clear')) && !twoJammingGuns(u)) { // two guns: the one Clear jam (Hands 5d)
       const c = price({ cb, u }, 'clear_jam', undefined, { hand: 'off' }).ap;
-      const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
+      const fight = cb || cardFight(u);
       const why = !u.offJammed ? 'Not jammed.' : dryRun(x.g || null, fight, u.id, (c2, u2) => clearJam(c2, u2, 'off')).err;
       out.push({ id: 'clear-off', label: 'Clear jam', tab: 'attack', ap: c, cost: apText(c), text: 'The off-hand ' + ow.name + ': a jammed gun can\'t fire until cleared. Clearing resets Heat.', why });
     }
