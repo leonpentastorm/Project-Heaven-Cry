@@ -18,6 +18,14 @@ The game shows its version in the corner of the title screen and in every "Repor
   every unit pick whose choices are narrowed by reach: the Tending and Shadow verbs, class moves with a reach, Stim and
   Stim throw, ally prayers and Calls, Pull free. Tests: `screens/combat-unit-pick.test.ts` (the real tileClick, a
   Survival fight at level 1 with the Empath's Attuner), `packages/engine/test/bond-reach.test.ts` (the reducer).
+- **Bonds and Tending have effects** (Leon: "no effect, no animation, no nothing, feels like standing still";
+  `apps/web/src/game/fx/bonds.ts`, in the tie kind's ink from `rules.json`, paced by the combat speed, off under Reduce
+  motion; no new engine event): a Bond tied (the Bonder's wind-up, the Figment cast's in Insight ink; a thread to the
+  target; the standing tie line draws itself in; BONDED), a Bond resisted (the thread frays short; RESISTED), a heal
+  down a Bond (a pulse runs the line from the Mender, then the one +N), a Guide (the guide's gesture and thread;
+  GUIDED), a Bond ending, read from the view (the line parts from its middle and both ends recoil; BOND BROKEN). Not
+  drawn, for want of an engine event: the echo into a Bonded enemy and the damage share (the `deal` and `redirect` ops
+  emit no fx), and an un-Bonded Tending heal (the heal event names no giver: it keeps the plain heal).
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 

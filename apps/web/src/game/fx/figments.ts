@@ -20,6 +20,7 @@ import { figmentIcon } from '../figmentIcons';
 
 export const FIG_INK = '#5394AC';
 const FIG_CORE = '#CFE6F0', WHITE = '#FFFFFF', MUTED = '#A3AEC2';
+const FIG_INK0 = FIG_INK, FIG_CORE0 = FIG_CORE;
 /** The summon's three steps (ms at Fast): the caster's wind-up, the thread's travel, the forming. */
 export const FIG_MS = { cast: 170, travel: 230, form: 440, unmake: 560, command: 150 } as const;
 
@@ -83,8 +84,10 @@ export interface FigKit {
 }
 
 // ---------- pieces (pure SVG and CSS) ----------
-/** A thread of light from a to b: drawn from a, its bright head travelling, then fading. */
-function thread(a: Pt, b: Pt, ms: number, o: { faint?: boolean; delay?: number } = {}) {
+/** A thread of light from a to b: drawn from a, its bright head travelling, then fading. ink / core: its colours (a
+ *  Figment's by default; the Bonds' in fx/bonds.ts). */
+export function thread(a: Pt, b: Pt, ms: number, o: { faint?: boolean; delay?: number; ink?: string; core?: string } = {}) {
+  const FIG_INK = o.ink || FIG_INK0, FIG_CORE = o.core || FIG_CORE0;
   const run = () => {
     const x0 = Math.min(a.x, b.x) - 8, y0 = Math.min(a.y, b.y) - 8, w = Math.abs(a.x - b.x) + 16, h = Math.abs(a.y - b.y) + 16;
     const ax = a.x - x0, ay = a.y - y0, bx = b.x - x0, by = b.y - y0, len = Math.max(1, Math.hypot(bx - ax, by - ay));
@@ -99,8 +102,10 @@ function thread(a: Pt, b: Pt, ms: number, o: { faint?: boolean; delay?: number }
   };
   if (o.delay) after(run, o.delay); else run();
 }
-/** The caster's wind-up: a ring closing on it, its token brightening in the ink, a small gesture toward the tile. */
-function windUp(K: FigKit, owner: string | null, ownerAt: string | undefined, toward: Pt | null, ms: number, small = false) {
+/** The caster's wind-up: a ring closing on it, its token brightening in the ink, a small gesture toward the tile. ink:
+ *  its colour (a Figment's by default; the Bonds' in fx/bonds.ts). */
+export function windUp(K: Pick<FigKit, 'at' | 'tokOf'>, owner: string | null, ownerAt: string | undefined, toward: Pt | null, ms: number, small = false, ink = FIG_INK0) {
+  const FIG_INK = ink;
   const p = K.at(ownerAt); if (!p) return null;
   const tok = K.tokOf(owner, ownerAt);
   ring(p, FIG_INK, ms + 120, { from: small ? 1.25 : 1.6, to: 0.85, width: small ? 3 : 4 });
