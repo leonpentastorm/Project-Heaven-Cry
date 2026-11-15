@@ -8,6 +8,7 @@ import { figFight } from './helpers/figfight';
 import { storyWith, withGame } from './helpers/perkfight';
 import FIGJ from '../../../data/figments.json';
 import ACTIONSJ from '../../../data/actions.json';
+import PERKSJ from '../../../data/perks.json';
 import { FORM, COST_SITE_IDS, condOn, perceivedFoes, isGhost, formsOf, pendingDoorPicks, pictureOptions, actionsFor, previewDescriptor, sendDescriptor, resolveAttack, migrateCharacterFigments, FIG_REV, ladderAt } from '../src';
 
 const F: any = FIGJ, ACT: any = ACTIONSJ;
@@ -169,5 +170,45 @@ describe('the forks (door/pick) and the save migration', () => {
     c.skills.visualization = 7; // the "one more" of fork A opens; the Ward is still to be had
     expect(pendingDoorPicks(c, F.visualizer.door).flatMap((p) => p.options.map((o) => o.id))).toEqual(['ward']);
     expect(migrateCharacterFigments(c)).toEqual([]); // once
+  });
+});
+
+describe('Solid Image (rules 1.56, the alpha perks, item 27): once a fight, a Glimmer becomes a real Figment at no charge', () => {
+  const SI: any = (PERKSJ as any).items.find((p: any) => p.id === 'solid_image'), E = SI.effects.find((e: any) => e.op === 'spawn_illusion');
+  const solidify = (f: any, u: any) => f.act({ type: 'combat/perk', unitId: u.id, id: 'solid_image', actionId: 'solidify' } as any);
+  it('no Glimmer: refused in words; with one, 0 AP and no charge make it the form its data names, outside the held count; the fooled stay fooled; once a fight; it fades at the next turn start', () => {
+    const f = figFight([{ skills: { visualization: 10 }, perks: { solid_image: 'mastered' }, weapon: 'service_pistol', forms: [] }], [{ tier: 'minion', at: '6,4', classic: true }]);
+    let u = f.turn(f.pc);
+    expect(() => solidify(f, u)).toThrow(/Glimmer first/);
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:glimmer', tile: '3,4' } as any); u = f.unit(u.id);
+    const img = (f.cb.images || [])[0]; expect(img.body).toBeUndefined(); const fooled = [...img.fooled]; expect(fooled).toContain(f.foe.id);
+    const ap = u.ap, ch = u.mg!.vcharge!;
+    solidify(f, u); u = f.unit(u.id);
+    expect(u.ap).toBe(ap); expect(u.mg!.vcharge).toBe(ch); // 0 AP, at no charge
+    const made = f.figments(u); expect(made.length).toBe(1);
+    expect((made[0] as any).figment.form).toBe(E.form); expect(made[0].pos).toBe('3,4'); expect((made[0] as any).owned.free).toBe(true);
+    const now = (f.cb.images || []).find((i: any) => i.owner === u.id)!; expect(now.body).toBe(made[0].id);
+    for (const id of fooled) expect(now.fooled).toContain(id); // the Glimmer's fooled stay fooled: their blows land on a body
+    // once a fight
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:glimmer', tile: '3,6' } as any); u = f.unit(u.id);
+    expect((f.cb.images || []).find((i: any) => i.owner === u.id)?.body).toBeUndefined(); // a new Glimmer stands
+    let why = ''; try { solidify(f, u); } catch (e: any) { why = String(e.message); } expect(why).toMatch(/fight|used/i);
+    // until the next turn starts (its `rounds`)
+    for (let i = 0; i < E.rounds; i++) u = f.turn(u);
+    expect(f.figments(u).length).toBe(0);
+  });
+});
+
+describe('Many-Eyed Dream (perks.json mirage) reads the new forms\' blows (rules 1.56, the alpha perks item 19, on Figments 2.0)', () => {
+  it('the Husk\'s Burst (a deal op by the Figment) is multiplied for each owned unit kept; the holder\'s side is not', () => {
+    const run = (perks: any) => {
+      const f = figFight([{ skills: { visualization: 5 }, level: 5, weapon: 'service_pistol', forms: ['husk'], perks }], [{ tier: 'soldier', at: '5,4', classic: true }]);
+      let u = f.turn(f.pc); f.picture(u, 'husk', '4,4'); u = f.unit(u.id); const k = f.figments(u)[0]; u.ap = 6; f.foe.armour = 0;
+      const hp = f.foe.hp; f.order(u, k, 'figment_burst'); return hp - f.foe.hp;
+    };
+    const M: any = (PERKSJ as any).items.find((p: any) => p.id === 'mirage'), per = M.tiers.II.effects[0].value.per[0].value;
+    const plain = run({}), dream = run({ mirage: 'II' });
+    expect(plain).toBeGreaterThan(0);
+    expect(dream).toBe(Math.max(1, Math.round(plain * (1 + per)))); // one Husk kept when it bursts
   });
 });

@@ -5975,16 +5975,15 @@
       "ap_cost": null,
       "uses": "per_combat",
       "flavour": "If you imagine it hard enough, it has edges.",
-      "text": "Once per fight, for 0 AP, make one of your Mirage projections real until your next turn starts. A wall blocks movement and sight for everyone. A figure takes the first hit aimed at you or one of your allies, then breaks.",
+      "text": "Once per fight, for 0 AP, your Glimmer becomes a real Double until your next turn starts, at no charge: outside your held count, with no upkeep. The enemies it fooled stay fooled, and their blows now land on it. Needs the Visualizer in hand.",
       "effects": [
         {
           "op": "spawn_illusion",
           "solid": true,
-          "duration": {
-            "rounds": 1
-          },
+          "form": "double",
+          "rounds": 1,
           "uses": "per_combat",
-          "context": "a wall blocks movement and line of fire; a figure absorbs one hit aimed at an ally"
+          "context": "your Glimmer becomes a real Double (a Figment at no charge, outside the held count) until your next turn starts"
         }
       ],
       "adjudication": "engine",

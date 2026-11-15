@@ -8,6 +8,8 @@ import {
   openWindow, active, combatReport, WEAPON, previewAttack, postStory, pendRuling, d20, type Unit, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, onlyHandlers, rng } from './helpers/perkfight';
+import TENDJ from '../../../data/tending.json';
+import { figFight } from './helpers/figfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
@@ -96,6 +98,91 @@ describe('AP economy (plan 2.6)', () => {
 });
 
 describe('actions (plan 2.7)', () => {
+  it('a data grant_action is an action: Mend Yourself (tending.json tend.mend_self) runs its own effects (a heal, its MP) for its AP, once a turn, engine-run (no lane handler: e.engine; rules 1.56: Shrug It Off has no action now)', () => {
+    const MS: any = (TENDJ as any).items.find((x: any) => x.id === 'tend.mend_self'), ga = MS.effects.find((e: any) => e.op === 'grant_action');
+    const f = figFight([{ skills: { empathy: MS.requires[0].min }, visualizer: null, offHand: 'attuner', weapon: 'service_pistol' }]);
+    let u = f.turn(f.pc); u.ap = 6; u.hp = Math.floor(u.maxHp / 2); const hp0 = u.hp, mp0 = u.mg!.mp;
+    const e = withGame(f.g, () => perkActionsFor({ u, cb: f.cb, g: f.g }, 'combat')).find((x) => x.id === 'verb:tend.mend_self')!;
+    expect(e).toBeTruthy(); expect(e.ap).toBe(ga.ap); expect(e.engine).toBe(true);
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:tend.mend_self' });
+    u = f.unit(u.id); expect(u.ap).toBe(6 - ga.ap); expect(u.hp).toBeGreaterThan(hp0); expect(u.mg!.mp).toBe(mp0 - ga.res.mp.base);
+    expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:tend.mend_self' })).toThrow(); // its limit: once a turn
+  });
+  it('use limits are stamped: a per-combat action works once; the Narrator gets what the engine cannot run', () => onlyHandlers([], () => {
+    const f = fightWith([{ perks: ['earthbreaker'], skills: { raw_power: 10 } }]);
+    const u = f.turn(f.pc); u.ap = 9;
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'earthbreaker' });
+    expect(f.cb.notes!.some((n) => /PERK Earthbreaker \(perk:earthbreaker/.test(n) && /yours to rule/.test(n))).toBe(true);
+    expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'earthbreaker' })).toThrow(/Used/);
+    expect(combatReport(f.cb)).toMatch(/yours to rule/);
+  }));
+  it('a lane action replaces the default; per-turn uses reset by stamp', () => onlyHandlers([
+    { id: 'heavyworlder', actions: [{ id: 'stomp', label: 'Stomp', scope: ['combat'], ap: 2, uses: { per: 'per_turn', n: 1 }, target: 'none', run: (h) => { h.cb!.log.push('STOMP'); } }] },
+  ], () => {
+    const f = fightWith([{ traits: ['heavyworlder'] }]);
+    const u = f.turn(f.pc);
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'trait:heavyworlder', actionId: 'stomp' });
+    expect(f.cb.log.at(-1)).toBe('STOMP');
+    expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'trait:heavyworlder' })).toThrow(/Used/);
+    const h = withGame(f.g, () => holderOf({ u: f.unit(u.id), cb: f.cb }, 'heavyworlder'))!;
+    f.cb.turn = (f.cb.turn + 1) % f.cb.order.length; // another turn's stamp
+    expect(withGame(f.g, () => uses({ ...h, cb: f.cb, u: f.unit(u.id) }).left('per_turn', 1, h.key + '#stomp'))).toBe(1);
+  }));
+  it('story/perk posts a tagged line and a pending ruling; a refused ruling refunds the use', () => onlyHandlers([
+    { id: 'heavyworlder', actions: [{ id: 'boast', label: 'Boast', scope: ['story'], ap: 0, uses: { per: 'per_session', n: 1 }, target: 'text',
+      run: (h, a) => { const eid = postStory(h, a.text || ''); pendRuling(h.g, h.c!, h.key, 'boasts: ' + a.text, eid || undefined); } }] },
+  ], () => {
+    const s = storyWith([{ traits: ['heavyworlder'] }]);
+    const c = s.chars[0];
+    s.act({ type: 'story/perk', charId: c.id, id: 'heavyworlder', text: 'I lift the cargo pod.' });
+    // Players see the action's label and the words, never the item key; the key rides as ref (the Narrator's tag).
+    const line = s.g.story.entries.at(-1)!;
+    expect(line.text).toBe('I lift the cargo pod.'); expect(line.head).toBe(c.name + ' · Boast'); expect(line.ref).toBe('trait:heavyworlder');
+    expect(line.text + line.head).not.toMatch(/trait:|perk:|class:/);
+    const r = s.g.story.rulings![0]; expect(r.use).toBeTruthy();
+    expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'heavyworlder', text: 'Again.' })).toThrow(/Used/);
+    s.act({ type: 'narrator/turn', turn: { narration: 'No.', perkRulings: [{ id: r.id, accepted: false }] } } as any);
+    expect(s.g.story.rulings).toEqual([]);
+    s.act({ type: 'story/perk', charId: c.id, id: 'heavyworlder', text: 'Once more.' }); // refunded, so it works
+  }));
+  it('toggles read the action\'s mods; armed presets are stored on the unit', () => onlyHandlers([
+    { id: 'heavyworlder', toggles: [{ id: 'mean', label: 'Mean', on: ['combat/attack'] }], on: { attack_preview: (ctx, h) => { if (ctx.att === h.u && modOn(h, 'mean')) ctx.terms.push({ v: 5, label: 'Mean' }); } },
+      actions: [{ id: 'guard', label: 'Guard', scope: ['combat'], ap: 0, target: 'none', arm: true, run: () => null }] },
+  ], () => {
+    const f = fightWith([{ traits: ['heavyworlder'], weapon: 'hellraiser_service_rifle' }], [{ at: 'E6' }]);
+    const u = f.turn(f.pc);
+    expect(withGame(f.g, () => togglesFor({ u, cb: f.cb }, 'combat/attack')).map((t) => t.id)).toEqual(['trait:heavyworlder#mean']);
+    f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'shot', mods: ['trait:heavyworlder#mean'] });
+    expect(f.cb.log.find((l) => /fires at/.test(l))).toMatch(/\+\d+/);
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'heavyworlder', arm: true, choice: 'always' });
+    expect(f.unit(u.id).armed!['trait:heavyworlder']).toMatchObject({ choice: 'always' });
+  }));
+  it('an off-turn window gives an ally one action, then the turn resumes', () => onlyHandlers([], () => {
+    const f = fightWith([{}, {}]);
+    const [a, b] = f.pcs; f.turn(a);
+    openWindow(f.cb, 'On My Mark', [{ unitId: b.id, ap: 2 }]);
+    expect(active(f.cb)!.id).toBe(b.id);
+    f.act({ type: 'combat/prone', unitId: b.id });
+    expect(active(f.cb)!.id).toBe(a.id);
+  }));
+});
+
+describe('weapon-granted actions (plan 2.9)', () => {
+  const unitWith = (weapon: string, extra: Partial<Unit> = {}) => ({ weapon, ap: 6, ammo: 0, mags: weapon === 'drifter_revolver' ? [6] : [], loose: 0, maxDur: (WEAPON as any)[weapon].durability || 0, jammed: false, ...extra } as unknown as Unit);
+  it('a bow has no Clear jam and no magazine; a revolver reloads with a speedloader; only heavy weapons Brace', () => {
+    expect(weaponActions(unitWith('recurve_bow')).map((a) => a.id)).not.toContain('clear');
+    expect(weaponActions(unitWith('recurve_bow')).map((a) => a.id)).not.toContain('load');
+    // rules 1.53: no Nock an arrow; with one quiver a bow has no reload, with two it is Switch quiver
+    expect(weaponActions(unitWith('recurve_bow')).find((a) => a.id === 'reload')).toBeUndefined();
+    expect(weaponActions(unitWith('recurve_bow', { quiver: { standard: 3 }, quiverReady: { id: 'quiver', arrows: { standard: 9 } } } as any)).find((a) => a.id === 'reload')!.label).toBe('Switch quiver');
+    expect(weaponActions(unitWith('drifter_revolver')).find((a) => a.id === 'reload')!.label).toBe('Speedloader');
+    expect(weaponActions(unitWith('service_pistol')).map((a) => a.id)).not.toContain('brace');
+    expect(weaponActions(unitWith('hellraiser_lmg')).map((a) => a.id)).toContain('brace');
+    expect(weaponActions(unitWith('combat_knife')).map((a) => a.id)).not.toContain('reload');
+    expect(weaponActions(unitWith('combat_knife')).find((a) => a.id === 'overwatch')!.label).toBe('Hold a strike');
+    expect(weaponActions(unitWith('breacher_tube')).find((a) => a.id === 'reload')!.ap).toBe(3);
+    expect(canJam((WEAPON as any).recurve_bow)).toBe(false); expect(canJam((WEAPON as any).service_pistol)).toBe(true);
+  });
   it('a bow fumbles on a natural 1 instead of jamming, and gains no Heat', () => {
     const f = fightWith([{ weapon: 'recurve_bow', skills: { dexterity: 3 } }], [{ at: 'E6' }]);
     const u = f.turn(f.pc);

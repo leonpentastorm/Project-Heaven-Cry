@@ -2749,7 +2749,7 @@ Shove and Break are techniques everyone can learn (the Shove Link, the Break Fin
 | **Roll With It** II | Athletics | 2 free tiles, and nothing else. |
 | **You Get Used to It** I/II | Composure | **I:** the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +2. **II:** +4, and you may give the bonus to that ally instead (the Seen worse action, 0 AP). |
 
-**AP gifts on alphas and betas, turned into defence** (15.7: anything that gives or takes AP inside a turn is a gamma's).
+**AP gifts on alphas and betas, turned into defence** (15.7: anything that gives or takes AP inside a turn is a gamma's). *Retired for the alpha perks by rules 1.56 (the alpha perks, item 28): Leon's order that both alpha perks of a skill serve its door's damage puts a tempo lever on an alpha (Wake of the Kill's 1 AP on a Figment's kill, Shadow Step's and Running Hand's cheaper strokes). It still holds for the betas and the unlocks.*
 
 | Perk or unlock | Skill | Was | Is now |
 |---|---|---|---|
@@ -6387,7 +6387,8 @@ Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 p
 24. **Resonance** (`resonance`, Will Power): unchanged in shape; a step is 4% (it was 10%), to 8% (II: 12%).
 25. **Sinner's Due** (`holy_ordnance`, Faith): your prayers deal 8% (II: 12%) more to an enemy at half its HP or less; II: also 12% to a Marked or Judged enemy above half.
 26. **Unbroken Litany** (`litany`, Faith): your first Hymn or Miracle each fight costs 1 AP less (a Whisper does not spend it); II: and the wait between your Hymns is 1 round shorter (never under the floor rules 1.22 sets for items).
-27. **Solid Image** (Visualization's Mastered perk) worked on Mirage's projections only. With Mirage gone it has nothing to make real; its rewording onto Figments (s.114) is open (item 4230).
+27. **Solid Image** (Visualization's Mastered perk), reworded onto Glimmer (the lead, 16 Nov 2026): once a fight, for 0 AP, your Glimmer becomes a real Double until your next turn starts, at no charge (outside the held count, no upkeep; made through the one door that makes a Figment). The enemies the Glimmer fooled stay fooled, and their blows now land on its body. It keeps the old perk's shape and limits (once a fight, free, until your next turn starts); Mirage's wall half went with Mirage. The form and the rounds are fields of its effect (`perks.json solid_image`).
+28. **The 15.7 rule (no alpha gives or takes AP inside a turn) is retired for the alpha perks** (the lead, 16 Nov 2026): Leon's order is that both alpha perks of a skill serve its door's damage, and one of the two is a tempo lever (item 4 of the design: "one damage lever and one tempo or resource lever"). Wake of the Kill's 1 AP on a Figment's kill (once a turn) is accepted as designed. The betas and the unlocks keep 15.7.
 
 ## Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1
 
@@ -7404,7 +7405,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - A figure takes a believer's attack, as a miss, and disproves it.
     - A sound pulls a believer one move toward the tile instead of an action (once).
     - Tier II's second projection comes in `text` ("x,y" or "kind@x,y").
-184. *(D23)* **Solid Image** (PROVISIONAL). It works only on Mirage projections (the Visualization Afterimage decoy isn't built
+184. *(D23)* **Solid Image** (PROVISIONAL). *Superseded by rules 1.56 item 27 (onto Glimmer; item 4230).* It works only on Mirage projections (the Visualization Afterimage decoy isn't built
     yet).
     - A wall becomes a barricade object until your next turn starts.
     - A figure takes the first hostile hit on any ally, for 0, and breaks.
@@ -10066,14 +10067,14 @@ Items 4148 to 4150.
 ### Rules 1.56 (Balance 2.0), the alpha perks
 
 4200. **Saves keep the alpha ids (rules 1.56, the alpha perks, item 1):** Leon, 15 Nov 2026. No re-pick system; a melee build that took Both Hands now holds a ranged perk (Pressure Point).
-4201. **Perk steps on top of the line (item 2):** Leon, 15 Nov 2026. The balance contract's builds take no perk steps (`test/balance/builds.ts STEPS`); the faith targets' line likewise. Measured on 15 Nov: with no perk steps the Outburst's all-in steady turn is 102% (L1 104, L5 108, L10 101, L20 93) against its ceiling of 135, and its peak at level 1 122% against 124: the Outburst line was fitted with Heart Overload's free Begin and Resonance's old +20/30% inside it, and needs its dial (`soul_modules.json damage.base`) re-fitted. For the lead. PROVISIONAL.
+4201. **Perk steps on top of the line (item 2):** Leon, 15 Nov 2026. The balance contract's builds take no perk steps (`test/balance/builds.ts STEPS`); the faith targets' line likewise. Measured on 15 Nov: with no perk steps the Outburst's all-in steady turn was 102% (L1 104, L5 108, L10 101, L20 93) against its ceiling of 135, and its peak at level 1 122% against 124: the Outburst line had been fitted with Heart Overload's free Begin and Resonance's old +20/30% inside it. **Refit (16 Nov 2026): `soul_modules.json damage.base` 31 → 37** (steady 124 / 128 / 120 / 111, mean 121; peak 147 / 210 / 172 / 180, mean 177). No base sits both lines: the steady turn needs about ×1.32 (base 41: steady 134, but peak 196 and level 5 at 233), the peak's level-5 band allows at most about ×1.16; the stage table does not separate them (the steady turn also swells to stage 4; measured). Level 5's peak (210) is over its band (206): **a ruling for the lead** (`docs/design/proposals/2026-11-alpha-perks-measured.md`, the refit). The contract's other systems sit on their lines with no perk steps and were not moved. The contract reports each system with both alpha perks taken (not asserted). PROVISIONAL.
 4202. **P1, spell damage names its door (items 6, 7):** approved by the lead (15 Nov 2026). `magic.ts withDoor` / `SPELL_DOORS`; amount blocks' `door`; the damage words `sigil_spell`, `prayer`, `bond`; `outburst` reads the door (one reading for both gates: `effects/dmgwords.ts`). The data rows checked against the old meaning: Hot Blood (`start.hot_blood`, "Outbursts deal more": now exact), Hollow Heart (the trait's "+% Outburst damage": now exact), Clear Pulse and Steady Heart (`to_hit` with `soul`: unchanged), Smite (`guardian.smite`'s blocks name `prayer`). No number.
 4203. **A kill names its technique; a Figment is a figment (item 8):** the predicate `mode` reads the damage source's technique (`src.tech`, `combat.ts attackDamage`); `<who>_kind` reads an owned unit's record kind. No number.
 4204. **Weight of the Wall (item 9):** 0.02 a Guard, max 1.10; II 0.03, max 1.15 (`perks.json bulwark`). PROVISIONAL.
 4205. **Answer in Kind (item 10):** ×1.08; II ×1.12 and 1 Guard a round. PROVISIONAL.
 4206. **Iron Grip (item 11):** +6%; II +12%. PROVISIONAL.
 4207. **Keep Swinging (item 12):** 1 Momentum; II 2, and 1 on an Elite or Boss hit. The Momentum is given when the Finisher's action is done (`acted`), since a Finisher spends the meter after its strike. PROVISIONAL.
-4208. **Pressure Point (item 13):** +10% at Pressure 2; II +15% at 2, +10% more at 3 (the steps read `target:pressure`; the 2 and 3 are `techniques.json rules.pressure`'s Pressed and Suppressed, held equal by hand: a validator check is a candidate). PROVISIONAL.
+4208. **Pressure Point (item 13):** +10% at Pressure 2; II +15% at 2, +10% more at 3 (the steps read `target:pressure`; the 2 and 3 are `techniques.json rules.pressure`'s Pressed and Suppressed, held equal by `tools/validate.py` since 16 Nov 2026). PROVISIONAL.
 4209. **Keep Their Heads Down (item 14):** 1 Pressure, once a turn; II once a turn a target. PROVISIONAL.
 4210. **Long Dark (item 15):** ×1.08; II ×1.14. PROVISIONAL.
 4211. **Shadow Step (item 16):** −1 AP, at least 1, once a turn; II twice. PROVISIONAL.
@@ -10089,7 +10090,8 @@ Items 4148 to 4150.
 4221. **Unbroken Litany (item 26):** −1 AP once a fight; II and `hymn_wait` −1. A prayer's `acted` name is now its cost site (`whisper` or `pray`); Vigil (`start.vigil`) reads both. PROVISIONAL.
 4222. **Handlers deleted (item 4):** the lane handlers of `bulwark`, `shrug_it_off`, `breaching_strike` (and the push-blocked seam in `physical/core.ts`), `both_hands`, `running_reload`, `sleight_of_hand`, `holy_ordnance`, `shadow_step`, `hold_the_stroke`, `parallel_thought`, `heart_overload`, `litany`, `shared_breath`, `mirage`, `blueprint`, `lay_down_arms`; Iron Grip's is cut to the Grapple and the forbid; Resonance's stays (numbers from data). The lint baselines shrank.
 4223. **Measured gains (`docs/design/proposals/2026-11-alpha-perks-measured.md`):** a record, not a target. PROVISIONAL.
-4230. **Solid Image is inert (item 27):** it needs its rewording onto Figments (s.114, item 184) before it does anything again. For the lead.
+4229. **The 15.7 rule retired for the alpha perks (item 28):** the lead, 16 Nov 2026; `test/skeleton-perks.test.ts` keeps it for the betas and the unlocks named there. No number.
+4230. **Solid Image onto Glimmer (item 27):** once a fight, 0 AP, no charge; the form `double` and `rounds` 1 are its effect's fields (`perks.json solid_image`, op `spawn_illusion`); the handler (`perks/d.ts`) makes it through `figments.ts makeFigment` (free: outside the held count, no upkeep) and keeps the Glimmer's fooled. Supersedes item 184's Mirage wording. PROVISIONAL.
 4231. **Items 4200 to 4231 are rules 1.56's, the alpha perks.**
 
 ### Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1

@@ -56,3 +56,54 @@ the survival simulator's builds) should add a row for each.
    of the measure above half; Unbroken Litany's AP is once a fight.
 
 PROVISIONAL (spec items 4201, 4223).
+
+## The refit (16 Nov 2026, the lead's ruling 1: the class line is fitted without perk steps)
+
+Measured with the contract's own measure (`refit-measure.ts`, 6 fights a cell, all in, levels 1 / 5 / 10 / 20), on
+the lane after the merge of feature/0.29 (Bonds 2.0 slice 1, Figments 2.0 slices 2 and 3).
+
+**The Outburst: `soul_modules.json damage.base` 31 → 37** (the only dial moved).
+
+| base | steady L1 / L5 / L10 / L20 (mean) | peak L1 / L5 / L10 / L20 (mean) |
+|---|---|---|
+| line | 135 (band 119 to 151; each level 101 to 169) | 165 (band 145 to 185; each level 124 to 206) |
+| 31 (before) | 104 / 108 / 101 / 93 (102) | 122 / 177 / 144 / 151 (149) |
+| **37 (after)** | **124 / 128 / 120 / 111 (121)** | **147 / 210 / 172 / 180 (177)** |
+| 41 (steady on 135) | 138 / 142 / 133 / 123 (134) | 163 / 233 / 190 / 199 (196) |
+
+No value of the base puts both on their lines: the steady turn needs about ×1.32, the peak's level 5 allows about ×1.16.
+At 37 every cell is inside the contract but one: **the level-5 peak, 210 against 206** (2% over). The stage table was
+tried as the second dial and does not separate them (the steady turn also swells to stage 4 and releases there):
+
+| tried | steady (mean) | peak L5 |
+|---|---|---|
+| base 41, stage 4 ×1.5 | 131 / 136 / 127 / 118 (128) | 225 |
+| base 41, stages 3-4 ×1.3 / ×1.4 | 123 / 129 / 121 / 112 (121) | 217 |
+| base 35, the table +0.1 (×0.9 to ×1.7) | 123 / 127 / 119 / 110 (120) | 206 (passes by 0.25) |
+| base 36, stages 1-3 +0.2/+0.2/+0.1 | 121 / 125 / 117 / 108 (118) | 205 |
+| base 31, `cycle.begin_ap` 2 → 1 (not a dial of the brief) | 129 / 140 / 118 / 101 (122) | 197; peak mean 160 |
+
+The gap is what Heart Overload's free Begin was: a tempo lever inside the steady loop that the one-turn peak does not
+use. **For the lead:** either (a) Begin at 1 AP (the last row: every cell in band at the old base, a rule change: the
+Swift module then gives nothing), (b) the feelings' steps as the peak's own dial (the peak is the stage table plus four
+feelings' steps), or (c) the level-5 peak band. Until then the contract is red on that one cell.
+
+**The other systems, no perk steps, at base 37** (the line, then the measured levels and mean): none was fitted with an
+old alpha perk inside it that it now lacks, and each sits within the contract's tolerance, so none was moved.
+
+| system | line | L1 / L5 / L10 / L20 (mean) | with both alpha perks at Tier II (mean) |
+|---|---|---|---|
+| plain rifle | 125 | 126 / 123 / 109 / 108 (117) | 117 |
+| gun (Masterwork) | 145 | 164 / 171 / 167 / 145 (162) | 177 / 203 / 219 / 182 (195) |
+| melee (blade) | 165 | 155 / 158 / 165 / 194 (168) | 155 / 158 / 149 / 198 (165) |
+| Sigil Line of 4 | 150 to 200 | 147 / 147 / 194 / 215 (176) | 148 / 185 / 228 / 225 (197) |
+| Outburst steady | 135 | 124 / 128 / 120 / 111 (121) | 141 / 147 / 144 / 132 (141) |
+| Outburst peak | 165 | 147 / 210 / 172 / 180 (177) | 157 / 226 / 192 / 201 (194) |
+| Whisper turn | 80 | 91 / 82 / 66 / 113 (88) | 98 / 77 / 66 / 118 (90) |
+| Hymn turn | 150 | 117 / 110 / 147 / 167 (135) | 119 / 101 / 149 / 190 (140) |
+| Chaplain turn | 125 | 113 / 134 / 127 / 150 (131) | 107 / 132 / 115 / 162 (129) |
+
+"With both alpha perks" is the build taking its Mastery's perk steps, its door's two alpha perks first (at level 1 the
+all-in skill has three steps: one perk at Tier II, one at Tier I). The melee, Whisper and Chaplain rows read lower at
+some levels with steps than without: the steps include perks the policy uses badly (a measure for the lead, not a
+defect found in a perk). The contract prints these lines on every run and asserts none of them.

@@ -1083,25 +1083,22 @@
       "id": "spawn_illusion",
       "tier": "core",
       "summary": "Create a decoy on the grid.",
-      "count": 4,
+      "count": 1,
       "params": [
         "context",
-        "count",
-        "disbelieve",
-        "duration",
+        "form",
         "rounds",
         "solid",
         "uses"
       ],
       "used_by": [
-        "perks:mirage",
         "perks:solid_image"
       ],
       "example": {
         "op": "spawn_illusion",
-        "count": 1,
-        "rounds": 1,
-        "disbelieve": "analysis"
+        "solid": true,
+        "form": "double",
+        "rounds": 1
       }
     },
     {

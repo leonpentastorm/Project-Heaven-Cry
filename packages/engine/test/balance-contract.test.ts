@@ -52,6 +52,15 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
     expect(bad, 'measured, all in:\n' + report.join('\n')).toEqual([]);
   }, 600000);
 
+  it('reported, not asserted (rules 1.56 item 2: perk steps go above the line): each system all in with its two alpha perks taken (Tier II where Mastery has earned it)', () => {
+    const rows: Record<string, number[]> = {}; STEPS.perks = true;
+    try {
+      for (const lv of LEVELS) { const r = measure(lv, 'allin', N, Object.keys(SYS), yardOf(lv, N), GUARD_GUNS); expect(r.errors, 'level ' + lv).toBe(0); for (const s of Object.keys(SYS)) (rows[s] ||= []).push(r[s]); }
+    } finally { STEPS.perks = false; }
+    const lines = Object.entries(SYS).map(([s, k]) => s + ' with both alpha perks at Tier II: ' + Math.round(rows[s].reduce((a, b) => a + b, 0) / rows[s].length) + '% (levels ' + LEVELS.join(' / ') + ': ' + rows[s].join(' / ') + '; its line ' + band(k).join(' to ') + ')');
+    console.info(lines.join('\n'));
+  }, 600000);
+
   it('played: a normal share at level 1 is not over any ceiling (it should sit near ceiling ÷ ' + 1.25 + ')', () => {
     const lv = LEVELS[0], yard = yardOf(lv, N), r = measure(lv, 'normal', N, ['gun', 'blade', 'ob', 'hymn', 'heal'], yard, GUARD_GUNS);
     for (const [s, k] of Object.entries({ gun: 'gun', blade: 'melee', ob: 'outburst_steady', hymn: 'hymn_turn', heal: 'healer_turn' })) expect(r[s], s + ' at a normal share, level ' + lv).toBeLessThanOrEqual(band(k)[1] * (1 + TOL.level));

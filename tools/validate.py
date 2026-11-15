@@ -3188,6 +3188,38 @@ def _tend_bond_check():
             if k in src and src[k] != v: errors.append(f"tending.json {it.get('id')} numbers.{k} is {v}, but the effect the engine runs says {src[k]}")
 _tend_bond_check()
 
+# Rules 1.56 (the alpha perks, spec item 4208): a number block's step that reads a target's Pressure (`target:pressure`)
+# names one of the thresholds of techniques.json rules.pressure (pressed, suppressed, broken), and Pressure Point
+# (perks.json both_hands) steps at exactly Pressed and then Suppressed: one source for what "Pressed" means.
+def _pressure_steps_check():
+    T = data.get("techniques") if isinstance(data.get("techniques"), dict) else {}
+    P = ((T.get("rules") or {}).get("pressure")) or {}
+    named = {k: P.get(k) for k in ("pressed", "suppressed", "broken") if isinstance(P.get(k), (int, float))}
+    if not named:
+        errors.append("techniques.json rules.pressure: no pressed / suppressed / broken thresholds (Pressure Point reads them)"); return
+    def steps_in(o):
+        if isinstance(o, dict):
+            if isinstance(o.get("steps"), list):
+                for st in o["steps"]:
+                    if isinstance(st, dict) and st.get("of") == "target:pressure": yield st
+            for v in o.values(): yield from steps_in(v)
+        elif isinstance(o, list):
+            for v in o: yield from steps_in(v)
+    for n in ("perks", "traits"):
+        for it in items(n):
+            for st in steps_in(it):
+                if st.get("at") not in named.values():
+                    errors.append(f"{n}:{it.get('id')}: a step on target:pressure at {st.get('at')} is none of techniques.json rules.pressure's thresholds {named}")
+    bh = next((x for x in items("perks") if x.get("id") == "both_hands"), None)
+    if not bh: return
+    for tier, blk in [("", bh)] + list((bh.get("tiers") or {}).items()):
+        for e in blk.get("effects") or []:
+            v = e.get("value") if isinstance(e.get("value"), dict) else {}
+            ats = [s.get("at") for s in v.get("steps") or [] if isinstance(s, dict) and s.get("of") == "target:pressure"]
+            want = [named.get("pressed"), named.get("suppressed")][:len(ats)]
+            if ats and ats != want: errors.append(f"perks:both_hands{('@' + tier) if tier else ''}: Pressure Point steps at {ats}, but techniques.json rules.pressure's pressed / suppressed are {want}")
+_pressure_steps_check()
+
 # The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import text_numbers

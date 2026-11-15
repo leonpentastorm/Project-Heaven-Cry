@@ -150,7 +150,13 @@ describe('rules 1.55 items 33 to 36: the field is a free fight without enemies',
     const F: any = (survivalJ as any).field;
     expect(F.carried_res).toContain('mp'); expect(F.lasting_ops).toContain('mend');
     const g = toField(inFight([{ build: 'plain_gun', level: 1 }]));
-    void g; // rules 1.56: Shrug It Off (the at-will perk action this used) is gone; the rule's data is checked above
+    // rules 1.56: Shrug It Off (the at-will action this used) is gone: Catch (at will, no carried cost, no op stated) is refused;
+    // Earthbreaker (once a fight) is not
+    expect((PERK.catch as any).effects.find((e: any) => e.op === 'grant_action').uses).toBe('at_will');
+    expect((PERK.earthbreaker as any).effects.find((e: any) => e.op === 'grant_action').uses).toBe('per_combat');
+    const c = clone(g).characters.c1; c.perks = [...(c.perks || []), { id: 'catch', tier: 'I' }, { id: 'earthbreaker', tier: 'mastered' }] as any;
+    expect(fieldRefusal(g, c, 'perk:catch')).toMatch(/waits for a fight/);
+    expect(fieldRefusal(g, c, 'perk:earthbreaker')).toBeNull();
   });
 });
 

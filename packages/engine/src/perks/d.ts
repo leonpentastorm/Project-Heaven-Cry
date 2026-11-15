@@ -31,7 +31,10 @@ import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
 import { die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
-import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
+import { rngOf, tilesLine, foesOf, alliesOf, canStand } from '../kit';
+import { rawItem } from '../effects/collect';
+import { makeFigment, visFocusWhy, FORM } from '../figments';
+import { imageOfOwner } from '../illusion';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { pay, refund, canPay, bill } from '../effects/cost';
 import { setCondRounds } from '../magic';
@@ -824,51 +827,40 @@ register({
 // Taut Thread (Empathy α; `shared_breath`): data only since rules 1.56 (Shared Breath: move-pool.md).
 
 // Many-Eyed Dream and Wake of the Kill (Visualization α; `mirage`, `blueprint`): data only since rules 1.56 (Balance 2.0).
-// Mirage's projections are in docs/design/move-pool.md; the Proj shape stays for Solid Image (its rewording onto
-// Figments is open: spec rules 1.56 item 4230).
-interface Proj { id: string; kind: 'wall' | 'figure' | 'sound'; tile: string; left: number; believers: string[]; solid?: boolean }
-const MIR_KEY = 'perk:mirage';
-const mirState = (u: Unit, cb: Combat | null | undefined, g?: any) => stateOf({ key: MIR_KEY, u, cb, g } as any);
+// Mirage's projections are in docs/design/move-pool.md.
 
 // =====================================================================================================================
-// Solid Image (Mastered, Visualization 10). Once per combat, 0 AP: one of your Mirage projections becomes real until
-// the start of your next turn. A wall blocks movement and line of sight for everyone (a solid barricade); a figure takes
-// the first hit aimed at any ally (0 damage to them) and then breaks. Story: the Narrator rules it from the text.
-// (The Visualization Afterimage decoy is not built yet: only Mirage projections can be solidified.)
+// Solid Image (Mastered, Visualization 10; rules 1.56, the alpha perks, item 27). Once per combat, 0 AP: your Glimmer
+// (the false Figment every Visualization user has, figments.ts) becomes a real Figment at no charge until the start of
+// your next turn: the form the effect names (data: its `form`), outside the held count, with no upkeep, made through the
+// one door that makes a Figment (figments.ts makeFigment), its lifetime the effect's `rounds`. The enemies the Glimmer
+// fooled stay fooled: their attack now lands on a body. It keeps the old perk's shape (once a fight, free, until your
+// next turn starts); Mirage's wall half went with Mirage (move-pool.md).
 // =====================================================================================================================
+const solidEff = (h: Holder): any => (rawItem(h.key)?.effects || []).find((e: any) => e?.op === 'spawn_illusion') || {};
+const glimmerOf = (cb: Combat | null | undefined, u: Unit | null | undefined) => { const i = cb && u ? imageOfOwner(cb, u.id) : null; return i && !i.body ? i : null; };
 register({
   id: 'solid_image', claims: 'all',
   actions: [{
-    id: 'solidify', label: 'Solidify', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'tile',
-    text: 'One of your projections becomes real until your next turn: a wall blocks movement and shots; a figure takes one hit meant for an ally.',
-    available: (h) => (h.u && ((mirState(h.u, h.cb).proj || []) as Proj[]).some((p) => p.kind !== 'sound') ? true : 'Project a wall or figure first (Mirage).'),
-    preview: (h, args) => {
-      const p = ((mirState(h.u!, h.cb).proj || []) as Proj[]).find((x) => x.tile === args.tile && x.kind !== 'sound');
-      if (!p) return { ok: false, why: 'Pick one of your projected walls or figures.' };
-      if (p.kind === 'wall' && h.cb!.units.some((x) => !x.dead && x.pos === p.tile)) return { ok: false, why: 'Someone stands there.' };
+    id: 'solidify', label: 'Solidify', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'none',
+    text: 'Your Glimmer becomes a real Figment until your next turn starts, at no charge.',
+    available: (h) => { const no = visFocusWhy(h.u); if (no) return no; return glimmerOf(h.cb, h.u) ? true : 'Glimmer first: there is no false image of you to make real.'; },
+    preview: (h) => {
+      const cb = h.cb!, u = h.u!, img = glimmerOf(cb, u); if (!img) return { ok: false, why: 'Glimmer first.' };
+      if (!canStand(cb, img.pos)) return { ok: false, why: 'Someone stands on your Glimmer.' };
+      return { tiles: [img.pos], lines: ['Your Glimmer at ' + refOf(img.pos) + ' becomes a real ' + (FORM[solidEff(h).form]?.name || 'Figment') + ' until your next turn.'] };
     },
-    run: (h, args) => {
-      const u = h.u!, cb = h.cb!, p = ((mirState(u, cb).proj || []) as Proj[]).find((x) => x.tile === args.tile && x.kind !== 'sound')!;
-      p.solid = true; p.left = Math.max(p.left, 1); const s = stateOf(h);
-      if (p.kind === 'wall') { const o = makeObject('solid_' + p.id, 'barricade', p.tile, { name: 'Solid image', text: 'A projection made real (Solid Image).' }); cb.objects = [...objectsOf(cb), o]; s.wall = o.id; }
-      else s.figure = p.id;
-      log(cb, u.name + '\'s ' + p.kind + ' at ' + refOf(p.tile) + ' becomes real (Solid Image).');
+    run: (h, _args, rng) => {
+      const cb = h.cb!, u = h.u!, img = glimmerOf(cb, u), e = solidEff(h); if (!img) return 'Glimmer first.';
+      const at = img.pos, fooled = [...img.fooled], rounds = Number(e.rounds);
+      if (!FORM[e.form] || !Number.isFinite(rounds)) throw new Error('solid_image: its spawn_illusion effect needs a form and rounds (data)');
+      const f = makeFigment(cb, rng as Rng, u, e.form, [], at, { charge: 0, free: { rounds } }); if (typeof f === 'string') return f;
+      const now = imageOfOwner(cb, u.id); if (now && now.body === f.id) now.fooled = [...new Set([...now.fooled, ...fooled])];
+      log(cb, u.name + '\'s Glimmer at ' + refOf(at) + ' becomes real (Solid Image).');
+      return null;
     },
   }],
-  on: {
-    turn_start: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const s = stateOf(h), cb: Combat = ctx.cb;
-      if (s.wall) { cb.objects = objectsOf(cb).filter((o) => o.id !== s.wall); s.wall = null; log(cb, 'The solid image fades back to light.'); }
-      if (s.figure) { s.figure = null; }
-    },
-    damage_in: (ctx, h) => {
-      const u = h.u, t: Unit = ctx.t, s = stateOf(h); if (ctx.phase !== 'reduce' || !u || !t || !s.figure || t.side !== u.side || !ctx.hostile || ctx.dmg <= 0) return;
-      const ms = mirState(u, ctx.cb), p = ((ms.proj || []) as Proj[]).find((x) => x.id === s.figure);
-      ctx.dmg = 0; s.figure = null; if (p) ms.proj = (ms.proj as Proj[]).filter((x) => x !== p);
-      log(ctx.cb, 'The solid image takes the blow meant for ' + t.name + ' and breaks (Solid Image).');
-    },
-  },
-  brief: () => 'Narrator: out of combat, a projection can be made real for a moment (a door held, a blow caught).',
+  brief: () => 'Narrator: out of combat, a Glimmer can be made real for a moment (a door held, a blow caught).',
 });
 
 void active; void lineOfSight; void unitSave; void ((): Holder | null => null);
