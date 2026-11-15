@@ -783,6 +783,7 @@
               "op": "displace",
               "how": "pull",
               "tiles": 3,
+              "willing": true,
               "target": "target",
               "if": {
                 "target": "ally"
