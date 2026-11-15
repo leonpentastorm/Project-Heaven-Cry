@@ -2,7 +2,7 @@
 // engine: the map's nodes and links (g.run), what the party can reach and why a node can't be taken (`reachable`,
 // `runMoveProblem`), what a node gives (`NODE_TIP`, `nodeXp`, `nodeCredits`), the panel's words (`NODE_TEXT`), the picks
 // (g.run.offers, priced by the engine), who has a level-up waiting (`levelUpDue`). RunScreen.tsx only draws it.
-import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, runWorth, BOON_CAP, relicRow, gearPreview, isStartBoon, materialsView, type MaterialsCardV } from '@engine';
+import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, PAY_KINDS, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, wearView, wearAt, packOf, type WearV, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, capRoom, runWorth, BOON_CAP, relicRow, gearPreview, isStartBoon, materialsView, type MaterialsCardV } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
 export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null;
@@ -48,7 +48,7 @@ const catOf = (id: string) => { const w: any = WEAPON[id]; if (w) return cap(Str
 /** The hover card of a node: what it gives and costs (data), and for a node that pays, the engine's XP and credits each. */
 export function nodeTip(g: GameState, n: RunNode): string {
   const r = g.run!, k = n.gate ? 'gate' : n.kind, base = (NODE_TIP as Record<string, string>)[k] || '';
-  const pay = ['fight', 'elite', 'boss', 'cache', 'vault_guard', 'vault'].includes(n.kind) ? (n.gate ? 'gate' : n.kind) : null;
+  const pay = (PAY_KINDS as readonly string[]).includes(n.kind) ? (n.gate ? 'gate' : n.kind) : null;
   const xp = pay ? nodeXp(pay as any, n.depth, r.stage) : 0, cr = pay ? nodeCredits(pay as any, n.depth, r.stage) : 0;
   const nums = pay ? ' Pays each of you ' + (xp ? xp + ' XP and ' : '') + cr + ' credits.' : '';
   const road = roadOf(n), where = n.spur ? 'Off the trail' : n.junction ? (n.gate ? '' : 'A fork: you may change trail here') : road ? 'On ' + road.charAt(0).toLowerCase() + road.slice(1) : '';

@@ -31,6 +31,9 @@ export const NODE_TIP: Record<string, string> = Object.fromEntries(Object.entrie
   .map(([k, t]) => [k, typeof t === 'string' && materialsAt(k) ? t.replace('the materials', 'the materials (' + MATERIAL_WORDS + ')') : t])) as Record<string, string>;
 /** The node kinds that pay: the fights, a cache, and (rules 1.48) the vault's chest. */
 export type PayKind = FightKind | 'cache' | 'vault';
+/** Every kind that pays (PayKind as a list: the fights, the gate, a cache, the vault's chest), for a reader that walks
+ * a route's pay (the levels guard) or marks a node that pays (the path map's hover). */
+export const PAY_KINDS: readonly PayKind[] = ['fight', 'elite', 'gate', 'boss', 'vault_guard', 'cache', 'vault'];
 /** The row a node kind (or where a pick is made) reads in a table keyed by kind (consolidation 0.28 M3): its own row
  * when the table names it, else the row `rewards.reads` points it to when the table names that (the gate and the vault's
  * guard read the Elite's, a cache and the vault's chest the fight's), else null (the caller's default). */

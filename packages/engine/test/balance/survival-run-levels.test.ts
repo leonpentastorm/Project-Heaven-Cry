@@ -1,6 +1,6 @@
 // @ts-nocheck (a measuring tool, like the rest of test/balance)
 // Survival's levels by route (rules 1.54 item 9, survival-spec 14.4): every route of stage 1's map, walked with the
-// engine's own pay (`nodeXp`, the paid kinds of `run/rewards.ts`) and the shared `xp_total` (`levelForXp`), on many seeds.
+// engine's own pay (`nodeXp`, the paid kinds `PAY_KINDS` of `run/rewards.ts`) and the shared `xp_total` (`levelForXp`), on many seeds.
 // For each map: the route with the most fights (plain, Elite and the gate), a typical route (the median count) and the
 // route with the fewest; where each reaches level 3 (the depth, or the Boss), and the level on arriving at the Boss.
 //  - THE GUARD (always on): level 3 never comes before depth 12 on any route, and 99% of routes have it from the Boss
@@ -9,11 +9,10 @@
 import { describe, expect, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
 import { pathMap, mapPaths, type PathNode } from '../../src/run/map';
-import { nodeXp } from '../../src/run/rewards';
+import { nodeXp, PAY_KINDS } from '../../src/run/rewards';
 import { levelForXp } from '../../src';
 
 const env = (globalThis as any).process?.env || {};
-const PAID = ['fight', 'elite', 'gate', 'cache'];
 const kindOf = (n: PathNode) => (n.gate ? 'gate' : n.kind);
 /** One route walked: its fights (plain, Elite, gate), the depth level 3 comes at (15 = from the Boss), the XP and level
  * at the Boss's door and after it. */
@@ -22,8 +21,8 @@ function walk(p: PathNode[]) {
   for (const n of p) {
     const k = kindOf(n);
     if (k === 'boss') { boss = n; break; }
-    if (!PAID.includes(k)) continue;
-    if (k !== 'cache') fights++;
+    if (!PAY_KINDS.includes(k as any)) continue;
+    if (k !== 'cache' && k !== 'vault') fights++;
     xp += nodeXp(k as any, n.depth, 1);
     if (at3 == null && levelForXp(xp) >= 3) at3 = n.depth;
   }
