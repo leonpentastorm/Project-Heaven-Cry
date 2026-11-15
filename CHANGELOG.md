@@ -18,6 +18,20 @@ A hotfix (15 Nov 2026). No rule changed; only the words.
 - **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
   ground), the button says so before the click: "new Line · fades FIRE".
 
+From Leon's playtest the same day (rules 1.55 items 27 to 33, every number PROVISIONAL):
+
+- **Hand things over anywhere out of a fight.** On the path map, at every place, on the field and at the rewards you
+  can give any item in your pack to a friend, one or the whole stack, from the backpack ("Give to …"). Stims count:
+  you can give them like any item. Credits are still given only at the stops with no fight, as before.
+- **Stim a friend on the map.** A stim can be used on a friend (or yourself) without a fight: from the backpack ("Stim
+  …") or a place's Give tab. It is the fight's own stim: a Downed friend gets up at 1 HP, anyone else is healed.
+- **The field after a fight has your actions.** Walking the field you can reload (speed or tactical), load magazines,
+  clear a jam, repair, stim a friend next to you, vent, swap a core, Syphon, Crystallise, pray, and use your perks' and
+  class moves' actions, paying what they cost; AP never runs out there. What you spent once a fight stays spent, a
+  Hymn's wait does not count down, and an action that would heal or give something for AP alone again and again waits
+  for a fight (the field says so). What a fight's end clears (Strain, a held Outburst, conditions, Flux) is cleared
+  again when you leave the field.
+
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
 The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). **Live since 15 Nov 2026**.
