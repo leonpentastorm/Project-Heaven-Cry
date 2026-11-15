@@ -18,7 +18,7 @@ import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
 import { setTriggerRunner, setAllItems, onHook } from './hooks';
-import { allItems, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
+import { allItems, instanceMods, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
 import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, tieCap, canStand, tiesOf as tiesOfK, type Area } from '../kit';
 import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
 import { applyDamage } from './damage';
@@ -231,7 +231,7 @@ function madeWithUnit(ev: Ev): boolean {
   if ((ctx.mode ?? src?.mode) === 'thrown') return false;
   const off = ctx.hand === 'off' && !u.swapMain, mods = off ? u.offMods : u.mods, w = off ? u.offWeapon : u.weapon;
   // rules 1.56 L4: a variant's modifiers are its row's own (data/variants.json `variant_mods`)
-  return !!w && ((mods || []).includes(id) || ((WEAPON[w] as any)?.variant_mods || []).includes(id)) && (src?.weapon ?? w) === w;
+  return !!w && instanceMods(w, { mods }).all.includes(id) && (src?.weapon ?? w) === w;
 }
 P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus', (ev, v) => madeWith(ev) === v);
 // Rules 1.33 (Tending, Bonds and the Mender): a door's ladder, the holder's ties, the action's pick

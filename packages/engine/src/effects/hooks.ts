@@ -3,12 +3,11 @@
 // cb.units order, then items in a fixed order (traits, perks, class moves), then handler priority: dispatch is
 // deterministic.
 import { addConditionRows, clearAddedConditions } from '../condtable';
-import { WEAPON, ITEM } from '../data';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
 import type { StatId } from './stats';
-import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, verbsOf, classMoveKeys, rawItem, _addRawItems, _clearRawItems } from './collect';
+import { type Held, instanceMods, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, verbsOf, classMoveKeys, rawItem, _addRawItems, _clearRawItems } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
 let G: any = null;
@@ -180,11 +179,23 @@ export function heldOfChar(c: Character | null | undefined): Held {
   // Rules 1.56 (plan 0.29 primitive 1): the mods fitted to the instances in the hands are held the same way (each acts only
   // through `with_this`: the event made with the instance that carries it).
   // Rules 1.56 L4: a variant's modifiers (its row's `variant_mods`, data/variants.json) are held for an instance in a hand.
-  const baked = (id: string | null | undefined): string[] => (id ? ((WEAPON[id] || ITEM[id]) as any)?.variant_mods || [] : []);
-  const props = [c.weaponState?.prop, c.offHand?.prop, ...(c.pack || []).map((x) => x.prop), ...(c.weaponState?.mods || []), ...(c.offHand?.mods || []), ...baked(c.weapon), ...baked(c.offHand?.id)].filter((x): x is string => !!x);
+  // Which instances are in the hands is character.ts handInstances' (the two-hander rule; set by setHandsRule). While it
+  // is being asked (twoHands reads the stat one_hand_heavy, answered from this held), the hands' items are left out: what
+  // decides whether the hands are full never comes from what is in them.
+  let hands: HandInstance[] = [];
+  if (!handsHook) hands = [{ hand: 'main', id: c.weapon, st: c.weaponState }, ...(c.offHand ? [{ hand: 'off' as const, id: c.offHand.id, st: c.offHand }] : [])];
+  else if (!askingHands.has(c)) { askingHands.add(c); try { hands = handsHook(c); } finally { askingHands.delete(c); } }
+  const m = hands.map((x) => instanceMods(x.id, x.st));
+  const props = [...m.flatMap((x) => x.prop), ...(c.pack || []).map((x) => x.prop), ...m.flatMap((x) => x.mods), ...m.flatMap((x) => x.baked)].filter((x): x is string => !!x);
   const rel = props.length ? [...new Set([...(c.relics || []), ...props])] : c.relics || [];
   return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(rel.length ? { relics: [...rel] } : {}), ...(vb.length ? { verbs: vb } : {}) };
 }
+/** An instance in a hand (character.ts handInstances): which hand, its id, its state. */
+export interface HandInstance { hand: 'main' | 'off'; id: string; st?: { prop?: string | null; mods?: readonly string[] | null } | null }
+let handsHook: ((c: Character) => HandInstance[]) | null = null;
+const askingHands = new Set<Character>();
+/** character.ts gives the runtime its hands rule (kept there to avoid an import cycle). */
+export const setHandsRule = (f: (c: Character) => HandInstance[]) => { handsHook = f; };
 let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
 export const setRankRule = (f: (c: Character) => number) => { rankHook = f; };

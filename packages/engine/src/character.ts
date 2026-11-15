@@ -3,8 +3,8 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
-import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem } from './effects/collect';
-import { statQuery, setRankRule } from './effects/hooks';
+import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
+import { statQuery, setRankRule, setHandsRule, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
@@ -918,12 +918,14 @@ export function focusRarity(c: Character, door: string): Rarity | null {
 /** Rules 1.43 (item 11), 1.56: the modifier items of the instances in the hands (a named property, the fitted mods), with
  * the hand each is in (the off hand unless a two-handed weapon fills both). What heldOfChar loads as relic items and
  * `with_this` reads. */
-export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => {
-  // rules 1.56 (plan 0.29 primitive 1): an instance's modifier items are its property and its fitted mods, one door
-  // rules 1.56 L4: and the modifiers its row carries when it is a variant (data/variants.json `variant_mods`)
-  const carried = (id: string | null | undefined, st: { prop?: string; mods?: string[] } | null | undefined, hand: 'main' | 'off') => [...(st?.prop ? [st.prop] : []), ...(st?.mods || []), ...((id ? ((WEAPON[id] || ITEM[id]) as any)?.variant_mods : null) || [])].map((prop) => ({ prop, hand }));
-  return [...(c.weapon !== 'fists' ? carried(c.weapon, c.weaponState, 'main') : []), ...(c.offHand && !twoHands(c, c.weapon) ? carried(c.offHand.id, c.offHand, 'off') : [])];
-};
+export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => handInstances(c).flatMap((x) => instanceMods(x.id, x.st).all.map((prop) => ({ prop, hand: x.hand })));
+/** The instances in the hands: the main hand (not bare fists) and the off hand, unless a two-handed weapon fills both.
+ * The one hands rule heldOfChar and handProps read (the modifiers on each: effects/collect.ts instanceMods). */
+export const handInstances = (c: Character): HandInstance[] => [
+  ...(c.weapon !== 'fists' ? [{ hand: 'main' as const, id: c.weapon, st: c.weaponState }] : []),
+  ...(c.offHand && !twoHands(c, c.weapon) ? [{ hand: 'off' as const, id: c.offHand.id, st: c.offHand }] : []),
+];
+setHandsRule(handInstances);
 /** Rules 1.43 (item 11; survival-spec rule 31): the named property of every instance a character carries (hands and
  * pack), one per instance: what counts on its run's cap whether in hand or not. */
 export const gearProps = (c: Character): string[] => [

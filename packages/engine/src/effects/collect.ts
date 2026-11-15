@@ -2,7 +2,7 @@
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
-import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL, ITEM, VARIANT_MOD } from '../data';
+import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL, ITEM, WEAPON, VARIANT_MOD } from '../data';
 import figmentsJ from '../../../../data/figments.json';
 import classesJ from '../../../../data/classes.json';
 import shadowJ from '../../../../data/shadow.json';
@@ -194,6 +194,13 @@ const guessKind = (id: string): ItemKind => (perkData(id) ? 'perk' : traitData(i
 /** "bulwark" → "perk:bulwark"; "gambler" → "trait:gambler"; "marksman.killzone" → "class:marksman.killzone"; keys pass through. */
 export const keyOf = (idOrKey: string, kind?: ItemKind) => (idOrKey.includes(':') ? idOrKey : (kind || guessKind(idOrKey)) + ':' + idOrKey);
 
+/** Rules 1.43, 1.56: the one reader of the modifier items on a gear instance: its named property, its fitted mods and its
+ * variant row's modifiers (data/variants.json `variant_mods`). Which instances count (the hands, the two-hander rule) is
+ * character.ts handInstances'; hooks.ts heldOfChar, character.ts handProps and triggers.ts madeWithUnit all read this. */
+export function instanceMods(id: string | null | undefined, st?: { prop?: string | null; mods?: readonly string[] | null } | null): { prop: string[]; mods: string[]; baked: string[]; all: string[] } {
+  const prop = st?.prop ? [st.prop] : [], mods = [...(st?.mods || [])], baked = [...((id ? ((WEAPON[id] || ITEM[id]) as any)?.variant_mods : null) || [])];
+  return { prop, mods, baked, all: [...prop, ...mods, ...baked] };
+}
 /** What a holder holds, the compact form a Unit carries (u.fx) and the collector reads. skills: the skill unlocks it has
  * reached ("brain_power.3"), only those in SKILL_ITEMS. */
 export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null; skills?: string[]; relics?: string[]; verbs?: string[] }

@@ -12,3 +12,9 @@ describe('M2: one magazine size in every path', () => {
     expect(pcs(g)[0].offAmmo).toBe(size);
   });
 });
+
+describe('M3: one reader of the modifiers on a held instance, with the two-hander rule', () => {
+  const flux = (weapon: string) => { const g = modFight({ weapon, prep: (x) => { x.characters.c1.offHand = { id: 'evoker.deep_well' }; } }); return A.fluxMaxOf(pcs(g)[0], g.combat) - A.FLUX_MAX; };
+  it('an off-hand focus variant answers its stat beside a one-handed weapon', () => { expect(flux('service_pistol')).toBeGreaterThan(0); });
+  it('a two-handed weapon fills both hands: the off-hand variant\'s stat does not answer (as with_this says)', () => { expect(flux('lever_carbine')).toBe(0); });
+});
