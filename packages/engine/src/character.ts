@@ -9,6 +9,7 @@ import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
+import figmentsJ from '../../../data/figments.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
@@ -89,6 +90,12 @@ export interface Character extends Sheet {
   outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[]; tones?: string[] };
   /** Rules 1.34: Figment designs (a form and its traits, named; made out of a fight) and the Visualizer's charge. */
   figments?: FigmentDesign[]; visCharge?: number;
+  /** Rules 1.56 (doorpicks.ts): what each door's choices took, kept for good (Visualization: the Figment forms chosen at its forks). */
+  doorPicks?: Record<string, string[]>;
+  /** Rules 1.56 (doorpicks.ts): what a door's save migration kept outside its choices (the forms an older ladder gave). */
+  doorKept?: Record<string, string[]>;
+  /** Rules 1.56 (Figments 2.0): the stamp of the forks' save migration (figments.json migration.rev); none: made before it. */
+  figRev?: number;
   mp?: number; evoCharge?: number; learnedScene?: number;
   /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). Class
    * Roster Revision 3 shelves every advanced class: the field is kept, but gives nothing until they come back. */
@@ -466,7 +473,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   // its gear when play starts (loadout.ts). An old draft's or a test's kit is carried as before.
   const kit = s.kit ? KITS[s.kit] || KITS.medic : BARE_KIT;
   const c: Character = {
-    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],
+    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, figRev: (figmentsJ as any).migration.rev, perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
     injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV, mpRev: 124, hpRev: HP_REV,
     ...(s.kit ? {} : { bare: true, kit: '' }),

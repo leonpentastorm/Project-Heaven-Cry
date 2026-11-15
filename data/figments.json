@@ -39,14 +39,16 @@
     "text": "Let go (verbs.let_go): unmake one; refund_share of its made charge (rounded down) goes back into the core. A Figment destroyed by damage gives nothing back and Snaps: your next turn has snap_ap AP less (at most once a turn)."
   },
   "ladder": [
-    { "points": 1, "held": 1, "forms": ["double"], "designs": 0, "traits": 0, "text": "The door: Picture, the Double, 1 held, range 5. The Visualizer also works out of a fight." },
-    { "points": 3, "forms": ["eye", "wall"], "designs": 2, "traits": 1, "text": "Eye and Wall; 2 ready designs, one trait each." },
-    { "points": 5, "held": 2, "forms": ["beast", "blade"], "designs": 3, "text": "2 held; Beast and Blade; 3 ready designs." },
-    { "points": 7, "held": 3, "traits": 2, "text": "3 held; two traits a design." },
-    { "points": 8, "designs": 4, "text": "4 ready designs." },
-    { "points": 9, "no_snap": true, "text": "A destroyed Figment no longer Snaps." },
-    { "points": 10, "designs": 5, "text": "5 ready designs; the Mastered perk." }
+    { "points": 1, "held": 1, "forms": ["double", "snare"], "designs": 0, "traits": 0, "text": "The door: Picture, the Double and the Snare, 1 held, range 5; Glimmer, Redraw and Cash in. The Visualizer also works out of a fight." },
+    { "points": 2, "forms": ["hand"], "text": "The Hand." },
+    { "points": 3, "fork": { "id": "a", "of": ["eye", "wall", "ward"] }, "designs": 2, "traits": 1, "text": "Choose one: the Eye, the Wall or the Ward; 2 ready designs, one trait each." },
+    { "points": 5, "held": 2, "fork": { "id": "b", "of": ["beast", "blade", "husk", "sentinel"] }, "designs": 3, "text": "2 held; choose one: the Beast, the Blade, the Husk or the Sentinel; 3 ready designs." },
+    { "points": 7, "held": 3, "traits": 2, "more": { "of": ["a"], "n": 1 }, "text": "3 held; two traits a design; one more form from the first choice." },
+    { "points": 8, "designs": 4, "more": { "of": ["b"], "n": 1 }, "text": "4 ready designs; one more form from the second choice." },
+    { "points": 9, "no_snap": true, "more": { "of": ["a", "b"], "n": 1 }, "text": "A destroyed Figment no longer Snaps; one more form from either choice." },
+    { "points": 10, "designs": 5, "forms": ["eye", "wall", "ward", "beast", "blade", "husk", "sentinel"], "text": "Every form; 5 ready designs; the Mastered perk." }
   ],
+  "migration": { "rev": 1, "legacy": [{ "points": 3, "forms": ["eye", "wall"] }, { "points": 5, "forms": ["beast", "blade"] }], "text": "Rules 1.56 (Figments 2.0): a character made before the forks keeps every form the old ladder opened at its Visualization (legacy); each fork it has passed counts as taken by a form it holds. Characters made since carry the stamp (rev) and choose." },
   "lure": {
     "found_out_add": 5,
     "text": "A Double lures by the fire doctrine of enemies.json (double_save): a tier with none is always fooled; the others save (Brain, against 12 + your Visualization strength, plus the tier's double_save) on first sight, an Elite and a Boss again at each of their turn starts, a Boss never two rounds running. An enemy that found a Double out gets found_out_add against your later Doubles this fight."
@@ -64,17 +66,17 @@
       "id": "double", "name": "Double", "icon": "figment-double", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
       "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
       "hp": 30, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
-      "actions": ["move"], "verbs": ["let_go"],
+      "actions": ["move"], "verbs": ["figment_draw_fire", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-double", "glyph": "◐",
-      "text": "A second you the bots build: {=hp} HP, your Defense, your pace. It draws fire: Minions and Vermin always take it for you; Soldiers, Elites and Bosses make a Brain save.",
+      "text": "A second you the bots build: {=hp} HP, your Defense, your pace. It draws fire: Minions and Vermin always take it for you; Soldiers, Elites and Bosses make a Brain save. Draw fire: every enemy that can see it close by makes a Heart save or is Taunted by it.",
       "adjudication": "engine", "provisional": true
     },
     {
       "id": "eye", "name": "Eye", "icon": "figment-eye", "owned_kind": "figment", "turn": "owner", "eyes": true,
-      "opens": { "skill": "visualization", "min": 3 }, "charge": 2,
+      "opens": { "skill": "visualization", "min": 3, "fork": "a" }, "charge": 2,
       "hp": 15, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
-      "actions": ["move"], "verbs": ["figment_stare", "let_go"],
+      "actions": ["move"], "verbs": ["figment_stare", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-eye", "glyph": "◉",
       "text": "A floating eye: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. It sees {=vision} tiles, in the dark too, for your whole side. Stare: one unit it sees stays seen by your side until your next turn, Hidden or not.",
@@ -82,19 +84,19 @@
     },
     {
       "id": "wall", "name": "Wall", "icon": "figment-wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": "full",
-      "opens": { "skill": "visualization", "min": 3 }, "charge": 3,
+      "opens": { "skill": "visualization", "min": 3, "fork": "a" }, "charge": 3,
       "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
-      "actions": ["move"], "verbs": ["let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
+      "actions": ["move"], "verbs": ["figment_press", "figment_redraw", "figment_cash_in", "let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-wall", "glyph": "▮",
-      "text": "Movable cover: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tile an AP. Full cover; it blocks movement and sight for both sides and nothing pushes it.",
+      "text": "Movable cover: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tile an AP. Full cover; it blocks movement and sight for both sides and nothing pushes it. Press: it shoves an enemy next to it away.",
       "adjudication": "engine", "provisional": true
     },
     {
       "id": "beast", "name": "Beast", "icon": "figment-beast", "owned_kind": "figment", "turn": "owner", "eyes": false,
-      "opens": { "skill": "visualization", "min": 5 }, "charge": 4,
+      "opens": { "skill": "visualization", "min": 5, "fork": "b" }, "charge": 4,
       "hp": 45, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 3, "weapon": "figment_claws",
-      "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "let_go"],
+      "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-beast", "glyph": "◆",
       "text": "A fast striker: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. Strike is a melee attack with its claws; Pounce runs a short straight line and strikes, and a hit knocks the target Prone unless it passes a Body save.",
@@ -102,13 +104,56 @@
     },
     {
       "id": "blade", "name": "Blade", "icon": "figment-blade", "owned_kind": "figment", "turn": "owner", "eyes": false,
-      "opens": { "skill": "visualization", "min": 5 }, "charge": 3,
+      "opens": { "skill": "visualization", "min": 5, "fork": "b" }, "charge": 3,
       "hp": 25, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 2, "weapon": "figment_edge",
-      "actions": ["move"], "verbs": ["figment_cut", "let_go"], "hold": { "reaction": "attack" },
+      "actions": ["move"], "verbs": ["figment_cut", "figment_redraw", "figment_cash_in", "let_go"], "hold": { "reaction": "attack" },
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-blade", "glyph": "✦",
       "text": "A floating blade: {=hp} HP, Defense {=defense}, {=movement} tiles an AP. Cut strikes an enemy next to it. Hold: the first enemy each round to enter or leave a tile next to it is Cut, and that spends one of your reactions.",
       "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "snare", "name": "Snare", "icon": "figment-snare", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 1 }, "charge": 1,
+      "hp": 10, "defense": 8, "armour": 0, "attack_bonus": 0, "movement": 1, "weapon": "figment_edge",
+      "actions": ["move"], "verbs": ["figment_trip", "figment_redraw", "figment_cash_in", "let_go"],
+      "hold": { "reaction": "attack" },
+      "effects": [{ "op": "condition", "when": "hit", "condition": "pinned", "via": "visualization", "target": "target", "if": { "actor": "self" } }, { "op": "unmake", "when": "hit", "if": { "actor": "self" } }],
+      "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-snare", "glyph": "✱",
+      "text": "A trap of bots: {=hp} HP, Defense {=defense}, {=movement} tile an AP. Hold: the first enemy each round to enter or leave a tile next to it is Cut (one of your reactions). Trip: it Cuts an enemy next to it now. Its hit Pins the target (Body save) and the Snare is spent.", "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "hand", "name": "Hand", "icon": "figment-hand", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 2 }, "charge": 2,
+      "hp": 20, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 3, "weapon": "fists",
+      "flies": true,
+      "actions": ["move"], "verbs": ["figment_hand_over", "figment_filch", "figment_redraw", "figment_cash_in", "let_go"],
+      "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-hand", "glyph": "✋",
+      "text": "A courier of bots: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. Hand over: it gives one of your own stims to an ally next to it. Filch: it lifts a throwable (else a spare magazine) from an enemy next to it onto its tile (a Body save keeps it).", "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "ward", "name": "Ward", "icon": "figment-ward", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 3, "fork": "a" }, "charge": 3,
+      "hp": 40, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 2, "weapon": "fists",
+      "actions": ["move"], "verbs": ["figment_interpose", "figment_redraw", "figment_cash_in", "let_go"],
+      "effects": [{ "op": "redirect", "when": "taking", "share": 0.5, "if": { "target": "ally", "target_within": 1, "by_hit": true }, "limit": { "per": "per_round", "n": 1 } }],
+      "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-ward", "glyph": "⛉",
+      "text": "A bodyguard: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. The first hit each round on an ally next to it lands {=effects.0.share|pct} on the Ward. Interpose: it steps to a free tile next to an ally.", "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "husk", "name": "Husk", "icon": "figment-husk", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
+      "opens": { "skill": "visualization", "min": 5, "fork": "b" }, "charge": 2,
+      "hp": 20, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
+      "actions": ["move"], "verbs": ["figment_burst", "figment_redraw", "figment_cash_in", "let_go"],
+      "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-husk", "glyph": "◌",
+      "text": "A hollow second you: {=hp} HP, your Defense, your pace. It lures as a Double does. Burst: it bursts on everyone next to it, both sides, and is gone (no charge back, no Snap).", "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "sentinel", "name": "Sentinel", "icon": "figment-sentinel", "owned_kind": "figment", "turn": "auto", "eyes": true, "opens": { "skill": "visualization", "min": 5, "fork": "b" }, "charge": 4,
+      "hp": 30, "defense": 10, "armour": 3, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol",
+      "infinite_ammo": true,
+      "vision": 8,
+      "actions": ["move"], "verbs": ["figment_fix", "figment_redraw", "figment_cash_in", "let_go"],
+      "auto": { "verb": "figment_fix", "target": "nearest_foe" },
+      "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-sentinel", "glyph": "⌖",
+      "text": "A turret of bots: {=hp} HP, Defense {=defense}, armour {=armour}; it does not walk. It sees {=vision} tiles. At each of your turn starts it Fixes the nearest enemy on your AP; Fix: its shot now, at an enemy it sees.", "adjudication": "engine", "provisional": true
     }
   ],
   "turret": {
@@ -139,6 +184,46 @@
       "text": "One unit it sees stays seen by your side until your next turn, Hidden or not.", "provisional": true
     },
     {
+      "id": "figment_draw_fire", "name": "Draw fire", "icon": "order-draw-fire", "site": "figment_order", "effects": [{ "op": "condition", "condition": "taunted", "rounds": 1, "via": "visualization", "targets": { "of": "self", "within": 3, "side": "foe", "sees": "line" } }],
+      "text": "Every enemy within {=effects.0.targets.within} tiles that can see it makes a Heart save or is Taunted by it for {=effects.0.rounds} round.", "provisional": true
+    },
+    {
+      "id": "figment_press", "name": "Press", "icon": "order-press", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "displace", "how": "push", "tiles": 1, "target": "target" }],
+      "text": "It shoves an enemy next to it {=effects.0.tiles} tile away.", "provisional": true
+    },
+    {
+      "id": "figment_trip", "name": "Trip", "icon": "order-trip", "site": "figment_cut", "attack": "melee", "reach": { "tiles": 1, "side": "foe" },
+      "text": "It Cuts an enemy next to it now.", "provisional": true
+    },
+    {
+      "id": "figment_hand_over", "name": "Hand over", "icon": "order-hand-over", "site": "figment_order", "reach": { "tiles": 1, "side": "ally" }, "stim": true,
+      "text": "It gives one of your own stims to an ally next to it: the stim's own heal, or a Downed ally stabilised.", "provisional": true
+    },
+    {
+      "id": "figment_filch", "name": "Filch", "icon": "", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "take", "save": "body", "via": "visualization", "target": "target" }],
+      "text": "It lifts a throwable (else a spare magazine) from an enemy next to it onto its own tile; a Body save keeps it.", "provisional": true
+    },
+    {
+      "id": "figment_interpose", "name": "Interpose", "icon": "order-interpose", "site": "figment_order", "reach": { "tile": true, "tiles": 3, "beside": "ally" }, "effects": [{ "op": "displace", "to": "tile", "tiles": 3 }],
+      "text": "It steps to a free tile next to an ally, within {=reach.tiles} tiles of it.", "provisional": true
+    },
+    {
+      "id": "figment_burst", "name": "Burst", "icon": "order-burst", "site": "figment_order", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "figment", "type": "explosive", "provisional": true } }, "effects": [{ "op": "deal", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }, { "op": "unmake" }],
+      "text": "It bursts: {=amounts.burst.base} on every unit next to it, both sides, and it is gone (no charge back, no Snap).", "provisional": true
+    },
+    {
+      "id": "figment_fix", "name": "Fix", "icon": "order-fix", "site": "figment_strike", "attack": "shot", "reach": { "tiles": 8, "side": "foe", "eyes": true },
+      "text": "Its shot now, at an enemy it sees within {=reach.tiles} tiles.", "provisional": true
+    },
+    {
+      "id": "figment_redraw", "name": "Redraw", "icon": "order-redraw", "site": "figment_order", "res": { "vcharge": 1 }, "reach": { "tile": true, "tiles": 4 }, "effects": [{ "op": "displace", "to": "tile", "tiles": 4 }],
+      "text": "It comes apart and reforms on a free tile within {=reach.tiles} tiles of it ({=res.vcharge} charge).", "provisional": true
+    },
+    {
+      "id": "figment_cash_in", "name": "Cash in", "icon": "", "site": "figment_order", "unmake": true, "refund_share": 1,
+      "text": "Unmake it on purpose: all its made charge goes back into the core.", "provisional": true
+    },
+    {
       "id": "let_go", "name": "Let go", "site": "let_go", "unmake": true, "refund_share": 0.5,
       "text": "Unmake it: half its made charge (rounded down) goes back into the core.", "provisional": true
     }
@@ -163,6 +248,12 @@
       "id": "picture", "name": "Picture", "icon": "figment-picture", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP and the form's charge (more for each trait) from your Visualizer. A Figment of a ready design or a bare form you have opened appears on a free tile your side sees within your projection range. Needs the Visualizer in hand.",
       "effects": [{ "op": "grant_action", "action": "picture", "ap": 2, "uses": "at_will", "pick": "forms", "pick_label": "What to picture", "reach": { "tile": true } }],
+      "adjudication": "engine", "provisional": true
+    },
+    {
+      "id": "glimmer", "name": "Glimmer", "icon": "", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
+      "text": "Costs {=effects.0.ap} AP, no charge: the bots paint you in light on a free tile your side sees within your projection range. Every enemy that sees it is fooled as by a Double (Minions and Vermin always; Soldiers, Elites and Bosses make a Brain save) and takes it for you until it is struck or fades. One false image of you at a time: a new one (a Double's too) replaces the old. Needs the Visualizer in hand.",
+      "effects": [{ "op": "grant_action", "action": "glimmer", "ap": 1, "uses": "at_will", "reach": { "tile": true } }],
       "adjudication": "engine", "provisional": true
     },
     {

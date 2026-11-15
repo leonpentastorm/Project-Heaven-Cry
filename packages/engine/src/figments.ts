@@ -25,7 +25,8 @@ import { levelFactor, statTerm } from './effects/output';
 import { spawnOwned, unmakeOwned, ownedBy, ownerOf, addOwnedGate } from './owned';
 import { condOn, saveAgainst } from './magic';
 import { canStand, tileOf } from './kit';
-import { addImage, dropImage, imagesOf, type FalseImage } from './illusion';
+import { addImage, dropImage, imagesOf, imageOfOwner, imageTurnStart, type FalseImage } from './illusion';
+import { registerDoorPicks, doorPicksOf, doorKeptOf, type DoorGrant } from './doorpicks';
 import { react } from './tactics';
 import type { Rng } from './rng';
 
@@ -35,16 +36,60 @@ export const FIG_TRAIT: Record<string, any> = Object.fromEntries((FIG.traits as 
 const LADDER: any[] = FIG.ladder;
 
 // ---------------------------------------------------------------------------------------------- the ladder
-export interface FigLadder { held: number; forms: string[]; designs: number; traits: number; noSnap: boolean }
-/** What Visualization at these points opens (figments.json ladder: each row adds or sets from its points up). */
+/** A fork of the ladder (rules 1.56, Figments 2.0): at its points, one form of `of` is chosen (door/pick). */
+export interface FigFork { id: string; of: string[]; points: number }
+/** A "one more" row: n more forms from the forks it names. */
+export interface FigMore { of: string[]; n: number; points: number }
+export interface FigLadder { held: number; forms: string[]; designs: number; traits: number; noSnap: boolean; forks: FigFork[]; more: FigMore[] }
+/** What Visualization at these points opens (figments.json ladder: each row adds or sets from its points up). `forms`
+ * are the forms every holder gets at these points; `forks` and `more` are the choices (door/pick: formsOf). */
 export function ladderAt(points: number): FigLadder {
-  const out: FigLadder = { held: 0, forms: [], designs: 0, traits: 0, noSnap: false };
+  const out: FigLadder = { held: 0, forms: [], designs: 0, traits: 0, noSnap: false, forks: [], more: [] };
   for (const r of LADDER) {
     if (points < r.points) continue;
     if (r.held != null) out.held = r.held; if (r.designs != null) out.designs = r.designs; if (r.traits != null) out.traits = r.traits;
-    if (r.forms) out.forms.push(...r.forms); if (r.no_snap) out.noSnap = true;
+    if (r.forms) for (const f of r.forms) if (!out.forms.includes(f)) out.forms.push(f);
+    if (r.no_snap) out.noSnap = true;
+    if (r.fork) out.forks.push({ id: r.fork.id, of: [...r.fork.of], points: r.points });
+    if (r.more) out.more.push({ of: [...r.more.of], n: r.more.n ?? 1, points: r.points });
   }
   return out;
+}
+/** The door's id for its picks (figments.json visualizer.door). */
+export const FIG_DOOR: string = FIG.visualizer.door;
+/** Every fork of the ladder by id (its points and its forms). */
+const FORKS: Record<string, FigFork> = Object.fromEntries(LADDER.filter((r) => r.fork).map((r) => [r.fork.id, { id: r.fork.id, of: [...r.fork.of], points: r.points }]));
+/** The forms this character holds open: the ladder's at its points, and the ones it chose (door/pick), in data order. */
+export function formsOf(c: Character | null | undefined): string[] {
+  const p = c?.skills?.visualization || 0, open = new Set([...ladderAt(p).forms, ...doorPicksOf(c, FIG_DOOR), ...doorKeptOf(c, FIG_DOOR)]);
+  return (FIG.forms as any[]).map((f) => f.id).filter((id) => open.has(id));
+}
+/** The choices the ladder gives at these points (the door's grants: each fork one form, each "one more" row n more),
+ * the forms already open for every holder taken out. */
+export function figmentGrants(c: Character): DoorGrant[] {
+  const L = ladderAt(c.skills?.visualization || 0), fixed = new Set(L.forms), name = (ids: string[]) => ids.map((f) => FORM[f]?.name || f).join(', ');
+  const forks: DoorGrant[] = L.forks.map((k) => ({ id: 'fork:' + k.id, of: k.of.filter((f) => !fixed.has(f)), n: 1, why: 'Visualization ' + k.points + ': choose one of ' + name(k.of) + '.' }));
+  const more: DoorGrant[] = L.more.map((m) => { const of = m.of.flatMap((id) => FORKS[id]?.of || []).filter((f) => !fixed.has(f)); return { id: 'more:' + m.points, of, n: m.n, why: 'Visualization ' + m.points + ': one more of ' + name(of) + '.' }; });
+  return [...forks, ...more].filter((g) => g.of.length > 0);
+}
+registerDoorPicks(FIG_DOOR, { name: 'Figment', grants: figmentGrants, option: (id) => (FORM[id] ? { id, label: FORM[id].name, icon: FORM[id].icon || '' } : null) });
+/** Rules 1.56 (Figments 2.0) save migration: a character made before the forks (no stamp `figRev`) keeps every form
+ * the old ladder opened at its Visualization (figments.json migration.legacy), as picks taken; each fork it has passed
+ * counts as taken by a form it holds. Says nothing in the story (nothing it had is gone). */
+export const FIG_REV: number = FIG.migration.rev;
+export function migrateCharacterFigments(c: Character): string[] {
+  if ((c as any).figRev === FIG_REV) return [];
+  (c as any).figRev = FIG_REV;
+  const p = c.skills?.visualization || 0, had = doorPicksOf(c, FIG_DOOR);
+  const keep = (FIG.migration.legacy as any[]).filter((r) => p >= r.points).flatMap((r) => r.forms as string[]).filter((f) => !had.includes(f) && !ladderAt(p).forms.includes(f));
+  if (!keep.length) return [];
+  // each fork passed: the first form it held of that fork is the fork's pick; the others are kept outside the grants,
+  // so the "one more" rows fill from the forms not held, as for anyone
+  const picks = ladderAt(p).forks.map((k) => keep.find((f) => k.of.includes(f))).filter((f): f is string => !!f);
+  (c as any).doorPicks = { ...((c as any).doorPicks || {}), [FIG_DOOR]: [...had, ...picks] };
+  const rest = keep.filter((f) => !picks.includes(f));
+  if (rest.length) (c as any).doorKept = { ...((c as any).doorKept || {}), [FIG_DOOR]: [...doorKeptOf(c, FIG_DOOR), ...rest] };
+  return []; // silent: the forms it had are all still there (the Figments tab shows the forks as chosen)
 }
 /** A unit's Visualization points (the magic unit's, else its character's). */
 export const visPoints = (u: Unit | null | undefined, c?: Character | null): number => u?.mg?.vis ?? (c ?? charOfUnit(u))?.skills?.visualization ?? 0;
@@ -66,8 +111,16 @@ export function heldMax(u: Unit | null | undefined, c?: Character | null): numbe
 export function designsMax(c: Character, u?: Unit | null): number { const p = c.skills?.visualization || 0; return p >= 3 ? ladderAt(p).designs + statQuery({ c, u }, 'figment_designs').add : 0; }
 /** How many traits a design may carry. */
 export const traitsMax = (points: number): number => ladderAt(points).traits;
-/** The forms this many points open. */
+/** The forms this many points open for every holder (the forks' choices are formsOf's). */
 export const formsOpen = (points: number): string[] => ladderAt(points).forms;
+/** Why this character can't use this form yet (null: it can): its points, or its fork not taken. */
+export function formWhy(c: Character, form: string): string | null {
+  const f = FORM[form]; if (!f) return 'No such form.';
+  if (formsOf(c).includes(form)) return null;
+  const k = f.opens?.fork ? FORKS[f.opens.fork] : null;
+  if (k && (c.skills?.visualization || 0) >= k.points) return f.name + ' is not one of your chosen forms.';
+  return f.name + (k ? ' is a choice at Visualization ' + k.points + '.' : ' needs Visualization ' + f.opens.min + '.');
+}
 
 // ---------------------------------------------------------------------------------------------- designs
 /** Why this design can't be kept by this character (null: it can). */
@@ -75,7 +128,7 @@ export function designWhy(c: Character, d: FigmentDesign): string | null {
   const p = c.skills?.visualization || 0;
   if (!d || !String(d.name || '').trim()) return 'Name the design.';
   if (!FORM[d.form]) return 'No such form.';
-  if (!formsOpen(p).includes(d.form)) return FORM[d.form].name + ' needs Visualization ' + FORM[d.form].opens.min + '.';
+  { const no = formWhy(c, d.form); if (no) return no; }
   const tr = d.traits || [];
   if (tr.some((t) => !FIG_TRAIT[t])) return 'No such trait.';
   if (new Set(tr).size !== tr.length) return 'A trait only once.';
@@ -113,7 +166,7 @@ export function pictureChoice(c: Character | null | undefined, choice: string | 
 /** Picture's choices: the ready designs, then the bare forms opened (every bare form is always ready). */
 export function pictureOptions(c: Character): { id: string; label: string; icon: string }[] {
   return [...readyFigments(c).map((d) => ({ id: 'd:' + d.id, label: d.name + ' (' + FORM[d.form].name + (d.traits.length ? ' + ' + d.traits.map((t) => FIG_TRAIT[t].name).join(', ') : '') + ')', icon: FORM[d.form].icon || '' })),
-    ...formsOpen(c.skills?.visualization || 0).map((f) => ({ id: f, label: FORM[f].name, icon: FORM[f].icon || '' }))];
+    ...formsOf(c).map((f) => ({ id: f, label: FORM[f].name, icon: FORM[f].icon || '' }))];
 }
 /** A design's charge: the form's, +trait_charge a trait, each trait's own `charge` (Hollow −2), never under 1. */
 export const figmentCharge = (form: string, traits: string[]): number => Math.max(1, (FORM[form]?.charge || 0) + traits.reduce((s, t) => s + FIG.trait_charge + (FIG_TRAIT[t]?.charge || 0), 0));
@@ -131,12 +184,19 @@ export function figmentLookOf(rowId: string | null | undefined): FigLook | null 
   const it = (FIG.items as any[]).find((x) => x.id === rowId); return it ? lookOf(it) : null;
 }
 /** One step of the ladder as the screens show it: what it opens, open or locked at these points. */
-export interface FigLadderStep { points: number; open: boolean; latest: boolean; forms: FigLook[]; held: number | null; designs: number | null; traits: number | null; noSnap: boolean; text: string }
+export interface FigLadderStep { points: number; open: boolean; latest: boolean; forms: FigLook[]; held: number | null; designs: number | null; traits: number | null; noSnap: boolean; text: string;
+  /** Rules 1.56: the choice this step gives (a fork: one of `of`; a "one more" row: n more), with the forms chosen there. */
+  choose: { of: FigLook[]; n: number; chosen: string[] } | null }
 /** The ladder (figments.json `ladder`) at these Visualization points: every step, open or locked with its requirement,
  * the latest step reached (what is "new") and the next one to open. The door skill is figments.json visualizer.door. */
-export function figmentLadderView(points: number): { door: string; points: number; steps: FigLadderStep[]; latest: FigLadderStep | null; next: FigLadderStep | null } {
-  const steps: FigLadderStep[] = LADDER.map((r) => ({ points: r.points, open: points >= r.points, latest: false, forms: (r.forms || []).map((f: string) => lookOf(FORM[f])),
-    held: r.held ?? null, designs: r.designs ?? null, traits: r.traits ?? null, noSnap: !!r.no_snap, text: r.text || '' }));
+export function figmentLadderView(points: number, c?: Character | null): { door: string; points: number; steps: FigLadderStep[]; latest: FigLadderStep | null; next: FigLadderStep | null } {
+  const took = doorPicksOf(c, FIG_DOOR);
+  const steps: FigLadderStep[] = LADDER.map((r) => {
+    const of: string[] = r.fork ? r.fork.of : r.more ? r.more.of.flatMap((id: string) => FORKS[id]?.of || []) : [];
+    return { points: r.points, open: points >= r.points, latest: false, forms: (r.forms || []).map((f: string) => lookOf(FORM[f])),
+      held: r.held ?? null, designs: r.designs ?? null, traits: r.traits ?? null, noSnap: !!r.no_snap, text: r.text || '',
+      choose: of.length ? { of: of.map((f) => lookOf(FORM[f])), n: r.fork ? 1 : r.more.n ?? 1, chosen: of.filter((f) => took.includes(f)) } : null };
+  });
   const latest = [...steps].reverse().find((s) => s.open) || null; if (latest) latest.latest = true;
   return { door: FIG.visualizer.door, points, steps, latest, next: steps.find((s) => !s.open) || null };
 }
@@ -150,11 +210,11 @@ export function figmentDesignView(c: Character, o: { inFight?: boolean } = {}) {
   const p = c.skills?.visualization || 0, ready = new Set(readyFigments(c).map((d) => d.id)), tmax = traitsMax(p);
   const designs = (c.figments || []).map((d) => ({ id: d.id, name: d.name, form: d.form, look: FORM[d.form] ? lookOf(FORM[d.form]) : null,
     traits: (d.traits || []).map((t) => ({ id: t, name: FIG_TRAIT[t]?.name || t })), charge: figmentCharge(d.form, d.traits || []), why: designWhy(c, d), ready: ready.has(d.id) }));
-  const open = formsOpen(p);
+  const open = formsOf(c);
   return {
     points: p, designsMax: designsMax(c), traitsMax: tmax, traitCharge: FIG.trait_charge as number,
     designs, newWhy: fight || designRoomWhy(c), fightWhy: fight,
-    forms: (FIG.forms as any[]).map((f) => ({ ...lookOf(f), open: open.includes(f.id), why: open.includes(f.id) ? null : f.name + ' needs Visualization ' + f.opens.min + '.' })),
+    forms: (FIG.forms as any[]).map((f) => ({ ...lookOf(f), open: open.includes(f.id), why: open.includes(f.id) ? null : formWhy(c, f.id) })),
     traits: (FIG.traits as any[]).map((t) => ({ id: t.id, name: t.name, text: t.text || '', charge: FIG.trait_charge + (t.charge || 0) })),
     /** Why this draft can't be kept now (null: it can): the reducer's own checks. */
     draftWhy: (d: FigmentDesign) => fight || designWhy(c, d) || designRoomWhy(c, d.id),
@@ -211,7 +271,7 @@ export function makeFigment(cb: Combat, rng: Rng, owner: Unit, form: string, tra
   const u = spawnOwned(cb, owner, form, at, rng, { block, spent: { vcharge: o.charge } }); if (typeof u === 'string') return u;
   setUp(owner, u, form, traits, o.charge);
   if (o.free) { (u as any).owned.free = true; (u as any).owned.left = o.free.rounds; }
-  if (block.lure) lure(cb, rng, owner, u, o.mirrorOf || owner);
+  if (block.lure) lure(cb, rng, owner, u, o.mirrorOf || owner, u.pos, u.name);
   sightCheck(cb);
   return u;
 }
@@ -227,16 +287,17 @@ export function unravel(cb: Combat, u: Unit, why: string): void {
  * (no double_save: Vermin, Minions) or makes a Brain save against 12 + the owner's Visualization strength, the tier's
  * double_save added to its save (and found_out_add once it found a Double out this fight). A fooled enemy sees `as`
  * (the owner, or the Mirror's pick) where the Double stands. */
-function lure(cb: Combat, rng: Rng, owner: Unit, body: Unit, as: Unit) {
-  const img: FalseImage = { id: 'img' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), owner: as.id, pos: body.pos, side: owner.side, round: cb.round, fooled: [], body: body.id };
+function lure(cb: Combat, rng: Rng, owner: Unit, body: Unit | null, as: Unit, at: string, label: string) {
+  // body null: a false Figment (Glimmer, rules 1.56): light alone, no unit; struck, it scatters (illusion.ts)
+  const img: FalseImage = { id: 'img' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), owner: as.id, pos: at, side: owner.side, round: cb.round, fooled: [], ...(body ? { body: body.id } : {}) };
   const lines: string[] = [];
   for (const e of cb.units) {
-    if (e.side === owner.side || !alive(e) || !unitSees(cb, e, body.pos)) continue;
+    if (e.side === owner.side || !alive(e) || !unitSees(cb, e, at)) continue;
     const ok = doubleSave(cb, rng, owner, e); if (!ok.fooled) { lines.push(e.name + ' sees through it (' + ok.line + ')'); continue; }
     img.fooled.push(e.id); lines.push(e.name + ' is fooled' + (ok.line ? ' (' + ok.line + ')' : ''));
   }
   addImage(cb, img);
-  if (lines.length) say(cb, body.name + ': ' + lines.join(' · ') + '.');
+  if (lines.length) say(cb, label + ': ' + lines.join(' · ') + '.');
 }
 /** Does this enemy take the Double for real (its tier's double_save; a found-out enemy saves better)? */
 function doubleSave(cb: Combat, rng: Rng, owner: Unit, e: Unit): { fooled: boolean; line: string } {
@@ -297,6 +358,24 @@ register({
   brief: () => null,
 });
 
+// Rules 1.56 (Figments 2.0): Glimmer, every Visualization user's false Figment: no charge, the one order site; the
+// image lures by the Double's doctrine (lure above) and fades at its owner's turn start two rounds on (illusion.ts).
+register({
+  id: 'glimmer', kind: 'verb',
+  actions: [{
+    id: 'glimmer', label: 'Glimmer', scope: ['combat'], target: 'tile', ap: (h) => price({ cb: h.cb, u: h.u }, 'figment_order').ap,
+    available: (h) => visFocusWhy(h.u) || true,
+    preview: (h, args) => { const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile), no = pictureTileWhy(cb, u, k); return no ? { ok: false, why: no } : { tiles: [k!], lines: ['A false image of ' + u.name + ' at ' + refOf(k!) + '.'] }; },
+    run: (h, args, rng) => {
+      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile), no = pictureTileWhy(cb, u, k); if (no) return no;
+      say(cb, u.name + ' glimmers a false image of ' + u.name + ' at ' + refOf(k!) + '.');
+      lure(cb, rng as Rng, u, null, u, k!, 'The Glimmer');
+      return null;
+    },
+  }],
+  brief: () => null,
+});
+
 // ---------------------------------------------------------------------------------------------- holding
 // Acting through a Figment: the Visualizer in hand, not Silenced, the Figment within projection range (Let go: always).
 addOwnedGate((cb, owner, u, verb) => {
@@ -313,7 +392,10 @@ onHook('turn_start_pre', (ctx: any, cb: Combat) => {
   if ((u as any).figSnap) { ctx.penalties.push({ n: FIG.let_go.snap_ap, why: 'a Figment snapped' }); delete (u as any).figSnap; }
 });
 onHook('turn_start', (ctx: any, cb: Combat) => {
-  const u: Unit = ctx.u; if (!u || !cb.ties?.length) return;
+  const u: Unit = ctx.u; if (!u) return;
+  // a Glimmer (an image with no body) fades at its owner's turn start two rounds on (illusion.ts imageTurnStart)
+  if (cb.images?.length) { const img = imageOfOwner(cb, u.id); if (img && !img.body) imageTurnStart(cb, u); }
+  if (!cb.ties?.length) return;
   // a Figment with a lifetime (the Rigger's Double) fades at its owner's turn start in its last round
   // (and a Scrap Turret after its rounds: any owned unit with a lifetime; an auto unit has acted first, owned.ts)
   for (const f of ownedBy(cb, u)) { const rec = (f as any).owned; if (rec?.left == null || !cb.units.includes(f)) continue; rec.left -= 1; if (rec.left > 0) continue; if (isFigment(f)) unravel(cb, f, 'it fades'); else { unmakeOwned(cb, f, { quiet: true }); say(cb, f.name + ' falls apart.'); } }

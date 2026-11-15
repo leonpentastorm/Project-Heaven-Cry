@@ -60,7 +60,7 @@
 "perk/outclassed@II/blow-kill": "Tester 1 banks 3 AP for next turn (Outclassed). / Tester 1 banks 1 AP for next turn (Outclassed: the kill). / Tester 1 strikes Soldier: d20 10 +4 = 14 vs 13 · hit, 22 damage · down for good",
 "perk/outclassed@II/shot-kill": "Tester 1 banks 3 AP for next turn (Outclassed). / Tester 1 banks 1 AP for next turn (Outclassed: the kill). / Tester 1 fires at Far soldier: d20 10 +4 = 14 vs 13 · hit, 62 damage · down for good",
 "perk/outclassed@II/shot-primed": "Tester 1 banks 3 AP for next turn (Outclassed). / Tester 1 banks 1 AP for next turn (Outclassed: the kill). / Tester 1 fires at Far soldier: d20 10 +5 = 15 vs 13 · hit, 62 damage · down for good",
-"perk/overhaul@mastered/prices2": "PRICES clear_jam2 crystallise3 escape2 extinguish1 field_repair1 parley2 pray? recover2 reload_both3 set_explosive? stim_throw1 throw2 triage? ward? whisper? picture2 attempt1 door1 feed? pull_free? s",
+"perk/overhaul@mastered/prices2": "PRICES clear_jam2 crystallise3 escape2 extinguish1 field_repair1 parley2 pray? recover2 reload_both3 set_explosive? stim_throw1 throw2 triage? ward? whisper? picture2 figment_order1 attempt1 door1 fee",
 "perk/overhaul@mastered/stats": "STATS never_jams:1x1 field_repair_amount:0x2 never_jams:1x1",
 "perk/parallel_thought@I/glyph-costs": "GLYPHS fire:0.1/1/1 shock:0.1/1/1 freeze:0.1/1/1 stone:0.1/1/1 acid:0.1/1/1 spark:0.1/1/1 gale:0.1/1/1 blind:0.1/1/1 slow:0.1/1/1 muddle:0.1/2/1",
 "perk/parallel_thought@II/glyph-costs": "GLYPHS fire:0.1/1/0 shock:0.1/1/0 freeze:0.1/1/0 stone:0.1/1/0 acid:0.1/1/0 spark:0.1/1/0 gale:0.1/1/0 blind:0.1/1/0 slow:0.1/1/0 muddle:0.1/2/0",

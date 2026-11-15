@@ -3148,6 +3148,46 @@ if _vj is not None:
                     if _row[_f["field"]] < 0: errors.append(f"{_w}: {_k['id']} takes {_f['field']} under 0")
         if isinstance(_vcap, (int, float)) and _worth > _vcap + 1e-9: errors.append(f"{_w}: worth {round(_worth, 2)} is over worth_cap {_vcap}")
 
+# Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1 (spec item 4246): tending.json `bond` is what the Bond card shows
+# (screenViews.ts bondView); each number is a copy of an effect value of tend.threads or tend.bond, and those items'
+# `numbers` (their texts read them) are copies too. Every copy must equal the value the engine runs.
+def _tend_bond_check():
+    T = data.get("tending") if isinstance(data.get("tending"), dict) else None
+    if not T: return
+    B, its = T.get("bond") or {}, {x.get("id"): x for x in T.get("items") or []}
+    th, bd = its.get("tend.threads") or {}, its.get("tend.bond") or {}
+    def one(effs, pred):
+        xs = [e for e in effs or [] if isinstance(e, dict) and pred(e)]
+        return xs[0] if xs else {}
+    the = th.get("effects") or []
+    src = {"share": one(the, lambda e: e.get("op") == "redirect").get("share"),
+           "hit": one(the, lambda e: e.get("op") == "roll_mod" and e.get("when") == "to_hit").get("value"),
+           "echo": next((p.get("value") for p in ((th.get("amounts") or {}).get("echo") or {}).get("per") or [] if p.get("of") == "event:amount"), None),
+           "boss_rounds": one(the, lambda e: e.get("op") == "cond_rounds").get("max")}
+    dm = one(the, lambda e: e.get("op") == "damage_mult" and isinstance(e.get("value"), dict)).get("value") or {}
+    src["per_bond"] = next((p.get("value") for p in dm.get("per") or [] if p.get("of") == "ties:bond"), None)
+    thr = [e.get("value") for e in the if e.get("op") == "mend_mult"]
+    if len(set(map(str, thr))) > 1: errors.append(f"tending.json tend.threads: the through multipliers differ ({thr})")
+    src["through"] = thr[0] if thr else None
+    dn = one(the, lambda e: e.get("op") == "resource" and e.get("when") == "downed").get("value")
+    src["down_mp"] = -dn if isinstance(dn, (int, float)) else None
+    for tier, k in (("elite", "save_elite"), ("boss", "save_boss")):
+        src[k] = one(the, lambda e, t=tier: e.get("op") == "roll_mod" and e.get("when") == "cond_incoming" and (e.get("if") or {}).get("target_tier") == [t]).get("value")
+    g = one(bd.get("effects"), lambda e: e.get("op") == "grant_action")
+    tl = (g.get("reach") or {}).get("tiles") or {}
+    st = (tl.get("steps") or [{}])[0]
+    src["make_range"], src["far_at"] = tl.get("base"), st.get("at")
+    src["make_range_far"] = (tl.get("base") or 0) + (st.get("value") or 0)
+    src["boss_gap"] = (one(g.get("effects"), lambda e: e.get("op") == "condition" and (e.get("if") or {}).get("target_tier") == ["boss"]).get("limit") or {}).get("cooldown")
+    for k, v in B.items():
+        if k in ("provisional", "about"): continue
+        if k not in src: errors.append(f"tending.json bond.{k}: no effect value is known for it (add it to tools/validate.py _tend_bond_check)"); continue
+        if src[k] != v: errors.append(f"tending.json bond.{k} is {v}, but the effect the engine runs says {src[k]}")
+    for it in (th, bd):
+        for k, v in (it.get("numbers") or {}).items():
+            if k in src and src[k] != v: errors.append(f"tending.json {it.get('id')} numbers.{k} is {v}, but the effect the engine runs says {src[k]}")
+_tend_bond_check()
+
 # The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import text_numbers

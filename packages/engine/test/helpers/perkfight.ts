@@ -20,6 +20,9 @@ export interface CharSpec {
   /** Perks by id: tier ('I' | 'II' | 'mastered' | 'achieved' | 'ultimate'); a list of ids means Tier I (or the perk's own tier). */
   perks?: Record<string, string> | string[];
   traits?: string[];
+  /** Rules 1.56 (Figments 2.0): the Figment forms chosen at the forks (door/pick's record). Not given, a character with
+   * Visualization set here is a pre-forks one (no figRev stamp): the save migration gives it the old ladder's forms. */
+  forms?: string[];
   /** Relics carried (items added at run time with addItems('relic', …); engine foundations 3). */
   relics?: string[];
   classId?: string | null; advancedClass?: string | null;
@@ -42,6 +45,7 @@ export function equipSpec(c: Character, spec: CharSpec) {
   if (spec.traits) c.traits = [...spec.traits];
   if (spec.relics) c.relics = [...spec.relics];
   if (spec.skills) Object.assign(c.skills, spec.skills);
+  if (spec.forms) c.doorPicks = { ...(c.doorPicks || {}), visualization: [...spec.forms] }; else if (spec.skills?.visualization) delete c.figRev;
   if (spec.attrs) Object.assign(c.attrs, spec.attrs);
   if (spec.classId !== undefined) c.classId = spec.classId;
   if (spec.advancedClass !== undefined) c.advancedClass = spec.advancedClass;

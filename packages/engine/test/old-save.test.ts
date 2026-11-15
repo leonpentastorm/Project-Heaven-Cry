@@ -24,6 +24,9 @@
 //   save-0.28.1-modded-gun-mid-fight.json     written by the LIVE 0.28.1 engine (origin/develop = origin/main at
 //       69fbd66f; the script beside it): a fight in its first round, c1 (a Gun Nut) with a service rifle carrying a
 //       scope, a suppressor and a quick-release magazine; its unit's held snapshot has no mod relics.
+//   save-0.28.2-rigger-mid-fight.json     written by the LIVE 0.28.2 engine (origin/develop at fdaddaf5; the script
+//       beside it): a fight in its first round, c1 a Rigger at Visualization 5 with two designs (a Beast, an Eye) and a
+//       Beast and a Wall pictured; no fork stamp (rules 1.56, Figments 2.0).
 //
 // Each is loaded the way the client loads a save (parsed, migrateLoaded) and played on. NEVER regenerate these files:
 // they are what an old save looks like. When the saved shape changes, add a NEW fixture beside them (written by the
@@ -31,6 +34,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { formsOf, pendingDoorPicks, pictureOptions, FIG_REV } from '../src';
 import { migrateLoaded, apply, viewFor, withGame, previewAttack, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf, quiversOf, packOf, legacySpecialId, specialRoundsFor, SPECIAL_REF_CALIBRE, priceOf, sellValue, WEAPON } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
@@ -296,6 +300,28 @@ describe('consolidation 0.29 M5: a 0.28.1 fight saved with a modded gun keeps it
     const u1 = g.combat.units.find((x: any) => x.side === 'pc'), ap1 = u1.ap; expect(u1.ammo).toBeLessThan(u0.ammo);
     g = apply(g, { type: 'combat/reload', unitId: u1.id } as any, 'host');
     expect(ap1 - g.combat.units.find((x: any) => x.side === 'pc').ap).toBe(1);
+    expect(() => viewFor(g, 'host')).not.toThrow();
+  }, 60_000);
+});
+
+// Rules 1.56 (Figments 2.0): save-0.28.2-rigger-mid-fight.json was written by the LIVE 0.28.2 engine (the script beside
+// it). The forks came after it: loaded, the Rigger keeps every form the old ladder gave it (Eye, Wall, Beast, Blade at
+// Visualization 5), each fork it passed counts as taken, its designs stay ready, and its pictured Figments take orders.
+describe('rules 1.56: a 0.28.2 Rigger keeps its forms through the forks, mid-fight', () => {
+  const NAME = 'save-0.28.2-rigger-mid-fight';
+  it('loaded and played on: every old form open, no fork pending, the designs ready, the new orders on the old Figments', () => {
+    const old = JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + NAME + '.json', import.meta.url)), 'utf8'));
+    expect(old.characters.c1.figRev).toBeUndefined(); expect(old.characters.c1.doorPicks).toBeUndefined();
+    const g0 = load(NAME);
+    let g = apply(g0, { type: 'player/online', id: 'host', online: true } as any, 'host');
+    const c = g.characters.c1; expect(c.figRev).toBe(FIG_REV);
+    for (const f of ['double', 'snare', 'hand', 'eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
+    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pictureOptions(c).map((o) => o.id)).toEqual(expect.arrayContaining(['d:hound', 'd:lookout', 'eye', 'wall', 'beast', 'blade']));
+    const pc = g.combat.units.find((u: any) => u.charId === 'c1'), wall = g.combat.units.find((u: any) => u.owned?.kind === 'figment' && u.name === 'Wall');
+    const before = pc.ap;
+    g = apply(g, { type: 'combat/owned', unitId: pc.id, owned: wall.id, verb: 'figment_cash_in' } as any, 'host');
+    expect(g.combat.units.some((u: any) => u.id === wall.id)).toBe(false); expect(before - g.combat.units.find((u: any) => u.id === pc.id).ap).toBe(1);
     expect(() => viewFor(g, 'host')).not.toThrow();
   }, 60_000);
 });

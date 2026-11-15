@@ -19,6 +19,7 @@ import {
   stepsEarned, stepsTaken, movement, overweightKg,
 } from '../../src';
 import { addStudy, learnStudied, thresholdN, growthOf } from '../../src/sigilgrowth';
+import { allPendingDoorPicks } from '../../src/doorpicks';
 import { addDrill, takePick, ensurePhys } from '../../src/physical/data';
 
 export const LEVELS = [1, 3, 6, 9, 12, 20];
@@ -94,6 +95,7 @@ export const BUILDS: BuildDef[] = [
   // Classes 3.0 step 8 (rules 1.34; figments-spec.md section 7): Figments. The Visualizer in the off hand (the service
   // pistol in the main), three spare cores. The door user is the same sheet with no class (figments-measure.ts).
   { id: 'rigger', label: 'Rigger (Figments)', way: 'j', kit: 'soldier', main: 'visualization', classId: 'trickster', policy: 'plain', weapon: 'service_pistol', offHand: 'visualizer', armour: 2,
+    forms: ['wall', 'beast', 'blade', 'eye', 'ward', 'husk', 'sentinel'], // rules 1.56: the forks, in the order its policy wants them (the old ladder's Wall and Beast first)
     weights: W({ visualization: NORMAL_SHARE, proficiency: 0.16, dexterity: 0.14, charisma: 0.12, athletics: 0.12, pain_threshold: 0.10 }),
     allin: ['visualization', 'proficiency', 'dexterity', 'charisma', 'athletics', 'pain_threshold'], spare: ['endurance', 'agility', 'perception'],
     perks: 'none', techniques: 'default',
@@ -187,11 +189,20 @@ export function spendLevel(def: BuildDef, variant: Variant, C: () => any, act: (
     act({ type: 'levelup/class', classId: pick });
   }
   takePerks(def, C, act);
+  takeForks(def, C, act);
   return notWanted;
 }
 /** Rules 1.56 (Balance 2.0; Leon, 15 Nov 2026): perk steps sit ON TOP of a class's damage line. The balance contract
  * measures the line, so it builds with no perk steps (`STEPS.perks = false`); every other measure takes them. */
 export const STEPS = { perks: true };
+/** Rules 1.56: a door's open choices (the Figment forks, door/pick): the build's preferred option first, else the first. */
+export function takeForks(def: BuildDef, C: () => any, act: (a: any) => void) {
+  for (let guard = 0; guard < 10; guard++) {
+    const open = allPendingDoorPicks(C()); if (!open.length) break;
+    const p = open[0], pref = (((def as any).forms || []) as string[]).find((f) => p.options.some((o) => o.id === f)) || p.options[0].id;
+    act({ type: 'door/pick', door: p.door, option: pref });
+  }
+}
 /** The perk steps Mastery has earned: the build's preferred perk first, else the first one offered. */
 export function takePerks(def: BuildDef, C: () => any, act: (a: any) => void) {
   if (def.perks === 'none' || !STEPS.perks) return;
@@ -223,7 +234,7 @@ export function buildCharacter(id: string, variant: Variant, level: number): Bui
     if (C().level !== lv) throw new Error(k + ': level ' + lv + ' was not reached');
     if (spendLevel(def, variant, C, act, lv, notes)) classWanted = false;
   }
-  takePerks(def, C, act);
+  takePerks(def, C, act); takeForks(def, C, act);
   // ---------- what play earns: gear, drill, words, Devotion (assumptions; the engine's own functions and gates) ----------
   const c = C(), was = bindGame(g);
   try {

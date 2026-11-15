@@ -16,7 +16,7 @@
 //               the nearest foe and a Wall (else a Double) when the charge allows, swap a core when the charge is short,
 //               strike with the Figment (it walks to the foe first), then the pistol with the AP left.
 // Echo stays unplayed by every policy (survival-spec 13.9.6).
-import { SIGIL, previewAttack, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, ladderAt, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit } from '../../src';
+import { SIGIL, previewAttack, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit } from '../../src';
 import { POLICIES, sigil, sigilAfter, outburst, plain, gunner, optimised, type Policy, type Ctx, type Step } from './policies';
 import { obHeal } from './heal-measure';
 
@@ -115,7 +115,7 @@ export const RIG = { pictures: 0 };
 /** The Rigger plays its door (spec 13.6 (1)). */
 export const rigger: Policy = (x) => {
   const u = x.u, cb = x.cb, c = x.c; if (!x.foes.length) return null;
-  const vis = c?.skills?.visualization || 0, opened = ladderAt(vis).forms || [];
+  const opened = formsOf(c); // rules 1.56: the forms the ladder gave and the forks chose
   const near = [...x.foes].sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos))[0];
   if (u.mg?.vcarry) {
     const want = [opened.includes('beast') ? 'beast' : opened.includes('blade') ? 'blade' : 'double', opened.includes('wall') ? 'wall' : 'double'];

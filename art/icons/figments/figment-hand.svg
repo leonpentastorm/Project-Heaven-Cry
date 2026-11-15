@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Hand: an open gauntlet palm up, a capsule laid across it -->
+  <path d="M8 40 L18 40 C22 40 24 42 28 44 L46 44 C50 44 50 50 46 50 L32 50 M18 40 L18 58 L8 58 M18 54 L30 56 L52 48 C56 46 58 50 55 53 L32 60 L18 58"/>
+  <path d="M26 22 L44 14 C48 12 52 20 48 22 L30 30 C26 32 22 24 26 22 Z"/>
+  <path d="M35 18 L39 26"/>
+  <path d="M20 8 L22 13 M30 6 L30 11 M40 4 L38 9"/>
+</svg>

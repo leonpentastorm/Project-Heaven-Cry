@@ -8,7 +8,8 @@ import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
   packOf, magsOf, roundsOf, loadAll, specialRoundsFor, takeSpecialRounds, plainRounds, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, modsOn, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
-import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT } from './figments';
+import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT, migrateCharacterFigments } from './figments';
+import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
@@ -400,6 +401,8 @@ export type Action =
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/pick'; charId: string; module: string; via?: string } | { type: 'magic/forget'; charId: string; designId: string }
   /** Rules 1.34: keep (or with `drop`, forget) a Figment design out of a fight (figments.ts setFigmentDesign) */
   | { type: 'figments/design'; charId: string; design?: FigmentDesign; drop?: string }
+  /** Rules 1.56 (doorpicks.ts): take one of a door's open choices (Visualization's forks), out of a fight; kept for good */
+  | { type: 'door/pick'; charId: string; door: string; option: string }
   // Rules 1.10 (Sigil 1.5): learn a word with a study pick (or the Mastered free word, over the cap); read a glyph or a trace (copying).
   | { type: 'sigil/learn'; charId: string; word: string; free?: boolean } | { type: 'combat/read'; unitId: string; tile: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
@@ -561,7 +564,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
-    const cls0 = c.classId, mpRev0 = c.mpRev, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c), ...migrateCharacterMp(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
+    const cls0 = c.classId, mpRev0 = c.mpRev, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c), ...migrateCharacterMp(c), ...migrateCharacterFigments(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     // rules 1.24 (item 1348): Max MP left Virtue; a fight saved before it holds the old pool in its units: the same share of the new one
     // rules 1.36 (the level scale): HP in the new units, the same share of the bar; a fight saved before it moves with it
     if (migrateCharacterHp(c)) migrateCombatHp(g);
@@ -978,6 +981,14 @@ function reduce(g: GameState, a: Action, by: string) {
       if (a.drop) { dropFigmentDesign(c!, a.drop); return; }
       if (!a.design) fail('Name the design.');
       const why = setFigmentDesign(c!, { ...a.design!, id: a.design!.id || 'f' + (g.seq += 1) }); if (why) fail(why);
+      return;
+    }
+    case 'door/pick': {
+      // Rules 1.56: one of a door's choices (doorpicks.ts: a list from the door's data, the pick kept on the character)
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat' && g.combat && !g.combat.over) fail('Choose after the fight.');
+      const why = takeDoorPick(c!, a.door, a.option); if (why) fail(why);
+      push(g, { kind: 'system', text: c!.name + ' chooses the ' + (doorOption(a.door, a.option)?.label || a.option) + '.' });
       return;
     }
     case 'sigil/learn': {

@@ -12,11 +12,13 @@
 //             after armour, x the Bonds held), in percent of the normal-share rifle-turn (yardOf): the Mender solo
 //             (Bonds on three Soldiers), the Mender in a squad of four (three allies and one enemy), the door user
 //   strike    the offence turn with the Ledger full (0.7 x its cap on the first hit)
+//   snap      rules 1.56 (Bonds 2.0 slice 1): one Snap (1 AP) on a Bonded Soldier, in percent of the rifle-turn (with
+//             and without the Ledger), and one Snap into a Bonded ally, in percent of the reference HP
 // The sheet (bonds-spec.md section 7): Insight and Empathy 7/7, 8/8, 10/10, 10/10 at levels 1 / 5 / 10 / 20, Dexterity
 // 0 / 1 / 2 / 4, a service pistol, the Attuner in the off hand.
 import { describe, it, expect } from 'vitest';
 import { yardOf } from './refit-measure';
-import { healTurn, shotTurn } from './tending-measure';
+import { healTurn, shotTurn, snapHit, snapHeal } from './tending-measure';
 
 const ON = !!process.env.TEND_MEASURE, N = Math.max(1, Number(process.env.TEND_N) || 8);
 const LEVELS = [1, 5, 10, 20];
@@ -31,6 +33,11 @@ describe('rules 1.33: the Tending and Mender lines', () => {
       put('offence: Mender squad (4 Bonds)', l, Math.round((shotTurn(l, true, true, 'squad') / yard) * 100));
       put('offence: door all in (solo)', l, Math.round((shotTurn(l, true, false, 'solo') / yard) * 100));
       put('strike: Mender solo, Ledger full', l, Math.round((shotTurn(l, true, true, 'solo', true) / yard) * 100));
+      // rules 1.56, Bonds 2.0 slice 1: one Snap (1 AP), in percent of the rifle-turn (6 AP) and of the reference HP
+      put('snap: Mender solo, one Snap (1 AP)', l, Math.round((snapHit(l, true, true) / yard) * 100));
+      put('snap: Mender solo, one Snap, Ledger full', l, Math.round((snapHit(l, true, true, true) / yard) * 100));
+      put('snap: door all in, one Snap (1 AP)', l, Math.round((snapHit(l, true, false) / yard) * 100));
+      put('snap heal: Mender, one Snap into an ally (1 AP)', l, snapHeal(l, true, true));
       put('rifle-turn (yard)', l, Math.round(yard * 10) / 10);
     }
     let md = '| Line | L1 | L5 | L10 | L20 | Mean |\n|---|---|---|---|---|---|\n';

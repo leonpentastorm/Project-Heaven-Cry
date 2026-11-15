@@ -1330,6 +1330,27 @@
       "source": "rules 1.33 section 2.11"
     },
     {
+      "id": "reeled",
+      "name": "Reeled",
+      "kind": "state",
+      "family": "body",
+      "save": true,
+      "engine": "table",
+      "text": "Caught on a Bond's pull: the Bonder draws you toward them. It ends as the pull is made.",
+      "effects": [],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "the pull it answers is made",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), Bonds 2.0 slice 1 item 1 (Tug: an enemy's Body save against the Bonder's Empathy)"
+    },
+    {
       "id": "settled",
       "name": "Settled",
       "label": "Settled (+2 saves)",

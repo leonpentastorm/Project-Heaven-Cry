@@ -22,6 +22,8 @@ export const COST_SITE_IDS = [
   // Classes 3.0 step 8 (rules 1.34): Picture (figments.ts). A Figment's own verbs are priced at their data site
   // (owned.ts runDataVerb): the `cost` hook hears them by name (`action`), no `ap_cost:` stat asks for them.
   'picture',
+  // rules 1.56 (Figments 2.0, P4): the one shared site of every non-attack Figment order (owned.ts runDataVerb) and Glimmer
+  'figment_order',
   // engine foundations 2: every verb priced by price() is a site (review 1, F3: these priced a literal, so no item could reach them)
   'attempt', 'brace', 'door', 'feed', 'load', 'overwatch', 'pickup', 'prone', 'pull_free', 'scuff', 'search', 'song', 'steady', 'syphon',
 ] as const;

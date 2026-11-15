@@ -40,9 +40,9 @@ export function figLevelUp(skillId, p) {
   const just = L.latest && L.latest.points === p ? L.latest : null, nx = L.next;
   const look = (st, ink) => st.forms.map((f) => ({ key: f.id, name: f.name, icon: figmentIconUri(f.icon, ink), title: f.name + ': ' + f.text }));
   if (!just && !nx) return { has: false, forms: [] };
-  const st = just || nx;
+  const st = just || nx, shown = [...st.forms, ...(st.choose ? st.choose.of : [])]; // rules 1.56: a fork's forms too
   return { has: true, state: just ? 'new' : 'next', head: just ? 'NEW · FIGMENTS AT VISUALIZATION ' + p + (st.forms.length ? ': ' + st.forms.map((f) => f.name).join(', ') : '') : 'LOCKED · FIGMENTS AT VISUALIZATION ' + nx.points,
-    headInk: just ? '#FFFFFF' : '#A3AEC2', forms: look(st, just ? FIG_LINE : '#7F8BA1'), hasForms: st.forms.length > 0, text: st.text,
+    headInk: just ? '#FFFFFF' : '#A3AEC2', forms: look({ forms: shown }, just ? FIG_LINE : '#7F8BA1'), hasForms: shown.length > 0, text: st.text,
     hasNext: !!(just && nx), next: just && nx ? 'Next, at Visualization ' + nx.points + ': ' + nx.text : '',
     style: 'display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; ' + (just ? 'border: 1px solid ' + FIG_LINE + '; background: rgba(83, 148, 172, 0.18)' : 'border: 1px dashed #2E3A50') };
 }
