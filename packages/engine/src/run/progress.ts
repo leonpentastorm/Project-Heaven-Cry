@@ -190,7 +190,8 @@ export function lastingFor(c: Character): string[] {
   }
   return out;
 }
-function forgeStock(g: GameState, rng: ReturnType<typeof rngFor>): RunStock[] {
+/** The Forge's stock (rules 1.46): what the living party lacks first (lastingFor), then any mod or armour, FORGE_SLOTS in all, at priceOf. */
+export function forgeStock(g: GameState, rng: ReturnType<typeof rngFor>): RunStock[] {
   const chars = Object.values(g.characters).filter((c) => !c.dead);
   const want = [...new Set(chars.flatMap((c) => lastingFor(c)))];
   const archers = chars.some((c) => quiversOf(c).length); // rules 1.53: enchantments are stocked for a party that carries quivers

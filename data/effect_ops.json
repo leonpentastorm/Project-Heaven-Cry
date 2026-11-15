@@ -4784,7 +4784,7 @@
       },
       "self_holds": {
         "arg": "hold",
-        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}",
+        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; holds also reads door: any (any focus), which only recipes use: it is not a value here",
         "values": [
           "evoker",
           "emanator",

@@ -548,6 +548,7 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
 /** The starting kits from the creation screen (the campaign's four; rules 1.51 added `rigger` and `mender`): what's held,
  * worn and packed (spec: Reloading, Item weights). */
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
+/** A pack line of loose rounds of a calibre (the one shape of a rounds line). */
 export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
 /** Rules 1.54 (survival-spec 14.2 item 6): the kind of pack line an item makes, the ONE rule for every place that puts
  * an item in a pack (a loadout, a kit, loot, a purchase, stowing, a trait's start item), so the same item always makes
@@ -1337,6 +1338,7 @@ export function fitMod(c: Character, idx: number): string | null {
   mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
   c.weaponState = { ...(c.weaponState || {}), mods }; c.pack = pack; return null;
 }
+/** Whether a gear's fitted mod list holds this mod id. */
 export const hasMod = (mods: string[] | undefined, id: string) => !!mods && mods.includes(id);
 
 // ---------- quivers (rules 1.53): graded gear, two carried, one worn ----------
@@ -1431,6 +1433,7 @@ export function fitQuiverMod(c: Character, idx: number, i: number): string | nul
   c.pack = pack; setQuivers(c, qs.map((x, k) => (k === i ? { ...x, mods } : x)));
   return null;
 }
+/** A weapon's magazine size with its fitted mods (null: it has no magazine). */
 export const magazineSize = (weaponId: string, mods?: string[]) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : hasMod(mods, 'mod_extended_mag') ? Math.floor(m * 1.5) : m; };
 
 // ---------- class resources and advanced classes (spec: Classes; rules 1.3 shared subsystems) ----------

@@ -27,6 +27,7 @@ export const isPile = (o: MapObject) => o.kind === 'pile';
 export const isCache = (o: MapObject) => !isPile(o) && (o.kind === 'cache' || (o.items != null && !!o.items.length));
 /** One pile per tile, so the tile names it (item 671). */
 export const pileId = (tile: string) => 'pile-' + tile.replace(',', '-');
+/** The pile on a tile, if any (one pile a tile, rules 1.9). */
 export const pileAt = (objs: MapObject[], tile: string) => objs.find((o) => isPile(o) && o.pos === tile);
 
 // ---------- labels ----------

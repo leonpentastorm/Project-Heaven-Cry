@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 490 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 650 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -120,7 +120,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `target_in_zone` | zone | target stands in a zone of this kind (a kind, or {kind, owner: self, side or any}) | `sanctuary` (classes.json) |
 | `actor_tied` | tie | actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it) | none yet |
 | `target_tied` | tie | target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it) | `take_the_weight` (classes.json) |
-| `self_holds` | hold | the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id} | `ledger` (classes.json) |
+| `self_holds` | hold | the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; holds also reads door: any (any focus), which only recipes use: it is not a value here | `ledger` (classes.json) |
 | `self_lacks_gear` | hold | the holder does not have it (as self_holds) | none yet |
 | `with_this` | bool | the event is (or is not) made with the gear instance that carries this item as its named property (rules 1.43: a Relic's property): the instance in a hand, and a weapon's event made with that hand's weapon, a door's event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door's focus | `prop.keen` (survival.json) |
 | `self_skill` | skill | the holder has at least these points in each skill named ({empathy: 7}: a door's ladder) | `camaraderie` (skills.json) |
@@ -1184,6 +1184,206 @@ Families: `body`, `brain`, `heart`.
 | `ROUND_PRICE` | `ROUND_PRICE: Record<string, number>` | Credits a round of each calibre costs (Core Rules, Ammo and calibres; `rules.json weapons_rules.calibres[].price_credits`). |
 | `emptyMagPrice` | `emptyMagPrice(weaponId: string): number \| null` | An empty magazine's price for a gun (rules 1.42; `weapons_rules.magazine_prices`: by reload unit, then category), or null for a gun loaded round by round. |
 | `priceOf` | `priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = []): number \| null` | What a weapon or an item costs at a rarity (its `price_credits` x `rules.json rarity.<r>.price`), with its fitted mods at their own price; or null when it has no price (a plot item, a natural weapon, `stock: f… |
+
+#### The pack, piles and loot lines (rules 1.9, 1.54): the one take, add, grant and line kind (`containers.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `PILE` | `PILE: { max_entries: number; narrator_entries_per_turn: number; narrator_items_per_pile: number; rounds_max: number; route_slack_tiles: number; tactical_reload_extra_ap:…` | The pile limits (PROVISIONAL, spec 14 items 671–683). |
+| `PICKUP_AP` | `PICKUP_AP: number` | Picking up costs this much AP on every map (item 674). |
+| `LOOT_QTY_MAX` | `LOOT_QTY_MAX: number` | Rules 1.54 item 8 (Core Rules item 4111): the most of one thing a loot entry gives (`loot_tables.json qty_max`; a weapon at most 3 of it, rounds `PILE.rounds_max`). |
+| `isPile` | `isPile(o: MapObject)` | ---------- what a container is ---------- |
+| `isCache` | `isCache(o: MapObject)` | A closed container (rules 1.7): the cache kind, or anything else the Narrator gave items (never a pile). |
+| `pileId` | `pileId(tile: string)` | One pile per tile, so the tile names it (item 671). |
+| `pileAt` | `pileAt(objs: MapObject[], tile: string)` | The pile on a tile, if any (one pile a tile, rules 1.9). |
+| `calName` | `calName(cal: string)` | A calibre's name as loose rounds read: ".32 Decrkm", "Rifle rounds", "Shell" (a name that is only a gun's kind gets "rounds"; review fix: "30 × Rifle"). |
+| `itemLabel` | `itemLabel(it: PackItem): string` | One line for a pack item on the ground: "Rifle magazine 7/24", "38 × .32 Decrkm", "Service pistol (fine)". |
+| `stackable` | `stackable(it: PackItem)` | Plain things merge their qty (item 673): no magazine, no rarity above standard, no wear or mods, and a weapon only when it is thrown (grenades stack). |
+| `magItem` | `magItem(weapon: string, rounds: number, type: string \| null = null): PackItem` | One magazine as a pack item (its rounds and type). |
+| `packAdd` | `packAdd(pack: PackItem[], it0: PackItem): PackItem[]` | Add one thing to a pack (the pack array is changed in place): magazines join that weapon's spares, rounds their calibre's stack, plain things their stack; everything else is its own entry. |
+| `packTake` | `packTake(pack: PackItem[], id: string, n: number): number` | Rules 1.54 (survival-spec 14.2 item 1): take `n` of an id (an item id, or `rounds:<calibre>` for plain rounds) out of a pack across its stacks, the first stack first (the pack array is changed in place; an emp… |
+| `dropOnTile` | `dropOnTile(objs: MapObject[], tile: string, list: PackItem[], o: { hidden?: boolean; keepHidden?: boolean } = {}): { pile: MapObject; lost: string[] }` | Drop things onto a tile: into its pile (made when there is none). |
+| `selectEntries` | `selectEntries(p: MapObject, take?: (string \| number)[] \| null): CacheItem[]` | The entries a pick-up names: entry keys or indices; nothing named means everything. |
+| `takeEntries` | `takeEntries(objs: MapObject[], p: MapObject, sel: CacheItem[])` | Take these entries out of the pile; an empty pile leaves the map (the list is changed in place). |
+| `entryPack` | `entryPack(e: CacheItem): PackItem[]` | An entry as a pack item (a pile's own entries are exact; a loot-shaped one is converted). |
+| `pileEntries` | `pileEntries(o: MapObject): { key: string; label: string; item: string; qty: number; kind: string }[]` | What a player sees of a pile: its entries, one line each (key for the pick-up checklist). |
+| `intoCounts` | `intoCounts(c: Character, it: PackItem): boolean` | Things the character keeps as counts, not pack entries (rules 1.9 review fix): a stim injector joins c.stims (what combat/stim spends) and an Essence of Experience joins c.essence. |
+| `lootToPack` | `lootToPack(l: { item?: string; qty?: number; rarity?: string; name?: string; text?: string; note?: string }): PackItem[]` | One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3), an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an… |
+
+#### Making: recipes and the make action (rules 1.54) (`recipes.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `RecipeLine` | `interface RecipeLine { item, n }` | One line of a recipe: an id (an item, or `rounds:<calibre>` among the gives) and how many a making takes or gives. |
+| `Recipe` | `interface Recipe { id, name, needs, tool, does, gives, where, text }` | A recipe (`data/recipes.json` items): what it needs, the tool, what it gives, where it is made, the words after the tool in its refusal (`does`). |
+| `RECIPES` | `RECIPES: Recipe[]` | Every recipe, in the data's order. |
+| `MakeAction` | `interface MakeAction { type, charId, recipe, times }` | gear/make (rules 1.54 item 5): make `times` of a recipe for a character. |
+| `makeProblem` | `makeProblem(g: GameState, by: string, a: MakeAction): string \| null` | Why `by` can't make this (rules 1.54 item 5), in words naming the character, or null. |
+| `makeNow` | `makeNow(g: GameState, by: string, a: MakeAction): { ok: string } \| { no: string }` | Make it (rules 1.54 item 5): the needs x times out of the pack, the gives x times into it. |
+| `MakeRowV` | `interface MakeRowV { recipe, name, needs, gives, tool, most, why, action }` | One recipe as the sheet's Make group draws it (rules 1.54, survival-spec 14.7): what it needs (with what the character has), what it gives, how many times it can be made now (`most`), and the engine's reason w… |
+| `MakeViewV` | `interface MakeViewV { charId, name, shown, rows }` | The Make group for one character: shown when it carries a recipe's tool and no fight is on (null: nobody to make for, or at the camp, where the GEAR tab is read-only). |
+| `makeView` | `makeView(g: GameState, me: string, charId?: string \| null): MakeViewV \| null` | The Make group's view (rules 1.54) for player `me`'s character (or `charId`). |
+
+#### The pack, holds and gear of a character (`character.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `isGunId` | `isGunId(id: string \| null \| undefined): boolean` | A gun as Gun Nut counts one: a firearm with a magazine (no melee, thrown weapon or bow). |
+| `magsOf` | `magsOf(weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit \|\| 'magazine'): PackItem` | The starting kits from the creation screen (the campaign's four; rules 1.51 added `rigger` and `mender`): what's held, worn and packed (spec: Reloading, Item weights). |
+| `roundsOf` | `roundsOf(calibre: string, n: number): PackItem` | A pack line of loose rounds of a calibre (the one shape of a rounds line). |
+| `packKindOf` | `packKindOf(id: string): PackItem['kind']` | Rules 1.54 (survival-spec 14.2 item 6): the kind of pack line an item makes, the ONE rule for every place that puts an item in a pack (a loadout, a kit, loot, a purchase, stowing, a trait's start item), so the… |
+| `packOf` | `packOf(c: Character): PackItem[]` | The pack, with saves from before magazines were tracked brought up to date. |
+| `FOCUS_IDS` | `FOCUS_IDS: Record<FocusKind, string[]>` | What counts as each focus (rules 1.33, rules 1.38): every item AND every weapon whose `focus.door` is a kind's door (the focus gloves, the mana arms that count as one, the Emanator katana; a faction's focus la… |
+| `inHands` | `inHands(c: Character): string[]` | What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. |
+| `HoldSpec` | `interface HoldSpec { slot, door, item }` | What a holder holds (Classes 3.0 section 6: the predicates self_holds / self_lacks_gear): a door's focus (door: a focus kind, evoker, emanator or attuner, or the door it opens, a skill id: brain_power, will_po… |
+| `FOCUS_DOORS` | `FOCUS_DOORS: string[]` | The doors whose focus `holds` knows: each kind's name and the skill it opens (FOCUS_IDS, FOCUS_DOOR). |
+| `holds` | `holds(c: Character, o: HoldSpec): boolean` | Does this character hold it (see HoldSpec)? |
+| `isFocusId` | `isFocusId(id: string)` | The one focus test: is this id a focus of any kind (an item or a weapon in FOCUS_IDS)? |
+| `setGrade` | `setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: string \| null, o: { /** the durability it is left with, a share of the new full (a worn step) */ durShare…` | Rules 1.43 (survival-spec 4.2 item 10): set the rarity of ONE carried weapon or focus instance (a hand, or a pack line: one of a stack is split off), keeping its mods, name, property and identity (drill is per… |
+| `fitMod` | `fitMod(c: Character, idx: number): string \| null` | Fit a mod from the pack onto the main-hand weapon, if it has that slot free. |
+| `hasMod` | `hasMod(mods: string[] \| undefined, id: string)` | Whether a gear's fitted mod list holds this mod id. |
+| `magazineSize` | `magazineSize(weaponId: string, mods?: string[])` | A weapon's magazine size with its fitted mods (null: it has no magazine). |
+
+#### Gear previews and comparisons (`gearpreview.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `GearInstance` | `interface GearInstance { id, rarity, mods }` | One gear instance: an item id with its grade and fitted mods (a pack entry's or a shop card's). |
+| `PreviewLine` | `interface PreviewLine { key, label, value, num, better }` | One number of a preview: `num` for comparing (null: a word, not a number); `better`: which way is better. |
+| `GearPreview` | `interface GearPreview { id, name, kind, rarity, category, lines, traits, text }` | What a card shows for an instance in this character's hands (all from the engine). |
+| `GearCompare` | `interface GearCompare { held, next, rows, slot }` | The compare panel: the instance against what the character would hold instead (`held`; null when nothing compares). |
+| `gearPreview` | `gearPreview(c: Character, inst: GearInstance): GearPreview` | The numbers a card shows for `inst` in `c`'s hands (rules 1.42, spec item 14): for a weapon, to hit against the reference foe of the character's level, damage per hit, the AP of each mode, magazine, range, tra… |
+| `heldAgainst` | `heldAgainst(c: Character, inst: GearInstance): { inst: GearInstance; slot: string } \| null` | What the instance would replace or sit beside in `c`'s hands (the same hand's weapon, the same worn slot, the focus of the same door), as an instance, and the slot's name; null when nothing compares. |
+| `compareGear` | `compareGear(c: Character, inst: GearInstance): GearCompare` | The compare panel (rules 1.42, spec 8.3): `inst` against what `c` holds in its place, each number on a row with the difference as a word ("better", "worse", "same"); the client draws it with a glyph beside the… |
+| `rarityWord` | `rarityWord(r: Rarity \| null \| undefined): string` | A rarity's word ("Fine"), for a card. |
+| `rarityMarks` | `rarityMarks(r: Rarity \| null \| undefined): number` | How many ornament marks a rarity carries on a card (`rules.json rarity.<r>.marks`). |
+
+#### The Survival shop: the counter, stock, selling and the services shelf (rules 1.46) (`run/shop.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `SHOP_DATA` | `SHOP_DATA: { always: { shelf: string; name: string; ids: { id: string; per: number }[] }[]; max_qty: number; stock: any; restock_price: number }` | The shop's numbers (`survival.json shop`): the counter's shelves, the rolled stock, the restock price. |
+| `SELL_RATE` | `SELL_RATE: number` | The share of an item's price a sale pays (`survival.json sell_rate.rate`, spec rule 27). |
+| `Face` | `interface Face { id, name, role, node, settings, portrait, portrait_pending, fallback, fallback_patron, backdrop, backdrop_pending, backdrop_fallback, bias, price, lines…` | A face of a safe node (spec section 3.4): its name, role, art ids and fallbacks, stock bias and price, and lines. |
+| `FaceLine` | `type FaceLine = 'greet' \| 'bought' \| 'cant_afford' \| 'sold' \| 'sold_to' \| 'gave' \| 'leave'` | The kinds of line a face says (data `lines`). |
+| `TabLine` | `type TabLine = 'stock' \| 'gear' \| 'upgrade' \| 'sell' \| 'give' \| 'fit' \| 'train' \| 'shrine' \| 'trade'` | What a keeper says as a tab of its place opens (data `lines`, by the tab's id; docs/design/ui-screens.md, Writing for the player). |
+| `faceTabLines` | `faceTabLines(f: Face \| undefined, patron?: string \| null): Record<string, string[]>` | A keeper's lines by kind (its tabs' and its purchases'; the client picks one as a tab opens or a thing is bought), with the shrine's votary's own lines over the face's when the shrine's patron is known. |
+| `FACES` | `FACES: Face[]` | Every face (`survival.json faces.items`). |
+| `faceFor` | `faceFor(node: string, setting: string): Face \| undefined` | The face of a node kind on a setting (the shop's keeper of that setting; the armourer, sergeant, medic everywhere). |
+| `ShopPiece` | `interface ShopPiece { key, id, rarity, price, rare, sold }` | One piece of a visit's rolled stock: shared, first buyer takes it (`sold`: the buyer's character id). |
+| `ShopState` | `interface ShopState { node, kind, face, stock, line, said, log }` | A shop (or, later, a Forge) open at the node the party stands on (`g.run.shop`). |
+| `rollStock` | `rollStock(seed: string, node: { id: string; depth: number }, stage: number, face?: Face): ShopPiece[]` | Today's rolled stock at a shop node (rule 25): `weapons` weapons and foci and `items` items within the depth's price band, `rare` pieces in the band x `rare_band` at `rare_rarity`, every rarity capped by the s… |
+| `CounterLine` | `interface CounterLine { key, id, per, shelf, res }` | One line of the counter (always stocked): its key, the id it sells, how many one purchase gives, its shelf. |
+| `counterLines` | `counterLines(chars: Character[]): CounterLine[]` | The counter as it stands for this party (rule 25): every listed shelf, the magazines or rounds of every gun a character carries (shelf `guns`, first), and a restock line for each persistent class resource (she… |
+| `lineGoods` | `lineGoods(id: string, n: number): PackItem[]` | The goods `n` units of a counter id are, as pack entries (rounds, full magazines, weapons one by one, an item's stack): what a purchase puts in the pack (rules 1.42; rules 1.52: the camp's loadout too). |
+| `linePrice` | `linePrice(l: CounterLine): number` | What one purchase of a counter line costs (the price of one unit x `per`; a restock point at `restock_price`). |
+| `shortOf` | `shortOf(c: Character, n: number): string \| null` | "Kade is 240 credits short." or null: the words a card shows when the purse can't pay (credits.ts cantPay). |
+| `restockRoom` | `restockRoom(c: Character, res: string): number` | What a restock line can still take for this character (its maximum less what it holds), or 0. |
+| `sellValue` | `sellValue(it: PackItem, qty = it.mags ? 1 : it.qty): number \| null` | What a pack entry sells for (rule 27): `rate` of its price at its own rarity with its mods; loose rounds and magazines at the counter's prices; for `qty` of a stack (magazines: that many of the entry's). |
+| `ServiceCard` | `interface ServiceCard { key, title, id, rarity, price, why, note, lines, action, service, wear }` | A card of the services shelf: what it is, its price here (null: none), the engine's reason it can't be taken (null: it can), the numbers that change (the gear preview's lines), and the action the client sends… |
+| `ShopService` | `interface ShopService { id, tab, kinds, cards }` | A service a shop or Forge lists (rule 37's grade step: build step 4a's `run/upgrade` registers one): its id, the tab it shows on, the node kinds it serves, and its cards for one character. |
+| `registerShopService` | `registerShopService(s: ShopService): void` | Add a service to the shop's (and the Forge's) services shelf (spec 8.3 "Upgrade"). |
+| `shopServices` | `shopServices(kind: 'shop' \| 'forge'): ShopService[]` | The services registered for a node kind (in registration order). |
+| `shopOf` | `shopOf(g: { run?: RunState \| null }): ShopState \| null` | The shop open at the party's node, or null. |
+| `shopSays` | `shopSays(g: { run?: RunState \| null }, kind: FaceLine \| null, text: string): void` | Rules 1.46: a line in the open shop's log, and its face's line of that kind (a give seen, a grade step bought; null: the log only, as for a make). |
+| `openShop` | `openShop(r: RunState, node: { id: string; depth: number }, setting: string): ShopState` | Open the shop at a node (rule 25): its face, today's stock, the greet line; the run waits in the shop. |
+| `buyProblem` | `buyProblem(g: G, by: string, a: { charId: string; key: string; qty?: number }): string \| null` | Why this purchase can't be made, in words, or null (rules 25, 26: the counter, the rolled stock, the purse). |
+| `buy` | `buy(g: G, by: string, a: { charId: string; key: string; qty?: number }): { ok: string } \| { no: string }` | Make a purchase (rules 25, 26): the credits out of the buyer's own purse, the goods into its pack (a stim and an Essence into their counts, a restock into the resource); a rolled piece is marked sold to the bu… |
+| `sellProblem` | `sellProblem(g: G, by: string, a: { charId: string; idx: number; qty?: number }): string \| null` | Why this sale can't be made, in words, or null (rule 27). |
+| `sell` | `sell(g: G, by: string, a: { charId: string; idx: number; qty?: number }): { ok: string } \| { no: string }` | Sell `qty` of a pack entry (rule 27): out of the pack, `sellValue` into the seller's purse. |
+| `leaveShop` | `leaveShop(g: G, by: string, close = false): { left: boolean; line?: string } \| { no: string }` | A player's "Ready to leave", or the host's close (rule 11, spec 8.3). |
+| `shopWaiting` | `shopWaiting(g: G): string[]` | Who is still browsing (connected players with no Ready mark), by name. |
+
+#### Run power: Relic rows, worth and the cap, boons and grafts (rules 1.47) (`run/power.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `BoonNeeds` | `interface BoonNeeds { door, weapon, skill }` | What a boon needs to do anything for its holder (survival.json `needs` on a starting or Boss boon; rules 1.51 item 2): a focus in a hand whose door skill has 1 point or more (`door`, any of a list), a weapon i… |
+| `RelicRow` | `interface RelicRow { id, kind, name, worth, text, effects, fits, pools, adjudication, provisional, needs }` | A Relic property's row (`data/survival.json`): its worth against the run-power cap, its effects and where it fits. |
+| `BOON_CAP` | `BOON_CAP: number` | The run's cap (survival.json boon_cap.cap): the most run power a character carries, in percent of a rifle-turn. |
+| `RELIC_PROPS` | `RELIC_PROPS: RelicRow[]` | The Relic properties (survival.json relic_props): a Relic step's choice, a picked Relic's roll. |
+| `BOONS` | `BOONS: RelicRow[]` | The thirteen boons (survival.json boons, spec section 3.5): the Boss's pick (rules 1.44, run/stage.ts boonOffer), a shrine's token and the graft roll from them. |
+| `graftOf` | `graftOf(boonId: string): string` | The graft's id for a boon (rule 42): `graft.` and the boon's own name after `boon.`. |
+| `GRAFTS` | `GRAFTS: RelicRow[]` | The Crossroads grafts (rule 42): each boon with a cut to max HP for the run (the stat `hp` x graft.hp_mult); worth the boon's. |
+| `START_BOONS` | `START_BOONS: (RelicRow & { lines: string[] })[]` | Rules 1.51 (spec rules 48 to 50): the starting boons (survival.json start_boons), one picked at the camp before node 1, offered by the character's line (run/stage.ts startOffer); their own pool, never a Boss's… |
+| `relicRow` | `relicRow(id: string): RelicRow \| undefined` | A relic row by id (a property, a boon, a graft), or undefined. |
+| `worthOf` | `worthOf(id: string): number` | What one relic item is worth on the cap (0 for one that is not run power: a campaign's relic). |
+| `runWorth` | `runWorth(c: Character): number` | A character's run power now: its relics (boons, tokens, a graft) and the property of every Relic it carries. |
+| `capRoom` | `capRoom(c: Character): number` | How much of the cap is left (never below 0). |
+| `capProblem` | `capProblem(c: Character, id: string): string \| null` | Why `id` can't be added to this character's run power, or null: it would pass the cap (rule 31). |
+| `propFits` | `propFits(propId: string, gearId: string): boolean` | Does a Relic property fit this weapon or focus (its `fits`)? |
+| `rollProps` | `rollProps(rng: Rng, gearId: string, room: number, n: number): string[]` | `n` Relic properties for this weapon or focus, distinct, each fitting it and worth at most `room` (rule 38: a property that would pass the cap is not offered), drawn from the stream; fewer when fewer fit. |
+| `boonsFor` | `boonsFor(c: Character, pool: string, max = Infinity): RelicRow[]` | The boons of a pool (a setting's `pool`), worth at most `max`, that this character does not hold yet and that fit its cap: what a shrine's token and the graft roll from. |
+
+#### Survival progression: the grade step, the Forge, repair, training, shrines, trades (rules 1.46 to 1.50) (`run/progress.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `GRADE_UP` | `GRADE_UP: { price: Record<'fine' \| 'masterwork' \| 'relic', number>; places: Record<GradePlace, number>; relic_at: GradePlace; per_visit: number; relic_from_stage: number…` | The grade ladder (survival.json grade_up): prices, the places and their factors, the Relic's place and stage, the chit. |
+| `GradePlace` | `type GradePlace = 'shop' \| 'forge'` | Where a grade step is bought: a shop (full price) or a Forge (its factor; the only place for the Relic step). |
+| `TRAIN` | `TRAIN: { drill: number; study: number; practice: number; devotion: number }` | The rest's small training (survival.json train). |
+| `TRAINING` | `TRAINING: { drill: number; study: number; practice: number; extra_price: number; most: number }` | The training ground's big training, its second's price and the most a visit (survival.json training). |
+| `SHRINE` | `SHRINE: { rite: number; token_max_worth: number; tokens_per_stage: number }` | The shrine's numbers (survival.json shrine): the rite's Devotion XP (rules 1.54 item 10: its own key; the campaigns' rites keep patrons.json gain.rite_kept), the token's most worth and how many a stage. |
+| `LASTING` | `LASTING: { offer: number; min: number; fill: string[]; chit_gate: number; chit_from_stage: number; chit_odds: number }` | The armour-or-item picks (survival.json lasting). |
+| `TRADES` | `TRADES: { offer: number; items: TradeRow[] }` | The Crossroads' trades (survival.json trades). |
+| `TradeRow` | `interface TradeRow { id, name, do, text, [k: string] }` | One trade (rule 42): `do` names what it takes and gives; its numbers are its own fields. |
+| `ProgressAction` | `type ProgressAction = \| { type: 'run/upgrade'` | The actions of this file (the run reducer hands them here; game.ts Action lists them). |
+| `Say` | `type Say = (text: string, charId?: string, head?: string) => void` | Where the reducer writes a line of the log (game.ts push). |
+| `openVisit` | `openVisit(g: GameState, n: { id: string; kind: string }): RunVisit` | Rules 1.43: a visit begins as the party enters a safe node; the Forge rolls its stock, the Crossroads its trades, the shrine its patron, each from the run's seed through the node's own stream (rule 12). |
+| `nextGrade` | `nextGrade(r: Rarity): Rarity \| null` | The grade a step reaches from this one (Standard, Fine, Masterwork, Relic), or null past the Relic (Celestial is never sold, rule 38). |
+| `gradePrice` | `gradePrice(to: Rarity, place: GradePlace): number` | What a grade step to `to` costs at a place (rule 37): the ladder's price x the place's factor; the Relic step its own price (rule 38: the Forge's factor does not apply). |
+| `relicChoices` | `relicChoices(g: GameState, c: Character, where: GearWhere): string[]` | The three named properties a Relic step offers for the instance at `where` (rule 38): fitting it and the cap, from the node's stream for this character and this weapon. |
+| `upgradeProblem` | `upgradeProblem(g: GameState, c: Character, a: { where: GearWhere; place: GradePlace; chit?: boolean; prop?: string }): string \| null` | Why this grade step can't be taken now, in words, or null (rules 37, 38, 43). |
+| `REPAIR` | `REPAIR: { rate: number; floor: number; places: Record<GradePlace, number> }` | Rules 1.50: the repair service's numbers (survival.json repair): the Core Rules' gunsmith rate (a full repair for that share of the item's price), the floor, the places and their factors. |
+| `repairPrice` | `repairPrice(w: Wear, place: GradePlace): number` | Rules 1.50: what bringing `w` back to full costs at a place: max(floor, rate x priceOf(the item at its grade) x the share missing) x the place's factor, rounded up; 0 when nothing is missing. |
+| `repairProblem` | `repairProblem(g: GameState, c: Character, a: { where: GearWhere; place: GradePlace }): string \| null` | Why this repair can't be bought now, in words, or null (rules 1.50). |
+| `lastingFor` | `lastingFor(c: Character): string[]` | The mods and worn pieces that would last for this character (rule 41): a mod for a slot its main weapon has free, a worn piece better (dearer) than the one it wears in that slot (or for an empty slot); priced… |
+| `forgeStock` | `forgeStock(g: GameState, rng: ReturnType<typeof rngFor>): RunStock[]` | The Forge's stock (rules 1.46): what the living party lacks first (lastingFor), then any mod or armour, FORGE_SLOTS in all, at priceOf. |
+| `forgeProblem` | `forgeProblem(g: GameState, c: Character, slot: number): string \| null` | Why this character can't buy the Forge's stock line `slot` now, or null (rule 44: shared stock, first buyer). |
+| `fitOf` | `fitOf(g: GameState, c: Character): { cls: number; price: number; why: string \| null } \| null` | The next armour class the Forge fits for this character, and why it can't now (rule 44), or null when none is next. |
+| `TrainBar` | `interface TrainBar { from, now, add, to, reaches, mark }` | Rules 1.54 item 10 (survival-spec 14.5): what a training card's bar draws, all from the growth functions: the bar's start (the last step reached, 0 before any), where the character stands now, what this traini… |
+| `trainProblem` | `trainProblem(g: GameState, c: Character, a: { train: string; weapon?: string }): string \| null` | Why this training can't be taken now, or null (rule 39 at a rest: one small one; rule 45 at a training ground: one big one free, a second for its price). |
+| `trainPrice` | `trainPrice(g: GameState, c: Character): number` | What a training costs now: the training ground's second (its extra price), else nothing. |
+| `tokenFor` | `tokenFor(g: GameState, c: Character): string \| null` | The shrine's token for this character (rule 46): one boon of the tile's pool, small enough and inside its cap, from the node's stream; null when none fits. |
+| `shrineProblem` | `shrineProblem(g: GameState, c: Character, choice: string): string \| null` | Why this shrine offer can't be taken now, or null (rule 46). |
+| `graftFor` | `graftFor(g: GameState, c: Character): string \| null` | The graft the Crossroads offers this character (rule 42): a boon of the next tile's pool (rules 1.44: the pools of the tiles offered after this stage's Boss, run/stage.ts nextPools) inside its cap, from the no… |
+| `tradePrice` | `tradePrice(c: Character, a: { trade: string; where?: GearWhere }): number` | What a trade costs in credits for this character and its pick (0 when it costs something else). |
+| `salvageWorth` | `salvageWorth(c: Character, pick: number, rate: number): number \| null` | What a salvage pays for a pack line (rule 42): its price at its own grade x the trade's rate, or null (unpriced). |
+| `tradeProblem` | `tradeProblem(g: GameState, c: Character, a: { trade: string; where?: GearWhere; weapon?: string; train?: string; pick?: number }): string \| null` | Why this trade can't be taken now, or null (rule 42: one trade a character, or walk on). |
+| `lastingOffer` | `lastingOffer(c: Character, node: { id: string; gate?: boolean; kind: string }, stage: number, seed: string): RunLasting` | An armour-or-item pick of three (rules 41, 43): at least `lasting.min` lasting things for this character (a mod for a free slot, a better worn piece), the rest from `fill`; the gate's holds an armourer's chit… |
+| `progressAction` | `progressAction(g: GameState, a: ProgressAction, by: string, say: Say): string \| null` | Rules 1.43: one `run/*` action of this file through the one reducer (game.ts runAction hands it here). |
+| `RunOption` | `interface RunOption { group, key, label, detail, price, why, action, pays, costs, wear, bar }` | One choice a safe node offers a character (rules 1.43): its words, its price (credits; 0 for none), the engine's reason it can't be taken (null when it can), and the action to send. |
+| `runOptions` | `runOptions(g: GameState, charId: string): RunOption[]` | Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). |
+| `lastingOptions` | `lastingOptions(g: GameState, charId: string): RunOption[]` | The pick of kit waiting for a character (an Elite's, a cache's), as options to send (rules 1.43, rule 41). |
+| `gradeCards` | `gradeCards(g: GameState, c: Character): ServiceCard[]` | Rules 1.46: the shop's grade step as cards of the services shelf (run/shop.ts `registerShopService`): each carried weapon or focus with the step's price here, what changes (the gear preview before and after: t… |
+| `repairCards` | `repairCards(g: GameState, c: Character): ServiceCard[]` | Rules 1.50: the shop's repair service as cards of the services shelf: each carried thing with wear, its durability now and full, the price here, and the engine's reason when it can't be bought; the action is `… |
+
+#### The camp loadout (rules 1.52) (`run/loadout.ts`)
+
+| name | signature or shape | what for |
+| --- | --- | --- |
+| `LOADOUT` | `LOADOUT: { budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string> }; gun: { loaded: number; spare: number }; bow: { spare: number }; focuses:…` | The camp's numbers (`survival.json loadout`, PROVISIONAL). |
+| `Archetype` | `interface Archetype { id, name, family, category, skip }` | A weapon archetype (survival.json `loadout.archetypes`; Leon, 14 Nov 2026): a weapons.json family as the data groups it (its mastery_family and category), less `skip`. |
+| `archetypeWeapons` | `archetypeWeapons(a: Archetype): string[]` | An archetype's weapons, cheapest first by priceOf at Standard (a tie by id): the first is its free weapon, the second the rack's better one. |
+| `RACK` | `RACK: { id: string; name: string; free: string; better: string \| null }[]` | The camp's weapon rack by archetype (rules 1.52; Leon, 14 Nov): the free weapon (the archetype's most basic), the same again at its price (a second to carry or dual-wield), and the next one up (null when the a… |
+| `LoadoutPick` | `interface LoadoutPick { weapon, focus, take, base, touched, boon, noSpare }` | One character's loadout at the camp: the free weapon and focus (null: declined or not yet picked), what is taken from the menu (line key to how many, in the order taken), and what it carried from traits when s… |
+| `LoadoutLine` | `interface LoadoutLine { key, id, per, shelf, shelfName, price }` | A line of the camp's menu: the shop's counter lines (every shelf but `counter.skip`) and the fixed stock. |
+| `loadoutLines` | `loadoutLines(c: Character): LoadoutLine[]` | The menu for this character as it stands (the counter's gun lines follow the guns it carries). |
+| `loadoutSpent` | `loadoutSpent(c: Character, p: LoadoutPick): number` | What the budget has spent on these picks (the menu's prices x how many). |
+| `openCamp` | `openCamp(r: RunState, chars: Character[]): void` | Open the camp (run/start): every character stripped, an empty loadout each, the budget in its purse. |
+| `LoadoutAction` | `type LoadoutAction = { charId: string } & ({ op: 'pick'` | The camp's actions (`run/loadout`): pick the free weapon or focus (id null: none), take or put back a menu line (qty signed), the Recommended loadout, or clear. |
+| `loadoutAction` | `loadoutAction(g: G, by: string, a: LoadoutAction): { ok: string } \| { no: string }` | Apply a camp action. |
+| `campBoon` | `campBoon(g: G, by: string, charId: string, choice: number): { ok: string } \| { no: string }` | Rules 1.51 at the camp (run/boon): choose the starting boon of the character's offer (`choice` its index), the character's own player only, before Ready. |
+| `CampBoons` | `type CampBoons = Record<string, { id: string` | The starting boon each character takes as the camp closes: its choice, or the first card of its offer (`first`). |
+| `recommendedPick` | `recommendedPick(c: Character, base: LoadoutPick['base']): Pick<LoadoutPick, 'weapon' \| 'focus' \| 'take'>` | The Recommended loadout for a character (data `recommended`): the focus of its door skill with most points; the first weapon row that fits; its profile's buys while the budget pays; then its weapon's cheapest… |
+| `campReady` | `campReady(g: G, by: string, o: { close?: boolean; undo?: boolean } = {}): { closed: false } \| { closed: true; boons: CampBoons } \| { no: string }` | Mark Ready at the camp (`run/ready`), or take the mark back; the host's `close` starts the run for everyone (an untouched loadout takes the Recommended one). |
+| `campWaiting` | `campWaiting(g: G): string[]` | Who is still making a loadout (connected players with no Ready mark), by name. |
+| `LoadoutCardV` | `interface LoadoutCardV { key, id, name, group, price, per, taken, picked, why, preview, text }` | A card of the camp's screen: a free pick or a menu line, with the engine's gear preview numbers, its price (0 for a free pick), how many are taken, and the reason one more can't be taken (null: it can). |
+| `CarryRowV` | `interface CarryRowV { group, label, kg, free, put, putLabel }` | One line of the Carrying panel: what it is, its weight, and the action that puts it back (null: it comes with a pick). |
+| `CompareRowV` | `interface CompareRowV { key, label, free, better, diff }` | A row of the rack's compare: the better weapon's number against the free one's. |
+| `BoonCardV` | `interface BoonCardV { i, id, name, text, worth, cap, lines, chosen }` | A starting boon's card at the camp: its words and number from data, its worth on the run's cap, its line. |
+| `LoadoutViewV` | `interface LoadoutViewV { me, skills, armourClass, armourName, budget, spent, left, rack, focus, weaponPick, focusPick, boon, shelves, carrying, party, ready, isHost, wai…` | The camp's screen for one player (their own character, or `charId`). |
+| `loadoutView` | `loadoutView(g: G, me: string, charId?: string \| null): LoadoutViewV \| null` | The camp's view for player `me`; null when the camp is closed or they have no character there. |
 
 #### The client's one hover card (`apps/web/src/game/actionTip.ts`)
 
