@@ -209,6 +209,7 @@ Every rule-bearing item carries both:
 - `tools/validate.py` refuses a digit typed into a text unless it is in `tools/text_numbers.json`: `allow` (with a reason) or the `baseline` of numbers not yet bound, which only shrinks. When a number has no field, **add the field the engine reads** and bind to it; do not add a mirror field that nothing reads.
 - `ap_cost` is the AP a card's chip shows. When the cost is not a fixed number it is `null` and `ap_cost_is` names it: `weapon_attack` (the AP of your weapon's attack), `twice_shot`, `reload`, `soul_cast_ap`.
 - A move's `uses` may also be `reaction` (it spends your reaction; the engine counts it as at will) and `per_combat`.
+- **The door line** (nine doors audit, 0.29): a door's alpha skill in `skills.json` may carry `door_line`, one sentence that says how the door is used, and `door_tab`, the fight's action tab it lives on (a descriptor group: `sigils`, `outbursts`…). The tab's header and the first-fight tip read it (`apps/web/src/game/doorLine.ts`). A rule number in it is a `{token}` filled from the engine's own constant (`DOOR_TOKENS` there: `{line_min}` and `{line_max}` are the Sigil Line's glyph counts, `sigils.json grammar`), never typed.
 
 English, in-universe where the doc is in-universe. No pop-culture references. Keep numbers exactly as the source doc states them; if the source conflicts with the Core Rules spec, the spec wins and you log the conflict in your report.
 

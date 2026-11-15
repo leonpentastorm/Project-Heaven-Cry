@@ -3,6 +3,8 @@
 import React from 'react';
 import { getState, subscribe } from './store';
 import { usePresence, presenceCls } from './presence';
+import { DOORS, hasDoor } from './doorLine';
+import { TAB_NAME } from './commands';
 
 const LS = 'phc.tips';
 const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
@@ -13,6 +15,15 @@ export function resetTips() { seen.clear(); save(); }
 type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);
 const lines = (st: St, k: string) => (st.game?.story.entries || []).filter((e: any) => e.kind === k && !e.rerolled).length;
+
+/** It is my turn in a fight, and my character there has this door (nine doors audit, 0.29: the first-fight tip). */
+export function myDoorTurn(st: St, skill: string): boolean {
+  const cb: any = st.screen === 'combat' ? (st.game as any)?.combat : null; if (!cb || cb.over) return false;
+  const u = (cb.units || []).find((x: any) => x.id === cb.order?.[cb.turn]); const c: any = u?.charId ? (st.game as any).characters?.[u.charId] : null;
+  return !!c && c.owner === st.me.id && hasDoor(c, skill);
+}
+/** One tip per door with a line (data: skills.json door_line), shown on the first turn of mine with that door. */
+export const DOOR_TIPS = DOORS.map((d) => ({ id: 'door:' + d.skill, title: (TAB_NAME[d.tab] || d.name).toUpperCase(), text: d.line, when: (st: St) => myDoorTurn(st, d.skill) }));
 
 /** In order: the first one whose moment has come and that this browser hasn't seen is shown. */
 export const TIPS: { id: string; title: string; text: string; when: (st: St) => boolean }[] = [
@@ -26,6 +37,7 @@ export const TIPS: { id: string; title: string; text: string; when: (st: St) => 
     text: '⟲ and ✎ under a Narrator line suggest a reroll or a rewording. The host puts it to a vote; everyone must say yes, or nothing changes.' },
   { id: 'combat', title: 'COMBAT', when: (st) => st.screen === 'combat',
     text: '6 AP a turn. Pick an action, then a tile or a target: the cost and the odds show before you commit. One reaction per round. End your turn when you\'re done.' },
+  ...DOOR_TIPS,
   { id: 'report', title: 'SOMETHING BROKE?', when: (st) => st.screen === 'main' && seen.has('round'),
     text: '⚑ Report (top bar) downloads one file with what happened, for Leon. Nothing is sent from here, and your API key is never in it.' },
 ];

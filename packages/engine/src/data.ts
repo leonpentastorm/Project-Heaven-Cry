@@ -18,7 +18,7 @@ import { expandVariants } from './variants';
 export type CoreId = 'body' | 'mind' | 'soul';
 export const CORES: CoreId[] = ['body', 'mind', 'soul'];
 
-export interface SkillDef { id: string; name: string; attribute: string; core: CoreId; slot: string; summary: string; overreach?: any; voice: any }
+export interface SkillDef { id: string; name: string; attribute: string; core: CoreId; slot: string; summary: string; overreach?: any; voice: any; /** A door's alpha skill: how the door is used, in one sentence ({token}s are engine constants; data/CONVENTIONS.md), and its fight tab. */ door_line?: string; door_tab?: string }
 export interface AttrDef { id: string; name: string; core: CoreId }
 export interface WeaponDef { id: string; name: string; category: string; damage: any; range_tiles: any; magazine: number | null; heat_limit: number | null; modes: string[]; ap_cost: Record<string, number>; skill: string; accuracy: number; mastery_family: string; properties: string[]; ammo?: string | null; weight_kg?: number; reload?: 'magazine' | 'loose'; magazine_kg?: number; reload_unit?: string; reload_ap?: number | null; damage_type?: string; explosive?: boolean; tags?: string[] }
 /** A base class (Class Roster Revision 3: one per attribute). ranks[r].moves are resolved: every move carries `key`, the

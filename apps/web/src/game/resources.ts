@@ -449,3 +449,18 @@ export function faithRows(u: any | null, c: any | null): ResRow[] {
   }
   return rows;
 }
+
+/** The token's Sigil chip (nine doors audit, 0.29): the Evoker's charge and the Flux on the caster's map token, read
+ *  from its own 'charge' and 'flux' rows above (the one copy; no number of its own). Letters pair the ink (C charge,
+ *  F Flux); a row's warning turns it to "!" and its word in the hover title. Null with no Evoker in hand (STOWED). */
+export interface SigilChip { text: string; title: string; ink: string; level: 'alert' | 'caution' | 'none' }
+export function sigilChip(rows: ResRow[]): SigilChip | null {
+  const ch = rows.find((r) => r.key === 'charge'), fl = rows.find((r) => r.key === 'flux');
+  if (!ch || !fl || ch.warn === 'STOWED') return null;
+  const warn = [ch, fl].find((r) => r.level === 'alert') || [ch, fl].find((r) => r.level === 'caution') || null;
+  const level = warn && (warn.level === 'alert' || warn.level === 'caution') ? warn.level : 'none';
+  return { text: 'C' + ch.now + ' F' + fl.now + (warn ? ' !' : ''), level, ink: level === 'alert' ? RES_INK.alert : RES_INK.mind,
+    title: ch.label + ' ' + ch.now + ' / ' + ch.max + ' · ' + fl.label + ' ' + fl.now + ' / ' + fl.max + (warn ? ' · ' + warn.warn : '') };
+}
+/** The chip's style on a 48 px map token: top right, over the portrait's edge (13 px text, the ink with its letters). */
+export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: -9px; z-index: 5; padding: 0 3px; border-radius: 4px; font-size: 13px; line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;

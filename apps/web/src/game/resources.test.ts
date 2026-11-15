@@ -2,7 +2,7 @@
 // testers missed in the old 10 px line (RELOAD, RELOAD CORE, OVERLOAD SOON, OVER THE LIMIT…).
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys } from '@engine';
-import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule } from './resources';
+import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule, sigilChip, RES_INK } from './resources';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
 // Class Roster Revision 3 shelves advanced classes; this file's advanced-move UI tests turn them on (test-only switch).
@@ -314,5 +314,21 @@ describe('resource panel fixes', () => {
     const v = resView(resourcesOf(u, c, g));
     expect(v.rows.find((r) => r.key === 'ammo')!.valueStyle).toMatch(/white-space: normal/);
     expect(v.urgent[0].valueStyle).toMatch(/text-overflow: ellipsis/);
+  });
+});
+
+describe('the Sigil chip on the caster token (nine doors audit, 0.29)', () => {
+  it('reads the charge and flux rows: their numbers, a warning as "!" with its word, the alert ink; nothing when stowed or no Evoker', () => {
+    const { u, c, g } = fight();
+    u.mg = sigil({ charge: 7, flux: 2 });
+    const rows = resourcesOf(u, c, g), ch = row(rows, 'charge'), fl = row(rows, 'flux');
+    expect(sigilChip(rows)).toEqual({ text: 'C' + ch.now + ' F' + fl.now, level: 'none', ink: RES_INK.mind, title: 'Evoker charge 7 / ' + ch.max + ' · Flux 2 / ' + fl.max });
+    expect(sigilChip(rows)!.text).toBe('C7 F2');
+    u.mg = sigil({ charge: 0, cores: 1, flux: 1 }); // RELOAD CORE: an alert
+    let k = sigilChip(resourcesOf(u, c, g))!; expect(k.text).toBe('C0 F1 !'); expect(k.level).toBe('alert'); expect(k.ink).toBe(RES_INK.alert); expect(k.title).toMatch(/· RELOAD CORE$/);
+    u.mg = sigil({ charge: 8, flux: row(rows, 'flux').max - 1 }); // OVERLOAD SOON: a caution, the Mind ink with its "!"
+    k = sigilChip(resourcesOf(u, c, g))!; expect(k.level).toBe('caution'); expect(k.ink).toBe(RES_INK.mind); expect(k.text.endsWith(' !')).toBe(true);
+    u.mg = sigil({ evoker: false }); expect(resourcesOf(u, c, g).find((r: any) => r.key === 'charge')).toBeUndefined(); expect(sigilChip(resourcesOf(u, c, g))).toBeNull();
+    u.mg = null; expect(sigilChip(resourcesOf(u, c, g))).toBeNull();
   });
 });
