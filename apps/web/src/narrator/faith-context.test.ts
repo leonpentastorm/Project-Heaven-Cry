@@ -80,6 +80,8 @@ describe('the Narrator and faith', () => {
     // Special Ammo, Killzone, Run and Gun), a few tokens: the cap moves to 25.7k on purpose.
     // Classes 3.0 step 7 (rules 1.33): the Mender's moves and Tending (the door's verbs on every sheet with Empathy), about
     // 0.08k: the cap moves to 25.9k on purpose.
-    expect(e.stable).toBeLessThan(25900);
+    // Rules 1.56 prayer 2.0: the doors' lines (Faith's door_line) and the Chaplain's Canticle in its class lines, a few
+    // tokens: the cap moves to 26.0k on purpose.
+    expect(e.stable).toBeLessThan(26000);
   });
 });
