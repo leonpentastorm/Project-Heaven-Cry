@@ -638,6 +638,57 @@ for k in (data.get("enemies", {}) or {}).get("companions", []) if isinstance(dat
     if "owned_kind" in k and not (isinstance(k["owned_kind"], str) and k["owned_kind"]): errors.append(f"{_w}: owned_kind is a word (companion, figment)")
     for _v in k.get("actions") or []:
         if k.get("turn") in ("owner", "auto") and _v not in ("move", "shot", "aimed", "melee"): errors.append(f"{_w}: an owned unit's verb is move, shot, aimed or melee (owned.ts OWNED_VERBS), not {_v}")
+# Rules 1.56 (Figments 2.0; the lead's ruling on the 0.29 wave-2 review, MF5 a and b): the owned data-verb vocabulary
+# (figments.json verbs, read by owned.ts OWNED_DATA_VERBS / runDataVerb / ownedVerbInfo). Every key is checked: an
+# unknown key is an error, never silently ignored (data/CONVENTIONS.md "Owned units' data verbs").
+_FJ = data.get("figments") if isinstance(data.get("figments"), dict) else {}
+_COSTS = ((data.get("actions") or {}).get("costs") or {})
+_RESN = set(((data.get("actions") or {}).get("resources") or {}).keys())
+_AROWS = {r.get("id"): r for r in ((data.get("actions") or {}).get("items") or []) if isinstance(r, dict)}
+_OWNER_USE_TYPES = ("combat/stim",)  # owned.ts OWNER_USES: the item uses an owned unit runs for its owner
+_DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts"}
+_DV_REACH = {"tiles", "side", "eyes", "tile", "beside"}
+_DVIDS = set()
+for _v in _FJ.get("verbs") or []:
+    _w = f"figments.verbs:{_v.get('id')}"
+    if not (isinstance(_v, dict) and isinstance(_v.get("id"), str)): errors.append(f"figments.verbs: a verb has an id"); continue
+    _DVIDS.add(_v["id"])
+    for _k in _v:
+        if _k not in _DV_KEYS: errors.append(f"{_w}: unknown data-verb field '{_k}' ({', '.join(sorted(_DV_KEYS))})")
+    if _v.get("site") not in _COSTS: errors.append(f"{_w}: site names an actions.json cost site")
+    _r = _v.get("reach")
+    if _r is not None:
+        if not isinstance(_r, dict): errors.append(f"{_w}: reach is an object ({', '.join(sorted(_DV_REACH))})")
+        else:
+            for _k in _r:
+                if _k not in _DV_REACH: errors.append(f"{_w}: unknown reach field '{_k}' ({', '.join(sorted(_DV_REACH))})")
+            if not (isinstance(_r.get("tiles", 1), int) and not isinstance(_r.get("tiles", 1), bool) and _r.get("tiles", 1) >= 1): errors.append(f"{_w}: reach.tiles is a whole number of tiles")
+            if "tile" in _r and _r["tile"] is not True: errors.append(f"{_w}: reach.tile is true (the order aims at a free tile)")
+            if _r.get("tile") and any(k in _r for k in ("side", "eyes")): errors.append(f"{_w}: a tile reach takes tiles and beside, not side or eyes")
+            if "beside" in _r and (_r["beside"] != "ally" or not _r.get("tile")): errors.append(f"{_w}: reach.beside is ally, with reach.tile")
+            if "side" in _r and _r["side"] not in ("foe", "ally"): errors.append(f"{_w}: reach.side is foe or ally")
+            if "eyes" in _r and _r["eyes"] is not True: errors.append(f"{_w}: reach.eyes is true (the unit's own sight)")
+    if "res" in _v and not (isinstance(_v["res"], dict) and _v["res"] and all(k in _RESN and isinstance(n, (int, float)) and not isinstance(n, bool) for k, n in _v["res"].items())): errors.append(f"{_w}: res maps actions.json resources to numbers")
+    if "attack" in _v and _v["attack"] not in ("shot", "aimed", "melee"): errors.append(f"{_w}: attack is shot, aimed or melee")
+    if "on_hit" in _v and not ("attack" in _v and isinstance(_v["on_hit"], list)): errors.append(f"{_w}: on_hit is a list of ops, with attack")
+    if "effects" in _v and not isinstance(_v["effects"], list): errors.append(f"{_w}: effects is a list of ops")
+    if "dash" in _v and not (isinstance(_v["dash"], int) and _v["dash"] >= 1 and "attack" in _v): errors.append(f"{_w}: dash is a whole number of tiles, with attack")
+    if "unmake" in _v and _v["unmake"] is not True: errors.append(f"{_w}: unmake is true")
+    if "refund_share" in _v and not (_v.get("unmake") and isinstance(_v["refund_share"], (int, float)) and 0 <= _v["refund_share"] <= 1): errors.append(f"{_w}: refund_share is a share from 0 to 1, with unmake")
+    if "use" in _v:
+        _row = _AROWS.get(_v["use"])
+        if not _row: errors.append(f"{_w}: use names an actions.json item (one of its owner's item uses)")
+        elif _row.get("type") not in _OWNER_USE_TYPES or "range" in _row: errors.append(f"{_w}: use '{_v['use']}' is not an item use an owned unit can run for its owner ({', '.join(_OWNER_USE_TYPES)}, hand to hand)")
+        if not (isinstance(_r, dict) and _r.get("side") == "ally"): errors.append(f"{_w}: use goes with reach.side ally (it is handed to an ally)")
+for _fm in _FJ.get("forms") or []:
+    _w = f"figments.forms:{_fm.get('id')}"
+    for _vv in _fm.get("verbs") or []:
+        if _vv not in _DVIDS and _vv not in ("move", "shot", "aimed", "melee", "let_go"): errors.append(f"{_w}: verb '{_vv}' is no figments.json verb")
+    if _fm.get("turn") == "auto":
+        _a = _fm.get("auto")
+        if not (isinstance(_a, dict) and set(_a) <= {"verb", "target"} and (_a.get("verb") in ("shot", "aimed", "melee") or _a.get("verb") in _DVIDS) and _a.get("target", "nearest_foe") in ("nearest_foe", "weakest_foe")):
+            errors.append(f"{_w}: a turn auto form needs auto {{verb: shot, aimed, melee or a figments.json verb; target: nearest_foe or weakest_foe}}")
+    elif "auto" in _fm: errors.append(f"{_w}: auto is for a turn auto form")
 # Rules 1.15: enemy levels. Every tier row is its level 1 block with a damage factor; `levels.table` has one row for
 # each level from min to max, in order, with the five columns the engine reads; the gap and the Narrator's shift are numbers.
 if isinstance(data.get("enemies"), dict):

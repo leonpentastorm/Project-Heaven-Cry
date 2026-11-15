@@ -196,7 +196,7 @@
       "text": "It Cuts an enemy next to it now.", "provisional": true
     },
     {
-      "id": "figment_hand_over", "name": "Hand over", "icon": "order-hand-over", "site": "figment_order", "reach": { "tiles": 1, "side": "ally" }, "stim": true,
+      "id": "figment_hand_over", "name": "Hand over", "icon": "order-hand-over", "site": "figment_order", "reach": { "tiles": 1, "side": "ally" }, "use": "stim",
       "text": "It gives one of your own stims to an ally next to it: the stim's own heal, or a Downed ally stabilised.", "provisional": true
     },
     {
