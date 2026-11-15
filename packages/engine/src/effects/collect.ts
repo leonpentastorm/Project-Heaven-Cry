@@ -140,8 +140,11 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
   if (kind === 'relic') {
     const x = heldRelicRow(id); if (!x) return null;
     // a mod's: its triggered effects (its `mod` marker is the slot, not a rule); a run relic's and a variant's modifier's: all
-    const effects = EXTRA.relic[id] || VARIANT_MOD[id] ? [...(x.effects || [])] : (x.effects || []).filter((e: any) => e && typeof e.when === 'string');
-    return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'relic'), text: x.text || '', adjudication: x.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will', provisional: !!x.provisional };
+    const effects = EXTRA.relic[id] || VARIANT_MOD[id] ? [...(x.effects || [])] : (x.effects || []).filter((e: any) => e && (typeof e.when === 'string' || e.op === 'grant_action'));
+    // rules 1.56 (P14): a carried modifier (a gear mod row, a variant's) is a whole item: its grant_action is an action of its holder's (the Open
+    // Hand's Breath), held while the instance is in a hand
+    const act = !EXTRA.relic[id] && !!(gearModRow(id) || VARIANT_MOD[id]) && effects.some((e: any) => e?.op === 'grant_action'), g = act ? effects.find((e: any) => e?.op === 'grant_action') : null;
+    return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'relic'), text: x.text || '', adjudication: x.adjudication || 'engine', active: act, bound: false, ap: g?.ap ?? null, uses: g?.uses || 'at_will', provisional: !!x.provisional };
   }
   if (kind === 'trait') {
     const x = traitData(id); if (!x) return null;

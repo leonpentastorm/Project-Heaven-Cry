@@ -136,6 +136,7 @@
       "heavy": "Mass. Melee: 3 AP an attack, knockback, hitting several. Ranged: must be Braced to work well.",
       "light": "Fast. 2 AP an attack; extra steps and strikes.",
       "bare": "A fist or a glove. Grapples and throws.",
+      "open_hand": "The Open Hand: a monk's glove. With only the family's gloves in your hands (or none) it brings Flurry, Trip and Grapple, the forms and the guard.",
       "thrown": "It can leave the hand.",
       "quick": "Handy. Firing next to an enemy doesn't provoke; moving costs no accuracy.",
       "auto": "Throws many rounds. Pressure on a miss; several targets. Always offers Burst and Rake.",
@@ -582,8 +583,9 @@
       ],
       "free": false,
       "comes_with": [
-        "bare"
+        "open_hand"
       ],
+      "comes_while": {"hands": {"props": ["open_hand"], "only": true}},
       "home": [],
       "particular": false,
       "numbers": {
@@ -954,8 +956,9 @@
       ],
       "free": false,
       "comes_with": [
-        "bare"
+        "open_hand"
       ],
+      "comes_while": {"hands": {"props": ["open_hand"], "only": true}},
       "home": [],
       "particular": false,
       "numbers": {
@@ -1292,7 +1295,10 @@
         }
       ],
       "free": false,
-      "comes_with": [],
+      "comes_with": [
+        "open_hand"
+      ],
+      "comes_while": {"hands": {"props": ["open_hand"], "only": true}},
       "home": [],
       "particular": false,
       "numbers": {
@@ -2843,8 +2849,9 @@
       "lines": [],
       "free": false,
       "comes_with": [
-        "bare"
+        "open_hand"
       ],
+      "comes_while": {"hands": {"props": ["open_hand"], "only": true}},
       "home": [],
       "particular": false,
       "numbers": {},

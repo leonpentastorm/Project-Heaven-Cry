@@ -196,7 +196,7 @@ for (const who of ['actor', 'target'] as Who[]) P(who + '_tied', 'tie', who + ' 
 // Classes 3.0 section 6: what the holder holds. {slot: hand | person, door: evoker | emanator} or {slot, item: <id>}
 // (character.ts holds: the one "focus in hand" test, which hasEvoker and hasEmanator are)
 const holdsOf = (ev: Ev, v: any): boolean => { const c = ev.h.c || charOfUnit(ev.self); return !!c && holds(c, v || {}); };
-P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; holds also reads door: any (any focus), which only recipes use: it is not a value here', (ev, v) => holdsOf(ev, v), () => FOCUS_DOORS);
+P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds nothing; holds also reads door: any (any focus), which only recipes use: it is not a value here', (ev, v) => holdsOf(ev, v), () => FOCUS_DOORS);
 P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev, v) => !holdsOf(ev, v), () => FOCUS_DOORS);
 // Rules 1.43 (survival-spec 4.2 item 11), 1.56: a named property or a fitted mod on a gear instance (GearState.prop,
 // GearState.mods) works only while that instance is in a hand and only for what is made with it. The event's means: a door's (a Sigil's or an Outburst's roll
@@ -206,9 +206,14 @@ P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev,
 const DOOR_OF_TYPE: Record<string, string> = { sigil: 'brain_power', soul: 'will_power' };
 const HEAL_DOOR: Record<string, string> = { tending: 'empathy', bond: 'empathy', sigil: 'brain_power', soul: 'will_power' };
 const WEAPON_HOOKS = new Set(['attack_preview', 'attack_roll', 'on_hit', 'on_miss', 'reload']);
+/** Rules 1.56 (P14, the unarmed fighter): the holder's own defence. When the holder is the event's target and someone
+ *  else its actor (a blow aimed at it, damage it takes, a condition or a save put on it), a carried modifier answers it
+ *  with the instance in a hand: nothing is made with the instance, it is worn (the Open Hand's guard and Sway). */
+const ownDefence = (ev: Ev): boolean => !!ev.target && ev.target === ev.self && !!ev.actor && ev.actor !== ev.self;
 function madeWith(ev: Ev): boolean {
   const c = ev.h.c || charOfUnit(ev.self); if (!c) return madeWithUnit(ev);
   const hands = handProps(c).filter((p) => p.prop === ev.h.itemId).map((p) => p.hand); if (!hands.length) return false;
+  if (ownDefence(ev)) return true;
   const ctx = ev.ctx || {}, src = ctx.src, hook = ev.trig.hook;
   const type = ctx.type ?? src?.type, heal = hook === 'heal_in' || hook === 'shield_grant';
   const door = ctx.via && kindOfDoor(String(ctx.via)) ? String(ctx.via) : DOOR_OF_TYPE[type] || (heal ? HEAL_DOOR[ctx.kind] : null);
@@ -226,12 +231,13 @@ function madeWith(ev: Ev): boolean {
  *  with that hand's weapon. */
 function madeWithUnit(ev: Ev): boolean {
   const u = ev.self, ctx = ev.ctx || {}, src = ctx.src, id = ev.h.itemId;
+  if (ownDefence(ev)) return [u.weapon, u.offWeapon].some((w) => !!w && instanceMods(w, { mods: w === u.weapon ? u.mods : u.offMods }).all.includes(id)); // P14
   if ((ctx.mode ?? src?.mode) === 'thrown') return false;
   const off = ctx.hand === 'off' && !u.swapMain, mods = off ? u.offMods : u.mods, w = off ? u.offWeapon : u.weapon;
   // rules 1.56 L4: a variant's modifiers are its row's own (data/variants.json `variant_mods`)
   return !!w && instanceMods(w, { mods }).all.includes(id) && (src?.weapon ?? w) === w;
 }
-P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus', (ev, v) => madeWith(ev) === v);
+P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus; the own defence of the holder (P14: the holder is the target, another unit the actor) with the instance in a hand', (ev, v) => madeWith(ev) === v);
 // Rules 1.33 (Tending, Bonds and the Mender): a door's ladder, the holder's ties, the action's pick
 /** The holder's points in a skill (a character's sheet; a unit with none has 0). */
 const skillPts = (ev: Ev, sk: string): number => Number(((ev.h.c || charOfUnit(ev.self)) as any)?.skills?.[sk] || 0);

@@ -1,7 +1,7 @@
 // Rules 1.56 (Balance 2.0), the unarmed fighter, slice 1 (docs/design/proposals/2026-11-unarmed.md): bare-hand gloves
 // are one weapon family. Every glove row carries the Open Hand (items.json `open_hand`, a modifier item named in the
 // row's `variant_mods`), whose data toggles on an attack are the family's forms: Jab, Palm, Sweep, Snatch; Flurry, Trip
-// and Grapple come with the Bare property (techniques.json `comes_with`). Everything goes through the reducer: the
+// and Grapple come with the Open Hand property (techniques.json `comes_with`, `comes_while`: open-hand-2.test.ts). Everything goes through the reducer: the
 // descriptor a player clicks (sendDescriptor with the toggle in its mods), the AP it takes, the blow it lands.
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
@@ -101,8 +101,8 @@ describe('the Open Hand: the glove family (rules 1.56, the unarmed fighter)', ()
     expect(r.dmg).toBe(0); expect(r.foe.prone).toBeFalsy(); expect(r.took).toBe(r.cost);
   });
 
-  it('Flurry, Trip and Grapple come with bare hands and every glove; not with a blade', () => {
-    for (const w of ['fists', 'hand_wraps', 'iron_mitts', 'striking_gloves']) {
+  it('Flurry, Trip and Grapple come with every glove (the Open Hand property); not with a blade (bare fists wait for P11)', () => {
+    for (const w of ['hand_wraps', 'iron_mitts', 'striking_gloves']) {
       const f = fightWith([{ archetype: 'monk', weapon: w }], [{ at: 'F6' }]); const u = f.turn(f.pc);
       const ids = actionsFor(f.g, u.id, 'host').map((d) => d.id);
       for (const t of ['flurry', 'trip', 'grapple']) expect(ids, w + ' ' + t).toContain('tq:main:' + t);

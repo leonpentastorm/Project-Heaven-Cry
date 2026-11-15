@@ -277,8 +277,6 @@
 "tech/flurry/maul/soldier": "P1 attackedTurn0>true chain.last0>flurry chain.n0>1 chain.t0>1.3 firstShotDone0>true firstShotTurn0>true",
 "tech/flurry/sabre/elite": "P1 attackedTurn0>true chain.last0>flurry chain.n0>1 chain.t0>1.4 firstShotDone0>true firstShotTurn0>true",
 "tech/flurry/sabre/soldier": "P1 attackedTurn0>true chain.last0>flurry chain.n0>1 chain.t0>1.4 firstShotDone0>true firstShotTurn0>true",
-"tech/grapple/fists/elite": "P1 attackedTurn0>true chain.last0>grapple chain.n0>1 chain.t0>1.3",
-"tech/grapple/fists/soldier": "P1 attackedTurn0>true chain.last0>grapple chain.n0>1 chain.t0>1.3",
 "tech/guard/adamantile_greatsword/elite": "P1 attackedTurn0>true chain.last0>guard chain.n0>1 chain.t0>1.0 tech.guard.def0>2 tech.guard.front0>1/0 tech.guard.heavy0>true tech.guard.on0>true tech.guard.t0>1.0 tech.guard.via0>raw_power",
 "tech/guard/adamantile_greatsword/soldier": "P1 attackedTurn0>true chain.last0>guard chain.n0>1 chain.t0>1.0 tech.guard.def0>2 tech.guard.front0>1/0 tech.guard.heavy0>true tech.guard.on0>true tech.guard.t0>1.0 tech.guard.via0>raw_power",
 "tech/guard/combat_knife/elite": "P1 attackedTurn0>true chain.last0>guard chain.n0>1 chain.t0>1.4 tech.guard.def0>2 tech.guard.front0>1/0 tech.guard.on0>true tech.guard.t0>1.4 tech.guard.via0>dexterity",

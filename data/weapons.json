@@ -2890,7 +2890,8 @@
         "props": [
           "light",
           "bare",
-          "blunt"
+          "blunt",
+          "open_hand"
         ],
         "hits_with": "raw_power",
         "scales_with": [
@@ -2938,7 +2939,8 @@
         "profile": "melee",
         "props": [
           "light",
-          "bare"
+          "bare",
+          "open_hand"
         ],
         "hits_with": "raw_power",
         "scales_with": [
@@ -2986,7 +2988,8 @@
         "profile": "melee",
         "props": [
           "light",
-          "bare"
+          "bare",
+          "open_hand"
         ],
         "hits_with": "dexterity",
         "scales_with": [
@@ -3031,7 +3034,8 @@
         "props": [
           "light",
           "bare",
-          "blunt"
+          "blunt",
+          "open_hand"
         ],
         "hits_with": "raw_power",
         "scales_with": [
@@ -3080,7 +3084,8 @@
         "props": [
           "light",
           "bare",
-          "point"
+          "point",
+          "open_hand"
         ],
         "hits_with": "dexterity",
         "scales_with": [
@@ -3140,7 +3145,8 @@
         "props": [
           "heavy",
           "bare",
-          "blunt"
+          "blunt",
+          "open_hand"
         ],
         "hits_with": "raw_power",
         "scales_with": [

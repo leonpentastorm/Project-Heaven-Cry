@@ -2,7 +2,7 @@
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
 import { statQuery, setRankRule, setHandsRule, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
@@ -895,19 +895,43 @@ const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.
  * focus kind, evoker, emanator or attuner, or the door it opens, a skill id: brain_power, will_power, empathy; rules
  * 1.33) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or the pack).
  * THE one test of "a focus in hand": hasEvoker, hasEmanator and hasAttuner are it. */
-export interface HoldSpec { slot?: 'hand' | 'person'; /** a focus kind, the skill it opens, or `any` (rules 1.54: any focus, isFocusId) */ door?: string; item?: string }
+export interface HoldSpec { slot?: 'hand' | 'person'; /** a focus kind, the skill it opens, or `any` (rules 1.54: any focus, isFocusId) */ door?: string; item?: string;
+  /** Rules 1.56 (P15, the unarmed fighter): what is in the hands by its properties (phys.props): `only` true, every hand
+   *  is empty or holds a thing with all of them (a focus, a shield or another weapon fails); `only` false (the default),
+   *  at least one hand holds such a thing. */
+  hands?: { props: string[]; only?: boolean };
+  /** Rules 1.56 (P15): the armour worn is at most this weight class (rules.json combat.armor.classes: its name, `light`,
+   *  or its number). */
+  body?: { armour_at_most: string | number } }
 /** A Figment design (rules 1.34, figments.json): a form and up to two traits, named. */
 export interface FigmentDesign { id: string; name: string; form: string; traits: string[] }
 /** The doors whose focus `holds` knows: each kind's name and the skill it opens (FOCUS_IDS, FOCUS_DOOR). */
 export const FOCUS_DOORS: string[] = [...FOCUS_KINDS, ...FOCUS_KINDS.map((k) => FOCUS_DOOR[k])];
 /** Does this character hold it (see HoldSpec)? */
 export function holds(c: Character, o: HoldSpec): boolean {
+  if (o.hands && !handsHold(c, o.hands)) return false;
+  if (o.body && !(c.armourClass <= armourClassOf(o.body.armour_at_most))) return false;
+  if (!o.door && !o.item) return !!(o.hands || o.body);
   // rules 1.54 (survival-spec 14.2 item 3): door `any`, any focus of the four kinds or a weapon that counts as one
   const k = o.door && o.door !== 'any' ? kindOfDoor(o.door) : null, ids = o.door === 'any' ? ALL_FOCUS_IDS : o.door ? (k ? FOCUS_IDS[k] : []) : o.item ? [o.item] : [];
   if (!ids.length) return false;
   if ((o.slot || 'hand') === 'person') return carries(c, ids);
   return inHands(c).some((x) => ids.includes(x));
 }
+/** A thing's properties (a weapon's or an off-hand item's phys.props). */
+const thingProps = (id: string): string[] => (((WEAPON[id] as any)?.phys?.props || (ITEM[id] as any)?.phys?.props || []) as string[]);
+/** Rules 1.56 (P15): the hands half of `holds`. Bare fists in the main hand and no off hand are empty hands; the off
+ * hand under a two-handed weapon is filled by it. */
+function handsHold(c: Character, o: { props: string[]; only?: boolean }): boolean {
+  const filled = inHands(c).filter((id) => !!id && id !== 'fists'), want = o.props || [];
+  const ok = (id: string) => !isFocusId(id) && want.every((p) => thingProps(id).includes(p));
+  return o.only ? filled.every(ok) : filled.some(ok);
+}
+/** Rules 1.56 (P15): an armour weight class by its name (rules.json combat.armor.classes: none, light, medium…) or its
+ * number; an unknown name is no class at all (nothing is at most it). */
+export const armourClassOf = (v: string | number): number => (typeof v === 'number' ? v : ARMOUR_CLASSES.find((a) => a.name.toLowerCase() === String(v).toLowerCase())?.class ?? -1);
+/** The armour weight class names, for the validator's and the catalogue's lists. */
+export const ARMOUR_CLASS_NAMES: string[] = ARMOUR_CLASSES.map((a) => a.name.toLowerCase());
 /** Rules 1.43 (survival-spec rule 25a, 4.2 item 9): the rarity of the focus of this door (a focus kind or the skill it
  * opens) in a hand, the main hand first; null when none is in a hand. What a graded focus adds to its door's rolls is
  * read from it once (rolls.ts focusAccTerm). */

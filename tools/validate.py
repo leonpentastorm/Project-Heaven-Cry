@@ -1550,7 +1550,7 @@ if isinstance(cq, dict):
 # Rules 1.12, Physical 2.0: data/techniques.json and the weapons' phys blocks (docs/design/handoffs/physical-2.0-PLAN.md)
 tq = data.get("techniques")
 if isinstance(tq, dict):
-    MELEE_PROPS = {"edge", "point", "blunt", "hook", "reach", "heavy", "light", "bare", "thrown"}
+    MELEE_PROPS = {"edge", "point", "blunt", "hook", "reach", "heavy", "light", "bare", "thrown", "open_hand"}  # open_hand: the monk's glove family (rules 1.56)
     RANGED_PROPS = {"quick", "auto", "precise", "spread", "heavy", "blast", "arc", "silent", "loud", "drawn", "thrown"}
     GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer"}, "ranged": {"fire", "press", "set", "take", "watch"}}
     AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
@@ -1959,6 +1959,24 @@ LEGACY_WHEN = {"on_use", "remove", "would_drop_to_0", "on_hit", "on_kill", "on_r
                "per_3_guard_lost", "reaction:enemy_spell_hits_your_shield", "reaction:melee_miss_against_self", "rest:each_special_type",
                "rest_of_session", "scene_start", "session_start", "stitch_16_20", "supreme_command", "turn_start_save"}
 REL = {"self", "ally", "side", "foe", "other", "none", "any"}
+# rules 1.56 (P15): self_holds' hands and body halves: the properties any weapon or off-hand item carries, and the
+# armour weight class names (rules.json combat.armor.classes)
+_THING_PROPS = {pr for _n in ("weapons", "items") for _i in items(_n) for pr in ((_i.get("phys") or {}).get("props") or [])}
+_ARMOUR_NAMES = sorted(str(_a.get("name", "")).lower() for _a in (((data.get("rules") or {}).get("combat") or {}).get("armor") or {}).get("classes") or [])
+def _hold_ok(v, p):
+    if not isinstance(v, dict) or not v or not set(v) <= {"slot", "door", "item", "hands", "body"} or v.get("slot", "hand") not in ("hand", "person"): return False
+    if "door" in v and "item" in v: return False
+    if "door" in v and v["door"] not in (p.get("values") or ["evoker", "emanator"]): return False
+    if "item" in v and not isinstance(v["item"], str): return False
+    h, b = v.get("hands"), v.get("body")
+    if h is not None and not (isinstance(h, dict) and set(h) <= {"props", "only"} and isinstance(h.get("props"), list) and h["props"] and set(h["props"]) <= _THING_PROPS and isinstance(h.get("only", False), bool)): return False
+    if b is not None and not (isinstance(b, dict) and set(b) == {"armour_at_most"} and (b["armour_at_most"] in _ARMOUR_NAMES or (isinstance(b["armour_at_most"], int) and not isinstance(b["armour_at_most"], bool)))): return False
+    return any(x in v for x in ("door", "item", "hands", "body"))
+# rules 1.56 (P15): a technique that comes with a property only while the holder holds something (comes_while) names it
+# in self_holds' shape
+for _t in items("techniques"):
+    if isinstance(_t, dict) and "comes_while" in _t and not _hold_ok(_t["comes_while"], {}): errors.append(f"techniques:{_t.get('id')}: comes_while is self_holds' shape ({{hands: {{props, only}}, body: {{armour_at_most}}}} or a door or item)")
+    if isinstance(_t, dict) and "comes_while" in _t and not _t.get("comes_with"): errors.append(f"techniques:{_t.get('id')}: comes_while gates comes_with, and it names none")
 def check_pred(k, v, w):
     p = PRED.get(k)
     if not p: errors.append(f"{w}: unknown predicate '{k}' in `if` (item_ops.predicates)"); return
@@ -1970,7 +1988,7 @@ def check_pred(k, v, w):
     elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
     elif a == "zone" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("owner", "any") in ("self", "side", "any") and set(v) <= {"kind", "owner"})): errors.append(f"{w}: `if.{k}` is a zone kind ({p.get('values')}) or {{kind, owner: self, side or any}}")
     elif a == "tie" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("as", "any") in ("from", "to", "any") and v.get("side", "any") in ("foe", "ally", "any") and set(v) <= {"kind", "as", "side"})): errors.append(f"{w}: `if.{k}` is a tie kind ({p.get('values')}) or {{kind, as: from or to, side}}")
-    elif a == "hold" and not (isinstance(v, dict) and set(v) <= {"slot", "door", "item"} and v.get("slot", "hand") in ("hand", "person") and (v.get("door") in (p.get("values") or ["evoker", "emanator"]) or (isinstance(v.get("item"), str) and "door" not in v))): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: {p.get('values')}}} or {{slot, item: <id>}}")
+    elif a == "hold" and not _hold_ok(v, p): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: {p.get('values')}}} or {{slot, item: <id>}}, and / or {{hands: {{props: [weapon properties], only: bool}}, body: {{armour_at_most: {_ARMOUR_NAMES} or a class number}}}}")
     elif a == "skill" and not (isinstance(v, dict) and v and all(sk in known["skill"] and isinstance(n, int) for sk, n in v.items())): errors.append(f"{w}: `if.{k}` maps skills to points ({{empathy: 5}})")
     elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
     elif a in ("zone", "tie", "hold", "skill", "limit"): pass

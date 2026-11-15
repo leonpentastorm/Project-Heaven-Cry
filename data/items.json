@@ -1263,8 +1263,107 @@
       "weight_kg": 0,
       "adjudication": "engine",
       "provisional": true,
-      "text": "The fist family's forms, on any attack with bare-hand gloves: Jab ({=toggles.0.effects.0.value|signed} AP, ×{=toggles.0.effects.1.value} damage), Palm (×{=toggles.1.effects.0.value}; a hit saves or is Off Balance and pushed {=toggles.1.effects.2.tiles} tile), Sweep ({=toggles.2.effects.0.value|signed} AP, ×{=toggles.2.effects.1.value}; a hit knocks it Prone, never a Boss), Snatch (×{=toggles.3.effects.0.value}; a hit saves or drops its weapon, never a Boss). One form's hold lands a turn.",
-      "effects": [],
+      "text": "The Open Hand, a monk's gloves (with only the family's gloves in your hands, or none). Open guard: in Light armour or none, with light gloves, blows aimed at you are at {=effects.0.value|signed} to hit. Sway (an Answer, your reaction): the first blow that lands on you in a round does ×{=effects.1.value} damage. Breath ({=effects.2.ap} AP, once a turn): end your newest Body harm and be Guarded. Forms on a plain blow (one a blow, never with a technique): Jab ({=toggles.0.effects.0.value|signed} AP, ×{=toggles.0.effects.1.value} damage), Palm (×{=toggles.1.effects.0.value}; a hit saves or is Off Balance and pushed {=toggles.1.effects.2.tiles} tile, once a turn a target, never a Boss), Sweep ({=toggles.2.effects.0.value|signed} AP, ×{=toggles.2.effects.1.value}; a hit knocks it Prone, never a Boss), Snatch (×{=toggles.3.effects.0.value}; a hit saves or drops its weapon, never a Boss). One form's hold lands a turn.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "actor": "foe",
+            "target": "self",
+            "with_this": true,
+            "self_holds": {
+              "hands": {
+                "props": [
+                  "open_hand",
+                  "light"
+                ],
+                "only": true
+              },
+              "body": {
+                "armour_at_most": "light"
+              }
+            }
+          },
+          "value": -2,
+          "label": "Open guard"
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "self",
+            "actor": "foe",
+            "by_hit": true,
+            "with_this": true,
+            "self_holds": {
+              "hands": {
+                "props": [
+                  "open_hand"
+                ],
+                "only": true
+              }
+            },
+            "answer_on": "sway"
+          },
+          "value": 0.5,
+          "limit": {
+            "reaction": 1,
+            "kind": "protect"
+          },
+          "say": "{self} sways off the line of {actor}'s blow.",
+          "fx": {
+            "k": "stance",
+            "what": "sway",
+            "word": "SWAY"
+          }
+        },
+        {
+          "op": "grant_action",
+          "action": "open_breath",
+          "label": "Breath",
+          "ap": 1,
+          "uses": "per_turn",
+          "if": {
+            "with_this": true,
+            "self_holds": {
+              "hands": {
+                "props": [
+                  "open_hand"
+                ],
+                "only": true
+              }
+            }
+          },
+          "effects": [
+            {
+              "op": "cleanse",
+              "family": "body",
+              "count": 1,
+              "newest": true,
+              "target": "self",
+              "say": "{self} breathes out{then}.",
+              "fx": {
+                "k": "stance",
+                "what": "breath",
+                "word": "BREATH"
+              },
+              "when": "acted"
+            },
+            {
+              "op": "condition",
+              "condition": "guarded",
+              "rounds": 1,
+              "skip_save": true,
+              "target": "self",
+              "when": "acted"
+            }
+          ],
+          "why": {
+            "self_holds": "Only with the Open Hand's gloves (or none) in your hands."
+          }
+        }
+      ],
       "toggles": [
         {
           "id": "jab",
@@ -1273,14 +1372,31 @@
             "combat/attack"
           ],
           "if": {
-            "with_this": true
+            "with_this": true,
+            "self_holds": {
+              "hands": {
+                "props": [
+                  "open_hand"
+                ],
+                "only": true
+              }
+            }
           },
           "effects": [
             {
               "op": "cost_mod",
               "when": "attack",
               "if": {
-                "with_this": true
+                "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true
               },
               "value": -1,
               "min": 1
@@ -1290,9 +1406,18 @@
               "when": "dealing",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true
               },
-              "value": 0.5,
+              "value": 0.4,
               "label": "Jab",
               "fx": {
                 "k": "stance",
@@ -1309,7 +1434,15 @@
             "combat/attack"
           ],
           "if": {
-            "with_this": true
+            "with_this": true,
+            "self_holds": {
+              "hands": {
+                "props": [
+                  "open_hand"
+                ],
+                "only": true
+              }
+            }
           },
           "effects": [
             {
@@ -1317,6 +1450,15 @@
               "when": "dealing",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true
               },
               "value": 0.6,
@@ -1332,6 +1474,15 @@
               "when": "hit",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true,
                 "target_alive": true
               },
@@ -1349,15 +1500,33 @@
               "when": "hit",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true,
                 "target_alive": true,
                 "target_has": [
                   "off_balance"
+                ],
+                "target_not_tier": [
+                  "boss"
                 ]
               },
               "target": "target",
               "how": "push",
-              "tiles": 1
+              "tiles": 1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "each": "target",
+                "key": "palm_push"
+              }
             }
           ]
         },
@@ -1368,14 +1537,31 @@
             "combat/attack"
           ],
           "if": {
-            "with_this": true
+            "with_this": true,
+            "self_holds": {
+              "hands": {
+                "props": [
+                  "open_hand"
+                ],
+                "only": true
+              }
+            }
           },
           "effects": [
             {
               "op": "cost_mod",
               "when": "attack",
               "if": {
-                "with_this": true
+                "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true
               },
               "value": 1
             },
@@ -1384,6 +1570,15 @@
               "when": "dealing",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true
               },
               "value": 0.4,
@@ -1399,6 +1594,15 @@
               "when": "hit",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true,
                 "target_alive": true,
                 "target_not_tier": [
@@ -1428,7 +1632,15 @@
             "combat/attack"
           ],
           "if": {
-            "with_this": true
+            "with_this": true,
+            "self_holds": {
+              "hands": {
+                "props": [
+                  "open_hand"
+                ],
+                "only": true
+              }
+            }
           },
           "effects": [
             {
@@ -1436,6 +1648,15 @@
               "when": "dealing",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true
               },
               "value": 0.5,
@@ -1451,6 +1672,15 @@
               "when": "hit",
               "if": {
                 "with_this": true,
+                "self_holds": {
+                  "hands": {
+                    "props": [
+                      "open_hand"
+                    ],
+                    "only": true
+                  }
+                },
+                "free_tech": true,
                 "melee": true,
                 "target_alive": true,
                 "target_not_tier": [

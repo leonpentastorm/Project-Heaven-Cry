@@ -349,8 +349,6 @@
 "tech/flurry/maul/soldier": "P1 ap9>5 res.momentum3>2",
 "tech/flurry/sabre/elite": "P1 ap9>6 res.momentum3>2",
 "tech/flurry/sabre/soldier": "P1 ap9>6 res.momentum3>2",
-"tech/grapple/fists/elite": "P1 ap9>8",
-"tech/grapple/fists/soldier": "P1 ap9>8",
 "tech/guard/adamantile_greatsword/elite": "P1 ap9>8",
 "tech/guard/adamantile_greatsword/soldier": "P1 ap9>8",
 "tech/guard/combat_knife/elite": "P1 ap9>8",
