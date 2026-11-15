@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 655 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 656 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1212,6 +1212,7 @@ Families: `body`, `brain`, `heart`.
 | `entryPack` | `entryPack(e: CacheItem): PackItem[]` | An entry as a pack item (a pile's own entries are exact; a loot-shaped one is converted). |
 | `pileEntries` | `pileEntries(o: MapObject): { key: string; label: string; item: string; qty: number; kind: string }[]` | What a player sees of a pile: its entries, one line each (key for the pick-up checklist). |
 | `intoCounts` | `intoCounts(c: Character, it: PackItem): boolean` | Things the character keeps as counts, not pack entries (rules 1.9 review fix): a stim injector joins c.stims (what combat/stim spends) and an Essence of Experience joins c.essence. |
+| `countedLines` | `countedLines(c: Character): { line: PackItem & { item: string; counted: true }; at: 'first' \| 'last' }[]` | A character's counted things as pack-shaped lines for a list (consolidation 0.28 S8): each held count (COUNTED) as {id and item: its item id, name, qty, kind: packKindOf, counted: true}, with where it is liste… |
 | `grantGoods` | `grantGoods(c: Character, pack: PackItem[], its: PackItem[]): PackItem[]` | Grant goods to a character (consolidation 0.28 M2): each into its count (intoCounts: a stim, an Essence) or else into `pack` (packAdd, which merges). |
 | `lootToPack` | `lootToPack(l: { item?: string; qty?: number; rarity?: string; name?: string; text?: string; note?: string }): PackItem[]` | One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3), an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an… |
 

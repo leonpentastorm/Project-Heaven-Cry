@@ -3,8 +3,8 @@
 // purse, hands and pack, the party's ready marks and the visit's log. Every price, quantity, number and reason comes from
 // here (priceOf, the gear preview, the reducer's own refusals: `buyProblem`, `sellProblem`); the client builds none.
 import { WEAPON, ITEM, SKILL } from '../data';
-import { type Character, type Rarity, type GearWhere, packOf, carriedKg, carryLimit, kindOfDoor, classResources, wearAt } from '../character';
-import { itemLabel } from '../containers';
+import { type Character, type PackItem, type Rarity, type GearWhere, packOf, carriedKg, carryLimit, kindOfDoor, classResources, wearAt } from '../character';
+import { itemLabel, countedLines } from '../containers';
 import { creditsOf } from '../credits';
 import { type GearPreview, gearPreview, rarityWord, rarityMarks } from '../gearpreview';
 import { SETTING } from './encounter';
@@ -60,6 +60,13 @@ export function meBlock(c: Character): MeV {
     worn: Object.entries(c.worn || {}).map(([slot, id]) => ({ slot: cap(slot.replace(/_/g, ' ')), name: (ITEM[id] as any)?.name || id })), armourClass: c.armourClass || 0,
     pack: packOf(c).map((it, i) => ({ label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), kg: Math.round(carriedKg({ ...c, pack: [it], stims: 0, essence: 0, carried: [] } as Character).pack * 100) / 100, wear: wearView(c, i) })),
     kg: kg.total, limit: carryLimit(c), handWear: wearView(c, 'main'), offWear: wearView(c, 'off') };
+}
+/** The sheet's pack list (consolidation 0.28 S8): the counted things (a stim, an Essence: countedLines) as lines
+ * flagged `counted`, each with its sell note by the shop's one sell rule (sellValue: "Sells for N", or "Can't be sold"),
+ * around the pack's own lines (packOf, in order: a pack line's index is its place among the lines not counted). */
+export function sheetPack(c: Character): (PackItem & { counted?: true })[] {
+  const cl = countedLines(c).map((x) => { const v = sellValue(x.line, 1); return { ...x, line: { ...x.line, note: v == null ? "Can't be sold" : 'Sells for ' + v } }; });
+  return [...cl.filter((x) => x.at === 'first').map((x) => x.line), ...packOf(c), ...cl.filter((x) => x.at === 'last').map((x) => x.line)];
 }
 /** Rules 1.54 item 4: the Materials card of a character's open pick, as the reward screen draws it: each material (its
  * id for the icon, its name, how many, the pack line's words), what the whole card sells for at the shop's rate, and the

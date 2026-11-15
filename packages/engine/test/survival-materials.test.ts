@@ -1,7 +1,7 @@
 // Rules 1.54 (survival-spec section 14, rows R6 to R13): the sheet in a run, materials, making, loot and the shop's
 // stock, every case through the one reducer. Numbers are read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
+import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, gearLockWhy, sheetPack, sellValue, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { Rec, type Pc } from './helpers/replay';
@@ -43,10 +43,22 @@ describe('rules 1.54 item 1: the sheet in a run (R6)', () => {
     const name = g.characters.c1.name;
     for (const a of [{ type: 'gear/load', charId: 'c1' }, { type: 'gear/equip', charId: 'c1', idx: 0, to: 'main' }, { type: 'gear/unequip', charId: 'c1', slot: 'main' }, { type: 'gear/give', charId: 'c1', to: 'c2', credits: 1 }])
       expect(refused(g, a)).toBe('At the camp, change ' + name + '\'s gear in the loadout.');
+    expect(gearLockWhy(g, 'c1')).toBe(refused(g, { type: 'gear/load', charId: 'c1' })); // the sheet's gate is the reducer's words
     // out of the camp the same action is the gear's own business again
     const m = started();
     expect(packOf(m.characters.c1).length).toBeGreaterThan(0);
     expect(refused(m, { type: 'gear/load', charId: 'c1' })).not.toMatch(/At the camp/);
+  });
+});
+
+describe('the sheet\'s pack list (consolidation 0.28 S8)', () => {
+  it('the counted things come from the engine, flagged, with the sell rule\'s note; the pack lines keep their order', () => {
+    const g = started(), c = g.characters.c1;
+    const list = sheetPack(c), counted = list.filter((x) => x.counted);
+    expect(list.filter((x) => !x.counted)).toEqual(packOf(c));
+    expect(counted.reduce((t, x) => t + x.qty, 0)).toBe((c.stims || 0) + (c.essence || 0));
+    for (const x of counted) { const v = sellValue(x, 1); expect(x.note).toBe(v == null ? "Can't be sold" : 'Sells for ' + v); expect(x.name).toBe((ITEM as any)[(x as any).item].name); }
+    expect((c.stims || 0) > 0).toBe(true); // the plain gun's loadout carries stims: the list has a counted line to check
   });
 });
 

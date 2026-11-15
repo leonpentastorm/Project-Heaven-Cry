@@ -157,11 +157,18 @@ const calibreId = (s: string) => Object.keys(CALIBRE_NAME).find((k) => k.toLower
  * combat/stim spends) and an Essence of Experience joins c.essence. True when it was counted. */
 export function intoCounts(c: Character, it: PackItem): boolean {
   if (it.kind === 'plot' || it.mags) return false;
-  const id = it.item || it.id;
-  if (id === 'stim_injector') { c.stims = (c.stims || 0) + it.qty; return true; }
-  if (id === 'essence_of_experience') { c.essence = (c.essence || 0) + it.qty; return true; }
-  return false;
+  const row = COUNTED.find((r) => r.item === (it.item || it.id)); if (!row) return false;
+  c[row.count] = (c[row.count] || 0) + it.qty; return true;
 }
+/** The counted things (intoCounts): each item id, the character's count it joins, and where the sheet lists it
+ * (before or after the pack lines). The one list intoCounts and countedLines read. */
+const COUNTED: { item: string; count: 'stims' | 'essence'; at: 'first' | 'last' }[] = [
+  { item: 'stim_injector', count: 'stims', at: 'first' }, { item: 'essence_of_experience', count: 'essence', at: 'last' },
+];
+/** A character's counted things as pack-shaped lines for a list (consolidation 0.28 S8): each held count (COUNTED) as
+ * {id and item: its item id, name, qty, kind: packKindOf, counted: true}, with where it is listed. */
+export const countedLines = (c: Character): { line: PackItem & { item: string; counted: true }; at: 'first' | 'last' }[] =>
+  COUNTED.filter((r) => (c[r.count] || 0) > 0).map((r) => ({ line: { id: r.item, item: r.item, name: ITEM[r.item]?.name || r.item, qty: c[r.count] || 0, kind: packKindOf(r.item), counted: true as const }, at: r.at }));
 /** Grant goods to a character (consolidation 0.28 M2): each into its count (intoCounts: a stim, an Essence) or else
  * into `pack` (packAdd, which merges). The one way the camp, the shop, making and a reward pick put goods in. */
 export function grantGoods(c: Character, pack: PackItem[], its: PackItem[]): PackItem[] {
