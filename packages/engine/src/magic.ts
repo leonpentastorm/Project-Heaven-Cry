@@ -4,7 +4,7 @@
 // Everything is deterministic: rolls come from the rng passed in.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import figmentsJ from '../../../data/figments.json';
-import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
+import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, RULES, type SigilDef, type ToneRider } from './data';
 import {
   type Character, type OutburstDesign, packKindOf, mod, maxMp, healingMult, packOf, soulPicksLeft, practiceOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
@@ -1841,13 +1841,19 @@ export function planStrike(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, sm: 
   a.rider = [o.note, tone !== 'raw' && rr.length ? (o.riders ? rr.map((r) => r.condition ? condName(r.condition) : '').filter(Boolean).join(', ') : toneRiders(tone, rs).text) : ''].filter(Boolean).join(' · ');
   return a;
 }
-/** Syphon (1 AP): MP from the air by the band, × the Syphon bonus; the meter drops 2. Who can: the mp resource row's
- * `needs` (data/actions.json: an Emanator or an Attuner in hand, any MP focus), asked through resGive. */
+/** What one Syphon takes from the ambient meter: data/rules.json mana.meter.events, the `syphon` row's delta. */
+export const SYPHON_DRAW: number = -Number((RULES.mana.meter.events as any[]).find((e) => e.event === 'syphon').delta);
+/** Syphon's floor (0.28.3, PROVISIONAL): refused when the meter can't pay its draw. */
+export const AIR_SPENT = 'The air here is spent: nothing to Syphon.';
+/** Syphon (1 AP): MP from the air by the band, × the Syphon bonus; the meter drops by SYPHON_DRAW and must be able to
+ * pay it (the floor). Who can: the mp resource row's `needs` (data/actions.json: an Emanator or an Attuner in hand,
+ * any MP focus), asked through resGive. */
 export function syphon(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || Number.isNaN(resGive(cb, u, 'mp', 0, { ask: true }))) return NEEDS_MP_FOCUS;
+  if (manaOf(cb) < SYPHON_DRAW) return AIR_SPENT;
   const ap = price({ cb, u }, 'syphon').ap; { const no = whyNot(cb, u, ap); if (no) return no; } if (m.mp >= m.mpMax) return 'Your MP is full.';
   pay(cb, u, ap); const got = resGive(cb, u, 'mp', Math.round(manaBand(manaOf(cb)).syphon_mp * m.syphon), { by: u, why: 'syphon' });
-  emitFx(cb, 'syphon', { unit: u.id, at: u.pos, mp: got }); shiftMana(cb, -2); say(cb, u.name + ' syphons ' + got + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
+  emitFx(cb, 'syphon', { unit: u.id, at: u.pos, mp: got }); shiftMana(cb, -SYPHON_DRAW); say(cb, u.name + ' syphons ' + got + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
   return null;
 }
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */

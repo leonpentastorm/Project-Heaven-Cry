@@ -8,6 +8,11 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3
+
+- **Syphon through the Attuner** (rules 1.55 item 0.28.3-S.2): any MP focus in hand can Syphon, so a Mender refills MP from the air with its Attuner, in a fight and on the area map. With the Attuner in the pack the button is greyed and says why. Stowing the Attuner in a fight now stops what it gives at once.
+- **Syphon has a floor** (rules 1.55 item 0.28.3-S.1): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). From a fight's start of 15 that is at most 7 Syphons, shared by the party; deaths raise the meter. PROVISIONAL.
+
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP

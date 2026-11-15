@@ -5,8 +5,9 @@
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { storyWith } from './helpers/perkfight';
-import { apply, actionsFor, manaBand, NEEDS_MP_FOCUS, type Action, type GameState } from '../src';
+import { apply, actionsFor, manaBand, NEEDS_MP_FOCUS, SYPHON_DRAW, AIR_SPENT, type Action, type GameState } from '../src';
 import actionsJ from '../../../data/actions.json';
+import rulesJ from '../../../data/rules.json';
 
 const refused = (g: GameState, a: any): string => { try { apply(g, a as Action, 'host'); return ''; } catch (e: any) { return String(e.message || e); } };
 
@@ -55,6 +56,19 @@ describe('Syphon reads the mp row\'s needs (an Attuner is an MP focus)', () => {
   });
   it('no MP focus at all: no Syphon row', () => {
     const f = fight(null); expect(f.row()).toBeFalsy();
+  });
+  it('the floor (0.28.3-S.1): the meter pays the data\'s draw; an empty meter refuses, row greyed, nothing paid', () => {
+    const draw = -(rulesJ as any).mana.meter.events.find((e: any) => e.event === 'syphon').delta;
+    expect(SYPHON_DRAW).toBe(draw);
+    const f = fight('hand'); let u = f.unit();
+    f.s.g.combat.mana = draw; // just enough: works, and the meter falls by the data's amount
+    const mp0 = u.mg.mp; f.s.act({ type: 'combat/syphon', unitId: u.id } as any);
+    expect(f.unit().mg.mp).toBeGreaterThan(mp0); expect(f.s.g.combat.mana).toBe(0);
+    u = f.unit(); const ap0 = u.ap, mp1 = u.mg.mp;
+    expect(f.row().available).toBe(false); expect(f.row().why).toBe(AIR_SPENT);
+    expect(refused(f.s.g, { type: 'combat/syphon', unitId: u.id })).toBe(AIR_SPENT);
+    expect(f.unit().ap).toBe(ap0); expect(f.unit().mg.mp).toBe(mp1); expect(f.s.g.combat.mana).toBe(0);
+    if (draw > 1) { f.s.g.combat.mana = draw - 1; expect(refused(f.s.g, { type: 'combat/syphon', unitId: u.id })).toBe(AIR_SPENT); }
   });
   it('full MP: refused, nothing paid', () => {
     const f = fight('hand', 10_000); const u = f.unit(), ap0 = u.ap;

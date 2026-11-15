@@ -1483,7 +1483,7 @@ Every battlefield tracks one number from 0 to 40: the bots in the air. It starts
 | A Sigil mage vents | + the Flux vented |
 | A Defender loses 3 Guard to reactive plate | +2 |
 | An enhanced round hits | +1 |
-| Syphon | −2 |
+| Syphon | −2 (refused when the meter can't pay it: rules 1.55 item 0.28.3-S.1) |
 | A Soul spell is cast | − its final mana cost ÷ 10, rounded up |
 | Crystallise | −10 |
 | A prayer | −5 |
@@ -1787,7 +1787,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
    3. **Tending others:** your first heal, stim, shield or cleanse given to an ally each turn: −1. Only the first counts, even one given at Strain 0.
    4. **Let it go** (free, on your turn): drop the held Outburst without releasing it: Strain falls by **its stage**, but **never by more than the Strain its swells cost** (stages bought with AP, free Pumps, Feeding or a perk give nothing back: Pump-then-let-go would otherwise be a vent; item 541); the built power is lost (a harmless violet sigh, the mana meter +1).
    5. **Steady the heart** (1 AP, only while holding): −1 Strain, and the held Outburst **doesn't swell** at the start of your next turn. Growth traded for safety: keep a charged heart ready (for Heart Overwatch or the right moment) without drifting over the limit. (Leon, 8 Nov 2026: the first draft, Breathe for 2 AP with a Strain debt, was a net zero for 2 AP.)
-6. Strain and a held Outburst reset after combat. **Syphon** (1 AP) still draws the air into MP (see the meter table, × your Mana Syphon bonus). **Crystallise** (3 AP, the meter at 10 or more) still turns the air into a core (the meter −10).
+6. Strain and a held Outburst reset after combat. **Syphon** (1 AP) still draws the air into MP (see the meter table, × your Mana Syphon bonus); any MP focus in hand can (an Emanator or an Attuner), and the meter must be able to pay its −2: an empty meter gives nothing (Superseded in part by rules 1.55 items 0.28.3-S.1 and 0.28.3-S.2). **Crystallise** (3 AP, the meter at 10 or more) still turns the air into a core (the meter −10).
 
 #### 4. Designs, schools and the second school
 
@@ -9751,3 +9751,14 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
 4132. **The token's short health word (rules 1.55 item 43):** `short` on each rung of `combat.health_look.ladder`: ok,
    scr, hurt, bad, dying (PROVISIONAL); a token at full HP shows no chip on the map.
 4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number).
+0.28.3-S.1. **Syphon has a floor (0.28.3; the lead's ruling, 15 Nov 2026):** Syphon takes its draw from the ambient
+   meter (`rules.json mana.meter.events`, the `syphon` row: 2) and is refused when the meter can't pay it ("The air here
+   is spent: nothing to Syphon."; the button greyed with that reason). No yield at an empty meter; no once-a-turn
+   limit: the meter is the limit (a Survival fight starts at 15, deaths raise it, the party shares it). For every MP
+   focus, the Emanator included. Measured (a Mender, 5 turns, no deaths): from 15 at most 7 Syphons, 120 MP for an
+   Empath (Insight 7, Determination 3); from 25 at most 12, 276 MP. Enemy Soul casters Syphon when short of MP
+   (`ai-soul.ts`); refused, they walk or shoot instead. PROVISIONAL.
+0.28.3-S.2. **Any MP focus can Syphon (0.28.3):** Syphon and its action row read the mp resource row's `needs`
+   (`data/actions.json`: an Emanator or an Attuner in hand), so a Mender with an Attuner Syphons; the gain goes through
+   `resGive`, capped at Max MP. With the focus only in the pack the row is greyed ("Needs an MP focus in hand (an
+   Emanator or an Attuner)."). Crystallise still needs an Emanator. PROVISIONAL.

@@ -31,7 +31,7 @@ import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COS
 import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleEntry } from './effects/actions';
 import type { PerkActionEntry } from './effects/actions';
 import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
-  steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
+  steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE, SYPHON_DRAW, AIR_SPENT } from './magic';
 import { focusHand, carriesMpFocus, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS } from './character';
 import { PILE, isPile } from './containers';
 import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
@@ -752,7 +752,7 @@ const MAGIC: ActionSystem = {
         out.push(D('revert', 'outbursts', 'Revert Pump', 0, 'free', 'Take back your last Pump this turn: its stage, its feeling, and the AP, MP and Strain it cost.', null, { preview: 'outburst', hidden: true }));
       }
       const band: any = manaBand(cb.mana ?? MANA_START);
-      if (sypShow) out.push(D('syphon', 'outbursts', 'Syphon', SPELL_AP.syphon, apT(SPELL_AP.syphon), 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops.', sypWhy, { preview: 'outburst' }));
+      if (sypShow) out.push(D('syphon', 'outbursts', 'Syphon', SPELL_AP.syphon, apT(SPELL_AP.syphon), 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops by ' + SYPHON_DRAW + ', and an empty meter gives nothing.', sypWhy || ((cb.mana ?? MANA_START) < SYPHON_DRAW ? AIR_SPENT : null), { preview: 'outburst' }));
       if (mg.emanator || (c && focusHand(c, 'emanator'))) {
         out.push(D('crystallise', 'outbursts', 'Crystallise', SPELL_AP.crystallise, apT(SPELL_AP.crystallise), 'Squeeze the air into one standard mana core. Needs ambient mana of 10 or more (Normal air or richer). The mana meter drops by 10.', emaWhy, { preview: 'outburst' }));
       }

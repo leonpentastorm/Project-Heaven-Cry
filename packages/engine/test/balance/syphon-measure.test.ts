@@ -37,7 +37,7 @@ describe('Syphon in a Survival fight', () => {
     for (const [label, meter] of [['Survival start (meter ' + MANA_START + ')', MANA_START], ['after two deaths (meter ' + (MANA_START + 10) + ')', MANA_START + 10]] as const)
       for (const per of [1, 2, 6]) for (const [who, attrs] of [['plain (Insight 1, Determination 1)', undefined], ['an Empath (Insight 7, Determination 3)', { insight: 7, determination: 3 }]] as const) {
         const r = run(per, meter, 5, attrs);
-        console.log('[syphon] ' + label + ', ' + who + ', ' + per + ' Syphon(s) a turn x ' + TURNS + ' turns: ' + r.n + ' Syphons (x' + r.mult + '), ' + r.got + ' MP (pool ' + r.max + '), meter ends ' + r.meterEnd + ' | Mends at 8 MP: ' + Math.floor(r.got / 8) + ', at 2 MP: ' + Math.floor(r.got / 2) + ', in this data, ' + MEND_MP + ' MP: ' + Math.floor(r.got / MEND_MP));
+        console.log('[syphon] ' + label + ', ' + who + ', ' + per + ' Syphon(s) a turn x ' + TURNS + ' turns: ' + r.n + ' Syphons (x' + r.mult + '), ' + r.got + ' MP (pool ' + r.max + '), meter ends ' + r.meterEnd + ' | Mends at 8 MP: ' + Math.floor(r.got / 8) + ', at 24 MP: ' + Math.floor(r.got / 24) + ', in this data, ' + MEND_MP + ' MP: ' + Math.floor(r.got / MEND_MP));
       }
   }, 600000);
 });
