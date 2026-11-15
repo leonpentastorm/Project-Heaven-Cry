@@ -6352,6 +6352,24 @@ and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded in
    (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
    and the validator refuses it. Giving, picking up, granting, the carried weight and the sheet's lines read it.
 
+## Rules 1.56 (Balance 2.0), Guard 2.0 (the tank)
+
+Leon, 15 Nov 2026, from co-op Survival on 0.28.2: "even with a shield it's just 10 more fake hp a turn". Guard 2.0
+(docs/design/proposals/2026-11-guard-2.0.md) gives the Endurance door things to do and things to see; it comes in
+slices. Slice 1's rules (Set Against the Blow, Close Guard, Slam, Retort) are lines of `durability.unlocks.1`, which
+the 0.28.3 tank fit creates; they wait for that fit to reach 0.29 and are not in force yet. In force now:
+
+1. **Guard is seen** (item 4300). Guard is drawn as plates around the token, one plate a point of Guard held, the empty
+   slots of the pool faint, the count beside them; the Guard stance's front arc stands outside the plates (one look).
+   When a hit is soaked the plates that took it flash and fly off as shards, with "BLOCKED N" (N: the damage the soak
+   took off); when the last plate goes to a hit or to Pressure the ring breaks, with "GUARD BROKEN"; Guard gained slides
+   in with "+N GUARD"; Guard taken by Pressure drops with "−N GUARD"; Guard spent on an order or an Answer drops with no
+   word (the order shows its own). The engine says which: each change to a unit's Guard is one event with the Guard
+   before and after, the pool, and why (gained, soaked, spent, Pressure), and for a soak the damage taken off. The
+   screen draws only what the event says. Guard changed by a Revision 3 class move (the Defender's plate, its Brace and
+   Interpose, Shrug It Off) or by a data `resource` line still sends no event: the plates follow the state, but that
+   moment has no flash.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9952,3 +9970,10 @@ Items 4148 to 4150.
 4159. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
     (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
     `{essence, last}`. No number.
+
+### Rules 1.56 (Balance 2.0), Guard 2.0 (the tank)
+
+4300. **The Guard event (rules 1.56, Guard 2.0, item 1):** `{k: guard, unit, at, was, now, max, why: gain | soak |
+    spend | pressure, soaked}` (physical/core.ts guardFx); the plates' look and words are fx/guard.ts. No number of the
+    rules: the effect's timings (gain 420, soak 460, broken 620, spend 260 ms at Fast) are the screen's.
+
