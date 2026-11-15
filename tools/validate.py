@@ -2922,7 +2922,8 @@ def _rprice(_id):
     if _num(_d.get("price_credits")) and _d["price_credits"] > 0: return _d["price_credits"]
     if _num(_d.get("price_mult")) and _d["price_mult"] > 0: return _rspecial((_rw.get("special_round_price") or {}).get("calibre"), _d.get("ammo_type"))
     return None
-_EACH_CALIBRE_MOST = 100  # recipes.ts EACH_CALIBRE_MOST
+_EACH_CALIBRE_MOST = (data.get("recipes") or {}).get("each_calibre_most")  # recipes.json each_calibre_most (recipes.ts reads it too)
+if not (isinstance(_EACH_CALIBRE_MOST, int) and _EACH_CALIBRE_MOST > 0): errors.append("recipes: each_calibre_most must be a whole number above 0"); _EACH_CALIBRE_MOST = 0
 def _rexpand(_r):
     """recipes.ts expandRow: an each_calibre row as one row per calibre of special_round_price.calibres (changed together)."""
     if not _r.get("each_calibre"): return [_r]
