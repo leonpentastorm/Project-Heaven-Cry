@@ -25,7 +25,7 @@ export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: a
  * code (a quiver's enchantment is a mod too: it has no triggered effects). */
 const gearModRow = (id: string): any | null => { const x: any = (ITEM as any)[id]; return x && x.category === 'mod' ? x : null; };
 // rules 1.56 L4: a variant's modifier item (data/variants.json, made at load by variants.ts) is held the same way
-const relicRow = (id: string): any | null => EXTRA.relic[id] || gearModRow(id) || VARIANT_MOD[id] || null;
+const heldRelicRow = (id: string): any | null => EXTRA.relic[id] || gearModRow(id) || VARIANT_MOD[id] || null;
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
@@ -138,7 +138,7 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
     return { key, kind, id, name: x.name, tier: 'I', effects, effTier: effects.map(() => 'I'), text: x.text || '', adjudication: x.adjudication || 'engine', active: !!g, bound: !!g, ap: g?.ap ?? x.ap_cost ?? null, /* rules 1.33: a passive verb (no grant_action: Threads, the ladder) answers stats like any item */ uses: g?.uses || x.uses || 'at_will', provisional: !!x.provisional };
   }
   if (kind === 'relic') {
-    const x = relicRow(id); if (!x) return null;
+    const x = heldRelicRow(id); if (!x) return null;
     // a mod's: its triggered effects (its `mod` marker is the slot, not a rule); a run relic's and a variant's modifier's: all
     const effects = EXTRA.relic[id] || VARIANT_MOD[id] ? [...(x.effects || [])] : (x.effects || []).filter((e: any) => e && typeof e.when === 'string');
     return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'relic'), text: x.text || '', adjudication: x.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will', provisional: !!x.provisional };
@@ -180,7 +180,7 @@ export function rawItem(key: string): any | null {
   const [kind, id] = splitKey(key);
   if (kind === 'perk') return perkData(id) || null;
   if (kind === 'trait') return traitData(id) || null;
-  if (kind === 'relic') return relicRow(id);
+  if (kind === 'relic') return heldRelicRow(id);
   if (kind === 'verb') return verbData(id) || null;
   if (kind === 'skill') { const [sid, lvl] = id.split('.'); return (SKILL[sid] as any)?.unlocks?.[lvl] || null; }
   if (kind === 'class') { const [cls, mv] = id.split('.'); return classMove(cls, mv)?.move || null; }
@@ -190,7 +190,7 @@ export function splitKey(key: string): [ItemKind, string] {
   const i = key.indexOf(':'); if (i < 0) return [guessKind(key), key];
   return [key.slice(0, i) as ItemKind, key.slice(i + 1)];
 }
-const guessKind = (id: string): ItemKind => (perkData(id) ? 'perk' : traitData(id) ? 'trait' : relicRow(id) ? 'relic' : verbData(id) ? 'verb' : SKILL_ITEMS.includes(id) ? 'skill' : id.includes('.') ? 'class' : 'perk');
+const guessKind = (id: string): ItemKind => (perkData(id) ? 'perk' : traitData(id) ? 'trait' : heldRelicRow(id) ? 'relic' : verbData(id) ? 'verb' : SKILL_ITEMS.includes(id) ? 'skill' : id.includes('.') ? 'class' : 'perk');
 /** "bulwark" → "perk:bulwark"; "gambler" → "trait:gambler"; "marksman.killzone" → "class:marksman.killzone"; keys pass through. */
 export const keyOf = (idOrKey: string, kind?: ItemKind) => (idOrKey.includes(':') ? idOrKey : (kind || guessKind(idOrKey)) + ':' + idOrKey);
 
