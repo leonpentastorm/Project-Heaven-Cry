@@ -4616,15 +4616,15 @@ profile: Insight and Empathy, 0.06 a point each, k 1.573) × the level factor (`
 | --- | --- | --- | --- |
 | Bond | 1 AP | Empathy 1 | section 2, rule 1 |
 | Let go | 0 AP | Empathy 1 | end one of your Bonds |
-| Mend | 2 AP, 8 MP (6 from Empathy 9) | Empathy 1 | R3 heal 3.75; on yourself once a turn (no through, no Trace) |
-| Touch | 2 AP, 8 MP (6 from Empathy 9) | Empathy 1 | an adjacent ally: heal 4.3 |
-| Settle | 1 AP, 5 MP | Empathy 1 | R3 or yourself: +2 on Body, Brain and Heart saves until your next turn |
-| Soothe | 1 AP, 6 MP | Empathy 1 | R3 or yourself: end the newest harmful Body condition (Heart too from Empathy 5; two from Empathy 7) |
-| Shield | 2 AP, 10 MP (8 from Empathy 9) | Empathy 2 | R3: a shield of 4.5 on the base layer (the larger stands) |
-| Raise | 1 AP, 12 MP | Empathy 3 | a Downed ally adjacent or Bonded in sight stands at 1.9 (at least 1 HP); once a turn |
-| Guide | 1 AP, 5 MP | Empathy 4 | R3: the ally steps up to 2 tiles (3 from Empathy 7) to a tile you pick; willing; provokes nothing |
+| Mend | 2 AP, 2 MP (1 from Empathy 9; rules 1.55 item 46) | Empathy 1 | R3 heal 3.75; on yourself once a turn (no through, no Trace) |
+| Touch | 2 AP, 2 MP (1 from Empathy 9) | Empathy 1 | an adjacent ally: heal 4.3 |
+| Settle | 1 AP, 1 MP | Empathy 1 | R3 or yourself: +2 on Body, Brain and Heart saves until your next turn |
+| Soothe | 1 AP, 2 MP | Empathy 1 | R3 or yourself: end the newest harmful Body condition (Heart too from Empathy 5; two from Empathy 7) |
+| Shield | 2 AP, 3 MP (2 from Empathy 9) | Empathy 2 | R3: a shield of 4.5 on the base layer (the larger stands) |
+| Raise | 1 AP, 4 MP | Empathy 3 | a Downed ally adjacent or Bonded in sight stands at 1.9 (at least 1 HP); once a turn |
+| Guide | 1 AP, 1 MP | Empathy 4 | R3: the ally steps up to 2 tiles (3 from Empathy 7) to a tile you pick (a second pick after the ally; rules 1.55 item 45); willing; provokes nothing |
 | Share a Hit | reaction (protect) | Camaraderie 1 | an adjacent ally (a Bonded ally in sight from Camaraderie 5) is hit: you take 25% + 5% a point of Camaraderie of it (at most 50%); no focus |
-| Field Surgery | out of a fight, a field kit, 15 MP | Empathy 3 | treat one limb injury or clear every Body condition; once an ally a scene |
+| Field Surgery | out of a fight, a field kit, 5 MP | Empathy 3 | treat one limb injury or clear every Body condition; once an ally a scene |
 
 Stim Throw is a gear action anyone has (1 AP, a stim, an ally within 4 you see). Songs stay gear and traits. Items
 2015 to 2024.
@@ -4633,7 +4633,7 @@ Stim Throw is a gear action anyone has (1 AP, a stim, an ally within 4 you see).
 
 Empathy: the door at 1 (Bond, 1 Bond held, Mend, Touch, Settle, Soothe, the passives of section 2); Shield at 2; Raise,
 Field Surgery and Feel Their Pain at 3; Guide at 4; 2 Bonds, Soothe reaches Heart, Mercy at 5; Bond made within 9 at 6;
-Soothe ends 2, Guide 3 tiles, a perk step at 7; 3 Bonds at 8; Mend, Touch and Shield 2 MP cheaper and a perk step at
+Soothe ends 2, Guide 3 tiles, a perk step at 7; 3 Bonds at 8; Mend, Touch and Shield 1 MP cheaper (rules 1.55 item 46; it was 2) and a perk step at
 9; the Mastered perk and ally Bonds that hold while Downed at 10. Healing given grows 0.06 a point throughout.
 **Empathy's free Pump (from 3) and the held Outburst's swell without Strain (from 7) move to Will Power** at the same
 points (`soul_modules.json cycle`). Anyone with Empathy 1 can feel (rules 1.8's feelings); a character who first gains
@@ -6233,6 +6233,21 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    (`fieldWorld`, game.ts) now writes back to that unit after every action what a token draws (HP, Max HP, Downed,
    conditions, shields, MP), read from the character as the field builds it (`storyCb`), so the token, its bar and the
    sheet agree; the fight's record (initiative, kills) stays.
+45. **Guide picks the tile** (item 4134; Leon's playtest on 0.28.2: "Guide does not work"). Guide (rules 1.33) moves
+   the ally to a tile its Bonder picks, but its card asked only for the ally and sent no tile: the engine took the AP
+   and the MP and nobody moved, with nothing said. A verb aimed at a unit whose own op moves that unit to the event's
+   tile (`displace` with `to: "tile"`) now takes the tile as a second pick after the unit: the tiles it may step to are
+   shaded (free to stand on, no trap, seen by you, at most the op's `tiles` from the ally), and until a legal one is
+   picked the action is refused in words ("Now click the tile Kade steps to.", "Too far for Kade (2 tiles).", "No room
+   there.", "You can't see that tile.") before anything is paid. The step is said in the log. No new number.
+46. **Tending costs a third of the MP** (item 4135; Leon's playtest on 0.28.2, as the Empath with the Attuner: "Bond
+   healing is good but MP is tiny, need to be raise at least 3x"; the lead's ruling, 15 Nov 2026: three times as many
+   Tending actions from a full bar, by the verbs' MP costs, not by Max MP, which also feeds Outbursts). Each Tending
+   verb's MP is a third of what it was, rounded down so that a bar holds at least three times as many: Mend, Mend
+   Yourself and Touch 2 (were 8), 1 from Empathy 9 (was 6); Shield 3 (was 10), 2 from Empathy 9 (was 8); Settle 1
+   (was 5); Soothe 2 (was 6); Raise 4 (was 12); Guide 1 (was 5); Field Surgery 5 (was 15). AP costs and heal sizes
+   are unchanged; Max MP is unchanged (rules 1.24). The Mender's class moves that spend MP (Triage 6, Inspire 10,
+   Rally 20) are not Tending verbs and keep their prices. PROVISIONAL (`data/tending.json`, each verb's `res.mp`).
 
 ## Maps (rules 1.16)
 
@@ -9751,3 +9766,5 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
 4132. **The token's short health word (rules 1.55 item 43):** `short` on each rung of `combat.health_look.ladder`: ok,
    scr, hurt, bad, dying (PROVISIONAL); a token at full HP shows no chip on the map.
 4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number).
+4134. **Guide's tile (rules 1.55 item 45):** a unit-aimed verb whose own `displace` goes `to: "tile"` asks for the tile after the unit; the legal tiles are at most the op's `tiles` from the unit, free, trap-free and seen. No number.
+4135. **Tending's MP (rules 1.55 item 46):** Mend, Mend Yourself, Touch 2 MP (1 from Empathy 9); Shield 3 (2); Settle 1; Soothe 2; Raise 4; Guide 1; Field Surgery 5. Supersedes items 2015 and 2016's 8 MP and section 3's table as it was. PROVISIONAL.

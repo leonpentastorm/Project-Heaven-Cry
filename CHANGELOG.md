@@ -8,6 +8,11 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3
+
+- **Guide works** (rules 1.55 item 45; Leon: "Guide does not work"): its card asked only for the ally and sent no tile, so the engine took 1 AP and the MP and nobody moved, with nothing said. Now you click the ally, then one of the shaded tiles it may step to; a missing, too-far, blocked or unseen tile is refused in words before anything is paid, and the step is said in the log (`effects/actions.ts` stepTileWhy, `descriptors.ts` PERKS).
+- **Tending costs a third of the MP** (rules 1.55 item 46; Leon: "MP is tiny, need to be raise at least 3x"; the lead's ruling: the verbs' costs, not Max MP): Mend, Mend Yourself, Touch 2 MP (were 8; 1 from Empathy 9), Shield 3 (was 10), Settle 1 (5), Soothe 2 (6), Raise 4 (12), Guide 1 (5), Field Surgery 5 (15). A level-1 Empath's 500 MP holds 250 Mends (was 62). PROVISIONAL.
+
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP

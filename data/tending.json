@@ -550,12 +550,12 @@
           "uses": "at_will",
           "res": {
             "mp": {
-              "base": 8,
+              "base": 2,
               "steps": [
                 {
                   "of": "skill:empathy",
                   "at": 9,
-                  "value": -2
+                  "value": -1
                 }
               ]
             }
@@ -634,12 +634,12 @@
           "uses": "at_will",
           "res": {
             "mp": {
-              "base": 8,
+              "base": 2,
               "steps": [
                 {
                   "of": "skill:empathy",
                   "at": 9,
-                  "value": -2
+                  "value": -1
                 }
               ]
             }
@@ -699,12 +699,12 @@
           "uses": "at_will",
           "res": {
             "mp": {
-              "base": 8,
+              "base": 2,
               "steps": [
                 {
                   "of": "skill:empathy",
                   "at": 9,
-                  "value": -2
+                  "value": -1
                 }
               ]
             }
@@ -781,7 +781,7 @@
           "ap": 1,
           "uses": "at_will",
           "res": {
-            "mp": 5
+            "mp": 1
           },
           "if": {
             "self_holds": {
@@ -850,7 +850,7 @@
           "ap": 1,
           "uses": "at_will",
           "res": {
-            "mp": 6
+            "mp": 2
           },
           "if": {
             "self_holds": {
@@ -980,12 +980,12 @@
           "uses": "at_will",
           "res": {
             "mp": {
-              "base": 10,
+              "base": 3,
               "steps": [
                 {
                   "of": "skill:empathy",
                   "at": 9,
-                  "value": -2
+                  "value": -1
                 }
               ]
             }
@@ -1063,7 +1063,7 @@
           "ap": 1,
           "uses": "at_will",
           "res": {
-            "mp": 12
+            "mp": 4
           },
           "if": {
             "self_holds": {
@@ -1143,7 +1143,7 @@
           "ap": 1,
           "uses": "at_will",
           "res": {
-            "mp": 5
+            "mp": 1
           },
           "if": {
             "self_holds": {
@@ -1358,7 +1358,7 @@
           "ap": 0,
           "uses": "out_of_combat",
           "res": {
-            "mp": 15
+            "mp": 5
           },
           "effects": []
         }

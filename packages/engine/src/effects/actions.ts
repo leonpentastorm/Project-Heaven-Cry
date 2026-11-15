@@ -110,7 +110,26 @@ export function tileReachWhy(h: Holder, reach: any, tile: string | null | undefi
   }
   return null;
 }
-const TARGET_OF_SIDE: Record<string, ActionDef['target']> = { foe: 'enemy', ally: 'ally', side: 'ally', any: 'unit' };
+/** The tile a unit-aimed verb moves its target to (`thenTile`: an own `displace` with to: "tile", Guide, rules 1.33):
+ * a tile the holder sees, free to stand on with no trap, other than the target's own, at most the op's `tiles` from the
+ * target. With no tile picked yet: refused with the prompt, and the legal tiles as the area to shade. */
+function stepTileWhy(h: Holder, reach: any, step: any, args: ActionArgs): Partial<ActionPreview> {
+  const u = h.u, cb = h.cb, t = args.targetId && cb ? cb.units.find((x) => x.id === args.targetId) : null;
+  if (!u || !cb || !t || reachWhy(h, reach, t)) return {}; // the target's own refusal comes first
+  const n = holderNumber(h, step.tiles) ?? 1;
+  const why = (k: string): string | null => {
+    if (k === t.pos) return t.name + ' is already there.';
+    if (distK(t.pos, k) > n) return 'Too far for ' + t.name + ' (' + n + (n === 1 ? ' tile).' : ' tiles).');
+    if (!unitSees(cb, u, k)) return 'You can\'t see that tile.';
+    if (!canStand(cb, k, t) || objectsAt(cb, k).some((o) => isTrap(o))) return 'No room there.';
+    return null;
+  };
+  if (args.tile) { const w = why(args.tile); return w ? { ok: false, why: w } : {}; }
+  const [tx, ty] = xy(t.pos), area: string[] = [];
+  for (let dx = -n; dx <= n; dx++) for (let dy = -n; dy <= n; dy++) { const k = key(tx + dx, ty + dy); if (!why(k)) area.push(k); }
+  return { ok: false, why: area.length ? 'Now click the tile ' + t.name + ' steps to.' : 'No free tile within ' + n + ' of ' + t.name + '.', area };
+}
+const TARGET_OF_SIDE: Record<string, ActionDef['target']> ={ foe: 'enemy', ally: 'ally', side: 'ally', any: 'unit' };
 
 /** The default actions of an item, from its data. */
 export function defaultActions(info: ItemInfo): ActionDef[] {
@@ -136,7 +155,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
         return null;
       },
     };
-    if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend 2 MP cheaper from Empathy 9)
+    if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend cheaper from Empathy 9)
     if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (typeof g.site === 'string') d.site = g.site;
@@ -148,7 +167,14 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       return true;
     };
     if (reach?.tile) d.preview = (h, args) => { const why = tileReachWhy(h, reach, args.tile); return why ? { ok: false, why } : {}; }; // a tile: in range and in sight
-    else if (reach) { d.reach = (h, t) => reachWhy(h, reach, t); d.choices = (h) => (h.cb ? h.cb.units.filter((t) => !reachWhy(h, reach, t)).map((t) => t.id) : []); }
+    else if (reach) {
+      d.reach = (h, t) => reachWhy(h, reach, t); d.choices = (h) => (h.cb ? h.cb.units.filter((t) => !reachWhy(h, reach, t)).map((t) => t.id) : []);
+      // 0.28.3 (rules 1.55 item 45): a unit-aimed verb whose own op moves the target to the event's tile (Guide's
+      // displace to: "tile") takes that tile as a second pick: the legal tiles are shown, and a missing or wrong one is
+      // refused in words before anything is paid (it was sent with no tile: the AP and MP went, nobody moved)
+      const step = mine.find((e) => e?.op === 'displace' && e.to === 'tile' && e.target === 'target');
+      if (step) { d.thenTile = true; d.preview = (h, args) => stepTileWhy(h, reach, step, args); }
+    }
     return d;
   };
   // a nested `when: "acted"` effect is the item's own triggered effect (collect.ts liftActed): the trigger runs it, not the action
@@ -236,8 +262,10 @@ export interface PerkActionEntry {
   options?: { id: string; label: string; off?: string }[]; pickMulti?: number; pickLabel?: string;
   /** The units it may go at, worked out by the engine (a door verb's reach): the pick list. */
   choices?: string[];
+  /** After the unit, a tile (ActionDef.thenTile: where the verb moves it). */
+  thenTile?: boolean;
 }
-type Who = { u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
+type Who ={ u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
 
 /** Every action a holder's items give on this surface, available or greyed (hidden ones left out). */
 export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
@@ -291,7 +319,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
     target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h, d), ...(subOf(h, d) ? { sub: subOf(h, d) } : {}), cls: h.info.classId,
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
-    ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}) };
+    ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}), ...(d.thenTile ? { thenTile: true } : {}) };
 }
 /** Why a feeling can't be given yet (rules 1.33: only a felt feeling is given). */
 export const UNFELT = 'Not felt yet: a feeling is yours to give once it has happened to you.';
