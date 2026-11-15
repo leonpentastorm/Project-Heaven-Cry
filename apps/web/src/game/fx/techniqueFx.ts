@@ -171,7 +171,8 @@ export function rowKey(e: { k: string; tech?: string; move?: string; thrown?: bo
     return e.mode === 'burst' ? 'burst' : 'shot';
   }
   if (e.k === 'technique') return TECH_FX[e.id]?.on === 'use' ? e.id : null;
-  if (e.k === 'shove') return e.unit && !e._tech && !e.interpose && !e.magic ? 'move:fighter.shove' : null;
+  // Interpose (the Answer, physical/guard.ts, and the Bulwark's move) is a 'shove' marked interpose: the tank's own row (Guard 2.0, the audit's d)
+  if (e.k === 'shove') return e.interpose && e.unit ? 'interpose' : e.unit && !e._tech && !e.magic ? 'move:fighter.shove' : null;
   if (e.k === 'anchor') return e.what === 'oa' && e.target ? 'move:defender.anchor' : null;
   return null;
 }

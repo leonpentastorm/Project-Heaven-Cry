@@ -2121,7 +2121,6 @@ export function toggleProne(cb: Combat, u: Unit): string | null {
   if (!u.prone) emit(cb, 'stood_up', { u, cb }); // 'stood_up' {u}: after standing (a held shot waits for it: Dead to Rights)
   return null;
 }
-const GUARD_RULES = (): any => (techniquesJ as any).rules?.guard || {};
 /** Is this unit's main-hand weapon one that has the Brace action of its own (a weapon that must be braced, the LMG's
  * −2, a weapon whose skill is a braced bonus, or one its handling grants Brace to)? What Brace was before rules 1.13. */
 export function weaponBraces(u: Unit): boolean {
@@ -2133,7 +2132,7 @@ export function weaponBraces(u: Unit): boolean {
  * braced only for Guard (u.guardBrace) is in the braced stance and nothing more. */
 export const weaponBraced = (u: Unit): boolean => !!u.braced && !u.guardBrace;
 /** Durability's Guard (rules 1.13; physical/guard.ts sets f): what a Brace gives a unit that has a Guard pool. */
-export const braceHook: { f: ((cb: Combat, u: Unit) => void) | null } = { f: null };
+export const braceHook: { f: ((cb: Combat, u: Unit) => void) | null; /** the Guard a Brace gives this unit (physical/core.ts guardGain: the one copy of the rule), for the Brace row */ gain?: ((u: Unit) => number) | null } = { f: null, gain: null };
 export function brace(cb: Combat, u: Unit): string | null {
   if (!weaponActions(u, cb).some((x) => x.id === 'brace')) return 'This weapon has nothing to brace.';
   if (u.braced) return 'Already braced.';
@@ -3031,7 +3030,9 @@ export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
   const braces = weaponBraces(u);
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;
-  if (braces || pool) add({ id: 'brace', label: 'Brace', ap: price({ cb, u }, 'brace').ap, why: u.braced ? 'Already braced.' : need(price({ cb, u }, 'brace').ap), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
+  // Guard 2.0 (rules 1.56, the audit's b): the row says the Guard this unit's Brace gives (guardGain, through braceHook)
+  const bg = pool ? braceHook.gain?.(u) ?? 0 : 0;
+  if (braces || pool) add({ id: 'brace', label: bg ? 'Brace · +' + bg + ' Guard' : 'Brace', ap: price({ cb, u }, 'brace').ap, why: u.braced ? 'Already braced.' : need(price({ cb, u }, 'brace').ap), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (bg ? ' You gain ' + bg + ' Guard.' : '') + ' Moving ends it.' });
   if (u.maxDur) { const c = price({ cb, u }, 'field_repair').ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
   const owAp = price({ cb, u }, 'overwatch', attackApCost(w, melee ? 'melee' : 'shot')).ap;
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });

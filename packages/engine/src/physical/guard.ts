@@ -24,6 +24,7 @@ const G = () => PHYS_RULES.guard || {};
 const DEF_PLATE = 'class:defender.reactive_plate', DEF_BRACE = 'class:defender.brace';
 
 // ---------- gained by Brace ----------
+braceHook.gain = (u: Unit) => guardGain(u, 'brace');
 braceHook.f = (cb: Combat, u: Unit) => {
   const got = addGuard(cb, u, guardGain(u, 'brace'));
   if (got) say(cb, '  +' + got + ' Guard (' + guardOf(u) + '/' + guardMax(u) + ').');
@@ -75,7 +76,8 @@ technique({
       answer(t, src.by, () => {
         spendGuard(cb, me, cost);
         const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
-        const dmg = landed(d.total, d.armour);
+        // a share of this blow already taken by others (an item's redirect: Close Guard, Share a Hit) is not taken again
+        const took = ctx.moved > 0 ? ctx.moved / (ctx.moved + ctx.dmg) : 0, dmg = Math.floor(landed(d.total, d.armour) * (1 - took));
         ctx.dmg = 0;
         interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
         emitFx(cb, 'shove', { unit: me.id, target: v.id, from: me.pos, to: me.pos, ok: true, interpose: true });

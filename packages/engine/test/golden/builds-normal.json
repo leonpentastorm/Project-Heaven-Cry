@@ -896,7 +896,7 @@
 "build/tank/normal/L3/taken/elite": "hit o:weapon/shot:28+0x1.239v0 i:P1:weapon/physical:12 => P1 hp188>176",
 "build/tank/normal/L3/taken/minion": "hit o:weapon/shot:20+0x1.18v0 i:P1:weapon/physical:1 => P1 hp188>187",
 "build/tank/normal/L3/taken/soldier": "hit o:weapon/shot:30+0x0.92v0 i:P1:weapon/physical:5 => P1 hp188>183",
-"build/tank/normal/L3/taken/vermin": "hit o:weapon/melee:18+0x0.59v0 i:P1:weapon/physical:1 => P1 hp188>187",
+"build/tank/normal/L3/taken/vermin": "hit o:weapon/melee:18+0x0.59v0 i:P1:weapon/physical:1 o:physical/item:0.5+0x1v0 i:F1:physical/physical:1 => P1 hp188>187, F1 hp20>19",
 "build/tank/normal/L3/tech/lunge": "o:weapon/melee:28+0x2.215v0 i:F3:weapon/physical:56 => F3 hp183>127",
 "build/tank/normal/L6/plain/boss": "pv 85.233 a17 c1.64 | hit o:weapon/melee:28+0x3.044v0 i:F5:weapon/physical:68 => F5 hp1518>1450",
 "build/tank/normal/L6/plain/elite": "pv 85.233 a17 c1.64 | hit o:weapon/melee:28+0x3.044v0 i:F4:weapon/physical:68 => F4 hp444>376",

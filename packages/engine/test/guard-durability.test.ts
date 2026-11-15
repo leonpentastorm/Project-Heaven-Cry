@@ -21,6 +21,8 @@ function fight(specs: { dur?: number; weapon?: string; shield?: string; known?: 
   const foe = f.put(f.foe, o.foeAt || 'D5'); foe.hp = foe.maxHp = 900; foe.lvlDmg = 1; // its weapon's plain damage (rules 1.15 would scale it; these tests count Guard against whole numbers)
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
   f.turn(f.pc);
+  // the techniques' Answers on, Durability's door's item Answers (Retort, Close Guard: rules 1.56 Guard 2.0) off: these tests count Guard and HP for one rule at a time
+  f.pcs.forEach((u) => { (f.char(u) as any).phys.answers = phys.TECHNIQUES.filter((t: any) => t.group === 'answer').map((t: any) => t.id); });
   for (const u of f.cb.units) { delete (u as any).reactUsed; delete (u as any).uses?.['reaction|reaction']; if (u.side === 'pc') { u.hp = u.maxHp; u.armour = 0; } }
   return f;
 }

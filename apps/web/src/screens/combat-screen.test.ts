@@ -399,7 +399,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     await React.act(async () => { vi.advanceTimersByTime(15000); });
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab).toBeTruthy();
     // the badge and the tab's label count Use now only
-    expect(tab.textContent).toMatch(/Perks\s*1$/); expect(tab.getAttribute('aria-label')).toMatch(/^Perks, 1 action, 3 to read/); // 3 since rules 1.55, 0.28.3-T.3: the sheet's Durability (Guard's door, Always on)
+    expect(tab.textContent).toMatch(/Perks\s*3$/); expect(tab.getAttribute('aria-label')).toMatch(/^Perks, 3 actions, 2 to read/); // rules 1.56 Guard 2.0: the sheet's Durability door gives Challenge and Slam (Use now)
     await React.act(async () => { tab.click(); });
     const panel = el.querySelector('#phc-tabpanel') as HTMLElement;
     // three labelled shelves, in that order
@@ -409,12 +409,12 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     expect((panel.querySelector('[data-shelf="always"] > span') as HTMLElement).textContent).toBe('ALWAYS ON');
     // Use now is the buttons players press, as before
     const use = Array.from(panel.querySelectorAll('button.phc-cb-act[data-act^="pk:"]'));
-    expect(use.map((b) => b.getAttribute('data-act'))).toEqual(['pk:perk:shrug_it_off#shrug_it_off']);
+    expect(use.map((b) => b.getAttribute('data-act'))).toEqual(['pk:perk:shrug_it_off#shrug_it_off', 'pk:skill:durability.1#guard_challenge', 'pk:skill:durability.1#guard_slam']);
     // the other two are lists of rows, not action buttons: a name and one line
     const rides = panel.querySelector('[data-shelf="rides"] ul[role="list"]') as HTMLElement, always = panel.querySelector('[data-shelf="always"] ul[role="list"]') as HTMLElement;
     expect(rides.getAttribute('aria-labelledby')).toBe('phc-shelf-rides'); expect(panel.querySelector('#phc-shelf-rides')!.textContent).toBe('RIDES AN ACTION');
     expect(Array.from(rides.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:running_reload']);
-    expect(Array.from(always.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:used_to_the_pain', 'pki:skill:durability.1']); // the sheet's Durability: Guard's door (rules 1.55, 0.28.3-T.3)
+    expect(Array.from(always.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:used_to_the_pain']); // the sheet's Durability door has actions now (rules 1.56 Guard 2.0): it is on Use now
     expect(panel.querySelectorAll('li .phc-cb-act').length).toBe(0); expect(panel.querySelectorAll('li [aria-pressed]').length).toBe(0);
     // a perk that rides a move is listed with where its switch is; a passive shows a live line
     expect(rides.querySelector('[data-perk-line]')!.textContent).toBe('on a move');
@@ -445,9 +445,9 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     await React.act(async () => { root.render(React.createElement(App)); });
     await React.act(async () => { vi.advanceTimersByTime(15000); });
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; await React.act(async () => { tab.click(); });
-    // the sheet's Durability holds Guard's door (Always on, rules 1.55, 0.28.3-T.3); Rides an action is empty and doesn't show
-    expect(Array.from(el.querySelectorAll('#phc-tabpanel [data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['use', 'always']);
-    expect(el.querySelectorAll('#phc-tabpanel [data-perk-row]').length).toBe(1);
+    // the sheet's Durability door is on Use now with the perk (rules 1.56 Guard 2.0: Challenge, Slam); the other shelves are empty and don't show
+    expect(Array.from(el.querySelectorAll('#phc-tabpanel [data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['use']);
+    expect(el.querySelectorAll('#phc-tabpanel [data-perk-row]').length).toBe(0);
     // another tab carries no shelf heading
     await React.act(async () => { (el.querySelector('#phc-tab-move') as HTMLElement).click(); });
     expect(el.querySelectorAll('#phc-tabpanel [data-shelf]').length).toBe(0);
@@ -464,9 +464,9 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     G.combat!.log.push(active(G.combat!)!.name + ' takes 12 (Used to the Pain: −25% on the next hit).');
     await React.act(async () => { root.render(React.createElement(App)); });
     await React.act(async () => { vi.advanceTimersByTime(15000); });
-    const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab.textContent).toMatch(/Perks\s*0$/);
+    const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab.textContent).toMatch(/Perks\s*2$/); // the Durability door's Challenge and Slam (rules 1.56 Guard 2.0)
     await React.act(async () => { tab.click(); });
-    expect(Array.from(el.querySelectorAll('#phc-tabpanel [data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['always']);
+    expect(Array.from(el.querySelectorAll('#phc-tabpanel [data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['use', 'always']);
     // the passive's line follows the fight: the log named it since this unit's last turn, so the row shows that line
     const live = el.querySelector('[data-perk-row="pki:perk:used_to_the_pain"]') as HTMLElement;
     expect(live.getAttribute('data-state')).toBe('last'); expect(live.querySelector('[data-perk-line]')!.textContent).toMatch(/^Last: .* \(Used to the Pain: −25% on the next hit\)$/);

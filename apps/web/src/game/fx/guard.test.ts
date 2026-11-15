@@ -8,7 +8,9 @@ import { refOf } from '@engine';
 import { physFight, rig } from '../../../../../packages/engine/test/helpers/physfight';
 import { setLayer, slow } from './dom';
 import { playFx, setContext, clearFx } from './play';
-import { guardFxOf, guardBeat, guardWord, platesMarkup, guardMarkup, GUARD_MS } from './guard';
+import { guardFxOf, guardBeat, guardWord, platesMarkup, guardMarkup, GUARD_MS, guardMoveWord, GUARD_MOVE_MS } from './guard';
+import { rowKey } from './techniqueFx';
+import { resolveAttack } from '@engine';
 import { meleeMarksOf } from './melee-techniques';
 
 function grid(w = 8, h = 6) {
@@ -91,5 +93,39 @@ describe('Guard on the fight map', () => {
     expect((both.match(/data-plate=/g) || []).length).toBe(2); expect((both.match(/<path /g) || []).length).toBe(2 + 1 + 1 + 1); // 2 plates, 1 slot, the arc, Heavy's arc
     const marks = meleeMarksOf(game([PC, { id: 'x', side: 'pc', pos: '2,2', tech: { guard: { on: true, front: [1, 0] } } }, { id: 'y', side: 'pc', pos: '3,3', res: { guard: 0 }, resMax: { guard: 4 } }]));
     expect(marks.filter((k) => k.kind === 'guard').map((k) => [k.unit, k.plates, k.max, !!k.front])).toEqual([['pc-c1', 3, 5, false], ['x', 0, 0, true]]);
+  });
+});
+
+describe("Guard 2.0 slice 1: the door's moves on the map (rules 1.56; skills.json durability.1, each op's fx)", () => {
+  let g: { root: HTMLElement; layer: HTMLElement };
+  beforeEach(() => { vi.useFakeTimers(); g = grid(); (window as any).__phcFxTrace = []; });
+  afterEach(() => { clearFx(); vi.useRealTimers(); g.root.remove(); g.layer.remove(); delete (window as any).__phcFxTrace; });
+  const moveTraces = () => ((window as any).__phcFxTrace as any[]).filter((t) => t.w === 'guard_move').map((t) => t.move);
+
+  it("each move has its word and its beat; Interpose (a shove marked interpose) plays the tank's own row", () => {
+    expect(guardMoveWord({ k: 'guard_move', move: 'crit_turned' })).toBe('CRIT TURNED');
+    expect(guardMoveWord({ k: 'guard_move', move: 'retort' })).toBe('RETORT');
+    expect(guardBeat({ k: 'guard_move', move: 'slam' })).toBe(GUARD_MOVE_MS.slam);
+    expect(rowKey({ k: 'shove', unit: 'a', target: 'b', interpose: true })).toBe('interpose');
+    expect(rowKey({ k: 'shove', unit: 'a', target: 'b' })).toBe('move:fighter.shove');
+  });
+
+  it("a real fight (the reducer): Slam, Challenge, then a foe's blow turned, answered by Retort: each event plays with its word", () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: [], skills: { durability: 5, dexterity: 0 } }], [{ tier: 'soldier', weapon: 'maul' }, { tier: 'soldier', weapon: 'maul' }]);
+    f.cb.objects = []; f.put(f.pc, 'C3'); const [a, b] = f.cb.units.filter((u) => u.side === 'foe');
+    f.put(a, 'D3'); f.put(b, 'B3'); for (const u of [a, b]) { const x = f.unit(u.id); x.hp = x.maxHp = 900; }
+    f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1; f.turn(f.pc);
+    const me = f.unit(f.pc.id); me.hp = me.maxHp; me.armour = 0; me.res!.guard = 5;
+    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_slam' } as any);
+    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any);
+    const foe = f.unit(a.id); f.put(foe, 'D3'); f.turn(foe); rig({ die: 20 });
+    f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(a.id), f.unit(f.pc.id), 'melee', null, { noAp: true })); rig(null);
+    const evs = ((f.cb as any).fx as any[]).filter((e) => e.k === 'guard_move');
+    expect(evs.map((e) => e.move)).toEqual(['slam', 'challenge', 'crit_turned', 'retort']);
+    setContext(f.g as any, 'combat');
+    for (const e of evs) { playFx({ ...e, seen: { pc: 1, foe: 1 } } as any); vi.advanceTimersByTime(slow(700) + 900); }
+    expect(moveTraces()).toEqual(['slam', 'challenge', 'crit_turned', 'retort']);
+    for (const w of ['SLAM', 'CHALLENGE', 'CRIT TURNED', 'RETORT']) expect(words()).toContain(w);
+    vi.advanceTimersByTime(3000); expect(g.layer.querySelector('[data-guard-fx]')).toBeNull();
   });
 });

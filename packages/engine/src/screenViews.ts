@@ -69,9 +69,9 @@ export interface ReactionView {
   /** The Answers this character keeps switched on, by name (phys.answers); null: it keeps none, so every Answer is on. */
   answers: string[] | null;
 }
-const answerName = (id: string): string => (TECHNIQUE as any)[id]?.name
-  || (Object.values(SKILL as any).flatMap((s: any) => Object.values(s.unlocks || {})).find((x: any) => JSON.stringify(x?.effects || []).includes('"answer_on":"' + id + '"')) as any)?.name
-  || id.replace(/_/g, ' ');
+// an item Answer: the effect's own label (Retort, on Durability's door: rules 1.56 Guard 2.0), else its item's name
+const itemAnswer = (id: string): string | undefined => { for (const x of Object.values(SKILL as any).flatMap((s: any) => Object.values(s.unlocks || {})) as any[]) { const e = (x?.effects || []).find((y: any) => y?.if?.answer_on === id); if (e) return e.label || x.name; } return undefined; };
+const answerName = (id: string): string => (TECHNIQUE as any)[id]?.name || itemAnswer(id) || id.replace(/_/g, ' ');
 export function reactionView(cb: Combat, u: Unit, c: Character | null): ReactionView {
   const max = maxReactions(u, cb), used = Math.min(max, reactionsUsed(cb, u));
   const on = (c as any)?.phys?.answers;

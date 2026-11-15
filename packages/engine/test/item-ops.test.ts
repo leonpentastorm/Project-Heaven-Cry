@@ -55,9 +55,11 @@ describe('item ops: a new perk and a relic in data only (test/fixtures/item-ops-
   });
   // (rules 1.33: Share a Hit, Camaraderie 1, would take part of the ally's lethal hit: these situations are about the item, so the squad doesn't share)
 
-  const base = () => noShare(opsFight({}));
+  // (rules 1.56 Guard 2.0: Durability's door would catch the ally's lethal blow on its Last Plate: off here too, the same way)
+  const quiet = (g: any) => { noShare(g); for (const u of (g.combat?.units || [])) if (u.side === 'pc' && u.held?.skills?.length) u.held = { ...u.held, skills: u.held.skills.filter((k: string) => !k.startsWith('durability.1')) }; return g; };
+  const base = () => quiet(opsFight({}));
   it('the perk: an ally dropped by an enemy banks 2 AP once a fight, and the next hit deals +50%', () => {
-    const g0 = noShare(opsFight({ perks: { test_blood_for_blood: 'mastered' } })), b0 = base();
+    const g0 = quiet(opsFight({ perks: { test_blood_for_blood: 'mastered' } })), b0 = base();
     const mine = situations(g0), theirs = situations(b0);
     expect(theirs['ally-lethal'].line).not.toMatch(/apNext/);
     expect(mine['ally-lethal'].line).toMatch(/P1 apNext:->2/);

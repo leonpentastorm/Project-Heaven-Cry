@@ -1381,7 +1381,7 @@ Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, n
 // The melee techniques' own beats (fx/melee-techniques.ts): arcs, thrown weapons, holds, slams, skids, falls, clashes…
 Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen }));
 // Guard 2.0 (fx/guard.ts): the Guard pool's plates gained, eating a blow (BLOCKED N), dropping, breaking.
-Object.assign(H, guardHandlers({ at, play, sawThen }));
+Object.assign(H, guardHandlers({ at, play, sawThen, tokOf }));
 // Physical 2.0 B (fx/ranged.ts): the ranged techniques, the quiver and thrown weapons; it wraps the handlers above.
 wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond

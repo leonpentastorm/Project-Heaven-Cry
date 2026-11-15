@@ -6357,8 +6357,9 @@ and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded in
 
 Leon, 15 Nov 2026, from co-op Survival on 0.28.2: "even with a shield it's just 10 more fake hp a turn". Guard 2.0
 (docs/design/proposals/2026-11-guard-2.0.md) gives the Endurance door things to do and things to see; it comes in
-slices. Slice 1's rules (Set Against the Blow, Close Guard, Slam, Retort) are lines of `durability.unlocks.1`, which
-the 0.28.3 tank fit creates; they wait for that fit to reach 0.29 and are not in force yet. In force now:
+slices. Slice 1's rules are lines of Durability's door (`skills.json durability.unlocks.1`, the item the 0.28.3 tank fit
+created; merged into the lane on 16 Nov 2026), every one `adjudication: engine`, every number PROVISIONAL (items 4301 to
+4307). In force:
 
 1. **Guard is seen** (item 4300). Guard is drawn as plates around the token, one plate a point of Guard held, the empty
    slots of the pool faint, the count beside them; the Guard stance's front arc stands outside the plates (one look).
@@ -6370,6 +6371,31 @@ the 0.28.3 tank fit creates; they wait for that fit to reach 0.29 and are not in
    screen draws only what the event says. Guard changed by a Revision 3 class move (the Defender's plate, its Brace and
    Interpose, Shrug It Off) or by a data `resource` line still sends no event: the plates follow the state, but that
    moment has no flash.
+2. **Set Against the Blow** (Durability 1; item 4301). While you hold Guard, a foe's critical hit on you lands as an
+   ordinary hit: its critical multiplier is taken out of the blow, and the injury the critical would roll is turned
+   aside. "CRIT TURNED" over the plates.
+3. **Close Guard** (Durability 1; an Answer, on until switched off; item 4302). While you hold Guard, a quarter of a
+   foe's blow on an ally next to you comes to you instead (the rest lands on the ally), as a plain blow (not melee, not
+   a critical: no Retort answers it); your plates soak your part as any blow. It is not a reaction. A line runs from
+   the ally to you. An Interpose after it takes what is left of the blow, never the part already shared (any share an
+   item moved: Share a Hit too).
+4. **Last Plate** (Durability 5; item 4303). Once a fight, a foe's blow that would drop you leaves you on 1 HP, and
+   every plate you hold breaks (Guard 0). "LAST PLATE".
+5. **Retort** (Durability 3; an Answer, on until switched off; item 4304). A foe hits you in melee while you hold
+   Guard: 1 Guard and your reaction throw half of the damage that reached you back at it, as a physical blow its armour
+   meets. "RETORT" and a chevron to the attacker.
+6. **Challenge** (Durability 3; 1 AP and 1 Guard; item 4305). Every foe you see within 2 tiles makes a Heart save
+   against your Durability or is Taunted (its next attack must go at you). A Boss answers no challenge: it is not
+   Taunted (the Bulwark's Draw Fire still gives a Boss −2 against anyone else; Challenge does not yet).
+7. **Slam** (Durability 5; 2 AP and 2 Guard; item 4306). Every foe next to you makes a Body save against your
+   Durability or is Off Balance (1 AP less on its next turn), and is pushed 1 tile away (the push takes no save; a foe
+   that cannot be moved stays).
+8. **The Brace row says its Guard** (item 4307): "Brace · +N Guard", N the unit's own (the same rule the Brace uses).
+   The Guard row of every unit with a pool carries Durability's door line (`door_line`).
+
+Not in slice 1 (each needs a piece the engine lacks; the draft lists them): Weather the Volley (a blow's volley and its
+round are not on the damage), the shield's own swing and its follow-up (P9, P11), cover behind the tank (P10), the
+growth paths (P8), Hold the Gap (P9).
 
 **The Durability tank (0.28.3; Leon on live 0.28.2, co-op Survival: "durability tank is crazy weak … the tank can't hit
 shit due to all skill point being in durability and his shield points block NOTTHING"; the measure and the fit:
@@ -9997,4 +10023,25 @@ Items 4148 to 4150.
 4300. **The Guard event (rules 1.56, Guard 2.0, item 1):** `{k: guard, unit, at, was, now, max, why: gain | soak |
     spend | pressure, soaked}` (physical/core.ts guardFx); the plates' look and words are fx/guard.ts. No number of the
     rules: the effect's timings (gain 420, soak 460, broken 620, spend 260 ms at Fast) are the screen's.
+4301. **Set Against the Blow (rules 1.56 Guard 2.0, item 2):** `skills.json durability.unlocks.1` effects 1, 2 and the
+    last: a `damage_mult` on `dealing` (`if {actor: foe, target: self, crit, by_hit, self_has_res: [guard]}`, `value: 1`,
+    `replaces: critical`) that marks the item's flag `crit_turned`; a `cancel` on `injury` while the flag stands (it
+    clears it); the flag also clears at the holder's turn end. No number of its own. PROVISIONAL.
+4302. **Close Guard (item 3):** effect 3, a `redirect` on `taking`, `share` 0.25 (PROVISIONAL; the draft's
+    `close_share`), `type: physical`, `answer_on: close_guard`. The redirect op records the share it moved on the blow
+    (`moved`); physical/guard.ts Interpose takes only the rest.
+4303. **Last Plate (item 4):** effect 4, a `floor` of 1 on `would_drop` (`by_hit`, `open`, Durability 5), `limit
+    {per_combat, n: 1}`, and `resource guard zero`. PROVISIONAL.
+4304. **Retort (item 5):** effect 5, a `deal` on `damaged` (`target: actor`, `answer_on: retort`, Durability 3, a
+    reaction of kind attack) of the amount block `retort` (`base 0`, `per event:amount 0.5`, physical, full armour), and
+    `resource guard −1`. 0.5 PROVISIONAL.
+4305. **Challenge (item 6):** effect 6, a `grant_action guard_challenge` (`ap` 1, `res {guard: 1}`, Durability 3); its
+    `condition taunted` on `targets {of: self, within: 2, side: foe, seen}`, the save via Durability; effect 7, a
+    `cancel` on `cond_incoming` of `taunted` the holder puts on a Boss. 1, 1, 2 PROVISIONAL.
+4306. **Slam (item 7):** effect 8, a `grant_action guard_slam` (`ap` 2, `res {guard: 2}`, Durability 5): `condition
+    off_balance` (save via Durability), then `displace push 1`, both on `targets {of: self, within: 1, side: foe}`. 2,
+    2, 1 PROVISIONAL.
+4307. **The Brace row (item 8):** its label and text read the unit's Brace gain from `guardGain` (physical/core.ts,
+    through `braceHook.gain`); the second copy of the formula in combat.ts is gone. `skills.json durability.door_line`
+    is the Guard row's line. No number.
 

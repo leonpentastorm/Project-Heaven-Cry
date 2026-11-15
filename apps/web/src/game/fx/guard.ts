@@ -14,7 +14,7 @@
 import type { FxEvent } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
-import { type Pt, after, anim, floatText, put, svg, trace } from './dom';
+import { type Pt, after, anim, floatText, lunge, put, ring, shake, svg, trace } from './dom';
 
 export const GUARD_INK = '#F2A54A';
 const WHITE = '#FFFFFF', MUTED = '#A3AEC2', GROUND = '#0A0D13';
@@ -34,8 +34,19 @@ export function guardFxOf(e: Partial<FxEvent> & { k: string }): GuardMoment | nu
   if (e.why === 'pressure') return 'pressure';
   return 'spend';
 }
+// ---------- the door's moves (rules 1.56 Guard 2.0, slice 1: skills.json durability.1, each op's `fx`) ----------
+/** The moves of Durability's door the engine marks with a 'guard_move' event ({target: the tank, other: the ally, the
+ *  attacker or nobody, from: that unit's tile, move}). */
+export type GuardMove = 'crit_turned' | 'close_guard' | 'last_plate' | 'retort' | 'challenge' | 'slam';
+export const GUARD_MOVE_MS: Record<GuardMove, number> = { crit_turned: 420, close_guard: 380, last_plate: 640, retort: 380, challenge: 520, slam: 480 };
+/** The word each move floats (always with the amber or white ink). */
+export function guardMoveWord(e: Partial<FxEvent> & { k: string }): string | null {
+  if (e.k !== 'guard_move') return null;
+  return ({ crit_turned: 'CRIT TURNED', close_guard: 'CLOSE GUARD', last_plate: 'LAST PLATE', retort: 'RETORT', challenge: 'CHALLENGE', slam: 'SLAM' } as Record<string, string>)[String(e.move)] || null;
+}
 /** The beat a Guard event holds (ms at Fast), or undefined for any other event. */
 export function guardBeat(e: Partial<FxEvent> & { k: string }): number | undefined {
+  if (e.k === 'guard_move') return (GUARD_MOVE_MS as any)[String(e.move)] ?? 0;
   const m = guardFxOf(e); if (!m) return e.k === 'guard' ? 0 : undefined;
   return m === 'pressure' ? GUARD_MS.spend : GUARD_MS[m];
 }
@@ -96,6 +107,7 @@ export function guardMarkup(p: { x: number; y: number }, s: number, front: numbe
 // ---------- the moments ----------
 export interface GuardKit {
   at: (k: string | null | undefined) => Pt | null;
+  /** the token of a unit (the acting token moves first) */ tokOf?: (id: string | null | undefined) => HTMLElement | null;
   play: (s: Sfx, p: Pt | null, o?: { rate?: number; gain?: number; delay?: number }) => void;
   /** the screen saw the unit when the event happened (play.ts sawThen) */ sawThen: (e: FxEvent) => boolean;
 }
@@ -124,8 +136,41 @@ function shards(s: SVGSVGElement, p: Pt, mid: { x: number; y: number }, ink: str
     anim(n, rm ? [{ opacity: 1 }, { opacity: 0 }] : [{ transform: 'translate(0,0) rotate(0deg)', opacity: 1 }, { transform: 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px) rotate(' + (j % 2 ? 160 : -140) + 'deg)', opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'forwards' });
   }
 }
+/** A straight amber line from a to b drawn out over ms (Close Guard's share, Retort's throw). */
+function line(a: Pt, b: Pt, ms: number, o: { width?: number; chevron?: boolean; ink?: string } = {}) {
+  const pad = Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y)) / 2 + a.s, cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+  const { s } = stage({ x: cx, y: cy, s: a.s }, pad, ms + 200), ink = o.ink || GUARD_INK;
+  const n = path('M' + a.x.toFixed(1) + ' ' + a.y.toFixed(1) + ' L' + b.x.toFixed(1) + ' ' + b.y.toFixed(1), ink, o.width ?? Math.max(2, a.s * 0.05));
+  const L = Math.hypot(b.x - a.x, b.y - a.y) || 1; n.setAttribute('stroke-dasharray', L.toFixed(1)); s.appendChild(n);
+  anim(n, reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }] : [{ strokeDashoffset: L, opacity: 1 }, { strokeDashoffset: 0, opacity: 1, offset: 0.45 }, { strokeDashoffset: 0, opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
+  if (o.chevron) { // a chevron at b, pointing along the line
+    const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L, k = a.s * 0.16, bx = b.x - ux * a.s * 0.3, by = b.y - uy * a.s * 0.3;
+    const c = path('M' + (bx - ux * k - uy * k).toFixed(1) + ' ' + (by - uy * k + ux * k).toFixed(1) + ' L' + bx.toFixed(1) + ' ' + by.toFixed(1) + ' L' + (bx - ux * k + uy * k).toFixed(1) + ' ' + (by - uy * k - ux * k).toFixed(1), ink, Math.max(2.5, a.s * 0.07));
+    s.appendChild(c); anim(c, [{ opacity: 0 }, { opacity: 1, offset: 0.4 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
+  }
+}
+/** Every plate slot of the token flashing at once (Set Against the Blow, Last Plate): white, then amber, then gone. */
+function flare(p: Pt, n: number, ms: number, ink = WHITE) {
+  const { s } = stage(p, p.s * 0.9, ms + 120);
+  for (let i = 0; i < n; i++) { const a = plateArc(p, p.s, i, n, null), q = path(a.d, ink, Math.max(4, p.s * 0.13), { 'stroke-linecap': 'butt' }); s.appendChild(q);
+    anim(q, [{ opacity: 0 }, { opacity: 1, stroke: ink, offset: 0.2 }, { opacity: 1, stroke: GUARD_INK, offset: 0.55 }, { opacity: 0 }], { duration: ms, fill: 'forwards' }); }
+}
 export function guardHandlers(K: GuardKit): Record<string, (e: FxEvent) => void> {
   return {
+    guard_move(e) {
+      const mv = String(e.move) as GuardMove, ms = GUARD_MOVE_MS[mv]; if (!ms || !K.sawThen(e)) return;
+      const p = K.at(e.at), o = K.at((e as any).from); if (!p) return;
+      const word = guardMoveWord(e), rm = reducedMotion(), tok = K.tokOf?.(e.target as string) || null;
+      trace('guard_move', { move: mv, unit: e.target, other: (e as any).other || null });
+      const toward = (q: Pt | null, d: number) => { if (q && tok && !rm) { const L = Math.hypot(q.x - p.x, q.y - p.y) || 1; lunge(tok, ((q.x - p.x) / L) * d, ((q.y - p.y) / L) * d, Math.round(ms * 0.4)); } };
+      if (mv === 'crit_turned') { flare(p, 4, ms); if (!rm) shake(tok, 0.4); K.play('hit_metal', p, { rate: 0.9, gain: 0.5 }); }
+      else if (mv === 'close_guard') { toward(o, 3); if (o) line(o, p, ms); K.play('hit_metal', p, { rate: 1.4, gain: 0.3 }); }
+      else if (mv === 'retort') { toward(o, 4); if (o) after(() => line(p, o, Math.round(ms * 0.7), { chevron: true, width: Math.max(2.5, p.s * 0.07) }), Math.round(ms * 0.25)); K.play('hit_heavy', p, { rate: 1.3, gain: 0.4 }); }
+      else if (mv === 'last_plate') { flare(p, 5, ms); ring(p, WHITE, ms, { from: 0.55, to: 0.62, width: 2 }); if (!rm) shake(tok, 0.8); K.play('hit_metal', p, { rate: 0.6, gain: 0.6 }); }
+      else if (mv === 'challenge') { if (tok && !rm) lunge(tok, 0, -2, 160); const r = Number((e as any).within) || 2; ring(p, GUARD_INK, ms, { from: 0.4, to: 0.4 + r * 0.95, width: 3 }); K.play('hit_heavy', p, { rate: 0.8, gain: 0.35 }); }
+      else if (mv === 'slam') { if (tok && !rm) lunge(tok, 0, 3, 160); ring(p, GUARD_INK, ms, { from: 0.5, to: 1.5, width: 4 }); flare(p, 6, Math.round(ms * 0.7), GUARD_INK); K.play('hit_heavy', p, { rate: 0.7, gain: 0.6 }); }
+      if (word) floatText(word, { x: p.x, y: p.y - p.s * 0.6, s: p.s }, mv === 'last_plate' || mv === 'crit_turned' ? WHITE : GUARD_INK, { small: mv !== 'last_plate', delay: 40, ms: 900 });
+    },
     guard(e) {
       const m = guardFxOf(e); if (!m || !K.sawThen(e)) return;
       const p = K.at(e.at); if (!p) return;

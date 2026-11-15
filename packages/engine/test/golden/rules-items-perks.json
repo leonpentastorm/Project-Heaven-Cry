@@ -22,6 +22,5 @@
 "item/perk/vanishing_act@mastered/action/vanishing_act": "n0 P1 +hidden",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-blow": "n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-shot": "n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden",
-"item/perk/walking_wounded@mastered/taken-low": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/wall_run@II/action/wall_strike": "n1 P1 3,6>3,7 || n1 P1 3,6>3,7 || n1 P1 3,6>3,7 || n1 P1 3,6>3,7 || n1 P1 3,6>3,7"
 }

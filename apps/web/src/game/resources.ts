@@ -112,6 +112,10 @@ export function classResInfo(c: any, resId: string): { label: string; source: st
   return { label: words(resId), source, spend, rule: rule || gainText, core: core || 'body' };
 }
 
+/** Guard 2.0 (rules 1.56, the audit's a): Durability's door in one line, from data (skills.json durability.door_line;
+ *  for the integrator: the Sigils and Outbursts lanes read the same field for their doors), shown under the Guard row of
+ *  every unit with a Guard pool, whatever it holds. */
+const GUARD_DOOR_LINE: string = String((E as any).SKILL?.durability?.door_line || '');
 /** Guard's rule in one sentence (the soak is the engine's number). */
 export const guardRule = (soak: number) => 'Guard: each point soaks ' + soak + ' damage; Brace and the Guard technique refill it.';
 
@@ -329,7 +333,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     // Shadow (rules 1.32): Perception's door, in Perception ink, with the engine's sight word for the unit (Unseen, In view, Seen)
     const sight = id === 'shadow' && u && cb ? (() => { try { const [s1, s2] = E.sightOf(cb, u); return s1 === 'seen' ? 'Seen' : s2 === 'in_view' ? 'In view' : 'Unseen'; } catch { return ''; } })() : '';
     const sRule = id === 'shadow' ? 'Shadow: built while unseen (a turn ended Hidden with no attack, a move from cover to cover, a kill nobody saw; at most 2 a turn), lost 1 at the start of a turn while seen, spent all at once by a Break on a weapon attack from Hidden.' : '';
-    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: id === 'shadow' ? RES_INK.perception : ink, sub: id === 'momentum' ? MOMENTUM_SUB : id === 'shadow' ? (sight ? 'Eye: ' + sight : 'Built while unseen') : (id === 'guard' ? gRule : '') || info.source || '',
+    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: id === 'shadow' ? RES_INK.perception : ink, sub: id === 'momentum' ? MOMENTUM_SUB : id === 'shadow' ? (sight ? 'Eye: ' + sight : 'Built while unseen') : (id === 'guard' ? GUARD_DOOR_LINE || gRule : '') || info.source || '',
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),
       hint: (mRule || sRule || (gRule ? gRule + (gv?.hint ? ' ' + gv.hint : '') : '') || rule || (info.source ? info.label + ' (' + info.source + ').' : info.label + '.')) + spend });
   }

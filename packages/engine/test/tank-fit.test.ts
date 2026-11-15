@@ -42,7 +42,7 @@ describe('T.2 Guard soaks rules.guard.soak a point, against a real enemy attack'
   it('the same blow, with 5 Guard and with none: the difference is the points spent × the soak (the last kept back)', () => {
     expect(G.soak).toBe(6);
     const blow = (n: number) => {
-      const f = fight(7, { foeAt: 'D5', foeWeapon: 'maul' }); guard(f, n); rig({ hit: true, die: 12 });
+      const f = fight(7, { foeAt: 'D5', foeWeapon: 'maul' }); guard(f, n); rig({ hit: true, die: 12 }); (f.char(f.pc) as any).phys.answers = []; // Retort off (rules 1.56 Guard 2.0): it spends Guard after the blow
       const t = f.unit(f.pc.id), hp = t.hp; f.turn(f.foe);
       f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), t, 'melee', null, { noAp: true }));
       return { lost: hp - f.unit(f.pc.id).hp, left: guard(f) };
