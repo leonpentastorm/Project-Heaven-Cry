@@ -27,7 +27,7 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
   + '.phc-camp-boons{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}';
 /** A card's picture: the painted gear icon (rounds and magazines by their gear ids), else the line icon. */
 function iconOf(id: string): string {
-  const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id);
+  const r = /^rounds:(.+)$/.exec(id), m = /^mag:([^:]+)/.exec(id); // rules 1.55: mag:<weapon>:0 is an empty one
   if (r) return gearIconUri(roundsGearId(r[1]), undefined, { large: true });
   if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
   return gearIconUri(id.replace(/^armour:\d$/, 'armour'), undefined, { large: true });

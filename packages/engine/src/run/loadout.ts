@@ -57,21 +57,34 @@ export interface LoadoutLine { key: string; id: string; per: number; shelf: stri
 
 const SHELF_NAME: Record<string, string> = Object.fromEntries(SHOP_DATA.always.map((s) => [s.shelf, s.name]));
 /** The menu for this character as it stands (the counter's gun lines follow the guns it carries). */
-export function loadoutLines(c: Character): LoadoutLine[] {
-  const out: LoadoutLine[] = [];
-  for (const l of counterLines([c])) if (!LOADOUT.counter.skip.includes(l.shelf) && !l.res) out.push({ key: l.key, id: l.id, per: l.per, shelf: l.shelf, shelfName: SHELF_NAME[l.shelf] || l.shelf, price: (priceOf(l.id) || 0) * l.per });
-  for (const id of rackIds()) { const p = priceOf(id); if (p != null) out.push({ key: 'stock:' + id, id, per: 1, shelf: 'rack', shelfName: 'Weapons', price: p }); }
-  for (const id of LOADOUT.stock.ids) { const p = priceOf(id); if (p != null) out.push({ key: 'stock:' + id, id, per: 1, shelf: 'stock', shelfName: 'Gear', price: p }); }
+export function loadoutLines(c: Character, take: Record<string, number> = {}): LoadoutLine[] {
+  const out: LoadoutLine[] = [], seen = new Set<string>();
+  // rules 1.55: nothing over the budget, no line twice (the same id in the same quantity)
+  const put = (l: LoadoutLine) => { const same = l.id + '#' + l.per; if (l.price > LOADOUT.budget || seen.has(same)) return; seen.add(same); out.push(l); };
+  for (const l of counterLines([c])) if (!LOADOUT.counter.skip.includes(l.shelf) && !l.res) put({ key: l.key, id: l.id, per: l.per, shelf: l.shelf, shelfName: SHELF_NAME[l.shelf] || l.shelf, price: (priceOf(l.id) || 0) * l.per });
+  for (const id of rackIds()) { const p = priceOf(id); if (p != null && usableBeside(c, id, take['stock:' + id] || 0)) put({ key: 'stock:' + id, id, per: 1, shelf: 'rack', shelfName: 'Weapons', price: p }); }
+  for (const id of LOADOUT.stock.ids) { const p = priceOf(id); if (p != null && usableBeside(c, id, take['stock:' + id] || 0)) put({ key: 'stock:' + id, id, per: 1, shelf: 'stock', shelfName: 'Gear', price: p }); }
   return out;
+}
+/** Rules 1.55: a further weapon or focus is offered only when it can be used beside what the character holds: no
+ * second focus; a weapon only when none is held, or when it and every weapon held are one-handed (twoHands). `bought`:
+ * how many of this id the line itself has already given (they are not counted against it). */
+function usableBeside(c: Character, id: string, bought = 0): boolean {
+  const held = [c.weapon, c.offHand?.id, ...packOf(c).flatMap((x) => Array(x.weapon && !x.mags ? Math.max(1, x.qty || 1) : 1).fill(x.weapon || x.item || x.id))].filter((x): x is string => !!x && x !== 'fists');
+  for (let i = 0; i < bought; i++) { const j = held.lastIndexOf(id); if (j >= 0) held.splice(j, 1); }
+  if ((ITEM[id] as any)?.focus) return !held.some((h) => !!(ITEM[h] as any)?.focus);
+  if (!WEAPON[id]) return true;
+  const weapons = held.filter((h) => !!WEAPON[h] && (WEAPON[h] as any).category !== 'thrown');
+  return !weapons.length || (!twoHands(c, id) && weapons.every((h) => !twoHands(c, h)));
 }
 const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if (a) return 'Class ' + a[1] + ' body armour';
   const rd = /^rounds:(.+)$/.exec(id); if (rd) return (CALIBRE_NAME[rd[1]] || rd[1]) + ' rounds';
-  const mg = /^mag:(.+)$/.exec(id); if (mg) return String((WEAPON[mg[1]] as any)?.name || mg[1]).replace(/ \(.*\)$/, '') + ' magazine';
+  const mg = /^mag:([^:]+)(:0)?/.exec(id); if (mg) return String((WEAPON[mg[1]] as any)?.name || mg[1]).replace(/ \(.*\)$/, '') + ' magazine' + (mg[2] ? ' (empty)' : '');
   return (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id; };
 const focusEntry = (id: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) });
 /** What the budget has spent on these picks (the menu's prices x how many). */
 export function loadoutSpent(c: Character, p: LoadoutPick): number {
-  const lines = loadoutLines(c); return Object.entries(p.take).reduce((t, [k, q]) => t + (lines.find((l) => l.key === k)?.price || 0) * q, 0);
+  const lines = loadoutLines(c, p.take); return Object.entries(p.take).reduce((t, [k, q]) => t + (lines.find((l) => l.key === k)?.price || 0) * q, 0);
 }
 
 /** Rebuild a character's gear from its picks (on the character itself). Returns the refusal in words (the character is
@@ -99,6 +112,7 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
     if (!l) { delete p.take[k]; continue; }
     spent += l.price * q;
     const ac = /^armour:(\d)$/.exec(l.id), it: any = ITEM[l.id];
+    if (q > 1 && !usableBeside({ ...c, weapon: 'fists', offHand: null, pack: [lineGoods(l.id, 1)].flat() } as Character, l.id)) return nameOf(l.id) + ': one is used at a time.'; // rules 1.55
     if (ac) {
       const n = Number(ac[1]), cap = armourCap(c);
       if (q > 1 || c.armourClass) return 'Body armour is one piece: take one class.';
@@ -282,8 +296,8 @@ export interface LoadoutViewV {
 }
 /** The skills a loadout reads (the weapons' skills, the doors, the armour gate). */
 const GEAR_SKILLS = ['dexterity', 'raw_power', 'brain_power', 'visualization', 'will_power', 'empathy', 'pain_threshold'];
-const STEER: Record<string, string> = { guns: 'Ammunition', calibres: 'Ammunition', special: 'Ammunition', thrown: 'Thrown', cores: 'Mana and parts', supplies: 'Medicine and supplies', stock: 'Gear' };
-const SHELF_ORDER = ['guns', 'calibres', 'special', 'thrown', 'cores', 'supplies', 'stock']; // the rack ('rack') is drawn by archetype
+const STEER: Record<string, string> = { guns: 'Ammunition', magazines: 'Ammunition', calibres: 'Ammunition', special: 'Ammunition', thrown: 'Thrown', cores: 'Mana and parts', supplies: 'Medicine and supplies', stock: 'Gear' };
+const SHELF_ORDER = [...SHOP_DATA.always.map((s) => s.shelf).filter((s) => !LOADOUT.counter.skip.includes(s)), 'stock']; // the counter's shelves in data order; the rack ('rack') is drawn by archetype
 /** The camp's view for player `me`; null when the camp is closed or they have no character there. */
 export function loadoutView(g: G, me: string, charId?: string | null): LoadoutViewV | null {
   const r = g.run; if (r?.state !== 'loadout' || !r.loadout) return null;
@@ -304,7 +318,7 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
   };
   const pickCard = (slot: 'weapon' | 'focus', id: string, group: string): LoadoutCardV => { const pv = preview(id), on = p[slot] === id;
     return { key: slot + ':' + id, id, name: pv.name, group, price: 0, per: 1, taken: on ? 1 : 0, picked: on, why: on ? null : why((q) => { q[slot] = id; }), preview: pv, text: pv.text }; };
-  const lines = loadoutLines(c), shelves: LoadoutViewV['shelves'] = [];
+  const lines = loadoutLines(c, p.take), shelves: LoadoutViewV['shelves'] = [];
   const lineCard = (l: LoadoutLine, group: string): LoadoutCardV => { const pv = preview(l.id), n = p.take[l.key] || 0;
     return { key: l.key, id: l.id, name: pv.name, group, price: l.price, per: l.per, taken: n, picked: n > 0,
       why: n >= LOADOUT.max_qty ? 'At most ' + LOADOUT.max_qty + ' of a line.' : why((q) => { q.take[l.key] = n + 1; }), preview: pv, text: pv.text }; };

@@ -6013,6 +6013,19 @@ standard core's 150 credits (Magic, "Mana cores").
    board and the squad, with no area map and no quest board. Every "full screen" of rules 1.42 to 1.52 is superseded by
    it.
 
+
+## Rules 1.55 (15 Nov 2026)
+
+Leon (15 Nov 2026, before the playtest): *"lot's of the things like extra emmanator in the beginning shop is out of price and have no reason to be in there"*; *"where is the magazines, we need to sell magazines, put them somewhere or speed reload is never getting used"*; *"300 is not enough for caster even now, they get like 3 core and notthing else for that"*.
+
+**The camp's and the shops' offers (Survival; release 0.28.1):**
+1. **Nothing over the budget at the camp.** The camp's menu lists no line whose price (unit price x `per`) is over the camp budget (300, `survival.json loadout.budget`). The fixed `stock` list holds only ids priced within it (the validator checks); Medium armour (400) and the four foci (1000) leave it.
+2. **A second weapon only when both can be used.** A rack or stock weapon is listed when the character holds no weapon yet, or when it and every weapon held are one-handed (the weapon's own `hands`, rules `twoHands`). Never a second focus (a focus is listed only to a character holding none), never a second two-handed weapon; a two-handed weapon or a focus is taken one at a time. Thrown weapons are not counted.
+3. **Ammunition follows the character** (camp and every shop counter): a calibre is listed only when a gun the character holds or has taken takes it; a special round (an item with `ammo_type`) only with a gun that is not a bow; an item that fuels a focus (its `fuel`, matched against the focus's `focus.fuel`: the standard core, `fuel: core`) only with such a focus held. The shop's counter is the buying character's own (another character's gun does not open a line for it); the restock shelf is listed only for a character with that class resource.
+4. **No line twice in one menu** (the same id in the same quantity; throwing knives were on the thrown shelf and the rack).
+5. **Magazines.** A shelf of its own, **Magazines** (`shop.always`, at the camp and on every shop counter): for each magazine-fed gun the character carries, a **full** magazine (`mag:<weapon>`: the empty magazine price and its rounds) and an **empty** one (`mag:<weapon>:0`: the empty magazine price of `rules.json weapons_rules.magazine_prices`, 30 for a pistol or an SMG, 40 a rifle, 25 a speedloader, 60 a drum or belt). One price rule: `mag:<weapon>:<rounds>` is priced by the same formula (empty price + rounds x the calibre's round price). An empty magazine joins the gun's spares with 0 rounds; **gear/load** fills it from loose rounds out of a fight (1 AP per 5 rounds in one, rules 1.9). The guns shelf keeps the rounds of loose-loaded guns and the quiver.
+6. **The caster's start.** A focus that burns cores (the Evoker, the Visualizer: `loadout.focus_with`) comes with **4** standard cores at the camp, free (PROVISIONAL; was 1), so the budget is not eaten by cores. The Emanator and the Attuner (MP) are unchanged.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.

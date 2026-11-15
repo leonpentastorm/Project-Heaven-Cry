@@ -130,14 +130,16 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
     ] };
   }
-  const r = /^(rounds|mag):(.+)$/.exec(id);
+  // rules 1.55: `mag:<weapon>:<rounds>` is a magazine holding that many (`:0` empty)
+  const r0 = /^(rounds|mag):(.+)$/.exec(id), mr = r0?.[1] === 'mag' ? /^([^:]+)(?::(\d+))?$/.exec(r0[2]) : null;
+  const r = r0 ? [r0[0], r0[1], mr ? mr[1] : r0[2]] : null, mcap = r ? (WEAPON[r[2]] as any)?.magazine ?? 0 : 0, held = mr?.[2] != null ? Math.min(mcap, Number(mr[2])) : mcap;
   if (r || it?.category === 'ammo') {
     const cal = r?.[1] === 'rounds' ? r[2] : r ? (WEAPON[r[2]] as any)?.ammo : null;
     const users = cal ? Object.values(WEAPON).filter((x: any) => x.ammo === cal).map((x: any) => x.name) : [];
-    return { ...base, name: r ? (r[1] === 'rounds' ? (CALIBRE_NAME[r[2]] || r[2]) + ' rounds' : nameOf(r[2]) + ' magazine') : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
-      text: r ? (r[1] === 'mag' ? 'A full magazine for the ' + nameOf(r[2]) + '.' : 'Loose rounds.') : base.text,
+    return { ...base, name: r ? (r[1] === 'rounds' ? (CALIBRE_NAME[r[2]] || r[2]) + ' rounds' : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
+      text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : 'Loose rounds.') : base.text,
       lines: [
-        ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: String((WEAPON[r[2]] as any)?.magazine ?? 0), num: (WEAPON[r[2]] as any)?.magazine ?? 0 }] : []),
+        ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: String(held), num: held }] : []),
         ...(cal ? [{ key: 'calibre', label: 'Calibre', value: CALIBRE_NAME[cal] || cal, num: null }] : [{ key: 'fits', label: 'Fits', value: 'any gun', num: null }]),
         ...(users.length ? [{ key: 'used', label: 'Used by', value: users.length > 2 ? users.length + ' guns' : users.join(', '), num: null }] : []),
       ] };

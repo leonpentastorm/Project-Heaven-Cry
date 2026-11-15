@@ -2505,6 +2505,9 @@ if _sv is not None:
             if _x.startswith("armour:") and _x[7:].isdigit(): _ok = (_classes.get(int(_x[7:])) or {}).get("price_credits", 0) > 0
             else: _ok = ((_wid.get(_x) or _iid.get(_x) or {}).get("price_credits") or 0) > 0
             if not _ok: errors.append(f"{_w}.stock: {_x!r} has no price (priceOf)")
+            # rules 1.55: the camp lists nothing over its budget, so every fixed stock id is priced within it
+            _p = (_classes.get(int(_x[7:])) or {}).get("price_credits", 0) if _x.startswith("armour:") and _x[7:].isdigit() else ((_wid.get(_x) or _iid.get(_x) or {}).get("price_credits") or 0)
+            if _ok and _num(_lo.get("budget")) and _p > _lo["budget"]: errors.append(f"{_w}.stock: {_x!r} costs {_p}, over the camp budget of {_lo['budget']} (rules 1.55)")
         for _x, _with in (_lo.get("focus_with") or {}).items():
             if _x not in (_lo.get("focuses") or []): errors.append(f"{_w}.focus_with: {_x!r} is not a free focus")
             for _y in _with:
