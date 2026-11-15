@@ -955,6 +955,8 @@ if "actions" in data:
         for k, v in c.items():
             if (k == "ap" or k.startswith("ap_") or k in ("min", "rounds")) and not (isinstance(v, int) and not isinstance(v, bool) and v >= 0):
                 errors.append(f"actions: costs.{cid}.{k} must be a whole number of 0 or more")
+        if "weapon_own" in c and c["weapon_own"] is not True:
+            errors.append(f"actions: costs.{cid}.weapon_own is true or absent (a weapon's own priced action: effects/cost.ts weaponOwnSite)")
         r = c.get("rule")
         if r is not None:
             if r not in _rule_acts:

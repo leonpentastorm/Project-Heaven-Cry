@@ -37,7 +37,7 @@ import patronsJ from '../../../../data/patrons.json';
 import techniquesJ from '../../../../data/techniques.json';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
-import { loseAp } from './cost';
+import { loseAp, weaponOwnSite } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { deal, mend, amountOf, type AmountSpec } from './output';
@@ -205,9 +205,6 @@ P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev,
 const DOOR_OF_TYPE: Record<string, string> = { sigil: 'brain_power', soul: 'will_power' };
 const HEAL_DOOR: Record<string, string> = { tending: 'empathy', bond: 'empathy', sigil: 'brain_power', soul: 'will_power' };
 const WEAPON_HOOKS = new Set(['attack_preview', 'attack_roll', 'on_hit', 'on_miss', 'reload']);
-/** A priced action that is a weapon's own (rules 1.56: a mod's reload cost acts on the gun it is fitted to, in the hand
- *  that reloads). */
-const WEAPON_SITES = new Set(['reload']);
 function madeWith(ev: Ev): boolean {
   const c = ev.h.c || charOfUnit(ev.self); if (!c) return madeWithUnit(ev);
   const hands = handProps(c).filter((p) => p.prop === ev.h.itemId).map((p) => p.hand); if (!hands.length) return false;
@@ -216,7 +213,7 @@ function madeWith(ev: Ev): boolean {
   const door = ctx.via && kindOfDoor(String(ctx.via)) ? String(ctx.via) : DOOR_OF_TYPE[type] || (heal ? HEAL_DOOR[ctx.kind] : null);
   if (door) { const k = kindOfDoor(door)!; return hands.some((h) => { const g = gearAt(c, h); return !!g && FOCUS_IDS[k].includes(g.id); }); }
   if (heal) return false;
-  if (type === 'weapon' || WEAPON_HOOKS.has(hook) || ctx.mode || (hook === 'cost' && WEAPON_SITES.has(ctx.action))) {
+  if (type === 'weapon' || WEAPON_HOOKS.has(hook) || ctx.mode || (hook === 'cost' && weaponOwnSite(ctx.action))) {
     if ((ctx.mode ?? src?.mode) === 'thrown') return false;
     const hand = ctx.hand === 'off' || ev.self.swapMain ? 'off' : 'main', g = gearAt(c, hand);
     return hands.includes(hand) && !!g && (src?.weapon ?? g.id) === g.id;

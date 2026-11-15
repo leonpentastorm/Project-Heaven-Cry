@@ -317,7 +317,8 @@
     },
     "reload": {
       "ap": 2,
-      "rule": "reload"
+      "rule": "reload",
+      "weapon_own": true
     },
     "parley": {
       "ap": 2
