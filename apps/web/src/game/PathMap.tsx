@@ -68,6 +68,15 @@ export function layoutPathMap(v: Pick<RunViewV, 'nodes' | 'rows' | 'lanes'>): { 
   return { pos, camp: { x: 62, y: H / 2 }, dx };
 }
 
+/** Which side of its marker a node's word goes (true: below), or undefined for the usual alternation. The vault's spur
+ * puts its words on the side away from the lanes (beside the marker they ran into the next column's node and word:
+ * 0.28.0 playtest, "…ULT GUARD"); the fork it leaves puts its own word on the other side. */
+export function labelSide(n: RunNodeV, nodes: RunNodeV[], pos: Record<string, { x: number; y: number }>): boolean | undefined {
+  if (n.spur) { const f = n.from ? pos[n.from] : null; return f && pos[n.id] ? pos[n.id].y >= f.y : undefined; }
+  const sp = nodes.find((x) => x.spur === 'guard' && x.from === n.id);
+  return sp && pos[sp.id] && pos[n.id] ? pos[sp.id].y < pos[n.id].y : undefined;
+}
+
 /** A trail between two points: a gentle curve (handles along the line of travel), bent a little by the seed. */
 function trailPath(a: { x: number; y: number }, b: { x: number; y: number }, key: string): string {
   const mx = (b.x - a.x) * 0.5, bend = jit(key, 'b', 10);
@@ -109,15 +118,15 @@ function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: 
   const col = here || lit ? ink.white : walked ? ink.text : passed ? ink.muted : '#D9DCE3';
   const ring = here ? '3px solid ' + ink.white : lit ? '2px solid ' + ink.white : walked ? '2px solid ' + ink.text : n.spur ? '2px dashed rgba(231,235,243,0.55)' : '1.5px solid rgba(214,200,170,0.55)';
   const label = n.word + (here ? ', you are here' : lit ? ', open now' : walked ? ', walked' : '') + (n.junction && !n.gate ? ', a fork' : '') + (n.spur ? ', off the trail' : '') + (n.leans.length ? ', marked by ' + n.leans.map((l) => l.name).join(' and ') : '');
-  const below = labelBelow ?? (n.depth % 2 === 1 || n.kind === 'boss' || !!n.gate); // labels alternate above and below, so neighbours never collide (the vault's spur: beside)
+  const below = labelBelow ?? (n.depth % 2 === 1 || n.kind === 'boss' || !!n.gate); // labels alternate above and below, so neighbours never collide (the vault's spur: outward, labelSide)
   return (
     <button type="button" data-phc-node={n.id} data-phc-kind={n.kind} data-phc-state={n.state} data-phc-junction={n.junction ? '' : undefined} data-phc-spur={n.spur || undefined}
       aria-label={label} {...tipProps(n.tip + (n.why ? ' ' + n.why : ''))} onClick={(e) => onPick(n, e.currentTarget)}
-      style={{ position: 'absolute', left: (p.x / W) * 100 + '%', top: (p.y / H) * 100 + '%', width: big, height: big, transform: 'translate(-50%, -50%)', padding: 0, border: 0, background: 'transparent', fontFamily: 'inherit', cursor: lit ? 'pointer' : 'default', opacity: passed ? 0.45 : 1, zIndex: here || lit ? 4 : 3 }}>
+      style={{ position: 'absolute', left: (p.x / W) * 100 + '%', top: (p.y / H) * 100 + '%', width: big, height: big, transform: 'translate(-50%, -50%)', padding: 0, border: 0, background: 'transparent', fontFamily: 'inherit', cursor: lit ? 'pointer' : 'default', opacity: passed ? 0.45 : 1, zIndex: n.spur ? 5 : here || lit ? 4 : 3 }}>
       {here ? <span aria-hidden="true" className="phc-pm-here" style={{ position: 'absolute', inset: -9, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.55)' }} /> : null}
       <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', borderRadius: n.junction ? 10 : '50%', transform: n.junction ? 'rotate(45deg)' : undefined, border: ring, background: walked || here ? ink.discWalked : ink.disc, boxShadow: lit ? '0 0 0 5px rgba(255,255,255,0.14), 0 0 18px rgba(255,255,255,0.25)' : '0 2px 6px rgba(0,0,0,0.6)' }} />
       <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: col }}><NodeGlyph kind={n.gate ? 'gate' : n.kind} size={glyphSize(n, big)} /></span>
-      <span style={{ position: 'absolute', ...(n.spur ? { left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: 5 } : { left: '50%', [below ? 'top' : 'bottom']: '100%', transform: 'translateX(-50%)', marginTop: below ? 3 : 0, marginBottom: below ? 0 : 3 }), fontSize: n.kind === 'boss' ? ICON.bossLabel : ICON.label, fontWeight: 700, letterSpacing: '0.04em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000, 0 0 6px #000' }}>{n.word}</span>
+      <span style={{ position: 'absolute', left: '50%', [below ? 'top' : 'bottom']: '100%', transform: 'translateX(-50%)', marginTop: below ? 3 : 0, marginBottom: below ? 0 : 3, fontSize: n.kind === 'boss' ? ICON.bossLabel : ICON.label, fontWeight: 700, letterSpacing: '0.04em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000, 0 0 6px #000' }}>{n.word}</span>
       {n.leans.length ? <span style={{ position: 'absolute', top: -10, right: -14, display: 'flex', gap: 2 }}>{n.leans.map((l) => <span key={l.initials} style={{ display: 'grid', placeItems: 'center', width: 20, height: 20, borderRadius: '50%', fontSize: 9, fontWeight: 700, background: l.color, color: '#0A0D13' }}>{l.initials}</span>)}</span> : null}
     </button>
   );
@@ -215,8 +224,7 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
           <NodeGlyph kind="start" size={ICON.campGlyph} />
           <span style={{ position: 'absolute', top: '100%', marginTop: 3, fontSize: ICON.label, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', textShadow: '0 1px 2px #000' }}>Camp</span>
         </span>
-        {v.nodes.map((n) => { const sp = v.nodes.find((x) => x.spur === 'guard' && x.from === n.id);
-          return pos[n.id] ? <Marker key={n.id} n={n} p={pos[n.id]} onPick={onPick} labelBelow={sp && pos[sp.id] ? pos[sp.id].y < pos[n.id].y : undefined} /> : null; })}
+        {v.nodes.map((n) => (pos[n.id] ? <Marker key={n.id} n={n} p={pos[n.id]} onPick={onPick} labelBelow={labelSide(n, v.nodes, pos)} /> : null))}
       </div>
     </div>
     </div>
