@@ -1,0 +1,42 @@
+{
+  "number": 51,
+  "id": "shop-city",
+  "name": "Sefa Mire's shop, Central City back streets",
+  "path": "art/illustrations/survival/nodes/shop-city.png",
+  "mode": "scene",
+  "prompt": "Paint one wide environment illustration for a game in Heavenprint: hand-painted opaque gouache and ink with broken,\ndirectional brush strokes, selective dry-brush scumbling, restrained hatching where a crease or an edge needs it,\ncharcoal lost edges, warm ivory accents on the focal edges, deliberate angular architectural forms in layers\n(foreground, middle, far), and quiet low-detail areas. Not line art, not a photograph, not a 3D render, no airbrushed\ngloss, no uniform digital sharpness, no cinematic lens flare. Match the attached Heavenprint scene references for\nbrushwork, finish and layering. **This is the backdrop of a place where a shopkeeper or a keeper stands in front of the\npicture:** no characters, no creatures, no figures of any kind, **the left third calm, dark and low-detail** (the keeper\nstands over it), the main props and the strongest values in the middle third, and the right third plain and mid-dark\n(it sits under a heavy dark gradient). Keep the overall value range mid-dark and the contrast gentle, so that the picture\nstill reads when darkened to about 40%. Camera: a raised three-quarter view looking into the place; no strong vanishing\nlines converging on the centre. One clear light source; light is locally coloured by the scene, never tinted by a skill\nor attribute colour; no glowing bloom. 16:9, 2560 x 1440 PNG if you can, never smaller than 1920 x 1080. No text, no\nletters, no numbers, no signs with writing (blank or abstract marks only), no logos, no UI, no frame, no border, no\nwatermark. Everything is invented: nothing recognisable from real-world works, brands, buildings or places.\n\n\nPaint this ONE subject:\nA back-alley stall under a shuttered arcade: a trestle of odd goods under a bare bulb, a rack of coats full of pockets, wet flagstones, crates that \"fell off something\", laundry lines overhead. Sodium amber and teal shadow. (Stop-gap: `shop-alley-dealer.png`, 4:3.)\n",
+  "refs": [
+    "art/illustrations/m813/outpost813.png",
+    "art/illustrations/m813/shield-line.png",
+    "art/illustrations/proving-ground/drill-yard.png",
+    "art/illustrations/survival/backdrops/city-a-archway.png",
+    "art/portraits/world/new-faces/orren-vask.png"
+  ],
+  "transparent": false,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1448,
+    1086
+  ],
+  "export_dimensions": [
+    2560,
+    1440
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-city.png",
+  "source_sha256": "6ea15ee6d5888593bff12e795e67c14d45b6849615f2e801fc137d1dc017e5e6",
+  "sha256": "60792a3d472873d2be34927752593e82d1299c128c8907b552285a47366f6cb4",
+  "exports": {},
+  "upscaled": true,
+  "export_processing": "Aspect-preserving central 16:9 crop when native ratio differs, then Lanczos upscale; no added detail",
+  "export_crop": [
+    0,
+    136,
+    1448,
+    950
+  ],
+  "native_minimum_met": false,
+  "implementation_ready": false,
+  "catalog_family": "survival_art",
+  "catalog_id": "shop-city"
+}
