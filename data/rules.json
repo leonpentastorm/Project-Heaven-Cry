@@ -858,7 +858,21 @@
         "ap_bard": 1
       }
     },
-    "death_releases_bots": true
+    "death_releases_bots": true,
+    "health_look": {
+      "about": "How a creature's health reads to a side that has not Analyzed it (rules 1.3; rules 1.55 item 27): one word from this ladder and nothing else (no bar, no number). A rung holds while the creature's share of its HP is above `above`; `full` is at full HP only; a living creature below every rung takes the last. A side's own and an Analyzed creature read exactly (the bar and the number). `tone` is the colour family the screen pairs with the word: calm, or hurt (the HP red), or dire (the HP red, filled).",
+      "ladder": [
+        { "word": "unhurt", "full": true, "tone": "calm" },
+        { "word": "scratched", "above": 0.75, "tone": "hurt" },
+        { "word": "hurt", "above": 0.5, "tone": "hurt" },
+        { "word": "badly hurt", "above": 0.25, "tone": "hurt" },
+        { "word": "near death", "above": 0, "tone": "dire" }
+      ],
+      "down": "down",
+      "dead": "dead",
+      "provisional": true,
+      "source": "rules 1.55 item 27 (Leon's playtest and ruling, 15 Nov 2026)"
+    }
   },
   "weapons_rules": {
     "heat": {

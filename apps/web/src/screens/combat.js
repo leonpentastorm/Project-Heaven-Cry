@@ -10,7 +10,7 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView } from '@engine';
+  attemptWhy, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView } from '@engine';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
@@ -365,6 +365,12 @@ function presenceVals(u, g, cb) {
 export const witnessedWords = (u, g) => 'UNTIL THE FIGHT ENDS OR ' + (patronNameOf(u, g).toUpperCase() || 'THE PATRON') + ' ACTS';
 /** The chip's title: "Witnessed: until the fight ends or Old Overcast acts." */
 const witnessedTitle = (u, g) => 'Witnessed: until the fight ends or ' + (patronNameOf(u, g) || 'the patron') + ' acts.';
+/** Rules 1.55 item 27: an un-Analyzed creature's health is the engine's word (healthView), drawn as a chip in its tone's
+ *  colour (calm: muted; hurt: the HP red; dire: the HP red filled), never a bar. `pos` places it (a token's foot). */
+export const lookChip = (hv, pos = '') => 'display: inline-block; padding: 1px 6px; border-radius: 999px; font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; '
+  + (hv.tone === 'dire' ? 'border: 1px solid #F65157; background: #F65157; color: #0A0D13' : hv.tone === 'hurt' ? 'border: 1px solid #F65157; background: rgba(10, 13, 19, 0.92); color: #F65157' : 'border: 1px solid #2E3A50; background: rgba(10, 13, 19, 0.92); color: #A3AEC2') + (pos ? '; ' + pos : '');
+export const lookWord = (hv) => hv.word.toUpperCase();
+const TOKEN_LOOK_POS = 'position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); z-index: 4';
 const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; ';
 /** Witnessed is your patron watching (a boon), not a harm: the faith light and the eye, a short label (the how-long is in
  *  its title and the FAITH tab's header), and gone once the fight is over (it never outlives the fight). */
@@ -931,7 +937,7 @@ export class CombatLogic extends DCLogic {
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
     const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
-    const condWord = (u) => (u.dead ? 'dead' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'wounded' : 'badly hurt');
+    const condWord = (u) => healthView(u).word; // the engine's view (rules 1.55 item 27): the look's word
 
     const at = {}; cb.units.filter((u) => !u.dead).forEach((u) => { at[u.pos] = u; });
     // Combat clarity (fx/play.ts): a unit whose walk or coming-into-sight has not played yet (or is playing now) is drawn
@@ -939,13 +945,14 @@ export class CombatLogic extends DCLogic {
     // every unit's token look, to draw a walk whose unit has no token on screen (it fell at the end of it).
     const fxHeld = fxHeldUnits(g);
     // The walker the layer draws carries the kind chip and HP bar its tile shows (as below), so they don't pop on when it
-    // arrives: exact HP for the squad and an Analyzed foe, else its look (unhurt, wounded, badly hurt).
+    // arrives: exact HP for the squad and an Analyzed foe, else its health word (rules 1.55 item 27: the engine's healthView, no bar).
     const hpLook = (u) => {
-      const known = u.side === 'pc' || u.analyzedBy, hpPct = u.dead || u.downed ? 0 : known ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
+      const hv = healthView(u), known = hv.known, hpPct = hv.pct; // the engine's view (rules 1.55 item 27): exact, or a word
+      if (!known) return null;
       return { box: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)' + (known ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.5)'),
         chip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #FFFFFF', fill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #F65157' + (known ? '' : '; opacity: 0.6') };
     };
-    setTokenLooks(cb.units.map((u) => { const kb = u.side === 'foe' ? kindBadge(u.kind, true) : null; return { id: u.id, src: faceOf(u) || '', style: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157'), kind: kb && kb.has ? { text: kb.text, style: kb.style } : null, hp: hpLook(u) }; }));
+    setTokenLooks(cb.units.map((u) => { const kb = u.side === 'foe' ? kindBadge(u.kind, true) : null; return { id: u.id, src: faceOf(u) || '', style: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157'), kind: kb && kb.has ? { text: kb.text, style: kb.style } : null, hp: hpLook(u), word: healthView(u).known ? null : { text: lookWord(healthView(u)), style: lookChip(healthView(u), TOKEN_LOOK_POS) } }; }));
     const sensedAt = {}; vis.sensed.forEach((k) => { sensedAt[k] = true; }); // a presence, no unit (spec: Vision, Sensory)
     const solid = new Set(cb.map.solid), diff = difficultOf(cb);
     // ---------- the chosen attack's reach in red (as on the area map): where it can land from here, as the engine allows ----------
@@ -1067,7 +1074,7 @@ export class CombatLogic extends DCLogic {
       const cReach = flow && flow.d.preview === 'call' && flow.reach.size ? flow.reach : null, cTile = cReach ? flow.picks.tile || null : null;
       const planStyle = inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : cReach ? (cReach.has(k) ? (cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : 'background: rgba(231, 235, 243, 0.07); border: 1px dashed rgba(231, 235, 243, 0.5)') : cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : '') : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
       const isHeld = !!(u && fxHeld.has(u.id));
-      const known = u && (u.side === 'pc' || u.analyzedBy), hpPct = !u ? 0 : u.dead || u.downed ? 0 : known ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
+      const hv = u ? healthView(u) : null, known = !!(hv && hv.known), hpPct = hv && hv.known ? hv.pct : 0; // the engine's view (rules 1.55 item 27): exact, or a word
       const sel = u && tgtUnit && u.id === tgtUnit.id;
       const isCur = u && cur && u.id === cur.id;
       tiles.push({
@@ -1105,7 +1112,8 @@ export class CombatLogic extends DCLogic {
             shieldFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + Math.max(8, Math.min(100, sh / Math.max(1, u ? u.maxHp : 1) * 100)) + '%; background: #8BDEEE',
             hasGuard: gd > 0, guardBox: 'position: absolute; left: 5px; bottom: ' + (sh > 0 ? 10 : 6) + 'px; z-index: 3; display: flex; gap: 2px; pointer-events: none',
             guardPips: Array.from({ length: Math.min(5, gd) }, (_, i) => ({ key: 'g' + i, style: 'width: 5px; height: 5px; border-radius: 1px 1px 3px 3px; background: #E7EBF3; box-shadow: 0 0 0 1px rgba(5, 7, 11, 0.9)' })) }; })(),
-        hasHp: !!u && !isHeld, hpBox: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)' + (known ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.5)'),
+        hasLook: !!u && !isHeld && !known, lookText: hv && !known ? lookWord(hv) : '', lookStyle: hv && !known ? lookChip(hv, TOKEN_LOOK_POS) : '',
+        hasHp: !!u && !isHeld && known, hpBox: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)' + (known ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.5)'),
         hpChip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #FFFFFF', hpFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #F65157' + (known ? '' : '; opacity: 0.6'),
         hasJoin: !!(SL.tiles[k] && SL.tiles[k].length), join: SL.tiles[k] ? joinUri(SL.tiles[k], { size: 44, pad: 26, anchor: [9, 9], pitch: 48 }) : '',
         // A preview line ends under the caster's token: while drawing, the joins sit above the token (and below the tip).
@@ -1151,8 +1159,8 @@ export class CombatLogic extends DCLogic {
     const sn = (u) => !u.unseen;
     const initiative = rotU.map((u, idx) => ({ tag: cb.over ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && idx < 2,
       tagStyle: 'font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: ' + (idx === 0 ? '#FFFFFF' : '#A3AEC2'),
-      ...(() => { const kn = u.side === 'pc' || u.analyzedBy, pct = u.downed ? 0 : kn ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
-        return { hpBox: 'position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; overflow: hidden; background: #1C2536' + (kn ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.45)'),
+      ...(() => { const hv = healthView(u), kn = hv.known, pct = kn ? hv.pct : 0; // the engine's view (rules 1.55 item 27): exact, or a word
+        return { hasHp: kn, hasLook: !kn, lookText: kn ? '' : lookWord(hv), lookStyle: kn ? '' : lookChip(hv), hpBox: 'position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; overflow: hidden; background: #1C2536' + (kn ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.45)'),
           hpChip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #FFFFFF', hpFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #F65157' + (kn ? '' : '; opacity: 0.6') }; })(),
       // an unseen hostile keeps its face and its initials to itself (the turn card's '?', below; review fix: the bar showed them)
       ...(() => { const sn = !u.unseen, fc = sn ? faceOf(u) : ''; return { zoom: zoomer(this, fc, sn ? u.name : 'Unseen hostile', 'portrait'), hasImg: !!fc, noImg: !fc, img: fc, short: sn ? u.short : '?' }; })(),
@@ -1286,7 +1294,7 @@ export class CombatLogic extends DCLogic {
     // broken image on a black square), else its initials in the token's red frame.
     const target = tgtUnit ? { zoom: zoomer(this, faceOf(tgtUnit), tgtUnit.name, 'portrait'), name: tgtUnit.name, img: faceOf(tgtUnit), hasImg: !!faceOf(tgtUnit), noImg: !faceOf(tgtUnit), short: tgtUnit.short || tgtUnit.name.slice(0, 2).toUpperCase(),
       badgeStyle: 'display: grid; place-items: center; flex: none; width: 40px; height: 50px; box-sizing: border-box; border-radius: 6px; font-size: 13px; font-weight: 700; ' + (tgtUnit.side === 'pc' ? 'border: 2px dashed ' + ring(tgtUnit) + '; color: ' + ring(tgtUnit) + '; background: #10151F' : 'border: 2px solid #F65157; color: #F65157; background: #2A0F14'),
-      known: !!tgtUnit.analyzedBy, hpFill: 'width: ' + Math.round(tgtUnit.hp / tgtUnit.maxHp * 100) + '%; height: 100%; background: #F65157',
+      known: healthView(tgtUnit).known, unknown: !healthView(tgtUnit).known, lookText: lookWord(healthView(tgtUnit)), lookStyle: lookChip(healthView(tgtUnit)), hpFill: 'width: ' + (healthView(tgtUnit).pct || 0) + '%; height: 100%; background: #F65157',
       line: tgtUnit.analyzedBy ? 'HP ' + fmtNum(tgtUnit.hp) + ' / ' + fmtNum(tgtUnit.maxHp) + ' · Defense ' + tgtUnit.def + ' · Armour ' + fmtNum(tgtUnit.armour) + (effectsOf(tgtUnit).length ? ' · ' + effectsOf(tgtUnit).map((f) => f[0]).join(', ') : '')
         : 'Looks ' + condWord(tgtUnit) + ' · ' + (tgtUnit.tier || 'hostile') + ' · Analyze to see its HP and status',
       odds: pv ? (pv.ok ? 'Hit ' + pv.pct + '% · need ' + pv.need + ' (you roll d20 ' + fmt(pv.toHit) + ')' + (pv.rangePenalty ? ' · range ' + pv.rangePenalty : '') + (pv.cover ? ' · behind half cover −5' : '') : pv.why) : 'Pick an attack to see the odds',

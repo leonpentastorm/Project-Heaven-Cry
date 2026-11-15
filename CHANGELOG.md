@@ -14,6 +14,12 @@ The game shows its version in the corner of the title screen and in every "Repor
   guard already left on 1 HP, Hold the Gate, the Toll Keeper) reported the roll's own number ("63834 damage · no damage")
   in the log and on the shot's floating number while the target lost nothing; it now reports 0 (`effects/damage.ts`).
   Test: `packages/engine/test/last-shot-0283.test.ts` (a real Burst through the reducer).
+- **An un-Analyzed foe shows a health word, not a bar** (rules 1.55 item 27; Leon's playtest: "the hp bar does not
+  goes down", and his ruling "put the word HURT there instead of % HP"). The bar drew unhurt / wounded / badly hurt as
+  100 / 66 / 33%, so it stood still from half HP to 1 and the shot before the kill looked eaten. Now one word of a
+  five-rung ladder in data (`rules.json combat.health_look`, provisional): UNHURT, SCRATCHED, HURT, BADLY HURT,
+  NEAR DEATH, as a chip on the token, the turn strip and the target card, no bar, no number. The engine's `healthView`
+  works it out. Analyzed foes and the squad unchanged.
 
 ## 0.28.2 — the Sigil word cap says why
 

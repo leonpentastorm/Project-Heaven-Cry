@@ -487,7 +487,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 - Enemies see by the same rule (Vision 12, halved in darkness).
 - **What a player is sent** (engine review 4, finding 4; 12 Nov 2026): fog of war is kept by the engine, not the screen. Each player's view holds only what their side sees: an unseen hostile is not in it at all (a sensed one is a presence on a tile, nothing more), nor are the other side's glyphs, zones and False Images out of sight, nor the tiles or names of the unseen in the fight's effects or its log (a log line about only what their side did not see when it happened is not sent). The human Narrator is sent everything. See item 1600.
 
-**Analyze.** 2 AP (1 with Acuity's Quick Read), at an enemy you can see within 4 + Acuity tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has **Read Them** (Acuity 5; it was Weak Point), that enemy deals 15% less damage to the whole squad (rules 1.13: a beta is defence; the +15% squad damage is gone). Details are provisional (item 56).
+**Analyze.** 2 AP (1 with Acuity's Quick Read), at an enemy you can see within 4 + Acuity tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks, as one word and nothing else (no bar, no number): **unhurt** (full HP), **scratched** (above 75%), **hurt** (75% to above 50%), **badly hurt** (50% to above 25%), **near death** (25% and below), or **down** (`rules.json combat.health_look`; PROVISIONAL) *(rules 1.55 item 27; it was three looks, unhurt, wounded, badly hurt, drawn as a banded bar)*. If the analyst has **Read Them** (Acuity 5; it was Weak Point), that enemy deals 15% less damage to the whole squad (rules 1.13: a beta is defence; the +15% squad damage is gone). Details are provisional (item 56).
 
 **Attack roll.** d20 + attack skill modifier + weapon accuracy + situational modifiers, against the target's **Defense** (10 + Dodge).
 
@@ -6118,6 +6118,14 @@ make what rare actually rare". The numbers and the arithmetic are in section 14,
    pack, as part of the gun.
 26. **What a killed foe leaves** (item 4127): in Survival the kind's loot table is not rolled (`drops.kind_table`
    false); a gun foe leaves gunpowder or casings and a caster residue only with a small chance.
+27. **An un-Analyzed creature's health is a word, not a bar** (item 4129; Leon's playtest, 15 Nov 2026: "the health
+   bar of the enemy shows at most 20 left, then we shot another shot for 43 dmg, but the hp bar does not goes down";
+   his ruling: "just display the status like put the word HURT their instead of % HP"). The bar drew the three looks
+   as 100 / 66 / 33%, so it stood still from half HP down to 1 and the shot before the kill looked eaten. Now no bar
+   and no number: one word of a five-rung ladder in data (`combat.health_look.ladder`, words and thresholds both,
+   PROVISIONAL): unhurt, scratched, hurt, badly hurt, near death, so the last word means the next solid hit can kill.
+   Analyze gives what it gave; the squad reads as before; the damage shown for a hit is unchanged (it was always the
+   HP lost).
 
 ## Maps (rules 1.16)
 
@@ -9619,4 +9627,7 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
-4128. **Items 4121 to 4128 are rules 1.55's.**
+4128. **Items 4121 to 4129 are rules 1.55's.**
+4129. **The health word (rules 1.55 item 27):** a 140 HP foe nobody has Analyzed, hit for 43 three times, reads hurt
+   (97, 69%), badly hurt (54, 39%), near death (11, 8%); the ladder is `rules.json combat.health_look.ladder`
+   (PROVISIONAL). The engine's view (`healthView`) is the one place it is worked out; the screen draws its word.
