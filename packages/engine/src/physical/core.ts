@@ -105,11 +105,18 @@ export function guardGain(u: Unit, by: 'guard' | 'brace' = 'guard'): number {
   const g = GR(); if (by === 'brace') return (g.brace_gain ?? 2) + (shieldOf(u) ? g.brace_shield_gain ?? 1 : 0);
   return (g.gain_base ?? 1) + Math.max(0, unitSkill(u, 'durability') - 1) * (g.gain_per_point ?? 1) + (shieldOf(u) ? g.shield_gain ?? 1 : 0);
 }
-function guardFx(cb: Combat, u: Unit, was: number) { const now = guardOf(u); if (now !== was) emitFx(cb, 'guard', { unit: u.id, at: u.pos, now, was, max: guardMax(u) }); }
+/** Why a unit's Guard changed, for the screen (Guard 2.0, rules 1.56 item 4300: the plates): gained, eaten by a hit
+ * (soaked: the damage it took off), spent on an order or an Answer, or taken by Pressure. */
+export type GuardWhy = 'gain' | 'soak' | 'spend' | 'pressure';
+function guardFx(cb: Combat, u: Unit, was: number, why: GuardWhy, soaked?: number) {
+  const now = guardOf(u); if (now === was) return;
+  emitFx(cb, 'guard', { unit: u.id, at: u.pos, now, was, max: guardMax(u), why, ...(soaked ? { soaked } : {}) });
+}
 /** Add Guard to a unit, up to its pool. Returns what it gained. */
-export function addGuard(cb: Combat, u: Unit, n: number): number { const was = guardOf(u), got = resGain(u, 'guard', Math.max(0, n)); guardFx(cb, u, was); return got; }
-/** Spend Guard. False (nothing spent) when the unit holds less. */
-export function spendGuard(cb: Combat, u: Unit, n: number): boolean { const was = guardOf(u); if (n <= 0) return true; if (!resSpend(u, 'guard', n)) return false; guardFx(cb, u, was); return true; }
+export function addGuard(cb: Combat, u: Unit, n: number): number { const was = guardOf(u), got = resGain(u, 'guard', Math.max(0, n)); guardFx(cb, u, was, 'gain'); return got; }
+/** Spend Guard. False (nothing spent) when the unit holds less. why: what spent it (the screen's word); soaked: the
+ * damage a soak took off the hit. */
+export function spendGuard(cb: Combat, u: Unit, n: number, why: GuardWhy = 'spend', soaked?: number): boolean { const was = guardOf(u); if (n <= 0) return true; if (!resSpend(u, 'guard', n)) return false; guardFx(cb, u, was, why, soaked); return true; }
 /** The Guard a technique costs to use (its own `numbers.guard_cost`: Shield Bash). An Answer spends its own as it fires. */
 export const guardCost = (def: TechDef): number => (def.group === 'answer' ? 0 : Number((def.numbers as any)?.guard_cost) || 0);
 /** Does the unit hold this item (a class move, a perk, a trait), by its key ('class:defender.brace')? */

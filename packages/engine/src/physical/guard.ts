@@ -49,7 +49,7 @@ onHook('damage_in', (ctx: any, cb) => {
   if (reach - k * per >= u.hp) k = Math.min(have, needs);
   if (k < 1) return;
   const cut = Math.min(reach, k * per);
-  spendGuard(cb, u, k); ctx.dmg = Math.floor(ctx.dmg) - cut; ctx.guardSoaked = (ctx.guardSoaked || 0) + cut;
+  spendGuard(cb, u, k, 'soak', cut); ctx.dmg = Math.floor(ctx.dmg) - cut; ctx.guardSoaked = (ctx.guardSoaked || 0) + cut;
   say(cb, u.name + '\'s Guard takes ' + cut + ' of it (' + k + ' Guard, ' + guardOf(u) + ' left).');
 });
 
