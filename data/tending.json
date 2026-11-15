@@ -1672,7 +1672,8 @@
           "if": {
             "action": [
               "tend_raise"
-            ]
+            ],
+            "flag": "last_thread"
           },
           "flag": "last_thread",
           "clear": true
@@ -1681,7 +1682,10 @@
           "op": "mark",
           "when": "turn_end",
           "flag": "last_thread",
-          "clear": true
+          "clear": true,
+          "if": {
+            "flag": "last_thread"
+          }
         }
       ],
       "adjudication": "engine",

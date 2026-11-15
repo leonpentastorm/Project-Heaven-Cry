@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 17 profiles, 41 cost sites, 15 resources, 61 stats, 24 condition fields, 663 primitive exports, 2026 other exports, 130 fx kinds, 174 Unit fields, 59 Combat fields, 41 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 17 profiles, 41 cost sites, 15 resources, 61 stats, 24 condition fields, 663 primitive exports, 2028 other exports, 130 fx kinds, 174 Unit fields, 59 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -585,10 +585,10 @@ Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod
 
 `immune(x, what)` is also asked about: `bleed`, `knockback`, `opportunity_attack`, `shove` (`IMMUNE_IDS`).
 
-### The condition table (`data/conditions.json`, 94 rows; loader `condtable.ts`)
+### The condition table (`data/conditions.json`, 95 rows; loader `condtable.ts`)
 
 A condition is a row; these are the fields rows use (how many rows use each):
-`id` (94), `amounts` (7), `name` (94), `kind` (94), `family` (94), `save` (94), `engine` (94), `text` (94), `effects` (94), `duration` (94), `ends_on` (94), `stacks` (94), `adjudication` (94), `save_note` (1), `provisional` (65), `aliases` (2), `key` (2), `label` (49), `boon` (39), `notes` (1), `source` (59), `engine_state` (3), `params` (1), `set_by` (46).
+`id` (95), `amounts` (7), `name` (95), `kind` (95), `family` (95), `save` (95), `engine` (95), `text` (95), `effects` (95), `duration` (95), `ends_on` (95), `stacks` (95), `adjudication` (95), `save_note` (1), `provisional` (66), `aliases` (2), `key` (2), `label` (49), `boon` (39), `notes` (1), `source` (60), `engine_state` (3), `params` (1), `set_by` (46).
 Families: `body`, `brain`, `heart`.
 
 #### The item-ops runner (`effects/triggers.ts`)
@@ -1434,7 +1434,7 @@ Families: `body`, `brain`, `heart`.
 | `picksOf` | `picksOf(d: ActionDescriptor, S: any, cb: any, cur: any, extra: Picks = {}): Picks` | The picks the screen holds for this descriptor. |
 | `flowView` | `flowView(g: any, me: string \| null, cur: any, S: any, extra: Picks = {}): FlowView \| null` | The picked action on the flow, or null when it is not (no action, not this player's turn, a system with its own screen code). extra: picks a bespoke panel made (a perk's form, a pile's checklist). |
 
-#### Every other export, by file (2026)
+#### Every other export, by file (2028)
 
 The scan of every file in the engine's source: what the tables above do not show. Read the doc comment in the file before writing a second one.
 
@@ -1517,7 +1517,7 @@ The scan of every file in the engine's source: what the tables above do not show
 | `run/shopview.ts` | `ShopCardV`, `SellRowV`, `ShopViewV`, `MeV`, `WearV`, `wearView`, `meBlock`, `sheetPack`, `MaterialsCardV`, `materialsView`, `shopView` |
 | `run/stage.ts` | `BOON_PICK`, `WORLD`, `SettingCard`, `settingCard`, `settingReady`, `poolBoons`, `holdsBoon`, `boonServes`, `boonOffer`, `START_BOON`, `boonWorks`, `lineOf`, `lineBoons`, `startOffer`, `isStartBoon`, `startBoonProblem`, `boonProblem`, `nextTiles`, `nextPools`, `tileProblem`, `stageLogFor`, `stageLog`, `enterStage`, `renownOf`, `boonsOf`, `keptDraft` |
 | `run/tally.ts` | `TapeEv`, `TallyRow`, `FightTally`, `settleTape`, `fightTally`, `sumTallies` |
-| `screenViews.ts` | `BondChip`, `BondView`, `bondView`, `ReactionView`, `reactionView`, `OwnedView`, `ownedView`, `TieLine`, `tieLines` |
+| `screenViews.ts` | `BondChip`, `BondView`, `BondGives`, `bondGives`, `bondView`, `ReactionView`, `reactionView`, `OwnedView`, `ownedView`, `TieLine`, `tieLines` |
 | `sigil.ts` | `sigilReady`, `glyphApOf`, `glyphCost`, `glyphsPerTile`, `groundCap`, `evokeCharge`, `Pattern`, `glyphDrawer`, `Stroke`, `strokeRuns`, `strokesOfGlyph`, `strokeOfGlyph`, `strokeOf`, `strokesAt`, `tidyStrokes`, `findPattern`, `Facing`, `facingFrom`, `spellRange`, `boltPath`, `dir8`, `burstTiles`, `Affected`, `SIGIL_CAP`, `lineMultFor`, `spellCritMult`, `spellGapToHit`, `lineGuards`, `sigilPower`, `sigilParts`, `capParts`, `applyInflections`, `narratorInflections`, `evokeGrowth`, `sigilDamage`, `sigilDamageTerms`, `sigilBoon`, `cleanseList`, `EvokeOpts`, `MissilePlan`, `EvokePreview`, `evokeOrigins`, `planEvoke`, `evokeMarks`, `StrokeOption`, `DrawPreview`, `JUNCTION`, `junctionsFor`, `strokeCandidates`, `strokePick`, `previewDraw`, `drawGlyph`, `scuff`, `readable`, `readGlyph`, `readDrawnBy`, `fadePattern`, `previewEvoke`, `evoke`, `newestCondition`, `destroyPlaced`, `turretAim`, `strikeTurret`, `sigilEnter`, `sigilTurnStart`, `sigilRoundTick`, `sigilSpot`, `placedMagic`, `secretFrom`, `patternAt`, `migrateSigil`, `migrateStorySigil`, `evokeTargets`, `glyphsAt`, `enemyDefaultWords`, `ENEMY_MAX_WORDS`, `enemyMagic`, `enemyCast`, `enemyAvoidMagic`, `CastAtResult`, `castAt` |
 | `sigilgrowth.ts` | `STUDY`, `WORD_MASTERY`, `SigilGrowth`, `growthOf`, `thresholdN`, `picksEarned`, `evokeStudy`, `pendingPicks`, `knowsWord`, `addStudy`, `noteEvoke`, `copyWord`, `masterySync`, `learnable`, `learnStudied`, `noteToStudy`, `learnedElsewhere`, `WordTier`, `wordUses`, `wordTierOf`, `masteredWords`, `Inflection`, `inflectionOf`, `INFLECTION_STATS`, `inflectionValue`, `SigilGrowthView`, `sigilGrowthView` |
 | `sigilwords.ts` | `SigilFam`, `Dir`, `G`, `ENEMY_AI`, `SIGIL_GRAMMAR`, `SIGIL_ELEMENTS`, `SIGIL_REV`, `MAX_GLYPHS`, `MIN_GLYPHS`, `REPEAT_MULT`, `LINE_MULT`, `lineMult`, `LIM`, `W`, `groupOf`, `classOf`, `isSubject`, `isReach`, `isElement`, `isAffliction`, `isBoonWord`, `isWorking`, `count`, `perCopy`, `Spell`, `compileSpell`, `grammarError`, `startingWordsError`, `STARTING_DEFAULT`, `migrateWords` |

@@ -3,6 +3,7 @@
 // out a Bond, a cap or a reaction count itself (apps/web/src/game/boundary.test.ts).
 //   bondView      the Bond strip (bonds-spec.md section 9): your Bonds, allies and enemies apart, the cap, the Attuner
 //   reactionView  the reaction pips (reactions-spec.md section 9): reactions this round, spent, the Answers switched on
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import type { Combat, Unit } from './combat';
 import type { Character } from './character';
 import { focusHand } from './character';
