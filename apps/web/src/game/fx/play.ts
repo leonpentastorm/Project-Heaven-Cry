@@ -15,6 +15,7 @@ import { wrapRanged, rangedBeat, rangedBatch, resetRanged, drawsOwnLoose } from 
 import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
+import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments } from './figments';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
@@ -51,6 +52,7 @@ export function setContext(g: GameState | null, screen: string) {
   if (!g) return;
   for (const c of Object.values(g.characters || {})) if (c && (c as any).id) charNames.set((c as any).id, String((c as any).name || ''));
   if (screen === 'combat' && g.combat) {
+    noteFigments(g.combat.units); // fx/figments.ts: which units are Figments, of what form, whose
     for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name) || MACHINE_KIND.has((u as any).kind), dead: !!u.dead, charId: u.charId || undefined });
     // The view is already fogged by the engine (fog.ts): every unit in it is one this side sees (or its own, or a body);
     // the human Narrator's view holds everything and plays everything.
@@ -310,7 +312,7 @@ export function fxHeldUnits(g: GameState | null | undefined): Set<string> {
   let p = processed.get(key);
   if (p == null && (cb.round || 1) <= 1 && (cb.fx || []).length <= 40 && ((cb.fx || [])[0]?.n || 1) <= 1) p = 0; // a fight's opening: it will play (FxLayer's own test)
   if (p == null) return out;
-  for (const e of cb.fx || []) if (e.n > p && e.unit && mineOnly(e) && (e.k === 'move' || (e.k === 'sight' && (e.how === 'enter' || e.how === 'reveal')))) out.add(String(e.unit));
+  for (const e of cb.fx || []) if (e.n > p && e.unit && mineOnly(e) && (e.k === 'move' || e.k === 'spawn' || (e.k === 'sight' && (e.how === 'enter' || e.how === 'reveal')))) out.add(String(e.unit));
   for (const e of cb.fx || []) if (e.n > p && e.k === 'shove' && e.target && e.ok && e.from !== e.to && mineOnly(e)) out.add(String(e.target));
   return out;
 }
@@ -374,7 +376,7 @@ export function moversOf(evs: FxEvent[], sideOf: (id: string) => string | undefi
       const path: string[] = (e.path || [e.from, e.to]).filter(Boolean);
       const mine = sideOf(id) === 'pc', seen0 = mine || !e.sight || typeof e.sight.pc !== 'string' || e.sight.pc[0] === '1';
       out.set(id, { kind: 'walk', stand: seen0 ? path[0] || null : null });
-    } else if (e.k === 'sight' && (e.how === 'enter' || e.how === 'reveal')) out.set(id, { kind: 'sight', stand: null });
+    } else if ((e.k === 'sight' && (e.how === 'enter' || e.how === 'reveal')) || e.k === 'spawn') out.set(id, { kind: 'sight', stand: null }); // a spawn: hidden until it forms (fx/figments.ts)
     else if (e.k === 'sight' && e.how === 'lost' && e.at) out.set(id, { kind: 'lost', stand: String(e.at) }); // it stays where it was last seen until it fades
   }
   return out;
@@ -408,6 +410,8 @@ export function holdMovers(evs: FxEvent[]) {
   // shot's flight): its ghost stands on its tile from now until its 'down' plays (live check: the token vanished and its
   // loot pile showed during the cut-in, then came back alive for the shot).
   for (const e of evs) if (e.k === 'down' && e.dead && e.unit && mineOnly(e) && unit(String(e.unit))?.dead) ghostOf(String(e.unit), e.at, HOLD_MS);
+  // a Figment unmade (let go, unravelled, destroyed) is gone from the grid at once: its copy stands until it comes apart
+  for (const e of evs) if (e.k === 'unmake' && e.unit && e.at && mineOnly(e) && figOf(String(e.unit)) && !unit(String(e.unit))) ghostOf(String(e.unit), e.at, HOLD_MS);
   holdTiles(evs);
   holdChanged();
 }
@@ -1378,17 +1382,20 @@ wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, pr
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
 // its rolls drawn one by one; it wraps everything above.
 wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose, explosion });
+// Figments (fx/figments.ts): the summon (the caster, a thread, the forming), their orders and attacks, their unmaking.
+wrapFigments(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, release: (id) => releaseMover(id), ghost: (id, key, life) => ghostOf(id, key, life) });
 /** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
 const streamsOwn = (v: FxEvent) => v.mode === 'dump' && fxOf(v.weapon, v.cat).mark === 'hole' && v.cat !== 'shotgun'; // a stream of rounds that hole (bullets, a charge's bolts): a spray
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
-const beatOf = (e: FxEvent): number => { const b = baseBeat(e) + (mineOnly(e) ? techExtraBeat(e, !drawsOwnLoose(e)) : 0); return b ? b * fxPace() : b; };
+const beatOf = (e: FxEvent): number => { const b = baseBeat(e) + (mineOnly(e) ? techExtraBeat(e, !drawsOwnLoose(e)) + figmentExtraBeat(e) : 0); return b ? b * fxPace() : b; };
 /** The beat at Fast (the written timings). */
 function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
   if (e.k === 'roll') return 0; // a roll's numbers (engine rolls.ts): data for the dice read-out, no beat of its own
+  const gb = figmentBeat(e); if (gb !== undefined) return gb;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;

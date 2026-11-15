@@ -163,6 +163,9 @@ const COMBAT_CSS = [
   '@keyframes phcWaitDot{0%,80%,100%{opacity:.25}40%{opacity:1}}.phc-wait-dots>span{animation:phcWaitDot 1.2s ease-in-out infinite}.phc-wait-dots>span:nth-child(2){animation-delay:.2s}.phc-wait-dots>span:nth-child(3){animation-delay:.4s}',
   // a kit map's object label (HALF 30): shown on the tile's hover or focus (always once the object is damaged)
   '.phc-tok .phc-kitlbl{opacity:0}.phc-tok:hover .phc-kitlbl,.phc-tok:focus-visible .phc-kitlbl{opacity:1}',
+  // A Figment's token is never a dead sprite: a slow shimmer in Expression's ink (fx/figments.ts draws its summon and
+  // unmaking). Filter only (its hold and fades use opacity); the combat speed sets its pace; off under Reduce motion.
+  '@keyframes phcFigIdle{0%,100%{filter:drop-shadow(0 0 2px rgba(83,148,172,.75)) brightness(1)}45%{filter:drop-shadow(0 0 7px rgba(83,148,172,.95)) brightness(1.22)}52%{filter:drop-shadow(0 0 3px rgba(207,230,240,.9)) brightness(1.45)}58%{filter:drop-shadow(0 0 6px rgba(83,148,172,.9)) brightness(1.12)}}',
   '.phc-reduce .phc-yt,.phc-reduce .phc-plan,.phc-reduce .phc-pips>span.phc-pip-drain{animation:phcPlanIn .15s ease-out both}.phc-reduce .phc-yt::after{display:none}',
   '.phc-reduce .phc-cur-ring,.phc-reduce .phc-tgt-ring,.phc-reduce .phc-wait-dots>span{animation:none}.phc-reduce .phc-cb-act{transition:none}.phc-reduce .phc-hp-chip,.phc-reduce .phc-hp-fill{transition:none}',
   // The pinned action column: tabs, a tab panel that scrolls on its own, a footer that never scrolls away.
@@ -272,6 +275,8 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
 
 // The action tabs: names, family inks (Sigils Mind cyan, Outbursts Soul violet, Attack the damage red; the rest neutral)
 // and the last tab each character used (kept across turns, and across reloads in this browser).
+/** A Figment token's idle shimmer (the keyframes above), by its owned record's kind; none under Reduce motion. */
+const figIdle = (u) => (u && u.owned && u.owned.kind === 'figment' && !u.downed && !reducedMotion() ? '; animation: phcFigIdle calc(2.6s * var(--phc-k, 1)) ease-in-out infinite' : '');
 const TAB_INK = { attack: HOSTILE_INK, sigils: SIGIL_GLOW, outbursts: SOUL_INK, shadow: '#40BAA0', tend: '#EB95B7', figments: '#5394AC' }; // each door in its attribute's ink (Perception, Insight, Expression)
 const TAB_MEM = (() => { try { return JSON.parse(localStorage.getItem('phc.combatTabs') || '{}') || {}; } catch { return {}; } })();
 function tabMem(charId, tab) {
@@ -1126,9 +1131,9 @@ export class CombatLogic extends DCLogic {
         // the fog and the dark stay above the kit: a tile out of sight (or unlit) dims its kit layers as its own shade does
         hasKit: !!(KL && KL.get(k) && KL.get(k).layers.length), kit: KL && KL.get(k) ? ((dim) => (dim ? KL.get(k).layers.map((l) => ({ ...l, style: l.style + '; filter: brightness(' + dim + ')' })) : KL.get(k).layers))(!vis.tiles.has(k) ? (cb.map.dark && !litAt(cb, k) ? 0.28 : 0.5) : cb.map.dark && !litAt(cb, k) ? 0.75 : 0) : [],
         hasImg: !!faceOf(u), img: faceOf(u),
-        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : ''), // tokenFade.ts: held, Downed, Hidden, in that order
+        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + figIdle(u), // tokenFade.ts: held, Downed, Hidden, in that order
         hasBadge: !!(u && !faceOf(u)), badge: u ? u.short : '',
-        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld }),
+        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld }) + figIdle(u),
         hasText: ((diff.has(k) && !mapArt && !(KL && (KL.get(k) || {}).decal)) || !!cv) && !u,
         // a kit object's HALF / FULL and HP: a small quiet label, shown on hover (CSS) or always once it is damaged
         textCls: kitObj && cv && cv.hp >= cv.max ? 'phc-kitlbl' : '', textStyle: kitObj ? KIT_LABEL : TEXT_STYLE, text: cv ? (ob ? fmtNum(cv.hp) : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + fmtNum(cv.hp)) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',

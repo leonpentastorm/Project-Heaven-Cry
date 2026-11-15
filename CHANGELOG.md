@@ -17,6 +17,12 @@ A hotfix (15 Nov 2026). No rule changed; only the words.
   (nothing about raising it at the top). The key's short hint says the same: "2 words max; Intelligence 3 gives 3".
 - **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
   ground), the button says so before the click: "new Line · fades FIRE".
+- **Figments move and show** (Leon's playtest: "feels like it's just standing there doing nothing"). Picturing one plays
+  on the caster first (a wind-up ring and a gesture), a thread of light runs to the tile, then the Figment forms (lines
+  drawing in, a ring closing, its glyph, its token flickering up); an order is the caster's pulse and a thread, then the
+  usual lunge, hit or MISS with the Figment's afterimages and its glyph on the target; Let go, unravelling or a destroyed
+  one comes apart and streams back to its maker; a held Figment's token shimmers (off under Reduce motion). Effects only
+  (`apps/web/src/game/fx/figments.ts`), from the engine's existing spawn, attack and unmake events.
 
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
