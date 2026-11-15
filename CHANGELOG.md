@@ -8,6 +8,86 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.29.0 — Balance 2.0: the nine doors
+
+Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a
+class's way of fighting (its "door") got new pieces, the gear got mods, special rounds and named variants as data, and
+the alpha perks were rewritten so each one helps its own door. The full account, door by door, is
+`docs/design/proposals/2026-11-nine-doors-report.md`.
+
+### The nine doors
+
+- **Guard (Durability, the Bulwark).** Guard is drawn as plates around your token. New: Close Guard (a quarter of a
+  blow taken by the plates), Retort (strike back when hit in melee), Set Against the Blow, Last Plate (once a fight a
+  killing blow leaves you on 1 HP), Challenge (nearby foes must attack you) and Slam (push every foe next to you).
+- **Momentum (Raw Power, the Breaker).** Momentum shows as x1 to x5 on the token. A Charge that hits builds it; four
+  Finishers spend it; Launch throws an enemy next to you across the room; Wrecker and Breach make smashing cover pay.
+- **Pressure (Dexterity, the Skirmisher).** Any ranged hit pins; Pressed, Suppressed and Broken show as pips. The
+  Skirmisher gets Fire and Move, Relocated and Break Them; Dexterity's door gives Near Miss, Shaken Nerves and Flush Out.
+- **Shadow (Ingenuity, the Operative).** A SHADOW tab from Ingenuity 1: Hide is cheaper, the tiles you can hide on are
+  shaded and it names who sees you; Tag marks a foe; Ghost Kill at Ingenuity 3; being found is shown (FOUND).
+- **Sigils (Brain Power, the Sigilist).** Unchanged in shape: it was the yardstick the other doors were built up to.
+- **Figments (Visualization, the Rigger).** Every Figment takes orders on your turn (one order price); Redraw and Cash
+  in for all; Glimmer, a false Figment anyone with Visualization can raise; five new forms on a ladder with two forks.
+- **Bonds (Empathy, the Mender).** Tug pulls a Bonded unit to you (an ally comes willing); Snap breaks a Bond on
+  purpose for damage or a heal; Last Thread makes your next Raise free; the Bond card shows what Bonds give.
+- **Outbursts (Will Power, the Channeler).** Kept as 0.28 left them; its alpha perks were rewritten.
+- **Prayer (Faith, the Chaplain).** The Canticle: a song that climbs three verses while you keep singing, each patron
+  with its own verses, broken by a hit; Amen, Holy Dread and Last Rites.
+
+### The monk's gloves
+
+- **Fighting bare-handed is a weapon family.** Hand wraps (free at the camp), Knuckledusters, Striking gloves, Iron
+  mitts and Kemizuchi strikers, in a force line (Raw Power) and a quick line (Dexterity). With gloves on: the forms
+  (Jab, Palm, Sweep and more) on your attacks, Flurry, Trip, Grapple and Counter, Open guard in light armour, Sway and
+  Breath.
+
+### Perks
+
+- **The 18 alpha perks were rewritten** so each feeds its own door (Weight of the Wall, Keep Swinging, Pressure Point,
+  Long Dark, Running Hand, Many-Eyed Dream, Taut Thread, Clenched Heart, Unbroken Litany and the rest). Your perks keep
+  their names on your sheet; nobody has to pick again. No perk asks the Narrator anything now.
+
+### Survival and camp
+
+- **The camp's Recommended kit** now knows the Operative (a pistol, a smoke grenade, armour, a stim) and the Monk (the
+  Hand wraps). The camp's header has its painting.
+- **A weapon mod can be a reward pick**, and the armourer fits mods to any gun you carry; the extra mod slot is fitted
+  at the Forge for the same fee.
+- **On the field after a fight** the Backpack has Give (with the amount box) and "Use on…", as on the map.
+- **The lobby says "one character each"** in a Survival room, as the Start button already required.
+
+### Gear
+
+- **Mods are data**: red dot, scope, compensator, foregrip, extended magazine, suppressor and more, each doing exactly
+  what its card says, on either hand. Guns now show their Recoil.
+- **Special rounds come in each calibre** (armour-piercing, hollow-point, incendiary), priced from that calibre's round;
+  old saves' special rounds turn into rounds of the reference calibre.
+- **Melee damage grows with one attribute** (Strength for heavy weapons, Agility for light ones); Pull Out shows only
+  when something is stuck.
+- **Variants** (twenty named weapons and foci, such as 'Long Bead' and 'Steady Eye') exist in the data but are not
+  offered anywhere yet.
+
+### Fights
+
+- Text in the fight, run and camp screens is never smaller than 13 px.
+- One rule for Taunt, one for a Boss holding against forced moves, one health ladder.
+- Tug costs 12 MP (three times its first price, as 0.28.3 did for every Tending verb).
+
+### Fixes
+
+- A Shot picked on a friend on the field shows why it is refused, not a hit chance.
+- The field no longer says YOUR TURN; it says NO TURNS HERE, and the Backpack says "free".
+- Bond aimed at a machine says "A machine has no heart to Bond." (pinned by tests; the live report did not reproduce).
+
+### Known and unfinished
+
+- **Designed, not built:** the shield's second swing; the Breaker's wall slams and hurling; enemies breaking under
+  Pressure (the AI does not read the states yet); consecrated ground (Hallow); the forks for Guard, Momentum, Pressure,
+  Shadow and prayer; bare fists counting as the glove family; variants in shops.
+- **Numbers not yet fitted:** guns go above their line once perks are added; the solo tank; casters and duos in
+  Survival. Every 1.56 number is PROVISIONAL.
+
 ## 0.28.3 — the field is the fight, and the Durability tank
 
 A patch release from Leon's playtest of 0.28.2 (rules 1.55 items 45 to 75, every number PROVISIONAL). Leon on live
