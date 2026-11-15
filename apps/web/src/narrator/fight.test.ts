@@ -2,7 +2,7 @@
 // what it may answer), the answer's schema and its parsing, the three providers (Anthropic, OpenAI-compatible,
 // scripted), and the main brief's words about speech in a fight.
 import { describe, expect, it } from 'vitest';
-import { apply, newGame, ARCHETYPES, active, fightRulingOf, type GameState, type FightRuling } from '@engine';
+import { apply, newGame, ARCHETYPES, active, fightRulingOf, healthView, type GameState, type FightRuling } from '@engine';
 import { anthropicProvider, scriptedProvider } from './anthropic';
 import { openaiProvider, resetQuirks } from './providers';
 import { RULES_PROMPT, campaignPrompt, turnPrompt } from './context';
@@ -37,7 +37,9 @@ describe('the fight prompt is small and says exactly what the Narrator may answe
     const { g, r } = fight(); const keel = g.combat!.units.find((u) => /Keel/.test(u.name))!;
     expect(fightAsk(g, r)).not.toMatch(/\d+\s*\/\s*\d+ HP|\bHP \d/); expect(fightAsk(g, r)).not.toContain('may surrender');
     keel.hp = Math.floor(keel.maxHp / 2);
-    expect(fightAsk(g, r)).toMatch(/Chief Engineer Keel .*at half or less; may surrender/);
+    expect(fightAsk(g, r)).toMatch(new RegExp('Chief Engineer Keel .*: ' + healthView(keel).word + '; may surrender')); // the engine's word (MF2)
+    for (const share of [0.9, 0.6, 0.3, 0.1]) { keel.hp = Math.floor(keel.maxHp * share); expect(fightAsk(g, r)).toMatch(new RegExp('Chief Engineer Keel \\(enemy, soldier\\) at [A-Z]+\\d+: ' + healthView(keel).word + '(;|\\n|$)')); }
+    keel.hp = Math.floor(keel.maxHp / 2);
     keel.conds = { shaken: 2 } as any; expect(fightAsk(g, r)).toMatch(/Chief Engineer Keel .*Shaken/);
   });
   it('is a fraction of a Narrator turn: no campaign, no memory, no map', () => {

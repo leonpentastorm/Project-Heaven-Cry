@@ -8,7 +8,7 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView } from '@engine';
 import { kitSprite } from '../game/kitMap';
 import { figmentFaceOf } from '../game/figmentIcons';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
@@ -313,7 +313,7 @@ export function effectsOf(u, own = false) {
 // ---------- map tokens (minimap, area map, combat grid) with a hover card ----------
 export function tokenVals(u, opt) {
   const hpPct = Math.max(0, Math.min(100, Math.round(u.hp / Math.max(1, u.maxHp) * 100)));
-  const word = u.dead ? 'DEAD' : u.downed ? 'DOWNED' : hpPct >= 100 ? 'UNHURT' : hpPct > 50 ? 'WOUNDED' : 'BADLY HURT';
+  const word = healthView(u).word.toUpperCase(); // the engine's word (rules.json combat.health_look), never a ladder of the screen's
   const known = !!opt.ally || !!u.analyzedBy, fx = known ? effectsOf(u) : [];
   return {
     ally: !!opt.ally, foe: !opt.ally, known, unknown: !known, img: faceOf(u), hasImg: !!faceOf(u), noImg: !faceOf(u), short: u.short, name: u.name,
