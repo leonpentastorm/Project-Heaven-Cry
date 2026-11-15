@@ -34,8 +34,12 @@ export const nodeXp = (k: PayKind, depth: number, stage: number): number =>
 /** Credits each character takes at a node (section 3.1, 11.1): c(d) = base + per_depth x d, x the kind, x the stage's. */
 export const nodeCredits = (k: PayKind, depth: number, stage: number): number =>
   Math.round((SV.credits.base + SV.credits.per_depth * depth) * mult(SV.credits, k) * (1 + ENC_BUDGET.stage.credits * (Math.max(1, stage) - 1)));
-/** The ammunition pack's count at a node (rule 23): magazines' worth for each gun. */
-export const packCount = (k: PayKind): number => (k === 'gate' ? SV.ammo_pack.elite : SV.ammo_pack[k] ?? SV.ammo_pack.fight);
+type PackN = { mags: number; supply: number };
+const packPart = (t: Record<string, number>, k: PayKind): number => (k === 'gate' ? t.elite : t[k] ?? t.fight);
+/** The supply pack's counts at a node (rule 23; rules 1.55, the lead's ruling): `mags`, the magazines' worth for each
+ * gun, and `supply`, the n of the burnt cores back and the MP share (`ammo_pack.mags`, `ammo_pack.supply` by kind; the
+ * gate reads the Elite's). */
+export const packCount = (k: PayKind): PackN => ({ mags: packPart(SV.ammo_pack.mags, k), supply: packPart(SV.ammo_pack.supply, k) });
 /** Rules 1.48: the grade of the vault's weapon in a stage: `vault.grade_up` above the stage's pick ceiling, at most
  * `vault.grade_max` (stage 1 Masterwork, from stage 2 Relic). */
 export const vaultGrade = (stage: number): Rarity => {
@@ -64,8 +68,9 @@ export function magazineWorth(id: string): PackItem[] {
  * `ammo_pack.cores_max` x n; at a cache or the vault's chest (`burnt` left out) `ammo_pack.cores` x n. The cores are x
  * the stat `run_supply` (Deep Satchel). The pack items, in order (the caller adds them with packAdd); the MP share is
  * `supplyMp`. */
-export function ammoPack(c: Character, n: number, guns: string[] = gunsOf(c), burnt?: number): PackItem[] {
-  const out: PackItem[] = [], mags = Math.round(n * ammoMult(c));
+export function ammoPack(c: Character, count: number | PackN, guns: string[] = gunsOf(c), burnt?: number): PackItem[] {
+  const pn = typeof count === 'number' ? { mags: count, supply: count } : count, n = pn.supply;
+  const out: PackItem[] = [], mags = Math.round(pn.mags * ammoMult(c));
   for (const id of guns) for (let i = 0; i < mags; i++) out.push(...magazineWorth(id));
   const base = burnt == null ? SV.ammo_pack.cores * n : Math.min(SV.ammo_pack.cores_max * n, Math.max(0, burnt));
   const coreN = Math.round(base * supplyMult(c));
@@ -76,7 +81,8 @@ export function ammoPack(c: Character, n: number, guns: string[] = gunsOf(c), bu
 /** Rules 1.51 (spec rule 52 c): the MP a character takes back with the supply pack: `ammo_pack.mp_share` x n x the stat
  * `run_supply` (Deep Satchel) of its max MP, rounded, for a character carrying an MP focus of `ammo_pack.mp_doors`; else
  * 0. The caller adds it, never above the max. */
-export function supplyMp(c: Character, n: number): number {
+export function supplyMp(c: Character, count: number | PackN): number {
+  const n = typeof count === 'number' ? count : count.supply;
   const mp = (SV.ammo_pack.mp_doors as string[]).some((k) => holds(c, { slot: 'person', door: k }));
   return mp ? Math.round(SV.ammo_pack.mp_share * n * supplyMult(c) * maxMp(c)) : 0;
 }
@@ -156,9 +162,9 @@ export function runFoeDrops(u: Unit): Drops {
  * character's own door (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled
  * rarity capped by the stage; and where it is offered, the Materials card for the node's credits. From
  * `rngFor(seed, node + '#pick#' + id)`. */
-export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { rarity?: 'fight' | 'elite' | 'boss'; ammo?: number; /** rules 1.48: every weapon at this grade (the vault's chest), not rolled */ grade?: Rarity; /** rules 1.54: where it is made when not the node's kind (a sealed crate) */ where?: OfferWhere } = {}): RunOffer {
+export function weaponOffer(c: Character, node: { id: string; depth: number }, k: PayKind, stage: number, seed: string, o: { /** a row of `rewards.rarity` (a sealed crate's own) */ rarity?: string; /** the price band's kind (a trade's `band`) */ band?: PayKind; ammo?: number; /** rules 1.48: every weapon at this grade (the vault's chest), not rolled */ grade?: Rarity; /** rules 1.54: where it is made when not the node's kind (a sealed crate) */ where?: OfferWhere } = {}): RunOffer {
   const where: OfferWhere = o.where || k;
-  const rng = rngFor(seed, node.id + '#pick#' + c.id), band = priceBand(o.rarity === 'elite' && k === 'fight' ? 'elite' : k, node.depth, stage);
+  const rng = rngFor(seed, node.id + '#pick#' + c.id), band = priceBand(o.band || k, node.depth, stage);
   // rules 1.53: a character who carries a Drawn weapon may be offered a quiver, and it counts as an offer for its door
   const archer = drawnWeapon(c.weapon) || packOf(c).some((x) => !!x.weapon && drawnWeapon(x.weapon)), quiver = archer && (priceOf(QUIVER_ITEM) || Infinity) <= band ? [QUIVER_ITEM] : [];
   const fits = [...PICKABLE.filter((id) => (priceOf(id) || Infinity) <= band), ...quiver];
@@ -178,10 +184,17 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
     return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };
   });
   const materials = materialsCard(where, k, node.depth, stage, rng);
-  return { node: node.id, weapons, ...(materials ? { materials } : {}), ammo: o.ammo ?? packCount(k) };
+  return { node: node.id, weapons, ...(materials ? { materials } : {}), ammo: o.ammo ?? packCount(k).mags };
 }
 /** A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove's line kind is the one rule's,
  * packKindOf, through lootToPack). */
-export const pickedItem = (w: RunWeapon): PackItem[] => lootToPack({ item: w.id, rarity: w.rarity })
-  .map((it) => ((ITEM[w.id] as any)?.focus && w.rarity !== 'standard' ? { ...it, rarity: w.rarity } : it))
-  .map((it) => (w.prop ? { ...it, prop: w.prop } : it)); // rules 1.43: a Relic's property goes with it
+export const pickedItem = (w: RunWeapon): PackItem[] => {
+  const gun = isGun(w.id) && !drawnWeapon(w.id), out = lootToPack({ item: w.id, rarity: w.rarity })
+    .map((it) => ((ITEM[w.id] as any)?.focus && w.rarity !== 'standard' ? { ...it, rarity: w.rarity } : it))
+    .map((it) => (w.prop ? { ...it, prop: w.prop } : it)) // rules 1.43: a Relic's property goes with it
+    .map((it) => (gun && it.weapon === w.id ? { ...it, loaded: (WEAPON[w.id] as any).magazine } : it));
+  // rules 1.55 (the lead's ruling): a gun taken from a pick or bought comes loaded and with `rewards.gun_spare`
+  // magazine's worth (a loose-loaded gun: that many loads of loose rounds), the same for a pick and a shop
+  if (gun) for (let i = 0; i < (SV.rewards.gun_spare ?? 0); i++) out.push(...magazineWorth(w.id));
+  return out;
+};

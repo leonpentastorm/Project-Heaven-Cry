@@ -9469,11 +9469,18 @@ Survival's rewards and drops for release 0.28.1 (Leon, 15 Nov 2026: "Naww wtf, n
 after a fight where every pile is picked up, "make them drop credits and other things is rare"). A later revision
 overrides the body and the earlier ones; every number here is PROVISIONAL.
 
-4121. **No free magazines (rules 1.55 item 1):** the supply pack (`ammo_pack`) is 0 after every fight (ordinary, Elite,
-    gate, vault guard, Boss): no magazines, no burnt cores back, no MP share; the REWARDS line no longer names it. A
-    cache and the vault's chest keep theirs (1). A gun picked from a fight's card comes without spare magazines (its
-    share was the pack's). Ammunition comes from the camp, shops, making from materials, and picking magazines back
-    up. Supersedes rule 23's pack after a fight and rules 1.51's cores and MP after a fight. PROVISIONAL.
+4121. **No free magazines (rules 1.55 item 1; the lead's ruling, 15 Nov 2026):** the supply pack (`ammo_pack`) has two
+    counts by node, `mags` (magazines for every gun carried) and `supply` (the burnt cores back and the MP share).
+    `mags` is 0 after every fight (ordinary, Elite, gate, vault guard, Boss); the REWARDS line names the pack only when
+    it holds magazines. `supply` keeps its 0.28.0 counts (fight 1, Elite and gate 2, vault guard 2, Boss 3): Leon ruled
+    out the magazines only, so a caster still takes back its burnt cores and its MP share. A cache and the vault's chest
+    keep both (1). Ammunition comes from the camp, shops, making from materials, and picking magazines back up.
+    Supersedes rule 23's magazines after a fight. PROVISIONAL.
+    **A gun taken from a pick or bought** (a reward card, the vault, the sealed crate, a shop's rolled piece) comes loaded
+    and with `rewards.gun_spare` (1) magazine's worth in the pack (a gun loaded round by round: that many magazines' worth
+    of loose rounds), as part of the gun (run/rewards.ts pickedItem, the one rule for both); the node's `mags` come on
+    top (the vault's 1). In 0.28.0 a bought gun came empty with nothing, a picked one empty with the pack's share.
+    PROVISIONAL.
 4122. **The gunner's start (rules 1.55 item 2):** `loadout.gun.spare` 1 → 2 (one loaded, two spare). The arithmetic:
     a stage-1 ordinary fight lasts about 3.1 rounds through the reducer (survival-loot.test.ts, measured); a pistol
     firing singles (2 AP) is 3 rounds a turn, about 9 a fight, so 12 + 2 x 12 = 36 rounds is about 3.9 fights; an
@@ -9485,7 +9492,8 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     a cache and the vault always offer one. PROVISIONAL.
 4124. **Rarity means rare (rules 1.55 item 4):** `rewards.rarity.fight` standard 75 / fine 25 → standard 90 / fine 10;
     `rewards.rarity.elite` fine 60 / masterwork 35 / relic 5 → standard 75 / fine 20 / masterwork 5 (stage 1, capped
-    at Fine: Fine 25%); `boss` and `ceiling` unchanged (stage 1 Fine, stage 2 Masterwork, stage 3 Relic), so a
+    at Fine: Fine 25%); `rewards.rarity.crate` (the Crossroads' sealed crate, its own row) keeps the 0.28.0 Elite odds, fine 60 /
+    masterwork 35 / relic 5; `boss` and `ceiling` unchanged (stage 1 Fine, stage 2 Masterwork, stage 3 Relic), so a
     Masterwork comes from a Boss, the vault or stage 2 on, a Relic from the vault (stage 2 on) and Bosses of stage 3 on.
     PROVISIONAL.
 4125. **Mana residue is scarce (rules 1.55 item 5):** the Materials card's residue by `by`: an ordinary fight a chance

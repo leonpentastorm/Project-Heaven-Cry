@@ -79,7 +79,7 @@ describe('Survival, one stage (rules 1.41)', () => {
     expect(g.characters.c1.xp).toBe(nodeXp('fight', n.depth, 1));
     expect(creditsOf(g.characters.c1)).toBe(creditsOf(g0.characters.c1) + nodeCredits('fight', n.depth, 1));
     expect(nodeXp('fight', 2, 1)).toBe(SV.xp.base + SV.xp.per_depth); expect(nodeCredits('fight', 1, 1)).toBe(SV.credits.base + SV.credits.per_depth);
-    expect(rounds(g.characters.c1)).toBe(mags0 + SV.ammo_pack.fight * mag);
+    expect(rounds(g.characters.c1)).toBe(mags0 + SV.ammo_pack.mags.fight * mag); expect(SV.ammo_pack.mags.fight).toBe(0); // rules 1.55: no magazine after a fight
     for (const id of ['c1', 'c2']) {
       const o = g.run!.offers![id];
       expect(o.weapons).toHaveLength(SV.rewards.offer.fight); // rules 1.54 item 2: one weapon after a fight
@@ -98,6 +98,22 @@ describe('Survival, one stage (rules 1.41)', () => {
     for (const m of g.run!.offers!.c2.materials!) expect(p2.characters.c2.pack!.filter((x) => (x.item || x.id) === m.item).reduce((t, x) => t + x.qty, 0)).toBe(m.n);
     expect(p2.run!.state).toBe('map'); expect(p2.run!.offers).toBeNull();
     expect(reachable(p2.run!).map((x) => x.id)).toEqual(runNode(p2.run!, p2.run!.at)!.links);
+  });
+
+  it('rules 1.55 (the lead ruling): a gun picked from the card comes loaded with SV.rewards.gun_spare magazine of its own; no supply-pack magazine after a fight', () => {
+    const g0 = take(started(DUO), reachable(started(DUO).run!)[0], 2);
+    const wc = SV.rewards.weapon_card.fight; SV.rewards.weapon_card.fight = 1;
+    let g: any; try { g = apply(g0, { type: 'run/skip' }, 'host'); } finally { SV.rewards.weapon_card.fight = wc; }
+    const guns = Object.keys(WEAPON).filter((id) => { const w: any = (WEAPON as any)[id]; return w.magazine != null && w.ammo && w.category !== 'thrown' && w.category !== 'bow' && priceOf(id) != null; });
+    for (const how of ['magazine', 'loose']) {
+      const id = guns.find((x) => (WEAPON as any)[x].reload === how); if (!id) continue;
+      const w: any = (WEAPON as any)[id], x = JSON.parse(JSON.stringify(g)); x.run.offers.c1.weapons[0] = { id, rarity: 'standard', price: priceOf(id) };
+      const before = JSON.parse(JSON.stringify(x.characters.c1.pack || []));
+      const p = apply(x, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host'), pack = p.characters.c1.pack!;
+      expect(pack.find((e) => e.weapon === id && e.kind === 'weapon')!.loaded).toBe(w.magazine); // loaded
+      const held = (l: any[]) => l.reduce((t, e) => t + (e.mags && e.weapon === id ? e.mags.reduce((u: number, n: number) => u + n, 0) : e.calibre === w.ammo && !e.mags ? e.qty || 0 : 0), 0);
+      expect(held(pack) - held(before)).toBe(SV.rewards.gun_spare * w.magazine); // one magazine's worth, as part of the gun
+    }
   });
 
   it('rule 5: a character dead in a won fight stands at 1 HP and takes its full share', () => {
