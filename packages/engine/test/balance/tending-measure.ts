@@ -43,3 +43,20 @@ export function shotTurn(level: number, allin: boolean, mender: boolean, bonds: 
   const shots = Math.floor(6 / Math.max(1, pv.ap || 2));
   return shots * p * per + (ledger && mender ? p * 0.7 * ledgerCap(r.c) : 0);
 }
+/** Rules 1.56, Bonds 2.0 slice 1: one Snap (1 AP) on a Bonded Soldier, the HP it loses (three Bonds held: the solo
+ * Mender's; ledger: the Ledger full first). Through the action itself (its own rules: the Bonds' bonus, the Ledger's). */
+export function snapHit(level: number, allin: boolean, mender: boolean, ledger = false): number {
+  const r = rig(level, allin, mender), t = r.fs[0];
+  for (const f of r.fs) tie(r.cb, r.me, f, 'bond');
+  if (ledger && mender) r.me.res = { ...(r.me.res || {}), ledger: ledgerCap(r.c) };
+  t.maxHp = 5000; t.hp = 5000;
+  r.act('verb:tend.snap', { targetId: t.id });
+  return 5000 - t.hp;
+}
+/** One Snap (1 AP) into a Bonded ally, in percent of the reference HP (as healTurn). */
+export function snapHeal(level: number, allin: boolean, mender: boolean): number {
+  const r = rig(level, allin, mender), a = r.allies[0];
+  tie(r.cb, r.me, a, 'bond'); a.maxHp = 5000; a.hp = 100; a.healRecv = 1;
+  r.act('verb:tend.snap', { targetId: a.id });
+  return Math.round(((a.hp - 100) / refHpAt(level)) * 100);
+}
