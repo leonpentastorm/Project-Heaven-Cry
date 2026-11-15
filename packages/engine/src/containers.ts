@@ -7,7 +7,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import ltJ from '../../../data/loot_tables.json';
-import { WEAPON, ITEM, CALIBRE_NAME } from './data';
+import { WEAPON, ITEM, CALIBRE_NAME, COUNTED } from './data';
 import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf, packKindOf } from './character';
 import { type MapObject, type CacheItem, makeObject } from './objects';
 
@@ -159,9 +159,8 @@ export function intoCounts(c: Character, it: PackItem): boolean {
   const f = COUNTED[it.item || it.id]; if (!f) return false;
   c[f] = (c[f] || 0) + it.qty; return true;
 }
-/** The items a character keeps as counts, by item id: the count's field on the character (the one list intoCounts
- * reads; rules 1.55 item 28: a counted item is given as an item, gear/give `count`). */
-export const COUNTED: Record<string, 'stims' | 'essence'> = Object.assign(Object.create(null), { stim_injector: 'stims', essence_of_experience: 'essence' }); // no prototype: a sent `count` of "__proto__" or "constructor" names nothing
+/** The items a character keeps as counts (data.ts COUNTED, from items.json `counted`: the one list intoCounts reads). */
+export { COUNTED };
 /** One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3),
  * an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an empty one; a weapon
  * loaded round by round gives its rounds loose), `rounds:<calibre>` (at most 120), and anything else a plot item. */

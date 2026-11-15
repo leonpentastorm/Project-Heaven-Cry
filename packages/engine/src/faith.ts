@@ -28,7 +28,7 @@ import { sessionN, dayOf, uses as usesOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { mendFactor, mendFactorOf } from './effects/mending';
 import { amountOf, term, levelOf, profileOf, mendSized, type Term } from './effects/output';
-import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory, statQuery, holdersOf, runOwnEffects } from './effects/hooks';
+import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, growthHeld, emit, emitStory, statQuery, holdersOf, runOwnEffects } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, reveal, blessing as legacyBlessing , dropHeldShot } from './tactics';
@@ -426,6 +426,7 @@ export function tithable(x: any, check: any): boolean { return !!x && x.qty > 0 
  * (item 713) multiplies gains, with the fraction carried. Returns the XP moved. */
 export function shiftDevotion(g: GameState | null, cb: Combat | null, c: Character, delta: number, reason: string, tag?: string): number {
   if (beliefOf(c).kind !== 'faithful' || !delta) return 0;
+  if (delta > 0 && growthHeld(cb)) return 0; // rules 1.55 item 34: Devotion grows only in a real fight (or the story)
   const was = devotionXpOf(c), lvWas = devotionLevelOf(was);
   let n = Math.round(delta), note = '';
   if (n > 0) {
@@ -484,6 +485,7 @@ function fightId(cb: Combat): string { const x: any = cb; return (x.faithFight |
 export function tagDevotion(g: GameState | null, cb: Combat | null, c: Character, tag: string, where: { fight?: string | null; act?: string; witnessed?: boolean } = {}): number | null {
   const p = patronOf(c); if (!p) return null;
   const liked = (p.likes || []).includes(tag), taboo = (p.taboos || []).includes(tag); if (!liked && !taboo) return null;
+  if (!taboo && growthHeld(cb)) return null; // rules 1.55 item 34: a liked tag on the field counts nothing and uses no cap
   const t = tallyOf(g, c);
   if (where.act != null) { if (t.act?.k !== where.act) t.act = { k: where.act, tags: [] }; if (t.act.tags.includes(tag)) return null; t.act.tags.push(tag); }
   const name = FAITH_TAG[tag]?.name || tag;

@@ -3,12 +3,16 @@
 // here the finished fight is shown with the squad and the piles where the field has them now. Display only: every
 // move and pickup is a world/act the engine judges; the vote is run/leave.
 import type { GameState } from '@phc/engine';
+import { fieldCombat } from '@engine';
 
 const isPile = (o: any) => o && o.kind === 'pile' && Array.isArray(o.items) && o.items.length > 0;
 
-/** The finished fight as the field stands now (the same fight when the run is not on its field). */
-export function fieldFight<T extends { units: any[]; objects?: any[] }>(g: GameState | null | undefined, cb: T | null | undefined): T | null | undefined {
+/** The finished fight as the field stands now (the same fight when the run is not on its field). `open`: the field is
+ * walked into (rules 1.55 item 36): the engine's field as a fight state (fieldCombat: the squad where it stands, AP
+ * full, no turns, what its actions run on), with the fallen enemies still lying where they fell. */
+export function fieldFight<T extends { units: any[]; objects?: any[] }>(g: GameState | null | undefined, cb: T | null | undefined, open = false): T | null | undefined {
   if (!cb || !g || g.run?.state !== 'field') return cb;
+  if (open) { const f: any = fieldCombat(g as any); if (f) return { ...f, units: [...f.units, ...cb.units.filter((u) => !u.charId && u.dead)] } as T; }
   const pos = g.story.positions || {};
   const units = cb.units.map((u) => (u.charId && pos[u.charId] ? { ...u, pos: pos[u.charId], dead: false } : u));
   return { ...cb, units, objects: g.story.objects || cb.objects || [] };

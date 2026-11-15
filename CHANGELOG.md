@@ -32,6 +32,19 @@ From Leon's playtest the same day (rules 1.55 items 27 to 33, every number PROVI
   for a fight (the field says so). What a fight's end clears (Strain, a held Outburst, conditions, Flux) is cleared
   again when you leave the field.
 
+The lead's rulings on the review (rules 1.55 items 34 to 39):
+
+- **The field has the fight's action bar.** Walking the field you get the fight screen's own action bar and cards,
+  with their targets and tile picks: draw and Evoke, Begin, Pump and Release with a design, prayers, moves aimed at a
+  friend, reload, items. The field's refusals show on the card. The short strip in the header is gone.
+- **Nothing grows on the field.** Syphon and Crystallise still work, but practice, study, word uses, new feelings,
+  Devotion XP, drill and deeds come only from a real fight.
+- **Nothing harms a friend on the field.** A spell or a thrown thing that would hurt a friend is refused, as an attack
+  is.
+- **Give from the path map's right panel**, with the stepper for how many; the backpack's Give has the stepper too.
+- **An old save on the field** counts every once-a-fight action as spent there.
+- **Counted items (stims, the Essence) are named in the data** (`counted` in items.json), not in the code.
+
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
 The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). **Live since 15 Nov 2026**.

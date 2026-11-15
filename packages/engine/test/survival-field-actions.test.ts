@@ -70,7 +70,7 @@ describe('rules 1.55 item 29: a stim on a friend with no map under the squad', (
     const self = clone(healed); self.characters.c1.hp = 1;
     const me = apply(self, { type: 'world/act', charId: 'c1', act: 'stim', targetId: 'c1' } as any, 'host'); expect(me.characters.c1.hp).toBeGreaterThan(1); expect(me.characters.c1.stims).toBe(0);
     expect(refused(me, { type: 'world/act', charId: 'c1', act: 'stim', targetId: 'c2' } as any)).toBe('No stims left.');
-    expect(giveView(healed, 'host').rows.find((r) => r.kind === 'count')!.use!.why.c2).toBeNull();
+    expect(giveView(healed, 'host').rows.find((r) => r.kind === 'count' && r.use)!.use!.why.c2).toBeNull();
     expect(refused(healed, { type: 'world/act', charId: 'c2', act: 'stim', targetId: 'c1' } as any)).toBe('Not your character.');
   });
 });
@@ -145,7 +145,7 @@ describe('rules 1.55 items 30 to 33: the field is a free fight without enemies',
 describe('saves from 0.28.1 (rules 1.55 items 27 to 33 add no saved field)', () => {
   it('a run saved mid-field (no carried counters) and one saved mid-map load and play on', () => {
     const f = toField(inFight(DUO, (x) => { x.characters.c1.stims = 1; }));
-    const old = clone(f); delete (old.story as any).ps; // what 0.28.1 saved on the field
+    const old = clone(f); delete (old.story as any).ps; delete (old.story as any).fieldLimits; // what 0.28.1 saved on the field
     const moved = apply(JSON.parse(JSON.stringify(old)), { type: 'world/act', charId: 'c1', act: 'prone' } as any, 'host');
     expect(moved.run!.state).toBe('field');
     let m = leaveField(old); for (const [i, c] of Object.entries(['c1', 'c2'])) m = apply(m, { type: 'run/pick', charId: c, choice: 'materials' }, ownerOf(+i));

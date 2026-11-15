@@ -10,7 +10,7 @@ import { PERK } from './data';
 import { comboEligible } from './character';
 import { type Combat, type Unit, xy, dist } from './combat';
 import { kindOf } from './objects';
-import { onHook, boundGame } from './effects/hooks';
+import { onHook, boundGame, growthHeld } from './effects/hooks';
 import { fxTaps } from './fxtap';
 
 /** The grant, set by game.ts (the Narrator's own code path): true when the perk was given. */
@@ -79,7 +79,7 @@ const of = (cb: Combat, u: Unit): Mem => (memOf(cb).u[u.id] ||= { open: 2, bb: 2
 
 /** Grant a deed's perk to a unit's character if it may have it (eligible, not held, alive; never in the Proving Ground). */
 function grant(cb: Combat, u: Unit, perkId: string): boolean {
-  const g = boundGame(); if (!g || g.sandbox || !deedGrant.f || !isPc(u)) return false;
+  const g = boundGame(); if (!g || g.sandbox || !deedGrant.f || !isPc(u) || growthHeld(cb)) return false; // rules 1.55 item 34: no deed on the field
   const c = g.characters?.[u.charId!]; if (!c || c.dead || comboEligible(c, perkId)) return false;
   const s = String((PERK as any)[perkId]?.deed || '').trim();
   return deedGrant.f(g, { charId: c.id, perkId, deed: s.charAt(0).toUpperCase() + s.slice(1) });

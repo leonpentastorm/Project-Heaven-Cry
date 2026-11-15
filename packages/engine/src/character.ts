@@ -2,7 +2,7 @@
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
 import type { StatId } from './effects/stats';
@@ -608,7 +608,7 @@ export function carriedKg(c: Character) {
   const off = c.offHand ? (WEAPON[c.offHand.id]?.weight_kg ?? (ITEM[c.offHand.id]?.weight_kg || 0)) : 0;
   const parts = { weapon: (w?.weight_kg || 0) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon) + off,
     armour: (ARMOUR_KG[c.armourClass] || 0) + Object.values(c.worn || {}).reduce((t, id) => t + (ITEM[id]?.weight_kg || 0), 0),
-    pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + c.stims * (ITEM.stim_injector?.weight_kg || 0) + c.essence * (ITEM.essence_of_experience?.weight_kg || 0) + (c.carried || []).reduce((t, x) => t + (Number(x.kg) || 0), 0) };
+    pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + Object.entries(COUNTED).reduce((t, [id, f]) => t + (c[f] || 0) * (ITEM[id]?.weight_kg || 0), 0) + (c.carried || []).reduce((t, x) => t + (Number(x.kg) || 0), 0) };
   return { ...parts, total: Math.round((parts.weapon + parts.armour + parts.pack) * 100) / 100 };
 }
 export const carryLimit = (c: Character) => fx(c, 'carry', 20 + 5 * (A(c, 'strength') - 1) + gearBonus(c, 'carry_bonus'));

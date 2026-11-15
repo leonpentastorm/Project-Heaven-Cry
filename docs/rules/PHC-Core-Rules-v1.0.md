@@ -6156,12 +6156,43 @@ in combat so you can reload, stim your friend, syphon, shit like that"*. The lea
    area map does not carry back to the character (a resource not in `survival.json field.carried_res`), and which
    either gives something lasting (an op of `field.lasting_ops`: healing, a resource, a taken item) or states no
    effects in the data (an item's own handler, which the data can't read: refused as doubtful). The list is the lead's
-   to rule (0.28.2 hand-off). Prayers are not refused by this item (their own slots and waits limit them).
+   to rule (0.28.2 hand-off). Prayers are not refused by this item (their own slots and waits limit them). The lead
+   (0.28.2 review): the actions this rule refuses as doubtful (37 in 0.28.2) stay refused for now; an explicit field
+   flag on each action in the data, read in place of this guess, is planned for 0.29.
 33. **What the fight's end clears is cleared when the field closes.** When the squad leaves the field, what a fight's end
    clears is cleared for what was done on the field (Strain, a held Outburst, conditions, shields: `magicOut` after a
    fight; Flux, rules 1.51), and the field's use counters go; the field's piles stay behind as before. *(What the fight
    itself left is still cleared as the field opens, as in 0.28.1: deferring the fight's own end to the field's close is
    0.29.)*
+
+The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
+
+34. **Nothing grows on the field.** Crystallise and Syphon stay allowed (the fight's leftover mana meter is finite, and
+   gathering it is a reason to walk the field), but what is learned by doing advances only in a real fight, never from
+   an action on the field: Outburst practice, Sigil study and word uses (a glyph read and copied on the field is
+   refused in words), feelings felt for the first time, Devotion XP and a liked tag's count (a taboo still costs), drill,
+   and the deeds the engine watches. One gate says so (`growthHeld`, effects/hooks.ts: the area map's throwaway fight
+   while the run is on its field, and the area map's dry run), read where each counter is written: practice
+   (magic.ts gainPractice), study and word uses (sigil.ts evokeGrowth, readGlyph), feelings (feelings.ts feelChar,
+   feelUnit), Devotion (faith.ts shiftDevotion, tagDevotion), drill (physical/rules.ts on_kill) and deeds (deeds.ts
+   grant).
+35. **Nothing harms a friend on the field.** A blow or a harmful condition one character's action would put on another
+   character on the field (an Evoke, a Release, a thrown thing, an area) is refused in words, the whole action, as an
+   attack is; nobody is hurt. One check, where harm is applied to a unit (`harmHeld`, effects/hooks.ts, read by
+   applyDamage and applyCond); your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. A
+   spell that misses hurts nobody and is not refused.
+36. **The field has the fight screen's actions.** Walking the field, the fight screen's own action bar and cards are
+   the field's: the same descriptors (descriptors.ts) read the field as a fight state (`fieldCombat`: the squad where
+   it stands on the fight's map, AP full, no turns), with their targets and tile picks; the action a card sends is
+   done as the area map's action (item 30), and the reducer's field verdict (items 30 to 35) is the refusal the card
+   shows. A fight's action the area map has no form of (a technique, a Call, a shove, ending the turn) is refused in
+   words. There are no turns: End turn is not offered.
+37. **The Give control.** On the path map the right panel has a Give module (data/modes.json `panels`: `give`), the
+   places' Give tab; the backpack line's Give has the same stepper (how many, one at a time) before the button.
+38. **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 31): there
+   every once-a-fight use counts as spent (the safe side). Read in the one counter door (effects/uses.ts).
+39. **Counted items are data.** Which items a character keeps as a count (item 28) is `counted` on the item's row of
+   items.json (the count's field: `stims`, `essence`), read once (`COUNTED`, data.ts; the validator checks it).
 
 ## Maps (rules 1.16)
 

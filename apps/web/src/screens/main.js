@@ -524,11 +524,12 @@ export class MainLogic extends DCLogic {
     // on a friend or yourself, from the engine's Give view (give.ts giveView: its rows, each receiver's reason, the
     // row's action and its use's action); a line the engine refuses for everyone shows nothing; solo lists no friend.
     const GV = c && !gearLocked ? giveView(g, me, c.id) : null;
+    // Rules 1.55 item 37: how many, with the Give tab's stepper (‹ ›, one at a time), kept per line while the sheet is open.
+    const giveQ = this.state.giveQ || {};
     const giveActs = (gkey) => { const row = GV && GV.rows.find((x) => x.key === gkey); if (!row) return [];
-      const out = [];
-      for (const t of GV.to) { if (row.why[t.id]) continue;
-        out.push({ key: 'g1' + t.id, label: 'Give ' + (row.qty > 1 ? '1 ' : '') + 'to ' + t.name, go: () => act({ ...row.action, to: t.id, qty: 1 }) });
-        if (row.qty > 1) out.push({ key: 'ga' + t.id, label: 'Give all ' + row.qty + ' to ' + t.name, go: () => act({ ...row.action, to: t.id, qty: row.qty }) }); }
+      const out = [], open = GV.to.filter((t) => !row.why[t.id]), n = Math.max(1, Math.min(row.qty, giveQ[gkey] || 1)), setQ = (q) => this.setState({ giveQ: { ...giveQ, [gkey]: Math.max(1, Math.min(row.qty, q)) } });
+      if (open.length && row.qty > 1) { out.push({ key: 'q-' + gkey, label: '‹ fewer', go: () => setQ(n - 1) }); out.push({ key: 'q+' + gkey, label: 'more ›', go: () => setQ(n + 1) }); }
+      for (const t of open) out.push({ key: 'g1' + t.id, label: 'Give ' + (row.qty > 1 ? n + ' ' : '') + 'to ' + t.name, go: () => { act({ ...row.action, to: t.id, qty: n }); setQ(1); } });
       if (row.use) for (const x of Object.values(g.characters)) { if (x.dead || row.use.why[x.id]) continue;
         out.push({ key: 'u' + x.id, label: row.use.label + ' ' + (x.id === c.id ? 'yourself' : x.name), go: () => act({ ...row.use.action, targetId: x.id }) }); }
       return out; };
@@ -550,7 +551,8 @@ export class MainLogic extends DCLogic {
       const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
       it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
       return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
-        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: n === it.mags[0] ? giveActs('pack:' + packOf(c).indexOf(it)).filter((x) => x.key.startsWith('g1')).map((x) => ({ ...x, label: x.label.replace(/^Give 1 /, 'Give a magazine ') })) : [], hasActs: false, src: it }));
+        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: n === it.mags[0] ? giveActs('pack:' + packOf(c).indexOf(it)).map((x) => ({ ...x, label: x.label.replace(/^Give (\d+) /, (_m, k) => (k === '1' ? 'Give a magazine ' : 'Give ' + k + ' magazines ')) })) : [], hasActs: false, src: it }))
+        .map((x) => ({ ...x, hasActs: x.acts.length > 0 }));
     });
     const canLoad = !!c && packOf(c).some((m) => m.mags && m.mags.some((n) => n < (WEAPON[m.weapon]?.magazine || 0)) && packOf(c).some((r) => r.calibre && r.calibre === WEAPON[m.weapon]?.ammo && r.qty > 0));
     const KG = c ? carriedKg(c) : { total: 0, weapon: 0, armour: 0, pack: 0 }, lim = c ? carryLimit(c) : 0, over = KG.total > lim;

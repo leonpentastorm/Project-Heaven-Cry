@@ -6,10 +6,10 @@
 import { MODES, playOf, type GameState } from '@engine';
 import modesJ from '../../../../data/modes.json';
 
-export type PanelId = 'mana' | 'map' | 'quests' | 'squad' | 'run' | 'run_board';
+export type PanelId = 'mana' | 'map' | 'quests' | 'squad' | 'run' | 'run_board' | 'give';
 /** Each panel id to what draws it: `template`, the play screen's own markup (main.template.html, its values from
  * screens/main.js); `slot`, a React view (runPanels.tsx) portalled into the template's [data-phc-panel-slot="<id>"]. */
-export const PANEL_DRAW: Record<PanelId, 'template' | 'slot'> = { mana: 'template', map: 'template', quests: 'template', squad: 'template', run: 'slot', run_board: 'slot' };
+export const PANEL_DRAW: Record<PanelId, 'template' | 'slot'> = { mana: 'template', map: 'template', quests: 'template', squad: 'template', run: 'slot', run_board: 'slot', give: 'slot' };
 export const PANEL_IDS = Object.keys(PANEL_DRAW) as PanelId[];
 export const isPanelId = (x: unknown): x is PanelId => typeof x === 'string' && x in PANEL_DRAW;
 const M = modesJ as unknown as { panel_names: Record<string, string>; proving_ground: { panels: string[] }; items: { id: string; panels: string[]; hides?: string[] }[] };

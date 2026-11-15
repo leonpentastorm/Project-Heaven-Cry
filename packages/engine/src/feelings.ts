@@ -13,7 +13,7 @@ import { SOUL_RULES } from './data';
 import type { Character } from './character';
 import { say, type Combat, type Unit, dist, lineOfSight } from './combat';
 import { fxTaps } from './fxtap';
-import { onHook, onStoryHook, boundGame, charOfUnit } from './effects/hooks';
+import { onHook, onStoryHook, boundGame, charOfUnit, growthHeld } from './effects/hooks';
 import { emitFx } from './combat';
 
 export interface FeelingDef {
@@ -57,7 +57,7 @@ export const setFeelStoryNote = (f: (g: any, c: Character, text: string) => void
 /** Unlock a feeling for a character (permanent). In a fight it reaches the character's units too, with a log line and
  * fx 'felt' {unit, char, feeling, name, why}; out of one, a line in the story. Returns true when it was new. */
 export function feelChar(g: any, c: Character | null | undefined, id: string, why: string, cb?: Combat | null): boolean {
-  const f = FEELING[id]; if (!c || !f || !canFeel(c)) return false;
+  const f = FEELING[id]; if (!c || !f || !canFeel(c) || growthHeld(cb)) return false; // rules 1.55 item 34: nothing is first felt on the field
   const k = (c.feelings ||= []); if (k.includes(id)) return false;
   k.push(id);
   const text = c.name + ' has felt ' + f.name + ' (' + why + '): it can be poured in now.';
@@ -72,7 +72,7 @@ export function feelChar(g: any, c: Character | null | undefined, id: string, wh
 }
 /** Unlock for the character behind a unit (enemies and companions don't feel). */
 export function feelUnit(cb: Combat, u: Unit | null | undefined, id: string, why: string): boolean {
-  if (!u || u.companion || !u.charId || (cb as any)?.dry) return false; // not in the area map's dry run (game.ts)
+  if (!u || u.companion || !u.charId || growthHeld(cb)) return false; // not in the area map's dry run (game.ts), nor on the field
   return feelChar(boundGame(), charOfUnit(u), id, why, cb);
 }
 

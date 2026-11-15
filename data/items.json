@@ -6,7 +6,7 @@
     {
       "id": "essence_of_experience",
       "name": "Essence of Experience",
-      "category": "consumable",
+      "category": "consumable", "counted": "essence",
       "weight_kg": 0.1,
       "stock": false,
       "price_credits": 300,
@@ -44,7 +44,7 @@
     {
       "id": "stim_injector",
       "name": "Stim injector",
-      "category": "consumable",
+      "category": "consumable", "counted": "stims",
       "weight_kg": 0.1,
       "adjudication": "engine",
       "provisional": true,

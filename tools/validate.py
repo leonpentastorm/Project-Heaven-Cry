@@ -2871,6 +2871,11 @@ _PACK_KINDS = {"weapon", "ammo", "tool", "focus", "food", "med", "loot", "plot"}
 for _i in _rimap.values():
     if "pack_kind" in _i and _i["pack_kind"] not in _PACK_KINDS: errors.append(f"items:{_i.get('id')}: pack_kind {_i['pack_kind']!r} is not a pack line's kind ({', '.join(sorted(_PACK_KINDS))})")
     if "plural" in _i and not (isinstance(_i["plural"], str) and _i["plural"].strip()): errors.append(f"items:{_i.get('id')}: plural must be a name")
+    # Rules 1.55 item 28: `counted` names the character's count field the item is kept in (data.ts COUNTED)
+    if "counted" in _i and _i["counted"] not in {"stims", "essence"}: errors.append(f"items:{_i.get('id')}: counted {_i['counted']!r} is not a character's count field (stims, essence)")
+    if "counted" in _i and _i.get("category") != "consumable": errors.append(f"items:{_i.get('id')}: counted is for a consumable")
+_cnt = [i.get("counted") for i in _rimap.values() if "counted" in i]
+if len(_cnt) != len(set(_cnt)): errors.append("items: two items name the same counted field")
 def _rprice(_id):
     """credits.ts priceOf at the standard grade, or None (unpriced or stock: false)."""
     if _id.startswith("rounds:"): _p = _rcal.get(_id[7:]); return _p if _num(_p) and _p > 0 else None

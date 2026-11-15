@@ -36,6 +36,7 @@ import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyN
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { scaleOf } from './effects/output';
+import { fieldDoor } from './effects/hooks';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
@@ -620,6 +621,7 @@ function reduce(g: GameState, a: Action, by: string) {
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
   if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
   if (g.run?.state === 'field' && FREE_WORLD.test(a.type)) { fieldWorld(g, a, by); return; } // rules 1.55: the won fight's field, roamed as the Proving Ground's gearing up
+  if (g.run?.state === 'field' && a.type.startsWith('combat/') && (a as any).unitId) { fieldWorld(g, fieldActOf(g, a), by); return; } // rules 1.55 item 36: the fight screen's actions on the field
   if (g.run && g.run.state !== 'over' && g.run.state !== 'field' && a.type === 'world/act' && a.act === 'stim') { const no = stimOffGrid(g, a, by); if (no) fail(no); return; } // rules 1.55 item 29: a stim on a friend off the map
   if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
   { const no = campGearProblem(g, a); if (no) fail(no); }
@@ -1115,7 +1117,7 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   let given = '';
   let guns: string[] = [];
   if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) { pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); guns.push(id); } if (rarity !== 'standard') given += ' (' + rarity + ')'; }
-  else if (id === 'stim_injector' || id === 'essence_of_experience') { if (id === 'stim_injector') c.stims += n; else c.essence += n; given = ITEM[id].name; }
+  else if (COUNTED[id]) { c[COUNTED[id]] = (c[COUNTED[id]] || 0) + n; given = ITEM[id].name; } // items.json `counted` (rules 1.55 item 28)
   else if (ITEM[id]) { const note = String(l.note || '').trim().slice(0, 40); given = (label || ITEM[id].name).slice(0, 60) + (note ? ' (' + note.toUpperCase() + ')' : ''); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given && (x.note || '') === note); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool', ...(note ? { note } : {}) }); }
   else {
     const name = label || pack.find((x) => x.kind === 'plot' && x.id === id)?.name || id.replace(/^plot:/, '').replace(/_/g, ' ').trim(); if (!name) return;
@@ -2772,6 +2774,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   }
   else fail('Unknown action.');
   if (err) fail(err);
+  { const fh = (cb as any).fieldHarm; if (fh && fh.by === u.id) fail(fh.text); } // rules 1.55 item 35: this character's harm to a friend on the field refuses the action (effects/hooks.ts harmHeld)
   // 'action_done' {u, a, cb, world: true}: after an area-map action, before it is written back (The Brightest Light's
   // double wear on the area map).
   { const was = bindGame(g); try { emitHook(cb, 'action_done', { u, a, cb, world: true }); } finally { bindGame(was); } }
@@ -3599,7 +3602,7 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
     c.pack = pack; collectGuns(c, Array(Math.min(n, 3)).fill(item)); // Gun Nut's collection (item 369)
     return at;
   }
-  if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
+  if (COUNTED[item]) { c[COUNTED[item]] = (c[COUNTED[item]] || 0) + n; c.pack = pack; return -1; } // items.json `counted`
   const def = ITEM[item] as any; if (!def) fail('No such item.');
   const kind: PackItem['kind'] = packKindOf(item); // rules 1.54: pack_kind, the one rule
   const ex = pack.findIndex((x) => (x.item || x.id) === item && !x.rarity);
@@ -3799,6 +3802,29 @@ function fieldWorld(g: GameState, a: Action, by: string) {
   if (w.act === 'perk') { const c = g.characters[w.charId]; const no = c && w.id ? fieldRefusal(g, c, w.id, w.actionId) : null; if (no) fail(no); }
   freshRound(g, w.charId); worldAct(g, w, by); freeAgain(g);
 }
+/** Rules 1.55 item 36: the fight screen's own action (its descriptors' combat/* action, descriptors.ts, which reads
+ * the field through fieldCombat) as the area map's world/act on the field: the same fields, the unit as its character.
+ * A fight's action the area map has no form of (a technique, a Call, a shove, ending the turn) is refused in words. */
+function fieldActOf(g: GameState, a: Action): Action {
+  const { type, unitId, ...rest } = a as any, charId = String(unitId).replace(/^pc-/, ''), act = String(type).slice('combat/'.length);
+  if (!g.characters[charId] || 'pc-' + charId !== unitId) fail('On the field only the squad acts.');
+  if (!FIELD_WORLD_ACTS.includes(act)) fail('That is a fight action, and the fight is over: on the field you walk, pick things up, use what you carry, cast and pray. Leave the field for the rewards.');
+  if (act === 'move') rest.how = rest.how === 'sprint' ? 'sprint' : 'move';
+  if (act === 'door') { const o = storyObjects(g).find((x) => x.pos === rest.tile && kindOf(x).door); rest.objId = o?.id; delete rest.tile; }
+  return { type: 'world/act', charId, act, ...rest } as Action;
+}
+/** The area map's own world/act verbs (worldAct), the ones a fight-screen action may become on the field. */
+const FIELD_WORLD_ACTS: string[] = ['move', 'door', 'perk', 'reload', 'load', 'clear', 'repair', 'prone', 'stim', 'analyze', 'read', 'attack', 'pickup', ...MAGIC_ACTS];
+const FIELD_CB = new WeakMap<GameState, Combat>();
+/** Rules 1.55 item 36: the field as the fight screen and its descriptors read it (storyCb: the squad where it stands on
+ * the fight's map, AP full, no rounds), one per state; null off the field. Read only: what is done is a reducer action. */
+export function fieldCombat(g: GameState): Combat | null {
+  if (g?.run?.state !== 'field' || !g.combat) return null;
+  let cb = FIELD_CB.get(g); if (cb) return cb;
+  const was = bindGame(g); try { cb = storyCb(g); } finally { bindGame(was); }
+  cb.name = g.combat.name; FIELD_CB.set(g, cb); return cb;
+}
+fieldDoor.f = fieldCombat;
 /** The area-map actions the field has no use for (rules 1.55 item 30): the story's, and ending a round (there is none). */
 const FIELD_NOT: string[] = ['carry', 'put_down', 'search', 'attempt', 'ask', 'end'];
 /** Rules 1.55 item 32 (`survival.json field`): what the area map carries back to the character, and the ops that give
@@ -3832,6 +3858,7 @@ function carryFightLimits(g: GameState, cb: Combat) {
     }
     const ps = (((g.story as any).ps ||= {})[u.charId] ||= {}); ps.uses = bag;
   }
+  (g.story as any).fieldLimits = true; // the fight's limits came with it (effects/uses.ts: an old save's field has none)
 }
 /** Rules 1.55 item 29: a stim used out of a fight with no map under the squad (the path map, a place, the camp, the
  * rewards): the fight's own stim (combat.ts useStim: its stabilise, its heal, its AP and its count) on a strip of two
@@ -3900,6 +3927,7 @@ function closeField(g: GameState) {
   // conditions, shields; Flux, rules 1.51), and the field's own counters go
   if (Object.keys(g.story.positions || {}).length) magicOut(g, storyCb(g), true);
   for (const id of Object.keys(g.characters)) { const m = g.story.magic?.[id]; if (m) m.flux = 0; const ps = (g.story as any).ps?.[id]; if (ps) delete ps.uses; }
+  delete (g.story as any).fieldLimits;
   g.story.positions = {}; delete g.story.objects; g.story.npcs = []; g.story.trail = {}; freeAgain(g); g.story.await = 'none';
 }
 function sandboxWorld(g: GameState, a: Action, by: string) {

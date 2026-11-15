@@ -404,10 +404,6 @@
 <sc-if value="{{field.hasTally}}" hint-placeholder-val="{{false}}"><span data-phc-field-tally="" style="font-size: 13px; color: #A3AEC2">{{field.tally}}</span></sc-if>
 <button type="button" class="phc-cb-act" data-phc-field-leave="" onClick="{{field.leave}}" style="min-height: 36px; padding: 0 14px; border-radius: 8px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{field.leaveLabel}}</button>
 <span style="font-size: 13px; color: #A3AEC2">{{field.waiting}}</span>
-<sc-if value="{{field.hasActs}}" hint-placeholder-val="{{false}}"><div data-phc-field-acts="" style="flex-basis: 100%; display: flex; flex-direction: column; gap: 6px; max-width: min(860px, 80vw); max-height: 40vh; overflow: auto">
-<sc-for list="{{field.actGroups}}" as="fg"><div data-phc-field-group="{{fg.key}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2; min-width: 120px">{{fg.label}}</span>
-<sc-for list="{{fg.acts}}" as="fa"><button type="button" class="phc-cb-act" data-phc-field-act="{{fa.key}}" aria-disabled="{{fa.off}}" tip="{{fa.why}}" onClick="{{fa.go}}" style="{{fa.style}}">{{fa.label}}</button></sc-for></div></sc-for>
-</div></sc-if>
 </div>
 </sc-if>
 <sc-if value="{{bp.show}}" hint-placeholder-val="{{false}}">
