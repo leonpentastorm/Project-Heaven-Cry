@@ -581,7 +581,9 @@
         }
       ],
       "free": false,
-      "comes_with": [],
+      "comes_with": [
+        "bare"
+      ],
       "home": [],
       "particular": false,
       "numbers": {
@@ -951,7 +953,9 @@
         }
       ],
       "free": false,
-      "comes_with": [],
+      "comes_with": [
+        "bare"
+      ],
       "home": [],
       "particular": false,
       "numbers": {
@@ -2838,7 +2842,9 @@
       "text": "Grab an enemy next to you: it saves (Body) or is Grappled until it breaks free. No damage. Given by the perk Iron Grip.",
       "lines": [],
       "free": false,
-      "comes_with": [],
+      "comes_with": [
+        "bare"
+      ],
       "home": [],
       "particular": false,
       "numbers": {},

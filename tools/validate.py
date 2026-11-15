@@ -2713,6 +2713,12 @@ if _sv is not None:
             elif _k in _GF and not _num(_v): errors.append(f"{_w}: {_k} is a gear field: a number")
         for _e in _m.get("effects") or []:
             if isinstance(_e, dict) and _e.get("when") and (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_w}: a mod's triggered effect acts only with the gun it is fitted to (if.with_this: true)")
+        # rules 1.56, the unarmed fighter: a mod's data toggles (the Open Hand's forms) are item ops like any item's, each
+        # acting only with the instance that carries it
+        _check_toggles(_m, _w)
+        for _t in _m.get("toggles") or []:
+            for _e in (_t.get("effects") or []) if isinstance(_t, dict) else []:
+                if isinstance(_e, dict) and (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_w}: toggle {_t.get('id')}: a mod's effect acts only with the instance it rides (if.with_this: true)")
     # Rules 1.55: an item the engine does not run yet (`built: false`) has no price (credits.ts priceOf), so no rolled
     # pool holds it; a fixed stock list must not name it either (the shop's counter, the lasting fill, the loadout, a loot table).
     _unbuilt = {i["id"] for i in items("items") if i.get("built") is False} | {i["id"] for i in items("weapons") if i.get("built") is False}

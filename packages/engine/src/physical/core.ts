@@ -259,7 +259,9 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // Rules 1.13. A technique a skill gives (Interpose at Durability 3) is everyone's who has the points, whatever is in
     // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
     // and that hand offers nothing else. Neither is ever learned, readied or lent.
-    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
+    // (rules 1.56, the unarmed fighter: a perk's technique also comes with a property its row names, `comes_with`, in
+    // the hand that has it: Grapple with bare hands and gloves)
+    if (d.perk) { if (!wield && !plainOnly && (hand === 'main' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0 || d.comes_with.some((p) => props.includes(p)))) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     // Rules 1.56 (Leon's ruling B): a technique that needs something stuck (Pull Out) is offered only while there is one

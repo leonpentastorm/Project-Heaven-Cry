@@ -1255,6 +1255,220 @@
       "adjudication": "engine",
       "provisional": true,
       "text": "A hand press with dies for every calibre. Between fights it turns gunpowder and casings into rounds."
+    },
+    {
+      "id": "open_hand",
+      "name": "Open Hand",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "The fist family's forms, on any attack with bare-hand gloves: Jab ({=toggles.0.effects.0.value|signed} AP, ×{=toggles.0.effects.1.value} damage), Palm (×{=toggles.1.effects.0.value}; a hit saves or is Off Balance and pushed {=toggles.1.effects.2.tiles} tile), Sweep ({=toggles.2.effects.0.value|signed} AP, ×{=toggles.2.effects.1.value}; a hit knocks it Prone, never a Boss), Snatch (×{=toggles.3.effects.0.value}; a hit saves or drops its weapon, never a Boss). One form's hold lands a turn.",
+      "effects": [],
+      "toggles": [
+        {
+          "id": "jab",
+          "name": "Jab",
+          "on": [
+            "combat/attack"
+          ],
+          "if": {
+            "with_this": true
+          },
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "attack",
+              "if": {
+                "with_this": true
+              },
+              "value": -1,
+              "min": 1
+            },
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "with_this": true,
+                "melee": true
+              },
+              "value": 0.5,
+              "label": "Jab",
+              "fx": {
+                "k": "stance",
+                "what": "jab",
+                "word": "JAB"
+              }
+            }
+          ]
+        },
+        {
+          "id": "palm",
+          "name": "Palm",
+          "on": [
+            "combat/attack"
+          ],
+          "if": {
+            "with_this": true
+          },
+          "effects": [
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "with_this": true,
+                "melee": true
+              },
+              "value": 0.6,
+              "label": "Palm",
+              "fx": {
+                "k": "stance",
+                "what": "palm",
+                "word": "PALM"
+              }
+            },
+            {
+              "op": "condition",
+              "when": "hit",
+              "if": {
+                "with_this": true,
+                "melee": true,
+                "target_alive": true
+              },
+              "target": "target",
+              "condition": "off_balance",
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "form"
+              },
+              "say": "{self}'s palm strikes {target}{then}."
+            },
+            {
+              "op": "displace",
+              "when": "hit",
+              "if": {
+                "with_this": true,
+                "melee": true,
+                "target_alive": true,
+                "target_has": [
+                  "off_balance"
+                ]
+              },
+              "target": "target",
+              "how": "push",
+              "tiles": 1
+            }
+          ]
+        },
+        {
+          "id": "sweep",
+          "name": "Sweep",
+          "on": [
+            "combat/attack"
+          ],
+          "if": {
+            "with_this": true
+          },
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "attack",
+              "if": {
+                "with_this": true
+              },
+              "value": 1
+            },
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "with_this": true,
+                "melee": true
+              },
+              "value": 0.4,
+              "label": "Sweep",
+              "fx": {
+                "k": "stance",
+                "what": "sweep",
+                "word": "SWEEP"
+              }
+            },
+            {
+              "op": "condition",
+              "when": "hit",
+              "if": {
+                "with_this": true,
+                "melee": true,
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ]
+              },
+              "target": "target",
+              "condition": "prone",
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "form"
+              },
+              "say": "{self} sweeps {target}'s legs{then}.",
+              "fx": {
+                "k": "stance",
+                "what": "swept",
+                "word": "PRONE"
+              }
+            }
+          ]
+        },
+        {
+          "id": "snatch",
+          "name": "Snatch",
+          "on": [
+            "combat/attack"
+          ],
+          "if": {
+            "with_this": true
+          },
+          "effects": [
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "with_this": true,
+                "melee": true
+              },
+              "value": 0.5,
+              "label": "Snatch",
+              "fx": {
+                "k": "stance",
+                "what": "snatch",
+                "word": "SNATCH"
+              }
+            },
+            {
+              "op": "condition",
+              "when": "hit",
+              "if": {
+                "with_this": true,
+                "melee": true,
+                "target_alive": true,
+                "target_not_tier": [
+                  "boss"
+                ]
+              },
+              "target": "target",
+              "condition": "disarmed",
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "form"
+              },
+              "say": "{self} grabs for {target}'s weapon{then}."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
