@@ -2,7 +2,8 @@
 // LoadoutScreen.tsx, after the loadout): three large cards a character (the line glyph, the name, the one sentence with
 // its number from data, the line's word in its attribute's ink, the worth against the cap). Every word and number is
 // the engine's (loadoutView's `boon` block: startOffer read from what the character holds, relicRow, worthOf).
-import { type LoadoutViewV, START_BOON, SKILLS } from '@engine';
+import { type LoadoutViewV, START_BOON, SKILLS, LOADOUT } from '@engine';
+import ASSETS from './assets.json';
 import { ATTR_INK } from './classView';
 
 /** A line's words and its attribute's ink (the alpha skill's attribute), from the data's line map. */
@@ -16,4 +17,10 @@ export interface CampCardV { i: number; id: string; name: string; text: string; 
 export function boonCards(v: LoadoutViewV): CampCardV[] {
   return v.boon.cards.map((k) => { const line = k.lines[0] || '', lw = lineWord(line);
     return { i: k.i, id: k.id, name: k.name, text: k.text, worth: k.worth, worthLine: k.worth + ' of your ' + k.cap, line, lineWord: lw.word, ink: lw.ink, chosen: k.chosen }; });
+}
+
+/** Rules 1.56 (L5): the camp's backdrop, the art asset its data names (survival.json `loadout.backdrop`, a catalogued painting); '' when it names none or the asset is not built (the header stays plain). */
+export function campBackdrop(): string {
+  const id = (LOADOUT as { backdrop?: string }).backdrop, A = ASSETS as Record<string, string>;
+  return id ? A[id + '-lg'] || A[id] || '' : '';
 }

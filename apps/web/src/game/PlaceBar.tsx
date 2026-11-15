@@ -72,7 +72,7 @@ export function PlaceBar(p: PlaceBarProps) {
         {p.portrait !== undefined ? (
           <div className="phc-keeper-img phc-pb-portrait" style={{ position: 'relative', width: compact ? 48 : 104, aspectRatio: compact ? '1 / 1' : '4 / 5', flexShrink: 0, borderRadius: compact ? 10 : 12, overflow: 'hidden', border: '1px solid #3B475D', background: I.raised, boxShadow: '0 12px 32px rgba(0,0,0,0.55)' }}>
             {p.portrait ? <img data-phc-keeper-portrait="" src={p.portrait} alt={p.portraitAlt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 20%', display: 'block' }} />
-              : <div style={{ display: 'grid', placeItems: 'center', height: '100%', color: I.muted, fontSize: 11, letterSpacing: '0.18em' }}>AHOC</div>}
+              : <div style={{ display: 'grid', placeItems: 'center', height: '100%', color: I.muted, fontSize: 13, letterSpacing: '0.18em' }}>AHOC</div>}
           </div>) : null}
         <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 2 : 6, minWidth: 0, flex: '1 1 260px' }}>
           <h1 data-phc-keeper-name="" style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: compact ? 22 : 28, lineHeight: 1.1, overflowWrap: 'anywhere' }}>{p.name}</h1>

@@ -6,7 +6,7 @@
 //
 // In a fight the ammo lives on the unit (u.mags, u.loose, u.offMags, u.extra, u.throwables, u.parts): c.pack is only
 // written back at the end of the fight or on a gear change, so those numbers are read from the unit.
-import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, withGame } from '@engine';
+import { WEAPON, ITEM, magazineSize, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, withGame } from '@engine';
 import { magGearId, roundsGearId, torsoGearId } from './gearIcons';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
@@ -46,14 +46,14 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
   const mainEmpty = c.weapon === 'fists' || !(WEAPON as any)[c.weapon];
   const mainSub = mainEmpty ? 'Your fists.' : [
     disarmed ? 'On the ground (Disarmed): Recover it, or draw another' : '',
-    w && w.magazine != null ? (u.ammo ?? 0) + '/' + w.magazine + ' loaded' : '',
+    w && w.magazine != null ? (u.ammo ?? 0) + '/' + magazineSize(w.id, c.weaponState?.mods) + ' loaded' : '', // the engine's size, fitted mods in it (rules 1.56)
     two ? 'both hands' : '', focusOf(c.weapon) ? 'counts as your ' + focusOf(c.weapon) : ''].filter(Boolean).join(' · ');
   const main: BpRow = { key: 'main', tag: two ? 'BOTH HANDS' : 'MAIN HAND', name: mainEmpty ? 'Empty' : (c.weaponState?.name || nameOf(c.weapon)), sub: mainSub, note: '', item: mainEmpty ? undefined : c.weapon,
     acts: mainEmpty ? [] : [act('stow-main', 'Put away', { op: 'stow', slot: 'main' }, { type: 'combat/stow', unitId: uid, slot: 'main' }),
       act('drop-main', 'Drop', { op: 'drop', slot: 'main' }, { type: 'combat/drop', unitId: uid, slot: 'main' })] };
   const offId = !two && c.offHand ? c.offHand.id : null, ow: any = offId ? (WEAPON as any)[offId] : null;
   const off: BpRow = { key: 'off', tag: 'OFF HAND', name: two ? 'Both hands: ' + nameOf(c.weapon) : offId ? (c.offHand.name || nameOf(offId)) : 'Empty', note: '', item: offId || undefined,
-    sub: two ? '' : offId ? [ow && ow.magazine != null ? (u.offAmmo ?? c.offHand.loaded ?? 0) + '/' + ow.magazine + ' loaded' : '', focusOf(offId) ? 'counts as your ' + focusOf(offId) : ''].filter(Boolean).join(' · ') : 'A one-handed weapon, a shield, a torch or a focus.',
+    sub: two ? '' : offId ? [ow && ow.magazine != null ? (u.offAmmo ?? c.offHand.loaded ?? 0) + '/' + magazineSize(ow.id, c.offHand.mods) + ' loaded' : '', focusOf(offId) ? 'counts as your ' + focusOf(offId) : ''].filter(Boolean).join(' · ') : 'A one-handed weapon, a shield, a torch or a focus.',
     acts: offId ? [...(ow && ow.hands === '1H' ? [act('swap', 'Swap hands', { op: 'swap' }, { type: 'combat/swap', unitId: uid, from: 'off' })] : []),
       act('stow-off', 'Put away', { op: 'stow', slot: 'off' }, { type: 'combat/stow', unitId: uid, slot: 'off' }),
       act('drop-off', 'Drop', { op: 'drop', slot: 'off' }, { type: 'combat/drop', unitId: uid, slot: 'off' })] : [] };
@@ -83,16 +83,16 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
       else if (def.category === 'mod') acts.push(act('mod-' + i, 'Fit', { op: 'mod', item: i }, { type: 'combat/swap', unitId: uid, mod: i }));
     }
     rows.push({ key: 'pack-' + i, tag, name: (it.qty > 1 ? it.qty + ' × ' : '') + (it.name || nameOf(wid || it.item || it.id)) + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''),
-      sub: wd ? [typeof wd.damage === 'number' ? wd.damage + ' dmg' : '', wd.hands, wd.magazine != null && it.loaded != null ? it.loaded + '/' + wd.magazine + ' loaded' : ''].filter(Boolean).join(' · ') : isPlotItem(it) ? (it.text || 'From the story.') : (it.note || def.text || '').slice(0, 90),
+      sub: wd ? [typeof wd.damage === 'number' ? wd.damage + ' dmg' : '', wd.hands, wd.magazine != null && it.loaded != null ? it.loaded + '/' + magazineSize(wid, it.mods) + ' loaded' : ''].filter(Boolean).join(' · ') : isPlotItem(it) ? (it.text || 'From the story.') : (it.note || def.text || '').slice(0, 90),
       note: fk ? FOCUS_NOTE : '', acts, item: isPlotItem(it) ? undefined : wid || it.item || it.id }); // (ammo rows are skipped above)
   });
   // ---------- ammo and throwables, from the unit ----------
   const ammo: BpRow[] = [];
-  const cap = w && w.magazine != null ? w.magazine : 0;
+  const cap = w && w.magazine != null ? magazineSize(w.id, c.weaponState?.mods) ?? 0 : 0;
   const unit = (w && w.reload_unit) || 'magazine';
   if (w && w.magazine != null && w.reload !== 'loose' && Array.isArray(u.mags)) ammo.push({ key: 'mags', tag: (unit + 's').toUpperCase(), name: u.mags.length + ' spare ' + unit + (u.mags.length === 1 ? '' : 's') + ' · ' + w.name, sub: u.mags.length ? u.mags.map((n: number, k: number) => typed(n, cap, u.magTypes?.[k])).join(' · ') : 'None left.', note: '', acts: [], item: magGearId(w.id) || undefined });
   if ((u.loose ?? 0) > 0 || (w && w.reload === 'loose')) ammo.push({ key: 'loose', tag: 'ROUNDS', name: (u.loose ?? 0) + ' loose rounds', sub: w && w.reload === 'loose' ? 'Loaded round by round.' : 'Load them into a ' + unit + ' (Utility).', note: '', acts: [], item: roundsGearId(w?.ammo) || undefined });
-  if (ow && ow.magazine != null && Array.isArray(u.offMags)) ammo.push({ key: 'offmags', tag: 'OFF-HAND MAGAZINES', name: u.offMags.length + ' · ' + ow.name, sub: u.offMags.map((n: number, k: number) => typed(n, ow.magazine, u.offMagTypes?.[k])).join(' · ') || 'None left.', note: '', acts: [], item: magGearId(ow.id) || undefined });
+  if (ow && ow.magazine != null && Array.isArray(u.offMags)) ammo.push({ key: 'offmags', tag: 'OFF-HAND MAGAZINES', name: u.offMags.length + ' · ' + ow.name, sub: u.offMags.map((n: number, k: number) => typed(n, magazineSize(ow.id, c.offHand.mods) ?? 0, u.offMagTypes?.[k])).join(' · ') || 'None left.', note: '', acts: [], item: magGearId(ow.id) || undefined });
   for (const [k, x] of (u.extra || []).entries()) { const xw: any = (WEAPON as any)[x.weapon]; ammo.push({ key: 'extra-' + k, tag: 'MAGAZINE', name: (xw ? xw.name : x.weapon) + ' magazine', sub: typed(x.rounds, xw?.magazine || 0, x.type) + ' · goes to the pack after the fight', note: '', acts: [], item: magGearId(x.weapon) || undefined }); }
   // Ammo for guns not in hand (or in hand but tracked elsewhere) is in the pack: read-only, by gun or calibre (review fix:
   // a stowed rifle's magazines vanished from the panel).

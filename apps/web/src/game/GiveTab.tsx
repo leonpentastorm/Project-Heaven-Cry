@@ -11,7 +11,7 @@ import { FRAME_INK as I } from './FullScreenFrame';
 import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
-const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
+const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 /** A character's portrait for the receiver cards (its own art, by asset key or URL), or ''. */
 const portraitOf = (p: string) => (!p ? '' : /^(data:|https?:|\/)/.test(p) ? p : A[p + '-lg'] || A[p] || A['char-' + p + '-lg'] || A['char-' + p] || '');
 
@@ -41,8 +41,8 @@ export function GiveTab() {
           background: on ? I.raised : 'rgba(16,21,31,0.8)', border: '1px solid ' + (on ? I.white : I.line), opacity: w && r.kind === 'never' ? 0.7 : 1 }}>
         <span style={{ width: 40, height: 40, flexShrink: 0, display: 'grid', placeItems: 'center' }}>{icon ? <img src={icon} alt="" width={36} height={36} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 18, color: I.muted }}>{r.kind === 'credits' ? '¤' : '—'}</span>}</span>
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.label}{r.kind === 'held' ? <span style={{ fontSize: 11.5, color: I.muted, fontWeight: 700, letterSpacing: '0.1em' }}> · IN HAND OR WORN</span> : null}</span>
-          {r.kind === 'never' || (w && r.kind !== 'held') ? <span style={{ fontSize: 12.5, color: I.muted }}>{w}</span> : r.kind === 'held' ? <span style={{ fontSize: 12.5, color: I.muted }}>Put it in your pack first.</span> : null}
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.label}{r.kind === 'held' ? <span style={{ fontSize: 13, color: I.muted, fontWeight: 700, letterSpacing: '0.1em' }}> · IN HAND OR WORN</span> : null}</span>
+          {r.kind === 'never' || (w && r.kind !== 'held') ? <span style={{ fontSize: 13, color: I.muted }}>{w}</span> : r.kind === 'held' ? <span style={{ fontSize: 13, color: I.muted }}>Put it in your pack first.</span> : null}
         </span>
         <span style={{ fontSize: 15, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: I.white }}>{r.kind === 'credits' ? r.qty.toLocaleString('en') : r.qty > 1 ? '×' + r.qty : ''}</span>
       </button>
@@ -52,7 +52,7 @@ export function GiveTab() {
     <section data-phc-give="" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
         <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2>
-        <span style={{ fontSize: 12.5, color: I.muted }}>It arrives at once.</span>
+        <span style={{ fontSize: 13, color: I.muted }}>It arrives at once.</span>
       </div>
       <div>
         <span style={kick}>TO</span>

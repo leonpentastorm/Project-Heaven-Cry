@@ -84,12 +84,12 @@ const BOONS = ['guarded', 'inspired'];
 export function sigilPad(evV, S, set) {
   const pp = evV && evV.pattern;
   if (!pp) return { sgShow: false, sgJunction: [], sgHasJunction: false, sgWords: [], sgStats: [], sgAffected: [], sgOrders: [], sgHasOrders: false, sgPaints: [], sgHasPaints: false, sgHasAffected: false, sgHasStats: false, sgHasWarn: false };
-  const chip = (on) => 'min-height: 28px; padding: 0 10px; border-radius: 2px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; ' + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; color: #E7EBF3' : 'border: 1px solid #1F4A55; background: transparent; color: #8BDEEE');
+  const chip = (on) => 'min-height: 28px; padding: 0 10px; border-radius: 2px; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; ' + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; color: #E7EBF3' : 'border: 1px solid #1F4A55; background: transparent; color: #8BDEEE');
   const evc = S.evc || {}, order = evc.order || 'halt';
   return {
     sgShow: true, sgShape: pp.shape.toUpperCase() + (evV.facing && evV.stage !== 'stand' ? ' · FIRES ' + evV.facing.toUpperCase() : ''),
     sgWords: pp.words.map((w) => ({ key: w.key, word: w.word, img: w.img, cls: w.cls })),
-    sgVerdict: pp.verdict, sgVerdictStyle: 'font-size: 12px; font-weight: 700; color: ' + (pp.valid ? '#6FEA77' : '#FFFFFF'),
+    sgVerdict: pp.verdict, sgVerdictStyle: 'font-size: 13px; font-weight: 700; color: ' + (pp.valid ? '#6FEA77' : '#FFFFFF'),
     sgCap: pp.ours ? pp.capLeft + ' left before your cap · room for ' + pp.lineLeft + ' more in this Line' : '',
     sgStats: pp.stats.map((x) => ({ key: x.k, text: x.k + ' ' + x.now + ' → ' + x.after })), sgHasStats: pp.stats.length > 0,
     sgWarn: ['⚠ ' + (pp.overload || ''), evV.fizzleText ? '⚠ ' + evV.fizzleText : ''].filter((x) => x.length > 2).join(' '), sgHasWarn: !!(pp.overload || evV.fizzle),
@@ -135,7 +135,7 @@ const COMBAT_CSS = [
   // The map's row and column labels take the pointer over their 2 px gaps too, so a tile scrolled under them is never hovered.
   '.phc-axis::before{content:\'\';position:absolute;inset:-2px}',
   '.phc-cb-dock[data-lock="wait"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg):not([data-phc-vow-prompt]), .phc-cb-dock[data-lock="held"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg):not([data-phc-vow-prompt]){opacity:.38;filter:grayscale(1);pointer-events:none;transition:opacity .2s}',
-  '.phc-cb-lockmsg{flex:none;padding:6px 10px;border:1px solid #232D3F;border-radius:8px;background:#10151F;color:#A3AEC2;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}',
+  '.phc-cb-lockmsg{flex:none;padding:6px 10px;border:1px solid #232D3F;border-radius:8px;background:#10151F;color:#A3AEC2;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}',
   '@keyframes phcYtIn{0%{transform:translateX(70px) skewX(-14deg);opacity:0}60%{transform:translateX(-4px) skewX(-14deg);opacity:1}100%{transform:skewX(-14deg);opacity:1}}',
   '@keyframes phcYtShine{0%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(260%) skewX(-20deg)}}',
   '.phc-yt{transform:skewX(-14deg);animation:phcYtIn calc(.42s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
@@ -220,8 +220,8 @@ const GRID_LAYER = { axis: 40, corner: 41 };
 /** A tile's word under it (ROUGH, RUBBLE, HALF 30); on a kit map an object's word is quieter (KIT_LABEL). */
 /** The ground beside a kit wall piece (half a tile thick) is the floor in the wall's light shade, not a dark fill. */
 const KIT_WALL_TINT = 'rgba(10, 13, 19, 0.28)';
-const TEXT_STYLE = 'position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 9px; letter-spacing: 0.06em; color: #A3AEC2';
-const KIT_LABEL = 'position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); z-index: 1; padding: 0 3px; border-radius: 3px; white-space: nowrap; font-size: 8px; line-height: 11px; letter-spacing: 0.04em; color: rgba(231, 235, 243, 0.8); background: rgba(5, 7, 11, 0.62); pointer-events: none; transition: opacity .12s';
+const TEXT_STYLE = 'position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 13px; letter-spacing: 0.06em; color: #A3AEC2';
+const KIT_LABEL = 'position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); z-index: 1; padding: 0 3px; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 11px; letter-spacing: 0.04em; color: rgba(231, 235, 243, 0.8); background: rgba(5, 7, 11, 0.62); pointer-events: none; transition: opacity .12s';
 const MINI_SLACK = 172;
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
@@ -294,13 +294,13 @@ let ZOOM = readZoom();
 let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hidden'; } catch { return false; } })();
 /** About how tall the hidden-panel turn mini-bar is (the grid keeps clear of it). */
 const MINI_H = 196;
-const CHIP = (on) => 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2');
+const CHIP = (on) => 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2');
 /** The Perks tab's shelves (rules 1.14, the perk card in a fight; game/perkShelves.ts). USE NOW is the tab's buttons,
  *  so here it is only its heading; RIDES AN ACTION and ALWAYS ON are lists of rows to read: a name and one line (where
  *  the switch is, or the live state), opening to the whole card when picked. Never a Confirm. items: the tab's own
  *  rows (they carry the pick handler and the lock); sel: the row picked now. Empty shelves are left out.
  *  Colour is meaning (docs/design/colour-system.md), always with the word: Ready green, Used muted, the rest text. */
-const SHELF_HEAD = 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2';
+const SHELF_HEAD = 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2';
 const STATE_INK = { ready: '#6FEA77', used: '#A3AEC2', last: '#FFFFFF', waiting: '#C9D3E3', active: '#C9D3E3' };
 export function perkShelfVals(sh, items, sel) {
   const byKey = {}; for (const a of items) byKey[a.key] = a;
@@ -308,8 +308,8 @@ export function perkShelfVals(sh, items, sel) {
     return { key: a.key, name: r.name, line: r.line, text: r.detail, state: r.state || 'rides', open: on ? 'true' : 'false', isOpen: on, locked: a.locked, pick: a.pick, title: r.name + ': ' + r.line + (/[.!?…]$/.test(r.line) ? ' ' : '. ') + 'Pick it to read its card.',
       style: 'display: flex; flex-direction: column; gap: 3px; padding: 5px 8px 5px 10px; border-left: 2px solid ' + (on ? '#FFFFFF' : '#232D3F') + '; border-radius: 0 6px 6px 0; background: ' + (on ? '#10151F' : 'transparent'),
       btnStyle: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 32px; padding: 0; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer',
-      lineStyle: 'font-size: 11.5px; line-height: 1.3; font-weight: ' + (r.state === 'ready' || r.state === 'last' ? '700' : '500') + '; color: ' + (STATE_INK[r.state] || '#C9D3E3'),
-      textStyle: 'font-size: 12px; line-height: 1.4; color: #C9D3E3' }; };
+      lineStyle: 'font-size: 13px; line-height: 1.3; font-weight: ' + (r.state === 'ready' || r.state === 'last' ? '700' : '500') + '; color: ' + (STATE_INK[r.state] || '#C9D3E3'),
+      textStyle: 'font-size: 13px; line-height: 1.4; color: #C9D3E3' }; };
   const shelves = ['rides', 'always'].map((id) => ({ key: id, label: SHELF_LABEL[id], help: SHELF_HELP[id], headId: 'phc-shelf-' + id, headStyle: SHELF_HEAD, rows: sh[id].map(rowOf).filter(Boolean) })).filter((x) => x.rows.length > 0);
   const hasUse = items.some((a) => !isPerkInfo(a.key));
   return { hasUse, useLabel: SHELF_LABEL.use, useHelp: SHELF_HELP.use, useStyle: SHELF_HEAD, shelves };
@@ -365,7 +365,7 @@ function presenceVals(u, g, cb) {
 export const witnessedWords = (u, g) => 'UNTIL THE FIGHT ENDS OR ' + (patronNameOf(u, g).toUpperCase() || 'THE PATRON') + ' ACTS';
 /** The chip's title: "Witnessed: until the fight ends or Old Overcast acts." */
 const witnessedTitle = (u, g) => 'Witnessed: until the fight ends or ' + (patronNameOf(u, g) || 'the patron') + ' acts.';
-const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; ';
+const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; ';
 /** Witnessed is your patron watching (a boon), not a harm: the faith light and the eye, a short label (the how-long is in
  *  its title and the FAITH tab's header), and gone once the fight is over (it never outlives the fight). */
 const WITNESSED_CHIP = COND_CHIP + 'white-space: nowrap; border: 1px solid var(--faith-light, ' + FAITH_GOLD + '); color: var(--faith-light, ' + FAITH_GOLD + ')';
@@ -375,7 +375,7 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
   ? { key: 'c-' + id, k: '◉ WITNESSED', t: witnessedTitle(u, g), style: WITNESSED_CHIP }
   : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + n, t: condName(id) + ': ' + (condText(id) ? condText(id).replace(/\.?$/, '. ') : '') + n + (n === 1 ? ' round' : ' rounds') + ' left.',
     style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
-  ...(u.shield > 0 ? [{ key: 'shield', k: '+' + fmtNum(u.shield) + ' SHIELD', t: 'A shield of ' + fmtNum(u.shield) + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
+  ...(u.shield > 0 ? [{ key: 'shield', k: '+' + fmtNum(u.shield) + ' SHIELD', t: 'A shield of ' + fmtNum(u.shield) + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
 
 /** Rules 1.14: the wait for the Narrator's answer to an attempt, as the fight screen shows it. Everyone sees who spoke
  *  and the words; the host can end the wait (everything spent comes back); a human Narrator (the host, in "I'll narrate")
@@ -399,8 +399,8 @@ function fightTalkVals(self, g, cb, fr, who, hostMe, act) {
   const TN_NAME = { 8: 'Easy', 12: 'Standard', 16: 'Hard', 20: 'Heroic' };
   out.gm = { show: true, hint: 'The fight waits for you. Write a line if you like, then pick one answer. A check comes first when the outcome is in doubt.' + (fr.perk && fr.perk.ask ? ' Your part: ' + fr.perk.ask : ''),
     line, onLine: (e) => set({ line: e.target.value }),
-    btn: 'flex: none; min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer',
-    sel: 'min-height: 32px; max-width: 100%; padding: 0 6px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 12px; letter-spacing: 0',
+    btn: 'flex: none; min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer',
+    sel: 'min-height: 32px; max-width: 100%; padding: 0 6px; border-radius: 8px; border: 1px solid #2E3A50; background: #0A0D13; color: #E7EBF3; font-family: inherit; font-size: 13px; letter-spacing: 0',
     sayOnly: () => send(null), sayOff: !line.trim(),
     skills: Object.values(SKILLS_BY_ID).map((k) => ({ value: k.id, label: k.name })).sort((a, b) => a.label.localeCompare(b.label)), skill, onSkill: (e) => set({ skill: e.target.value }),
     tns: TN_LADDER.map((n) => ({ value: String(n), label: 'TN ' + n + ' · ' + (TN_NAME[n] || '') })), tn: String(tn), onTn: (e) => set({ tn: Number(e.target.value) }),
@@ -1031,7 +1031,7 @@ export class CombatLogic extends DCLogic {
     // The letters and numbers stay at the window's edge while the map scrolls under them (the camera). They are the top
     // layer of the map (GRID_LAYER): a tile scrolled under them, its hover and its chips stay beneath, and the pointer
     // over them (their gaps included: .phc-axis) is theirs, so a tile under the header never reacts (Leon, live 0.23.0).
-    const AXIS = 'display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ';
+    const AXIS = 'display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #7F8BA1; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ';
     const clearHover = (e) => hoverFor(this).enter(null, e); // (game/mapHover.ts: at most once a frame, never while the map moves)
     const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text, hover: clearHover, style: AXIS + (key === 'h-' ? 'top: 0; left: 0; z-index: ' + GRID_LAYER.corner : key[0] === 'h' ? 'top: 0; z-index: ' + GRID_LAYER.axis : 'left: 0; z-index: ' + GRID_LAYER.axis) });
     // Tooltips near an edge turn inward: the edge is the camera's window, not the map's (vx, vy: a tile's place in it).
@@ -1092,7 +1092,7 @@ export class CombatLogic extends DCLogic {
         // under the tile. It is drawn over every token and overlay of the grid.
         costStyle: (() => { const txt = String(mTag || (aTag ? aTag.text : '') || ''), wrap = !!aTag && !aTag.ok && txt.length > 26, wPx = Math.min(wrap ? 230 : 400, txt.length * 7.2 + 16), half = wPx / 2;
           const right = (vW - 1 - vxOf(x)) * 48 + 23 + 6, left = vxOf(x) * 48 + 23 + 22, dx = Math.round(Math.max(0, half - left) - Math.max(0, half - right));
-          return 'position: absolute; left: 50%; ' + (vyOf(y) === 0 ? 'top: calc(100% - 6px)' : 'bottom: calc(100% - 10px)') + '; transform: translateX(calc(-50% + ' + dx + 'px)); z-index: 30; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; pointer-events: none; '
+          return 'position: absolute; left: 50%; ' + (vyOf(y) === 0 ? 'top: calc(100% - 6px)' : 'bottom: calc(100% - 10px)') + '; transform: translateX(calc(-50% + ' + dx + 'px)); z-index: 30; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 700; pointer-events: none; '
             + (wrap ? 'white-space: normal; width: max-content; max-width: 230px; text-align: center; line-height: 1.25; ' : 'white-space: nowrap; '); })()
           + (aTag ? (aTag.ok ? 'background: #F65157; color: #0A0D13' : 'background: #1C2536; color: #F65157; border: 1px solid #F65157') : 'background: #FFFFFF; color: #0A0D13'),
         hasPlan: !!planStyle, planStyle: 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; box-sizing: border-box; ' + planStyle,
@@ -1111,7 +1111,7 @@ export class CombatLogic extends DCLogic {
         // A preview line ends under the caster's token: while drawing, the joins sit above the token (and below the tip).
         joinStyle: 'position: absolute; left: -26px; top: -26px; width: 96px; height: 96px; pointer-events: none; z-index: ' + (SL.tiles[k] && SL.tiles[k].some((x) => x.kind === 'preview') ? 4 : 2),
         hasStrokeHot: SL.hot.has(k), strokeHotStyle: 'position: absolute; inset: 0; z-index: 2; border-radius: 4px; pointer-events: none; box-sizing: border-box; border: 1px solid ' + SIGIL_INK + '; box-shadow: inset 0 0 8px rgba(139, 222, 238, 0.35)',
-        hasStrokeTip: k === S.hover && !!SL.hotText, strokeTip: SL.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (vxOf(x) >= vW / 2 ? 'right: 0' : 'left: 0') + '; z-index: 5; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
+        hasStrokeTip: k === S.hover && !!SL.hotText, strokeTip: SL.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (vxOf(x) >= vW / 2 ? 'right: 0' : 'left: 0') + '; z-index: 5; padding: 1px 6px; border-radius: 6px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
         hasGlyphs: gls.length + trs.length > 0, glyphs: [...gls.map((gl) => ({ key: gl.id, title: glyphName(gl), src: glyphMark(gl, 'pc', knows).src,
           style: 'width: 16px; height: 16px; border-radius: 3px; background: rgba(5, 7, 11, 0.55); ' + (gl.side === 'pc' ? 'box-shadow: 0 0 6px rgba(79, 200, 223, 0.6)' : 'opacity: 0.85; box-shadow: 0 0 0 1px rgba(246, 81, 87, 0.5)') })),
           ...trs.map((t) => { const tm = traceMark(t, knows); return { key: 'tr-' + t.id, title: tm.title, src: tm.src, style: tm.style }; })],
@@ -1150,7 +1150,7 @@ export class CombatLogic extends DCLogic {
     this.flipInit(rotU.map((u) => u.id).join(','));
     const sn = (u) => !u.unseen;
     const initiative = rotU.map((u, idx) => ({ tag: cb.over ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && idx < 2,
-      tagStyle: 'font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: ' + (idx === 0 ? '#FFFFFF' : '#A3AEC2'),
+      tagStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + (idx === 0 ? '#FFFFFF' : '#A3AEC2'),
       ...(() => { const kn = u.side === 'pc' || u.analyzedBy, pct = u.downed ? 0 : kn ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
         return { hpBox: 'position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; overflow: hidden; background: #1C2536' + (kn ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.45)'),
           hpChip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #FFFFFF', hpFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #F65157' + (kn ? '' : '; opacity: 0.6') }; })(),
@@ -1182,13 +1182,13 @@ export class CombatLogic extends DCLogic {
     const pkSince = cur ? turnMark(cb, cur) : 0;
     const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!(g.sandbox || g.run), g, since: pkSince }); // the Proving Ground has no Narrator to rule on anything
     let pkShelfMemo = null; const pkShelves = () => pkShelfMemo || (pkShelfMemo = perkShelves(g, cb, cur, ch, { since: pkSince }));
-    const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: areaOrder(gid, items).map(([id, label, costText, text, why, meta]) => ({
+    const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 13px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: areaOrder(gid, items).map(([id, label, costText, text, why, meta]) => ({
       // A move that can't be used now still opens (its footer says why); its reason is on the button too.
       // Its hover card (game/actionTip.ts): the name and cost, a line per sentence, the weapon's line and traits, the refusal.
       ...tipAttrs({ name: label, cost: costText, ...(meta && meta.parts ? { needs: meta.parts.needs, text: meta.parts.text, line: meta.parts.line, traits: meta.parts.traits } : { text }), why }),
       area: gid === 'attack' ? (meta && meta.hand) || 'other' : '', sub: (meta && meta.sub) || '',
       name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
-      costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
+      costStyle: 'font-size: 13px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
         (why && rowSel !== id ? 'opacity: 0.62; ' : '') + (rowSel === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
     const actName = { move: 'Move', sprint: 'Sprint', disengage: 'Disengage', analyze: 'Analyze', pickup: 'Pick up',
@@ -1274,13 +1274,13 @@ export class CombatLogic extends DCLogic {
     }
     sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), pressed: t.on ? 'true' : 'false', title: (t.preview || t.label) + (t.why ? ' · ' + t.why : ''), off: !!t.why,
       pick: () => { const m = new Set(this.state.mods || []); if (t.on) { m.delete(t.id); if (t.defaultOn) m.add('!' + t.id); } else { m.add(t.id); m.delete('!' + t.id); } this.setState({ mods: [...m] }); },
-      style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (t.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (t.why ? '; opacity: 0.45' : '') }));
+      style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (t.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (t.why ? '; opacity: 0.45' : '') }));
     // A technique whose weapon has two of the properties it reads: the player picks which line applies (args.line).
     // what the technique's text lets you choose beyond the property line (Called Shot's part, Run Through's weapon left in…)
     // The flow's option steps as chips (Order's things, a technique's line and its options): the engine's choices.
     if (flow && flow.chips.length) sel.toggles = [...sel.toggles, ...flow.chips.map((c) => ({ key: c.key, label: c.label + (c.on ? ' ✓' : ''), pressed: c.on ? 'true' : 'false', title: c.title, off: c.off,
       pick: () => { if (!c.off) this.setState(c.pick); },
-      style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (c.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (c.off ? '; opacity: 0.45' : '') }))];
+      style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (c.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (c.off ? '; opacity: 0.45' : '') }))];
     sel.hasToggles = sel.toggles.length > 0;
     // The target's face exactly as its token draws it (an art library name resolved, never the raw id: a raw id was a
     // broken image on a black square), else its initials in the token's red frame.
@@ -1315,9 +1315,9 @@ export class CombatLogic extends DCLogic {
     const abar = (pct, col) => 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + Math.max(0, Math.min(100, pct)) + '%; background: ' + col;
     const myU = (mineTurn ? cur : null) || cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) || null;
     const mc = myU ? g.characters[myU.charId] : null, mw = myU ? WEAPON[myU.weapon] : null;
-    const FX_CHIP = 'padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #F65157';
+    const FX_CHIP = 'padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157';
     const meCls = mc ? classOf(mc) : null; // the class emblem and name beside YOU (classIcons.ts)
-    const mePanel = myU && mc ? { name: myU.name, img: faceOf(myU) || IMG['wick-welcome'], zoom: zoomer(this, faceOf(myU), myU.name, 'portrait'), hasCls: !!meCls, clsIcon: meCls ? meCls.icon : '', clsName: meCls ? meCls.name.toUpperCase() : '', clsStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: ' + (meCls ? meCls.ink : '#A3AEC2'),
+    const mePanel = myU && mc ? { name: myU.name, img: faceOf(myU) || IMG['wick-welcome'], zoom: zoomer(this, faceOf(myU), myU.name, 'portrait'), hasCls: !!meCls, clsIcon: meCls ? meCls.icon : '', clsName: meCls ? meCls.name.toUpperCase() : '', clsStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + (meCls ? meCls.ink : '#A3AEC2'),
       hp: fmtNum(myU.hp) + ' / ' + fmtNum(myU.maxHp), hpFill: abar(myU.hp / myU.maxHp * 100, '#F65157'), hpChip: abar(myU.hp / myU.maxHp * 100, '#FFFFFF'),
       // Everything you spend, below the HP bar (game/resources.ts): ammo, Heat, Evoker charge, cores, Flux, MP, Strain, the
       // held Outburst, class resources, companions. The line under HP keeps AP, Movement, Stims and Echo.
@@ -1369,14 +1369,14 @@ export class CombatLogic extends DCLogic {
             why: wi.ok ? null : why }), disabled: wi.ok ? 'false' : 'true', onKey: (e) => this.wordKey(e),
           hasUses: !!wm, uses: wm ? String(wm.uses) : '', hasStar: !!(wm && wm.hasStar), star: wm ? wm.star : '', starAlt: wm ? wm.starAlt : '',
           aria: (def.word || wd.toUpperCase()) + ', ' + (wordClassName(wd) || 'word') + ', ' + (wi.ok ? wi.sub : 'can\'t draw now: ' + why) + (wm ? '; ' + wm.text : ''),
-          subStyle: 'font-size: 10px; font-weight: 600; line-height: 1.2; color: ' + (wi.ok ? '#C9D3E3' : '#A3AEC2'),
+          subStyle: 'font-size: 13px; font-weight: 600; line-height: 1.2; color: ' + (wi.ok ? '#C9D3E3' : '#A3AEC2'),
           pick: () => this.setState({ word: wd }),
           style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 6px; row-gap: 1px; align-items: center; justify-items: start; min-width: 0; padding: 4px 6px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: ' + (wi.ok ? '#E7EBF3' : '#A3AEC2') + '; '
             + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; box-shadow: 0 0 8px rgba(79, 200, 223, 0.45)' : wi.ok ? 'border: 1px solid #1F4A55; background: #0D1119' : 'border: 1px dashed #2A3A48; background: #0B0F16') + (wi.ok ? '' : '; opacity: 0.8') }; }) : [],
       designs: isMagic && mineTurn && S.action === 'outburst' && designs.length > 0 && !mg?.held, // holding: the HEART panel runs it
       designList: S.action === 'outburst' && mg ? cards.map((d) => { const on = dsel && d.id === dsel.id;
         return { key: d.id, name: d.name, pressed: on ? 'true' : 'false', pick: () => this.setState({ design: d.id, aim: null }), icon: d.icon, line: d.line, school: d.schools, title: d.title, ...tipAttrs({ name: d.name, cost: d.costText, text: d.title, why: d.canBegin ? null : d.beginWhy }),
-          stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
+          stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
           style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
       begin: () => { if (card && card.canBegin) { const a = sendDescriptor(g, cur.id, 'outburst', { design: card.id, mode: 'begin', ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }, me); if (a) act(a); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
@@ -1396,7 +1396,7 @@ export class CombatLogic extends DCLogic {
     pad.hasStrokeNote = !!pad.strokeNote;
     pad.strokeBtns = sbs.map((b) => ({ key: b.key, label: (b.on ? '✓ ' : '') + b.label, title: b.title, pressed: b.on ? 'true' : 'false', off: !b.ok,
       pick: () => this.setState({ stroke: b.key }),
-      style: 'min-height: 24px; padding: 0 8px; border-radius: 6px; font-family: inherit; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; '
+      style: 'min-height: 24px; padding: 0 8px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; '
         + (b.on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; color: #E7EBF3; box-shadow: 0 0 6px rgba(79, 200, 223, 0.4)' : b.ok ? 'border: 1px solid #1F4A55; background: transparent; color: #8BDEEE' : 'border: 1px dashed #2A3A48; background: transparent; color: #A3AEC2') }));
     sel.strokeBtns = pad.strokeBtns;
     // The HEART panel at the top of the Outbursts tab while holding: its buttons run the moves at once (Release picks the aim).
@@ -1430,7 +1430,7 @@ export class CombatLogic extends DCLogic {
     const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : unseenNow ? 'HOSTILES ACTING' : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
       name: cb.over ? cb.name : unseenNow ? 'Unseen hostile' : !cur ? '' : seenCur ? cur.name : 'Unseen hostile', line: cb.over ? 'The fight is over.' : unseenNow ? 'Something moves out of sight' : !cur ? '' : cur.side === 'foe' ? (seenCur ? 'Round ' + cb.round + ' · it moves' : 'Something moves out of sight') : 'Round ' + cb.round + ' · ' + (cur.downed ? 'Downed' : cur.ap + ' AP') + (curOwner && curOwner.id !== me ? ' · their move' : ''),
       hasImg: !!(cur && seenCur && faceOf(cur)) && !cb.over, img: cur && seenCur ? faceOf(cur) : '', noImg: !(cur && seenCur && faceOf(cur)) || !!cb.over, short: cb.over ? (won ? '✓' : '✕') : cur && seenCur ? cur.short : '?',
-      kickerStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: ' + curInk,
+      kickerStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.18em; color: ' + curInk,
       imgStyle: 'width: 48px; height: 48px; object-fit: cover; background: #000; flex: none; ' + (cur && cur.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + curInk : 'border-radius: 6px; border: 2px solid ' + curInk),
       badgeStyle: 'display: grid; place-items: center; width: 48px; height: 48px; flex: none; font-size: 14px; font-weight: 700; border-radius: ' + (cur && cur.side === 'pc' ? '50%' : '6px') + '; border: 2px dashed ' + curInk + '; color: ' + curInk,
       style: 'display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 4px solid ' + curInk };
@@ -1514,8 +1514,8 @@ export class CombatLogic extends DCLogic {
         pick: () => this.setTab(gr.id), onKey: (e) => this.tabKey(e), holds,
         // Each tab wears its family's ink: full when open, a faint underline when not (with the word, never colour alone).
         style: 'position: relative; flex: 1 0 auto; min-width: 0; max-width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: ' + (tight ? '3px' : '4px') + '; min-height: 36px; padding: ' + (tight ? '9px 5px 0' : '0 9px') + '; border: 0; border-bottom: 2px solid ' + (on ? ink : ink + '55') + '; border-radius: 8px 8px 0 0; background: ' + (on ? '#1C2536' : 'transparent') + '; color: ' + (on ? ink : '#A3AEC2') + '; font-family: inherit; font-size: ' + (tight ? '10.5px' : '11px') + '; font-weight: 700; letter-spacing: ' + (tight ? '0.02em' : '0.04em') + '; text-transform: uppercase; white-space: nowrap; cursor: pointer',
-        countStyle: (tight ? 'position: absolute; right: 3px; top: 2px; min-width: 13px; padding: 0 3px; font-size: 9px; line-height: 13px; ' : 'flex: none; min-width: 15px; padding: 0 4px; font-size: 9.5px; line-height: 15px; ') + 'border-radius: 999px; letter-spacing: 0; text-align: center; box-sizing: border-box; ' + (on ? 'background: ' + ink + '; color: #0A0D13' : 'background: #1C2536; color: #C9D3E3'),
-        numStyle: 'position: absolute; left: 4px; top: 2px; font-size: 9px; font-weight: 600; letter-spacing: 0; color: ' + (on ? '#A3AEC2' : '#5D6A80'),
+        countStyle: (tight ? 'position: absolute; right: 3px; top: 2px; min-width: 13px; padding: 0 3px; font-size: 13px; line-height: 13px; ' : 'flex: none; min-width: 15px; padding: 0 4px; font-size: 13px; line-height: 15px; ') + 'border-radius: 999px; letter-spacing: 0; text-align: center; box-sizing: border-box; ' + (on ? 'background: ' + ink + '; color: #0A0D13' : 'background: #1C2536; color: #C9D3E3'),
+        numStyle: 'position: absolute; left: 4px; top: 2px; font-size: 13px; font-weight: 600; letter-spacing: 0; color: ' + (on ? '#A3AEC2' : '#5D6A80'),
         holdStyle: 'position: absolute; right: 4px; ' + (tight ? 'bottom: 5px' : 'top: 4px') + '; width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF' };
     });
     // The Calls tab's rows are chips (as the technique pad's): the Call, its AP and reach, the text of the step the
@@ -1547,7 +1547,7 @@ export class CombatLogic extends DCLogic {
     const bpV = canPack && S.bp ? backpackView(g, cb, myU, !!(mineTurn && cur && myU.id === cur.id), holding ? lockMsg : '') : null;
     // The Backpack button sits in your unit card beside your name (Leon, 9 Nov 2026: one labelled button there, none by
     // the AP bar); on short windows, where the card folds into the one-line bar, the bar carries it. Lit while open.
-    const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';
+    const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';
     const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: S.bp ? 'true' : 'false', btnStyle: bpBtn(28) + '; margin-left: auto', miniStyle: bpBtn(26),
       title: (S.bp ? 'Close your backpack' : 'Open your backpack: draw, put away, drop, light armour') + ' (key B)',
       show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '', reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
@@ -1557,7 +1557,7 @@ export class CombatLogic extends DCLogic {
           icon: gearIconUri(r.item, r.acts.length && r.acts.every((a) => a.off) ? GEAR_INK_OFF : GEAR_INK), hasIcon: !!gearIconUri(r.item),
           acts: r.acts.map((a) => ({ key: a.key, text: a.label + (a.cost ? ' · ' + a.cost : ''), off: a.off, why: a.why || a.label + (a.cost ? ' · ' + a.cost : ''),
             go: () => { if (!a.off && a.action) act(a.action); },
-            style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
+            style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
     const T = {
       tabs, tabPanel, showWho: !mePanel, lock, lockMsg, vow: vowV, bp,
       mine: mineTurn, waiting: !mineTurn, wait, ytInk: curInk, ytSub: 'ROUND ' + cb.round + ' · ' + ap + ' AP',
@@ -1631,7 +1631,7 @@ export class CombatLogic extends DCLogic {
       // The header's right cluster (UI pass, screens/shell.js): room, Save, ⚙, ⚑, Leave.
       ...shellVals(this, 'combat'),
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
-      turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
+      turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
       initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, talk, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
       // The whole fight (the last 120 lines), newest first: the box is a reversed column, so it rests on the newest line
       // and scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).

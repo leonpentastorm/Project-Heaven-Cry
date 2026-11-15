@@ -100,11 +100,11 @@ export function feelingRows(btns: FeelingBtn[], open: boolean, query: string, ru
     rows: list.map((b) => ({ key: b.id, name: b.name, icon: b.icon, iconStyle: b.iconStyle, ink: b.ink, off: !b.ok, cost: b.ok ? b.cost : '✕ ' + b.why.replace(/\.$/, ''), step: b.stepText, effect: b.effect,
       ...tipAttrs({ name: b.name, cost: [...(b.ok ? [b.cost] : []), 'step ' + b.stepText, '×' + b.mult + ' after'], text: b.effect, why: b.why || null }), pick: () => { if (b.ok) run('pump:' + b.id); },
       style: 'display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0 6px; align-items: center; min-height: 34px; padding: 3px 7px; border-radius: 8px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: ' + (b.ok ? 'pointer' : 'default') + '; border: 1px solid ' + rgba(b.ink, b.ok ? 0.75 : 0.3) + '; background: ' + rgba(b.ink, b.ok ? 0.12 : 0.04) + (b.ok ? '' : '; opacity: 0.55'),
-      nameStyle: 'font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
-      stepStyle: 'font-size: 11px; font-weight: 700; color: ' + b.ink,
-      costStyle: 'grid-column: 2 / 4; font-size: 10px; font-weight: 600; line-height: 1.25; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis' })),
+      nameStyle: 'font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
+      stepStyle: 'font-size: 13px; font-weight: 700; color: ' + b.ink,
+      costStyle: 'grid-column: 2 / 4; font-size: 13px; font-weight: 600; line-height: 1.25; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis' })),
     gridStyle: 'display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px',
-    toggleStyle: 'align-self: flex-start; min-height: 26px; padding: 0 10px; border-radius: 99px; border: 1px solid #3A2E5C; background: #120E1E; color: #E7EBF3; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer',
+    toggleStyle: 'align-self: flex-start; min-height: 26px; padding: 0 10px; border-radius: 99px; border: 1px solid #3A2E5C; background: #120E1E; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer',
   };
 }
 /** Revert Pump's button: free, on your turn, while a pump of this turn can be taken back. */

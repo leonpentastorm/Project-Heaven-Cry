@@ -29,11 +29,11 @@ function iconOf(id: string): string {
   if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
   return gearIconUri(id, undefined, { large: true });
 }
-const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
+const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 const shelfHead = (name: string, note?: string) => (
   <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '6px 0 12px' }}>
     <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>{name}</h2>
-    {note ? <span style={{ fontSize: 12, color: I.muted }}>{note}</span> : null}
+    {note ? <span style={{ fontSize: 13, color: I.muted }}>{note}</span> : null}
     <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
   </div>
 );
@@ -45,15 +45,15 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
   return (
     <article data-phc-card={c.key} data-phc-card-id={c.id} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps(c.name + '. ' + c.text)}
       style={{ gridColumn: big ? 'span 2' : undefined, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 236, padding: 18, borderRadius: 16, background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (graded ? '#7A879E' : I.line), boxShadow: graded ? 'inset 0 0 0 1px rgba(255,255,255,0.06)' : 'none', opacity: sold ? 0.55 : 1, position: 'relative' }}>
-      {graded ? <span aria-hidden="true" style={{ position: 'absolute', top: 10, right: 14, fontSize: 12, letterSpacing: '0.3em', color: I.white }}>{MARK.repeat(c.marks)}</span> : null}
+      {graded ? <span aria-hidden="true" style={{ position: 'absolute', top: 10, right: 14, fontSize: 13, letterSpacing: '0.3em', color: I.white }}>{MARK.repeat(c.marks)}</span> : null}
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
         <div style={{ flexShrink: 0, width: big ? 112 : 88, height: big ? 112 : 88, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
           {icon ? <img src={icon} alt="" width={big ? 104 : 80} height={big ? 104 : 80} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 28, color: I.muted }}>+</span>}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <span data-phc-card-name="" style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 19, fontWeight: 600, lineHeight: 1.15 }}>{c.name}</span>
-          {graded || ['weapon', 'focus', 'armour'].includes(c.preview.kind) || c.rare ? <span data-phc-grade="" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: graded ? I.white : I.muted }}>{c.rarityWord.toUpperCase()}{graded ? ' ' + MARK.repeat(c.marks) : ''}{c.rare ? ' · RARE' : ''}</span> : null}
-          <span style={{ fontSize: 12.5, color: I.muted }}>{c.doorWord && c.attr ? <>{c.forLine.split(' · ')[0]} · <span style={{ color: ATTR_INK[c.attr] || I.text }}>{c.doorWord}</span>{c.forLine.includes(' · yours') ? ' · yours' : ''}</> : c.forLine}</span>
+          {graded || ['weapon', 'focus', 'armour'].includes(c.preview.kind) || c.rare ? <span data-phc-grade="" style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: graded ? I.white : I.muted }}>{c.rarityWord.toUpperCase()}{graded ? ' ' + MARK.repeat(c.marks) : ''}{c.rare ? ' · RARE' : ''}</span> : null}
+          <span style={{ fontSize: 13, color: I.muted }}>{c.doorWord && c.attr ? <>{c.forLine.split(' · ')[0]} · <span style={{ color: ATTR_INK[c.attr] || I.text }}>{c.doorWord}</span>{c.forLine.includes(' · yours') ? ' · yours' : ''}</> : c.forLine}</span>
         </div>
       </div>
       {c.preview.lines.length ? (
@@ -64,7 +64,7 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{total.toLocaleString('en')}</span>
-          <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS{c.per > 1 ? ' · ' + c.per * qty + ' ROUNDS' : qty > 1 ? ' · ' + qty + ' OF THEM' : ''}</span>
+          <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS{c.per > 1 ? ' · ' + c.per * qty + ' ROUNDS' : qty > 1 ? ' · ' + qty + ' OF THEM' : ''}</span>
         </div>
         {c.qtyMax > 1 && !sold ? (
           <div role="group" aria-label="How many" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
@@ -88,7 +88,7 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
   if (!cmp.held) return <p data-phc-compare="" style={{ margin: 0, fontSize: 13, color: I.muted, lineHeight: 1.5 }}>{cmp.next.name} goes in your pack. It replaces nothing you hold.</p>;
   return (
     <div data-phc-compare="" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>
         <span>{(cmp.slot || '').toUpperCase()}</span><span>HOLDING</span><span>THIS</span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 13, fontWeight: 600 }}>
@@ -97,7 +97,7 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
       {cmp.rows.map((r) => (
         <div key={r.key} data-phc-cmp={r.key} style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 13, alignItems: 'baseline', paddingTop: 6, borderTop: '1px solid ' + I.line }}>
           <span style={{ color: I.muted }}>{r.label.replace(/ \(.*\)$/, '')}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{r.held}</span>
-          <span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{r.next}{r.diff && r.diff !== 'same' ? <span style={{ marginLeft: 6, fontSize: 11.5, color: r.diff === 'better' ? I.ok : I.muted }}>{r.diff === 'better' ? '▲ better' : '▼ worse'}</span> : r.diff === 'same' ? <span style={{ marginLeft: 6, fontSize: 11.5, color: I.muted }}>= same</span> : null}</span>
+          <span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{r.next}{r.diff && r.diff !== 'same' ? <span style={{ marginLeft: 6, fontSize: 13, color: r.diff === 'better' ? I.ok : I.muted }}>{r.diff === 'better' ? '▲ better' : '▼ worse'}</span> : r.diff === 'same' ? <span style={{ marginLeft: 6, fontSize: 13, color: I.muted }}>= same</span> : null}</span>
         </div>
       ))}
     </div>

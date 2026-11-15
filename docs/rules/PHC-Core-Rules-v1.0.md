@@ -6196,6 +6196,25 @@ Leon (15 Nov 2026): *"the skill increase hit chance for all weapons, melee get d
 7. **With any weapon in the hand.** While something is stuck, Pull Out is on the main hand's pad whatever it holds (a gun too); the weapon comes back to a free hand as before.
 8. **Throw** stays where rules 1.55 put it: on a weapon with the thrown property, or one that lends or readies it.
 
+## Rules 1.56 (Balance 2.0), L5 (client display)
+
+What the screens show of rules 1.56, all of it the engine's own lines (nothing is worked out in the client).
+
+1. **The weapon's line** on the sheet's GEAR tab and the cards (shop, camp, the reward pick) show, beside "Hits with":
+   the recoil a shot (`gearpreview` key `recoil`, with the fitted mods in it; the sheet leaves it out when it is none),
+   each fitted mod by its own data text (`mod:<id>`), and the damage-scaling line ("Damage scales with", only when a
+   slope is not 0). The backpack's magazine counts read `magazineSize(weapon, mods)`, so an extended magazine shows in
+   every row.
+2. **Type:** rules text is never under 13 px on the play, fight, run and camp screens (the initiative strip, the mana
+   forecast, the header and the sheet included); decorative badges inside a fixed-size mark keep their size.
+3. **The Outburst heart panel** scrolls inside itself when it is taller than the window (it was sticky and clipped the
+   feelings row at 1920 x 1080).
+4. **The reward pick's hover card** keeps off the other cards (`data-tip-avoid`), so it never covers the Materials
+   counts.
+5. **Art slots:** the camp's header takes the painting its data names (`survival.json loadout.backdrop`, catalog
+   `survival-camp`), and each right-panel header takes `icon-panel-<panel id>` when the catalogue has one (built as
+   `panel-<id>`), drawn in the header's ink. PROVISIONAL (review-candidate art).
+
 ## Rules 1.56 (Balance 2.0), XP
 
 Survival's XP refitted for release 0.29 (the lead's finding 10.C.1 of the 0.29 plan: no level-up in stage 1; Leon's

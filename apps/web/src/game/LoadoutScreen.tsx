@@ -17,7 +17,7 @@ import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, ty
 import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
-import { boonCards } from './campView';
+import { boonCards, campBackdrop } from './campView';
 import { boonIconSvg } from './boonIcons';
 import { MoveOn } from './runPanels';
 import { PlaceBar, BarNumber } from './PlaceBar';
@@ -226,7 +226,7 @@ export function LoadoutScreen() {
     <div className="phc-camp" data-phc-camp="" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: I.ground, color: I.text, fontFamily: "'Chakra Petch', sans-serif" }}>
       <style>{CSS}</style>
       {/* the place header (PlaceBar, the visibility standard): sticky at the top of the middle column's scroll, over the cards */}
-      <PlaceBar marks={{ 'data-phc-camp-bar': '' }} name="The camp"
+      <PlaceBar marks={{ 'data-phc-camp-bar': '' }} name="The camp" backdrop={campBackdrop()}
         tabs={<nav aria-label="The camp's steps" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '0 0 10px' }}>
           {([[1, '1 · Loadout'], [2, '2 · Starting boon' + (v.boon.chosen ? ' ✓' : '')]] as const).map(([n, lab]) => (
             <button key={n} type="button" data-phc-camp-step={n} aria-current={step === n ? 'step' : undefined} onClick={() => go(n)}

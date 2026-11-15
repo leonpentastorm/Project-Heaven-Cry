@@ -14,7 +14,7 @@ let isOpen = false;
 export function openMissionBoard(open = !isOpen) { isOpen = open; subs.forEach((f) => f(open)); }
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', bad: '#F65157', todo: '#FFFFFF' };
-const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', color: ink.muted };
+const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.18em', color: ink.muted };
 const btn: React.CSSProperties = { minHeight: 40, padding: '0 18px', borderRadius: 10, border: 0, background: ink.text, color: ink.ground, fontFamily: 'inherit', fontWeight: 700, cursor: 'pointer' };
 const markColor = (s: string) => (s === 'done' ? ink.ok : s === 'failed' ? ink.muted : ink.todo);
 const SEEN = (code: string) => 'phc.endings.' + code;
@@ -73,7 +73,7 @@ export function MissionLayer({ game, screen }: { game: GameState | null; screen:
               <span style={kick}>SIDE JOBS</span>
               {b.side.map((j) => <div key={j.key} style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}>
                 <span aria-label={j.status} style={{ flex: 'none', width: 18, fontWeight: 700, color: markColor(j.status) }}>{j.mark}</span>
-                <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontSize: 14, color: j.status === 'open' ? ink.text : ink.muted }}>{j.text}</span>{j.detail && <span style={{ fontSize: 12, color: ink.muted }}>{j.detail}</span>}</span>
+                <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontSize: 14, color: j.status === 'open' ? ink.text : ink.muted }}>{j.text}</span>{j.detail && <span style={{ fontSize: 13, color: ink.muted }}>{j.detail}</span>}</span>
               </div>)}
             </section>
           )}
@@ -83,7 +83,7 @@ export function MissionLayer({ game, screen }: { game: GameState | null; screen:
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>{b.past.map((m) => <MissionCard key={m.key} m={m} small />)}</div>
             </details>
           )}
-          <span style={{ fontSize: 12, color: ink.muted, lineHeight: 1.5 }}>Stuck? Ask the Narrator out of character: switch on OOC next to Send, or start a line with [OOC]. It doesn't use your turn.</span>
+          <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>Stuck? Ask the Narrator out of character: switch on OOC next to Send, or start a line with [OOC]. It doesn't use your turn.</span>
         </div>
       )}
 
@@ -91,7 +91,7 @@ export function MissionLayer({ game, screen }: { game: GameState | null; screen:
         <div aria-live="polite" style={{ position: 'fixed', top: 72, left: 0, right: 0, zIndex: 45, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, pointerEvents: 'none' }}>
           {toasts.map((t) => (
             <div key={t.id} role="status" className="phc-a-drop" style={{ minWidth: 280, maxWidth: 'min(560px, 92vw)', padding: '10px 16px', borderRadius: 10, background: ink.panel, border: '1px solid ' + (t.tone === 'done' ? ink.ok : t.tone === 'failed' ? ink.muted : ink.line), borderLeft: '4px solid ' + (t.tone === 'done' ? ink.ok : t.tone === 'failed' ? ink.muted : ink.todo), boxShadow: '0 8px 30px rgba(0,0,0,.5)', fontFamily: "'Chakra Petch', sans-serif", display: 'flex', gap: 10, alignItems: 'baseline' }}>
-              <span style={{ flex: 'none', fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', color: t.tone === 'done' ? ink.ok : t.tone === 'failed' ? ink.muted : ink.todo }}>{t.kicker}</span>
+              <span style={{ flex: 'none', fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: t.tone === 'done' ? ink.ok : t.tone === 'failed' ? ink.muted : ink.todo }}>{t.kicker}</span>
               <span style={{ fontSize: 14, color: ink.text }}>{t.text}</span>
             </div>
           ))}
@@ -128,8 +128,8 @@ export function MissionLayer({ game, screen }: { game: GameState | null; screen:
               {E.cards.map((c) => <div key={c.key} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
                 {c.img ? <img src={c.img} alt={c.name} style={{ width: '100%', aspectRatio: '4 / 5', objectFit: 'cover', borderRadius: 8, background: '#000', filter: c.dead ? 'grayscale(1)' : undefined }} /> : null}
                 <span style={{ fontFamily: 'Spectral, serif', fontSize: 20, fontWeight: 600 }}>{c.name}</span>
-                <span style={{ fontSize: 12, color: ink.muted, display: 'inline-flex', alignItems: 'center', gap: 5 }}>Level {c.level} · {c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 14, height: 14 }} />}{c.cls}{c.dead ? ' · DEAD' : ''}</span>
-                {c.deeds.map((d, i) => <span key={i} style={{ fontSize: 12, color: '#C9D3E3' }}>★ {d}</span>)}
+                <span style={{ fontSize: 13, color: ink.muted, display: 'inline-flex', alignItems: 'center', gap: 5 }}>Level {c.level} · {c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 14, height: 14 }} />}{c.cls}{c.dead ? ' · DEAD' : ''}</span>
+                {c.deeds.map((d, i) => <span key={i} style={{ fontSize: 13, color: '#C9D3E3' }}>★ {d}</span>)}
               </div>)}
             </section>
             {E.credits.length > 0 && <section aria-label="Credits" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={kick}>CREDITS</span>{E.credits.map((c, i) => <span key={i} style={{ fontSize: 13, color: ink.muted }}>{c}</span>)}</section>}

@@ -16,7 +16,7 @@ import { PlaceBar, BarNumber } from './PlaceBar';
 import { MoveOn } from './runPanels';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF', ok: '#6FEA77' };
-const kick: React.CSSProperties = { fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
+const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const btn = (on = true): React.CSSProperties => ({ minHeight: 44, padding: '0 20px', borderRadius: 10, border: on ? 0 : '1px solid ' + ink.line, background: on ? ink.text : 'transparent', color: on ? ink.ground : ink.text, fontFamily: 'inherit', fontWeight: 700, fontSize: 15, cursor: 'pointer' });
 const title: React.CSSProperties = { margin: 0, fontFamily: "'Spectral', serif", fontSize: 'clamp(28px, 2.4vw, 40px)', fontWeight: 600, lineHeight: 1.15 };
 
@@ -35,7 +35,7 @@ function BoonPick({ b }: { b: BoonPickV }) {
             <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{c.name}</span>
             <span style={{ fontSize: 14, lineHeight: 1.5, color: '#DCE2EC', maxWidth: 360 }}>{c.text}</span>
             <span style={{ marginTop: 'auto', fontSize: 13, letterSpacing: '0.04em', color: c.worth ? ink.white : ink.muted }}>{c.worthLine}</span>
-            {c.why ? <span style={{ fontSize: 12, color: ink.muted }}>{c.why}</span> : b.canPick ? <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>TAKE IT</span> : null}
+            {c.why ? <span style={{ fontSize: 13, color: ink.muted }}>{c.why}</span> : b.canPick ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>TAKE IT</span> : null}
           </button>
         ))}
       </div>
@@ -49,15 +49,15 @@ function TileCard({ t, mine }: { t: TileCardV; mine: boolean }) {
       onClick={() => act({ type: 'run/tile', tile: t.id })}
       style={{ position: 'relative', display: 'flex', flexDirection: 'column', minWidth: 0, padding: 0, overflow: 'hidden', textAlign: 'left', borderRadius: 16, border: mine ? '2px solid ' + ink.white : '2px solid ' + ink.line, background: ink.panel, color: ink.text, fontFamily: 'inherit', cursor: 'pointer' }}>
       <span aria-hidden="true" style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', background: t.art ? 'center / cover no-repeat url("' + t.art + '")' : 'radial-gradient(ellipse at 50% 35%, #1C2536 0%, #10151F 80%)', borderBottom: '1px solid ' + ink.line }}>
-        {t.art ? null : <span style={{ display: 'grid', placeItems: 'center', height: '100%', fontSize: 12, letterSpacing: '0.18em', color: ink.muted }}>{t.setting.toUpperCase()}</span>}
+        {t.art ? null : <span style={{ display: 'grid', placeItems: 'center', height: '100%', fontSize: 13, letterSpacing: '0.18em', color: ink.muted }}>{t.setting.toUpperCase()}</span>}
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '16px 18px 18px' }}>
         <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{t.name}</span>
         <span style={{ fontSize: 14, lineHeight: 1.5, color: '#DCE2EC' }}>{t.line}</span>
         <span style={{ fontSize: 13, color: ink.muted }}>Boss: <span style={{ color: ink.text }}>{t.boss}</span> · Boons: <span style={{ color: ink.white }}>{t.theme}</span> ({t.boons.join(', ')})</span>
         <span style={{ display: 'flex', gap: 6, alignItems: 'center', minHeight: 22 }}>
-          {mine ? <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>✓ YOUR MARK</span> : null}
-          {t.leans.map((l) => <span key={l.initials} aria-label={l.name} style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 10, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}
+          {mine ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>✓ YOUR MARK</span> : null}
+          {t.leans.map((l) => <span key={l.initials} aria-label={l.name} style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 13, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}
         </span>
       </span>
     </button>
