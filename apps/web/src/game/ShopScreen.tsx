@@ -23,7 +23,7 @@ const ATTR_INK: Record<string, string> = { endurance: '#F65157', strength: '#F68
 const MARK = '◆';
 /** A card's picture: the painted icon (rounds and magazines by their gear ids), else the line icon. */
 function iconOf(id: string): string {
-  const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id);
+  const r = /^rounds:(.+)$/.exec(id), m = /^mag:([^:]+)/.exec(id); // rules 1.55: mag:<weapon>:0 is an empty one
   if (r) return gearIconUri(roundsGearId(r[1]), undefined, { large: true });
   if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
   return gearIconUri(id, undefined, { large: true });

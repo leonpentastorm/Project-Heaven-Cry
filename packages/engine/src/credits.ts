@@ -42,8 +42,10 @@ export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly 
   const r = /^rounds:(.+)$/.exec(id); if (r) return ROUND_PRICE[r[1]] > 0 ? ROUND_PRICE[r[1]] : null;
   // rules 1.52: body armour of a class (`armour:<class>`) at the class's own price (rules.json combat armor.classes)
   const ac = /^armour:(\d)$/.exec(id); if (ac) { const p = Number(ARMOUR_CLASSES[Number(ac[1])]?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; }
-  const m = /^mag:(.+)$/.exec(id);
-  if (m) { const w: any = WEAPON[m[1]], e = emptyMagPrice(m[1]), rp = w ? ROUND_PRICE[w.ammo] : 0; return e == null || !rp ? null : e + rp * (w.magazine || 0); }
+  // rules 1.55: `mag:<weapon>:<rounds>` is a magazine holding that many rounds (`:0` an empty one), the same formula
+  const m = /^mag:([^:]+)(?::(\d+))?$/.exec(id);
+  if (m) { const w: any = WEAPON[m[1]], e = emptyMagPrice(m[1]), rp = w ? ROUND_PRICE[w.ammo] : 0; if (e == null || !rp) return null;
+    const cap = w.magazine || 0, n = m[2] != null ? Math.min(cap, Number(m[2])) : cap; return e + rp * n; }
   const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false) return null;
   let p = Number(def.price_credits);
   if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = Number(def.price_mult) * (ROUND_PRICE[WR.special_round_price?.calibre] || 0);

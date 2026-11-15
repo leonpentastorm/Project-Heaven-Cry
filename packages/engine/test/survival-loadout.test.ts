@@ -4,7 +4,7 @@
 // close; a campaign gives a bare character its loadout; a character made with a kit (an old draft, a test) keeps it.
 import { describe, expect, it } from 'vitest';
 import { type GameState, newGame, apply, RuleError, newCharacter, validateSheet, creditsOf, packOf, priceOf, carriedKg, carryLimit, viewFor,
-  LOADOUT, RACK, archetypeWeapons, loadoutLines, loadoutSpent, recommendedPick, startOffer, kitFor, campaignLoadout, KITS, WEAPON, quiversOf, quiverHolds } from '../src';
+  LOADOUT, RACK, archetypeWeapons, loadoutLines, loadoutSpent, recommendedPick, startOffer, kitFor, campaignLoadout, KITS, WEAPON, quiversOf, quiverHolds, ITEM, twoHands, emptyMagPrice } from '../src';
 import { sheetOf } from './helpers/perkfight';
 import svJ from '../../../data/survival.json';
 
@@ -70,11 +70,13 @@ describe('the camp (rules 1.52)', () => {
       for (const id of ws) expect(priceOf(id)!, id).toBeGreaterThanOrEqual(priceOf(r.free)!);
       if (r.better) expect(priceOf(r.better)!).toBeGreaterThanOrEqual(priceOf(r.free)!);
     }
-    const c = Object.values(camp().characters)[0], keys = loadoutLines(c).map((l) => l.key);
-    for (const r of RACK) { expect(keys, r.id).toContain('stock:' + r.free); if (r.better) expect(keys, r.id).toContain('stock:' + r.better); }
-    // what a better weapon over the whole budget is: shown, with the reason it can't be taken
-    const over = RACK.filter((r) => r.better && priceOf(r.better)! > LOADOUT.budget);
-    expect(over.length).toBeGreaterThan(0);
+    // rules 1.55: with nothing held, the rack lists every weapon within the budget (once: a line on a counter shelf is not repeated)
+    const c = Object.values(camp().characters)[0], ls = loadoutLines(c), keys = ls.map((l) => l.key);
+    for (const r of RACK) for (const id of [r.free, ...(r.better ? [r.better] : [])]) {
+      const elsewhere = ls.some((l) => l.id === id && l.shelf !== 'rack');
+      expect(keys.includes('stock:' + id), id).toBe(priceOf(id)! <= LOADOUT.budget && !elsewhere);
+    }
+    expect(ls.filter((l) => l.price > LOADOUT.budget)).toEqual([]);
     const v = viewFor(camp(), HOST) as any; void v;
   });
   it('every archetype\'s free weapon finds its own ammunition on the menu, and each focus its cores', () => {
@@ -83,8 +85,42 @@ describe('the camp (rules 1.52)', () => {
       const g = lo(camp(), 'Kade', { op: 'pick', slot: 'weapon', id: r.free }), c = Object.values(g.characters)[0], ls = loadoutLines(c);
       expect(ls.some((l) => l.id === 'mag:' + r.free || l.id === 'rounds:' + w.ammo), r.id).toBe(true);
     }
+    // rules 1.55: cores only for a focus that burns them (`fuel`), none for no focus or an MP focus
     const c = Object.values(camp().characters)[0];
-    expect(loadoutLines(c).some((l) => l.id === 'standard_core')).toBe(true);
+    expect(loadoutLines(c).some((l) => l.id === 'standard_core')).toBe(false);
+    for (const f of LOADOUT.focuses) { const x = Object.values(lo(camp(), 'Kade', { op: 'pick', slot: 'focus', id: f }).characters)[0];
+      expect(loadoutLines(x).some((l) => l.id === 'standard_core'), f).toBe((ITEM[f] as any).focus.fuel === (ITEM.standard_core as any).fuel); }
+  });
+  it('rules 1.55: the camp offers what the character can use: nothing over the budget, no second focus, no second two-hander (another one only of a one-hander), no line twice, ammunition for what it holds', () => {
+    const picks: any[] = [...RACK.map((r) => ({ slot: 'weapon', id: r.free })), ...LOADOUT.focuses.map((f) => ({ slot: 'focus', id: f }))];
+    for (const pk of picks) {
+      const c = Object.values(lo(camp(), 'Kade', { op: 'pick', ...pk }).characters)[0], ls = loadoutLines(c);
+      expect(ls.filter((l) => l.price > LOADOUT.budget), pk.id).toEqual([]);
+      expect(new Set(ls.map((l) => l.id + '#' + l.per)).size, pk.id).toBe(ls.length);
+      if (pk.slot === 'focus') expect(ls.filter((l) => (ITEM[l.id] as any)?.focus), pk.id).toEqual([]);
+      const held = c.weapon !== 'fists' ? c.weapon : null, wl = ls.filter((l) => (l.shelf === 'rack' || l.shelf === 'stock') && WEAPON[l.id]);
+      if (held && twoHands(c, held)) { for (const l of wl) expect(twoHands(c, l.id), pk.id + ' ' + l.id).toBe(false); expect(wl.some((l) => l.id === held), pk.id).toBe(false); }
+      if (held && !twoHands(c, held) && RACK.find((r) => r.free === held)!.free && priceOf(held)! <= LOADOUT.budget) expect(ls.some((l) => l.key === 'stock:' + held) || ls.some((l) => l.id === held && l.shelf !== 'rack'), pk.id).toBe(true); // another one of a one-hander
+      const cals = new Set([held, ...packOf(c).map((x) => x.weapon)].map((id) => (WEAPON[id || ''] as any)?.ammo).filter(Boolean));
+      for (const l of ls) { const r = /^rounds:(.+)$/.exec(l.id); if (r) expect(cals.has(r[1]), pk.id + ' ' + l.id).toBe(true); }
+    }
+    // taking a pistol brings its rounds and both magazines (full and empty) onto the menu
+    let g = lo(camp(), 'Kade', { op: 'pick', slot: 'weapon', id: FREE('light_blades') });
+    const P = BETTER('pistols'), w: any = WEAPON[P];
+    expect(loadoutLines(Object.values(g.characters)[0]).some((l) => l.id === 'rounds:' + w.ammo)).toBe(false);
+    g = lo(g, 'Kade', { op: 'take', key: 'stock:' + P });
+    const ls = loadoutLines(Object.values(g.characters)[0], g.run!.loadout![Object.values(g.characters)[0].id].take);
+    expect(ls.some((l) => l.id === 'rounds:' + w.ammo)).toBe(true);
+    expect(ls.find((l) => l.id === 'mag:' + P)?.shelf).toBe('magazines');
+    expect(ls.find((l) => l.id === 'mag:' + P + ':0')?.price).toBe(emptyMagPrice(P));
+    expect(ls.some((l) => l.key === 'stock:' + P)).toBe(true); // the line taken stays listed (a second one-hander may join it)
+  });
+  it('rules 1.55: a focus that burns cores comes with four of them (focus_with), free', () => {
+    for (const f of LOADOUT.focuses) {
+      const c = Object.values(lo(camp(), 'Kade', { op: 'pick', slot: 'focus', id: f }).characters)[0];
+      const cores = packOf(c).filter((x) => x.id === 'standard_core').reduce((t, x) => t + x.qty, 0);
+      expect(cores, f).toBe((ITEM[f] as any).focus.fuel === 'core' ? 4 : 0); expect(creditsOf(c)).toBe(LOADOUT.budget);
+    }
   });
   it('ONE free weapon and ONE free focus; a gun comes loaded and with a spare (which can be left behind for nothing), a bow with one quiver', () => {
     const P = 'service_pistol';
@@ -124,7 +160,9 @@ describe('the camp (rules 1.52)', () => {
     // the shop's own lines: the gun's magazine is on the menu, at the shop's price
     expect(loadoutLines(c).find((l) => l.key === 'mag:' + FREE('smgs'))!.price).toBe(priceOf('mag:' + FREE('smgs')));
     // over the budget: refused in words, nothing changes
-    expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'stock:armour:2' })).toBe('Over the budget by ' + (priceOf('stim_injector')! + priceOf('armour:2')! - LOADOUT.budget) + ' credits (' + (priceOf('stim_injector')! + priceOf('armour:2')!) + ' of ' + LOADOUT.budget + ').');
+    g = lo(g, 'Kade', { op: 'take', key: 'stock:armour:1' });
+    const sum = priceOf('stim_injector')! + priceOf('armour:1')! + priceOf('field_kit')!;
+    expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'field_kit' })).toBe('Over the budget by ' + (sum - LOADOUT.budget) + ' credits (' + sum + ' of ' + LOADOUT.budget + ').');
     expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'field_kit', qty: -1 })).toBe('Kade has none of that to put back.');
     expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'nonsense' })).toBe('The camp doesn\'t stock that.');
   });

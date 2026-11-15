@@ -83,7 +83,7 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
       totals: Array.from({ length: o.qtyMax ?? 1 }, (_, i) => price * (i + 1)), whys: Array.from({ length: o.qtyMax ?? 1 }, (_, i) => (i ? ask(key, i + 1) : why)) };
   };
   const ask = (key: string, qty = 1) => (c ? buyProblem(g as any, c.owner, { charId: c.id, key, qty }) : 'You have no character here to buy for.');
-  const lines = counterLines(chars);
+  const lines = counterLines(c ? [c] : chars); // rules 1.55: the counter follows the character it sells to
   const shelves = SHOP_DATA.always.map((s) => ({ shelf: s.shelf, name: s.name, cards: lines.filter((l) => l.shelf === s.shelf && (!l.res || !c || classResources(c).some((x) => x.id === l.res && x.persist)))
     .map((l) => l.res ? card(l.key, 'restock:' + l.res, 'standard', linePrice(l), 1, ask(l.key), { name: 'Restock: ' + l.res.replace(/_/g, ' '), qtyMax: Math.max(1, Math.min(SHOP_DATA.max_qty, c ? restockRoom(c, l.res) : 1)) })
       : card(l.key, l.id, 'standard', linePrice(l), l.per, ask(l.key), { qtyMax: SHOP_DATA.max_qty })) })).filter((s) => s.cards.length);
