@@ -19,7 +19,7 @@
     "about": "Rules 1.52 (Leon, 14 Nov 2026: 'Survival will give you one low level melee, one low level gun, a bow, one of the 4 focus and a budget'; corrected the same day: 'only one weapon'). The camp before node 1: each character takes ONE free weapon: the most basic of a weapon archetype (`archetypes`), ONE free focus from `focuses` (either may be declined; declining gives nothing back), and spends `budget` credits on the shop's menu (`counter`, `stock`) at shop prices (credits.ts priceOf, the one price door). What is not spent is the character's starting purse. A gun comes with `gun.loaded` magazine loaded and `gun.spare` spare (a gun loaded round by round: that many magazines' worth of loose rounds); a bow with its quiver full (its own magazine in weapons.json). A core-fuelled focus comes with `focus_with`. Everything else is bought from the shop's own menu (`counter`, `stock`).",
     "budget": 300,
     "archetypes": {"about": "Leon, 14 Nov 2026 (binding): \"freelist get the most basic one of all the weapon achetype, then we put the same weapon type but better in the rack shop, and identical weapon too, so you can dualwield or upgrade your choice\". An archetype is a weapons.json family as the data groups it (`family` its mastery_family, `category` its category; `skip` ids that are not gear one carries). Its free weapon is its cheapest weapon by priceOf (Standard grade); the rack holds that weapon again (a second to carry or dual-wield) and the next weapon up by price in the archetype (one step). Computed by the engine (run/loadout.ts archetypeWeapons), checked by tools/validate.py. Families left out are in `left_out`.", "list": [{"id": "light_blades", "name": "Knives and light blades", "family": "light_blades", "category": "light_melee"}, {"id": "heavy_melee", "name": "Heavy blades, axes and polearms", "family": "heavy_melee", "category": "heavy_melee"}, {"id": "unarmed", "name": "Fist weapons", "family": "unarmed", "category": "unarmed", "skip": ["fists"]}, {"id": "pistols", "name": "Pistols", "family": "sidearms", "category": "pistol"}, {"id": "revolvers", "name": "Revolvers", "family": "sidearms", "category": "revolver"}, {"id": "smgs", "name": "Submachine guns", "family": "smgs", "category": "smg"}, {"id": "rifles", "name": "Rifles", "family": "rifles", "category": "rifle"}, {"id": "shotguns", "name": "Shotguns", "family": "shotguns", "category": "shotgun"}, {"id": "bows", "name": "Bows and crossbows", "family": "bows", "category": "bow"}], "left_out": {"heavy": "launchers, flamers and belt-fed or rotary guns: support weapons, not a first weapon (a call for Leon)", "mana_arms": "the focus weapons (the Evoker blade, the Emanator katana and gauntlet, the core rifle...): each is a focus and a weapon at a focus-weapon's price (a call for Leon)", "thrown": "grenades and charges: on the Thrown shelf at the shop's price"}, "provisional": true},
-    "gun": {"loaded": 1, "spare": 1},
+    "gun": {"loaded": 1, "spare": 2},
     "bow": {"spare": 0},
     "focuses": ["evoker", "emanator", "attuner", "visualizer"],
     "focus_with": {"evoker": [{"id": "standard_core", "qty": 1}], "visualizer": [{"id": "standard_core", "qty": 1}]},
@@ -102,17 +102,20 @@
   },
   "xp": { "about": "Rules 1.41 (spec section 3.1): f(d) = base + per_depth x (d - 1) to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault. Rules 1.54 item 9: base 10, per_depth 2, boss 5 (level 3 after stage 1's Boss).", "base": 10, "per_depth": 2, "elite": 1.5, "boss": 5, "cache": 0.25, "vault_guard": 1.5, "vault": 0, "provisional": true },
   "credits": { "about": "Rules 1.41 (spec section 3.1): c(d) = base + per_depth x d to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault.", "base": 80, "per_depth": 20, "elite": 1.5, "boss": 2, "cache": 1.5, "vault_guard": 1.5, "vault": 2, "provisional": true },
-  "ammo_pack": { "about": "Rules 1.41, 1.51 (spec rules 23, 52): the supply pack. After a won fight (or at a cache or the vault) each character gets, with n this many by the node: n magazines' worth of rounds for every gun it carries (x the stat run_ammo); with a focus of a kind in `core_doors` carried, after a fight the spare cores it burnt in it back (none burnt, none back), at most `cores_max` x n, and at a cache or the vault `cores` x n; with a focus of a kind in `mp_doors` carried, `mp_share` x n of its max MP (cores and MP x the stat run_supply).", "fight": 1, "elite": 2, "boss": 3, "cache": 1, "vault_guard": 2, "vault": 1, "cores": 1, "cores_max": 2, "core_doors": ["evoker", "visualizer"], "mp_share": 0.3, "mp_doors": ["emanator", "attuner"], "provisional": true },
+  "ammo_pack": { "about": "Rules 1.41, 1.51 (spec rules 23, 52): the supply pack. After a won fight (or at a cache or the vault) each character gets, with n this many by the node: n magazines' worth of rounds for every gun it carries (x the stat run_ammo); with a focus of a kind in `core_doors` carried, after a fight the spare cores it burnt in it back (none burnt, none back), at most `cores_max` x n, and at a cache or the vault `cores` x n; with a focus of a kind in `mp_doors` carried, `mp_share` x n of its max MP (cores and MP x the stat run_supply). Rules 1.55 item 1 (Leon, 15 Nov 2026: \"no refill mag between fight\"): n is 0 after every fight (no magazines, no burnt cores back, no MP share); a cache and the vault's chest keep theirs.", "fight": 0, "elite": 0, "boss": 0, "cache": 1, "vault_guard": 0, "vault": 1, "cores": 1, "cores_max": 2, "core_doors": ["evoker", "visualizer"], "mp_share": 0.3, "mp_doors": ["emanator", "attuner"], "provisional": true },
   "rewards": {
     "about": "Rules 1.41, 1.54 (spec rule 26, section 14 R7): the pick after a won fight: `offer` weapons by where it is made (the gate reads the Elite's), the first for the character's own door or weapon category; rarity by node kind, capped by `ceiling` (by stage, the last repeats); price at most base + per_depth x d + per_stage x (s - 1), x elite or boss. Or, where `materials.at` names, the Materials card instead: each of `materials.items` at ceil(C / per_credits) for the node's credits C (nodeCredits), into the pack whole (packAdd, Core Rules item 4111). Credits instead is retired (rules 1.54 item 2); an offer saved before keeps its credits choice.",
     "offer": { "fight": 1, "elite": 1, "boss": 1, "vault_guard": 1, "vault": 3, "crate": 3 },
+    "weapon_card": { "about": "Rules 1.55 item 3: the chance a pick made here holds the One-weapon card, rolled once for the node (every player the same); otherwise the Materials card alone. Where not named: always.", "fight": 0.2 },
     "materials": {
+      "about": "Rules 1.55 items 5 and 6: gunpowder and casings at ceil(C x mult / per_credits), C an ordinary fight's credits at the node's depth and stage (an Elite x2, a Boss x4: about one, two and four fights of one gunner's .32 rounds, 2 rounds a pair); mana residue only by `by` (its chance, absent: certain, and a [min, max] qty).",
       "at": ["fight", "elite", "boss", "vault_guard"],
-      "items": [{ "item": "gunpowder", "per_credits": 2 }, { "item": "casing", "per_credits": 2 }, { "item": "mana_residue", "per_credits": 20 }]
+      "mult": { "elite": 2, "boss": 4, "vault_guard": 2 },
+      "items": [{ "item": "gunpowder", "per_credits": 16 }, { "item": "casing", "per_credits": 16 }, { "item": "mana_residue", "by": { "fight": { "chance": 0.25, "qty": [1, 2] }, "elite": { "qty": [2, 4] }, "boss": { "qty": [8, 12] }, "vault_guard": { "qty": [8, 12] } } }]
     },
     "rarity": {
-      "fight": { "standard": 75, "fine": 25 },
-      "elite": { "fine": 60, "masterwork": 35, "relic": 5 },
+      "fight": { "standard": 90, "fine": 10 },
+      "elite": { "standard": 75, "fine": 20, "masterwork": 5 },
       "boss": { "masterwork": 70, "relic": 25, "celestial": 5 }
     },
     "ceiling": ["fine", "masterwork", "relic"],
@@ -121,8 +124,10 @@
   },
   "drops": {
     "about": "Rules 1.54 item 3 (spec section 14 R8): what a Survival foe drops. Every foe a Survival fight makes carries the loot door's flag that turns off what a foe always drops (its weapon, magazines and loose rounds, a Boss's notable thing) and rolls its kind's table as before; besides, given (outside the loot cap): `gun` from a foe whose weapon has a calibre, and by the foe's table (loot_tables.json: a caster's, a machine's) `by_table`. A qty is a [min, max] range.",
-    "gun": [{ "item": "gunpowder", "qty": [2, 5] }, { "item": "casing", "qty": [2, 5] }],
-    "by_table": { "caster": [{ "item": "mana_residue", "qty": [1, 2] }], "machine": [{ "item": "mana_residue", "qty": [1, 2] }] },
+    "gun": [{ "item": "gunpowder", "qty": [1, 3], "chance": 0.15 }, { "item": "casing", "qty": [1, 3], "chance": 0.15 }],
+    "by_table": { "caster": [{ "item": "mana_residue", "qty": [1, 1], "chance": 0.25 }] },
+    "kind_table": false,
+    "rules_1_55": "Rules 1.55 item 8 (Leon, 15 Nov 2026): with the walk after a fight every pile is income, so a Survival foe leaves only rare things: `kind_table` false (its kind's loot table is not rolled), a gun's foe gunpowder or casings with a small chance, a caster mana residue 1 with a chance, nothing else. Credits on the ground need a pile entry the engine does not have (no credits item): not built.",
     "provisional": true
   },
   "nodes": {
@@ -139,7 +144,7 @@
   },
   "tips": {
     "about": "Rules 1.41 (spec 8.2): the path map's hover card for each kind of node, to the player: what you do there and what you get; the engine adds the XP and credits it pays.",
-    "fight": "A fight. Win for XP, credits and ammunition, then take the materials (gunpowder, casings, mana residue) or one weapon.",
+    "fight": "A fight. Win for XP and credits, then take the materials (gunpowder and casings, now and then mana residue) or, sometimes, one weapon.",
     "elite": "A hard fight: an Elite and its line. Better pay and a better pick.",
     "gate": "The Gate. Every trail passes it: an Elite and its line. Better pay and a better pick.",
     "boss": "The stage's Boss. The best pay and pick of the stage. Win to clear the stage.",

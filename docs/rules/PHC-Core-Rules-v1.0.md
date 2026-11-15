@@ -9461,3 +9461,48 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     data; the "?" pop-up shows the ten steps, creation and level-up show the next point's line. Rules text never under
     13 px; a row at most about 60 characters. No rule changed. PROVISIONAL (the layout).
 4120. **Items 4100 to 4120 are rules 1.54's.**
+
+### Rules 1.55 (15 Nov 2026)
+
+Survival's rewards and drops for release 0.28.1 (Leon, 15 Nov 2026: "Naww wtf, no refill mag between fight alright";
+"check the combat drop tables, no essesive weapon and mana residue, make what rare actually rare"; and, with the walk
+after a fight where every pile is picked up, "make them drop credits and other things is rare"). A later revision
+overrides the body and the earlier ones; every number here is PROVISIONAL.
+
+4121. **No free magazines (rules 1.55 item 1):** the supply pack (`ammo_pack`) is 0 after every fight (ordinary, Elite,
+    gate, vault guard, Boss): no magazines, no burnt cores back, no MP share; the REWARDS line no longer names it. A
+    cache and the vault's chest keep theirs (1). A gun picked from a fight's card comes without spare magazines (its
+    share was the pack's). Ammunition comes from the camp, shops, making from materials, and picking magazines back
+    up. Supersedes rule 23's pack after a fight and rules 1.51's cores and MP after a fight. PROVISIONAL.
+4122. **The gunner's start (rules 1.55 item 2):** `loadout.gun.spare` 1 → 2 (one loaded, two spare). The arithmetic:
+    a stage-1 ordinary fight lasts about 3.1 rounds through the reducer (survival-loot.test.ts, measured); a pistol
+    firing singles (2 AP) is 3 rounds a turn, about 9 a fight, so 12 + 2 x 12 = 36 rounds is about 3.9 fights; an
+    SMG on Bursts (3 rounds, 3 AP) 6 a turn, about 19 a fight, 30 + 60 = 90 about 4.7; the lever carbine 8 + 16 = 24
+    about 2.6. About three ordinary fights, not more, before the camp's budget is spent on rounds. PROVISIONAL.
+4123. **The weapon card is rare at ordinary fights (rules 1.55 item 3):** `rewards.weapon_card.fight` 0.2: the chance
+    an ordinary fight's pick holds the One-weapon card, rolled once for the node (`rngFor(seed, node + '#weapon-card')`,
+    every player the same); otherwise the Materials card alone (still a pick). Elites, the gate, a vault guard, a Boss,
+    a cache and the vault always offer one. PROVISIONAL.
+4124. **Rarity means rare (rules 1.55 item 4):** `rewards.rarity.fight` standard 75 / fine 25 → standard 90 / fine 10;
+    `rewards.rarity.elite` fine 60 / masterwork 35 / relic 5 → standard 75 / fine 20 / masterwork 5 (stage 1, capped
+    at Fine: Fine 25%); `boss` and `ceiling` unchanged (stage 1 Fine, stage 2 Masterwork, stage 3 Relic), so a
+    Masterwork comes from a Boss, the vault or stage 2 on, a Relic from the vault (stage 2 on) and Bosses of stage 3 on.
+    PROVISIONAL.
+4125. **Mana residue is scarce (rules 1.55 item 5):** the Materials card's residue by `by`: an ordinary fight a chance
+    of 0.25, then 1 to 2; an Elite or the gate 2 to 4; a Boss or a vault guard 8 to 12 (10 residue press one core,
+    100 credits). Was ceil(C / 20) on every card (5 at the first fight, 38 at a stage-1 Boss). PROVISIONAL.
+4126. **Gunpowder and casings (rules 1.55 item 6):** each at ceil(C x mult / 16), C an ordinary fight's credits at the
+    node's depth and stage (`materials.mult`: Elite and gate 2, vault guard 2, Boss 4). Was ceil(C / 2) of the node's
+    own credits (50 + 50 at the first fight). The arithmetic: a pair makes 2 .32 rounds (recipes.json), so the first
+    fight's 7 + 7 is 14 rounds, a depth-5 fight's 12 + 12 is 24, about one fight of an SMG on Bursts (19) or two of a
+    pistol (9); an Elite twice, a Boss four times. The card's "sells for" stays the one sell rule's. PROVISIONAL.
+4127. **What a killed foe leaves (rules 1.55 item 8):** measured through the reducer before the change (20 stage-1
+    fights a kind, solo gunner): no foe weapon or magazine was on the ground (rules 1.54 item 3 already turned them
+    off); the ground sold for 6.3% of an ordinary fight's pay, 5.1% of an Elite's, 6.8% of a Boss's, from the kind
+    tables (cores, spare parts, stims, personal effects) and the given materials (gunpowder and casings 2 to 5 each from
+    every gun foe, residue 1 to 2 from every caster and machine). Now `drops.kind_table` false (the kind's table is
+    not rolled for a Survival foe), a gun foe gunpowder 1 to 3 and casings 1 to 3 each with a chance of 0.15, a caster
+    mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
+    a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
+    unchanged. PROVISIONAL.
+4128. **Items 4121 to 4128 are rules 1.55's.**
