@@ -34,6 +34,8 @@ art/
     weapons/<weapon_id>.svg        monoline weapon icons, one per data/weapons.json id (60); README.md is the spec
     armour/<item_id>.svg           monoline armour and shield icons, one per data/items.json armour/shield id (19)
     focus/<item_id>.svg            monoline magic-focus icons: the Evoker and the Emanator, both gloves (2)
+    figments/figment-<id>.svg      monoline Figment icons, one per figments.json row's `icon` (five forms, the Scrap Turret,
+                                   Picture: 7); catalogue `figment_icons`; the painted portraits are still wanted (ART-REQUESTS C6)
   emblems/
     ahoc/ahoc-seal-white.png       the AHOC seal used in the UI (+ the red 2020 original)
     patrons/<patron_id>.png        the eight patron marks

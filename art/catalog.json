@@ -27413,5 +27413,98 @@
         "24": "art/icons/banners/exports/24/fight-lost.png"
       }
     }
+  },
+  "figment_icons": {
+    "figment-double": {
+      "id": "figment-double",
+      "label": "Double (Figment line icon)",
+      "path": "art/icons/figments/figment-double.svg",
+      "sha256": "7ee18cf04f021a40b82c3ee33514d75652649cbc38c0c8180fada8d7f2354758",
+      "format": "svg",
+      "mode": "line",
+      "grid": 64,
+      "stroke": 2,
+      "ink": "currentColor",
+      "status": "in-place",
+      "painted_portrait": "wanted later (art/briefs/ART-REQUESTS.md)"
+    },
+    "figment-eye": {
+      "id": "figment-eye",
+      "label": "Eye (Figment line icon)",
+      "path": "art/icons/figments/figment-eye.svg",
+      "sha256": "1a2d5bbf9c20bb1d605a9fd898cf7c2aa43a00d2d93fbba47901e9e3bcc42bb4",
+      "format": "svg",
+      "mode": "line",
+      "grid": 64,
+      "stroke": 2,
+      "ink": "currentColor",
+      "status": "in-place",
+      "painted_portrait": "wanted later (art/briefs/ART-REQUESTS.md)"
+    },
+    "figment-wall": {
+      "id": "figment-wall",
+      "label": "Wall (Figment line icon)",
+      "path": "art/icons/figments/figment-wall.svg",
+      "sha256": "a664f54fe490cb8b970533b4cbddd0f483516dbf8d77f4ee713a69d987214075",
+      "format": "svg",
+      "mode": "line",
+      "grid": 64,
+      "stroke": 2,
+      "ink": "currentColor",
+      "status": "in-place",
+      "painted_portrait": "wanted later (art/briefs/ART-REQUESTS.md)"
+    },
+    "figment-beast": {
+      "id": "figment-beast",
+      "label": "Beast (Figment line icon)",
+      "path": "art/icons/figments/figment-beast.svg",
+      "sha256": "ad82b9e2b5f90270e2dd55f19c635ad1d61e621168bcb7df3f03df9719393003",
+      "format": "svg",
+      "mode": "line",
+      "grid": 64,
+      "stroke": 2,
+      "ink": "currentColor",
+      "status": "in-place",
+      "painted_portrait": "wanted later (art/briefs/ART-REQUESTS.md)"
+    },
+    "figment-blade": {
+      "id": "figment-blade",
+      "label": "Blade (Figment line icon)",
+      "path": "art/icons/figments/figment-blade.svg",
+      "sha256": "b4c4d699b7367f3a5ba483d137a0bd7010abbef2c8fe58b9eadb35135e809fb3",
+      "format": "svg",
+      "mode": "line",
+      "grid": 64,
+      "stroke": 2,
+      "ink": "currentColor",
+      "status": "in-place",
+      "painted_portrait": "wanted later (art/briefs/ART-REQUESTS.md)"
+    },
+    "figment-scrap-turret": {
+      "id": "figment-scrap-turret",
+      "label": "Scrap Turret (Figment line icon)",
+      "path": "art/icons/figments/figment-scrap-turret.svg",
+      "sha256": "ee3c741a6b83016325ec989f02f3caaf6ebd41ee1022e3a2aabce7fd80fa4373",
+      "format": "svg",
+      "mode": "line",
+      "grid": 64,
+      "stroke": 2,
+      "ink": "currentColor",
+      "status": "in-place",
+      "painted_portrait": "wanted later (art/briefs/ART-REQUESTS.md)"
+    },
+    "figment-picture": {
+      "id": "figment-picture",
+      "label": "Picture (Figment line icon)",
+      "path": "art/icons/figments/figment-picture.svg",
+      "sha256": "9246c874909fd9a9bedda2c086b6dc96f16a6e3b33fe7a5cf902e8681ac93303",
+      "format": "svg",
+      "mode": "line",
+      "grid": 64,
+      "stroke": 2,
+      "ink": "currentColor",
+      "status": "in-place",
+      "painted_portrait": "wanted later (art/briefs/ART-REQUESTS.md)"
+    }
   }
 }

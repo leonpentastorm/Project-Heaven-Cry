@@ -61,7 +61,7 @@
   },
   "forms": [
     {
-      "id": "double", "name": "Double", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
+      "id": "double", "name": "Double", "icon": "figment-double", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
       "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
       "hp": 30, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
       "actions": ["move"], "verbs": ["let_go"],
@@ -71,7 +71,7 @@
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "eye", "name": "Eye", "owned_kind": "figment", "turn": "owner", "eyes": true,
+      "id": "eye", "name": "Eye", "icon": "figment-eye", "owned_kind": "figment", "turn": "owner", "eyes": true,
       "opens": { "skill": "visualization", "min": 3 }, "charge": 2,
       "hp": 15, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
       "actions": ["move"], "verbs": ["figment_stare", "let_go"],
@@ -81,7 +81,7 @@
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "wall", "name": "Wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": "full",
+      "id": "wall", "name": "Wall", "icon": "figment-wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": "full",
       "opens": { "skill": "visualization", "min": 3 }, "charge": 3,
       "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
       "actions": ["move"], "verbs": ["let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
@@ -91,7 +91,7 @@
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "beast", "name": "Beast", "owned_kind": "figment", "turn": "owner", "eyes": false,
+      "id": "beast", "name": "Beast", "icon": "figment-beast", "owned_kind": "figment", "turn": "owner", "eyes": false,
       "opens": { "skill": "visualization", "min": 5 }, "charge": 4,
       "hp": 45, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 3, "weapon": "figment_claws",
       "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "let_go"],
@@ -101,7 +101,7 @@
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "blade", "name": "Blade", "owned_kind": "figment", "turn": "owner", "eyes": false,
+      "id": "blade", "name": "Blade", "icon": "figment-blade", "owned_kind": "figment", "turn": "owner", "eyes": false,
       "opens": { "skill": "visualization", "min": 5 }, "charge": 3,
       "hp": 25, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 2, "weapon": "figment_edge",
       "actions": ["move"], "verbs": ["figment_cut", "let_go"], "hold": { "reaction": "attack" },
@@ -112,7 +112,7 @@
     }
   ],
   "turret": {
-    "id": "scrap_turret", "name": "Scrap Turret", "owned_kind": "machine", "kind": "turret", "turn": "auto", "eyes": true,
+    "id": "scrap_turret", "name": "Scrap Turret", "icon": "figment-scrap-turret", "owned_kind": "machine", "kind": "turret", "turn": "auto", "eyes": true,
     "hp": 40, "defense": 10, "armour": 5, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol", "rounds": 3,
     "auto": { "verb": "shot", "target": "nearest_foe" }, "tags": ["electronic"],
     "glyph": "⌖",
@@ -160,7 +160,7 @@
   "trait_charge": 1,
   "items": [
     {
-      "id": "picture", "name": "Picture", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
+      "id": "picture", "name": "Picture", "icon": "figment-picture", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP and the form's charge (more for each trait) from your Visualizer. A Figment of a ready design or a bare form you have opened appears on a free tile your side sees within your projection range. Needs the Visualizer in hand.",
       "effects": [{ "op": "grant_action", "action": "picture", "ap": 2, "uses": "at_will", "pick": "forms", "pick_label": "What to picture", "reach": { "tile": true } }],
       "adjudication": "engine", "provisional": true

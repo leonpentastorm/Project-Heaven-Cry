@@ -8,7 +8,7 @@ import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
   packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
-import { setFigmentDesign, dropFigmentDesign } from './figments';
+import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
@@ -957,7 +957,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'figments/design': {
       // Rules 1.34: a Figment design (a form and its traits, named) is made out of a fight, as an Outburst's
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
-      if (g.phase === 'combat') fail('Design Figments out of combat.');
+      if (g.phase === 'combat') fail(FIG_DESIGN_IN_FIGHT);
       if (a.drop) { dropFigmentDesign(c!, a.drop); return; }
       if (!a.design) fail('Name the design.');
       const why = setFigmentDesign(c!, { ...a.design!, id: a.design!.id || 'f' + (g.seq += 1) }); if (why) fail(why);

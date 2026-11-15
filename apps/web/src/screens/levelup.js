@@ -17,6 +17,8 @@ import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureSt
 import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
+import { figmentLadderView } from '@engine';
+import { figmentIconUri, FIG_LINE } from '../game/figmentIcons';
 
 const PERK_ICON = {};
 D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ICON[p.id] = p.icon; }); if (s.ep.mastered) PERK_ICON[s.ep.mastered.id] = s.ep.mastered.icon; });
@@ -30,6 +32,20 @@ const dia = (n, filled, color) => Array.from({ length: n }, (_, i) => ({ style: 
 const chip = (ok) => 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (ok ? '#6FEA77' : '#FFFFFF') + '; color: ' + (ok ? '#6FEA77' : '#FFFFFF');
 /** A skill's mastery steps (M1 to M4, then the Mastered perk) where its data puts them: the road map's steps (shared.js). */
 const masteryOf = (id) => roadMap(id).steps.filter((s) => s.step);
+/** Rules 1.34, 0.28.2: the Figments door's card (the skill figments.json visualizer.door names) says what its points
+ *  open (the engine's ladder view): "New" with the forms' icons when these points reached a step, else the next step,
+ *  locked with its points. Every other skill: none. */
+export function figLevelUp(skillId, p) {
+  const L = figmentLadderView(p || 0); if (skillId !== L.door) return { has: false, forms: [] };
+  const just = L.latest && L.latest.points === p ? L.latest : null, nx = L.next;
+  const look = (st, ink) => st.forms.map((f) => ({ key: f.id, name: f.name, icon: figmentIconUri(f.icon, ink), title: f.name + ': ' + f.text }));
+  if (!just && !nx) return { has: false, forms: [] };
+  const st = just || nx;
+  return { has: true, state: just ? 'new' : 'next', head: just ? 'NEW · FIGMENTS AT VISUALIZATION ' + p + (st.forms.length ? ': ' + st.forms.map((f) => f.name).join(', ') : '') : 'LOCKED · FIGMENTS AT VISUALIZATION ' + nx.points,
+    headInk: just ? '#FFFFFF' : '#A3AEC2', forms: look(st, just ? FIG_LINE : '#7F8BA1'), hasForms: st.forms.length > 0, text: st.text,
+    hasNext: !!(just && nx), next: just && nx ? 'Next, at Visualization ' + nx.points + ': ' + nx.text : '',
+    style: 'display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; ' + (just ? 'border: 1px solid ' + FIG_LINE + '; background: rgba(83, 148, 172, 0.18)' : 'border: 1px dashed #2E3A50') };
+}
 // Who runs it, always in words (colour pairs with the word): solid for the engine, dashed for the Narrator.
 const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
 const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
@@ -118,7 +134,7 @@ export class LevelUpLogic extends DCLogic {
       return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + ink, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (free ? ' phc-lu-step' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }), raiseStyle: raiseStyle(!why, ink), raiseLabel: 'Raise ' + s.name,
-        hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'Next point (' + np + '): ' + nxt, nextAt: np,
+        hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'Next point (' + np + '): ' + nxt, nextAt: np, fig: figLevelUp(s.id, p),
         marks: steps.map((t) => ({ key: t.n, label: t.step === 'mastered' ? '★' : t.step, title: (t.step === 'mastered' ? 'Mastered: ' + t.perks.map((q) => q.name).join('') : t.step + ': a perk step, ' + t.perks.map((q) => q.name).join(' or ')) + ' at ' + t.n + ' points',
           style: 'flex: 1; text-align: center; padding: 1px 0; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; ' + (p >= t.n ? 'background: ' + ink + '; color: #0A0D13' : t === reach ? 'border: 1px solid ' + ink + '; color: ' + ink : 'border: 1px solid #2E3A50; color: ' + LOCKED) })),
         hasReach: !!reach, reachAt: reach ? reach.n : 0, reach: reach ? (reach.step === 'mastered' ? '★ at ' + reach.n + ': ' : reach.step + ' at ' + reach.n + ': ') + reach.perks.map((q) => q.name).join(reach.step === 'mastered' ? '' : ' or ') : '',
