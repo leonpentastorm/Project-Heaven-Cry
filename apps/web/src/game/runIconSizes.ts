@@ -1,5 +1,5 @@
 // The run's icon sizes in one table (rules 1.54 item 11, survival-spec 14.1 R5 and 14.7: "icons larger"; Leon, 14 Nov
-// 2026). CSS pixels. A path-map marker's glyph is 0.6 of its marker (the Boss's 0.62), never under 32 px; a label 12 px.
+// 2026). CSS pixels. A path-map marker's glyph is 0.6 of its marker (the Boss's 0.62), never under 32 px; a label 13 px.
 // Every run screen reads its sizes here: a size typed beside a component is a defect, as a number in a rule is.
 export const ICON = {
   /** the path map's markers, by kind (were 36 / 42 / 40 / 50 / 64 / 44: fight and the like / a fork / the vault's spur /
@@ -9,8 +9,8 @@ export const ICON = {
   glyphShare: 0.6, bossGlyphShare: 0.62, glyphMin: 32,
   /** the camp's glyph on the path map */
   campGlyph: 32,
-  /** the words under the markers (were 10; the Boss's 12) */
-  label: 12, bossLabel: 13,
+  /** the words under the markers (were 10, then 12; the Boss's 12, then 13; Leon, 15 Nov: nothing under 13 px) */
+  label: 13, bossLabel: 14,
   /** the legend's glyphs (not named by R5: unchanged) */
   legend: 16,
   /** the reward card's weapon icon (was 52) */
@@ -19,7 +19,8 @@ export const ICON = {
   material: 40,
   /** a held boon's icon in the run board */
   boonHeld: 24,
-  /** the path map's width in the middle column (its height is 16:9 of it); a narrower middle scrolls it sideways */
+  /** the path map's width at scale 1 (its height is 16:9 of it): a wider middle scales the whole map up to fill it (its
+   * height capped so the legend and the hint stay on screen); a narrower middle scrolls it sideways */
   pathMap: 900,
   /** the Boss's glyph on the right panel's small map */
   miniGlyph: 14,

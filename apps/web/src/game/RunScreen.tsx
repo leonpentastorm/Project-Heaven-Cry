@@ -167,7 +167,7 @@ export function RunScreen() {
       ) : null}
       <section aria-label="Path map" style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
         <PathMap v={v} onPick={pick} />
-        <span data-phc-map-hint="" style={{ fontSize: 12, color: ink.muted }}>{v.solo ? 'Click a lit stop to go there. Hover any stop to see what it holds.' : 'Click a lit stop. At a fork it marks your choice, and the squad goes when everyone has marked. Hover any stop to see what it holds.'}</span>
+        <span data-phc-map-hint="" style={{ fontSize: 13, color: ink.muted, textAlign: 'center' }}>{v.solo ? 'Click a lit stop to go there. Hover any stop to see what it holds.' : 'Click a lit stop. At a fork it marks your choice, and the squad goes when everyone has marked. Hover any stop to see what it holds.'}</span>
       </section>
     </div>
   );

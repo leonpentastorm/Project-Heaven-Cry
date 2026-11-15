@@ -125,6 +125,24 @@ await p.locator('[data-phc-camp-more="stock:' + KN + '"]').click(); await settle
 ok('a second weapon from the rack at its price (' + knife + '): it goes in the pack', (await me0()).pack.some((x) => x.weapon === KN) && knife === WPN[KN].price_credits);
 await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
 await sidePanels(p, 'the camp');
+// Leon, 15 Nov: the camp's top bar (the budget, Next) stays in sight however far the camp is scrolled; nothing on a card
+// spills (a name, a stat row: its scrollWidth inside its box); two cards a family ("another one" at the free one's foot);
+// the families use the width (no family grid leaves more than a card's width empty on the right)
+const campOverflow = () => p.evaluate(() => { const bad = []; for (const e of document.querySelectorAll('[data-phc-camp-name], [data-phc-camp-stats] dt, [data-phc-camp-stats] dd, [data-phc-camp-card], [data-phc-camp-free], [data-phc-startboon]')) if (e.scrollWidth > e.clientWidth + 1) bad.push((e.textContent || '').slice(0, 24)); return bad; });
+for (const [w, hh] of [[1280, 720], [1920, 1080]]) {
+  await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
+  const bad = await campOverflow();
+  ok('the camp at ' + w + ': no card\'s name or stat row overflows its box' + (bad.length ? ' (' + bad.join(' | ') + ')' : ''), !bad.length);
+  const fam = await p.evaluate(() => [...document.querySelectorAll('[data-phc-camp-rack]')].map((f) => f.querySelectorAll('.phc-camp-pair > *').length));
+  const gap = await p.evaluate(() => { const g = document.querySelector('.phc-camp-families'), r = g.getBoundingClientRect(); let right = 0, card = 0; for (const k of g.children) { const b = k.getBoundingClientRect(); if (b.top - r.top < 5) { right = Math.max(right, b.right); card = b.width; } } return { empty: r.right - right, card }; });
+  ok('the camp at ' + w + ': each weapon family two cards at most (' + fam.join('') + '), the first row of families fills the width (' + Math.round(gap.empty) + ' px empty)', fam.every((n) => n >= 1 && n <= 2) && gap.empty < gap.card);
+  const bar = await p.evaluate(async () => { const s = document.querySelector('[data-phc-camp]').parentElement; s.scrollTop = s.scrollHeight; await new Promise((r) => setTimeout(r, 300));
+    const b = document.querySelector('[data-phc-camp-bar]').getBoundingClientRect(), c = s.getBoundingClientRect(), hit = document.elementFromPoint(b.left + 20, b.top + b.height / 2);
+    const next = document.querySelector('[data-phc-camp-next]')?.getBoundingClientRect(); const out = { scrolled: s.scrollTop, top: b.top - c.top, hit: !!hit?.closest('[data-phc-camp-bar]'), next: !!next && next.top >= c.top && next.bottom <= c.bottom };
+    s.scrollTop = 0; return out; });
+  ok('the camp at ' + w + ': scrolled to its end (' + bar.scrolled + ' px), the top bar is still at the top, in front, with Next in sight', bar.scrolled > 0 && Math.abs(bar.top) < 2 && bar.hit && bar.next);
+}
+await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 const kept = (await me0()).credits;
 // the starting boon: the camp's second step, three large cards offered by what the loadout holds
 ok('Ready waits for the starting boon: the button reads Next', await p.locator('[data-phc-camp-next]').count() === 1 && !(await p.locator('[data-phc-camp-ready]').count()));
@@ -136,6 +154,14 @@ await act({ type: 'run/move', node: (await run()).nodes.find((n) => n.depth === 
 ok('the map waits at the camp (a stop asked for is refused)', (await run()).state === 'loadout' && (await run()).at === null);
 const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0[0];
 await p.locator('[data-phc-startboon="' + pickId + '"]').click(); await settle(p, 300);
+for (const [w, hh] of [[1280, 720], [1920, 1080]]) { // the boon step: the cards centred, nothing spills; at 1080 Carrying in sight
+  await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
+  const bad = await campOverflow(), m = await p.evaluate(() => { const t = document.querySelector('[data-phc-camp-take]').getBoundingClientRect(), cs = [...document.querySelectorAll('[data-phc-startboon]')].map((e) => e.getBoundingClientRect());
+    const l = Math.min(...cs.map((c) => c.left)), r = Math.max(...cs.map((c) => c.right)); return { off: Math.abs((l - t.left) - (t.right - r)), w: Math.min(...cs.map((c) => c.width)), carry: document.querySelector('[data-phc-camp-carry]').getBoundingClientRect().bottom, vh: innerHeight }; });
+  ok('the starting boon at ' + w + ': the cards centred (' + Math.round(m.off) + ' px off), each ' + Math.round(m.w) + ' px wide, no text spills' + (bad.length ? ' (' + bad.join(' | ') + ')' : '') + (hh >= 1080 ? ', Carrying in sight' : ''),
+    !bad.length && m.off < 24 && m.w >= 280 && (hh < 1080 || m.carry <= m.vh));
+}
+await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 ok('a starting boon chosen (' + pickId + '): marked, given when the camp closes', (await pick0()).boon === pickId && !((await me0()).relics || []).includes(pickId) && await p.locator('[data-phc-camp-ready]').count() === 1);
 await p.locator('[data-phc-camp-ready]').click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
@@ -175,12 +201,18 @@ ok('a run offers no area map: no AREA MAP button (' + areaMap.button + '), and M
 await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
 // rules 1.49 (build step 10): the map always fits its frame: every marker, its word and the camp inside the map's frame
 // (the vault's guard and chest were clipped by the frame's bottom at 1280 x 720), at three screen sizes
-const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800], [1920, 1080]]) {
+const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800], [1920, 1080], [2560, 1080]]) {
   await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
   const out = await p.evaluate(() => { const f = document.querySelector('[data-phc-pathmap]')?.getBoundingClientRect(); if (!f) return ['no map'];
     const bad = []; for (const n of document.querySelectorAll('[data-phc-node], [data-phc-node-camp]')) for (const e of [n, ...n.querySelectorAll('span')]) { const b = e.getBoundingClientRect(); if (!b.width) continue;
       if (b.left < f.left - 0.5 || b.right > f.right + 0.5 || b.top < f.top - 0.5 || b.bottom > f.bottom + 0.5) { bad.push(n.getAttribute('data-phc-node') || 'camp'); break; } } return bad; });
-  ok('rules 1.49: ' + when + ' at ' + w + ' x ' + hh + ': every marker and its word inside the map\'s frame, the vault\'s spur too' + (out.length ? ' (outside: ' + out.join(', ') + ')' : ''), !out.length); }
+  ok('rules 1.49: ' + when + ' at ' + w + ' x ' + hh + ': every marker and its word inside the map\'s frame, the vault\'s spur too' + (out.length ? ' (outside: ' + out.join(', ') + ')' : ''), !out.length);
+  // Leon, 15 Nov: the map fills its box: the layer (markers, trails) is the backdrop's box exactly, and it fills 90% of the
+  // middle's width or reaches the height cap (the legend and the hint still on screen); a frame never wider than its map
+  const fill = await p.evaluate(() => { const r = (s) => document.querySelector(s)?.getBoundingClientRect(); const m = r('[data-phc-pathmap]'), a = r('[data-phc-pathmap-art]') || r('[data-phc-pathmap-box]'), sc = r('[data-phc-pathmap-scroll]'), sec = r('[aria-label="Path map"]'), hint = r('[data-phc-map-hint]');
+    return { same: Math.abs(m.left - a.left) < 1.5 && Math.abs(m.top - a.top) < 1.5 && Math.abs(m.width - a.width) < 1.5 && Math.abs(m.height - a.height) < 1.5, share: Math.min(m.width, sc.width) / sec.width, capped: hint.bottom <= innerHeight + 1 && hint.bottom >= innerHeight - 60, frameOver: sc.width - m.width, hintOn: hint.bottom <= innerHeight + 1 }; });
+  ok('the path map at ' + w + ' x ' + hh + ': the layer is the backdrop\'s box, ' + Math.round(fill.share * 100) + '% of the width' + (fill.capped ? ' (height cap)' : '') + ', no black remainder (' + Math.round(fill.frameOver) + ' px)',
+    fill.same && (fill.share >= 0.9 || fill.capped) && fill.frameOver <= 4); }
   await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); };
 await mapFits('stage 1\'s map');
 

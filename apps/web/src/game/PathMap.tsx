@@ -124,7 +124,7 @@ function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: 
 }
 
 /** The legend: each kind on this map with its marker and word, then what the trails and rings mean. */
-function Legend({ v }: { v: RunViewV }) {
+function Legend({ v, at }: { v: RunViewV; at?: React.Ref<HTMLDivElement> }) {
   const seen = new Map<string, string>();
   for (const n of v.nodes) { const k = n.gate ? 'gate' : n.kind; if (!seen.has(k)) seen.set(k, n.word); }
   const order = ['fight', 'elite', 'gate', 'shop', 'forge', 'training', 'shrine', 'rest', 'cache', 'event', 'vault_guard', 'vault', 'boss'];
@@ -135,7 +135,7 @@ function Legend({ v }: { v: RunViewV }) {
     </span>
   );
   return (
-    <div data-phc-pathmap-legend="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', alignItems: 'center', padding: '6px 10px', borderRadius: 8, background: '#10151F', border: '1px solid #232D3F', fontSize: 11, color: ink.text }}>
+    <div ref={at} data-phc-pathmap-legend="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', alignItems: 'center', padding: '6px 10px', borderRadius: 8, background: '#10151F', border: '1px solid #232D3F', fontSize: 13, color: ink.text }}>
       {item('start', 'Camp')}
       {kinds.map((k) => item(k, seen.get(k)!))}
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke={ink.text} strokeWidth="3" strokeLinecap="round" /></svg>Walked</span>
@@ -146,16 +146,45 @@ function Legend({ v }: { v: RunViewV }) {
 }
 
 /** The path map (rules 1.48): the backdrop, the trails, the camp, the markers and the legend. Rules 1.54 (survival-spec
- * 14.6 item 4): in the play screen's middle it keeps its size (ICON.pathMap) and scrolls sideways when the middle is
- * narrower, the stop the squad stands on (or the camp) scrolled into view; the right panel's small map shows the whole. */
+ * 14.6 item 4): in the play screen's middle it is laid out at ICON.pathMap and scrolls sideways when the middle is
+ * narrower, the stop the squad stands on (or the camp) scrolled into view; the right panel's small map shows the whole.
+ * A wider middle (Leon, 15 Nov: the map filled only the left 800 px at 1810) scales the whole layer up with ONE transform
+ * (the backdrop, the trails, the markers and their words together, so nothing drifts off its painted spot) to the
+ * middle's width, its height capped so the legend and the hint stay on screen; the frame shrinks to the map, centred. */
+/** The scale that fills the middle: its width, capped by the height left under the title for the map, the legend and
+ * the hint; never under 1 (a marker never smaller than ICON's). */
+function useFill(outer: React.RefObject<HTMLDivElement | null>, legend: React.RefObject<HTMLDivElement | null>): number {
+  const [s, setS] = React.useState(1);
+  React.useLayoutEffect(() => {
+    const el = outer.current; if (!el) return;
+    const measure = () => {
+      const centre = el.closest('[data-phc-centre]') as HTMLElement | null, screen = el.closest('[data-phc-run-screen]') as HTMLElement | null;
+      const avail = el.clientWidth - 2; // the frame's border
+      let sc = avail / ICON.pathMap;
+      if (centre && screen) {
+        const above = Math.min(80, el.getBoundingClientRect().top - screen.getBoundingClientRect().top); // the title row (a node's panel above scrolls away)
+        const below = (legend.current?.offsetHeight || 0) + 8 + 18 + 8 + 28; // the legend, the hint, the gaps and the screen's foot
+        sc = Math.min(sc, (centre.clientHeight - above - below - 2) / (ICON.pathMap * 9 / 16));
+      }
+      const next = Math.max(1, Math.floor(sc * 1000) / 1000);
+      setS((was) => (Math.abs(was - next) > 0.002 ? next : was));
+    };
+    measure();
+    const ro = new ResizeObserver(measure); ro.observe(el); const c = el.closest('[data-phc-centre]'); if (c) ro.observe(c);
+    return () => ro.disconnect();
+  }, []);
+  return s;
+}
+
 export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: HTMLElement) => void }) {
   const { pos, camp } = React.useMemo(() => layoutPathMap(v), [v.nodes, v.rows, v.lanes]);
+  const outer = React.useRef<HTMLDivElement>(null), legend = React.useRef<HTMLDivElement>(null), scale = useFill(outer, legend);
   const scroller = React.useRef<HTMLDivElement>(null), standing = v.nodes.find((n) => n.state === 'here')?.id || 'camp';
   React.useLayoutEffect(() => {
     const el = scroller.current; if (!el) return;
     const at = standing === 'camp' ? camp : pos[standing]; if (!at) return;
     el.scrollLeft = Math.max(0, (at.x / W) * el.scrollWidth - el.clientWidth / 3);
-  }, [standing, v.stage, v.seed]);
+  }, [standing, v.stage, v.seed, scale]);
   const art = A['survival-map-' + v.settingId + '-lg'] || A['survival-map-' + v.settingId];
   const byId: Record<string, RunNodeV> = {}; for (const n of v.nodes) byId[n.id] = n;
   const firsts = v.nodes.filter((n) => n.depth === 1 && !n.spur);
@@ -167,9 +196,10 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
       className={kind === 'lit' ? 'phc-pm-lit' : undefined} data-phc-trail={kind} />
   );
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
-    <div ref={scroller} data-phc-pathmap-scroll="" style={{ overflowX: 'auto', overflowY: 'hidden', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F' }}>
-    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', width: ICON.pathMap, display: 'grid', placeItems: 'center' }}>
+    <div ref={outer} style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
+    <div ref={scroller} data-phc-pathmap-scroll="" data-phc-pathmap-scale={scale} style={{ overflowX: 'auto', overflowY: 'hidden', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', ...(scale > 1 ? { width: ICON.pathMap * scale + 2, maxWidth: '100%', alignSelf: 'center', boxSizing: 'border-box' } : {}) }}>
+    <div style={{ width: ICON.pathMap * scale, height: ICON.pathMap * 9 / 16 * scale }}>
+    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', width: ICON.pathMap, display: 'grid', placeItems: 'center', transform: scale > 1 ? 'scale(' + scale + ')' : undefined, transformOrigin: '0 0' }}>
       <style>{'@keyframes phc-pm-dash{to{stroke-dashoffset:-26}}.phc-pm-lit{animation:phc-pm-dash 1.2s linear infinite}@keyframes phc-pm-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:.25}}.phc-pm-here{animation:phc-pm-pulse 2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pm-lit,.phc-pm-here{animation:none}}'}</style>
       {/* the 16:9 map at its own size (the frame scrolls sideways over it), so nothing on it is ever cut off */}
       <div data-phc-pathmap-box="" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9' }}>
@@ -190,7 +220,8 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
       </div>
     </div>
     </div>
-    <Legend v={v} />
+    </div>
+    <Legend v={v} at={legend} />
     </div>
   );
 }
