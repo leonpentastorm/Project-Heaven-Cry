@@ -3,6 +3,7 @@
 // out a Bond, a cap or a reaction count itself (apps/web/src/game/boundary.test.ts).
 //   bondView      the Bond strip (bonds-spec.md section 9): your Bonds, allies and enemies apart, the cap, the Attuner
 //   reactionView  the reaction pips (reactions-spec.md section 9): reactions this round, spent, the Answers switched on
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import type { Combat, Unit } from './combat';
 import type { Character } from './character';
 import { focusHand } from './character';
@@ -13,6 +14,7 @@ import { maxReactions, reactionsUsed, cueLive } from './tactics';
 import { TECHNIQUE } from './physical';
 import { SKILL } from './data';
 import { ownerOf } from './owned';
+import tendingJ from '../../../data/tending.json';
 
 /** One unit on the Bond strip. */
 export interface BondChip {
@@ -33,6 +35,30 @@ export interface BondView {
   focus: 'hand' | 'pack' | 'none';
   /** The words the strip shows when the threads are quiet (the Attuner in the pack), else null. */
   quiet: string | null;
+  /** What the Bonds give now (rules 1.56, Bonds 2.0 slice 1, item 6): the numbers of tending.json `bond` (the validator
+   * holds each equal to the effect the engine runs), and the lines the card prints. */
+  gives: BondGives;
+}
+/** The Bond card's numbers: shares are fractions (0.05 is 5%), `damage` the bonus on your blows now. */
+export interface BondGives {
+  perBond: number; bonds: number; damage: number; through: number; share: number; hit: number; echo: number;
+  /** One line each, in words, as the card shows them. */
+  lines: string[];
+}
+const BOND_NUMBERS: any = (tendingJ as any).bond || {};
+const pctOf = (x: number) => Math.round(x * 1000) / 10;
+/** The Bond card's numbers now: per_bond x the Bonds counted by the effect's own source (ties:bond, kit.ts tiesOf, either end). */
+export function bondGives(cb: Combat, me: Unit): BondGives {
+  const perBond = Number(BOND_NUMBERS.per_bond) || 0, bonds = tiesOf(cb, me, BOND).length, damage = perBond * bonds;
+  const through = Number(BOND_NUMBERS.through) || 1, share = Number(BOND_NUMBERS.share) || 0, hit = Number(BOND_NUMBERS.hit) || 0, echo = Number(BOND_NUMBERS.echo) || 0;
+  const lines = [
+    '+' + pctOf(perBond) + '% damage a Bond · ' + bonds + (bonds === 1 ? ' Bond' : ' Bonds') + ' · +' + pctOf(damage) + '%',
+    'Tending a Bonded ally ×' + through + ' (+' + pctOf(through - 1) + '%)',
+    pctOf(share) + '% of the damage you take goes to your Bonded enemies',
+    'Echo: ' + pctOf(echo) + '% of what you heal hits each Bonded enemy',
+    '+' + hit + ' to hit a Bonded enemy',
+  ];
+  return { perBond, bonds, damage, through, share, hit, echo, lines };
 }
 const BOND = 'bond';
 /** The bonded mark's rounds left, when they run out (a held condition counts very high: no end). */
@@ -57,7 +83,8 @@ export function bondView(cb: Combat, me: Unit, c: Character | null): BondView | 
   const focus: BondView['focus'] = at === 'main' || at === 'off' ? 'hand' : at === 'pack' ? 'pack' : 'none';
   return { cap: Number.isFinite(cap) ? cap : chips.length, held: chips.length, allies: chips.filter((x) => x.side === 'ally'), enemies: chips.filter((x) => x.side === 'foe'),
     open: Number.isFinite(cap) ? Math.max(0, cap - chips.length) : 0, focus,
-    quiet: focus === 'pack' ? 'Attuner in pack: Bonds held, threads quiet' : focus === 'none' && door ? 'No Attuner: Bonds need one in hand' : null };
+    quiet: focus === 'pack' ? 'Attuner in pack: Bonds held, threads quiet' : focus === 'none' && door ? 'No Attuner: Bonds need one in hand' : null,
+    gives: bondGives(cb, me) };
 }
 
 /** The reaction pips (reactions-spec.md section 9). */

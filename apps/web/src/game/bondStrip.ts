@@ -36,6 +36,8 @@ export function bondStripVals(cb: any, u: any, c: any, face: (id: string) => str
     count: v.held + ' / ' + v.cap, aria: 'Your Bonds: ' + v.held + ' of ' + v.cap + (v.quiet ? '. ' + v.quiet : ''),
     allies: v.allies.map(chip), hasAllies: v.allies.length > 0, enemies: v.enemies.map(chip), hasEnemies: v.enemies.length > 0,
     hasBoth: v.allies.length > 0 && v.enemies.length > 0, empties, hasEmpty: empties.length > 0, none: v.held === 0,
+    // what the Bonds give now, the engine's lines (screenViews.ts bondGives: tending.json `bond`, held equal to the effects)
+    gives: (v.gives?.lines || []).map((line, i) => ({ key: 'g' + i, line })), hasGives: !!v.gives?.lines?.length,
     tip: 'Bonds (Empathy, with an Attuner in hand): allies above the line, enemies below. You hold ' + v.held + ' of ' + v.cap + '. Tending through a Bond reaches a Bonded ally anywhere you see; an enemy Bonded to you shares the damage you take and feels your care as a wound.',
     ledger: lg ? { value: lg.value, tip: lg.hint || 'The Ledger', fill: 'display: block; height: 100%; width: ' + pct(lg.now!, lg.max!) + '%; background: ' + INSIGHT_INK, track: 'display: block; flex: 1; height: 6px; border-radius: 3px; background: #1C2536; overflow: hidden' } : null,
     hasLedger: !!lg,

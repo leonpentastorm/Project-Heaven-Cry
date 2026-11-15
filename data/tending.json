@@ -24,7 +24,7 @@
     "boss_rounds": 3,
     "boss_gap": 4,
     "provisional": true,
-    "about": "rules 1.33 section 2 (bonds-spec.md section 2; the echo is Leon's 0.20, 13 Nov 2026). The ops of tend.threads and tend.bond repeat these numbers; tools/validate.py checks they are equal."
+    "about": "rules 1.33 section 2 (bonds-spec.md section 2; the echo is Leon's 0.20, 13 Nov 2026). The numbers the Bond card shows (screenViews.ts bondView: the Bond strip's lines). They are the effect values of tend.threads and tend.bond (and those items' `numbers`, which their texts read); tools/validate.py checks every one is equal."
   },
   "items": [
     {
@@ -524,6 +524,272 @@
               "say": "{self} lets the Bond with {target} go."
             }
           ]
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "tend.snap",
+      "name": "Snap",
+      "kind": "verb",
+      "group": "bond",
+      "door": "empathy",
+      "requires": [
+        {
+          "skill": "empathy",
+          "min": 1
+        }
+      ],
+      "text": "{=effects.0.ap} AP, once a turn, with an Attuner in hand: break one of your Bonds on purpose, anywhere you see. A Bonded enemy takes {=amounts.snap.base} × your Healing given as Soul damage, more as you level, and is Dazed (it saves); a Bonded ally heals {=amounts.snap_heal.base} × your Healing given. The Mender's Ledger empties into it first, as its own blow by the Ledger's rule into an enemy, as a heal of {=amounts.snap_ledger.per.0.value|pct}% of it into an ally. The Bond ends.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "tend_snap",
+          "ap": 1,
+          "uses": "at_will",
+          "if": {
+            "self_holds": {
+              "slot": "hand",
+              "door": "empathy"
+            }
+          },
+          "reach": {
+            "sight": true,
+            "side": "any",
+            "tied": "bond",
+            "if": {
+              "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
+            }
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "effects": [
+            {
+              "op": "deal",
+              "amount": "ledger_blow",
+              "target": "target",
+              "if": {
+                "target": "foe",
+                "self_has_res": [
+                  "ledger"
+                ]
+              }
+            },
+            {
+              "op": "deal",
+              "amount": "snap",
+              "target": "target",
+              "if": {
+                "target": "foe"
+              },
+              "say": "{self} snaps the Bond with {target}{then}."
+            },
+            {
+              "op": "condition",
+              "condition": "dazed",
+              "target": "target",
+              "via": "empathy",
+              "rounds": 1,
+              "if": {
+                "target": "foe"
+              },
+              "say": "The jolt runs through {target}{then}."
+            },
+            {
+              "op": "mend",
+              "amount": "snap_ledger",
+              "target": "target",
+              "if": {
+                "target": "ally",
+                "self_has_res": [
+                  "ledger"
+                ]
+              },
+              "say": "{self} empties the Ledger into {target}{then}."
+            },
+            {
+              "op": "resource",
+              "resource": "ledger",
+              "value": "zero",
+              "if": {
+                "target": "ally",
+                "self_has_res": [
+                  "ledger"
+                ]
+              }
+            },
+            {
+              "op": "mend",
+              "amount": "snap_heal",
+              "target": "target",
+              "if": {
+                "target": "ally"
+              },
+              "say": "{self} snaps the Bond with {target}, and the thread mends{then}."
+            },
+            {
+              "op": "tie",
+              "kind": "bond",
+              "clear": "target",
+              "target": "target"
+            }
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
+        }
+      ],
+      "amounts": {
+        "snap": {
+          "kind": "damage",
+          "base": 3.0,
+          "profile": "tend",
+          "type": "soul",
+          "armour": "none",
+          "provisional": true
+        },
+        "snap_heal": {
+          "kind": "heal",
+          "base": 3.0,
+          "profile": "tend",
+          "heal_kind": "tending",
+          "provisional": true
+        },
+        "snap_ledger": {
+          "kind": "heal",
+          "base": 0,
+          "per": [
+            {
+              "of": "res:ledger",
+              "value": 0.5
+            }
+          ],
+          "heal_kind": "tending",
+          "provisional": true
+        },
+        "ledger_blow": {
+          "kind": "damage",
+          "base": 0,
+          "type": "soul",
+          "armour": "none",
+          "provisional": true
+        }
+      },
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "tend.tug",
+      "name": "Tug",
+      "kind": "verb",
+      "group": "bond",
+      "door": "empathy",
+      "requires": [
+        {
+          "skill": "empathy",
+          "min": 1
+        }
+      ],
+      "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, with an Attuner in hand: pull a unit Bonded to you, anywhere you see, toward you. An enemy makes a Body save against your Empathy and, failing, is pulled {=effects.0.effects.1.tiles} tiles (a Boss {=effects.0.effects.2.tiles}); an ally comes willing, {=effects.0.effects.4.tiles} tiles. It is a pull like any other: a burning tile on the way burns.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "tend_tug",
+          "ap": 1,
+          "uses": "at_will",
+          "res": {
+            "mp": 4
+          },
+          "if": {
+            "self_holds": {
+              "slot": "hand",
+              "door": "empathy"
+            }
+          },
+          "reach": {
+            "sight": true,
+            "side": "any",
+            "tied": "bond",
+            "if": {
+              "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "reeled",
+              "target": "target",
+              "via": "empathy",
+              "if": {
+                "target": "foe"
+              },
+              "say": "{self} tugs at the Bond with {target}{then}."
+            },
+            {
+              "op": "displace",
+              "how": "pull",
+              "tiles": 2,
+              "target": "target",
+              "if": {
+                "target_has": [
+                  "reeled"
+                ],
+                "target_not_tier": [
+                  "boss"
+                ]
+              },
+              "say": "{self} reels {target} in along the Bond{then}."
+            },
+            {
+              "op": "displace",
+              "how": "pull",
+              "tiles": 1,
+              "target": "target",
+              "if": {
+                "target_has": [
+                  "reeled"
+                ],
+                "target_tier": [
+                  "boss"
+                ]
+              },
+              "say": "{self} reels {target} in along the Bond{then}."
+            },
+            {
+              "op": "cleanse",
+              "condition": [
+                "reeled"
+              ],
+              "target": "target",
+              "if": {
+                "target_has": [
+                  "reeled"
+                ]
+              }
+            },
+            {
+              "op": "displace",
+              "how": "pull",
+              "tiles": 3,
+              "target": "target",
+              "if": {
+                "target": "ally"
+              },
+              "say": "{self} draws {target} in along the Bond{then}."
+            }
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "adjudication": "engine",
@@ -1361,6 +1627,65 @@
             "mp": 15
           },
           "effects": []
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "tend.last_thread",
+      "name": "Last Thread",
+      "kind": "verb",
+      "door": "empathy",
+      "requires": [
+        {
+          "skill": "empathy",
+          "min": 1
+        }
+      ],
+      "text": "When an ally Bonded to you goes Down, your next Raise before the end of your next turn costs {=effects.1.set} AP.",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "downed",
+          "if": {
+            "target": "ally",
+            "target_tied": "bond"
+          },
+          "flag": "last_thread",
+          "say": "{self} feels the last thread to {target} pull taut."
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:tend.raise#tend_raise"
+            ],
+            "flag": "last_thread"
+          },
+          "set": 0
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "tend_raise"
+            ],
+            "flag": "last_thread"
+          },
+          "flag": "last_thread",
+          "clear": true
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "flag": "last_thread",
+          "clear": true,
+          "if": {
+            "flag": "last_thread"
+          }
         }
       ],
       "adjudication": "engine",

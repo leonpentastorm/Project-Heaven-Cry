@@ -6352,6 +6352,17 @@ and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded in
    (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
    and the validator refuses it. Giving, picking up, granting, the carried weight and the sheet's lines read it.
 
+## Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1
+
+Leon (15 Nov 2026, playtest): *"anything to spice up that class aside from some funny big number when you link more bond ?"* The design is `docs/design/proposals/2026-11-bonds-2.0.md` (with Leon's rulings of 15 Nov 2026 at its end); this is its first slice. Every number is PROVISIONAL and a field of `data/tending.json`; every item is `adjudication: engine`. A later revision overrides the body and the earlier ones.
+
+1. **Tug** (`tend.tug`; Empathy 1; 1 AP and 4 MP, with an Attuner in hand): pull a unit Bonded to you, anywhere you see, toward you. An enemy makes a Body save against your Empathy (the condition Reeled, which ends as the pull is made) and, failing, is pulled 2 tiles (a Boss 1); an ally comes willing, 3 tiles, with no save. It is forced movement like any pull (rules.json `forced_movement`): a hazard on the way works as for any pull, and what is immune to knockback is not moved.
+2. **Snap** (`tend.snap`; Empathy 1; 1 AP, no MP, once a turn, with an Attuner in hand): break one of your Bonds on purpose, anywhere you see. A Bonded enemy takes 3.0 × your Healing given (the `tend` profile, more as you level) as Soul damage, no armour, and is Dazed for a round (its own save, Body, against your Empathy); a Bonded ally heals 3.0 × your Healing given (Tending, so ×1.2 through the Bond it is breaking). Then the Bond ends.
+3. **The Mender's Snap.** The Ledger empties into a Snap first. Into an enemy it is a blow of its own, flat (not scaled by your Healing given or your level: `ledger_blow`, base 0, Soul, no armour), that the Ledger's rule (rules 1.33) fills at its own share and empties: one rule, not a second; the Bonds' bonus rides it as any blow of yours. Into an ally, the Ledger empties as a heal of 50% of it (`snap_ledger`, flat). The Snap's own heal comes after and is a heal you give, so it fills the Ledger as any does. (A Ledger cashed into the Snap's own `tend`-profile blow would be multiplied by the Healing given and the Level term: measured at 363% to 1163% of a rifle-turn for one Snap, so it is kept apart.)
+4. **Heartbeat, the no-Hide half: not built.** Hiding is not a condition put on through the condition door (tactics.ts `hide` sets the state directly), so the design's `cancel` on `cond_incoming` never hears it, and Traced's `always_seen` would also keep an enemy Bond alive out of sight. It waits for the lead's ruling on one general piece (see item 4246).
+5. **Last Thread** (`tend.last_thread`; Empathy 1, a passive): when an ally Bonded to you goes Down, your next Raise before the end of your next turn costs 0 AP (the MP as ever). The design's "this round" is read as "before your next turn ends", so a Down on an enemy's turn after yours is not wasted (a call for Leon).
+6. **The Bond card's numbers.** The Bond strip shows what the Bonds give now, worked out by the engine (`screenViews.ts bondGives`), never by the screen: "+5% damage a Bond · 2 Bonds · +10%" (the Bonds counted as the effect counts them, `ties:bond`), the Tending multiplier through a Bond, the damage share, the echo and the bonus to hit. It reads `tending.json bond`, and the validator holds every number there (and each Tending item's `numbers`, which their texts read) equal to the effect value the engine runs.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9952,3 +9963,16 @@ Items 4148 to 4150.
 4159. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
     (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
     `{essence, last}`. No number.
+
+### Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1
+
+Items 4240 to 4247.
+
+4240. **Tug (rules 1.56 Bonds 2.0 slice 1 item 1; `tending.json tend.tug`):** 1 AP, 4 MP; an enemy pulled 2 tiles on a failed Body save (a Boss 1), an ally 3 tiles. PROVISIONAL (the lead fits).
+4241. **Reeled (`conditions.json reeled`):** the Tug's save, Body family, against the Bonder's Empathy; no effect of its own; ends as the pull is made. PROVISIONAL.
+4242. **Snap (item 2; `tend.snap`):** 1 AP, 0 MP, once a turn; `amounts.snap` damage base 3.0 on the `tend` profile, Soul, no armour; Dazed 1 round (Body save); `amounts.snap_heal` heal base 3.0 on the `tend` profile. PROVISIONAL (the lead fits with `test/balance/tending-measure.ts`).
+4243. **The Mender's Snap (item 3):** on an enemy, a flat blow (`amounts.ledger_blow`, base 0) that the Ledger's own rule fills (classes.json `bard.ledger`, factor 0.7) and empties; into an ally, `amounts.snap_ledger` 0.5 of the Ledger as a heal, no profile. Measured: one Snap with a full Ledger is 80 / 84 / 92 / 159% of a rifle-turn at levels 1 / 5 / 10 / 20 (against 32 / 33 / 36 / 63% without). PROVISIONAL (the lead fits).
+4244. **Last Thread (item 5; `tend.last_thread`):** a Raise at 0 AP after a Bonded ally goes Down, until the end of the holder's next turn (the design said "this round"). Empathy 1 for now (Raise itself needs 3). PROVISIONAL; a call made for Leon.
+4245. **The Bond card's lines (item 6):** read from `tending.json bond` (per_bond 0.05, through 1.2, share 0.2, echo 0.2, hit 3); no new number.
+4246. **Heartbeat's no-Hide half (item 4): needs a ruling.** The one general piece it needs: the hide door (tactics.ts `hide`, `hideBlock`) asks the condition door for `hidden` (the `cond_apply` hook, so a data `cancel` on `cond_incoming` refuses it), or a condition row's `forbid` of action `hide` (Traced carries one today that nothing reads) is read as a refusal. Either is a new engine read; not built in this slice.
+4247. **Items 4240 to 4247 are rules 1.56 Bonds 2.0 slice 1's.** The validator check of `tending.json bond` against the effects (item 6) is new in this slice: the copies were said to be checked, and were not.
