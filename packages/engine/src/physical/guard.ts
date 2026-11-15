@@ -20,7 +20,7 @@ import { PHYS_RULES } from './data';
 import { technique, answer, guardOf, guardMax, guardGain, guardSoak, addGuard, spendGuard, holds } from './core';
 import { NOT_A_HIT } from './rules';
 
-const G = () => PHYS_RULES.guard || {};
+const G = (): Record<string, number> => PHYS_RULES.guard; // every number checked present at load (physical/core.ts GUARD_NUMBERS)
 const DEF_PLATE = 'class:defender.reactive_plate', DEF_BRACE = 'class:defender.brace';
 
 // ---------- gained by Brace ----------
@@ -46,7 +46,7 @@ onHook('damage_in', (ctx: any, cb) => {
   // 1 point is kept back for a reaction (Interpose, Shield Wall, Shrug It Off), unless what gets through would take
   // the unit down: then every point the hit needs is spent (the lead's tuning, 10 Nov 2026; provisional, keep_back).
   const per = guardSoak(u), have = guardOf(u), needs = Math.ceil(reach / per);
-  let k = Math.min(Math.max(0, have - (G().keep_back ?? 1)), needs);
+  let k = Math.min(Math.max(0, have - G().keep_back), needs);
   if (reach - k * per >= u.hp) k = Math.min(have, needs);
   if (k < 1) return;
   const cut = Math.min(reach, k * per);
@@ -67,7 +67,7 @@ technique({
   run: () => 'Interpose is a reaction: it fires when an ally next to you is hit.',
   react: {
     damage_in(ctx, t) {
-      const me = t.u, cb = t.cb, v: Unit = ctx.t, src = ctx.src, cost = t.num('guard_cost', G().interpose_cost ?? 1);
+      const me = t.u, cb = t.cb, v: Unit = ctx.t, src = ctx.src, cost = t.num('guard_cost', G().interpose_cost);
       if (ctx.phase !== 'reduce' || interposing || !(ctx.dmg > 0) || !v || v === me || v.side !== me.side || v.dead || v.downed) return;
       if (src?.type !== 'weapon' || !src.by || src.by.side === v.side) return;
       if (!alive(me) || dist(me.pos, v.pos) > t.num('reach', 1) || guardOf(me) < cost) return;

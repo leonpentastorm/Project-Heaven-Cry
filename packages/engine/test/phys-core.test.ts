@@ -360,6 +360,9 @@ describe('review fixes, beside what already exists', () => {
     const pc = () => g.combat!.units.find((u) => u.charId === c.id)!;
     g = apply(g, { type: 'sandbox/meter', unitId: pc().id, momentum: 2, pressure: 2 }, 'host');
     expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    // the 0.29 consolidation (SF5): the meter's Guard is clamped at the data's cap (techniques.json rules.guard.max), no typed number
+    g = apply(g, { type: 'sandbox/meter', unitId: pc().id, guard: 99 } as any, 'host');
+    expect(pc().res?.guard).toBe(phys.PHYS_RULES.guard.max); expect(pc().resMax?.guard).toBeLessThanOrEqual(phys.PHYS_RULES.guard.max);
     g = apply(g, { type: 'sandbox/technique', charId: c.id, id: 'coup' }, 'host'); // any tool rebuilds the fighter from its character
     expect(pc().resMax?.momentum).toBe(3); expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
     expect(phys.techniquePad(g.combat!, pc(), 'main', g).flatMap((x) => x.entries.map((e) => e.id))).toContain('coup');

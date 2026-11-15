@@ -99,19 +99,23 @@ const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) ? SHIELD
 const shieldHand = (u: Unit, hand: 'main' | 'off') => hand === 'off' && !u.offWeapon && !!shieldOf(u);
 /** A unit's points in a skill: its character's now, else what the unit was built with (a stat block may give them). */
 export const unitSkill = (u: Unit, skill: string): number => { const c = u.companion ? null : charOfUnit(u); return (c ? (c.skills as any)?.[skill] : (u as any)[skill]) || 0; };
-const GR = () => PHYS_RULES.guard || {};
+/** Guard's numbers (techniques.json rules.guard): every one the engine reads must be there, checked once at load, so no
+ *  fallback in code can disagree with the data (the 0.29 consolidation, SF5). */
+const GUARD_NUMBERS = ['max', 'soak', 'gain_base', 'gain_per_point', 'shield_gain', 'brace_gain', 'brace_shield_gain', 'keep_back', 'interpose_cost'] as const;
+for (const k of GUARD_NUMBERS) if (typeof PHYS_RULES.guard?.[k] !== 'number') throw new Error('techniques.json rules.guard.' + k + ' is missing: Guard reads it.');
+const GR = (): Record<(typeof GUARD_NUMBERS)[number], number> => PHYS_RULES.guard;
 export const guardOf = (u: Unit) => resOf(u, 'guard');
 export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
 /** What one Guard point takes off a hit for this unit (rules.guard.soak, in HP: × the level scale, rules 1.36). The one
  * place it is worked out: the soak (guard.ts) and the panel's words (physView) both read it. */
-export const guardSoak = (u: Pick<Unit, 'level'>): number => Math.max(1, Math.round((GR().soak ?? 10) * scaleOf(u.level)));
+export const guardSoak = (u: Pick<Unit, 'level'>): number => Math.max(1, Math.round(GR().soak * scaleOf(u.level)));
 /** What gives this unit Guard, and how much (0 for a unit with no Guard pool; the pool's size cuts it). The Guard
  * technique scales: 1, +1 for each Durability point above 1, +1 with a shield in the off hand. The Brace action is
  * flat: 2, 3 with a shield (the lead's tuning, 10 Nov 2026; provisional, rules.guard brace_gain / brace_shield_gain). */
 export function guardGain(u: Unit, by: 'guard' | 'brace' = 'guard'): number {
   if (u.resMax?.guard == null) return 0;
-  const g = GR(); if (by === 'brace') return (g.brace_gain ?? 2) + (shieldOf(u) ? g.brace_shield_gain ?? 1 : 0);
-  return (g.gain_base ?? 1) + Math.max(0, unitSkill(u, 'durability') - 1) * (g.gain_per_point ?? 1) + (shieldOf(u) ? g.shield_gain ?? 1 : 0);
+  const g = GR(); if (by === 'brace') return g.brace_gain + (shieldOf(u) ? g.brace_shield_gain : 0);
+  return g.gain_base + Math.max(0, unitSkill(u, 'durability') - 1) * g.gain_per_point + (shieldOf(u) ? g.shield_gain : 0);
 }
 /** Why a unit's Guard changed, for the screen (Guard 2.0, rules 1.56 item 4300: the plates): gained, eaten by a hit
  * (soaked: the damage it took off), spent on an order or an Answer, or taken by Pressure. */
@@ -1005,8 +1009,8 @@ export const MOMENTUM_HINT: string = String(PHYS_RULES.momentum?.texts?.how || '
 /** The Guard rule in plain sentences (the pool's hint on the screen). */
 /** Guard's rule in words, every number from rules.guard (its soak at this unit's level, rules 1.36). */
 export function guardHint(u: Pick<Unit, 'level'>): string {
-  const g = GR(), brace = g.brace_gain ?? 2, keep = g.keep_back ?? 1;
-  return 'Brace gives ' + brace + ' Guard (' + (brace + (g.brace_shield_gain ?? 1)) + ' with a shield); the Guard technique gives ' + (g.gain_base ?? 1) + ', +' + (g.gain_per_point ?? 1) + ' for each Durability point above 1, +' + (g.shield_gain ?? 1) + ' with a shield. Each point takes ' + guardSoak(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
+  const g = GR(), brace = g.brace_gain, keep = g.keep_back;
+  return 'Brace gives ' + brace + ' Guard (' + (brace + g.brace_shield_gain) + ' with a shield); the Guard technique gives ' + g.gain_base + ', +' + g.gain_per_point + ' for each Durability point above 1, +' + g.shield_gain + ' with a shield. Each point takes ' + guardSoak(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
 }
 /** A Pressure state's data row (rules.pressure.states: word, says, text, text_pc). */
 const PS = (state: string): any => PHYS_RULES.pressure?.states?.[state] || {};
@@ -1019,7 +1023,7 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   return {
     momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
     // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
-    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: guardSoak(u), shield: !!shieldOf(u), hint: guardHint(u) } : null,
+    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back, soak: guardSoak(u), shield: !!shieldOf(u), hint: guardHint(u) } : null,
     // Pressure 2.0 (rules 1.56): the state's word, its short line and its cost are data (techniques.json rules.pressure.states)
     pressure: { now, max: pressureCap(u), state, word: state ? PS(state).word || '' : now ? 'Under fire' : '', says: state ? PS(state).says || '' : '',
       cost: state ? (u.side === 'pc' && PS(state).text_pc) || PS(state).text || '' : '', by },
