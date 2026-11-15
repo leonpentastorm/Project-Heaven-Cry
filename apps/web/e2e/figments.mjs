@@ -29,7 +29,9 @@ await act({ type: 'sandbox/class', charId: cid, classId: 'marksman', rank: 1 });
 await act({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true });
 ok('the Visualizer in the off hand', (await act({ type: 'sandbox/give', charId: cid, item: 'visualizer', equip: true })) === null);
 await act({ type: 'sandbox/give', charId: cid, item: 'standard_core', qty: 3 });
-ok('the design Hound (Beast + Swift) kept out of the fight', (await act({ type: 'figments/design', charId: cid, design: { id: 'hound', name: 'Hound', form: 'beast', traits: ['swift'] } })) === null);
+// rules 1.56 (Figments 2.0): the Wall and the Beast are fork forms now (Visualization 3 and 5): chosen through door/pick
+ok('the forks: the Wall (Visualization 3) and the Beast (Visualization 5) chosen', (await act({ type: 'door/pick', charId: cid, door: 'visualization', option: 'wall' })) === null && (await act({ type: 'door/pick', charId: cid, door: 'visualization', option: 'beast' })) === null);
+ok('the design Hound (Beast + Swift) kept out of the fight',(await act({ type: 'figments/design', charId: cid, design: { id: 'hound', name: 'Hound', form: 'beast', traits: ['swift'] } })) === null);
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
