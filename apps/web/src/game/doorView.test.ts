@@ -3,7 +3,7 @@
 // Every fight here is the engine's own (newCharacter, startCombat, beginOutburst); the rows are actionGroups'.
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('./store', () => ({ getState: () => ({}), subscribe: () => () => {} })); // tips.tsx reads the store; these tests hand it the state
-import { ARCHETYPES, type Sheet, SKILL, SOUL_RULES, newCharacter, startCombat, beginOutburst, pumpOutburst, stageMult, SPELL_AP } from '@engine';
+import { ARCHETYPES, type Sheet, SKILL, SOUL_RULES, newCharacter, startCombat, beginOutburst, pumpOutburst, SPELL_AP } from '@engine';
 import { DOORS, topDoor, firstTurnTab, tabDoorLine } from './doorView';
 import { designCards } from './heartView';
 import { smartCommands, actionGroups } from './commands';
@@ -64,14 +64,14 @@ describe('the Outbursts door', () => {
   it('the turn card\'s Outburst button shows the held stage and the MP, held or not', () => {
     const { cb, u } = fight({ will_power: 3 }, 'emanator');
     u.mg.mp = 120; u.mg.mpMax = 200;
-    expect(smartCommands(u).find((x) => x.action === 'outburst')!.sub).toBe('Nothing held · 120 MP');
+    expect(smartCommands(u).find((x) => x.action === 'outburst')!.sub).toBe('Not held · 120 MP');
     expect(beginOutburst(cb, rng, u, 'sb', undefined, true)).toBeNull();
     u.ap = 6; expect(pumpOutburst(cb, rng, u)).toBeNull();
     const st = u.mg.held.stage, rel = smartCommands(u).find((x) => x.action === 'release')!;
     expect(st).toBe(1);
-    expect(rel.sub).toBe('Held stage ' + st + ' ×' + stageMult(st) + ' · ' + Math.round(u.mg.mp) + ' MP · ' + SPELL_AP.release + ' AP');
+    expect(rel.sub).toBe('Stage ' + st + ' · ' + Math.round(u.mg.mp) + ' MP · ' + SPELL_AP.release + ' AP');
     const air = fight({ will_power: 3 });
-    expect(smartCommands(air.u).find((x) => x.action === 'outburst')!.sub).toBe('Nothing held · MP from the air');
+    expect(smartCommands(air.u).find((x) => x.action === 'outburst')!.sub).toBe('Not held · from the air');
   });
   it('the first-fight tip is the door\'s line, once it is my turn with a character that has the door', () => {
     const { c, cb } = fight({ will_power: 3 });
