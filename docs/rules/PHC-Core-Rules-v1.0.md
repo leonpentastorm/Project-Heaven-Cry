@@ -6352,6 +6352,44 @@ and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded in
    (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
    and the validator refuses it. Giving, picking up, granting, the carried weight and the sheet's lines read it.
 
+## Rules 1.56 (Balance 2.0), prayer 2.0 (the Chaplain)
+
+Leon, 15 Nov 2026: "All players need to feel like they do something only they do best." Prayer was already wide (eight
+patrons, their Hymns, Devotion, Witnessed, interventions, the Miracle); what it lacked was a job the Chaplain alone does
+for the squad, and a moment on screen for its own acts (`docs/design/proposals/2026-11-prayer-2.0.md`). Everything below
+is a row of data on the Chaplain (`classes.json guardian.gain`, `conditions.json canticle_*`), adjudication engine;
+every number is PROVISIONAL (items 4480 to 4489). Rules 1.6, 1.22 and 1.31 stand.
+
+1. **The Canticle** (a gain of the Chaplain, beside The Patron at Your Side; item 4480). 1 AP, once a turn, from Faith 1.
+   It is not a prayer: it uses neither the turn's Whisper nor the Hymn's wait. The singer and every ally within 2 tiles
+   carry the singer's patron's **verse** for 2 rounds (each cast puts it on again). An Atheist rolls the Whisper's TN
+   for it, as for any prayer; a miss gives no verse but the song goes on.
+2. **The verses grow** (item 4481). Each turn in a row the Chaplain sings, the song climbs a verse: I, II, III. From
+   Faith 5 the third verse adds **Crescendo** (+1 to hit) to everyone within 3 tiles (not for the Counting Weaver,
+   whose own verse is to hit). A turn without singing starts the song again from verse I.
+3. **The patron's verses** (item 4482): Nerukhan, *Shelter of the Saints*: damage taken ×0.9 (rounded up). The
+   Quartermaster, *Short Supply*: the first reload each turn 1 AP less. The Laughing Mask, *Missed Me*: an enemy that
+   misses you banks 1 AP for your next turn, at most twice a fight. The Toll-Keeper, *Not Yet*: the first blow that would
+   drop you leaves 1 HP, once a fight. Mother Ember, *Warm Hands*: heals and shields on you ×1.25. Old Overcast,
+   *Gathering*: your damage +6%. The Matchmaker, *Hold My Hand*: +2 on saves against Heart conditions. The Counting
+   Weaver, *Foreknown*: +1 to hit. An Atheist, *Stubborn*: +1 on every save.
+4. **The song breaks** (item 4483): a blow that takes the singer's HP (a hit, not a hazard, Bleeding or its own
+   Strain) ends every verse on the singer and on its allies within 3 tiles, and the song starts again from verse I.
+   A shield that holds does not break it.
+5. **Amen** (a gain; item 4484): after the Chaplain prays (a Whisper, a Hymn, a Miracle, Ward or Sanctuary), the
+   first hit an ally lands on an enemy still standing before the Chaplain's next turn adds 10 × Blessing power Soul
+   damage, no roll, through armour. Once per prayer window.
+6. **Holy Dread** (a gain; item 4485): Soul damage of the Chaplain's (a Rebuke, a Smite, an Amen; also its own
+   Outbursts until damage names its door) that leaves an enemy at half its HP or less and standing: a Heart save
+   against Faith, or Shaken for 1 round. Once a turn.
+7. **Last Rites** (a gain; item 4486): a prayer's heal of the Chaplain's on a Downed ally is ×1.5.
+8. **Seen** (item 4487): a prayer, Smite, Ward, the Canticle and its verses, the song breaking, Amen, Holy Dread,
+   Witnessed and a Devotion change each have their moment on the fight map, drawn from the engine's events (the
+   client decides nothing). A Devotion change says who saw it (`patrons.json devotion.lines`).
+9. **Not in this revision** (item 4488): Hallow (consecrated ground: needs zone kinds from data), praying from holy
+   ground (needs the seat), the Office fork at rank II (needs one fork action for every door), and the patron's mark
+   on an action before it is taken.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9952,3 +9990,25 @@ Items 4148 to 4150.
 4159. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
     (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
     `{essence, last}`. No number.
+
+### Rules 1.56 (Balance 2.0), prayer 2.0 (the Chaplain)
+
+4480. **The Canticle (rules 1.56 prayer 2.0 item 1; `classes.json guardian.gain canticle`):** 1 AP, once a turn,
+    from Faith 1; verses within 2 tiles for 2 rounds. PROVISIONAL.
+4481. **The verses grow (item 2):** verse III at Faith 5; Crescendo +1 to hit within 3 tiles
+    (`conditions.json canticle_crescendo`). PROVISIONAL.
+4482. **The patron's verses (item 3; `conditions.json canticle_*`):** ×0.9 taken; −1 AP on the first reload a turn;
+    1 AP banked on a miss, twice a fight; a floor of 1 HP once a fight; heals ×1.25; damage +6% (softened from +10% so the
+    squad's gain stays under the `canticle_squad` ceiling of +8%); +2 on Heart saves; +1 to hit; +1 on saves (Atheist).
+    PROVISIONAL.
+4483. **The song breaks (item 4):** a blow that takes the singer's HP; reach 3 tiles. PROVISIONAL.
+4484. **Amen (item 5):** base 10, profile blessing, Soul, through armour; set by any prayer of the Chaplain's (the
+    acted name of a Whisper and a Hymn is the same cost site, `pray`, so the draft's "after your Hymn" reads "after
+    your prayer"). PROVISIONAL.
+4485. **Holy Dread (item 6):** half HP or less, Shaken 1 round, a Heart save against Faith, once a turn; reads all Soul
+    damage of the Chaplain's until damage names its door (P18). PROVISIONAL.
+4486. **Last Rites (item 7):** ×1.5. PROVISIONAL.
+4487. **The Devotion lines (item 8; `patrons.json devotion.lines`):** words only, no number.
+4488. **Not built (item 9):** Hallow (P11), praying from holy ground (P3 + P11), the Office (P8), the patron's mark on
+    an action before it is taken (a dry run that reports Devotion: left for the preview work).
+4489. **Items 4480 to 4489 are rules 1.56 prayer 2.0's.**

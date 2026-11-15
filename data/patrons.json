@@ -58,7 +58,14 @@
     "apostasy": {
       "cooldown_days": 90
     },
-    "provisional": true
+    "provisional": true,
+    "lines": {
+      "liked": "{patron} saw that ({tag})",
+      "taboo": "{patron} turned away ({tag})",
+      "vow": "{patron} heard the vow",
+      "rite": "{patron} accepts the rite",
+      "other": "{patron} took note"
+    }
   },
   "prayer": {
     "faith_min": 1,

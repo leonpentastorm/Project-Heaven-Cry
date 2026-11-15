@@ -3086,6 +3086,343 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "rules 1.34: the Eye's Stare (figments-spec.md section 3; P7 always_seen)"
+    },
+    {
+      "id": "canticle_nerukhan",
+      "name": "Shelter of the Saints",
+      "label": "Shelter (less damage taken)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "Damage you take is ×{=effects.0.value}. A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "value": 0.9,
+          "round": "up"
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_the_quartermaster",
+      "name": "Short Supply",
+      "label": "Short Supply (a cheaper reload)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "Your first reload each turn costs {=effects.0.value|abs} AP less. A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "reload",
+          "value": -1,
+          "min": 0,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          }
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_the_laughing_mask",
+      "name": "Missed Me",
+      "label": "Missed Me (a miss banks AP)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "An enemy that misses you gives you {=effects.0.value} AP on your next turn (at most {=effects.0.limit.n} times a fight). A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "grant_ap",
+          "when": "miss",
+          "if": {
+            "target": "self",
+            "actor": "foe"
+          },
+          "value": 1,
+          "bank": true,
+          "limit": {
+            "per": "per_combat",
+            "n": 2
+          }
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_toll_keeper",
+      "name": "Not Yet",
+      "label": "Not Yet (the first drop is held)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "The first blow that would drop you leaves you at {=effects.0.value} HP (once a fight). A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "floor",
+          "when": "would_drop",
+          "if": {
+            "open": true
+          },
+          "value": 1,
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          }
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_mother_ember",
+      "name": "Warm Hands",
+      "label": "Warm Hands (bigger heals)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "Heals and shields on you are ×{=effects.0.value}. A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "mend_mult",
+          "when": "heal",
+          "value": 1.25
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_old_overcast",
+      "name": "Gathering",
+      "label": "Gathering (more damage)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "Your damage is {=effects.0.value_pct}% more. A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "dealing",
+          "value_pct": 6
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_the_matchmaker",
+      "name": "Hold My Hand",
+      "label": "Hold My Hand (Heart saves)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have {=effects.0.value|signed} on saves against Heart conditions. A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "cond_incoming",
+          "if": {
+            "cond_family": [
+              "heart"
+            ]
+          },
+          "value": 2
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_counting_weaver",
+      "name": "Foreknown",
+      "label": "Foreknown (to hit)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have {=effects.0.value|signed} to hit. A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": 1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_plain",
+      "name": "Stubborn",
+      "label": "Stubborn (saves)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have {=effects.0.value|signed} on every save (an Atheist's verse: sung to no one, and held anyway). A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "save",
+          "value": 1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_crescendo",
+      "name": "Crescendo",
+      "label": "Crescendo (to hit)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "The third verse: you have {=effects.0.value|signed} to hit. A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": 1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
     }
   ],
   "families": {

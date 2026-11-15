@@ -67,7 +67,7 @@ describe('the data (chaplain-spec.md sections 3 and 10)', () => {
     expect(CLASS.guardian.ranks.III.moves.map((m: any) => m.key)).toEqual(['class:guardian.sanctuary', 'class:lumeri_templar.judgement']);
     expect(CLASS_MOVE_POOL['lumeri_templar.judgement'].name).toBe('Verdict'); expect(CLASS_MOVE_POOL['lumeri_templar.blessed_shells'].name).toBe('Blessed Arms');
     expect(CLASS_MOVE_POOL['lumeri_templar.blessed_shells'].fantasy_tags).not.toContain('guns');
-    expect((CLASS.guardian as any).gain.map((m: any) => m.id)).toEqual(['at_your_side']);
+    expect((CLASS.guardian as any).gain.map((m: any) => m.id)).toEqual(['at_your_side', 'canticle', 'amen', 'holy_dread', 'last_rites']); // rules 1.56 prayer 2.0
     expect(CLASS_MOVE_POOL['guardian.will_shield']).toBeUndefined(); // Ward replaces it
   });
   it('rule 8: no move costs MP or Strain; the class\'s only pool is Devotion', () => {
