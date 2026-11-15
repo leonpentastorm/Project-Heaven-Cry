@@ -24,9 +24,15 @@ export type PlayMode = 'survival' | 'roguelike' | 'campaign';
 /** One row of data/modes.json: a card of the lobby's mode picker. `available: false` locks it, and `coming` says why. */
 export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; art_pending?: boolean; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null;
   /** rules 1.54 item 11: the right panel's modules, top to bottom (data/modes.json panel_names ids; the client's panel registry draws them) */
-  panels: string[] }
+  panels: string[];
+  /** rules 1.54 item 11: what the sheet hides in this mode (its tab or button ids) */
+  hides?: string[] }
 /** The three modes in the picker's order (data/modes.json items). */
 export const MODES: ModeDef[] = (modesJ as any).items;
+/** Each right-panel module's name, the grip's words (data/modes.json panel_names). */
+export const PANEL_NAMES: Record<string, string> = (modesJ as any).panel_names;
+/** The Proving Ground's right-panel modules (a tool, not a mode card: data/modes.json proving_ground). */
+export const PROVING_GROUND_PANELS: string[] = (modesJ as any).proving_ground.panels;
 /** The mode a new room selects (data/modes.json default: Survival). */
 export const DEFAULT_PLAY: PlayMode = (modesJ as any).default;
 /** The mode a save written before modes existed reads (data/modes.json old_save: Campaign, the only thing it could be). */
