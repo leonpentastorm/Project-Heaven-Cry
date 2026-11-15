@@ -6026,6 +6026,27 @@ Leon (15 Nov 2026, before the playtest): *"lot's of the things like extra emmana
 5. **Magazines.** A shelf of its own, **Magazines** (`shop.always`, at the camp and on every shop counter): for each magazine-fed gun the character carries, a **full** magazine (`mag:<weapon>`: the empty magazine price and its rounds) and an **empty** one (`mag:<weapon>:0`: the empty magazine price of `rules.json weapons_rules.magazine_prices`, 30 for a pistol or an SMG, 40 a rifle, 25 a speedloader, 60 a drum or belt). One price rule: `mag:<weapon>:<rounds>` is priced by the same formula (empty price + rounds x the calibre's round price). An empty magazine joins the gun's spares with 0 rounds; **gear/load** fills it from loose rounds out of a fight (1 AP per 5 rounds in one, rules 1.9). The guns shelf keeps the rounds of loose-loaded guns and the quiver.
 6. **The caster's start.** A focus that burns cores (the Evoker, the Visualizer: `loadout.focus_with`) comes with **4** standard cores at the camp, free (PROVISIONAL; was 1), so the budget is not eaten by cores. The Emanator and the Attuner (MP) are unchanged.
 
+### The field after a won fight (Survival; Leon: "let people roam in the combat map to pick up stuff before voting to go back")
+
+7. **The field.** A won Survival fight does not go straight to its rewards: the run's state is **`field`**, between
+   `fight` and `reward`. The fight's map stays, every character stands where its unit stood (a character dead in the
+   fight stands up at 1 HP where it fell), and the piles stay as the fight left them: dropped magazines, thrown
+   or stuck weapons (dropped where their target stood, rules 1.12), and whatever foes dropped (in Survival, materials:
+   rules 1.54 item 3). PROVISIONAL.
+8. **Roaming is the Proving Ground's gearing up.** On the field the squad uses the same world actions with free
+   movement: walk (`world/act` move, `story/move`), open a door, and pick up (`world/act` pickup, a whole pile in one
+   action by default, a selection if given). No rounds, no turn order, AP always full after each action (a walk is
+   still one action's reach). Nothing else is done on the field (an attack, a search, a carried body: refused in
+   words); gear changes out of a fight work as anywhere in a run. PROVISIONAL.
+9. **Leaving is the shop's vote.** Each player marks **Leave the field** (`run/leave`, the same mark as leaving a shop:
+   `r.ready`); when every online player has marked it, or the host closes the field (`run/leave` with close), the run
+   goes on to `reward`. A field with nothing on it still opens, and Leave is offered at once: solo it is one click.
+   PROVISIONAL.
+10. **The pay is unchanged and given as the fight is won**, as before: XP, credits, the supply pack and the rolled
+   pick are given on entering the field; the pick (`run/pick`, `run/take`) waits until the field is left. A lost
+   fight (the run is over), an Extraction and a Proving Ground fight are unchanged. What still lies on the field when
+   the squad leaves stays behind.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.

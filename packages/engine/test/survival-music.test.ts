@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, musicFor, OST, FIGHT_POOL, RUN_MUSIC } from '../src';
 import { type Pc } from './helpers/replay';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ, M = SV.music;
@@ -57,7 +57,7 @@ describe('rules 1.54: Survival\'s music by situation', () => {
   it('the boon pick plays boon', () => {
     const g0 = clone(started()), r = g0.run!, boss = r.nodes.find((x) => x.kind === 'boss')!, prev = r.nodes.find((x) => x.links.includes(boss.id))!;
     r.at = prev.id;
-    let g = apply(take(g0, boss.id), { type: 'run/skip' }, 'host');
+    let g = leaveField(apply(take(g0, boss.id), { type: 'run/skip' }, 'host'));
     for (let i = 0; i < DUO.length; i++) g = apply(g, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'materials' }, ownerOf(i));
     expect(g.run!.state).toBe('boon');
     expect(heard(g)).toBe(M.boon);

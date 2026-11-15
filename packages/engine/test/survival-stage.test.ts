@@ -11,7 +11,7 @@ import { type GameState, apply, RuleError, BOONS, BOON_CAP, worthOf, runWorth, c
   renownOf, keptDraft, xpForLevel, devotionXpOf, setDevotionXp, devotionThreshold, maxHp, graftFor, mapNodes, pathMap, eliteUp, type RunNode } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, startRun, ownerOf, playStage } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage, leaveField } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -33,7 +33,7 @@ function inFight(prep: (g: GameState) => void = () => {}, pcs: Pc[] = DUO): Game
 function afterBoss(pcs: Pc[] = DUO, prep: (g: GameState) => void = () => {}, seed = 'PHC-0001'): GameState {
   const g0 = clone(started(pcs, seed)), r = g0.run!, boss = r.nodes.find((x) => x.kind === 'boss')!, prev = r.nodes.find((x) => x.links.includes(boss.id))!;
   r.at = prev.id; prep(g0);
-  let g = apply(take(g0, boss.id, pcs.length), { type: 'run/skip' }, 'host');
+  let g = leaveField(apply(take(g0, boss.id, pcs.length), { type: 'run/skip' }, 'host'));
   for (let i = 0; i < pcs.length; i++) g = apply(g, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'materials' }, ownerOf(i));
   return g;
 }

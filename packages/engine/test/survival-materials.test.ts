@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
 import { Rec, type Pc } from './helpers/replay';
 
 const SV: any = svJ;
@@ -54,7 +54,7 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
   it('after a fight: one weapon or the Materials card for the node\'s credits, whole into the pack; credits instead retired', () => {
     let g = at('fight');
     const n = g.run!.nodes.find((x) => x.id === g.run!.at)!;
-    g = apply(g, { type: 'run/skip' }, 'host');
+    g = leaveField(apply(g, { type: 'run/skip' }, 'host'));
     const o = g.run!.offers!.c1, C = nodeCredits('fight', n.depth, g.run!.stage);
     expect(o.weapons).toHaveLength(SV.rewards.offer.fight); expect(o.instead).toBeUndefined();
     expect(o.materials).toEqual(SV.rewards.materials.items.map((m: any) => ({ item: m.item, n: Math.ceil(C / m.per_credits) })));

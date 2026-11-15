@@ -22,6 +22,11 @@ export function startRun(g: any, seed: string, o: { by?: string; keep?: boolean 
   if (!o.keep) for (const c of Object.values(out.characters) as any[]) c.relics = (c.relics || []).filter((id: string) => !isStartBoon(id));
   return out;
 }
+/** Rules 1.55: off a won fight's field to its rewards: every player in the room marks Leave (run/leave). */
+export function leaveField(g: GameState): GameState {
+  let x = g; for (const p of g.players) if (x.run?.state === 'field') x = apply(x, { type: 'run/leave' } as any, p.id);
+  return x;
+}
 /** Who plays each character (the host, then p2, p3, p4). */
 export const ownerOf = (i: number) => (i ? 'p' + (i + 1) : 'host');
 /** The way the test squad walks: the first reachable node of a kind in `prefer` (in order), else the first reachable. */
@@ -54,6 +59,8 @@ export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: bool
     } else if (run.state === 'fight') {
       if (o.skip) r.must({ type: 'run/skip' });
       else { r.fight(40); if (r.g.combat && !r.g.combat.over && r.g.phase === 'combat') { r.errors.push('a fight did not end in 40 rounds'); break; } }
+    } else if (run.state === 'field') { // rules 1.55: the walker leaves the won fight's field at once (every player marks Leave)
+      for (let i = 0; i < n && r.g.run?.state === 'field'; i++) r.must({ type: 'run/leave' }, ownerOf(i));
     } else if (run.state === 'reward') {
       for (let i = 0; i < n; i++) if (run.offers?.['c' + (i + 1)]) r.must({ type: 'run/pick', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i));
       for (let i = 0; i < n; i++) if (r.g.run.lasting?.['c' + (i + 1)]) r.must({ type: 'run/take', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); // rules 1.43: the kit's pick

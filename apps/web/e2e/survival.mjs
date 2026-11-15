@@ -252,7 +252,18 @@ for (let i = 0; i < 400; i++) {
   await settle(p, 60);
 }
 let g = await G();
-ok('node 1 fought by hand to its end: ' + (g.combat?.summary || '?'), g.combat?.over === 'win' && g.run.state === 'reward');
+ok('node 1 fought by hand to its end: ' + (g.combat?.summary || '?'), g.combat?.over === 'win' && g.run.state === 'field');
+// rules 1.55: the field: the header, what lies on the ground, a pickup, then Leave (solo: one click) and the rewards
+await click(p, 'Walk the field ›', { timeout: 60000 });
+await p.waitForSelector('[data-phc-field-head]', { timeout: 30000 });
+ok('the field: "The field is yours" with what lies on the ground (' + (await p.locator('[data-phc-field-ground]').innerText()) + ')', (await p.locator('[data-phc-field-head]').innerText()).includes('THE FIELD IS YOURS'));
+if (await p.locator('[data-phc-field-take]').count()) { const before = (await G()).story.objects.filter((o) => o.kind === 'pile' && o.items?.length).length; await p.locator('[data-phc-field-take]').click(); await settle(p, 300); ok('Take all picks up the pile in reach', (await G()).story.objects.filter((o) => o.kind === 'pile' && o.items?.length).length === before - 1); }
+await shot('field');
+if (process.env.FIELD_SHOT) copyFileSync(OUT + 'field.png', process.env.FIELD_SHOT);
+await p.locator('[data-phc-field-leave]').click();
+await p.waitForFunction(() => window.__phc.getState().game.run.state === 'reward', null, { timeout: 30000 });
+ok('Leave the field: the rewards', (await G()).run.state === 'reward');
+g = await G(); // what the field's pickup brought is the pack the pick adds to
 await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 { // the music's Now playing card leaves within its 5 s after a fight (it stayed over the sheet for 30 s and more)
@@ -644,6 +655,7 @@ while (guard++ < 40) {
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
+    await click(p, 'Walk the field ›', { timeout: 60000 }); await p.locator('[data-phc-field-leave]').click({ timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
     await click(p, 'Back to the map ›', { timeout: 60000 });
   } else if (r.state === 'reward') {
     await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
@@ -759,6 +771,7 @@ for (let i = 0; i < 160; i++) {
     e = await act({ type: 'run/skip' });
     if (!e && s2by[r.at]?.kind === 'vault_guard' && !seen.guard) { const f = (await run()).stats.fights.at(-1), name = (await G()).run && f.foes.map((x) => x.name);
       seen.guard = f.kind === 'vault_guard' && f.template === 'vault_watch' && f.foes.some((x) => x.tier === 'elite'); ok('the vault\'s guard: a fight of its own (' + f.template + ': ' + name.join(', ') + '), harder than an Elite\'s', seen.guard); }
+  } else if (r.state === 'field') { e = await act({ type: 'run/leave' }); // rules 1.55: the field (solo: one Leave)
   } else if (r.state === 'shop') { e = await act({ type: 'run/leave' }); // rules 1.42: a shop on the way (solo: leaving is the close)
   } else if (r.state === 'reward') {
     if (s2by[r.at]?.kind === 'vault' && !seen.chest) { const o = Object.values(r.offers)[0]; seen.chest = o.weapons.length === 3 && o.weapons.every((w) => w.rarity === 'relic' || w.rarity === 'masterwork') && (r.note.credits || 0) > 0;
@@ -840,6 +853,7 @@ for (let i = 0; i < 80; i++) {
   // the guest's move only where the way forks (on a lane with one way forward the host's click walks the squad on)
   if (hr.state === 'map') { const next = way[hr.path.length], at = hr.nodes.find((n) => n.id === hr.at), forks = !at || at.links.length >= 2; e = await actOn(h, { type: 'run/move', node: next }); if (!e && forks) { await settle(h, 150); e = await actOn(gu, { type: 'run/move', node: next }); } }
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
+  else if (hr.state === 'field') e = await actOn(h, { type: 'run/leave', close: true }); // rules 1.55: the host closes the field
   else if (hr.state === 'reward') { for (const [id, o] of Object.entries(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('C: walked to the shop: ' + e, false); break; }
   await settle(h, 120);
@@ -889,6 +903,7 @@ for (let i = 0; i < 80; i++) {
   if (hr.state === 'map') e = await actOn(h, { type: 'run/move', node: nexts[0] });
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
   else if (hr.state === 'shop') { e = await actOn(h, { type: 'run/leave', close: true }); }
+  else if (hr.state === 'field') e = await actOn(h, { type: 'run/leave', close: true }); // rules 1.55: the host closes the field
   else if (hr.state === 'reward') { for (const [id, o] of Object.entries(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('C2: walked on to a fork: ' + e, false); break; }
   await settle(h, 120);
@@ -937,6 +952,7 @@ const walkD = async (stop, why) => { for (let i = 0; i < 400; i++) {
   if (dr.state === 'map') { const here = dr.nodes.find((n) => n.id === dr.at), nx = here ? here.links.filter((l) => dr.nodes.find((n) => n.id === l)?.kind !== 'vault_guard') : dr.nodes.filter((n) => n.depth === 1).map((n) => n.id); e = await dAct({ type: 'run/move', node: nx[0] }); }
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
+  else if (dr.state === 'field') e = await dAct({ type: 'run/leave', close: true }); // rules 1.55: the host closes the field
   else if (dr.state === 'reward') { for (const [id, o] of Object.entries(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
   else if (dr.state === 'boon') e = await dAct({ type: 'run/boon', charId: dcid, choice: 0 });
   else if (dr.state === 'tile') e = await dAct({ type: 'run/tile', tile: dr.tiles[0].id });
@@ -972,6 +988,7 @@ for (let i = 0; i < 80; i++) {
   if (dr.state === 'map') e = await dAct({ type: 'run/move', node: toForge[dr.path.filter((x) => x.startsWith('s3.')).length] });
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
+  else if (dr.state === 'field') e = await dAct({ type: 'run/leave', close: true }); // rules 1.55: the host closes the field
   else if (dr.state === 'reward') { for (const [id, o] of Object.entries(dr.offers || {})) e = e || await dAct({ type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(dr.lasting || {})) e = e || await dAct({ type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('D: the way to the Forge: ' + e, false); break; }
 }

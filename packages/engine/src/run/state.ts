@@ -37,10 +37,10 @@ export const modeOf = (id: string | null | undefined): ModeDef | undefined => MO
 export const playOf = (g: { settings: { play?: PlayMode } }): PlayMode => g.settings.play || OLD_SAVE_PLAY;
 
 /** Where a run stands. `loadout`: the camp before node 1 (rules 1.52, run/loadout.ts); `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
- * after a won fight (offers); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:
+ * after a won fight (offers; rules 1.55: after `field`, the won fight's map roamed freely until everyone marks Leave); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:
  * after a Boss (the stage is cleared; rules 1.44: each character picks a boon, then the squad picks the next tile);
  * `over`: lost or retired. */
-export type RunPhase = 'loadout' | 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
+export type RunPhase = 'loadout' | 'map' | 'fight' | 'field' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
 /** A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. */
 export type RunNode = PathNode;
 /** A tile of the world the party walks (rule 32): a stage's setting and its boon pool. */
@@ -97,7 +97,7 @@ export interface RunState {
   state: RunPhase;
   /** Each player's mark on a reachable node (rule 11), by player id. */
   leans: Record<string, string>;
-  /** Each player's "ready" (leaving a shop or a Forge together), by player id. */
+  /** Each player's "ready" (leaving a shop, a Forge or a won fight's field together), by player id. */
   ready: Record<string, boolean>;
   /** The picks on offer after a won fight, by character id; null when none (step 5 adds the boons and tiles). */
   offers: Record<string, RunOffer> | null;
@@ -155,6 +155,7 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
   if (!g.players.some((p) => p.id === by)) return 'Only a player in the room picks the way.';
   if (r.state === 'loadout') return 'Finish your loadout at the camp first: everyone marks Ready, or the host starts the run.';
   if (r.state === 'fight') return 'The fight is on.';
+  if (r.state === 'field') return 'Leave the field first: everyone marks Leave, or the host closes it.';
   if (r.state === 'reward') return 'Take your pick first. The squad moves on when everyone has.';
   if (r.state === 'shop') return 'Leave the shop first: everyone marks ready, or the host closes it.';
   if (r.state === 'boon') return 'Pick your boon first. The next tile comes after.';

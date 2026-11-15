@@ -128,6 +128,7 @@ function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   if (r.state === 'tile') { const sv = stageView(g, me); return sv && sv.canGo ? { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) } : null; }
   if (r.state === 'map' && v.canGo) return { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) };
   if (r.state === 'fight' && g.combat) return { key: 'fight', label: 'To the fight', attr: { 'data-phc-phase': 'fight' }, go: () => go('combat') };
+  if (r.state === 'field' && g.combat) return { key: 'field', label: 'To the field', attr: { 'data-phc-phase': 'field' }, go: () => go('combat') }; // rules 1.55
   return null;
 }
 /** The same phase control, drawn again in a place's header (PlaceBar: the visibility standard), so the button that moves

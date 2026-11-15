@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, mapNodes, pathMap, reachable, runNode, nodeXp, nodeCredits, ENC_BUDGET, creditsOf, priceOf, maxHp, NODE_TEXT, WEAPON, type RunNode } from '../src';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, startRun, ownerOf, playStage } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage, leaveField } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -72,8 +72,9 @@ describe('Survival, one stage (rules 1.41)', () => {
     // the rounds held for the gun in hand, in magazines or loose (rules 1.52: the free rifle may load round by round)
     const rounds = (c: any) => { const w: any = (WEAPON as any)[c.weapon]; return (c.pack || []).reduce((t: number, p: any) => t + (p.mags && p.weapon === c.weapon ? p.mags.reduce((u: number, n: number) => u + n, 0) : p.calibre === w.ammo && !p.mags ? p.qty || 0 : 0), 0); };
     const mags0 = rounds(g0.characters.c1), mag = (WEAPON as any)[g0.characters.c1.weapon].magazine;
-    const g = apply(g0, { type: 'run/skip' }, 'host'), n = runNode(g.run!, g.run!.at)!;
-    expect(g.run!.state).toBe('reward'); expect(g.phase).toBe('story');
+    const gf = apply(g0, { type: 'run/skip' }, 'host'), g = leaveField(gf), n = runNode(g.run!, g.run!.at)!;
+    expect(gf.run!.state).toBe('field'); expect(g.run!.state).toBe('reward'); expect(g.phase).toBe('story'); // rules 1.55: the field first
+    expect(gf.characters.c1.xp).toBe(g.characters.c1.xp); // the pay is given as the fight is won, before the field
     expect(g.characters.c1.xp).toBe(nodeXp('fight', n.depth, 1));
     expect(creditsOf(g.characters.c1)).toBe(creditsOf(g0.characters.c1) + nodeCredits('fight', n.depth, 1));
     expect(nodeXp('fight', 2, 1)).toBe(SV.xp.base + SV.xp.per_depth); expect(nodeCredits('fight', 1, 1)).toBe(SV.credits.base + SV.credits.per_depth);
@@ -135,7 +136,7 @@ describe('Survival, one stage (rules 1.41)', () => {
 
   it('the Boss clears the stage: after its picks the run stands at the boon, and the host retires it back to the lobby', () => {
     const g = started(DUO), boss = firstOf(g, 'boss'), at = standOn(g, before(g, boss).id);
-    let x = apply(take(at, boss, 2), { type: 'run/skip' }, 'host');
+    let x = leaveField(apply(take(at, boss, 2), { type: 'run/skip' }, 'host'));
     expect(x.run!.state).toBe('reward'); expect(x.characters.c1.xp).toBe(nodeXp('boss', 15, 1));
     expect(refused(x, { type: 'run/retire' })).toBe('You can retire only after beating a stage\'s Boss.');
     x = apply(apply(x, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host'), { type: 'run/pick', charId: 'c2', choice: 0 }, 'p2');

@@ -97,6 +97,7 @@ for (let step = 0; step < 40 && fights < 3; step++) {
       await settle(p, 400);
     }
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip: ' + e, false); break; }
+    await click(p, 'Walk the field ›', { timeout: 60000 }); await p.locator('[data-phc-field-leave]').click({ timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
     await click(p, 'Back to the map ›', { timeout: 60000 });
   } else if (r.state === 'reward') {
     await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
