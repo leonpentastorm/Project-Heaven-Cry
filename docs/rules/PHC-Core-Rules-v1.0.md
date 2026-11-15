@@ -6013,6 +6013,22 @@ standard core's 150 credits (Magic, "Mana cores").
    board and the squad, with no area map and no quest board. Every "full screen" of rules 1.42 to 1.52 is superseded by
    it.
 
+## Rules 1.55 (15 Nov 2026)
+
+Leon (15 Nov 2026), verbatim: "on weapons ui, list out what skill it scale it's hit with too".
+
+1. **Every weapon's numbers say what it is aimed with.** The gear preview (rules 1.42) of a weapon, a thrown weapon or
+   a focus gains two lines: **Hits with**, the skill its roll to hit is made with, as the attack itself resolves it (a
+   weapon's `skill`, a focus's door), with the character's own check modifier ("Dexterity · +3"); and **Damage scales
+   with**, what its damage multiplier reads, in the words of the damage breakdown (a weapon's `phys.scales_with` and
+   the skill it hits with, or `also_scales`: "Agility and Dexterity", "Strength, Raw Power and Dexterity"; a focus:
+   its damage profile's pair, "Intelligence and Brain Power"; a focus with no damage profile, the Attuner, has no such
+   line). A weapon with more than one way of use shows its default (a melee weapon in melee, any other as a shot or a
+   throw). Every card that shows a weapon's numbers shows both (`docs/design/ui-screens.md`). The magazine line reads
+   rounds, a middle dot and the calibre ("30 · .32 Decrkm"). No number changes. Note: since rules 1.26 the weapon,
+   Sigil and Soul profiles have no attribute or skill slope (level buys damage), so the second line names what the
+   multiplier reads, which today is a constant; the line is the breakdown's own label and moves with it.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.

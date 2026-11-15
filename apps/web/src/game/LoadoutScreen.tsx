@@ -17,6 +17,7 @@ import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
 import { boonCards } from './campView';
 import { boonIconSvg } from './boonIcons';
+import { shownLines } from './previewLines';
 
 const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scrollbar-thumb{background:#2A3447;border-radius:6px}'
@@ -57,7 +58,7 @@ function PickCard({ c, slot, charId }: { c: LoadoutCardV; slot: 'weapon' | 'focu
         </span>
       </div>
       <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '2px 8px', fontSize: 12 }}>
-        {c.preview.lines.slice(0, 4).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} {...tipProps(l.label)}>{l.label.replace(/ \(.*\)$/, '')}</dt><dd style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
+        {shownLines(c.preview.lines, 4).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} {...tipProps(l.label)}>{l.label.replace(/ \(.*\)$/, '')}</dt><dd style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
       </dl>
       {off ? <span style={{ marginTop: 'auto', fontSize: 12, color: I.muted }}>{c.why}</span> : null}
     </button>
@@ -77,7 +78,7 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
         <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 16, fontWeight: 600, lineHeight: 1.15 }}>{c.name}</span>
           {tag ? <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>{tag}</span> : null}
-          {!compare ? <span style={{ fontSize: 12, color: I.muted }}>{c.preview.lines.slice(0, 2).map((l) => l.label.replace(/ \(.*\)$/, '') + ' ' + l.value).join(' · ') || c.preview.category}</span> : null}
+          {!compare ? <span style={{ fontSize: 12, color: I.muted }}>{shownLines(c.preview.lines, 2).map((l) => l.label.replace(/ \(.*\)$/, '') + ' ' + l.value).join(' · ') || c.preview.category}</span> : null}
         </span>
       </div>
       {compare && compare.length ? (
