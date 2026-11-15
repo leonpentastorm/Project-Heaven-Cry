@@ -9,7 +9,9 @@ import { FAITH_PATRON } from '../belief';
 import { rngFor, die } from '../rng';
 import { gearPreview } from '../gearpreview';
 import { type RunOption, type TrainBar, runOptions, nextGrade } from './progress';
-import { runNode, runSetting, type RunState } from './state';
+import { runNode, runSetting } from './state';
+import { TABS, placeOpen, type PlaceTabV } from './places';
+export { PLACE_KINDS, placeOpen, type PlaceTabV } from './places';
 import { SETTING } from './encounter';
 import { MAP_DATA } from './map';
 import { faceFor, faceTabLines } from './shop';
@@ -17,8 +19,6 @@ import { type MeV, meBlock } from './shopview';
 import { capRoom } from './power';
 import type { GameState } from '../game';
 
-/** A place's tab: its id, its word, and the option groups it holds (the Give tab holds none: it draws `giveView`). */
-export interface PlaceTabV { id: string; label: string; groups: RunOption['group'][] }
 /** One large choice card: the engine's option, and for a grade step the numbers before and after (the gear preview),
  * for a Relic property its worth against the character's cap, for a training its bar (rules 1.54 item 10: the option's
  * trainBar, where the character stands, what it adds, the next step in words; null for any other card). */
@@ -33,18 +33,6 @@ export interface PlaceViewV {
   /** the character's boon room left, "30 left" ('' with no character) */
   log: string[]; worth: string;
 }
-/** The tabs each place shows (the Give tab last on every one). */
-const TABS: Record<string, PlaceTabV[]> = {
-  forge: [{ id: 'upgrade', label: 'Repair and upgrade', groups: ['grade', 'relic', 'repair'] }, { id: 'stock', label: 'Mods and armour', groups: ['forge'] }, { id: 'fit', label: 'Armour fitting', groups: ['fit'] }],
-  training: [{ id: 'train', label: 'Training', groups: ['train'] }],
-  rest: [{ id: 'train', label: 'Small training', groups: ['train'] }],
-  shrine: [{ id: 'shrine', label: 'Blessings', groups: ['shrine'] }],
-  event: [{ id: 'trade', label: 'Trades', groups: ['trade'] }],
-};
-/** The node kinds that open as a full-screen place (the shop has its own view, shopview.ts). */
-export const PLACE_KINDS = Object.keys(TABS);
-/** Is the party standing at a place that opens full screen (its visit open, on the map, not a pick waiting)? */
-export const placeOpen = (g: { run?: RunState | null }): boolean => { const r = g.run; if (!r || r.state !== 'map' || !r.visit || r.visit.node !== r.at) return false; return PLACE_KINDS.includes(r.visit.kind); };
 
 /** The full-screen place's view for player `me` (their own character, or `charId`); null when no place is open. */
 export function placeView(g: GameState, me: string, charId?: string | null): PlaceViewV | null {

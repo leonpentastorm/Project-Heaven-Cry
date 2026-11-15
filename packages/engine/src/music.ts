@@ -9,6 +9,7 @@ import { SKILL, TRAITS } from './data';
 import { seedFrom } from './rng';
 import { costOf } from './effects/cost';
 import { runSetting, runNode } from './run/state';
+import { placeOpen } from './run/places';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import survivalJ from '../../../data/survival.json';
 
@@ -65,8 +66,8 @@ export function runMusic(g: Pick<GameState, 'run'>): { id: OstId; why: string } 
   const r = g.run; if (!r || r.state === 'over' || r.state === 'fight') return null;
   if (r.state === 'loadout') return { id: RUN_MUSIC.camp, why: 'Survival: the camp' };
   if (r.state === 'boon') return { id: RUN_MUSIC.boon, why: 'Survival: the boon pick' };
-  // A place's screen is open: the shop's (state 'shop'; once left, its visit stays on the map), or a safe node's visit on the map.
-  const at = runNode(r, r.at), open = r.state === 'shop' || (r.state === 'map' && r.visit?.node === r.at && r.visit.kind !== 'shop');
+  // A place's screen is open: the shop's (state 'shop'; once left, its visit stays on the map), or a place's (placeOpen).
+  const at = runNode(r, r.at), open = r.state === 'shop' || placeOpen(g);
   const kind = open ? at?.kind : undefined;
   const own = kind ? RUN_MUSIC.place[kind] : undefined;
   if (own) return { id: own, why: 'Survival: ' + kind };
