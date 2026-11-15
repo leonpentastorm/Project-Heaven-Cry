@@ -54,8 +54,11 @@ for fid, a in C.get("figments", {}).items():
 for fam, prefix in (("traits", "wick-trait-"), ("perks", "wick-perk-")):
     for iid, a in C[fam].items():
         small = ROOT / a.get("exports", {}).get("128", a["path"])
-        emit(prefix + iid, small, (128, 128), None, 90, versioned=iid == "both-hands")
-        emit(prefix + iid, ROOT / a["path"], None, (512, 512), 90, versioned=iid == "both-hands")
+        # versioned: art replaced under the same name (Both Hands; a placeholder over an old perk's icon, and later its
+        # delivery) gets a new address, so no cache keeps showing the old picture
+        ver = iid == "both-hands" or "previous_revision_path" in a
+        emit(prefix + iid, small, (128, 128), None, 90, versioned=ver)
+        emit(prefix + iid, ROOT / a["path"], None, (512, 512), 90, versioned=ver)
         # A renamed item keeps its art file (rules 1.13: Grapple is Iron Grip, Origami Hands is Both Hands): the catalog
         # entry's `data_id` names the item it belongs to now, and the same images also answer to that name, which is
         # the one the screens ask for ("wick-perk-" + the data id with hyphens). No second copy is written.
@@ -197,6 +200,8 @@ GEAR_DERIVED = ("rounds", "mag", "loot")
 
 def gear_key(stem):
     kind, _, rid = stem.partition("-")
+    if kind == "loot" and rid in DATA_IDS:  # a loot painting of an item (Contraband): the item's own key, as any item's
+        return "gear-" + rid
     if kind in GEAR_DERIVED or (kind == "armour" and rid.startswith("torso_class")):
         return "gear-" + stem
     for cand in (rid, "ammo_" + rid, "mod_" + rid):
