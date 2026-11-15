@@ -10,27 +10,27 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, narratorOff, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView } from '@engine';
+  attemptWhy, narratorOff, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, NO_TURNS } from '@engine';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 import { seenFigments } from '../game/fx/figments';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
-/** Rules 1.55: the field's header (the engine's field: fieldView): what lies on the ground, Take all, Leave and the vote. */
-/** Rules 1.55 item 39 (0.28.2): on the field the fight screen's own action bar is the field's (the engine's field as a
- *  fight state, fieldCombat; its descriptors; every action the reducer's field verdict). The fight as the screen shows it
- *  now, and the unit it acts for: on the field (walked into) my character's unit, else the unit whose turn it is. */
-const fightNow = (g, me, open) => { const cb = g && g.combat ? castFight(g, fieldFight(g, g.combat, !!open), ART) : null;
-  const on = !!(open && cb && g.run && g.run.state === 'field');
+/** Rules 1.55 items 45 and 51 (0.28.3): the field is the fight itself, still running with no enemies left
+ *  (cb.field): the same screen, action bar and effects. The fight as the screen shows it now, and the unit it acts
+ *  for: on the field my character's unit (no turns), else the unit whose turn it is. */
+const fightNow = (g, me) => { const cb = g && g.combat ? castFight(g, g.combat, ART) : null;
+  const on = !!(cb && cb.field && !cb.over);
   const cur = !cb ? null : on ? cb.units.find((u) => u.charId && !u.companion && !u.dead && g.characters[u.charId]?.owner === me) || null : active(cb);
   return { cb, cur, open: on }; };
-const fieldVals = (fv, open) => {
-  if (!fv || !open) return { show: false };
+/** Rules 1.55: the field's header (fieldView): what lies on the ground, Take all (the fight's own pickup), the vote. */
+const fieldVals = (fv) => {
+  if (!fv) return { show: false };
   const ground = fv.piles ? fv.piles + (fv.piles === 1 ? ' pile' : ' piles') + ', ' + fv.items + (fv.items === 1 ? ' item' : ' items') + ' on the ground' : 'Nothing left on the ground';
   const word = 'Leave the field', tally = fv.solo ? '' : fv.ready + ' of ' + fv.of + ' ready';
-  return { show: true, ground, tally, hasTally: !fv.solo, canTake: !!fv.takeId && !!fv.charId, take: () => act({ type: 'world/act', charId: fv.charId, act: 'pickup', objId: fv.takeId }),
-    takeHint: fv.takeId ? 'Take all' : fv.piles ? 'Walk next to a pile to take it' : '', hasHint: !fv.takeId && fv.piles > 0,
+  return { show: true, ground, tally, hasTally: !fv.solo, canTake: !!fv.take, take: () => act(fv.take),
+    takeHint: fv.takeTile ? 'Take all' : fv.piles ? 'Walk next to a pile to take it' : '', hasHint: !fv.takeTile && fv.piles > 0,
     leaveLabel: fv.mine ? '✓ ' + word : word, leave: fv.mine ? () => {} : () => act({ type: 'run/leave' }), waiting: fv.mine && fv.waiting.length ? 'Waiting for ' + fv.waiting.join(', ') + '.' : '' };
 };
 const act = (a) => {
@@ -48,7 +48,7 @@ import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag
 import { forecastVals } from '../game/manaForecast';
 import { echoView } from '../game/echoView';
 import { castFight } from '../game/cast';
-import { fieldFight, fieldView } from '../game/fieldView'; // rules 1.55: a won run fight's field
+import { fieldView } from '../game/fieldView'; // rules 1.55: a won run fight's field
 import { worldLayer, kindBadge, pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -514,7 +514,7 @@ export class CombatLogic extends DCLogic {
 
   /** An action picked outside the panel (the your-turn card's command tiles): select it, if it is this unit's to use. */
   pickAction(id, unit) {
-    const g = getState().game, me = getState().me.id, F = fightNow(g, me, this.state.fieldIn), cb = F.cb, cur = F.cur;
+    const g = getState().game, me = getState().me.id, F = fightNow(g, me), cb = F.cb, cur = F.cur;
     if (!cb || (cb.over && !F.open) || !cur || cur.side !== 'pc' || cur.downed || (unit && unit !== cur.id) || g.characters[cur.charId]?.owner !== me) return;
     const w = WEAPON[cur.weapon], act1 = id === 'shot' && w && isMelee(w) ? 'melee' : id, act2 = mapLegacy(cur, act1) || act1;
     if (this._ids && !this._ids.has(act2)) return;
@@ -810,7 +810,7 @@ export class CombatLogic extends DCLogic {
   renderVals() {
     const st = getState(), g = st.game, me = st.me.id;
     // HP follows the effects (fx/play.ts fxShownHp): a bar falls when its hit plays, not when the state arrives.
-    const F0 = fightNow(g, me, this.state.fieldIn), onField = F0.open; // rules 1.55 item 39: walking the field, the fight screen acts on it
+    const F0 = fightNow(g, me), onField = F0.open; // rules 1.55 item 39: walking the field, the fight screen acts on it
     const cb = (() => { const c0 = F0.cb, shown = c0 ? fxShownHp(g) : null;
       return c0 && shown && shown.size ? { ...c0, units: c0.units.map((u) => (shown.has(u.id) && !u.dead ? { ...u, hp: Math.min(u.maxHp, shown.get(u.id)) } : u)) } : c0; })();
     // A new unit's turn starts clean: a spell (or its aim) picked for the last unit never carries over to this one.
@@ -1209,7 +1209,7 @@ export class CombatLogic extends DCLogic {
     const rotU = [...ordU.slice(ci), ...ordU.slice(0, ci)];
     this.flipInit(rotU.map((u) => u.id).join(','));
     const sn = (u) => !u.unseen;
-    const initiative = rotU.map((u, idx) => ({ tag: cb.over ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && idx < 2,
+    const initiative = rotU.map((u, idx) => ({ tag: cb.over || cb.field ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && !cb.field && idx < 2, // rules 1.55 item 51: the field has no turns
       tagStyle: 'font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: ' + (idx === 0 ? '#FFFFFF' : '#A3AEC2'),
       ...(() => { const hv = healthView(u), kn = hv.known, pct = kn ? hv.pct : 0; // the engine's view (rules 1.55 item 29): exact, or a word
         return { hasHp: kn, hasLook: !kn, lookText: kn ? '' : lookWord(hv), lookStyle: kn ? '' : lookChip(hv), hpBox: 'position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; overflow: hidden; background: #1C2536' + (kn ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.45)'),
@@ -1627,7 +1627,7 @@ export class CombatLogic extends DCLogic {
       padTCls: 'phc-a-rise' + pt.cls, padT: pt.val || { groups: [] }, padWShow: pw.show, padWCls: 'phc-a-rise' + pw.cls, padW: pw.val || {}, padDShow: pd.show, padDCls: 'phc-a-rise' + pd.cls, padD: pd.val || {},
       tgtList: tp.show ? [{ ...tp.val, key: 'tgt-' + tp.val.id, cls: 'phc-a-right' + tp.cls }] : [],
       cantConfirm, noConfirm: isPerkInfo(S.action), confirmText: S.action === 'draw' && isMagic ? 'Click a tile to draw' : S.action === 'pickup' && pickPile && pickSel ? pickupLabel(pickPile, pickUntick) : 'Confirm', confirmSfx: isMagic ? 'none' : undefined,
-      confirm: () => this.confirm(), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField,
+      confirm: () => this.confirm(), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField, noTurns: onField, noTurnsText: NO_TURNS, // rules 1.55 item 51
     };
     // The grid fits the room beside the pinned column (fitGrid measures; it runs again on resize and when the map changes).
     const zoom = this._zoom || 1, fitKey = cb.map.w + 'x' + cb.map.h;
@@ -1704,9 +1704,9 @@ export class CombatLogic extends DCLogic {
         // Rules 1.9 (item 695): what the loot cap held back, for the host's eyes only (the engine strips lootLog from
         // everyone else's view).
         ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),
-      cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField, // the field has no turns
-      toStory: fv ? () => this.setState({ fieldIn: true }) : () => go(homeScreen(g)), toStoryLabel: fv ? 'Walk the field ›' : g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !(fv && S.fieldIn),
-      field: fieldVals(fv, !!S.fieldIn), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
+      cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField, noTurns: onField, noTurnsText: NO_TURNS, // rules 1.55 item 51: the field has no turns
+      toStory: () => go(homeScreen(g)), toStoryLabel: g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !fv, // a field saved by 0.28.2 shows its vote, not the end card
+      field: fieldVals(fv), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
       overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox || g.run ? '' : ' The Narrator picks up the story.') + (me === g.hostId && cb.lootLog && cb.lootLog.length ? ' ' + lootLogLine(cb.lootLog) : ''),
     };
   }
@@ -1714,8 +1714,8 @@ export class CombatLogic extends DCLogic {
   tileClick(k) {
     // In the overview a click on a tile goes back to the camera, centred there; it never acts.
     if (this._overview) { this.toggleOverview(k); return; }
-    const S = this.state, g = getState().game, F = fightNow(g, getState().me.id, S.fieldIn), cb = F.cb, cur = F.cur;
-    if (fieldView(g, getState().me.id) && !F.open) return; // rules 1.55: the won fight's screen, the field not walked into yet
+    const S = this.state, g = getState().game, F = fightNow(g, getState().me.id), cb = F.cb, cur = F.cur;
+    if (fieldView(g, getState().me.id) && !F.open) return; // rules 1.55 item 50: a field saved by 0.28.2 is only left
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);
     const u = cb.units.find((x) => x.pos === k && !x.dead);
     // A perk action that wants a target or a tile takes the click (an ally, anyone, or the tile itself).
@@ -1744,7 +1744,7 @@ export class CombatLogic extends DCLogic {
 
   /** A held heart's move (rules 1.5): Pump, Steady, Let go, Feed, Heart Overwatch on or off. */
   heartAct(id) {
-    const g = getState().game, cur = fightNow(g, getState().me.id, this.state.fieldIn).cur; if (!cur || !cur.mg) return;
+    const g = getState().game, cur = fightNow(g, getState().me.id).cur; if (!cur || !cur.mg) return;
     // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump. What each sends is the engine's descriptor.
     const [aid, feeling] = id.startsWith('pump:') ? ['pump', id.slice(5)] : [id, null];
     if (aid !== 'heartwatch' && aid !== 'letgo') this.revealHeart(); // what changed, in view
@@ -1754,7 +1754,7 @@ export class CombatLogic extends DCLogic {
   }
   /** A tile click while a spell is chosen: draw there, pick a pattern, or aim. */
   magicClick(k, cur) {
-    const S = this.state, m = this._mg || {}, g = getState().game, cb = fightNow(g, getState().me.id, S.fieldIn).cb;
+    const S = this.state, m = this._mg || {}, g = getState().game, cb = fightNow(g, getState().me.id).cb;
     if (S.action === 'draw') { if (m.word) { const a = sendDescriptor(g, cur.id, 'draw', { word: m.word, tile: k, ...(m.stroke ? { stroke: m.stroke } : {}) }, getState().me.id); if (a) act(a); if (S.stroke) this.setState({ stroke: null }); } return; }
     if (S.action === 'evoke') {
       const r = evokeClick(m.evTile ? m.evV || null : null, cb, cur, k, S.evc || {});
@@ -1767,7 +1767,7 @@ export class CombatLogic extends DCLogic {
   }
 
   confirm() {
-    const cur = fightNow(getState().game, getState().me.id, this.state.fieldIn).cur, a = this.state.action, S = this.state, m = this._mg || {};
+    const cur = fightNow(getState().game, getState().me.id).cur, a = this.state.action, S = this.state, m = this._mg || {};
     if (isPerkInfo(a)) return; // a row to read: nothing to run (and never an attack on the picked target)
     // The flow: Confirm sends the engine's action for the picks (null: not ready; the panel says why).
     if (this._flow) {

@@ -79,7 +79,7 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
           style={{ minHeight: 46, padding: '0 20px', borderRadius: 12, border: 0, background: why || row.kind === 'never' ? I.raised : I.text, color: why || row.kind === 'never' ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15.5, fontWeight: 700, cursor: why ? 'default' : 'pointer' }}>{word}</button>
         {why ? <span data-phc-give-reason="" style={{ fontSize: 13, color: I.muted }}>{why}</span> : null}
         {row.use ? [target.id, v.from!.id].map((id) => { const u = row.use!, no = u.why[id], name = id === v.from!.id ? 'yourself' : target.name; // rules 1.55 item 32: use it on the friend picked, or on yourself
-          return <button key={'use-' + id} type="button" data-phc-give-use={id} disabled={!!no} aria-label={no ? u.label + ' ' + name + ': ' + no : undefined} onClick={() => act({ ...(u.action as any), targetId: id })}
+          return <button key={'use-' + id} type="button" data-phc-give-use={id} disabled={!!no} aria-label={no ? u.label + ' ' + name + ': ' + no : undefined} onClick={() => act({ ...(u.action as any), targetId: u.targets?.[id] ?? id })}
             style={{ minHeight: 46, padding: '0 18px', borderRadius: 12, border: '1px solid ' + I.line, background: no ? 'transparent' : I.raised, color: no ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: no ? 'default' : 'pointer' }}>{u.label + ' ' + name}</button>; }) : null}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

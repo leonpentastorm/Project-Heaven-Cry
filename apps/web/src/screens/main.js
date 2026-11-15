@@ -533,7 +533,7 @@ export class MainLogic extends DCLogic {
       if (open.length && row.qty > 1) { out.push({ key: 'q-' + gkey, label: '‹ fewer', go: () => setQ(n - 1) }); out.push({ key: 'q+' + gkey, label: 'more ›', go: () => setQ(n + 1) }); }
       for (const t of open) out.push({ key: 'g1' + t.id, label: 'Give ' + (row.qty > 1 ? n + ' ' : '') + 'to ' + t.name, go: () => { act({ ...row.action, to: t.id, qty: n }); setQ(1); } });
       if (row.use) for (const x of Object.values(g.characters)) { if (x.dead || row.use.why[x.id]) continue;
-        out.push({ key: 'u' + x.id, label: row.use.label + ' ' + (x.id === c.id ? 'yourself' : x.name), go: () => act({ ...row.use.action, targetId: x.id }) }); }
+        out.push({ key: 'u' + x.id, label: row.use.label + ' ' + (x.id === c.id ? 'yourself' : x.name), go: () => act({ ...row.use.action, targetId: (row.use.targets && row.use.targets[x.id]) || x.id }) }); }
       return out; };
     const rig = pack.flatMap((it, ri) => {
       if (!it.mags) { const pi0 = ri - (c && c.stims ? 1 : 0), pi = c && pi0 >= 0 && pi0 < packOf(c).length && it.id !== 'eoe' && it.id !== 'stim' ? pi0 : -1, def = ITEM[it.item || it.id] || {}, wdef = it.weapon ? WEAPON[it.weapon] : null, acts = [];
