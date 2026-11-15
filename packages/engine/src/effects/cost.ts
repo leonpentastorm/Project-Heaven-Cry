@@ -186,7 +186,7 @@ export const unlend = (cb: Combat | null | undefined) => { if (cb) delete (cb as
 
 // ---------------------------------------------------------------------------------------------- can it be paid
 /** THE refusal sentence for a resource the unit is short of. */
-export const needs = (n: number, what = 'AP', left?: number) => 'Needs ' + n + ' ' + what + (left != null ? ' (' + left + ' left)' : '') + '.';
+export const needs = (n: number, what = 'AP', left?: number, have?: number) => 'Needs ' + n + ' ' + what + (left != null ? ' (' + left + ' left)' : have != null ? ' (you have ' + have + ')' : '') + '.';
 /** The same question for a pool that is not a unit's (the area map's round AP, g.story.ap): the sentence, or null.
  * o.left: say what is left ("Needs 2 AP (1 left)."). */
 export const poolWhyNot = (have: number, n: number, o: { left?: boolean } = {}): string | null => (have < n ? needs(n, 'AP', o.left ? have : undefined) : null);
@@ -210,7 +210,7 @@ export function resWhyNot(res: Record<string, number> | undefined, u: Unit | nul
   for (const [id, n] of Object.entries(res || {})) {
     if (!(n > 0)) continue; const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
     if (!u && d.on === 'unit') return 'Only in a fight (it costs ' + n + ' ' + d.name + ').';
-    if (resLeft(u, id, c) < n) return needs(n, d.name);
+    const have = resLeft(u, id, c); if (have < n) return needs(n, d.name, undefined, Math.floor(have)); // 0.28.3: "Needs 24 MP (you have 10)."
   }
   return null;
 }

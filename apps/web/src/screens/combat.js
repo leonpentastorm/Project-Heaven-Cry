@@ -471,6 +471,13 @@ function fightTalkVals(self, g, cb, fr, who, hostMe, act) {
   return out;
 }
 
+/** A row's cost split for the MP blue (0.28.3): the AP part, the engine's "N MP" piece, and the rest (uses), in the cost text's order. */
+const costParts = (costText, mp) => {
+  const parts = String(costText || '').split(' · '), k = mp ? parts.indexOf(mp + ' MP') : -1;
+  if (k < 0) return { cost: costText, hasMp: false, mp: '', costTail: '' };
+  return { cost: parts.slice(0, k).join(' · '), hasMp: true, mp: parts[k], costTail: parts.slice(k + 1).map((x) => ' · ' + x).join('') };
+};
+
 export class CombatLogic extends DCLogic {
   constructor(props) { super(props); this.state = { action: 'move', hover: null, target: null }; LIVE = this; }
 
@@ -1247,7 +1254,9 @@ export class CombatLogic extends DCLogic {
       // Its hover card (game/actionTip.ts): the name and cost, a line per sentence, the weapon's line and traits, the refusal.
       ...tipAttrs({ name: label, cost: costText, ...(meta && meta.parts ? { needs: meta.parts.needs, text: meta.parts.text, line: meta.parts.line, traits: meta.parts.traits } : { text }), why }),
       area: gid === 'attack' ? (meta && meta.hand) || 'other' : '', sub: (meta && meta.sub) || '',
-      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
+      // 0.28.3 (rules 1.55 item 46): an MP cost is drawn in the MP blue after the AP, the engine's own figure (meta.mp); the cost text says it in the same words
+      ...costParts(costText, meta && meta.mp),
+      name: label, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
         (why && rowSel !== id ? 'opacity: 0.62; ' : '') + (rowSel === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));

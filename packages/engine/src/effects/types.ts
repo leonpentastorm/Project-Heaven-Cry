@@ -280,6 +280,8 @@ export interface ActionDef {
   choices?(h: Holder): string[];
   /** Why it can't go at this unit (a door verb's `reach`: side, range, sight, its `if`), or null. */
   reach?(h: Holder, t: Unit): string | null;
+  /** 0.28.3: after the unit, a tile (where the verb moves it: Guide, rules 1.33); its preview checks the tile. */
+  thenTile?: boolean;
 }
 
 /** A flag on an existing action (Ricochet, Double or Nothing, Nonlethal…): the player turns it on with `mods`. */
