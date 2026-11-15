@@ -29,10 +29,11 @@ describe('the camp\'s view', () => {
     const v = loadoutView(camp() as any, 'host')!;
     expect(v.rack.map((a) => a.id)).toEqual(RACK.map((a) => a.id));
     for (const a of v.rack) {
-      expect(a.free.price).toBe(0); expect(a.again!.price).toBeGreaterThan(0); expect(a.again!.id).toBe(a.free.id);
-      if (a.better) { expect(a.better.price).toBeGreaterThanOrEqual(a.again!.price); expect(a.better.compare.length).toBeGreaterThan(0); }
+      // rules 1.55: nothing over the budget is listed; a weapon also on a counter shelf (throwing knives) is listed once
+      expect(a.free.price).toBe(0); if (a.again) { expect(a.again.price).toBeGreaterThan(0); expect(a.again.id).toBe(a.free.id); expect(a.again.price).toBeLessThanOrEqual(v.budget); }
+      if (a.better) { if (a.again) expect(a.better.price).toBeGreaterThanOrEqual(a.again.price); expect(a.better.price).toBeLessThanOrEqual(v.budget); expect(a.better.compare.length).toBeGreaterThan(0); }
     }
-    expect(v.rack.some((a) => a.better && a.better.price > v.budget && /Over the budget/.test(a.better.why || ''))).toBe(true);
+    expect(v.rack.filter((a) => a.again).length).toBeGreaterThan(0);
   });
   it('the squad panel shows the held boons, the starting one marked, and the cap', () => {
     let g = apply(camp(), { type: 'run/boon', charId: 'c1', choice: 1 }, 'host'); g = apply(g, { type: 'run/go' }, 'host');

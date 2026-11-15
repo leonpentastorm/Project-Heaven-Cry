@@ -19,12 +19,12 @@
     "about": "Rules 1.52 (Leon, 14 Nov 2026: 'Survival will give you one low level melee, one low level gun, a bow, one of the 4 focus and a budget'; corrected the same day: 'only one weapon'). The camp before node 1: each character takes ONE free weapon: the most basic of a weapon archetype (`archetypes`), ONE free focus from `focuses` (either may be declined; declining gives nothing back), and spends `budget` credits on the shop's menu (`counter`, `stock`) at shop prices (credits.ts priceOf, the one price door). What is not spent is the character's starting purse. A gun comes with `gun.loaded` magazine loaded and `gun.spare` spare (a gun loaded round by round: that many magazines' worth of loose rounds); a bow with its quiver full (its own magazine in weapons.json). A core-fuelled focus comes with `focus_with`. Everything else is bought from the shop's own menu (`counter`, `stock`).",
     "budget": 300,
     "archetypes": {"about": "Leon, 14 Nov 2026 (binding): \"freelist get the most basic one of all the weapon achetype, then we put the same weapon type but better in the rack shop, and identical weapon too, so you can dualwield or upgrade your choice\". An archetype is a weapons.json family as the data groups it (`family` its mastery_family, `category` its category; `skip` ids that are not gear one carries). Its free weapon is its cheapest weapon by priceOf (Standard grade); the rack holds that weapon again (a second to carry or dual-wield) and the next weapon up by price in the archetype (one step). Computed by the engine (run/loadout.ts archetypeWeapons), checked by tools/validate.py. Families left out are in `left_out`.", "list": [{"id": "light_blades", "name": "Knives and light blades", "family": "light_blades", "category": "light_melee"}, {"id": "heavy_melee", "name": "Heavy blades, axes and polearms", "family": "heavy_melee", "category": "heavy_melee"}, {"id": "unarmed", "name": "Fist weapons", "family": "unarmed", "category": "unarmed", "skip": ["fists"]}, {"id": "pistols", "name": "Pistols", "family": "sidearms", "category": "pistol"}, {"id": "revolvers", "name": "Revolvers", "family": "sidearms", "category": "revolver"}, {"id": "smgs", "name": "Submachine guns", "family": "smgs", "category": "smg"}, {"id": "rifles", "name": "Rifles", "family": "rifles", "category": "rifle"}, {"id": "shotguns", "name": "Shotguns", "family": "shotguns", "category": "shotgun"}, {"id": "bows", "name": "Bows and crossbows", "family": "bows", "category": "bow"}], "left_out": {"heavy": "launchers, flamers and belt-fed or rotary guns: support weapons, not a first weapon (a call for Leon)", "mana_arms": "the focus weapons (the Evoker blade, the Emanator katana and gauntlet, the core rifle...): each is a focus and a weapon at a focus-weapon's price (a call for Leon)", "thrown": "grenades and charges: on the Thrown shelf at the shop's price"}, "provisional": true},
-    "gun": {"loaded": 1, "spare": 1},
+    "gun": {"loaded": 1, "spare": 2},
     "bow": {"spare": 0},
     "focuses": ["evoker", "emanator", "attuner", "visualizer"],
-    "focus_with": {"evoker": [{"id": "standard_core", "qty": 1}], "visualizer": [{"id": "standard_core", "qty": 1}]},
+    "focus_with": {"evoker": [{"id": "standard_core", "qty": 4}], "visualizer": [{"id": "standard_core", "qty": 4}]},
     "counter": {"about": "The paid shelves are the shop's own menu (Leon, 14 Nov 2026: '1 weapon for free, take anything else with cost from the shop menu'): every shelf of `shop.always` but the restock (run/shop.ts counterLines, its prices, its keys), then `stock`.", "skip": ["restock"]},
-    "stock": {"about": "The camp's gear shelf beside the weapon rack: a second focus, body armour (`armour:<class>`, rules.json armor.classes prices) and worn pieces, standard grade, a FIXED list (every player sees the same choices). The weapons are the rack's, by archetype (`archetypes`).", "ids": ["evoker", "emanator", "attuner", "visualizer", "armour:1", "armour:2", "work_gloves", "padded_undershirt", "utility_belt", "field_helmet", "field_boots"]},
+    "stock": {"about": "The camp's gear shelf beside the weapon rack: body armour (`armour:<class>`, rules.json armor.classes prices) and worn pieces, standard grade, a FIXED list (every player sees the same choices). The weapons are the rack's, by archetype (`archetypes`). Rules 1.55: every id priced within `budget` (the validator checks); no second focus (the free one is the focus) and nothing over the budget is listed.", "ids": ["armour:1", "work_gloves", "padded_undershirt", "utility_belt", "field_helmet", "field_boots"]},
     "max_qty": 10,
     "recommended": {"about": "The Recommended button (and the host's Start for an away player): the focus of the character's door skill with the most points (none without one); the free weapon of the first `weapon` row's archetype that fits (a caster with a focus takes the revolver, one-handed with six rounds, so the focus sits in the off hand; Raw Power above Dexterity a heavy blade; else the rifle); then its profile's `buys` in order while the budget pays (profile: the focus's fuel, core or mp; else gun or melee by the weapon), then the weapon's ammunition while it pays.", "focus_by_door": {"brain_power": "evoker", "visualization": "visualizer", "will_power": "emanator", "empathy": "attuner"}, "weapon": [{"when": "focus", "archetype": "revolvers"}, {"skill": "raw_power", "over": "dexterity", "archetype": "heavy_melee"}, {"archetype": "rifles"}], "buys": {"core": ["armour:1", "standard_core"], "mp": ["armour:1", "field_kit"], "gun": ["armour:1", "stim_injector"], "melee": ["armour:1", "stim_injector", "stim_injector"]}, "fill": "ammo"},
     "provisional": true
@@ -102,27 +102,34 @@
   },
   "xp": { "about": "Rules 1.41 (spec section 3.1): f(d) = base + per_depth x (d - 1) to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault. Rules 1.54 item 9: base 10, per_depth 2, boss 5 (level 3 after stage 1's Boss).", "base": 10, "per_depth": 2, "elite": 1.5, "boss": 5, "cache": 0.25, "vault_guard": 1.5, "vault": 0, "provisional": true },
   "credits": { "about": "Rules 1.41 (spec section 3.1): c(d) = base + per_depth x d to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault.", "base": 80, "per_depth": 20, "elite": 1.5, "boss": 2, "cache": 1.5, "vault_guard": 1.5, "vault": 2, "provisional": true },
-  "ammo_pack": { "about": "Rules 1.41, 1.51 (spec rules 23, 52): the supply pack. After a won fight (or at a cache or the vault) each character gets, with n this many by the node: n magazines' worth of rounds for every gun it carries (x the stat run_ammo); with a focus of a kind in `core_doors` carried, after a fight the spare cores it burnt in it back (none burnt, none back), at most `cores_max` x n, and at a cache or the vault `cores` x n; with a focus of a kind in `mp_doors` carried, `mp_share` x n of its max MP (cores and MP x the stat run_supply).", "fight": 1, "elite": 2, "boss": 3, "cache": 1, "vault_guard": 2, "vault": 1, "cores": 1, "cores_max": 2, "core_doors": ["evoker", "visualizer"], "mp_share": 0.3, "mp_doors": ["emanator", "attuner"], "provisional": true },
+  "ammo_pack": { "about": "Rules 1.41, 1.51 (spec rules 23, 52): the supply pack. After a won fight (or at a cache or the vault) each character gets, with n this many by the node: n magazines' worth of rounds for every gun it carries (x the stat run_ammo); with a focus of a kind in `core_doors` carried, after a fight the spare cores it burnt in it back (none burnt, none back), at most `cores_max` x n, and at a cache or the vault `cores` x n; with a focus of a kind in `mp_doors` carried, `mp_share` x n of its max MP (cores and MP x the stat run_supply). Rules 1.55 item 19 (Leon, 15 Nov 2026: \"no refill mag between fight\"): the pack's n has two counts by node, `mags` (the magazines) and `supply` (the burnt cores back and the MP share): `mags` is 0 after every fight, a cache and the vault's chest keep theirs; `supply` keeps its 0.28.0 counts, so a caster still takes back its burnt cores and its MP share (the lead's ruling, 15 Nov 2026: only the magazines were ruled out).", "mags": {"fight": 0, "elite": 0, "boss": 0, "cache": 1, "vault_guard": 0, "vault": 1}, "supply": {"fight": 1, "elite": 2, "boss": 3, "cache": 1, "vault_guard": 2, "vault": 1}, "cores": 1, "cores_max": 2, "core_doors": ["evoker", "visualizer"], "mp_share": 0.3, "mp_doors": ["emanator", "attuner"], "provisional": true },
   "rewards": {
-    "about": "Rules 1.41, 1.54 (spec rule 26, section 14 R7): the pick after a won fight: `offer` weapons by where it is made (the gate reads the Elite's), the first for the character's own door or weapon category; rarity by node kind, capped by `ceiling` (by stage, the last repeats); price at most base + per_depth x d + per_stage x (s - 1), x elite or boss. Or, where `materials.at` names, the Materials card instead: each of `materials.items` at ceil(C / per_credits) for the node's credits C (nodeCredits), into the pack whole (packAdd, Core Rules item 4111). Credits instead is retired (rules 1.54 item 2); an offer saved before keeps its credits choice.",
+    "about": "Rules 1.41, 1.54 (spec rule 26, section 14 R7): the pick after a won fight: `offer` weapons by where it is made (the gate reads the Elite's), the first for the character's own door or weapon category; rarity by node kind, capped by `ceiling` (by stage, the last repeats); price at most base + per_depth x d + per_stage x (s - 1), x elite or boss. Or, where `materials.at` names, the Materials card instead: each of `materials.items` at ceil(C / per_credits) for the node's credits C (nodeCredits), into the pack whole (packAdd, Core Rules item 4111). A gun taken from a pick or bought (rules 1.55, the lead's ruling) comes loaded and with `gun_spare` magazine's worth (a loose-loaded gun: that many loads of loose rounds), as part of the gun (pickedItem). `rarity.crate` is the sealed crate's own row (the 0.28.0 Elite odds), and its trade's `band` the price band it draws from. Credits instead is retired (rules 1.54 item 2); an offer saved before keeps its credits choice.",
     "offer": { "fight": 1, "elite": 1, "boss": 1, "vault_guard": 1, "vault": 3, "crate": 3 },
+    "gun_spare": 1,
+    "weapon_card": { "about": "Rules 1.55 item 21: the chance a pick made here holds the One-weapon card, rolled once for the node (every player the same); otherwise the Materials card alone. Where not named: always.", "fight": 0.2 },
     "materials": {
+      "about": "Rules 1.55 items 23 and 24: gunpowder and casings at ceil(C x mult / per_credits), C an ordinary fight's credits at the node's depth and stage (an Elite x2, a Boss x4: about one, two and four fights of one gunner's .32 rounds, 2 rounds a pair); mana residue only by `by` (its chance, absent: certain, and a [min, max] qty).",
       "at": ["fight", "elite", "boss", "vault_guard"],
-      "items": [{ "item": "gunpowder", "per_credits": 2 }, { "item": "casing", "per_credits": 2 }, { "item": "mana_residue", "per_credits": 20 }]
+      "mult": { "elite": 2, "boss": 4, "vault_guard": 2 },
+      "items": [{ "item": "gunpowder", "per_credits": 16 }, { "item": "casing", "per_credits": 16 }, { "item": "mana_residue", "by": { "fight": { "chance": 0.25, "qty": [1, 2] }, "elite": { "qty": [2, 4] }, "boss": { "qty": [8, 12] }, "vault_guard": { "qty": [8, 12] } } }]
     },
     "rarity": {
-      "fight": { "standard": 75, "fine": 25 },
-      "elite": { "fine": 60, "masterwork": 35, "relic": 5 },
-      "boss": { "masterwork": 70, "relic": 25, "celestial": 5 }
+      "fight": { "standard": 90, "fine": 10 },
+      "elite": { "standard": 75, "fine": 20, "masterwork": 5 },
+      "boss": { "masterwork": 70, "relic": 25, "celestial": 5 },
+      "crate": { "fine": 60, "masterwork": 35, "relic": 5 }
     },
     "ceiling": ["fine", "masterwork", "relic"],
     "price_band": { "base": 300, "per_depth": 150, "per_stage": 1000, "elite": 1.25, "boss": 1.5, "vault_guard": 1.25, "vault": 1.5 },
     "provisional": true
   },
   "drops": {
-    "about": "Rules 1.54 item 3 (spec section 14 R8): what a Survival foe drops. Every foe a Survival fight makes carries the loot door's flag that turns off what a foe always drops (its weapon, magazines and loose rounds, a Boss's notable thing) and rolls its kind's table as before; besides, given (outside the loot cap): `gun` from a foe whose weapon has a calibre, and by the foe's table (loot_tables.json: a caster's, a machine's) `by_table`. A qty is a [min, max] range.",
-    "gun": [{ "item": "gunpowder", "qty": [2, 5] }, { "item": "casing", "qty": [2, 5] }],
-    "by_table": { "caster": [{ "item": "mana_residue", "qty": [1, 2] }], "machine": [{ "item": "mana_residue", "qty": [1, 2] }] },
+    "about": "Rules 1.54 item 3 (spec section 14 R8): what a Survival foe drops. Every foe a Survival fight makes carries the loot door's flag that turns off what a foe always drops (its weapon, magazines and loose rounds, a Boss's notable thing) and rolls its kind's table only where `kind_table` is true (rules 1.55: false); besides, by chance (a row with a chance below 1 is rolled and counts against the loot caps; a certain row is given outside them): `gun` from a foe whose weapon has a calibre, and by the foe's table (loot_tables.json: a caster's, a machine's) `by_table`. A qty is a [min, max] range.",
+    "gun": [{ "item": "gunpowder", "qty": [1, 3], "chance": 0.15 }, { "item": "casing", "qty": [1, 3], "chance": 0.15 }],
+    "by_table": { "caster": [{ "item": "mana_residue", "qty": [1, 1], "chance": 0.25 }] },
+    "kind_table": false,
+    "rules_1_55": "Rules 1.55 item 26 (Leon, 15 Nov 2026): with the walk after a fight every pile is income, so a Survival foe leaves only rare things: `kind_table` false (its kind's loot table is not rolled), a gun's foe gunpowder or casings with a small chance, a caster mana residue 1 with a chance, nothing else. Credits on the ground need a pile entry the engine does not have (no credits item): not built.",
     "provisional": true
   },
   "nodes": {
@@ -139,7 +146,7 @@
   },
   "tips": {
     "about": "Rules 1.41 (spec 8.2): the path map's hover card for each kind of node, to the player: what you do there and what you get; the engine adds the XP and credits it pays.",
-    "fight": "A fight. Win for XP, credits and ammunition, then take the materials (gunpowder, casings, mana residue) or one weapon.",
+    "fight": "A fight. Win for XP and credits, then take the materials (gunpowder and casings, now and then mana residue) or, sometimes, one weapon.",
     "elite": "A hard fight: an Elite and its line. Better pay and a better pick.",
     "gate": "The Gate. Every trail passes it: an Elite and its line. Better pay and a better pick.",
     "boss": "The stage's Boss. The best pay and pick of the stage. Win to clear the stage.",
@@ -176,6 +183,7 @@
   "forge": {
     "about": "Rules 1.43 (spec rule 44): the Forge's rolled stock, `slots` mods and worn pieces made for what its visitors carry (a mod for a slot one of them has free, a worn piece better than one of them wears), each at its price; the grade step's factor is grade_up.places.forge.",
     "slots": 4,
+    "fit": { "about": "Rules 1.55: in a run a weapon mod is fitted, swapped or taken off only at a Forge, for a fee of `rate` x the mod's price (priceOf; a swap pays the new mod's fee once and returns the old one to the pack; a removal pays the removed mod's fee), at least `min` credits, rounded up. The free fit (gear/mod) is refused in a run; a campaign and the Proving Ground keep it.", "rate": 0.2, "min": 25, "provisional": true },
     "provisional": true
   },
   "armour_fit": {
@@ -419,7 +427,7 @@
         "text": "Upgrade a weapon to Fine or Masterwork for {=cut_rate|pct}% of a shop's price. It comes back worn." },
       { "id": "ev.drill_yard", "name": "A hard sparring", "do": "drill", "hp_share": 0.25, "drill": 300, "provisional": true,
         "text": "Drill with a weapon you carry. It costs {=hp_share|pct}% of the HP you have now." },
-      { "id": "ev.sealed_crate", "name": "A sealed crate", "do": "crate", "price": 300, "rarity": "elite", "provisional": true,
+      { "id": "ev.sealed_crate", "name": "A sealed crate", "do": "crate", "price": 300, "rarity": "crate", "band": "elite", "provisional": true,
         "text": "Three weapons of an Elite's grade, still sealed. Pay, open it, pick one." },
       { "id": "ev.wayside", "name": "A wayside shrine", "do": "wayside", "devotion": 4, "study": 5, "practice": 5, "per_stage": 1, "provisional": true,
         "text": "Free, once a stage: Devotion XP if you have a patron, or study or practice." },
@@ -542,6 +550,7 @@
     "about": "Rules 1.42 (spec rules 25 to 27, section 8.3): the shop. `always`: the counter, never sold out, at the fixed price of credits.ts priceOf, in shelves (`guns`: a magazine or the rounds of every gun the party carries, worked out per visit; `restock`: the persistent class resources, a point at a time; the others list ids); `per`: how many one purchase gives (a stack of rounds). `stock`: the rolled gear of a visit, shared by the party (first buyer): `weapons` weapons and foci and `items` items in the depth's price band (rewards.price_band, on the standard price), and `rare` pieces in the band times `rare_band` at `rare_rarity`; rarity by `rarity` (the last row whose `from_stage` the stage reaches), every roll capped by the stage's ceiling (rewards.ceiling); `item_categories`: the items.json categories it may roll (mods and armour are the Forge's). `restock_price`: credits a point of a persistent class resource. `max_qty`: the most of one counter line in one purchase.",
     "always": [
       { "shelf": "guns", "name": "For your guns", "ids": [] },
+      { "shelf": "magazines", "name": "Magazines", "about": "Rules 1.55: for each magazine-fed gun the character carries, a full magazine (`mag:<weapon>`) and an empty one (`mag:<weapon>:0`, the empty magazine price of rules.json magazine_prices), both at priceOf (run/shop.ts counterLines).", "ids": [] },
       { "shelf": "calibres", "name": "Ammunition", "ids": [ { "id": "rounds:.32 decrkm", "per": 20 }, { "id": "rounds:rifle", "per": 20 }, { "id": "rounds:revolver", "per": 12 }, { "id": "rounds:.50 frontier", "per": 10 }, { "id": "rounds:.700", "per": 3 }, { "id": "rounds:shell", "per": 12 }, { "id": "rounds:arrow", "per": 10 }, { "id": "rounds:bolt", "per": 10 }, { "id": "rounds:40 mm grenade", "per": 1 }, { "id": "rounds:rocket", "per": 1 }, { "id": "rounds:fuel canister", "per": 1 }, { "id": "rounds:core charge", "per": 10 } ] },
       { "shelf": "special", "name": "Special rounds", "ids": [ { "id": "ammo_armor_piercing", "per": 10 }, { "id": "ammo_hollow_point", "per": 10 }, { "id": "ammo_incendiary", "per": 10 }, { "id": "ammo_enhanced", "per": 10 } ] },
       { "shelf": "thrown", "name": "Thrown", "ids": [ { "id": "frag_grenade", "per": 1 }, { "id": "smoke_grenade", "per": 1 }, { "id": "flashbang", "per": 1 }, { "id": "incendiary_grenade", "per": 1 }, { "id": "throwing_knives", "per": 1 } ] },
@@ -566,7 +575,7 @@
   "faces": {
     "about": "Rules 1.42 (spec section 3.4): the faces of the safe nodes: one shopkeeper per setting, one armourer, drill sergeant and medic for every setting, the shrine's patron. `portrait` and `backdrop` are the art/catalog.json ids the artist will deliver (`*_pending: true` until they land); `fallback` is a world-pool portrait (catalog `characters`; the patron's is the rolled patron's own, `fallback_patron`) and `backdrop_fallback` an illustration id (catalog `illustrations`), or null for the ground colour, drawn meanwhile. `bias` weights the rolled stock by tag (weapon, item, melee, thrown, focus, mana, core, mod); `price` multiplies the rolled stock's prices only. `lines`: greet, bought, cant_afford, sold, sold_to (a rolled piece another player took), gave, leave, and what the keeper says as a tab opens (stock, gear, upgrade, sell at a shop; upgrade, stock, fit at a Forge; train, shrine, trade; give), in the keeper's own voice (docs/design/ui-screens.md, Writing for the player); the shrine's patron face has `votaries`: each patron's votary's greet, bought and leave.",
     "items": [
-      { "id": "quartermaster", "name": "Ledda Kroll", "role": "Chapter quartermaster", "node": "shop", "settings": ["ahoc"], "portrait": "survival-keeper-ahoc", "fallback": "drava-keel", "backdrop": "shop-ahoc", "backdrop_pending": true, "backdrop_fallback": "m813-outpost-hangar", "bias": {"weapon": 1.5}, "price": 1.0,
+      { "id": "quartermaster", "name": "Ledda Kroll", "role": "Chapter quartermaster", "node": "shop", "settings": ["ahoc"], "portrait": "survival-keeper-ahoc", "fallback": "drava-keel", "backdrop": "shop-ahoc", "backdrop_pending": false, "backdrop_fallback": "m813-outpost-hangar", "bias": {"weapon": 1.5}, "price": 1.0,
         "lines": {
           "greet": ["Sign for it or don't touch it.", "Chapter stores. Everything here is counted twice and blessed once.", "You look like someone who just spent a magazine on a wall. Restock."],
           "bought": ["Logged.", "Signed out to you. Bring back the casing if you can.", "That is on the ledger now."],
@@ -581,7 +590,7 @@
           "sell": ["Back into stores it goes. Don't expect chapter generosity.", "I'll take it. The ledger decides what it's worth."],
           "give": ["Passing kit to a squadmate? Fine. I'm writing it down."]
         }, "provisional": true },
-      { "id": "dealer", "name": "Sefa Mire", "role": "Back-alley dealer", "node": "shop", "settings": ["city"], "portrait": "survival-keeper-city", "fallback": "selka-noon", "backdrop": "shop-city", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"item": 1.5}, "price": 0.9,
+      { "id": "dealer", "name": "Sefa Mire", "role": "Back-alley dealer", "node": "shop", "settings": ["city"], "portrait": "survival-keeper-city", "fallback": "selka-noon", "backdrop": "shop-city", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"item": 1.5}, "price": 0.9,
         "lines": {
           "greet": ["You didn't see me. I didn't see you. Now, what do you need?", "Everything here fell off something. The prices are honest, which is more than the streets are.", "Keep your voice down and your purse open."],
           "bought": ["Pleasure.", "Don't tell anyone where you got it."],
@@ -596,7 +605,7 @@
           "sell": ["I'll buy it. I won't pay much. That's business.", "Everything's worth something. Yours, less."],
           "give": ["Share with your friends, sure. Less for me to sell them."]
         }, "provisional": true },
-      { "id": "sutler", "name": "Brann Okoye", "role": "Camp sutler", "node": "shop", "settings": ["field"], "portrait": "survival-keeper-field", "fallback": "basko-rell", "backdrop": "shop-field", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"melee": 1.5, "thrown": 1.5}, "price": 0.95,
+      { "id": "sutler", "name": "Brann Okoye", "role": "Camp sutler", "node": "shop", "settings": ["field"], "portrait": "survival-keeper-field", "fallback": "basko-rell", "backdrop": "shop-field", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"melee": 1.5, "thrown": 1.5}, "price": 0.95,
         "lines": {
           "greet": ["Mind the mud. Blades on the left, bangs on the right.", "The front takes everything eventually. Take what you need first.", "Wipe your boots. Then buy something."],
           "bought": ["Good choice. Sharp end away from you.", "That'll see you through the next trench."],
@@ -611,7 +620,7 @@
           "sell": ["Salvage pays. Not much, but it pays."],
           "give": ["Pass it along. Somebody'll need it more by tonight."]
         }, "provisional": true },
-      { "id": "trader", "name": "Ivo Smetanin", "role": "Smetanita trader", "node": "shop", "settings": ["works"], "portrait": "survival-keeper-works", "fallback": "pell-morrow", "backdrop": "shop-works", "backdrop_pending": true, "backdrop_fallback": "m813-rear-pad-loading", "bias": {"focus": 2.0, "mana": 2.0}, "price": 1.15,
+      { "id": "trader", "name": "Ivo Smetanin", "role": "Smetanita trader", "node": "shop", "settings": ["works"], "portrait": "survival-keeper-works", "fallback": "pell-morrow", "backdrop": "shop-works", "backdrop_pending": false, "backdrop_fallback": "m813-rear-pad-loading", "bias": {"focus": 2.0, "mana": 2.0}, "price": 1.15,
         "lines": {
           "greet": ["Smetanita goods. Precision costs, and precision is all I sell.", "Gloves, cores, tools of the trade. The foundry makes, I deliver.", "Inspect anything. Touch nothing you won't buy."],
           "bought": ["A sound investment.", "Calibrated this morning."],
@@ -626,7 +635,7 @@
           "sell": ["I'll assess it. Expect a fair, small number."],
           "give": ["A transfer between colleagues. Efficient."]
         }, "provisional": true },
-      { "id": "reliquary", "name": "Sister Amaun", "role": "Reliquary keeper", "node": "shop", "settings": ["shrine"], "portrait": "survival-keeper-shrine", "fallback": "brother-halden", "backdrop": "shop-shrine", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"focus": 1.5}, "price": 1.1,
+      { "id": "reliquary", "name": "Sister Amaun", "role": "Reliquary keeper", "node": "shop", "settings": ["shrine"], "portrait": "survival-keeper-shrine", "fallback": "brother-halden", "backdrop": "shop-shrine", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"focus": 1.5}, "price": 1.1,
         "lines": {
           "greet": ["Peace on your road. The relics are blessed; the rounds are merely counted.", "Lay down your burdens. Then pick up new ones; they are for sale.", "Be welcome, pilgrim. Mind the step, it is older than you."],
           "bought": ["May it serve you.", "Go with it."],
@@ -641,7 +650,7 @@
           "sell": ["The house takes it back, and gives a little."],
           "give": ["Give freely. It is the only giving that counts."]
         }, "provisional": true },
-      { "id": "chandler", "name": "Corra Vell", "role": "Rim chandler", "node": "shop", "settings": ["rim"], "portrait": "survival-keeper-rim", "fallback": "asher-fen", "backdrop": "shop-rim", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"item": 1.5, "core": 1.5}, "price": 1.0,
+      { "id": "chandler", "name": "Corra Vell", "role": "Rim chandler", "node": "shop", "settings": ["rim"], "portrait": "survival-keeper-rim", "fallback": "asher-fen", "backdrop": "shop-rim", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"item": 1.5, "core": 1.5}, "price": 1.0,
         "lines": {
           "greet": ["Air's recycled, prices aren't. Take a look.", "Last stop before the dark. Stock up.", "Close the hatch behind you. We pay for the heat."],
           "bought": ["Sealed and stamped.", "Don't let it vent."],
@@ -656,7 +665,7 @@
           "sell": ["Scrap's worth something on the rim. Not a lot."],
           "give": ["Share the load. That's how crews get home."]
         }, "provisional": true },
-      { "id": "armourer", "name": "Hesk Varro", "role": "Armourer", "node": "forge", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "forge-armourer", "portrait_pending": true, "fallback": "orren-vask", "backdrop": "forge", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"mod": 1.5}, "price": 1.0,
+      { "id": "armourer", "name": "Hesk Varro", "role": "Armourer", "node": "forge", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "forge-armourer", "portrait_pending": false, "fallback": "orren-vask", "backdrop": "forge", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"mod": 1.5}, "price": 1.0,
         "lines": {
           "greet": ["Put it on the bench. Let's see what it could be.", "Steel remembers how it was treated. Let's fix that.", "Bring me something worth the work."],
           "bought": ["Good steel.", "That'll hold."],
@@ -670,7 +679,7 @@
           "fit": ["Stand still. I'll fit the next plate to you.", "Heavier armour, if your body can take it."],
           "give": ["Share the load."]
         }, "provisional": true },
-      { "id": "sergeant", "name": "Nara Dusk", "role": "Drill sergeant", "node": "training", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "train-sergeant", "portrait_pending": true, "fallback": "captain-nara-dusk", "backdrop": "training", "backdrop_pending": true, "backdrop_fallback": "proving-ground-drill-yard", "bias": {}, "price": 1.0,
+      { "id": "sergeant", "name": "Nara Dusk", "role": "Drill sergeant", "node": "training", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "train-sergeant", "portrait_pending": false, "fallback": "captain-nara-dusk", "backdrop": "training", "backdrop_pending": false, "backdrop_fallback": "proving-ground-drill-yard", "bias": {}, "price": 1.0,
         "lines": {
           "greet": ["On the line. Again. Until it's boring.", "You call that a stance? We'll fix it.", "First drill's on me. The second one you pay for."],
           "bought": ["Again.", "Better. Again."],
@@ -682,7 +691,7 @@
           "train": ["Pick your drill. I'll make you hate it.", "Once on me, again on your coin."],
           "give": ["Good. A squad shares."]
         }, "provisional": true },
-      { "id": "medic", "name": "Mallow", "role": "Field medic", "node": "rest", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "rest-medic", "portrait_pending": true, "fallback": "mallow-3", "backdrop": "rest-safe-room", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0,
+      { "id": "medic", "name": "Mallow", "role": "Field medic", "node": "rest", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "rest-medic", "portrait_pending": true, "fallback": "mallow-3", "backdrop": "rest-safe-room", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0,
         "lines": {
           "greet": ["Sit. Breathe. Let me look at that.", "Everyone's patched. Rest while you can.", "Nobody leaves until I've seen them."],
           "bought": ["Use it well.", "Good. Now sit still."],
@@ -694,7 +703,7 @@
           "train": ["If you've energy left, practise something quiet.", "One drill. Then sleep."],
           "give": ["Kind of you."]
         }, "provisional": true },
-      { "id": "patron", "name": "The shrine's patron", "role": "Patron", "node": "shrine", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "shrine-patron", "portrait_pending": true, "fallback": null, "backdrop": "shrine", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0, "fallback_patron": true,
+      { "id": "patron", "name": "The shrine's patron", "role": "Patron", "node": "shrine", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "shrine-patron", "portrait_pending": true, "fallback": null, "backdrop": "shrine", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0, "fallback_patron": true,
         "lines": {
           "greet": ["The candles lean toward you.", "The shrine is quiet. It is listening.", "Someone keeps these candles lit. Not you."],
           "bought": ["Accepted.", "Taken up."],
@@ -716,7 +725,7 @@
           "the_matchmaker": {"greet": ["Are you on the list? Everyone's on the list. Sit.", "Oh, you'd look lovely together. You and a blessing, I mean.", "She has a plan for you. It has a seating chart."], "bought": ["Perfect match.", "I'll put that in the file."], "leave": ["Bring someone next time."]},
           "counting_weaver": {"greet": ["Your thread is on the loom. Let's see the figures.", "Everything is counted here. Including you, twice.", "Sit. The Weaver is reconciling your accounts."], "bought": ["Entered.", "The tally holds."], "leave": ["Your thread runs on. For now."]}
         }, "provisional": true },
-      { "id": "broker", "name": "Teo Vant", "role": "Crossroads broker", "node": "event", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "event-broker", "portrait_pending": true, "fallback": "veyra-salt", "backdrop": "crossroads", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0,
+      { "id": "broker", "name": "Teo Vant", "role": "Crossroads broker", "node": "event", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "event-broker", "portrait_pending": false, "fallback": "veyra-salt", "backdrop": "crossroads", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0,
         "lines": {
           "greet": ["Everyone who walks this road wants something. So do I.", "Three deals on the table. Pick one, or keep walking.", "No haggling. The price is the price."],
           "bought": ["A fair trade, near enough.", "Pleasure doing business."],

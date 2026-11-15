@@ -11,7 +11,7 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM } from '../character';
-import { lootToPack, packAdd, intoCounts, itemLabel } from '../containers';
+import { lootToPack, packAdd, intoCounts, itemLabel, magItem } from '../containers';
 import { priceOf, creditsOf, payCredits, earnCredits, cantPay, ROUND_PRICE, emptyMagPrice } from '../credits';
 import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
@@ -103,24 +103,41 @@ export interface CounterLine { key: string; id: string; per: number; shelf: stri
  * character carries (shelf `guns`, first), and a restock line for each persistent class resource (shelf `restock`). */
 export function counterLines(chars: Character[]): CounterLine[] {
   const out: CounterLine[] = [], seen = new Set<string>();
-  const put = (l: CounterLine) => { if (seen.has(l.key)) return; seen.add(l.key); out.push(l); };
+  // rules 1.55: no line twice in one menu (the same id in the same quantity on two shelves)
+  const put = (l: CounterLine) => { const same = l.id + '#' + l.per; if (seen.has(l.key) || seen.has(same)) return; seen.add(l.key); seen.add(same); out.push(l); };
   for (const s of SHOP_DATA.always) {
     if (s.shelf === 'guns') {
       // rules 1.53: a party with an archer finds a plain quiver on the counter (every archer may carry two)
-      for (const c of chars) if ((drawnWeapon(c.weapon) || packOf(c).some((x) => !!x.weapon && drawnWeapon(x.weapon))) && priceOf(QUIVER_ITEM) != null) put({ key: 'quiver', id: QUIVER_ITEM, per: 1, shelf: 'guns' });
+      for (const c of chars) if ((drawnWeapon(c.weapon) || packOf(c).some((x) => !!x.weapon && drawnWeapon(x.weapon))) && priceOf(QUIVER_ITEM) != null) put({ key: 'quiver', id: QUIVER_ITEM, per: 1, shelf: s.shelf });
       for (const c of chars) for (const g of gunsOf(c)) { const w: any = WEAPON[g];
-        if (w.reload === 'magazine' && priceOf('mag:' + g) != null) put({ key: 'mag:' + g, id: 'mag:' + g, per: 1, shelf: 'guns' });
-        else if (ROUND_PRICE[w.ammo]) put({ key: 'guns:rounds:' + w.ammo, id: 'rounds:' + w.ammo, per: w.magazine || 1, shelf: 'guns' }); }
+        if (w.reload !== 'magazine' && ROUND_PRICE[w.ammo]) put({ key: 'guns:rounds:' + w.ammo, id: 'rounds:' + w.ammo, per: w.magazine || 1, shelf: s.shelf }); }
+    } else if (s.shelf === 'magazines') {
+      // rules 1.55: for each magazine-fed gun carried, a full magazine and an empty one (`mag:<weapon>:0`, priceOf)
+      for (const c of chars) for (const g of gunsOf(c)) if ((WEAPON[g] as any).reload === 'magazine' && priceOf('mag:' + g) != null) {
+        put({ key: 'mag:' + g, id: 'mag:' + g, per: 1, shelf: s.shelf }); put({ key: 'mag:' + g + ':0', id: 'mag:' + g + ':0', per: 1, shelf: s.shelf }); }
     } else if (s.shelf === 'restock') {
       for (const c of chars) for (const r of classResources(c)) if (r.persist) put({ key: 'restock:' + r.id, id: 'restock:' + r.id, per: 1, shelf: 'restock', res: r.id });
-    } else for (const x of s.ids) if (priceOf(x.id) != null) put({ key: x.id, id: x.id, per: x.per, shelf: s.shelf });
+    } else for (const x of s.ids) if (priceOf(x.id) != null && fitsSomeone(chars, x.id)) put({ key: x.id, id: x.id, per: x.per, shelf: s.shelf });
   }
   return out;
+}
+/** What a character holds or has taken (hand, off hand, pack), as ids. */
+const heldIds = (c: Character): string[] => [c.weapon, c.offHand?.id, ...packOf(c).map((x) => x.weapon || x.item || x.id)].filter((x): x is string => !!x);
+/** Rules 1.55: ammunition follows the character. A calibre is listed when a gun carried takes it; a special round
+ * (an item with `ammo_type`) when a gun that is not a bow is carried; an item that fuels a focus (`fuel`) when a focus
+ * of that fuel (`focus.fuel`) is held. Anything else is always listed. */
+function fitsSomeone(chars: Character[], id: string): boolean {
+  const r = /^rounds:(.+)$/.exec(id), it: any = ITEM[id];
+  if (r) return chars.some((c) => gunsOf(c).some((g) => (WEAPON[g] as any).ammo === r[1]));
+  if (it?.ammo_type) return chars.some((c) => gunsOf(c).some((g) => !drawnWeapon(g)));
+  if (it?.fuel) return chars.some((c) => heldIds(c).some((h) => (ITEM[h] as any)?.focus?.fuel === it.fuel));
+  return true;
 }
 /** The goods `n` units of a counter id are, as pack entries (rounds, full magazines, weapons one by one, an item's
  * stack): what a purchase puts in the pack (rules 1.42; rules 1.52: the camp's loadout too). */
 export function lineGoods(id: string, n: number): PackItem[] {
-  const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id);
+  const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id), mr = /^mag:([^:]+):(\d+)$/.exec(id);
+  if (mr) return Array.from({ length: n }, () => magItem(mr[1], Math.min(Number(mr[2]), (WEAPON[mr[1]] as any)?.magazine || 0)));
   return r ? [roundsOf(r[1], n)] : m || (WEAPON[id] as any) ? Array.from({ length: n }, () => lootToPack({ item: id })).flat()
     : lootToPack({ item: id }).map((it) => ({ ...it, qty: n }));
 }
@@ -198,7 +215,7 @@ export function buyProblem(g: G, by: string, a: { charId: string; key: string; q
     if (q !== 1) return 'There is only one of these.';
     return shortOf(c, piece.price);
   }
-  const l = counterLines(Object.values(g.characters)).find((x) => x.key === a.key); if (!l) return 'This shop does not sell that.';
+  const l = counterLines([c]).find((x) => x.key === a.key); if (!l) return 'This shop does not sell that.';
   if (l.res) { const room = restockRoom(c, l.res); if (!room) return c.name + ' has no ' + l.res.replace(/_/g, ' ') + ' to restock.'; if (q > room) return c.name + ' has room for ' + room + ' more.'; }
   return shortOf(c, linePrice(l) * q);
 }
@@ -217,7 +234,7 @@ export function buy(g: G, by: string, a: { charId: string; key: string; qty?: nu
     sh.stock = sh.stock.map((p) => (p.key === piece.key ? { ...p, sold: c.id } : p));
     what = 'the ' + (piece.rarity !== 'standard' ? piece.rarity[0].toUpperCase() + piece.rarity.slice(1) + ' ' : '') + nameOf(piece.id);
   } else {
-    const l = counterLines(Object.values(g.characters)).find((x) => x.key === a.key)!;
+    const l = counterLines([c]).find((x) => x.key === a.key)!;
     const err = payCredits(c, linePrice(l) * q); if (err) return { no: err };
     if (l.res) { c.res = { ...(c.res || {}), [l.res]: (c.res?.[l.res] ?? 0) + q }; what = q + ' ' + l.res.replace(/_/g, ' '); }
     else {
@@ -253,16 +270,19 @@ export function sell(g: G, by: string, a: { charId: string; idx: number; qty?: n
   const text = c.name + ' sold ' + (q > 1 && !it.calibre ? q + ' × ' : '') + label + ' for ' + v + ' credits'; logLine(sh, text);
   return { ok: text };
 }
-/** A player's "Ready to leave", or the host's close (rule 11, spec 8.3). Returns true when the party leaves now. */
+/** A player's "Ready to leave", or the host's close (rule 11, spec 8.3), of the shop or (rules 1.55) of a won fight's
+ * field: one vote for both. Returns true when the party leaves now: the shop goes back to the map, the field to `reward`. */
 export function leaveShop(g: G, by: string, close = false): { left: boolean; line?: string } | { no: string } {
-  const r = g.run, sh = shopOf(g); if (!r || !sh) return { no: 'No shop is open here.' };
-  if (!g.players.some((p) => p.id === by)) return { no: 'Only a player in the room leaves the shop.' };
-  if (close && by !== g.hostId) return { no: 'Only the host can close the shop for everyone. Mark yourself ready to leave instead.' };
+  const r = g.run, sh = shopOf(g), field = r?.state === 'field'; if (!r || (!sh && !field)) return { no: 'No shop is open here.' };
+  const where = field ? 'the field' : 'the shop';
+  if (!g.players.some((p) => p.id === by)) return { no: 'Only a player in the room leaves ' + where + '.' };
+  if (close && by !== g.hostId) return { no: 'Only the host can close ' + where + ' for everyone. Mark yourself ready to leave instead.' };
   r.ready = { ...r.ready, [by]: true };
   const on = g.players.filter((p) => p.online);
   if (!close && on.some((p) => !r.ready[p.id])) return { left: false };
-  sayLine(r, sh, 'leave');
-  const f = FACES.find((x) => x.id === sh.face), line = f ? f.name + ': "' + sh.line.text + '"' : undefined;
+  if (field) { r.state = 'reward'; r.ready = {}; return { left: true }; }
+  sayLine(r, sh!, 'leave');
+  const f = FACES.find((x) => x.id === sh!.face), line = f ? f.name + ': "' + sh!.line.text + '"' : undefined;
   r.shop = null; r.state = 'map'; r.ready = {};
   return { left: true, line };
 }

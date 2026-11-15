@@ -118,6 +118,30 @@ for key, a in C.get("survival_art", {}).items():
     elif mode == "path-node-marker-sheet":
         for kind, marker in a["marker_exports"].items():
             emit("survival-node-" + kind, ROOT / marker["path"], (128, 128), None, 95, versioned=True)
+# The 15 Nov delivery (art/_archive/everything-missing/2026-11-15), by catalog id, built under its own id:
+#   mode "ink" in survival_art: a standalone node marker (survival-node-start, -vault_guard, -vault), as the sheet's are.
+#   mode "portrait" / "scene" in survival_art: built only when data names the id (a face's `portrait` or `backdrop` in
+#     data/survival.json, a mode card's `art` in data/modes.json), so an unused painting never ships.
+#   catalog `boons` (icon-boon-<stem>): boon-<stem>, white ink at 128 px; game/boonIcons.ts draws it as a CSS mask.
+NAMED = set()
+for f in json.loads((ROOT / "data/survival.json").read_text())["faces"]["items"]:
+    NAMED.update(x for x in (f.get("portrait"), f.get("backdrop")) if x)
+NAMED.update(m["art"] for m in json.loads((ROOT / "data/modes.json").read_text())["items"] if m.get("art"))
+for key, a in C.get("survival_art", {}).items():
+    mode = a.get("mode")
+    if mode == "ink":
+        emit(key, ROOT / a["path"], (128, 128), None, 95, versioned=True)
+    elif mode == "portrait" and key in NAMED:
+        emit(key, ROOT / a["path"], (480, 600), (800, 1000), versioned=True)
+    elif mode == "scene" and key in NAMED:
+        emit(key, ROOT / a["path"], (1280, 720), (1920, 1080), 78, versioned=True)
+for key, a in C.get("boons", {}).items():
+    emit("boon-" + key[len("icon-boon-"):], ROOT / a["path"], (128, 128), None, 95, versioned=True)
+# catalog `interface_icons` banner-*: the fight cards' sign (game/turnIntro.tsx), white ink at 128 px, under its own id.
+# Not built: icon-panel-* (the right panel's headers have no icon slot yet).
+for key, a in C.get("interface_icons", {}).items():
+    if key.startswith("banner-"):
+        emit(key, ROOT / a["path"], (128, 128), None, 95, versioned=True)
 # Blessing 2.0 (docs/design/handoffs/blessing-art-brief.md): picked up from their folders as they are delivered, so the art
 # drops in with no code change (game/faithArt.ts falls back to code-drawn placeholders for anything missing):
 #   art/portraits/patrons/<id>.png -> patron-<id> (4:5 portrait)

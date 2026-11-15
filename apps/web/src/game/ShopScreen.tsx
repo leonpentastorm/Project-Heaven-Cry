@@ -10,10 +10,12 @@ import { act, getState } from './store';
 import { shopView, compareGear, type ShopCardV, type ShopViewV, type Rarity } from '@engine';
 import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
 import { tipProps } from './actionTip';
+import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import ASSETS from './assets.json';
 import { GiveTab } from './GiveTab';
 import { UpgradeCard } from './UpgradeCard';
+import { shownLines } from './previewLines';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
@@ -22,7 +24,7 @@ const ATTR_INK: Record<string, string> = { endurance: '#F65157', strength: '#F68
 const MARK = '◆';
 /** A card's picture: the painted icon (rounds and magazines by their gear ids), else the line icon. */
 function iconOf(id: string): string {
-  const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id);
+  const r = /^rounds:(.+)$/.exec(id), m = /^mag:([^:]+)/.exec(id); // rules 1.55: mag:<weapon>:0 is an empty one
   if (r) return gearIconUri(roundsGearId(r[1]), undefined, { large: true });
   if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
   return gearIconUri(id, undefined, { large: true });
@@ -56,7 +58,7 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
       </div>
       {c.preview.lines.length ? (
         <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: '1fr auto', gap: '4px 12px', fontSize: 13.5 }}>
-          {c.preview.lines.slice(0, 5).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted }}>{l.label}</dt><dd data-phc-num={l.key} style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
+          {shownLines(c.preview.lines, 5).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted }}>{l.label}</dt><dd data-phc-num={l.key} style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
         </dl>
       ) : null}
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
@@ -133,19 +135,28 @@ export function ShopScreen() {
     </>;
   }
   else if (tab === 'give') body = <GiveTab />;
-  else body = <section data-phc-shelf="sell">{shelfHead('Sell')}<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{v.sell.map((r) => (
-    <div key={r.idx} data-phc-sell={r.idx} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why ? 0.6 : 1 }}>
+  else body = <section data-phc-shelf="sell">{shelfHead('Sell')}<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{v.sell.map((r) => {
+    // How many to sell: one by default (rules 1.55), stepped up to the whole stack; the value and the refusal come from the view.
+    const k = 'sell:' + r.idx, n = Math.min(q(k), r.totals.length), val = r.totals[n - 1] ?? r.value, why = r.why && r.totals.length <= 1 ? r.why : (r.whys[n - 1] ?? null);
+    const sellIt = () => { setConfirm(null); setQ(k)(1); act({ type: 'run/sell', charId, idx: r.idx, qty: n }); };
+    const step = (m: number) => setQ(k)(Math.max(1, Math.min(r.totals.length, m)));
+    const stepBtn = (label: string, aria: string, m: number) => <button type="button" aria-label={aria} onClick={() => step(m)} style={{ minWidth: 28, height: 38, border: 0, background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: label.length > 1 ? 13 : 18, fontWeight: 700, cursor: 'pointer' }}>{label}</button>;
+    return (
+    <div key={r.idx} data-phc-sell={r.idx} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why && r.totals.length <= 1 ? 0.6 : 1 }}>
       <img src={iconOf(r.id)} alt="" width={40} height={40} style={{ objectFit: 'contain', visibility: iconOf(r.id) ? 'visible' : 'hidden' }} />
       <span style={{ flex: 1, minWidth: 0, fontSize: 14 }}>{r.label}</span>
-      {r.why ? <span style={{ fontSize: 12.5, color: I.muted }}>{r.why}</span> : <>
-        <span data-phc-sell-value="" style={{ fontSize: 18, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{(r.value || 0).toLocaleString('en')} <span style={{ fontSize: 11, color: I.muted }}>CREDITS</span></span>
-        {confirm === r.idx && r.ask ? <><span style={{ fontSize: 12.5 }}>{r.ask}</span><button type="button" data-phc-sell-yes="" onClick={() => { setConfirm(null); act({ type: 'run/sell', charId, idx: r.idx }); }} style={{ minHeight: 38, padding: '0 14px', borderRadius: 10, border: 0, background: I.text, color: I.ground, fontFamily: 'inherit', fontWeight: 700 }}>Yes, sell</button></>
-          : <button type="button" data-phc-sell-btn="" onClick={() => (r.ask ? setConfirm(r.idx) : act({ type: 'run/sell', charId, idx: r.idx }))} style={{ minHeight: 38, padding: '0 16px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontWeight: 700 }}>Sell</button>}
+      {r.totals.length > 1 ? <div role="group" aria-label="How many to sell" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
+        {stepBtn('‹', 'One fewer', n - 1)}<span data-phc-sell-qty="" style={{ minWidth: 26, textAlign: 'center', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{n}</span>{stepBtn('›', 'One more', n + 1)}{stepBtn('All', 'All of them', r.totals.length)}
+      </div> : null}
+      {why ? <span style={{ fontSize: 13, color: I.muted }}>{why}</span> : <>
+        <span data-phc-sell-value="" style={{ fontSize: 18, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{(val || 0).toLocaleString('en')} <span style={{ fontSize: 13, color: I.muted }}>CREDITS</span></span>
+        {confirm === r.idx && r.ask ? <><span style={{ fontSize: 13 }}>{r.ask}</span><button type="button" data-phc-sell-yes="" onClick={sellIt} style={{ minHeight: 38, padding: '0 14px', borderRadius: 10, border: 0, background: I.text, color: I.ground, fontFamily: 'inherit', fontWeight: 700 }}>Yes, sell</button></>
+          : <button type="button" data-phc-sell-btn="" onClick={() => (r.ask ? setConfirm(r.idx) : sellIt())} style={{ minHeight: 38, padding: '0 16px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontWeight: 700 }}>Sell</button>}
       </>}
-    </div>))}</div></section>;
+    </div>); })}</div></section>;
   return (
     <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.setting} line={say.text} lineKey={say.key}
-      tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0}
+      tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0} actions={<MoveOn />}
       onClose={v.isHost && v.party.length > 1 ? () => act({ type: 'run/leave', close: true }) : undefined} closeTip="Takes everyone back to the map.">
       {body}
       {tab !== 'give' ? <section data-phc-compare-panel="" style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 14, background: 'rgba(16,21,31,0.9)', border: '1px solid ' + I.line }}>

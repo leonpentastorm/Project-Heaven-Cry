@@ -584,10 +584,13 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
 
 // ---------- the standing layer: lasting states ----------
 export interface MeleeMark {
-  key: string; kind: 'bind' | 'grapple' | 'nailed' | 'guard' | 'feint';
+  key: string; kind: 'bind' | 'grapple' | 'nailed' | 'guard' | 'feint' | 'stuck';
+  /** a stuck weapon (rules 1.55): its place among the unit's stuck weapons (0 to 2) and its thrower's side ink */ n?: number; ink?: string;
   /** the holder's (or the marked unit's) tile, and the other end for a link */ a: string; b?: string;
   unit: string; other?: string; weapon?: string | null; ap?: number; front?: number[]; heavy?: boolean; reach?: boolean;
 }
+/** A stuck weapon's outline: its thrower's side (the token colours of the sheet: the squad blue, the foes' HP red). */
+const STUCK_INK = { pc: '#7FD4FF', foe: '#F65157' } as const;
 const cheb = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
 /** The lasting states on the grid now (pure, from the saved state). seen: the tiles the squad sees (null: all). A unit
  *  of the viewer's side is always seen; another only on a seen tile and not hidden. A link needs both ends seen. */
@@ -606,6 +609,8 @@ export function meleeMarksOf(g: GameState | null | undefined, seen?: Set<string>
     const gby = u.condBy?.grappled;
     if (gby && (u.conds?.grappled || 0) > 0) { const h = byId.get(gby); if (live(h) && sees(u) && sees(h)) out.push({ key: 'grapple|' + h.id + '|' + u.id, kind: 'grapple', a: h.pos, b: u.pos, unit: h.id, other: u.id }); }
     if (u.nailed && sees(u)) out.push({ key: 'nailed|' + u.id + '|' + (u.nailed.weapon || ''), kind: 'nailed', a: u.pos, unit: u.id, weapon: u.nailed.weapon || null, ap: u.nailed.ap });
+    // rules 1.55: each thrown weapon stuck in the unit (a Throw that hit; Pull Out or the unit's fall ends it), up to 3
+    if (Array.isArray(u.stuck) && sees(u)) u.stuck.slice(0, 3).forEach((x: any, i: number) => { const by = byId.get(x?.by); out.push({ key: 'stuck|' + u.id + '|' + i + '|' + (x?.weapon || '') + '|' + (x?.by || ''), kind: 'stuck', a: u.pos, unit: u.id, other: x?.by, weapon: x?.weapon || null, n: i, ink: (by?.side || 'pc') === 'pc' ? STUCK_INK.pc : STUCK_INK.foe }); });
     const gd = u.tech?.guard;
     if (gd?.on && sees(u)) out.push({ key: 'guard|' + u.id + '|' + (gd.front || []).join(','), kind: 'guard', a: u.pos, unit: u.id, front: gd.front || [1, 0], heavy: !!gd.heavy, reach: !!gd.reach });
     const su = u.setUp;
@@ -651,11 +656,13 @@ function drawMark(n: MarkNode): boolean {
   if (n.m.kind === 'bind' || n.m.kind === 'grapple') n.g.innerHTML = linkMarkup(a, b!, s, n.m.kind === 'grapple');
   else if (n.m.kind === 'guard') n.g.innerHTML = guardMarkup(a, s, n.m.front || [1, 0], { heavy: n.m.heavy, reach: n.m.reach });
   else if (n.m.kind === 'feint') n.g.innerHTML = bracketsMarkup(a, s, 0.92);
-  else if (n.m.kind === 'nailed') {
-    // the weapon stuck in the token at 35°, its grip standing out of the top right (a dark outline under the white ink)
-    const z = s * 0.9, x = a.x + s * 0.2, y = a.y - s * 0.22, img = (ink: string, dx: number, dy: number) => '<image href="' + gearLineUri(n.m.weapon, ink) + '" x="' + (x - z / 2 + dx).toFixed(1) + '" y="' + (y - z / 2 + dy).toFixed(1) + '" width="' + z.toFixed(1) + '" height="' + z.toFixed(1) + '" transform="rotate(35 ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
+  else if (n.m.kind === 'nailed' || n.m.kind === 'stuck') {
+    // the weapon stuck in the token at 35°, its grip standing out of the top right (a dark outline under the white ink);
+    // a stuck one (rules 1.55) is smaller, fanned by its place (up to 3), outlined in its thrower's side ink
+    const st = n.m.kind === 'stuck', k = n.m.n || 0, z = s * (st ? 0.6 : 0.9), x = a.x + s * (st ? 0.24 - k * 0.2 : 0.2), y = a.y - s * (st ? 0.26 - k * 0.06 : 0.22), rot = st ? 35 - k * 30 : 35, under = st ? n.m.ink || '#0A0D13' : '#0A0D13';
+    const img = (ink: string, dx: number, dy: number) => '<image href="' + gearLineUri(n.m.weapon, ink) + '" x="' + (x - z / 2 + dx).toFixed(1) + '" y="' + (y - z / 2 + dy).toFixed(1) + '" width="' + z.toFixed(1) + '" height="' + z.toFixed(1) + '" transform="rotate(' + rot + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
     n.g.innerHTML = (n.m.weapon && hasGearIcon(n.m.weapon)
-      ? [[-1.5, 0], [1.5, 0], [0, -1.5], [0, 1.5], [1, 1], [-1, -1]].map(([dx, dy]) => img('#0A0D13', dx, dy)).join('') + img('#FFFFFF', 0, 0)
+      ? [[-1.5, 0], [1.5, 0], [0, -1.5], [0, 1.5], [1, 1], [-1, -1]].map(([dx, dy]) => img(under, dx, dy)).join('') + img('#FFFFFF', 0, 0)
       : '<path d="M' + (a.x - s * 0.16) + ' ' + (a.y - s * 0.16) + ' L' + (a.x + s * 0.16) + ' ' + (a.y + s * 0.16) + ' M' + (a.x + s * 0.16) + ' ' + (a.y - s * 0.16) + ' L' + (a.x - s * 0.16) + ' ' + (a.y + s * 0.16) + '" stroke="' + FORCE + '" stroke-width="' + Math.max(2.5, s * 0.07).toFixed(1) + '" stroke-linecap="round"/>')
       + (n.m.ap ? '<text x="' + (a.x + s * 0.3).toFixed(1) + '" y="' + (a.y + s * 0.44).toFixed(1) + '" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="' + Math.max(8, s * 0.2).toFixed(1) + '" fill="' + FORCE + '" stroke="#0A0D13" stroke-width="2.5" paint-order="stroke" text-anchor="middle">' + n.m.ap + ' AP</text>' : '');
   }
@@ -674,10 +681,10 @@ function goneMark(k: string, n: MarkNode, animate = true) {
   record(k, 'unmark:' + n.m.kind, true);
   if (!animate) { n.g.remove(); return; }
   const frames: Keyframe[] = reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }]
-    : n.m.kind === 'nailed' ? [{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(' + ((centre(n.m.a)?.s || 40) * 0.3).toFixed(1) + 'px)', opacity: 0 }]
+    : n.m.kind === 'nailed' || n.m.kind === 'stuck' ? [{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(' + ((centre(n.m.a)?.s || 40) * 0.3).toFixed(1) + 'px)', opacity: 0 }]
       : n.m.kind === 'bind' || n.m.kind === 'grapple' ? [{ opacity: 1, strokeDasharray: 'none' }, { opacity: 0.6, offset: 0.3 }, { opacity: 0 }]
         : [{ opacity: 1 }, { opacity: 0 }];
-  const a = anim(n.g, frames, { duration: n.m.kind === 'nailed' ? 240 : 200, easing: 'ease-in', fill: 'forwards' });
+  const a = anim(n.g, frames, { duration: n.m.kind === 'nailed' || n.m.kind === 'stuck' ? 240 : 200, easing: 'ease-in', fill: 'forwards' });
   const g = n.g; if (a) a.onfinish = () => g.remove(); else g.remove();
   setTimeout(() => g.remove(), 1500);
 }

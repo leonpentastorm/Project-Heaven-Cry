@@ -13,7 +13,9 @@ const DUO = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 function afterOneFight() {
   const r = new Rec(survivalRoom('PHC-T001', DUO, { test: true }), DUO); r.must({ type: 'run/start', seed: 'PHC-T001', camp: 'recommended' }); // rules 1.52: the camp skipped (a test room)
   const node = chooseNode(r.g)!; for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
-  r.fight(40); expect(r.g.run.state).toBe('reward');
+  r.fight(40); expect(r.g.run.state).toBe('field'); // rules 1.55: the field first; everyone leaves it
+  for (let i = 0; i < DUO.length && r.g.run.state === 'field'; i++) r.must({ type: 'run/leave' }, ownerOf(i));
+  expect(r.g.run.state).toBe('reward');
   return r.g;
 }
 

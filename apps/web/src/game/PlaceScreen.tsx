@@ -12,6 +12,7 @@ import { act, getState } from './store';
 import { placeView, type PlaceCardV, type PlaceViewV } from '@engine';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
+import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import { patronPortrait } from './faithArt';
 import { GiveTab } from './GiveTab';
@@ -25,7 +26,7 @@ const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repea
 /** The words over each group of cards (the engine names the group; the client its heading and its note). */
 const HEAD: Record<string, [string, string]> = {
   grade: ['Upgrade', 'One upgrade per visit'], repair: ['Repair', 'Back to full durability'], relic: ['Relic upgrade', 'Pick one property. It stays on the weapon.'],
-  forge: ['Mods and armour', 'Made for what your squad carries'], fit: ['Armour fitting', 'Lets you wear heavier armour'],
+  forge: ['Mods and armour', 'Made for what your squad carries'], mod: ['Mod fitting', 'The armourer fits a mod to the weapon in your hand, or takes one off, for a fee'], fit: ['Armour fitting', 'Lets you wear heavier armour'],
   train: ['Training', ''], shrine: ['Blessings', 'Take one'], trade: ['Trades', 'One each, or walk on'],
 };
 const NOTHING: Record<string, string> = { upgrade: 'You carry no weapon or focus that can be upgraded.', stock: 'The armourer has nothing for your squad today.', fit: 'You wear the heaviest armour the armourer fits.' };
@@ -117,7 +118,7 @@ export function PlaceScreen(_p: { onLeave: () => void }) {
   return (
     <div data-phc-place={v.kind}>
       <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.word + ' · ' + v.setting} line={say.text} lineKey={v.node + say.key}
-        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0}>
+        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0} actions={<MoveOn />}>
         {on === 'give' ? <GiveTab /> : <TabBody v={v} tab={on} />}
       </FullScreenFrame>
     </div>

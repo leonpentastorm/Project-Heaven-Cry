@@ -82,6 +82,9 @@ at once); a normal room never does.
 - [ ] After a won fight each character gets XP, credits (its own purse), a magazine's worth for every gun it carries
       and a pick of three weapons (one for its own door or weapon category) or credits instead. An Elite adds a pick of
       kit (a mod or a worn piece among them).
+- [ ] **The field (rules 1.55):** after the victory card the fight's map stays with "The field is yours", what lies on
+      the ground and a Leave the field button ("1 of 2 ready"); walk with no AP, pick up a dropped magazine or a foe's
+      materials (Take all), and the rewards come when everyone has left (solo: one click).
 - [ ] Level 3 arrives around depth 3: the level-up screen gives the class of the highest attribute.
 - [ ] A character who dies in a won fight stands at 1 HP afterwards with its full share; the whole squad down ends the
       run with its score.

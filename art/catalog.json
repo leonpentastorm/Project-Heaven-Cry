@@ -17307,6 +17307,357 @@
       ],
       "brief_number": 35,
       "origin": "brief"
+    },
+    "quiver-quiver": {
+      "label": "Quiver",
+      "path": "art/icons/gear/quiver-quiver.png",
+      "sha256": "b5539b8e6afda13fc8da2a1e7ec91961a1acfad4f4fd2cfaba6a84e2f396d32e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/quiver-quiver.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 1,
+      "exports": {
+        "256": "art/icons/gear/exports/256/quiver-quiver.png",
+        "128": "art/icons/gear/exports/128/quiver-quiver.png",
+        "64": "art/icons/gear/exports/64/quiver-quiver.png",
+        "32": "art/icons/gear/exports/32/quiver-quiver.png"
+      }
+    },
+    "mod-ench_fire": {
+      "label": "Ember enchantment",
+      "path": "art/icons/gear/mod-ench_fire.png",
+      "sha256": "393a898e7b3df1d998320e97a3d729f713602fa944b169b2e9f16326b88ff4f8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mod-ench_fire.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 2,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-ench_fire.png",
+        "128": "art/icons/gear/exports/128/mod-ench_fire.png",
+        "64": "art/icons/gear/exports/64/mod-ench_fire.png",
+        "32": "art/icons/gear/exports/32/mod-ench_fire.png"
+      }
+    },
+    "mod-ench_storm": {
+      "label": "Storm enchantment",
+      "path": "art/icons/gear/mod-ench_storm.png",
+      "sha256": "ae3cf11ccbb81aeb8d12089278bf1f5b49abdfca264ea90a0dcf10cb4079fac0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mod-ench_storm.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 3,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-ench_storm.png",
+        "128": "art/icons/gear/exports/128/mod-ench_storm.png",
+        "64": "art/icons/gear/exports/64/mod-ench_storm.png",
+        "32": "art/icons/gear/exports/32/mod-ench_storm.png"
+      }
+    },
+    "mod-ench_frost": {
+      "label": "Frost enchantment",
+      "path": "art/icons/gear/mod-ench_frost.png",
+      "sha256": "3d82d7db0fbb7747c8e1892c21dca9102a6e822484592792386476b5f74d79fa",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mod-ench_frost.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 4,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-ench_frost.png",
+        "128": "art/icons/gear/exports/128/mod-ench_frost.png",
+        "64": "art/icons/gear/exports/64/mod-ench_frost.png",
+        "32": "art/icons/gear/exports/32/mod-ench_frost.png"
+      }
+    },
+    "mod-ench_stone": {
+      "label": "Stone enchantment",
+      "path": "art/icons/gear/mod-ench_stone.png",
+      "sha256": "25262f298a59b066c3c6a49c3937a4e439f4e8bcfcf3047a664e67bf7fde45c9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mod-ench_stone.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 5,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-ench_stone.png",
+        "128": "art/icons/gear/exports/128/mod-ench_stone.png",
+        "64": "art/icons/gear/exports/64/mod-ench_stone.png",
+        "32": "art/icons/gear/exports/32/mod-ench_stone.png"
+      }
+    },
+    "mod-ench_gale": {
+      "label": "Gale enchantment",
+      "path": "art/icons/gear/mod-ench_gale.png",
+      "sha256": "e24e94c08eeead7abbebd331e61efe7ba1d8fe16335cf3299ec9aec0558bbb74",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mod-ench_gale.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 6,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-ench_gale.png",
+        "128": "art/icons/gear/exports/128/mod-ench_gale.png",
+        "64": "art/icons/gear/exports/64/mod-ench_gale.png",
+        "32": "art/icons/gear/exports/32/mod-ench_gale.png"
+      }
+    },
+    "mod-ench_acid": {
+      "label": "Acid enchantment",
+      "path": "art/icons/gear/mod-ench_acid.png",
+      "sha256": "5d512ea223fc3cbd5c350138606f0f64ca29a97f341a223ca026c5d93a00fda4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mod-ench_acid.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 7,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-ench_acid.png",
+        "128": "art/icons/gear/exports/128/mod-ench_acid.png",
+        "64": "art/icons/gear/exports/64/mod-ench_acid.png",
+        "32": "art/icons/gear/exports/32/mod-ench_acid.png"
+      }
+    },
+    "tool-armourer_chit": {
+      "label": "Armourer's chit",
+      "path": "art/icons/gear/tool-armourer_chit.png",
+      "sha256": "a4d34679439468f446e700db5800d9b2d020a1ae6a787c0749b2d1b7f3859855",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/tool-armourer_chit.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 8,
+      "exports": {
+        "256": "art/icons/gear/exports/256/tool-armourer_chit.png",
+        "128": "art/icons/gear/exports/128/tool-armourer_chit.png",
+        "64": "art/icons/gear/exports/64/tool-armourer_chit.png",
+        "32": "art/icons/gear/exports/32/tool-armourer_chit.png"
+      }
+    },
+    "material-gunpowder": {
+      "label": "Gunpowder",
+      "path": "art/icons/gear/material-gunpowder.png",
+      "sha256": "ddb33036c3bbed5fbf693514998d1ff3ab7fac42cb8a34639a6dd514238c57df",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/material-gunpowder.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 9,
+      "exports": {
+        "256": "art/icons/gear/exports/256/material-gunpowder.png",
+        "128": "art/icons/gear/exports/128/material-gunpowder.png",
+        "64": "art/icons/gear/exports/64/material-gunpowder.png",
+        "32": "art/icons/gear/exports/32/material-gunpowder.png"
+      }
+    },
+    "material-casing": {
+      "label": "Casing",
+      "path": "art/icons/gear/material-casing.png",
+      "sha256": "2136e082fd34f3bcda2e54c456b5a97b3ba843cbc87318d8c9ca6ed3f0e297d6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/material-casing.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 10,
+      "exports": {
+        "256": "art/icons/gear/exports/256/material-casing.png",
+        "128": "art/icons/gear/exports/128/material-casing.png",
+        "64": "art/icons/gear/exports/64/material-casing.png",
+        "32": "art/icons/gear/exports/32/material-casing.png"
+      }
+    },
+    "material-mana_residue": {
+      "label": "Mana residue",
+      "path": "art/icons/gear/material-mana_residue.png",
+      "sha256": "6792b95535f93121a090f5a1a234c6a4b6594a43af8a5323cce6b5ce212dfabc",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/material-mana_residue.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 11,
+      "exports": {
+        "256": "art/icons/gear/exports/256/material-mana_residue.png",
+        "128": "art/icons/gear/exports/128/material-mana_residue.png",
+        "64": "art/icons/gear/exports/64/material-mana_residue.png",
+        "32": "art/icons/gear/exports/32/material-mana_residue.png"
+      }
+    },
+    "tool-ammo_maker": {
+      "label": "Ammo maker",
+      "path": "art/icons/gear/tool-ammo_maker.png",
+      "sha256": "6bc28ba366a9f4df09056b5faa5fbc4faf87eea1a87d2dc2d86d5edf2affc52e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/tool-ammo_maker.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 12,
+      "exports": {
+        "256": "art/icons/gear/exports/256/tool-ammo_maker.png",
+        "128": "art/icons/gear/exports/128/tool-ammo_maker.png",
+        "64": "art/icons/gear/exports/64/tool-ammo_maker.png",
+        "32": "art/icons/gear/exports/32/tool-ammo_maker.png"
+      }
+    },
+    "card-materials": {
+      "label": "Materials card picture",
+      "path": "art/icons/gear/card-materials.png",
+      "sha256": "df22fe6e510f5a2e2f80e6d5adceb449392ba15359fc9018e4c25abf4e08e2d1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/card-materials.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "gear",
+      "brief_number": 13,
+      "exports": {
+        "256": "art/icons/gear/exports/256/card-materials.png",
+        "128": "art/icons/gear/exports/128/card-materials.png",
+        "64": "art/icons/gear/exports/64/card-materials.png",
+        "32": "art/icons/gear/exports/32/card-materials.png"
+      }
     }
   },
   "survival_art": {
@@ -22549,24 +22900,26 @@
       "native_minimum_met": false
     },
     "survival-p030": {
-      "label": "rest safe room",
+      "label": "The rest (Mallow's safe room)",
       "path": "art/illustrations/survival/nodes/rest-safe-room.png",
-      "sha256": "9492f1da6ee987504568f50be63b95262cb5e4c1eaf4ab0264313bc4134c7ea9",
-      "width": 2048,
-      "height": 1536,
-      "mode": "node-scene",
+      "sha256": "8208aa4f6abeb4a258d84271a0c2461f4d4ced138681fde92a2e74eb814427c7",
+      "width": 2560,
+      "height": 1440,
+      "mode": "scene",
       "background": "opaque",
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false,
-      "collection": "survival-scenes-and-portraits-2026-11-13",
-      "source_path": "art/_archive/survival/2026-11-13-scenes-and-portraits/native-renders/P030.png",
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/rest-safe-room.png",
       "native_dimensions": [
-        1448,
-        1086
+        1672,
+        941
       ],
       "upscaled": true,
-      "native_minimum_met": false
+      "native_minimum_met": false,
+      "brief_number": 59,
+      "previous_path": "art/_archive/everything-missing/2026-11-15/superseded/art/illustrations/survival/nodes/rest-safe-room.png"
     },
     "survival-p031": {
       "label": "rest campfire",
@@ -23067,6 +23420,27 @@
             4,
             1
           ]
+        },
+        "start": {
+          "path": "art/icons/survival/markers/start.png",
+          "sha256": "36547cb713e256151cab5da0f5fc14570c3e8484c03bbb62fe21ba3aad287222",
+          "width": 1024,
+          "height": 1024,
+          "standalone": true
+        },
+        "vault_guard": {
+          "path": "art/icons/survival/markers/vault_guard.png",
+          "sha256": "ed8563f37fdd134258f21a822e270d85e9761435248a4d8b6511c1bf69f76426",
+          "width": 1024,
+          "height": 1024,
+          "standalone": true
+        },
+        "vault": {
+          "path": "art/icons/survival/markers/vault.png",
+          "sha256": "6c1e2acc3840796dbe50b99bcb27f2d2f39934834a3651fe8b4122a41f17e8c4",
+          "width": 1024,
+          "height": 1024,
+          "standalone": true
         }
       }
     },
@@ -23126,6 +23500,442 @@
       "background": "opaque",
       "source_path": "art/_archive/survival/2026-11-14-path-and-keepers/native-renders/P064.png",
       "collection": "survival-path-and-keepers-2026-11-14"
+    },
+    "survival-node-start": {
+      "label": "The camp",
+      "path": "art/icons/survival/markers/start.png",
+      "sha256": "36547cb713e256151cab5da0f5fc14570c3e8484c03bbb62fe21ba3aad287222",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/start.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 43,
+      "exports": {
+        "64": "art/icons/survival/markers/exports/64/start.png",
+        "56": "art/icons/survival/markers/exports/56/start.png",
+        "48": "art/icons/survival/markers/exports/48/start.png",
+        "32": "art/icons/survival/markers/exports/32/start.png",
+        "24": "art/icons/survival/markers/exports/24/start.png"
+      }
+    },
+    "survival-node-vault_guard": {
+      "label": "The vault's guard",
+      "path": "art/icons/survival/markers/vault_guard.png",
+      "sha256": "ed8563f37fdd134258f21a822e270d85e9761435248a4d8b6511c1bf69f76426",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/vault_guard.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 44,
+      "exports": {
+        "64": "art/icons/survival/markers/exports/64/vault_guard.png",
+        "56": "art/icons/survival/markers/exports/56/vault_guard.png",
+        "48": "art/icons/survival/markers/exports/48/vault_guard.png",
+        "32": "art/icons/survival/markers/exports/32/vault_guard.png",
+        "24": "art/icons/survival/markers/exports/24/vault_guard.png"
+      }
+    },
+    "survival-node-vault": {
+      "label": "The vault",
+      "path": "art/icons/survival/markers/vault.png",
+      "sha256": "6c1e2acc3840796dbe50b99bcb27f2d2f39934834a3651fe8b4122a41f17e8c4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/vault.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 45,
+      "exports": {
+        "64": "art/icons/survival/markers/exports/64/vault.png",
+        "56": "art/icons/survival/markers/exports/56/vault.png",
+        "48": "art/icons/survival/markers/exports/48/vault.png",
+        "32": "art/icons/survival/markers/exports/32/vault.png",
+        "24": "art/icons/survival/markers/exports/24/vault.png"
+      }
+    },
+    "forge-armourer": {
+      "label": "Hesk Varro, the armourer",
+      "path": "art/portraits/survival/forge-armourer.png",
+      "sha256": "dd12c799fc3b3d8e5664ec9279c50964609a826cb6cf00d78767b398ccd3fbbe",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/forge-armourer.png",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "portrait",
+      "brief_number": 46,
+      "eye_line": {
+        "x": 0.447,
+        "y": 0.22
+      },
+      "eye_line_method": "Manual estimate on native render, transformed through recorded export crop"
+    },
+    "train-sergeant": {
+      "label": "Nara Dusk, the drill sergeant",
+      "path": "art/portraits/survival/train-sergeant.png",
+      "sha256": "b28c477ec029ba97e6b362664004507cf62f998c070e65f203e6ec2fa839d3c4",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/train-sergeant.png",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "portrait",
+      "brief_number": 47,
+      "eye_line": {
+        "x": 0.456,
+        "y": 0.22
+      },
+      "eye_line_method": "Manual estimate on native render, transformed through recorded export crop"
+    },
+    "event-broker": {
+      "label": "Teo Vant, the Crossroads broker",
+      "path": "art/portraits/survival/event-broker.png",
+      "sha256": "cc92d06d4642bbee84e066d812df08c88b7dc1b13419012531d30f6fb4cb775a",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/event-broker.png",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "portrait",
+      "brief_number": 48,
+      "eye_line": {
+        "x": 0.456,
+        "y": 0.22
+      },
+      "eye_line_method": "Manual estimate on native render, transformed through recorded export crop"
+    },
+    "survival-camp": {
+      "label": "The camp (before node 1)",
+      "path": "art/illustrations/survival/nodes/survival-camp.png",
+      "sha256": "1af66bbe623f03399c35ab39f89668d67dfe1c72a7ee91489db0bdb3229f8965",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/survival-camp.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 49
+    },
+    "shop-ahoc": {
+      "label": "Ledda Kroll's shop, AHOC chapter outpost",
+      "path": "art/illustrations/survival/nodes/shop-ahoc.png",
+      "sha256": "fe947735c19f1b0bf9de9947f587d3d7478c86e884984829cf6738e8b82d06a5",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-ahoc.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 50
+    },
+    "shop-city": {
+      "label": "Sefa Mire's shop, Central City back streets",
+      "path": "art/illustrations/survival/nodes/shop-city.png",
+      "sha256": "60792a3d472873d2be34927752593e82d1299c128c8907b552285a47366f6cb4",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-city.png",
+      "native_dimensions": [
+        1448,
+        1086
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 51
+    },
+    "shop-field": {
+      "label": "Brann Okoye's shop, the old battlefield",
+      "path": "art/illustrations/survival/nodes/shop-field.png",
+      "sha256": "cdd14d9daf1b58ee8ba6db8fbe38546aa796ad2e99c1f90ec0adda0a4c91d388",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-field.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 52
+    },
+    "shop-works": {
+      "label": "Ivo Smetanin's shop, the machine works",
+      "path": "art/illustrations/survival/nodes/shop-works.png",
+      "sha256": "67d65be54c8d6169db27ef3fee7417fcfae1222c953100d36da07d92aaa79c15",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-works.png",
+      "native_dimensions": [
+        1448,
+        1086
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 53
+    },
+    "shop-shrine": {
+      "label": "Sister Amaun's shop, the shrine and cathedral district",
+      "path": "art/illustrations/survival/nodes/shop-shrine.png",
+      "sha256": "dfc488bd09c8cbb4075d10cc4ff13fc2502e80bf0f152a9b57e5c95b6f31f4bb",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-shrine.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 54
+    },
+    "shop-rim": {
+      "label": "Corra Vell's shop, the rim station",
+      "path": "art/illustrations/survival/nodes/shop-rim.png",
+      "sha256": "0d664bc32c96ad2733daab634186b3203c5a2762c2253667c7ff677dfc189f83",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-rim.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 55
+    },
+    "forge": {
+      "label": "The Forge (Hesk Varro)",
+      "path": "art/illustrations/survival/nodes/forge.png",
+      "sha256": "6543b98102d88bc8eaa553449d0d873aae19b6acdc0a5622a48893f26b1bf201",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/forge.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 56
+    },
+    "training": {
+      "label": "The training ground (Nara Dusk)",
+      "path": "art/illustrations/survival/nodes/training.png",
+      "sha256": "90f440260d0f0384215fd3731818eba21056c261f859321c253b4d163b4be65f",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/training.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 57
+    },
+    "shrine": {
+      "label": "The shrine (the patron's own face draws over it)",
+      "path": "art/illustrations/survival/nodes/shrine.png",
+      "sha256": "665e1da96101f38693850da0a66b7bd81dc781cc2dee6fdf3e52d797a499e0ff",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shrine.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 58
+    },
+    "rest-safe-room": {
+      "label": "The rest (Mallow's safe room)",
+      "path": "art/illustrations/survival/nodes/rest-safe-room.png",
+      "sha256": "8208aa4f6abeb4a258d84271a0c2461f4d4ced138681fde92a2e74eb814427c7",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/rest-safe-room.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 59,
+      "previous_path": "art/_archive/everything-missing/2026-11-15/superseded/art/illustrations/survival/nodes/rest-safe-room.png"
+    },
+    "crossroads": {
+      "label": "The Crossroads (Teo Vant)",
+      "path": "art/illustrations/survival/nodes/crossroads.png",
+      "sha256": "1eced975525c2f1d68e77779fb16d160406630b388e511a512d3c130daf3388c",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/crossroads.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 60
+    },
+    "roguelike-card-title": {
+      "label": "Roguelike",
+      "path": "art/illustrations/survival/cards/title-roguelike.png",
+      "sha256": "13423e2a689a5093e77395a979700782abbab502b2d2eb7ffc02b58901fb1921",
+      "width": 2560,
+      "height": 1440,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/title-roguelike.png",
+      "native_dimensions": [
+        1672,
+        941
+      ],
+      "native_minimum_met": false,
+      "upscaled": true,
+      "mode": "scene",
+      "brief_number": 66
     }
   },
   "kit": {
@@ -25646,6 +26456,962 @@
       "delivery": "survival-k115",
       "status": "review-candidate",
       "use": true
+    }
+  },
+  "boons": {
+    "icon-boon-edge": {
+      "label": "Honed",
+      "path": "art/icons/boons/edge.png",
+      "sha256": "5e1f460b7694f19ab7ba89c90978c561d976da57184d968f3ebe2d78fdad3e5d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/edge.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 14,
+      "exports": {
+        "64": "art/icons/boons/exports/64/edge.png",
+        "56": "art/icons/boons/exports/56/edge.png",
+        "48": "art/icons/boons/exports/48/edge.png",
+        "32": "art/icons/boons/exports/32/edge.png",
+        "24": "art/icons/boons/exports/24/edge.png"
+      }
+    },
+    "icon-boon-second_wind": {
+      "label": "Second Wind",
+      "path": "art/icons/boons/second_wind.png",
+      "sha256": "f2c2f8e981fb9b333a02451885123a7aa8a8d5e540eb0c5493ea2aa055591444",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/second_wind.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 15,
+      "exports": {
+        "64": "art/icons/boons/exports/64/second_wind.png",
+        "56": "art/icons/boons/exports/56/second_wind.png",
+        "48": "art/icons/boons/exports/48/second_wind.png",
+        "32": "art/icons/boons/exports/32/second_wind.png",
+        "24": "art/icons/boons/exports/24/second_wind.png"
+      }
+    },
+    "icon-boon-true_aim": {
+      "label": "True Aim",
+      "path": "art/icons/boons/true_aim.png",
+      "sha256": "f4502f1b9e3085071dead990c187384db0ef5bdef89937e7e40c30fa98a68057",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/true_aim.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 16,
+      "exports": {
+        "64": "art/icons/boons/exports/64/true_aim.png",
+        "56": "art/icons/boons/exports/56/true_aim.png",
+        "48": "art/icons/boons/exports/48/true_aim.png",
+        "32": "art/icons/boons/exports/32/true_aim.png",
+        "24": "art/icons/boons/exports/24/true_aim.png"
+      }
+    },
+    "icon-boon-hardened": {
+      "label": "Hardened",
+      "path": "art/icons/boons/hardened.png",
+      "sha256": "b393eb70c83515cda6014b994339ebfb83ea43118ca15774285e891fefc77f10",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/hardened.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 17,
+      "exports": {
+        "64": "art/icons/boons/exports/64/hardened.png",
+        "56": "art/icons/boons/exports/56/hardened.png",
+        "48": "art/icons/boons/exports/48/hardened.png",
+        "32": "art/icons/boons/exports/32/hardened.png",
+        "24": "art/icons/boons/exports/24/hardened.png"
+      }
+    },
+    "icon-boon-lifeline": {
+      "label": "Lifeline",
+      "path": "art/icons/boons/lifeline.png",
+      "sha256": "255e11bbcc25384f0f7e77beafd8be030c682336bb6c3511726082b082665c46",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/lifeline.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 18,
+      "exports": {
+        "64": "art/icons/boons/exports/64/lifeline.png",
+        "56": "art/icons/boons/exports/56/lifeline.png",
+        "48": "art/icons/boons/exports/48/lifeline.png",
+        "32": "art/icons/boons/exports/32/lifeline.png",
+        "24": "art/icons/boons/exports/24/lifeline.png"
+      }
+    },
+    "icon-boon-echo": {
+      "label": "Steady Breath",
+      "path": "art/icons/boons/echo.png",
+      "sha256": "26f218d2240fb1515c0c3b369d37d3e677751b40dcbb40db7af2bcd1e03452d6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/echo.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 19,
+      "exports": {
+        "64": "art/icons/boons/exports/64/echo.png",
+        "56": "art/icons/boons/exports/56/echo.png",
+        "48": "art/icons/boons/exports/48/echo.png",
+        "32": "art/icons/boons/exports/32/echo.png",
+        "24": "art/icons/boons/exports/24/echo.png"
+      }
+    },
+    "icon-boon-deep_well": {
+      "label": "Deep Well",
+      "path": "art/icons/boons/deep_well.png",
+      "sha256": "db2b27ce590b2b1dc11491a653c09d2d0308cb0054d440b789f42158ae6dfd89",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/deep_well.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 20,
+      "exports": {
+        "64": "art/icons/boons/exports/64/deep_well.png",
+        "56": "art/icons/boons/exports/56/deep_well.png",
+        "48": "art/icons/boons/exports/48/deep_well.png",
+        "32": "art/icons/boons/exports/32/deep_well.png",
+        "24": "art/icons/boons/exports/24/deep_well.png"
+      }
+    },
+    "icon-boon-primed": {
+      "label": "Primed",
+      "path": "art/icons/boons/primed.png",
+      "sha256": "67c33b06ec061e2ad4e5f38f8b38aecf1e8dbc2d2b63865612ee94e37d46b19b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/primed.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 21,
+      "exports": {
+        "64": "art/icons/boons/exports/64/primed.png",
+        "56": "art/icons/boons/exports/56/primed.png",
+        "48": "art/icons/boons/exports/48/primed.png",
+        "32": "art/icons/boons/exports/32/primed.png",
+        "24": "art/icons/boons/exports/24/primed.png"
+      }
+    },
+    "icon-boon-reflexes": {
+      "label": "Quick Hands",
+      "path": "art/icons/boons/reflexes.png",
+      "sha256": "570f84a26f49bccf3fcf73a6420f5e99982b26b7da7dd70e9ac07f4bc5b7a955",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/reflexes.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 22,
+      "exports": {
+        "64": "art/icons/boons/exports/64/reflexes.png",
+        "56": "art/icons/boons/exports/56/reflexes.png",
+        "48": "art/icons/boons/exports/48/reflexes.png",
+        "32": "art/icons/boons/exports/32/reflexes.png",
+        "24": "art/icons/boons/exports/24/reflexes.png"
+      }
+    },
+    "icon-boon-mending": {
+      "label": "Field Mending",
+      "path": "art/icons/boons/mending.png",
+      "sha256": "ad421b2220740005f9bc6a7c6a881a9c13baa9f26142dbb1167a55076d003b35",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mending.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 23,
+      "exports": {
+        "64": "art/icons/boons/exports/64/mending.png",
+        "56": "art/icons/boons/exports/56/mending.png",
+        "48": "art/icons/boons/exports/48/mending.png",
+        "32": "art/icons/boons/exports/32/mending.png",
+        "24": "art/icons/boons/exports/24/mending.png"
+      }
+    },
+    "icon-boon-bandolier": {
+      "label": "Bandolier",
+      "path": "art/icons/boons/bandolier.png",
+      "sha256": "b3d5aae101ecd62aa95c8903f6498900ed848c4f247ca1392768c910cc89d078",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/bandolier.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 24,
+      "exports": {
+        "64": "art/icons/boons/exports/64/bandolier.png",
+        "56": "art/icons/boons/exports/56/bandolier.png",
+        "48": "art/icons/boons/exports/48/bandolier.png",
+        "32": "art/icons/boons/exports/32/bandolier.png",
+        "24": "art/icons/boons/exports/24/bandolier.png"
+      }
+    },
+    "icon-boon-deep_satchel": {
+      "label": "Deep Satchel",
+      "path": "art/icons/boons/deep_satchel.png",
+      "sha256": "defa6e5fffb05641fd2f4c5c2edbf7efa5cb79da5334626694ca23c6af061b5b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/deep_satchel.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 25,
+      "exports": {
+        "64": "art/icons/boons/exports/64/deep_satchel.png",
+        "56": "art/icons/boons/exports/56/deep_satchel.png",
+        "48": "art/icons/boons/exports/48/deep_satchel.png",
+        "32": "art/icons/boons/exports/32/deep_satchel.png",
+        "24": "art/icons/boons/exports/24/deep_satchel.png"
+      }
+    },
+    "icon-boon-tithe": {
+      "label": "Tithe",
+      "path": "art/icons/boons/tithe.png",
+      "sha256": "fd5b978fc179b40dfae650e45c14a1bf911832c7146064653bc823ecf1edaf06",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/tithe.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 26,
+      "exports": {
+        "64": "art/icons/boons/exports/64/tithe.png",
+        "56": "art/icons/boons/exports/56/tithe.png",
+        "48": "art/icons/boons/exports/48/tithe.png",
+        "32": "art/icons/boons/exports/32/tithe.png",
+        "24": "art/icons/boons/exports/24/tithe.png"
+      }
+    },
+    "icon-boon-devout": {
+      "label": "Devout",
+      "path": "art/icons/boons/devout.png",
+      "sha256": "7e82f92c4ecbcbb69198d74e4801aa1a33cce74d701b872e6a4cf58c450e47ed",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/devout.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 27,
+      "exports": {
+        "64": "art/icons/boons/exports/64/devout.png",
+        "56": "art/icons/boons/exports/56/devout.png",
+        "48": "art/icons/boons/exports/48/devout.png",
+        "32": "art/icons/boons/exports/32/devout.png",
+        "24": "art/icons/boons/exports/24/devout.png"
+      }
+    },
+    "icon-boon-script_ward": {
+      "label": "Ward of Script",
+      "path": "art/icons/boons/script_ward.png",
+      "sha256": "2b239d2baf0fbae11247594185fa8b61bbad9e44593fda17d25e9ab988e9791c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/script_ward.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 28,
+      "exports": {
+        "64": "art/icons/boons/exports/64/script_ward.png",
+        "56": "art/icons/boons/exports/56/script_ward.png",
+        "48": "art/icons/boons/exports/48/script_ward.png",
+        "32": "art/icons/boons/exports/32/script_ward.png",
+        "24": "art/icons/boons/exports/24/script_ward.png"
+      }
+    },
+    "icon-boon-long_hand": {
+      "label": "Long Hand",
+      "path": "art/icons/boons/long_hand.png",
+      "sha256": "48e2cc4c3cbf919bc78065162dc51ab38c7c956736f5da6f9d0d7bb73f1bbcf0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/long_hand.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 29,
+      "exports": {
+        "64": "art/icons/boons/exports/64/long_hand.png",
+        "56": "art/icons/boons/exports/56/long_hand.png",
+        "48": "art/icons/boons/exports/48/long_hand.png",
+        "32": "art/icons/boons/exports/32/long_hand.png",
+        "24": "art/icons/boons/exports/24/long_hand.png"
+      }
+    },
+    "icon-boon-sure_script": {
+      "label": "Sure Script",
+      "path": "art/icons/boons/sure_script.png",
+      "sha256": "cdf54d6eca4e97699c6e343158cc9f9cdc553a7ce4f73ebc94e534abb1407c60",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/sure_script.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 30,
+      "exports": {
+        "64": "art/icons/boons/exports/64/sure_script.png",
+        "56": "art/icons/boons/exports/56/sure_script.png",
+        "48": "art/icons/boons/exports/48/sure_script.png",
+        "32": "art/icons/boons/exports/32/sure_script.png",
+        "24": "art/icons/boons/exports/24/sure_script.png"
+      }
+    },
+    "icon-boon-steady_heart": {
+      "label": "Steady Heart",
+      "path": "art/icons/boons/steady_heart.png",
+      "sha256": "4e8e74ac3edb25879c7205b9e74419c4e45d2bc8b47d131ad6fc32794327200b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/steady_heart.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 31,
+      "exports": {
+        "64": "art/icons/boons/exports/64/steady_heart.png",
+        "56": "art/icons/boons/exports/56/steady_heart.png",
+        "48": "art/icons/boons/exports/48/steady_heart.png",
+        "32": "art/icons/boons/exports/32/steady_heart.png",
+        "24": "art/icons/boons/exports/24/steady_heart.png"
+      }
+    },
+    "icon-boon-deep_reserve": {
+      "label": "Deep Reserve",
+      "path": "art/icons/boons/deep_reserve.png",
+      "sha256": "255d2ffbcac625b2fc2a0834700af4f71fdfab31901bfb2d676e4a48bac4584c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/deep_reserve.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 32,
+      "exports": {
+        "64": "art/icons/boons/exports/64/deep_reserve.png",
+        "56": "art/icons/boons/exports/56/deep_reserve.png",
+        "48": "art/icons/boons/exports/48/deep_reserve.png",
+        "32": "art/icons/boons/exports/32/deep_reserve.png",
+        "24": "art/icons/boons/exports/24/deep_reserve.png"
+      }
+    },
+    "icon-boon-mercy_return": {
+      "label": "Mercy's Return",
+      "path": "art/icons/boons/mercy_return.png",
+      "sha256": "cecd1c0393e09d18c8a85898cc6edaff9ba645404ed0f00f8d511c2963c3a9d9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/mercy_return.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 33,
+      "exports": {
+        "64": "art/icons/boons/exports/64/mercy_return.png",
+        "56": "art/icons/boons/exports/56/mercy_return.png",
+        "48": "art/icons/boons/exports/48/mercy_return.png",
+        "32": "art/icons/boons/exports/32/mercy_return.png",
+        "24": "art/icons/boons/exports/24/mercy_return.png"
+      }
+    },
+    "icon-boon-guns": {
+      "label": "Guns (line)",
+      "path": "art/icons/boons/guns.png",
+      "sha256": "36f7d660f1181c701434f58eaf478d098016b4c49546ac0af75d8ef17ac543ae",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/guns.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 34,
+      "exports": {
+        "64": "art/icons/boons/exports/64/guns.png",
+        "56": "art/icons/boons/exports/56/guns.png",
+        "48": "art/icons/boons/exports/48/guns.png",
+        "32": "art/icons/boons/exports/32/guns.png",
+        "24": "art/icons/boons/exports/24/guns.png"
+      }
+    },
+    "icon-boon-blades": {
+      "label": "Blades (line)",
+      "path": "art/icons/boons/blades.png",
+      "sha256": "37f4c00e994759f554a20fc78af6249f19a4b2466cffcfdf55bf96958dc2ef9c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/blades.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 35,
+      "exports": {
+        "64": "art/icons/boons/exports/64/blades.png",
+        "56": "art/icons/boons/exports/56/blades.png",
+        "48": "art/icons/boons/exports/48/blades.png",
+        "32": "art/icons/boons/exports/32/blades.png",
+        "24": "art/icons/boons/exports/24/blades.png"
+      }
+    },
+    "icon-boon-guard": {
+      "label": "Guard (line)",
+      "path": "art/icons/boons/guard.png",
+      "sha256": "040afe54d73dc335372755aea36942d1dceeb63131d39379b4912a4933b7ba5c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/guard.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 36,
+      "exports": {
+        "64": "art/icons/boons/exports/64/guard.png",
+        "56": "art/icons/boons/exports/56/guard.png",
+        "48": "art/icons/boons/exports/48/guard.png",
+        "32": "art/icons/boons/exports/32/guard.png",
+        "24": "art/icons/boons/exports/24/guard.png"
+      }
+    },
+    "icon-boon-shadow": {
+      "label": "Shadow (line)",
+      "path": "art/icons/boons/shadow.png",
+      "sha256": "98b2e8344ba0d3644b78d8cfde64ddc669baf30d2901fe85eb2005cd4fa93e6e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shadow.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 37,
+      "exports": {
+        "64": "art/icons/boons/exports/64/shadow.png",
+        "56": "art/icons/boons/exports/56/shadow.png",
+        "48": "art/icons/boons/exports/48/shadow.png",
+        "32": "art/icons/boons/exports/32/shadow.png",
+        "24": "art/icons/boons/exports/24/shadow.png"
+      }
+    },
+    "icon-boon-sigil": {
+      "label": "Sigil (line)",
+      "path": "art/icons/boons/sigil.png",
+      "sha256": "627c13e77b73be150bbf3f8c8ca9273a6d50c8d298cd73da9034d706ba9d8ec5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/sigil.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 38,
+      "exports": {
+        "64": "art/icons/boons/exports/64/sigil.png",
+        "56": "art/icons/boons/exports/56/sigil.png",
+        "48": "art/icons/boons/exports/48/sigil.png",
+        "32": "art/icons/boons/exports/32/sigil.png",
+        "24": "art/icons/boons/exports/24/sigil.png"
+      }
+    },
+    "icon-boon-outburst": {
+      "label": "Outburst (line)",
+      "path": "art/icons/boons/outburst.png",
+      "sha256": "b74e3fb84fd99cc91e300c0b9f16f6f3fa570d91e28c8c266b89c48e79d1e623",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/outburst.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 39,
+      "exports": {
+        "64": "art/icons/boons/exports/64/outburst.png",
+        "56": "art/icons/boons/exports/56/outburst.png",
+        "48": "art/icons/boons/exports/48/outburst.png",
+        "32": "art/icons/boons/exports/32/outburst.png",
+        "24": "art/icons/boons/exports/24/outburst.png"
+      }
+    },
+    "icon-boon-bonds": {
+      "label": "Bonds and Tending (line)",
+      "path": "art/icons/boons/bonds.png",
+      "sha256": "26f0d161cbd9deba4aafc3797db0b122b207b76720d517550c3a52ec573a2724",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/bonds.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 40,
+      "exports": {
+        "64": "art/icons/boons/exports/64/bonds.png",
+        "56": "art/icons/boons/exports/56/bonds.png",
+        "48": "art/icons/boons/exports/48/bonds.png",
+        "32": "art/icons/boons/exports/32/bonds.png",
+        "24": "art/icons/boons/exports/24/bonds.png"
+      }
+    },
+    "icon-boon-figments": {
+      "label": "Figments (line)",
+      "path": "art/icons/boons/figments.png",
+      "sha256": "584f8e9bd423670ed4a2e801f685213c7301929321b052fa5489da67c58b38f9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/figments.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 41,
+      "exports": {
+        "64": "art/icons/boons/exports/64/figments.png",
+        "56": "art/icons/boons/exports/56/figments.png",
+        "48": "art/icons/boons/exports/48/figments.png",
+        "32": "art/icons/boons/exports/32/figments.png",
+        "24": "art/icons/boons/exports/24/figments.png"
+      }
+    },
+    "icon-boon-faith": {
+      "label": "Faith (line)",
+      "path": "art/icons/boons/faith.png",
+      "sha256": "43ff8e8e530bd1703c953f6090e8834e2e7d28581fb28016fc8a3b280b644a38",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/faith.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 42,
+      "exports": {
+        "64": "art/icons/boons/exports/64/faith.png",
+        "56": "art/icons/boons/exports/56/faith.png",
+        "48": "art/icons/boons/exports/48/faith.png",
+        "32": "art/icons/boons/exports/32/faith.png",
+        "24": "art/icons/boons/exports/24/faith.png"
+      }
+    }
+  },
+  "interface_icons": {
+    "icon-panel-run": {
+      "label": "Run (panel icon)",
+      "path": "art/icons/panels/run.png",
+      "sha256": "5d08751696ca649b0b6b7e081fae8d401b6e2a0b1b8b039dd2265b4dd713c131",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/run.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 61,
+      "exports": {
+        "64": "art/icons/panels/exports/64/run.png",
+        "56": "art/icons/panels/exports/56/run.png",
+        "48": "art/icons/panels/exports/48/run.png",
+        "32": "art/icons/panels/exports/32/run.png",
+        "24": "art/icons/panels/exports/24/run.png"
+      }
+    },
+    "icon-panel-run_board": {
+      "label": "Run board (panel icon)",
+      "path": "art/icons/panels/run_board.png",
+      "sha256": "04d597c6a1adbfbbb176b6e18d7e1a30474936105001d721d08fa1f02cde5885",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/run_board.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 62,
+      "exports": {
+        "64": "art/icons/panels/exports/64/run_board.png",
+        "56": "art/icons/panels/exports/56/run_board.png",
+        "48": "art/icons/panels/exports/48/run_board.png",
+        "32": "art/icons/panels/exports/32/run_board.png",
+        "24": "art/icons/panels/exports/24/run_board.png"
+      }
+    },
+    "banner-fight-start": {
+      "label": "Fight start (flash mark)",
+      "path": "art/icons/banners/fight-start.png",
+      "sha256": "444130c7a273dfc061802828bb23214fe4ce64fb69d9067f56114afd764063a6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/fight-start.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 63,
+      "exports": {
+        "64": "art/icons/banners/exports/64/fight-start.png",
+        "56": "art/icons/banners/exports/56/fight-start.png",
+        "48": "art/icons/banners/exports/48/fight-start.png",
+        "32": "art/icons/banners/exports/32/fight-start.png",
+        "24": "art/icons/banners/exports/24/fight-start.png"
+      }
+    },
+    "banner-fight-won": {
+      "label": "Fight won (flash mark)",
+      "path": "art/icons/banners/fight-won.png",
+      "sha256": "cad0a11aad1b4b681f31ddfb22bd8db4afe7dea02567b53a76b30c2da067b7a9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/fight-won.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 64,
+      "exports": {
+        "64": "art/icons/banners/exports/64/fight-won.png",
+        "56": "art/icons/banners/exports/56/fight-won.png",
+        "48": "art/icons/banners/exports/48/fight-won.png",
+        "32": "art/icons/banners/exports/32/fight-won.png",
+        "24": "art/icons/banners/exports/24/fight-won.png"
+      }
+    },
+    "banner-fight-lost": {
+      "label": "Fight lost (flash mark)",
+      "path": "art/icons/banners/fight-lost.png",
+      "sha256": "3dcebcd652d1277889b282604c0bc38c6c611c6b7e8c97e1ac9c32525f79426d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "everything-missing-2026-11-15",
+      "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/fight-lost.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "native_minimum_met": true,
+      "upscaled": false,
+      "mode": "ink",
+      "brief_number": 65,
+      "exports": {
+        "64": "art/icons/banners/exports/64/fight-lost.png",
+        "56": "art/icons/banners/exports/56/fight-lost.png",
+        "48": "art/icons/banners/exports/48/fight-lost.png",
+        "32": "art/icons/banners/exports/32/fight-lost.png",
+        "24": "art/icons/banners/exports/24/fight-lost.png"
+      }
     }
   }
 }

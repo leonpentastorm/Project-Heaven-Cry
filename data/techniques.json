@@ -766,7 +766,9 @@
         }
       ],
       "free": false,
-      "comes_with": [],
+      "comes_with": [
+        "thrown"
+      ],
       "home": [],
       "particular": false,
       "numbers": {

@@ -1,0 +1,332 @@
+[
+  {
+    "number": 1,
+    "path": "art/icons/gear/quiver-quiver.png",
+    "exists": false
+  },
+  {
+    "number": 2,
+    "path": "art/icons/gear/mod-ench_fire.png",
+    "exists": false
+  },
+  {
+    "number": 3,
+    "path": "art/icons/gear/mod-ench_storm.png",
+    "exists": false
+  },
+  {
+    "number": 4,
+    "path": "art/icons/gear/mod-ench_frost.png",
+    "exists": false
+  },
+  {
+    "number": 5,
+    "path": "art/icons/gear/mod-ench_stone.png",
+    "exists": false
+  },
+  {
+    "number": 6,
+    "path": "art/icons/gear/mod-ench_gale.png",
+    "exists": false
+  },
+  {
+    "number": 7,
+    "path": "art/icons/gear/mod-ench_acid.png",
+    "exists": false
+  },
+  {
+    "number": 8,
+    "path": "art/icons/gear/tool-armourer_chit.png",
+    "exists": false
+  },
+  {
+    "number": 9,
+    "path": "art/icons/gear/material-gunpowder.png",
+    "exists": false
+  },
+  {
+    "number": 10,
+    "path": "art/icons/gear/material-casing.png",
+    "exists": false
+  },
+  {
+    "number": 11,
+    "path": "art/icons/gear/material-mana_residue.png",
+    "exists": false
+  },
+  {
+    "number": 12,
+    "path": "art/icons/gear/tool-ammo_maker.png",
+    "exists": false
+  },
+  {
+    "number": 13,
+    "path": "art/icons/gear/card-materials.png",
+    "exists": false
+  },
+  {
+    "number": 14,
+    "path": "art/icons/boons/edge.png",
+    "exists": false
+  },
+  {
+    "number": 15,
+    "path": "art/icons/boons/second_wind.png",
+    "exists": false
+  },
+  {
+    "number": 16,
+    "path": "art/icons/boons/true_aim.png",
+    "exists": false
+  },
+  {
+    "number": 17,
+    "path": "art/icons/boons/hardened.png",
+    "exists": false
+  },
+  {
+    "number": 18,
+    "path": "art/icons/boons/lifeline.png",
+    "exists": false
+  },
+  {
+    "number": 19,
+    "path": "art/icons/boons/echo.png",
+    "exists": false
+  },
+  {
+    "number": 20,
+    "path": "art/icons/boons/deep_well.png",
+    "exists": false
+  },
+  {
+    "number": 21,
+    "path": "art/icons/boons/primed.png",
+    "exists": false
+  },
+  {
+    "number": 22,
+    "path": "art/icons/boons/reflexes.png",
+    "exists": false
+  },
+  {
+    "number": 23,
+    "path": "art/icons/boons/mending.png",
+    "exists": false
+  },
+  {
+    "number": 24,
+    "path": "art/icons/boons/bandolier.png",
+    "exists": false
+  },
+  {
+    "number": 25,
+    "path": "art/icons/boons/deep_satchel.png",
+    "exists": false
+  },
+  {
+    "number": 26,
+    "path": "art/icons/boons/tithe.png",
+    "exists": false
+  },
+  {
+    "number": 27,
+    "path": "art/icons/boons/devout.png",
+    "exists": false
+  },
+  {
+    "number": 28,
+    "path": "art/icons/boons/script_ward.png",
+    "exists": false
+  },
+  {
+    "number": 29,
+    "path": "art/icons/boons/long_hand.png",
+    "exists": false
+  },
+  {
+    "number": 30,
+    "path": "art/icons/boons/sure_script.png",
+    "exists": false
+  },
+  {
+    "number": 31,
+    "path": "art/icons/boons/steady_heart.png",
+    "exists": false
+  },
+  {
+    "number": 32,
+    "path": "art/icons/boons/deep_reserve.png",
+    "exists": false
+  },
+  {
+    "number": 33,
+    "path": "art/icons/boons/mercy_return.png",
+    "exists": false
+  },
+  {
+    "number": 34,
+    "path": "art/icons/boons/guns.png",
+    "exists": false
+  },
+  {
+    "number": 35,
+    "path": "art/icons/boons/blades.png",
+    "exists": false
+  },
+  {
+    "number": 36,
+    "path": "art/icons/boons/guard.png",
+    "exists": false
+  },
+  {
+    "number": 37,
+    "path": "art/icons/boons/shadow.png",
+    "exists": false
+  },
+  {
+    "number": 38,
+    "path": "art/icons/boons/sigil.png",
+    "exists": false
+  },
+  {
+    "number": 39,
+    "path": "art/icons/boons/outburst.png",
+    "exists": false
+  },
+  {
+    "number": 40,
+    "path": "art/icons/boons/bonds.png",
+    "exists": false
+  },
+  {
+    "number": 41,
+    "path": "art/icons/boons/figments.png",
+    "exists": false
+  },
+  {
+    "number": 42,
+    "path": "art/icons/boons/faith.png",
+    "exists": false
+  },
+  {
+    "number": 43,
+    "path": "art/icons/survival/markers/start.png",
+    "exists": false
+  },
+  {
+    "number": 44,
+    "path": "art/icons/survival/markers/vault_guard.png",
+    "exists": false
+  },
+  {
+    "number": 45,
+    "path": "art/icons/survival/markers/vault.png",
+    "exists": false
+  },
+  {
+    "number": 46,
+    "path": "art/portraits/survival/forge-armourer.png",
+    "exists": false
+  },
+  {
+    "number": 47,
+    "path": "art/portraits/survival/train-sergeant.png",
+    "exists": false
+  },
+  {
+    "number": 48,
+    "path": "art/portraits/survival/event-broker.png",
+    "exists": false
+  },
+  {
+    "number": 49,
+    "path": "art/illustrations/survival/nodes/survival-camp.png",
+    "exists": false
+  },
+  {
+    "number": 50,
+    "path": "art/illustrations/survival/nodes/shop-ahoc.png",
+    "exists": false
+  },
+  {
+    "number": 51,
+    "path": "art/illustrations/survival/nodes/shop-city.png",
+    "exists": false
+  },
+  {
+    "number": 52,
+    "path": "art/illustrations/survival/nodes/shop-field.png",
+    "exists": false
+  },
+  {
+    "number": 53,
+    "path": "art/illustrations/survival/nodes/shop-works.png",
+    "exists": false
+  },
+  {
+    "number": 54,
+    "path": "art/illustrations/survival/nodes/shop-shrine.png",
+    "exists": false
+  },
+  {
+    "number": 55,
+    "path": "art/illustrations/survival/nodes/shop-rim.png",
+    "exists": false
+  },
+  {
+    "number": 56,
+    "path": "art/illustrations/survival/nodes/forge.png",
+    "exists": false
+  },
+  {
+    "number": 57,
+    "path": "art/illustrations/survival/nodes/training.png",
+    "exists": false
+  },
+  {
+    "number": 58,
+    "path": "art/illustrations/survival/nodes/shrine.png",
+    "exists": false
+  },
+  {
+    "number": 59,
+    "path": "art/illustrations/survival/nodes/rest-safe-room.png",
+    "exists": true
+  },
+  {
+    "number": 60,
+    "path": "art/illustrations/survival/nodes/crossroads.png",
+    "exists": false
+  },
+  {
+    "number": 61,
+    "path": "art/icons/panels/run.png",
+    "exists": false
+  },
+  {
+    "number": 62,
+    "path": "art/icons/panels/run_board.png",
+    "exists": false
+  },
+  {
+    "number": 63,
+    "path": "art/icons/banners/fight-start.png",
+    "exists": false
+  },
+  {
+    "number": 64,
+    "path": "art/icons/banners/fight-won.png",
+    "exists": false
+  },
+  {
+    "number": 65,
+    "path": "art/icons/banners/fight-lost.png",
+    "exists": false
+  },
+  {
+    "number": 66,
+    "path": "art/illustrations/survival/cards/title-roguelike.png",
+    "exists": false
+  }
+]

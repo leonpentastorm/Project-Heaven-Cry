@@ -11,6 +11,9 @@ import { boonIconSvg } from './boonIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { TallyTable } from './RunTally';
 import { summaryTallies } from './tallyView';
+import { runView } from './runView';
+import { PlaceBar, BarNumber } from './PlaceBar';
+import { MoveOn } from './runPanels';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF', ok: '#6FEA77' };
 const kick: React.CSSProperties = { fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
@@ -106,14 +109,15 @@ function Summary({ s }: { s: SummaryV }) {
 export function StageScreen() {
   const st = getState(), g = st.game, me = st.me.id, v = g ? stageView(g, me) : null;
   if (!g || !v) return null;
+  const mine = runView(g, me)?.party.find((x) => x.mine);
   return (
-    <div data-phc-stage-screen={v.state} style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', gap: 22, padding: '18px 20px 32px', background: 'radial-gradient(ellipse at 50% 0%, #141B28 0%, #0A0D13 70%)', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxSizing: 'border-box' }}>
-      {v.summary ? <Summary s={v.summary} /> : <>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-          <span data-phc-cleared="" style={{ fontSize: 24, fontWeight: 700, letterSpacing: '0.16em' }}>STAGE {v.stage} CLEARED</span>
-          <h1 style={{ ...title, fontSize: 22, color: '#DCE2EC' }}>{v.state === 'boon' ? 'Pick a boon for the rest of the run' : 'Pick the next tile'}</h1>
-          {v.waiting ? <span data-phc-waiting="" style={{ fontSize: 14, color: ink.white }}>{v.waiting}</span> : null}
-        </div>
+    <div data-phc-stage-screen={v.state} style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: 'radial-gradient(ellipse at 50% 0%, #141B28 0%, #0A0D13 70%)', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxSizing: 'border-box' }}>
+      {v.summary ? <div style={{ padding: '18px 20px 32px' }}><Summary s={v.summary} /></div> : <>
+        {/* the place header (PlaceBar, the visibility standard): the stage cleared, your credits, the button that moves on */}
+        <PlaceBar role={<span data-phc-cleared="">STAGE {v.stage} CLEARED</span>} name={v.state === 'boon' ? 'Pick a boon for the rest of the run' : 'Pick the next tile'}
+          money={mine ? <BarNumber label="CREDITS" n={mine.credits} mark={{ 'data-phc-bar-credits': '' }} /> : null} actions={<MoveOn />}
+          foot={v.waiting ? <span data-phc-waiting="" style={{ fontSize: 14, color: ink.white }}>{v.waiting}</span> : null} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 22, padding: '18px 20px 32px' }}>
         {v.state === 'boon' ? v.boons.map((b) => <BoonPick key={b.charId} b={b} />) : (
           <section aria-label="The next tile" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <span style={kick}>STAGE {v.stage + 1} · {v.solo ? 'CLICK A TILE TO GO' : 'MARK A TILE. THE SQUAD GOES WHEN EVERYONE HAS'}</span>
@@ -122,6 +126,7 @@ export function StageScreen() {
             </div>
           </section>
         )}
+        </div>
       </>}
     </div>
   );
