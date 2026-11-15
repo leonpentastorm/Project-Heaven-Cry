@@ -560,6 +560,9 @@ export const SPECIAL_REF_CALIBRE: string = SRP.calibre || '';
 /** The special-round item of each type that is made and sold by calibre (items.json: an `ammo_type` with a
  * `price_mult`), by type. An `ammo_type` item without one (enhanced rounds) is its own item and fits any gun. */
 export const SPECIAL_ROUND_ITEM: Readonly<Record<string, any>> = Object.fromEntries(Object.values(ITEM).filter((it: any) => it?.ammo_type && Number(it.price_mult) > 0).map((it: any) => [it.ammo_type, it]));
+/** A special round's name by calibre ("Armour-piercing (5.56 Hellraiser)"), or null when the type is not a special
+ * round: the one way the making list, the camp and the gear card name one (consolidation 0.29 should-fix 7). */
+export const specialRoundName = (calibre: string, type: string | null | undefined): string | null => (type && SPECIAL_ROUND_ITEM[type] ? SPECIAL_ROUND_ITEM[type].name + ' (' + (CALIBRE_NAME[calibre] || calibre) + ')' : null);
 /** The parts of a rounds id: `rounds:<calibre>` (type null) or `rounds:<calibre>:<type>` (a special round of that
  * calibre); null for any other id. The one reader of the shape (a calibre id holds no colon). */
 export function roundsIdOf(id: string): { calibre: string; type: string | null } | null {
