@@ -30,6 +30,8 @@ export const LOADOUT: {
   budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string> }; gun: { loaded: number; spare: number }; bow: { spare: number };
   focuses: string[]; focus_with: Record<string, { id: string; qty: number }[]>; counter: { skip: string[] }; stock: { ids: string[] }; max_qty: number;
   recommended: { focus_by_door: Record<string, string>; weapon: { when?: 'focus'; skill?: string; over?: string; archetype: string }[]; buys: Record<string, string[]>; fill: string };
+  /** The camp screen's backdrop, an art catalog id (optional; consolidation 0.29 ruling i, plan 10.D item 5). */
+  backdrop?: string;
 } = SV.loadout;
 /** A weapon archetype (survival.json `loadout.archetypes`; Leon, 14 Nov 2026): a weapons.json family as the data groups
  * it (its mastery_family and category), less `skip`. */
