@@ -131,7 +131,7 @@ ok('Ready waits for the starting boon: the button reads Next', await p.locator('
 await p.locator('[data-phc-camp-next]').click(); await p.waitForSelector('[data-phc-startboon]', { timeout: 30000 });
 const campCards = await p.locator('[data-phc-startboon]').allTextContents(), offer0 = await p.locator('[data-phc-startboon]').evaluateAll((e) => e.map((x) => x.getAttribute('data-phc-startboon')));
 ok('the starting boon: three large cards, each its name, its sentence with its number from data, its line\'s word and its worth on the cap (' + offer0.join(', ') + ')', campCards.length === 3
-  && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-startboon] svg').count() === 3);
+  && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-startboon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon (its line's)
 await act({ type: 'run/move', node: (await run()).nodes.find((n) => n.depth === 1).id }); await settle(p, 300);
 ok('the map waits at the camp (a stop asked for is refused)', (await run()).state === 'loadout' && (await run()).at === null);
 const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0[0];
@@ -602,7 +602,7 @@ const both = async (name) => { await shot(name + '-1280'); await p.setViewportSi
 const cid0 = Object.keys(g.characters)[0], offer = r.boons[cid0];
 const cards = await p.locator('[data-phc-boons="' + cid0 + '"] [data-phc-boon]').allTextContents();
 ok('the boon pick: three large cards, each its name, its sentence with its number from data and its worth (' + offer.join(', ') + ')', cards.length === 3 && offer.length === 3
-  && cards.every((t) => /\d/.test(t) && /boon room/.test(t)) && await p.locator('[data-phc-boons] [data-phc-boon] svg').count() === 3);
+  && cards.every((t) => /\d/.test(t) && /boon room/.test(t)) && await p.locator('[data-phc-boons] [data-phc-boon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon
 await both('survival-boon-pick');
 await p.locator('[data-phc-boon="' + offer[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'tile', null, { timeout: 30000 });

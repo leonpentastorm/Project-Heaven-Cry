@@ -56,7 +56,7 @@ export function boonIconSvg(id: string, size = 56, ink = 'currentColor'): string
   const url = boonArt(id);
   if (url) {
     const m = 'url(&quot;' + url + '&quot;) center / contain no-repeat';
-    return '<span aria-hidden="true" data-phc-boon="art" style="display: block; width: ' + size + 'px; height: ' + size + 'px; background: ' + ink + '; -webkit-mask: ' + m + '; mask: ' + m + '"></span>';
+    return '<span aria-hidden="true" data-phc-boon-icon="art" style="display: block; width: ' + size + 'px; height: ' + size + 'px; background: ' + ink + '; -webkit-mask: ' + m + '; mask: ' + m + '"></span>';
   }
   const line = (relicRow(id) as any)?.lines?.[0];
   const paths = BOON_ICON_PATHS[id] || (line && LINE_ICON_PATHS[line]) || BOON_ICON_PATHS['boon.primed'];
