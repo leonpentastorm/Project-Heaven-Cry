@@ -43,9 +43,8 @@ const LEDGER: [string, string, Record<string, number>][] = [
   ['class:heartbinder.through', 'mirror', { 'mults.share': 0.5 }],                                    // floor(n / 2)
   ['class:vessel.inner_charge', 'heartbeat', { base: 0, 'per.forms': 10 }], ['class:vessel.release_strike', 'damage', { base: 15 }],
   ['class:infiltrator.field_fix', 'repair', { base: 15 }], ['class:infiltrator.sabotage', 'damage', { base: 30 }],
-  ['perk:shrug_it_off', 'shield', { base: 0, 'per.max_hp': 0.1 }],
   ['perk:last_charge', 'shield', { base: 15 }], ['perk:last_charge', 'shield_by_armour', { base: 0, 'per.armour_class': 15 }],
-  ['perk:trick_shot', 'ricochet', { 'mults.share': 0.5 }], ['perk:breaching_strike', 'slam', { 'mults.share': 0.5 }],
+  ['perk:trick_shot', 'ricochet', { 'mults.share': 0.5 }],
   ['perk:field_surgeon', 'patch', { base: 0, 'per.max_hp': 0.5 }],
   ['perk:clean_hands', 'shield', { 'mults.pct_of_max_hp_I': 15, 'mults.pct_of_max_hp_II': 25 }],
   ['trait:factory_made', 'repair', { base: 0, 'per.improvisation': 10 }],
@@ -66,9 +65,9 @@ describe('a6: the ledger (what moved from TypeScript into data is the same numbe
   it('itemAmount is the base, its per-point parts, then each multiplier in turn; a missing block or multiplier throws', () => {
     expect(itemAmount('class:storm_hand.discharge', 'damage', [term(1.35, 'stat')], { charge: 3 })).toBe(20 * 3 * 1.35);
     expect(itemAmount('trait:grenadiers_arm', 'damage', [term(1.6, 'stat')], { kg: 70 })).toBe((10 + 70 / 4) * 1.6);
-    expect(itemAmount('perk:shrug_it_off', 'shield', [], { max_hp: 145 })).toBe(0.1 * 145);
+    expect(itemAmount('perk:field_surgeon', 'patch', [], { max_hp: 145 })).toBe(0.5 * 145);
     expect(amountMult('perk:trick_shot', 'ricochet', 'share')).toBe(0.5);
-    expect(() => amountBlock('perk:shrug_it_off', 'nothing')).toThrow(/No amount block/);
+    expect(() => amountBlock('perk:field_surgeon', 'nothing')).toThrow(/No amount block/);
     expect(() => amountBlock('perk:no_such_perk', 'shield')).toThrow(/No amount block/);
     expect(() => amountMult('perk:trick_shot', 'ricochet', 'nothing')).toThrow(/No multiplier/);
   });

@@ -537,6 +537,7 @@
                 }
               ],
               "profile": "melee",
+              "tech": "breaker_launch",
               "provisional": true
             }
           },
@@ -2453,6 +2454,7 @@
                   "profile": "blessing",
                   "type": "soul",
                   "armour": "none",
+                  "door": "prayer",
                   "provisional": true
                 },
                 "smite_storm": {
@@ -2462,6 +2464,7 @@
                   "type": "soul",
                   "element": "lightning",
                   "armour": "none",
+                  "door": "prayer",
                   "provisional": true
                 }
               },
@@ -3127,6 +3130,7 @@
               "base": 10,
               "profile": "blessing",
               "type": "soul",
+              "door": "prayer",
               "armour": "none",
               "provisional": true
             }
@@ -3140,6 +3144,7 @@
               "if": {
                 "action": [
                   "pray",
+                  "whisper",
                   "ward",
                   "sanctuary"
                 ]
@@ -3197,7 +3202,7 @@
           "name": "Holy Dread",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "When your god's blow (Soul damage of yours: a Rebuke, a Smite, an Amen) leaves an enemy at half its HP or less and still standing, it saves (Heart, against your Faith) or is Shaken for {=effects.0.rounds} round. Once a turn.",
+          "text": "When your god's blow (a prayer's damage of yours: a Rebuke, a Smite, an Amen) leaves an enemy at half its HP or less and still standing, it saves (Heart, against your Faith) or is Shaken for {=effects.0.rounds} round. Once a turn.",
           "effects": [
             {
               "op": "condition",
@@ -3210,7 +3215,7 @@
                 "actor": "self",
                 "target": "foe",
                 "damage": [
-                  "soul"
+                  "prayer"
                 ],
                 "target_hp_at_most": 0.5,
                 "target_alive": true

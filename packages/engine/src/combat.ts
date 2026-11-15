@@ -1279,7 +1279,7 @@ const charFor = (u: Unit): Character | null => { const G = boundGameRef(); retur
  * flat adds, situational self-multipliers (mults, multiplicative) and target-specific bonuses (vs: fractions that add
  * together and are capped at +100%, plan 6a-1; stackDamage). Special ammo (rules.json ammo_types), the Ambush
  * multiplier, Weakened and the target's Critical damage taken are applied here. */
-export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean } = {}) {
+export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean} = {}) {
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
@@ -1310,10 +1310,11 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (condOn(att, 'weakened')) M(condMods('weakened').dealtMult ?? 1, 'Weakened'); // the row's damage_dealt_pct (data/conditions.json)
   if (condOn(att, 'sharpened')) M(condMods('sharpened').nextAttackMult ?? 1, 'Sharpened'); // SHARPEN (rules 1.4)
   if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (fx.statuses.includes('stunned') && condOn(tgt, 'stunned')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
-  const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
+  const tech = strikeTech(att); // THE technique of the blow (one reading: the source, damage_out and on_hit carry the same `tech`)
+  const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null, ...(tech ? { tech } : {}), ...(VOLLEY ? { volley: VOLLEY } : {}) }; // tech and volley (rules 1.56): the technique it is made with and the volley it is made in, on the source too, so its kill says so (the item-op predicates mode, free_tech)
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
   // tech (rules 1.56, the Momentum chain 2.0): the technique the blow is made with, as on attack_roll and on_hit (`mode` and `free_tech` read it)
-  const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, tech: strikeTech(att), cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0, volley: VOLLEY }; // and the volley it is made in (rules 1.56, the unarmed fighter: the predicate mode)
+  const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, tech, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0, volley: VOLLEY }; // and the volley it is made in (rules 1.56, the unarmed fighter: the predicate mode)
   emit(cb, 'damage_out', ctx);
   if (ctx.critBonus) { critM = critOf(ctx.critBonus); critTerm.v = critM; }
   amt.add = ctx.add;

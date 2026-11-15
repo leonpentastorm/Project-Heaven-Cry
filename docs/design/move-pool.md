@@ -140,3 +140,32 @@ Spec items 582–586, decision 101, draft `docs/design/grand-sigilist-draft.md`.
 **Not shelved:** the Sigil damage balance from the same branch (spec items 587–591: Elemental on the Physical slope,
 Sigil and Elemental bonuses added instead of multiplied, one main element per spell, the 350 / 500 ceiling) applies to
 every Sigil caster now.
+
+## The alpha perks' old effects (rules 1.56, Balance 2.0; dropped from play 15 Nov 2026)
+
+Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 perk help the gate playstyle of that perk
+in dmg"*. The 18 alpha perks keep their ids and got new effects (`docs/design/proposals/2026-11-alpha-perks-revamp.md`;
+spec rules 1.56, the alpha perks). What they did before is kept here, out of play, for the beta and gamma revamp. The
+lead's ruling (b): dropped, not moved; a bespoke handler that only these used was deleted (its code is in git history,
+release 0.28.2).
+
+| Perk id (new name) | The old effect (its text) | Where it may come back |
+|---|---|---|
+| `bulwark` (Weight of the Wall) | **Stonewall:** allies directly behind you, in line with the attacker, take 25% (II: 50%, 2 tiles) less from ranged attacks | a Durability beta or gamma perk (defence) |
+| `shrug_it_off` (Answer in Kind) | **Shrug It Off:** 2 AP (II: 1 AP and a shield of 10% of max HP), remove one Body debuff from yourself | a Durability beta perk (a cleanse); the Bulwark's rank II move keeps its own Shrug It Off |
+| `breaching_strike` (Keep Swinging) | **Breaching Strike:** a target your melee technique pushes into a wall, an object or an enemy takes the hit again at half (II: the enemy it hit too) | a Maul-type weapon property |
+| `iron_grip` (Iron Grip) | its redirect (an attack aimed at you hits the held target 50% of the time), the drag (a held target comes with you), II's Momentum on a held target and the free Throw Down | Raw Power beta, or a grappling technique |
+| `both_hands` (Pressure Point) | **Both Hands:** after a melee hit, your next shot that turn has no Recoil; II: a hit with a shot gives 1 Momentum once a turn | Savoir Faire (a melee-and-gun hybrid) |
+| `running_reload` (Keep Their Heads Down) | **Running Reload:** once a turn, reload as part of a move for no extra AP; II: clear a jam on the move too | dropped (it repeats Speed Loader) |
+| `sleight_of_hand` (Long Dark) | **Sleight of Hand:** 2 AP (II: 1), plant an item on an adjacent target unseen (a grenade goes off, a tracker Marks; the rest the Narrator's) | dropped (it repeats Shadow's door verb Plant) |
+| `shadow_step` (Shadow Step) | while Hidden, a move cover to cover counts half its tiles; II: an attack that would reveal you rolls Ingenuity to stay Hidden | dropped (Shadow Run; the Break overrides the stay-Hidden roll) |
+| `hold_the_stroke` (Second Clause) | **Hold the Stroke:** 1 (II: 2) more of your glyphs on the ground before the oldest fades | an Intelligence beta perk |
+| `parallel_thought` (Running Hand) | **Parallel Thought:** once a turn, while a placed spell of yours stands, your next Sigil spell costs 1 (II: 2) AP less | dropped |
+| `mirage` (Many-Eyed Dream) | **Mirage:** 2 AP, a false wall, figure or sound; enemies that fail believe it (II: two, longer). Solid Image (Mastered) made one real | Charisma, or a Figment order (another lane makes "a false Figment" a base order) |
+| `blueprint` (Wake of the Kill) | **Blueprint:** once a scene, outside a fight, the squad gets +1 (II: +2) Movement on its first turn | Proficiency |
+| `shared_breath` (Taut Thread) | **Shared Breath:** 2 AP, link with an ally; the next (II: every) Heart debuff on either lands on both at half its duration | Camaraderie |
+| `lay_down_arms` (Bitter Balm) | **Lay Down Arms:** 2 AP, a humanoid (II: up to three) makes a Heart save or can't attack on its next turn | Implication |
+| `heart_overload` (Clenched Heart) | **Heart Overload:** once a turn, right after a Release at stage 2+, Begin the same design again for 0 AP (II: at stage 1); blood for mana at 1 HP a point | **a candidate Channeler rank move** (the lead's ruling) |
+| `resonance` (Resonance) | its numbers: +10% a step to +20% (II: +30%) | (kept, cut to 4% a step, to 8% / 12%) |
+| `litany` (Unbroken Litany) | **Litany:** 2 AP, you and allies within 3 get +1 (II: +2) on all saves until your next turn | Conscience |
+| `holy_ordnance` (Sinner's Due) | **Holy Ordnance:** 3 AP, bless a magazine: +20% (II: +40%, two magazines) to upper-realm and cursed beings | **a future Relic property** (Survival; the lead's ruling) |

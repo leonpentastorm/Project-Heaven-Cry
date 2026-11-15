@@ -205,10 +205,11 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     // is caught, and the fight is deeply equal after every preview.
     const writes: string[] = [];
     const trap = (cb: any) => Object.defineProperty(cb, 'mods', { configurable: true, enumerable: false, get: () => undefined, set: (v) => { writes.push(JSON.stringify(v)); } });
-    const a = withPerks({ heart_overload: 'I' }); fire(a.cb, a.u, 2); a.u.ap = 0;
+    // (rules 1.56: Heart Overload's switch is gone; the design cards still change nothing)
+    const a = withPerks({}); fire(a.cb, a.u, 2); a.u.ap = 0;
     a.u.uses ||= {};
     const wasA = JSON.stringify(a.cb); trap(a.cb);
-    expect(designCards(a.cb, a.u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 0 }); // (the card that asks with Heart Overload's switch off)
+    designCards(a.cb, a.u);
     expect(JSON.stringify(a.cb)).toBe(wasA);
     const b = withPerks({}); beginOutburst(b.cb, rng, b.u, 'sb', undefined, true);
     b.u.uses ||= {}; // (the engine makes a unit's empty counter bag the first time anything reads a counter)
@@ -218,38 +219,18 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(JSON.stringify(b.cb)).toBe(wasB);
     expect(writes).toEqual([]);
   });
-  it('Heart Overload: after a Release at stage 2 the same design\'s card offers Begin again for 0 AP; the others don\'t', () => {
-    const { cb, u } = withPerks({ heart_overload: 'I' }); fire(cb, u, 2); u.ap = 0;
-    const cards = designCards(cb, u), sb = cards.find((x) => x.id === 'sb')!, fb = cards.find((x) => x.id === 'fb')!;
-    expect(sb).toMatchObject({ canBegin: true, beginAp: 0, bloodHp: 0, again: 'Heart Overload: Begin Soul Bolt again for 0 AP.' });
-    expect(sb.costText).toMatch(/^Heart Overload: Begin again 0 AP · Snap 3 AP/);
-    expect(fb).toMatchObject({ canBegin: false, beginAp: 2, again: '', beginWhy: 'Needs 2 AP.' }); expect(fb.costText).toMatch(/^Begin 2 AP/);
-  });
-  it('Heart Overload: no offer after a Release below stage 2, and none on a later turn', () => {
-    const a = withPerks({ heart_overload: 'I' }); fire(a.cb, a.u, 1);
-    expect(designCards(a.cb, a.u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 2, again: '' });
-    const b = withPerks({ heart_overload: 'I' }); fire(b.cb, b.u, 2); b.cb.round += 1;
-    expect(designCards(b.cb, b.u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 2, again: '' });
-  });
-  it('Heart Overload, mana short: the card shows the HP it costs and that it can\'t heal or shield', () => {
-    const { cb, u } = withPerks({ heart_overload: 'I' }); fire(cb, u, 2); u.mg.mp = 0; u.hp = u.maxHp = 500;
-    const sb = designCards(cb, u).find((x) => x.id === 'sb')!;
-    expect(sb.canBegin).toBe(true); expect(sb.bloodHp).toBeGreaterThan(0); expect(sb.mp).toBe(0);
-    expect(sb.again).toBe('Heart Overload: Begin Soul Bolt again for 0 AP. You don\'t have the mana: it costs ' + sb.bloodHp + ' HP, and it can\'t heal or shield.');
-    expect(sb.costText).toMatch(new RegExp('^Heart Overload: Begin again 0 AP · ' + sb.bloodHp + ' HP for the mana · Snap'));
-  });
   it('Resonance: the bonus is in the Release preview before releasing (the panel, the button and the grid summary)', () => {
     const { cb, u } = withPerks({ resonance: 'I' }); fire(cb, u, 1);
     beginOutburst(cb, rng, u, 'sb', undefined, true); u.mg.held.stage = 2; u.ap = 9;
     const p = heartPanel(cb, u)!;
-    expect(p.multNotes).toEqual(['Resonance +10%']); expect(p.mult).toBe(1.32); // ×1.2 at stage 2 (rules 1.19), +10%
-    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.32\)\. Resonance \+10% is in that number/);
+    expect(p.multNotes).toEqual(['Resonance +4%']); expect(p.mult).toBe(1.25); // ×1.2 at stage 2 (rules 1.19), +4% (rules 1.56)
+    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.25\)\. Resonance \+4% is in that number/);
     const v: any = heartVals(p, () => {});
-    expect(v.multText).toBe('×1.32'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +10%');
+    expect(v.multText).toBe('×1.25'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +4%');
     const o = aimOverlay(cb, u, 'held', '4,5');
-    expect(o.summary[0]).toBe('Resonance +10% to this Release, built by the Releases before it.');
+    expect(o.summary[0]).toBe('Resonance +4% to this Release, built by the Releases before it.');
     // A snap cast of a design shows it too.
-    u.mg.held = null; expect(aimOverlay(cb, u, 'sb', '4,5').summary[0]).toMatch(/^Resonance \+10% to this Release/);
+    u.mg.held = null; expect(aimOverlay(cb, u, 'sb', '4,5').summary[0]).toMatch(/^Resonance \+4% to this Release/);
   });
   it('without the perk the panel has no Resonance note', () => {
     const { cb, u } = withPerks({}); fire(cb, u, 1); beginOutburst(cb, rng, u, 'sb', undefined, true);
@@ -257,14 +238,4 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
   });
 });
 
-describe('rules 1.14: Heart Overload needs an Emanator in hand', () => {
-  it('without one the design card offers nothing after the Release', () => {
-    const c: any = newCharacter('c1', 'p1', sheetFrom('Vale')); c.perks = [{ id: 'heart_overload', tier: 'I' }];
-    c.outbursts = DESIGNS.map((d) => ({ ...d, modules: [...d.modules] })); c.soulKnown = { schools: ['damage', 'control'], modules: ['burst', 'wave'], tones: ['fire'] };
-    const cb: any = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'Raider', tier: 'soldier', weapon: 'fists', at: 'E6' }], 'easy', { state: 4 }, []);
-    cb.turn = cb.order.indexOf(cb.units.find((x: any) => x.side === 'pc').id);
-    const u = cb.units.find((x: any) => x.side === 'pc'); u.ap = 9; u.mg.mp = 400; u.mg.strainLimit = 20; u.mg.emanator = false;
-    beginOutburst(cb, rng, u, 'sb', undefined, true); u.mg.held.stage = 2; u.ap = 9; releaseOutburst(cb, rng, u, '4,5');
-    expect(designCards(cb, u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 2, again: '' });
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('rules 1.14: Heart Overload needs an Emanator

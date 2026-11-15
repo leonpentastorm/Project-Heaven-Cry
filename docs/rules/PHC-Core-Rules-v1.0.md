@@ -2757,7 +2757,7 @@ Shove and Break are techniques everyone can learn (the Shove Link, the Break Fin
 | **Roll With It** II | Athletics | 2 free tiles, and nothing else. |
 | **You Get Used to It** I/II | Composure | **I:** the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +2. **II:** +4, and you may give the bonus to that ally instead (the Seen worse action, 0 AP). |
 
-**AP gifts on alphas and betas, turned into defence** (15.7: anything that gives or takes AP inside a turn is a gamma's).
+**AP gifts on alphas and betas, turned into defence** (15.7: anything that gives or takes AP inside a turn is a gamma's). *Retired for the alpha perks by rules 1.56 (the alpha perks, item 28): Leon's order that both alpha perks of a skill serve its door's damage puts a tempo lever on an alpha (Wake of the Kill's 1 AP on a Figment's kill, Shadow Step's and Running Hand's cheaper strokes). It still holds for the betas and the unlocks.*
 
 | Perk or unlock | Skill | Was | Is now |
 |---|---|---|---|
@@ -6360,6 +6360,45 @@ and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded in
    (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
    and the validator refuses it. Giving, picking up, granting, the carried weight and the sheet's lines read it.
 
+## Rules 1.56 (Balance 2.0), the alpha perks
+
+Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 perk help the gate playstyle of that perk in dmg"*. The design is `docs/design/proposals/2026-11-alpha-perks-revamp.md`; the measured gains are `docs/design/proposals/2026-11-alpha-perks-measured.md`. A later revision overrides the body and the earlier ones; every number here is PROVISIONAL and a field of its perk in `data/perks.json` (section 14 items 4200 to 4231).
+
+**Rulings.**
+1. **Saves keep the ids** (Leon). Every alpha perk keeps its id and a held step keeps its tier; a character holding an old perk holds the new one. There is no re-pick.
+2. **Perk steps sit on top of a class's damage line** (Leon). No class or perk is trimmed to fit under a ceiling. The balance contract (`rules.json balance`) holds the line, so it measures its builds with no perk steps.
+3. **The Mender's damage for each Bond stays** (Leon).
+4. **The old effects are dropped** (the lead) and listed in `docs/design/move-pool.md`: Stonewall's cover, Shrug It Off's cleanse, Breaching Strike's wall-slam, Iron Grip's redirect and drag, Both Hands, Running Reload, Sleight of Hand's plant, Shadow Step's cover-to-cover move and stay-Hidden roll, Hold the Stroke's ground cap, Parallel Thought, Mirage's projections, Blueprint, Shared Breath, Lay Down Arms, Heart Overload's free Begin (a candidate Channeler rank move), Litany's ally saves, Holy Ordnance (a future Relic property).
+5. **No perk asks the Narrator anything** (`adjudication: engine` on all 18).
+
+**Spell damage names its door (P1, the lead's approved primitive).**
+6. Damage made through a door carries it on its source: a Sigil spell's is `sigil`, an Outburst's Release (its chain and its held leak too) `outburst` with its Release stage, a prayer's (a Whisper, a Hymn, a Blessing's harm, Smite) `prayer`, a Bond's echo `bond` (an amount block may name its `door`). A roll to hit through a door carries it too.
+7. The damage words read it: `outburst` is an Outburst's damage only (until 1.56 it was any Soul damage, a prayer's and a Bond's echo too), `sigil_spell` a Sigil spell's of any type, `prayer` a prayer's, `bond` a Bond's. A number block reads the stage as `event:stage`.
+8. **A kill names its technique:** a weapon blow's damage source carries the technique it was struck with, so a kill or a downing can be told apart by Finisher (the `mode` words). An owned unit's record kind (a Figment's `figment`) is one of its kinds for the `kind` words.
+
+**The 18 perks** (Tier I / Tier II; each pair is one damage lever under a condition the door makes and one tempo or resource lever):
+9. **Weight of the Wall** (`bulwark`, Durability): while you hold Guard, your weapon attacks deal 2% (II: 3%) more for each Guard, up to 10% (II: 15%).
+10. **Answer in Kind** (`shrug_it_off`, Durability): when an enemy's blow hurts you, your weapon attacks deal 8% (II: 12%) more until the end of your next turn; II: the blow also gives 1 Guard (once a round).
+11. **Iron Grip** (`iron_grip`, Raw Power): the technique Grapple and the forbid stay (a held target can't use Answers or reactions); your melee hits deal 6% (II: 12%) more to a Grappled or Prone enemy (II: also Shaken or Afraid).
+12. **Keep Swinging** (`breaching_strike`, Raw Power): when one of your Finishers drops an enemy, you gain 1 (II: 2) Momentum once it is done; II: a Finisher that hits an Elite or a Boss gives 1 Momentum.
+13. **Pressure Point** (`both_hands`, Dexterity): your ranged attacks deal 10% more to a Pressed enemy (Pressure 2+); II: 15%, and 10% more again at Pressure 3+.
+14. **Keep Their Heads Down** (`running_reload`, Dexterity): once a turn (II: once a turn for each enemy), your ranged hit gives its target 1 more Pressure.
+15. **Long Dark** (`sleight_of_hand`, Ingenuity): your attacks made while Hidden deal 8% (II: 14%) more; it multiplies on top of the Break.
+16. **Shadow Step** (`shadow_step`, Ingenuity): once (II: twice) a turn, on your turn, an attack you make while Hidden and holding Shadow costs 1 AP less (never under 1). A preview spends nothing.
+17. **Second Clause** (`hold_the_stroke`, Brain Power): your Sigil spells deal 6% (II: 12%) more to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced.
+18. **Running Hand** (`parallel_thought`, Brain Power): the first glyph you draw each turn costs 0.5 AP less; II: and adds no Flux. A preview spends nothing.
+19. **Many-Eyed Dream** (`mirage`, Visualization): your Figments' blows deal 4% (II: 6%) more for each owned unit you keep, up to 12% (II: 18%). (A Scrap Turret counts as one you keep.)
+20. **Wake of the Kill** (`blueprint`, Visualization): once a turn, on your turn, when your Figment kills an enemy you gain 1 AP; II: when your Figment puts an enemy down, 1 AP (banked to your next turn when it is not yours) and 1 Visualizer charge, once a turn.
+21. **Taut Thread** (`shared_breath`, Empathy): with an Attuner in hand, your hits on an enemy Bonded to you deal 6% (II: 12%) more.
+22. **Bitter Balm** (`lay_down_arms`, Empathy): with an Attuner in hand, when you heal yourself or a Bonded ally, each enemy Bonded to you takes 4% (II: 8%) of the HP restored as Soul damage (the `bond` door) at the start of its next turn, beside the Bond's echo.
+23. **Clenched Heart** (`heart_overload`, Will Power): with an Emanator in hand, your Outbursts Released at stage 3+ deal 5% more; II: 5% at stage 2, 10% at stage 3+.
+24. **Resonance** (`resonance`, Will Power): unchanged in shape; a step is 4% (it was 10%), to 8% (II: 12%).
+25. **Sinner's Due** (`holy_ordnance`, Faith): your prayers deal 8% (II: 12%) more to an enemy at half its HP or less; II: also 12% to a Marked or Judged enemy above half.
+26. **Unbroken Litany** (`litany`, Faith): your first Hymn or Miracle each fight costs 1 AP less (a Whisper does not spend it); II: and the wait between your Hymns is 1 round shorter (never under the floor rules 1.22 sets for items).
+27. **Solid Image** (Visualization's Mastered perk), reworded onto Glimmer (the lead, 16 Nov 2026): once a fight, for 0 AP, your Glimmer becomes a real Double until your next turn starts, at no charge (outside the held count, no upkeep; made through the one door that makes a Figment). The enemies the Glimmer fooled stay fooled, and their blows now land on its body. It keeps the old perk's shape and limits (once a fight, free, until your next turn starts); Mirage's wall half went with Mirage. The form and the rounds are fields of its effect (`perks.json solid_image`).
+28. **The 15.7 rule (no alpha gives or takes AP inside a turn) is retired for the alpha perks** (the lead, 16 Nov 2026): Leon's order is that both alpha perks of a skill serve its door's damage, and one of the two is a tempo lever (item 4 of the design: "one damage lever and one tempo or resource lever"). Wake of the Kill's 1 AP on a Figment's kill (once a turn) is accepted as designed. The betas and the unlocks keep 15.7.
+29. **The Outburst's level-5 peak band** (lead's ruling of 16 Nov 2026, PROVISIONAL): the Outburst's level-5 peak sits about 2 percent over its band because one base dial cannot put both the steady turn and the peak on their lines. The damage base stays 37 (36 drops the steady turn under its band), and the peak's per-level top is 212, not 206 (`rules.json balance.ceilings.outburst_peak.level_hi`); to be refitted with the feelings' steps in the Balance 2.0 number pass. Begin's AP and the stage table are unchanged (section 14, item 4231).
+
 ## Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1
 
 Leon (15 Nov 2026, playtest): *"anything to spice up that class aside from some funny big number when you link more bond ?"* The design is `docs/design/proposals/2026-11-bonds-2.0.md` (with Leon's rulings of 15 Nov 2026 at its end); this is its first slice. Every number is PROVISIONAL and a field of `data/tending.json`; every item is `adjudication: engine`. A later revision overrides the body and the earlier ones.
@@ -6463,8 +6502,8 @@ every number is PROVISIONAL (items 4480 to 4489). Rules 1.6, 1.22 and 1.31 stand
 5. **Amen** (a gain; item 4484): after the Chaplain prays (a Whisper, a Hymn, a Miracle, Ward or Sanctuary), the
    first hit an ally lands on an enemy still standing before the Chaplain's next turn adds 10 × Blessing power Soul
    damage, no roll, through armour. Once per prayer window.
-6. **Holy Dread** (a gain; item 4485): Soul damage of the Chaplain's (a Rebuke, a Smite, an Amen; also its own
-   Outbursts until damage names its door) that leaves an enemy at half its HP or less and standing: a Heart save
+6. **Holy Dread** (a gain; item 4485; the prayer door since item 4490): a prayer's damage of the Chaplain's (a Rebuke, a Smite, an
+   Amen, any Whisper, Hymn or intervention that harms; never its Outbursts) that leaves an enemy at half its HP or less and standing: a Heart save
    against Faith, or Shaken for 1 round. Once a turn.
 7. **Last Rites** (a gain; item 4486): a prayer's heal of the Chaplain's on a Downed ally is ×1.5.
 8. **Seen** (item 4487): a prayer, Smite, Ward, the Canticle and its verses, the song breaking, Amen, Holy Dread,
@@ -7578,7 +7617,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - A figure takes a believer's attack, as a miss, and disproves it.
     - A sound pulls a believer one move toward the tile instead of an action (once).
     - Tier II's second projection comes in `text` ("x,y" or "kind@x,y").
-184. *(D23)* **Solid Image** (PROVISIONAL). It works only on Mirage projections (the Visualization Afterimage decoy isn't built
+184. *(D23)* **Solid Image** (PROVISIONAL). *Superseded by rules 1.56 item 27 (onto Glimmer; item 4230).* It works only on Mirage projections (the Visualization Afterimage decoy isn't built
     yet).
     - A wall becomes a barricade object until your next turn starts.
     - A figure takes the first hostile hit on any ally, for 0, and breaks.
@@ -10237,6 +10276,37 @@ Items 4148 to 4150.
     (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
     `{essence, last}`. No number.
 
+### Rules 1.56 (Balance 2.0), the alpha perks
+
+4200. **Saves keep the alpha ids (rules 1.56, the alpha perks, item 1):** Leon, 15 Nov 2026. No re-pick system; a melee build that took Both Hands now holds a ranged perk (Pressure Point).
+4201. **Perk steps on top of the line (item 2):** Leon, 15 Nov 2026. The balance contract's builds take no perk steps (`test/balance/builds.ts STEPS`); the faith targets' line likewise. Measured on 15 Nov: with no perk steps the Outburst's all-in steady turn was 102% (L1 104, L5 108, L10 101, L20 93) against its ceiling of 135, and its peak at level 1 122% against 124: the Outburst line had been fitted with Heart Overload's free Begin and Resonance's old +20/30% inside it. **Refit (16 Nov 2026): `soul_modules.json damage.base` 31 → 37** (steady 124 / 128 / 120 / 111, mean 121; peak 147 / 210 / 172 / 180, mean 177). No base sits both lines: the steady turn needs about ×1.32 (base 41: steady 134, but peak 196 and level 5 at 233), the peak's level-5 band allows at most about ×1.16; the stage table does not separate them (the steady turn also swells to stage 4; measured). Level 5's peak (210) is over its band (206): settled by the lead's ruling, item 4231. The contract's other systems sit on their lines with no perk steps and were not moved. The contract reports each system with both alpha perks taken (not asserted). PROVISIONAL.
+4202. **P1, spell damage names its door (items 6, 7):** approved by the lead (15 Nov 2026). `magic.ts withDoor` / `SPELL_DOORS`; amount blocks' `door`; the damage words `sigil_spell`, `prayer`, `bond`; `outburst` reads the door (one reading for both gates: `effects/dmgwords.ts`). The data rows checked against the old meaning: Hot Blood (`start.hot_blood`, "Outbursts deal more": now exact), Hollow Heart (the trait's "+% Outburst damage": now exact), Clear Pulse and Steady Heart (`to_hit` with `soul`: unchanged), Smite (`guardian.smite`'s blocks name `prayer`). No number.
+4203. **A kill names its technique; a Figment is a figment (item 8):** the predicate `mode` reads the damage source's technique (`src.tech`, `combat.ts attackDamage`); `<who>_kind` reads an owned unit's record kind. No number.
+4204. **Weight of the Wall (item 9):** 0.02 a Guard, max 1.10; II 0.03, max 1.15 (`perks.json bulwark`). PROVISIONAL.
+4205. **Answer in Kind (item 10):** ×1.08; II ×1.12 and 1 Guard a round. PROVISIONAL.
+4206. **Iron Grip (item 11):** +6%; II +12%. PROVISIONAL.
+4207. **Keep Swinging (item 12):** 1 Momentum; II 2, and 1 on an Elite or Boss hit. The Momentum is given when the Finisher's action is done (`acted`), since a Finisher spends the meter after its strike. PROVISIONAL.
+4208. **Pressure Point (item 13):** +10% at Pressure 2; II +15% at 2, +10% more at 3 (the steps read `target:pressure`; the 2 and 3 are `techniques.json rules.pressure`'s Pressed and Suppressed, held equal by `tools/validate.py` since 16 Nov 2026). PROVISIONAL.
+4209. **Keep Their Heads Down (item 14):** 1 Pressure, once a turn; II once a turn a target. PROVISIONAL.
+4210. **Long Dark (item 15):** ×1.08; II ×1.14. PROVISIONAL.
+4211. **Shadow Step (item 16):** −1 AP, at least 1, once a turn; II twice. PROVISIONAL.
+4212. **Second Clause (item 17):** ×1.06; II ×1.12; the seven conditions. PROVISIONAL.
+4213. **Running Hand (item 18):** −0.5 AP; II and the glyph's Flux 0. PROVISIONAL.
+4214. **Many-Eyed Dream (item 19):** 0.04 an owned unit, max 1.12; II 0.06, max 1.18. PROVISIONAL.
+4215. **Wake of the Kill (item 20):** 1 AP; II 1 AP and 1 charge. PROVISIONAL.
+4216. **Taut Thread (item 21):** ×1.06; II ×1.12. PROVISIONAL.
+4217. **Bitter Balm (item 22):** 0.04 of the HP restored; II 0.08 (`amounts.balm`, `amounts.balm_ii`). PROVISIONAL.
+4218. **Clenched Heart (item 23):** +5% at stage 3; II +5% at 2 and +5% more at 3. PROVISIONAL.
+4219. **Resonance (item 24):** 4% a step, 8% (II 12%) at most (`stat_mod release_mult_pct` value and limit; the handler reads them from data now). PROVISIONAL.
+4220. **Sinner's Due (item 25):** ×1.08 at half HP or less; II ×1.12, and ×1.12 on a Marked or Judged enemy above half. PROVISIONAL.
+4221. **Unbroken Litany (item 26):** −1 AP once a fight; II and `hymn_wait` −1. A prayer's `acted` name is now its cost site (`whisper` or `pray`); Vigil (`start.vigil`) reads both. PROVISIONAL.
+4222. **Handlers deleted (item 4):** the lane handlers of `bulwark`, `shrug_it_off`, `breaching_strike` (and the push-blocked seam in `physical/core.ts`), `both_hands`, `running_reload`, `sleight_of_hand`, `holy_ordnance`, `shadow_step`, `hold_the_stroke`, `parallel_thought`, `heart_overload`, `litany`, `shared_breath`, `mirage`, `blueprint`, `lay_down_arms`; Iron Grip's is cut to the Grapple and the forbid; Resonance's stays (numbers from data). The lint baselines shrank.
+4223. **Measured gains (`docs/design/proposals/2026-11-alpha-perks-measured.md`):** a record, not a target. PROVISIONAL.
+4229. **The 15.7 rule retired for the alpha perks (item 28):** the lead, 16 Nov 2026; `test/skeleton-perks.test.ts` keeps it for the betas and the unlocks named there. No number.
+4230. **Solid Image onto Glimmer (item 27):** once a fight, 0 AP, no charge; the form `double` and `rounds` 1 are its effect's fields (`perks.json solid_image`, op `spawn_illusion`); the handler (`perks/d.ts`) makes it through `figments.ts makeFigment` (free: outside the held count, no upkeep) and keeps the Glimmer's fooled. Supersedes item 184's Mirage wording. PROVISIONAL.
+4231. **The Outburst's level-5 peak band (item 29):** lead's ruling of 16 Nov 2026. Base 36 was tried and fails the steady turn's mean (118 against the floor of 118.8), so `soul_modules.json damage.base` stays 37 and only the peak's per-level top is widened from 206 (165 × 1.25) to 212 (`rules.json balance.ceilings.outburst_peak.level_hi` 1.285). The Outburst's level-5 peak sits about 2 percent over its band because one base dial cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass. Begin's AP and the stage table are unchanged. PROVISIONAL.
+4232. **Items 4200 to 4232 are rules 1.56's, the alpha perks.**
+
 ### Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1
 
 Items 4240 to 4247.
@@ -10313,8 +10383,8 @@ Items 4240 to 4247.
 4484. **Amen (item 5):** base 10, profile blessing, Soul, through armour; set by any prayer of the Chaplain's (the
     acted name of a Whisper and a Hymn is the same cost site, `pray`, so the draft's "after your Hymn" reads "after
     your prayer"). PROVISIONAL.
-4485. **Holy Dread (item 6):** half HP or less, Shaken 1 round, a Heart save against Faith, once a turn; reads all Soul
-    damage of the Chaplain's until damage names its door (P18). PROVISIONAL.
+4485. **Holy Dread (item 6):** half HP or less, Shaken 1 round, a Heart save against Faith, once a turn; reads the prayer
+    door (`damage: [prayer]`, item 4490; until then all Soul damage of the Chaplain's). PROVISIONAL.
 4486. **Last Rites (item 7):** ×1.5. PROVISIONAL.
 4487. **The Devotion lines (item 8; `patrons.json devotion.lines`):** words only, no number.
 4488. **Not built (item 9):** Hallow (P11), praying from holy ground (P3 + P11), the Office (P8), the patron's mark on
@@ -10357,3 +10427,11 @@ Items 4240 to 4247.
 4369. **Breath (item 6):** 1 AP, per turn, cleanse 1 Body harm (newest), Guarded 1 round. PROVISIONAL.
 4370. **The forms' limits (item 7):** `free_tech: true` on every form effect; Jab ×0.4 (was ×0.5, item 4362); Palm's push `limit {per: per_turn, n: 1, each: target}`, `target_not_tier: [boss]`. PROVISIONAL.
 4371. **Items 4365 to 4371 are the unarmed fighter's slice 2.**
+
+### Rules 1.56 (Balance 2.0), the 0.29 integration of the alpha perks with the door lanes
+
+4490. **Holy Dread reads the prayer door:** `damage: [prayer]` (it read all Soul damage of the Chaplain's until damage named its door; its draft asked for the prayer). The Amen's block is the prayer door too (`door: prayer`), and its mark hears a Whisper as well as a Hymn or Miracle (`action: [pray, whisper, ward, sanctuary]`: since the alpha lane a Whisper's own action is `whisper`). PROVISIONAL.
+4491. **The technique of a blow, one reading:** `src.tech` is the attack's technique (`strikeTech`), the same value damage_out and on_hit carry as `tech`; a volley's id rides as `volley` on all three; `free_tech` reads the source's on a kill or a downing, as `mode` does.
+4492. **Launch is a weapon blow:** an amount block's `tech` makes its `deal` a weapon blow made with that technique (melee or ranged by its group's system); Launch's block is `tech: breaker_launch` (it was `true` damage: the number is unchanged, it now meets a shield and counts as weapon damage). `techniques.json rules.group_actions` names an action that counts as one of a group (Launch: a Finisher). PROVISIONAL.
+4493. **Keep Swinging counts Finishers by group:** the item-op predicate `tech_group` (the event's technique: the attack's, its source's, an action's own) replaces the id lists; Cleave, Break, Coup, Run Through, Throw Down and Launch all count. Its Momentum is given at `priority: 150`, after the Finisher's own spend (Launch spends all its Momentum when done). PROVISIONAL.
+4494. **Items 4490 to 4494 are the 0.29 integration's.**

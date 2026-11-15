@@ -51,14 +51,6 @@ describe('the three shelves', () => {
     const { sh } = shelves(charWith({ traits: ['company_man'] }));
     expect(sh.use.map((e) => e.id)).toContain('trait:company_man');
   });
-  it('Rides an action: a perk that changes a move is not a button; the shelf says where its switch is', () => {
-    const { sh } = shelves(perk('running_reload'));
-    expect(sh.use).toEqual([]);
-    const r = row(sh, 'perk:running_reload');
-    expect(r).toMatchObject({ shelf: 'rides', name: 'Running Reload', line: 'on a move' });
-    expect(r.detail).toMatch(/^No button here\. Its switch “[^”]+” is on a move: pick that action and the switch shows under it\. /);
-    expect(r.detail.endsWith(r.text)).toBe(true); // the card's own text follows, whole
-  });
   it('Rides an action: an attack, a Pump and a Begin each read in plain words', () => {
     expect(row(shelves(charWith({ traits: ['gambler'] })).sh, 'trait:gambler').line).toBe('on your attacks');
     const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' } as any] }), { sh } = shelves(c);
@@ -84,11 +76,6 @@ describe('the three shelves', () => {
     const sh = perkShelves(f.g, f.cb, foe, null);
     expect(sh.rides).toEqual([]); expect(sh.always).toEqual([]);
   });
-  it('a switch that belongs to a higher tier is not listed: Running Reload I names only its own', () => {
-    const one = row(shelves(perk('running_reload', 'I')).sh, 'perk:running_reload'), two = row(shelves(perk('running_reload', 'II')).sh, 'perk:running_reload');
-    expect(one.detail).toContain('“Reload on the move”'); expect(one.detail).not.toContain('Clear the jam');
-    expect(two.detail).toContain('“Reload on the move” and “Clear the jam on the move”');
-  });
   it('class moves stay on their own tab: none is on a shelf', () => {
     const c = charWith(); c.classId = 'marksman'; (c as any).level = 6;
     const { sh } = shelves(c);
@@ -109,9 +96,9 @@ describe('the three shelves', () => {
 });
 
 describe('a button that only shows at its moment (the audit\'s finding 8)', () => {
-  const TEN: [string, string][] = [['perk', 'catch'], ['perk', 'shadow_step'], ['perk', 'jury_rig'], ['perk', 'rite_in_the_field'], ['perk', 'clean_draw'], ['perk', 'case_closed'], ['perk', 'twin_discipline'],
+  const TEN: [string, string][] = [['perk', 'catch'], ['perk', 'jury_rig'], ['perk', 'rite_in_the_field'], ['perk', 'clean_draw'], ['perk', 'case_closed'], ['perk', 'twin_discipline'],
     ['trait', 'oil_in_my_mind'], ['trait', 'oil_in_my_soul'], ['trait', 'old_school']];
-  it('the ten sit on Always on while the button is down, with "Its button appears when …"', () => {
+  it('the nine (rules 1.56: Shadow Step is data now) sit on Always on while the button is down, with "Its button appears when …"', () => {
     for (const [kind, id] of TEN) {
       const p = (PERKS as any[]).find((x) => x.id === id);
       const c = kind === 'trait' ? charWith({ traits: [id] }) : perk(id, p.tiers ? 'II' : p.tier), { sh } = shelves(c), r = row(sh, kind + ':' + id);
@@ -258,7 +245,7 @@ describe('the live line of Always on', () => {
     expect(r).toMatchObject({ state: 'active', line: 'Works when a fight starts' });
   });
   it('a trigger with a list in it is whole (it is data, not a pattern match)', () => {
-    expect(cardTrigger('perk:breaching_strike', 'I').trigger).toBe('when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it');
+    expect(cardTrigger('perk:breaching_strike', 'I').trigger).toBe('when one of your finishers drops an enemy'); // rules 1.56: Keep Swinging
   });
   it('a plain standing bonus with no moment says "Active all fight"', () => {
     expect(row(shelves(charWith({ traits: ['born_performer'] })).sh, 'trait:born_performer')).toMatchObject({ state: 'active', line: 'Active all fight' });

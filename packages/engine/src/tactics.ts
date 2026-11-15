@@ -13,7 +13,7 @@ import { type Character, mod, prayerCooldown, gearNum } from './character';
 import { say, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
-import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
+import { applyCond, condOn, condSource, endCond, harm, withDoor, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
 import { condMods } from './condtable';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit, hookUsed, onHook } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
@@ -412,7 +412,7 @@ export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power:
   power = Math.max(0, ctx.power ?? power); // items may change the power (Factory Made, The Old Blood: hooks gap A5/F5)
   let out = '', left = false;
   for (const e of bl.effects || []) {
-    if (e.op === 'stat_mod' && e.stat === 'hp' && typeof e.value === 'number') out += e.value > 0 ? heal(t, e.value * power, cb, u, 'blessing') : harm(cb, rng, u, t, -e.value * power, 'soul');
+    if (e.op === 'stat_mod' && e.stat === 'hp' && typeof e.value === 'number') out += e.value > 0 ? heal(t, e.value * power, cb, u, 'blessing') : withDoor('prayer', null, () => harm(cb, rng, u, t, -e.value * power, 'soul')); // rules 1.56 P1: a Blessing's harm is a prayer's
     else if (e.op === 'heal' && typeof e.value === 'number') out += heal(t, e.value * power, cb, u, 'blessing'); // rules 1.6 data
     else if (e.op === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
     else if (e.op === 'stat_mod' && e.stat === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';

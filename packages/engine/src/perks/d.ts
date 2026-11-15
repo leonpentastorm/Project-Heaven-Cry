@@ -8,6 +8,7 @@
 // items for spec section 14), with the hooks this file works around. Randomness comes from the rng the hook or action
 // passes, else the bound game's rng (g.rng). What the engine can't run goes to the Narrator: a fight note, a pending
 // ruling, or the item's brief() remainder in the character brief.
+import { effNum } from '../effects/num';
 import {
   register, stateOf, uses, stampOf, note, pendRuling, postStory, grantPerkAp, modOn, boundGame, charOfUnit, holderOf, type Holder,
 } from '../effects';
@@ -30,7 +31,10 @@ import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
 import { die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
-import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
+import { rngOf, tilesLine, foesOf, alliesOf, canStand } from '../kit';
+import { rawItem } from '../effects/collect';
+import { makeFigment, visFocusWhy, FORM } from '../figments';
+import { imageOfOwner } from '../illusion';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { pay, refund, canPay, bill } from '../effects/cost';
 import { setCondRounds } from '../magic';
@@ -65,199 +69,46 @@ function sayLine(h: Holder): string | null {
   return n ? n.slice(head.length, -1) : null;
 }
 
-// =====================================================================================================================
-// Hold the Stroke (Brain Power). I: 1 more glyph of yours on the ground at once, II: 2 (spec: Glyphs on the ground;
-// item 443). Rules 1.4: the engine asks 'ground_cap' {u, n} for how many of your glyphs stand before the oldest fades,
-// so the extra glyphs are plain glyphs (every Line reader, the preview's "fades" and "glyphs left" see them). Max Sigil
-// words still caps the words in one spell, and no spell passes 4 glyphs. A 1.3 save's "#pool" tags are cleared on
-// your next draw.
-// =====================================================================================================================
-register({
-  id: 'hold_the_stroke', claims: 'all', priority: 300,
-  on: {
-    ground_cap: (ctx, h) => { if (me(h, ctx.u)) ctx.n += tiles(h); },
-    glyph_cost: (ctx, h) => {
-      if (!me(h, ctx.u)) return;
-      for (const g of ctx.cb?.glyphs || []) if (g.by === h.u!.id + '#pool') g.by = h.u!.id; // a 1.3 save's tags
-    },
-  },
-  brief: () => null,
-});
-/** Glyphs of this caster on the ground, and the cap (for the UI and tests). */
-export function strokePool(cb: Combat, u: Unit): { n: number; pool: number } {
-  return { n: (cb.glyphs || []).filter((g) => glyphOwner(g) === u.id).length, pool: groundCap(u, cb) };
-}
+// Second Clause and Running Hand (Brain Power α; `hold_the_stroke`, `parallel_thought`): data only since rules 1.56
+// (Balance 2.0; data/perks.json). The ground cap and the field-gated cut are in docs/design/move-pool.md.
 
-// =====================================================================================================================
-// Parallel Thought (Brain Power). While one of your Sigils is still active, your next Sigil costs 1 AP less (II: 2).
-// Rules 1.4: "still active" = one of your placed spells stands (a STAY field, a WAIT trap, a WATCH turret); unfired
-// glyphs, smoke, light and RAISE walls don't count. The discount covers that spell's glyph draws first, then its Evoke,
-// never below 0; it ends with your Evoke (anything left is lost). Once per turn.
-// =====================================================================================================================
-function ptState(h: Holder, cb: Combat) {
-  const s = stateOf(h), t = turnStamp(h);
-  if (s.turn !== t) { s.turn = t; s.left = tiles(h); s.spent = false; s.pend = null; }
-  return s;
-}
-/** Your Evoke ends the turn's discount once any of it was used (an Evoke, or a fused cast: Twin Discipline). */
-function ptEvoked(h: Holder, cb: Combat) { const s = ptState(h, cb); if (s.pend || s.spent) { s.left = 0; s.pend = null; } }
-register({
-  id: 'parallel_thought', claims: 'all', priority: 250,
-  on: {
-    glyph_cost: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const cb: Combat = ctx.cb, s = ptState(h, cb);
-      if (!s.left || !placedStanding(cb, h.u!)) return;
-      const d = Math.min(s.left, ctx.ap); if (d <= 0) return;
-      ctx.ap -= d;
-      if (!ctx.preview && canPay(cb, h.u!, bill('draw', ctx.ap, { charge: ctx.charge }))) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
-    },
-    // planEvoke is pure (every evoke_cost is a preview): the discount is shown here and taken up at 'evoked'.
-    evoke_cost: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const cb: Combat = ctx.cb, s = ptState(h, cb);
-      s.pend = null;
-      if (!s.left || !placedStanding(cb, h.u!)) return;
-      const d = Math.min(s.left, ctx.ap); if (d <= 0) return;
-      ctx.ap -= d; s.pend = true;
-    },
-    evoked: (ctx, h) => { if (me(h, ctx.u)) ptEvoked(h, ctx.cb); },
-    turn_end: (ctx, h) => { if (me(h, ctx.u)) ptState(h, ctx.cb); },
-  },
-  brief: () => null,
-});
-
-// =====================================================================================================================
-// Heart Overload (Will Power; rules 1.14, item 1011). Once a turn, right after you Release an Outburst at stage 2 or
-// higher, you may Begin the same design again at once for 0 AP: its mana and Strain are paid as usual, and it holds at
-// stage 0 (II: stage 1). Blood for mana: if you lack the mana for that free Begin, it may be paid in HP, 1 HP a point
-// (true HP loss); an Outburst paid in blood can't heal or shield (plan 6a-4: HP-paid heals were net positive), so a
-// design that heals or shields is never offered blood. It needs an Emanator in hand.
-// How it is offered: the Release arms it for that design; the next Begin of that design this turn is the free one,
-// unless the player switches "Begin again for 0 AP" off on the Begin. Anything else the character does first (a move,
-// an attack, a Begin of another design, a snap cast) ends the offer; words don't. Both switches are on by default
-// while they apply, so the design's card shows the real price before the click (PROVISIONAL: the spec leaves the
-// shape of the offer open). Rules 1.5's "Pay with HP on any Begin" (2 HP a point, II: 1) is gone.
-// =====================================================================================================================
-const HO_STAGE = 2, HO_HP_PER_MP = 1; // PROVISIONAL (item 1011)
-/** Actions that are only words: they don't end the offer. */
-const HO_WORDS = new Set(['combat/say']); // plain speech is free (rules 1.14); an attempt is an action
-/** The design the free Begin is offered on right now, or null. */
-function hoOffer(h: Holder): string | null {
-  const a = stateOf(h).again, u = h.u;
-  if (!a || !u || !h.cb || ow(h.cb) || a.stamp !== turnStamp(h) || active(h.cb) !== u) return null;
-  if (!u.mg?.emanator || u.mg.held || uses(h).left('per_turn', 1) <= 0) return null;
-  return a.design;
-}
-/** Is this Begin the free one (the armed design, held, with the switch on)? */
-const hoFree = (h: Holder, ctx: any, hold: boolean) => me(h, ctx.u) && hold && !!ctx.design && hoOffer(h) === ctx.design.id && modOn(h, 'again');
-const hoName = (h: Holder) => { const id = hoOffer(h); return (h.u?.mg?.designs || []).find((d: any) => d.id === id)?.name || 'the same design'; };
-/** Set while hoBlood asks what the free Begin's mana comes to (it runs 'outburst_cost' again): nothing is written to
- * the fight for it, so it is safe from a screen's preview. */
-let hoAsking = false;
-/** The free Begin's mana, when the heart doesn't have it and blood may pay (never for a design that heals or shields). */
-function hoBlood(h: Holder): number {
-  const id = hoOffer(h), m = h.u?.mg, d: any = (m?.designs || []).find((x: any) => x.id === id); if (!m || !d || mends(migrateDesign(d))) return 0;
-  if (hoAsking) return 0;
-  hoAsking = true; // (asked on the fight with the switch set: a copy of its top level, the fight itself is not written)
-  try { const pv = previewOutburst({ ...h.cb!, mods: ['!' + h.key + '#pay_hp'] }, h.u!, d.id, undefined, false); return m.mp < pv.cost ? pv.cost * HO_HP_PER_MP : 0; }
-  finally { hoAsking = false; }
-}
-register({
-  id: 'heart_overload', claims: 'all', priority: 300, noDefaultActions: true, // used from Begin (its switches)
-  toggles: [{
-    id: 'again', label: 'Heart Overload: Begin again for 0 AP', on: ['combat/outburst'], defaultOn: true,
-    available: (h) => !!hoOffer(h), // only right after the Release that earned it
-    preview: (h) => 'Begin ' + hoName(h) + ' again now for 0 AP. You pay its mana and Strain as usual. It holds at stage ' + (h.tier === 'II' && h.u && freeStageLeft(h.u) ? 1 : 0) + '. Once a turn.',
-  }, {
-    id: 'pay_hp', label: 'Heart Overload: pay the mana in HP', on: ['combat/outburst'], defaultOn: true,
-    available: (h) => hoBlood(h) > 0, // only for the free Begin, and only when the mana is short
-    preview: (h) => 'You don\'t have the mana to Begin ' + hoName(h) + ' again. Pay ' + hoBlood(h) + ' HP instead (' + HO_HP_PER_MP + ' HP a point). An Outburst paid in blood can\'t heal or shield.',
-  }],
-  on: {
-    outburst_cost: (ctx, h) => {
-      if (!hoFree(h, ctx, !ctx.release)) return;
-      ctx.ap = 0; if (hoAsking) return; // only the mana is being asked for
-      const mp = Math.max(0, Math.round(ctx.mp));
-      if (h.u!.mg!.mp < mp && modOn(h, 'pay_hp') && !mends(ctx.design)) { ctx.hp = (ctx.hp || 0) + mp * HO_HP_PER_MP; ctx.mp = 0; }
-    },
-    outburst_begin: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const s = stateOf(h);
-      const free = hoFree(h, ctx, !!ctx.hold) && uses(h).take('per_turn', 1);
-      s.again = null; s.raise = null;
-      if (!free) return;
-      if (h.tier === 'II') s.raise = ctx.design.id;
-      log(ctx.cb, h.u!.name + '\'s heart doesn\'t stop: ' + ctx.design.name + ' begins again for 0 AP (Heart Overload).');
-      if (ctx.hp > 0) { s.paid = ctx.design.id; log(ctx.cb, h.u!.name + ' pays ' + ctx.hp + ' HP for the mana (Heart Overload): this Outburst can\'t heal or shield.'); }
-    },
-    // II: the free Begin holds at stage 1. The held Outburst exists by the Begin's Strain (magic.ts beginOutburst).
-    strain: (ctx, h) => {
-      const s = stateOf(h), m = h.u?.mg; if (!me(h, ctx.u) || ctx.why !== 'begin' || !s.raise) return;
-      const id = s.raise; s.raise = null; if (!m?.held || m.held.design !== id || m.held.stage >= 1) return;
-      if (!takeFreeStage(h.u!)) return; // rules 1.19: one free stage a turn; if a free Pump took it, this Begin holds at stage 0
-      m.held.stage = 1;
-      emitFx(ctx.cb, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: 1, mult: stageMult(1), free: true, max: false, tone: m.held.tone || 'raw', overload: true });
-      log(ctx.cb, 'Heart Overload: it holds at stage 1 (×' + stageMult(1) + ').');
-    },
-    outburst_release: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const s = stateOf(h), u = h.u!;
-      // The offer: your own Release, on your turn, at stage 2 or higher, with an Emanator in hand; once a turn.
-      s.again = null;
-      if (!ctx.wild && !ctx.reaction && !ow(ctx.cb) && ctx.design && ctx.stage >= HO_STAGE && u.mg?.emanator && active(ctx.cb) === u && uses(h).left('per_turn', 1) > 0) {
-        s.again = { design: ctx.design.id, stamp: turnStamp(h), fresh: true };
-        log(ctx.cb, 'Heart Overload: ' + u.name + ' may Begin ' + ctx.design.name + ' again now for 0 AP.');
-      }
-      // Blood can't mend: an Outburst whose Begin was paid in HP heals and shields nothing.
-      if (!s.paid || s.paid !== ctx.design?.id) { s.noMend = null; if (s.paid && !u.mg?.held) s.paid = null; return; }
-      s.paid = null;
-      if (mends(ctx.design)) log(ctx.cb, 'Heart Overload: blood can\'t mend. This Outburst heals and shields nothing.');
-      s.noMend = ctx.cb.log.length;
-    },
-    // "At once": the offer lasts until the character's next action. The Release's own action leaves it standing.
-    action_done: (ctx, h) => {
-      const s = stateOf(h); if (!s.again || !me(h, ctx.u)) return;
-      if (s.again.fresh) { s.again.fresh = false; return; }
-      if (!HO_WORDS.has(String(ctx.a?.type || ''))) s.again = null;
-    },
-    turn_end: (ctx, h) => { if (me(h, ctx.u)) stateOf(h).again = null; },
-    heal_in: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.by) && s.noMend != null && s.noMend === ctx.cb?.log.length) ctx.n = 0; },
-    shield_grant: (ctx, h) => { const s = stateOf(h); if (me(h, ctx.by) && s.noMend != null && s.noMend === ctx.cb?.log.length) ctx.n = 0; },
-  },
-  brief: () => null,
-});
+// Clenched Heart (Will Power α; `heart_overload`): data only since rules 1.56 (the free re-Begin: move-pool.md).
 
 // =====================================================================================================================
 // Resonance (Will Power; rules 1.14, item 1012). I: each Outburst you Release gives your NEXT Release in this fight
-// +10% to its effect, building up to +20%. You lose what you have built when you end a turn in which you neither held
-// nor Released an Outburst. II: it builds up to +30%, and an ally's Release that you can see adds a step too.
+// +4% to its effect (rules 1.56; it was +10%), building up to +8%. You lose what you have built when you end a turn in which you neither held
+// nor Released an Outburst. II: it builds up to +12%, and an ally's Release that you can see adds a step too.
 // The bonus multiplies the Release the way its stage does ('outburst_release' mult: damage, healing, shields, the
 // second school), and the previews carry it ('release_cost' mult / 'outburst_cost' relMult, with a note).
 // The shared Resonance rule of rules 1.5 (allies releasing in the same round: +0.2 each on the stage multiplier, +0.4
 // at most) is unchanged and adds to this. Rules 1.5's perk (the wider window) is gone. Readings where the spec is
 // silent (PROVISIONAL): a wild release neither uses nor builds it; the Twinbound twin is not "an ally" for tier II.
 // =====================================================================================================================
-const RES_STEP = 0.1, RES_STEPS = { I: 2, II: 3 }; // PROVISIONAL (item 1012)
-const resCap = (h: Holder) => (h.tier === 'II' ? RES_STEPS.II : RES_STEPS.I);
-/** Steps built (each +10% on the next Release), never over this tier's ceiling. */
+// Rules 1.56 (Balance 2.0): its numbers are its data's (the stat_mod's value, a step in percent, and its limit, the most).
+const resStepOf = (h: Holder) => effNum(h, 'stat_mod') / 100;
+const resCap = (h: Holder) => Math.floor(effNum(h, 'stat_mod', 'limit') / effNum(h, 'stat_mod'));
+/** Steps built (each a step of its data on the next Release), never over this tier's ceiling. */
 const resSteps = (h: Holder): number => (ow(h.cb) ? 0 : Math.max(0, Math.min(resCap(h), Math.floor(Number(stateOf(h).steps) || 0))));
-const resPct = (n: number) => Math.round(n * RES_STEP * 100);
-const resMult = (n: number) => 1 + Math.round(n * RES_STEP * 100) / 100;
-const resNote = (n: number) => 'Resonance +' + resPct(n) + '%';
+const resPct = (h: Holder, n: number) => Math.round(n * resStepOf(h) * 100);
+const resMult = (h: Holder, n: number) => 1 + Math.round(n * resStepOf(h) * 100) / 100;
+const resNote = (h: Holder, n: number) => 'Resonance +' + resPct(h, n) + '%';
 const resBuild = (h: Holder, why: string) => {
   const s = stateOf(h), was = resSteps(h), now = Math.min(resCap(h), was + 1); s.steps = now;
-  if (now > was && h.cb) log(h.cb, h.u!.name + '\'s next Release: +' + resPct(now) + '% (Resonance' + why + ').');
+  if (now > was && h.cb) log(h.cb, h.u!.name + '\'s next Release: +' + resPct(h, now) + '% (Resonance' + why + ').');
 };
 register({
   id: 'resonance', claims: 'all', priority: 50,
   on: {
     // The previews: a held Release, and a snap cast.
-    release_cost: (ctx, h) => { const n = resSteps(h); if (me(h, ctx.u) && ctx.preview && n > 0) { ctx.mult = (ctx.mult || 1) * resMult(n); if (Array.isArray(ctx.notes)) ctx.notes.push(resNote(n)); } },
-    outburst_cost: (ctx, h) => { const n = resSteps(h); if (me(h, ctx.u) && ctx.release && n > 0) { ctx.relMult = (ctx.relMult || 1) * resMult(n); ctx.relAll = (ctx.relAll || 1) * resMult(n); if (Array.isArray(ctx.relNotes)) ctx.relNotes.push(resNote(n)); } },
+    release_cost: (ctx, h) => { const n = resSteps(h); if (me(h, ctx.u) && ctx.preview && n > 0) { ctx.mult = (ctx.mult || 1) * resMult(h, n); if (Array.isArray(ctx.notes)) ctx.notes.push(resNote(h, n)); } },
+    outburst_cost: (ctx, h) => { const n = resSteps(h); if (me(h, ctx.u) && ctx.release && n > 0) { ctx.relMult = (ctx.relMult || 1) * resMult(h, n); ctx.relAll = (ctx.relAll || 1) * resMult(h, n); if (Array.isArray(ctx.relNotes)) ctx.relNotes.push(resNote(h, n)); } },
     outburst_begin: (ctx, h) => { if (me(h, ctx.u)) stateOf(h).kept = turnStamp(h); },
     turn_start: (ctx, h) => { if (me(h, ctx.u) && h.u!.mg?.held) stateOf(h).kept = turnStamp(h); },
     outburst_release: (ctx, h) => {
       const u = h.u, r: Unit = ctx.u, cb: Combat = ctx.cb; if (!u || !r || ow(cb) || ctx.wild) return;
       if (me(h, r)) {
         const s = stateOf(h), n = resSteps(h); s.kept = turnStamp(h);
-        if (n > 0) { ctx.mult = (ctx.mult || 1) * resMult(n); log(cb, u.name + '\'s heart keeps the beat: +' + resPct(n) + '% to this Release (Resonance).'); emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: [], bonus: Math.round(n * RES_STEP * 100) / 100, perk: true }); }
+        if (n > 0) { ctx.mult = (ctx.mult || 1) * resMult(h, n); log(cb, u.name + '\'s heart keeps the beat: +' + resPct(h, n) + '% to this Release (Resonance).'); emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: [], bonus: Math.round(n * resStepOf(h) * 100) / 100, perk: true }); }
         resBuild(h, '');
         return;
       }
@@ -524,9 +375,8 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
   // It is an Evoke too (spec 1.5 section 2.1): the Line earns study and its words their uses.
   const grew = evokeGrowth(cb, u, p.words, p.glyphs.length, hits.some((x) => x.unit.side !== u.side));
   if (grew.length) log(cb, grew.join(' '));
-  // The glyphs fade as the spell fires (a Keystone stays), and it counts as your Evoke for Parallel Thought and Clean Draw.
+  // The glyphs fade as the spell fires (a Keystone stays), and it counts as your Evoke for Clean Draw.
   fadePattern(cb, p); // rules 1.10 (item 919): a junction stays in its other stroke; the strokes left are tidied
-  const pt = holderOf({ u, cb, c: h.c }, 'parallel_thought'); if (pt) ptEvoked({ ...pt, u, cb }, cb);
   const cd = holderOf({ u, cb, c: h.c }, 'clean_draw'); if (cd) cleanEvoked({ ...cd, u, cb }, cb, p.glyphs);
   return null;
 }
@@ -625,58 +475,7 @@ register({
   brief: () => 'Narrator: out of combat, who counts as a hostile listener and how a Shaken crowd behaves.',
 });
 
-// =====================================================================================================================
-// Litany (Faith). A spoken prayer (2 AP, at will; Silenced blocks it): allies within 3 tiles, you included, +1 on all
-// saves until the start of your next turn (II: +2). Doesn't stack with another Litany. Story: before a known danger,
-// the same prayer gives the party +1/+2 on their next save check.
-// =====================================================================================================================
-const litOf = (key: string, x: { u?: Unit; c?: Character | null; cb?: Combat | null; g?: any }) => stateOf({ key, ...x } as any);
-register({
-  id: 'litany', claims: 'all',
-  actions: [
-    {
-      id: 'litany', label: 'Litany', scope: ['combat'], ap: 'data', target: 'none',
-      text: 'A spoken prayer: allies within 3 tiles, you included, get a bonus on every save until your next turn.',
-      available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced: no prayers.' : true),
-      run: (h) => {
-        const u = h.u!, cb = h.cb!, v = tiles(h), got: string[] = [];
-        for (const t of alliesOf(cb, u, { self: true })) {
-          if (dist(t.pos, u.pos) > 3) continue;
-          const st = litOf(h.key, { u: t, cb, g: gameOf(h) });
-          if (st.lit && st.lit.v > v) continue;
-          st.lit = { v, by: u.id }; got.push(t.name);
-        }
-        log(cb, u.name + ' speaks the Litany: +' + v + ' on saves until their next turn for ' + got.join(', ') + '.');
-      },
-    },
-    {
-      id: 'litany_story', label: 'Litany', scope: ['story', 'world'], ap: 0, target: 'none', uses: { per: 'per_scene', n: 1 },
-      text: 'Before a known danger: the party gets a bonus on its next save check.',
-      run: (h) => {
-        const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Pray in the story.';
-        for (const x of Object.values(g.characters || {}) as Character[]) if (!x.dead) { const st = litOf(h.key, { c: x, g }); st.lit = { v: tiles(h), by: c.id, scene: g.story?.scene?.n }; }
-        postStory(h, 'speaks the Litany over the party (+' + tiles(h) + ' on the next save).');
-        return null;
-      },
-    },
-  ],
-  on: {
-    cond_apply: (ctx, h) => {
-      const t: Unit = ctx.t; if (!t || !h.u || !t.ps?.[h.key]?.lit) return;
-      const lit = t.ps[h.key].lit; if (lit.by === h.u.id) ctx.saveAdd = (ctx.saveAdd || 0) + lit.v;
-    },
-    turn_start: (ctx, h) => {
-      if (!me(h, ctx.u)) return;
-      for (const t of ctx.cb.units as Unit[]) { const st = t.ps?.[h.key]; if (st?.lit?.by === h.u!.id) delete st.lit; }
-    },
-    check_mod: (ctx, h) => {
-      const c = charOf(h), g = gameOf(h); if (!c || !g || ctx.ck?.kind !== 'save') return;
-      const st = litOf(h.key, { c: ctx.c, g });
-      if (st.lit?.by === c.id) { ctx.add.push({ add: st.lit.v, label: 'Litany' }); delete st.lit; }
-    },
-  },
-  brief: () => null,
-});
+// Unbroken Litany (Faith α; `litany`): data only since rules 1.56 (Litany's ally saves: move-pool.md).
 
 // =====================================================================================================================
 // Upper-Touched (trait). Thin Veil: Outbursts cost 20% less MP (the 5 MP floor stays); you sense upper-realm beings
@@ -1025,191 +824,43 @@ register({
   brief: () => null,
 });
 
-// =====================================================================================================================
-// Shared Breath (Empathy). 2 AP, link with an ally within 3 tiles you can see (provisional). The next Heart debuff
-// (Fear, Shaken, Taunted, Commanded, Disarmed…) that lands on either of you lands on both, each at half its duration
-// (rounded up, minimum 1; untimed ones stay untimed). II: the link lasts the whole fight and splits every Heart debuff.
-// =====================================================================================================================
-register({
-  id: 'shared_breath', claims: 'all',
-  actions: [{
-    id: 'link', label: 'Shared Breath', scope: ['combat'], ap: 'data', target: 'ally', range: 3,
-    text: 'Link with an ally: the next Heart debuff on either of you is split between you, each at half its duration.',
-    preview: (h, args) => { const t = h.cb?.units.find((x) => x.id === args.targetId); if (t && (me(h, t))) return { ok: false, why: 'Link with someone else.' }; if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; },
-    run: (h, args) => {
-      const t = h.cb!.units.find((x) => x.id === args.targetId)!; const s = stateOf(h);
-      s.link = { b: t.id, left: h.tier === 'II' ? 999 : 1 };
-      log(h.cb, h.u!.name + ' breathes with ' + t.name + ' (Shared Breath' + (h.tier === 'II' ? ': all fight' : '') + ').');
-    },
-  }],
-  on: {
-    cond_landed: (ctx, h) => {
-      const u = h.u, t: Unit = ctx.t, s = stateOf(h), cb: Combat = ctx.cb; if (!u || !t || !s.link || s.busy) return;
-      if (condFamily(ctx.id) !== 'heart' || isBoon(ctx.id)) return;
-      const partnerId = me(h, t) ? s.link.b : t.id === s.link.b ? u.id : null; if (!partnerId) return;
-      const p = cb.units.find((x) => x.id === partnerId); if (!p || p.dead) { s.link = null; return; }
-      const full = t.conds?.[ctx.id] ?? ctx.rounds, timed = full < 99, half = timed ? Math.max(1, Math.ceil(full / 2)) : undefined;
-      if (timed && t.conds) setCondRounds(t, ctx.id, half!);
-      s.busy = true;
-      try { log(cb, 'Shared Breath: ' + t.name + ' and ' + p.name + ' share it' + (half ? ' (' + half + ' round' + (half === 1 ? '' : 's') + ' each)' : '') + applyCond(cb, rngOf(h, ctx), ctx.by || null, p, ctx.id, half, undefined, { skipSave: true, ...(ctx.via ? { via: ctx.via } : {}) }) + '.'); }
-      finally { s.busy = false; }
-      if (--s.link.left <= 0) s.link = null;
-    },
-  },
-  brief: () => null,
-});
+// Taut Thread (Empathy α; `shared_breath`): data only since rules 1.56 (Shared Breath: move-pool.md).
+
+// Many-Eyed Dream and Wake of the Kill (Visualization α; `mirage`, `blueprint`): data only since rules 1.56 (Balance 2.0).
+// Mirage's projections are in docs/design/move-pool.md.
 
 // =====================================================================================================================
-// Mirage (Visualization). 2 AP, at will: project a false wall, figure or sound onto a tile within 6 + mod(Visualization)
-// (provisional). Each enemy that sees the tile (hears it, for a sound: 8 tiles) rolls d20 + its tier (minion 0 · soldier
-// 1 · elite 2 · boss 3) against 12 + mod(Visualization) (provisional); on a failure it believes the projection until
-// the start of your next turn (II: two projections, until the start of the turn after). A wall stops a believer's
-// move and blocks its shots through the tile; a figure draws a believer's attack (the attack goes at the figure and
-// finds only light, and that enemy stops believing); a sound draws a believer one move toward it. Plan 6a-10: one cast
-// at a time (a new cast replaces the old), an enemy that saw through one gets +5 against your later Mirages. Tier II's
-// second projection: args.text "x,y" (same kind) or "kind@x,y".
+// Solid Image (Mastered, Visualization 10; rules 1.56, the alpha perks, item 27). Once per combat, 0 AP: your Glimmer
+// (the false Figment every Visualization user has, figments.ts) becomes a real Figment at no charge until the start of
+// your next turn: the form the effect names (data: its `form`), outside the held count, with no upkeep, made through the
+// one door that makes a Figment (figments.ts makeFigment), its lifetime the effect's `rounds`. The enemies the Glimmer
+// fooled stay fooled: their attack now lands on a body. It keeps the old perk's shape (once a fight, free, until your
+// next turn starts); Mirage's wall half went with Mirage (move-pool.md).
 // =====================================================================================================================
-interface Proj { id: string; kind: 'wall' | 'figure' | 'sound'; tile: string; left: number; believers: string[]; solid?: boolean }
-const MIR_KEY = 'perk:mirage';
-const mirState = (u: Unit, cb: Combat | null | undefined, g?: any) => stateOf({ key: MIR_KEY, u, cb, g } as any);
-const visMod = (c: Character | null | undefined) => mod(c?.skills?.visualization || 0);
-/** Every live projection on the field, with its caster. */
-function projections(cb: Combat): { by: Unit; p: Proj }[] {
-  const out: { by: Unit; p: Proj }[] = [];
-  for (const u of cb.units) for (const p of ((u.ps?.[MIR_KEY]?.proj || []) as Proj[])) out.push({ by: u, p });
-  return out;
-}
-const believes = (e: Unit, p: Proj) => p.believers.includes(e.id);
-function disprove(by: Unit, e: Unit, p: Proj) { p.believers = p.believers.filter((x) => x !== e.id); const s = by.ps![MIR_KEY]; if (!(s.disproved ||= []).includes(e.id)) s.disproved.push(e.id); }
-function castMirage(h: Holder, rng: Rng, specs: { kind: Proj['kind']; tile: string }[]): string {
-  const u = h.u!, cb = h.cb!, c = charOf(h), s = mirState(u, cb, gameOf(h)), tn = SAVE_TN + visMod(c), left = h.tier === 'II' ? 2 : 1;
-  s.proj = []; // one cast at a time: a new one replaces the old
-  const lines: string[] = [];
-  for (const sp of specs) {
-    const p: Proj = { id: 'mi' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: sp.kind, tile: sp.tile, left, believers: [] };
-    const rolls: string[] = [];
-    for (const e of foesOf(cb, u, { companions: false })) {
-      const aware = sp.kind === 'sound' ? dist(e.pos, sp.tile) <= HEARING : unitSees(cb, e, sp.tile); if (!aware) continue;
-      const plus = (s.disproved || []).includes(e.id) ? 5 : 0, rv = rollVs(cb, rng, { by: e, mod: [{ add: tierSave(e.tier), label: 'tier' }, { add: plus, label: 'disproved' }], tn, why: 'mirage' }), ok = rv.ok;
-      if (!ok) p.believers.push(e.id);
-      rolls.push(e.name + ' ' + rv.total + (ok ? ' sees through it' : ' believes'));
-    }
-    s.proj.push(p);
-    lines.push('a ' + sp.kind + ' at ' + refOf(sp.tile) + (rolls.length ? ' (Acuity vs ' + tn + ': ' + rolls.join(', ') + ')' : ' (no one sees it)'));
-  }
-  return u.name + ' projects ' + lines.join(' and ') + ' (Mirage).';
-}
-const KINDS = ['wall', 'figure', 'sound'];
-function mirSpecs(h: Holder, args: any): { kind: Proj['kind']; tile: string }[] | string {
-  const kind = (KINDS.includes(String(args.choice)) ? args.choice : 'figure') as Proj['kind'];
-  if (!args.tile) return 'Pick a tile.';
-  const out = [{ kind, tile: args.tile as string }];
-  if (h.tier === 'II' && args.text) { const m = /^(?:(wall|figure|sound)@)?(\d+,\d+)$/.exec(String(args.text).trim()); if (m) out.push({ kind: (m[1] || kind) as Proj['kind'], tile: m[2] }); }
-  const u = h.u!, cb = h.cb!, range = 6 + visMod(charOf(h));
-  for (const sp of out) {
-    if (dist(u.pos, sp.tile) > range) return 'Out of range (' + range + ' tiles).';
-    if (!standable(cb.map, sp.tile)) return 'Nothing can be projected there.';
-  }
-  return out;
-}
-register({
-  id: 'mirage', claims: 'all',
-  actions: [
-    {
-      id: 'mirage', label: 'Mirage', scope: ['combat'], ap: 'data', target: 'tile',
-      text: 'Project a false wall, figure or sound onto a tile in range. Enemies who fail an Acuity check believe it.',
-      preview: (h, args) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return { ok: false, why: sp }; return { tiles: sp.map((x) => x.tile), lines: ['A ' + sp.map((x) => x.kind).join(' and a ') + ' (Acuity vs ' + (12 + visMod(charOf(h))) + ')'] }; },
-      run: (h, args, rng) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return sp; log(h.cb, castMirage(h, rng, sp)); return null; },
-    },
-    {
-      // 2 overworld AP on the area map (the audit's story side); free in the story panel (a scene's action, once a round there).
-      id: 'mirage_story', label: 'Mirage', scope: ['story', 'world'], ap: (h) => (h.cb ? 2 : 0), target: 'text',
-      text: 'Project a false wall, figure or sound to distract or misdirect. The engine rolls the NPCs\' Acuity; the Narrator plays them.',
-      run: (h, args, rng) => {
-        const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Project in the story.';
-        const tn = SAVE_TN + visMod(c), rolls = npcsOf(g).filter((n: any) => n.side === 'hostile' && !n.dead).slice(0, 8).map((n: any) => { const rv = rollVs(null, rng, { mod: tierSave(n.tier), tn }), ok = rv.ok; return n.name + ' ' + rv.total + (ok ? ' sees through it' : ' believes'); });
-        const t = String(args.text || '').trim().slice(0, 200), eid = postStory(h, 'projects ' + t + ' (Mirage; Acuity vs ' + tn + (rolls.length ? ': ' + rolls.join(', ') : '') + ').');
-        pendRuling(g, c, h.key, 'Mirage: ' + c.name + ' projects ' + t + '. The engine rolled: ' + (rolls.join(', ') || 'no hostile NPCs nearby') + '. Play what the fooled NPCs do.', eid || undefined);
-        return null;
-      },
-    },
-  ],
-  on: {
-    turn_start: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const s = mirState(h.u!, ctx.cb);
-      for (const p of (s.proj || []) as Proj[]) p.left--;
-      const gone = ((s.proj || []) as Proj[]).filter((p) => p.left <= 0);
-      if (gone.length) log(ctx.cb, 'The Mirage fades at ' + gone.map((p) => refOf(p.tile)).join(', ') + '.');
-      s.proj = ((s.proj || []) as Proj[]).filter((p) => p.left > 0);
-    },
-    move_step: (ctx, h) => {
-      const e: Unit = ctx.u; if (!h.u || !e || e.side === h.u.side || ctx.stop) return;
-      for (const p of (mirState(h.u, ctx.cb).proj || []) as Proj[]) if (p.kind === 'wall' && !p.solid && p.tile === ctx.at && believes(e, p)) { e.pos = ctx.from; ctx.stop = 'a wall that isn\'t there'; log(ctx.cb, e.name + ' stops at a wall that isn\'t there (Mirage).'); return; }
-    },
-    attack_preview: (ctx, h) => {
-      const a: Unit = ctx.att; if (!h.u || !a || a.side === h.u.side || ctx.fail || ctx.melee) return;
-      const line = tilesLine(a.pos, ctx.tgt.pos, { end: false });
-      for (const p of (mirState(h.u, ctx.cb).proj || []) as Proj[]) if (p.kind === 'wall' && !p.solid && believes(a, p) && line.includes(p.tile)) { ctx.fail = 'A wall stands in the way (or so they believe).'; return; }
-    },
-    attack_roll: (ctx, h) => {
-      const a: Unit = ctx.att, t: Unit = ctx.tgt, u = h.u; if (!u || !a || !t || a.side === u.side || t.side !== u.side || ctx.hit === false) return;
-      const p = ((mirState(u, ctx.cb).proj || []) as Proj[]).find((x) => x.kind === 'figure' && !x.solid && believes(a, x) && unitSees(ctx.cb, a, x.tile));
-      if (!p) return;
-      ctx.hit = false; disprove(u, a, p);
-      log(ctx.cb, a.name + ' attacks the figure at ' + refOf(p.tile) + ': it is only light (Mirage). ' + a.name + ' won\'t be fooled by it again.');
-    },
-    enemy_action_start: (ctx, h) => {
-      const e: Unit = ctx.u, u = h.u, cb: Combat = ctx.cb; if (!u || !e || e.side === u.side || ctx.skip) return;
-      const p = ((mirState(u, cb).proj || []) as Proj[]).find((x) => x.kind === 'sound' && believes(e, x)); if (!p) return;
-      p.believers = p.believers.filter((x) => x !== e.id); // one move toward it, then it knows
-      const [ex, ey] = xy(e.pos), r = Math.max(1, Math.floor(e.movement * 2)), cand: string[] = [];
-      for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const k = key(ex + dx, ey + dy); if (k !== e.pos && dist(k, p.tile) < dist(e.pos, p.tile)) cand.push(k); }
-      cand.sort((a, b) => dist(a, p.tile) - dist(b, p.tile) || dist(a, e.pos) - dist(b, e.pos));
-      for (const k of cand.slice(0, 24)) { if (!moveUnit(cb, e, k, rngOf(h, ctx))) { log(cb, e.name + ' goes after a sound at ' + refOf(p.tile) + ' (Mirage).'); ctx.skip = true; return; } }
-    },
-  },
-  brief: () => 'Narrator: out of combat, what the fooled NPCs do.',
-});
-
-// =====================================================================================================================
-// Solid Image (Mastered, Visualization 10). Once per combat, 0 AP: one of your Mirage projections becomes real until
-// the start of your next turn. A wall blocks movement and line of sight for everyone (a solid barricade); a figure takes
-// the first hit aimed at any ally (0 damage to them) and then breaks. Story: the Narrator rules it from the text.
-// (The Visualization Afterimage decoy is not built yet: only Mirage projections can be solidified.)
-// =====================================================================================================================
+const solidEff = (h: Holder): any => (rawItem(h.key)?.effects || []).find((e: any) => e?.op === 'spawn_illusion') || {};
+const glimmerOf = (cb: Combat | null | undefined, u: Unit | null | undefined) => { const i = cb && u ? imageOfOwner(cb, u.id) : null; return i && !i.body ? i : null; };
 register({
   id: 'solid_image', claims: 'all',
   actions: [{
-    id: 'solidify', label: 'Solidify', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'tile',
-    text: 'One of your projections becomes real until your next turn: a wall blocks movement and shots; a figure takes one hit meant for an ally.',
-    available: (h) => (h.u && ((mirState(h.u, h.cb).proj || []) as Proj[]).some((p) => p.kind !== 'sound') ? true : 'Project a wall or figure first (Mirage).'),
-    preview: (h, args) => {
-      const p = ((mirState(h.u!, h.cb).proj || []) as Proj[]).find((x) => x.tile === args.tile && x.kind !== 'sound');
-      if (!p) return { ok: false, why: 'Pick one of your projected walls or figures.' };
-      if (p.kind === 'wall' && h.cb!.units.some((x) => !x.dead && x.pos === p.tile)) return { ok: false, why: 'Someone stands there.' };
+    id: 'solidify', label: 'Solidify', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'none',
+    text: 'Your Glimmer becomes a real Figment until your next turn starts, at no charge.',
+    available: (h) => { const no = visFocusWhy(h.u); if (no) return no; return glimmerOf(h.cb, h.u) ? true : 'Glimmer first: there is no false image of you to make real.'; },
+    preview: (h) => {
+      const cb = h.cb!, u = h.u!, img = glimmerOf(cb, u); if (!img) return { ok: false, why: 'Glimmer first.' };
+      if (!canStand(cb, img.pos)) return { ok: false, why: 'Someone stands on your Glimmer.' };
+      return { tiles: [img.pos], lines: ['Your Glimmer at ' + refOf(img.pos) + ' becomes a real ' + (FORM[solidEff(h).form]?.name || 'Figment') + ' until your next turn.'] };
     },
-    run: (h, args) => {
-      const u = h.u!, cb = h.cb!, p = ((mirState(u, cb).proj || []) as Proj[]).find((x) => x.tile === args.tile && x.kind !== 'sound')!;
-      p.solid = true; p.left = Math.max(p.left, 1); const s = stateOf(h);
-      if (p.kind === 'wall') { const o = makeObject('solid_' + p.id, 'barricade', p.tile, { name: 'Solid image', text: 'A projection made real (Solid Image).' }); cb.objects = [...objectsOf(cb), o]; s.wall = o.id; }
-      else s.figure = p.id;
-      log(cb, u.name + '\'s ' + p.kind + ' at ' + refOf(p.tile) + ' becomes real (Solid Image).');
+    run: (h, _args, rng) => {
+      const cb = h.cb!, u = h.u!, img = glimmerOf(cb, u), e = solidEff(h); if (!img) return 'Glimmer first.';
+      const at = img.pos, fooled = [...img.fooled], rounds = Number(e.rounds);
+      if (!FORM[e.form] || !Number.isFinite(rounds)) throw new Error('solid_image: its spawn_illusion effect needs a form and rounds (data)');
+      const f = makeFigment(cb, rng as Rng, u, e.form, [], at, { charge: 0, free: { rounds } }); if (typeof f === 'string') return f;
+      const now = imageOfOwner(cb, u.id); if (now && now.body === f.id) now.fooled = [...new Set([...now.fooled, ...fooled])];
+      log(cb, u.name + '\'s Glimmer at ' + refOf(at) + ' becomes real (Solid Image).');
+      return null;
     },
   }],
-  on: {
-    turn_start: (ctx, h) => {
-      if (!me(h, ctx.u)) return; const s = stateOf(h), cb: Combat = ctx.cb;
-      if (s.wall) { cb.objects = objectsOf(cb).filter((o) => o.id !== s.wall); s.wall = null; log(cb, 'The solid image fades back to light.'); }
-      if (s.figure) { s.figure = null; }
-    },
-    damage_in: (ctx, h) => {
-      const u = h.u, t: Unit = ctx.t, s = stateOf(h); if (ctx.phase !== 'reduce' || !u || !t || !s.figure || t.side !== u.side || !ctx.hostile || ctx.dmg <= 0) return;
-      const ms = mirState(u, ctx.cb), p = ((ms.proj || []) as Proj[]).find((x) => x.id === s.figure);
-      ctx.dmg = 0; s.figure = null; if (p) ms.proj = (ms.proj as Proj[]).filter((x) => x !== p);
-      log(ctx.cb, 'The solid image takes the blow meant for ' + t.name + ' and breaks (Solid Image).');
-    },
-  },
-  brief: () => 'Narrator: out of combat, a projection can be made real for a moment (a door held, a blow caught).',
+  brief: () => 'Narrator: out of combat, a Glimmer can be made real for a moment (a door held, a blow caught).',
 });
 
 void active; void lineOfSight; void unitSave; void ((): Holder | null => null);

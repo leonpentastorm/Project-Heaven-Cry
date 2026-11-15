@@ -374,7 +374,7 @@
       "effects": [ { "op": "resource", "when": "round_start", "resource": "vcharge", "value": 3, "limit": {"per": "per_combat", "n": 1} } ],
       "text": "{=effects.0.value|signed} Visualizer charge when a fight's first round begins (up to its most)." },
     { "id": "start.vigil", "kind": "relic", "name": "Vigil", "lines": ["faith"], "worth": 4, "adjudication": "engine", "provisional": true, "needs": {"skill": {"faith": 1}},
-      "effects": [ { "op": "cost_mod", "when": "cost", "if": {"action": ["whisper"]}, "set": 0, "limit": {"per": "per_combat", "n": 1, "key": "vigil", "peek": true} }, { "op": "use", "when": "acted", "if": {"action": ["pray"]}, "limit": {"per": "per_combat", "n": 1, "key": "vigil"} } ],
+      "effects": [ { "op": "cost_mod", "when": "cost", "if": {"action": ["whisper"]}, "set": 0, "limit": {"per": "per_combat", "n": 1, "key": "vigil", "peek": true} }, { "op": "use", "when": "acted", "if": {"action": ["pray", "whisper"]}, "limit": {"per": "per_combat", "n": 1, "key": "vigil"} } ],
       "text": "Your first prayer each fight, if it is a Whisper, costs {=effects.0.set} AP." },
     { "id": "start.shelter", "kind": "relic", "name": "Shelter", "lines": ["faith"], "worth": 4, "adjudication": "engine", "provisional": true, "needs": {"skill": {"faith": 1}},
       "effects": [ { "op": "mend_mult", "when": "heal", "if": {"actor": "self", "target": "any", "how": ["blessing"]}, "value": 1.15 } ],

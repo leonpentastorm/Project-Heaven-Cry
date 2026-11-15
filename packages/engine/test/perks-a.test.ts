@@ -8,7 +8,7 @@ import {
   applyDamage, applyCond, resolveAttack, previewAttack, shove, healUnit, blessing, movement, carryLimit, maxHp, skillRollMod, PATRONS, condOn,
   type Unit, type Combat,
 } from '../src';
-import { behindLine } from '../src/perks/a';
+
 import { fightWith, storyWith, withGame, rng } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -24,56 +24,9 @@ function storyCheck(s: ReturnType<typeof storyWith>, charId: string, skills: str
   return { ck, roll: () => { s.act({ type: 'check/roll', checkId: ck.id }); return s.g.story.entries.filter((e) => e.kind === 'check').at(-1)!.head!; } };
 }
 
-describe('Stonewall', () => {
-  it('geometry: the ray from the attacker through the guard, 1 (I) or 2 (II) tiles on', () => {
-    expect(behindLine('2,5', '5,5', '6,5', 1)).toBe(true);
-    expect(behindLine('2,5', '5,5', '7,5', 1)).toBe(false);
-    expect(behindLine('2,5', '5,5', '7,5', 2)).toBe(true);
-    expect(behindLine('2,2', '4,4', '5,5', 1)).toBe(true);
-    expect(behindLine('2,5', '5,5', '5,6', 2)).toBe(false);
-  });
-  for (const tier of ['I', 'II'] as const) it('Tier ' + tier + ': an ally behind the guard takes ' + (tier === 'I' ? '25' : '50') + '% less from a ranged shot', () => {
-    const f = fightWith([{ perks: { bulwark: tier } }, {}], [{ at: 'C6' }]);
-    const [guard, ally] = f.pcs, foe = f.foe; sure(foe);
-    at(f, foe, '2,5'); at(f, guard, '5,5'); at(f, ally, tier === 'I' ? '6,5' : '7,5');
-    const shot = (seed: number) => withGame(f.g, () => { f.g.rng.state = seed; const hp = ally.hp; resolveAttack(f.cb, f.g.rng, foe, ally, 'shot', null, { noAp: true }); const d = hp - ally.hp; ally.hp = ally.maxHp; return d; });
-    const covered = shot(11);
-    expect(logHas(f.cb, /Stonewall/)).toBe(true);
-    at(f, guard, '5,8'); // off the line
-    const open = shot(11);
-    expect(open).toBeGreaterThan(0);
-    expect(covered).toBe(Math.floor(open * (tier === 'I' ? 0.75 : 0.5)));
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Stonewall'
 
-describe('Shrug It Off', () => {
-  it('Tier I: 2 AP, removes a Body debuff; refused with nothing to remove', () => {
-    const f = fightWith([{ perks: { shrug_it_off: 'I' } }]);
-    let u = f.turn(f.pc);
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'shrug_it_off' })).toThrow(/No Body debuff/);
-    withGame(f.g, () => applyCond(f.cb, rng(), f.foe, f.unit(u.id), 'pinned', undefined, undefined, { skipSave: true }));
-    expect(condOn(f.pc, 'pinned')).toBe(true);
-    pcAct(f, { type: 'combat/perk', id: 'shrug_it_off' });
-    u = f.pc; expect(condOn(u, 'pinned')).toBe(false); expect(u.ap).toBe(4); expect(u.shield || 0).toBe(0);
-  });
-  it('Tier II: 1 AP and a shield of 10% of max HP (Healing received applies)', () => {
-    const f = fightWith([{ perks: { shrug_it_off: 'II' } }]);
-    const u = f.turn(f.pc); u.prone = true;
-    pcAct(f, { type: 'combat/perk', id: 'shrug_it_off' });
-    expect(f.pc.prone).toBe(false); expect(f.pc.ap).toBe(5);
-    expect(f.pc.shield).toBe(Math.floor(Math.floor(0.1 * f.pc.maxHp * (f.pc.healRecv || 1))));
-  });
-  it('story: ends a story Body condition, or asks the Narrator about a narrated one', () => {
-    const s = storyWith([{ perks: { shrug_it_off: 'I' } }]);
-    const c = s.chars[0];
-    s.act({ type: 'narrator/turn', turn: { narration: 'The gas.', conditions: [{ target: c.id, id: 'nausea' }] } } as any);
-    expect((s.g.characters[c.id].persistentConds || []).map((p) => p.id)).toContain('nausea');
-    s.act({ type: 'story/perk', charId: c.id, id: 'shrug_it_off' });
-    expect((s.g.characters[c.id].persistentConds || []).map((p) => p.id)).not.toContain('nausea');
-    s.act({ type: 'story/perk', charId: c.id, id: 'shrug_it_off' });
-    expect(s.g.story.rulings!.some((r) => r.key === 'perk:shrug_it_off')).toBe(true);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Shrug It Off'
 
 describe('Used to the Pain', () => {
   // rules 1.13: no AP any more. A light first hit hardens you against the next hit; a heavy one doesn't.

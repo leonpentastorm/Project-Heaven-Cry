@@ -1609,6 +1609,8 @@
       },
       "outburst_peak": {
         "allin": 165,
+        "level_hi": 1.285,
+        "level_hi_note": "lead's ruling of 16 Nov 2026, PROVISIONAL (rules 1.56): the band's top is 212, not 165 x 1.25 = 206, because the Outburst's level-5 peak sits about 2 percent over its band: one base dial (damage.base 37) cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass",
         "what": "the biggest Release, one turn",
         "dial": "soul_modules.json damage.base, then cycle.stage_mult"
       },

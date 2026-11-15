@@ -109,24 +109,7 @@ describe('Overruled!', () => {
 });
 
 // ======================================================================================================== Blueprint
-describe('Blueprint', () => {
-  for (const tier of ['I', 'II'] as const) it(tier + ': the sketch gives the squad +' + (tier === 'II' ? 2 : 1) + ' Movement in round 1, and no AP', () => {
-    const f = fightAfter([{ perks: { blueprint: tier } }, {}], [{ at: 'P6' }], (s) => s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'blueprint' }));
-    open(f.cb);
-    const [a, b] = f.pcs, mv = f.unit(b.id).movement;
-    const ub = f.turn(f.unit(b.id)); expect(ub.movement).toBe(mv + (tier === 'II' ? 2 : 1)); expect(ub.ap).toBe(6);
-    pcAct(f as any, { type: 'combat/end-turn' }, ub);
-    expect(f.unit(b.id).movement).toBe(mv);
-    f.cb.round = 2; const ua = f.turn(f.unit(a.id)); expect(ua.ap).toBe(6);
-    expect(logHas(f.cb, /Blueprint/)).toBe(true);
-  });
-  it('once a scene; a fight with no sketch gets nothing', () => {
-    const s = storyWith([{ perks: { blueprint: 'I' } }]);
-    s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'blueprint' });
-    expect(() => s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'blueprint' })).toThrow(/Used/);
-    const f = fightWith([{ perks: { blueprint: 'II' } }]); const u = f.turn(f.pc); expect(u.ap).toBe(6);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Blueprint'
 
 // ======================================================================================================== Talks Broke Down
 describe('Talks Broke Down', () => {
@@ -409,30 +392,7 @@ describe('Pattern Lock', () => {
 });
 
 // ======================================================================================================== Lay Down Arms
-describe('Lay Down Arms', () => {
-  it('I: 2 AP, a humanoid that hears you fails its Heart save: no attacks on its next turn', () => {
-    const f = fightWith([{ perks: { lay_down_arms: 'I' } }], [{ at: 'E6' }]); open(f.cb);
-    const foe = f.foes[0]; weakSaves(f.unit(foe.id)); at(f, f.pc, '2,5'); f.turn(f.pc);
-    pcAct(f, { type: 'combat/perk', id: 'lay_down_arms', targetId: foe.id });
-    expect(f.unit(f.pc.id).ap).toBe(4); expect(condArg(f.unit(foe.id), 'commanded')).toBe('hold');
-    const hp = f.unit(f.pc.id).hp; f.unit(f.pc.id).ap = 0; pcAct(f, { type: 'combat/end-turn' });
-    expect(f.unit(f.pc.id).hp).toBe(hp); // it held fire
-  });
-  it('II: up to three at once; robots and the deaf (out of hearing) are refused', () => {
-    const f = fightWith([{ perks: { lay_down_arms: 'II' } }], [{ at: 'E6' }, { at: 'E7' }, { at: 'E8' }, { name: 'Sentry drone', at: 'E4' }]); open(f.cb);
-    const [a, b, c, d] = f.foes; for (const x of f.foes) weakSaves(f.unit(x.id)); at(f, f.pc, '2,5'); f.turn(f.pc);
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'lay_down_arms', targetId: d.id })).toThrow(/doesn't listen/);
-    pcAct(f, { type: 'combat/perk', id: 'lay_down_arms', targetId: a.id, targetIds: [b.id, c.id] });
-    for (const x of [a, b, c]) expect(condOn(f.unit(x.id), 'commanded')).toBe(true);
-    at(f, f.unit(a.id), '15,15'); f.unit(f.pc.id).ap = 6;
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'lay_down_arms', targetId: a.id })).toThrow(/range|hear/);
-  });
-  it('story: the engine rolls the save and the Narrator plays the result', () => {
-    const s = storyWith([{ perks: { lay_down_arms: 'I' } }]);
-    s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'lay_down_arms', actionId: 'plea', npc: 'the guard', text: 'Nobody has to die here.' });
-    const r = s.g.story.rulings!.at(-1)!; expect(r.key).toBe('perk:lay_down_arms'); expect(r.text).toMatch(/Heart save d20 \d+/);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Lay Down Arms'
 
 // ======================================================================================================== Field Surgeon
 describe('Field Surgeon', () => {

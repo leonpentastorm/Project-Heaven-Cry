@@ -113,22 +113,7 @@ describe('Roll With It', () => {
   });
 });
 
-describe('Shadow Step', () => {
-  it('I: Hidden, cover to cover counts half the tiles', () => {
-    const f = fightWith([{ perks: { shadow_step: 'I' } }], [{ at: 'P11' }]);
-    const pc = at(f.pc, '4,5'); f.foe.vision = 1; pc.hidden = true; pc.hideEntry = 1; const u = f.turn(pc); u.movement = 1;
-    f.act({ type: 'combat/move', unitId: u.id, to: '8,2' }); // next to the crates at F4-F5, then next to H2: 4 tiles
-    expect(f.pc.ap).toBe(4); expect(f.pc.bank).toBe(0);
-    expect(logHas(f.cb, /Shadow Step/)).toBe(true);
-  });
-  it('II: an attack that reveals you rolls to stay Hidden (no witness: stays), with no second ambush', () => {
-    const f = fightWith([{ perks: { shadow_step: 'II' }, weapon: 'hellraiser_service_rifle' }], [{ at: 'F6' }]);
-    const pc = f.pc; f.foe.vision = 1; pc.hidden = true; pc.hideEntry = 1; f.turn(pc);
-    f.act({ type: 'combat/attack', unitId: pc.id, targetId: f.foe.id, mode: 'shot' });
-    expect(f.pc.hidden).toBe(true); expect(f.pc.ambushUsed).toBe(1); expect(f.pc.hideEntry).toBe(1);
-    expect(logHas(f.cb, /stays Hidden/)).toBe(true);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Shadow Step'
 
 describe('Got You in My Sight', () => {
   it('I: an enemy hides in your sight on your turn: +2 AP now, once a round; a sneak attack hit costs 2 AP next turn', () => {

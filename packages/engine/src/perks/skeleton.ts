@@ -1,9 +1,7 @@
 // Skeleton 2.0 (rules 1.13), the perk and unlock pass: the items that were replaced or became passives.
 //   Raw Power 3 · Heavy Hands      a melee technique's push moves its target 1 tile further
 //   Raw Power 5 · Follow Through   a Finisher that takes its target out leaves you 1 Momentum
-//   Breaching Strike I/II (perk)   a target pushed up against a wall or another enemy takes the hit again at half
-//   Iron Grip I/II (perk)          replaces Grapple: riders on a target you have Bound or Grappled
-//   Both Hands I/II (perk)         replaces Origami Hands: blade in one hand, gun in the other
+//   Iron Grip I/II (perk)          replaces Grapple: the technique Grapple, and a held target can't react (rules 1.56)
 //   Dexterity 5 · Quick Draw       the first attack of a fight with a weapon drawn for it costs no AP
 //   Improvisation 5 · Tuned        the weapon in your main hand never jams and never breaks
 //   Camaraderie 3 · Hand-Off       once a round an adjacent ally uses your Defense against one attack
@@ -11,20 +9,16 @@
 // Every number here is PROVISIONAL (spec section 14).
 //
 // Wired in physical/core.ts: Heavy Hands (forceMove asks 'push_tiles'), Quick Draw (apFor names its technique in
-// 'attack_preview'), Iron Grip II (finisherNeed asks 'momentum_needed:<id>'), and Breaching Strike against a push that
-// is blocked at once (forceMove calls slam through setSlam, below).
-import { register, stateOf, applyDamage, emit, has, tierOf, type Holder } from '../effects';
-import { onHook, charOfUnit } from '../effects/hooks';
-import { landed } from '../effects/output';
-import { amountMult } from '../effects/amounts';
-import { type Combat, type Unit, key, xy, dist, alive, moveBlockers, emitFx, attackDamage, checkOver, previewAttack, resolveAttack, isMelee, displace } from '../combat';
+// 'attack_preview').
+import { register, stateOf, has, type Holder } from '../effects';
+import { charOfUnit } from '../effects/hooks';
+import { type Combat, type Unit, dist, alive, emitFx, checkOver, previewAttack, resolveAttack, isMelee } from '../combat';
 import { WEAPON } from '../data';
 import { resGain, resOf } from '../tactics';
 import { condSource } from '../magic';
-import { die } from '../rng';
 import { TECHNIQUE } from '../physical/data';
-import { strikingWith, ensureMomentum, turnStamp, setSlam } from '../physical/core';
-import { overworld, say, standBlocker } from '../kit';
+import { ensureMomentum } from '../physical/core';
+import { overworld, say } from '../kit';
 
 const tierII = (h: Holder) => h.tier === 'II';
 /** An item's per-fight state, read without creating it (previews and stat queries change nothing). */
@@ -44,61 +38,8 @@ function giveMomentum(cb: Combat, u: Unit, silent = false): number {
 // (W1), so the technique's card, its preview and the push itself agree.
 register({ id: 'raw_power.3', kind: 'skill', claims: 'all', stat: (_h, stat, ctx) => (stat === 'push_tiles' && ctx?.system === 'melee' ? 1 : 0), brief: () => null });
 
-// =====================================================================================================================
-// Breaching Strike (Raw Power; a passive since rules 1.13, name kept). When one of your melee techniques pushes a target
-// and a wall, a solid object or another enemy of yours stops it, it takes the hit again at half: half of the damage of
-// the hit that pushed it (a push with no hit of its own, Shove: half a plain blow with the weapon in hand). II: the
-// enemy it was pushed into takes the same. The core moves a pushed unit tile by tile and emits 'forced_move' for each
-// tile it takes ({u, by, to, how: the technique}) and nothing for a blocked one, so the push is followed here and
-// settled when the action is done: the target was moved, and the tile beyond it, the same way, is blocked (W4).
-// =====================================================================================================================
-const NOT_A_PUSH = new Set(['drag', 'throw_down', 'iron_grip']);
-interface Push { from: string; to: string }
-const BREACH = 'breaching_strike';
-onHook('displaced', (ctx: any) => { // after the one forced move (combat.ts displace): where it started and where it ended
-  const by: Unit | undefined = ctx.by, t: Unit | undefined = ctx.u; if (!by || !t || !ctx.to || ctx.to === ctx.from || NOT_A_PUSH.has(ctx.how)) return;
-  if (TECHNIQUE[ctx.how]?.system !== 'melee' || dist(by.pos, ctx.to) <= dist(by.pos, ctx.from)) return; // a melee technique, moving it away
-  if (!has(by, BREACH)) return;
-  (((by as any)._push ||= {}) as Record<string, Push>)[t.id] = { from: ctx.from, to: ctx.to };
-});
-onHook('on_hit', (ctx: any) => { const a: Unit = ctx.att; if (ctx.melee && a && has(a, BREACH)) ((a as any)._hit ||= {})[ctx.tgt.id] = ctx.dmg; });
-onHook('action_done', (_ctx: any, cb) => {
-  for (const by of [...cb.units]) {
-    const pushes = (by as any)._push as Record<string, Push> | undefined, hits = ((by as any)._hit || {}) as Record<string, number>;
-    delete (by as any)._push; delete (by as any)._hit;
-    if (!pushes || !alive(by) || cb.over) continue;
-    for (const [id, p] of Object.entries(pushes)) {
-      const t = cb.units.find((x) => x.id === id); if (!t || !alive(t) || t.pos !== p.to || !alive(by)) continue;
-      const [fx, fy] = xy(p.from), [tx, ty] = xy(p.to), b = blockerAt(cb, key(tx + Math.sign(tx - fx), ty + Math.sign(ty - fy)), t);
-      if (b) { slam(cb, by, t, b, hits[id]); checkOver(cb); }
-    }
-  }
-});
-/** What stands on a tile for a pushed unit: 'wall' (off the map, a solid tile, a blocking object), a unit, or null. */
-function blockerAt(cb: Combat, k: string, mover: Unit): 'wall' | Unit | null {
-  const b = standBlocker(cb, k, mover); return b === 'edge' || b === 'object' ? 'wall' : b;
-}
-/** Breaching Strike: `t`, pushed by `by`, is stopped by a wall or by the unit `into`. Half the hit again (II: the enemy
- * it hit takes the same). Nothing for a holder without the perk, or when `into` is on the pusher's side. */
-export function slam(cb: Combat, by: Unit, t: Unit, into: 'wall' | Unit, hit?: number): void {
-  const tier = tierOf(by, BREACH); if (!tier || (into !== 'wall' && into.side === by.side)) return;
-  let base = hit;
-  if (base == null) { const d = attackDamage(cb, by, t, 'melee', by.companion ? null : charOfUnit(by), { preview: true }); base = landed(d.total, d.armour); }
-  const dmg = Math.max(1, Math.floor(base * amountMult('perk:breaching_strike', 'slam', 'share'))), src: any = { by, type: 'weapon', melee: true, mode: 'melee', shield: true, credit: 'all' };
-  const r = applyDamage(cb, t, dmg, src);
-  emitFx(cb, 'perk', { unit: by.id, target: t.id, from: by.pos, to: t.pos, id: BREACH });
-  say(cb, t.name + ' is slammed into ' + (into === 'wall' ? 'the wall' : into.name) + ' (Breaching Strike): ' + r.amount + ' damage' + (r.killed ? ' · down' : '') + '.');
-  if (tier === 'II' && into !== 'wall' && alive(into)) { const r2 = applyDamage(cb, into, dmg, { ...src }); say(cb, into.name + ' takes the same (Breaching Strike II): ' + r2.amount + ' damage' + (r2.killed ? ' · down' : '') + '.'); }
-}
-// The core's call for a push that a wall or a body stops (physical/core.ts forceMove): the hit that pushed it is this
-// action's hit on it, and the push is settled here, so the end of the action doesn't count it a second time.
-setSlam((cb, by, t, into, how) => {
-  if (NOT_A_PUSH.has(how) || !has(by, BREACH)) return;
-  const hit = ((by as any)._hit as Record<string, number> | undefined)?.[t.id];
-  if ((by as any)._push) delete (by as any)._push[t.id];
-  slam(cb, by, t, into, hit);
-});
-register({ id: BREACH, claims: 'all', brief: () => null });
+// Keep Swinging (Raw Power; `breaching_strike`): written in data only since rules 1.56 (Balance 2.0; data/perks.json).
+// Breaching Strike's wall-slam is in docs/design/move-pool.md.
 
 // ---------- Raw Power · Follow Through (Mastery 2) ----------
 // A Finisher that takes its target out (an enemy dropped or killed during it) leaves you 1 Momentum: given when the
@@ -118,72 +59,21 @@ register({
 });
 
 // =====================================================================================================================
-// Iron Grip (Raw Power; replaces Grapple). A target you hold is one you have Grappled (Bind with bare hands, Trip's
-// Bare line) or Bound (Bind with a weapon).
-// I: it can't use Answers or reactions (every reaction window it would take is cancelled); an attack aimed at you has
-//    a 50% chance to land on it instead (the old Grapple II); when you walk, it comes with you, into the tile you leave
-//    (a forced move for it: held shots see it, and what can't be moved stays, which ends the hold as before).
-// II: each of your melee techniques that hits it gives you 1 Momentum (once a technique; not a Finisher, which ends the
-//    hold), and Throw Down on it needs no Momentum.
-//    The second half is the answer to the core's 'momentum_needed:throw_down' query (W3): −99 while you hold someone.
-// PROVISIONAL (spec 14): the proposal's tier II read "earns the variety bonus", which the Momentum rework removed; this
-// is its reading under the new rule.
+// Iron Grip (Raw Power; replaces Grapple; rules 1.56, Balance 2.0). A target you hold is one you have Grappled (Bind
+// with bare hands, Trip's Bare line) or Bound (Bind with a weapon). This handler keeps the two parts the item ops have no
+// piece for: the technique Grapple (the answer to 'technique:grapple') and the forbid (a held target's every reaction
+// window is cancelled). Its damage step is data (data/perks.json, effects 1). The old redirect, drag and Tier II's
+// Momentum went (docs/design/move-pool.md). Pressure Point and Keep Their Heads Down (Dexterity; `both_hands`,
+// `running_reload`) are data only.
 // =====================================================================================================================
 register({
-  id: 'iron_grip', claims: 'all',
-  stat: (h, stat) => (stat === 'technique:grapple' ? 1 : stat === 'momentum_needed:throw_down' && tierII(h) && h.u && h.cb && heldOf(h.cb, h.u).length ? -99 : 0),
+  id: 'iron_grip', claims: ['forbid'],
+  stat: (_h, stat) => (stat === 'technique:grapple' ? 1 : 0),
   on: {
     reaction_window: (ctx, h) => {
       const r: Unit | undefined = ctx.reactor; if (!h.u || !r || ctx.cancel || !alive(h.u) || !holds(h.u, r)) return;
       ctx.cancel = true; say(h.cb, r.name + ' can\'t react in ' + h.u.name + '\'s grip (Iron Grip).');
     },
-    attack_target: (ctx, h) => {
-      if (ctx.tgt !== h.u || !h.cb || !h.u || !alive(h.u)) return;
-      const cap = heldOf(h.cb, h.u)[0]; if (!cap || ctx.att === cap || ctx.att.side === h.u.side) return;
-      const r = ctx.rng || h.g?.rng; if (!r) return;
-      const roll = die(r, 100); if (roll > 50) return;
-      ctx.tgt = cap; say(h.cb, 'The blow aimed at ' + h.u.name + ' finds ' + cap.name + ' instead (Iron Grip, d100 ' + roll + ').');
-    },
-    // the walk is priced before a tile is taken: who is held now is who is dragged
-    move_cost: (ctx, h) => { if (ctx.u === h.u && h.u && h.cb && !overworld(h.cb)) stateOf(h).drag = heldOf(h.cb, h.u).map((x) => x.id); },
-    move_step: (ctx, h) => {
-      const u = h.u, cb = h.cb; if (!u || !cb || ctx.u !== u || ctx.forced || ctx.how === 'drag' || !ctx.from) return;
-      const ids: string[] = peek(h).drag || []; if (!ids.length) return;
-      const t = cb.units.find((x) => ids.includes(x.id) && alive(x) && dist(x.pos, ctx.from) <= 1 && x.pos !== ctx.from);
-      if (!t || cb.units.some((v) => !v.dead && v.pos === ctx.from)) return;
-      const mv = displace(cb, ctx.rng, t, { tile: ctx.from }, { by: u, how: 'pull', source: 'iron_grip' }); if (!mv.moved) return; // the one forced move (combat.ts): Nailed, immunity and the hook can hold it
-      say(cb, u.name + ' drags ' + t.name + ' along (Iron Grip)' + mv.text + '.');
-    },
-    moved: (ctx, h) => { if (ctx.u === h.u) stateOf(h).drag = []; },
-    on_hit: (ctx, h) => {
-      const u = h.u, cb = h.cb; if (!tierII(h) || !u || !cb || ctx.att !== u || !ctx.melee || !holds(u, ctx.tgt)) return;
-      const t: any = strikingWith(u); if (t?.def.group === 'finisher') return;
-      if (t) { if (t._ironGrip) return; t._ironGrip = true; }
-      // inside a technique the core shows the meter itself once the strike is done
-      if (giveMomentum(cb, u, !!t)) say(cb, u.name + ' works the held ' + ctx.tgt.name + ': +1 Momentum (Iron Grip).');
-    },
-  },
-  brief: () => null,
-});
-
-// =====================================================================================================================
-// Both Hands (Dexterity; replaces Origami Hands). I: after one of your melee techniques hits, your next shot that turn
-// has no Recoil. II: and after one of your shots hits, you gain 1 Momentum, once a turn (you need a melee weapon in a
-// hand to have the meter). PROVISIONAL (spec 14): the proposal's second half read "counts as different for Momentum",
-// the variety bonus the Momentum rework removed; this is its reading under the new rule. A thrown weapon is neither.
-// =====================================================================================================================
-register({
-  id: 'both_hands', claims: 'all',
-  on: {
-    attack_preview: (ctx, h) => { if (ctx.att === h.u && h.cb && !ctx.melee && ctx.mode !== 'thrown' && peek(h).calm === turnStamp(h.cb)) ctx.noRecoil = true; },
-    on_hit: (ctx, h) => {
-      const u = h.u, cb = h.cb; if (!u || !cb || ctx.att !== u || ctx.mode === 'thrown') return; const st = stateOf(h), now = turnStamp(cb);
-      if (ctx.melee) { st.calm = now; return; }
-      st.calm = null; // this shot was the "next shot"
-      if (!tierII(h) || st.gave === now) return;
-      if (giveMomentum(cb, u)) { st.gave = now; say(cb, u.name + ' follows the shot in: +1 Momentum (Both Hands).'); }
-    },
-    on_miss: (ctx, h) => { if (ctx.att === h.u && !ctx.melee && ctx.mode !== 'thrown') stateOf(h).calm = null; },
   },
   brief: () => null,
 });

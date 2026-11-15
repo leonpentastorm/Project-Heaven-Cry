@@ -154,7 +154,7 @@ describe('rules 1.51: each starting boon through its door (survival-spec 13.3), 
     expect(v(out({ relics: ['start.whetted'] }, { type: 'weapon', melee: true }), 'Whetted')).toBe(row('start.whetted').effects[0].value);
     expect(v(out({ kit: 'sigil', relics: ['start.bright_script'] }, { type: 'sigil' }), 'Bright Script')).toBe(row('start.bright_script').effects[0].value);
     expect(v(out({ kit: 'sigil', relics: ['start.bright_script'] }, { type: 'soul' }), 'Bright Script')).toBeUndefined();
-    expect(v(out({ kit: 'soul', relics: ['start.hot_blood'] }, { type: 'soul' }), 'Hot Blood')).toBe(row('start.hot_blood').effects[0].value);
+    expect(v(out({ kit: 'soul', relics: ['start.hot_blood'] }, { type: 'soul', door: 'outburst' }), 'Hot Blood')).toBe(row('start.hot_blood').effects[0].value);
     expect(v(out({ relics: ['start.cheap_shot'] }, { type: 'weapon', ranged: true }), 'Cheap Shot')).toBeUndefined();
     expect(v(out({ relics: ['start.cheap_shot'] }, { type: 'weapon', ranged: true }, (f) => { f.pc.hidden = true; }), 'Cheap Shot')).toBe(row('start.cheap_shot').effects[0].value);
   });

@@ -45,55 +45,7 @@ const unitMod = (u: Unit, skill: 'proficiency' | 'dexterity' | 'analysis') => mo
 
 // ======================================================================================================== PERKS
 
-// ---------- Running Reload (Dexterity β) ----------
-// I: once per turn, a move of at least 1 tile can carry a reload, for no extra AP (plan 6b: the move's cost only;
-// PROVISIONAL). II: also clear a jam as part of a move (once per turn). Combat: the toggles on Move ("Reload on the
-// move", "Clear the jam on the move"), shown only while the held weapon has a reload (or can jam and is jammed).
-// Area map: the "Move and reload" action (the area map's Move takes no toggles).
-const RR_RELOAD = '#reload', RR_CLEAR = '#clear';
-const reloadEntry = (u: Unit) => weaponActions(u).find((x) => x.id === 'reload');
-const canReloadNow = (u: Unit) => { const a = reloadEntry(u); return !!a && (a.why == null || /^Needs/.test(a.why)); };
-const canClearNow = (u: Unit) => anyJammed(u) && weaponActions(u).some((x) => x.id === 'clear');
-function runningReload(h: Holder, u: Unit, cb: Combat, wantReload: boolean, wantClear: boolean): string {
-  const did: string[] = [];
-  if (wantClear && tierII(h) && canClearNow(u) && uses(h).take('per_turn', 1, h.key + RR_CLEAR)) {
-    const e = free(u, () => clearJam(cb, u)); if (e) uses(h).refund('per_turn', h.key + RR_CLEAR); else did.push('clears the jam');
-  }
-  if (wantReload && canReloadNow(u) && uses(h).take('per_turn', 1, h.key + RR_RELOAD)) {
-    const e = free(u, () => reload(cb, u, { free: true })); if (e) { uses(h).refund('per_turn', h.key + RR_RELOAD); say(cb, '(Running Reload: ' + e + ')'); } else did.push('reloads');
-  }
-  if (did.length) say(cb, u.name + ' ' + did.join(' and ') + ' on the move (Running Reload: no extra AP).');
-  return did.join(', ');
-}
-register({
-  id: 'running_reload', claims: 'all',
-  toggles: [
-    { id: 'reload', label: 'Reload on the move', on: ['combat/move'],
-      available: (h) => { const u = h.u; if (!u || !reloadEntry(u)) return false; if (uses(h).left('per_turn', 1, h.key + RR_RELOAD) <= 0) return 'Used this turn.'; return canReloadNow(u) ? true : reloadEntry(u)!.why || true; },
-      preview: () => 'Reload as you move, for no extra AP. Once a turn.' },
-    { id: 'clear', label: 'Clear the jam on the move', on: ['combat/move'],
-      available: (h) => { const u = h.u; if (!u || !tierII(h) || !canJam(WEAPON[u.weapon])) return false; if (!u.jammed) return 'Not jammed.'; return uses(h).left('per_turn', 1, h.key + RR_CLEAR) > 0 ? true : 'Used this turn.'; } },
-  ],
-  actions: [{
-    id: 'move_reload', label: 'Move and reload', scope: ['world'], ap: 0, target: 'tile',
-    text: 'Once a round: walk to a tile and reload on the way. You pay only the AP for the walk. II: this also clears a jam.',
-    available: (h) => (!h.u || !reloadEntry(h.u) ? false : canReloadNow(h.u) || (tierII(h) && canClearNow(h.u)) ? true : reloadEntry(h.u)!.why || 'Nothing to reload.'),
-    run: (h, args) => {
-      const cb = h.cb!, u = h.u!, to = tileOf(cb, args.tile); if (!to) return 'Pick a tile.';
-      const e = moveUnit(cb, u, to); if (e) return e;
-      const g = h.g; if (g && h.c) { positionsOf(g)[h.c.id] = u.pos; if (g.story.sneak) g.story.sneak[h.c.id] = false; if (g.story.hidden) g.story.hidden[h.c.id] = false; }
-      runningReload(h, u, cb, true, true);
-      return null;
-    },
-  }],
-  on: {
-    moved: (ctx, h) => {
-      if (ctx.u !== h.u || ctx.forced || !inFight(h) || (ctx.tiles || 0) < 1) return;
-      const r = modOn(h, 'reload'), c = modOn(h, 'clear'); if (r || c) runningReload(h, h.u!, h.cb!, r, c);
-    },
-  },
-  brief: () => null,
-});
+// ---------- Keep Their Heads Down (Dexterity α; `running_reload`): data only since rules 1.56 (Running Reload: move-pool.md) ----------
 
 // ---------- Rounding Up (Reaction Speed γ) ----------
 // I: once per turn, a fractional AP remainder (Glyph AP, 0.5-0.9) rounds up to the next whole AP (plan 6a-7: once per
@@ -167,73 +119,7 @@ register({
   brief: () => 'story: catches anything thrown at them or beside them; narrate the catch',
 });
 
-// ---------- Sleight of Hand (Dexterity γ) ----------
-// 2 AP (II: 1), plant an item on an adjacent target without being seen (no roll: the perk says unseen). A grenade is
-// primed and goes off at the start of the target's next turn; a tracker Marks the target for the rest of the fight
-// (the squad sees it: it can't hide, +1 to hit it); anything else (evidence) is a Narrator fact. Area map: the same on a
-// person on the map; a grenade planted there goes off on their first turn if a fight starts. Story: plant something on
-// someone (Tier I: not mid-conversation, i.e. while you hold the story focus; II: also then; plan 6b; PROVISIONAL).
-const plantable = (h: Holder, choice: string | undefined): { kind: 'grenade' | 'tracker' | 'item'; item: string; idx?: number } | string => {
-  const u = h.u, c = h.c, ch = String(choice || '').trim();
-  if (!ch) return 'Pick what to plant: a grenade, a tracker or an item from your pack.';
-  if (u && WEAPON[ch]?.category === 'thrown') return (u.throwables?.[ch] || 0) > 0 ? { kind: 'grenade', item: ch } : 'You carry no ' + WEAPON[ch].name.toLowerCase() + '.';
-  const pack = c ? packOf(c) : [];
-  const idx = /^\d+$/.test(ch) ? +ch : pack.findIndex((p) => p.id === ch || (p.item || '') === ch || p.name.toLowerCase() === ch.toLowerCase());
-  const it = pack[idx]; if (!it || it.qty <= 0) return 'Nothing like that in your pack.';
-  if (it.mags || it.kind === 'weapon') return 'Plant something small: not a weapon or its magazines.';
-  return { kind: /tracker/i.test(it.id + ' ' + it.name + ' ' + (it.item || '')) ? 'tracker' : 'item', item: it.name, idx };
-};
-const takeOne = (c: Character, idx: number) => { const pack = packOf(c).map((x) => ({ ...x })); const it = pack[idx]; if (!it) return; if (it.qty > 1) it.qty--; else pack.splice(idx, 1); c.pack = pack; };
-register({
-  id: 'sleight_of_hand', claims: 'all',
-  actions: [
-    { id: 'plant', label: 'Plant an item', scope: ['combat', 'world'], ap: (h) => (tierII(h) ? 1 : 2), target: 'unit', range: 1,
-      text: 'Slip something onto someone next to you without being seen. A grenade goes off at the start of their next turn. A tracker keeps them Marked. For any other item, the Narrator decides what it means.',
-      preview: (h, args) => { const p = plantable(h, args.choice); return typeof p === 'string' ? { ok: false, why: p } : { lines: ['Plant ' + (p.kind === 'grenade' ? 'a primed ' + WEAPON[p.item].name.toLowerCase() : p.item) + ', unseen.'] }; },
-      run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t || t === u) return 'Pick someone next to you.';
-        const p = plantable(h, args.choice); if (typeof p === 'string') return p;
-        if (p.kind === 'grenade') {
-          u.throwables![p.item]--;
-          if (overworld(cb)) { const npc = (t as any).npcId || t.id; (charState(h.c).planted ||= []).push({ npc, item: p.item }); note(h, 'planted a primed ' + WEAPON[p.item].name.toLowerCase() + ' on ' + t.name + ' (unseen): it goes off on their first turn of a fight'); }
-          else (stateOf(h).planted ||= []).push({ t: t.id, item: p.item });
-          say(cb, u.name + ' slips something onto ' + t.name + '.');
-          return null;
-        }
-        if (h.c && p.idx != null) takeOne(h.c, p.idx);
-        if (p.kind === 'tracker' && !overworld(cb)) { const r = applyCond(cb, rng, u, t, 'marked', undefined, undefined, { skipSave: true, via: 'ingenuity' }); say(cb, u.name + ' plants a tracker on ' + t.name + r + '.'); return null; }
-        say(cb, u.name + ' slips something onto ' + t.name + '.');
-        note(h, 'planted ' + p.item + ' on ' + t.name + ' (unseen): rule what it means when it matters');
-        return null;
-      } },
-    { id: 'plant_story', label: 'Plant an item', scope: ['story'], ap: 0, target: 'text',
-      text: 'Say who and what: the item leaves your pack and the Narrator knows it was planted, unseen.',
-      available: (h) => { const g = h.g, f = g?.story?.focus; return !tierII(h) && f && h.c && f.charId === h.c.id ? 'Planting in the middle of a conversation needs Sleight of Hand II.' : true; },
-      run: (h, args) => {
-        const c = h.c; if (!c) return 'Only a character can.';
-        const text = String(args.text || '').slice(0, 160), pack = packOf(c);
-        const idx = pack.findIndex((p) => !p.mags && p.kind !== 'weapon' && text.toLowerCase().includes(p.name.toLowerCase()));
-        if (idx >= 0) takeOne(c, idx);
-        note(h, (args.npc ? 'on ' + args.npc + ': ' : '') + 'planted unseen: "' + text + '"' + (idx >= 0 ? ' (' + pack[idx].name + ' left the pack)' : '') + '. Record it; rule what follows when it matters');
-        return null;
-      } },
-  ],
-  on: {
-    combat_start: (ctx, h) => {
-      const cb = h.cb, p = cs(h.c).planted as any[] | undefined; if (!cb || !p?.length || !h.u) return;
-      for (const x of p) { const t = cb.units.find((v) => v.npcId === x.npc || v.id === x.npc); if (t) (stateOf(h).planted ||= []).push({ t: t.id, item: x.item }); }
-      delete charState(h.c).planted;
-    },
-    turn_start: (ctx, h) => {
-      const st = stateOf(h), list = st.planted as any[] | undefined, cb = h.cb; if (!list?.length || !cb) return;
-      const here = list.filter((x) => x.t === ctx.u.id); if (!here.length) return;
-      st.planted = list.filter((x) => x.t !== ctx.u.id);
-      for (const x of here) say(cb, 'The ' + WEAPON[x.item].name.toLowerCase() + ' planted on ' + ctx.u.name + ' goes off (Sleight of Hand)' + blast(cb, rngOf(h, ctx), h.u || null, ctx.u.pos, x.item) + '.');
-      checkOver(cb);
-    },
-  },
-  brief: () => 'planted items: what they mean later is yours (II: also mid-conversation)',
-});
+// ---------- Long Dark (Ingenuity α; `sleight_of_hand`): data only since rules 1.56 (the plant: move-pool.md) ----------
 
 // ---------- Jury-Rig (Proficiency β) ----------
 // I: a broken weapon (durability 0) works one more time per breakage: one more shot, or one full-damage strike
@@ -444,45 +330,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Holy Ordnance (Faith α) ----------
-// 3 AP, at will: bless the magazine in an adjacent ally's gun (or your own): its rounds do +20% (II: +40%) to
-// upper-realm and cursed beings (kinds upper_realm, cursed, crawler, celestial, or tagged so), in the target-specific
-// bucket (capped at ×2 with the others, plan 6a-1). II: two magazines (the next one loaded is blessed too). It lasts
-// until that magazine is swapped out (plan 6b: until emptied; PROVISIONAL). Area map: the same, out of combat; it
-// carries into the next fight. Blessing power (Faith) doesn't apply (PROVISIONAL).
-const BLESS = 'holy:bless';
-const blessable = (u: Unit) => { const w: any = WEAPON[u.weapon]; return !!w && isGunId(u.weapon) && !!w.reload && w.category !== 'mana'; };
-const holyFoe = (t: Unit) => ['upper_realm', 'cursed', 'crawler', 'celestial'].includes(t.kind || '') || (t.tags || []).some((x) => x === 'cursed' || x === 'upper_realm');
-register({
-  id: 'holy_ordnance', claims: 'all',
-  actions: [{
-    id: 'bless', label: 'Bless a magazine', scope: ['combat', 'world'], ap: 'data', target: 'ally', range: 1,
-    text: 'Bless the magazine in your gun, or in the gun of an ally next to you. I: its rounds deal +20% damage to upper-realm and cursed beings. II: +40%, and the next magazine loaded is blessed too.',
-    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t ? {} : !blessable(t) ? { ok: false, why: t.name + ' holds no gun with a magazine.' } : { lines: [t.name + '\'s ' + (WEAPON[t.weapon]?.name || 'gun') + ': +' + (tierII(h) ? 40 : 20) + '% vs upper-realm and cursed beings' + (tierII(h) ? ', two magazines' : '') + '.'] }; },
-    run: (h, args) => {
-      const cb = h.cb!, t = unitById(cb, args.targetId)!, mult = tierII(h) ? 1.4 : 1.2, mags = tierII(h) ? 2 : 1;
-      if (overworld(cb)) { const c = t.charId ? h.g?.characters?.[t.charId] : null; if (c) charState(c).holyBless = { mult, mags }; }
-      else (t.ps ||= {})[BLESS] = { mult, loaded: true, spare: mags - 1 };
-      say(cb, h.u!.name + ' blesses ' + (t === h.u ? 'their own' : t.name + '\'s') + ' magazine (Holy Ordnance).'); return null;
-    },
-  }],
-  on: {
-    combat_start: (ctx, h) => {
-      const cb = h.cb, g = h.g; if (!cb || !g) return;
-      for (const v of cb.units) { const c = v.charId ? g.characters?.[v.charId] : null, b = c ? cs(c).holyBless : null; if (b && blessable(v)) { (v.ps ||= {})[BLESS] = { mult: b.mult, loaded: true, spare: b.mags - 1 }; delete charState(c).holyBless; } }
-    },
-    damage_out: (ctx, h) => {
-      const b = ctx.att?.ps?.[BLESS]; if (!b || !b.loaded || ctx.melee || ctx.spell || ctx._holy || !holyFoe(ctx.tgt)) return;
-      ctx.vs.push({ v: Math.round((b.mult - 1) * 100) / 100, label: 'Holy Ordnance' }); ctx._holy = true;
-    },
-    reload: (ctx) => { const b = ctx.u?.ps?.[BLESS]; if (!b || ctx.hand === 'off') return; /* the blessed magazines are the main gun's */ b.loaded = false; if (b.spare > 0) { b.spare--; b.loaded = true; } if (!b.loaded && !b.spare) delete ctx.u.ps[BLESS]; },
-    combat_end: (ctx, h) => {
-      const g = h.g, cb = h.cb; if (!g || !cb) return;
-      for (const v of cb.units) { const b = v.ps?.[BLESS], c = v.charId ? g.characters?.[v.charId] : null; if (b && c && (b.loaded || b.spare)) charState(c).holyBless = { mult: b.mult, mags: (b.loaded ? 1 : 0) + b.spare }; if (b) delete v.ps![BLESS]; }
-    },
-  },
-  brief: () => null,
-});
+// ---------- Sinner's Due (Faith α; `holy_ordnance`): data only since rules 1.56 (Holy Ordnance: move-pool.md, a future Relic property) ----------
 
 // ======================================================================================================== TRAITS
 

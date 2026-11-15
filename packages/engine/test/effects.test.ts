@@ -8,6 +8,8 @@ import {
   openWindow, active, combatReport, WEAPON, previewAttack, postStory, pendRuling, d20, type Unit, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, onlyHandlers, rng } from './helpers/perkfight';
+import TENDJ from '../../../data/tending.json';
+import { figFight } from './helpers/figfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
@@ -16,8 +18,8 @@ describe('collector (plan 2.2)', () => {
     const s = storyWith([{ perks: { shrug_it_off: 'II' }, classId: 'marksman', skills: { dexterity: 5, vigilant: 4, reaction_speed: 4 } }]);
     const c = s.chars[0], items = itemsOf(heldOfChar(c));
     const shrug = items.find((i) => i.key === 'perk:shrug_it_off')!;
-    expect(shrug.effects.some((e) => e.op === 'shield')).toBe(true);
-    expect(shrug.effects.filter((e) => e.op === 'grant_action')).toHaveLength(1);
+    expect(shrug.effects.some((e) => e.op === 'resource')).toBe(true); // rules 1.56: Answer in Kind II's Guard (Tier II only)
+    expect(shrug.effects.filter((e) => e.op === 'damage_mult')).toHaveLength(1);
     expect(items.filter((i) => i.kind === 'class').map((i) => i.key)).toEqual(['class:marksman.fire_discipline', 'class:marksman.special_ammo']); // signature 13: rank II
     c.advancedClass = 'gunslinger';
     expect(itemsOf(heldOfChar(c)).filter((i) => i.key.startsWith('class:gunslinger.'))).toHaveLength(3);
@@ -96,15 +98,16 @@ describe('AP economy (plan 2.6)', () => {
 });
 
 describe('actions (plan 2.7)', () => {
-  it('a data grant_action is an action: Shrug It Off II runs its own effects (cleanse, 10% shield) for 1 AP, engine-run', () => onlyHandlers([], () => {
-    const f = fightWith([{ perks: { shrug_it_off: 'II' }, skills: { durability: 5 } }]);
-    let u = f.turn(f.pc);
-    const list = withGame(f.g, () => perkActionsFor({ u, cb: f.cb, g: f.g }, 'combat'));
-    const e = list.find((x) => x.id === 'perk:shrug_it_off')!;
-    expect(e).toBeTruthy(); expect(e.ap).toBe(1); expect(e.engine).toBe(true); expect(e.tab).toBe('perks');
-    const ap0 = u.ap; f.act({ type: 'combat/perk', unitId: u.id, id: 'perk:shrug_it_off' });
-    u = f.unit(u.id); expect(u.ap).toBe(ap0 - 1); expect(u.shield).toBe(Math.floor(u.maxHp * 0.1));
-  }));
+  it('a data grant_action is an action: Mend Yourself (tending.json tend.mend_self) runs its own effects (a heal, its MP) for its AP, once a turn, engine-run (no lane handler: e.engine; rules 1.56: Shrug It Off has no action now)', () => {
+    const MS: any = (TENDJ as any).items.find((x: any) => x.id === 'tend.mend_self'), ga = MS.effects.find((e: any) => e.op === 'grant_action');
+    const f = figFight([{ skills: { empathy: MS.requires[0].min }, visualizer: null, offHand: 'attuner', weapon: 'service_pistol' }]);
+    let u = f.turn(f.pc); u.ap = 6; u.hp = Math.floor(u.maxHp / 2); const hp0 = u.hp, mp0 = u.mg!.mp;
+    const e = withGame(f.g, () => perkActionsFor({ u, cb: f.cb, g: f.g }, 'combat')).find((x) => x.id === 'verb:tend.mend_self')!;
+    expect(e).toBeTruthy(); expect(e.ap).toBe(ga.ap); expect(e.engine).toBe(true);
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:tend.mend_self' });
+    u = f.unit(u.id); expect(u.ap).toBe(6 - ga.ap); expect(u.hp).toBeGreaterThan(hp0); expect(u.mg!.mp).toBe(mp0 - ga.res.mp.base);
+    expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:tend.mend_self' })).toThrow(); // its limit: once a turn
+  });
   it('use limits are stamped: a per-combat action works once; the Narrator gets what the engine cannot run', () => onlyHandlers([], () => {
     const f = fightWith([{ perks: ['earthbreaker'], skills: { raw_power: 10 } }]);
     const u = f.turn(f.pc); u.ap = 9;

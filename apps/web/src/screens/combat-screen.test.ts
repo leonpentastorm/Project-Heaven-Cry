@@ -333,27 +333,26 @@ describe('combat screen', () => {
 });
 
 describe('the Perks tab on the combat screen (plan 3)', () => {
-  it('a perk holder gets a Perks tab; picking Shrug It Off and confirming sends combat/perk and the engine runs it', async () => {
+  it('a perk holder gets a Perks tab; picking Vanishing Act and confirming sends combat/perk and the engine runs it (rules 1.56: Shrug It Off has no action now)', async () => {
     vi.useFakeTimers();
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'perk-tab');
     doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
-    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'shrug_it_off', tier: 'II' }];
+    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'vanishing_act', tier: 'mastered' }];
     doAct({ type: 'narrator/turn', turn: { narration: 'Brace.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'P11' }] } } } as any);
     // Make it the PC's turn whatever initiative said (the enemy may have gone first).
     for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
     await React.act(async () => { root.render(React.createElement(App)); });
     await React.act(async () => { vi.advanceTimersByTime(15000); });
     const u = active(G.combat!)!; expect(u.side).toBe('pc');
-    G.combat!.units.find((x) => x.id === u.id)!.prone = true; // Shrug It Off needs a Body debuff to remove (spec §14 item 101)
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab).toBeTruthy();
     await React.act(async () => { tab.click(); });
-    const pick = buttons(el, /Shrug It Off/)[0]; expect(pick).toBeTruthy();
+    const ap0 = u.ap; const pick = buttons(el, /Vanishing Act/)[0]; expect(pick).toBeTruthy();
     await React.act(async () => { pick.click(); });
     const conf = buttons(el, /^Confirm$/)[0];
     await React.act(async () => { conf.click(); });
-    expect(G.combat!.log.some((l) => /shrugs off/.test(l))).toBe(true);
-    expect(G.combat!.units.find((x) => x.id === u.id)!.shield).toBeGreaterThan(0);
+    expect(G.combat!.log.some((l) => /is simply gone/.test(l))).toBe(true);
+    const after = G.combat!.units.find((x) => x.id === u.id)!; expect(after.hidden).toBe(true); expect(after.ap).toBeLessThan(ap0);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   });
   it('a combat move that needs a pick is all chips: The Voice\'s orders, the engine\'s verdict, Confirm; no typed detail field', async () => {
@@ -391,7 +390,8 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'perk-shelves');
     doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
     const c = Object.values(G.characters)[0];
-    (G.characters[c.id] as any).perks = [{ id: 'shrug_it_off', tier: 'II' }, { id: 'running_reload', tier: 'I' }, { id: 'used_to_the_pain', tier: 'I' }, { id: 'cultured', tier: 'achieved' }];
+    (G.characters[c.id] as any).perks = [{ id: 'vanishing_act', tier: 'mastered' }, { id: 'used_to_the_pain', tier: 'I' }, { id: 'cultured', tier: 'achieved' }];
+    (G.characters[c.id] as any).traits = [...((G.characters[c.id] as any).traits || []), 'gambler']; // rules 1.56: Running Reload's switch is gone; Gambler rides the attacks
     doAct({ type: 'narrator/turn', turn: { narration: 'Brace.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'P11' }] } } } as any);
     for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
     await React.act(async () => { root.render(React.createElement(App)); });
@@ -408,15 +408,15 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     expect((panel.querySelector('[data-shelf="always"] > span') as HTMLElement).textContent).toBe('ALWAYS ON');
     // Use now is the buttons players press, as before
     const use = Array.from(panel.querySelectorAll('button.phc-cb-act[data-act^="pk:"]'));
-    expect(use.map((b) => b.getAttribute('data-act'))).toEqual(['pk:perk:shrug_it_off#shrug_it_off']);
+    expect(use.map((b) => b.getAttribute('data-act'))).toEqual(['pk:perk:vanishing_act#vanishing_act']);
     // the other two are lists of rows, not action buttons: a name and one line
     const rides = panel.querySelector('[data-shelf="rides"] ul[role="list"]') as HTMLElement, always = panel.querySelector('[data-shelf="always"] ul[role="list"]') as HTMLElement;
     expect(rides.getAttribute('aria-labelledby')).toBe('phc-shelf-rides'); expect(panel.querySelector('#phc-shelf-rides')!.textContent).toBe('RIDES AN ACTION');
-    expect(Array.from(rides.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:running_reload']);
+    expect(Array.from(rides.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:trait:gambler']);
     expect(Array.from(always.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:used_to_the_pain']);
     expect(panel.querySelectorAll('li .phc-cb-act').length).toBe(0); expect(panel.querySelectorAll('li [aria-pressed]').length).toBe(0);
     // a perk that rides a move is listed with where its switch is; a passive shows a live line
-    expect(rides.querySelector('[data-perk-line]')!.textContent).toBe('on a move');
+    expect(rides.querySelector('[data-perk-line]')!.textContent).toBe('on your attacks');
     expect(always.querySelector('li')!.getAttribute('data-state')).toBe('waiting');
     expect(always.querySelector('[data-perk-line]')!.textContent).toBe('Waiting: the first time you are hit in each fight');
     // a story-only perk is not on the fight's card
@@ -438,7 +438,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'perk-shelf-one');
     doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
-    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'shrug_it_off', tier: 'II' }];
+    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'vanishing_act', tier: 'mastered' }];
     doAct({ type: 'narrator/turn', turn: { narration: 'Brace.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'P11' }] } } } as any);
     for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
     await React.act(async () => { root.render(React.createElement(App)); });

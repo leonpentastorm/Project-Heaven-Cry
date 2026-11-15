@@ -5,7 +5,6 @@
   "adjudication": "engine",
   "notes": "One entry per perk (at each tier), trait or skill perk that names the moment it works. `trigger` is that moment in the card's own words, lower case, with no full stop (\"when combat starts\"); the Perks tab shows it as \"Waiting: <trigger>\". `standing: true` marks a trigger that is a state or the fight's own start (\"while your song plays\"): the tab says \"Works <trigger>\", since there is nothing to wait for. An item with no entry has no moment to wait for (\"Active all fight\"). `core_wired` lists items the core rules look for by id, with no handler of their own for a fight: passives all the same. `private_count` lists limited passives that keep their count where the card cannot read it: they show their limit, never \"Ready\". The validator checks every id is a real item; packages/engine/test/perkcard.test.ts checks each trigger is in its card's text and that the two lists are complete.",
   "core_wired": [
-    "breaching_strike",
     "many_hands"
   ],
   "private_count": [
@@ -37,12 +36,12 @@
     {
       "id": "perk:breaching_strike",
       "tier": "I",
-      "trigger": "when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it"
+      "trigger": "when one of your finishers drops an enemy"
     },
     {
       "id": "perk:breaching_strike",
       "tier": "II",
-      "trigger": "when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it"
+      "trigger": "when one of your finishers drops an enemy"
     },
     {
       "id": "perk:into_the_dark",
@@ -72,12 +71,12 @@
     {
       "id": "perk:both_hands",
       "tier": "I",
-      "trigger": "after one of your melee techniques hits"
+      "trigger": "to a Pressed enemy"
     },
     {
       "id": "perk:both_hands",
       "tier": "II",
-      "trigger": "after one of your melee techniques hits"
+      "trigger": "to a Pressed enemy"
     },
     {
       "id": "perk:rounding_up",
@@ -102,13 +101,13 @@
     {
       "id": "perk:shadow_step",
       "tier": "I",
-      "trigger": "while you are Hidden",
+      "trigger": "while Hidden and holding Shadow",
       "standing": true
     },
     {
       "id": "perk:shadow_step",
       "tier": "II",
-      "trigger": "while you are Hidden",
+      "trigger": "while Hidden and holding Shadow",
       "standing": true
     },
     {
@@ -120,18 +119,6 @@
       "id": "perk:got_you_in_my_sight",
       "tier": "II",
       "trigger": "when an enemy you can see hides or leaves your sight"
-    },
-    {
-      "id": "perk:parallel_thought",
-      "tier": "I",
-      "trigger": "while one of your placed spells still stands",
-      "standing": true
-    },
-    {
-      "id": "perk:parallel_thought",
-      "tier": "II",
-      "trigger": "while one of your placed spells still stands",
-      "standing": true
     },
     {
       "id": "perk:overruled",
@@ -184,16 +171,6 @@
       "id": "perk:rally_cry",
       "tier": "II",
       "trigger": "when an enemy or a hazard drops an ally to 0 HP"
-    },
-    {
-      "id": "perk:heart_overload",
-      "tier": "I",
-      "trigger": "after you Release an Outburst at stage 2 or higher"
-    },
-    {
-      "id": "perk:heart_overload",
-      "tier": "II",
-      "trigger": "after you Release an Outburst at stage 2 or higher"
     },
     {
       "id": "perk:you_get_used_to_it",

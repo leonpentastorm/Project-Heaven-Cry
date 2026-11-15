@@ -49,8 +49,8 @@ describe('rules 1.19: the stage table and the Damage base', () => {
     for (let s = 1; s <= 4; s++) expect(Math.round((stageMult(s) - stageMult(s - 1)) * 100) / 100).toBe(PLAIN_STEP);
     expect((SOUL_RULES as any).cycle.provisional).toBe(true);
   });
-  it('a character\'s Damage base is 31 (rules 1.26, the re-fit: all in on the ceiling, steady 135%, peak 165%; 40 from 12 Nov, 36 before); an enemy caster\'s is 24', () => {
-    expect(SOUL_DAMAGE).toBe(31); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
+  it('a character\'s Damage base is 37 (rules 1.56, fitted with no perk steps: spec item 4201; 31 in rules 1.26, 40 from 12 Nov, 36 before); an enemy caster\'s is 24', () => {
+    expect(SOUL_DAMAGE).toBe(37); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
     const f = heart(); const foe = f.foe; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.soulBase).toBeUndefined();
   });
 });
@@ -146,14 +146,6 @@ describe('rules 1.19: one free Pump a turn', () => {
     release(f); expect(lost(f.foe)).toBe(Math.floor(20 * 1.3 * 0.8)); // 1.2 + 0.1, At Once ×0.8
     // not on a design that doesn't deal damage
     const g = heart(['6,5'], ['4,5'], { classId: 'channeler', level: 5 }); const b = give(g.pc, { school: 'buff', option: 'heal', modules: [] }); begin(g, b); const ap2 = me(g).ap; pump(g); expect(me(g).ap).toBe(ap2 - 1); expect(me(g).mg!.held!.plus || 0).toBe(0);
-  });
-  it('Heart Overload II: its free Begin holds at stage 1 only while the turn\'s free stage is still there', () => {
-    const AGAIN = 'perk:heart_overload#again';
-    const run = (usedFree: boolean) => {
-      const f = heart(['6,5'], [], { perks: { heart_overload: 'II' } }); const m = me(f).mg!; if (usedFree) { m.freePumps = 1; m.freePumpsMax = 1; }
-      const d = give(f.pc); begin(f, d); pump(f, undefined, 2); release(f); begin(f, d, { hold: true, mods: [AGAIN] }); return me(f).mg!.held!.stage;
-    };
-    expect(run(false)).toBe(1); expect(run(true)).toBe(0);
   });
 });
 

@@ -39,15 +39,12 @@ describe('perks used from another action have no button of their own', () => {
       && (h.actions || []).some((a) => a.scope.includes('combat')); }).map((i) => i.key);
     expect([...new Set(both)].sort()).toEqual(Object.keys(DOUBLES).sort());
   });
-  it('an item used only from a chip in a fight is listed to read there (Running Reload on Move, Verse of War on Begin and Release)', () => {
-    const f = fightWith([{ ...SOUL, skills: { will_power: 10 }, perks: ['the_twin_pays', 'running_reload', 'verse_of_war'] } as any], [{}]);
+  it('an item used only from a chip in a fight is listed to read there (Verse of War on Begin and Release; rules 1.56: Running Reload is gone)', () => {
+    const f = fightWith([{ ...SOUL, skills: { will_power: 10 }, perks: ['the_twin_pays', 'verse_of_war'] } as any], [{}]);
     const u = f.turn(f.pc), who = { u: f.unit(u.id), c: f.g.characters[f.pc.charId!], cb: f.cb, g: f.g };
     const ids = perkActionsFor(who, 'combat').map((e) => e.id), info = perkInfoFor(who, 'combat'), by = (k: string) => info.find((e) => e.id === k);
-    expect(ids).not.toContain('perk:verse_of_war'); expect(ids).not.toContain('perk:running_reload');
-    expect(by('perk:running_reload')).toMatchObject({ via: 'Used from a move' });
+    expect(ids).not.toContain('perk:verse_of_war');
     expect(by('perk:verse_of_war')).toMatchObject({ via: 'Used from Begin or Release' });
     expect(by('perk:verse_of_war')!.uses.label).toBe('');
-    // on the area map Running Reload keeps its own button ("Move and reload"), so it is not listed to read there
-    expect(perkInfoFor(who, 'world').map((e) => e.id)).not.toContain('perk:running_reload');
   });
 });

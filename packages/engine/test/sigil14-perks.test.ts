@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { d20, previewDraw, previewPerkAction, positionsOf, npcsOf, zoneMap, standable, storyObjects, refOf, type Combat, type Unit, type GameState } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
-import { strokePool } from '../src/perks/d';
+
 
 /** A seed whose next d20 rolls are all 2-19 (no criticals, no natural 1s). */
 function calm(n = 12): number { for (let s = 1; s < 500000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return s; } throw new Error('no seed'); }
@@ -32,79 +32,10 @@ const line = (f: any, words: string[], tiles: string[]) => words.forEach((w, i) 
 const mine = (cb: Combat, u: Unit) => (cb.glyphs || []).filter((g) => g.by.split('#')[0] === u.id);
 
 // ---------------------------------------------------------------------------------------------------------------------
-describe('Hold the Stroke under 1.4 (item 443: glyphs on the ground = Max Sigil words + Hold the Stroke)', () => {
-  it('I: one more of your glyphs stands before the oldest fades, II: two; the draw preview counts them', () => {
-    for (const [tier, cap] of [[null, 2], ['I', 3], ['II', 4]] as const) {
-      const f = caster(tier ? { hold_the_stroke: tier } : {}, ['spark', 'seek'], ['12,12'], { maxWords: 2 });
-      for (const t of ['2,2', '5,2', '8,2', '11,2', '14,2']) draw(f, 'spark', t);
-      expect(mine(f.cb, f.pc).length).toBe(cap);
-      expect(mine(f.cb, f.pc).map((g) => g.pos)).toEqual(['2,2', '5,2', '8,2', '11,2', '14,2'].slice(5 - cap)); // the oldest faded
-      expect(strokePool(f.cb, f.pc)).toEqual({ n: cap, pool: cap });
-      // The next draw's preview: the cap is full, so the oldest would fade and no glyph is left.
-      f.pc.pos = '2,9'; const pv = withGame(f.g, () => previewDraw(f.cb, f.pc, 'spark'));
-      expect(pv.ok).toBe(true); expect(pv.fades?.pos).toBe(mine(f.cb, f.pc)[0].pos); expect(pv.capLeft).toBe(0);
-    }
-  });
-  it('the extra glyphs are plain glyphs: a Line of them fires; a spell is still capped at Max Sigil words', () => {
-    const f = caster({ hold_the_stroke: 'II' }, ['spark', 'seek', 'spread'], ['8,5'], { maxWords: 2 });
-    draw(f, 'spark', '2,2'); draw(f, 'spark', '6,2'); // two strays on the ground
-    line(f, ['spark', 'seek'], ['4,5', '3,5']); // the 3rd and 4th: within the pool, nothing fades
-    expect(mine(f.cb, f.pc).length).toBe(4); expect(mine(f.cb, f.pc).every((g) => g.by === f.pc.id)).toBe(true);
-    const hp = f.foe.hp; f.g.rng.state = calm();
-    f.act({ type: 'combat/evoke', unitId: f.pc.id, tile: '3,5', aim: '8,5' });
-    expect(f.foe.hp).toBeLessThan(hp);
-    // A third word on the Line would pass Max Sigil words 2: Hold the Stroke doesn't grow a spell.
-    line(f, ['spark', 'seek'], ['4,8', '3,8']); f.pc.pos = '2,8';
-    expect(() => f.act({ type: 'combat/draw', unitId: f.pc.id, word: 'spread', tile: '2,8' })).toThrow(/cap|Max Sigil words/);
-  });
-  it('a 1.3 save\'s "#pool" tags are cleared at the next draw, so those glyphs count and fade again', () => {
-    const f = caster({ hold_the_stroke: 'I' }, ['spark', 'seek'], ['12,12'], { maxWords: 2 });
-    draw(f, 'spark', '2,2'); draw(f, 'spark', '5,2');
-    for (const g of f.cb.glyphs!) g.by = f.pc.id + '#pool';
-    draw(f, 'spark', '8,2'); draw(f, 'spark', '11,2');
-    expect(f.cb.glyphs!.every((g) => g.by === f.pc.id)).toBe(true);
-    expect(mine(f.cb, f.pc).map((g) => g.pos)).toEqual(['5,2', '8,2', '11,2']);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Hold the Stroke under 1.4
 
 // ---------------------------------------------------------------------------------------------------------------------
-describe('Parallel Thought under 1.4 ("still active" = one of your fields, traps or turrets stands)', () => {
-  it('a STAY field you Evoked makes your next glyph 1 AP cheaper (I); once a turn', () => {
-    const f = caster({ parallel_thought: 'I' }, ['fire', 'stay', 'spark', 'seek']);
-    line(f, ['fire', 'stay'], ['4,5', '3,5']);
-    const ap0 = f.pc.ap; f.act({ type: 'combat/evoke', unitId: f.pc.id, tile: '3,5', aim: '5,5' });
-    expect(r1(ap0 - f.pc.ap)).toBe(1); // nothing stood before it: the Evoke paid in full
-    expect(f.cb.zones!.some((z) => z.kind === 'field' && z.by === f.pc.id)).toBe(true);
-    const a1 = f.pc.ap; draw(f, 'spark', '2,2'); expect(r1(a1 - f.pc.ap)).toBe(0); expect(logHas(f.cb, /Parallel Thought/)).toBe(true);
-    const a2 = f.pc.ap; draw(f, 'seek', '2,3'); expect(r1(a2 - f.pc.ap)).toBe(1);
-  });
-  it('a trap or a turret of yours counts; smoke (VEIL), LIGHT, an unfired glyph and an ally\'s field don\'t', () => {
-    for (const [kind, by, want] of [['trap', 'me', 0], ['turret', 'me', 0], ['veil', 'me', 1], ['light', 'me', 1], ['field', 'ally', 1]] as const) {
-      const f = caster({ parallel_thought: 'I' }, ['spark', 'seek'], ['12,12'], { allies: ['1,9'] });
-      draw(f, 'spark', '8,8'); // an unfired glyph of yours on the ground
-      f.cb.zones = [{ id: 'zq', kind: kind as any, tiles: ['9,9'], words: ['fire', kind === 'trap' ? 'wait' : 'watch'], by: by === 'me' ? f.pc.id : f.pcs[1].id, side: 'pc', left: 3, mult: 0.5, who: 'x', hp: 20 } as any];
-      const a = f.pc.ap; draw(f, 'spark', '2,2'); expect(r1(a - f.pc.ap)).toBe(want);
-    }
-  });
-  it('II: the discount covers the glyph first, then the Evoke, and ends with the Evoke', () => {
-    const f = caster({ parallel_thought: 'II' }, ['spark', 'seek'], ['8,5']);
-    f.cb.zones = [{ id: 'zf', kind: 'field', tiles: ['12,2'], words: ['fire', 'stay'], by: f.pc.id, side: 'pc', left: 3, mult: 0.5, who: 'x' } as any];
-    const ap0 = f.pc.ap; line(f, ['spark', 'seek'], ['4,5', '3,5']); // 1 + 1 AP of glyphs: both free (2 AP of discount)
-    expect(r1(ap0 - f.pc.ap)).toBe(0);
-    const g = caster({ parallel_thought: 'II' }, ['spark', 'seek'], ['8,5']);
-    g.cb.zones = [{ id: 'zf', kind: 'field', tiles: ['12,2'], words: ['fire', 'stay'], by: g.pc.id, side: 'pc', left: 3, mult: 0.5, who: 'x' } as any];
-    draw(g, 'spark', '4,5'); // 1 of the 2 AP used; the second glyph takes the rest...
-    const a1 = g.pc.ap; draw(g, 'seek', '3,5'); expect(r1(a1 - g.pc.ap)).toBe(0); // ...and does: none left for the Evoke
-    const a2 = g.pc.ap; g.g.rng.state = calm(); g.act({ type: 'combat/evoke', unitId: g.pc.id, tile: '3,5', aim: '8,5' });
-    expect(r1(a2 - g.pc.ap)).toBe(1);
-    const h = caster({ parallel_thought: 'II' }, ['spark', 'seek'], ['8,5']);
-    line(h, ['spark', 'seek'], ['4,5', '3,5']); // drawn before anything stood: full price
-    h.cb.zones = [{ id: 'zf', kind: 'field', tiles: ['12,2'], words: ['fire', 'stay'], by: h.pc.id, side: 'pc', left: 3, mult: 0.5, who: 'x' } as any];
-    const c0 = h.pc.ap; h.g.rng.state = calm(); h.act({ type: 'combat/evoke', unitId: h.pc.id, tile: '3,5', aim: '8,5' });
-    expect(r1(c0 - h.pc.ap)).toBe(0); // the Evoke's 1 AP was free
-    const c1 = h.pc.ap; draw(h, 'spark', '2,2'); expect(r1(c1 - h.pc.ap)).toBe(1); // the discount ended with it
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Parallel Thought under 1.4
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('Clean Draw under 1.4 (a Sigil of any length = at most 4 glyphs)', () => {

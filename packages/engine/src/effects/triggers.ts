@@ -46,6 +46,7 @@ import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amount
 import { resOf } from '../tactics';
 import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
 import { resLeft } from './cost';
+import { dmgIs, DAMAGE_WORDS } from './dmgwords';
 
 // ============================================================================================== the triggers
 /** A trigger: the hook it listens on (and the hook's phase), who the event's ACTOR and TARGET are, and whose event it
@@ -115,12 +116,10 @@ function rel(self: Unit, u: Unit | null, want: string): boolean {
 }
 const list = (x: any): any[] => (Array.isArray(x) ? x : [x]);
 const share = (u: Unit) => u.hp / u.maxHp;
-const DMG_WORDS = ['melee', 'ranged', 'explosive', 'outburst', 'weapon', 'physical', 'sigil', 'soul', 'elemental', 'fire', 'lightning', 'emp', 'true'];
-function dmgIs(src: any, w: string): boolean {
-  if (!src) return false;
-  return w === 'melee' ? !!src.melee : w === 'ranged' ? !!src.ranged : w === 'explosive' ? !!src.explosive : w === 'outburst' ? src.type === 'soul'
-    : w === 'weapon' ? src.type === 'weapon' : w === 'physical' ? src.type === 'weapon' && src.dmgType !== 'elemental' : src.type === w || src.dmgType === w;
-}
+/** A unit's kinds for the `<who>_kind` words: its own (human by default), and an owned unit's record kind (rules 1.56: a Figment is its form and a figment). */
+const kindsOf = (u: Unit): string[] => { const k = [(u as any).kind || 'human'], o = (u as any).owned?.kind; return o ? [...k, o] : k; };
+// (THE reading of a damage word: effects/dmgwords.ts, shared with the older `context` gate of effects/core.ts)
+const DMG_WORDS = DAMAGE_WORDS;
 /** A hit by someone: not a hazard, a trap's tick, Bleeding or Burning. */
 const byHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].includes(src.type);
 /** Damage a unit does to itself (a Mana Short, an overload, Strain, Flux). */
@@ -154,15 +153,15 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
   P(who + '_lacks', 'ids', who + ' has none of these conditions', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).some((id) => condHas(u, id)); });
   P(who + '_tier', 'words', who + '\'s tier is one of these (vermin, minion, soldier, elite, boss)', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).includes((u as any).tier); });
   P(who + '_not_tier', 'words', who + '\'s tier is none of these', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).includes((u as any).tier); });
-  P(who + '_kind', 'words', who + '\'s kind is one of these (human, robot, crawler, ork…)', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).includes((u as any).kind || 'human'); });
-  P(who + '_not_kind', 'words', who + '\'s kind is none of these', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).includes((u as any).kind || 'human'); });
+  P(who + '_kind', 'words', who + '\'s kind is one of these (human, robot, crawler, ork…), or an owned unit\'s record kind (figment, machine: owned.ts ownedRecord)', (ev, v) => { const u = unitOf(ev, who); return !!u && kindsOf(u).some((k) => list(v).includes(k)); });
+  P(who + '_not_kind', 'words', who + '\'s kind is none of these (as ' + who + '_kind)', (ev, v) => { const u = unitOf(ev, who); return !!u && !kindsOf(u).some((k) => list(v).includes(k)); });
   if (who !== 'self') P(who + '_within', 'number', who + ' stands within this many tiles of the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && !!u.pos && dist(u.pos, ev.self.pos) <= v; });
   P(who + '_sight', 'words', who + '\'s sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)', (ev, v) => { const u = unitOf(ev, who); if (!u) return false; const s = sightOf(ev.cb, u); return list(v).some((w) => s.includes(w)); }, () => SIGHT_WORDS);
   if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder: its eyes reach the holder\'s tile and the holder is not Hidden (shadow-spec 2.1)', (ev, v) => { const u = unitOf(ev, who); return !!u && (unitSees(ev.cb, u, ev.self.pos) && !ev.self.hidden) === v; });
 }
 P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev, v) => !!(ev.ctx.melee ?? ev.ctx.src?.melee) === v);
 P('crit', 'bool', 'the attack is (or is not) a critical', (ev, v) => !!(ev.ctx.crit ?? ev.ctx.src?.crit) === v);
-P('mode', 'words', 'the attack\'s mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech)', (ev, v) => list(v).includes(ev.ctx.mode) || (!!ev.ctx.tech && list(v).includes(ev.ctx.tech)));
+P('mode', 'words', 'the attack\'s mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech; on damage, a kill or a downing, its source\'s: src.mode, src.tech)', (ev, v) => { const m = ev.ctx.mode ?? ev.ctx.src?.mode, t = ev.ctx.tech ?? ev.ctx.src?.tech; return list(v).includes(m) || (!!t && list(v).includes(t)); });
 P('damage', 'words', 'the damage is of one of these kinds (' + DMG_WORDS.join(', ') + ')', (ev, v) => list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
 P('not_damage', 'words', 'the damage is of none of these kinds (as damage; also a source type: strain, short)', (ev, v) => !list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
 P('by_hit', 'bool', 'the damage came (or did not come) from someone\'s blow, not a hazard, trap, Bleeding or Burning', (ev, v) => byHit(ev.ctx.src) === v);
@@ -260,7 +259,16 @@ P('toggle', 'words', 'one of the holder\'s item\'s data toggles (its ids) is on 
 /** The free techniques (techniques.json `free`: everyone's, whatever they have readied: Shot, Aimed Shot, Cut,
  * Overwatch, Pull Out): rules 1.30, Fire Discipline's dear technique is any other. */
 const FREE_TECH: string[] = ((techniquesJ as any).items || []).filter((t: any) => t.free).map((t: any) => t.id);
-P('free_tech', 'bool', 'the attack is (true) or is not (false) made with a free technique, everyone\'s (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands)', (ev, v) => (ev.ctx.tech ? FREE_TECH.includes(ev.ctx.tech) : !ev.ctx.volley && ['shot', 'aimed', 'melee', 'thrown'].includes(ev.ctx.mode)) === v);
+/** Rules 1.56 (the alpha perks, Keep Swinging): THE reading of a technique's group: its row's (techniques.json `group`), or,
+ *  for an action that is no technique row but counts as one of a group (the Breaker's Launch: a Finisher), techniques.json
+ *  rules.group_actions. Its system (melee, ranged) is the one whose rules.groups list holds the group. */
+const TECH_ROW: Record<string, any> = Object.fromEntries(((techniquesJ as any).items || []).map((t: any) => [t.id, t]));
+const techGroupOf = (id: string | null | undefined): string | null => (id ? TECH_ROW[id]?.group ?? (techniquesJ as any).rules?.group_actions?.[id] ?? null : null);
+const techSystemOf = (id: string | null | undefined): string | null => { const g = techGroupOf(id); return g ? Object.keys((techniquesJ as any).rules?.groups || {}).find((k) => ((techniquesJ as any).rules.groups[k] || []).includes(g)) || null : null; };
+/** The technique an event is made with: the attack's (ctx.tech), its damage source's (src.tech), or an action's own id (`acted`: ctx.action). */
+const evTech = (ev: Ev): string | null => ev.ctx.tech ?? ev.ctx.src?.tech ?? (ev.trig.hook === 'acted' ? ev.ctx.action ?? null : null);
+P('tech_group', 'words', "the technique the event is made with (the attack's, its damage source's, an action's own) is in one of these technique groups (techniques.json group: opener, strike, link, finisher, answer, fire, press, set, take, watch; rules.group_actions: an action that counts as one)", (ev, v) => { const g = techGroupOf(evTech(ev)); return !!g && list(v).includes(g); }, () => Object.values((techniquesJ as any).rules?.groups || {}).flat() as string[]);
+P('free_tech', 'bool', 'the attack is (true) or is not (false) made with a free technique, everyone\'s (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands)', (ev, v) => { const t = ev.ctx.tech ?? ev.ctx.src?.tech, m = ev.ctx.mode ?? ev.ctx.src?.mode, vo = ev.ctx.volley ?? ev.ctx.src?.volley; return (t ? FREE_TECH.includes(t) : !vo && ['shot', 'aimed', 'melee', 'thrown'].includes(m)) === v; }); // (on damage, a kill or a downing: its source's, as mode)
 P('tech_ap_at_least', 'number', 'the attack\'s own price is at least this many AP: its technique\'s cost with the weapon before any item (ctx.techAp), or with no technique the attack\'s base AP', (ev, v) => typeof ev.ctx.techAp === 'number' && ev.ctx.techAp >= v);
 P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at most this many tiles', (ev, v) => typeof ev.ctx.tiles === 'number' && ev.ctx.tiles <= v);
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
@@ -404,7 +412,9 @@ O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shiel
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
 O('deal', ANY, true, ['amount', 'via', 'nonlethal', 'by'], 'deal an amount block (amounts) to the self, actor or target (by: "source", a condition row: dealt as by whoever gave it); via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
-  const type = b.type || 'true', src: any = { by: giverOfOp(ev, e), type, dmgType: b.element || type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
+  // a block's `tech` (rules 1.56): a weapon's blow made with that technique (or a technique-like action: Launch), melee or ranged by its group's system
+  const sys = b.tech ? techSystemOf(b.tech) : null, type = b.type || (b.tech ? 'weapon' : 'true');
+  const src: any = { by: giverOfOp(ev, e), type, dmgType: b.element || (b.tech ? 'physical' : type), shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(b.door ? { door: b.door } : {}), ...(b.tech ? { tech: b.tech, melee: sys === 'melee', ranged: sys === 'ranged' } : {}), ...(e.nonlethal ? { nonlethal: true } : {}) };
   let sent = 0;
   const from = giverOfOp(ev, e), go = () => { sent = deal(ev.cb, from, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed && e.by !== 'source' }, { who: from === ev.self ? ev.h.c || null : charOfUnit(from), src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }).sent; };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
@@ -518,7 +528,7 @@ O('object', ANY, true, ['do', 'has', 'kind', 'amount'], 'work the object on the 
 O('close_roll', ['spot'], false, ['value'], 'an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow\'s Close Quarters, rules 1.32)', (ev, e) => { if (ev.ctx.close) { ev.ctx.outright = false; ev.ctx.mod += e.value || 0; } });
 
 /** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
-const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);
+const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.door ? { door: e.fixed.door } : {}), ...(e.fixed.tech ? { tech: e.fixed.tech } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);
 const blockOf = (h: Holder, e: any): AmountBlock | null => {
   if (e.amount && typeof e.amount === 'object' && typeof e.amount.base === 'number') return e.amount as AmountBlock;
   if (typeof e.amount === 'string') { try { return amountBlock(h.key, e.amount); } catch { return null; } }
@@ -658,7 +668,7 @@ function queueDelayed(ev: Ev, x0: any, label: string): void {
   if (DELAYED_NOW.includes(ev.h.key)) return;
   // a copy: withNumbers hands back the item's own object when it has no number block, and the fields below are deleted
   const x: any = { ...withNumbers(ev, x0) }, d = x0.delay || {};
-  if ((x.op === 'deal' || x.op === 'mend') && !x.fixed) { const b = blockOf(ev.h, x); if (b) { const r = amountOf({ ...specOf(b), kind: b.kind }, ev.self, { who: ev.h.c || null, counts: countsOf(ev, b) }); x.fixed = { kind: b.kind, n: r.raw, ...(b.type ? { type: b.type } : {}), ...(b.armour ? { armour: b.armour } : {}), ...(b.heal_kind ? { heal_kind: b.heal_kind } : {}) }; } }
+  if ((x.op === 'deal' || x.op === 'mend') && !x.fixed) { const b = blockOf(ev.h, x); if (b) { const r = amountOf({ ...specOf(b), kind: b.kind }, ev.self, { who: ev.h.c || null, counts: countsOf(ev, b) }); x.fixed = { kind: b.kind, n: r.raw, ...(b.type ? { type: b.type } : {}), ...(b.door ? { door: b.door } : {}), ...(b.tech ? { tech: b.tech } : {}), ...(b.armour ? { armour: b.armour } : {}), ...(b.heal_kind ? { heal_kind: b.heal_kind } : {}) }; } }
   delete x.delay; delete x.targets; delete x.when; delete x.if; delete x.limit; delete x.and;
   const q: Delayed = { key: ev.h.key, holder: ev.self.id, actor: ev.actor?.id || null, target: ev.target?.id || null, op: x, label, until: d.until, n: typeof d.n === 'number' ? d.n : 1, round: ev.cb.round };
   ev.cb.delayed = [...(ev.cb.delayed || []), q];

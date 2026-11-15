@@ -3,7 +3,7 @@
 // and the data rules of the pass. The perks that kept their place are tested with their lanes (perks-a … perks-f).
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PERKS, PERK, SKILL, TRAITS, emit, statQuery, previewAttack, resolveAttack, previewCall, applyDamage, condOn, coverageGaps, type Unit } from '../src';
-import { slam } from '../src/perks/skeleton';
+
 import { d20 } from '../src/rng';
 import { physFight, rig } from './helpers/physfight';
 import { withGame } from './helpers/perkfight';
@@ -23,7 +23,7 @@ describe('the data of the pass', () => {
   it('the replaced perks have new ids and the old ones are gone; there are still 106 perks, two acquired a skill', () => {
     expect(P.grapple).toBeUndefined(); expect(P.origami_hands).toBeUndefined();
     expect(P.iron_grip.name).toBe('Iron Grip'); expect(P.iron_grip.skills).toEqual(['raw_power']);
-    expect(P.both_hands.name).toBe('Both Hands'); expect(P.both_hands.skills).toEqual(['dexterity']);
+    expect(P.both_hands.name).toBe('Pressure Point'); expect(P.both_hands.skills).toEqual(['dexterity']); // rules 1.56: the id stays, the perk is new
     expect(PERKS.length).toBe(106);
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
     expect(Object.keys(per).length).toBe(27); expect(Object.values(per).every((n) => n === 2)).toBe(true);
@@ -32,13 +32,13 @@ describe('the data of the pass', () => {
     for (const p of PERKS as any[]) if (p.tier === 'acquired' || p.tier === 'mastered') expect(p.skill_greek, p.id).toBe((SKILL as any)[p.skills[0]].slot);
   });
   it('no alpha or beta perk gives or takes AP in the turn any more (15.7); the own-cost discounts stay', () => {
-    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'blueprint', 'you_get_used_to_it'];
+    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
     for (const id of gone) {
       const p = P[id], fx = [...(p.effects || []), ...(p.tiers?.I?.effects || []), ...(p.tiers?.II?.effects || [])];
       expect(fx.some((e: any) => e.op === 'stat_mod' && e.stat === 'ap'), id).toBe(false);
       expect(p.perk_type, id).not.toBe('ap_mod'); if (id !== 'walking_wounded') expect(/\bAP\b/.test(p.text), id).toBe(false); // Walking Wounded: "injuries never cost you AP"
     }
-    for (const id of ['hot_swap', 'overhaul', 'running_reload', 'rite_in_the_field']) expect(P[id].perk_type, id).toBe('ap_mod');
+    for (const id of ['hot_swap', 'overhaul', 'rite_in_the_field', 'parallel_thought']) expect(P[id].perk_type, id).toBe('ap_mod');
   });
   it('Dead Signal is Acuity\'s (id analysis); the unlocks carry their new names', () => {
     expect(P.dead_signal.skills).toEqual(['analysis', 'ingenuity']); expect(P.dead_signal.requires[0]).toEqual({ skill: 'analysis', min: 5 });
@@ -88,44 +88,7 @@ describe('Heavy Hands and Follow Through (Raw Power 3 and 5)', () => {
   });
 });
 
-describe('Breaching Strike (a passive now)', () => {
-  const fight = (tier: string | null, block: 'enemy' | 'wall' | 'none') => {
-    const f = physFight([{ weapon: 'sabre', known: ['shove'], skills: { raw_power: 2, athletics: 4 }, ...(tier ? { perks: { breaching_strike: tier } } : {}) }], [{ at: 'D7' }, { at: 'F7' }]);
-    f.put(f.pc, 'C7'); f.put(f.foes[0], 'D7'); f.put(f.foes[1], block === 'enemy' ? 'F7' : 'L3');
-    if (block === 'wall') f.cb.map = { ...f.cb.map, solid: [...(f.cb.map.solid || []), f.tile('F7')] };
-    for (const x of f.foes) { f.unit(x.id).hp = f.unit(x.id).maxHp = 500; }
-    f.turn(f.pc); weak(f, f.foes[0]);
-    return f;
-  };
-  const lost = (f: F, i: number) => 500 - f.unit(f.foes[i].id).hp;
-  it('I: a target your melee technique pushes up against another enemy takes half the hit again; the enemy takes nothing', () => {
-    const f = fight('I', 'enemy');
-    expect(f.tech('shove', { targetId: f.foes[0].id })).toBeNull();
-    expect(f.unit(f.foes[0].id).pos).toBe(f.tile('E7'));
-    expect(lost(f, 0)).toBeGreaterThan(0); expect(lost(f, 1)).toBe(0); expect(logHas(f, /slammed into .* \(Breaching Strike\)/)).toBe(true);
-    expect(f.pc.ap).toBe(5); // Shove's own AP: the perk is no action and costs nothing
-  });
-  it('II: the enemy it was pushed into takes the same; a wall slams it too; open ground or no perk: nothing', () => {
-    const two = fight('II', 'enemy'); two.tech('shove', { targetId: two.foes[0].id });
-    expect(lost(two, 0)).toBeGreaterThan(0); expect(lost(two, 1)).toBe(lost(two, 0));
-    const wall = fight('I', 'wall'); wall.tech('shove', { targetId: wall.foes[0].id });
-    expect(lost(wall, 0)).toBeGreaterThan(0); expect(logHas(wall, /slammed into the wall/)).toBe(true);
-    const open = fight('II', 'none'); open.tech('shove', { targetId: open.foes[0].id });
-    expect(open.unit(open.foes[0].id).pos).toBe(open.tile('E7')); expect(lost(open, 0)).toBe(0);
-    const none = fight(null, 'enemy'); none.tech('shove', { targetId: none.foes[0].id }); expect(lost(none, 0)).toBe(0);
-  });
-  it('the hit again is half the damage of the hit that pushed it (slam, the call the core makes for a blocked push)', () => {
-    const f = fight('I', 'none');
-    withGame(f.g, () => slam(f.cb, f.pc, f.unit(f.foes[0].id), 'wall', 41));
-    expect(lost(f, 0)).toBe(20);
-    withGame(f.g, () => slam(f.cb, f.pc, f.unit(f.foes[0].id), f.unit(f.pcs[0].id), 41)); // an ally of the pusher is no wall
-    expect(lost(f, 0)).toBe(20);
-  });
-  it('the old 3 AP strike is gone', () => {
-    const f = fight('II', 'none');
-    expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'breaching_strike', targetId: f.foes[0].id } as any)).toThrow(/isn't an action/);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Breaching Strike (a passive now)'
 
 describe('Iron Grip (replaces Grapple)', () => {
   const fight = (tier: string, more: any = {}) => {
@@ -139,68 +102,13 @@ describe('Iron Grip (replaces Grapple)', () => {
     expect(win(f.foes[0])).toBe(true); expect(win(f.foes[1])).toBe(false);
     expect(logHas(f, /can't react in .* grip \(Iron Grip\)/)).toBe(true);
   });
-  it('I: when you walk, the held target comes with you into the tile you leave, and stays held (a Grapple and a Bind alike)', () => {
-    const f = fight('I'); hold(f, f.foes[0]);
-    f.act({ type: 'combat/move', unitId: f.pc.id, to: f.tile('B7') } as any);
-    expect(f.pc.pos).toBe(f.tile('B7')); expect(f.unit(f.foes[0].id).pos).toBe(f.tile('C7'));
-    expect(condOn(f.unit(f.foes[0].id), 'grappled')).toBe(true); expect(logHas(f, /drags .* along \(Iron Grip\)/)).toBe(true);
-    const g = fight('I'); g.pc.tech = { ...(g.pc.tech || {}), bind: { target: g.foes[0].id, pen: 2, r: g.cb.round, via: 'dexterity' } };
-    g.act({ type: 'combat/move', unitId: g.pc.id, to: g.tile('B7') } as any);
-    expect(g.unit(g.foes[0].id).pos).toBe(g.tile('C7')); expect(g.pc.tech!.bind.target).toBe(g.foes[0].id); // the Bind didn't break
-    // without the perk a walk leaves the target behind
-    const n = physFight([{ weapon: 'sabre' }], [{ at: 'D7', weapon: 'fists' }]); n.put(n.pc, 'C7'); n.put(n.foe, 'D7'); n.turn(n.pc); hold(n, n.foe);
-    n.act({ type: 'combat/move', unitId: n.pc.id, to: n.tile('B7') } as any); expect(n.unit(n.foe.id).pos).toBe(n.tile('D7'));
-  });
-  it('II: each melee technique that hits a held target gives 1 Momentum (once a technique); not at tier I, not on a target you don\'t hold', () => {
-    const f = fight('II'); hold(f, f.foes[0]); f.momentum(f.pc, 0); rig({ hit: true });
-    expect(f.tech('cut', { targetId: f.foes[0].id })).toBeNull();
-    expect(f.momentum(f.pc)).toBe(2); // the plain attack's own 1, and Iron Grip's
-    expect(f.tech('bash', { targetId: f.foes[0].id })).toBeNull();
-    expect(f.momentum(f.pc)).toBe(2); // a Strike spends 1 and gets it back
-    const one = fight('I'); hold(one, one.foes[0]); one.momentum(one.pc, 0); rig({ hit: true });
-    one.tech('cut', { targetId: one.foes[0].id }); expect(one.momentum(one.pc)).toBe(1);
-    const free = fight('II'); free.momentum(free.pc, 0); rig({ hit: true });
-    free.tech('cut', { targetId: free.foes[0].id }); expect(free.momentum(free.pc)).toBe(1);
-  });
-  it('II: Throw Down on a held target needs no Momentum (the answer to the core\'s query)', () => {
-    const ask = (f: F) => withGame(f.g, () => statQuery({ u: f.pc, cb: f.cb }, 'momentum_needed:throw_down', {}).add);
-    const f = fight('II'); expect(ask(f)).toBe(0); hold(f, f.foes[0]); expect(ask(f)).toBe(-99);
-    const one = fight('I'); hold(one, one.foes[0]); expect(ask(one)).toBe(0);
-  });
   it('the old 2 AP grab is gone: holding comes from Bind', () => {
     const f = fight('II');
     expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'iron_grip', targetId: f.foes[0].id } as any)).toThrow(/isn't an action/);
   });
 });
 
-describe('Both Hands (replaces Origami Hands)', () => {
-  const fight = (tier: string | null) => {
-    const f = physFight([{ weapon: 'service_pistol', off: 'combat_knife', skills: { dexterity: 6 }, ...(tier ? { perks: { both_hands: tier } } : {}) }], [{ at: 'D7' }]);
-    f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 900; f.turn(f.pc); f.unit(f.pc.id).ap = 30; return f;
-  };
-  const recoil = (f: F) => withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'shot', { free: true })).terms!.some((t) => t.label === 'recoil');
-  const swing = (f: F, mode: 'melee' | 'shot') => withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.pc, f.foe, mode, f.char(f.pc), { noAp: true }));
-  it('I: after a melee technique hits, your next shot that turn has no Recoil; the shot after it has', () => {
-    const f = fight('I'); rig({ hit: true }); f.unit(f.pc.id).shotsThisTurn = 6;
-    expect(recoil(f)).toBe(true);
-    expect(f.tech('cut', { targetId: f.foe.id, hand: 'off' })).toBeNull();
-    f.unit(f.pc.id).shotsThisTurn = 6; expect(recoil(f)).toBe(false);
-    swing(f, 'shot'); f.unit(f.pc.id).shotsThisTurn = 6; expect(recoil(f)).toBe(true); // it was the next shot
-    const none = fight(null); rig({ hit: true }); none.tech('cut', { targetId: none.foe.id, hand: 'off' }); none.unit(none.pc.id).shotsThisTurn = 6; expect(recoil(none)).toBe(true);
-  });
-  it('a melee miss sets nothing up; the turn ending drops it', () => {
-    const f = fight('I'); rig({ hit: false }); f.tech('cut', { targetId: f.foe.id, hand: 'off' }); f.unit(f.pc.id).shotsThisTurn = 6; expect(recoil(f)).toBe(true);
-    rig({ hit: true }); f.tech('cut', { targetId: f.foe.id, hand: 'off' }); f.unit(f.pc.id).shotsThisTurn = 6; expect(recoil(f)).toBe(false);
-    f.cb.round += 1; expect(recoil(f)).toBe(true);
-  });
-  it('II: a shot that hits gives 1 Momentum, once a turn; tier I gives none', () => {
-    const f = fight('II'); rig({ hit: true }); f.momentum(f.pc, 0);
-    swing(f, 'shot'); expect(f.momentum(f.pc)).toBe(1); expect(logHas(f, /\+1 Momentum \(Both Hands\)/)).toBe(true);
-    swing(f, 'shot'); expect(f.momentum(f.pc)).toBe(1);
-    f.cb.round += 1; swing(f, 'shot'); expect(f.momentum(f.pc)).toBe(2);
-    const one = fight('I'); rig({ hit: true }); one.momentum(one.pc, 0); swing(one, 'shot'); expect(one.momentum(one.pc)).toBe(0);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Both Hands (replaces Origami Hands)'
 
 describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
   it('Quick Draw: the first attack of a fight with a weapon drawn for it costs 0 AP (asked with the technique\'s id); then full price', () => {
@@ -287,30 +195,6 @@ describe('the hooks wired into the core (physical/core.ts)', () => {
     expect(f.tech('snap_shot', { targetId: f.foe.id, item: stowed(f, 'service_pistol') })).toBeNull(); expect(f.pc.ap).toBe(6);
     expect(f.pv('snap_shot', { targetId: f.foe.id, item: stowed(f, 'sabre') }).ap).toBeGreaterThan(0); // used up for the fight
     const low = fight(4); expect(low.pv('snap_shot', { targetId: low.foe.id, item: stowed(low, 'service_pistol') }).ap).toBe(2);
-  });
-  it('Iron Grip II in play: Throw Down on a held target starts with no Momentum; tier I still needs 2', () => {
-    const fight = (tier: string) => {
-      const f = physFight([{ weapon: 'fists', known: ['throw_down'], skills: { raw_power: 5, dexterity: 6 }, perks: { iron_grip: tier } }], [{ at: 'D7', weapon: 'fists' }]);
-      f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 500; f.turn(f.pc); hold(f, f.foe); f.momentum(f.pc, 0); return f;
-    };
-    const two = fight('II'); rig({ hit: true });
-    expect(two.pv('throw_down', { targetId: two.foe.id }).ok).toBe(true);
-    expect(two.tech('throw_down', { targetId: two.foe.id })).toBeNull(); expect(two.momentum(two.pc)).toBe(0); // it spends all there is: none
-    const one = fight('I'); expect(one.tech('throw_down', { targetId: one.foe.id })).toMatch(/Needs Momentum 2/);
-  });
-  it('Breaching Strike in play: a push that is blocked at once slams the target where it stands, and once only', () => {
-    const fight = (wall: string, pts = 2, tier: string | null = 'I') => {
-      const f = physFight([{ weapon: 'sabre', known: ['shove'], skills: { raw_power: pts, athletics: 4 }, ...(tier ? { perks: { breaching_strike: tier } } : {}) }], [{ at: 'D7' }]);
-      f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.cb.map = { ...f.cb.map, solid: [...(f.cb.map.solid || []), f.tile(wall)] };
-      f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 500; f.turn(f.pc); weak(f, f.foe); return f;
-    };
-    const slams = (f: F) => f.cb.log.filter((l) => /slammed into the wall \(Breaching Strike\)/.test(l)).length;
-    const f = fight('E7'); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
-    expect(f.unit(f.foe.id).pos).toBe(f.tile('D7')); expect(f.unit(f.foe.id).hp).toBeLessThan(500); expect(slams(f)).toBe(1);
-    // Heavy Hands sends it a second tile, the wall stops that one: still one slam (not one from the core and one at the action's end)
-    const g = fight('F7', 3); expect(g.tech('shove', { targetId: g.foe.id })).toBeNull();
-    expect(g.unit(g.foe.id).pos).toBe(g.tile('E7')); expect(slams(g)).toBe(1);
-    const none = fight('E7', 2, null); expect(none.tech('shove', { targetId: none.foe.id })).toBeNull(); expect(none.unit(none.foe.id).hp).toBe(500);
   });
 });
 

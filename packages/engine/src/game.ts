@@ -1729,6 +1729,7 @@ function actedName(g: GameState, cb: Combat, u: Combat['units'][number], c: Char
   if (['end-turn', 'decline', 'say', 'attempt', 'analyze'].includes(t)) return null;
   if (a.type === 'combat/perk') return perkActionId({ u, c, cb, g }, a.id, (a as any).actionId) || null;
   if (a.type === 'combat/technique') return String((a as any).id || 'technique');
+  if (a.type === 'combat/pray') return (a as any).kind === 'whisper' ? 'whisper' : 'pray'; // rules 1.56: a prayer's name is its cost site (a Whisper's own, a Hymn's or a Miracle's pray)
   if (a.type === 'combat/move') return String((a as any).how || 'move');
   return actionName(t.replace(/-/g, '_'));
 }

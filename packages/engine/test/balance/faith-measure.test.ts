@@ -14,6 +14,7 @@ import { describe, it, expect } from 'vitest';
 import { F_LEVELS, PATRON_IDS, DEVOTION_BY_LEVEL, SESSION_AT, SOLDIER_TURN, faithBuild, chaplainBuild, dabblerBuild, faithSheet, rifleTurn, prayerRow, fline, soldierTurn, inventory, supportWorth } from './faith-measure';
 import { prayerHarms } from './policies';
 import { FAITH_PATRON, WHISPER, DEVOTION_XP, TAG_CAPS } from '../../src';
+import { STEPS } from './builds';
 
 const ON = !!process.env.FAITH_MEASURE, PARTS = (process.env.FAITH_MEASURE_PARTS || 'sheets,yard,inventory,rows,support,dabbler,miracle,limits').split(',');
 const N = Math.max(1, Number(process.env.FAITH_MEASURE_N) || 8), LEVELS = (process.env.FAITH_MEASURE_LEVELS || F_LEVELS.join(',')).split(',').map(Number);
@@ -38,7 +39,9 @@ describe('the Faith targets hold (rules 1.22)', () => {
   // Blessing power once a turn): the bands' tops below are the door's plus Smite (Hymn turn 175 → 200, quiet turn 110 →
   // 130, the no-damage-Hymn patron 100 → 125, the Chaplain's own line). Measured, not fitted: the step 5 hand-off.
   it('a prayer-led character sworn to a damage patron: a turn with a Hymn is about 150% of the plain rifle, a turn with only a Whisper about 60 to 80%, and the Hymn is not there every turn', () => {
-    for (const p of ['old_overcast', 'nerukhan']) {
+    // rules 1.56 (Leon, 15 Nov 2026): perk steps sit on top of the line; these targets are the line's (no perk steps)
+    STEPS.perks = false;
+    try { for (const p of ['old_overcast', 'nerukhan']) {
       const r = prayerRow('prayer-led', faithBuild(p), 'normal', lv, n, y, { opts: { hymn: 'damage', vow: VOW } });
       console.log('[targets] ' + fline(r));
       expect(r.errors).toBe(0);
@@ -53,6 +56,7 @@ describe('the Faith targets hold (rules 1.22)', () => {
     const two = prayerRow('two targets', faithBuild('old_overcast'), 'normal', lv, n, y, { foes: 2, opts: { hymn: 'damage', vow: VOW } });
     console.log('[targets] ' + fline(two)); expect(two.errors).toBe(0);
     expect(two.pctHymnTurn, 'two targets, a Hymn turn').toBeGreaterThanOrEqual(145); expect(two.pctHymnTurn).toBeLessThanOrEqual(215);
+    } finally { STEPS.perks = true; }
   }, 120000);
   it('a patron with no Hymn that deals damage still has the Whisper and the rifle: not under half a rifle, not over one', () => {
     const r = prayerRow('prayer-led', faithBuild('mother_ember'), 'normal', lv, n, y, { opts: { hymn: 'any' } });

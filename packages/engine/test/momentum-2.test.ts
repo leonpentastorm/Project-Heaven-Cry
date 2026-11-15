@@ -7,6 +7,7 @@ import { CLASSES, enemyTurn, makeObject, PHYS_RULES, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { withGame } from './helpers/perkfight';
 import { onHook } from '../src/effects/hooks';
+import PERKSJ from '../../../data/perks.json';
 
 // Forced saves (the dice of a save are not the attack's rig): 'pass' or 'fail' decides every save until reset.
 let SAVE: 'pass' | 'fail' | null = null;
@@ -19,9 +20,9 @@ const LAUNCH = row('launch').effects[0];
 const SK = { athletics: 6, raw_power: 6, dexterity: 6 };
 type F = ReturnType<typeof fight>;
 /** A Breaker (or, cls null, a classless fighter) on C5, foes where given (default one next to it on D5), its turn. */
-function fight(o: { weapon?: string; known?: string[]; foes?: { at: string; tier?: string }[]; m?: number; cls?: string | null; level?: number } = {}) {
+function fight(o: { weapon?: string; known?: string[]; foes?: { at: string; tier?: string }[]; m?: number; cls?: string | null; level?: number; perks?: Record<string, string> } = {}) {
   const foes = o.foes || [{ at: 'D5' }];
-  const f = physFight([{ weapon: o.weapon || 'sabre', known: o.known || [], skills: SK, classId: o.cls === undefined ? 'fighter' : o.cls, level: o.level ?? 3 } as any], foes.map((x) => ({ tier: x.tier || 'elite', ...x })) as any);
+  const f = physFight([{ weapon: o.weapon || 'sabre', known: o.known || [], skills: SK, ...(o.perks ? { perks: o.perks } : {}), classId: o.cls === undefined ? 'fighter' : o.cls, level: o.level ?? 3 } as any], foes.map((x) => ({ tier: x.tier || 'elite', ...x })) as any);
   f.cb.objects = [];
   f.put(f.pc, 'C5'); foes.forEach((x, i) => { const u = f.put(f.foes[i], x.at); u.hp = u.maxHp = 900; });
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
@@ -166,5 +167,22 @@ describe('the enemy AI still plays', () => {
       withGame(f.g, () => { let n = 0; while (!f.cb.over && f.cb.units.find((x) => x.id === f.cb.order[f.cb.turn])?.side === 'foe' && n++ < 10) enemyTurn(f.cb, f.g.rng); });
     }
     expect(f.cb.round).toBeGreaterThan(1);
+  });
+});
+
+// Rules 1.56, the 0.29 integration: Keep Swinging (perks.json breaching_strike) counts a Finisher by its technique group
+// (techniques.json group finisher; the Launch, an action, through rules.group_actions), never by a list of ids.
+describe('Keep Swinging counts every Breaker Finisher by its group: Cleave, Break, Coup and Launch', () => {
+  const PERK: any = (PERKSJ as any).items.find((p: any) => p.id === 'breaching_strike');
+  const gain = PERK.tiers.I.effects[1].value;
+  const drop = (how: string, perk: boolean) => {
+    const f = fight({ m: 3, perks: perk ? { breaching_strike: 'I' } : undefined }); weak(f.foe); f.foe.hp = 1; rig({ hit: true, die: 12 });
+    if (how === 'launch') launch(f, f.foe); else f.tech(how, { targetId: f.foe.id });
+    rig(null); const t = f.unit(f.foe.id); return { m: f.momentum(f.pc), down: !!t.dead || t.hp <= 0 };
+  };
+  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ": the kill gives the perk's Momentum", () => {
+    const a = drop(how, true), b = drop(how, false);
+    expect(a.down).toBe(true); expect(b.down).toBe(true);
+    expect(a.m - b.m).toBe(gain);
   });
 });

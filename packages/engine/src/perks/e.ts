@@ -167,47 +167,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Blueprint (Visualization α) ----------
-// Story / area map: "Sketch the ground" (1 AP on the area map, free in the story; once a scene, PROVISIONAL plan 6):
-// every squadmate in the scene (the holder too) has seen it. When the next fight starts in the same scene, those units
-// get +1 Movement (tiles per AP: as written; strong at Agility 1, flagged) on their round-1 turn; II: +2 Movement
-// (rules 1.13: an alpha gives no AP). The mark is used up by that fight, or lapses with the scene. A fight with no story before it
-// (the sandbox) gets nothing.
-register({
-  id: 'blueprint', claims: 'all',
-  actions: [{
-    id: 'sketch', label: 'Sketch the ground', scope: ['world', 'story'], ap: (h) => (h.cb ? 1 : 0), uses: { per: 'per_scene', n: 1 }, target: 'none',
-    text: 'Once a scene: sketch the ground before the assault. I: every squadmate here gets +1 Movement in round 1 of the next fight this scene. II: +2 Movement.',
-    run: (h) => {
-      const g = gameOf(h); if (!g) return 'No story.';
-      const saw = Object.values(g.characters || {}).filter((c: any) => !c.dead).map((c: any) => c.id);
-      const st = storyState(h); st.sketch = { scene: g.story.scene?.n ?? 0, zone: g.story.zone, saw, tier: h.tier };
-      say(h.cb, (h.c?.name || 'Someone') + ' sketches the ground for the squad (Blueprint).');
-      if (!h.cb) postStory(h, 'sketches the ground: the squad knows where to go when it starts.', { kind: 'system' });
-      return null;
-    },
-  }],
-  on: {
-    combat_start: (ctx, h) => {
-      const g = gameOf(h), cb = ctx.cb as Combat; if (!g || !h.c || overworld(cb)) return;
-      const st = storyState(h), sk = st.sketch; if (!sk) return;
-      delete st.sketch;
-      if (sk.scene !== (g.story.scene?.n ?? 0)) return;
-      for (const u of cb.units) if (u.charId && sk.saw.includes(u.charId)) { const us = unitState(h, u); us.tier = us.tier === 'II' ? 'II' : sk.tier; }
-      say(cb, 'The squad fights to ' + h.c.name + '\'s sketch (Blueprint): +' + (sk.tier === 'II' ? 2 : 1) + ' Movement in round 1.');
-    },
-    turn_start: (ctx, h) => {
-      const u = ctx.u as Unit, cb = h.cb; if (!cb || cb.round !== 1 || !u.ps?.[h.key]?.tier) return;
-      const us = unitState(h, u); if (us.mv != null) return;
-      us.mv = u.movement; u.movement += us.tier === 'II' ? 2 : 1;
-    },
-    turn_end: (ctx, h) => {
-      const u = ctx.u as Unit, us = u.ps?.[h.key]; if (!us || us.mv == null || us.mvBack) return;
-      u.movement = us.mv; us.mvBack = true;
-    },
-  },
-  brief: () => null,
-});
+// ---------- Wake of the Kill (Visualization α; `blueprint`): data only since rules 1.56 (Blueprint: move-pool.md) ----------
 
 // ---------- Talks Broke Down (Charisma γ) ----------
 // The engine reads how the talk went: the last dialogue check (a dialogue skill, or the 'dialogue' tag) any squadmate
@@ -629,50 +589,7 @@ function patSee(ctx: any, h: Holder) {
   const st = stateOf(h), seen: string[] = (st.seen ||= []), k = patKey(ctx); if (!seen.includes(k)) seen.push(k);
 }
 
-// ---------- Lay Down Arms (Empathy α) ----------
-// 2 AP, at will: plead with one humanoid enemy who can hear you (8 tiles; not a robot, machine, turret, drone or
-// beast); II: up to three (targetIds). Each makes a Heart save (vs 12 + your Empathy strength: the perk's own skill, rules 1.13);
-// on a failure it lowers its weapon: no attacks on its next turn (PROVISIONAL, plan 6: the engine's Commanded "hold
-// fire", which ticks at the end of its own turn; the data's Disarmed would cost it 2 AP to recover, not in the text).
-// Area map and story: the same plea to a hostile person; the engine rolls the save (d20 + its tier save vs 12 +
-// Implication), and on a failure the Narrator plays them standing down for the moment (a pending ruling).
-const humanoid = (t: Unit) => !['robot', 'machine', 'turret', 'drone', 'beast'].includes(t.kind || '') && !isMachine(t) && !(t.tags || []).includes('non_humanoid');
-function storyPlea(h: Holder, who: { name: string; tier?: string } | null, rng: Rng, text?: string): string | null {
-  if (!who) return 'Name who you plead with.';
-  const rv = rollVs(null, rng, { mod: tierSave(who.tier || 'soldier'), tn: SAVE_TN + (h.c ? strengthOf(h.c, 'empathy') : 0), lead: 'Heart save' }), saved = rv.ok; // someone in the story with no tier named saves as a Soldier
-  const line = who.name + ' ' + rv.text + ' · ' + (saved ? 'holds their weapon' : 'lowers their weapon');
-  say(h.cb, (h.c?.name || '') + ' pleads with ' + who.name + (text ? ' "' + text.slice(0, 120) + '"' : '') + ' (Lay Down Arms): ' + line + '.');
-  const g = gameOf(h); if (g && h.c) pendRuling(g, h.c, h.key, 'Lay Down Arms on ' + who.name + (text ? ' ("' + text.slice(0, 100) + '")' : '') + ': ' + line + (saved ? '.' : ': play them standing down for the moment.'));
-  return null;
-}
-register({
-  id: 'lay_down_arms', claims: 'all', narrator: [],
-  actions: [
-    { id: 'lay_down_arms', label: 'Lay Down Arms', scope: ['combat'], ap: 'data', target: 'enemy', range: HEARING,
-      text: 'Plead with a humanoid enemy who can hear you. It makes a Heart save. If it fails, it lowers its weapon and can\'t attack on its next turn. II: plead with up to three enemies at once.',
-      preview: (h, args) => {
-        const cb = h.cb; if (!cb) return {};
-        const ids = [...new Set([args.targetId, ...(args.targetIds || [])].filter(Boolean) as string[])].slice(0, tierII(h) ? 3 : 1);
-        for (const id of ids) { const t = unitById(cb, id); if (!t || t.side === h.u!.side || !alive(t)) return { ok: false, why: 'Pick enemies.' }; if (!humanoid(t)) return { ok: false, why: t.name + ' doesn\'t listen to pleas.' }; if (dist(t.pos, h.u!.pos) > HEARING) return { ok: false, why: t.name + ' can\'t hear you (' + HEARING + ' tiles).' }; }
-        return { lines: [ids.length + ' Heart save' + (ids.length === 1 ? '' : 's') + ' vs ' + (saveTn(h.u!, 'empathy')) + '.'] };
-      },
-      run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!;
-        const ids = [...new Set([args.targetId, ...(args.targetIds || [])].filter(Boolean) as string[])].slice(0, tierII(h) ? 3 : 1);
-        const out = ids.map((id) => unitById(cb, id)!).map((t) => applyCond(cb, rng, u, t, 'commanded', 1, 'heart', { arg: 'hold', via: 'empathy' }).replace(/^ · /, '').replace(/is Commanded/, 'lowers its weapon'));
-        say(cb, u.name + ' pleads with them to lay down their arms' + (args.text ? ' "' + String(args.text).slice(0, 120) + '"' : '') + ': ' + out.join('; ') + '.');
-        return null;
-      } },
-    { id: 'plea', label: 'Lay Down Arms', scope: ['world', 'story'], ap: (h) => (h.cb ? 2 : 0), target: 'none',
-      text: 'Plead with a hostile person to stand down. They make a Heart save, and the Narrator plays out the result.',
-      run: (h, args, rng) => {
-        if (h.cb) { const t = unitById(h.cb, args.targetId); if (t && !humanoid(t)) return t.name + ' doesn\'t listen to pleas.'; return storyPlea(h, t ? { name: t.name, tier: t.tier } : null, rng, args.text); }
-        const g = gameOf(h), want = charmedKey(args.npc || args.choice || ''), n = (g?.story?.npcs || []).find((x: any) => charmedKey(x.name) === want || charmedKey(x.id) === want);
-        return storyPlea(h, n ? { name: n.name, tier: n.tier } : want ? { name: args.npc || args.choice || '', tier: 'soldier' } : null, rng, args.text);
-      } },
-  ],
-  brief: () => null,
-});
+// ---------- Bitter Balm (Empathy α; `lay_down_arms`): data only since rules 1.56 (Lay Down Arms: move-pool.md) ----------
 
 // ---------- Field Surgeon (Proficiency + Camaraderie, Achieved) ----------
 // Field Repair reaches an adjacent ally: 2 AP, Proficiency 3+, one spare-parts charge: a living ally heals 3 ×
