@@ -6156,6 +6156,30 @@ the earlier ones; every new number here is PROVISIONAL (items 4130 to 4136).
    the main hand's do with the main hand's.
 5. **Old School** refuses a mod tagged `electronic` (the red dot), by the mod's own name.
 
+## Rules 1.56 (Balance 2.0), L3 mods in Survival
+
+Leon (15 Nov 2026): *"weapon mod can be a reward just like raw weapon. maybe at the forge you pay some dough to get
+them attached"*. Rules 1.55 items 15 and 16 (the `built: false` filter, the Forge's fee) stand; these items finish what
+they left for 0.29. Every new number is PROVISIONAL.
+
+1. **A mod can be a reward pick.** Where a pick holds the One-weapon card, the card may be a weapon mod instead of a
+   weapon: one roll for the character at the node (`rewards.mods.chance`, by where the pick is made, through
+   `rewards.reads`; absent: never), from its own stream. The mod is drawn from the mods that fit a free slot on a gun
+   the character carries (the main hand, the off hand, a gun in the pack; a carried quiver's empty enchantment slot)
+   and whose price is within `rewards.mods.band` x the node's price band. None that fits: the weapon stays. It goes in
+   the pack (the one grant); fitting it is the Forge's service. Odds (PROVISIONAL, rare): an ordinary fight and a cache
+   0.05, an Elite and the gate 0.1, a vault guard and a Boss 0.35, the vault's chest and a sealed crate never; band 0.5.
+   An Elite's, the gate's and a cache's pick of kit keep their mods (rule 41), now read from every gun carried.
+2. **The armourer fits to any gun carried.** `run/fit_mod` and `run/unfit_mod` take `where` (the main hand when
+   absent, the off hand, or a pack line holding a gun; one of a stack of guns is split off to take it). Same fee
+   (rules 1.55 item 16), same refusals, in words naming the gun. The Forge's stock reads every gun carried for what the
+   party lacks. Supersedes rules 1.55 item 16's "the fit is to the weapon in the main hand".
+3. **The extra mod slot at the Forge, for the same fee.** The extra slot of Gun Nut, Blade Recluse and Overhaul (a second
+   mod in a slot type the weapon already fills; the main hand only, as the perks give it) is fitted in a run by the
+   armourer for the fee of item 2 (`run/fit_mod` with `extra: true`, through the perk's own action and its rules). Out
+   of a run the perk's free action is unchanged. Taking an extra-slot mod off is `run/unfit_mod`, the same fee.
+4. **Off-hand guns' own mods acting on the off hand's shot** are lane L1's (rules 1.56, L1): not changed here.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9683,7 +9707,7 @@ PROVISIONAL.
 ### Rules 1.56 (Balance 2.0), L2 special rounds by calibre
 
 Release 0.29 item D3 (the 0.28 review's leftover: "special rounds made at 2 gunpowder + 2 casings fit heavy guns").
-Lane L2 of the 0.29 build plan; items 4137 to 4142. Every number here is PROVISIONAL.
+Lane L2 of the 0.29 build plan; items 4137 to 4143. Every number here is PROVISIONAL.
 
 4137. **Special rounds belong to a calibre.** Armour-piercing, hollow-point and incendiary rounds (the items with an
     `ammo_type` and a `price_mult`) are carried, bought, made and loaded as rounds of one calibre: a pack line of that
@@ -9709,3 +9733,14 @@ Lane L2 of the 0.29 build plan; items 4137 to 4142. Every number here is PROVISI
     `ammo_incendiary`) reads as the same count of rounds of the reference calibre (`special_round_price.calibre`,
     rifle), at the price it had; so does a loot or shop row that names the bare item.
 4143. **Items 4137 to 4143 are rules 1.56 L2's.**
+
+### Rules 1.56 (Balance 2.0), L3 mods in Survival
+
+Items 4144 to 4146.
+
+4144. **A mod as a reward (rules 1.56 L3 item 1):** `survival.json rewards.mods.chance` fight 0.05, elite 0.1, vault_guard
+    0.35, boss 0.35, vault 0, crate 0 (the gate reads the Elite's, a cache the fight's); `rewards.mods.band` 0.5 of the
+    node's price band. PROVISIONAL (to fit in P3: mods held per character by the end of stage 2, target 1 to 2).
+4145. **Fit to any gun, the extra slot for the fee (rules 1.56 L3 items 2 and 3):** `forge.fit` rate 0.2, min 25,
+    unchanged. PROVISIONAL.
+4146. **Items 4144 to 4146 are rules 1.56 L3's.**

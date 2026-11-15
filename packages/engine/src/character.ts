@@ -1391,17 +1391,26 @@ export function unequip(c: Character, slot: string): string | null {
   else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
   c.pack = pack; return null;
 }
-/** Fit a mod from the pack onto the main-hand weapon, if it has that slot free. */
-export function fitMod(c: Character, idx: number): string | null {
+/** Fit a mod from the pack (line `idx`) onto a carried weapon: the main hand (default), the off hand, or a pack line
+ * holding a weapon (rules 1.56 L3 item 2; one of a stack is split off to take it). A mod already in that slot comes off
+ * into the pack. */
+export function fitMod(c: Character, idx: number, where: 'main' | 'off' | number = 'main'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx], m = it && (ITEM[it.item || it.id] as any);
   if (!m || m.category !== 'mod') return 'That isn\'t a mod.';
-  const slots: string[] = (WEAPON[c.weapon] as any)?.mod_slots || [], mods = [...(c.weaponState?.mods || [])];
-  if (!slots.includes(m.mod_slot)) return 'Your weapon has no ' + m.mod_slot + ' slot.';
+  const t = typeof where === 'number' ? pack[where] : null;
+  if (typeof where === 'number' && (!t || t.kind !== 'weapon' || !t.weapon || where === idx)) return 'That isn\'t a weapon.';
+  if (where === 'off' && !c.offHand) return 'Nothing in your off hand.';
+  const wid = where === 'main' ? c.weapon : where === 'off' ? c.offHand!.id : t!.weapon!;
+  const slots: string[] = (WEAPON[wid] as any)?.mod_slots || [], mods = [...((where === 'main' ? c.weaponState?.mods : where === 'off' ? c.offHand!.mods : t!.mods) || [])];
+  if (!slots.includes(m.mod_slot)) return (where === 'main' ? 'Your weapon' : 'The ' + (WEAPON[wid]?.name || wid)) + ' has no ' + m.mod_slot + ' slot.';
   if (statQuery({ c }, 'equip_ban', { mod: m.id }).add > 0) return equipBanWhy(c, { mod: m.id });
   const old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
   if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: packKindOf(old) }); }
-  mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
-  c.weaponState = { ...(c.weaponState || {}), mods }; c.pack = pack; return null;
+  mods.push(m.id);
+  if (t) { if (t.qty > 1) { t.qty--; pack.push({ ...t, qty: 1, mods }); } else t.mods = mods; }
+  if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
+  if (where === 'main') c.weaponState = { ...(c.weaponState || {}), mods }; else if (where === 'off') c.offHand = { ...c.offHand!, mods };
+  c.pack = pack; return null;
 }
 // ---------- a weapon instance's numbers (rules 1.56, plan 0.29 primitive 2) ----------
 const GEAR_FIELDS: Record<string, { combine: 'sum' | 'max'; default?: number }> = (RULES as any).weapons_rules?.gear_fields || {};

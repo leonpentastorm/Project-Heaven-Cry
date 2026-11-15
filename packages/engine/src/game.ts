@@ -3207,7 +3207,7 @@ function runAction(g: GameState, a: Action, by: string) {
       } else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
         const pack = packOf(c!).map((x) => ({ ...x }));
-        for (const it of pickedItem(w!)) packAdd(pack, it);
+        grantGoods(c!, pack, pickedItem(w!)); // the one grant (a weapon, a focus, or rules 1.56 L3 a mod)
         for (let i = 0; i < Math.round(o!.ammo * ammoMult(c!)); i++) for (const it of magazineWorth(w!.id)) packAdd(pack, it); // rule 23: a picked gun takes its share of the pack (rules 1.44: Bandolier's too)
         c!.pack = pack;
         took = c!.name + ' takes the ' + (w!.rarity !== 'standard' ? w!.rarity[0].toUpperCase() + w!.rarity.slice(1) + ' ' : '') + itemName(w!.id) + '.';

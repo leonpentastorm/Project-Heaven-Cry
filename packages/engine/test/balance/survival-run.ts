@@ -331,7 +331,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   };
   const savingForRelic = (id: string) => { const c = C(id), it = gearAt(c, doorWhere(c)); return r.g.run.stage >= GRADE_UP.relic_from_stage && it && it.rarity === 'masterwork'; };
   const fitBought = (id: string, item: string) => { const c = C(id), i = packOf(c).findIndex((x) => (x.item || x.id) === item); if (i < 0) return;
-    if ((ITEM[item] as any)?.category === 'mod') { if ((ITEM[item] as any).mod_slot === 'enchantment') act({ type: 'gear/mod', charId: id, idx: i }, by(id)); else { const o = opts(id).find((q) => q.group === 'mod' && !q.why && q.action.type === 'run/fit_mod' && q.action.idx === i); if (o) act(o.action, by(id)); } } /* rules 1.55: the armourer fits it at a Forge, for a fee; picked elsewhere, it waits in the pack */ else act({ type: 'gear/equip', charId: id, idx: i, to: 'worn' }, by(id)); };
+    if ((ITEM[item] as any)?.category === 'mod') { if ((ITEM[item] as any).mod_slot === 'enchantment') act({ type: 'gear/mod', charId: id, idx: i }, by(id)); else { const o = opts(id).find((q) => q.group === 'mod' && !q.why && q.action.type === 'run/fit_mod' && q.action.where == null && !q.action.extra && q.action.idx === i); if (o) act(o.action, by(id)); } } /* rules 1.55: the armourer fits it at a Forge, for a fee; picked elsewhere, it waits in the pack */ else act({ type: 'gear/equip', charId: id, idx: i, to: 'worn' }, by(id)); };
 
   // ---- repairs (rules 1.50): every carried thing Worn or Broken, the hands first, when affordable
   const repairHere = (id: string) => {
@@ -373,7 +373,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
     gradeHere(id, 'forge');
     // rules 1.55: the mods picked since the last Forge, fitted now for the fee (a free slot only, no swap)
     for (let k = 0; k < 8; k++) { const c = C(id), used = new Set((c.weaponState?.mods || []).map((m: string) => (ITEM[m] as any)?.mod_slot));
-      const o = opts(id).find((q) => q.group === 'mod' && !q.why && q.action.type === 'run/fit_mod' && !used.has((ITEM[(packOf(c)[q.action.idx].item || packOf(c)[q.action.idx].id)] as any)?.mod_slot)); if (!o || act(o.action, by(id))) break; }
+      const o = opts(id).find((q) => q.group === 'mod' && !q.why && q.action.type === 'run/fit_mod' && q.action.where == null && !q.action.extra && !used.has((ITEM[(packOf(c)[q.action.idx].item || packOf(c)[q.action.idx].id)] as any)?.mod_slot)); if (!o || act(o.action, by(id))) break; }
     if (savingForRelic(id)) continue;
     const fit = opts(id).find((q) => q.group === 'fit' && !q.why); if (fit && r.g.run.stage <= 2) must(fit.action, by(id));
     const want = new Set(lastingFor(C(id)));
