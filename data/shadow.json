@@ -2,6 +2,9 @@
   "$schema_version": "1.0",
   "kind": "shadow",
   "tab": "shadow",
+  "tab_also": [
+    "hide"
+  ],
   "source": "docs/design/shadow-spec.md section 3; rules 1.32 (Classes 3.0 step 6): Perception's door verbs, through Ingenuity. Each is a door verb (kind verb, P6) held by anyone whose Ingenuity reaches its `requires`; the Break is a toggle on the attack card (skills.json ingenuity.1); the passive Still Breath is Ingenuity's unlock 5.",
   "groups": {
     "slip": "Slip",
@@ -10,6 +13,61 @@
     "break": "Break"
   },
   "items": [
+    {
+      "id": "shadow.tag",
+      "name": "Tag",
+      "kind": "verb",
+      "group": "mark",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 1
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP, once a turn, from Hidden: an enemy within {=effects.0.reach.tiles} tiles that can't see you is Marked. Your attacks on it from Hidden are Tagged (surer to hit), and a Break on it strikes harder.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "tag",
+          "ap": 1,
+          "uses": "per_turn",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "reach": {
+            "tiles": 8,
+            "side": "foe",
+            "if": {
+              "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "condition": "marked",
+              "target": "target",
+              "skip_save": true,
+              "fx": {
+                "k": "stance",
+                "what": "tag"
+              },
+              "say": "{self} tags {target} from the dark."
+            }
+          ],
+          "why": {
+            "self_has": "An enemy sees you: Tag needs you Hidden."
+          }
+        }
+      ]
+    },
     {
       "id": "shadow.lift",
       "name": "Lift",

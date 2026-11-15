@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 17 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 663 primitive exports, 2049 other exports, 130 fx kinds, 174 Unit fields, 59 Combat fields, 41 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 17 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 663 primitive exports, 2056 other exports, 130 fx kinds, 174 Unit fields, 59 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -323,7 +323,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `damage_out` | an amount of damage is being made (before armour): multipliers and target bonuses | `att`, `tgt`, `mode`, `melee`, `src`, `base`, `add`, `mults`, `vs`, `crit`, `preview`, `tech`, `mods`, `pierce`, `ignoreArmour`, `critBonus`, `spec` | combat.ts:1317 (+1) | classes/i.ts:345 (+27) | `dealing` |
 | `on_hit` | an attack hit | `att`, `tgt`, `mode`, `dmg`, `crit`, `killed`, `melee`, `volley`, `tech`, `mods` | combat.ts:1476 | classes/i.ts:592 (+46) | `hit` |
 | `on_miss` | an attack missed | `att`, `tgt`, `mode`, `die`, `fumble`, `melee`, `volley`, `stopped`, `mods` | combat.ts:1477 | classes/i.ts:1147 (+30) | `miss` |
-| `damage_in` | damage is landing on a unit, in phases (reduce, shield, would_drop_to_0, after) | `t`, `src`, `dmg`, `phase`, `hostile`, `self`, `guard0` | effects/damage.ts:78 (+3) | classes/i.ts:387 (+34) | `taking`, `would_drop` |
+| `damage_in` | damage is landing on a unit, in phases (reduce, shield, would_drop_to_0, after) | `t`, `src`, `dmg`, `phase`, `hostile`, `self`, `guard0` | effects/damage.ts:78 (+3) | classes/i.ts:387 (+35) | `taking`, `would_drop` |
 | `on_damaged` | a unit lost HP | `t`, `src`, `dmg`, `prevHp` | effects/damage.ts:113 | classes/k.ts:1090 (+12) | `damaged` |
 | `on_downed` | a unit went down (Downed or dead) | `victim`, `by`, `src`, `ownTurn`, `dead` | effects/damage.ts:121 | classes/j.ts:819 (+17) | `downed` |
 | `on_kill` | a unit was dropped by an enemy (the killer gets the credit) | `victim`, `by`, `src`, `ownTurn` | effects/damage.ts:122 | classes/k.ts:112 (+6) | `kill` |
@@ -335,8 +335,8 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived`, `over` | combat.ts:2614 (+1) | classes/k.ts:1251 (+8) | `heal_given` |
 | `heal_in` | a unit is about to be healed (the amount may change) | `t`, `by`, `n`, `kind` | effects/damage.ts:132 | classes/k.ts:1411 (+6) | `heal` |
 | `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n`, `layer`, `kind` | effects/damage.ts:156 | classes/i.ts:1289 (+7) | `shield` |
-| `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `spend`, `cancel`, `at` | tactics.ts:146 | classes/i.ts:253 (+5) |  |
-| `reaction` | a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves | `u`, `kind`, `event`, `payer` | tactics.ts:150 | none | `reaction` |
+| `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `spend`, `cancel`, `at` | tactics.ts:147 | classes/i.ts:253 (+5) |  |
+| `reaction` | a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves | `u`, `kind`, `event`, `payer` | tactics.ts:151 | none | `reaction` |
 | `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2658 | calls/rules.ts:81 (+6) |  |
 | `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:1852 | perks/c.ts:511 |  |
 | `sees` | a side's sight of a unit is decided: items may make it seen or unseen | `side`, `t`, `by`, `seen`, `sensed` | combat.ts:1026 | calls/rules.ts:85 (+4) |  |
@@ -371,14 +371,14 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `weapon_actions` | a unit's weapon actions are listed (declared; nothing emits it yet) |  | **never emitted** | none |  |
 | `path_opts` | a walk's path options are opened by items (run, pass, jump, ignore difficult ground, known traps) | `u`, `runnable`, `pass`, `jump`, `ignoreDifficult` | combat.ts:820 | perks/a.ts:530 |  |
 | `hide` | a unit became hidden | `u`, `why` | sigil.ts:51 (+1) | faith.ts:789 (+7) |  |
-| `spot` | a unit tries to spot a hidden one: the die, the modifier, the TN, cancel | `by`, `u`, `die`, `mod`, `tn`, `cancel`, `close`, `outright` | tactics.ts:258 (+1) | classes/k.ts:124 (+8) | `spot` |
+| `spot` | a unit tries to spot a hidden one: the die, the modifier, the TN, cancel | `by`, `u`, `die`, `mod`, `tn`, `cancel`, `close`, `outright` | tactics.ts:279 (+1) | classes/k.ts:124 (+8) | `spot` |
 | `spotted` | a hidden unit was revealed | `u`, `why` | magic.ts:1448 (+2) | perks/b.ts:244 (+2) |  |
 | `on_surrender` | a unit surrendered or was subdued | `t`, `by`, `why` | effects/damage.ts:108 (+2) | deeds.ts:193 (+5) |  |
-| `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:313 | perks/g.ts:207 |  |
+| `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:334 | perks/g.ts:207 |  |
 | `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:145 (+2) |  |
 | `blessing_in` | a blessing reaches a unit: an item may handle it itself | `u`, `t`, `blessing`, `power`, `handled`, `out` | faith.ts:1086 (+1) | classes/k.ts:203 (+6) |  |
 | `trap_sprung` | a trap was sprung on a unit | `u`, `obj` | combat.ts:2023 | classes/rev3.ts:341 |  |
-| `blast_landed` | a blast landed on a tile (who made it, the radius, who was in it) | `by`, `tile`, `item`, `radius`, `who` | tactics.ts:352 | physical/ranged/thrown.ts:163 |  |
+| `blast_landed` | a blast landed on a tile (who made it, the radius, who was in it) | `by`, `tile`, `item`, `radius`, `who` | tactics.ts:373 | physical/ranged/thrown.ts:163 |  |
 | `glyphs_per_tile` | how many glyphs a tile may hold for this caster | `u`, `tile`, `n` | sigil.ts:82 | classes/k.ts:360 |  |
 | `evoke_area` | a spell's area is being built (its depth may change) | `u`, `spell`, `pattern`, `depth` | sigil.ts:262 | none |  |
 | `spell_mult` | a Sigil spell's damage, healing or shield multiplier for one target | `u`, `t`, `spell`, `kind`, `mult` | sigil.ts:451 (+1) | none |  |
@@ -404,7 +404,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `xp_grant` | XP is about to be granted (the amount may change) | `c`, `source`, `amount` | game.ts:1380 | perks/e.ts:853 (+1) |  |
 | `notice` | an NPC on the area map may notice a character (its range) | `c`, `npc`, `range`, `dark`, `ignore` | game.ts:2645 | perks/a.ts:382 (+5) |  |
 | `stay_hidden` | a character tries to stay hidden from an NPC: modifier and TN | `c`, `npc`, `mod`, `tn` | game.ts:2656 | perks/a.ts:383 (+5) |  |
-| `world_move_cost` | a move on the area map is priced (sneaking costs extra) | `c`, `u`, `tiles`, `how`, `extra`, `preview` | actions.ts:217 (+1) | perks/b.ts:232 (+1) |  |
+| `world_move_cost` | a move on the area map is priced (sneaking costs extra) | `c`, `u`, `tiles`, `how`, `extra`, `preview` | actions.ts:218 (+1) | perks/b.ts:232 (+1) |  |
 | `karma_award` | Karma is about to be awarded (its multiplier) | `c`, `amount`, `unlawful`, `mult`, `why` | game.ts:1244 | perks/f.ts:714 (+3) |  |
 | `action_refuse` | an item may refuse an action before it is done (a shove, an Overwatch) | `u`, `a`, `fail` | game.ts:2838 | perks/e.ts:994 (+1) |  |
 | `evoke_reach` | how far from its Line a caster may Evoke | `u`, `pattern`, `reach` | sigil.ts:590 (+1) | classes/k.ts:793 |  |
@@ -1048,7 +1048,7 @@ Families: `body`, `brain`, `heart`.
 | `PickOption` | `interface PickOption { id, label, text, why }` | One choice of an option pick: its id, label, help text, and why it is greyed out. |
 | `PickStep` | `interface PickStep { key, kind, prompt, optional, choices, options, max, renderer, auto, when }` | One pick an action asks for (a target, a tile, an option, a custom panel), with what may be picked. |
 | `DescCost` | `interface DescCost { ap, text, res }` | An action's price as the engine priced it: AP, the words shown, resources. |
-| `ActionDescriptor` | `interface ActionDescriptor { id, group, parent, name, text, cost, available, why, picks, toggleOn, preview, hidden, pad, engine, hand, parts, sub }` | One action a unit may take, as the client renders it: id, group, name, cost, availability, picks. |
+| `ActionDescriptor` | `interface ActionDescriptor { id, group, parent, name, text, cost, available, why, picks, toggleOn, preview, hidden, pad, engine, hand, parts, sub, spots, eyes }` | One action a unit may take, as the client renders it: id, group, name, cost, availability, picks. |
 | `PreviewLine` | `interface PreviewLine { k, text }` | One line of a descriptor preview (odds, a note, a meter, a save, the cost, an ask). |
 | `GridMarks` | `interface GridMarks { units, tiles }` | What a preview paints on the grid (tiles, targets, an area, a path). |
 | `DescriptorPreview` | `interface DescriptorPreview { id, ok, why, ask, next, ap, cost, lines, marks, toggles, rolls, action }` | What an action would do with these picks: ok or why not, its AP, its lines and grid marks. |
@@ -1435,7 +1435,7 @@ Families: `body`, `brain`, `heart`.
 | `picksOf` | `picksOf(d: ActionDescriptor, S: any, cb: any, cur: any, extra: Picks = {}): Picks` | The picks the screen holds for this descriptor. |
 | `flowView` | `flowView(g: any, me: string \| null, cur: any, S: any, extra: Picks = {}): FlowView \| null` | The picked action on the flow, or null when it is not (no action, not this player's turn, a system with its own screen code). extra: picks a bespoke panel made (a perk's form, a pile's checklist). |
 
-#### Every other export, by file (2049)
+#### Every other export, by file (2056)
 
 The scan of every file in the engine's source: what the tables above do not show. Read the doc comment in the file before writing a second one.
 
@@ -1462,7 +1462,7 @@ The scan of every file in the engine's source: what the tables above do not show
 | `deeds.ts` | `deedGrant`, `ENGINE_DEEDS`, `DEED_RULES` |
 | `descriptors.ts` | `DescGroup`, `PickKind`, `Picks`, `isLegacyUnit`, `TQ`, `techId`, `parseTechId`, `TECH_OPTIONS`, `techOpt`, `TechParts`, `techParts`, `techHelp`, `ORDER_THINGS`, `orderMax`, `PR`, `prayId`, `parsePrayId`, `oddsPct`, `prayOdds`, `PK`, `perkId`, `parsePerkId`, `perkCost`, `perkState`, `perkText` |
 | `doorpicks.ts` | `DoorOption`, `DoorGrant`, `DoorPickSource`, `registerDoorPicks`, `doorsWithPicks`, `doorPicksOf`, `doorKeptOf`, `DoorPending`, `pendingDoorPicks`, `allPendingDoorPicks`, `doorPickWhy`, `takeDoorPick`, `doorOption` |
-| `effects/collect.ts` | `_addRawItems`, `_clearRawItems`, `ADVANCED`, `BASE_CLASS`, `advancedActive`, `_setAdvancedLive`, `REV2_CLASSES`, `revision2Classes`, `_setRevision2Classes`, `perkEffects`, `itemInfo`, `classMove`, `rawItem`, `splitKey`, `keyOf`, `instanceMods`, `Held`, `SKILL_ITEMS`, `allVerbs`, `meetsRequires`, `verbsOf`, `skillItemsOf`, `heldAny`, `classMoveKeys`, `itemsOf`, `heldKey`, `effectsOfHeld`, `allItems` |
+| `effects/collect.ts` | `_addRawItems`, `_clearRawItems`, `ADVANCED`, `BASE_CLASS`, `advancedActive`, `_setAdvancedLive`, `REV2_CLASSES`, `revision2Classes`, `_setRevision2Classes`, `perkEffects`, `itemInfo`, `classMove`, `rawItem`, `splitKey`, `keyOf`, `instanceMods`, `Held`, `SKILL_ITEMS`, `allVerbs`, `meetsRequires`, `verbsOf`, `DoorTab`, `DOOR_TABS`, `doorTabsOf`, `skillItemsOf`, `heldAny`, `classMoveKeys`, `itemsOf`, `heldKey`, `effectsOfHeld`, `allItems` |
 | `effects/core.ts` | `TAG_VOCAB`, `wearing`, `contextHolds`, `skillRollMod`, `immuneByItem`, `immune`, `actionAp`, `forbids`, `xpAfter`, `itemWords`, `wordCostMods`, `mendShown`, `pushAway` |
 | `effects/coverage.ts` | `CoverageRow`, `coverageOf`, `coverageReport`, `coverageGaps`, `Verdict`, `verdictOf`, `verdictFor`, `coverageSummary` |
 | `effects/damage.ts` | `tendHook`, `ELEMENTAL_TYPES`, `READ_THEM`, `PAST_SHIELDS`, `ShieldLayer`, `ShieldOpts`, `shieldTotal` |
@@ -1524,7 +1524,7 @@ The scan of every file in the engine's source: what the tables above do not show
 | `sigilgrowth.ts` | `STUDY`, `WORD_MASTERY`, `SigilGrowth`, `growthOf`, `thresholdN`, `picksEarned`, `evokeStudy`, `pendingPicks`, `knowsWord`, `addStudy`, `noteEvoke`, `copyWord`, `masterySync`, `learnable`, `learnStudied`, `noteToStudy`, `learnedElsewhere`, `WordTier`, `wordUses`, `wordTierOf`, `masteredWords`, `Inflection`, `inflectionOf`, `INFLECTION_STATS`, `inflectionValue`, `SigilGrowthView`, `sigilGrowthView` |
 | `sigilwords.ts` | `SigilFam`, `Dir`, `G`, `ENEMY_AI`, `SIGIL_GRAMMAR`, `SIGIL_ELEMENTS`, `SIGIL_REV`, `MAX_GLYPHS`, `MIN_GLYPHS`, `REPEAT_MULT`, `LINE_MULT`, `lineMult`, `LIM`, `W`, `groupOf`, `classOf`, `isSubject`, `isReach`, `isElement`, `isAffliction`, `isBoonWord`, `isWorking`, `count`, `perCopy`, `Spell`, `compileSpell`, `grammarError`, `startingWordsError`, `STARTING_DEFAULT`, `migrateWords` |
 | `spotlight.ts` | `SPOTLIGHT_FX`, `SpotlightKind`, `SPOTLIGHT_KINDS`, `SPOTLIGHT_PRIORITY`, `SpotlightFx`, `SpotlightInput`, `spotlightScene`, `markAction`, `clearAction`, `critMoment`, `spotlight` |
-| `tactics.ts` | `AmmoType`, `AMMO_TYPES`, `ammoId`, `damageTypeOf`, `isExplosive`, `radiusOf`, `dropHeldShot`, `isSilent`, `ReactKind`, `REACT_KINDS`, `ReactOpts`, `maxReactions`, `reactionsUsed`, `addReactBlock`, `reactBlocked`, `cueLive`, `reactionDonor`, `canReact`, `react`, `loseReactions`, `refundReaction`, `heldShotPaid`, `payHeldShot`, `spendPaidShot`, `SightWord`, `SIGHT_WORDS`, `sightOf`, `TIER_NOTICE`, `seenByFoes`, `hide`, `reveal`, `hideBlock`, `hideAction`, `ambushReady`, `spotHidden`, `canSurrender`, `surrender`, `trySurrender`, `subdue`, `HEARING`, `PARLEY_VIA`, `ThreatenAlias`, `setThreaten`, `parley`, `throwRangeOf`, `throwItem`, `blast`, `PATRONS`, `PATRON`, `devotionOf`, `blessing`, `extinguish`, `escapeGrapple`, `recoverWeapon`, `COMPANION_KINDS`, `companionUnits`, `resOf`, `resGain`, `resSpend`, `FoeTraits`, `KINDS`, `FOE_TAGS`, `applyFoeTraits`, `deathMana` |
+| `tactics.ts` | `AmmoType`, `AMMO_TYPES`, `ammoId`, `damageTypeOf`, `isExplosive`, `radiusOf`, `dropHeldShot`, `isSilent`, `ReactKind`, `REACT_KINDS`, `ReactOpts`, `maxReactions`, `reactionsUsed`, `addReactBlock`, `reactBlocked`, `cueLive`, `reactionDonor`, `canReact`, `react`, `loseReactions`, `refundReaction`, `heldShotPaid`, `payHeldShot`, `spendPaidShot`, `SightWord`, `SIGHT_WORDS`, `sightOf`, `TIER_NOTICE`, `seenByFoes`, `eyesOn`, `hide`, `FoundHow`, `foundFx`, `reveal`, `hideBlock`, `HIDE_WHY`, `hideAction`, `ambushReady`, `spotHidden`, `canSurrender`, `surrender`, `trySurrender`, `subdue`, `HEARING`, `PARLEY_VIA`, `ThreatenAlias`, `setThreaten`, `parley`, `throwRangeOf`, `throwItem`, `blast`, `PATRONS`, `PATRON`, `devotionOf`, `blessing`, `extinguish`, `escapeGrapple`, `recoverWeapon`, `COMPANION_KINDS`, `companionUnits`, `resOf`, `resGain`, `resSpend`, `FoeTraits`, `KINDS`, `FOE_TAGS`, `applyFoeTraits`, `deathMana` |
 | `variants.ts` | `VariantMod`, `VariantLine`, `expandVariants` |
 | `world.ts` | `Trigger`, `NpcPlace`, `WorldEvent`, `KIND_DEFS`, `WORLD_KINDS`, `AVATAR_POOLS`, `TALK_RANGE`, `WORLD_AP`, `FAIL_HURT`, `HIDEABLE`, `kindKg`, `validAvatar`, `avatarOf`, `worldEvent`, `eventsSeen`, `onWorld`, `hazardEvents`, `freeNear`, `areaTiles`, `zoneHazards`, `liveHazards`, `setZoneHazards`, `applyHazardOp`, `zoneTriggers`, `applyTriggerOp`, `fireTrigger`, `enterTriggers`, `examineTriggers`, `objectiveTriggers`, `revealIds`, `revealNear`, `raiseAlarm`, `carryable`, `carriedOf`, `carry`, `putDown`, `dropFromDowned`, `landDropped`, `cleanItems`, `search`, `cacheView`, `pickupWorld`, `applyGroundOp`, `pileFog`, `previewOdds`, `tryApproach`, `approachResult`, `markWord`, `worldCond`, `talkAsk`, `TalkOption`, `talkOptions`, `npcView`, `approachOptions`, `cleanApproaches`, `npcTalkFields`, `walkStory`, `worldAfter`, `Marker`, `markersFor`, `HereObjective`, `hereCard`, `HazardTile`, `hazardTilesFor`, `hazardsFor`, `worldView` |
 
@@ -1634,7 +1634,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `song` | `unit`, `at` | game.ts:1700 | 1 |
 | `spawn` | `unit`, `at`, `owner`, `block` | owned.ts:115 | 1 |
 | `spot` | `unit`, `at`, `target`, `to`, `only` | physical/ranged/sets.ts:124 | 1 |
-| `stance` | `unit`, `at`, `what`, `target` | classes/i.ts:248 | 15 |
+| `stance` | `unit`, `at`, `what`, `target`, `how`, `by`, `only` | classes/i.ts:248 | 16 |
 | `steady` | `unit`, `at`, `by`, `strain`, `stage` | magic.ts:1164 | 1 |
 | `stim` | `unit`, `target`, `from`, `to`, `heal`, `revive`, `thrown` | combat.ts:2616 | 3 |
 | `stopped` | `unit`, `how`, `by`, `apLoss`, `untilAp` | physical/core.ts:566 | 1 |

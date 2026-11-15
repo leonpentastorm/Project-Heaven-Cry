@@ -54,15 +54,15 @@ import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
 import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
-import { fadeStyle } from '../game/tokenFade';
-import { tieLayerVals } from '../game/tieLayer';
+import { fadeStyle, SHADE_POOL, shadowHeld, wispsUri, wispStyle, SHADOW_INK } from '../game/tokenFade';
+import { tieLayerVals, eyeLines } from '../game/tieLayer';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode } from '../game/techView';
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
@@ -233,6 +233,10 @@ const GRID_LAYER = { axis: 40, corner: 41 };
 /** A tile's word under it (ROUGH, RUBBLE, HALF 30); on a kit map an object's word is quieter (KIT_LABEL). */
 /** The ground beside a kit wall piece (half a tile thick) is the floor in the wall's light shade, not a dark fill. */
 const KIT_WALL_TINT = 'rgba(10, 13, 19, 0.28)';
+// Rules 1.56 Shadow 2.0 item 11: a Hide spot (a tile this turn's Move reaches out of every seen enemy's eyes), in
+// Perception's ink; the nearest outlined solid (the refusal names it).
+const SPOT_TILE = 'background: rgba(64, 186, 160, 0.16); border: 1px dashed rgba(64, 186, 160, 0.85)';
+const SPOT_NEAR = 'background: rgba(64, 186, 160, 0.28); border: 2px solid #40BAA0';
 const TEXT_STYLE = 'position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 13px; letter-spacing: 0.06em; color: #A3AEC2';
 const KIT_LABEL = 'position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); z-index: 1; padding: 0 3px; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 11px; letter-spacing: 0.04em; color: rgba(231, 235, 243, 0.8); background: rgba(5, 7, 11, 0.62); pointer-events: none; transition: opacity .12s';
 const MINI_SLACK = 172;
@@ -848,6 +852,14 @@ export class CombatLogic extends DCLogic {
     // Fog of war is the engine's (fog.ts): the view holds only what this player's side sees (the human Narrator: all of
     // it), and vis is its sight (tiles seen, tiles sensed) for shading. Nothing here filters units by sight.
     const vis = fightSight(cb);
+    // Rules 1.56 Shadow 2.0 items 11, 12 (the engine's Hide row, commands.ts hideHelp): refused because you are seen, the
+    // tiles this turn's Move reaches from which Hide works are shaded in the door's ink, the nearest outlined; armed by the
+    // SHADOW tab or Hide itself, and kept while a Move is being picked from there. Who sees you: hovering your own token
+    // with the tab open draws a line from each enemy whose eyes reach you (the tie layer, below).
+    if (S.tab === 'shadow' || S.action === 'hide') this._spotsArmed = true; else if (!isMove) this._spotsArmed = false;
+    const HH = mineTurn ? hideHelp(cb, cur, ch, g) : null;
+    const spotsOn = !!(HH && HH.spots && HH.spots.length && this._spotsArmed);
+    const spotSet = new Set(spotsOn ? HH.spots : []), spotNear = spotsOn ? HH.spots[0] : null;
     const route = {}; let moveAp = 0;
     // Rules 1.9 (item 683): the route a click takes goes around revealed hazards when it can (the engine's movePaths), and
     // the preview marks every revealed hazard tile it still crosses ("Path crosses: …").
@@ -1125,7 +1137,7 @@ export class CombatLogic extends DCLogic {
       const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
       const pileHere = pileReach.some((o) => o.pos === k);
       const cReach = flow && flow.d.preview === 'call' && flow.reach.size ? flow.reach : null, cTile = cReach ? flow.picks.tile || null : null;
-      const planStyle = inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : cReach ? (cReach.has(k) ? (cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : 'background: rgba(231, 235, 243, 0.07); border: 1px dashed rgba(231, 235, 243, 0.5)') : cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : '') : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
+      const planStyle = spotSet.has(k) ? (k === spotNear ? SPOT_NEAR : SPOT_TILE) : inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : cReach ? (cReach.has(k) ? (cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : 'background: rgba(231, 235, 243, 0.07); border: 1px dashed rgba(231, 235, 243, 0.5)') : cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : '') : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
       const isHeld = !!(u && fxHeld.has(u.id));
       // a Sigil caster's charge and Flux on its token (game/resources.ts sigilChip: its own resource rows)
       const sgc = u && !isHeld && u.side === 'pc' && u.mg && u.charId && g.characters[u.charId] ? sigilChip(resourcesOf(u, g.characters[u.charId], g)) : null;
@@ -1137,7 +1149,7 @@ export class CombatLogic extends DCLogic {
         hasPress: pLook.has && !isHeld, press: pLook.pips, pressStyle: pLook.style, pressTitle: pLook.title, hasPressTag: !!pLook.tag && !isHeld, pressTag: pLook.tag, pressTagStyle: pLook.tagStyle,
         hasMom: mLook.has && !isHeld, mom: mLook.text, momStyle: mLook.style, momTitle: mLook.title, momFull: mLook.full ? '1' : '',
         hasWatchT: !!wT, watchTStyle: wT ? wT.style : '', watchTTitle: wT ? wT.title : '', hasWatchChip: !!wChip && !isHeld, watchChip: wChip ? wChip.text : '', watchChipStyle: wChip ? wChip.style : '', watchChipTitle: wChip ? wChip.title : '',
-        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.shield > 0 ? ' · Shield ' + u.shield + ' (damage takes it first)' : '') + (u.res && u.res.guard > 0 ? ' · Guard ' + u.res.guard : '') + (u.downed ? ' · Downed' : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
+        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.shield > 0 ? ' · Shield ' + u.shield + ' (damage takes it first)' : '') + (u.res && u.res.guard > 0 ? ' · Guard ' + u.res.guard : '') + (u.downed ? ' · Downed' : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (spotSet.has(k) ? ' · hide spot: out of the eyes of every enemy you see' + (k === spotNear ? ' (nearest)' : '') : '') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
         hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, vxOf(x), vyOf(y), vW, !!u) : '',
@@ -1191,9 +1203,13 @@ export class CombatLogic extends DCLogic {
         // the fog and the dark stay above the kit: a tile out of sight (or unlit) dims its kit layers as its own shade does
         hasKit: !!(KL && KL.get(k) && KL.get(k).layers.length), kit: KL && KL.get(k) ? ((dim) => (dim ? KL.get(k).layers.map((l) => ({ ...l, style: l.style + '; filter: brightness(' + dim + ')' })) : KL.get(k).layers))(!vis.tiles.has(k) ? (cb.map.dark && !litAt(cb, k) ? 0.28 : 0.5) : cb.map.dark && !litAt(cb, k) ? 0.75 : 0) : [],
         hasImg: !!faceOf(u), img: faceOf(u),
-        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + figIdle(u), // tokenFade.ts: held, Downed, Hidden, in that order
+        // Rules 1.56, Shadow 2.0 (game/tokenFade.ts): a Hidden token darkens to its outline over a pool of shadow (an
+        // ally's dashed), and the Shadow it holds shows as wisps on its corner (the engine's u.res and u.resMax)
+        hasShade: !!u && !isHeld && !!u.hidden && !u.downed, shadeStyle: SHADE_POOL,
+        ...(() => { const sh = u && !isHeld ? shadowHeld(u) : null; return sh && (sh.n > 0 || u.hidden) ? { hasWisps: true, wisps: wispsUri(sh.n, sh.max), wispStyle: wispStyle(sh.max), wispTitle: 'Shadow ' + sh.n + ' / ' + sh.max } : { hasWisps: false, wisps: '', wispStyle: '', wispTitle: '' }; })(),
+        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld, ally: !!u && u.side === 'pc' && owner(u) !== me }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + figIdle(u), // tokenFade.ts: held, Downed, Hidden, in that order
         hasBadge: !!(u && !faceOf(u)), badge: u ? u.short : '',
-        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld }) + figIdle(u),
+        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld, ally: !!u && u.side === 'pc' && owner(u) !== me }) + figIdle(u),
         hasText: ((diff.has(k) && !mapArt && !(KL && (KL.get(k) || {}).decal)) || !!cv) && !u,
         // a kit object's HALF / FULL and HP: a small quiet label, shown on hover (CSS) or always once it is damaged
         textCls: kitObj && cv && cv.hp >= cv.max ? 'phc-kitlbl' : '', textStyle: kitObj ? KIT_LABEL : TEXT_STYLE, text: cv ? (ob ? fmtNum(cv.hp) : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + fmtNum(cv.hp)) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',
@@ -1207,7 +1223,9 @@ export class CombatLogic extends DCLogic {
     }
     for (const t of tiles) if (t.worldNote) t.label += t.worldNote;
     // The map's tie lines (game/tieLayer.ts: a Bond's faint line, from the view's ties; stronger on the Bonder's turn or a hovered chip)
-    const tieLayer = tieLayerVals(cb, { turnOf: cur ? cur.id : null, hotTo: S.tieHot || null, motion: !reducedMotion() });
+    const tieLayer0 = tieLayerVals(cb, { turnOf: cur ? cur.id : null, hotTo: S.tieHot || null, motion: !reducedMotion() });
+    const eyeL = HH && HH.eyes.length && S.tab === 'shadow' && S.hover && S.hover === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : [];
+    const tieLayer = eyeL.length ? { ...tieLayer0, has: true, lines: [...tieLayer0.lines, ...eyeL] } : tieLayer0;
     // The strip turns over: the acting unit first, then who comes next (each slides to its new place).
     // An unseen hostile's place in the order is an opaque mark (the engine's fog): a card with nothing on it.
     const ordU = cb.order.map((id) => cb.units.find((u) => u.id === id) || (isUnseenId(id) ? { id, side: 'foe', unseen: true, hp: 1, maxHp: 1 } : null)).filter((u) => u && !u.dead), actId = cur ? cur.id : cb.window?.queue[0]?.unitId ?? cb.order[cb.turn], ci = Math.max(0, ordU.findIndex((u) => u.id === actId));

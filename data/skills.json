@@ -1512,6 +1512,8 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
+      "door_line": "Hidden: enemies can't target you, and your first attack from it is an ambush. Get there: Hide where no enemy's eyes reach you (behind a wall, in smoke, out of their sight). Holding Shadow, switch Break on that attack. Hidden ends when you attack, take a hit, or a foe ends its turn next to you.",
+      "door_tab": "shadow",
       "per_point": {
         "numbers": {
           "spot": 1
@@ -1538,7 +1540,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden.",
+          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy.",
           "effects": [
             {
               "op": "resource",
@@ -1555,6 +1557,10 @@
                 "per": "per_turn",
                 "n": 2,
                 "key": "gain"
+              },
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
               },
               "say": "{self} stays unseen: Shadow {res:shadow}."
             },
@@ -1591,6 +1597,10 @@
                   "flag": "cover"
                 }
               ],
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
               "say": "{self} slips from cover to cover: Shadow {res:shadow}."
             },
             {
@@ -1610,6 +1620,10 @@
                 "n": 2,
                 "key": "gain"
               },
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
               "say": "{self} kills unseen: Shadow {res:shadow}."
             },
             {
@@ -1624,6 +1638,10 @@
                 "self_has_res": [
                   "shadow"
                 ]
+              },
+              "fx": {
+                "k": "stance",
+                "what": "shadow_loss"
               },
               "say": "{self} is seen: Shadow {res:shadow}."
             },
@@ -1656,6 +1674,57 @@
               "resource": "shadow",
               "value": "zero",
               "when": "combat_end"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "hide"
+                ]
+              },
+              "value": -1,
+              "min": 1,
+              "label": "Go to Ground"
+            },
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "acted",
+              "if": {
+                "action": [
+                  "hide"
+                ],
+                "self_lacks_res": [
+                  "shadow"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "first"
+              },
+              "label": "First Shade",
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} settles into the dark (First Shade): Shadow {res:shadow}."
+            },
+            {
+              "op": "roll_mod",
+              "when": "to_hit",
+              "if": {
+                "self_has": [
+                  "hidden"
+                ],
+                "target_has": [
+                  "marked"
+                ]
+              },
+              "value": 1,
+              "label": "Tagged"
             }
           ],
           "toggles": [
@@ -1684,7 +1753,7 @@
                     "per": [
                       {
                         "of": "res:shadow",
-                        "value": 0.7
+                        "value": 0.6
                       },
                       {
                         "of": "event:ambush",
@@ -1708,6 +1777,10 @@
                       "condition": "hidden"
                     }
                   ],
+                  "fx": {
+                    "k": "stance",
+                    "what": "break"
+                  },
                   "say": "{self} breaks from the shadows and is revealed."
                 }
               ]
@@ -1718,7 +1791,7 @@
           "name": "Mastery 1",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
+          "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked). The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1730,6 +1803,57 @@
               "when": "spot",
               "value": 4,
               "label": "Close Quarters"
+            },
+            {
+              "op": "mark",
+              "flag": "ghost",
+              "when": "hit",
+              "if": {
+                "hostile": true,
+                "target_alive": false
+              }
+            },
+            {
+              "op": "condition",
+              "condition": "hidden",
+              "when": "acted",
+              "if": {
+                "flag": "ghost",
+                "self_sight": [
+                  "out_of_view"
+                ],
+                "self_lacks": [
+                  "marked",
+                  "hidden"
+                ]
+              },
+              "skip_save": true,
+              "same_entry": true,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "ghost"
+              },
+              "priority": 110,
+              "label": "Ghost Kill",
+              "fx": {
+                "k": "stance",
+                "what": "ghost"
+              },
+              "say": "{self} drops the body and sinks back into the dark (Ghost Kill)."
+            },
+            {
+              "op": "mark",
+              "flag": "ghost",
+              "clear": true,
+              "when": "acted",
+              "priority": 120
+            },
+            {
+              "op": "mark",
+              "flag": "ghost",
+              "clear": true,
+              "when": "turn_start"
             }
           ],
           "adjudication": "engine",
@@ -2696,6 +2820,8 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Shapes thought into images; pictures the Figments the bots build.",
+      "door_line": "In a fight, Picture offers your ready designs first, then every bare form you have opened (the Visualizer in hand).",
+      "door_tab": "figments",
       "per_point": {
         "source": "rules 1.34: the elemental line went with rules 1.26's slope; Visualization is Figments' door",
         "numbers": {
@@ -3162,6 +3288,8 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
+      "door_line": "A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you).",
+      "door_tab": "tend",
       "per_point": {
         "rows": [
           {

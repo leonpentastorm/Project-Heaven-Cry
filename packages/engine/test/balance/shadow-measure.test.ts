@@ -5,7 +5,8 @@
 // UPPER bound for a real Shadow build, which shares its points. Off unless SHADOW_MEASURE=1 (it prints a table); the
 // guard below runs always: no Break (Execution included) takes a full-HP Elite or Boss at the character's level under 1 HP.
 import { describe, it, expect } from 'vitest';
-import { apply, bindGame, resolveAttack, RULES, CLASS } from '../../src';
+import { apply, bindGame, resolveAttack, RULES, CLASS, SKILL, WEAPON, attackApCost } from '../../src';
+import { ACTIONS } from '../../src/actions';
 import { applyCond } from '../../src/magic';
 import { startFight } from './sim';
 
@@ -42,7 +43,32 @@ function windowPct(level: number, who: 'door' | 'operative', n: number) {
   return Math.round((win / plain) * C.plain.allin);
 }
 
+/** Rules 1.56 Shadow 2.0 slice 1 (items 4332, 4333): the door's first three turns played as a level-1 door plays them,
+ * from the fight's start with no Shadow. Before (`door_1`): turn 1 Hide at the plain price and wait Hidden (+1 at the
+ * turn's end), turn 2 a Break at 1 Shadow and the shots its AP leave, turn 3 shots. After (`door_2`): turn 1 Hide at the
+ * door's price, First Shade's Shadow, a Break at once and the shots its AP leave; turns 2 and 3 shots. The shot's AP is
+ * the rifle's (the simulator's plain gun), every price from data. Against the same nine plain shots. */
+function firstWindow(level: number, after: boolean, n: number) {
+  const DOOR: any = (SKILL as any).ingenuity.unlocks['1'], ground = DOOR.effects.find((e: any) => e.label === 'Go to Ground'), first = DOOR.effects.find((e: any) => e.label === 'First Shade');
+  const hide = (ACTIONS as any).find((a: any) => a.id === 'hide').ap, ap = 6;
+  let plain = 0, win = 0;
+  for (let i = 0; i < n; i++) {
+    const x = setUp(level, false, 'soldier', 'SW' + level + (after ? 'a' : 'b') + i), shotAp = attackApCost((WEAPON as any)[x.u.weapon], 'shot');
+    for (let k = 0; k < 9; k++) plain += shot(x);
+    const hideAp = after ? Math.max(ground.min, hide + ground.value) : hide;
+    const t1 = after ? Math.floor((ap - hideAp - shotAp) / shotAp) : 0, t2 = after ? 3 : Math.floor((ap - shotAp) / shotAp);
+    win += shot(x, { brk: after ? first.value : 1 });
+    for (let k = 0; k < t1 + t2 + 3; k++) win += shot(x);
+  }
+  return Math.round((win / plain) * C.plain.allin);
+}
+
 describe('Shadow: the window (rules 1.32, item 1962)', () => {
+  it.runIf((globalThis as any).process?.env?.SHADOW_MEASURE === '1')('Shadow 2.0 slice 1: the first window before and after (door_1, door_2)', () => {
+    const n = Number((globalThis as any).process?.env?.SHADOW_N) || 40, rows: string[] = [];
+    for (const L of [1, 5, 10, 20]) rows.push('L' + L + ': door_1 ' + firstWindow(L, false, n) + ', door_2 ' + firstWindow(L, true, n));
+    (globalThis as any).console.log('Shadow first window (line: door all in ' + C.shadow.door_allin + ', Operative ' + C.shadow.allin + ')' + String.fromCharCode(10) + rows.join(String.fromCharCode(10)));
+  });
   it.runIf((globalThis as any).process?.env?.SHADOW_MEASURE === '1')('measures the door and the Operative at levels 1, 5, 10, 20', () => {
     const n = Number((globalThis as any).process?.env?.SHADOW_N) || 40, rows: string[] = [];
     for (const L of [1, 5, 10, 20]) rows.push('L' + L + ': door ' + windowPct(L, 'door', n) + ', Operative ' + windowPct(L, 'operative', n));

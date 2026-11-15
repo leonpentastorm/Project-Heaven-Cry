@@ -8,6 +8,7 @@ import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
 import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
+import actionsJ from '../../../data/actions.json';
 import { type Character, mod, prayerCooldown, gearNum } from './character';
 import { say, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
@@ -199,8 +200,13 @@ export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, Sigh
 
 // ---------- combat Hidden (spec: Helpful states; rules 1.3) ----------
 export const TIER_NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
-/** Does any unit of the other side see this tile (range, light, line of sight)? */
-export const seenByFoes = (cb: Combat, u: Unit) => cb.units.some((v) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, v, u.pos));
+/** THE one test of an enemy's eyes on a unit: v, of the other side, up and not itself Hidden, sees the tile (range,
+ * light, line of sight). at: a tile the unit would stand on (the Hide spots, rules 1.56 Shadow 2.0 item 11). */
+const eyeOn = (cb: Combat, u: Unit, v: Unit, at: string) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, v, at);
+/** Does any unit of the other side see this tile (range, light, line of sight)? at: another tile (default its own). */
+export const seenByFoes = (cb: Combat, u: Unit, at: string = u.pos) => cb.units.some((v) => eyeOn(cb, u, v, at));
+/** The units of the other side whose eyes reach the unit's tile (or `at`): seenByFoes's own test, listed. */
+export const eyesOn = (cb: Combat, u: Unit, at: string = u.pos): Unit[] => cb.units.filter((v) => eyeOn(cb, u, v, at));
 /** Become Hidden (not while Marked). Each entry gives one ambush. Returns a log suffix. */
 export function hide(cb: Combat, u: Unit, why = ''): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
@@ -213,27 +219,42 @@ export function hide(cb: Combat, u: Unit, why = ''): string {
   sightFx(cb, null, { [u.id]: 'hide' }); // presentation: it fades from the eyes of a side that saw it
   return ' · ' + u.name + ' is Hidden' + (why ? ' (' + why + ')' : '');
 }
-/** Stop being Hidden (spotted, an attack that isn't silent, damage taken, an enemy ending its turn next to you). */
-export function reveal(cb: Combat, u: Unit, why: string): string {
+/** How a unit was found (rules 1.56 Shadow 2.0 item 13): spotted by a roll, an enemy ending next to it, a hit, its own
+ * attack, or anything else (a Boss in the open, a perk, a light). */
+export type FoundHow = 'spot' | 'close' | 'hit' | 'attack' | 'other';
+/** Presentation (rules 1.56 item 13): tell the unit's OWN side it was found (the other side's eyes get the 'sight'
+ * reveal): the effect stance 'found', with the finder only when that side sees it (fog). */
+export function foundFx(cb: Combat, u: Unit, how: FoundHow, by?: Unit | null): void {
+  emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'found', how, ...(by && by !== u && sideSeesUnit(cb, u.side === 'foe' ? 'foe' : 'pc', by) ? { by: by.id } : {}), only: u.side === 'foe' ? 'foe' : 'pc' });
+}
+/** Stop being Hidden (spotted, an attack that isn't silent, damage taken, an enemy ending its turn next to you).
+ * o.how, o.by: how and by whom it was found, for the effect its own side sees (foundFx). */
+export function reveal(cb: Combat, u: Unit, why: string, o: { how?: FoundHow; by?: Unit | null } = {}): string {
   if (!u.hidden) return '';
   rawHidden(cb, u, false);
   say(cb, u.name + ' is revealed (' + why + ').');
   emit(cb, 'spotted', { u, why, cb });
   sightFx(cb, null, { [u.id]: 'reveal' }); // presentation: it shimmers into the sight of a side that can see its tile
+  foundFx(cb, u, o.how || 'other', o.by);
   return ' · revealed';
 }
+// A hit that lands on a Hidden unit reveals it (effects/damage.ts marks the hook's ctx): its side sees it found (HIT).
+onHook('damage_in', (ctx: any, cb: Combat) => { if (ctx.phase === 'after' && ctx.revealed && cb) foundFx(cb, ctx.t, 'hit', ctx.src?.by || null); });
 // Rules 1.37 (shadow-spec 8.1): a Boss still Hidden when its first round is over (placed Hidden by the Narrator) is
 // revealed as the next round starts.
 onHook('round_start', (_ctx: any, cb: Combat) => { for (const u of cb.units) if (u.hidden && !u.dead && bossInTheOpen(cb, u)) reveal(cb, u, 'a Boss stands in the open after the first round'); });
 /** The Hide action (2 AP, provisional): only out of every enemy's sight, never while Marked. */
 /** Why this unit can't Hide now, whatever its AP (or null): the Hide action and its row in the action list both ask. */
 export function hideBlock(cb: Combat, u: Unit): string | null {
-  if (u.hidden) return 'Already Hidden.';
-  if (condOn(u, 'marked')) return 'Marked: you can\'t hide.';
-  if (bossInTheOpen(cb, u)) return 'A Boss stands in the open after the first round.'; // rules 1.37
-  if (seenByFoes(cb, u)) return 'An enemy can see you: get out of sight first.';
+  // the refusals are data, each with what to do about it (actions.json hide.why; rules 1.56, Shadow 2.0 item 4330)
+  if (u.hidden) return HIDE_WHY.hidden;
+  if (condOn(u, 'marked')) return HIDE_WHY.marked;
+  if (bossInTheOpen(cb, u)) return HIDE_WHY.boss; // rules 1.37
+  if (seenByFoes(cb, u)) return HIDE_WHY.seen;
   return null;
 }
+/** Hide's refusals (data/actions.json hide.why): hidden, marked, boss, seen; seen_to and seen_none, the seen refusal with where to go (descriptors.ts hideHelp, {who} and {tile}). */
+export const HIDE_WHY: Record<'hidden' | 'marked' | 'boss' | 'seen' | 'seen_to' | 'seen_none', string> = ((actionsJ as any).items.find((a: any) => a.id === 'hide')?.why) || {};
 export function hideAction(cb: Combat, u: Unit): string | null {
   { const no = hideBlock(cb, u); if (no) return no; }
   const ap = price({ cb, u }, 'hide').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
@@ -256,13 +277,13 @@ export function spotHidden(cb: Combat, rng: Rng, by: Unit, only?: Unit | null) {
     const close = dist(u.pos, by.pos) <= 1;
     if (!close && !unitSees(cb, by, u.pos)) continue;
     const pre: any = !close ? null : hookUsed('spot') ? emit(cb, 'spot', { by, u, die: 0, mod: m, tn: tn0, cancel: false, close: true, outright: true, cb, rng }) : { outright: true };
-    if (pre?.outright) { reveal(cb, u, by.name + ' is right next to them'); continue; }
+    if (pre?.outright) { reveal(cb, u, by.name + ' is right next to them', { how: 'close', by }); continue; }
     const die = pre?.cancel ? 0 : pre?.die || rollD20(rng).die; // (an item may have set the close roll's die)
     const ctx: any = pre ? { ...pre, die } : emit(cb, 'spot', { by, u, die, mod: m, tn: tn0, cancel: false, cb, rng });
     if (ctx.cancel) continue;
     const sr = judge('roll', { die: ctx.die }, ctx.mod, ctx.tn), ok = sr.ok; rollFx(cb, sr, by, { why: 'spot' }); // the hook may have changed the die, the modifier or the TN
     say(cb, by.name + ' looks for ' + u.name + ': ' + sr.text + (ok ? ' · spotted' : ' · nothing'));
-    if (ok) reveal(cb, u, 'spotted by ' + by.name);
+    if (ok) reveal(cb, u, 'spotted by ' + by.name, { how: 'spot', by });
   }
 }
 
@@ -340,7 +361,7 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   pay(cb, u, ctx.ap); u.throwables![item]--;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: item, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
   say(cb, u.name + (placed ? ' places a ' : ' throws a ') + w.name.toLowerCase() + ' at ' + refOf(tile) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : blast(cb, rng, u, tile, item, ctx.radius)) + '.');
-  if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase());
+  if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase(), { how: 'attack' });
   return null;
 }
 /** A thrown item goes off on a tile (credited to the thrower: kills, bleed, the barrels it sets off). */

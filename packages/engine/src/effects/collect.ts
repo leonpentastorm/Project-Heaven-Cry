@@ -221,6 +221,18 @@ export function meetsRequires(req: any[] | undefined, sheet: { skills?: Record<s
 }
 /** The door verbs a sheet holds (their ids, in order). */
 export const verbsOf = (sheet: { skills?: Record<string, number> | null; cls?: string | null; rank?: number }): string[] => allVerbs().filter((v) => meetsRequires(v.requires, sheet)).map((v) => v.id);
+/** Rules 1.56, Shadow 2.0 (spec item 4330): a door verb file's tab, read from data (each system's file: `tab_also` the core
+ * actions its tab lists too, as Hide on Shadow's). How the door works is its alpha skill's `door_line` (skills.json, the
+ * one reader: apps/web doorView.ts), never a second line here. A file with none gives an empty list. */
+export interface DoorTab { tab: string; also: string[] }
+export const DOOR_TABS: Record<string, DoorTab> = Object.fromEntries(([shadowJ, tendingJ, FIG] as any[]).filter((j) => typeof j?.tab === 'string')
+  .map((j) => [j.tab, { tab: j.tab, also: Array.isArray(j.tab_also) ? j.tab_also : [] }]));
+/** The door tabs a unit (its `held` verbs) or a sheet (a character: a verb's `requires`, the one test) opens, each with
+ * its lines. */
+export function doorTabsOf(x: { held?: Held | null; skills?: Record<string, number> | null; cls?: string | null; classId?: string | null; rank?: number }): DoorTab[] {
+  const held = new Set(x.held ? x.held.verbs || [] : verbsOf({ skills: x.skills, cls: x.cls ?? x.classId ?? null, rank: x.rank }));
+  return Object.values(DOOR_TABS).filter((d) => allVerbs().some((v) => v.tab === d.tab && held.has(v.id)));
+}
 /** The skill items a character's points reach. */
 export const skillItemsOf = (skills: Record<string, number> | null | undefined): string[] =>
   SKILL_ITEMS.filter((k) => { const [sid, lvl] = k.split('.'); return (skills?.[sid] || 0) >= +lvl; });

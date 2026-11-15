@@ -80,7 +80,7 @@
 "item/perk/used_to_the_pain@II/taken-fire": "P1 res.momentum1>0",
 "item/perk/used_to_the_pain@II/taken-low": "P1 res.momentum1>0; F2 ammo24>23 ap0>7 heat0>1",
 "item/perk/used_to_the_pain@II/taken-soul": "P1 res.momentum1>0",
-"item/perk/vanishing_act@mastered/action/vanishing_act": "P1 ap9>7 | short: Needs 2 AP. | again: NO Already Hidden. | next: NO Already Hidden. | later: NO Already Hidden.",
+"item/perk/vanishing_act@mastered/action/vanishing_act": "P1 ap9>7 | short: Needs 2 AP. | again: NO Already Hidden: strike from here, or move and stay out of every enemy's eyes. | next: NO Already Hidden: strike from here, or move and stay out of every enemy's eyes. | later: NO Already Hidden: strike from here, or move and stay out of every enemy's eyes.",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-blow": "P1 ap9>7",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-shot": "P1 ammo12>11 ap9>7 heat0>1",
 "item/perk/wall_run@II/action/wall_strike": "P1 ammo24>23 ap9>6 bank0>1.5 heat0>1 res.momentum1>0 | short: Needs 2 AP. | again: P1 ammo23>22 ap9>7 heat1>2 | next: P1 ammo23>22 ap9>7 heat0>1 | later: P1 ammo23>22 ap9>7 heat0>1",

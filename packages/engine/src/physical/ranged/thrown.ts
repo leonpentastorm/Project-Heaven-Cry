@@ -87,7 +87,7 @@ function lobGrenade(t: Tech, id: string): string | null {
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: id, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id, tech: t.def.id, vi: 0 });
   say(cb, u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : lobbing(u, id, () => blast(cb, t.rng, u, tile!, id, ctx.radius))) + '.');
   if (!ctx.cancel && explosive) blastPressure(t, tile!, ctx.radius);
-  if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + nameOf(w));
+  if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + nameOf(w), { how: 'attack' });
   return null;
 }
 
@@ -110,7 +110,7 @@ function lobBlast(t: Tech): string | null {
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id, tech: t.def.id, vi: 0 });
   say(cb, u.name + ' lobs a round from the ' + w.name + ' onto ' + refOf(tile!) + lobbing(u, w.id, () => blast(cb, t.rng, u, tile!, w.id, radius)) + (u.jammed && t.hand === 'main' ? ' · the weapon jams' : '') + '.');
   blastPressure(t, tile!, radius);
-  if (u.hidden && !isSilent(u)) reveal(cb, u, 'fired');
+  if (u.hidden && !isSilent(u)) reveal(cb, u, 'fired', { how: 'attack' });
   return null;
 }
 

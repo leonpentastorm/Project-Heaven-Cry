@@ -11,7 +11,7 @@ import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pus
 import { itemAmount } from '../effects/amounts';
 import { SKILL, WEAPON, ITEM } from '../data';
 import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
-import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
+import { hide, reveal, seenByFoes, TIER_NOTICE, HIDE_WHY } from '../tactics';
 import { applyCond, condOn } from '../magic';
 import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../character';
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
@@ -461,8 +461,8 @@ const vanished = (h: Holder) => { const s = stateOf(h); return !!h.u?.hidden && 
 register({
   id: 'vanishing_act', claims: 'all',
   on: {
-    on_hit: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked'); },
-    on_miss: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked'); },
+    on_hit: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked', { how: 'attack' }); },
+    on_miss: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked', { how: 'attack' }); },
     forced_move: (ctx, h) => { if (ctx.by === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'shoved'); },
     outburst_release: (ctx, h) => { if (ctx.u === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'released an Outburst'); },
     moved: (ctx, h) => { if (h.u && ctx.u.side !== h.u.side && vanished(h) && dist(ctx.to, h.u.pos) <= 1) reveal(ctx.cb, h.u, ctx.u.name + ' walks into them'); },
@@ -475,7 +475,7 @@ register({
     {
       id: 'vanishing_act', label: 'Vanishing Act', scope: ['combat'], ap: 'data', uses: { per: 'per_combat', n: 1 }, target: 'none',
       text: 'Once a fight: drop out of sight where you stand, even in plain view. You stay Hidden until you attack or someone touches you.',
-      available: (h) => (h.u?.hidden ? 'Already Hidden.' : h.u && condOn(h.u, 'marked') ? 'Marked: you can\'t hide.' : true),
+      available: (h) => (h.u?.hidden ? HIDE_WHY.hidden : h.u && condOn(h.u, 'marked') ? HIDE_WHY.marked : true),
       run: (h) => { const cb = h.cb!, u = h.u!; const out = hide(cb, u, 'Vanishing Act'); if (!u.hidden) return 'You can\'t hide now.'; stateOf(h).entry = u.hideEntry; log(cb, u.name + ' is simply gone' + out + '.'); return null; },
     },
     {

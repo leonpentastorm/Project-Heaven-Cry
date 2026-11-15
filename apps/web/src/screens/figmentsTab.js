@@ -13,6 +13,7 @@ import { figmentLadderView, figmentDesignView, figmentLookOf, pendingDoorPicks }
 import { act, toast } from '../game/store';
 import { figmentIconUri, FIG_INK, FIG_LINE } from '../game/figmentIcons';
 import { groupedSection } from '../game/workshopGroups';
+import { doorLineOf } from '../game/doorView';
 
 const MUTED = '#7F8BA1', TEXT = '#E7EBF3';
 const chip = (on, off) => 'display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px 0 6px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.5' : 'pointer')
@@ -92,7 +93,7 @@ export function figmentSectionVals(sc, g, c, rerender) {
     steps, designs, noDesigns: !designs.length, noDesignsText: V.designsMax ? 'No designs kept yet: a design is a form with its traits, named, ready to picture.' : (V.newWhy || ''),
     canNew, newWhy: canNew ? '' : V.newWhy || '', hasNewWhy: !canNew && !!V.newWhy,
     newDesign: () => { if (!canNew) return toast(V.newWhy || 'Not now.'); set({ id: null, name: '', form: firstOpen.id, traits: [] }); },
-    pictureNote: 'In a fight, Picture offers your ready designs first, then every bare form you have opened (the Visualizer in hand).',
+    pictureNote: doorLineOf('visualization'), // the door's one line (skills.json door_line, the one reader: game/doorView.ts)
     ed,
   };
 }
