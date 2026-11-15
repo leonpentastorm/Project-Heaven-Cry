@@ -348,7 +348,7 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
   for (const [k, n] of Object.entries(p.take)) { const l = lines.find((x) => x.key === k); if (!l) continue;
     carrying.push({ group: 'Bought', label: (n > 1 ? n + ' × ' : '') + nameOf(l.id) + (l.per > 1 ? ' (' + l.per * n + ')' : '') + ' · ' + l.price * n + ' cr', kg: 0, free: false, put: { type: 'run/loadout', charId: c.id, op: 'take', key: k, qty: -1 } }); }
   for (const it of packOf(c)) carrying.push({ group: 'In the pack', label: itemLabel(it), kg: kgOf(it), free: true, put: null });
-  for (const [id, f] of Object.entries(COUNTED)) if (c[f]) carrying.push({ group: 'In the pack', label: c[f] + ' × ' + nameOf(id), kg: Math.round(c[f] * ((ITEM[id] as any)?.weight_kg || 0) * 100) / 100, free: true, put: null }); // items.json `counted`
+  for (const [id, f] of Object.entries(COUNTED)) if (c[f]) carrying.push({ group: 'In the pack', label: c[f] + ' × ' + nameOf(id), kg: Math.round(c[f] * ((ITEM[id] as any)?.weight_kg || 0) * 100) / 100, free: true, put: null }); // items.json `counts_into`
   const spent = loadoutSpent(c, p), chars = Object.values(g.characters), owner = (pid: string) => chars.find((x) => x.owner === pid) || null;
   const boonBlock = (): LoadoutViewV['boon'] => {
     const offer = startOffer(c, r.seed);

@@ -2,7 +2,7 @@
 // not a unit: it stands on a tile (cb.images), has no HP and takes no turn. Each enemy it fooled (a failed Brain save
 // when it appeared) sees the image where its owner stands: the AI attacks and closes on the image instead of the real
 // one (combat.ts enemyTurn, enemyIntent; the Sigil and Soul planners leave a fooled enemy's real owner alone). An
-// attack on an image passes through it and it scatters. Images fade at the start of their owner's turn two rounds on.
+// attack on an image passes through it and it scatters. A body-less image (Glimmer) fades at the start of its owner's turn its rounds on.
 // Everything here is deterministic: no die is rolled (the saves are rolled by the class move with the game's rng).
 import type { Combat, Unit } from './combat';
 import { say, emitFx, previewAttack, isMelee, refOf, sideSeesUnit, sightBlockers, resolveAttack } from './combat';
@@ -13,8 +13,10 @@ import { pay } from './effects/cost';
 
 export interface FalseImage {
   id: string; owner: string; pos: string; side: 'pc' | 'foe';
-  /** The round it appeared (it fades at its owner's turn start in round + 2). */
+  /** The round it appeared (a body-less one fades at its owner's turn start in round + fade). */
   round: number;
+  /** The rounds a body-less image lasts (Glimmer: its row's numbers.fade_rounds). */
+  fade?: number;
   /** Enemy unit ids that failed their Brain save: they take the image for its owner. */
   fooled: string[];
   /** Rules 1.34 (Figments): the Double whose body this image is (a unit of cb.units): a fooled enemy sees the owner
@@ -76,8 +78,9 @@ export function strikeImage(cb: Combat, att: Unit, ghost: Unit, mode: 'melee' | 
   say(cb, att.name + (melee ? ' strikes at ' : ' fires at ') + (owner ? owner.name : 'someone') + ' at ' + refOf(img.pos) + ': it passes through a False Image, which scatters.');
   dropImage(cb, img, 'struck');
 }
-/** An image fades at its owner's turn start two rounds after it appeared, or when its owner falls. */
+/** An image fades at its owner's turn start its `fade` rounds after it appeared (Glimmer's row, figments.json
+ * numbers.fade_rounds), or when its owner falls. */
 export function imageTurnStart(cb: Combat, u: Unit) {
   const img = imageOfOwner(cb, u.id); if (!img) return;
-  if (u.dead || cb.round >= img.round + 2) { dropImage(cb, img, u.dead ? 'owner down' : 'faded'); say(cb, u.name + '\'s False Image fades.'); }
+  if (u.dead || cb.round >= img.round + (img.fade ?? 0)) { dropImage(cb, img, u.dead ? 'owner down' : 'faded'); say(cb, u.name + '\'s False Image fades.'); }
 }

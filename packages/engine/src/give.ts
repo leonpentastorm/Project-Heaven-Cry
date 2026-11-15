@@ -11,7 +11,7 @@
 import './datatext';
 import svJ from '../../../data/survival.json';
 import { WEAPON, ITEM } from './data';
-import { type Character, type PackItem, packOf } from './character';
+import { type Character, type PackItem, packOf, packKindOf } from './character';
 import { packAdd, itemLabel, COUNTED, intoCounts } from './containers';
 import { creditsOf, payCredits, earnCredits } from './credits';
 import { relicRow, worthOf, runWorth, BOON_CAP } from './run/power';
@@ -89,7 +89,7 @@ export function giveNow(g: GameState, by: string, a: GiveAction): { ok: string; 
   }
   if (a.count != null) { // rules 1.55 item 31: out of the giver's count, into the receiver's by intoCounts (the one door)
     const f = COUNTED[a.count], n = Math.max(1, Math.min(c[f] || 0, Math.round(a.qty ?? 1)));
-    c[f] = (c[f] || 0) - n; intoCounts(to, { id: a.count, item: a.count, name: nameOfId(a.count), qty: n, kind: 'med' } as PackItem);
+    c[f] = (c[f] || 0) - n; intoCounts(to, { id: a.count, item: a.count, name: nameOfId(a.count), qty: n, kind: packKindOf(a.count) } as PackItem);
     return { ok: c.name + ' gives ' + to.name + ' ' + (n > 1 ? n + ' × ' : '') + nameOfId(a.count) + '.', to, from: c };
   }
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[a.idx!], k = qtyOf(it, a.qty), part = partOf(it, k);

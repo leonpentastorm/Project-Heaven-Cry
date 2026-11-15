@@ -16,10 +16,11 @@ import type { Combat, Unit } from './combat';
 import { say, emitFx, dist, unitSees, refOf, alive, resolveAttack, previewAttack, sightCheck } from './combat';
 import type { Character, FigmentDesign } from './character';
 import { mod } from './character';
-import { ENEMY, enemyLevelRow, RULES } from './data';
+import { ENEMY, enemyLevelRow, RULES, SKILL } from './data';
 import { register, statQuery, charOfUnit, uses } from './effects';
 import { onHook } from './effects/hooks';
 import { registerPickList } from './effects/actions';
+import { rawItem } from './effects/collect';
 import { price, resGive } from './effects/cost';
 import { levelFactor, statTerm } from './effects/output';
 import { spawnOwned, unmakeOwned, ownedBy, ownerOf, addOwnedGate } from './owned';
@@ -57,6 +58,8 @@ export function ladderAt(points: number): FigLadder {
 }
 /** The door's id for its picks (figments.json visualizer.door). */
 export const FIG_DOOR: string = FIG.visualizer.door;
+/** The door skill's name, as the sheet shows it (skills.json), for the forks' and the forms' sentences. */
+const SKILL_NAME = (): string => SKILL[FIG_DOOR]?.name || FIG_DOOR;
 /** Every fork of the ladder by id (its points and its forms). */
 const FORKS: Record<string, FigFork> = Object.fromEntries(LADDER.filter((r) => r.fork).map((r) => [r.fork.id, { id: r.fork.id, of: [...r.fork.of], points: r.points }]));
 /** The forms this character holds open: the ladder's at its points, and the ones it chose (door/pick), in data order. */
@@ -68,8 +71,8 @@ export function formsOf(c: Character | null | undefined): string[] {
  * the forms already open for every holder taken out. */
 export function figmentGrants(c: Character): DoorGrant[] {
   const L = ladderAt(c.skills?.visualization || 0), fixed = new Set(L.forms), name = (ids: string[]) => ids.map((f) => FORM[f]?.name || f).join(', ');
-  const forks: DoorGrant[] = L.forks.map((k) => ({ id: 'fork:' + k.id, of: k.of.filter((f) => !fixed.has(f)), n: 1, why: 'Visualization ' + k.points + ': choose one of ' + name(k.of) + '.' }));
-  const more: DoorGrant[] = L.more.map((m) => { const of = m.of.flatMap((id) => FORKS[id]?.of || []).filter((f) => !fixed.has(f)); return { id: 'more:' + m.points, of, n: m.n, why: 'Visualization ' + m.points + ': one more of ' + name(of) + '.' }; });
+  const forks: DoorGrant[] = L.forks.map((k) => ({ id: 'fork:' + k.id, of: k.of.filter((f) => !fixed.has(f)), n: 1, why: SKILL_NAME() + ' ' + k.points + ': choose one of ' + name(k.of) + '.' }));
+  const more: DoorGrant[] = L.more.map((m) => { const of = m.of.flatMap((id) => FORKS[id]?.of || []).filter((f) => !fixed.has(f)); return { id: 'more:' + m.points, of, n: m.n, why: SKILL_NAME() + ' ' + m.points + ': one more of ' + name(of) + '.' }; });
   return [...forks, ...more].filter((g) => g.of.length > 0);
 }
 registerDoorPicks(FIG_DOOR, { name: 'Figment', grants: figmentGrants, option: (id) => (FORM[id] ? { id, label: FORM[id].name, icon: FORM[id].icon || '' } : null) });
@@ -111,15 +114,13 @@ export function heldMax(u: Unit | null | undefined, c?: Character | null): numbe
 export function designsMax(c: Character, u?: Unit | null): number { const p = c.skills?.visualization || 0; return p >= 3 ? ladderAt(p).designs + statQuery({ c, u }, 'figment_designs').add : 0; }
 /** How many traits a design may carry. */
 export const traitsMax = (points: number): number => ladderAt(points).traits;
-/** The forms this many points open for every holder (the forks' choices are formsOf's). */
-export const formsOpen = (points: number): string[] => ladderAt(points).forms;
 /** Why this character can't use this form yet (null: it can): its points, or its fork not taken. */
 export function formWhy(c: Character, form: string): string | null {
   const f = FORM[form]; if (!f) return 'No such form.';
   if (formsOf(c).includes(form)) return null;
   const k = f.opens?.fork ? FORKS[f.opens.fork] : null;
   if (k && (c.skills?.visualization || 0) >= k.points) return f.name + ' is not one of your chosen forms.';
-  return f.name + (k ? ' is a choice at Visualization ' + k.points + '.' : ' needs Visualization ' + f.opens.min + '.');
+  return f.name + (k ? ' is a choice at ' + SKILL_NAME() + ' ' + k.points + '.' : ' needs ' + SKILL_NAME() + ' ' + f.opens.min + '.');
 }
 
 // ---------------------------------------------------------------------------------------------- designs
@@ -132,7 +133,7 @@ export function designWhy(c: Character, d: FigmentDesign): string | null {
   const tr = d.traits || [];
   if (tr.some((t) => !FIG_TRAIT[t])) return 'No such trait.';
   if (new Set(tr).size !== tr.length) return 'A trait only once.';
-  if (tr.length > traitsMax(p)) return traitsMax(p) ? 'At most ' + traitsMax(p) + ' trait' + (traitsMax(p) > 1 ? 's' : '') + ' a design.' : 'Traits open at Visualization 3.';
+  if (tr.length > traitsMax(p)) return traitsMax(p) ? 'At most ' + traitsMax(p) + ' trait' + (traitsMax(p) > 1 ? 's' : '') + ' a design.' : 'Traits open at ' + SKILL_NAME() + ' ' + (LADDER.find((r) => (r.traits || 0) > 0) || {}).points + '.'; // the ladder's first row with traits (figments.json)
   return null;
 }
 /** Why a new design can't be kept now (no room in the ready count), null when there is room; one copy of the rule for the
@@ -143,7 +144,7 @@ export function designRoomWhy(c: Character, id?: string | null): string | null {
   if (list.length < designsMax(c)) return null;
   if (designsMax(c)) return 'You keep ' + designsMax(c) + ' designs ready: drop one first.';
   const at = (LADDER.find((r) => (r.designs || 0) > 0) || {}).points;
-  return 'Designs open at Visualization ' + at + '.';
+  return 'Designs open at ' + SKILL_NAME() + ' ' + at + '.';
 }
 /** Keep a design (out of a fight): replaces one with the same id, refused past the ready count. */
 export function setFigmentDesign(c: Character, d: FigmentDesign): string | null {
@@ -287,9 +288,10 @@ export function unravel(cb: Combat, u: Unit, why: string): void {
  * (no double_save: Vermin, Minions) or makes a Brain save against 12 + the owner's Visualization strength, the tier's
  * double_save added to its save (and found_out_add once it found a Double out this fight). A fooled enemy sees `as`
  * (the owner, or the Mirror's pick) where the Double stands. */
-function lure(cb: Combat, rng: Rng, owner: Unit, body: Unit | null, as: Unit, at: string, label: string) {
-  // body null: a false Figment (Glimmer, rules 1.56): light alone, no unit; struck, it scatters (illusion.ts)
-  const img: FalseImage = { id: 'img' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), owner: as.id, pos: at, side: owner.side, round: cb.round, fooled: [], ...(body ? { body: body.id } : {}) };
+function lure(cb: Combat, rng: Rng, owner: Unit, body: Unit | null, as: Unit, at: string, label: string, fade?: number) {
+  // body null: a false Figment (Glimmer, rules 1.56): light alone, no unit; struck, it scatters (illusion.ts); `fade`:
+  // the rounds it lasts (its row's numbers.fade_rounds)
+  const img: FalseImage = { id: 'img' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), owner: as.id, pos: at, side: owner.side, round: cb.round, fooled: [], ...(body ? { body: body.id } : {}), ...(fade != null ? { fade } : {}) };
   const lines: string[] = [];
   for (const e of cb.units) {
     if (e.side === owner.side || !alive(e) || !unitSees(cb, e, at)) continue;
@@ -376,7 +378,7 @@ register({
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile), no = pictureTileWhy(cb, u, k); if (no) return no;
       say(cb, u.name + ' glimmers a false image of ' + u.name + ' at ' + refOf(k!) + '.');
-      lure(cb, rng as Rng, u, null, u, k!, 'The Glimmer');
+      lure(cb, rng as Rng, u, null, u, k!, 'The Glimmer', rawItem(h.key)?.numbers?.fade_rounds);
       return null;
     },
   }],
@@ -400,7 +402,7 @@ onHook('turn_start_pre', (ctx: any, cb: Combat) => {
 });
 onHook('turn_start', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.u; if (!u) return;
-  // a Glimmer (an image with no body) fades at its owner's turn start two rounds on (illusion.ts imageTurnStart)
+  // a Glimmer (an image with no body) fades at its owner's turn start its rounds on (illusion.ts imageTurnStart)
   if (cb.images?.length) { const img = imageOfOwner(cb, u.id); if (img && !img.body) imageTurnStart(cb, u); }
   if (!cb.ties?.length) return;
   // a Figment with a lifetime (the Rigger's Double) fades at its owner's turn start in its last round

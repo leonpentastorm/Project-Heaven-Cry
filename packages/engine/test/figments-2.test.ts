@@ -60,14 +60,16 @@ describe('the orders on today\'s forms and the caster\'s orders (slice 2)', () =
     const a = sendDescriptor(f.g, u.id, row.id, {})!; expect(a).toMatchObject({ type: 'combat/owned', verb: 'figment_cash_in' }); f.act(a);
     u = f.unit(u.id); expect(f.figments(u).length).toBe(0); expect(u.mg!.vcharge).toBe(ch + FORM.double.charge * VERB.figment_cash_in.refund_share);
   });
-  it('Glimmer: every Visualization user\'s false Figment: no charge, the order site; a Minion takes it for you; it fades two rounds on', () => {
+  it('Glimmer: every Visualization user\'s false Figment: no charge, the order site; a Minion takes it for you; it fades its rounds on (numbers.fade_rounds)', () => {
     const f = figFight([{ skills: { visualization: 1 }, weapon: 'service_pistol', forms: [] }], [{ tier: 'minion', at: '6,4', classic: true }]);
     let u = f.turn(f.pc); const ch = u.mg!.vcharge!, ap = u.ap;
     f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:glimmer', tile: '3,4' } as any); u = f.unit(u.id);
     expect(ap - u.ap).toBe(ORDER); expect(u.mg!.vcharge).toBe(ch); expect(f.figments(u).length).toBe(0);
     const seen = withGame(f.g, () => perceivedFoes(f.cb, f.foe)); const ghost = seen.find((x) => isGhost(x))!;
     expect(ghost.pos).toBe('3,4'); expect(seen.some((x) => x.id === u.id)).toBe(false);
-    f.cb.round += 2; u = f.turn(u); expect((f.cb.images || []).length).toBe(0);
+    const fade = F.items.find((x: any) => x.id === 'glimmer').numbers.fade_rounds; // its lifetime, from its row
+    f.cb.round += fade - 1; u = f.turn(u); expect((f.cb.images || []).length).toBe(1); // a round short: still there
+    f.cb.round += 1; u = f.turn(u); expect((f.cb.images || []).length).toBe(0);
   });
   it('Glimmer needs the Visualizer in hand (Leon\'s ruling 1: always)', () => {
     const f = figFight([{ skills: { visualization: 3 }, weapon: 'service_pistol', visualizer: 'pack', forms: [] }]); const u = f.turn(f.pc);
