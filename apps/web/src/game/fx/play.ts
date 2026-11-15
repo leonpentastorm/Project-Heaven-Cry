@@ -1386,7 +1386,7 @@ wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, pr
 // its rolls drawn one by one; it wraps everything above.
 wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose, explosion });
 // The Momentum chain 2.0 (fx/breaker.ts): the counter's moments, the impact ring, the finishers' lines, Launch, the smash.
-wrapBreaker(H, { at, tokOf, posOf: (id) => unit(id)?.pos, maxOf: (id) => unit(id)?.resMax?.momentum ?? null, play });
+wrapBreaker(H, { at, tokOf, posOf: (id) => unit(id)?.pos, maxOf: (id) => (unit(id) as any)?.resMax?.momentum ?? null, play });
 // Figments (fx/figments.ts): the summon (the caster, a thread, the forming), their orders and attacks, their unmaking.
 wrapFigments(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, release: (id) => releaseMover(id), ghost: (id, key, life) => ghostOf(id, key, life) });
 /** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
