@@ -1,0 +1,105 @@
+{
+  "$schema_version": "1.0",
+  "kind": "variants",
+  "source": "PHC Core Rules v1.0, rules 1.56 (Balance 2.0), L4 Variants; docs/design/proposals/2026-11-balance-2.0.md section 4; build plan 0.29 C10, C11. Every number PROVISIONAL.",
+  "note": "Mode-neutral. A variant is a named weapon or focus: a base row plus one or two modifiers of the closed list of kinds below. The engine makes each variant's row at load (packages/engine/src/variants.ts): the base row with the field kinds' changes, the variant's own id, name and grade, and one modifier item per effect kind, held only while the instance is in a hand (hooks.ts heldOfChar, the predicate with_this). Its price is the base's times (1 + worth / 100), at its grade, through credits.ts priceOf. A variant is never rolled: loot, a shop or a campaign may name one by id. The validator refuses a third modifier, an unknown kind or form, a kind that does not fit the base, two of one kind, a worth over worth_cap.",
+  "adjudication": "engine",
+  "provisional": true,
+  "worth_cap": 20,
+  "kinds": [
+    { "id": "harder", "name": "Harder", "neutral": 1, "provisional": true, "forms": [
+      { "id": "weapon", "fits": ["guns", "melee"], "worth_per": 100, "sentence": "Lands {value|more}% harder.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "damage_mult", "when": "dealing", "if": { "with_this": true, "damage": ["weapon"] }, "value": 1 }] },
+      { "id": "focus", "fits": ["foci"], "worth_per": 100, "sentence": "Its door's harm lands {value|more}% harder.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "damage_mult", "when": "dealing", "if": { "with_this": true }, "value": 1 }] }
+    ] },
+    { "id": "true", "name": "True", "neutral": 0, "provisional": true, "forms": [
+      { "id": "weapon", "fits": ["guns", "melee"], "worth_per": 5, "sentence": "{value|signed} to hit.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "roll_mod", "when": "to_hit", "if": { "with_this": true }, "value": 0 }] },
+      { "id": "focus", "fits": ["foci"], "worth_per": 5, "sentence": "Its door's rolls to hit are {value|signed}, and the saves it forces are {value} harder.", "puts": ["effects.0.value", "effects.1.value"],
+        "effects": [{ "op": "roll_mod", "when": "to_hit", "if": { "with_this": true }, "value": 0 }, { "op": "roll_mod", "when": "save", "roll": "tn", "if": { "actor": "self", "with_this": true }, "value": 0 }] }
+    ] },
+    { "id": "quick_hands", "name": "Quick hands", "neutral": 0, "provisional": true, "forms": [
+      { "id": "reload", "fits": ["guns"], "worth_per": 6, "sentence": "Reloading it costs {value|abs} AP less, never under {effects.0.min}.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "cost_mod", "when": "reload", "if": { "with_this": true }, "value": 0, "min": 1 }] },
+      { "id": "core", "fits": ["evoker"], "worth_per": 3, "sentence": "Swapping a core costs {value|abs} AP less, never under {effects.0.min}.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "cost_mod", "when": "cost", "if": { "with_this": true, "action": ["swap_core"] }, "value": 0, "min": 1 }] },
+      { "id": "vent", "fits": ["evoker"], "worth_per": 3, "value_fixed": 1, "sentence": "Your first Vent a turn costs no AP.", "puts": [],
+        "effects": [{ "op": "cost_mod", "when": "cost", "if": { "with_this": true, "action": ["vent"] }, "set": 0, "limit": { "per": "per_turn", "n": 1 } }] }
+    ] },
+    { "id": "rider", "name": "Rider", "neutral": 0, "provisional": true, "forms": [
+      { "id": "bleed", "fits": ["guns", "melee"], "worth_per": 8, "value_fixed": 1, "sentence": "A hit makes the target Bleed.", "puts": [],
+        "effects": [{ "op": "condition", "when": "hit", "if": { "with_this": true, "target_alive": true }, "target": "target", "condition": "bleeding", "skip_save": true }] }
+    ] },
+    { "id": "kind", "name": "Kind", "neutral": 1, "provisional": true, "forms": [
+      { "id": "focus", "fits": ["foci"], "worth_per": 40, "sentence": "Its heals and shields are {value|more}% stronger.", "puts": ["effects.0.value", "effects.1.value"],
+        "effects": [{ "op": "mend_mult", "when": "heal", "if": { "actor": "self", "target": "any", "with_this": true }, "value": 1 }, { "op": "mend_mult", "when": "shield", "if": { "actor": "self", "target": "any", "with_this": true }, "value": 1 }] }
+    ] },
+    { "id": "deep_magazine", "name": "Deep magazine", "neutral": 0, "provisional": true, "forms": [
+      { "id": "field", "fits": ["magazine_guns"], "worth_per": 0.5, "field": "magazine", "sign": 1, "sentence": "Holds {value} more rounds." }
+    ] },
+    { "id": "long_reach", "name": "Long reach", "neutral": 0, "provisional": true, "forms": [
+      { "id": "field", "fits": ["guns"], "worth_per": 2, "field": "range_tiles", "sign": 1, "sentence": "Reaches {value} tiles further." }
+    ] },
+    { "id": "runs_cool", "name": "Runs cool", "neutral": 0, "provisional": true, "forms": [
+      { "id": "field", "fits": ["heat_guns"], "worth_per": 1, "field": "heat_limit", "sign": 1, "sentence": "Takes {value} more Heat before it must vent." }
+    ] },
+    { "id": "kicks_less", "name": "Kicks less", "neutral": 0, "provisional": true, "forms": [
+      { "id": "field", "fits": ["recoil_guns"], "worth_per": 5, "field": "recoil", "sign": -1, "sentence": "Kicks less: Recoil {value} lower." }
+    ] },
+    { "id": "holds_more_flux", "name": "Holds more Flux", "neutral": 0, "provisional": true, "forms": [
+      { "id": "stat", "fits": ["evoker"], "worth_per": 3, "sentence": "Holds {value} more Flux before it overloads.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "stat_mod", "stat": "flux_max", "value": 0 }] }
+    ] },
+    { "id": "deep_cell", "name": "Deep cell", "neutral": 0, "provisional": true, "forms": [
+      { "id": "stat", "fits": ["evoker"], "worth_per": 3, "sentence": "Each core gives {value} more charge.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "stat_mod", "stat": "core_charge", "value": 0 }] }
+    ] },
+    { "id": "steady_heart", "name": "Steady heart", "neutral": 0, "provisional": true, "forms": [
+      { "id": "stat", "fits": ["emanator", "attuner"], "worth_per": 5, "sentence": "Your Strain limit is {value} higher while you hold it.", "puts": ["effects.0.value"],
+        "effects": [{ "op": "stat_mod", "stat": "strain_limit", "value": 0 }] }
+    ] }
+  ],
+  "items": [
+    { "id": "hellraiser_service_rifle.long_belly", "name": "Hellraiser 'Long Belly'", "base": "hellraiser_service_rifle", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "deep_magazine", "value": 8 }, { "kind": "kicks_less", "value": 1 }] },
+    { "id": "decrkm_smg.steady_hand", "name": "Decrkm 'Steady Hand'", "base": "decrkm_smg", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "kicks_less", "value": 1 }, { "kind": "true", "form": "weapon", "value": 1 }] },
+    { "id": "legion_pdw.quickdraw", "name": "Legion 'Quickdraw' PDW", "base": "legion_pdw", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "quick_hands", "form": "reload", "value": -1 }] },
+    { "id": "coach_gun.ranch_pair", "name": "Coach gun 'Ranch Pair'", "base": "coach_gun", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "long_reach", "value": 2 }] },
+    { "id": "drifter_revolver.hot_six", "name": "Drifter 'Hot Six'", "base": "drifter_revolver", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "harder", "form": "weapon", "value": 1.1 }] },
+    { "id": "brigade_auto_shotgun.cold_drum", "name": "Brigade 'Cold Drum'", "base": "brigade_auto_shotgun", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "runs_cool", "value": 3 }, { "kind": "deep_magazine", "value": 4 }] },
+    { "id": "ccec_marksman_rifle.pin", "name": "CCEC 'Pin'", "base": "ccec_marksman_rifle", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "true", "form": "weapon", "value": 1 }] },
+    { "id": "hellraiser_rotary.lazy_susan", "name": "Rotary 'Lazy Susan'", "base": "hellraiser_rotary", "rarity": "masterwork", "provisional": true,
+      "mods": [{ "kind": "runs_cool", "value": 6 }, { "kind": "kicks_less", "value": 1 }] },
+    { "id": "lever_carbine.brush_gun", "name": "Lever carbine 'Brush Gun'", "base": "lever_carbine", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "quick_hands", "form": "reload", "value": -1 }, { "kind": "long_reach", "value": 2 }] },
+    { "id": "crossbow.barbed", "name": "Crossbow 'Barbed'", "base": "crossbow", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "rider", "form": "bleed" }] },
+    { "id": "evoker.deep_well", "name": "Evoker 'Deep Well'", "base": "evoker", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "holds_more_flux", "value": 2 }] },
+    { "id": "evoker.long_fuse", "name": "Evoker 'Long Fuse'", "base": "evoker", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "deep_cell", "value": 2 }, { "kind": "quick_hands", "form": "core", "value": -1 }] },
+    { "id": "evoker.vent_valve", "name": "Evoker 'Vent Valve'", "base": "evoker", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "quick_hands", "form": "vent" }] },
+    { "id": "evoker.marksmans_glove", "name": "Evoker 'Marksman's Glove'", "base": "evoker", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "true", "form": "focus", "value": 1 }] },
+    { "id": "emanator.calm_wrist", "name": "Emanator 'Calm Wrist'", "base": "emanator", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "steady_heart", "value": 1 }] },
+    { "id": "emanator.red_knuckle", "name": "Emanator 'Red Knuckle'", "base": "emanator", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "harder", "form": "focus", "value": 1.1 }] },
+    { "id": "attuner.warm_palm", "name": "Attuner 'Warm Palm'", "base": "attuner", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "kind", "form": "focus", "value": 1.15 }] },
+    { "id": "attuner.tight_thread", "name": "Attuner 'Tight Thread'", "base": "attuner", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "true", "form": "focus", "value": 1 }] },
+    { "id": "visualizer.long_lens", "name": "Visualizer 'Long Lens'", "base": "visualizer", "rarity": "fine", "provisional": true,
+      "mods": [{ "kind": "true", "form": "focus", "value": 1 }] },
+    { "id": "visualizer.steady_eye", "name": "Visualizer 'Steady Eye'", "base": "visualizer", "rarity": "masterwork", "provisional": true,
+      "mods": [{ "kind": "true", "form": "focus", "value": 2 }] }
+  ]
+}

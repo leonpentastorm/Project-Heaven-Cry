@@ -41,6 +41,8 @@ export const STATS = {
   counter: 'Counter chance', ambush_mult: 'Ambush damage multiplier', ambush_taken: 'Ambush damage taken', elemental_taken: 'Elemental damage taken',
   heal_received: 'Healing received multiplier', shield_received: 'Shields received multiplier', mult_heal_given: 'Healing given multiplier', mult_physical: 'Physical damage multiplier',
   blessing_power: 'Blessing power (faith.ts)', max_sigil_words: 'Sigil words known at once', glyph_ap: 'AP a glyph costs to draw', module_slots: 'Outburst module slots',
+  // rules 1.56 L4 (plan 0.29 primitive 4): what a variant's modifier adds while its focus is in a hand
+  flux_max: 'Flux an Evoker holds before it overloads, beside rules.json mana.sigil.flux.safe_max (magic.ts fluxMaxOf)', core_charge: 'Charge one mana core gives, beside rules.json mana.cores.standard.charge (character.ts coreChargeOf)',
   ready_designs: 'Outburst designs readied', free_pumps: 'Free Pumps a fight', soul_range: 'Outburst reach', strain_limit: 'Strain limit', throw_range: 'Throw range',
   // ---- asked in a fight (combat.ts, tactics.ts, magic.ts, physical/, faith.ts)
   armor: 'Armour value (combat.ts unit build)', attack: 'Attack bonus (combat.ts unit build)', vision: 'Vision in tiles', death_save: 'A Downed unit\'s death save',

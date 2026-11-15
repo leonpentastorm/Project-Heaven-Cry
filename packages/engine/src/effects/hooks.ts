@@ -3,6 +3,7 @@
 // cb.units order, then items in a fixed order (traits, perks, class moves), then handler priority: dispatch is
 // deterministic.
 import { addConditionRows, clearAddedConditions } from '../condtable';
+import { WEAPON, ITEM } from '../data';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
@@ -178,7 +179,9 @@ export function heldOfChar(c: Character | null | undefined): Held {
   // same reading as character.ts gearProps (this file takes no runtime import of character.ts).
   // Rules 1.56 (plan 0.29 primitive 1): the mods fitted to the instances in the hands are held the same way (each acts only
   // through `with_this`: the event made with the instance that carries it).
-  const props = [c.weaponState?.prop, c.offHand?.prop, ...(c.pack || []).map((x) => x.prop), ...(c.weaponState?.mods || []), ...(c.offHand?.mods || [])].filter((x): x is string => !!x);
+  // Rules 1.56 L4: a variant's modifiers (its row's `variant_mods`, data/variants.json) are held for an instance in a hand.
+  const baked = (id: string | null | undefined): string[] => (id ? ((WEAPON[id] || ITEM[id]) as any)?.variant_mods || [] : []);
+  const props = [c.weaponState?.prop, c.offHand?.prop, ...(c.pack || []).map((x) => x.prop), ...(c.weaponState?.mods || []), ...(c.offHand?.mods || []), ...baked(c.weapon), ...baked(c.offHand?.id)].filter((x): x is string => !!x);
   const rel = props.length ? [...new Set([...(c.relics || []), ...props])] : c.relics || [];
   return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(rel.length ? { relics: [...rel] } : {}), ...(vb.length ? { verbs: vb } : {}) };
 }

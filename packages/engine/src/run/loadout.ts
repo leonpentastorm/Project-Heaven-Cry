@@ -37,7 +37,7 @@ export interface Archetype { id: string; name: string; family: string; category:
 /** An archetype's weapons, cheapest first by priceOf at Standard (a tie by id): the first is its free weapon, the second
  * the rack's better one. */
 export function archetypeWeapons(a: Archetype): string[] {
-  return Object.keys(WEAPON).filter((id) => { const w: any = WEAPON[id]; return w.mastery_family === a.family && w.category === a.category && !(a.skip || []).includes(id) && priceOf(id) != null; })
+  return Object.keys(WEAPON).filter((id) => { const w: any = WEAPON[id]; return w.mastery_family === a.family && w.category === a.category && !w.variant_of && !(a.skip || []).includes(id) && priceOf(id) != null; })
     .sort((x, y) => (priceOf(x) || 0) - (priceOf(y) || 0) || (x < y ? -1 : 1));
 }
 /** The camp's weapon rack by archetype (rules 1.52; Leon, 14 Nov): the free weapon (the archetype's most basic), the

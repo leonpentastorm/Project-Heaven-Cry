@@ -30,7 +30,7 @@ import { callPad, previewCall } from './calls/core';
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH } from './faith';
 import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleEntry } from './effects/actions';
 import type { PerkActionEntry } from './effects/actions';
-import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
+import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, fluxMaxOf, coreChargeOf, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
 import { focusHand, NEEDS_EVOKER, NEEDS_EMANATOR } from './character';
 import { PILE, isPile } from './containers';
@@ -713,11 +713,11 @@ const MAGIC: ActionSystem = {
       const wordOpts = words.map((w) => { const p: any = safe(() => withGame(x.g, () => previewDraw(cb, u, w, u.pos)), { ok: false, why: 'Not now.' } as any); return { id: w, label: w.toUpperCase(), why: p.ok ? null : p.why || 'Not now.' }; });
       out.push(D('draw', 'sigils', 'Draw a glyph', gAp, apT(gAp), 'Pick a word on the glyph keyboard, then click your own tile. A tile holds one glyph. Step and draw again to walk a Line of 2 to 4 glyphs in a straight row. Each glyph costs its word\'s charge from your Evoker and adds its Flux.', evoWhy,
         { picks: [{ key: 'word', kind: 'option', renderer: 'glyph-keyboard', prompt: 'Pick a word.', options: wordOpts }, { key: 'stroke', kind: 'custom', renderer: 'stroke', prompt: 'Which stroke it goes into.', optional: true }, { key: 'tile', kind: 'tile', prompt: 'Click your own tile to draw.', choices: [u.pos], auto: true }], preview: 'sigil' }));
-      out.push(D('evoke', 'sigils', 'Evoke', SPELL_AP.evoke, apT(SPELL_AP.evoke), 'Fire a Line of glyphs. It needs a Subject and at least one other word. Where you stand aims it: from an end, it fires along the Line; from the side, across it. Charge ' + mg.charge + '/' + CORE_CHARGE + '.', evoWhy,
+      out.push(D('evoke', 'sigils', 'Evoke', SPELL_AP.evoke, apT(SPELL_AP.evoke), 'Fire a Line of glyphs. It needs a Subject and at least one other word. Where you stand aims it: from an end, it fires along the Line; from the side, across it. Charge ' + mg.charge + '/' + coreChargeOf({ u, cb }) + '.', evoWhy,
         { picks: [{ key: 'evoke', kind: 'custom', renderer: 'evoke', prompt: 'Click a glyph of a Line to Evoke it.', choices: (x.seen.glyphs || []).map((gl: any) => gl.pos) }], preview: 'sigil', toggleOn: 'combat/evoke' }));
       out.push(D('scuff', 'sigils', 'Scuff', SPELL_AP.scuff, apT(SPELL_AP.scuff), 'Wipe out the glyphs on the tile you stand on.', null, { preview: 'sigil' }));
-      out.push(D('vent', 'sigils', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, vAp, apT(vAp), 'Pour all your Flux into the air. The mana meter rises by the same amount. If your Flux goes past ' + FLUX_MAX + ', the Evoker overloads.' + apNote('vent', vAp), evoWhy, { preview: 'sigil' }));
-      out.push(D('core', 'sigils', 'Swap core', cAp, apT(cAp), apNote('core', cAp) + 'Load a fresh mana core with ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy, { preview: 'sigil' }));
+      out.push(D('vent', 'sigils', 'Vent Flux · ' + mg.flux + '/' + fluxMaxOf(u, cb), vAp, apT(vAp), 'Pour all your Flux into the air. The mana meter rises by the same amount. If your Flux goes past ' + fluxMaxOf(u, cb) + ', the Evoker overloads.' + apNote('vent', vAp), evoWhy, { preview: 'sigil' }));
+      out.push(D('core', 'sigils', 'Swap core', cAp, apT(cAp), apNote('core', cAp) + 'Load a fresh mana core with ' + coreChargeOf({ u, cb }) + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy, { preview: 'sigil' }));
     }
     if (designs.length || mg.emanator) {
       const held = mg.held;

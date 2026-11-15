@@ -145,6 +145,7 @@ export const SHOOTER = { archetype: 'sharpshooter', level: 6, skills: { dexterit
 export function recordWeapons(T: Table) {
   for (const w of Object.values(A.WEAPON) as any[]) {
     if (w.category === 'thrown') continue; // thrown items go off through Throw (the flat section)
+    if (w.variant_of) continue; // a variant (rules 1.56 L4) is its base's row plus modifiers: test/variants.test.ts pins it
     const g0 = fightSpec([{ ...SHOOTER, weapon: w.id }], TIERS.map((tier) => ({ tier })), { level: 6, seed: 'weapon/' + w.id });
     const melee = isMeleeW(w.id), mode = melee ? 'melee' : 'shot';
     for (const tier of TIERS) {

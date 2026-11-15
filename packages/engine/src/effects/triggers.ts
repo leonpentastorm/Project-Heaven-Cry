@@ -230,7 +230,8 @@ function madeWithUnit(ev: Ev): boolean {
   const u = ev.self, ctx = ev.ctx || {}, src = ctx.src, id = ev.h.itemId;
   if ((ctx.mode ?? src?.mode) === 'thrown') return false;
   const off = ctx.hand === 'off' && !u.swapMain, mods = off ? u.offMods : u.mods, w = off ? u.offWeapon : u.weapon;
-  return !!w && (mods || []).includes(id) && (src?.weapon ?? w) === w;
+  // rules 1.56 L4: a variant's modifiers are its row's own (data/variants.json `variant_mods`)
+  return !!w && ((mods || []).includes(id) || ((WEAPON[w] as any)?.variant_mods || []).includes(id)) && (src?.weapon ?? w) === w;
 }
 P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus', (ev, v) => madeWith(ev) === v);
 // Rules 1.33 (Tending, Bonds and the Mender): a door's ladder, the holder's ties, the action's pick

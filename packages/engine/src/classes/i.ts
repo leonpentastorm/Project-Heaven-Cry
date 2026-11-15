@@ -31,7 +31,7 @@ import { itemAmount, amountMult, amountBlock, amountSpecOf } from '../effects/am
 import { BUFF_HEAL, saveTn, makeZone } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, saveAgainst, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
-  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
+  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, fluxMaxOf, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
   formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP, planStrike,
   type EvokePreview, type Spell,
 } from '../magic';
@@ -94,8 +94,8 @@ function evokerReady(h: Holder): string | null {
  * all of it bursts into the air). The same rule as magic.ts flux(), for class moves that add Flux. */
 function addFlux(cb: Combat, u: Unit, n: number): string {
   const m = u.mg; if (!m || n <= 0) return '';
-  m.flux += n; if (m.flux <= FLUX_MAX) return ' · +' + n + ' Flux (' + m.flux + '/' + FLUX_MAX + ')';
-  const over = m.flux - FLUX_MAX, all = m.flux; m.flux = 0; m.lockRound = cb.round;
+  const max = fluxMaxOf(u, cb); m.flux += n; if (m.flux <= max) return ' · +' + n + ' Flux (' + m.flux + '/' + max + ')';
+  const over = m.flux - max, all = m.flux; m.flux = 0; m.lockRound = cb.round;
   emitFx(cb, 'overload', { unit: u.id, at: u.pos }); shiftMana(cb, all, 'an Evoker overloads');
   const r = applyDamage(cb, u, itemAmount('rule:flux_overload', 'damage', [], { flux_over: over }), { type: 'overload', shield: true, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
   return ' · OVERLOAD: the Evoker bursts (' + r.amount + ' damage to ' + u.name + '), locked until next round';

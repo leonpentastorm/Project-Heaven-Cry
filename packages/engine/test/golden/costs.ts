@@ -376,7 +376,7 @@ export function recordCredit(T: Record<string, string>) {
 }
 
 export function recordFoes(T: Record<string, string>) {
-  const guns = (Object.values(A.WEAPON) as any[]).filter((w) => w.magazine != null && w.reload).map((w) => w.id).sort();
+  const guns = (Object.values(A.WEAPON) as any[]).filter((w) => w.magazine != null && w.reload && !w.variant_of).map((w) => w.id).sort();
   for (const wid of guns) for (const tier of ['soldier', 'elite']) {
     let g: any; try { g = fightSpec([{ ...SHOOTER }, { ...SHOOTER }], [{ tier, weapon: wid }], { level: 6, seed: 'foe/' + wid }); } catch (e: any) { T['foe/' + wid + '/' + tier + '/setup'] = 'THREW ' + why(e); continue; }
     const [u, al] = pcs(g), f = foes(g)[0];

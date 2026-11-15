@@ -4,11 +4,11 @@
 // Everything is deterministic: rolls come from the rng passed in.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import figmentsJ from '../../../data/figments.json';
-import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
+import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, RULES, type SigilDef, type ToneRider } from './data';
 import {
   type Character, type OutburstDesign, packKindOf, mod, maxMp, healingMult, packOf, soulPicksLeft, practiceOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
-  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
+  soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide, CORE_CHARGE, coreChargeOf,
 } from './character';
 import { say, type Combat, type Unit, alwaysSeen, bossInTheOpen, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
 import { type Rng, die } from './rng';
@@ -106,8 +106,12 @@ export interface MagicUnit {
  * feeling poured in and the Strain it added. */
 export interface PumpRec { design: string; stage0: number; ap: number; free: 'first' | 'empathy' | 'item' | null; feeling?: string; strain: number; felt0: number; /** the stages this pump added (Revert takes back only these, not a Feed's after it) */ added?: number; /** what an item added to the multiplier with this pump (Shape, rules 1.19) */ plus?: number; /** rules 1.24: the MP this pump took (Revert gives it back) */ mp?: number }
 export const MANA_START = 15;
-export const FLUX_MAX = 6;
-export const CORE_CHARGE = 10;
+/** The Flux an Evoker holds before it overloads (rules 1.4; data/rules.json mana.sigil.flux.safe_max): the one copy (C11). */
+export const FLUX_MAX: number = Number((RULES as any).mana?.sigil?.flux?.safe_max);
+if (!(FLUX_MAX > 0)) throw new Error('data/rules.json mana.sigil.flux.safe_max is missing');
+/** This unit's Flux limit: FLUX_MAX plus what its items add (stat `flux_max`: a variant's Holds more Flux, rules 1.56 L4). */
+export const fluxMaxOf = (u: Unit, cb?: Combat | null): number => FLUX_MAX + statQuery({ u, cb: cb || null }, 'flux_max').add;
+export { CORE_CHARGE, coreChargeOf };
 /** The standard mana core's item id (a resource's neutral item: every core line is lootToPack of it). */
 export const CORE_ITEM = 'standard_core';
 /** rules 1.34: a Visualizer's core (figments.json visualizer.charge). */
@@ -622,9 +626,9 @@ export function withElement<T>(el: string | null, f: () => T): T { const was = F
 export function magicSpellWords<T>(n: number, f: () => T): T { const was = SPELL; SPELL = { words: n }; try { return f(); } finally { SPELL = was; } }
 /** Add Flux; past the limit the Evoker overloads (exported for class moves: hooks gap I8/K1). */
 export function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
-  const m = u.mg!; m.flux += n;
-  if (m.flux <= FLUX_MAX) return '';
-  const over = m.flux - FLUX_MAX, all = m.flux; m.flux = 0; m.lockRound = cb.round;
+  const m = u.mg!, max = fluxMaxOf(u, cb); m.flux += n;
+  if (m.flux <= max) return '';
+  const over = m.flux - max, all = m.flux; m.flux = 0; m.lockRound = cb.round;
   emitFx(cb, 'overload', { unit: u.id, at: u.pos }); shiftMana(cb, all, 'an Evoker overloads');
   return ' OVERLOAD: the Evoker bursts' + harmFor('overload', () => harm(cb, rng, null, u, itemAmount('rule:flux_overload', 'damage', [], { flux_over: over }), 'true')) + ', locked until next round';
 }
@@ -650,7 +654,7 @@ export function swapCore(cb: Combat, u: Unit): string | null {
   { const no = whyNot(cb, u, ap); if (no) return no; } if (m.cores < 1) return 'No spare cores.';
   // focus: which Evoker throws out the spent core (an Evoker blade, a grand staff, else the off-hand Evoker), for the picture
   const focus = [u.weapon, u.offWeapon].find((id) => id && ((WEAPON as any)[id]?.properties || []).includes('counts_as_evoker')) || 'evoker';
-  pay(cb, u, ap); m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); say(cb, u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
+  const full = coreChargeOf({ u, cb }); pay(cb, u, ap); m.cores--; m.charge = full; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); say(cb, u.name + ' loads a fresh core into the Evoker (' + full + ' charge).');
   return null;
 }
 /** Enemies scuff a glyph of the other side they stand on (spec: Sigils, Drawing 7). */

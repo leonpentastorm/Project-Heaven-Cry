@@ -3028,6 +3028,90 @@ for _a in data["attributes"]["items"]:
     _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}
     if _a.get("skills") != _want: errors.append(f"attributes.json {_a['id']}: skills {_a.get('skills')} is not what skills.json says ({_want})")
 
+# Rules 1.56 (Balance 2.0), L4: variants (data/variants.json; packages/engine/src/variants.ts is the one loader). A
+# variant is a base weapon or focus and one or two modifiers of the closed list of kinds. Refused: a third modifier, an
+# unknown kind or form, a kind that does not fit the base, two of one kind, a total worth over worth_cap.
+_vj = data.get("variants")
+if _vj is not None:
+    _wmap = {w["id"]: w for w in items("weapons")}
+    _imap = {i["id"]: i for i in items("items")}
+    _grades = [k for k, v in (data["rules"].get("rarity") or {}).items() if isinstance(v, dict)]
+    _vgun = lambda w: bool(w) and w.get("magazine") is not None and bool(w.get("ammo")) and w.get("category") != "thrown"
+    _vmelee = lambda w: bool(w) and w.get("category") != "unarmed" and ("melee" in str(w.get("category")) or (w.get("phys") or {}).get("system") == "melee")
+    _vfits = {
+        "guns": lambda b, w, i: _vgun(w), "magazine_guns": lambda b, w, i: _vgun(w) and w.get("reload") == "magazine",
+        "heat_guns": lambda b, w, i: _vgun(w) and isinstance(w.get("heat_limit"), (int, float)), "recoil_guns": lambda b, w, i: _vgun(w) and (w.get("recoil") or 0) > 0,
+        "melee": lambda b, w, i: _vmelee(w), "foci": lambda b, w, i: bool(i and i.get("focus")),
+    }
+    for _fid in [x["id"] for x in items("items") if x.get("focus")]: _vfits[_fid] = (lambda f: (lambda b, w, i: b == f))(_fid)
+    _vfields = {"magazine", "range_tiles", "heat_limit", "recoil"}
+    _vcap = _vj.get("worth_cap")
+    if not isinstance(_vcap, (int, float)) or _vcap <= 0: errors.append("variants.json: worth_cap is a number over 0 (percent of a rifle-turn)")
+    _vk = {}
+    for _k in _vj.get("kinds") or []:
+        _w = f"variants.json kind {_k.get('id')}"
+        if _k.get("id") in _vk: errors.append(f"{_w}: a kind id is unique")
+        _vk[_k.get("id")] = _k
+        if not isinstance(_k.get("neutral", 0), (int, float)): errors.append(f"{_w}: neutral is a number")
+        if not _k.get("forms"): errors.append(f"{_w}: a kind has at least one form")
+        for _f in _k.get("forms") or []:
+            _fw = f"{_w}/{_f.get('id')}"
+            if not _f.get("fits") or not set(_f["fits"]) <= set(_vfits): errors.append(f"{_fw}: fits names what it goes on ({sorted(_vfits)})")
+            if not isinstance(_f.get("worth_per"), (int, float)) or _f["worth_per"] < 0: errors.append(f"{_fw}: worth_per is a number, 0 or more")
+            if not isinstance(_f.get("sentence"), str) or not _f["sentence"]: errors.append(f"{_fw}: a form has its sentence")
+            elif re.search(r"\d", re.sub(r"\{[^}]*\}", " ", _f["sentence"])): errors.append(f"{_fw}: a sentence has no typed number (its numbers are {{value}} placeholders)")
+            if "field" in _f:
+                if _f["field"] not in _vfields: errors.append(f"{_fw}: a field kind changes one of {sorted(_vfields)}")
+                if _f.get("sign") not in (1, -1): errors.append(f"{_fw}: a field kind's sign is 1 or -1")
+                if _f.get("effects"): errors.append(f"{_fw}: a form is a field or effects, not both")
+            else:
+                if not _f.get("effects"): errors.append(f"{_fw}: a form changes a field or has effects")
+                for _ei, _e in enumerate(_f.get("effects") or []):
+                    if _e.get("op") not in OPS: errors.append(f"{_fw} effect {_ei}: unknown op {_e.get('op')}")
+                    if isinstance(_e.get("when"), str):
+                        check_trigger_effect(_e, f"{_fw} effect {_ei}")
+                        if (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_fw} effect {_ei}: a variant's modifier works only with its instance: if.with_this true")
+                    elif _e.get("op") == "stat_mod" and not declared_stat(_e.get("stat")): errors.append(f"{_fw} effect {_ei}: stat '{_e.get('stat')}' is not declared (effects/stats.ts)")
+                for _pp in _f.get("puts") or []:
+                    _n = {"effects": _f.get("effects") or []}
+                    try:
+                        for _part in _pp.split("."): _n = _n[int(_part)] if isinstance(_n, list) else _n[_part]
+                        if not isinstance(_n, (int, float)): raise KeyError(_pp)
+                    except Exception: errors.append(f"{_fw}: puts names a number in its effects ({_pp})")
+            if "value_fixed" in _f and not isinstance(_f["value_fixed"], (int, float)): errors.append(f"{_fw}: value_fixed is a number")
+    _vseen = set()
+    for _v in _vj.get("items") or []:
+        _w = f"variants.json {_v.get('id')}"
+        if _v.get("id") in _vseen or _v.get("id") in _wmap or _v.get("id") in _imap: errors.append(f"{_w}: a variant's id is its own (no other variant, weapon or item has it)")
+        _vseen.add(_v.get("id"))
+        _b = _v.get("base"); _bw, _bi = _wmap.get(_b), _imap.get(_b)
+        if not (_bw or (_bi and _bi.get("focus"))): errors.append(f"{_w}: base '{_b}' is a weapon or a focus"); continue
+        if not isinstance(_v.get("name"), str) or not _v["name"] or re.search(r"\d", _v["name"]): errors.append(f"{_w}: a variant has a name, with no number in it")
+        if _v.get("rarity", "standard") not in _grades: errors.append(f"{_w}: rarity is one of {_grades}")
+        _ms = _v.get("mods") or []
+        if not 1 <= len(_ms) <= 2: errors.append(f"{_w}: a variant has one or two modifiers, never {len(_ms)}")
+        if len({m.get("kind") for m in _ms}) != len(_ms): errors.append(f"{_w}: two modifiers of one kind")
+        _worth = 0
+        _row = dict(_bw or _bi)
+        for _m in _ms:
+            _k = _vk.get(_m.get("kind"))
+            if not _k: errors.append(f"{_w}: unknown kind '{_m.get('kind')}' ({sorted(_vk)})"); continue
+            _forms = _k.get("forms") or []
+            _f = next((x for x in _forms if x.get("id") == (_m.get("form") or (_forms[0].get("id") if _forms else None))), None)
+            if not _f: errors.append(f"{_w}: kind {_k['id']} has no form '{_m.get('form')}'"); continue
+            if not any(_vfits[x](_b, _bw, _bi) for x in _f.get("fits") or [] if x in _vfits): errors.append(f"{_w}: {_k['id']} does not fit {_b} (it fits {_f.get('fits')})")
+            _val = _f.get("value_fixed", _m.get("value"))
+            if not isinstance(_val, (int, float)) or isinstance(_val, bool): errors.append(f"{_w}: {_k['id']} needs a numeric value"); continue
+            if "value_fixed" in _f and "value" in _m: errors.append(f"{_w}: {_k['id']} has a fixed value: the line gives none")
+            if _val == _k.get("neutral", 0): errors.append(f"{_w}: {_k['id']} at its neutral value changes nothing")
+            _worth += abs(_val - _k.get("neutral", 0)) * _f.get("worth_per", 0)
+            if "field" in _f:
+                if not isinstance(_row.get(_f["field"]), (int, float)): errors.append(f"{_w}: {_k['id']} changes {_f['field']}, which {_b} does not have as a number")
+                else:
+                    _row[_f["field"]] = _row[_f["field"]] + _f.get("sign", 1) * _val
+                    if _row[_f["field"]] < 0: errors.append(f"{_w}: {_k['id']} takes {_f['field']} under 0")
+        if isinstance(_vcap, (int, float)) and _worth > _vcap + 1e-9: errors.append(f"{_w}: worth {round(_worth, 2)} is over worth_cap {_vcap}")
+
 # The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import text_numbers

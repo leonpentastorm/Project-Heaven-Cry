@@ -5,6 +5,8 @@
 // classes/j.ts keeps its own class-state credits; it moves here when it returns.)
 import { WEAPON, ITEM, RULES, ARMOUR_CLASSES } from './data';
 import { RARITY, type Character, type Rarity, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from './character';
+/** The grades in order (rules.json rarity): what a variant's own grade is compared against. */
+const rarityOrder = (): string[] => Object.keys(RARITY);
 
 /** The credits a character holds (0 when it has never had any). */
 export const creditsOf = (c: { credits?: number } | null | undefined): number => Math.max(0, Math.floor(Number(c?.credits) || 0));
@@ -58,6 +60,9 @@ export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly 
   const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false || def.built === false) return null;
   let p = Number(def.price_credits);
   if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = specialRoundPrice(WR.special_round_price?.calibre, def.ammo_type) ?? NaN;
+  // rules 1.56 L4: a variant (data/variants.json) is its base's price x (1 + its modifiers' worth / 100), and never under
+  // its own grade (a direct upgrade comes at a rarer grade and costs more)
+  if (def.variant_of) { p = p * (1 + Number(def.variant_worth || 0) / 100); const order = rarityOrder(); if (order.indexOf(def.variant_grade) > order.indexOf(rarity)) rarity = def.variant_grade; }
   if (!Number.isFinite(p) || p <= 0) return null;
   const base = Math.round(p * (RARITY[rarity]?.price ?? 1));
   return base + mods.reduce((t, x) => t + (priceOf(x) || 0), 0);

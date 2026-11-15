@@ -6,7 +6,7 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, isGunId, quiversOf, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
-import { CORE_CHARGE, CORE_ITEM, VIS_CHARGE } from '../magic';
+import { CORE_CHARGE, coreChargeOf, CORE_ITEM, VIS_CHARGE } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
 import { rollTable, defaultTable, type Drops, type DropEntry } from '../loot';
@@ -122,7 +122,7 @@ export function supplyMp(c: Character, count: number | PackN): number {
 }
 /** Rules 1.51 (spec rule 52 b): the Sigil and Figment charge a character holds: its spare cores x a core's charge, and
  * the loaded charge of each Evoker and Visualizer it carries. (Shown on the run's screens; the supply pack counts cores.) */
-export const chargeHeld = (c: Character): number => coresCarried(c) * CORE_CHARGE + evoChargeNow(c) + (carriesVisualizer(c) ? Math.max(0, Math.min(VIS_CHARGE, c.visCharge ?? VIS_CHARGE)) : 0);
+export const chargeHeld = (c: Character): number => coresCarried(c) * coreChargeOf({ c }) + evoChargeNow(c) + (carriesVisualizer(c) ? Math.max(0, Math.min(VIS_CHARGE, c.visCharge ?? VIS_CHARGE)) : 0);
 /** Rules 1.51 (spec rule 52 b; the review): the spare cores burnt in a fight, from two counts of the cores carried
  * (coresCarried) as it began and as it ended: never below 0, never more than were held as it began. The core loaded in a
  * focus is not counted until it is swapped out (a Rest fills it). */
@@ -137,8 +137,9 @@ export const creditsFor = (c: Character, credits: number): number => Math.round(
 
 const RARITIES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 /** The weapons and foci a pick can offer (rule 26): every weapon and focus with a price, no thrown things. */
+// (a variant, rules 1.56 L4, is never rolled: loot, a shop or a campaign names one by id)
 const PICKABLE: string[] = [...Object.keys(WEAPON).filter((id) => (WEAPON[id] as any).category !== 'thrown'), ...Object.keys(ITEM).filter((id) => (ITEM[id] as any).focus)]
-  .filter((id) => priceOf(id) != null);
+  .filter((id) => priceOf(id) != null && !((WEAPON[id] || ITEM[id]) as any).variant_of);
 const categoryOf = (id: string): string => (WEAPON[id] as any)?.category || ((ITEM[id] as any)?.focus ? 'focus' : 'item');
 /** The highest price a pick may roll at a node (rule 26), on the standard price. */
 export const priceBand = (k: PayKind, depth: number, stage: number): number => {
