@@ -230,6 +230,7 @@ if (process.env.FIELD_SHOT) copyFileSync(OUT + 'field.png', process.env.FIELD_SH
 await p.locator('[data-phc-field-leave]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'reward', null, { timeout: 30000 });
 ok('Leave the field: the rewards', (await G()).run.state === 'reward');
+g = await G(); // what the field's pickup brought is the pack the pick adds to
 await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 { // the music's Now playing card leaves within its 5 s after a fight (it stayed over the sheet for 30 s and more)
