@@ -6013,6 +6013,31 @@ standard core's 150 credits (Magic, "Mana cores").
    board and the squad, with no area map and no quest board. Every "full screen" of rules 1.42 to 1.52 is superseded by
    it.
 
+## Rules 1.55 (15 Nov 2026)
+
+Leon (15 Nov 2026): "balance can be break if there is something broken in the mod slot"; "weapon mod can be a reward
+just like raw weapon. maybe at the forge you pay some dough to get them attached". Ruled: the Forge's fee only (a mod
+as a reward pick, and mods moved into data, are 0.29).
+
+1. **Weapon mods: a mod the engine does not run is not sold.** An item row marked `built: false` (today the foregrip,
+   the wrapped grip, the underslung launcher and the sigil-etched magazine, and the pavise shield) has no price
+   (`priceOf`), so no Forge stock, shop stock, reward pick, pick of kit or camp list holds it, and none sells. The
+   validator refuses a `built: false` item in any fixed stock list (the shop's counter, the lasting fill, a loot
+   table, a loadout). When its effect is built the flag goes and it is sold again.
+2. **In a Survival run a weapon mod is fitted only by the armourer at a Forge, for a fee.** Fitting, swapping and
+   taking off a mod are the Forge's service (`run/fit_mod`, `run/unfit_mod`, listed on the Forge's Mods and armour tab):
+   the fee is `forge.fit.rate` (0.2, PROVISIONAL) x the mod's price, at least `forge.fit.min` (25 credits, PROVISIONAL),
+   rounded up. A swap pays the new mod's fee once and the old mod goes into the pack; taking a mod off pays that mod's
+   fee and puts it in the pack. The fit is to the weapon in the main hand (as `fitMod` has always fitted; an off-hand
+   or a packed gun is drawn first). The free fit from the pack (`gear/mod`, and in a fight its 1 AP form) is refused in
+   a run, in words. A quiver's enchantment keeps its free fit (rules 1.53). Buying a mod at the Forge puts it in the
+   pack as before; fitting it is the second step. A campaign and the Proving Ground keep the free fit. Not yet covered:
+   the extra slot of Gun Nut, Blade Recluse and Overhaul (`extra_mod`) is still fitted free (0.29).
+3. **The mod ceiling (rules 1.18), measured, not changed.** The red dot on the Frontier hand cannon (151 / 156% of the
+   plain rifle at levels 6 / 12; with Gun Nut and both optics 161 / 160) and the red dot and extended magazine on the
+   Brigade auto-shotgun (150 at level 6) pass the 145% ceiling. The numbers that do it (the red dot's band, the extended
+   magazine's +50%) are typed in engine code, not data, so they are left for 0.29, when mods move into data.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
