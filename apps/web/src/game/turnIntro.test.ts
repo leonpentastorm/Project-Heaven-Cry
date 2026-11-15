@@ -1,6 +1,6 @@
 // Turn banners and the your-turn cut-in read a real fight: who is up, whose they are, and the four commands.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, type Sheet, newCharacter, startCombat } from '@engine';
+import { ARCHETYPES, type Sheet, newCharacter, startCombat, WEAPON } from '@engine';
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true, location: { search: '', hash: '' } });
 vi.stubGlobal('location', { search: '', hash: '' });
@@ -132,6 +132,17 @@ describe('turn banners', () => {
     delete g.sandbox;
     expect(_test.cutFor(g, cb, pc.id)!.cmds[0]).toMatchObject({ action: 'tq:main:shot', custom: true });
     C.writePrefs(g, 'c1', [null, null, null, null]);
+  });
+});
+
+describe('an empty gun with nothing to load (0.28.1 playtest)', () => {
+  it('Shoot and the reload are greyed with the reason, not offered', () => {
+    const { pc } = game();
+    const lever: any = Object.values(WEAPON).find((w: any) => w.reload === 'loose' && w.magazine && w.ammo)!;
+    const u: any = { ...pc, weapon: lever.id, ammo: 0, loose: 0, mags: [], jammed: false };
+    const cmds = C.smartCommands(u), shoot = cmds.find((x) => x.label === 'Shoot')!, load = cmds.find((x) => x.action === 'reload')!;
+    expect(shoot.off).toBe(true); expect(shoot.sub).toMatch(/Empty/);
+    expect(load.off).toBe(true); expect(load.sub).toBe('No rounds left to load');
   });
 });
 
