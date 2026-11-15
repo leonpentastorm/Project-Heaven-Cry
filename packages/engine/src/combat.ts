@@ -1204,6 +1204,26 @@ export function meleeReachOf(att: Unit, mode: AttackMode): number {
 export const opticBands = (att: Unit, mode: AttackMode): number => (hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0);
 /** The last range band a shot can still be made in (previewAttack refuses past it). */
 export const MAX_RANGE_BANDS = 3;
+/** An offer of op `roll_with` (an item op on `attack`): roll with this skill (or the best of these) in place of the
+ * weapon's own skill. */
+export interface RollWithOffer { skill: string | string[]; ifHigher: boolean; label: string }
+/** THE choice of the skill an attack rolls with (op `roll_with`, rules 1.55): the weapon's own skill, unless an offer
+ * names a skill whose modifier (character.ts mod) is higher (if_higher), or any offered skill (no if_higher). The
+ * attack's skill term changes by the difference: it replaces the weapon skill's modifier, never adds to it. The roll
+ * and the attack's preview read it through previewAttack, the gear card through gearpreview.ts skillLines. Null: the
+ * weapon's own skill stands. */
+export function rollWithPick(c: Character | null | undefined, weaponSkill: string, offers: readonly RollWithOffer[] | null | undefined): { skill: string; delta: number; mod: number; label: string } | null {
+  if (!c || !offers?.length) return null;
+  const own = mod(c.skills[weaponSkill] || 0); let best: { skill: string; delta: number; mod: number; label: string } | null = null;
+  for (const o of offers) for (const s of ([] as string[]).concat(o.skill || [])) {
+    if (!SKILL[s] || s === weaponSkill) continue;
+    const m = mod(c.skills[s] || 0), d = m - own;
+    if ((!o.ifHigher || d > 0) && (!best || d > best.delta)) best = { skill: s, delta: d, mod: m, label: o.label };
+  }
+  return best;
+}
+/** The words of a roll_with pick: "Durability (holding Guard)". */
+export const rollWithWords = (p: { skill: string; label: string }): string => (SKILL[p.skill]?.name || p.skill) + (p.label ? ' (' + p.label + ')' : '');
 export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, opts: { extra?: number; free?: boolean; noRecoil?: boolean; /** the attack is an ambush whatever the attacker's Hidden state (a technique's: its damage shows the Ambush multiplier) */ ambush?: boolean } = {}): AttackPreview {
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = (w as any).grants?.effect || {};
@@ -1255,7 +1275,9 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const recoilT = weaponBraced(att) || condOn(att, 'emplaced') ? Math.ceil(recoil / 2) : recoil;
   const emplaced = !melee && condOn(att, 'emplaced') ? 2 : 0;
   const skillCond = condSkillMod(att, useW.skill);
-  const terms: Term[] = [...T(att.attack, 'skill'), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
+  // op roll_with (rules 1.55): the attack may roll with another skill's modifier in place of the weapon's (one choice: rollWithPick)
+  const rw = rollWithPick(charFor(att), w.skill || 'raw_power', hk.rollWith);
+  const terms: Term[] = [...(rw ? T(att.attack + rw.delta, 'Hits with: ' + rollWithWords(rw)) : T(att.attack, 'skill')), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
     ...T(mode === 'aimed' ? 2 : 0, 'aimed'), ...T(mode === 'auto' ? -2 : 0, 'full auto'), ...T(opts.extra || 0, 'volley'), ...T(rangePenalty, 'range'), ...T(heat, 'Heat'), ...T(armPenalty(att, useW), 'injured arm'),
     ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),
     ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...T(levelGap(att, tgt, cb) * ENEMY_LEVELS.gap.to_hit_per_level, 'level gap'), ...(hk.terms as Term[]).filter((t) => t && t.v), ...toHitTerms(cb, att, tgt, 'weapon', { mode })]; // the one hook of every roll to hit (rolls.ts)

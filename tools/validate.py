@@ -2003,6 +2003,10 @@ def check_trigger_effect(e, w):
                 if isinstance(x[f], dict): check_number_block(x[f], f"{w}: '{f}'")
                 else: errors.append(f"{w}: '{f}' must be a number (or a number block) in data, never a word")
         if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not (isinstance(x.get("value"), (int, float)) or isinstance(x.get("value"), dict) or (x.get("op") == "resource" and x.get("value") in ("all", "zero"))): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value (a number block; a resource: \"all\" or \"zero\")")
+        if x.get("op") == "roll_with":  # rules 1.55: roll with this skill (or the best of these) in place of the weapon's, never on top
+            _rs = x.get("skill") if isinstance(x.get("skill"), list) else [x.get("skill")]
+            if not _rs or not all(isinstance(k_, str) and k_ in known["skill"] for k_ in _rs): errors.append(f"{w}: a roll_with's skill is a skills.json id, or a list of them")
+            if "if_higher" in x and not isinstance(x["if_higher"], bool): errors.append(f"{w}: a roll_with's if_higher is true or false")
         if x.get("op") in ("deal", "mend") and isinstance(x.get("amount"), dict):
             for pp in x["amount"].get("per") or []:
                 if isinstance(pp, dict) and ":" in str(pp.get("of", "")) and str(pp["of"]).split(":", 1)[0] not in SOURCE_SPACES: errors.append(f"{w}: an amount's per-point part names '{pp['of']}': its source is one of {SOURCE_SPACES}")

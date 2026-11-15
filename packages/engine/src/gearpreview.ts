@@ -8,12 +8,12 @@
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
 import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, maxDurOf, quiverHolds, quiversOf } from './character';
-import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia } from './combat';
+import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia, rollWithPick, rollWithWords, type RollWithOffer } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf } from './effects/output';
 import { rngFor } from './rng';
 import { focusAccTerm } from './rolls';
-import { bindGame } from './effects/hooks';
+import { bindGame, holdersOf } from './effects/hooks';
 import { CALIBRE_NAME } from './data';
 
 /** One gear instance: an item id with its grade and fitted mods (a pack entry's or a shop card's). */
@@ -59,9 +59,19 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
   const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot'), sc = weaponMultLabel(w.id, { live: true });
   return [
     { key: 'hits_with', label: 'Hits with', value: (SKILL[sk]?.name || sk) + ' · ' + signed(checkMod(c, sk)), num: null },
+    // op roll_with (rules 1.55): the skill an item lets the attack roll with instead, when it would (the fight's own choice, combat.ts rollWithPick)
+    ...rollWithLines(c, sk),
     // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
     ...(sc ? [{ key: 'scales_with', label: 'Damage scales with', value: sc, num: null }] : []),
   ];
+}
+/** The character's roll_with offers (items whose effect is op roll_with on `attack`), read without a fight: the card
+ * names the skill each would roll with and when (its label), through the same choice the attack makes. */
+function rollWithLines(c: Character, sk: string): PreviewLine[] {
+  const offers: RollWithOffer[] = [];
+  for (const h of holdersOf({ c })) for (const e of h.info.effects) if (e?.op === 'roll_with' && e.when === 'attack') offers.push({ skill: e.skill, ifHigher: !!e.if_higher, label: e.label || h.info.name });
+  const p = rollWithPick(c, sk, offers);
+  return p ? [{ key: 'hits_with_alt', label: 'Hits with', value: rollWithWords(p) + ' · ' + signed(p.mod), num: null }] : [];
 }
 /** A focus hits through its door skill (the door its rolls to hit are made through, rolls.ts toHitTerms); its damage
  * reads the pair of the damage profile (output.profiles, level `deal`) whose pair holds that door; none: no such line. */
