@@ -171,43 +171,7 @@ describe('gap 23: Barrage and the 1.4 elements (item 486)', () => {
   });
 });
 
-describe('gap 24: Stonewall traces the line of fire from where the spell comes from (item 488)', () => {
-  /** A hostile caster on the foe side (the Sigil words given), Stonewall I on PC 2, PC 3 its ally. */
-  function bulwark(gPos: string, tPos: string) {
-    const f = fightWith([{ archetype: 'sigilist', kit: 'sigil' }, { archetype: 'sigilist', kit: 'sigil', perks: { bulwark: 'I' } }, { archetype: 'sigilist', kit: 'sigil' }], [{ tier: 'minion' }]);
-    const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
-    const [p1, g, t] = f.pcs, e = f.foe;
-    p1.pos = '15,10'; g.pos = gPos; t.pos = tPos;
-    for (const x of [...f.pcs, e]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; }
-    e.mg = JSON.parse(JSON.stringify(p1.mg)); arm(e, ['fire', 'arc', 'seek']); e.side = 'foe';
-    f.g.rng.state = SEED;
-    return { f, g, t, e };
-  }
-  it('across a vertical Line, an ARC lob from the lane\'s glyph passes over the guard: Stonewall cuts it, though the caster is off that line', () => {
-    // The Line is FIRE on 4,2 and ARC on 4,3; the caster beside it on 3,2 fires across (east), the lanes on rows 2 and 3.
-    // The target on 6,3 is in row 3's lane (the lob leaves from 4,3), the guard on 5,3 between: origin, guard, target in a
-    // row. From the caster's tile (3,2) the ray through the guard misses the target (the 1.3 caster-based reading).
-    const { f, t, e } = bulwark('5,3', '6,3');
-    withGame(f.g, () => {
-      const cb = f.cb, rng = f.g.rng;
-      for (const [w, k] of [['fire', '4,2'], ['arc', '4,3']] as const) { e.pos = k; expect(drawGlyph(cb, rng, e, w, k)).toBeNull(); }
-      e.pos = '3,2';
-      expect(evokeSpell(cb, rng, e, '4,2', '6,3')).toBeNull();
-    });
-    expect(500 - f.unit(t.id).hp).toBe(18); // FIRE 30 × ARC 0.8 = 24, Stonewall I −25% = 18
-    expect(logHas(f.cb, /Stonewall/)).toBe(true);
-  });
-  it('a Touch spell from the glyph the guard stands on has no line through the guard: no Stonewall (the caster-based ray would have given one)', () => {
-    const { f, t, e } = bulwark('4,3', '5,3');
-    withGame(f.g, () => {
-      const cb = f.cb, rng = f.g.rng; arm(e, ['fire', 'condense']);
-      for (const [w, k] of [['fire', '4,2'], ['condense', '4,3']] as const) { e.pos = k; expect(drawGlyph(cb, rng, e, w, k)).toBeNull(); }
-      e.pos = '3,3'; // beside the Line: across (east); the caster, the guard on 4,3 and the target on 5,3 are in a row
-      expect(evokeSpell(cb, rng, e, '4,2', '5,3')).toBeNull();
-    });
-    expect(500 - f.unit(t.id).hp).toBe(45); expect(logHas(f.cb, /Stonewall/)).toBe(false);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('gap 24: Stonewall traces the line of fire
 
 describe('gap 20: class moves that cast give the grid their area, tiles and targets (item 489 c)', () => {
   it('Payload\'s preview carries the doubled Burst tiles, the area it may aim into and who it hits, marked as Sigil', () => {

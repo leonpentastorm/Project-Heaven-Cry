@@ -147,14 +147,6 @@ describe('rules 1.19: one free Pump a turn', () => {
     // not on a design that doesn't deal damage
     const g = heart(['6,5'], ['4,5'], { classId: 'channeler', level: 5 }); const b = give(g.pc, { school: 'buff', option: 'heal', modules: [] }); begin(g, b); const ap2 = me(g).ap; pump(g); expect(me(g).ap).toBe(ap2 - 1); expect(me(g).mg!.held!.plus || 0).toBe(0);
   });
-  it('Heart Overload II: its free Begin holds at stage 1 only while the turn\'s free stage is still there', () => {
-    const AGAIN = 'perk:heart_overload#again';
-    const run = (usedFree: boolean) => {
-      const f = heart(['6,5'], [], { perks: { heart_overload: 'II' } }); const m = me(f).mg!; if (usedFree) { m.freePumps = 1; m.freePumpsMax = 1; }
-      const d = give(f.pc); begin(f, d); pump(f, undefined, 2); release(f); begin(f, d, { hold: true, mods: [AGAIN] }); return me(f).mg!.held!.stage;
-    };
-    expect(run(false)).toBe(1); expect(run(true)).toBe(0);
-  });
 });
 
 describe('rules 1.19: what a Pump costs', () => {

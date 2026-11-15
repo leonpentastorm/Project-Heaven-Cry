@@ -23,7 +23,7 @@ describe('the data of the pass', () => {
   it('the replaced perks have new ids and the old ones are gone; there are still 106 perks, two acquired a skill', () => {
     expect(P.grapple).toBeUndefined(); expect(P.origami_hands).toBeUndefined();
     expect(P.iron_grip.name).toBe('Iron Grip'); expect(P.iron_grip.skills).toEqual(['raw_power']);
-    expect(P.both_hands.name).toBe('Both Hands'); expect(P.both_hands.skills).toEqual(['dexterity']);
+    expect(P.both_hands.name).toBe('Pressure Point'); expect(P.both_hands.skills).toEqual(['dexterity']); // rules 1.56: the id stays, the perk is new
     expect(PERKS.length).toBe(106);
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
     expect(Object.keys(per).length).toBe(27); expect(Object.values(per).every((n) => n === 2)).toBe(true);
@@ -32,13 +32,13 @@ describe('the data of the pass', () => {
     for (const p of PERKS as any[]) if (p.tier === 'acquired' || p.tier === 'mastered') expect(p.skill_greek, p.id).toBe((SKILL as any)[p.skills[0]].slot);
   });
   it('no alpha or beta perk gives or takes AP in the turn any more (15.7); the own-cost discounts stay', () => {
-    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'blueprint', 'you_get_used_to_it'];
+    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
     for (const id of gone) {
       const p = P[id], fx = [...(p.effects || []), ...(p.tiers?.I?.effects || []), ...(p.tiers?.II?.effects || [])];
       expect(fx.some((e: any) => e.op === 'stat_mod' && e.stat === 'ap'), id).toBe(false);
       expect(p.perk_type, id).not.toBe('ap_mod'); if (id !== 'walking_wounded') expect(/\bAP\b/.test(p.text), id).toBe(false); // Walking Wounded: "injuries never cost you AP"
     }
-    for (const id of ['hot_swap', 'overhaul', 'running_reload', 'rite_in_the_field']) expect(P[id].perk_type, id).toBe('ap_mod');
+    for (const id of ['hot_swap', 'overhaul', 'rite_in_the_field', 'parallel_thought']) expect(P[id].perk_type, id).toBe('ap_mod');
   });
   it('Dead Signal is Acuity\'s (id analysis); the unlocks carry their new names', () => {
     expect(P.dead_signal.skills).toEqual(['analysis', 'ingenuity']); expect(P.dead_signal.requires[0]).toEqual({ skill: 'analysis', min: 5 });

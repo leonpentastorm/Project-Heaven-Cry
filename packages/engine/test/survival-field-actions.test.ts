@@ -150,8 +150,7 @@ describe('rules 1.55 items 33 to 36: the field is a free fight without enemies',
     const F: any = (survivalJ as any).field;
     expect(F.carried_res).toContain('mp'); expect(F.lasting_ops).toContain('mend');
     const g = toField(inFight([{ build: 'plain_gun', level: 1 }]));
-    const c = clone(g).characters.c1; c.perks = [...(c.perks || []), { id: 'shrug_it_off', tier: 'I' }];
-    if (PERK.shrug_it_off) expect(fieldRefusal(g, c, 'perk:shrug_it_off')).toMatch(/waits for a fight/);
+    void g; // rules 1.56: Shrug It Off (the at-will perk action this used) is gone; the rule's data is checked above
   });
 });
 
