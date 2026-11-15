@@ -9,26 +9,14 @@
       "category": "consumable", "counted": "essence",
       "weight_kg": 0.1,
       "stock": false,
-      "price_credits": 300,
+      "price_credits": 600,
       "start_quantity": 1,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Experience sealed in mana, worth {=effects.0.value} XP. Cracking it takes 10 minutes outside a fight, and someone with Brain Power 5 and an Evoker, or Will Power 5 and an Emanator. They choose who absorbs it: themselves or a party member who is present. A character can absorb one per long rest. It also sells well.",
+      "text": "Experience sealed in mana, worth {=effects.0.value} XP. Anyone with a focus in a hand can crack it outside a fight: an Evoker, an Emanator, a Visualizer or an Attuner. They choose who absorbs it: themselves or a party member. A character can absorb {=effects.0.limit.n} per rest. It also sells well.",
+      "use": { "label": "Crack for", "via": "effects" },
       "requires_to_use": [
-        {
-          "any_of": [
-            {
-              "skill": "brain_power",
-              "min": 5,
-              "focus": "evoker"
-            },
-            {
-              "skill": "will_power",
-              "min": 5,
-              "focus": "emanator"
-            }
-          ]
-        }
+        { "holds": { "slot": "hand", "door": "any" }, "why": "Crack it with a focus in a hand: an Evoker, an Emanator, a Visualizer or an Attuner." }
       ],
       "effects": [
         {
@@ -36,8 +24,7 @@
           "value": 100,
           "source": "essence",
           "target": "self_or_party_member_present",
-          "when": "cracked out of combat (10 minutes)",
-          "limit": "one absorbed per character per long rest"
+          "limit": { "per": "per_rest", "n": 1 }
         }
       ]
     },
@@ -49,6 +36,7 @@
       "adjudication": "engine",
       "provisional": true,
       "text": "One dose. Use it on an ally next to you: it stabilises a Downed ally at 1 HP, or heals 6 × your Healing given, more as you level. It also stops Bleeding.",
+      "use": { "label": "Stim", "via": "stim" },
       "price_credits": 80
     },
     {
@@ -66,7 +54,7 @@
       "name": "Armourer's chit",
       "category": "tool",
       "weight_kg": 0,
-      "stock": false,
+      "stock": false, "sell": false,
       "adjudication": "engine",
       "provisional": true,
       "text": "A chapter armourer's stamped requisition. At a shop or a Forge it pays for one grade step to Fine or Masterwork in place of credits. Never sold; it may be given."
@@ -941,7 +929,7 @@
       "name": "Musek Blestor",
       "category": "tool",
       "weight_kg": 0.3,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": 120,
       "adjudication": "engine",
       "provisional": true,
@@ -954,7 +942,7 @@
       "category": "armour",
       "slot": "head_accessory",
       "weight_kg": 0.05,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": 60,
       "effects": [],
       "adjudication": "engine",
@@ -967,7 +955,7 @@
       "category": "armour",
       "slot": "head",
       "weight_kg": 0.3,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": 40,
       "effects": [],
       "adjudication": "narrator",
@@ -979,7 +967,7 @@
       "name": "Prosthetic arm",
       "category": "augment",
       "weight_kg": 0,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": 2500,
       "effects": [],
       "adjudication": "hybrid",
@@ -991,7 +979,7 @@
       "name": "Central City ID",
       "category": "document",
       "weight_kg": 0,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": null,
       "effects": [],
       "adjudication": "narrator",
@@ -1003,7 +991,7 @@
       "name": "Bank card",
       "category": "document",
       "weight_kg": 0,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": null,
       "effects": [],
       "adjudication": "narrator",
@@ -1015,7 +1003,7 @@
       "name": "Contraband",
       "category": "loot",
       "weight_kg": 1,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": 300,
       "effects": [],
       "adjudication": "narrator",
@@ -1027,7 +1015,7 @@
       "name": "Grimoire",
       "category": "tool",
       "weight_kg": 1.2,
-      "stock": false,
+      "stock": false, "sell": false,
       "price_credits": null,
       "effects": [],
       "adjudication": "narrator",

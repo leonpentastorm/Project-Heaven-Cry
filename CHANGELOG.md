@@ -10,42 +10,31 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.28.3
 
-A patch release from Leon's playtest of 0.28.2: Guide and the healing price. The field-after-a-fight rewrite (fix/0.28.3-field-fight) is not in it: its review found a blocking free farm (Syphon and Crystallise on the field) and the Bond-on-the-field client gap, so it waits for the next release.
+A patch release from Leon's playtest of 0.28.2. Not in it, waiting for the next release: the field-after-a-fight rewrite (fix/0.28.3-field-fight; its review rulings are not finished) and the Durability tank fit (fix/0.28.3-tank; not finished).
 
-- **Guide works** (rules 1.55 item 45; Leon: "Guide does not work"): its card asked only for the ally and sent no tile, so the engine took 1 AP and the MP and nobody moved, with nothing said. Now you click the ally, then one of the shaded tiles it may step to; a missing, too-far, blocked or unseen tile is refused in words before anything is paid, and the step is said in the log (`effects/actions.ts` stepTileWhy, `descriptors.ts` PERKS).
-- **Healing costs three times the MP** (rules 1.55 item 46; Leon: "by mp is tiny i meant bond healer have way too many fucking heal, they carry the weak as shit tank in my run"): every Tending verb and every Mender move that spends MP is 3× its 0.28.2 price: Mend, Mend Yourself, Touch 24 MP (were 8; 18 from Empathy 9), Shield 30 (10), Settle 15 (5), Soothe 18 (6), Raise 36 (12), Guide 15 (5), Field Surgery 45 (15), Triage 18 (6), Inspire 30 (10), Rally 60 (20). AP, heal sizes and Max MP unchanged. The cards and bar buttons show the MP beside the AP. PROVISIONAL.
-- **Syphon through the Attuner** (rules 1.55 item 48): any MP focus in hand can Syphon, so a Mender refills MP from the air with its Attuner, in a fight and on the area map. With the Attuner in the pack the button is greyed and says why. Stowing the Attuner in a fight now stops what it gives at once.
-- **Syphon has a floor** (rules 1.55 item 47): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). From a fight's start of 15 that is at most 7 Syphons, shared by the party; deaths raise the meter. PROVISIONAL.
-- **Bond can pick enemies again** (Leon on 0.28.2: "bond cannot select enemies"). With Bond picked, a click on an enemy
-  outside its reach turned the action into a plain Shot with no word (`apps/web/src/game/actionFlow.ts` click: a unit
-  not in the step's choices fell through to `screens/combat.js` tileClick's "a foe clicked is an attack"). Now, while a
-  unit pick is open, a click on a unit is always that pick: in its choices it is picked; otherwise the screen says the
-  engine's reason for that unit ("✕ Soldier B: Out of range (6 tiles).") and the action stays picked. The same held for
-  every unit pick whose choices are narrowed by reach: the Tending and Shadow verbs, class moves with a reach, Stim and
-  Stim throw, ally prayers and Calls, Pull free. Tests: `screens/combat-unit-pick.test.ts` (the real tileClick, a
-  Survival fight at level 1 with the Empath's Attuner), `packages/engine/test/bond-reach.test.ts` (the reducer).
-- **Bonds and Tending have effects** (Leon: "no effect, no animation, no nothing, feels like standing still";
-  `apps/web/src/game/fx/bonds.ts`, in the tie kind's ink from `rules.json`, paced by the combat speed, off under Reduce
-  motion; no new engine event): a Bond tied (the Bonder's wind-up, the Figment cast's in Insight ink; a thread to the
-  target; the standing tie line draws itself in; BONDED), a Bond resisted (the thread frays short; RESISTED), a heal
-  down a Bond (a pulse runs the line from the Mender, then the one +N), a Guide (the guide's gesture and thread;
-  GUIDED), a Bond ending, read from the view (the line parts from its middle and both ends recoil; BOND BROKEN). Not
-  drawn, for want of an engine event: the echo into a Bonded enemy and the damage share (the `deal` and `redirect` ops
-  emit no fx), and an un-Bonded Tending heal (the heal event names no giver: it keeps the plain heal).
 ### Survival
 
-- **The camp reads as a checklist** (rules 1.55 item 49; Leon, 15 Nov 2026: players found the free weapon three runs in).
-  The camp's header lists what to do, each with its state in words: 1 FREE WEAPON (NOT PICKED, or ✓ and its name),
-  2 FREE FOCUS (only for a character with a focus door skill), the BUDGET left of the total with a meter, and the
-  STARTING BOON; a click opens its section. One sentence of help under the title. The body is in steps: "Step 1 · Your
-  free weapon" (one FREE card an archetype, "Take (free)", "Swap to this (free)", "✓ YOURS"), "Step 2 · Your free focus",
-  then "Spend your budget" (another one and the better one of each weapon family, then the shop's shelves, all priced).
-  "Not sure? Take the recommended kit" is first, naming what it gives. Moving on with a free pick not taken asks first
-  ("You have not taken your free weapon. It costs nothing."). The engine's camp view now says which cards are free, the
-  free picks' state and what Recommended gives.
-- **A shield at the camp** (rules 1.55 item 50; Leon: "first weapon shop have no shield for tanks"): the Buckler (200
-  credits) is on the camp's Gear shelf; bought, it goes in the off hand beside a one-handed weapon, and is refused in
-  words beside a two-hander or the free focus.
+- **The camp reads as a checklist** (rules 1.55 item 49): the header lists what to do, each with its state in words (1 FREE WEAPON, 2 FREE FOCUS, the BUDGET left, the STARTING BOON). The free picks carry FREE where a price would be. "Not sure? Take the recommended kit" comes first; moving on with a free pick not taken asks first.
+- **A shield at the camp** (rules 1.55 item 50): the Buckler (200 credits) is on the camp's Gear shelf; it goes in the off hand beside a one-handed weapon, and is refused in words beside a two-hander or the free focus.
+- **The tank's recommended kit** (rules 1.55 item 51): a character with Durability on top gets a one-hander, the Buckler and what the budget still pays for. Taking a focus with a shield held says how to fix it (item 52); a greyed Recommended button shows the engine's reason (item 53). PROVISIONAL.
+- **One amount control for giving and selling** (rules 1.55 item 54): type the number, or step it by 1, 10 or 100, or MAX; it shows what you hold, and the engine says why an amount is refused.
+- **Counted items can be sold** (rules 1.55 items 55 and 56): stims and Essences are on the shop's Sell list. "Never on a shelf" and "never sold" are now two facts in the data.
+- **The Essence of Experience** (rules 1.55 items 57 to 60): any focus in a hand cracks it, no skill minimum; 100 XP for yourself or a friend, one per character per rest, out of a fight. Its price is 600 (sells for 150). Using a counted item (the Essence, a stim on a friend off the map) is one action, `gear/use`. PROVISIONAL.
+
+### Fights
+
+- **Bond can pick enemies again**: with a unit pick open, a click on a unit outside its choices shows the engine's reason ("Out of range (6 tiles).") and the action stays picked, instead of turning into a Shot. The same for every reach-narrowed pick (Tending, Shadow, class moves, stims, ally prayers, Pull free).
+- **Bonds and Tending have effects** on the fight map (`fx/bonds.ts`): a Bond tied or resisted, a heal down a Bond, a Guide, a Bond breaking. No new engine event.
+
+### Classes
+
+- **Healing costs three times the MP** (rules 1.55 item 46): every Tending verb and every Mender move that spends MP is 3x its 0.28.2 price (Mend 24, Shield 30, Settle 15, Soothe 18, Raise 36, Guide 15, Field Surgery 45, Triage 18, Inspire 30, Rally 60). AP, heal sizes and Max MP unchanged. Cards and bar buttons show the MP beside the AP. PROVISIONAL.
+- **Syphon through any MP focus** (rules 1.55 item 48): a Mender Syphons with the Attuner, in a fight and on the area map; with the focus in the pack the button is greyed and says why.
+- **Syphon has a floor** (rules 1.55 item 47): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). PROVISIONAL.
+
+### Fixes
+
+- **Guide works** (rules 1.55 item 45): click the ally, then one of the shaded tiles it may step to; a bad tile is refused in words before anything is paid.
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 

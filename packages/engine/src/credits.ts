@@ -37,8 +37,9 @@ export function emptyMagPrice(weaponId: string): number | null {
  * at their own price; or null when it has no price (a plot item, a natural weapon, `stock: false` things). Also prices
  * the counter's shapes (rules 1.42): `rounds:<calibre>` (one round), `mag:<weapon>` (one full magazine: the empty
  * magazine and its rounds) and a special round (`price_mult` x the reference calibre's round). The one price door: shop,
- * sale, picks, loot value. */
-export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = []): number | null {
+ * sale, picks, loot value. `o.sale` (rules 1.55 item 55): the price a SALE starts from: `stock: false` (never
+ * bought) does not stop it, `sell: false` (never sold) does. */
+export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = [], o: { sale?: boolean } = {}): number | null {
   const r = /^rounds:(.+)$/.exec(id); if (r) return ROUND_PRICE[r[1]] > 0 ? ROUND_PRICE[r[1]] : null;
   // rules 1.52: body armour of a class (`armour:<class>`) at the class's own price (rules.json combat armor.classes)
   const ac = /^armour:(\d)$/.exec(id); if (ac) { const p = Number(ARMOUR_CLASSES[Number(ac[1])]?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; }
@@ -48,10 +49,10 @@ export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly 
     const cap = w.magazine || 0, n = m[2] != null ? Math.min(cap, Number(m[2])) : cap; return e + rp * n; }
   // rules 1.55: a row the engine does not run yet (`built: false`) has no price, so no stock, reward, loot or camp pool that
   // asks for a price (every one does) can hold it
-  const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false || def.built === false) return null;
+  const def: any = WEAPON[id] || ITEM[id]; if (!def || def.built === false || (o.sale ? def.sell === false : def.stock === false)) return null;
   let p = Number(def.price_credits);
   if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = Number(def.price_mult) * (ROUND_PRICE[WR.special_round_price?.calibre] || 0);
   if (!Number.isFinite(p) || p <= 0) return null;
   const base = Math.round(p * (RARITY[rarity]?.price ?? 1));
-  return base + mods.reduce((t, x) => t + (priceOf(x) || 0), 0);
+  return base + mods.reduce((t, x) => t + (priceOf(x, 'standard', [], o) || 0), 0);
 }

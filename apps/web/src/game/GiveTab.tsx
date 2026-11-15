@@ -1,11 +1,14 @@
 // The Give tab of every full-screen place (survival-spec 8.3 "Give tab", rule 47; rules 1.46): the party as large
 // portrait cards (pick who receives), then a line of your own (the purse, a pack line, or what is in a hand or worn:
-// "Put in the pack and give"), an amount or a quantity with the stepper, and one button: "Give 300 credits to Ha".
+// "Put in the pack and give"), an amount or a quantity with the amount control (AmountField.tsx, rules 1.55
+// rules 1.55 item 54), and one button: "Give 300 credits to Ha".
 // What can't be given stays listed, greyed, with the engine's reason. Everything comes from `giveView` (give.ts); the
 // action is `gear/give` (or `gear/unequip` first) through the store. Solo: the tab says there is nobody to give to.
 import React from 'react';
 import { act, getState } from './store';
-import { giveView, type GiveRowV } from '@engine';
+import { giveView, giveProblem, type GiveRowV, type GiveViewV } from '@engine';
+import { AmountField } from './AmountField';
+import { registerMount } from '../dc/runtime';
 import { gearIconUri } from './gearIcons';
 import { FRAME_INK as I } from './FullScreenFrame';
 import ASSETS from './assets.json';
@@ -26,8 +29,10 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
   if (v.none) return <section data-phc-give="" data-phc-give-none=""><h2 style={{ margin: '6px 0 12px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2><p style={{ fontSize: 16, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>{v.none}</p></section>;
   const who = to && v.to.find((t) => t.id === to) ? to : v.to[0].id, target = v.to.find((t) => t.id === who)!;
   const row = v.rows.find((r) => r.key === sel) || v.rows[0];
-  const most = row.kind === 'credits' ? Math.max(1, row.qty) : Math.max(1, row.qty), amount = Math.min(n, most);
-  const why = row.why[who];
+  const most = Math.max(0, row.qty), amount = Math.max(0, Math.min(n, most));
+  // the engine's word on this amount (give.ts giveProblem: the same check the reducer makes), under the field
+  const sized = row.kind === 'credits' || ((row.kind === 'pack' || row.kind === 'count') && most > 1);
+  const why = row.why[who] || (sized ? giveProblem(g as any, me, { ...(row.action as any), to: who, ...(row.kind === 'credits' ? { credits: amount } : { qty: amount }) }) : null);
   const send = () => {
     if (row.kind === 'held') { act({ type: 'gear/unequip', charId: v.from!.id, slot: row.unequip! }); setSel('credits'); return; }
     act({ ...(row.action as any), to: who, ...(row.kind === 'credits' ? { credits: amount } : row.kind === 'pack' || row.kind === 'count' ? { qty: amount } : {}) });
@@ -68,16 +73,13 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
         </div>
       </div>
       <div data-phc-give-send="" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '14px 16px', borderRadius: 14, background: 'rgba(16,21,31,0.97)', border: '1px solid #3B475D' }}>
-        {(row.kind === 'credits' || ((row.kind === 'pack' || row.kind === 'count') && most > 1)) && !why ? (
-          <div role="group" aria-label="How many" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
-            <button type="button" aria-label="Fewer" onClick={() => setN(Math.max(1, amount - (row.kind === 'credits' && amount > 10 ? 10 : 1)))} style={{ width: 34, height: 42, border: 0, background: 'transparent', color: I.text, fontSize: 20, cursor: 'pointer' }}>‹</button>
-            <span data-phc-give-n="" style={{ minWidth: 56, textAlign: 'center', fontWeight: 700, fontSize: 17, fontVariantNumeric: 'tabular-nums' }}>{amount}</span>
-            <button type="button" aria-label="More" onClick={() => setN(Math.min(most, amount + (row.kind === 'credits' && amount >= 10 ? 10 : 1)))} style={{ width: 34, height: 42, border: 0, background: 'transparent', color: I.text, fontSize: 20, cursor: 'pointer' }}>›</button>
-          </div>
+        {sized && !row.why[who] ? (
+          <AmountField value={amount} max={most} onChange={setN} onEnter={() => { if (!why) send(); }} compact={compact} why={why}
+            label={row.kind === 'credits' ? 'Credits to give' : 'How many ' + row.label + ' to give'} />
         ) : null}
         <button type="button" data-phc-give-go="" disabled={!!why || row.kind === 'never'} onClick={send}
           style={{ minHeight: 46, padding: '0 20px', borderRadius: 12, border: 0, background: why || row.kind === 'never' ? I.raised : I.text, color: why || row.kind === 'never' ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15.5, fontWeight: 700, cursor: why ? 'default' : 'pointer' }}>{word}</button>
-        {why ? <span data-phc-give-reason="" style={{ fontSize: 13, color: I.muted }}>{why}</span> : null}
+        {why && !(sized && !row.why[who]) ? <span data-phc-give-reason="" style={{ fontSize: 13, color: I.muted }}>{why}</span> : null}
         {row.use ? [target.id, v.from!.id].map((id) => { const u = row.use!, no = u.why[id], name = id === v.from!.id ? 'yourself' : target.name; // rules 1.55 item 32: use it on the friend picked, or on yourself
           return <button key={'use-' + id} type="button" data-phc-give-use={id} disabled={!!no} aria-label={no ? u.label + ' ' + name + ': ' + no : undefined} onClick={() => act({ ...(u.action as any), targetId: id })}
             style={{ minHeight: 46, padding: '0 18px', borderRadius: 12, border: '1px solid ' + I.line, background: no ? 'transparent' : I.raised, color: no ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: no ? 'default' : 'pointer' }}>{u.label + ' ' + name}</button>; }) : null}
@@ -93,3 +95,29 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
     </section>
   );
 }
+
+/** The backpack line's Give (rules 1.55 items 30 to 32 and 54): the same amount control for a stack, a "Give N to"
+ * button for each friend the engine allows, and the line's "Use on…" (gear/use), all from the Give view (give.ts). A
+ * template hosts it by name (`<sc-mount is="give-inline">`, main.template.html's backpack rows). */
+export function GiveInline({ rowKey, charId }: { rowKey: string; charId: string }) {
+  const st = getState(), g = st.game, me = st.me.id;
+  const [n, setN] = React.useState(1);
+  const v: GiveViewV | null = g ? giveView(g as any, me, charId) : null, row = v?.rows.find((r) => r.key === rowKey);
+  if (!v || !v.from || !row) return null;
+  const open = v.to.filter((t) => !row.why[t.id]), most = Math.max(0, row.qty), amount = Math.max(0, Math.min(n, most));
+  const uses = row.use ? Object.values((g as any).characters as Record<string, { id: string; name: string; dead?: boolean }>).filter((x) => !x.dead && !row.use!.why[x.id]) : [];
+  if (!open.length && !uses.length) return null;
+  const why = open.length && most > 1 ? giveProblem(g as any, me, { ...(row.action as any), to: open[0].id, qty: amount }) : null;
+  const give = (to: string) => { act({ ...(row.action as any), to, qty: amount }); setN(1); };
+  const b: React.CSSProperties = { minHeight: 30, padding: '0 10px', borderRadius: 6, border: '1px solid ' + I.text, background: I.panel, color: I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' };
+  return (
+    <div data-phc-give-inline={rowKey} style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
+      {open.length && most > 1 ? <AmountField value={amount} max={most} min={1} onChange={setN} onEnter={() => { if (!why && open.length === 1) give(open[0].id); }} compact why={why} label={'How many ' + row.label + ' to give'} /> : null}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {open.map((t) => <button key={'g' + t.id} type="button" data-phc-give-inline-to={t.id} disabled={!!why} onClick={() => give(t.id)} style={b}>{'Give ' + (most > 1 ? amount + ' ' : '') + 'to ' + t.name}</button>)}
+        {uses.map((x) => <button key={'u' + x.id} type="button" data-phc-give-use={x.id} onClick={() => act({ ...(row.use!.action as any), targetId: x.id })} style={b}>{row.use!.label + ' ' + (x.id === v.from!.id ? 'yourself' : x.name)}</button>)}
+      </div>
+    </div>
+  );
+}
+registerMount('give-inline', GiveInline);

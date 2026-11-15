@@ -96,6 +96,8 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
 
 describe('the shop\'s stock (Leon, 14 Nov): a trait\'s gear is not sold, food is; the ammo maker is on the counter', () => {
   const traitGear = Object.values(ITEM).filter((x: any) => x.stock === false).map((x) => x.id);
+  // rules 1.55 item 55: never bought (stock: false) and never sold (sell: false) are two facts; a trait's gear is both
+  const neverSold = Object.values(ITEM).filter((x: any) => x.stock === false && x.sell === false).map((x) => x.id);
   it('the counter sells the ammo maker at its price; nothing a trait grants is on the counter or in the rolled stock', () => {
     expect(traitGear.length).toBeGreaterThan(1);
     for (const seed of ['PHC-0001', 'PHC-0002', 'PHC-0003']) {
@@ -109,8 +111,8 @@ describe('the shop\'s stock (Leon, 14 Nov): a trait\'s gear is not sold, food is
     }
   });
   it('a trait\'s gear has no price, so it can\'t be sold either; food a trait counts (the smoker\'s) keeps its price', () => {
-    const g = at('shop', { prep: (x) => { x.characters.c1.pack = [...packOf(x.characters.c1), line(traitGear[0], 1, { kind: 'tool' })]; } });
-    const idx = packOf(g.characters.c1).findIndex((x) => (x.item || x.id) === traitGear[0]);
+    const g = at('shop', { prep: (x) => { x.characters.c1.pack = [...packOf(x.characters.c1), line(neverSold[0], 1, { kind: 'tool' })]; } });
+    const idx = packOf(g.characters.c1).findIndex((x) => (x.item || x.id) === neverSold[0]);
     expect(refused(g, { type: 'run/sell', charId: 'c1', idx })).toMatch(/can't be sold\.$/);
     for (const x of Object.values(ITEM) as any[]) if (x.category === 'food') expect(x.stock).not.toBe(false);
   });
