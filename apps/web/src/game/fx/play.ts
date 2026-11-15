@@ -1196,7 +1196,8 @@ Object.assign(H, faithHandlers({ ...SOUL_KIT, posOfChar: (charId) => { if (!char
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 const COND_WORD: Record<string, string> = { slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
-const condWord = (id: string) => COND_WORD[id] || String(id || '').toUpperCase();
+// the word table, else the id as words: an id's underscores are spaces on screen (off_balance: OFF BALANCE)
+const condWord = (id: string) => COND_WORD[id] || String(id || '').replace(/_/g, ' ').toUpperCase();
 const condBoon = (id: string) => id === 'guarded' || id === 'inspired' || id === 'quickened' || id === 'sharpened';
 
 // ---------- particles: Sigil squares, Soul motes, heal pluses ----------

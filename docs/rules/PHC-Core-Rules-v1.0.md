@@ -6371,22 +6371,25 @@ created; merged into the lane on 16 Nov 2026), every one `adjudication: engine`,
    screen draws only what the event says. Guard changed by a Revision 3 class move (the Defender's plate, its Brace and
    Interpose, Shrug It Off) or by a data `resource` line still sends no event: the plates follow the state, but that
    moment has no flash.
-2. **Set Against the Blow** (Durability 1; item 4301). While you hold Guard, a foe's critical hit on you lands as an
+2. **Set Against the Blow** (Durability 3, the lead's ruling of 16 Nov 2026: a one-point dip buys no critical
+   immunity; item 4301). While you hold Guard, a foe's critical hit on you lands as an
    ordinary hit: its critical multiplier is taken out of the blow, and the injury the critical would roll is turned
    aside. "CRIT TURNED" over the plates.
 3. **Close Guard** (Durability 1; an Answer, on until switched off; item 4302). While you hold Guard, a quarter of a
    foe's blow on an ally next to you comes to you instead (the rest lands on the ally), as a plain blow (not melee, not
    a critical: no Retort answers it); your plates soak your part as any blow. It is not a reaction. A line runs from
    the ally to you. An Interpose after it takes what is left of the blow, never the part already shared (any share an
-   item moved: Share a Hit too).
+   item moved: Share a Hit too). When you both Close Guard and Interpose the same blow, the two add up to the blow worked
+   out once against your armour (what Interpose alone gives), never less and never more than the blow itself; a share
+   another unit took comes off it in proportion.
 4. **Last Plate** (Durability 5; item 4303). Once a fight, a foe's blow that would drop you leaves you on 1 HP, and
    every plate you hold breaks (Guard 0). "LAST PLATE".
 5. **Retort** (Durability 3; an Answer, on until switched off; item 4304). A foe hits you in melee while you hold
    Guard: 1 Guard and your reaction throw half of the damage that reached you back at it, as a physical blow its armour
    meets. "RETORT" and a chevron to the attacker.
 6. **Challenge** (Durability 3; 1 AP and 1 Guard; item 4305). Every foe you see within 2 tiles makes a Heart save
-   against your Durability or is Taunted (its next attack must go at you). A Boss answers no challenge: it is not
-   Taunted (the Bulwark's Draw Fire still gives a Boss −2 against anyone else; Challenge does not yet).
+   against your Durability or is Taunted (its next attack must go at you). A Boss answers no challenge: Challenge's
+   own Taunt does not land on it (a Taunt from anything else lands on a Boss as before) (the Bulwark's Draw Fire still gives a Boss −2 against anyone else; Challenge does not yet).
 7. **Slam** (Durability 5; 2 AP and 2 Guard; item 4306). Every foe next to you makes a Body save against your
    Durability or is Off Balance (1 AP less on its next turn), and is pushed 1 tile away (the push takes no save; a foe
    that cannot be moved stays).
@@ -10024,20 +10027,26 @@ Items 4148 to 4150.
     spend | pressure, soaked}` (physical/core.ts guardFx); the plates' look and words are fx/guard.ts. No number of the
     rules: the effect's timings (gain 420, soak 460, broken 620, spend 260 ms at Fast) are the screen's.
 4301. **Set Against the Blow (rules 1.56 Guard 2.0, item 2):** `skills.json durability.unlocks.1` effects 1, 2 and the
-    last: a `damage_mult` on `dealing` (`if {actor: foe, target: self, crit, by_hit, self_has_res: [guard]}`, `value: 1`,
-    `replaces: critical`) that marks the item's flag `crit_turned`; a `cancel` on `injury` while the flag stands (it
-    clears it); the flag also clears at the holder's turn end. No number of its own. PROVISIONAL.
+    last two: a `damage_mult` on `dealing` (`if {actor: foe, target: self, crit, by_hit, self_has_res: [guard],
+    self_skill: {durability: 3}}`, `value: 1`, `replaces: critical`) that marks the item's flag `crit_turned`; a
+    `cancel` on `injury` while the flag stands (it clears it); the flag clears when the blow has resolved (a `mark
+    clear` on `hit` with the holder as target), and at the holder's turn end for a blow that sends no hit event.
+    Durability 3 PROVISIONAL (the lead's ruling, 16 Nov 2026).
 4302. **Close Guard (item 3):** effect 3, a `redirect` on `taking`, `share` 0.25 (PROVISIONAL; the draft's
     `close_share`), `type: physical`, `answer_on: close_guard`. The redirect op records the share it moved on the blow
-    (`moved`); physical/guard.ts Interpose takes only the rest.
+    (`moved`, and by whom: `movedTo`); physical/guard.ts Interpose takes the blow against its own armour less its own
+    share and less, in proportion, the shares others took (the review's item 3, 16 Nov 2026).
 4303. **Last Plate (item 4):** effect 4, a `floor` of 1 on `would_drop` (`by_hit`, `open`, Durability 5), `limit
     {per_combat, n: 1}`, and `resource guard zero`. PROVISIONAL.
 4304. **Retort (item 5):** effect 5, a `deal` on `damaged` (`target: actor`, `answer_on: retort`, Durability 3, a
     reaction of kind attack) of the amount block `retort` (`base 0`, `per event:amount 0.5`, physical, full armour), and
     `resource guard −1`. 0.5 PROVISIONAL.
 4305. **Challenge (item 6):** effect 6, a `grant_action guard_challenge` (`ap` 1, `res {guard: 1}`, Durability 3); its
-    `condition taunted` on `targets {of: self, within: 2, side: foe, seen}`, the save via Durability; effect 7, a
-    `cancel` on `cond_incoming` of `taunted` the holder puts on a Boss. 1, 1, 2 PROVISIONAL.
+    `mark challenge`, then (its `and`) `condition taunted` on `targets {of: self, within: 2, side: foe, seen}`, the save
+    via Durability, then `mark challenge clear`; effect 7, a `cancel` on `cond_incoming` of `taunted` the holder puts on
+    a Boss while the flag `challenge` stands (only Challenge's own Taunt; the review's item 2, 16 Nov 2026: it had
+    cancelled every Taunt the holder put on a Boss). The cleaner form, a tier filter on the target set itself
+    (`targets.not_tier`), is a new field of a closed list and waits for the lead. 1, 1, 2 PROVISIONAL.
 4306. **Slam (item 7):** effect 8, a `grant_action guard_slam` (`ap` 2, `res {guard: 2}`, Durability 5): `condition
     off_balance` (save via Durability), then `displace push 1`, both on `targets {of: self, within: 1, side: foe}`. 2,
     2, 1 PROVISIONAL.

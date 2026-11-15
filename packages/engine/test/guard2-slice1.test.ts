@@ -47,6 +47,22 @@ describe('item 5, Set Against the Blow: a critical on a Guard holder lands as an
   });
 });
 
+describe('item 5 at Durability 3 (the lead, 16 Nov 2026): a one-point dip buys no critical immunity; the flag lives one blow', () => {
+  it('at Durability 2 a critical on a Guard holder still bites; at 3 it is turned, and the flag is gone once the blow has resolved', () => {
+    const lost = (dur: number, crit: boolean) => { const f = fight(dur); guard(f, 2); const hp = tank(f).hp; blow(f, tank(f), { crit }); return { f, lost: hp - tank(f).hp }; };
+    expect(lost(2, true).lost).toBeGreaterThan(lost(2, false).lost);
+    expect(moves(lost(2, true).f, 'crit_turned').length).toBe(0);
+    const at3 = lost(3, true);
+    expect(at3.lost).toBe(lost(3, false).lost); expect(moves(at3.f, 'crit_turned').length).toBe(1);
+    expect((tank(at3.f).ps as any)?.['skill:durability.1']?.flags?.crit_turned).toBeFalsy();
+    expect(Object.values((tank(at3.f).ps as any) || {}).some((b: any) => b?.flags?.crit_turned)).toBe(false);
+    // a critical that drops the tank rolls no injury (nothing cancels, nothing cleared the flag before): it is gone too
+    const down = fight(3); guard(down, 2); tank(down).hp = 5; blow(down, tank(down), { crit: true });
+    expect(tank(down).hp).toBe(0); expect(moves(down, 'crit_turned').length).toBe(1);
+    expect(Object.values((tank(down).ps as any) || {}).some((b: any) => b?.flags?.crit_turned)).toBe(false);
+  });
+});
+
 describe('item 8, Close Guard: a quarter of a foe\'s blow on an ally next to the tank comes to the tank', () => {
   it('the ally takes 75%, the tank the rest (soaked by its plates); none without Guard', () => {
     const run = (g: number) => { const f = fight(5, { ally: true, foes: [{ at: 'D6' }] }); guard(f, g); (f.char(f.pcs[0]) as any).phys.answers = ['close_guard']; // Interpose and Retort off: Interpose would take the rest of the blow
@@ -57,6 +73,29 @@ describe('item 8, Close Guard: a quarter of a foe\'s blow on an ally next to the
     expect(on.ally).toBe(off.ally - Math.floor(off.ally * share));
     expect(moves(on.f, 'close_guard')[0]).toMatchObject({ target: on.f.pcs[0].id, other: on.f.pcs[1].id });
     expect(guard(on.f)).toBeLessThanOrEqual(3);
+  });
+});
+
+describe('item 8 with Interpose (item 3 of the review): Close Guard and Interpose on one blow compose', () => {
+  it('the protector takes no less than Interpose alone and no more than the blow; the ally nothing; armour once', () => {
+    // Guard 1: Interpose's price, and nothing left over to soak (keep_back), so the HP lost is the damage that reached it
+    const run = (answers: string[] | null, g = 1) => { const f = fight(5, { ally: true, foes: [{ at: 'D6' }] }); guard(f, g); if (answers) (f.char(f.pcs[0]) as any).phys.answers = answers;
+      const a = f.unit(f.pcs[1].id), hp = a.hp, th = tank(f).hp; blow(f, a); return { f, ally: hp - f.unit(f.pcs[1].id).hp, tank: th - tank(f).hp }; };
+    const bare = run(null, 0), alone = run(['interpose']), both = run(['close_guard', 'interpose']);
+    expect(bare.tank).toBe(0); expect(alone.ally).toBe(0); expect(both.ally).toBe(0);
+    expect(alone.tank).toBeGreaterThan(0);
+    expect(moves(both.f, 'close_guard').length).toBe(1); expect(both.f.cb.log.join(' ')).toMatch(/interposes for/);
+    expect(both.tank).toBeGreaterThanOrEqual(alone.tank); expect(both.tank).toBeLessThanOrEqual(bare.ally);
+    expect(both.tank).toBe(alone.tank); // the same armour (none) on both: the blow, once, whoever's share it was
+    // armour differs: the protector's share from Close Guard (already past the ally's armour) and the rest of the blow
+    // worked out again against its own armour: still at least Interpose alone, never more than the blow itself
+    const armoured = (who: 0 | 1, answers: string[] | null, g = 1) => { const f = fight(5, { ally: true, foes: [{ at: 'D6' }] }); guard(f, g); if (answers) (f.char(f.pcs[0]) as any).phys.answers = answers; f.unit(f.pcs[who].id).armour = 10;
+      const a = f.unit(f.pcs[1].id), hp = a.hp, th = tank(f).hp; blow(f, a); return { ally: hp - f.unit(f.pcs[1].id).hp, tank: th - tank(f).hp }; };
+    for (const who of [0, 1] as const) {
+      const blowOn = armoured(who, null, 0).ally, ia = armoured(who, ['interpose']).tank, ib = armoured(who, ['close_guard', 'interpose']).tank;
+      expect(ib, 'armour on ' + (who ? 'the ally' : 'the protector')).toBeGreaterThanOrEqual(ia);
+      expect(ib).toBeLessThanOrEqual(Math.max(blowOn, ia));
+    }
   });
 });
 
@@ -102,6 +141,20 @@ describe('item 10, Challenge: 1 AP and 1 Guard, foes within 2 save or are Taunte
     expect(() => f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any)).toThrow();
     const g = fight(3); guard(g, 0);
     expect(() => g.act({ type: 'combat/perk', unitId: g.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any)).toThrow();
+  });
+});
+
+describe('item 10, Challenge and a Boss (item 2 of the review): only the Taunt of Challenge itself misses a Boss', () => {
+  it('Challenge does not Taunt a Boss that fails every save; the same tank Taunting by a Call does, as before', () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: [], skills: { durability: 3, implication: 7, dexterity: 0, athletics: 0, raw_power: 0 } }], [{ tier: 'boss', weapon: 'maul' }]);
+    f.cb.objects = []; f.put(f.pcs[0], 'C5'); const boss = f.cb.units.find((u) => u.side === 'foe')!; f.put(boss, 'D5'); boss.hp = boss.maxHp = 900;
+    f.cb.order = [f.pcs[0].id, boss.id]; f.cb.round = 1; f.turn(f.pcs[0]);
+    guard(f, 3); f.unit(boss.id).sv = { body: -99, brain: -99, heart: -99 };
+    f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any);
+    expect(f.unit(boss.id).conds?.taunted).toBeFalsy();
+    expect((tank(f).ps as any)?.['skill:durability.1']?.flags?.challenge).toBeFalsy(); // the flag lives only while Challenge resolves
+    f.act({ type: 'combat/call', unitId: f.pcs[0].id, id: 'call.taunt', targetId: boss.id } as any);
+    expect(f.unit(boss.id).conds?.taunted, f.cb.log.slice(-4).join(' | ')).toBeTruthy();
   });
 });
 

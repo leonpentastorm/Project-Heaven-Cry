@@ -2896,6 +2896,15 @@ export function enemySearchTile(cb: Combat, u: Unit, stood?: Set<string>): { til
     P ||= paths(cb, u.pos, u.id);
     const d = P.dist[at] ?? dist(u.pos, at); if (d < gd) { gd = d; goal = at; }
   }
+  // The dead end (16 Nov 2026, seed PHC-0003: a Boss walked to where it last saw the caster, braced, and stood there for
+  // thirty rounds while the caster, out of its sight, shot at it): every tile it knows of is searched. A turn begun on
+  // such a tile (it has not moved yet this turn) heads for the nearest hostile that is not Hidden, by the noise of the
+  // fight: an enemy never holds its turns for ever while a hostile it could walk to is fighting. A Hidden one is not heard.
+  if (!goal && !u.moved) for (const t of cb.units) {
+    if (t.side === u.side || !alive(t) || t.hidden) continue;
+    P ||= paths(cb, u.pos, u.id);
+    const d = P.dist[t.pos] ?? dist(u.pos, t.pos); if (d < gd) { gd = d; goal = t.pos; }
+  }
   if (!goal || !P) return null;
   const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity, best: string | null = null;
   for (const [k, tiles] of Object.entries(P.dist)) {

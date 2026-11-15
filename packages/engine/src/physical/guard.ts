@@ -76,8 +76,12 @@ technique({
       answer(t, src.by, () => {
         spendGuard(cb, me, cost);
         const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
-        // a share of this blow already taken by others (an item's redirect: Close Guard, Share a Hit) is not taken again
-        const took = ctx.moved > 0 ? ctx.moved / (ctx.moved + ctx.dmg) : 0, dmg = Math.floor(landed(d.total, d.armour) * (1 - took));
+        // A share of this blow already moved by an item's redirect (Close Guard, Share a Hit; ctx.movedTo, effects/triggers.ts)
+        // is not taken twice. What others took comes off the blow in proportion; what this protector took itself is part of
+        // the blow it now takes whole: worked out once against its own armour, less the share it already has. So the two
+        // compose: never less than Interpose alone, never more than the blow (rules 1.56 Guard 2.0, the review's item 3).
+        const mine = Number(ctx.movedTo?.[me.id]) || 0, others = Math.max(0, (Number(ctx.moved) || 0) - mine), whole = (Number(ctx.moved) || 0) + ctx.dmg;
+        const dmg = Math.max(0, Math.floor(landed(d.total, d.armour) * (whole > 0 ? 1 - others / whole : 1)) - mine);
         ctx.dmg = 0;
         interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
         emitFx(cb, 'shove', { unit: me.id, target: v.id, from: me.pos, to: me.pos, ok: true, interpose: true });

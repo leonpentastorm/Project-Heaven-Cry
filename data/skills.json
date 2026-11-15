@@ -83,7 +83,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your weapon attacks roll {=unlocks.1.effects.0.value.per.0.value|signed} to hit for each Durability point above {=unlocks.1.effects.0.value.base|abs}, at most +{=unlocks.1.effects.0.value.max} (the tank hits through its door). Set Against the Blow: while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard: every foe you see within {=unlocks.1.effects.6.effects.0.targets.within} tiles makes a Heart save or is Taunted; a Boss answers no challenge. Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.8.if.self_skill.durability}): {=unlocks.1.effects.8.ap} AP and {=unlocks.1.effects.8.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.8.effects.1.tiles} tile and makes a Body save or is Off Balance.",
+          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your weapon attacks roll {=unlocks.1.effects.0.value.per.0.value|signed} to hit for each Durability point above {=unlocks.1.effects.0.value.base|abs}, at most +{=unlocks.1.effects.0.value.max} (the tank hits through its door). Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard: every foe you see within {=unlocks.1.effects.6.effects.0.and.0.targets.within} tiles makes a Heart save or is Taunted; a Boss answers no challenge. Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.8.if.self_skill.durability}): {=unlocks.1.effects.8.ap} AP and {=unlocks.1.effects.8.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.8.effects.1.tiles} tile and makes a Body save or is Off Balance.",
           "effects": [
             {
               "op": "roll_mod",
@@ -116,7 +116,10 @@
                 "by_hit": true,
                 "self_has_res": [
                   "guard"
-                ]
+                ],
+                "self_skill": {
+                  "durability": 3
+                }
               },
               "value": 1,
               "label": "Set Against the Blow",
@@ -261,16 +264,27 @@
               },
               "effects": [
                 {
-                  "op": "condition",
+                  "op": "mark",
                   "when": "acted",
-                  "condition": "taunted",
-                  "via": "durability",
-                  "targets": {
-                    "of": "self",
-                    "within": 2,
-                    "side": "foe",
-                    "seen": true
-                  },
+                  "flag": "challenge",
+                  "and": [
+                    {
+                      "op": "condition",
+                      "condition": "taunted",
+                      "via": "durability",
+                      "targets": {
+                        "of": "self",
+                        "within": 2,
+                        "side": "foe",
+                        "seen": true
+                      }
+                    },
+                    {
+                      "op": "mark",
+                      "flag": "challenge",
+                      "clear": true
+                    }
+                  ],
                   "fx": {
                     "k": "guard_move",
                     "move": "challenge",
@@ -284,6 +298,7 @@
               "op": "cancel",
               "when": "cond_incoming",
               "if": {
+                "flag": "challenge",
                 "actor": "self",
                 "target": "foe",
                 "cond": [
@@ -352,6 +367,18 @@
               "flag": "crit_turned",
               "clear": true,
               "if": {
+                "flag": "crit_turned"
+              },
+              "label": "Set Against the Blow"
+            },
+            {
+              "op": "mark",
+              "when": "hit",
+              "flag": "crit_turned",
+              "clear": true,
+              "if": {
+                "actor": "foe",
+                "target": "self",
                 "flag": "crit_turned"
               },
               "label": "Set Against the Blow"
