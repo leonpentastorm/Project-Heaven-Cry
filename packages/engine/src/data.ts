@@ -12,6 +12,8 @@ import archetypesJ from '../../../data/archetypes.json';
 import itemsJ from '../../../data/items.json';
 import sigilsJ from '../../../data/sigils.json';
 import soulJ from '../../../data/soul_modules.json';
+import variantsJ from '../../../data/variants.json';
+import { expandVariants } from './variants';
 
 export type CoreId = 'body' | 'mind' | 'soul';
 export const CORES: CoreId[] = ['body', 'mind', 'soul'];
@@ -91,6 +93,13 @@ export const COMBAT_XP: Record<string, number> = { easy: 25, standard: 50, hard:
 
 // ---------- weights (spec: Item weights; provisional) ----------
 export const ITEM: Record<string, { id: string; name: string; weight_kg: number; text?: string }> = Object.fromEntries((itemsJ as any).items.map((x: any) => [x.id, x]));
+// ---------- variants (rules 1.56 L4, data/variants.json): rows made at load from a base and its modifiers ----------
+const VARIANTS_MADE = expandVariants(variantsJ, WEAPON, ITEM);
+for (const w of VARIANTS_MADE.weapons) WEAPON[w.id] = w;
+for (const it of VARIANTS_MADE.items) (ITEM as any)[it.id] = it;
+/** The modifier items the variants' effect kinds make (a `relic` row each, by id): effects/collect.ts holds them like a
+ * fitted mod. WEAPONS (the list) stays the base weapons: a variant is in the WEAPON and ITEM tables by its id. */
+export const VARIANT_MOD: Record<string, any> = Object.fromEntries(VARIANTS_MADE.mods.map((m) => [m.id, m]));
 const findKey = (o: any, k: string): any => { if (!o || typeof o !== 'object') return null; if (k in o) return o; for (const v of Object.values(o)) { const r = findKey(v, k); if (r) return r; } return null; };
 export const CALIBRE_NAME: Record<string, string> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.name]));
 export const ROUND_KG: Record<string, number> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.round_kg]));

@@ -2,7 +2,7 @@
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
-import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL, ITEM } from '../data';
+import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL, ITEM, VARIANT_MOD } from '../data';
 import figmentsJ from '../../../../data/figments.json';
 import classesJ from '../../../../data/classes.json';
 import shadowJ from '../../../../data/shadow.json';
@@ -24,7 +24,8 @@ export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: a
  * through the predicate `with_this`. Read from the data table itself, so a mod written as one data line is held with no
  * code (a quiver's enchantment is a mod too: it has no triggered effects). */
 const gearModRow = (id: string): any | null => { const x: any = (ITEM as any)[id]; return x && x.category === 'mod' ? x : null; };
-const relicRow = (id: string): any | null => EXTRA.relic[id] || gearModRow(id);
+// rules 1.56 L4: a variant's modifier item (data/variants.json, made at load by variants.ts) is held the same way
+const relicRow = (id: string): any | null => EXTRA.relic[id] || gearModRow(id) || VARIANT_MOD[id] || null;
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
@@ -138,7 +139,8 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
   }
   if (kind === 'relic') {
     const x = relicRow(id); if (!x) return null;
-    const effects = EXTRA.relic[id] ? [...(x.effects || [])] : (x.effects || []).filter((e: any) => e && typeof e.when === 'string'); // a mod's: its triggered effects (its `mod` marker is the slot, not a rule)
+    // a mod's: its triggered effects (its `mod` marker is the slot, not a rule); a run relic's and a variant's modifier's: all
+    const effects = EXTRA.relic[id] || VARIANT_MOD[id] ? [...(x.effects || [])] : (x.effects || []).filter((e: any) => e && typeof e.when === 'string');
     return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'relic'), text: x.text || '', adjudication: x.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will', provisional: !!x.provisional };
   }
   if (kind === 'trait') {
@@ -292,6 +294,7 @@ export function allItems(): ItemInfo[] {
   for (const id of Object.keys(EXTRA.trait)) out.push(itemInfo('trait:' + id)!);
   for (const id of Object.keys(EXTRA.relic)) out.push(itemInfo('relic:' + id)!);
   for (const id of Object.keys(ITEM)) if (gearModRow(id)) out.push(itemInfo('relic:' + id)!); // the weapon mods (rules 1.56)
+  for (const id of Object.keys(VARIANT_MOD)) out.push(itemInfo('relic:' + id)!); // the variants' modifiers (rules 1.56 L4)
   for (const v of allVerbs()) out.push(itemInfo('verb:' + v.id)!);
   return out.filter(Boolean);
 }

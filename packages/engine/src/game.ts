@@ -9,7 +9,7 @@ import {
   packOf, magsOf, roundsOf, loadAll, specialRoundsFor, takeSpecialRounds, plainRounds, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, modsOn, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign } from './figments';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
@@ -3358,7 +3358,7 @@ function runEnter(g: GameState, id: string) {
   r.visit = openVisit(g, n); // rules 1.43: what is done at a safe node, and what it rolled on entry (run/progress.ts)
   if (n.kind === 'rest') { // rule 24: the long rest and a new session; the small training is run/train
     applyRest(g, 'long'); beginSession(g);
-    for (const c of Object.values(g.characters)) { if (carriesEvoker(c)) c.evoCharge = CORE_CHARGE; if (carriesVisualizer(c)) c.visCharge = VIS_CHARGE; } // rules 1.51 (spec rule 52 d): the loaded cores full
+    for (const c of Object.values(g.characters)) { if (carriesEvoker(c)) c.evoCharge = coreChargeOf({ c }); if (carriesVisualizer(c)) c.visCharge = VIS_CHARGE; } // rules 1.51 (spec rule 52 d): the loaded cores full
   }
   if (n.kind === 'cache') { const k: PayKind = 'cache', xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {};
     for (const c of Object.values(g.characters)) { giveXp(g, c, 'survival', xp, 'a cache'); const got = creditsFor(c, cr); earnCredits(c, got); stageLog(r).credits += got; ammo[c.id] = runAmmo(c, packCount(k)); }
@@ -3561,7 +3561,7 @@ function sbRefill(c: Character) {
   const w = WEAPON[c.weapon];
   if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
   if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
-  if (carriesEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === CORE_ITEM); if (core) core.qty = Math.max(core.qty, 4); else pack.push(...lootToPack({ item: CORE_ITEM, qty: 4 })); }
+  if (carriesEvoker(c)) { c.evoCharge = coreChargeOf({ c }); const core = pack.find((it) => (it.item || it.id) === CORE_ITEM); if (core) core.qty = Math.max(core.qty, 4); else pack.push(...lootToPack({ item: CORE_ITEM, qty: 4 })); }
   c.pack = pack;
   if (carriesMpFocus(c)) c.mp = maxMp(c);
   c.stims = Math.max(c.stims, 3);
@@ -3636,7 +3636,7 @@ function sbKit(g: GameState, c: Character, kind: MagicKit): string[] {
   };
   if (kind !== 'soul') {
     focus('evoker', 'an Evoker');
-    sbGive(c, 'standard_core', 4, 'standard'); c.evoCharge = CORE_CHARGE; got.push('4 mana cores');
+    sbGive(c, 'standard_core', 4, 'standard'); c.evoCharge = coreChargeOf({ c }); got.push('4 mana cores');
     for (const w of MAGIC_KIT.words) learn({ word: w });
   }
   if (kind !== 'sigil') {

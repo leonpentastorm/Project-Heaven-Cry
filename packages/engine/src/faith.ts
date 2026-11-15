@@ -20,7 +20,7 @@ import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, packKindOf, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, modsOn, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
-import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
+import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE, coreChargeOf } from './magic';
 import { pushAway } from './effects/core';
 import { setPrayerDoor } from './effects/actions';
 import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot, setResSetter } from './effects/cost';
@@ -703,7 +703,7 @@ function quartermasterDry(cb: Combat) {
     for (const hit of [coreHit && 'core_dry', mpHit && 'mp_out'] as const) {
       if (!hit || u.dead) continue;
       const f = intervening(cb, 'the_quartermaster').find((x) => x === u); if (!f) break;
-      if (hit === 'core_dry') intervene(cb, f, 'core_dry', f, CORE_CHARGE, () => { m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: f.id, at: f.pos, dur: 1000 }); return ': a fresh core slots into the Evoker (' + CORE_CHARGE + ' charge; the spare cores untouched)'; });
+      if (hit === 'core_dry') { const full = coreChargeOf({ u: f, cb }); intervene(cb, f, 'core_dry', f, full, () => { m.charge = full; emitFx(cb, 'core', { unit: f.id, at: f.pos, dur: 1000 }); return ': a fresh core slots into the Evoker (' + full + ' charge; the spare cores untouched)'; }); }
       else { const gain = Math.floor(m.mpMax * QM_MP_SHARE); intervene(cb, f, 'mp_out', f, gain, () => { m.mp = Math.max(0, m.mp) + gain; return ': ' + gain + ' MP back (' + Math.round(m.mp) + '/' + m.mpMax + ')'; }); }
     }
     st.seenCharge = m.evoker ? Math.round(m.charge) : undefined; st.seenMp = m.emanator ? Math.round(m.mp) : undefined;

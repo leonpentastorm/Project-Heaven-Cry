@@ -29,7 +29,7 @@ import {
   planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady,  dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
   enemyMagic, W, isElement, isAffliction, isBoonWord,  MAX_GLYPHS, SIGIL_REV, sigilPower, lineMultFor,
 } from './sigil';
-import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn, ventAp, coreAp } from './magic';
+import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, fluxMaxOf, coreChargeOf, unitSave, condOn, ventAp, coreAp } from './magic';
 import { fooledBy } from './illusion';
 import { tilesAround, canStand, foesOf } from './kit';
 import { withAp, canPay } from './effects/cost';
@@ -379,9 +379,10 @@ function linePrice(cb: Combat, u: Unit, words: string[], tiles: string[], evokeA
     if (i < words.length - 1) { const a = apForTiles(1, bank, u.movement); bank = bank + a * u.movement - 1; ap += a; }
   }
   const pre: ('vent' | 'core')[] = [];
-  if (fx > FLUX_MAX) return null;
-  if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += ventAp(u, cb); }
-  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += coreAp(u, cb); }
+  const fmax = fluxMaxOf(u, cb);
+  if (fx > fmax) return null;
+  if (m.flux + fx > fmax) { pre.push('vent'); ap += ventAp(u, cb); }
+  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > coreChargeOf({ u, cb })) return null; pre.push('core'); ap += coreAp(u, cb); }
   ap += evokeAp;
   return canPay(null, u, ap) ? { ap, pre } : null;
 }

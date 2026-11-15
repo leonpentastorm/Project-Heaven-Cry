@@ -920,8 +920,9 @@ export function focusRarity(c: Character, door: string): Rarity | null {
  * `with_this` reads. */
 export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => {
   // rules 1.56 (plan 0.29 primitive 1): an instance's modifier items are its property and its fitted mods, one door
-  const carried = (st: { prop?: string; mods?: string[] } | null | undefined, hand: 'main' | 'off') => [...(st?.prop ? [st.prop] : []), ...(st?.mods || [])].map((prop) => ({ prop, hand }));
-  return [...(c.weapon !== 'fists' ? carried(c.weaponState, 'main') : []), ...(c.offHand && !twoHands(c, c.weapon) ? carried(c.offHand, 'off') : [])];
+  // rules 1.56 L4: and the modifiers its row carries when it is a variant (data/variants.json `variant_mods`)
+  const carried = (id: string | null | undefined, st: { prop?: string; mods?: string[] } | null | undefined, hand: 'main' | 'off') => [...(st?.prop ? [st.prop] : []), ...(st?.mods || []), ...((id ? ((WEAPON[id] || ITEM[id]) as any)?.variant_mods : null) || [])].map((prop) => ({ prop, hand }));
+  return [...(c.weapon !== 'fists' ? carried(c.weapon, c.weaponState, 'main') : []), ...(c.offHand && !twoHands(c, c.weapon) ? carried(c.offHand.id, c.offHand, 'off') : [])];
 };
 /** Rules 1.43 (item 11; survival-spec rule 31): the named property of every instance a character carries (hands and
  * pack), one per instance: what counts on its run's cap whether in hand or not. */
@@ -1027,7 +1028,13 @@ export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item ||
 /** MP now: the MP focus's charge (an Emanator or, rules 1.33, an Attuner; full when first carried); no MP focus, no MP. */
 export const mpNow = (c: Character) => (carriesMpFocus(c) ?Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
-export const evoChargeNow = (c: Character) => (carriesEvoker(c) ? c.evoCharge ?? 10 : 0);
+/** A standard mana core's charge (rules 1.4; data/rules.json mana.cores.standard.charge): the one copy (C11, rules 1.56). */
+export const CORE_CHARGE: number = Number((RULES as any).mana?.cores?.standard?.charge);
+if (!(CORE_CHARGE > 0)) throw new Error('data/rules.json mana.cores.standard.charge is missing');
+/** The charge one core gives this character's or unit's Evoker: a core's charge plus what its items add (stat
+ * `core_charge`: a variant's Deep cell, rules 1.56 L4, while the Evoker is in a hand). */
+export const coreChargeOf = (x: { c?: Character | null; u?: any; cb?: any }): number => CORE_CHARGE + statQuery(x as any, 'core_charge').add;
+export const evoChargeNow = (c: Character) => (carriesEvoker(c) ? c.evoCharge ?? coreChargeOf({ c }) : 0);
 /** The modifier on a skill CHECK (rules 1.13): a gamma-slot skill adds its full points, every other skill points − 1;
  * 0 points is −2 either way. Only for checks, Ask and passives: attacks, saves, Initiative and debuff TNs keep mod(). */
 export const checkModOf = (skill: string, p: number) => (p <= 0 ? -2 : SKILL[skill]?.slot === 'gamma' ? p : p - 1);

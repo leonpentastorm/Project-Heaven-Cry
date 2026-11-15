@@ -78,7 +78,8 @@ const rarityRow = (stage: number): Record<string, number> => { const rows: any[]
 const rollRarity = (rng: ReturnType<typeof rngFor>, table: Record<string, number>, stage: number): Rarity =>
   cappedRarity(((rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([item, weight]) => ({ item, weight: Number(weight) })) } as any)?.item) || 'standard') as Rarity, stage);
 /** The weapons and foci a shop may roll (priced, not thrown: those are the counter's). */
-const GEAR_POOL: string[] = [...Object.keys(WEAPON).filter((id) => (WEAPON[id] as any).category !== 'thrown'), ...Object.keys(ITEM).filter(isFocusItem)].filter((id) => priceOf(id) != null).sort();
+// (a variant, rules 1.56 L4, is never rolled: a shop sells one only when something names it)
+const GEAR_POOL: string[] = [...Object.keys(WEAPON).filter((id) => (WEAPON[id] as any).category !== 'thrown'), ...Object.keys(ITEM).filter(isFocusItem)].filter((id) => priceOf(id) != null && !((WEAPON[id] || ITEM[id]) as any).variant_of).sort();
 /** The items a shop may roll (`stock.item_categories`; priced; never on the counter already). */
 const ITEM_POOL = (): string[] => { const counter = new Set(SHOP_DATA.always.flatMap((s) => s.ids.map((x) => x.id)));
   return Object.keys(ITEM).filter((id) => (SHOP_DATA.stock.item_categories as string[]).includes((ITEM[id] as any).category) && !isFocusItem(id) && !counter.has(id) && priceOf(id) != null).sort(); };

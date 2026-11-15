@@ -85,6 +85,9 @@ function attackLines(cb: Combat, u: Unit, foe: Unit, mode: AttackMode) {
  * reference foe of the character's level, damage per hit, the AP of each mode, magazine, range, traits; for a focus its
  * door and the door skill's modifier; for armour and shields what the character's Defense, armour and injury resistance
  * become; for ammunition and items their numbers in data. */
+/** Rules 1.56 L4: a variant's modifiers (data/variants.json), one line each, its kind's sentence (the field kinds' numbers
+ * are already in the lines above: the variant's row carries them). */
+const variantLines = (row: any): PreviewLine[] => ((row?.variant_lines || []) as any[]).map((l) => ({ key: 'variant:' + l.kind, label: l.name, value: l.text, num: null }));
 export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   const id = inst.id, rarity: Rarity = inst.rarity || 'standard', w: any = WEAPON[id], it: any = ITEM[id];
   const base = { id, name: nameOf(id), rarity, text: String(w?.text || it?.text || '') };
@@ -120,6 +123,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     }
     // rules 1.56: each fitted mod, by its own data text
     for (const m of inst.mods || []) { const mi: any = ITEM[m]; if (mi) lines.push({ key: 'mod:' + m, label: mi.name, value: String(mi.text || ''), num: null }); }
+    lines.push(...variantLines(w));
     { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
     lines.push(...skillLines(c, u, w));
     const traits = [...(w.properties || []), ...((w.phys?.props as string[]) || [])].map((t) => cap(String(t).replace(/_/g, ' ')));
@@ -134,6 +138,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       { key: 'door_acc', label: 'Grade on ' + (sk?.name || door) + ' rolls', value: '+' + doorAcc(c, inst, door), num: doorAcc(c, inst, door), better: 'higher' },
       { key: 'fuel', label: 'Runs on', value: it.focus.fuel === 'core' ? 'mana cores' : 'MP', num: null },
       ...focusSkillLines(c, door),
+      ...variantLines(it),
     ] };
   }
   if (it && (it.category === 'armour' || it.category === 'shield')) {
@@ -171,7 +176,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   const r = r0 ? [r0[0], r0[1], mr ? mr[1] : rs ? rs.calibre : r0[2]] : null, mcap = r ? (WEAPON[r[2]] as any)?.magazine ?? 0 : 0, held = mr?.[2] != null ? Math.min(mcap, Number(mr[2])) : mcap;
   if (r || it?.category === 'ammo') {
     const cal = r?.[1] === 'rounds' ? r[2] : r ? (WEAPON[r[2]] as any)?.ammo : null;
-    const users = cal ? Object.values(WEAPON).filter((x: any) => x.ammo === cal).map((x: any) => x.name) : [];
+    const users = cal ? Object.values(WEAPON).filter((x: any) => x.ammo === cal && !x.variant_of).map((x: any) => x.name) : [];
     return { ...base, name: r ? (r[1] === 'rounds' ? (sp ? sp.name + ' (' + (CALIBRE_NAME[r[2]] || r[2]) + ')' : (CALIBRE_NAME[r[2]] || r[2]) + ' rounds') : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
       text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : sp ? sp.text : 'Loose rounds.') : base.text,
       lines: [
