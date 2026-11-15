@@ -568,7 +568,7 @@
   "faces": {
     "about": "Rules 1.42 (spec section 3.4): the faces of the safe nodes: one shopkeeper per setting, one armourer, drill sergeant and medic for every setting, the shrine's patron. `portrait` and `backdrop` are the art/catalog.json ids the artist will deliver (`*_pending: true` until they land); `fallback` is a world-pool portrait (catalog `characters`; the patron's is the rolled patron's own, `fallback_patron`) and `backdrop_fallback` an illustration id (catalog `illustrations`), or null for the ground colour, drawn meanwhile. `bias` weights the rolled stock by tag (weapon, item, melee, thrown, focus, mana, core, mod); `price` multiplies the rolled stock's prices only. `lines`: greet, bought, cant_afford, sold, sold_to (a rolled piece another player took), gave, leave, and what the keeper says as a tab opens (stock, gear, upgrade, sell at a shop; upgrade, stock, fit at a Forge; train, shrine, trade; give), in the keeper's own voice (docs/design/ui-screens.md, Writing for the player); the shrine's patron face has `votaries`: each patron's votary's greet, bought and leave.",
     "items": [
-      { "id": "quartermaster", "name": "Ledda Kroll", "role": "Chapter quartermaster", "node": "shop", "settings": ["ahoc"], "portrait": "survival-keeper-ahoc", "fallback": "drava-keel", "backdrop": "shop-ahoc", "backdrop_pending": true, "backdrop_fallback": "m813-outpost-hangar", "bias": {"weapon": 1.5}, "price": 1.0,
+      { "id": "quartermaster", "name": "Ledda Kroll", "role": "Chapter quartermaster", "node": "shop", "settings": ["ahoc"], "portrait": "survival-keeper-ahoc", "fallback": "drava-keel", "backdrop": "shop-ahoc", "backdrop_pending": false, "backdrop_fallback": "m813-outpost-hangar", "bias": {"weapon": 1.5}, "price": 1.0,
         "lines": {
           "greet": ["Sign for it or don't touch it.", "Chapter stores. Everything here is counted twice and blessed once.", "You look like someone who just spent a magazine on a wall. Restock."],
           "bought": ["Logged.", "Signed out to you. Bring back the casing if you can.", "That is on the ledger now."],
@@ -583,7 +583,7 @@
           "sell": ["Back into stores it goes. Don't expect chapter generosity.", "I'll take it. The ledger decides what it's worth."],
           "give": ["Passing kit to a squadmate? Fine. I'm writing it down."]
         }, "provisional": true },
-      { "id": "dealer", "name": "Sefa Mire", "role": "Back-alley dealer", "node": "shop", "settings": ["city"], "portrait": "survival-keeper-city", "fallback": "selka-noon", "backdrop": "shop-city", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"item": 1.5}, "price": 0.9,
+      { "id": "dealer", "name": "Sefa Mire", "role": "Back-alley dealer", "node": "shop", "settings": ["city"], "portrait": "survival-keeper-city", "fallback": "selka-noon", "backdrop": "shop-city", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"item": 1.5}, "price": 0.9,
         "lines": {
           "greet": ["You didn't see me. I didn't see you. Now, what do you need?", "Everything here fell off something. The prices are honest, which is more than the streets are.", "Keep your voice down and your purse open."],
           "bought": ["Pleasure.", "Don't tell anyone where you got it."],
@@ -598,7 +598,7 @@
           "sell": ["I'll buy it. I won't pay much. That's business.", "Everything's worth something. Yours, less."],
           "give": ["Share with your friends, sure. Less for me to sell them."]
         }, "provisional": true },
-      { "id": "sutler", "name": "Brann Okoye", "role": "Camp sutler", "node": "shop", "settings": ["field"], "portrait": "survival-keeper-field", "fallback": "basko-rell", "backdrop": "shop-field", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"melee": 1.5, "thrown": 1.5}, "price": 0.95,
+      { "id": "sutler", "name": "Brann Okoye", "role": "Camp sutler", "node": "shop", "settings": ["field"], "portrait": "survival-keeper-field", "fallback": "basko-rell", "backdrop": "shop-field", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"melee": 1.5, "thrown": 1.5}, "price": 0.95,
         "lines": {
           "greet": ["Mind the mud. Blades on the left, bangs on the right.", "The front takes everything eventually. Take what you need first.", "Wipe your boots. Then buy something."],
           "bought": ["Good choice. Sharp end away from you.", "That'll see you through the next trench."],
@@ -613,7 +613,7 @@
           "sell": ["Salvage pays. Not much, but it pays."],
           "give": ["Pass it along. Somebody'll need it more by tonight."]
         }, "provisional": true },
-      { "id": "trader", "name": "Ivo Smetanin", "role": "Smetanita trader", "node": "shop", "settings": ["works"], "portrait": "survival-keeper-works", "fallback": "pell-morrow", "backdrop": "shop-works", "backdrop_pending": true, "backdrop_fallback": "m813-rear-pad-loading", "bias": {"focus": 2.0, "mana": 2.0}, "price": 1.15,
+      { "id": "trader", "name": "Ivo Smetanin", "role": "Smetanita trader", "node": "shop", "settings": ["works"], "portrait": "survival-keeper-works", "fallback": "pell-morrow", "backdrop": "shop-works", "backdrop_pending": false, "backdrop_fallback": "m813-rear-pad-loading", "bias": {"focus": 2.0, "mana": 2.0}, "price": 1.15,
         "lines": {
           "greet": ["Smetanita goods. Precision costs, and precision is all I sell.", "Gloves, cores, tools of the trade. The foundry makes, I deliver.", "Inspect anything. Touch nothing you won't buy."],
           "bought": ["A sound investment.", "Calibrated this morning."],
@@ -628,7 +628,7 @@
           "sell": ["I'll assess it. Expect a fair, small number."],
           "give": ["A transfer between colleagues. Efficient."]
         }, "provisional": true },
-      { "id": "reliquary", "name": "Sister Amaun", "role": "Reliquary keeper", "node": "shop", "settings": ["shrine"], "portrait": "survival-keeper-shrine", "fallback": "brother-halden", "backdrop": "shop-shrine", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"focus": 1.5}, "price": 1.1,
+      { "id": "reliquary", "name": "Sister Amaun", "role": "Reliquary keeper", "node": "shop", "settings": ["shrine"], "portrait": "survival-keeper-shrine", "fallback": "brother-halden", "backdrop": "shop-shrine", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"focus": 1.5}, "price": 1.1,
         "lines": {
           "greet": ["Peace on your road. The relics are blessed; the rounds are merely counted.", "Lay down your burdens. Then pick up new ones; they are for sale.", "Be welcome, pilgrim. Mind the step, it is older than you."],
           "bought": ["May it serve you.", "Go with it."],
@@ -643,7 +643,7 @@
           "sell": ["The house takes it back, and gives a little."],
           "give": ["Give freely. It is the only giving that counts."]
         }, "provisional": true },
-      { "id": "chandler", "name": "Corra Vell", "role": "Rim chandler", "node": "shop", "settings": ["rim"], "portrait": "survival-keeper-rim", "fallback": "asher-fen", "backdrop": "shop-rim", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"item": 1.5, "core": 1.5}, "price": 1.0,
+      { "id": "chandler", "name": "Corra Vell", "role": "Rim chandler", "node": "shop", "settings": ["rim"], "portrait": "survival-keeper-rim", "fallback": "asher-fen", "backdrop": "shop-rim", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"item": 1.5, "core": 1.5}, "price": 1.0,
         "lines": {
           "greet": ["Air's recycled, prices aren't. Take a look.", "Last stop before the dark. Stock up.", "Close the hatch behind you. We pay for the heat."],
           "bought": ["Sealed and stamped.", "Don't let it vent."],
@@ -658,7 +658,7 @@
           "sell": ["Scrap's worth something on the rim. Not a lot."],
           "give": ["Share the load. That's how crews get home."]
         }, "provisional": true },
-      { "id": "armourer", "name": "Hesk Varro", "role": "Armourer", "node": "forge", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "forge-armourer", "portrait_pending": true, "fallback": "orren-vask", "backdrop": "forge", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"mod": 1.5}, "price": 1.0,
+      { "id": "armourer", "name": "Hesk Varro", "role": "Armourer", "node": "forge", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "forge-armourer", "portrait_pending": false, "fallback": "orren-vask", "backdrop": "forge", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"mod": 1.5}, "price": 1.0,
         "lines": {
           "greet": ["Put it on the bench. Let's see what it could be.", "Steel remembers how it was treated. Let's fix that.", "Bring me something worth the work."],
           "bought": ["Good steel.", "That'll hold."],
@@ -672,7 +672,7 @@
           "fit": ["Stand still. I'll fit the next plate to you.", "Heavier armour, if your body can take it."],
           "give": ["Share the load."]
         }, "provisional": true },
-      { "id": "sergeant", "name": "Nara Dusk", "role": "Drill sergeant", "node": "training", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "train-sergeant", "portrait_pending": true, "fallback": "captain-nara-dusk", "backdrop": "training", "backdrop_pending": true, "backdrop_fallback": "proving-ground-drill-yard", "bias": {}, "price": 1.0,
+      { "id": "sergeant", "name": "Nara Dusk", "role": "Drill sergeant", "node": "training", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "train-sergeant", "portrait_pending": false, "fallback": "captain-nara-dusk", "backdrop": "training", "backdrop_pending": false, "backdrop_fallback": "proving-ground-drill-yard", "bias": {}, "price": 1.0,
         "lines": {
           "greet": ["On the line. Again. Until it's boring.", "You call that a stance? We'll fix it.", "First drill's on me. The second one you pay for."],
           "bought": ["Again.", "Better. Again."],
@@ -684,7 +684,7 @@
           "train": ["Pick your drill. I'll make you hate it.", "Once on me, again on your coin."],
           "give": ["Good. A squad shares."]
         }, "provisional": true },
-      { "id": "medic", "name": "Mallow", "role": "Field medic", "node": "rest", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "rest-medic", "portrait_pending": true, "fallback": "mallow-3", "backdrop": "rest-safe-room", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0,
+      { "id": "medic", "name": "Mallow", "role": "Field medic", "node": "rest", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "rest-medic", "portrait_pending": true, "fallback": "mallow-3", "backdrop": "rest-safe-room", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0,
         "lines": {
           "greet": ["Sit. Breathe. Let me look at that.", "Everyone's patched. Rest while you can.", "Nobody leaves until I've seen them."],
           "bought": ["Use it well.", "Good. Now sit still."],
@@ -696,7 +696,7 @@
           "train": ["If you've energy left, practise something quiet.", "One drill. Then sleep."],
           "give": ["Kind of you."]
         }, "provisional": true },
-      { "id": "patron", "name": "The shrine's patron", "role": "Patron", "node": "shrine", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "shrine-patron", "portrait_pending": true, "fallback": null, "backdrop": "shrine", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0, "fallback_patron": true,
+      { "id": "patron", "name": "The shrine's patron", "role": "Patron", "node": "shrine", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "shrine-patron", "portrait_pending": true, "fallback": null, "backdrop": "shrine", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0, "fallback_patron": true,
         "lines": {
           "greet": ["The candles lean toward you.", "The shrine is quiet. It is listening.", "Someone keeps these candles lit. Not you."],
           "bought": ["Accepted.", "Taken up."],
@@ -718,7 +718,7 @@
           "the_matchmaker": {"greet": ["Are you on the list? Everyone's on the list. Sit.", "Oh, you'd look lovely together. You and a blessing, I mean.", "She has a plan for you. It has a seating chart."], "bought": ["Perfect match.", "I'll put that in the file."], "leave": ["Bring someone next time."]},
           "counting_weaver": {"greet": ["Your thread is on the loom. Let's see the figures.", "Everything is counted here. Including you, twice.", "Sit. The Weaver is reconciling your accounts."], "bought": ["Entered.", "The tally holds."], "leave": ["Your thread runs on. For now."]}
         }, "provisional": true },
-      { "id": "broker", "name": "Teo Vant", "role": "Crossroads broker", "node": "event", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "event-broker", "portrait_pending": true, "fallback": "veyra-salt", "backdrop": "crossroads", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0,
+      { "id": "broker", "name": "Teo Vant", "role": "Crossroads broker", "node": "event", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "event-broker", "portrait_pending": false, "fallback": "veyra-salt", "backdrop": "crossroads", "backdrop_pending": false, "backdrop_fallback": null, "bias": {}, "price": 1.0,
         "lines": {
           "greet": ["Everyone who walks this road wants something. So do I.", "Three deals on the table. Pick one, or keep walking.", "No haggling. The price is the price."],
           "bought": ["A fair trade, near enough.", "Pleasure doing business."],

@@ -1,0 +1,47 @@
+{
+  "number": 46,
+  "id": "forge-armourer",
+  "name": "Hesk Varro, the armourer",
+  "path": "art/portraits/survival/forge-armourer.png",
+  "mode": "portrait",
+  "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New\nFaces images as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective\ndry-brush scumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy\nand restrained stylization (not enormous eyes, not interchangeable pointed chins, not flat cel shading) and specific\nemotional acting. Paint forms directly; avoid photographed skin with a texture overlay. Preserve local material\ncolours and quiet dark areas. Match the references' finish without copying their characters, clothes, composition or\nincidental accessories. Follow the lore for tools and magic. Format: 4:5, 800 x 1000 PNG, one character, shown from\nthe chest or waist up, one visible action, one specific emotion, one useful setting hint behind them. No\nunrequested text, frame, UI or watermark; no real-world person, brand or recognisable character.\n\n\nPaint this ONE subject:\nThe armourer of the Forge, standing at a bench: a broad, sun-creased man of about fifty with a scorched leather apron over mismatched plate, a hammer and a calliper in his belt, a half-fitted pauldron on the vise in front of him. Action: running a thumb along an edge to test it. Emotion: unhurried, proud of the work, hard to impress. His line: \"Steel remembers how it was treated.\" (Stand-in today: `orren-vask`.)\n\nFRAMING CORRECTION: preserve the same broad fifty-year-old armourer, curled greying dark hair, sun-creased face, soot-brown apron, half-fitted pauldron and thumb testing its edge from the attached previous master. Recompose him lower in the portrait: BOTH EYES at exactly 22 percent of canvas height from the top, not 12 percent. Leave substantial headroom above the hair. Keep the entire crown within the frame. Waist-up portrait with face centered horizontally, hands and pauldron below. Painted furnace and workshop fill the new headroom. Maintain deliberate opaque gouache planes and broken ink; no photographic skin texture.",
+  "refs": [
+    "art/portraits/world/new-faces/orren-vask.png",
+    "art/portraits/world/new-faces/ivara-drenn.png",
+    "art/portraits/survival/keeper-ahoc.png",
+    "art/portraits/survival/keeper-city.png",
+    "art/_archive/everything-missing/2026-11-15/superseded/armourer-framing-v1/master.png"
+  ],
+  "transparent": false,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/forge-armourer.png",
+  "source_sha256": "e7340a7d24bf201d1d72dd5459245666c8e95b837d3cd7581597f1b961b09582",
+  "sha256": "dd12c799fc3b3d8e5664ec9279c50964609a826cb6cf00d78767b398ccd3fbbe",
+  "exports": {},
+  "upscaled": false,
+  "export_processing": "Aspect-preserving portrait crop using painted headroom to align estimated eye midpoint to 22%; Lanczos downsample",
+  "export_crop": [
+    29,
+    72,
+    1093,
+    1402
+  ],
+  "eye_line": {
+    "x": 0.447,
+    "y": 0.22
+  },
+  "eye_line_method": "Manual estimate on native render, transformed through recorded export crop",
+  "native_minimum_met": true,
+  "implementation_ready": false,
+  "catalog_family": "survival_art",
+  "catalog_id": "forge-armourer"
+}

@@ -1,0 +1,42 @@
+{
+  "number": 54,
+  "id": "shop-shrine",
+  "name": "Sister Amaun's shop, the shrine and cathedral district",
+  "path": "art/illustrations/survival/nodes/shop-shrine.png",
+  "mode": "scene",
+  "prompt": "Paint one wide environment illustration for a game in Heavenprint: hand-painted opaque gouache and ink with broken,\ndirectional brush strokes, selective dry-brush scumbling, restrained hatching where a crease or an edge needs it,\ncharcoal lost edges, warm ivory accents on the focal edges, deliberate angular architectural forms in layers\n(foreground, middle, far), and quiet low-detail areas. Not line art, not a photograph, not a 3D render, no airbrushed\ngloss, no uniform digital sharpness, no cinematic lens flare. Match the attached Heavenprint scene references for\nbrushwork, finish and layering. **This is the backdrop of a place where a shopkeeper or a keeper stands in front of the\npicture:** no characters, no creatures, no figures of any kind, **the left third calm, dark and low-detail** (the keeper\nstands over it), the main props and the strongest values in the middle third, and the right third plain and mid-dark\n(it sits under a heavy dark gradient). Keep the overall value range mid-dark and the contrast gentle, so that the picture\nstill reads when darkened to about 40%. Camera: a raised three-quarter view looking into the place; no strong vanishing\nlines converging on the centre. One clear light source; light is locally coloured by the scene, never tinted by a skill\nor attribute colour; no glowing bloom. 16:9, 2560 x 1440 PNG if you can, never smaller than 1920 x 1080. No text, no\nletters, no numbers, no signs with writing (blank or abstract marks only), no logos, no UI, no frame, no border, no\nwatermark. Everything is invented: nothing recognisable from real-world works, brands, buildings or places.\n\n\nPaint this ONE subject:\nA reliquary keeper's stall in a cathedral side aisle: candle racks, small glass reliquary cases, a lancet window letting in pale light, incense haze kept painted and soft. Ivory stone, gold highlights, deep shadow.\n\nCANVAS: paint a WIDE horizontal 16:9 environment, approximately 1.78 times wider than high, NOT 4:3. Keep important props inside central 75% vertically to allow widescreen delivery crop. No characters, figures or creatures whatsoever.",
+  "refs": [
+    "art/illustrations/m813/outpost813.png",
+    "art/illustrations/m813/shield-line.png",
+    "art/illustrations/proving-ground/drill-yard.png",
+    "art/illustrations/survival/backdrops/shrine-a-steps.png",
+    "art/portraits/world/new-faces/orren-vask.png"
+  ],
+  "transparent": false,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1672,
+    941
+  ],
+  "export_dimensions": [
+    2560,
+    1440
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/shop-shrine.png",
+  "source_sha256": "2d87c90b9856bb0741c6fa313dedaa762f3518fc5b0e6935103f6efdbcf2dd56",
+  "sha256": "dfc488bd09c8cbb4075d10cc4ff13fc2502e80bf0f152a9b57e5c95b6f31f4bb",
+  "exports": {},
+  "upscaled": true,
+  "export_processing": "Aspect-preserving central 16:9 crop when native ratio differs, then Lanczos upscale; no added detail",
+  "export_crop": [
+    0,
+    0,
+    1672,
+    941
+  ],
+  "native_minimum_met": false,
+  "implementation_ready": false,
+  "catalog_family": "survival_art",
+  "catalog_id": "shop-shrine"
+}

@@ -30,7 +30,7 @@
       "id": "roguelike",
       "name": "Roguelike",
       "line": "Dungeons, a world map and companions.",
-      "art": null,
+      "art": "roguelike-card-title",
       "available": false,
       "narrator": "optional",
       "start": "run",

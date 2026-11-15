@@ -1,0 +1,47 @@
+{
+  "number": 65,
+  "id": "banner-fight-lost (0.28.0)",
+  "name": "Fight lost (flash mark)",
+  "path": "art/icons/banners/fight-lost.png",
+  "mode": "ink",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (the Wick trait and perk icons: bold flat white shapes, a confident inked silhouette with a few\ninterior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no\ncolour and no grey. This icon is an object or a sign, not a figure: do not draw Wick or any person unless the line below\nsays so. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at\n24 px in a row and look right at 56 px on a dark disc: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or\ninsignia (a medical mark is a plain plus, never a red cross).\n\n\nPaint this ONE subject:\nThe same pole snapped in two and lying on the ground on a diagonal, the cloth trailing on the ground. It must differ from #64 by the fall: upright against slanted and broken.\nPure-white filled shapes with transparent interior cuts; confident substantial ink weight matching reference nonfigure shop sign. No mascot, no Wick. Keep all detail sturdy at 24 pixels. Transparent margin 10\u201315% all around. Not a thin wireframe.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/survival/markers/shop.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/fight-lost.png",
+  "source_sha256": "2b70f0f3e6f0b1e55fbd74ee2a1d9a4ed1829613db6cc9694e1d67fbd92a0a2b",
+  "sha256": "3dcebcd652d1277889b282604c0bc38c6c611c6b7e8c97e1ac9c32525f79426d",
+  "exports": {
+    "64": "art/icons/banners/exports/64/fight-lost.png",
+    "56": "art/icons/banners/exports/56/fight-lost.png",
+    "48": "art/icons/banners/exports/48/fight-lost.png",
+    "32": "art/icons/banners/exports/32/fight-lost.png",
+    "24": "art/icons/banners/exports/24/fight-lost.png"
+  },
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop and aspect-preserving fit inside central 820px of 1024px canvas; Lanczos UI exports; pure-white RGB enforced preserving generated alpha",
+  "export_crop": [
+    23,
+    126,
+    1230,
+    1134
+  ],
+  "native_minimum_met": true,
+  "implementation_ready": false,
+  "catalog_family": "interface_icons",
+  "catalog_id": "banner-fight-lost"
+}
