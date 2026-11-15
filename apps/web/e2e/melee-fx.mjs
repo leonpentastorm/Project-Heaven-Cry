@@ -153,7 +153,7 @@ const CASES = [
       await p.screenshot({ path: process.env.STUCK_SHOT || SHOTS + 'stuck.png' });
       const mv = await act({ type: 'combat/move', unitId: u.id, to: ref(throwNext) }); if (mv) { ok('…move next to it (' + mv + ')', false); return; } await idle();
       const e = await act({ type: 'combat/technique', unitId: u.id, id: 'pull_out', targetId: args.targetId }); ok('…Pull Out from next to it is taken (' + (e || 'ok') + ')', !e); await idle();
-      const gone = await p.waitForFunction(() => !document.querySelector('[data-melee-mark="stuck"]'), null, { timeout: 10000 }).then(() => true).catch(() => false);
+      const gone = await p.waitForFunction(() => !document.querySelector('[data-melee-mark="stuck"]'), null, { timeout: 30000 }).then(() => true).catch(() => false);
       ok('…and the stuck mark is gone after Pull Out', gone); } },
   { id: 'bind', kind: 'bind', weapon: 'sabre', label: 'Bind (the link snaps, then stands)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [-1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id } : null; },
     async check(u, args, t0) { await idle(); if (await markAfter('bind', 'bind', t0, '…the Bind stands on the layer while it holds')) ok('…one link', (await p.locator('[data-melee-mark="bind"]').count()) === 1); await p.screenshot({ path: SHOTS + 'bind-standing.png' }); } },

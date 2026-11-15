@@ -233,7 +233,7 @@ export function physLines(v: PhysView | null): string[] {
   if (v.pressure && v.pressure.now) out.push((v.pressure.word || 'Under fire') + ' (Pressure ' + v.pressure.now + ' / ' + v.pressure.max + ')' + (v.pressure.cost ? ': ' + v.pressure.cost : ''));
   if (v.stopped) out.push('Stopped once: ' + v.stopped.text.charAt(0).toLowerCase() + v.stopped.text.slice(1));
   if (v.watch) out.push('Holding ' + v.watch.name + (v.watch.tile ? ' on ' + v.watch.tile : ''));
-  for (const x of v.stuck || []) out.push('A ' + x.name.toLowerCase() + ' is stuck in it' + (x.byName ? ' (' + x.byName + ''s)' : '')); // rules 1.55
+  for (const x of v.stuck || []) out.push('A ' + x.name.toLowerCase() + ' is stuck in it' + (x.byName ? ' (thrown by ' + x.byName + ')' : '')); // rules 1.55
   return out;
 }
 /** The You card's chips (key, k: the short word, t: what it means, style): your Pressure with its state, cost and who
