@@ -1098,7 +1098,7 @@ Families: `body`, `brain`, `heart`.
 | `RunWeapon` | `interface RunWeapon { id, rarity, price, prop }` | One weapon of a pick (rule 26): the weapon or focus, its rarity, its price at that rarity. |
 | `RunOffer` | `interface RunOffer { node, weapons, materials, instead, ammo }` | A character's pick after a won fight (rule 26; rules 1.54 item 2): its weapons (one after a fight, three at the vault's chest or a sealed crate), or the Materials card (`materials`, where offered); `instead`:… |
 | `RunNote` | `interface RunNote { node, kind, text, xp, credits, ammo, back, won, rounds, picks }` | What the node the party stands on gave (its panel): XP and credits each, the ammunition by character, the text of a node without a fight (data), who came back from the dead (rule 5), the fight's result. |
-| `RunFight` | `interface RunFight { node, stage, depth, kind, template, setting, level, target, spent, scaleHp, foes, cores, charge, outcome, rounds, kills, tally }` | One fight of the run (rule 35's beginning: the budget asked and spent, the foes, the result). |
+| `RunFight` | `interface RunFight { node, stage, depth, kind, template, setting, level, target, spent, scaleHp, foes, cores, burnt, charge, outcome, rounds, kills, tally }` | One fight of the run (rule 35's beginning: the budget asked and spent, the foes, the result). |
 | `RunStock` | `interface RunStock { id, price, sold }` | One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. |
 | `RunVisit` | `interface RunVisit { node, kind, steps, did, stock, trades, patron, log }` | The safe node the party stands on (rules 1.43, build step 4a): what each character did there this visit and what the node rolled on entry. |
 | `RunLasting` | `interface RunLasting { node, items }` | An armour-or-item pick (rules 1.43, spec rule 41): three things, at least two lasting; or nothing. |
@@ -1282,7 +1282,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `light` | `at`, `tiles`, `side` | sigil.ts:1146 | 1 |
 | `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1576 | 1 |
 | `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2476 | 2 |
-| `mana` | `band`, `mana` | game.ts:4072 | 2 |
+| `mana` | `band`, `mana` | game.ts:4074 | 2 |
 | `mask` | `target`, `at`, `fade` | magic.ts:491 | 2 |
 | `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image` | combat.ts:1428 | 6 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:35 | 3 |

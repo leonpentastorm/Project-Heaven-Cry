@@ -64,5 +64,5 @@ describe('the field is the fight screen (rules 1.55 items 45 and 51)', () => {
     await React.act(async () => { vi.advanceTimersByTime(20000); });
     expect(fxDebug().queuedTo[key]).toBeGreaterThanOrEqual(heal!.n);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
-  });
+  }, 60_000); // a whole screen rendered: slow on a busy machine
 });

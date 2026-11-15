@@ -3471,6 +3471,8 @@ function runFightOver(g: GameState) {
       offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
     }
   });
+  { const before = r.stats.fights[r.stats.fights.length - 1]?.cores || {}, burnt = Object.fromEntries(chars.map((c) => [c.id, before[c.id] != null ? coresBurnt(before[c.id], coresCarried(c)) : 0])); // the sheets are the fight's now (sbChange)
+    r.stats = { ...r.stats, fights: r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, burnt } : f)) }; }
   push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k).mags > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '. Walk the field, then vote to leave.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'field'; r.ready = {}; r.offers = offers;
@@ -3484,12 +3486,12 @@ function runFlux(g: GameState) { for (const id of Object.keys(g.characters)) { c
 function runFieldClose(g: GameState) {
   const cb = g.combat!, r = g.run!, n = runNode(r, r.at)!, k = payKindOf(n);
   cb.over = 'win'; delete cb.field;
-  const before = r.stats.fights[r.stats.fights.length - 1]?.cores || {};
+  const burnt = r.stats.fights[r.stats.fights.length - 1]?.burnt || {};
   fightBack(g, cb, true); runFlux(g);
   g.phase = 'story'; g.story.await = 'none'; g.story.work = null; g.combat = { ...cb };
   const chars = Object.values(g.characters), back: string[] = [], ammo: Record<string, string[]> = {};
   for (const c of chars) if (c.dead) { c.dead = false; c.hp = Math.min(maxHp(c), survivalRun.dead_return_hp); back.push(c.id); } // rule 5
-  for (const c of chars) ammo[c.id] = runAmmo(c, packCount(k), before[c.id] != null ? coresBurnt(before[c.id], coresCarried(c)) : 0);
+  for (const c of chars) ammo[c.id] = runAmmo(c, packCount(k), burnt[c.id] || 0);
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
   if (r.note) r.note = { ...r.note, ammo, ...(back.length ? { back } : {}) };
 }
