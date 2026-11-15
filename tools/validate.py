@@ -2658,6 +2658,20 @@ if _sv is not None:
         for _id in _ls.get("fill") or []:
             if _id not in _all_ids: errors.append(f"survival:lasting.fill: {_id!r} is not an item or weapon")
         if not (_num(_ls.get("offer")) and _num(_ls.get("min")) and _ls["min"] <= _ls["offer"]): errors.append("survival:lasting: offer and min (min at most offer)")
+    # Rules 1.55: an item the engine does not run yet (`built: false`) has no price (credits.ts priceOf), so no rolled
+    # pool holds it; a fixed stock list must not name it either (the shop's counter, the lasting fill, the loadout, a loot table).
+    _unbuilt = {i["id"] for i in items("items") if i.get("built") is False} | {i["id"] for i in items("weapons") if i.get("built") is False}
+    def _names_unbuilt(o, w):
+        if isinstance(o, str):
+            if o in _unbuilt: errors.append(f"{w}: {o!r} is built: false (rules 1.55: not sold, rolled or given until it is built)")
+        elif isinstance(o, dict):
+            for _k2, _v2 in o.items():
+                if _k2 not in ("about", "text", "note"): _names_unbuilt(_v2, w + "." + str(_k2))
+        elif isinstance(o, list):
+            for _n2, _v2 in enumerate(o): _names_unbuilt(_v2, w + "[" + str(_n2) + "]")
+    for _k in ("shop", "lasting", "loadout", "forge"):
+        if _k in _sv: _names_unbuilt(_sv[_k], "survival:" + _k)
+    if "loot_tables" in data: _names_unbuilt(data["loot_tables"], "loot_tables")
     _tr = _sv.get("trades")
     if _tr is not None:
         _DO = {"grade", "drill", "crate", "wayside", "graft", "salvage"}

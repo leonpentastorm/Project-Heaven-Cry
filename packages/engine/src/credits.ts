@@ -44,7 +44,9 @@ export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly 
   const ac = /^armour:(\d)$/.exec(id); if (ac) { const p = Number(ARMOUR_CLASSES[Number(ac[1])]?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; }
   const m = /^mag:(.+)$/.exec(id);
   if (m) { const w: any = WEAPON[m[1]], e = emptyMagPrice(m[1]), rp = w ? ROUND_PRICE[w.ammo] : 0; return e == null || !rp ? null : e + rp * (w.magazine || 0); }
-  const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false) return null;
+  // rules 1.55: a row the engine does not run yet (`built: false`) has no price, so no stock, reward, loot or camp pool that
+  // asks for a price (every one does) can hold it
+  const def: any = WEAPON[id] || ITEM[id]; if (!def || def.stock === false || def.built === false) return null;
   let p = Number(def.price_credits);
   if ((!Number.isFinite(p) || p <= 0) && Number(def.price_mult) > 0) p = Number(def.price_mult) * (ROUND_PRICE[WR.special_round_price?.calibre] || 0);
   if (!Number.isFinite(p) || p <= 0) return null;
