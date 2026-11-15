@@ -5985,7 +5985,7 @@ standard core's 150 credits (Magic, "Mana cores").
    pack line's kind by an item's id (the core, the two focus gloves, the ration pack; the same kinds as today); the pack's
    quantity cap (20, a literal in `lootToPack`) moved into data (item 4111: its value, and why the Materials card's grant
    does not pass through it). **No new trigger, predicate, op, hook, stat or cost site.**
-9. **The slower climb** (`survival.json` only; the shared `xp_total` is untouched): f(d) = `xp.base` **10** +
+9. *(Superseded by rules 1.56 (Balance 2.0), XP: `xp.base` 35, `xp.per_depth` 0; level 3 after the gate and before the Boss.)* **The slower climb** (`survival.json` only; the shared `xp_total` is untouched): f(d) = `xp.base` **10** +
    `xp.per_depth` **2** × (d − 1) (was 100 and 22); the Boss × `xp.boss` **5** (was 2); `stage.xp` **[1, 2.6, 4, 4,
    4.5]** (was [1, 1, 1.1, 1.25, 1.25]; the last repeats). **Stage 1 is played before the class is earned:** on the
    reference path (survival-spec 5.4) a character reaches level 2 at the gate, has 210 XP at the Boss's door and 400
@@ -6118,6 +6118,25 @@ make what rare actually rare". The numbers and the arithmetic are in section 14,
    pack, as part of the gun.
 26. **What a killed foe leaves** (item 4127): in Survival the kind's loot table is not rolled (`drops.kind_table`
    false); a gun foe leaves gunpowder or casings and a caster residue only with a small chance.
+
+## Rules 1.56 (Balance 2.0), XP
+
+Survival's XP refitted for release 0.29 (the lead's finding 10.C.1 of the 0.29 plan: no level-up in stage 1; Leon's
+target from rules 1.54 item 9 stands: "only get to level 3 as you are about to take on the first boss, if your whole
+first run you focus on taking as many fight as possible"). Measured with the simulator, 24 seeds a cell, and the static
+route walk (`docs/design/proposals/2026-11-xp-fit-0.29.md`). Overrides rules 1.54 item 9's numbers and keeps its words;
+the shared `xp_total` is untouched. PROVISIONAL.
+
+1. **Every stage-1 fight pays the same** (item 4129): f(d) = `xp.base` **35** + `xp.per_depth` **0** x (d - 1) (was 10
+   and 2); `xp.elite` 1.5, `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5 and `stage.xp` [1, 2.6, 4, 4, 4.5]
+   unchanged. Level 2 comes after about three fights (stop 5 on the most-fights route, stop 6 to 7 on the gear route);
+   level 3 after the gate and before the Boss (at stops 9 to 12; at the Boss's door on 100% of most-fights routes and
+   71% to 86% of characters on the gear route); no character above level 3 after stage 1's Boss in the simulator, and
+   none above 4 on any route of the static walk.
+2. **The guard** (item 4130; `survival-run-levels.test.ts`, in `npm run check`) reads the pay from data and asserts the
+   lead's targets: level 3 at the Boss's door on at least 80% of most-fights routes and 50% of typical ones, no route
+   above level 4 after the Boss, level 3 before the gate (`map.gate_row`) on at most 1% of routes and never before the
+   row above it, level 3 from the Boss on 99% of routes.
 
 ## Maps (rules 1.16)
 
@@ -9537,10 +9556,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     data cap": a question for the lead. PROVISIONAL.
 4112. **XP (rules 1.54 item 9; `survival.json`):** `xp.base` 10, `xp.per_depth` 2, `xp.boss` 5, `stage.xp` [1, 2.6, 4,
     4, 4.5]; `xp.elite` 1.5, `xp.vault_guard` 1.5 and `xp.cache` 0.25 unchanged; the shared `xp_total` untouched.
-    Supersedes items 2821 and 3606. PROVISIONAL.
+    Supersedes items 2821 and 3606. PROVISIONAL. *(Superseded by rules 1.56: item 4129, base 35, per_depth 0.)*
 4113. **Levels by stage (rules 1.54 item 9):** on the reference path (survival-spec 5.4) 400 XP after stage 1's Boss
     (level 3), 1,440 after stage 2 (5), 3,040 (7), 4,640 (9), 6,440 (11), 8,240 after stage 6 (13); the scout's
-    count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13).
+    count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13). *(Superseded by rules 1.56, item 4129: level 3 before the Boss on 88% of typical routes, at depths 9 to 13.)*
     Supersedes item 3611. PROVISIONAL.
 4114. **The curve measured again (rules 1.54 item 9; `docs/design/handoffs/survival-0.28-fit.md`):** 6 seeds a cell,
     stages capped at 5, routes gear and training. On the new XP a squad of four ended at means 1.6 (gear) and 3.1
@@ -9620,3 +9639,16 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
 4128. **Items 4121 to 4128 are rules 1.55's.**
+
+### Rules 1.56 (Balance 2.0), XP
+
+4129. **XP a node pays (rules 1.56 XP item 1; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
+    `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
+    simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
+    5 for 80% on a typical route" is not met (25% to 46% of characters on the gear route: level 2 at stop 6 to 7): meeting it needs
+    base 50, which brings level 3 to stop 8, before the gate, against Leon's words. Supersedes item 4112's base and
+    per_depth. PROVISIONAL.
+4130. **The levels guard (rules 1.56 XP item 2):** the static route walk, 60 maps: level 3 at the door on 80% of
+    most-fights and 50% of typical routes; at most level 4 after the Boss; at most 1% of routes at level 3 before the
+    gate row, none before the row above it; 99% at level 3 after the Boss. Replaces the 1.54 guard (level 3 never
+    before depth 12). PROVISIONAL.

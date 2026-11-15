@@ -3,14 +3,18 @@
 // engine's own pay (`nodeXp`, the paid kinds `PAY_KINDS` of `run/rewards.ts`) and the shared `xp_total` (`levelForXp`), on many seeds.
 // For each map: the route with the most fights (plain, Elite and the gate), a typical route (the median count) and the
 // route with the fewest; where each reaches level 3 (the depth, or the Boss), and the level on arriving at the Boss.
-//  - THE GUARD (always on): level 3 never comes before depth 12 on any route, and 99% of routes have it from the Boss
-//    (spec 14.4: "the most-fights route reaches 250 at depth 12 or 13, before the Boss; every other route from the Boss");
+//  - THE GUARD (always on; rules 1.56, Balance 2.0, XP: docs/design/proposals/2026-11-xp-fit-0.29.md): the lead's targets
+//    read against the data's pay: level 3 at the Boss's door on 80% of most-fights routes and 50% of typical ones, no
+//    route above level 4 after the Boss, level 3 before the gate (`map.gate_row`) on at most 1% of routes and never
+//    before row 7, and level 3 from the Boss on 99% of routes;
 //  - THE TABLE (opt-in, SIM_LEVELS=1, SIM_LEVEL_SEEDS default 400): the measure for the hand-off.
 import { describe, expect, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
 import { pathMap, mapPaths, type PathNode } from '../../src/run/map';
 import { nodeXp, PAY_KINDS } from '../../src/run/rewards';
 import { levelForXp } from '../../src';
+import svJ from '../../../../data/survival.json';
+const SV: any = svJ;
 
 const env = (globalThis as any).process?.env || {};
 const kindOf = (n: PathNode) => (n.gate ? 'gate' : n.kind);
@@ -39,12 +43,17 @@ function routes(seeds: number) {
   return out;
 }
 
-describe('Survival, levels by route (rules 1.54 item 9): the guard', () => {
-  it('level 3 never before depth 12 on any stage-1 route, and from the Boss on 99% of them', () => {
-    const rs = routes(60), all = rs.flatMap((r) => r.all);
-    expect(all.every((w) => w.at3 == null || w.at3 >= 12), JSON.stringify(all.filter((w) => w.at3 != null && w.at3 < 12).slice(0, 3))).toBe(true);
-    // measured 14 Nov (400 maps, 23,510 routes): 0.03% (the fewest fights) end stage 1 at level 2 (244 XP and under)
-    expect(all.filter((w) => w.afterLevel >= 3).length / all.length).toBeGreaterThanOrEqual(0.99);
+describe('Survival, levels by route (rules 1.56, Balance 2.0, XP): the guard', () => {
+  it('level 3 comes after the gate and at the Boss door on most-fights and typical routes; never past level 4 in stage 1', () => {
+    const rs = routes(60), all = rs.flatMap((r) => r.all), gate = SV.map.gate_row;
+    const share = (xs: any[], f: (w: any) => boolean) => xs.filter(f).length / xs.length;
+    expect(share(rs.map((r) => r.most), (w) => w.doorLevel >= 3)).toBeGreaterThanOrEqual(0.8);
+    expect(share(rs.map((r) => r.typical), (w) => w.doorLevel >= 3)).toBeGreaterThanOrEqual(0.5);
+    expect(Math.max(...all.map((w) => w.afterLevel))).toBeLessThanOrEqual(4);
+    // measured 15 Nov at base 35, per_depth 0 (200 maps): 0.2% of routes reach level 3 before the gate, the earliest at row 7
+    expect(share(all, (w) => w.at3 != null && w.at3 < gate)).toBeLessThanOrEqual(0.01);
+    expect(all.every((w) => w.at3 == null || w.at3 >= gate - 1), JSON.stringify(all.filter((w) => w.at3 != null && w.at3 < gate - 1).slice(0, 3))).toBe(true);
+    expect(share(all, (w) => w.afterLevel >= 3)).toBeGreaterThanOrEqual(0.99);
   });
 });
 
