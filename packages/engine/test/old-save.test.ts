@@ -324,4 +324,14 @@ describe('rules 1.56: a 0.28.2 Rigger keeps its forms through the forks, mid-fig
     expect(g.combat.units.some((u: any) => u.id === wall.id)).toBe(false); expect(before - g.combat.units.find((u: any) => u.id === pc.id).ap).toBe(1);
     expect(() => viewFor(g, 'host')).not.toThrow();
   }, 60_000);
+  it('0.29 wave-2 review MF3: migrated at LOAD, before any action: the view shows the old forms, no fork open, the designs ready', () => {
+    const g0 = load(NAME); // the client's load door, and nothing after it
+    const c = g0.characters.c1; expect(c.figRev).toBe(FIG_REV);
+    for (const f of ['double', 'snare', 'hand', 'eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
+    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pictureOptions(c).map((o) => o.id)).toEqual(expect.arrayContaining(['d:hound', 'd:lookout']));
+    const v: any = viewFor(g0, 'host'); expect(formsOf(v.characters.c1)).toEqual(formsOf(c)); expect(pendingDoorPicks(v.characters.c1, 'visualization')).toEqual([]);
+    // a door/pick sent from that view is refused for the right reason (nothing open), not after a late migration
+    expect(() => apply(g0, { type: 'door/pick', charId: 'c1', door: 'visualization', option: 'ward' } as any, 'host')).toThrow();
+  });
 });
