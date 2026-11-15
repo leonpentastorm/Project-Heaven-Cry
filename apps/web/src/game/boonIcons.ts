@@ -1,4 +1,5 @@
 import { relicRow } from '@engine';
+import ASSETS from './assets.json';
 // The boon icons (survival-spec section 3.5, 8.2; rules 1.44; rules 1.51 adds the six caster boons and a glyph for each
 // line, which the starting boons draw): line glyphs drawn here as simple SVG in the house
 // line-icon style (a 64 grid, a round stroke in currentColor) until the artist's Wick flat-ink icons land
@@ -41,7 +42,22 @@ export const LINE_ICON_PATHS: Record<string, string[]> = {
   faith: ['M32 10 C38 20 44 26 44 36 C44 46 38 52 32 52 C26 52 20 46 20 36 C20 26 26 20 32 10 Z', 'M32 32 L32 46'], // a flame
 };
 /** An inline SVG of a boon's glyph (`ink` defaults to currentColor), for innerHTML. */
+const A = ASSETS as Record<string, string>;
+/** The artist's white-ink icon for a boon (catalog `boons`, built as boon-<stem> by tools/build_web_assets.py): a boon id's
+ *  own (boon.edge -> boon-edge), else its first line's (a starting boon: guns -> boon-guns); '' when none is delivered. */
+export function boonArt(id: string): string {
+  const own = id.startsWith('boon.') ? A['boon-' + id.slice('boon.'.length)] : '';
+  const line = (relicRow(id) as any)?.lines?.[0];
+  return own || (line ? A['boon-' + line] || '' : '');
+}
+/** A boon's icon for innerHTML (`ink` defaults to currentColor): the artist's icon as a CSS mask in the ink when it is
+ *  delivered, else the SVG line glyph below. */
 export function boonIconSvg(id: string, size = 56, ink = 'currentColor'): string {
+  const url = boonArt(id);
+  if (url) {
+    const m = 'url(&quot;' + url + '&quot;) center / contain no-repeat';
+    return '<span aria-hidden="true" data-phc-boon="art" style="display: block; width: ' + size + 'px; height: ' + size + 'px; background: ' + ink + '; -webkit-mask: ' + m + '; mask: ' + m + '"></span>';
+  }
   const line = (relicRow(id) as any)?.lines?.[0];
   const paths = BOON_ICON_PATHS[id] || (line && LINE_ICON_PATHS[line]) || BOON_ICON_PATHS['boon.primed'];
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="' + size + '" height="' + size + '" fill="none" stroke="' + ink + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'

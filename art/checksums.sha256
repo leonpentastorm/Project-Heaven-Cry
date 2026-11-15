@@ -2386,7 +2386,7 @@ fdd7c36efe3c8a23a0d6c78c6c90875df52a8941edd04ee5a7909a6b92613462  art/_archive/u
 3e2a46e3761f429c81126e838bf4f78c273bceec495c057bc5fa5db1dae8807a  art/_archive/ui/title-screen/source-renders/title-back-native.png
 0e2bf5319cf4a3236811c008052ce53a066d29e9fd59873e974a15ab6a17f105  art/_archive/ui/title-screen/source-renders/title-front-native.png
 c116fc3201c5bc293ff601b0dae0694087512777909f5ec2293fbc49c570a635  art/_archive/ui/title-screen/source-renders/title-mid-native.png
-e6747a5a1649a17de623be501d0006dee915e8c505f499310638dc065a177878  art/briefs/ART-REQUESTS.md
+ddf29f7fc137b3e39f9a75ee41640094b42d1379f73371c8c086ae17e6eeaa6a  art/briefs/ART-REQUESTS.md
 2a7124da61595c42fa024611ff6da489c3317b216034c94cbe4dcfd50e8c6e53  art/briefs/FORGE-PHC.md
 7de6e209774c1613e3d74d7fcc9b014658122a5d55e90385ead9481ccffe7387  art/briefs/GPT-CONTINUE-2026-11-13-survival.md
 5ac78bd3f6fc7dead3745784d88e9bf079638c42771d3a52e4f41b5ad221a4b3  art/briefs/GPT-PROMPTS-2026-11-12.md
@@ -2395,6 +2395,7 @@ e6747a5a1649a17de623be501d0006dee915e8c505f499310638dc065a177878  art/briefs/ART
 80284fdc24bddb91713c065fe65cba8db127bfa3c61577c4e8bca187b752a89c  art/briefs/GPT-PROMPTS-2026-11-13-survival.md
 ebf3997460b615c4c9fa5c72481a7810b0048f09b13f04b52a45930489953fa7  art/briefs/GPT-PROMPTS-2026-11-14-portraits.md
 0fc96ca2504b715723db0b7c2c5e81f6c8266ffedee308b6ccb4424d6725671a  art/briefs/GPT-PROMPTS-2026-11-14-survival-foes.md
+037a15e219ff6d9acf925fc9b626f7550a86be052b8d86199593a422f5c4659a  art/briefs/GPT-PROMPTS-2026-11-15-everything-missing.md
 74862e11059029851b0152176699f3a057789d839b0d5926d75bd81980701040  art/briefs/archetype-portraits.md
 ca90bd7e555afdd1bad775f64454bf410cf6d1856070e566cc181ddbfe784138  art/briefs/first-patch-revival-redo.md
 821628bf1325a4023d390dbe8b0908751f860aab17ab4b138997f785aade81db  art/briefs/m813-mpat.md
@@ -6415,7 +6416,7 @@ dd51991cab960cfbe3400aa4cde06952fba35e79639e903dfe44bc4226980a67  art/ui/title-s
 5cf1806cf75f5601f4455c90100a8b27fd242707b25b41bf1e11401af98a68fa  art/ui/title-screen/title-mid.png
 db27e0309aa0d98503c8a461c09ea1ecf1bfae303dd4f5f039c82fb5fb28b217  art/ui/title-screen/title-screen.psd
 9485120c0d8cabdbe77aa2699822ce672c7062553bb5542a127d71dbfc34ca85  docs/ART-INTEGRATION.md
-cbf7a704a9a81117cccfae4fad939eea5d6320102786eddf083705d1a72b3e7c  docs/ASSET-DIRECTORY.md
+bd2cf5895038e8168175aecacfd0fb468cda8e1b382948ac54660c1b524b0a9f  docs/ASSET-DIRECTORY.md
 6de65e53e188ecbce5e1f2c19aabc745f5f6e06ee73f4bcbe82249108a8bdd0e  tools/art/export_m813_campaign.py
 7b9574a297c82a2ef925a3b4ee62827ac1281a722abcd4ed5498fd5ff165e7cd  tools/art/export_nov12_icons.py
 d11fb5d194cac8e8fd09dc4bb4bc90bea07012599d2f5942081bf57923720ea5  tools/art/export_wick_animation.py

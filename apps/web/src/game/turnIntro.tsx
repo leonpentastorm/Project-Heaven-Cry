@@ -91,7 +91,7 @@ export function cue(name: Cue) {
 type CardKind = 'turn' | 'round' | 'fight' | 'victory' | 'defeat';
 interface Banner { id: string; kind: CardKind; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number;
   /** the slab behind (default: red for a hostile, else white), the mark before the kicker, the sign drawn with no picture */
-  slab?: string; mark?: string; glyph?: string; /** an end card's line of what follows (data) */ after?: string }
+  slab?: string; mark?: string; glyph?: string; /** the artist's white-ink sign for the glyph (banner-fight-*, catalog interface_icons), drawn in the stripe colour; '' keeps the glyph */ glyphArt?: string; /** an end card's line of what follows (data) */ after?: string }
 interface Cut { k?: number; id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
   hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): every row, in the You card's order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
@@ -131,13 +131,13 @@ function fightCard(g: GameState, cb: any, meId: string): Banner {
   const who = !b ? '' : b.mine ? 'You go first' : b.foe ? 'The hostiles go first' : b.name + ' goes first';
   const setting = g.run ? SETTING[runSetting(g.run)]?.name || '' : '';
   return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: 'FIGHT', sub: [setting, who].filter(Boolean).join(' · '),
-    stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: FIGHT_HOLD };
+    stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', glyphArt: ART('banner-fight-start'), img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: FIGHT_HOLD };
 }
 /** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight). */
 function endCard(g: GameState, cb: any, won: boolean): Banner {
   const color = won ? '#6FEA77' : '#F65157', after = g.run ? survivalRun.after_fight?.[won ? 'won' : 'lost'] || '' : '';
   return { id: 'e' + Date.now(), kind: won ? 'victory' : 'defeat', kicker: cb.name, kickerColor: color, name: won ? 'VICTORY' : 'DEFEAT', sub: after, after,
-    stripe: color, slab: won ? '#FFFFFF' : '#F65157', mark: '', glyph: won ? '✓' : '✕', img: '', mine: false, foe: !won, hold: ROUND_HOLD };
+    stripe: color, slab: won ? '#FFFFFF' : '#F65157', mark: '', glyph: won ? '✓' : '✕', glyphArt: ART(won ? 'banner-fight-won' : 'banner-fight-lost'), img: '', mine: false, foe: !won, hold: ROUND_HOLD };
 }
 
 /** Would the card on the left cover this unit's tile? Then it comes in from the right instead, so the unit stays in view. */
@@ -432,7 +432,9 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
           <span aria-hidden="true" style={{ alignSelf: 'stretch', width: 16, background: b.stripe, flex: 'none' }} />
           <span style={{ transform: 'skewX(16deg)', display: 'flex', alignItems: 'center', gap: 16, minWidth: 0 }}>
             {b.img ? <img src={b.img} alt="" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', background: '#000', border: '3px solid ' + b.stripe, flex: 'none' }} />
-              : <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 64, height: 64, borderRadius: '50%', border: '3px solid ' + b.stripe, color: b.stripe, fontSize: 28, fontWeight: 700, flex: 'none' }}>{b.glyph || '!'}</span>}
+              : <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 64, height: 64, borderRadius: '50%', border: '3px solid ' + b.stripe, color: b.stripe, fontSize: 28, fontWeight: 700, flex: 'none' }}>{b.glyphArt
+                ? <span data-phc-banner-art="" style={{ display: 'block', width: 40, height: 40, background: 'currentColor', WebkitMask: 'url("' + b.glyphArt + '") center / contain no-repeat', mask: 'url("' + b.glyphArt + '") center / contain no-repeat' }} />
+                : b.glyph || '!'}</span>}
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, fontFamily: "'Chakra Petch', sans-serif" }}>
               <span style={{ fontSize: b.mine ? 15 : 13, fontWeight: 700, letterSpacing: '0.32em', color: b.kickerColor, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.mark ?? (b.mine ? '▶ ' : b.foe ? '⚠ ' : '')}{b.kicker}</span>
               <span style={{ fontSize: 'clamp(22px, 3.4vw, 34px)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.05, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{b.name}</span>

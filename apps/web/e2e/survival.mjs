@@ -153,7 +153,7 @@ ok('every node of the stage is drawn (' + drawn + ' of ' + r.nodes.length + '), 
 // the kinds with no marker (the vault's guard and chest, the camp) keep their line icon; the setting's painted backdrop
 // is drawn by catalog id, not the field chart
 const marks = await p.locator('[data-phc-node]').evaluateAll((b) => b.map((x) => [x.getAttribute('data-phc-kind'), x.getAttribute('data-phc-spur'), x.querySelector('[data-phc-marker]')?.getAttribute('data-phc-marker')]));
-ok('the inked markers: every kind with one draws it (' + marks.filter((m) => m[2] === 'art').length + '), only the vault\'s spur the line icon', marks.every(([, spur, m]) => (spur ? m === 'line' : m === 'art')));
+ok('the inked markers: every kind with one draws it (' + marks.filter((m) => m[2] === 'art').length + '), the vault\'s spur too (0.28.1)', marks.every(([, , m]) => m === 'art'));
 ok('the path map draws its setting\'s painted backdrop (survival-map-' + (await run()).world.at(-1)?.setting + ')', /survival-map-/.test(await p.locator('[data-phc-pathmap-art]').getAttribute('src').catch(() => '') || ''));
 const lit = await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
 const first = r.nodes.filter((n) => n.depth === 1).map((n) => n.id);

@@ -31,8 +31,8 @@ function hash(s: string): number { let h = 2166136261; for (let i = 0; i < s.len
 const jit = (id: string, k: string, amp: number) => ((hash(id + k) % 1000) / 1000 - 0.5) * 2 * amp;
 
 /** The artist's marker for each node kind (art/icons/survival/markers/<file>.png, built as survival-node-<file>); the
- * gate is an Elite. Kinds not here (start, vault_guard, vault) have no inked marker yet: the line icon draws them. */
-const MARKER: Record<string, string> = { fight: 'fight', elite: 'elite', gate: 'elite', boss: 'boss', shop: 'shop', forge: 'forge', training: 'training', shrine: 'shrine', rest: 'rest', cache: 'cache', event: 'crossroads' };
+ * gate is an Elite. A kind whose marker is not built draws the line icon. */
+const MARKER: Record<string, string> = { fight: 'fight', elite: 'elite', gate: 'elite', boss: 'boss', shop: 'shop', forge: 'forge', training: 'training', shrine: 'shrine', rest: 'rest', cache: 'cache', event: 'crossroads', start: 'start', vault_guard: 'vault_guard', vault: 'vault' };
 /** A node kind's glyph at `size` css px in the current colour: the inked marker (a CSS mask, so the state colours still
  * apply) or, with none, the SVG line icon. `data-phc-marker` says which ("art" or "line"). */
 export function NodeGlyph({ kind, size }: { kind: string; size: number }) {
