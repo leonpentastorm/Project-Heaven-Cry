@@ -57,6 +57,7 @@ import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, g
   counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf, startOffer,
   dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds } from '../../src';
 import { fxTaps } from '../../src/fxtap';
+import { allPendingDoorPicks } from '../../src/doorpicks';
 import svJ from '../../../../data/survival.json';
 import { RIG } from './run-policies';
 import { Rec, type Pc } from '../helpers/replay';
@@ -318,7 +319,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   };
 
   const levelUp = () => { for (const id of ids) { const c = C(id), def = BUILD[pcs[ids.indexOf(id)].build];
-    if (!(c.unspent?.skill > 0 || c.unspent?.attr > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length)) continue;
+    if (!(c.unspent?.skill > 0 || c.unspent?.attr > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length || allPendingDoorPicks(c).length)) continue;
     try { spendLevel(def, pcs[ids.indexOf(id)].variant || 'normal', () => C(id), (a) => act({ charId: id, ...a }, by(id)), c.level); } catch (e: any) { r.errors.push('levelup ' + id + ': ' + e.message); } } };
 
   // ---- the door item: grade it (shop or Forge), the pick that grades it

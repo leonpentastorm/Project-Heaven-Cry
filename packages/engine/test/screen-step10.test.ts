@@ -133,7 +133,7 @@ describe('screen: Figments', () => {
     f.picture(u, 'beast', '3,4'); u = f.unit(u.id); u.ap = 6; f.picture(u, 'double', '3,5'); u = f.unit(u.id);
     const rows = actionsFor(f.g, u.id), tab = rows.filter((d) => d.group === FJ.tab);
     const pic = tab.filter((d) => d.sub === FJ.groups.picture).map((d) => d.id);
-    expect(pic.length).toBe(2);
+    expect(pic.length).toBe(FJ.items.filter((i: any) => i.group === 'picture').length); // Picture, Glimmer (rules 1.56), Load the Visualizer
     const figs = f.figments(u); expect(figs.length).toBe(2);
     for (const x of figs) {
       const mine = tab.filter((d) => d.id.startsWith('ow:' + x.id + ':'));

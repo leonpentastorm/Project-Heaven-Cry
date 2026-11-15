@@ -9,7 +9,7 @@
 // what AP is left; swap the core when it runs short. Fights: the build against two Soldiers on open ground, 5 rounds.
 import { startFight, TIER_WEAPON } from './sim';
 import { yardOf, soldierTurnAt } from './refit-measure';
-import { apply, withGame, beginTurn, previewAttack, sideSeesUnit, dist, heldMax, ladderAt, figmentsOf, heldFigments, FORM, figmentCharge, projectionRange, canStand, unitSees } from '../../src';
+import { apply, withGame, beginTurn, previewAttack, sideSeesUnit, dist, heldMax, formsOf, figmentsOf, heldFigments, FORM, figmentCharge, projectionRange, canStand, unitSees } from '../../src';
 import { onHook } from '../../src/effects/hooks';
 
 const W = (g: any, f: () => any) => withGame(g, f);
@@ -45,7 +45,7 @@ function stepToward(cb: any, u: any, to: string, tiles: number, keep = 1): strin
 function pcTurn(g: any, rigger: boolean): any {
   const cb = () => g.combat, me = () => cb().units.find((x: any) => x.id === TRACK.pc), foes = () => cb().units.filter((x: any) => x.side === 'foe' && !x.dead && !x.downed);
   const u0 = me(); if (!u0 || u0.dead || u0.downed) return g;
-  const c = g.characters[u0.charId], vis = c.skills.visualization || 0, opened = ladderAt(vis).forms;
+  const c = g.characters[u0.charId], opened = formsOf(c); // rules 1.56: the ladder's and the forks' forms
   const near = () => foes().sort((a: any, b: any) => dist(me().pos, a.pos) - dist(me().pos, b.pos))[0];
   const want = [opened.includes('beast') ? 'beast' : opened.includes('blade') ? 'blade' : 'double', opened.includes('wall') ? 'wall' : 'double'];
   // the core, when what is wanted can't be paid

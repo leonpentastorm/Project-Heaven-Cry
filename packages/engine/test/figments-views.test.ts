@@ -7,7 +7,7 @@ import { storyWith } from './helpers/perkfight';
 import { figFight } from './helpers/figfight';
 import FIGJ from '../../../data/figments.json';
 import CATJ from '../../../art/catalog.json';
-import { figmentLadderView, figmentDesignView, figmentLookOf, pictureOptions, ladderAt, FORM, FIG_DESIGN_IN_FIGHT } from '../src';
+import { figmentLadderView, figmentDesignView, figmentLookOf, pictureOptions, ladderAt, FORM, FIG_DESIGN_IN_FIGHT, formsOf, formWhy } from '../src';
 
 const F: any = FIGJ, CAT: any = CATJ;
 /** The points of the first ladder step that gives this (designs > 0). */
@@ -71,7 +71,9 @@ describe('the design workshop view, against the reducer (figments/design)', () =
   it("forms open by the ladder, the rest locked with the form's own points; every trait with its charge", () => {
     const s = storyWith([{ skills: { visualization: 3 } }]); const c = s.g.characters[s.chars[0].id];
     const v = figmentDesignView(c);
-    for (const f of v.forms) { const row = FORM[f.id]; expect(f.open).toBe(3 >= row.opens.min); expect(f.icon).toBe(row.icon); if (!f.open) expect(f.why).toContain(String(row.opens.min)); }
+    // rules 1.56: open is the character's (the ladder's forms and the forks it took: a pre-forks one keeps Eye and Wall)
+    for (const f of v.forms) { const row = FORM[f.id]; expect(f.open).toBe(formsOf(c).includes(f.id)); expect(f.icon).toBe(row.icon); if (!f.open) expect(f.why).toBe(formWhy(c, f.id)); }
+    expect(formsOf(c)).toEqual(expect.arrayContaining(['eye', 'wall'])); expect(formsOf(c)).not.toContain('ward');
     expect(v.traits.length).toBe(F.traits.length); expect(v.traitsMax).toBe(ladderAt(3).traits);
     for (const t of v.traits) expect(t.charge).toBe(F.trait_charge + (F.traits.find((x: any) => x.id === t.id).charge || 0));
   });

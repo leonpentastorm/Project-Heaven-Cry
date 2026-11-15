@@ -74,6 +74,7 @@ export { setBraced, stagger, clearStagger, setDowned, setNailed, startHidden, as
 export { spawnOwned, unmakeOwned, ownedBy, runOwned, orderable, ownedVerbs, addOwnedBlocks, clearOwnedBlocks, ownerOf as ownerOfUnit } from './owned';
 // Classes 3.0 step 8 (rules 1.34): Figments and the Visualizer (figments.ts).
 export * from './figments';
+export * from './doorpicks';
 // Action descriptors (engine review 4, finding 3): one description of every action a unit can take, one preview, one send.
 export { actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, stepOn, GROUP_ORDER, isLegacyUnit, TQ, TPAD, TWATCH, techId, parseTechId, TECH_OPTIONS, techOpt, techHelp, techParts, ORDER_THINGS, orderMax,
   PR, prayId, parsePrayId, oddsPct, prayOdds, PK, perkId, parsePerkId, perkCost, perkState, perkText,

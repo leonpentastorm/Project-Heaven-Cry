@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Snare: a four-pronged caltrop star inside a broken circle -->
+  <path d="M32 12 L36 28 L52 32 L36 36 L32 52 L28 36 L12 32 L28 28 Z"/>
+  <path d="M28 28 L36 36 M36 28 L28 36"/>
+  <path d="M19 9 A26 26 0 0 1 45 9 M55 19 A26 26 0 0 1 55 45 M45 55 A26 26 0 0 1 19 55 M9 45 A26 26 0 0 1 9 19"/>
+</svg>

@@ -782,7 +782,9 @@ const OWNED: ActionSystem = {
         const dv = ownedVerbInfo(x.cb, x.u, o, v);
         if (dv) {
           out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + dv.name, dv.ap, apT(dv.ap) + ' (yours)', o.name + ': ' + dv.text + ' It has no turn of its own: the AP are yours.', ownedWhy(x.cb, x.u, o, v),
-            { picks: dv.pick === 'enemy' ? [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' goes at.', choices: foeIds(x) }] : [] }));
+            { picks: dv.pick === 'enemy' ? [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' goes at.', choices: foeIds(x) }]
+              : dv.pick === 'ally' ? [{ key: 'targetId', kind: 'ally', prompt: 'Click the ally ' + o.name + ' goes to.', choices: allyIds(x, true).filter((id) => id !== o.id) }]
+              : dv.pick === 'tile' ? [{ key: 'tile', kind: 'tile', prompt: 'Click the tile ' + o.name + ' goes to.' }] : [] }));
           continue;
         }
         const w: any = WEAPON[o.weapon], ap = v === 'move' ? 1 : w ? attackApCost(w, v) : 2, why = ownedWhy(x.cb, x.u, o, v);
@@ -799,6 +801,7 @@ const OWNED: ActionSystem = {
     if (verb === 'move') return p.tile ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, tile: p.tile } as Action) : null;
     const u = x.cb.units.find((y) => y.id === owned), dv = u ? ownedVerbInfo(x.cb, x.u, u, verb) : null;
     if (dv && dv.pick === 'none') return { type: 'combat/owned', unitId: x.u.id, owned, verb } as Action;
+    if (dv && dv.pick === 'tile') return p.tile ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, tile: p.tile } as Action) : null;
     return p.targetId ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, targetId: p.targetId } as Action) : null;
   },
 };

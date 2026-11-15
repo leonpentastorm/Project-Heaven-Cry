@@ -301,3 +301,21 @@ header, and text of at least 13 px; the fight screen is excepted as today.
 2. **Swap:** only the Rigger swaps with a Figment (Sleight). Should every Visualization user get a swap order too?
 3. **Hand over carries real gear:** a nanobot picture passing a real stim from your pack to a friend. Is that true to
    what a Figment is, or should the Hand only carry what it is made of (a heal of its own)?
+
+## Leon's rulings, 15 Nov 2026
+
+1. **The Visualizer glove is ALWAYS required**, a Mastered Rigger included: Lucid keeps only "the first two orders each
+   turn cost 1 less" (no hands-free holding).
+2. **A swap-places order is the Rigger's only** (through Sleight), not every Visualization user's.
+3. **The Hand carries a REAL stim** from the owner's pack to an ally.
+
+And the lead's: the Mirage perk is NOT reworked here (the perk lane replaces Visualization's perks); "a false Figment"
+becomes a BASE ORDER every Visualization user has, under an in-universe name of its own: **Glimmer**.
+
+**Built in 0.29 (lane/0.29-figments-2, rules 1.56 Figments 2.0 in the spec):** P4 (`figment_order`), slice 2 (Draw fire,
+Press, Redraw, Cash in, Glimmer) and slice 3 (Snare, Hand, Ward, Husk, Sentinel, forks A and B with the general
+`door/pick`, the save migration). Changes from the tables above, for the lead: Filch costs the order site (1 AP, not 2);
+the Sentinel's Fix is also its auto verb (an auto unit may run a data verb); the Snare's AP loss on hit is Pinned (a
+condition row that exists) and it borrows `figment_edge`; the Sentinel borrows the service pistol (no new weapon rows);
+Redraw's move is the `guide` forced move (willing, provokes nothing); the save migration keeps a pre-forks Rigger's extra
+forms outside the grants (`doorKept`), so its "one more" rows still give new forms.

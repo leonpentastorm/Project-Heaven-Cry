@@ -1,0 +1,23 @@
+// Writes test/fixtures/save-0.28.2-rigger-mid-fight.json with the engine at fdaddaf5 (origin/develop, the LIVE 0.28.2
+// build, 15 Nov 2026): a story room, c1 a Rigger (class trickster) with Visualization 5 and the Visualizer in the off
+// hand, two designs kept (a Hound: Beast + Swift; a Lookout: Eye), then a fight against a Soldier, saved in its first
+// round with a Beast and a Wall pictured. The old ladder gave it the Eye, the Wall, the Beast and the Blade by points.
+// Run once (as a vitest file in that engine's test/ folder, OUT=<path>); never regenerate.
+import { it } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { apply, beginTurn } from '../src';
+import { storyWith, withGame } from './helpers/perkfight';
+it('writes the fixture', () => {
+  const s = storyWith([{ skills: { visualization: 5 }, attrs: { expression: 5 }, classId: 'trickster', level: 5, weapon: 'service_pistol' }], 'OLD-RIGGER');
+  let g: any = s.g;
+  const c = g.characters.c1; c.offHand = { id: 'visualizer' }; c.pack = [...(c.pack || []), { id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 2, kind: 'ammo' }];
+  g = apply(g, { type: 'figments/design', charId: 'c1', design: { id: 'hound', name: 'Hound', form: 'beast', traits: ['swift'] } } as any, 'host');
+  g = apply(g, { type: 'figments/design', charId: 'c1', design: { id: 'lookout', name: 'Lookout', form: 'eye', traits: [] } } as any, 'host');
+  g = apply(g, { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Old Rigger', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Near', tier: 'soldier', weapon: 'service_pistol', at: '12,4', no_surrender: true }] } } } as any, 'host');
+  const cb = g.combat, pc = cb.units.find((u: any) => u.charId === 'c1');
+  cb.turn = cb.order.indexOf(pc.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng));
+  pc.ap = 9;
+  g = apply(g, { type: 'combat/perk', unitId: pc.id, id: 'verb:picture', choice: 'beast', tile: '3,4' } as any, 'host');
+  g = apply(g, { type: 'combat/perk', unitId: pc.id, id: 'verb:picture', choice: 'wall', tile: '3,5' } as any, 'host');
+  writeFileSync(process.env.OUT!, JSON.stringify(g));
+});

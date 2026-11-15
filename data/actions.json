@@ -384,6 +384,11 @@
       "ap": 1,
       "provisional": true,
       "source": "rules 1.34 (Figments)"
+    },
+    "figment_order": {
+      "ap": 1,
+      "provisional": true,
+      "source": "rules 1.56 (Figments 2.0): every non-attack Figment order and Glimmer (P4, the one shared site)"
     }
   }
 }

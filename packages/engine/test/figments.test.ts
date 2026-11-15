@@ -27,13 +27,15 @@ describe('figments: the data', () => {
     expect(R.balance.ceilings.figments.allin).toBeGreaterThan(R.balance.ceilings.figments.door_allin);
     for (const t of (ENEMIESJ as any).items) expect('owned_weight' in t && 'double_save' in t).toBe(true);
   });
-  it('the ladder: the door at Visualization 1 (the Double, one held), Eye and Wall at 3, Beast and Blade and two held at 5, three at 7', () => {
+  it('the ladder (rules 1.56): the Double and the Snare at Visualization 1, the Hand at 2, a fork at 3 and at 5, two held at 5, three at 7, every form at 10', () => {
     expect(ladderAt(0)).toMatchObject({ held: 0, forms: [] });
-    expect(ladderAt(1)).toMatchObject({ held: 1, forms: ['double'], designs: 0, traits: 0 });
-    expect(ladderAt(3).forms).toEqual(['double', 'eye', 'wall']); expect(ladderAt(3)).toMatchObject({ designs: 2, traits: 1 });
-    expect(ladderAt(5)).toMatchObject({ held: 2, designs: 3 }); expect(ladderAt(5).forms).toContain('beast');
+    expect(ladderAt(1)).toMatchObject({ held: 1, forms: ['double', 'snare'], designs: 0, traits: 0 });
+    expect(ladderAt(3).forms).toEqual(['double', 'snare', 'hand']); expect(ladderAt(3)).toMatchObject({ designs: 2, traits: 1 });
+    expect(ladderAt(3).forks.map((k) => k.of)).toEqual([F.ladder.find((r: any) => r.points === 3).fork.of]);
+    expect(ladderAt(5)).toMatchObject({ held: 2, designs: 3 }); expect(ladderAt(5).forks.length).toBe(2);
     expect(ladderAt(7)).toMatchObject({ held: 3, traits: 2 }); expect(ladderAt(9).noSnap).toBe(true); expect(ladderAt(10).designs).toBe(5);
-    for (const f of F.forms) expect(ladderAt(f.opens.min).forms).toContain(f.id);
+    for (const f of F.forms) if (!f.opens.fork) expect(ladderAt(f.opens.min).forms).toContain(f.id); else expect(ladderAt(f.opens.min).forks.some((k) => k.of.includes(f.id))).toBe(true);
+    for (const f of F.forms) expect(ladderAt(10).forms).toContain(f.id);
   });
 });
 
@@ -116,7 +118,7 @@ describe('figments: rules 1.34 section 2', () => {
     expect(f.cb.units.find((x) => x.id === w.id)).toBeTruthy();
   });
   it('rule 9: only the Eye sees for your side; every other form has no eyes', () => {
-    for (const fm of F.forms) expect(!!fm.eyes).toBe(fm.id === 'eye');
+    for (const fm of F.forms) expect(!!fm.eyes).toBe(fm.vision != null); // rules 1.56: the Sentinel sees too (its own vision)
     const f = figFight([{ skills: { visualization: 3 }, weapon: 'service_pistol' }]); let u = f.turn(f.pc); f.picture(u, 'eye', SPOT); u = f.unit(u.id);
     const e = f.figments(u)[0]; expect(e.eyes).not.toBe(false); expect(e.vision).toBe(FORM.eye.vision);
   });
@@ -158,7 +160,7 @@ describe('figments: the forms\' verbs', () => {
   it('the descriptors: a Figment\'s verbs are rows of its owner\'s panel, priced at their sites', () => {
     const f = figFight([{ skills: { visualization: 5 }, level: 5, weapon: 'service_pistol' }]); let u = f.turn(f.pc); f.picture(u, 'beast', SPOT); u = f.unit(u.id);
     const rows = actionsFor(f.g, u.id).filter((d) => d.id.startsWith('ow:'));
-    expect(rows.map((d) => d.name.replace(/^.*: /, ''))).toEqual(['Move', 'Strike', 'Pounce', 'Let go']);
+    expect(rows.map((d) => d.name.replace(/^.*: /, ''))).toEqual(['Move', ...FORM.beast.verbs.map((v: string) => F.verbs.find((x: any) => x.id === v).name)]);
     expect(rows.find((d) => /Pounce/.test(d.name))!.cost.ap).toBe(cost('figment_pounce'));
   });
 });
