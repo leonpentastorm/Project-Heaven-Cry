@@ -114,3 +114,12 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
     { key: 'pack', title: 'BACKPACK', rows, empty: 'Nothing else in the pack.' },
     { key: 'ammo', title: 'AMMO AND THROWABLES', rows: ammo, empty: 'No spare ammo.' }] };
 }
+
+/** The pack's own Draw for a carried item (a focus: the Evoker…), as the backpack row prices it (engine gearCost: the
+ *  gear-change AP, its refusal). Null when no such item is in the pack. One copy: the Sigils tab's "draw it from the
+ *  pack" row reads its cost from here, never its own number. */
+export function packDrawOf(g: any, cb: any, u: any, ids: readonly string[]): BpAct | null {
+  const bp = backpackView(g, cb, u, true); if (!bp) return null;
+  for (const s of bp.sections) for (const r of s.rows) if (r.item && ids.includes(r.item)) { const a = r.acts.find((x) => !!x.action); if (a) return a; }
+  return null;
+}

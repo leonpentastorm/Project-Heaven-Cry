@@ -62,7 +62,7 @@ import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, p
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
@@ -71,7 +71,8 @@ import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
-import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
+import { resourcesOf, resView, heldOutburstOf, RES_CSS, sigilChip, sigilChipStyle } from '../game/resources';
+import { doorOfTab, firstTurnTab } from '../game/doorLine';
 import { bondStripVals, reactionPipsVals } from '../game/bondStrip';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
@@ -1126,10 +1127,13 @@ export class CombatLogic extends DCLogic {
       const cReach = flow && flow.d.preview === 'call' && flow.reach.size ? flow.reach : null, cTile = cReach ? flow.picks.tile || null : null;
       const planStyle = inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : cReach ? (cReach.has(k) ? (cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : 'background: rgba(231, 235, 243, 0.07); border: 1px dashed rgba(231, 235, 243, 0.5)') : cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : '') : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
       const isHeld = !!(u && fxHeld.has(u.id));
+      // a Sigil caster's charge and Flux on its token (game/resources.ts sigilChip: its own resource rows)
+      const sgc = u && !isHeld && u.side === 'pc' && u.mg && u.charId && g.characters[u.charId] ? sigilChip(resourcesOf(u, g.characters[u.charId], g)) : null;
       const hv = u ? healthView(u) : null, known = !!(hv && hv.known), hpPct = hv && hv.known ? hv.pct : 0; // the engine's view (rules 1.55 item 29): exact, or a word
       const sel = u && tgtUnit && u.id === tgtUnit.id;
       const isCur = u && cur && u.id === cur.id;
       tiles.push({
+        hasSgChip: !!sgc, sgChip: sgc ? sgc.text : '', sgChipTitle: sgc ? sgc.title : '', sgChipStyle: sgc ? sigilChipStyle(sgc) : '',
         hasPress: pLook.has && !isHeld, press: pLook.pips, pressStyle: pLook.style, pressTitle: pLook.title,
         hasWatchT: !!wT, watchTStyle: wT ? wT.style : '', watchTTitle: wT ? wT.title : '', hasWatchChip: !!wChip && !isHeld, watchChip: wChip ? wChip.text : '', watchChipStyle: wChip ? wChip.style : '', watchChipTitle: wChip ? wChip.title : '',
         key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.shield > 0 ? ' · Shield ' + u.shield + ' (damage takes it first)' : '') + (u.res && u.res.guard > 0 ? ' · Guard ' + u.res.guard : '') + (u.downed ? ' · Downed' : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
@@ -1247,7 +1251,7 @@ export class CombatLogic extends DCLogic {
       // Its hover card (game/actionTip.ts): the name and cost, a line per sentence, the weapon's line and traits, the refusal.
       ...tipAttrs({ name: label, cost: costText, ...(meta && meta.parts ? { needs: meta.parts.needs, text: meta.parts.text, line: meta.parts.line, traits: meta.parts.traits } : { text }), why }),
       area: gid === 'attack' ? (meta && meta.hand) || 'other' : '', sub: (meta && meta.sub) || '',
-      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
+      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { if (id === PACK_EVOKER) { this.setState({ bp: true }); return; } const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
       costStyle: 'font-size: 13px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
         (why && rowSel !== id ? 'opacity: 0.62; ' : '') + (rowSel === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
@@ -1525,16 +1529,26 @@ export class CombatLogic extends DCLogic {
         headOf[first.key] = fu ? figmentHead(sb, { unit: fu.id, img: faceOf(fu), short: fu.short || fu.name.slice(0, 2).toUpperCase(), ink: ring(fu) }) : subHead(sb); });
     });
     const tabIds = groups.map((gr) => gr.id);
-    if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
+    // A new turn of yours opens its tab once, when it is really yours: the state hands the turn over while the hostiles' turns
+    // still play on screen (turnWait), so the turn's own key is kept, not only the moment the state's active unit changed.
+    const tabTurn = mineTurn ? cur.id + ':' + cb.round + ':' + cb.turn : null;
+    if (mineTurn && (newTurn || this._tabTurn !== tabTurn)) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
+      this._tabTurn = tabTurn;
       const seenHostile = foes.some((u) => !u.downed);
       // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
-      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
+      // The fight's first turn opens on the character's door when its first action is usable (game/doorLine.ts: a
+      // Sigilist with an Evoker in hand opens on Sigils); after that the tab this character used last wins.
+      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : firstTurnTab(cb, ch, groups, isPerkInfo) || tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
       this._tabAction = S.action; this._tabShown = S.tab; this._tabCls = '';
-    }
+    // The same turn of yours seen again after a moment that was not (an effect still playing hands the screen back and
+    // forth): its tab is the one it had, not the fallback a hostile's moment left behind.
+    } else if (mineTurn && !this._tabMine && this._tabHeld && S.tab !== this._tabHeld && S.action === this._tabAction) S.tab = this._tabHeld;
     // The tab follows the action: picked on the turn card, or implied by a tile click (a hostile → Attack).
     if (S.action !== this._tabAction) { this._tabAction = S.action; if (tabOf[S.action]) S.tab = tabOf[S.action]; if (mineTurn) this.revealAction(); }
     if (!tabIds.includes(S.tab)) S.tab = tabOf[S.action] || tabIds[0];
     if (mineTurn) tabMem(cur.charId, S.tab);
+    if (mineTurn) this._tabHeld = S.tab;
+    this._tabMine = mineTurn;
     // Your resource rows, once the tab is settled (one fact, one place; Leon, live 0.24.0): with the HEART panel up (the
     // Outbursts tab, an Outburst held) Strain and the held Outburst are the panel's; on the Attack tab a jammed gun's
     // JAMMED is on its own area header, so its ammo row there doesn't repeat it (every other tab: the row says it).
@@ -1588,7 +1602,9 @@ export class CombatLogic extends DCLogic {
         style: 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; min-height: 44px; padding: 7px 10px; border-radius: 8px; text-align: left; font-family: inherit; cursor: pointer; '
           + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #E7EBF3' : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1') } }; };
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
+    const tabDoor = tabG ? doorOfTab(tabG.id) : null; // the door's one line under the tab's name (data: skills.json door_line)
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
+      hasDoor: !!tabDoor, door: tabDoor ? tabDoor.line : '', doorSkill: tabDoor ? tabDoor.skill : '', doorStyle: 'font-size: 13px; line-height: 1.4; color: #C9D3E3',
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),

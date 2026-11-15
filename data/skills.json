@@ -2134,6 +2134,8 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
+      "door_line": "Draw words on your own tile in a straight row of {line_min} to {line_max}, then Evoke from an end or the side.",
+      "door_tab": "sigils",
       "per_point": {
         "numbers": {
           "sigil": 0.1,

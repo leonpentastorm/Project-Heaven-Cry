@@ -16,6 +16,7 @@ import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments } from './figments';
+import { leanIn, recoil } from './sigilBody';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
@@ -978,18 +979,10 @@ const H: Record<string, Handler> = {
   // ---------- Sigils (rules 1.4): cyan, square, snapping; each element in its own way (fx/elements.ts) ----------
   draw(e) {
     const p = at(e.tile); if (!p) return;
-    const d = GLYPH_PATHS[e.word] || 'M6 6 H18 V18 H6 Z', el = elementFx(e.element || e.word);
-    const s = svg(24, 24, '<path d="' + d + '" pathLength="1" fill="none" stroke="' + SIGIL_INK + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1" style="filter:drop-shadow(0 0 3px ' + SIGIL_GLOW + ')"/>');
-    const box = put(s, p, p.s * 0.8, p.s * 0.8, 900);
-    const path = s.querySelector('path'); if (path) anim(path, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: reducedMotion() ? 1 : 320, easing: 'ease-out', fill: 'forwards' });
-    anim(box, [{ opacity: 1 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }], { duration: 900, fill: 'forwards' });
-    // The glyph locks into its tile: a square frame snaps on (a Line that grows, a fresh start, or a Stack's second).
-    snapFrame(p, e.effect === 'breaks' ? MUTED : SIGIL_INK, 'sigil', 380, { delay: 260, from: 1.3, to: e.effect === 'stacks' ? 0.8 : 1 });
-    squares(p, el.id === 'raw' ? SIGIL_INK : el.ink, 6, 0.5, 600, 300);
-    // Each word is a note: a pattern drawn word by word plays a short melody.
-    play('sigil_draw', p, { rate: NOTE[(hash(e.word) % NOTE.length)] });
-    // Sigil 1.5 (rules 1.10): the glyph joins a stroke (a Line grows, or a junction joins two): a glassy link after the note.
-    if (e.effect === 'extends') play('sg_join', p, { delay: 240, rate: e.junction ? 0.85 : 1 });
+    // The caster leans in over its own tile, then the stroke draws (fx/sigilBody.ts; nothing to wait for under Reduce motion).
+    const lead = leanIn(tokOf(e.unit, e.at), p);
+    if (lead) { ring(p, SIGIL_INK, lead + 160, { from: 0.5, to: 0.85, width: 2 }); after(() => drawStroke(e, p), lead); } // the tile lights under the lean
+    else drawStroke(e, p);
   },
   // Sigil 1.5 (rules 1.10): an Evoke's study crossed a threshold, or a word became Mastered and its inflection came on.
   sigil_growth(e) {
@@ -1023,6 +1016,9 @@ const H: Record<string, Handler> = {
     play('sigil_evoke', src || at(e.at));
     // The pattern flashes white and collapses into where it fires from.
     for (const k of tiles) { const q = at(k); if (!q) continue; burst('flare', q, q.s * 1.2, 260, { color: WHITE, from: 0.5, to: 1.5 }); if (src && !reducedMotion()) squaresTo(q, src, SIGIL_INK, 3, 220); }
+    // …and the caster kicks back, away from the way it fires, as the pattern reaches its source (fx/sigilBody.ts).
+    { const me = at(e.at), d = e.dir || [0, 0], to = centre(missiles[0]?.impact || e.impact);
+      if (me) recoil(tokOf(e.unit, e.at), me, d[0] || d[1] ? Math.atan2(d[1], d[0]) : to && (to.x !== me.x || to.y !== me.y) ? angle(me, to) : null); }
     if (missiles.length > 1 && src) { snapFrame(src, WHITE, 'sigil', 300, { from: 0.6, to: 1.4 }); floatText('×' + missiles.length, src, SIGIL_INK, { small: true }); } // TWICE: the spell splits
     const glyph = subjectGlyph(e.words || []);
     missiles.forEach((m, i) => after(() => missile(e, m, el, glyph), 230 + i * 110));
@@ -1371,6 +1367,23 @@ function chipShatter(p: Pt, word: string) {
   after(() => { shards(q, { ...ELEMENTS.freeze, ink: MUTED, core: WHITE }, 'sigil', 10, 0.8, 520); floatText('CLEANSED', p, OK, { small: true }); }, 300);
 }
 
+/** A glyph's stroke on its tile (the draw handler, after the caster's lean): the word's path, the frame snapping on,
+ *  the element's squares, its note. */
+function drawStroke(e: FxEvent, p: Pt) {
+  trace('sigil', { what: 'stroke', word: e.word });
+  const d = GLYPH_PATHS[e.word] || 'M6 6 H18 V18 H6 Z', el = elementFx(e.element || e.word);
+  const s = svg(24, 24, '<path d="' + d + '" pathLength="1" fill="none" stroke="' + SIGIL_INK + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1" style="filter:drop-shadow(0 0 3px ' + SIGIL_GLOW + ')"/>');
+  const box = put(s, p, p.s * 0.8, p.s * 0.8, 900);
+  const path = s.querySelector('path'); if (path) anim(path, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: reducedMotion() ? 1 : 320, easing: 'ease-out', fill: 'forwards' });
+  anim(box, [{ opacity: 1 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }], { duration: 900, fill: 'forwards' });
+  // The glyph locks into its tile: a square frame snaps on (a Line that grows, a fresh start, or a Stack's second).
+  snapFrame(p, e.effect === 'breaks' ? MUTED : SIGIL_INK, 'sigil', 380, { delay: 260, from: 1.3, to: e.effect === 'stacks' ? 0.8 : 1 });
+  squares(p, el.id === 'raw' ? SIGIL_INK : el.ink, 6, 0.5, 600, 300);
+  // Each word is a note: a pattern drawn word by word plays a short melody.
+  play('sigil_draw', p, { rate: NOTE[(hash(e.word) % NOTE.length)] });
+  // Sigil 1.5 (rules 1.10): the glyph joins a stroke (a Line grows, or a junction joins two): a glassy link after the note.
+  if (e.effect === 'extends') play('sg_join', p, { delay: 240, rate: e.junction ? 0.85 : 1 });
+}
 // World Play 1.7 (fx/world.ts): carrying, searches, hazards, triggers, the alarm, approaches, talk, markers.
 Object.assign(H, worldHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play }));
 // Class Roster Revision 3's moves (fx/classes.ts): the same kit as the Soul handlers, plus a few particles from here.

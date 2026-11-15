@@ -5,13 +5,14 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
-  PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText } from '@engine';
+  FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 import { heldClassId, currentClassId } from './classView';
 import { techAction, TWATCH, legacyAttack } from './techView';
 import { perkShelves } from './perkShelves';
+import { packDrawOf } from './backpack';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
@@ -112,7 +113,11 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   if (tendRows.length) out.push(['TEND · BONDS AND CARE', tendRows, '#EB95B7', 'tend']);
   const figRows = by('figments'); // rules 1.34: Expression's door (Picture, then each held Figment's verbs), in Expression ink
   if (figRows.length) out.push(['FIGMENTS · PICTURED', figRows, '#5394AC', 'figments']);
-  const sig = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
+  const sig0 = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
+  // An Evoker in the pack, not in hand (nine doors audit, 0.29): the rows refused for it become one row that says so, priced as the pack's
+  // own Draw prices the gear change; picking it opens the backpack (screens/combat.js). The engine's rows return the
+  // moment the Evoker is in hand.
+  const pd = evokerInPack(cb, cur, ch, opts.g), sig: ActionItem[] = pd ? [[PACK_EVOKER, NEEDS_EVOKER.replace(/\.$/, '') + ': draw it from the pack', pd.cost, 'Open your backpack and Draw the Evoker into your hand; then Draw a glyph.', pd.why || NEEDS_EVOKER], ...sig0.filter((it) => it[4] !== NEEDS_EVOKER)] : sig0; // the engine's rows it did not refuse for the Evoker (Scuff) stay
   if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
   if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);
   if (pray.length) out.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
@@ -121,6 +126,14 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   return out;
 }
 
+/** The Sigils tab's row while the Evoker is only in the pack: its id (picking it opens the backpack). */
+export const PACK_EVOKER = 'pack:evoker';
+/** The pack's Draw for this unit's Evoker when it carries one but holds none (null otherwise). */
+function evokerInPack(cb: any, cur: any, ch: any, g: any) {
+  const c = ch || (g && cur?.charId ? g.characters?.[cur.charId] : null);
+  if (!cur?.mg || cur.mg.evoker || !c || !carriesEvoker(c)) return null;
+  try { return packDrawOf(gameFor(g, cb, c), cb, cur, FOCUS_IDS.evoker); } catch { return null; }
+}
 /** A unit that can't use techniques (the engine's gate: a companion, a puppet, a unit with a fixed action list) keeps
  *  the old attack rows. */
 export const isLegacyUnit = (u: any) => !!u && (!!u.companion || Array.isArray(u.allowedActions) || u.side !== 'pc');
