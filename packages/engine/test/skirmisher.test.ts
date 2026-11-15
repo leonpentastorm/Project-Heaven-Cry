@@ -211,6 +211,34 @@ describe('Run and Gun (rules 1.30 item 1808)', () => {
     const rel = (CLASS.marksman as any).gain.find((m: any) => m.id === 'relocated').effects[2].value;
     expect(added(true) - added(false)).toBe(rg().numbers.pressure + rel);
   });
+  it('rank III holds Fire and Move and Run and Gun: one free move a turn between them, and it is the longer one', () => {
+    const fm = (CLASS.marksman as any).gain.find((m: any) => m.id === 'fire_and_move'), step = fm.effects[1].if.path_tiles_at_most;
+    // a long free move first (Run and Gun's), then a short one: the short one is paid (no second free move from Fire and Move)
+    const a = setUp(); at(a.f, a.f.foe, '9,4');
+    a.f.act({ unitId: a.u.id, type: 'combat/attack', targetId: a.f.foe.id, mode: 'shot' } as any);
+    let ap = a.f.unit(a.u.id).ap;
+    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles) } as any);
+    expect(a.f.unit(a.u.id).ap).toBe(ap);
+    a.f.unit(a.u.id).ap = 6; a.f.unit(a.u.id).heat = 0;
+    a.f.act({ unitId: a.u.id, type: 'combat/attack', targetId: a.f.foe.id, mode: 'shot' } as any);
+    ap = a.f.unit(a.u.id).ap;
+    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles - step) } as any);
+    expect(a.f.unit(a.u.id).ap).toBeLessThan(ap);
+    // a short free move first is Run and Gun's (the longer one, asked first: its Pressure rider is set), and the next move is paid
+    const b = setUp(); at(b.f, b.f.foe, '9,4');
+    b.f.act({ unitId: b.u.id, type: 'combat/attack', targetId: b.f.foe.id, mode: 'shot' } as any);
+    ap = b.f.unit(b.u.id).ap;
+    b.f.act({ unitId: b.u.id, type: 'combat/move', to: '4,' + (4 - step) } as any);
+    expect(b.f.unit(b.u.id).ap).toBe(ap);
+    expect((b.f.unit(b.u.id) as any).ps?.['class:marksman.run_and_gun']?.flags?.ran).toBe(true);
+    ap = b.f.unit(b.u.id).ap;
+    b.f.act({ unitId: b.u.id, type: 'combat/move', to: '4,' + (4 - 2 * step) } as any);
+    expect(b.f.unit(b.u.id).ap).toBeLessThan(ap);
+    // the next turn has its free move again (the marker ends with the turn)
+    expect(condOn(b.f.unit(b.u.id), 'free_move_spent')).toBe(true);
+    b.f.act({ unitId: b.u.id, type: 'combat/end-turn' } as any);
+    expect(condOn(b.f.unit(b.u.id), 'free_move_spent')).toBe(false);
+  });
 });
 
 describe('Riposte, one Answer (rules 1.30 item 1810)', () => {

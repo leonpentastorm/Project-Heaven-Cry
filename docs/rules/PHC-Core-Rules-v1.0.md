@@ -6365,6 +6365,9 @@ a data field and PROVISIONAL (items 4440 to 4452). Nothing here adds an engine p
    engine's view of a unit (`physView`) reads them, and the map shows the word under the pips.
 2. **Fire and Move** (Skirmisher, gain): once a turn, after a ranged attack on your turn, a move of 1 tile costs no AP
    and draws no opportunity attack (Slipping). Its own item beside Run and Gun (rank III), which keeps its longer step.
+   The two share **one free move a turn** (review fix, 16 Nov 2026): whichever is taken puts the state `free_move_spent`
+   (conditions.json; it ends with the turn) on the mover, and neither gives a free move while it is on. Run and Gun is
+   asked first (`priority` 90), so a rank III Skirmisher's free move is always the longer one, with its Pressure.
 3. **Relocated** (Skirmisher, gain): your first ranged attack after you move on your turn (walk, sprint, disengage) is
    at +1 to hit, and a hit adds 1 more Pressure. The flag clears on that attack's hit or miss and at the end of the turn.
 4. **Break Them** (Skirmisher, gain): Rout costs 1 AP less on your turn, never under 1 (it stacks with Fire Discipline's

@@ -424,7 +424,10 @@
                 ],
                 "flag": "fired",
                 "ap_above": 0,
-                "path_tiles_at_most": 1
+                "path_tiles_at_most": 1,
+                "self_lacks": [
+                  "free_move_spent"
+                ]
               },
               "limit": {
                 "per": "per_turn",
@@ -435,6 +438,11 @@
                 {
                   "op": "condition",
                   "condition": "slipping",
+                  "skip_save": true
+                },
+                {
+                  "op": "condition",
+                  "condition": "free_move_spent",
                   "skip_save": true
                 }
               ]
@@ -745,16 +753,25 @@
                     ],
                     "flag": "fired",
                     "ap_above": 0,
-                    "path_tiles_at_most": 2
+                    "path_tiles_at_most": 2,
+                    "self_lacks": [
+                      "free_move_spent"
+                    ]
                   },
                   "limit": {
                     "per": "per_turn",
                     "n": 1
                   },
+                  "priority": 90,
                   "and": [
                     {
                       "op": "condition",
                       "condition": "slipping",
+                      "skip_save": true
+                    },
+                    {
+                      "op": "condition",
+                      "condition": "free_move_spent",
                       "skip_save": true
                     },
                     {

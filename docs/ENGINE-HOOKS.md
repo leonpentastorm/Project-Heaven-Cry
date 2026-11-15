@@ -61,7 +61,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `self_hp_above` | number | self's HP is over this share of its max | `take_the_weight` (classes.json) |
 | `self_hp_at_most` | number | self's HP is at most this share of its max | `foe_mercy` (conditions.json) |
 | `self_has` | ids | self has one of these conditions | `ingenuity` (skills.json) |
-| `self_lacks` | ids | self has none of these conditions | none yet |
+| `self_lacks` | ids | self has none of these conditions | `fire_and_move` (classes.json) |
 | `self_tier` | words | self's tier is one of these (vermin, minion, soldier, elite, boss) | none yet |
 | `self_not_tier` | words | self's tier is none of these | `foe_mercy` (conditions.json) |
 | `self_kind` | words | self's kind is one of these (human, robot, crawler, ork…) | none yet |
@@ -585,10 +585,10 @@ Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod
 
 `immune(x, what)` is also asked about: `bleed`, `knockback`, `opportunity_attack`, `shove` (`IMMUNE_IDS`).
 
-### The condition table (`data/conditions.json`, 94 rows; loader `condtable.ts`)
+### The condition table (`data/conditions.json`, 95 rows; loader `condtable.ts`)
 
 A condition is a row; these are the fields rows use (how many rows use each):
-`id` (94), `amounts` (7), `name` (94), `kind` (94), `family` (94), `save` (94), `engine` (94), `text` (94), `effects` (94), `duration` (94), `ends_on` (94), `stacks` (94), `adjudication` (94), `save_note` (1), `provisional` (65), `aliases` (2), `key` (2), `label` (49), `boon` (39), `notes` (1), `source` (59), `engine_state` (3), `params` (1), `set_by` (46).
+`id` (95), `amounts` (7), `name` (95), `kind` (95), `family` (95), `save` (95), `engine` (95), `text` (95), `effects` (95), `duration` (95), `ends_on` (95), `stacks` (95), `adjudication` (95), `save_note` (1), `provisional` (66), `aliases` (2), `key` (2), `label` (50), `boon` (40), `notes` (1), `source` (60), `engine_state` (3), `params` (1), `set_by` (46).
 Families: `body`, `brain`, `heart`.
 
 #### The item-ops runner (`effects/triggers.ts`)

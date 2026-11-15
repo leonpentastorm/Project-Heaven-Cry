@@ -49,9 +49,9 @@ refused, foes broken) waits for P10 (the AI reading the states): today Pressure'
 Afraid only.
 
 **Onboarding.** Slide is listed for every character with Dexterity (the Perks tab: a door verb with no `tab` in its
-file goes there; greyed with the engine's refusal once used this turn). The ranged weapon block's line (`meterHint`) and
-one `TIPS` row `pressure` ("SHOOT TO PIN", the first time a character of mine with Dexterity and a ranged weapon has the
-turn) read `skills.json dexterity.door_line`.
+file goes there; greyed with the engine's refusal once used this turn). The ranged weapon block's line (`meterHint`)
+reads `skills.json dexterity.door_line`; the first-fight hint is the general door tip's (see "Integrator": the lane's own
+`TIPS` row `pressure` was removed in review).
 
 15 Nov 2026, first draft. Status: **design, nothing built**. Every number below is PROVISIONAL and a data field
 (`data/techniques.json rules.pressure` for the meter, `data/classes.json` `marksman` for the class, `data/skills.json`
@@ -266,3 +266,19 @@ fingers at a target, an opened bracket around it); the forks **Suppressor** (Wic
    that gate (Pressure alone makes it give up)? Recommended: no; a Broken foe above half HP cowers or runs instead.
 3. **Whose Pressure moves the AI?** Recommended: everyone's (it is the meter's rule, rules 1.12); the Skirmisher is
    best at it through Near Miss, Relocated and Shaken Nerves, not through a private meter.
+
+## Integrator
+
+Review fixes (16 Nov 2026), for whoever combines this branch:
+
+1. **The first-fight hint comes from the general door tip.** This lane's own `pressure` row ("SHOOT TO PIN") and its
+   `pinsNow` test are removed from `apps/web/src/game/tips.tsx` (the file is back to `develop`'s); only the text stays,
+   as `skills.json dexterity.door_line`. The general reader (one tip for every skill with a `door_line`, built on
+   `wip/lane-0.29-door-will_power` and merged into `lane/0.29-prayer-2`) shows it; this branch has no general reader, so
+   until the combine the line shows nowhere as a tip (the ranged block's `meterHint` still reads it).
+2. **One free move a turn between Fire and Move and Run and Gun.** A `limit` key is the item's own
+   (`<item key>#<key>`), so two items cannot share one counter through it. The shared once-a-turn is carried by a data
+   state instead: `conditions.json free_move_spent` (a boon, no save; it ends with the turn by its own `cleanse` on
+   `turn_end`), put on by whichever free move is taken and tested by both (`self_lacks`). Run and Gun's `cost_mod` has
+   `priority: 90`, so it is asked first and the free move is the longer one, with its Pressure rider. No new primitive. A
+   cleaner piece, for the lead if wanted: a `limit` whose key is shared by the holder's items (`shared: true`).
