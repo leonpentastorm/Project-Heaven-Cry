@@ -870,7 +870,40 @@
       "clear_ap": 2,
       "cooldown_per_turn": 2
     },
-    "recoil": "each shot after the first in a turn -1 cumulative, reduced by floor(dexterity/2)",
+    "recoil": {
+      "text": "Recoil 2.0 (rules 1.56): each shot after the first in a turn is at minus the gun's Recoil (its `recoil` field with its mods': weapons_rules.gear_fields), cumulative, reduced by floor(Dexterity / dex_relief_per); halved (braced_mult, rounded toward 0) braced or Emplaced; none in a volley, a reaction or full auto.",
+      "dex_relief_per": 2,
+      "braced_mult": 0.5
+    },
+    "gear_fields": {
+      "about": "Rules 1.56 (plan 0.29 primitive 2): the closed list of a weapon instance's number fields (character.ts gearNum). Each is a field of the weapon row (its own value, else `default`) and of a mod row (its change); `combine` sum adds every mod's to the weapon's, max takes the largest; a mod's `<field>_modes` limits its value to those attack modes.",
+      "recoil": {
+        "combine": "sum",
+        "default": 1,
+        "about": "the Recoil each earlier shot this turn adds (bows and the core rifle 0; the compensator -1)",
+        "provisional": true
+      },
+      "magazine_pct": {
+        "combine": "sum",
+        "default": 0,
+        "about": "percent more rounds in every magazine of the gun, rounded down (the extended magazine)"
+      },
+      "bands": {
+        "combine": "max",
+        "default": 0,
+        "about": "range bands past the effective range with no penalty against units (the red dot; the scope on aimed shots)"
+      },
+      "silent": {
+        "combine": "max",
+        "default": 0,
+        "about": "1: the gun's shots don't reveal a Hidden shooter (the suppressor)"
+      },
+      "melee_damage": {
+        "combine": "max",
+        "default": 0,
+        "about": "the damage of a melee blow made with the gun instead of the fists' (the bayonet; the blow hits with the fists' skill)"
+      }
+    },
     "range_bands": {
       "band_length": "effective range",
       "penalty_per_band": -2,

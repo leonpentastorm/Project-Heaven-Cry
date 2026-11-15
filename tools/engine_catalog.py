@@ -420,7 +420,7 @@ PRIMITIVE_FILES = [
     (SRC + '/credits.ts', None, 'Credits and prices (rules 1.41)'),
     (SRC + '/containers.ts', None, 'The pack, piles and loot lines (rules 1.9, 1.54): the one take, add, grant and line kind'),
     (SRC + '/recipes.ts', None, 'Making: recipes and the make action (rules 1.54)'),
-    (SRC + '/character.ts', ['packKindOf', 'holds', 'HoldSpec', 'isFocusId', 'FOCUS_DOORS', 'FOCUS_IDS', 'inHands', 'packOf', 'magsOf', 'roundsOf', 'isGunId', 'fitMod', 'hasMod', 'magazineSize', 'setGrade'], 'The pack, holds and gear of a character'),
+    (SRC + '/character.ts', ['packKindOf', 'holds', 'HoldSpec', 'isFocusId', 'FOCUS_DOORS', 'FOCUS_IDS', 'inHands', 'packOf', 'magsOf', 'roundsOf', 'isGunId', 'fitMod', 'gearNum', 'modsOn', 'handProps', 'magazineSize', 'setGrade'], 'The pack, holds and gear of a character'),
     (SRC + '/gearpreview.ts', None, 'Gear previews and comparisons'),
     (SRC + '/run/shop.ts', None, 'The Survival shop: the counter, stock, selling and the services shelf (rules 1.46)'),
     (SRC + '/run/power.ts', None, 'Run power: Relic rows, worth and the cap, boons and grafts (rules 1.47)'),

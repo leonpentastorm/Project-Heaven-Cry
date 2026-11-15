@@ -143,7 +143,7 @@ describe('two bugs found by reading, fixed by going through the primitive', () =
   it('an enemy asks its weapon\'s own reload price, not a typed 2 AP (a 1 AP reload with 1 AP; a 3 AP reload not with 2)', () => {
     // Review: the first version of this test only said "the ammo stays 0", true with or without the fix. What can be
     // seen: a quick-release magazine reloads for 1 AP, and an enemy with 1 AP left now does it (the typed 2 refused it).
-    const quick = (ap: number) => { const f = fightWith([{}], [{ at: 'F6', weapon: 'hellraiser_service_rifle', classic: true }]), e = f.foe; f.cb.round = 2; f.turn(e); e.mods = ['mod_quick_release']; e.ap = ap; e.ammo = 0;
+    const quick = (ap: number) => { const f = fightWith([{}], [{ at: 'F6', weapon: 'hellraiser_service_rifle', classic: true }]), e = f.foe; f.cb.round = 2; f.turn(e); e.mods = ['mod_quick_release']; e.held = { ...(e.held || { perks: [], traits: [] }), relics: ['mod_quick_release'] }; e.ap = ap; e.ammo = 0; // rules 1.56: a fitted mod is held (no enemy row carries one: fitted by hand)
       expect(withGame(f.g, () => reloadAp(e, f.cb))).toBe(1); withGame(f.g, () => enemyTurn(f.cb, f.g.rng)); return e; };
     { const e = quick(1); expect(e.ammo).toBeGreaterThan(0); expect(e.ap).toBe(0); }
     // The breacher tube reloads for 3 AP: with 2 it is not tried, with 3 it is done. (No shipped enemy gets here: a gun

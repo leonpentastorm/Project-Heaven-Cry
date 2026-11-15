@@ -592,7 +592,7 @@ export function loadAll(c: Character): number {
   c.pack = pack.filter((it) => it.qty > 0 || it.mags);
   return moved;
 }
-export const loadedOf = (c: Character) => c.loaded ?? (WEAPON[c.weapon]?.magazine || 0);
+export const loadedOf = (c: Character) => c.loaded ?? (magazineSize(c.weapon, c.weaponState?.mods) || 0); // rules 1.56: the magazine as its mods size it
 export const spareMags = (c: Character) => packOf(c).find((x) => x.weapon === c.weapon && x.mags)?.mags || [];
 
 // ---------- weight (spec: Item weights) ----------
@@ -856,12 +856,14 @@ export function focusRarity(c: Character, door: string): Rarity | null {
   if (held[1] && ids.includes(held[1])) return c.offHand?.rarity || 'standard';
   return null;
 }
-/** Rules 1.43 (item 11): the named properties of the instances in the hands, with the hand each is in (the off hand
- * unless a two-handed weapon fills both). What heldOfChar loads as relic items. */
-export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => [
-  ...(c.weaponState?.prop && c.weapon !== 'fists' ? [{ prop: c.weaponState.prop, hand: 'main' as const }] : []),
-  ...(c.offHand?.prop && !twoHands(c, c.weapon) ? [{ prop: c.offHand.prop, hand: 'off' as const }] : []),
-];
+/** Rules 1.43 (item 11), 1.56: the modifier items of the instances in the hands (a named property, the fitted mods), with
+ * the hand each is in (the off hand unless a two-handed weapon fills both). What heldOfChar loads as relic items and
+ * `with_this` reads. */
+export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => {
+  // rules 1.56 (plan 0.29 primitive 1): an instance's modifier items are its property and its fitted mods, one door
+  const carried = (st: { prop?: string; mods?: string[] } | null | undefined, hand: 'main' | 'off') => [...(st?.prop ? [st.prop] : []), ...(st?.mods || [])].map((prop) => ({ prop, hand }));
+  return [...(c.weapon !== 'fists' ? carried(c.weaponState, 'main') : []), ...(c.offHand && !twoHands(c, c.weapon) ? carried(c.offHand, 'off') : [])];
+};
 /** Rules 1.43 (item 11; survival-spec rule 31): the named property of every instance a character carries (hands and
  * pack), one per instance: what counts on its run's cap whether in hand or not. */
 export const gearProps = (c: Character): string[] => [
@@ -1249,7 +1251,9 @@ export function twoHands(c: Character, wid: string | null | undefined): boolean 
 }
 const equipBanWhy = (c: Character, ctx: any): string => {
   const w: any = ctx.weapon ? WEAPON[ctx.weapon] : null, t: string[] = w?.tags || [];
-  if ((c.traits || []).includes('old_school')) return ctx.mod === 'mod_red_dot' || (ctx.mods || []).includes('mod_red_dot') ? 'Old School: no red dot on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';
+  // rules 1.56: a mod's tags are its data (the red dot is `electronic`); its name is the refusal's
+  const em = [ctx.mod, ...(ctx.mods || [])].map((id: string) => (id ? (ITEM[id] as any) : null)).find((m: any) => (m?.tags || []).includes('electronic'));
+  if ((c.traits || []).includes('old_school')) return em ? 'Old School: no ' + String(em.name).toLowerCase() + ' on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';
   return 'A trait won\'t let you.';
 };
 /** A pack entry that is ammunition (a magazine stack, loose rounds), never a thing for a hand (review fix). */
@@ -1343,8 +1347,22 @@ export function fitMod(c: Character, idx: number): string | null {
   mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
   c.weaponState = { ...(c.weaponState || {}), mods }; c.pack = pack; return null;
 }
-/** Whether a gear's fitted mod list holds this mod id. */
-export const hasMod = (mods: string[] | undefined, id: string) => !!mods && mods.includes(id);
+// ---------- a weapon instance's numbers (rules 1.56, plan 0.29 primitive 2) ----------
+const GEAR_FIELDS: Record<string, { combine: 'sum' | 'max'; default?: number }> = (RULES as any).weapons_rules?.gear_fields || {};
+/** A weapon instance's number (the gun and its fitted mods): one of the closed list of fields in data/rules.json
+ * weapons_rules.gear_fields (recoil, magazine_pct, bands, silent, melee_damage). The weapon row's own value (else the
+ * list's `default`) and each mod row's change, combined by the list's `combine` (sum: the weapon's plus every mod's; max:
+ * the largest). A mod's `<field>_modes` limits its value to those attack modes (the scope's band: aimed shots only). An
+ * unknown field throws. */
+export function gearNum(weaponId: string | null | undefined, mods: readonly string[] | null | undefined, field: string, mode?: string): number {
+  const f = GEAR_FIELDS[field]; if (!f) throw new Error('gearNum: "' + field + '" is not in data/rules.json weapons_rules.gear_fields');
+  const w: any = weaponId ? WEAPON[weaponId] : null, own = typeof w?.[field] === 'number' ? w[field] : f.default ?? 0;
+  const vals = (mods || []).map((id) => ITEM[id] as any).filter((m) => m && typeof m[field] === 'number' && (!m[field + '_modes'] || (!!mode && m[field + '_modes'].includes(mode)))).map((m) => m[field] as number);
+  return f.combine === 'max' ? Math.max(own, ...vals) : vals.reduce((t, v) => t + v, own);
+}
+/** The mods fitted to the carried instance of this weapon (the main hand's, else the off hand's; none in the pack): what
+ * a spare magazine of that weapon is sized by. */
+export const modsOn = (c: Character, weaponId: string | null | undefined): string[] => (weaponId && c.weapon === weaponId ? c.weaponState?.mods : weaponId && c.offHand?.id === weaponId ? c.offHand.mods : null) || [];
 
 // ---------- quivers (rules 1.53): graded gear, two carried, one worn ----------
 /** A quiver the character carries (rules 1.53): the item (items.json category `quiver`), its grade, the enchantment fitted
@@ -1439,7 +1457,7 @@ export function fitQuiverMod(c: Character, idx: number, i: number): string | nul
   return null;
 }
 /** A weapon's magazine size with its fitted mods (null: it has no magazine). */
-export const magazineSize = (weaponId: string, mods?: string[]) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : hasMod(mods, 'mod_extended_mag') ? Math.floor(m * 1.5) : m; };
+export const magazineSize = (weaponId: string, mods?: readonly string[] | null) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : Math.floor(m * (1 + gearNum(weaponId, mods, 'magazine_pct') / 100)); };
 
 // ---------- class resources and advanced classes (spec: Classes; rules 1.3 shared subsystems) ----------
 /** A class resource: id, maximum now, and whether it persists between fights (Supplies, toxins; refilled at a long

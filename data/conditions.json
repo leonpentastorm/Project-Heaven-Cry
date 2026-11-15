@@ -860,11 +860,6 @@
           "op": "attack_mod",
           "value": 2,
           "context": "emplaced_weapon"
-        },
-        {
-          "op": "stat_mult",
-          "stat": "recoil",
-          "value": 0.5
         }
       ],
       "duration": {

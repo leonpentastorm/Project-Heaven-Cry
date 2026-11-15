@@ -31,8 +31,9 @@ const modFor = (g: GameState) => { const slots: string[] = (WEAPON[g.characters.
   return ['mod_red_dot', 'mod_extended_mag', 'mod_compensator'].find((m) => slots.includes((ITEM[m] as any).mod_slot))!; };
 
 describe('rules 1.55: a mod the engine does not run is never sold', () => {
-  it('the four inert mods are flagged and have no price', () => {
-    for (const id of ['mod_foregrip', 'mod_wrapped_grip', 'mod_underslung', 'mod_sigil_magazine']) { expect(UNBUILT).toContain(id); expect(priceOf(id)).toBeNull(); }
+  it('the three inert mods are flagged and have no price; the foregrip is built (rules 1.56: Bursts and full auto with it)', () => {
+    for (const id of ['mod_wrapped_grip', 'mod_underslung', 'mod_sigil_magazine']) { expect(UNBUILT).toContain(id); expect(priceOf(id)).toBeNull(); }
+    expect(UNBUILT).not.toContain('mod_foregrip'); expect(priceOf('mod_foregrip')).toBe((ITEM.mod_foregrip as any).price_credits);
   });
   it('no built: false item across 200 seeded Forge stocks, shop stocks and picks of kit', () => {
     const seen = new Set<string>();
