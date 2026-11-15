@@ -21,6 +21,9 @@
 //       special rounds by calibre (the script beside it, save-0.28-special-rounds-shop.how.ts.txt): a Survival run in a
 //       shop, c1 with the service rifle carrying `ammo_armor_piercing` (bought) and `ammo_hollow_point` (made), the old
 //       one-id-for-every-gun lines.
+//   save-0.28.1-modded-gun-mid-fight.json     written by the LIVE 0.28.1 engine (origin/develop = origin/main at
+//       69fbd66f; the script beside it): a fight in its first round, c1 (a Gun Nut) with a service rifle carrying a
+//       scope, a suppressor and a quick-release magazine; its unit's held snapshot has no mod relics.
 //
 // Each is loaded the way the client loads a save (parsed, migrateLoaded) and played on. NEVER regenerate these files:
 // they are what an old save looks like. When the saved shape changes, add a NEW fixture beside them (written by the
