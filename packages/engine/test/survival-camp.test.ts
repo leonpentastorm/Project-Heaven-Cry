@@ -340,7 +340,7 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     s.relics = ['boon.deep_satchel']; expect(cores(ammoPack(s, 1, [], 9))).toBe(SV.ammo_pack.cores_max * 2);
     expect(worthOf('boon.deep_satchel')).toBeGreaterThan(0); expect(capRoom(s)).toBe(BOON_CAP - worthOf('boon.deep_satchel'));
   });
-  it('through the reducer: after a won fight the cores burnt come back, the MP share lands (never past the max), Flux is 0', () => {
+  it('through the reducer: after a won fight a caster takes back its burnt core and its MP share at their 0.28.0 counts, a gunner no magazine (rules 1.55, the lead ruling), Flux is 0', () => {
     const pcs: Pc[] = [{ build: 'sigil', level: 1 }, { build: 'outburst', level: 1 }];
     const g0 = clone(apply(camp(pcs), { type: 'run/go' }, 'host')), r = g0.run!, n = r.nodes.find((x) => x.depth === 3)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
     n.kind = 'fight'; r.at = prev.id; r.state = 'map';
@@ -349,12 +349,13 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     const before = cores(packOf(g.characters.c1)), g2 = clone(g);
     sig.mg!.charge = 1; sig.mg!.cores -= 1; sig.mg!.flux = 3; out.mg!.mp = 5; // one spare core swapped in and most of the loaded one spent: one core burnt
     const done = apply(g, { type: 'run/skip' }, 'host');
-    expect(cores(packOf(done.characters.c1))).toBe(before); // the one burnt came back, no more
+    expect(SV.ammo_pack.supply.fight).toBe(1); expect(SV.ammo_pack.mags.fight).toBe(0); // the 0.28.0 count for cores and MP; no magazines
+    expect(cores(packOf(done.characters.c1))).toBe(before); // the one burnt comes back
     g2.combat!.units.find((u) => u.charId === 'c1')!.mg!.charge = 1; // nothing burnt: the loaded core's 9 charge is not a spare core
     const none = apply(g2, { type: 'run/skip' }, 'host');
     expect(cores(packOf(none.characters.c1))).toBe(before);
     expect(done.story.magic!.c1.flux).toBe(0);
-    expect(mpNow(done.characters.c2)).toBe(Math.min(maxMp(done.characters.c2), 5 + supplyMp(done.characters.c2, 1)));
+    expect(mpNow(done.characters.c2)).toBe(Math.min(maxMp(done.characters.c2), 5 + supplyMp(done.characters.c2, 1))); expect(mpNow(done.characters.c2)).toBeGreaterThan(5);
     expect(done.run!.note!.ammo!.c2.some((x) => / MP$/.test(x))).toBe(true);
   });
   it('a Rest fills the loaded charge of every carried Evoker and Visualizer', () => {

@@ -272,19 +272,26 @@ await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 }
 r = await run();
 const c = Object.values(g.characters)[0];
-ok('the rewards: XP (' + SVD.xp.base + ' at stop 1, rules 1.54 item 9) and credits each, the ammunition pack (' + (r.note.ammo[c.id] || []).join(', ') + ')', r.note.xp === SVD.xp.base && c.xp === r.note.xp && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length > 0
+ok('the rewards: XP (' + SVD.xp.base + ' at stop 1, rules 1.54 item 9) and credits each, no ammunition pack (rules 1.55: ' + (r.note.ammo[c.id] || []).length + ' lines)', r.note.xp === SVD.xp.base && c.xp === r.note.xp && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length === 0
   && new RegExp(r.note.xp + ' XP').test(await p.locator('[data-phc-note]').textContent()));
 const o1 = r.offers[c.id], wcard = p.locator('[data-phc-offer="' + c.id + '"] [data-phc-pick]');
 { // rules 1.54 item 2: Materials or One weapon, two large cards; credits instead is gone
   const mats = await p.locator('[data-phc-offer="' + c.id + '"] [data-phc-material]').evaluateAll((l) => l.map((e) => [e.getAttribute('data-phc-material'), Number(e.getAttribute('data-phc-material-n'))]));
-  ok('the pick: two large cards, the materials (' + mats.map((m) => m.join(' ')).join(', ') + ', the engine\'s offer) and one weapon; no credits instead', await p.locator('[data-phc-pick-materials]').count() === 1 && await wcard.count() === 1
-    && !(await p.locator('[data-phc-instead]').count()) && JSON.stringify(mats) === JSON.stringify(o1.materials.map((m) => [m.item, m.n])) && mats.length === SVD.rewards.materials.items.length);
+  // rules 1.55 item 21: an ordinary fight's weapon card is a roll (rewards.weapon_card.fight), so stop 1 may show the
+  // Materials card alone: both shapes are accepted (the card count must match the engine's offer); Materials is taken either way
+  const hasW = o1.weapons.length > 0;
+  ok('the pick: the materials card (' + mats.map((m) => m.join(' ')).join(', ') + ', the engine\'s offer)' + (hasW ? ' and one weapon' : ', no weapon card this time (the 1.55 roll)') + '; no credits instead', await p.locator('[data-phc-pick-materials]').count() === 1 && await wcard.count() === (hasW ? 1 : 0)
+    && !(await p.locator('[data-phc-instead]').count()) && JSON.stringify(mats) === JSON.stringify(o1.materials.map((m) => [m.item, m.n])) && mats.length >= SVD.rewards.materials.items.filter((x) => x.per_credits).length);
+  if (!hasW) console.log('NOTE: stop 1 rolled no weapon card (rules 1.55 item 21): the weapon card checks are skipped here; the walk still takes and equips the first weapon card it meets (an Elite always offers one)');
+  else {
   const wt = await wcard.textContent(), icon = await wcard.locator('img').first().getAttribute('width'), tip = await wcard.getAttribute('data-tip-text');
   const pv = await p.evaluate(([cid, w]) => window.__phc.gearPreview(cid, { id: w.id, rarity: w.rarity }), [c.id, o1.weapons[0]]);
   ok('the weapon card: its icon at 72 px, its grade word, its worth; its hover card holds every number of the engine\'s gear preview (' + pv.lines.length + ')', icon === '72' && /(STANDARD|FINE)/.test(wt) && /\d+ credits/.test(wt)
     && pv.lines.every((l) => (tip || '').includes(l.label + ': ' + l.value)));
   const sz = await p.locator('[data-phc-pick-materials]').boundingBox(), sw = await wcard.boundingBox();
   ok('… both cards large and side by side (' + Math.round(sz?.width || 0) + ' and ' + Math.round(sw?.width || 0) + ' px wide, ' + Math.round(sz?.height || 0) + ' px tall)', !!sz && !!sw && sz.height >= 280 && Math.abs(sz.y - sw.y) < 2 && sz.width >= 200);
+  }
+  if (!hasW) { const sz = await p.locator('[data-phc-pick-materials]').boundingBox(); ok('… the materials card large (' + Math.round(sz?.width || 0) + ' px wide, ' + Math.round(sz?.height || 0) + ' px tall)', !!sz && sz.height >= 280 && sz.width >= 200); }
 }
 await p.mouse.move(2, 2);
 await shot('survival-reward-pick');

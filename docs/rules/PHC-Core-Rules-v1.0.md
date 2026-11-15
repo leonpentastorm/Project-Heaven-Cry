@@ -6097,6 +6097,28 @@ Leon (15 Nov 2026), verbatim: "on weapons ui, list out what skill it scale it's 
    throw). Every card that shows a weapon's numbers shows them (`docs/design/ui-screens.md`). The magazine line reads
    rounds, a middle dot and the calibre ("30 · .32 Decrkm"). No number changes.
 
+### Survival's rewards and drops (spec items 4121 to 4128)
+
+Leon (15 Nov 2026): "no refill mag between fight"; "check the combat drop tables, no essesive weapon and mana residue,
+make what rare actually rare". The numbers and the arithmetic are in section 14, items 4121 to 4128. All PROVISIONAL.
+
+19. **No free magazines after a fight** (item 4121): the supply pack's magazines (`ammo_pack.mags`) are 0 after every
+   fight; its burnt cores and MP share (`ammo_pack.supply`) are kept; a cache and the vault's chest keep both.
+20. **The gunner's start** (item 4122): the camp's free gun comes with two spare magazines (`loadout.gun.spare` 2).
+21. **The weapon card is rare at ordinary fights** (item 4123): one roll for the node (`rewards.weapon_card.fight`
+   0.2), every player the same; otherwise the Materials card alone. Elites, the gate, a vault guard, a Boss, a cache and
+   the vault always offer one.
+22. **Rarity means rare** (item 4124): the grade odds of ordinary fights and Elites lowered; the sealed crate has its own
+   row.
+23. **Mana residue is scarce** (item 4125): residue on the Materials card by where it is won (`by`), a chance at an
+   ordinary fight.
+24. **Gunpowder and casings** (item 4126): from an ordinary fight's credits at the node's depth and stage, an Elite
+   x2, a Boss x4 (`materials.mult`).
+25. **A picked or bought gun comes loaded, with a spare** (item 4121): `rewards.gun_spare` (1) magazine's worth in the
+   pack, as part of the gun.
+26. **What a killed foe leaves** (item 4127): in Survival the kind's loot table is not rolled (`drops.kind_table`
+   false); a gun foe leaves gunpowder or casings and a caster residue only with a small chance.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9545,3 +9567,56 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     data; the "?" pop-up shows the ten steps, creation and level-up show the next point's line. Rules text never under
     13 px; a row at most about 60 characters. No rule changed. PROVISIONAL (the layout).
 4120. **Items 4100 to 4120 are rules 1.54's.**
+
+### Rules 1.55 (15 Nov 2026)
+
+Survival's rewards and drops for release 0.28.1 (Leon, 15 Nov 2026: "Naww wtf, no refill mag between fight alright";
+"check the combat drop tables, no essesive weapon and mana residue, make what rare actually rare"; and, with the walk
+after a fight where every pile is picked up, "make them drop credits and other things is rare"). A later revision
+overrides the body and the earlier ones; every number here is PROVISIONAL.
+
+4121. **No free magazines (rules 1.55 item 19; the lead's ruling, 15 Nov 2026):** the supply pack (`ammo_pack`) has two
+    counts by node, `mags` (magazines for every gun carried) and `supply` (the burnt cores back and the MP share).
+    `mags` is 0 after every fight (ordinary, Elite, gate, vault guard, Boss); the REWARDS line names the pack only when
+    it holds magazines. `supply` keeps its 0.28.0 counts (fight 1, Elite and gate 2, vault guard 2, Boss 3): Leon ruled
+    out the magazines only, so a caster still takes back its burnt cores and its MP share. A cache and the vault's chest
+    keep both (1). Ammunition comes from the camp, shops, making from materials, and picking magazines back up.
+    Supersedes rule 23's magazines after a fight. PROVISIONAL.
+    **A gun taken from a pick or bought** (rules 1.55 item 25; a reward card, the vault, the sealed crate, a shop's rolled piece) comes loaded
+    and with `rewards.gun_spare` (1) magazine's worth in the pack (a gun loaded round by round: that many magazines' worth
+    of loose rounds), as part of the gun (run/rewards.ts pickedItem, the one rule for both); the node's `mags` come on
+    top (the vault's 1). In 0.28.0 a bought gun came empty with nothing, a picked one empty with the pack's share.
+    PROVISIONAL.
+4122. **The gunner's start (rules 1.55 item 20):** `loadout.gun.spare` 1 → 2 (one loaded, two spare). The arithmetic:
+    a stage-1 ordinary fight lasts about 3.1 rounds through the reducer (survival-loot.test.ts, measured); a pistol
+    firing singles (2 AP) is 3 rounds a turn, about 9 a fight, so 12 + 2 x 12 = 36 rounds is about 3.9 fights; an
+    SMG on Bursts (3 rounds, 3 AP) 6 a turn, about 19 a fight, 30 + 60 = 90 about 4.7; the lever carbine 8 + 16 = 24
+    about 2.6. About three ordinary fights, not more, before the camp's budget is spent on rounds. PROVISIONAL.
+4123. **The weapon card is rare at ordinary fights (rules 1.55 item 21):** `rewards.weapon_card.fight` 0.2: the chance
+    an ordinary fight's pick holds the One-weapon card, rolled once for the node (`rngFor(seed, node + '#weapon-card')`,
+    every player the same); otherwise the Materials card alone (still a pick). Elites, the gate, a vault guard, a Boss,
+    a cache and the vault always offer one. PROVISIONAL.
+4124. **Rarity means rare (rules 1.55 item 22):** `rewards.rarity.fight` standard 75 / fine 25 → standard 90 / fine 10;
+    `rewards.rarity.elite` fine 60 / masterwork 35 / relic 5 → standard 75 / fine 20 / masterwork 5 (stage 1, capped
+    at Fine: Fine 25%); `rewards.rarity.crate` (the Crossroads' sealed crate, its own row) keeps the 0.28.0 Elite odds, fine 60 /
+    masterwork 35 / relic 5; `boss` and `ceiling` unchanged (stage 1 Fine, stage 2 Masterwork, stage 3 Relic), so a
+    Masterwork comes from a Boss, the vault or stage 2 on, a Relic from the vault (stage 2 on) and Bosses of stage 3 on.
+    PROVISIONAL.
+4125. **Mana residue is scarce (rules 1.55 item 23):** the Materials card's residue by `by`: an ordinary fight a chance
+    of 0.25, then 1 to 2; an Elite or the gate 2 to 4; a Boss or a vault guard 8 to 12 (10 residue press one core,
+    100 credits). Was ceil(C / 20) on every card (5 at the first fight, 38 at a stage-1 Boss). PROVISIONAL.
+4126. **Gunpowder and casings (rules 1.55 item 24):** each at ceil(C x mult / 16), C an ordinary fight's credits at the
+    node's depth and stage (`materials.mult`: Elite and gate 2, vault guard 2, Boss 4). Was ceil(C / 2) of the node's
+    own credits (50 + 50 at the first fight). The arithmetic: a pair makes 2 .32 rounds (recipes.json), so the first
+    fight's 7 + 7 is 14 rounds, a depth-5 fight's 12 + 12 is 24, about one fight of an SMG on Bursts (19) or two of a
+    pistol (9); an Elite twice, a Boss four times. The card's "sells for" stays the one sell rule's. PROVISIONAL.
+4127. **What a killed foe leaves (rules 1.55 item 26):** measured through the reducer before the change (20 stage-1
+    fights a kind, solo gunner): no foe weapon or magazine was on the ground (rules 1.54 item 3 already turned them
+    off); the ground sold for 6.3% of an ordinary fight's pay, 5.1% of an Elite's, 6.8% of a Boss's, from the kind
+    tables (cores, spare parts, stims, personal effects) and the given materials (gunpowder and casings 2 to 5 each from
+    every gun foe, residue 1 to 2 from every caster and machine). Now `drops.kind_table` false (the kind's table is
+    not rolled for a Survival foe), a gun foe gunpowder 1 to 3 and casings 1 to 3 each with a chance of 0.15, a caster
+    mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
+    a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
+    unchanged. PROVISIONAL.
+4128. **Items 4121 to 4128 are rules 1.55's.**

@@ -3368,14 +3368,14 @@ function runEnter(g: GameState, id: string) {
     r.lasting = Object.fromEntries(Object.values(g.characters).map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); r.state = 'reward'; } // rules 1.43 (rule 41): the cache's pick of kit
   if (n.kind === 'vault') { // rules 1.48: the vault's chest: credits and a weapon of three one grade above the stage's picks; then back onto the lane
     const k: PayKind = 'vault', cr = nodeCredits(k, n.depth, r.stage), grade = vaultGrade(r.stage), offers: Record<string, RunOffer> = {};
-    for (const c of Object.values(g.characters)) { const got = creditsFor(c, cr); earnCredits(c, got); stageLog(r).credits += got; offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed, { grade, ammo: packCount(k) }); }
+    for (const c of Object.values(g.characters)) { const got = creditsFor(c, cr); earnCredits(c, got); stageLog(r).credits += got; offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed, { grade, ammo: packCount(k).mags }); }
     r.note = { ...r.note, credits: cr };
     r.offers = offers; r.state = 'reward'; }
   push(g, { kind: 'system', head: (n.gate ? 'THE GATE' : word.toUpperCase()), text: text || word });
 }
 /** Give a character the supply pack (rule 23; rules 1.51, spec rule 52): its magazines and cores (`burnt`: the cores it
  * burnt in the fight) and its MP share, never above its max; the names of what it got, for the panel. */
-function runAmmo(c: Character, count: number, burnt?: number): string[] {
+function runAmmo(c: Character, count: ReturnType<typeof packCount>, burnt?: number): string[] {
   const got = ammoPack(c, count, undefined, burnt), out = got.map((it) => itemLabel(it));
   if (got.length) { const pack = packOf(c).map((x) => ({ ...x })); for (const it of got) packAdd(pack, it); c.pack = pack; }
   const mp = supplyMp(c, count), was = mpNow(c);
@@ -3441,7 +3441,7 @@ function runFightOver(g: GameState) {
     offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
   }
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
-  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the supply pack, and a pick: the materials or a weapon.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k).mags > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   // rules 1.55: the pay is given now, as before; the picks wait on the field, which the squad leaves together (run/leave)
   r.out = []; r.state = 'field'; r.ready = {}; r.offers = offers; openField(g, cb);

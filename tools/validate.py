@@ -2909,7 +2909,16 @@ if "offer" in _rw54:
     if not set(_ma.get("at") or []) <= _WHERE: errors.append("survival:rewards.materials.at: where a pick is made")
     for _e in _ma.get("items") or []:
         if _e.get("item") not in _rimap: errors.append(f"survival:rewards.materials: {_e.get('item')!r} is not an items.json item")
-        if not (_num(_e.get("per_credits")) and _e["per_credits"] > 0): errors.append(f"survival:rewards.materials: {_e.get('item')!r} needs per_credits above 0")
+        if "by" in _e:  # rules 1.55 item 23: by where: a chance (absent: certain) and a [min, max] qty
+            for _k, _row in (_e["by"] or {}).items():
+                _q = (_row or {}).get("qty")
+                if _k not in _WHERE or not (isinstance(_q, list) and len(_q) == 2 and all(isinstance(x, int) and x >= 1 for x in _q) and _q[0] <= _q[1]) or not (_row.get("chance") is None or (_num(_row["chance"]) and 0 < _row["chance"] <= 1)):
+                    errors.append(f"survival:rewards.materials: {_e.get('item')!r} by {_k!r}: where a pick is made, a [min, max] qty and a chance in (0, 1]")
+        elif not (_num(_e.get("per_credits")) and _e["per_credits"] > 0): errors.append(f"survival:rewards.materials: {_e.get('item')!r} needs per_credits above 0 (or a `by` row)")
+    for _k, _v in (_ma.get("mult") or {}).items():
+        if _k not in _WHERE or not (_num(_v) and _v > 0): errors.append(f"survival:rewards.materials.mult: {_k!r} is where a pick is made, a number above 0 (rules 1.55 item 24)")
+    for _k, _v in (_rw54.get("weapon_card") or {}).items():
+        if _k != "about" and (_k not in _WHERE or not (_num(_v) and 0 <= _v <= 1)): errors.append(f"survival:rewards.weapon_card: {_k!r} is where a pick is made, a chance from 0 to 1 (rules 1.55 item 21)")
 if _sv54.get("drops") is not None:
     _dr, _lt = _sv54["drops"], {t.get("id") for t in items("loot_tables")}
     if _dr.get("provisional") is not True: errors.append("survival:drops: provisional: true")
@@ -2919,6 +2928,8 @@ if _sv54.get("drops") is not None:
             _q = _e.get("qty")
             if _e.get("item") not in _rimap: errors.append(f"survival:drops.{_w}: {_e.get('item')!r} is not an items.json item")
             if not (isinstance(_q, list) and len(_q) == 2 and all(isinstance(x, int) and x >= 1 for x in _q) and _q[0] <= _q[1] <= (data.get("loot_tables") or {}).get("qty_max", 20)): errors.append(f"survival:drops.{_w}: {_e.get('item')!r} qty is a [min, max] range within the loot cap (qty_max)")
+            if not (_e.get("chance") is None or (_num(_e["chance"]) and 0 < _e["chance"] <= 1)): errors.append(f"survival:drops.{_w}: {_e.get('item')!r} chance in (0, 1] (rules 1.55 item 26)")
+    if "kind_table" in _dr and _dr["kind_table"] is not False: errors.append("survival:drops.kind_table: false or left out (rules 1.55 item 26)")
 if not (isinstance((data.get("loot_tables") or {}).get("qty_max"), int) and data["loot_tables"]["qty_max"] >= 1): errors.append("loot_tables: qty_max, the most of one thing a loot entry gives (a whole number)")
 
 # Leon 14 Nov 2026: an item a trait grants is not sold in the shop (stock: false, as the armourer's chit), unless it is food.
