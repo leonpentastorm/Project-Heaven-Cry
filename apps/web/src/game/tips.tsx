@@ -3,6 +3,7 @@
 import React from 'react';
 import { getState, subscribe } from './store';
 import { usePresence, presenceCls } from './presence';
+import { SKILL, weaponSystem } from '@engine';
 
 const LS = 'phc.tips';
 const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
@@ -14,6 +15,12 @@ type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);
 const lines = (st: St, k: string) => (st.game?.story.entries || []).filter((e: any) => e.kind === k && !e.rerolled).length;
 
+/** Is the unit whose turn it is mine, with Dexterity (the Pressure door) and a ranged weapon in hand? */
+export function pinsNow(st: St): boolean {
+  const cb: any = (st.game as any)?.combat, u = cb?.units?.find((x: any) => x.id === cb.order?.[cb.turn]);
+  const c: any = u?.charId ? (st.game as any).characters?.[u.charId] : null;
+  return !!c && c.owner === st.me.id && (c.skills?.dexterity || 0) >= 1 && !!u.weapon && weaponSystem(u.weapon) === 'ranged';
+}
 /** In order: the first one whose moment has come and that this browser hasn't seen is shown. */
 export const TIPS: { id: string; title: string; text: string; when: (st: St) => boolean }[] = [
   { id: 'round', title: 'YOUR ROUND', when: (st) => st.screen === 'main' && st.game?.story.await === 'players' && mine(st),
@@ -26,6 +33,9 @@ export const TIPS: { id: string; title: string; text: string; when: (st: St) => 
     text: '⟲ and ✎ under a Narrator line suggest a reroll or a rewording. The host puts it to a vote; everyone must say yes, or nothing changes.' },
   { id: 'combat', title: 'COMBAT', when: (st) => st.screen === 'combat',
     text: '6 AP a turn. Pick an action, then a tile or a target: the cost and the odds show before you commit. One reaction per round. End your turn when you\'re done.' },
+  // Pressure 2.0 (rules 1.56): once, the first fight a character of mine with Dexterity and a ranged weapon starts its turn
+  { id: 'pressure', title: 'SHOOT TO PIN', when: (st) => st.screen === 'combat' && pinsNow(st),
+    get text() { return String((SKILL as any).dexterity?.door_line || ''); } },
   { id: 'report', title: 'SOMETHING BROKE?', when: (st) => st.screen === 'main' && seen.has('round'),
     text: '⚑ Report (top bar) downloads one file with what happened, for Leon. Nothing is sent from here, and your API key is never in it.' },
 ];
