@@ -109,6 +109,7 @@ describe('a Hidden unit\'s token', () => {
     expect(tokenOpacity({ hidden: true, downed: true })).toBe(0.5);
     expect(tokenOpacity({ hidden: true }, { held: true })).toBe(0);
     expect(tokenOpacity({})).toBe(1);
-    expect(fadeStyle({})).toBe(''); expect(fadeStyle({ hidden: true })).toBe('; opacity: 0.6');
+    expect(fadeStyle({})).toBe(''); expect(fadeStyle({ hidden: true })).toMatch(/^; opacity: 0\.6; filter: brightness/); // rules 1.56: the Hidden look darkens to its outline
+    expect(fadeStyle({ hidden: true, downed: true })).toBe('; opacity: 0.5');
   });
 });
