@@ -123,6 +123,7 @@
     },
     "ceiling": ["fine", "masterwork", "relic"],
     "price_band": { "base": 300, "per_depth": 150, "per_stage": 1000, "elite": 1.25, "boss": 1.5, "vault_guard": 1.25, "vault": 1.5 },
+    "mods": { "about": "Rules 1.56 (Balance 2.0, L3 item 1): where a pick holds the One-weapon card, the chance (by where it is made, through rewards.reads; absent: never) that the card is a weapon mod instead: one roll for the character at the node, from its own stream; a mod that fits a free slot on a gun the character carries (or a carried quiver's empty enchantment slot), priced within `band` x the node's price band; none fits: the weapon stays.", "chance": { "fight": 0.05, "elite": 0.1, "boss": 0.35, "vault_guard": 0.35, "vault": 0, "crate": 0 }, "band": 0.5, "provisional": true },
     "provisional": true
   },
   "drops": {
