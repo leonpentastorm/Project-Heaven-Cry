@@ -186,6 +186,8 @@ export class RoomLogic extends DCLogic {
       // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.
       proveCan: isHost && g.phase === 'lobby', proveGuest: !isHost && g.phase === 'lobby', openProve: () => openProvingGround(mine.length ? undefined : 'sharpshooter'),
       proveLabel: '⚔ Proving Ground · practice range' + (mine.length ? '' : ' · with a test character'),
+      // the players header says how many characters each brings, from the mode's own row (data/modes.json characters_each)
+      playersHead: 'PLAYERS · UP TO 4 · ' + (mode && mode.characters_each != null ? (mode.characters_each === 1 ? 'ONE CHARACTER EACH' : mode.characters_each + ' CHARACTERS EACH') : 'EACH CAN PLAY MORE THAN ONE CHARACTER'),
       modeCards: modeCardsV, modeWho: isHost ? 'YOU PICK' : 'THE HOST PICKS', seal: IMG['emblem-ahoc-seal'] || ART('emblem-ahoc-seal'), showModes: !runLive,
       showCampaign: !runLive && playOf(g) === 'campaign', runOn: !!run, run: runV || {},
       // The Narrator panel (survival-spec 8.1 item 8): collapsed, not hidden, where a Narrator is optional flavour

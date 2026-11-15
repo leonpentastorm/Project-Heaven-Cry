@@ -1094,7 +1094,7 @@ Families: `body`, `brain`, `heart`.
 | --- | --- | --- |
 | `survivalRun` | `survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string; after_fight: { won: string; lost: string } }` | The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41); its after_fight lines are the fight cards' words for what follows a fight (the client's turnIntro.t… |
 | `PlayMode` | `type PlayMode = 'survival' \| 'roguelike' \| 'campaign'` | A mode a room can play (data/modes.json ids). |
-| `ModeDef` | `interface ModeDef { id, name, line, art, art_pending, available, narrator, start, coming, panels, hides }` | One row of data/modes.json: a card of the lobby's mode picker. |
+| `ModeDef` | `interface ModeDef { id, name, line, art, art_pending, available, narrator, start, coming, characters_each, panels, hides }` | One row of data/modes.json: a card of the lobby's mode picker. |
 | `MODES` | `MODES: ModeDef[]` | The three modes in the picker's order (data/modes.json items). |
 | `PANEL_NAMES` | `PANEL_NAMES: Record<string, string>` | Each right-panel module's name, the grip's words (data/modes.json panel_names). |
 | `PROVING_GROUND_PANELS` | `PROVING_GROUND_PANELS: string[]` | The Proving Ground's right-panel modules (a tool, not a mode card: data/modes.json proving_ground). |

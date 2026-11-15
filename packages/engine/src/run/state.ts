@@ -23,6 +23,8 @@ export const survivalRun: { start_credits: number; dead_return_hp: number; first
 export type PlayMode = 'survival' | 'roguelike' | 'campaign';
 /** One row of data/modes.json: a card of the lobby's mode picker. `available: false` locks it, and `coming` says why. */
 export interface ModeDef { id: PlayMode; name: string; line: string; art: string | null; art_pending?: boolean; available: boolean; narrator: 'optional' | 'required'; start: 'run' | 'session'; coming: string | null;
+  /** how many characters each player brings (null: as many as they like); the lobby header and the run's start read it */
+  characters_each: number | null;
   /** rules 1.54 item 11: the right panel's modules, top to bottom (data/modes.json panel_names ids; the client's panel registry draws them) */
   panels: string[];
   /** rules 1.54 item 11: what the sheet hides in this mode (its tab or button ids) */
@@ -217,7 +219,8 @@ export function runStartProblem(g: { hostId: string; phase: string; settings: { 
   const seats = Object.values(g.characters); if (!seats.length) return 'Lock in a character to start.';
   for (const p of g.players) {
     const mine = seats.filter((c) => c.owner === p.id);
-    if (mine.length > 1) return 'In Survival each player brings one character. ' + p.name + ' has ' + mine.length + ': take one back.';
+    const each = modeOf(play)?.characters_each ?? null; // data/modes.json: Survival 1
+    if (each != null && mine.length > each) return 'In ' + (modeOf(play)?.name || play) + ' each player brings ' + (each === 1 ? 'one character' : each + ' characters') + '. ' + p.name + ' has ' + mine.length + ': take ' + (mine.length - each === 1 ? 'one' : mine.length - each) + ' back.';
     if (!mine.length && p.online) return p.name + ' has no character locked in yet.';
   }
   const high = seats.find((c) => c.level !== 1); if (high) return 'Survival starts at level 1. ' + high.name + ' is level ' + high.level + ': bring a new character.';

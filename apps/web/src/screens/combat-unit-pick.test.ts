@@ -67,4 +67,11 @@ describe('0.28.3: a click on a unit while a unit pick is open is always that pic
     expect(L.state.action).toBe(mend); expect(sent).toEqual([]);
     expect(toasts.at(-1)).toMatch(new RegExp('^✕ ' + far.name + ': '));
   });
+  it("Bond on a machine (0.29.0, seen on live 0.28.3: it said \"Click a target.\"): the data's own reason for that unit", () => {
+    const { near } = fight(); near.kind = 'robot'; snap = null;
+    const L = screen(); L.renderVals(); rowNamed(L.renderVals(), 'Bond').pick();
+    const bond = L.state.action; L.renderVals(); L.tileClick(near.pos);
+    expect(L.state.action).toBe(bond); expect(sent).toEqual([]);
+    expect(toasts.at(-1)).toBe('✕ ' + near.name + ': A machine has no heart to Bond.');
+  });
 });

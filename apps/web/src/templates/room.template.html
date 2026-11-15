@@ -10,7 +10,7 @@
 <section aria-label="Players and squad" class="phc-stagger" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 34px; font-weight: 600">The squad</h1>
 <div style="display: flex; flex-direction: column; gap: 8px">
-<span style="font-size: 13px; letter-spacing: 0.16em; color: #A3AEC2">PLAYERS · UP TO 4 · EACH CAN PLAY MORE THAN ONE CHARACTER</span>
+<span style="font-size: 13px; letter-spacing: 0.16em; color: #A3AEC2">{{playersHead}}</span>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px">
 <sc-for list="{{players}}" as="p" hint-placeholder-count="4">
 <div style="{{p.style}}"><span style="{{p.badgeStyle}}">{{p.initials}}</span><span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{p.name}}</span><span style="font-size: 13px; color: #A3AEC2">{{p.note}}</span></span></div>

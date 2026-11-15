@@ -2424,6 +2424,9 @@ if _modes is not None:
     if _ids != ["survival", "roguelike", "campaign"]: errors.append(f"modes: ids {_ids} are not the engine's PlayMode, in the picker's order (survival, roguelike, campaign)")
     _by = {m.get("id"): m for m in _mi}
     if not (_by.get(_modes.get("default")) or {}).get("available"): errors.append(f"modes: default {_modes.get('default')!r} is not an open mode")
+    for _m in _mi:
+        _ce = _m.get("characters_each", "missing")
+        if not (_ce is None or (isinstance(_ce, int) and not isinstance(_ce, bool) and _ce >= 1)): errors.append(f"modes:{_m.get('id')}: characters_each is a whole number of 1 or more, or null (as many as they like)")
     if _modes.get("old_save") not in _by: errors.append(f"modes: old_save {_modes.get('old_save')!r} is not a mode")
     for _k, _v in (_modes.get("panel_names") or {}).items():
         if not isinstance(_v, str) or not _v.strip(): errors.append(f"modes: panel_names.{_k} must be a text")

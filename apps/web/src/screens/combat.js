@@ -10,7 +10,7 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, narratorOff, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, NO_TURNS } from '@engine';
+  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, NO_TURNS } from '@engine';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
@@ -1510,6 +1510,12 @@ export class CombatLogic extends DCLogic {
     const hasTarget = !!target && ([...ATTACKS, 'shove', 'analyze', 'paired'].includes(S.action) || (S.action === 'skill' && skFx.op === 'multi_shot') || !!(tFlow && tFlow.picks.targetId));
     // A technique's target card reads the technique's own roll (its to-hit and terms), not a plain attack's.
     if (target && tFlow && tFlow.picks.targetId) { const a0 = (tFlow.pv.rolls || []).find((a) => a.unit === tFlow.picks.targetId); if (a0 && a0.pv) { target.odds = a0.pv.ok ? 'Hit ' + a0.pv.pct + '% · need ' + a0.pv.need + ' (you roll d20 ' + fmt(a0.pv.toHit) + ')' + (a0.pv.rangePenalty ? ' · range ' + a0.pv.rangePenalty : '') + (a0.pv.cover ? ' · behind half cover −5' : '') : a0.pv.why; target.breakdown = a0.pv.ok ? hitBreakdown(a0.pv) : ''; } else if (!tFlow.pv.ok) { target.odds = tFlow.pv.why || 'Not now'; target.breakdown = ''; } }
+    // 0.29.0 (seen on live 0.28.3: a Shot picked on a friend on the field read "hostile, Hit 75%"): on the field an attack
+    // on a friend is refused by the engine (effects/hooks.ts harmHeld): the card says the reducer's own refusal, no odds.
+    if (target && onField && cur && tgtUnit && tgtUnit.id !== cur.id && tgtUnit.side === cur.side && ATTACKS.includes(S.action)) {
+      let no = null; try { const v = previewAction(g, { type: 'combat/attack', unitId: cur.id, targetId: tgtUnit.id, mode: attackMode }, getState().me.id); no = v.ok ? null : v.why; } catch { no = null; }
+      if (no) { target.odds = no; target.breakdown = ''; target.line = 'A friend · ' + no; }
+    }
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
     // The technique pad (a weapon's Techniques, or Hold a shot): opens inside its row, as the glyph keyboard does; one at
@@ -1658,7 +1664,10 @@ export class CombatLogic extends DCLogic {
     const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';
     const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: S.bp ? 'true' : 'false', btnStyle: bpBtn(28) + '; margin-left: auto', miniStyle: bpBtn(26),
       title: (S.bp ? 'Close your backpack' : 'Open your backpack: draw, put away, drop, light armour') + ' (key B)',
-      show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '', reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
+      show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? (onField ? 'free' : bpV.ap + ' AP') : '', // rules 1.55 item 70: on the field AP never limits
+      rule: onField ? 'On the field gear changes cost nothing: no turns here' : '1 AP a hand · a two-handed draw 2 · a drop 0 · light armour 1 a piece',
+      // the field's Give and Use on… (the path map's own Give module, GiveTab.tsx, mounted here: the fight screen has no sheet)
+      hasGive: !!bpV && onField, reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
       sections: bpV ? bpV.sections.map((sc) => ({ key: sc.key, title: sc.title, isEmpty: !sc.rows.length, empty: sc.empty,
         rows: sc.rows.map((r) => ({ key: r.key, tag: r.tag, name: r.name, sub: r.sub, hasSub: !!r.sub, note: r.note, hasNote: !!r.note, hasActs: r.acts.length > 0,
           // the item's icon (gearIcons.ts: painted when there is one, else the monoline one, muted when none of its actions can run now)
@@ -1668,7 +1677,7 @@ export class CombatLogic extends DCLogic {
             style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
     const T = {
       tabs, tabPanel, showWho: !mePanel, lock, lockMsg, vow: vowV, bp,
-      mine: mineTurn, waiting: !mineTurn, wait, ytInk: curInk, ytSub: apFree ? 'AP FREE' : 'ROUND ' + cb.round + ' · ' + ap + ' AP',
+      mine: mineTurn, waiting: !mineTurn, wait, ytWord: onField ? 'NO TURNS HERE' : 'YOUR TURN', ytInk: curInk, ytSub: apFree ? 'AP FREE' : 'ROUND ' + cb.round + ' · ' + ap + ' AP',
       ytStyle: 'position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',
       who, zoomPc: zoomer(this, who.img, who.name, 'portrait'), apText: apNow, apPips, apFree, groups, sel, pad,
       padTCls: 'phc-a-rise' + pt.cls, padT: pt.val || { groups: [] }, padWShow: pw.show, padWCls: 'phc-a-rise' + pw.cls, padW: pw.val || {}, padDShow: pd.show, padDCls: 'phc-a-rise' + pd.cls, padD: pd.val || {},
@@ -1739,8 +1748,8 @@ export class CombatLogic extends DCLogic {
       // The header's right cluster (UI pass, screens/shell.js): room, Save, ⚙, ⚑, Leave.
       ...shellVals(this, 'combat'),
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
-      turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
-      initiative, tiles, apPips, apText: apNow, groups, sel, hasTarget, squad, say, talk, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
+      turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : onField ? 'NO TURNS HERE' : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
+      initiative, tiles, apPips, apText: apNow, ytWord: T.ytWord, groups, sel, hasTarget, squad, say, talk, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
       // The whole fight (the last 120 lines), newest first: the box is a reversed column, so it rests on the newest line
       // and scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).
       // …and only the lines written before the effect now playing: the log keeps step with what is on screen.

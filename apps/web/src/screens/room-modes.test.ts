@@ -130,4 +130,10 @@ describe('the room around the picker', () => {
     v.run.retire(); expect(act).toHaveBeenCalledWith({ type: 'run/retire' });
     role = 'guest'; me = 'p2'; expect(vals().run.canRetire).toBe(false);
   });
+  it("0.29.0 (seen on live 0.28.3): the players header says one character each in Survival, from the mode's data", async () => {
+    expect(MODES.find((m) => m.id === 'survival')!.characters_each).toBe(1);
+    expect(vals().playersHead).toBe('PLAYERS · UP TO 4 · ONE CHARACTER EACH');
+    expect(await html(vals())).toMatch(/ONE CHARACTER EACH/);
+    G.settings.play = 'campaign'; expect(vals().playersHead).toBe('PLAYERS · UP TO 4 · EACH CAN PLAY MORE THAN ONE CHARACTER');
+  });
 });

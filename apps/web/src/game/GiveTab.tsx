@@ -121,3 +121,6 @@ export function GiveInline({ rowKey, charId }: { rowKey: string; charId: string 
   );
 }
 registerMount('give-inline', GiveInline);
+/** The field's Give (0.29.0, the fight screen has no sheet): the path map's compact Give module, hosted in the field's
+ * Backpack (`<sc-mount is="give-tab">`, combat.template.html): the same rows, amounts and Use on… */
+registerMount('give-tab', () => <GiveTab compact />);
