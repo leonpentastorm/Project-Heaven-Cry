@@ -286,3 +286,38 @@ slice 2 (P14, P15), and it is the slice that decides whether the monk lives.
 Flurry, Trip and Grapple (they come with Bare): `npm run try` with an Elite holding `fists` opens with Lunge then
 Flurry. No enemy in data carries fists (only a companion row, which makes plain attacks), a Disarmed enemy picks no
 technique, and the replay guard is unchanged; the lead rules whether `comes_with` should reach an enemy's own list.
+
+## Slice 2, built (16 Nov 2026, lane/0.29-monk-1)
+
+Spec: "Rules 1.56 (Balance 2.0), the unarmed fighter (slice 2)", items 4365 to 4371. The lead approved P14 and P15.
+
+| # | Item | Built | Where |
+|---|---|---|---|
+| P15 | `self_holds` `{hands: {props, only}, body: {armour_at_most}}`: the one test `holds`; a technique's `comes_while`; a data toggle whose `self_holds` fails is hidden | yes | `character.ts holds`, `physical/core.ts usable`, `effects/actions.ts dataToggle`, `tools/validate.py _hold_ok` |
+| — | The family's own property `open_hand` on the glove rows; Flurry, Trip, Grapple, Riposte (Counter) come with it, while only the family is in the hands; never with Bare alone, never to an enemy | yes | `data/weapons.json`, `data/techniques.json` |
+| P14 | `with_this` answers its holder's own defence; a carried modifier's `grant_action` is an action | yes | `effects/triggers.ts ownDefence`, `effects/collect.ts` |
+| 6 | Open guard −2 (light gloves, Light armour or none); the weapon card's line (`card.text`) | yes | `items.json open_hand`, `gearpreview.ts` |
+| 7 | Sway (was Slip): an Answer, ×0.5 on the first blow a round | yes | `items.json open_hand` |
+| 8 | Counter: Riposte comes with the family | yes | `techniques.json riposte` |
+| 16 | Breath: 1 AP, once a turn, cleanse a Body harm, Guarded | yes | `items.json open_hand` |
+| — | Forms on a plain blow only (`free_tech`), Jab ×0.4, Palm's push once a turn a target and never a Boss | yes | `items.json open_hand` |
+| — | The preview reads the chosen forms and shows whole points | yes | `descriptors.ts techPreviewOf` |
+| — | The Open Hand is never given or listed | yes | `data.ts isCarriedModifier`, `game.ts sandbox/give`, the sandbox lists |
+| 14, 15 | Flow, Closing Strike | no: P9 (a per-turn count an amount can read) | |
+| 5, 17 | One attribute on bare hands, bare hands in the family | no: `roll_with` not on this base; P11 | |
+| — | The camp's Recommended wraps for an unarmed archetype | no: the camp branch's `top`/`hands`/`profile` keys are not in this base | for the integrator |
+
+## Slice 2, measured
+
+Survival simulator, gear route, stage 1 only, 16 seeds (SIM-1 to SIM-16): **solo_monk cleared stage 1 on 0 of 16
+before, 5 of 16 after** (Open guard −2; −3 read 9 of 16); solo_melee 6 of 16 before, 7 of 16 after (noise: nothing of
+it changed). Hits to die (`test/balance/monk-measure.test.ts`, 40 seeds, a level-1 fighter standing next to a level-1
+Soldier with the service rifle, the enemy AI's own turns):
+
+| Fighter | Before: rolls / hits / Soldier turns | After |
+|---|---|---|
+| Monk, wraps, no armour | 9.0 / 4.0 / 2.6 | 17.7 / 5.5 / 4.9 |
+| Monk, wraps, Light | 11.5 / 4.9 / 3.3 | 23.0 / 7.1 / 6.4 |
+| Monk, wraps, Medium (guard off; Sway on) | 17.1 / 7.0 / 4.9 | 24.0 / 9.8 / 6.6 |
+| Gladius, buckler, Light (the comparator) | 15.5 / 4.9 / 4.5 | 15.5 / 4.9 / 4.5 |
+

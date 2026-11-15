@@ -8,6 +8,12 @@
 //                                      ring, Palm a flat bar at the hand and an arc pushed a tile ahead, Sweep an arc
 //                                      along the floor (Agility ink), Snatch a hook; its word (the data's `word`)
 //   stance {what: swept, word}         the Sweep's Prone landed: the target tips (the word on the target)
+//   stance {what: sway, word}          slice 2, Sway halved a blow on the holder: its token leans off the line and back
+//                                      (6 px, ease-in-out), the word on it
+//   stance {what: breath, word}        slice 2, Breath: a slow ring drawn in from a tile to the token (Body amber, the
+//                                      guard's ink), the word on it
+//   melee {cat: unarmed, tech: riposte} slice 2, Counter (Riposte with the family): a snap strike line from the striker
+//                                      through its target and COUNTER on the target
 // The target of a form is the striker's last blow (its melee event, which the engine sends first: combat.ts emits the
 // blow before its damage and its riders). No id is named here; the shapes are keyed by the data's `what`. Every
 // duration goes through dom.ts (the combat speed and the tempo); with Reduce motion nothing moves, the words still show.
@@ -17,25 +23,28 @@ import { reducedMotion } from '../sfx';
 import { type Pt, after, anim, floatText, put, ring, svg, trace, lunge, angle } from './dom';
 import { MFX_INK } from './melee-techniques';
 
-const { cut: WHITE, force: FORCE, foot: FOOT, muted: MUTED } = MFX_INK;
-/** The beats (ms at Fast): the jab, the rings, a form's shape, the afterimages. */
-export const OPEN_MS = { jab: 90, rings: 220, form: 260, ghost: 160, swept: 240 } as const;
+const { cut: WHITE, force: FORCE, foot: FOOT, muted: MUTED, guard: GUARD } = MFX_INK;
+/** The beats (ms at Fast): the jab, the rings, a form's shape, the afterimages; slice 2: Sway's lean, Breath's ring, the
+ *  Counter's snap line. */
+export const OPEN_MS = { jab: 90, rings: 220, form: 260, ghost: 160, swept: 240, sway: 260, breath: 500, counter: 140 } as const;
+/** The word a Counter shows (the strike is Riposte's, named by the engine's event: tech). */
+export const COUNTER_WORD = 'COUNTER';
 /** The shapes a form's `what` draws (the data's fx; an unknown `what` with a word still shows its word). */
 const SHAPES = ['jab', 'palm', 'sweep', 'snatch'] as const;
 type Shape = (typeof SHAPES)[number];
 
 /** What an event is on screen for the Open Hand (pure, for the tests): an unarmed blow landing, a form named, the
  *  Sweep's fall, or none (the base handlers keep it). */
-export function openHandFxOf(e: Partial<FxEvent> & { k: string }): 'blow' | 'form' | 'swept' | null {
+export function openHandFxOf(e: Partial<FxEvent> & { k: string }): 'blow' | 'form' | 'swept' | 'sway' | 'breath' | null {
   if (e.k === 'melee' && e.cat === 'unarmed') return 'blow';
-  if (e.k === 'stance' && typeof e.word === 'string' && e.word) return e.what === 'swept' ? 'swept' : 'form';
+  if (e.k === 'stance' && typeof e.word === 'string' && e.word) return e.what === 'swept' ? 'swept' : e.what === 'sway' ? 'sway' : e.what === 'breath' ? 'breath' : 'form';
   return null;
 }
 /** The beat an Open Hand event holds the stage (ms at Fast), or undefined: the others keep theirs. A blow keeps its own
  *  melee beat (its rings play inside it). */
 export function openHandBeat(e: Partial<FxEvent> & { k: string }): number | undefined {
   const w = openHandFxOf(e);
-  return w === 'form' ? OPEN_MS.form : w === 'swept' ? OPEN_MS.swept : undefined;
+  return w === 'form' ? OPEN_MS.form : w === 'swept' ? OPEN_MS.swept : w === 'sway' ? OPEN_MS.sway : w === 'breath' ? OPEN_MS.breath : undefined;
 }
 /** The shape a form draws, from its `what` (null: just its word). */
 export const formShape = (what: unknown): Shape | null => ((SHAPES as readonly string[]).includes(String(what)) ? (what as Shape) : null);
@@ -84,6 +93,15 @@ function shape(s: Shape, a: Pt, b: Pt) {
   anim(box, [{ opacity: 1 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }], { duration: OPEN_MS.form + 60, fill: 'forwards' });
 }
 
+/** The Counter's snap strike: a straight line from the striker through its target and a tile past it, white. */
+function snap(a: Pt, b: Pt) {
+  const end = along(a, b, 2), x0 = Math.min(a.x, end.x), y0 = Math.min(a.y, end.y), w = Math.max(2, Math.abs(end.x - a.x)), h = Math.max(2, Math.abs(end.y - a.y));
+  const el = svg(w, h, '<line x1="' + (a.x - x0) + '" y1="' + (a.y - y0) + '" x2="' + (end.x - x0) + '" y2="' + (end.y - y0) + '" stroke="' + WHITE + '" stroke-width="2" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>');
+  const box = put(el, { x: x0 + w / 2, y: y0 + h / 2 }, w, h, OPEN_MS.counter + 120); box.setAttribute('data-oh-counter', '1');
+  const line = el.querySelector('line'); if (line && !reducedMotion()) anim(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: OPEN_MS.counter, easing: 'ease-in', fill: 'forwards' });
+  anim(box, [{ opacity: 1 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }], { duration: OPEN_MS.counter + 100, fill: 'forwards' });
+}
+
 // ---------- the handlers ----------
 /** Wrap the blow and the stance handlers (after every other wrapper: the blow's own lunge, hit and number play first). */
 export function wrapOpenHand(H: Record<string, (e: FxEvent) => void>, K: OpenKit) {
@@ -95,6 +113,7 @@ export function wrapOpenHand(H: Record<string, (e: FxEvent) => void>, K: OpenKit
     const a = K.at(e.from), b = K.at(e.to); if (!a || !b) return;
     try {
       if (e.tech === 'flurry' && K.sawThen(e)) afterimages(K, e, a, b);
+      if (e.tech === 'riposte') { trace('openhand', { what: 'counter', unit: e.unit }); snap(a, b); floatText(COUNTER_WORD, b, WHITE, { small: true }); }
       if (!e.hit) return;
       trace('openhand', { what: 'blow', unit: e.unit, tech: e.tech || null });
       after(() => impact(along(a, b, 0.6), e.tech === 'flurry' ? 1 : 2, FORCE), OPEN_MS.jab);
@@ -105,6 +124,12 @@ export function wrapOpenHand(H: Record<string, (e: FxEvent) => void>, K: OpenKit
     const who = String(e.target || e.unit || ''), last = LAST.get(who);
     const a = K.at(last?.from || e.at), b = last ? K.at(last.to) : null;
     trace('openhand', { what: w, form: e.what, unit: who });
+    if (w === 'sway' || w === 'breath') { // the holder's own defence: drawn on the holder (the stance names it)
+      const p = K.at(e.at) || (who ? K.at(String((e as any).pos || '')) : null), tok = K.tokOf(who, e.at); if (!p) return;
+      if (w === 'sway') { if (tok) lunge(tok, p.s * 0.15, -p.s * 0.06, OPEN_MS.sway); floatText(String(e.word), p, WHITE, { small: true }); K.play('swish', p, { rate: 1.3, gain: 0.3 }); }
+      else { ring(p, GUARD, OPEN_MS.breath, { from: 1.3, to: 0.35, width: 2 }); floatText(String(e.word), p, GUARD, { small: true, delay: OPEN_MS.breath * 0.6 }); }
+      return;
+    }
     if (w === 'swept') { // the target tips: the word on it
       if (!b) return;
       const tok = K.tokOf(last!.target, last!.to);

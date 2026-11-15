@@ -22,7 +22,7 @@ import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, R
 import { kindOf } from './objects';
 import { apFor } from './effects/cost';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
-import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
+import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith } from './preview';
 import type { Action, GameState } from './game';
 import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView } from './physical/core';
 import { TECHNIQUE, weaponSystem, propText } from './physical/data';
@@ -549,10 +549,12 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
   const args: any = { hand: t.hand, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile ? { tile: p.tile } : {}), ...(p.allyId ? { allyId: p.allyId } : {}), ...(p.line ? { line: p.line } : {}), ...(t.item != null ? { item: t.item } : {}) };
   const o = techOpt(t.id, p.opt); if (o) args.opt = o;
   const run = (c: Combat) => safe(() => previewTechnique(c, x.u, t.id, args, x.g), { ok: false, why: 'Not now.', ap: 0, attacks: [], notes: [] } as any);
-  const whole = run(x.cb), pv: any = safe(() => previewSeenBy(x.cb, x.side, run, ['attacks', 'pressure', 'saves', 'moves', 'notes', 'area'] as any, whole), whole);
+  // the chosen toggles (the Open Hand's forms) shape the preview's numbers as they shape the blow (preview.ts fightWith)
+  const fcb = p.mods?.length ? fightWith(x.cb, p.mods) : x.cb;
+  const whole = run(fcb), pv: any = safe(() => previewSeenBy(fcb, x.side, run, ['attacks', 'pressure', 'saves', 'moves', 'notes', 'area'] as any, whole), whole);
   const name = (id: string) => x.seen.units.find((v) => v.id === id)?.name || id;
   const lines: PreviewLine[] = [];
-  for (const a of pv.attacks || []) { const q: any = a.pv; if (q) lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + (q.dmg && q.dmg.total != null ? ' · ' + q.dmg.total + ' damage' : '') : q.why || 'can\'t attack') }); }
+  for (const a of pv.attacks || []) { const q: any = a.pv; if (q) lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + (q.dmg && q.dmg.total != null ? ' · ' + Math.floor(q.dmg.total) + ' damage' : '') : q.why || 'can\'t attack') }); }
   for (const n of pv.notes || []) lines.push({ k: 'note', text: n });
   if (pv.momentum) lines.push({ k: 'meter', text: 'Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : '') });
   if (pv.guard) lines.push({ k: 'meter', text: 'Guard ' + pv.guard.now + ' → ' + pv.guard.after });

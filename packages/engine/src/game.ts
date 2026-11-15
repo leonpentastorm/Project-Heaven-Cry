@@ -1,7 +1,7 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
-import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS, levelGiven, fightLevelOf } from './data';
+import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS, levelGiven, fightLevelOf, isCarriedModifier } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
@@ -4198,6 +4198,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     case 'sandbox/give': {
       const c = mine(a.charId), rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(a.rarity || '') ? a.rarity : 'standard') as Rarity;
       if (!WEAPON[a.item] && !ITEM[a.item]) fail('No such item.');
+      if (isCarriedModifier(a.item)) fail('That is a rule a weapon carries, not an item.');
       let err: string | null = null;
       sbChange(g, c, () => {
         const at = sbGive(c, a.item, a.qty || 1, rarity);

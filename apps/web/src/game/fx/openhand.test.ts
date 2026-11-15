@@ -7,7 +7,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf, ITEM } from '@engine';
 import { setLayer, slow } from './dom';
 import { playFx, setContext, clearFx } from './play';
-import { openHandFxOf, openHandBeat, formShape, OPEN_MS, resetOpenHand } from './openhand';
+import { openHandFxOf, openHandBeat, formShape, OPEN_MS, resetOpenHand, COUNTER_WORD } from './openhand';
 
 function grid(w = 8, h = 6) {
   const root = document.createElement('div'); document.body.appendChild(root);
@@ -76,6 +76,24 @@ describe('the Open Hand on the fight map', () => {
     playFx(e as any); expect(traces().slice(-1)[0]).toMatchObject({ what: 'swept' });
     vi.advanceTimersByTime(slow(200)); expect(g.layer.textContent).toContain(f.word);
     vi.advanceTimersByTime(3000);
+  });
+  // slice 2: the holder's own defence and Breath (the data's fx on open_hand's effects, nested in Breath's action)
+  const OWN: any[] = ((ITEM as any).open_hand.effects as any[]).flatMap((e) => [e, ...(e.effects || [])]).filter((e: any) => e.fx).map((e: any) => e.fx);
+  it('Sway leans the holder off the line and names it; Breath draws a ring in to the holder, inside their own beats', () => {
+    expect(OWN.map((f) => f.what).sort()).toEqual(['breath', 'sway']);
+    for (const f of OWN) {
+      const e = stanceOf(f, 40 + OWN.indexOf(f));
+      expect(openHandFxOf(e)).toBe(f.what); expect(openHandBeat(e)).toBe((OPEN_MS as any)[f.what]);
+      playFx(e as any); vi.advanceTimersByTime(slow(OPEN_MS.breath));
+      expect(g.layer.textContent).toContain(f.word);
+      vi.advanceTimersByTime(10000); expect(g.layer.childElementCount).toBe(0);
+    }
+  });
+  it('Counter (Riposte with a glove): a snap strike line through the attacker and COUNTER', () => {
+    playFx(blow({ tech: 'riposte', n: 60 }) as any);
+    expect(traces().some((t) => t.what === 'counter')).toBe(true);
+    expect(g.layer.querySelector('[data-oh-counter]')).not.toBeNull(); expect(g.layer.textContent).toContain(COUNTER_WORD);
+    vi.advanceTimersByTime(10000); expect(g.layer.childElementCount).toBe(0);
   });
   it('any other stance keeps its own handler (BRACED)', () => {
     const e = { k: 'stance', unit: PC.id, at: PC.pos, what: 'brace', n: 7 };

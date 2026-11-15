@@ -5,7 +5,7 @@
 // with the family), Breath (1 AP, once a turn). Everything through the reducer with real actions.
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
-import { actionsFor, previewDescriptor, sendDescriptor, previewAttack, resolveAttack } from '../src';
+import { actionsFor, previewDescriptor, sendDescriptor, previewAttack, resolveAttack, gearPreview, isCarriedModifier } from '../src';
 import { usable } from '../src/physical/core';
 import { fightWith, withGame } from './helpers/perkfight';
 import { dice } from './golden/harness';
@@ -104,5 +104,20 @@ describe('the forms\' limits (the reviewer\'s abuse list)', () => {
     const { f, u } = monk({ tier: 'boss' }); const at0 = f.foe.pos;
     for (let i = 0; i < 2; i++) { f.unit(u.id).ap = 6; dice({ die: 15, hit: true }, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: [OH('palm')] }, 'host')!)); }
     expect(f.foe.pos).toBe(at0);
+  });
+});
+
+describe('the small fixes', () => {
+  it('the attack preview reads the chosen form, in whole points', () => {
+    const { f, u } = monk(); const dmg = (mods: string[]) => { const l = previewDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: mods.map((m) => 'relic:open_hand#' + m) }, 'host')!.lines.find((x) => x.k === 'odds')!.text; return Number(/(\d+(?:\.\d+)?) damage/.exec(l)![1]); };
+    const plain = dmg([]), jab = dmg(['jab']);
+    expect(Number.isInteger(plain)).toBe(true); expect(Number.isInteger(jab)).toBe(true); expect(jab).toBeLessThan(plain);
+  });
+  it('the Open Hand is no item: the Proving Ground cannot give it; the card of a glove says the guard in one line', () => {
+    expect(isCarriedModifier('open_hand')).toBe(true); expect(isCarriedModifier('stim_injector')).toBe(false);
+    const { f } = monk(); const c: any = Object.values(f.g.characters)[0];
+    expect(() => f.act({ type: 'sandbox/give', charId: c.id, item: 'open_hand' } as any)).toThrow();
+    const line = (gearPreview as any)(c, { id: 'iron_mitts', rarity: 'standard' }).lines.find((l: any) => l.key === 'carried:open_hand');
+    expect(line.value).toContain('Open guard'); expect(line.value).toContain('−2');
   });
 });

@@ -1343,11 +1343,6 @@
               "newest": true,
               "target": "self",
               "say": "{self} breathes out{then}.",
-              "fx": {
-                "k": "stance",
-                "what": "breath",
-                "word": "BREATH"
-              },
               "when": "acted"
             },
             {
@@ -1356,7 +1351,12 @@
               "rounds": 1,
               "skip_save": true,
               "target": "self",
-              "when": "acted"
+              "when": "acted",
+              "fx": {
+                "k": "stance",
+                "what": "breath",
+                "word": "BREATH"
+              }
             }
           ],
           "why": {
@@ -1698,7 +1698,10 @@
             }
           ]
         }
-      ]
+      ],
+      "card": {
+        "text": "Open guard: only light gloves in hand, Light armour or none: blows at you are at {=effects.0.value|signed} to hit."
+      }
     }
   ]
 }

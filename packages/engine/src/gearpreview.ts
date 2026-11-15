@@ -125,6 +125,8 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     }
     // rules 1.56: each fitted mod, by its own data text
     for (const m of inst.mods || []) { const mi: any = ITEM[m]; if (mi) lines.push({ key: 'mod:' + m, label: mi.name, value: String(mi.text || ''), num: null }); }
+    // rules 1.56 (the unarmed fighter): a carried modifier of the row (`variant_mods`) says its one card line (its `card.text`)
+    for (const m of ((w as any)?.variant_mods || []) as string[]) { const mi: any = ITEM[m]; if (mi?.card?.text) lines.push({ key: 'carried:' + m, label: mi.name, value: String(mi.card.text), num: null }); }
     lines.push(...variantLines(w));
     { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
     lines.push(...skillLines(c, u, w));
