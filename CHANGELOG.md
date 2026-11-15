@@ -8,6 +8,39 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3 — the field is the fight
+
+Leon on live 0.28.2: "cannot bond in field map after battle" and "ZERO effect are played in field map". The field
+after a won Survival fight is now the same fight, still running with no enemies left (rules 1.55 items 45 to 51,
+PROVISIONAL), not a second "field" mode beside it.
+
+### Survival
+
+- **Everything you can do in a fight works on the field, and looks and sounds the same.** When the last enemy falls
+  you stay on the fight screen: Bond, Tending, class moves, techniques, Calls, prayers, reloads, stims, Sigils and
+  Outbursts are the fight's own actions, with their effects, sounds, log lines and numbers.
+- **No turns on the field.** Anyone acts at any time; End turn is gone ("No turns here: act freely, then vote to
+  leave."); no round passes, so waits (a Hymn's) do not count down, a Downed friend rolls no death saves (stim them),
+  and a once-a-turn use (a Whisper) is used once there.
+- **AP never runs out on the field.** Costs are shown as listed; nothing is refused for AP; walk anywhere you can reach.
+- **Still guarded:** once-a-fight uses stay spent; nothing learned by doing grows; nothing you do can hurt a friend
+  (a Bond on a friend is not harm); the free-and-lasting actions stay refused in words.
+- **The fight ends when you vote to leave.** XP and credits are still paid as the last enemy falls and the pick comes
+  after leaving; the fight's own end (Strain, a held Outburst, conditions, Flux, the dead standing up) and **the supply
+  pack** now come as the party leaves. A character dead in the fight stands up at 1 HP with no HP from a level its XP
+  brought while it lay dead. Field Mending and Devout land as the field is left.
+- **Give, make and level up on the field** as anywhere out of a fight; the fight's tokens take it.
+- **A save made on 0.28.2's field** loads and can only be left (the vote).
+
+### Under the hood
+
+- One flag, `Combat.field`, read in one place per rule: `combatAction` (no turn order), effects/cost.ts `apFor` and
+  `pay` (AP), `endTurn`, `runEnemies` and `checkOver` (no turns, no end by itself), `growthHeld` and `harmHeld`. A
+  harmful condition is one of kind `debuff` in conditions.json (`CondDef.harm`).
+- Removed: the field's area-map translation (`fieldWorld`, `fieldActOf`), `fieldCombat` and its door, the write-back,
+  `fieldActs`, the field's own use counters and `survival.json field.carried_res`. Replay hashes and the golden damage
+  tables did not move.
+
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP

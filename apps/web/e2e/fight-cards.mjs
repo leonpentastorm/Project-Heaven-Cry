@@ -74,7 +74,7 @@ await pause(p, 2500);
 ok('one FIGHT and one VICTORY for the fight, no DEFEAT', (await cards('fight')).length === 1 && (await cards('victory')).length === 1 && !(await cards('defeat')).length);
 
 // ---------- the next fight, under reduced motion; a reload in the middle of it ----------
-await click(p, 'Walk the field ›', { timeout: 60000 }); await p.locator('[data-phc-field-leave]').click({ timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
+await p.locator('[data-phc-field-leave]').click({ timeout: 60000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
 await click(p, 'Back to the map ›', { timeout: 60000 });
 await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
 g = await G();
