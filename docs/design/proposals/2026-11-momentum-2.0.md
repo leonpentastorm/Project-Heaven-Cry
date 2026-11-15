@@ -217,3 +217,84 @@ none painted; the counter, arcs and rings are SVG (section 4).
    and any melee weapon are already neutral, and the gun has its own door.
 4. **Hurl's small foes** (P14): vermin and minions only, or Soldiers too at Raw Power 7? Recommended: vermin and
    minions; a Soldier is Throw Down's.
+
+## 12. Built in 0.29 (lane `wip/lane-0.29-momentum-2`), and what was not
+
+Spec: rules 1.56, "the Momentum chain 2.0 (the Breaker)", items 4400 to 4409. Every rule is a row on
+`data/classes.json fighter.gain` (held from rank I, read live: an old save's Breaker has them at its next fight).
+
+| # | Item | State | Built from (exact names) |
+|---|---|---|---|
+| 1 | The counter | built | client: `techView.ts momentumLook` over `physView().momentum` {now, max}; `techniques.json rules.momentum.show.counter_min`; the token template's `data-momentum-chip` |
+| 2 | Impact grows | built | fx `melee` + the next fx `momentum` of the same unit (`fx/breaker.ts noteBreaker`); `show.ring_base`, `ring_per`, `crack_at` |
+| 3 | Every blow counts | **held** (measured, below) | would be: trigger `hit`, predicates `actor`, `melee`, `free_tech`, op `resource`, `limit` |
+| 4 | Idle bleeds | held (ships with 5) | |
+| 5 | The run carries | not tonight (P12) | |
+| 6 | Charge carries | built (`charge_carries`) | trigger `hit`, predicate `mode` [charge], op `resource` |
+| 7 | Bowl Over | built (`charge_carries`) | trigger `hit`, `mode`, `target_alive`, op `condition` prone (`via` raw_power). Prone has no save in its row: it always lands |
+| 8 | Cleave | built (`breaker_finishers`) | stat `technique:cleave`; trigger `attack`, op `roll_mod` +2 |
+| 9 | Break | built, Exposed only | stat `technique:break`; trigger `hit`, op `condition` exposed `skip_save` |
+| 10 | Launch | built (`launch`) | `grant_action` (`res` momentum 2, `reach` tiles 1, side foe, `if` target_alive / target_not_tier [boss], `why`); nested `when: acted` ops: `deal` (amount `launch`, profile melee), `condition` off_balance (the Body save, `via` raw_power), `displace` push 3 `if target_has [off_balance]`, `displace` push 1 `if target_lacks [off_balance]`, `condition` prone `skip_save`, `resource` momentum `all` |
+| 11 | Coup as Execute | built (`breaker_finishers`), ×1.2 | stat `technique:coup`; `roll_mod` (trigger `attack`) and `damage_mult` (trigger `dealing`), `mode` [coup], `target_hp_below` 0.5 |
+| 12 | Wrecker | built, +1 Momentum (no AP cut: P15) | trigger `acted`, `action` [shoot_cover], op `resource` |
+| 13 | Breach | built | trigger `acted`, `action` [shoot_cover], op `condition` exposed with `targets {of: tile, within 2, side foe, seen}` |
+| 14 | Push preview | not built tonight (time) | `displace(..., {preview: true})` is there; no client piece yet |
+| 15, 16 | Into the Wall, Hurl | not tonight (P13, P14) | |
+| 17 | Moves drawn | built in part | `fx/breaker.ts`: Charge chevron, Cleave arc, Break hexagon, Coup slash (on the `technique` event), Launch heave and flight (on `shove`), the smash shards (`object`), the Exposed bracket (`cond`) |
+| 18 to 20 | Demolisher, Duelist | not tonight (P8) | |
+
+Changes to existing pieces (no new trigger, predicate, op, stat, cost site or resource; `docs/ENGINE-HOOKS.md` counts
+unchanged):
+- stat `technique:<id>` gives a technique of any group (it gave only an Answer); its meaning already said "comes with
+  a perk". Only Riposte used it before.
+- hooks `on_hit` and `damage_out` carry `tech` (the technique the blow is made with), as `attack_roll` did, so `mode`
+  and `free_tech` read it on `hit` and `dealing`. No data row used `mode` or `free_tech` on those triggers before.
+- `MOMENTUM_HINT` reads `techniques.json rules.momentum.texts.how`.
+- The consolidation's finding 1 was wrong in one point: the cover smash fires `acted` as `shoot_cover` (game.ts
+  `actedName`: the reducer's action name, not its cost site), so Wrecker and Breach never met the Break finisher. Breach
+  takes the struck tile as its centre (`targets.of: tile`).
+
+Onboarding: Launch is a class action, listed in the fight's CLASS tab whether or not it can be used, greyed with the
+engine's own reason ("Needs 2 Momentum.", "{target} is too big to throw."); the meter's hover reads `texts.how`; one
+`TIPS` row `momentum` reads `skills.json raw_power.door_line` the first time one of your characters with the meter has
+the turn. The class tab's header line (the audit lane's `door_line` reader) is not in this lane.
+
+Effects with no event to hang on (listed, not invented): Bowl Over's Prone and Launch's landing Prone (flag
+conditions draw no `cond` event); the Momentum Launch spends (the item op `resource` and the `res` payment emit no
+`momentum` event: the counter drops on the next render without its moment); Execute's "under half HP" (the client
+would have to judge it: the slash plays on every Coup).
+
+### Measured
+
+The blade all in (`balance-contract.test.ts measure`, 6 fights a cell, % of the plain rifle; band 124 to 206):
+
+| | L1 | L5 | L10 | L20 | mean |
+|---|---|---|---|---|---|
+| before (0.29 at 31e49beb) | 155 | 158 | 149 | 194 | 164 |
+| with Every Blow Counts (+1 a technique hit, 3 a turn; also with 1 a turn) | 155 | 173 | 170 | 218 | 179 |
+| as built (Every Blow Counts held) | 155 | 164 | 149 | 194 | 166 |
+
+Execute alone moved nothing in this measure (the simulator's policy does not pick Coup under half HP). Every Blow
+Counts is held: a Strike's own cost refunded by its hit makes every Strike free for the Breaker; it needs a fit (a
+Strike exclusion, or a smaller Coup per Momentum for the Breaker) before it ships.
+
+Survival (`survival-run.ts`, new cells `solo_breaker` and `breaker` (a Breaker and a gunner), the gear route, 16 seeds
+SIM-1 to SIM-16, at most 4 stages; "end" is stage + depth / 16):
+
+| cell | stage 1 cleared | mean stages cleared | mean end | errors |
+|---|---|---|---|---|
+| solo_breaker, before | 6 / 16 | 0.56 | 2.03 | 0 |
+| solo_breaker, as built | 6 / 16 | 0.56 | 2.09 | 0 |
+| breaker + gunner, before | 0 / 16 | 0 | 1.43 | 0 |
+| breaker + gunner, as built | 0 / 16 | 0 | 1.43 | 0 |
+
+The class comes at level 3 (stage 1's Boss), so stage 1 cannot move; past it the solo Breaker goes a little further.
+The duo cell loses stage 1 on every seed before and after (a simulator matter of that pairing, not of this lane: the
+two are the same build and policy as `solo_melee` and `solo_gunner`); it is listed, not fitted. The draft's target
+(the solo Breaker inside 40 to 55% of stage-1 clears) needs the run carries (P12) and the walking tax question (11.1).
+
+Frames (a real Survival fight, level 1, the Wrecking Ball archetype: Strength 7, Raw Power 7, the camp's Ork machete,
+normal pace): `momentum-01` the fight's start with the MOMENTUM tip (the door line), `momentum-02` the token's "x1"
+chip, `momentum-03` to `07` a Cut that kills (the swing, "−70", then the counter's arc segments and "x2"),
+`momentum-09` the action column. At level 1 the character has no class yet: Launch and the four finishers are the
+Breaker's, from level 3 (their descriptor through the reducer: `old-save.test.ts`, the Momentum chain block).
