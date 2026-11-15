@@ -37,11 +37,12 @@ describe('rules 1.37: an enemy acts on what its side perceives', () => {
     expect(cb.log.slice(l0).join(' ')).not.toMatch(/fires|shoots|hits|misses/i);
     expect(dist(e.pos, last)).toBeLessThan(dist(was, last));
   });
-  it('standing on the last-seen tile with nobody in sight: it has searched there and holds', () => {
+  it('standing on the last-seen tile with nobody in sight: it has searched there, and (16 Nov 2026, the dead end of seed PHC-0003) heads on toward the fight it hears, never holding for ever', () => {
     const { cb, p, e } = setup('17,4', '17,3', open(WALL));
     noteSeenAt(cb); p.pos = '2,1'; e.pos = '17,4'; // it slipped away behind the wall; the enemy stands where it was
     expect(sideSees(cb, 'foe', p)).toBe(false);
-    const was = e.pos; enemyTurn(cb, { state: 3 }); expect(e.pos).toBe(was);
+    const was = e.pos; enemyTurn(cb, { state: 3 }); expect(e.pos).not.toBe(was);
+    expect(dist(e.pos, p.pos)).toBeLessThan(dist(was, p.pos));
   });
   it('hit by an attacker its side can\'t see: its side learns the tile the attack came from and searches toward it', () => {
     const { cb, p, e } = setup('4,3', '16,3', open(WALL), 'pistol');

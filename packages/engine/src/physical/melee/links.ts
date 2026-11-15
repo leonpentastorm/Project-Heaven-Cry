@@ -180,7 +180,7 @@ pressureFilter((cb, target, n) => {
   if (target.resMax?.guard == null) return n;
   const per = PHYS_RULES.guard?.pressure_per_point ?? 1; // Guard a point of Pressure (techniques.json rules.guard)
   const g = resOf(target, 'guard'), take = Math.min(Math.floor(g / per), n); if (!take) return n;
-  spendGuard(cb, target, take * per);
+  spendGuard(cb, target, take * per, 'pressure');
   say(cb, target.name + ' takes ' + take + ' Pressure on Guard (' + (g - take * per) + ' Guard left).');
   return n - take;
 });

@@ -11,6 +11,7 @@ import { faithHandlers, faithBeat, faithBatch, sealedBoon } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
+import { guardHandlers, guardBeat } from './guard';
 import { wrapRanged, rangedBeat, rangedBatch, resetRanged, drawsOwnLoose } from './ranged';
 import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
@@ -1201,7 +1202,8 @@ Object.assign(H, faithHandlers({ ...SOUL_KIT, patronOfUnit: (id) => patronOfUnit
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 const COND_WORD: Record<string, string> = { off_balance: 'OFF BALANCE', slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
-const condWord = (id: string) => COND_WORD[id] || String(condName(String(id || '')) || id || '').toUpperCase(); // a row's own name (the Canticle's verses), not its id
+// the word table, else a row's own name (the Canticle's verses), else the id as words (an id's underscores are spaces on screen)
+const condWord = (id: string) => { const n = condName(String(id || '')); return COND_WORD[id] || String(n && n !== id ? n : String(id || '').replace(/_/g, ' ')).toUpperCase(); };
 const condBoon = (id: string) => id === 'guarded' || id === 'inspired' || id === 'quickened' || id === 'sharpened';
 
 // ---------- particles: Sigil squares, Soul motes, heal pluses ----------
@@ -1402,6 +1404,8 @@ Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, 
 Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, nameOf: (id) => (phys.TECHNIQUE as any)[id]?.name || id }));
 // The melee techniques' own beats (fx/melee-techniques.ts): arcs, thrown weapons, holds, slams, skids, falls, clashes…
 Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen }));
+// Guard 2.0 (fx/guard.ts): the Guard pool's plates gained, eating a blow (BLOCKED N), dropping, breaking.
+Object.assign(H, guardHandlers({ at, play, sawThen, tokOf }));
 // Physical 2.0 B (fx/ranged.ts): the ranged techniques, the quiver and thrown weapons; it wraps the handlers above.
 wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
@@ -1439,6 +1443,7 @@ function baseBeat(e: FxEvent): number {
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
   const mb = meleeTechBeat(e); if (mb !== undefined) return mb;
+  const gdb = guardBeat(e); if (gdb !== undefined) return gdb;
   const rb = rangedBeat(e); if (rb !== undefined) return rb;
   const xb = pressureBeat(e); if (xb !== undefined) return xb;
   const pb = physBeat(e); if (pb !== undefined) return pb;

@@ -462,10 +462,11 @@ O('redirect', ['taking'], true, ['share', 'split', 'type'], 'move a share of the
   const c = ev.ctx; if (c.src?.redirected || !(c.dmg > 0)) return false;
   const share = Math.max(0, Math.min(1, typeof e.share === 'number' ? e.share : 0.5)), moved = Math.floor(c.dmg * share); if (moved <= 0) return false;
   const to: Unit[] = e.split && e.targets ? selectUnits(ev, e.targets).filter((u) => u !== c.t) : [ev.self].filter((u) => u !== c.t); if (!to.length) return false;
-  c.dmg -= moved; const each = Math.floor(moved / to.length);
+  c.dmg -= moved; c.moved = (c.moved || 0) + moved; const each = Math.floor(moved / to.length); // c.moved: the blow's part already taken by others (an Interpose takes what is left)
   if (ev.preview) return;
   const src = typeof e.type === 'string' ? { ...c.src, type: e.type, dmgType: e.type, melee: false, ranged: false, crit: false } : c.src;
-  to.forEach((u, i) => { const n = i === 0 ? moved - each * (to.length - 1) : each; if (n > 0) applyDamage(ev.cb, u, n, { ...src, redirected: true }); });
+  // c.movedTo: who took how much of it (an Interpose by one of them takes the rest of the blow less its own share: guard.ts)
+  to.forEach((u, i) => { const n = i === 0 ? moved - each * (to.length - 1) : each; if (n > 0) { (c.movedTo ||= {})[u.id] = (c.movedTo[u.id] || 0) + n; applyDamage(ev.cb, u, n, { ...src, redirected: true }); } });
 });
 O('use', ANY, true, [], 'nothing but its limit: spends one use (for a limit another effect reads with peek)', () => undefined);
 O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of the item\'s own flags, for a later trigger\'s flag / no_flag', (ev, e) => {
@@ -653,7 +654,9 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   // the batch row limit.of "owner": an owned unit's reaction is its owner's (P1's payer, P9's record)
   if (asReaction && !ev.preview) { const payer = lim.of === 'owner' ? ownerOf(cb, self) : null; if (lim.of === 'owner' && !payer) return; if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent(), ...(payer ? { payer } : {}) }, go)) return; } else go();
   if (ev.preview || !ran) return; // a set with nobody in it: nothing happened, nothing is said
-  if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
+  // an op's own effect event: the holder (target), its tile, and the event's other unit (other: its target, or else its
+  // actor, when that is not the holder: Close Guard's ally, Retort's attacker, rules 1.56 Guard 2.0) for a line between them
+  if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx, o = ev.target && ev.target !== self ? ev.target : ev.actor && ev.actor !== self ? ev.actor : null; emitFx(cb, k, { target: self.id, at: self.pos, ...(o ? { other: o.id, from: o.pos } : {}), ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));
 }
 // ============================================================================================== delay (section 6)

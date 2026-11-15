@@ -20,6 +20,8 @@ function fight(o: { weapon?: string; shield?: string | null; dur?: number; guard
   const foe = f.put(f.foe, o.foeAt || 'D5'); foe.hp = foe.maxHp = 900;
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
   f.turn(f.pc);
+  // Durability's door's item Answers (Retort, Close Guard: rules 1.56 Guard 2.0) off: these tests count Guard for the shield's own techniques
+  f.pcs.forEach((u) => { (f.char(u) as any).phys.answers = phys.TECHNIQUES.filter((t: any) => t.group === 'answer').map((t: any) => t.id); });
   for (const u of f.cb.units) { delete u.openerUsed; delete (u as any).reactUsed; delete (u as any).uses?.['reaction|reaction']; if (u.side === 'pc') u.hp = u.maxHp; }
   f.momentum(f.pc, o.m ?? 1); if (f.pc.resMax?.guard != null) f.pc.res!.guard = o.guard ?? 0;
   return f;

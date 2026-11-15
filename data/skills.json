@@ -44,6 +44,7 @@
       "core": "body",
       "slot": "alpha",
       "summary": "The tank.",
+      "door_line": "Guard is your door: plates around you. The Guard technique (any weapon) and Brace raise them; each plate eats part of a blow, and Challenge and Slam spend them.",
       "per_point": {
         "numbers": {
           "pool": 1,
@@ -75,6 +76,330 @@
         "armor:heavy"
       ],
       "unlocks": {
+        "1": {
+          "name": "Guard",
+          "category": "Active Skill",
+          "mastery": 0,
+          "item": true,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your weapon attacks roll {=unlocks.1.effects.0.value.per.0.value|signed} to hit for each Durability point above {=unlocks.1.effects.0.value.base|abs}, at most +{=unlocks.1.effects.0.value.max} (the tank hits through its door). Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard: every foe you see within {=unlocks.1.effects.6.effects.0.and.0.targets.within} tiles makes a Heart save or is Taunted; a Boss answers no challenge. Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.8.if.self_skill.durability}): {=unlocks.1.effects.8.ap} AP and {=unlocks.1.effects.8.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.8.effects.1.tiles} tile and makes a Body save or is Off Balance.",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "attack",
+              "if": {
+                "self_has_res": [
+                  "guard"
+                ]
+              },
+              "label": "Guard (Durability)",
+              "value": {
+                "base": -3,
+                "per": [
+                  {
+                    "of": "skill:durability",
+                    "value": 1
+                  }
+                ],
+                "min": 0,
+                "max": 4
+              }
+            },
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "crit": true,
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ],
+                "self_skill": {
+                  "durability": 3
+                }
+              },
+              "value": 1,
+              "label": "Set Against the Blow",
+              "fx": {
+                "k": "guard_move",
+                "move": "crit_turned"
+              },
+              "say": "{self} sets against the blow: the critical lands as an ordinary hit (Set Against the Blow).",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "crit_turned"
+                }
+              ],
+              "replaces": "critical"
+            },
+            {
+              "op": "cancel",
+              "when": "injury",
+              "if": {
+                "actor": "foe",
+                "flag": "crit_turned"
+              },
+              "label": "Set Against the Blow",
+              "why": "Set Against the Blow",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "crit_turned",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_within": 1,
+                "actor": "foe",
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ],
+                "self_alive": true,
+                "answer_on": "close_guard"
+              },
+              "share": 0.25,
+              "label": "Close Guard",
+              "fx": {
+                "k": "guard_move",
+                "move": "close_guard"
+              },
+              "say": "{self} takes part of the blow on {target} (Close Guard).",
+              "type": "physical"
+            },
+            {
+              "op": "floor",
+              "when": "would_drop",
+              "if": {
+                "by_hit": true,
+                "open": true,
+                "self_skill": {
+                  "durability": 5
+                }
+              },
+              "value": 1,
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "last_plate"
+              },
+              "label": "Last Plate",
+              "and": [
+                {
+                  "op": "resource",
+                  "resource": "guard",
+                  "value": "zero"
+                }
+              ],
+              "fx": {
+                "k": "guard_move",
+                "move": "last_plate"
+              },
+              "say": "{self} holds on the last plate: 1 HP, every plate broken (Last Plate)."
+            },
+            {
+              "op": "deal",
+              "when": "damaged",
+              "if": {
+                "actor": "foe",
+                "melee": true,
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ],
+                "self_alive": true,
+                "self_skill": {
+                  "durability": 3
+                },
+                "answer_on": "retort"
+              },
+              "amount": "retort",
+              "target": "actor",
+              "limit": {
+                "reaction": 1,
+                "kind": "attack"
+              },
+              "label": "Retort",
+              "and": [
+                {
+                  "op": "resource",
+                  "resource": "guard",
+                  "value": -1
+                }
+              ],
+              "fx": {
+                "k": "guard_move",
+                "move": "retort"
+              },
+              "say": "{self} throws the blow back at {actor}{then} (Retort)."
+            },
+            {
+              "op": "grant_action",
+              "action": "guard_challenge",
+              "label": "Challenge",
+              "ap": 1,
+              "res": {
+                "guard": 1
+              },
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "if": {
+                "self_skill": {
+                  "durability": 3
+                }
+              },
+              "why": {
+                "self_skill": "Challenge needs Durability 3."
+              },
+              "effects": [
+                {
+                  "op": "mark",
+                  "when": "acted",
+                  "flag": "challenge",
+                  "and": [
+                    {
+                      "op": "condition",
+                      "condition": "taunted",
+                      "via": "durability",
+                      "targets": {
+                        "of": "self",
+                        "within": 2,
+                        "side": "foe",
+                        "seen": true
+                      }
+                    },
+                    {
+                      "op": "mark",
+                      "flag": "challenge",
+                      "clear": true
+                    }
+                  ],
+                  "fx": {
+                    "k": "guard_move",
+                    "move": "challenge",
+                    "within": 2
+                  },
+                  "say": "{self} issues a challenge{then}."
+                }
+              ]
+            },
+            {
+              "op": "cancel",
+              "when": "cond_incoming",
+              "if": {
+                "flag": "challenge",
+                "actor": "self",
+                "target": "foe",
+                "cond": [
+                  "taunted"
+                ],
+                "target_tier": [
+                  "boss"
+                ]
+              },
+              "label": "Challenge",
+              "why": "a Boss answers no challenge"
+            },
+            {
+              "op": "grant_action",
+              "action": "guard_slam",
+              "label": "Slam",
+              "ap": 2,
+              "res": {
+                "guard": 2
+              },
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "if": {
+                "self_skill": {
+                  "durability": 5
+                }
+              },
+              "why": {
+                "self_skill": "Slam needs Durability 5."
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "off_balance",
+                  "via": "durability",
+                  "targets": {
+                    "of": "self",
+                    "within": 1,
+                    "side": "foe"
+                  },
+                  "fx": {
+                    "k": "guard_move",
+                    "move": "slam"
+                  },
+                  "say": "{self} slams the plates outward."
+                },
+                {
+                  "op": "displace",
+                  "when": "acted",
+                  "how": "push",
+                  "tiles": 1,
+                  "targets": {
+                    "of": "self",
+                    "within": 1,
+                    "side": "foe"
+                  }
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "crit_turned",
+              "clear": true,
+              "if": {
+                "flag": "crit_turned"
+              },
+              "label": "Set Against the Blow"
+            },
+            {
+              "op": "mark",
+              "when": "hit",
+              "flag": "crit_turned",
+              "clear": true,
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "flag": "crit_turned"
+              },
+              "label": "Set Against the Blow"
+            }
+          ],
+          "amounts": {
+            "retort": {
+              "kind": "damage",
+              "base": 0,
+              "per": [
+                {
+                  "of": "event:amount",
+                  "value": 0.5
+                }
+              ],
+              "type": "physical",
+              "armour": "full",
+              "provisional": true
+            }
+          }
+        },
         "3": {
           "name": "Take the Hit",
           "category": "Combat Interaction",
@@ -214,7 +539,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "\u2212{=per_point.numbers.elemental_taken|pct}% elemental damage taken"
+            "text": "−{=per_point.numbers.elemental_taken|pct}% elemental damage taken"
           },
           {
             "at": "each",
@@ -2020,7 +2345,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "\u2212{=per_point.numbers.crit_taken|pct}% critical damage taken"
+            "text": "−{=per_point.numbers.crit_taken|pct}% critical damage taken"
           },
           {
             "at": "each",
@@ -2980,7 +3305,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "\u2212{=per_point.numbers.ambush_taken|pct}% ambush damage taken"
+            "text": "−{=per_point.numbers.ambush_taken|pct}% ambush damage taken"
           },
           {
             "at": "each from 3",

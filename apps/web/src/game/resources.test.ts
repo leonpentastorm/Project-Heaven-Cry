@@ -1,7 +1,7 @@
 // The RESOURCES block (game/resources.ts): each class archetype sees its own rows, in words, with the warnings that
 // testers missed in the old 10 px line (RELOAD, RELOAD CORE, OVERLOAD SOON, OVER THE LIMIT…).
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys } from '@engine';
+import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys, SKILL } from '@engine';
 import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule, sigilChip, RES_INK } from './resources';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
@@ -164,10 +164,10 @@ describe('class resources, named from the data', () => {
     expect(r).toMatchObject({ label: 'Guard', value: '2 / ' + u.resMax.guard, kind: 'pips', now: 2 });
     // the soak is the engine's, at the unit's level (rules 1.36: Guard's soak is in HP and scales with level)
     const soak = phys.guardSoak(u);
-    expect(r.sub).toBe('Guard: each point soaks ' + soak + ' damage; Brace and the Guard technique refill it.');
-    expect(guardRule(soak)).toBe(r.sub);
+    // its line is Durability's door line (skills.json durability.door_line, rules 1.56 Guard 2.0); the rule with the soak is the hover
+    expect(r.sub).toBe((SKILL as any).durability.door_line);
+    expect(r.hint.startsWith(guardRule(soak))).toBe(true);
     expect(r.hint).toContain('Each point takes ' + soak + ' damage off a hit');
-    expect(r.hint.startsWith(r.sub!)).toBe(true);
     // no Durability, no class pool: no row
     const n = fight((c) => { c.classId = null; c.skills.durability = 0; });
     expect(row(resourcesOf(n.u, n.c, n.g), 'res-guard')).toBeUndefined();

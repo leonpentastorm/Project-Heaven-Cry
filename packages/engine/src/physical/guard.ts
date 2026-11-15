@@ -24,6 +24,7 @@ const G = () => PHYS_RULES.guard || {};
 const DEF_PLATE = 'class:defender.reactive_plate', DEF_BRACE = 'class:defender.brace';
 
 // ---------- gained by Brace ----------
+braceHook.gain = (u: Unit) => guardGain(u, 'brace');
 braceHook.f = (cb: Combat, u: Unit) => {
   const got = addGuard(cb, u, guardGain(u, 'brace'));
   if (got) say(cb, '  +' + got + ' Guard (' + guardOf(u) + '/' + guardMax(u) + ').');
@@ -49,7 +50,7 @@ onHook('damage_in', (ctx: any, cb) => {
   if (reach - k * per >= u.hp) k = Math.min(have, needs);
   if (k < 1) return;
   const cut = Math.min(reach, k * per);
-  spendGuard(cb, u, k); ctx.dmg = Math.floor(ctx.dmg) - cut; ctx.guardSoaked = (ctx.guardSoaked || 0) + cut;
+  spendGuard(cb, u, k, 'soak', cut); ctx.dmg = Math.floor(ctx.dmg) - cut; ctx.guardSoaked = (ctx.guardSoaked || 0) + cut;
   say(cb, u.name + '\'s Guard takes ' + cut + ' of it (' + k + ' Guard, ' + guardOf(u) + ' left).');
 });
 
@@ -75,7 +76,12 @@ technique({
       answer(t, src.by, () => {
         spendGuard(cb, me, cost);
         const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
-        const dmg = landed(d.total, d.armour);
+        // A share of this blow already moved by an item's redirect (Close Guard, Share a Hit; ctx.movedTo, effects/triggers.ts)
+        // is not taken twice. What others took comes off the blow in proportion; what this protector took itself is part of
+        // the blow it now takes whole: worked out once against its own armour, less the share it already has. So the two
+        // compose: never less than Interpose alone, never more than the blow (rules 1.56 Guard 2.0, the review's item 3).
+        const mine = Number(ctx.movedTo?.[me.id]) || 0, others = Math.max(0, (Number(ctx.moved) || 0) - mine), whole = (Number(ctx.moved) || 0) + ctx.dmg;
+        const dmg = Math.max(0, Math.floor(landed(d.total, d.armour) * (whole > 0 ? 1 - others / whole : 1)) - mine);
         ctx.dmg = 0;
         interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
         emitFx(cb, 'shove', { unit: me.id, target: v.id, from: me.pos, to: me.pos, ok: true, interpose: true });

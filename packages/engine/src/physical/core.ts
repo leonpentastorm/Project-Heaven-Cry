@@ -20,7 +20,7 @@ import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
-import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
+import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName, given } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 import { setBraced, setNailed, bracedAs } from '../unitstate';
 import { condsAside } from '../magic';
@@ -105,11 +105,18 @@ export function guardGain(u: Unit, by: 'guard' | 'brace' = 'guard'): number {
   const g = GR(); if (by === 'brace') return (g.brace_gain ?? 2) + (shieldOf(u) ? g.brace_shield_gain ?? 1 : 0);
   return (g.gain_base ?? 1) + Math.max(0, unitSkill(u, 'durability') - 1) * (g.gain_per_point ?? 1) + (shieldOf(u) ? g.shield_gain ?? 1 : 0);
 }
-function guardFx(cb: Combat, u: Unit, was: number) { const now = guardOf(u); if (now !== was) emitFx(cb, 'guard', { unit: u.id, at: u.pos, now, was, max: guardMax(u) }); }
+/** Why a unit's Guard changed, for the screen (Guard 2.0, rules 1.56 item 4300: the plates): gained, eaten by a hit
+ * (soaked: the damage it took off), spent on an order or an Answer, or taken by Pressure. */
+export type GuardWhy = 'gain' | 'soak' | 'spend' | 'pressure';
+function guardFx(cb: Combat, u: Unit, was: number, why: GuardWhy, soaked?: number) {
+  const now = guardOf(u); if (now === was) return;
+  emitFx(cb, 'guard', { unit: u.id, at: u.pos, now, was, max: guardMax(u), why, ...(soaked ? { soaked } : {}) });
+}
 /** Add Guard to a unit, up to its pool. Returns what it gained. */
-export function addGuard(cb: Combat, u: Unit, n: number): number { const was = guardOf(u), got = resGain(u, 'guard', Math.max(0, n)); guardFx(cb, u, was); return got; }
-/** Spend Guard. False (nothing spent) when the unit holds less. */
-export function spendGuard(cb: Combat, u: Unit, n: number): boolean { const was = guardOf(u); if (n <= 0) return true; if (!resSpend(u, 'guard', n)) return false; guardFx(cb, u, was); return true; }
+export function addGuard(cb: Combat, u: Unit, n: number): number { const was = guardOf(u), got = resGain(u, 'guard', Math.max(0, n)); guardFx(cb, u, was, 'gain'); return got; }
+/** Spend Guard. False (nothing spent) when the unit holds less. why: what spent it (the screen's word); soaked: the
+ * damage a soak took off the hit. */
+export function spendGuard(cb: Combat, u: Unit, n: number, why: GuardWhy = 'spend', soaked?: number): boolean { const was = guardOf(u); if (n <= 0) return true; if (!resSpend(u, 'guard', n)) return false; guardFx(cb, u, was, why, soaked); return true; }
 /** The Guard a technique costs to use (its own `numbers.guard_cost`: Shield Bash). An Answer spends its own as it fires. */
 export const guardCost = (def: TechDef): number => (def.group === 'answer' ? 0 : Number((def.numbers as any)?.guard_cost) || 0);
 /** Does the unit hold this item (a class move, a perk, a trait), by its key ('class:defender.brace')? */
@@ -265,7 +272,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // the hand that has it, and only while the holder holds what its row's `comes_while` names (P15, character.ts holds:
     // only the family's gloves in the hands; a unit with no character holds nothing, so an enemy has it only on its list)
     if (d.perk) { if (!wield && !plainOnly && (hand === 'main' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0 || comes(d))) out.push({ id: d.id, how: 'comes' }); continue; }
-    if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) { out.push({ id: d.id, how: 'comes' }); continue; } if (given(d)) continue; } // a skill's pressed technique: learned as before without the points (rules 1.55, 0.28.3-T.1)
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     // Rules 1.56 (Leon's ruling B): a technique that needs something stuck (Pull Out) is offered only while there is one
     // to pull, and then with any weapon in the main hand (what is in the hand does not wrench a blade out of a body).
@@ -941,8 +948,11 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
   const more = shieldHand(u, hand) && weaponSystem(u.weapon) !== 'melee' ? usable(cb, u, 'main').filter((x) => TECHNIQUE[x.id].innate) : [];
   const sys = weaponSystem(weaponId), have = [...usable(cb, u, hand), ...more], c = u.companion ? null : charOfUnit(u), knownSig = new Set(((c as any)?.phys?.known as string[]) || []);
   const taught = new Set(Object.values(WEAPON).map((w) => weaponTeaches(w.id)).filter(Boolean) as string[]);
-  // the hand's system's groups, then the group of a technique offered with any weapon (needs.stuck, rules 1.56: Pull Out with a gun)
-  return [...new Set([...groupsOf(sys), ...have.filter((x) => TECHNIQUE[x.id].needs.stuck).map((x) => TECHNIQUE[x.id].group)])].map((group) => ({
+  // the hand's system's groups, then the group of a technique offered with any weapon (needs.stuck, rules 1.56: Pull Out
+  // with a gun), then a door's own pressed technique (not an Answer: Durability's Guard, techniques.json innate; the 0.28.3
+  // tank fit) drawn with any weapon under its own group
+  const doorGroups = have.map((x) => TECHNIQUE[x.id]).filter((d) => d.needs.stuck || (d.innate && d.group !== 'answer')).map((d) => d.group);
+  return [...new Set([...groupsOf(sys), ...doorGroups])].map((group) => ({
     group, label: groupName(group),
     entries: have.filter((x) => TECHNIQUE[x.id].group === group).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);

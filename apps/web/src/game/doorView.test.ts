@@ -9,9 +9,10 @@ import { designCards } from './heartView';
 import { smartCommands, actionGroups } from './commands';
 import { TIPS, DOOR_TIPS, myDoorTurn } from './tips';
 
+// (no Durability unless asked: since Guard 2.0 it is a door too, and the preset's would be the top one)
 const sheet = (skills: Record<string, number>): Sheet => {
   const a = ARCHETYPES[0];
-  return { name: 'Vale', portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset, ...skills }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} };
+  return { name: 'Vale', portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset, durability: 0, ...skills }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} };
 };
 const DESIGN = { id: 'sb', name: 'Soul Bolt', school: 'damage', modules: [] as string[] };
 const rng = { state: 7 } as any;
