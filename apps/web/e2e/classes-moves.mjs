@@ -10,6 +10,9 @@
 // Every move through its real button on the CLASS tab, its picker's chips and the grid; the engine state checked and the
 // fx events seen playing (the layer draws). Screenshots: e2e/shots/classes-moves-*.png (deviceScaleFactor 1).
 import { chromium, player, click, BASE, OUT, pickAction, settle, tipOf } from './lib.mjs';
+import { readFileSync } from 'fs';
+// the Guard pool's cap (techniques.json rules.guard.max: 4 since rules 1.55 item 74), read from the data
+const GUARD_MAX = JSON.parse(readFileSync(new URL('../../../data/techniques.json', import.meta.url), 'utf8')).rules.guard.max;
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -297,7 +300,7 @@ ok('the Channeler\'s panel reads Strain and MP', /STRAIN\s*\d+ \/ \d+/i.test(awa
 // ---------- 9. Defender: the resource panel reads Guard; Shrug It Off's toggle names the one in force ----------
 await setClass('defender', 2);
 ok('host turn', await newTurn());
-ok('the Defender\'s panel reads Guard: ' + ((await bodyTxt()).match(/GUARD\s*\d+ \/ \d+/i) || [''])[0], /GUARD\s*\d+ \/ 5/i.test(await bodyTxt()));
+ok('the Defender\'s panel reads Guard: ' + ((await bodyTxt()).match(/GUARD\s*\d+ \/ \d+/i) || [''])[0], new RegExp('GUARD\\s*\\d+ / ' + GUARD_MAX, 'i').test(await bodyTxt()));
 r = await useMove(/^Shrug It Off: off/);
 await settle(host, 250);
 ok('Shrug It Off: off is in force (' + (r || 'confirmed') + ')', !r && (await host.locator('[role="tabpanel"] button', { hasText: 'Shrug It Off: off ✓' }).count()) > 0);
