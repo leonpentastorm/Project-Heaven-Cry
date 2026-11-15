@@ -36,7 +36,7 @@ import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyN
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { scaleOf } from './effects/output';
-import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
@@ -509,6 +509,18 @@ function migrateFloor(g: GameState) {
  * settled on every sheet (the other migrations wait for the first action, as before). */
 export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
+  // rules 1.56 (consolidation 0.29 M5): a fight saved before fitted mods were held (0.28) keeps a held snapshot with no
+  // mod relics, and a mod acts only as a held item now: each PC unit holding a snapshot takes the modifiers on its own
+  // weapon instances (instanceMods of u.weapon with u.mods, u.offWeapon with u.offMods) that it lacks. Nothing is
+  // written when none is missing (a save from 0.29 on loads as it was).
+  try {
+    for (const u of ((g as any)?.combat?.units || []) as any[]) {
+      if (u.side !== 'pc' || !u.charId || u.companion || !u.held) continue;
+      const want = [...instanceMods(u.weapon, { mods: u.mods }).all, ...(u.offWeapon ? instanceMods(u.offWeapon, { mods: u.offMods }).all : [])];
+      const have = new Set(u.held.relics || []), add = [...new Set(want.filter((x) => !have.has(x)))];
+      if (add.length) u.held = { ...u.held, relics: [...(u.held.relics || []), ...add] };
+    }
+  } catch { /* a fight this old is handled by apply */ }
   // rules 1.39: a save from before modes played a campaign; playOf reads the missing field so, and nothing is written
   // here (a load must leave the state as it was: the replay guard's save-and-load case)
   return g;

@@ -28,7 +28,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf, quiversOf, packOf, legacySpecialId, specialRoundsFor, SPECIAL_REF_CALIBRE, priceOf, sellValue, WEAPON } from '../src';
+import { migrateLoaded, apply, viewFor, withGame, previewAttack, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf, quiversOf, packOf, legacySpecialId, specialRoundsFor, SPECIAL_REF_CALIBRE, priceOf, sellValue, WEAPON } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
 const load = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
@@ -268,6 +268,31 @@ describe('rules 1.56: a 0.28 save holding the old special-round ids loads and pl
     expect(specialRoundsFor(packOf(g.characters.c1), cal).hollow_point || 0).toBe(0);
     g = apply(g, { type: 'gear/ammo', charId: 'c1', ammo: 'armor_piercing' } as any, 'host');
     expect(g.characters.c1.loadedType).toBe('armor_piercing'); expect(g.characters.c1.loaded).toBeGreaterThan(0);
+    expect(() => viewFor(g, 'host')).not.toThrow();
+  }, 60_000);
+});
+
+// Consolidation 0.29 M5: save-0.28.1-modded-gun-mid-fight.json was written by the LIVE 0.28.1 engine (origin/develop =
+// origin/main at 69fbd66f; the script beside it): a fight in its first round, c1's turn, a service rifle with a scope, a
+// suppressor and a quick-release magazine. Its unit's held snapshot has no mod relics (0.28 read the mods another way);
+// loaded (migrateLoaded), the mods act through the reducer: the quick-release's 1 AP reload, the scope on an aimed shot.
+describe('consolidation 0.29 M5: a 0.28.1 fight saved with a modded gun keeps its mods working', () => {
+  const NAME = 'save-0.28.1-modded-gun-mid-fight';
+  const raw = () => JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + NAME + '.json', import.meta.url)), 'utf8'));
+  it('the old snapshot lacks them; loaded, the unit holds them, a reload costs the quick-release\'s 1 AP and the aimed shot has the scope', () => {
+    const old = raw(), u0 = old.combat.units.find((x: any) => x.side === 'pc');
+    expect(u0.held).toBeTruthy(); expect(u0.held.relics || []).not.toContain('mod_quick_release');
+    expect(u0.mods).toEqual(['mod_scope', 'mod_suppressor', 'mod_quick_release']);
+    const g0 = load(NAME), pc = () => g0.combat.units.find((x: any) => x.side === 'pc'), foe = g0.combat.units.find((x: any) => x.side === 'foe');
+    expect(pc().held.relics).toEqual(expect.arrayContaining(['mod_scope', 'mod_suppressor', 'mod_quick_release']));
+    // the scope: an aimed shot's to-hit is 1 above a plain shot's difference without it (the preview the reducer resolves)
+    const aimed = withGame(g0, () => previewAttack(g0.combat, pc(), foe, 'aimed'));
+    expect((aimed.terms || []).some((t: any) => t.v === 1 && /scope/i.test(String(t.label)))).toBe(true);
+    // fire once, then reload through the reducer: 1 AP (the quick-release), not the rifle's own
+    let g = apply(g0, { type: 'combat/attack', unitId: pc().id, targetId: foe.id, mode: 'shot' } as any, 'host');
+    const u1 = g.combat.units.find((x: any) => x.side === 'pc'), ap1 = u1.ap; expect(u1.ammo).toBeLessThan(u0.ammo);
+    g = apply(g, { type: 'combat/reload', unitId: u1.id } as any, 'host');
+    expect(ap1 - g.combat.units.find((x: any) => x.side === 'pc').ap).toBe(1);
     expect(() => viewFor(g, 'host')).not.toThrow();
   }, 60_000);
 });
