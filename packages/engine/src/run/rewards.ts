@@ -11,7 +11,7 @@ import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
 import { rollTable, defaultTable, type Drops, type DropEntry } from '../loot';
 import type { Unit } from '../combat';
-import { rngFor, die } from '../rng';
+import { rngFor, die, next, type Rng } from '../rng';
 import { ENC_BUDGET, VAULT, type FightKind } from './encounter';
 import type { RunOffer, RunWeapon } from './state';
 import { capRoom, rollProps, worthOf } from './power';
@@ -126,19 +126,31 @@ type OfferWhere = PayKind | 'crate';
 /** Rules 1.54 item 2 (spec R7): how many weapons a pick holds where it is made (`rewards.offer`; the gate reads the
  * Elite's, as every table does). */
 const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; return t[w === 'gate' ? 'elite' : w] ?? t.fight; };
-/** Rules 1.54 item 4 (Core Rules item 4107): the Materials card of a node worth C credits (nodeCredits): each of
- * `rewards.materials.items` at ceil(C / per_credits); none where `rewards.materials.at` does not name it (the vault's
- * chest, a sealed crate). */
-function materialsCard(w: OfferWhere, credits: number): { item: string; n: number }[] | null {
-  const m = SV.rewards.materials; if (!m || !(m.at as string[]).includes(w === 'gate' ? 'elite' : w)) return null;
-  return (m.items as { item: string; per_credits: number }[]).map((x) => ({ item: x.item, n: Math.ceil(credits / x.per_credits) })).filter((x) => x.n > 0);
+/** Rules 1.54 item 4 (Core Rules item 4107), rules 1.55 items 5 and 6: the Materials card at a node of depth d: each
+ * of `rewards.materials.items` with `per_credits` at ceil(C / per_credits), C an ordinary fight's credits there
+ * (nodeCredits) x `materials.mult` by the kind (the gate reads the Elite's); an item with `by` only where its row names
+ * the kind: with its `chance` (absent: certain), a qty in its [min, max], from the pick's own stream. None where
+ * `rewards.materials.at` does not name it (the vault's chest, a sealed crate). */
+function materialsCard(w: OfferWhere, k: PayKind, depth: number, stage: number, rng: Rng): { item: string; n: number }[] | null {
+  const m = SV.rewards.materials, key = w === 'gate' ? 'elite' : w; if (!m || !(m.at as string[]).includes(key)) return null;
+  const C = nodeCredits('fight', depth, stage) * mult(m.mult || {}, k);
+  return (m.items as { item: string; per_credits?: number; by?: Record<string, { chance?: number; qty: [number, number] }> }[]).map((x) => {
+    if (x.per_credits) return { item: x.item, n: Math.ceil(C / x.per_credits) };
+    const row = x.by?.[key]; if (!row || (row.chance != null && !(next(rng) < row.chance))) return { item: x.item, n: 0 };
+    return { item: x.item, n: row.qty[0] + die(rng, row.qty[1] - row.qty[0] + 1) - 1 };
+  }).filter((x) => x.n > 0);
 }
+/** Rules 1.55 item 3: does a pick hold the One-weapon card: `rewards.weapon_card` by where it is made (absent: always),
+ * rolled once for the node from `rngFor(seed, node + '#weapon-card')`, so every player sees the same. */
+const weaponCard = (w: OfferWhere, node: string, seed: string): boolean => {
+  const p = SV.rewards.weapon_card?.[w === 'gate' ? 'elite' : w]; return p == null || p >= 1 || next(rngFor(seed, node + '#weapon-card')) < p;
+};
 /** Rules 1.54 item 3 (spec R8): what a foe of a Survival fight drops: the loot door's flag off (no weapon, magazines,
  * loose rounds or Boss's notable thing), its kind's table rolled as before, and given materials (`survival.json drops`):
  * `gun` for a gun, `by_table` by its table (a caster's, a machine's). */
 export function runFoeDrops(u: Unit): Drops {
-  const D = SV.drops, table = defaultTable(u);
-  return { gear: false, table, items: [...(isGun(u.weapon) ? D.gun : []), ...(D.by_table[table] || [])].map((e: DropEntry) => ({ ...e })) };
+  const D = SV.drops, table = defaultTable(u); // rules 1.55 item 8: `kind_table` false: the kind's table is not rolled
+  return { gear: false, ...(D.kind_table === false ? {} : { table }), items: [...(isGun(u.weapon) ? D.gun : []), ...(D.by_table[table] || [])].map((e: DropEntry) => ({ ...e })) };
 }
 /** The pick at a node (rule 26; rules 1.54 item 2): `offerSize(where)` weapons within the price band, the first for the
  * character's own door (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled
@@ -153,9 +165,9 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
   const door = doorOf(c), dk = door ? kindOfDoor(door) : null;
   const own = [...(dk ? fits.filter((id) => FOCUS_IDS[dk].includes(id)) : []), ...fits.filter((id) => categoryOf(id) === categoryOf(c.weapon)), ...quiver];
   const take = (list: string[], have: string[]) => { const l = list.filter((id) => !have.includes(id)); return l.length ? l[die(rng, l.length) - 1] : null; };
-  const ids: string[] = [];
-  const first = take(own.length ? own : fits, ids); if (first) ids.push(first);
-  while (ids.length < offerSize(where)) { const x = take(fits, ids); if (!x) break; ids.push(x); }
+  const ids: string[] = [], size = weaponCard(where, node.id, seed) ? offerSize(where) : 0; // rules 1.55 item 3
+  const first = size ? take(own.length ? own : fits, ids) : null; if (first) ids.push(first);
+  while (ids.length < size) { const x = take(fits, ids); if (!x) break; ids.push(x); }
   const table = SV.rewards.rarity[o.rarity || (k === 'gate' || k === 'vault_guard' ? 'elite' : k === 'cache' || k === 'vault' ? 'fight' : k)];
   let room = capRoom(c);
   const weapons: RunWeapon[] = ids.map((id) => {
@@ -165,7 +177,7 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
     if (rarity === 'relic' && id !== QUIVER_ITEM) { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
     return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };
   });
-  const materials = materialsCard(where, nodeCredits(k, node.depth, stage));
+  const materials = materialsCard(where, k, node.depth, stage, rng);
   return { node: node.id, weapons, ...(materials ? { materials } : {}), ammo: o.ammo ?? packCount(k) };
 }
 /** A picked weapon or focus as it goes into the pack (rarity kept, rule 26; a focus glove's line kind is the one rule's,

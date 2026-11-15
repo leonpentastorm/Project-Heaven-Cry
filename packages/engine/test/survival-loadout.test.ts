@@ -90,12 +90,12 @@ describe('the camp (rules 1.52)', () => {
     const P = 'service_pistol';
     let g = lo(camp(), 'Kade', { op: 'pick', slot: 'weapon', id: FREE('revolvers') });
     let c = Object.values(g.characters)[0], w: any = WEAPON[FREE('revolvers')];
-    expect(c.weapon).toBe(FREE('revolvers')); expect(c.loaded).toBe(w.magazine); expect(packOf(c).find((x) => x.weapon === c.weapon && x.mags)!.mags).toEqual([w.magazine]);
+    expect(c.weapon).toBe(FREE('revolvers')); expect(c.loaded).toBe(w.magazine); expect(packOf(c).find((x) => x.weapon === c.weapon && x.mags)!.mags).toEqual(Array(SV.loadout.gun.spare).fill(w.magazine));
     expect(creditsOf(c)).toBe(LOADOUT.budget); // free
     g = lo(g, 'Kade', { op: 'spare', keep: false }); c = Object.values(g.characters)[0];
     expect(packOf(c).some((x) => x.weapon === c.weapon && x.mags)).toBe(false); expect(creditsOf(c)).toBe(LOADOUT.budget); // nothing given for it
     g = lo(g, 'Kade', { op: 'spare', keep: true }); c = Object.values(g.characters)[0];
-    expect(packOf(c).find((x) => x.weapon === c.weapon && x.mags)!.mags).toEqual([w.magazine]);
+    expect(packOf(c).find((x) => x.weapon === c.weapon && x.mags)!.mags).toEqual(Array(SV.loadout.gun.spare).fill(w.magazine));
     g = lo(g, 'Kade', { op: 'take', key: 'stock:' + BETTER('pistols') }); c = Object.values(g.characters)[0]; // the rack's better pistol, at its price
     expect(BETTER('pistols')).toBe(P); expect(packOf(c).some((x) => (x.weapon || x.id) === P)).toBe(true); expect(creditsOf(c)).toBe(LOADOUT.budget - priceOf(P)!);
     g = lo(g, 'Kade', { op: 'take', key: 'stock:' + P, qty: -1 }); c = Object.values(g.characters)[0]; // sold back at the full price: removed

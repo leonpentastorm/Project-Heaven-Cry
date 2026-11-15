@@ -55,7 +55,7 @@ export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: bool
       if (o.skip) r.must({ type: 'run/skip' });
       else { r.fight(40); if (r.g.combat && !r.g.combat.over && r.g.phase === 'combat') { r.errors.push('a fight did not end in 40 rounds'); break; } }
     } else if (run.state === 'reward') {
-      for (let i = 0; i < n; i++) if (run.offers?.['c' + (i + 1)]) r.must({ type: 'run/pick', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i));
+      for (let i = 0; i < n; i++) if (run.offers?.['c' + (i + 1)]) r.must({ type: 'run/pick', charId: 'c' + (i + 1), choice: run.offers['c' + (i + 1)].weapons.length ? 0 : 'materials' }, ownerOf(i)); // rules 1.55 item 3: no weapon card, the materials
       for (let i = 0; i < n; i++) if (r.g.run.lasting?.['c' + (i + 1)]) r.must({ type: 'run/take', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); // rules 1.43: the kit's pick
     } else if (run.state === 'shop') { // rules 1.42: the walker buys nothing and leaves (every player ready)
       for (let i = 0; i < n && r.g.run?.state === 'shop'; i++) r.must({ type: 'run/leave' }, ownerOf(i));

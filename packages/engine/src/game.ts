@@ -3434,7 +3434,7 @@ function runFightOver(g: GameState) {
     offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
   }
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
-  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the supply pack, and a pick: the materials or a weapon.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k) > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'reward'; r.offers = offers;
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit

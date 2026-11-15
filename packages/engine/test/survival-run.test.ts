@@ -72,7 +72,9 @@ describe('Survival, one stage (rules 1.41)', () => {
     // the rounds held for the gun in hand, in magazines or loose (rules 1.52: the free rifle may load round by round)
     const rounds = (c: any) => { const w: any = (WEAPON as any)[c.weapon]; return (c.pack || []).reduce((t: number, p: any) => t + (p.mags && p.weapon === c.weapon ? p.mags.reduce((u: number, n: number) => u + n, 0) : p.calibre === w.ammo && !p.mags ? p.qty || 0 : 0), 0); };
     const mags0 = rounds(g0.characters.c1), mag = (WEAPON as any)[g0.characters.c1.weapon].magazine;
-    const g = apply(g0, { type: 'run/skip' }, 'host'), n = runNode(g.run!, g.run!.at)!;
+    const wc = SV.rewards.weapon_card.fight; SV.rewards.weapon_card.fight = 1; // rules 1.55 item 3: this test reads the weapon card, forced on
+    let g: any; try { g = apply(g0, { type: 'run/skip' }, 'host'); } finally { SV.rewards.weapon_card.fight = wc; }
+    const n = runNode(g.run!, g.run!.at)!;
     expect(g.run!.state).toBe('reward'); expect(g.phase).toBe('story');
     expect(g.characters.c1.xp).toBe(nodeXp('fight', n.depth, 1));
     expect(creditsOf(g.characters.c1)).toBe(creditsOf(g0.characters.c1) + nodeCredits('fight', n.depth, 1));
@@ -82,7 +84,7 @@ describe('Survival, one stage (rules 1.41)', () => {
       const o = g.run!.offers![id];
       expect(o.weapons).toHaveLength(SV.rewards.offer.fight); // rules 1.54 item 2: one weapon after a fight
       for (const w of o.weapons) { expect(['standard', 'fine']).toContain(w.rarity); expect(w.price).toBe(priceOf(w.id, w.rarity)); expect(priceOf(w.id)!).toBeLessThanOrEqual(SV.rewards.price_band.base + SV.rewards.price_band.per_depth * n.depth); }
-      expect(o.instead).toBeUndefined(); expect(o.materials!.length).toBe(SV.rewards.materials.items.length); // credits instead retired
+      expect(o.instead).toBeUndefined(); expect(o.materials!.length).toBeGreaterThanOrEqual(SV.rewards.materials.items.filter((x: any) => x.per_credits).length); // credits instead retired; rules 1.55: residue by chance
     }
     // the picks: owner (or host) only; a weapon into the pack at its rarity; the materials (rules 1.54); then back to the map
     expect(refused(g, { type: 'run/pick', charId: 'c1', choice: 0 }, 'p2')).toMatch(/^Only .+'s player picks for /);
