@@ -10,7 +10,7 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView } from '@engine';
+  attemptWhy, narratorOff, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView } from '@engine';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
@@ -1344,7 +1344,8 @@ export class CombatLogic extends DCLogic {
     say.submit = (e) => { if (e && e.preventDefault) e.preventDefault(); say.send(); }; // the Say button, or Enter in the box
     // Rules 1.14: an attempt (words that want something to happen) costs 1 AP, once a turn, on your own turn, and the
     // Narrator answers at once; the fight waits for it. Say stays free. The reason it can't be used is the engine's.
-    const fr = cb.ruling || null, frWho = fr ? cb.units.find((u) => u.id === fr.unit) : null, hostMe = getState().role === 'host';
+    const fr = (cb.ruling && !narratorOff(g)) ? cb.ruling : null, // a ruling nobody can answer is given back by the engine at the next action: it never locks the panel
+      frWho = fr ? cb.units.find((u) => u.id === fr.unit) : null, hostMe = getState().role === 'host';
     { const mineNow = !!myU && mineTurn && cur && myU.id === cur.id;
       const no = !myU ? '' : fr ? 'The Narrator is deciding.' : (mineTurn && typeof performance !== 'undefined' && turnsBusyUntil() > performance.now()) ? 'The other turns are still playing out.' : !mineNow ? 'Only on your own turn.' : attemptWhy(g, cb, myU, ATTEMPT_AP) || '';
       say.attemptOff = !!no; say.attemptLabel = 'Attempt · ' + ATTEMPT_AP + ' AP';

@@ -21,6 +21,11 @@ A hotfix (15 Nov 2026): the Sigil words, and one number change, Survival's XP (r
   (nothing about raising it at the top). The key's short hint says the same: "2 words max; Intelligence 3 gives 3".
 - **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
   ground), the button says so before the click: "new Line · fades FIRE".
+- **Speaking in a Survival fight never locks the turn.** A run has no Narrator, but Attempt (1 AP) let the words through
+  and the fight waited for an answer that could never come, End turn included. Now Say is said for everyone as before,
+  and Attempt (and every perk that asks for words) is off with the reason "No Narrator in this mode: say it, but nobody
+  rules on an attempt." A ruling left waiting with no Narrator to answer it (a run, the Narrator gone or away) is given
+  back at the next action, so End turn always works; a save already stuck frees itself the same way.
 
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
