@@ -4,7 +4,7 @@
 // the fight spent kept spent, a Hymn's wait not counting down, the doubtful actions refused. Everything through the
 // reducer with real actions; numbers are read from the state and the data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, reachable, packOf, giveView, magazineWorth, maxHp, setDevotionXp, devotionThreshold, fieldRefusal, PERK } from '../src';
+import { type GameState, apply, RuleError, reachable, packOf, giveView, magazineWorth, maxHp, setDevotionXp, devotionThreshold, fieldRefusal, fieldActs, PERK } from '../src';
 import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 import survivalJ from '../../../data/survival.json';
@@ -85,6 +85,10 @@ describe('rules 1.55 items 30 to 33: the field is a free fight without enemies',
     g = apply(g, { type: 'world/act', charId: 'c1', act: 'stim', targetId: 'c2' } as any, 'host');
     expect(g.characters.c2.hp).toBeGreaterThan(1); expect(g.characters.c1.stims).toBe(1); expect(g.story.ap).toEqual({}); expect(g.run!.state).toBe('field');
     expect(refused(g, { type: 'world/act', charId: 'c1', act: 'attack', targetId: 'c2', mode: 'shot' } as any)).toMatch(/^Nothing hostile is left on the field/);
+    // the field's view offers what the reducer takes: the stim on the friend next to you, and each row goes through
+    const v = fieldActs(g, 'host'); expect(v.find((x) => x.key === 'stim:c2')?.why).toBeNull();
+    for (const x of v.filter((y) => !y.why)) expect(() => apply(g, x.action, 'host')).not.toThrow();
+    expect(fieldActs(leaveField(g), 'host')).toEqual([]);
     expect(refused(g, { type: 'world/act', charId: 'c1', act: 'search', objId: 'x' } as any)).toMatch(/^The fight is over: on the field you walk/);
   });
 
@@ -135,5 +139,17 @@ describe('rules 1.55 items 30 to 33: the field is a free fight without enemies',
     const g = toField(inFight([{ build: 'plain_gun', level: 1 }]));
     const c = clone(g).characters.c1; c.perks = [...(c.perks || []), { id: 'shrug_it_off', tier: 'I' }];
     if (PERK.shrug_it_off) expect(fieldRefusal(g, c, 'perk:shrug_it_off')).toMatch(/waits for a fight/);
+  });
+});
+
+describe('saves from 0.28.1 (rules 1.55 items 27 to 33 add no saved field)', () => {
+  it('a run saved mid-field (no carried counters) and one saved mid-map load and play on', () => {
+    const f = toField(inFight(DUO, (x) => { x.characters.c1.stims = 1; }));
+    const old = clone(f); delete (old.story as any).ps; // what 0.28.1 saved on the field
+    const moved = apply(JSON.parse(JSON.stringify(old)), { type: 'world/act', charId: 'c1', act: 'prone' } as any, 'host');
+    expect(moved.run!.state).toBe('field');
+    let m = leaveField(old); for (const [i, c] of Object.entries(['c1', 'c2'])) m = apply(m, { type: 'run/pick', charId: c, choice: 'materials' }, ownerOf(+i));
+    const map = clone(m); delete (map.story as any).ps;
+    expect(apply(map, { type: 'gear/give', charId: 'c1', to: 'c2', count: 'stim_injector', qty: 1 } as any, 'host').characters.c2.stims).toBe((map.characters.c2.stims || 0) + 1);
   });
 });

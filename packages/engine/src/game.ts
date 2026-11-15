@@ -3852,6 +3852,32 @@ function stimOffGrid(g: GameState, a: { charId: string; targetId?: string }, by:
   for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c.id });
   return null;
 }
+/** One action the field offers (rules 1.55 item 30): its group, its words, the action to send, and the reducer's own
+ * reason it can't be done now (null: it can). */
+export interface FieldActV { key: string; group: 'gear' | 'magic' | 'stim' | 'perk'; label: string; action: Action; why: string | null }
+/** The field's actions for player `me`'s character (rules 1.55 item 30): the area map's own actions, a stim for each
+ * friend next to you (and yourself), and the item actions that need no pick, each judged by the reducer itself (the
+ * action applied to a copy: the same truth, never a second check). Shown: what can be done now, and what the field
+ * refuses (item 32), greyed with its reason. Empty off the field. */
+export function fieldActs(g: GameState, me: string): FieldActV[] {
+  const r = g.run; if (!r || r.state !== 'field') return [];
+  const c = Object.values(g.characters).find((x) => x.owner === me && !x.dead), pos = g.story.positions || {}; if (!c || !pos[c.id]) return [];
+  const w = (o: Record<string, unknown>) => ({ type: 'world/act', charId: c.id, ...o }) as unknown as Action;
+  const rows: Omit<FieldActV, 'why'>[] = [];
+  for (const [key, label, o] of FIELD_BASIC) rows.push({ key, group: key.startsWith('m:') ? 'magic' : 'gear', label, action: w(o) });
+  for (const t of Object.values(g.characters)) if (!t.dead && pos[t.id] && dist(pos[c.id], pos[t.id]) <= 1) rows.push({ key: 'stim:' + t.id, group: 'stim', label: 'Stim ' + (t.id === c.id ? 'yourself' : t.name), action: w({ act: 'stim', targetId: t.id }) });
+  { const cb = storyCb(g), u = cb.units.find((x) => x.charId === c.id);
+    if (u) { const was = bindGame(g); try { for (const e of perkActionsFor({ u, c, cb, g }, 'world')) if (e.target === 'none' && !e.arm) rows.push({ key: 'perk:' + e.id + '#' + e.actionId, group: 'perk', label: e.label, action: w({ act: 'perk', id: e.id, actionId: e.actionId }) }); } finally { bindGame(was); } } }
+  const judge = (a: Action): string | null => { try { apply(g, a, me); return null; } catch (e) { if (e instanceof RuleError) return e.message; return String((e as Error)?.message || e); } };
+  return rows.map((x) => ({ ...x, why: judge(x.action) })).filter((x) => !x.why || (x.group === 'perk' && /waits for a fight/.test(x.why)));
+}
+/** The area map's own actions on the field, as the area map's world/act takes them (rules 1.55 item 30). */
+const FIELD_BASIC: [string, string, Record<string, unknown>][] = [
+  ['g:reload', 'Reload', { act: 'reload' }], ['g:reload_t', 'Reload (tactical)', { act: 'reload', tactical: true }], ['g:reload_b', 'Reload both', { act: 'reload', hand: 'both' }],
+  ['g:load', 'Load magazines', { act: 'load' }], ['g:clear', 'Clear the jam', { act: 'clear' }], ['g:repair', 'Field Repair', { act: 'repair' }], ['g:prone', 'Prone or stand', { act: 'prone' }],
+  ['m:vent', 'Vent Flux', { act: 'vent' }], ['m:core', 'Swap a core', { act: 'core' }], ['m:pump', 'Pump', { act: 'pump' }], ['m:steady', 'Steady the heart', { act: 'steady' }],
+  ['m:letgo', 'Let it go', { act: 'letgo' }], ['m:release', 'Release', { act: 'release' }], ['m:syphon', 'Syphon', { act: 'syphon' }], ['m:crystallise', 'Crystallise', { act: 'crystallise' }],
+];
 /** The strip a stim off the map is used on (rules 1.55 item 29). */
 const OFF_GRID: MapDef = layoutMap('off-grid', { name: 'Off the map', w: 2, h: 1, rows: ['..'] });
 // rules 1.55 item 29: the Give view's "Use on..." for the counted item a stim is (the count combat/stim spends)

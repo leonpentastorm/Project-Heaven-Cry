@@ -28,13 +28,13 @@ export function GiveTab() {
   const why = row.why[who];
   const send = () => {
     if (row.kind === 'held') { act({ type: 'gear/unequip', charId: v.from!.id, slot: row.unequip! }); setSel('credits'); return; }
-    act({ ...(row.action as any), to: who, ...(row.kind === 'credits' ? { credits: amount } : row.kind === 'pack' ? { qty: amount } : {}) });
+    act({ ...(row.action as any), to: who, ...(row.kind === 'credits' ? { credits: amount } : row.kind === 'pack' || row.kind === 'count' ? { qty: amount } : {}) });
     setN(1); if (row.kind === 'pack') setSel('credits');
   };
   const word = row.kind === 'credits' ? 'Give ' + amount.toLocaleString('en') + (amount === 1 ? ' credit' : ' credits') + ' to ' + target.name
     : row.kind === 'held' ? 'Put it in the pack' : row.kind === 'never' ? 'Yours to keep' : 'Give ' + (most > 1 ? amount + ' × ' : '') + row.label + ' to ' + target.name;
   const line = (r: GiveRowV) => {
-    const w = r.why[who], on = r.key === row.key, icon = r.kind === 'pack' || r.kind === 'held' ? gearIconUri(r.id, undefined, { large: true }) : '';
+    const w = r.why[who], on = r.key === row.key, icon = r.kind === 'pack' || r.kind === 'count' || r.kind === 'held' ? gearIconUri(r.id, undefined, { large: true }) : '';
     return (
       <button key={r.key} type="button" data-phc-give-row={r.key} data-phc-give-why={w ? '' : undefined} aria-pressed={on} onClick={() => { setSel(r.key); setN(r.kind === 'credits' ? Math.min(100, Math.max(1, r.qty)) : 1); }}
         style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderRadius: 12, textAlign: 'left', fontFamily: 'inherit', cursor: 'pointer', color: w && r.kind !== 'held' ? I.muted : I.text,
@@ -66,7 +66,7 @@ export function GiveTab() {
         </div>
       </div>
       <div data-phc-give-send="" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '14px 16px', borderRadius: 14, background: 'rgba(16,21,31,0.97)', border: '1px solid #3B475D' }}>
-        {(row.kind === 'credits' || (row.kind === 'pack' && most > 1)) && !why ? (
+        {(row.kind === 'credits' || ((row.kind === 'pack' || row.kind === 'count') && most > 1)) && !why ? (
           <div role="group" aria-label="How many" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
             <button type="button" aria-label="Fewer" onClick={() => setN(Math.max(1, amount - (row.kind === 'credits' && amount > 10 ? 10 : 1)))} style={{ width: 34, height: 42, border: 0, background: 'transparent', color: I.text, fontSize: 20, cursor: 'pointer' }}>‹</button>
             <span data-phc-give-n="" style={{ minWidth: 56, textAlign: 'center', fontWeight: 700, fontSize: 17, fontVariantNumeric: 'tabular-nums' }}>{amount}</span>
@@ -76,6 +76,9 @@ export function GiveTab() {
         <button type="button" data-phc-give-go="" disabled={!!why || row.kind === 'never'} onClick={send}
           style={{ minHeight: 46, padding: '0 20px', borderRadius: 12, border: 0, background: why || row.kind === 'never' ? I.raised : I.text, color: why || row.kind === 'never' ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15.5, fontWeight: 700, cursor: why ? 'default' : 'pointer' }}>{word}</button>
         {why ? <span data-phc-give-reason="" style={{ fontSize: 13, color: I.muted }}>{why}</span> : null}
+        {row.use ? [target.id, v.from!.id].map((id) => { const u = row.use!, no = u.why[id], name = id === v.from!.id ? 'yourself' : target.name; // rules 1.55 item 29: use it on the friend picked, or on yourself
+          return <button key={'use-' + id} type="button" data-phc-give-use={id} disabled={!!no} aria-label={no ? u.label + ' ' + name + ': ' + no : undefined} onClick={() => act({ ...(u.action as any), targetId: id })}
+            style={{ minHeight: 46, padding: '0 18px', borderRadius: 12, border: '1px solid ' + I.line, background: no ? 'transparent' : I.raised, color: no ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: no ? 'default' : 'pointer' }}>{u.label + ' ' + name}</button>; }) : null}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span style={kick}>WHAT</span>

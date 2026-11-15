@@ -52,7 +52,7 @@ const skillLine = (c, inst) => (c && inst && inst.id && (WEAPON[inst.id] || ITEM
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
-import { approachOptions, sigilGrowthView, canLayGrandForms, makeView } from '@engine';
+import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView } from '@engine';
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
@@ -520,6 +520,18 @@ export class MainLogic extends DCLogic {
         nameStyle: 'font-weight: ' + (x ? '600; color: #E7EBF3' : '400; color: #5B6577') }; });
     const kg = (x) => (Math.round(x * 1000) / 1000) + ' kg';
     // Magazines show as separate lines: full, part-loaded (each count) and empty (spec: Magazines and rounds are inventory).
+    // Rules 1.55 items 27 to 29 (0.28.2): a backpack line's Give (to each friend: one, or the whole stack) and a stim's Use
+    // on a friend or yourself, from the engine's Give view (give.ts giveView: its rows, each receiver's reason, the
+    // row's action and its use's action); a line the engine refuses for everyone shows nothing; solo lists no friend.
+    const GV = c && !gearLocked ? giveView(g, me, c.id) : null;
+    const giveActs = (gkey) => { const row = GV && GV.rows.find((x) => x.key === gkey); if (!row) return [];
+      const out = [];
+      for (const t of GV.to) { if (row.why[t.id]) continue;
+        out.push({ key: 'g1' + t.id, label: 'Give ' + (row.qty > 1 ? '1 ' : '') + 'to ' + t.name, go: () => act({ ...row.action, to: t.id, qty: 1 }) });
+        if (row.qty > 1) out.push({ key: 'ga' + t.id, label: 'Give all ' + row.qty + ' to ' + t.name, go: () => act({ ...row.action, to: t.id, qty: row.qty }) }); }
+      if (row.use) for (const x of Object.values(g.characters)) { if (x.dead || row.use.why[x.id]) continue;
+        out.push({ key: 'u' + x.id, label: row.use.label + ' ' + (x.id === c.id ? 'yourself' : x.name), go: () => act({ ...row.use.action, targetId: x.id }) }); }
+      return out; };
     const rig = pack.flatMap((it, ri) => {
       if (!it.mags) { const pi0 = ri - (c && c.stims ? 1 : 0), pi = c && pi0 >= 0 && pi0 < packOf(c).length && it.id !== 'eoe' && it.id !== 'stim' ? pi0 : -1, def = ITEM[it.item || it.id] || {}, wdef = it.weapon ? WEAPON[it.weapon] : null, acts = [];
         if (pi >= 0 && !gearLocked) {
@@ -531,13 +543,14 @@ export class MainLogic extends DCLogic {
             Object.values(g.characters).filter((x) => x.id !== c.id && !x.dead).forEach((x) => acts.push({ key: 'g' + x.id, label: 'Give to ' + x.name, go: () => act({ type: 'gear/give', charId: c.id, idx: pi, to: x.id }) }));
             acts.push({ key: 'd', label: 'Drop', go: () => act({ type: 'gear/drop', charId: c.id, idx: pi }) }); }
         }
+        if (it.kind !== 'plot') acts.push(...giveActs(pi >= 0 ? 'pack:' + pi : 'count:' + (it.item || it.id)));
         const tag = wdef ? 'WEAPON' : def.category === 'armour' ? 'ARMOUR' : def.category === 'mod' ? 'MOD' : def.slot === 'off_hand' ? 'OFF HAND' : KIND[it.kind] || 'ITEM';
         return [{ key: it.id + ':' + pi, tag, name: it.name + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''), qty: '×' + it.qty, kg: kg(itemKg(it)),
           note: (focusKindOf(it.weapon || it.item || it.id) ? 'In the pack: it counts only in a hand (Off hand). ' : '') + (wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, armsLine(wdef.id)].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || ''), acts, hasActs: acts.length > 0, src: it }]; }
       const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
       it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
       return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
-        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: [], hasActs: false, src: it }));
+        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: n === it.mags[0] ? giveActs('pack:' + packOf(c).indexOf(it)).filter((x) => x.key.startsWith('g1')).map((x) => ({ ...x, label: x.label.replace(/^Give 1 /, 'Give a magazine ') })) : [], hasActs: false, src: it }));
     });
     const canLoad = !!c && packOf(c).some((m) => m.mags && m.mags.some((n) => n < (WEAPON[m.weapon]?.magazine || 0)) && packOf(c).some((r) => r.calibre && r.calibre === WEAPON[m.weapon]?.ammo && r.qty > 0));
     const KG = c ? carriedKg(c) : { total: 0, weapon: 0, armour: 0, pack: 0 }, lim = c ? carryLimit(c) : 0, over = KG.total > lim;

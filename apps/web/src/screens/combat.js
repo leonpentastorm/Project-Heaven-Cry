@@ -10,20 +10,30 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView } from '@engine';
+  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, fieldActs } from '@engine';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
 /** Rules 1.55: the field's header (the engine's field: fieldView): what lies on the ground, Take all, Leave and the vote. */
-const fieldVals = (fv, open) => {
+/** Rules 1.55 item 30 (0.28.2): the field's actions, the engine's view (fieldActs: the reducer's own verdict on each),
+ *  kept for the state it was made for. */
+let FIELD_ACTS = { g: null, me: null, list: [] };
+const fieldActsOf = (g, me) => { if (FIELD_ACTS.g !== g || FIELD_ACTS.me !== me) FIELD_ACTS = { g, me, list: (() => { try { return fieldActs(g, me); } catch { return []; } })() }; return FIELD_ACTS.list; };
+const FIELD_GROUP = { gear: 'GEAR', stim: 'STIM', magic: 'MAGIC', perk: 'PERKS AND MOVES' };
+const fieldVals = (fv, open, g, me) => {
   if (!fv || !open) return { show: false };
+  const list = g ? fieldActsOf(g, me) : [];
+  const groups = Object.keys(FIELD_GROUP).map((k) => ({ key: k, label: FIELD_GROUP[k], acts: list.filter((x) => x.group === k).map((x) => ({ key: x.key, label: x.label, why: x.why || '', off: x.why ? 'true' : undefined,
+    go: () => { if (x.why) { toast(x.why); return; } act(x.action); },
+    style: 'min-height: 32px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (x.why ? 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; opacity: 0.7' : 'border: 1px solid #232D3F; background: #1C2536; color: #E7EBF3') })) })).filter((x) => x.acts.length);
   const ground = fv.piles ? fv.piles + (fv.piles === 1 ? ' pile' : ' piles') + ', ' + fv.items + (fv.items === 1 ? ' item' : ' items') + ' on the ground' : 'Nothing left on the ground';
   const word = 'Leave the field', tally = fv.solo ? '' : fv.ready + ' of ' + fv.of + ' ready';
   return { show: true, ground, tally, hasTally: !fv.solo, canTake: !!fv.takeId && !!fv.charId, take: () => act({ type: 'world/act', charId: fv.charId, act: 'pickup', objId: fv.takeId }),
     takeHint: fv.takeId ? 'Take all' : fv.piles ? 'Walk next to a pile to take it' : '', hasHint: !fv.takeId && fv.piles > 0,
-    leaveLabel: fv.mine ? '✓ ' + word : word, leave: fv.mine ? () => {} : () => act({ type: 'run/leave' }), waiting: fv.mine && fv.waiting.length ? 'Waiting for ' + fv.waiting.join(', ') + '.' : '' };
+    leaveLabel: fv.mine ? '✓ ' + word : word, leave: fv.mine ? () => {} : () => act({ type: 'run/leave' }), waiting: fv.mine && fv.waiting.length ? 'Waiting for ' + fv.waiting.join(', ') + '.' : '',
+    actGroups: groups, hasActs: groups.length > 0 };
 };
 const act = (a) => {
   if (a && /^combat\//.test(a.type) && a.type !== 'combat/say' && typeof performance !== 'undefined' && performance.now() < turnsBusyUntil()) {
@@ -1642,7 +1652,7 @@ export class CombatLogic extends DCLogic {
         ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),
       cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
       toStory: fv ? () => this.setState({ fieldIn: true }) : () => go(homeScreen(g)), toStoryLabel: fv ? 'Walk the field ›' : g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !(fv && S.fieldIn),
-      field: fieldVals(fv, !!S.fieldIn), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
+      field: fieldVals(fv, !!S.fieldIn, g, me), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
       overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox || g.run ? '' : ' The Narrator picks up the story.') + (me === g.hostId && cb.lootLog && cb.lootLog.length ? ' ' + lootLogLine(cb.lootLog) : ''),
     };
   }
