@@ -2828,6 +2828,8 @@ if _sv is not None:
             if isinstance(_cat.get(_sec), dict): _ids_all |= set(_cat[_sec].keys())
         _chars = set((_cat.get("characters") or {}).keys()); _ills = set((_cat.get("illustrations") or {}).keys())
         _setids = {s.get("id") for s in _sv.get("settings") or []}
+        # rules 1.56 (L5): the camp's own backdrop is a catalogued painting (survival_art)
+        if (_sv.get("loadout") or {}).get("backdrop") is not None and _sv["loadout"]["backdrop"] not in _ids_all: errors.append(f"survival:loadout.backdrop {_sv['loadout']['backdrop']!r} is not in the art catalog")
         for _f in (_sv["faces"].get("items") or []):
             _w = f"survival:faces.{_f.get('id')}"
             for _k in ("name", "role", "node"):

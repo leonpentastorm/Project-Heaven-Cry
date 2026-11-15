@@ -380,7 +380,7 @@ export class MainLogic extends DCLogic {
       grip[id] = (e) => startStoryDrag(e.nativeEvent || e, id, this._rp, (n) => set(n), all);
       gripKey[id] = (e) => { const n = keyMoveStoryPanel(e.key, id, this._rp, all); if (n) { e.preventDefault(); set(n, id); } }; });
     const last = order[order.length - 1] === 'squad';
-    const slots = all.filter((id) => PANEL_DRAW[id] === 'slot').map((id) => ({ key: id, id, name: STORY_PANEL_NAME[id] || id, head: (STORY_PANEL_NAME[id] || id).toUpperCase(), grip: grip[id], gripKey: gripKey[id],
+    const slots = all.filter((id) => PANEL_DRAW[id] === 'slot').map((id) => ({ key: id, id, name: STORY_PANEL_NAME[id] || id, head: (STORY_PANEL_NAME[id] || id).toUpperCase(), hasIcon: !!ART('panel-' + id), iconStyle: 'flex: none; width: 24px; height: 24px; background: #A3AEC2; -webkit-mask: url("' + ART('panel-' + id) + '") center / contain no-repeat; mask: url("' + ART('panel-' + id) + '") center / contain no-repeat', grip: grip[id], gripKey: gripKey[id],
       style: 'order: ' + o[id] + '; flex: none; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px; background: #0D1119; border: 1px solid #232D3F' }));
     // The squad module by the registry: the run's player card (runPanels.tsx RunSquad, in its slot) where the mode's list
     // holds the run module, else the story's speaking order; neither where the list has no squad.

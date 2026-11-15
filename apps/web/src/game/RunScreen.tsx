@@ -49,7 +49,7 @@ function Offer({ o }: { o: OfferV }) {
     <div data-phc-offer={o.charId} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
       <span style={kick}>{o.mine ? 'YOUR PICK · ' + o.name.toUpperCase() : o.name.toUpperCase() + (o.canPick ? ' · YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>
       {o.canPick ? <>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', minmax(0, 1fr))', gap: 10 }}>
+        <div data-tip-avoid="[data-phc-pick-materials], [data-phc-pick]" style={{ display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', minmax(0, 1fr))', gap: 10 }}>
           {m ? (
             <button type="button" data-phc-pick-materials="" {...tipProps(m.tip)}
               onClick={() => act(m.action as any)} style={bigCard(false)}>

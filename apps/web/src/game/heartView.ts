@@ -341,7 +341,7 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
     strainText: 'STRAIN ' + p.strain + ' / ' + p.limit, strainTrack: S.strainTrack, strainFill: S.strainFill, strainMark: S.strainMark,
     warn: p.warn, hasWarn: !!p.warn, warnStyle: S.warnStyle, swell: p.swell, rider: p.rider,
     btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,
-    boxStyle: 'flex: none; position: sticky; top: 0; z-index: 3; display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; border-radius: 12px; background: #120E1E; border: 1px solid ' + p.ink + '; box-shadow: 0 0 14px ' + rgba(p.ink, 0.25),
+    boxStyle: 'flex: none; position: sticky; top: 0; z-index: 3; max-height: calc(100vh - 240px); overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; border-radius: 12px; background: #120E1E; border: 1px solid ' + p.ink + '; box-shadow: 0 0 14px ' + rgba(p.ink, 0.25),
     multStyle: 'flex: none; display: inline-block; font-size: ' + (17 + Math.min(4, p.stage) * 2) + 'px; line-height: 1; font-weight: 700; white-space: nowrap; color: ' + (p.does.length ? doesInk : p.ink) + (p.does.length ? '; text-shadow: 0 0 10px ' + rgba(doesInk, 0.7) : '') };
 }
 
