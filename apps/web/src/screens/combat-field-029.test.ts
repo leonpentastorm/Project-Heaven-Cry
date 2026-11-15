@@ -8,12 +8,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, apply, newGame, viewFor, reachable, paths, refOf, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
+const TOASTS: string[] = [];
 const listeners = new Set<() => void>();
 let snap: any = null;
 const view = () => ({ game: viewFor(G, ME), me: { id: ME, name: 'Leon' }, role: 'host', screen: 'combat', toast: null, savedAt: 0 });
 const doAct = (a: any) => { G = apply(G, a, ME); snap = view(); listeners.forEach((f) => f()); };
 vi.mock('../game/store', () => ({ getState: () => snap || (snap = view()), subscribe: (f: any) => { listeners.add(f); return () => listeners.delete(f); },
-  act: (a: any) => { try { doAct(a); } catch (e: any) { if (e?.name !== 'RuleError' && e?.constructor?.name !== 'RuleError') throw e; } }, go: () => {}, toast: () => {}, polishText: async () => '', retryNarrator: () => {}, saveNow: () => {}, poke: () => {}, homeScreen: () => 'main' }));
+  act: (a: any) => { try { doAct(a); } catch (e: any) { if (e?.name !== 'RuleError' && e?.constructor?.name !== 'RuleError') throw e; } }, go: () => {}, toast: (t: string) => { TOASTS.push(t); }, polishText: async () => '', retryNarrator: () => {}, saveNow: () => {}, poke: () => {}, homeScreen: () => 'main' }));
 vi.mock('../game/report', () => ({ openReport: () => {}, PlaytestTools: () => null }));
 const origErr = console.error;
 console.error = (...a: any[]) => { const t = a.map(String).join(' '); if (!/not wrapped in act|act\(\.\.\.\)/.test(t)) origErr(...a); };
@@ -78,6 +79,16 @@ describe("0.29.0: the field's Backpack, the friend target card and the field's w
     const v = L.renderVals();
     expect(v.target.odds).toMatch(/is a friend/); expect(v.target.odds).not.toMatch(/Hit \d+%/);
     expect(v.ytWord).toBe('NO TURNS HERE'); expect(v.turnChip).toBe('NO TURNS HERE');
+    vi.useRealTimers();
+  });
+  it("(b) Bond on a machine on the field: the data's reason for that unit, never the step's prompt", async () => {
+    vi.useFakeTimers(); field();
+    const foe = G.combat!.units.find((u) => u.side === 'foe')!; foe.kind = 'robot'; delete (foe as any).hidden;
+    const m = unitOf('Medic'), [x, y] = m.pos.split(',').map(Number); foe.pos = (x + 2) + ',' + y; snap = view();
+    const L: any = new CombatLogic({}); L.setState = (p: any) => { Object.assign(L.state, p); };
+    const row = L.renderVals().groups.flatMap((g: any) => g.items).find((i: any) => i.name === 'Bond'); expect(row).toBeTruthy(); row.pick();
+    L.renderVals(); L.tileClick(foe.pos);
+    expect(TOASTS.at(-1)).toBe('✕ ' + foe.name + ': A machine has no heart to Bond.');
     vi.useRealTimers();
   });
 });
