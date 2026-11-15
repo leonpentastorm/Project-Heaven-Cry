@@ -1279,9 +1279,11 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
     : -Math.max(0, (att.shotsThisTurn || 0) * kick - Math.floor((att.dexterity || 0) / RECOIL.dex_relief_per));
   const recoilT = weaponBraced(att) || condOn(att, 'emplaced') ? Math.ceil(recoil * RECOIL.braced_mult) : recoil;
   const emplaced = !melee && condOn(att, 'emplaced') ? 2 : 0;
-  const skillCond = condSkillMod(att, useW.skill);
-  // op roll_with (rules 1.55): the attack may roll with another skill's modifier in place of the weapon's (one choice: rollWithPick)
-  const rw = rollWithPick(charFor(att), w.skill || 'raw_power', hk.rollWith);
+  // the skill this strike rolls with: the weapon actually striking (weaponVia: an off hand's own, a thrown weapon's, the
+  // fists of a Disarmed blow), THE reading used by the roll, its preview and the gear card (gearpreview.ts)
+  const via = weaponVia(att, mode), skillCond = condSkillMod(att, via);
+  // op roll_with (rules 1.55): the attack may roll with another skill's modifier in place of that one (one choice: rollWithPick)
+  const rw = rollWithPick(charFor(att), via, hk.rollWith);
   const terms: Term[] = [...(rw ? T(att.attack + rw.delta, 'Hits with: ' + rollWithWords(rw)) : T(att.attack, 'skill')), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
     ...T(mode === 'aimed' ? 2 : 0, 'aimed'), ...T(mode === 'auto' ? -2 : 0, 'full auto'), ...T(opts.extra || 0, 'volley'), ...T(rangePenalty, 'range'), ...T(heat, 'Heat'), ...T(armPenalty(att, useW), 'injured arm'),
     ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),

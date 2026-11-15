@@ -94,3 +94,24 @@ describe('T.3 while Guard is held, the tank rolls with Durability (op roll_with,
   });
 });
 void ({} as Unit);
+
+// The 0.29 consolidation (SF2): ONE reading of the skill a strike rolls with (combat.ts weaponVia: the weapon actually
+// striking), read by the roll, its preview and the gear card. A rifle with no melee side strikes in melee with the fists
+// (Raw Power): roll_with compares Durability against Raw Power there, never against the rifle's Dexterity.
+describe('SF2: roll_with compares against the skill of the weapon actually striking', () => {
+  const blow = (g: number) => {
+    const f = fight(3, { dex: 7, foeAt: 'D5' }); guard(f, g); rig({ die: 10 });
+    f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'melee' } as any);
+    const line = f.cb.log.find((l) => /d20 10/.test(l)) || '', m = /d20 10 ([−+-]\s?\d+)/.exec(line);
+    return m ? Number(m[1].replace('−', '-').replace(/\s/g, '')) : NaN;
+  };
+  it('a fists blow by a rifle holder (Dexterity 7, Raw Power 0, Durability 3) holding Guard rolls with Durability', () => {
+    const a = blow(0), b = blow(1); expect(Number.isNaN(a)).toBe(false);
+    expect(b - a).toBe(mod(3) - mod(0));
+  });
+  it('the shot with the same rifle keeps its Dexterity (higher than Durability): no change', () => {
+    const shot = (g: number) => { const f = fight(3, { dex: 7 }); guard(f, g); rig({ die: 10 }); f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);
+      const line = f.cb.log.find((l) => /fires at/.test(l)) || '', m = /d20 10 ([−+-]\s?\d+)/.exec(line); return m ? Number(m[1].replace('−', '-').replace(/\s/g, '')) : NaN; };
+    expect(shot(1) - shot(0)).toBe(0);
+  });
+});
