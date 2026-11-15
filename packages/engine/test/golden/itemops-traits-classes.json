@@ -138,7 +138,7 @@
 "class/guardian@II/shot": "P1 ap:9>7, F2 hp:259/259>197/259 conds:>judged1",
 "class/guardian@II/shot-afraid": "P1 ap:9>7, F2 hp:259/259>197/259 conds:>fear2.judged1",
 "class/guardian@II/shot-attack": "P1 ap:9>7, F2 hp:259/259>197/259 conds:>judged1",
-"class/guardian@II/shot-crit": "P1 ap:9>7, F2 hp:259/259>105/259 conds:>judged1 mv:1.5>0.75 inj:0>1",
+"class/guardian@II/shot-crit": "P1 ap:9>7, F2 hp:259/259>105/259 conds:>judged1.shaken1 mv:1.5>0.75 inj:0>1",
 "class/guardian@II/stats": "",
 "class/guardian@III/stats": "",
 "class/infiltrator@I/analyze": "P1 ap:9>8, F2 conds:>read1",

@@ -1,13 +1,13 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, WEAPON, fightSight, phys, refOf } from '@engine';
+import { type FxEvent, type GameState, SIGIL, WEAPON, condName, fightSight, phys, refOf } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
 import { soulHandlers, soulBeat, discharge } from './soul';
 import { feelingHandlers, feelingBeat } from './feelings';
-import { faithHandlers, faithBeat } from './faith';
+import { faithHandlers, faithBeat, faithBatch, sealedBoon } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
@@ -64,6 +64,12 @@ export function setContext(g: GameState | null, screen: string) {
   }
 }
 const unit = (id: string | null | undefined) => (id ? units.get(id) : undefined);
+/** The patron a unit's (or a character's) Faithful character prays to, from the game on screen (null: an Atheist). */
+function patronOfUnit(id: string | null | undefined): string | null {
+  if (!id || !ctxGame) return null;
+  const cid = unit(id)?.charId || id, c: any = (ctxGame.characters as any)?.[cid];
+  return c?.belief?.kind === 'faithful' ? String(c.belief.patron || c.patron || '') || null : null;
+}
 /** The tiles the squad sees now (null: everything, outside a fight). */
 export const seenNow = () => seenTiles;
 
@@ -1149,7 +1155,7 @@ const H: Record<string, Handler> = {
     play('sg_command', p);
   },
   boon(e) {
-    const p = at(e.at); if (!p) return;
+    const p = at(e.at); if (!p || sealedBoon(e)) return; // a Chaplain's Ward: fx/faith.ts ward_seal draws its own seal
     const tok = tokOf(e.target, e.at);
     switch (e.word) {
       case 'ward': brackets(p, SIGIL_INK); floatText('WARD +' + (e.amount || 0), p, SIGIL_INK, { small: true, delay: 200 }); play('sg_ward', p); break;
@@ -1186,12 +1192,12 @@ Object.assign(H, soulHandlers(SOUL_KIT));
 // Outburst 4.0 (fx/feelings.ts): feelings felt and poured, residue, Revert, practice, Fuse, Linger, Thread.
 Object.assign(H, feelingHandlers(SOUL_KIT));
 // Blessing 2.0 (fx/faith.ts): prayers, Witnessed, interventions, Devotion, vows, the patron's lines and Miracles.
-Object.assign(H, faithHandlers({ ...SOUL_KIT, posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; },
+Object.assign(H, faithHandlers({ ...SOUL_KIT, patronOfUnit: (id) => patronOfUnit(id), posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; },
   nameOfChar: (charId) => (charId ? charNames.get(charId) : undefined), hurry: (ms) => hurryFx(ms) }));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 const COND_WORD: Record<string, string> = { slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
-const condWord = (id: string) => COND_WORD[id] || String(id || '').toUpperCase();
+const condWord = (id: string) => COND_WORD[id] || String(condName(String(id || '')) || id || '').toUpperCase(); // a row's own name (the Canticle's verses), not its id
 const condBoon = (id: string) => id === 'guarded' || id === 'inspired' || id === 'quickened' || id === 'sharpened';
 
 // ---------- particles: Sigil squares, Soul motes, heal pluses ----------
@@ -1409,7 +1415,7 @@ const beatOf = (e: FxEvent): number => { const b = baseBeat(e) + (mineOnly(e) ? 
 function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
-  if (e.k === 'roll') return 0; // a roll's numbers (engine rolls.ts): data for the dice read-out, no beat of its own
+  if (e.k === 'roll' && e.why !== 'pray') return 0; // a roll's numbers (engine rolls.ts): data for the dice read-out, no beat of its own (an Atheist's prayer by dice has its moment: fx/faith.ts)
   const gb = figmentBeat(e); if (gb !== undefined) return gb;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
@@ -1552,6 +1558,7 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; 
   if (!evs.length) return;
   noteQueued(stream, Math.max(...evs.map((e) => e.n || 0)));
   if (opts.from == null) rangedBatch(evs, stream); // fx/ranged.ts: tag the batch's techniques in order (a new fight forgets the last)
+  faithBatch(evs); // fx/faith.ts: each Chaplain moment tied to the unit it landed on (a data row's fx is sent at its holder)
   // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
   // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms
   // to the map, then the miracle happens". What came before it plays first as usual (a decided fight skips it: the

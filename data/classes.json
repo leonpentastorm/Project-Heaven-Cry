@@ -1833,7 +1833,10 @@
                       "amount": "ward",
                       "target": "target",
                       "layer": "ward",
-                      "holders": 2
+                      "holders": 2,
+                      "fx": {
+                        "k": "ward_seal"
+                      }
                     }
                   ]
                 }
@@ -1903,7 +1906,10 @@
                     "n": 1,
                     "key": "smite"
                   },
-                  "say": "{patron} smites {target} (Smite){then}."
+                  "say": "{patron} smites {target} (Smite){then}.",
+                  "fx": {
+                    "k": "smite"
+                  }
                 },
                 {
                   "op": "deal",
@@ -1928,7 +1934,10 @@
                     "n": 1,
                     "key": "smite"
                   },
-                  "say": "{patron} smites {target} (Smite){then}."
+                  "say": "{patron} smites {target} (Smite){then}.",
+                  "fx": {
+                    "k": "smite"
+                  }
                 },
                 {
                   "op": "deal",
@@ -1951,7 +1960,10 @@
                     "n": 1,
                     "key": "smite"
                   },
-                  "say": "{patron} smites {target} (Smite){then}."
+                  "say": "{patron} smites {target} (Smite){then}.",
+                  "fx": {
+                    "k": "smite"
+                  }
                 },
                 {
                   "op": "condition",
@@ -2043,6 +2055,644 @@
           ],
           "status": "active",
           "surface": "combat"
+        },
+        {
+          "id": "canticle",
+          "name": "Canticle",
+          "ap_cost": 1,
+          "uses": "per_turn",
+          "door_line": "Sing the Canticle each turn: you and everyone near you carry your patron's verse, and it grows while you keep singing, until a wound breaks the song.",
+          "text": "Sing ({=effects.0.ap} AP, once a turn; not a prayer, so your Whisper and your Hymn stay free). You and every ally within {=effects.0.effects.4.targets.within} tiles carry your patron's verse for {=effects.0.effects.4.rounds} rounds (each patron sings its own: the verse's card says what it gives; an Atheist rolls the Whisper's TN for it). Sing again on your next turn and the song grows: the second verse, Rising, which steadies the aim of everyone within {=effects.0.effects.14.targets.within} tile, then, from Faith {=effects.0.effects.13.if.self_skill.faith}, the third, Crescendo, which steadies every aim within {=effects.0.effects.13.targets.within} tiles in its place (neither for the Counting Weaver, whose verse already does). Skip a turn and it starts again from the first verse. A blow that takes your HP breaks the song: the verses on you and on every ally your song reached end (another Chaplain's song on the others holds).",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "canticle",
+              "ap": 1,
+              "uses": "per_turn",
+              "if": {
+                "self_skill": {
+                  "faith": 1
+                },
+                "no_flag": "sung"
+              },
+              "why": {
+                "self_skill": "The Canticle needs a point of Faith.",
+                "no_flag": "You sang this turn. Sing again on your next turn."
+              },
+              "effects": [
+                {
+                  "op": "mark",
+                  "when": "acted",
+                  "flag": "verse_3",
+                  "if": {
+                    "flag": "verse_2"
+                  },
+                  "fx": {
+                    "k": "canticle",
+                    "verse": 3
+                  }
+                },
+                {
+                  "op": "mark",
+                  "when": "acted",
+                  "flag": "verse_2",
+                  "if": {
+                    "flag": "held",
+                    "no_flag": "verse_2"
+                  },
+                  "fx": {
+                    "k": "canticle",
+                    "verse": 2
+                  }
+                },
+                {
+                  "op": "mark",
+                  "when": "acted",
+                  "flag": "sung",
+                  "if": {
+                    "no_flag": "held"
+                  },
+                  "fx": {
+                    "k": "canticle",
+                    "verse": 1
+                  }
+                },
+                {
+                  "op": "mark",
+                  "when": "acted",
+                  "flag": "sung"
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_nerukhan",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "nerukhan"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_the_quartermaster",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "the_quartermaster"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_the_laughing_mask",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "the_laughing_mask"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_toll_keeper",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "toll_keeper"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_mother_ember",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "mother_ember"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_old_overcast",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "old_overcast"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_the_matchmaker",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "the_matchmaker"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_counting_weaver",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "patron": [
+                      "counting_weaver"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_plain",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "not_patron": [
+                      "nerukhan",
+                      "the_quartermaster",
+                      "the_laughing_mask",
+                      "toll_keeper",
+                      "mother_ember",
+                      "old_overcast",
+                      "the_matchmaker",
+                      "counting_weaver"
+                    ],
+                    "answered": true
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_crescendo",
+                  "targets": {
+                    "of": "self",
+                    "within": 3,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "flag": "verse_3",
+                    "self_skill": {
+                      "faith": 5
+                    },
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_rising",
+                  "targets": {
+                    "of": "self",
+                    "within": 1,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "flag": "verse_2",
+                    "no_flag": "verse_3",
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_rising",
+                  "targets": {
+                    "of": "self",
+                    "within": 1,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "flag": "verse_3",
+                    "self_skill_below": {
+                      "faith": 5
+                    },
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                },
+                {
+                  "op": "cleanse",
+                  "when": "acted",
+                  "condition": "canticle_rising",
+                  "targets": {
+                    "of": "self",
+                    "within": 3,
+                    "side": "side"
+                  },
+                  "if": {
+                    "flag": "verse_3",
+                    "self_skill": {
+                      "faith": 5
+                    },
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                },
+                {
+                  "op": "tie",
+                  "when": "acted",
+                  "kind": "verse",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "ally"
+                  }
+                },
+                {
+                  "op": "tie",
+                  "when": "acted",
+                  "kind": "verse",
+                  "targets": {
+                    "of": "self",
+                    "within": 3,
+                    "side": "ally"
+                  },
+                  "if": {
+                    "flag": "verse_3",
+                    "self_skill": {
+                      "faith": 5
+                    },
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "held",
+              "if": {
+                "flag": "sung"
+              }
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "held",
+              "clear": true,
+              "if": {
+                "no_flag": "sung"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "verse_2",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "verse_3",
+                  "clear": true
+                },
+                {
+                  "op": "tie",
+                  "kind": "verse",
+                  "clear": "all"
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_start",
+              "flag": "sung",
+              "clear": true
+            },
+            {
+              "op": "cleanse",
+              "when": "damaged",
+              "condition": [
+                "canticle_nerukhan",
+                "canticle_the_quartermaster",
+                "canticle_the_laughing_mask",
+                "canticle_toll_keeper",
+                "canticle_mother_ember",
+                "canticle_old_overcast",
+                "canticle_the_matchmaker",
+                "canticle_counting_weaver",
+                "canticle_plain",
+                "canticle_crescendo",
+                "canticle_rising"
+              ],
+              "if": {
+                "by_hit": true,
+                "flag": "held"
+              },
+              "and": [
+                {
+                  "op": "cleanse",
+                  "condition": [
+                    "canticle_nerukhan",
+                    "canticle_the_quartermaster",
+                    "canticle_the_laughing_mask",
+                    "canticle_toll_keeper",
+                    "canticle_mother_ember",
+                    "canticle_old_overcast",
+                    "canticle_the_matchmaker",
+                    "canticle_counting_weaver",
+                    "canticle_plain",
+                    "canticle_crescendo",
+                    "canticle_rising"
+                  ],
+                  "targets": {
+                    "of": "self",
+                    "side": "ally",
+                    "tied": "verse"
+                  }
+                },
+                {
+                  "op": "tie",
+                  "kind": "verse",
+                  "clear": "all"
+                },
+                {
+                  "op": "mark",
+                  "flag": "sung",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "held",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "verse_2",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "verse_3",
+                  "clear": true
+                }
+              ],
+              "fx": {
+                "k": "canticle_break"
+              },
+              "say": "{self} is hurt and the Canticle breaks."
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "guardian",
+          "new": true,
+          "fantasy_tags": [
+            "faith",
+            "song",
+            "support"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+        },
+        {
+          "id": "amen",
+          "name": "Amen",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "amounts": {
+            "amen": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "blessing",
+              "type": "soul",
+              "armour": "none",
+              "provisional": true
+            }
+          },
+          "text": "After you pray (a Whisper, a Hymn, a Miracle, your Ward or your Sanctuary), the first hit an ally lands on an enemy that still stands before your next turn rings out: your patron adds {=amounts.amen.base} × your Blessing power Soul damage, with no roll, through armour.",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "acted",
+              "flag": "amen",
+              "if": {
+                "action": [
+                  "pray",
+                  "ward",
+                  "sanctuary"
+                ]
+              }
+            },
+            {
+              "op": "deal",
+              "when": "hit",
+              "amount": "amen",
+              "target": "target",
+              "via": "faith",
+              "if": {
+                "actor": "ally",
+                "hostile": true,
+                "target_alive": true,
+                "flag": "amen"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "amen",
+                  "clear": true
+                }
+              ],
+              "fx": {
+                "k": "amen"
+              },
+              "say": "{patron} answers {actor}'s blow on {target} (Amen){then}."
+            },
+            {
+              "op": "mark",
+              "when": "turn_start",
+              "flag": "amen",
+              "clear": true
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "guardian",
+          "new": true,
+          "fantasy_tags": [
+            "faith",
+            "prayer",
+            "support"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+        },
+        {
+          "id": "holy_dread",
+          "name": "Holy Dread",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "When your god's blow (Soul damage of yours: a Rebuke, a Smite, an Amen) leaves an enemy at half its HP or less and still standing, it saves (Heart, against your Faith) or is Shaken for {=effects.0.rounds} round. Once a turn.",
+          "effects": [
+            {
+              "op": "condition",
+              "when": "damaged",
+              "condition": "shaken",
+              "rounds": 1,
+              "via": "faith",
+              "target": "target",
+              "if": {
+                "actor": "self",
+                "target": "foe",
+                "damage": [
+                  "soul"
+                ],
+                "target_hp_at_most": 0.5,
+                "target_alive": true
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              },
+              "fx": {
+                "k": "holy_dread"
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "guardian",
+          "new": true,
+          "fantasy_tags": [
+            "faith",
+            "fear"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+        },
+        {
+          "id": "last_rites",
+          "name": "Last Rites",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "A prayer's heal of yours on a Downed ally is ×{=effects.0.value}.",
+          "effects": [
+            {
+              "op": "mend_mult",
+              "when": "heal",
+              "value": 1.5,
+              "if": {
+                "actor": "self",
+                "how": [
+                  "blessing"
+                ],
+                "target": "ally",
+                "target_alive": false
+              },
+              "fx": {
+                "k": "last_rites"
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "guardian",
+          "new": true,
+          "fantasy_tags": [
+            "faith",
+            "heal"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
         }
       ]
     }

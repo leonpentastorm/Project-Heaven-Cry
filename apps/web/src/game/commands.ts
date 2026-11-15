@@ -5,7 +5,7 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
-  FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText } from '@engine';
+  FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
@@ -113,7 +113,7 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   if (tendRows.length) out.push(['TEND · BONDS AND CARE', tendRows, '#EB95B7', 'tend']);
   const figRows = by('figments'); // rules 1.34: Expression's door (Picture, then each held Figment's verbs), in Expression ink
   if (figRows.length) out.push(['FIGMENTS · PICTURED', figRows, '#5394AC', 'figments']);
-  const sig0 = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
+  const sig0 = by('sigils'), soul = by('outbursts'), pray = hymnWaitShown(by('faith'), gameFor(opts.g, cb, ch), ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null)), cl = by('calls');
   // An Evoker in the pack, not in hand (nine doors audit, 0.29): the rows refused for it become one row that says so, priced as the pack's
   // own Draw prices the gear change; picking it opens the backpack (screens/combat.js). The engine's rows return the
   // moment the Evoker is in hand.
@@ -134,6 +134,16 @@ function evokerInPack(cb: any, cur: any, ch: any, g: any) {
   if (!cur?.mg || cur.mg.evoker || !c || !carriesEvoker(c)) return null;
   try { return packDrawOf(gameFor(g, cb, c), cb, cur, FOCUS_IDS.evoker); } catch { return null; }
 }
+
+/** Prayer 2.0: a Hymn that must wait says so on its row: "HYMN IN 3" where its cost was (the rounds are the engine's,
+ *  faithView's cooldowns.hymnRoundsLeft; the reason stays the engine's own). */
+export function hymnWaitShown(rows: ActionItem[], g: any, ch: any): ActionItem[] {
+  if (!ch || !rows.some((r) => r[5]?.sub === 'Hymns' && r[4])) return rows;
+  let left = 0; try { left = Number(faithView(g, ch.id)?.cooldowns.hymnRoundsLeft) || 0; } catch { left = 0; }
+  if (left <= 0) return rows;
+  return rows.map((r) => (r[5]?.sub === 'Hymns' && r[4] ? [r[0], r[1], 'HYMN IN ' + left, r[3], r[4], r[5]] as ActionItem : r));
+}
+
 /** A unit that can't use techniques (the engine's gate: a companion, a puppet, a unit with a fixed action list) keeps
  *  the old attack rows. */
 export const isLegacyUnit = (u: any) => !!u && (!!u.companion || Array.isArray(u.allowedActions) || u.side !== 'pc');
@@ -193,6 +203,9 @@ export function catalogue(cb: any, u: any, ch: any, opts: ActionOpts = {}): CatE
   return actionGroups(cb, u, ch, opts).map(([n, items, ink, tab]) => [n, items.filter((it) => !isPerkInfo(it[0])), ink, tab] as ActionGroup).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text, why]) => ({ action, label, cost, text, tab, ink, why: u.downed ? 'Downed.' : why !== undefined ? why : whyNot(u, action, cost) })));
 }
 
+/** The heart's MP as the turn card shows it beside the held stage: what is in it, or that it draws on the air (no
+ *  Emanator in hand: the Begin is paid in Strain, heartView noEmanatorText). */
+const heartMp = (mg: any): string => (mg.emanator ? Math.round(mg.mp) + ' MP' : 'MP from the air');
 /** The smart default: an attack (or Clear jam), Move, Reload (or Shove), then the unit's signature move. */
 export function smartCommands(u: any): Command[] {
   const w: any = (WEAPON as any)[u.weapon], legacy = isLegacyUnit(u), melee = legacy ? (w ? isMelee(w) : true) : phys.weaponSystem(u.weapon) === 'melee', mg = u.mg;
@@ -202,7 +215,7 @@ export function smartCommands(u: any): Command[] {
   if (mg?.held) {
     const st = mg.held.stage ?? 0, full = st >= 4, free = (mg.freePumps || 0) > 0;
     cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : SPELL_AP.pump + ' AP'), key: '1', off: full || (!free && (u.ap ?? 0) < SPELL_AP.pump) });
-    cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' ×' + stageMult(st) + ' · ' + SPELL_AP.release + ' AP', key: '2', off: (u.ap ?? 0) < SPELL_AP.release });
+    cmds.push({ action: 'release', label: 'Release', sub: 'Held stage ' + st + ' ×' + stageMult(st) + ' · ' + heartMp(mg) + ' · ' + SPELL_AP.release + ' AP', key: '2', off: (u.ap ?? 0) < SPELL_AP.release });
     cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '3', off: !!u.prone });
     if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
     else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });
@@ -218,8 +231,7 @@ export function smartCommands(u: any): Command[] {
   if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.quiver ? rl.ap + ' AP · the other quiver' : rl.why && !/^Needs/.test(rl.why) ? rl.why.replace(/\.$/, '') : u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.quiver ? !!rl.why : u.ammo >= w.magazine || (!!rl.why && !/^Needs/.test(rl.why)) }); // rules 1.53: a bow's reload is Switch quiver
   else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an enemy next to you', key: '3' });
   else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
-  if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });
-  else if (mg && (mg.emanator || mg.designs?.length) && mg.designs?.length) cmds.push({ action: 'outburst', label: 'Outburst', sub: Math.round(mg.mp) + ' MP in the heart', key: '4' });
+  if (mg && mg.designs?.length) cmds.push({ action: 'outburst', label: 'Outburst', sub: 'Nothing held · ' + heartMp(mg), key: '4' });
   else if (mg && (mg.evoker || mg.words?.length)) cmds.push({ action: 'draw', label: 'Draw a glyph', sub: 'Evoker ' + mg.charge + ' charge', key: '4' });
   else if (!legacy) cmds.push(melee ? { action: 'tpad:main', label: 'Techniques', sub: 'What your ' + (w ? w.name : 'fists') + ' can do', key: '4' } : { action: TWATCH, label: 'Hold a shot', sub: 'Watch for their move', key: '4' });
   else if (sk && (skFx.op === 'multi_shot' || skFx.op === 'sweep')) cmds.push({ action: 'skill', label: sk.name, sub: skFx.ap + ' AP · ' + (skFx.op === 'multi_shot' ? (skFx.shots || 3) + ' shots at one target' : 'every enemy next to you'), key: '4', off: u.jammed || u.ap < (skFx.ap || 0) || (skFx.op === 'multi_shot' && w.magazine != null && u.ammo <= 0) });

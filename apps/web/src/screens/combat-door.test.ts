@@ -47,7 +47,7 @@ describe('the Sigils door on the combat screen', () => {
     const v = screen().renderVals();
     expect(TP(v)[0].key).toBe('tp-sigils');
     const line = String(SKILL.brain_power.door_line).replace('{line_min}', String(SIGIL_GRAMMAR.min_glyphs)).replace('{line_max}', String(SIGIL_GRAMMAR.max_glyphs));
-    expect(TP(v)[0]).toMatchObject({ hasDoor: true, door: line, doorSkill: 'brain_power' });
+    expect(TP(v)[0]).toMatchObject({ hasDoor: true, doorLine: line, doorSkill: 'brain_power' });
     expect(line).toBe('Draw words on your own tile in a straight row of 2 to 4, then Evoke from an end or the side.');
     expect(TP(v)[0].items[0].key).toBe('draw'); expect(TP(v)[0].items[0].why).toBe('');
   });

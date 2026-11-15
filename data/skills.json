@@ -3616,6 +3616,8 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
+      "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays.",
+      "door_tab": "outbursts",
       "per_point": {
         "numbers": {
           "soul": 0.1,
@@ -4108,6 +4110,8 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "The saints judge. You deliver.",
+      "door_line": "Pray to your patron. A Whisper is quick and comes once a turn; a Hymn is strong and then must wait. Your patron watches what you do: each thing it likes raises your Devotion, each thing it hates lowers it.",
+      "door_tab": "faith",
       "per_point": {
         "numbers": {
           "blessing": 0.1,

@@ -6,7 +6,7 @@ import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVal
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
 import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt,
-  SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
+  SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
@@ -69,10 +69,10 @@ import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
+import { firstTurnTab, tabDoorLine } from '../game/doorView';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS, sigilChip, sigilChipStyle } from '../game/resources';
-import { doorOfTab, firstTurnTab } from '../game/doorLine';
 import { bondStripVals, reactionPipsVals } from '../game/bondStrip';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
@@ -431,7 +431,7 @@ const ownConds = (u, g) => condChips(u, g).filter((c) => c.key !== 'c-witnessed'
 export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id, n]) => n > 0 && !(id === 'witnessed' && g && g.combat && g.combat.over)).map(([id, n]) => id === 'witnessed'
   ? { key: 'c-' + id, k: '◉ WITNESSED', t: witnessedTitle(u, g), style: WITNESSED_CHIP }
   : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + ' · ' + n, t: condName(id) + ': ' + (condText(id) ? condText(id).replace(/\.?$/, '. ') : '') + n + (n === 1 ? ' round' : ' rounds') + ' left.',
-    style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
+    style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) || condIsBoon(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
   ...(u.shield > 0 ? [{ key: 'shield', k: '+' + fmtNum(u.shield) + ' SHIELD', t: 'A shield of ' + fmtNum(u.shield) + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
 
 /** Rules 1.14: the wait for the Narrator's answer to an attempt, as the fight screen shows it. Everyone sees who spoke
@@ -1536,9 +1536,9 @@ export class CombatLogic extends DCLogic {
       this._tabTurn = tabTurn;
       const seenHostile = foes.some((u) => !u.downed);
       // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
-      // The fight's first turn opens on the character's door when its first action is usable (game/doorLine.ts: a
-      // Sigilist with an Evoker in hand opens on Sigils); after that the tab this character used last wins.
-      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : firstTurnTab(cb, ch, groups, isPerkInfo) || tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
+      // A character's first turn of a fight (0.29, the doors; game/doorView.ts): its top door's tab, when that tab has an
+      // action it can use now (a Sigilist with an Evoker in hand opens on Sigils); after that the tab used last wins.
+      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : firstTurnTab(cb, ch, ITEMS, isPerkInfo) || tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
       this._tabAction = S.action; this._tabShown = S.tab; this._tabCls = '';
     // The same turn of yours seen again after a moment that was not (an effect still playing hands the screen back and
     // forth): its tab is the one it had, not the fallback a hostile's moment left behind.
@@ -1602,9 +1602,9 @@ export class CombatLogic extends DCLogic {
         style: 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; min-height: 44px; padding: 7px 10px; border-radius: 8px; text-align: left; font-family: inherit; cursor: pointer; '
           + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #E7EBF3' : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1') } }; };
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
-    const tabDoor = tabG ? doorOfTab(tabG.id) : null; // the door's one line under the tab's name (data: skills.json door_line)
+    const tabDoor = tabG ? tabDoorLine(tabG.id) : null; // the door's one line under the tab's name (skills.json door_line)
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
-      hasDoor: !!tabDoor, door: tabDoor ? tabDoor.line : '', doorSkill: tabDoor ? tabDoor.skill : '', doorStyle: 'font-size: 13px; line-height: 1.4; color: #C9D3E3',
+      hasDoor: !!tabDoor, doorSkill: tabDoor ? tabDoor.skill : '', doorLine: tabDoor ? tabDoor.line : '', doorStyle: 'font-size: 13px; line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
