@@ -289,6 +289,9 @@ const o1 = r.offers[c.id], wcard = p.locator('[data-phc-offer="' + c.id + '"] [d
   const pv = await p.evaluate(([cid, w]) => window.__phc.gearPreview(cid, { id: w.id, rarity: w.rarity }), [c.id, o1.weapons[0]]);
   ok('the weapon card: its icon at 72 px, its grade word, its worth; its hover card holds every number of the engine\'s gear preview (' + pv.lines.length + ')', icon === '72' && /(STANDARD|FINE)/.test(wt) && /\d+ credits/.test(wt)
     && pv.lines.every((l) => (tip || '').includes(l.label + ': ' + l.value)));
+  // rules 1.56 L3: a mod may be the card: its button says what the engine's preview calls it (a weapon "Take the weapon", else "Take it")
+  const take = (await wcard.locator('[data-phc-pick-take]').textContent()).trim();
+  ok('… its button by the engine kind (' + pv.kind + ': "' + take + '")', take === (['weapon', 'thrown'].includes(pv.kind) ? 'Take the weapon' : 'Take it'));
   const sz = await p.locator('[data-phc-pick-materials]').boundingBox(), sw = await wcard.boundingBox();
   ok('… both cards large and side by side (' + Math.round(sz?.width || 0) + ' and ' + Math.round(sw?.width || 0) + ' px wide, ' + Math.round(sz?.height || 0) + ' px tall)', !!sz && !!sw && sz.height >= 280 && Math.abs(sz.y - sw.y) < 2 && sz.width >= 200);
   }
@@ -429,8 +432,20 @@ async function shopChecks() {
     await p.locator('#phc-sheet-tab-gear').click();
     await p.waitForSelector('[data-phc-make]', { timeout: 30000 }).catch(() => {});
     const row = p.locator('[data-phc-recipe="' + rec.id + '"]');
-    ok('the sheet\'s GEAR tab shows Make with a row for each recipe of the ammo maker (' + await p.locator('[data-phc-recipe]').count() + '), the core\'s not (no focus in hand)', await p.locator('[data-phc-make]').count() === 1
-      && await p.locator('[data-phc-recipe]').count() === RECIPES.filter((x) => x.tool.item === MAKER).length && await p.locator('[data-phc-recipe="' + CORE.id + '"]').count() === 0);
+    { // rules 1.56 (L2): the special rounds are one recipe a calibre, so the rows are the engine's make view's (its rows
+      // with the tool in hand), not the data's lines; Leon, 15 Nov 2026: the list is grouped, the first group open and the
+      // rest folded under its own header (until the view says which rows fit what is carried: the special rounds)
+      const mv = await p.evaluate((id) => window.__phc.makeView(id), m1.id), want = mv.rows.filter((r) => r.tool.held).map((r) => r.recipe);
+      const shown0 = await p.locator('[data-phc-recipe]').count(), restHead = p.locator('[data-phc-make-rest]');
+      const restText = (await restHead.count()) ? (await restHead.textContent()).trim() : '', restN = Number((restText.match(/\((\d+)\)/) || [])[1] || 0);
+      if (restN) { await restHead.click(); await settle(p, 200); }
+      const keys = await p.locator('[data-phc-recipe]').evaluateAll((es) => es.map((e) => e.getAttribute('data-phc-recipe')));
+      ok('the sheet\'s GEAR tab shows Make with a row for each recipe of the ammo maker the engine lists (' + shown0 + ' shown, ' + restN + ' folded under "' + restText + '"; ' + keys.length + ' of ' + want.length + '), the core\'s not (no focus in hand)',
+        await p.locator('[data-phc-make]').count() === 1 && shown0 > 0 && shown0 + restN === want.length && keys.length === want.length && want.every((k) => keys.includes(k))
+        && want.every((k) => RECIPES.some((x) => (k === x.id || k.startsWith(x.id + ':')) && x.tool.item === MAKER)) && !keys.includes(CORE.id));
+      if (restN) { await restHead.click(); await settle(p, 200); }
+      ok('… folded again, the rest of the list is hidden (' + await p.locator('[data-phc-recipe]').count() + ' rows)', await p.locator('[data-phc-recipe]').count() === shown0);
+    }
     const most = Number(await row.getAttribute('data-phc-recipe-most'));
     ok('… the ' + rec.name + ' row: what it takes with what you have, what it makes, the engine\'s most (' + most + ')', most === Math.min(...rec.needs.map((l) => Math.floor(held(m1, l.item) / l.n)))
       && new RegExp('\\(have ' + held(m1, rec.needs[0].item) + '\\)').test(await row.locator('[data-phc-recipe-needs]').textContent()));

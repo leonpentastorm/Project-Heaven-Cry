@@ -14,7 +14,8 @@ export interface PartyV { id: string; name: string; level: number; hp: number; m
   /** rules 1.51: the boons held (the starting one marked `camp`), and the run power against the cap */ boons: { id: string; name: string; text: string; worth: number; camp: boolean }[]; worth: string;
   /** rules 1.50: the main hand's wear (null: nothing there wears), and every other carried thing Worn or Broken, by name */
   wear: WearV | null; weapon: string; worn: { name: string; w: WearV }[] }
-export interface OfferCardV { i: number; id: string; name: string; rarity: string; rarityWord: string; marks: number; category: string; price: number; tip: string; lines: { key: string; label: string; value: string }[] }
+export interface OfferCardV { i: number; id: string; name: string; rarity: string; rarityWord: string; marks: number; category: string; price: number; tip: string;
+  /** what the engine's gear preview says the card is (weapon, focus, mod…): its kicker and its button's words */ kick: string; take: string; lines: { key: string; label: string; value: string }[] }
 /** The pick card's short words for the gear preview's lines (the card is narrow; the hover card has the rest). */
 const PICK_WORD: Record<string, string> = { hit: 'To hit', dmg: 'Damage', ap: 'AP', door_mod: 'Door' };
 /** The path map's legend: every node kind's word, in the map's own words (data), the gate's apart. */
@@ -80,8 +81,10 @@ export function runView(g: GameState, me: string): RunViewV | null {
   const offers: OfferV[] = Object.entries(r.offers || {}).map(([cid, o]) => {
     const c = g.characters[cid];
     return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, instead: o.instead ?? null, materials: materialsView(g, cid),
-      cards: o.weapons.map((w, i) => { const pv = c ? gearPreview(c, { id: w.id, rarity: w.rarity }).lines : [];
+      cards: o.weapons.map((w, i) => { const gp = c ? gearPreview(c, { id: w.id, rarity: w.rarity }) : null, pv = gp ? gp.lines : [], kind = gp?.kind || '';
         return { i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
+          // the words by the preview's kind; the offer carries no verb of its own (rules 1.56 L3: a mod may be in the pick), so anything else is a neutral "Take it"
+          kick: kind === 'weapon' || kind === 'thrown' ? 'ONE WEAPON' : kind === 'mod' ? 'ONE MOD' : 'ONE PICK', take: kind === 'weapon' || kind === 'thrown' ? 'Take the weapon' : 'Take it',
           // the one hover card: its name and grade, every number of the engine's gear preview, then its text
           tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + pv.map((l) => l.label + ': ' + l.value + '.').join(' ') + ' ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || ''),
           lines: pv.filter((l) => ['hit', 'dmg', 'ap', 'door_mod', 'hits_with', 'scales_with'].includes(l.key)).map((l) => ({ key: l.key, label: PICK_WORD[l.key] || l.label, value: l.value })) }; }) };

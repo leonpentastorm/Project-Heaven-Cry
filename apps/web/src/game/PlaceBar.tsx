@@ -67,8 +67,12 @@ export function PlaceBar(p: PlaceBarProps) {
       style={{ position: 'sticky', top: 0, zIndex: 6, display: 'flex', flexDirection: 'column', background: I.ground, borderBottom: '1px solid ' + I.line, boxShadow: '0 6px 14px rgba(0,0,0,0.35)', overflow: 'hidden' }}>
       <style>{CSS}</style>
       {p.backdrop && !compact ? <img src={p.backdrop} alt="" aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.85) brightness(0.75)' }} /> : null}
-      {p.backdrop && !compact ? <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(10,13,19,0.55) 0%, rgba(10,13,19,0.86) 40%, rgba(10,13,19,0.94) 100%)' }} /> : null}
-      <div style={{ position: 'relative', display: 'flex', alignItems: compact ? 'center' : 'flex-start', flexWrap: 'wrap', gap: '10px 18px', padding: compact ? '8px 20px' : '16px 20px 12px' }}>
+      {/* the shade over the painting: with a keeper, light behind the portrait and dark behind the speech; with none (the
+          camp), the painting shows across the bar under an even shade that keeps its text at contrast (a shadow under it) */}
+      {p.backdrop && !compact ? <div aria-hidden="true" data-phc-place-shade="" style={{ position: 'absolute', inset: 0, background: p.portrait !== undefined
+        ? 'linear-gradient(90deg, rgba(10,13,19,0.55) 0%, rgba(10,13,19,0.86) 40%, rgba(10,13,19,0.94) 100%)'
+        : 'linear-gradient(90deg, rgba(10,13,19,0.82) 0%, rgba(10,13,19,0.6) 45%, rgba(10,13,19,0.7) 100%)' }} /> : null}
+      <div style={{ position: 'relative', display: 'flex', alignItems: compact ? 'center' : 'flex-start', flexWrap: 'wrap', gap: '10px 18px', padding: compact ? '8px 20px' : '16px 20px 12px', ...(p.backdrop && !compact && p.portrait === undefined ? { textShadow: '0 1px 3px rgba(0,0,0,0.85)' } : {}) }}>
         {p.portrait !== undefined ? (
           <div className="phc-keeper-img phc-pb-portrait" style={{ position: 'relative', width: compact ? 48 : 104, aspectRatio: compact ? '1 / 1' : '4 / 5', flexShrink: 0, borderRadius: compact ? 10 : 12, overflow: 'hidden', border: '1px solid #3B475D', background: I.raised, boxShadow: '0 12px 32px rgba(0,0,0,0.55)' }}>
             {p.portrait ? <img data-phc-keeper-portrait="" src={p.portrait} alt={p.portraitAlt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 20%', display: 'block' }} />

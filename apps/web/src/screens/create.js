@@ -57,7 +57,7 @@ const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var
   + '.phc-sk-face img{display:block;width:100%;height:100%;object-fit:cover}'
   + '.phc-sk-face:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}'
   + '.phc-sk-body{display:flex;flex-direction:column;gap:3px;flex:1 1 0;min-width:0}'
-  + '.phc-sk-mod{flex:none;padding:1px 7px;border-radius:999px;border:1px solid #3B475D;font-size:11px;font-weight:700;color:#E7EBF3;white-space:nowrap}'
+  + '.phc-sk-mod{flex:none;padding:1px 7px;border-radius:999px;border:1px solid #3B475D;font-size: 13px;font-weight:700;color:#E7EBF3;white-space:nowrap}'
   + '.phc-sk-tags{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;white-space:nowrap}'
   + '.phc-pt-bar{position:sticky;top:0;z-index:5}'
   + '@media (max-width:1180px){.phc-pt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.phc-pt-fam:nth-child(3){grid-column:1/-1}.phc-pt-fam:nth-child(3) .phc-pt-attrs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}'
@@ -212,7 +212,7 @@ const HIST_MAX = 60;
 
 const btn = (on, color) => 'min-height: 40px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; ' +
   (on ? 'border: 1px solid ' + color + '; background: #1C2536; color: ' + color : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
-const chip = (color) => 'padding: 4px 10px; border-radius: 999px; border: 1px solid ' + color + '; color: ' + color + '; font-size: 12px; font-weight: 700; letter-spacing: 0.1em';
+const chip = (color) => 'padding: 4px 10px; border-radius: 999px; border: 1px solid ' + color + '; color: ' + color + '; font-size: 13px; font-weight: 700; letter-spacing: 0.1em';
 const dia = (n, filled, color, size) => Array.from({ length: n }, (_, i) => ({ style: 'width: ' + size + 'px; height: ' + size + 'px; transform: rotate(45deg); box-sizing: border-box; ' +
   (i < filled ? 'background: ' + color : 'border: 1px solid #3B475D') }));
 
@@ -310,7 +310,7 @@ export class CreateLogic extends DCLogic {
       n: i + 1, label, go: set({ step: id }), current: S.step === id ? 'step' : 'false',
       style: 'display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 8px; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; ' +
         (S.step === id ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2'),
-      numStyle: 'display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; ' + (S.step === id ? 'background: #E7EBF3; color: #0A0D13' : 'background: #1C2536; color: #A3AEC2'),
+      numStyle: 'display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 13px; ' + (S.step === id ? 'background: #E7EBF3; color: #0A0D13' : 'background: #1C2536; color: #A3AEC2'),
     }));
 
     // identity
@@ -335,7 +335,7 @@ export class CreateLogic extends DCLogic {
     const attrGrid = (attrs) => { const top = Math.max(...D.attrs.map((x) => attrs[x.id] || 1));
       return D.attrs.map((x) => { const v = attrs[x.id] || 1, hi = v === top && top > 1;
         return { key: x.id, abbr: ABBR(x.name), val: v, top: hi ? 'true' : 'false', title: x.name + ' ' + v + (hi ? ' (highest)' : ''),
-          style: 'display: flex; justify-content: space-between; align-items: baseline; gap: 5px; padding: 1px 6px; border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; line-height: 16px; box-sizing: border-box; '
+          style: 'display: flex; justify-content: space-between; align-items: baseline; gap: 5px; padding: 1px 6px; border-radius: 5px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; line-height: 16px; box-sizing: border-box; '
             + (hi ? 'background: ' + x.ink + '; color: #0A0D13; border: 1px solid ' + x.ink : v > 1 ? 'color: ' + x.ink + '; border: 1px solid ' + x.ink + '66' : 'color: #7F8BA1; border: 1px solid #232D3F') }; }); };
     const BLANK_ATTRS = {};
     const leadsOf = (arch) => arch.leans.map((l) => CLASSNAME[l]).join(' or ');
@@ -354,13 +354,13 @@ export class CreateLogic extends DCLogic {
       card: cardFor(A), hasCard: !!cardFor(A), zoomCard: zoomer(this, cardFor(A), A ? A.name + ': suggested portrait' : '', 'portrait'),
       name: A ? A.name : 'Custom', role: A ? A.role.toUpperCase() : 'YOUR CALL',
       // The nine attributes, three to a family (the family is a heading, nothing more), the highest marked.
-      attrFams: CORES.map((c) => ({ key: c, name: c.toUpperCase(), nameStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: ' + D.core[c],
+      attrFams: CORES.map((c) => ({ key: c, name: c.toUpperCase(), nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + D.core[c],
         rows: D.attrs.filter((x) => x.core === c).map((x) => { const v = pvAttrs[x.id] || 1, hi = v === pvTop && pvTop > 1;
           return { key: x.id, name: x.name, val: v, top: hi, dia: dia(ATTR_CAP, v, x.ink, 8), gives: ATTR_NEXT[x.id],
             open: () => this.setState({ attrPage: x.id }), openLabel: x.name + ': what it gives',
             nameStyle: 'padding: 0; border: 0; background: none; text-align: left; font-family: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; font-size: 14px; font-weight: 700; color: ' + (v > 1 ? x.ink : '#A3AEC2'),
             valStyle: 'font-size: 18px; font-weight: 700; line-height: 1; color: ' + (v > 1 ? x.ink : '#A3AEC2'),
-            tagStyle: 'padding: 0 6px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; background: ' + x.ink + '; color: #0A0D13' }; }) })),
+            tagStyle: 'padding: 0 6px; border-radius: 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; background: ' + x.ink + '; color: #0A0D13' }; }) })),
       skills: A ? Object.entries(A.preset).map(([id, p]) => ({ name: SK[id].name, pts: p + ' pts', style: 'color: ' + ATTR[SK[id].attr].ink })) : [],
       leans: A ? leadsOf(A) : 'whatever you build',
       leanIcons: A ? A.leans.map((l) => ({ key: l, name: CLASSNAME[l], icon: emblemOf(l).icon, style: 'display: inline-flex; gap: 4px; align-items: center; font-weight: 700; color: ' + emblemOf(l).ink })) : [], hasLeans: !!A, noLeans: !A,
@@ -412,7 +412,7 @@ export class CreateLogic extends DCLogic {
               pips: Array.from({ length: ATTR_CAP }, (_, i) => ({ key: i, style: pip(i < p, i < v, a.ink), title: 'Set ' + s.name + ' to ' + (i + 1) + (i + 1 > v ? ': ' + a.name + ' rises to ' + (i + 1) + ' too' : ''),
                 set: () => this.pointsDo((st, x) => { const cur = st.skills[s.id] || 0; return _setSkill(st, s.id, i + 1 === cur ? i : i + 1, x); }, s.id) })),
               hover: hoverOn(s.id), help: () => this.setState({ epccg: s.id, hover: s.id }), helpStyle: epBtnStyle(a.ink, 'width: 26px; height: 26px; font-size: 13px'),
-              nameStyle: 'font-size: 14px; font-weight: 700; color: ' + a.ink, tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
+              nameStyle: 'font-size: 14px; font-weight: 700; color: ' + a.ink, tagStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
               style: S.hover === s.id ? 'border-color: ' + a.ink + '; background: #161D2B' : '' };
           }),
         };
@@ -439,8 +439,8 @@ export class CreateLogic extends DCLogic {
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
       style: 'display: flex; align-items: center; gap: 14px; min-height: 100px; box-sizing: border-box; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     // Class Roster Revision 3: level 3 offers the class of the highest attribute (every tied one).
-    const leanChip = (ink) => 'display: inline-flex; gap: 5px; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink;
-    const leanList = !der.leans.length ? [{ name: 'Place some points', total: '', icon: '', hasIcon: false, chip: 'font-size: 12px; color: #A3AEC2' }]
+    const leanChip = (ink) => 'display: inline-flex; gap: 5px; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink;
+    const leanList = !der.leans.length ? [{ name: 'Place some points', total: '', icon: '', hasIcon: false, chip: 'font-size: 13px; color: #A3AEC2' }]
       : der.leans.length > 3 ? [{ name: der.leans.length + ' tied', total: '', icon: '', hasIcon: false, chip: leanChip('#E7EBF3') }]
         : der.leans.map((l) => ({ name: l.name, total: l.total, icon: emblemOf(l.id).icon, hasIcon: true, chip: leanChip(D.core[l.core]) }));
     const archNote = S.applied ? 'Started from the ' + ARCH[S.applied].name + ' archetype. Change anything; the archetype is not saved.' : 'Built from scratch.';
@@ -564,13 +564,13 @@ export class CreateLogic extends DCLogic {
     const traitFull = picked.map((id) => D.traits.find((t) => t.id === id)).filter(Boolean).map((t) => ({ zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, cat: t.cat.toUpperCase(), icon: t.icon, flavour: t.flavour,
       up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })) }));
     const voiceList = D.skills.filter((sk) => PT(sk.id) > 0).sort((a, b) => PT(b.id) - PT(a.id)).slice(0, 4).map((sk) => ({ name: sk.name.toUpperCase(), line: sk.quiet,
-      nameStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: ' + ATTR[sk.attr].ink }));
+      nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + ATTR[sk.attr].ink }));
     const magicSigils = canSigil ? sig.map((w) => ({ word: SIGIL[w]?.word || w, img: glyphUri(w, SIGIL_INK), text: SIGIL[w]?.text || '' })) : [];
     const magicLine = canSigil && !sigErr ? stackLine(sig, S.skills) : '';
     const magicOb = { name: obName, school: (SCHOOL[ob.school]?.name || '').toUpperCase() + ' SCHOOL', parts: obParts, cost: obInfo.line, heart: obInfo.icon };
     const leanCards = der.leans.map((l) => { const c = D.classes.find((x) => x.id === l.id), an = ATTR[l.attribute].name;
       return { key: l.id, name: l.name, total: an + ' ' + l.total, icon: emblemOf(l.id).icon, sig: c.sig.map((id) => SK[id].name + ' ' + PT(id)).join(' · '), nameStyle: 'font-size: 15px; font-weight: 700; color: ' + D.core[l.core],
-        attrStyle: 'font-size: 12px; font-weight: 700; color: ' + ATTR[l.attribute].ink }; });
+        attrStyle: 'font-size: 13px; font-weight: 700; color: ' + ATTR[l.attribute].ink }; });
 
     return { ...epccgVals(this, (id) => S.skills[id] || 0), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left === 0 && statsPlaced ? '✓ EVERY POINT PLACED' : left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'),
@@ -582,7 +582,7 @@ export class CreateLogic extends DCLogic {
       catTabs, traitCards, traitChip, traitChipStyle: chip(picked.length ? '#6FEA77' : '#FFFFFF'),
       hasTech, techSys, techVerdict, techVerdictStyle: 'font-size: 13px; font-weight: 700; color: ' + (techErr ? '#FFFFFF' : '#6FEA77'), hasMagic, canSigil, canSoul, sigilGroups, sigilVerdict, sigilVerdictStyle, sigilHead: glyphUri('spark', SIGIL_GLOW, { glow: true }), soulHead: heartUri(1),
       schoolCards, obOpts, hasOpts: obOpts.length > 0, obTones, feelChips, feelHint, obToneHint: visOk ? 'Raw ignores armour and has no rider; an element adds a rider that grows with the stage (armour counts half).' : 'An element tone needs Lore Master 1; your Outburst is Raw (it ignores armour).',
-      obShapeIcon: obInfo.icon, obShapeLine: obInfo.line, obShapeStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: ' + obInfo.ink, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
+      obShapeIcon: obInfo.icon, obShapeLine: obInfo.line, obShapeStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: ' + obInfo.ink, modGroups, slotChip, slotChipStyle: chip(SOUL_INK), obName: S.ob ? S.ob.name : '', obPlaceholder: (SCHOOL[ob.school]?.name || 'Outburst') + ' Outburst',
       onObName: (e) => this.setState({ ob: { ...obOf(this.state), name: e.target.value.slice(0, 40) } }), obVerdict, obVerdictStyle,
       resetSigils: set({ sigils: [...DEFAULT_SIGILS] }), resetSigilsLabel: 'Back to ' + DEFAULT_SIGILS.map((w) => SIGIL[w]?.word || w).join(' + '), resetOb: set({ ob: { ...DEFAULT_OB } }),
       magicSigils, magicLine, hasMagicLine: !!magicLine, magicOb,
@@ -594,7 +594,7 @@ export class CreateLogic extends DCLogic {
       stamped: !!S.stamp, stampMode: S.stamp || 'on', sealStyle: SEAL_STYLE + (S.stamp ? '0' : '0.55'),
       ...(() => { const yt = ytId(S.idv.song), st = S.songState;
         const note = !S.idv.song ? 'Played for the whole room when you do something amazing. Pick a video that allows embedding.' : !yt ? 'Not a YouTube link: it stays as text and won\'t play.' : st === 'checking' ? 'Checking the video…' : st === 'bad' ? '✗ This video doesn\'t allow embedding, so it can\'t play in the game. Try another upload of the song.' : st === 'ok' ? '✓ Plays in the game' + (ytStart(S.idv.song) ? ' from ' + Math.floor(ytStart(S.idv.song) / 60) + ':' + String(ytStart(S.idv.song) % 60).padStart(2, '0') : '') + '.' : 'Leave the field to check the link.';
-        return { songHas: !!yt, songNote: note, songNoteStyle: 'font-size: 12px; color: ' + (st === 'ok' && yt ? '#6FEA77' : st === 'bad' && yt ? '#F65157' : '#A3AEC2'),
+        return { songHas: !!yt, songNote: note, songNoteStyle: 'font-size: 13px; color: ' + (st === 'ok' && yt ? '#6FEA77' : st === 'bad' && yt ? '#F65157' : '#A3AEC2'),
           songCheck: async () => { const link = this.state.idv.song, id = ytId(link); if (!id) return this.setState({ songState: null });
             this.setState({ songState: 'checking' });
             try { const r = await fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + id));

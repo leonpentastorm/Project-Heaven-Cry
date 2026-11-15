@@ -575,9 +575,12 @@ export class MainLogic extends DCLogic {
           ...cand((it) => (it.weapon && WEAPON[it.weapon]?.hands === '1H') || ITEM[it.item || it.id]?.slot === 'off_hand', 'Hold', 'off')];
       const r = st.rarity || 'standard';
       const fk = id && !twoHanded ? focusKindOf(id) : null; // the focus this hand holds (it counts only in a hand)
+      // rules 1.56: what is fitted to it (a mod) and a variant's modifiers, by the engine's preview lines, one chip each
+      const fitted = id && !twoHanded && WEAPON[id] ? gearPreview(c, { id, rarity: r, mods: st.mods }).lines.filter((l) => /^(mod|variant):/.test(l.key)).map((l) => ({ key: l.key, label: l.label, tip: l.label + ': ' + l.value })) : [];
       return { key, side: ((isMain ? mainSide : mainSide === 'right' ? 'left' : 'right') + ' hand').toUpperCase(), tag: (isMain ? 'MAIN' : 'OFF') + (fk ? ' · ' + fk.toUpperCase() : ''), name: twoHanded ? 'Both hands: ' + (WEAPON[c.weapon]?.name || '') : id ? tips[key].title : 'Empty',
         img: id ? artOf(id) : '', hasImg: !!(id && artOf(id)), noImg: !(id && artOf(id)), glyph: twoHanded ? '═' : id ? glyphOf(id) : '·', marks: id ? marks(r) : '', rarity: id ? RW(r) : '',
         frameStyle: 'position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; border-radius: 10px; background: #0D1119; border: ' + (id ? (RARITY[r]?.marks ? 2 + RARITY[r].marks : 1) + 'px solid ' + (RARITY[r]?.marks ? '#E7EBF3' : '#3B475D') : '1px dashed #3B475D') + '; font-size: 40px; color: #5B6577; cursor: pointer',
+        fitted, hasFitted: fitted.length > 0,
         nameStyle: 'font-size: 13px; font-weight: 700; color: ' + (id || twoHanded ? '#E7EBF3' : '#5B6577'), ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length,
         noActText: gearLocked ? IN_FIGHT : twoHanded ? 'Your weapon needs both hands.' : 'Nothing in the pack fits here.' };
     };
@@ -594,7 +597,7 @@ export class MainLogic extends DCLogic {
     });
     // (backpack rows: hover for details, click for actions)
     const rigView = rig.map((r) => { const key = 'rig-' + r.key, it = r.src || {}, id = it.item || it.id;
-      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : it.kind === 'plot' ? '◈' : '▪', img: gearIconUri(it.mags ? magGearId(it.weapon) : it.calibre ? roundsGearId(it.calibre) : '', GEAR_INK, { large: true }), lines: [r.note, r.kg].filter(Boolean), lore: '' };
+      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : it.kind === 'plot' ? '◈' : '▪', img: gearIconUri(it.mags ? magGearId(it.weapon) : it.calibre ? roundsGearId(it.calibre, it.ammoType) : '', GEAR_INK, { large: true }), lines: [r.note, r.kg].filter(Boolean), lore: '' };
       const acts = [...r.acts.map((a) => ({ ...a, go: () => { a.go(); this.setState({ gearMenu: null }); } })), ...((it.mags || it.calibre) && canLoad && !gearLocked ? [{ key: 'load', label: 'Load magazines', go: () => { act({ type: 'gear/load', charId: c.id }); this.setState({ gearMenu: null }); } }] : [])];
       return { ...r, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : 'Nothing to do with it here yet.',
         img: tips[key].img, hasImg: !!tips[key].img, noImg: !tips[key].img, glyph: tips[key].glyph,
@@ -606,14 +609,18 @@ export class MainLogic extends DCLogic {
     // engine's reason when it can't; a ‹ n › stepper (1 to the engine's most) and Make, which sends the row's gear/make.
     // The view hides it in a fight and at the camp. Nothing here counts or prices anything.
     const MV = c ? makeView(g, me, c.id) : null;
-    const mkIcon = (id) => gearIconUri(/^rounds:/.test(id) ? roundsGearId(id.slice('rounds:'.length)) : id, GEAR_INK, { large: true });
+    const mkIcon = (id) => gearIconUri(id, GEAR_INK, { large: true }); // a rounds id: its calibre's (a special round: its own picture)
     // Leon, 15 Nov 2026 ("the ammo maker ui need to be collapseable too"): one compact row a recipe (icon, name, what one
     // make gives, the needs as chips, the stepper and Make, the engine's most as a small count; a recipe that can't be
     // made now dimmed with the engine's reason), under a header that folds (the sheet's one fold: workshopGroups).
-    // (Grouping "for what you carry" first needs the make view to say which recipes fit a held gun or focus: it doesn't.)
+    // Leon, 15 Nov 2026 (the Make list foldable and grouped "for what you carry"): the rows that fit what the character
+    // carries first, the rest folded under "Other calibres". Which rows fit is the engine's to say (rules 1.56, the make
+    // view's `fits`, approved in the 0.29 plan 10.B.4); until the view carries it, the list splits by what the view gives:
+    // the plain rounds and the cores first, the special rounds (a `rounds:<calibre>:<type>` id) folded under "Special rounds".
     const mkRows = MV && MV.shown ? MV.rows.filter((r) => r.tool.held) : [];
-    const mk = MV && MV.shown ? { has: true, charId: MV.charId, sub: 'Free, between fights: what a recipe needs comes out of your pack.', ready: mkRows.filter((r) => !r.why && r.most > 0).length + ' ready now',
-      rows: mkRows.map((r) => {
+    const mkHasFits = mkRows.some((r) => typeof r.fits === 'boolean');
+    const mkFirst = (r) => (mkHasFits ? !!r.fits : !/^rounds:[^:]+:/.test(r.gives[0]?.item || ''));
+    const mkRowV = (r) => {
         const most = Math.max(1, r.most), n = Math.min(most, Math.max(1, (S.mkN || {})[r.recipe] || 1)), setN = (v) => this.setState({ mkN: { ...(this.state.mkN || {}), [r.recipe]: v } });
         const img = mkIcon(r.gives[0]?.item || ''), off = !!r.why || r.most < 1;
         return { key: r.recipe, name: r.name, most: r.most, img, hasImg: !!img, noImg: !img, badge: (r.name.replace(/[^A-Za-z0-9]/g, '').charAt(0) || '▪').toUpperCase(),
@@ -628,7 +635,13 @@ export class MainLogic extends DCLogic {
           make: () => { if (off) { toast(r.why || ''); return; } act({ ...r.action, times: n }); setN(1); },
           rowStyle: 'display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 6px 8px; border-radius: 8px; background: #0D1119; border: 1px solid #1C2536' + (off ? '; opacity: 0.62' : ''),
           goStyle: 'min-height: 30px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (off ? 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2' : 'border: 0; background: #E7EBF3; color: #0A0D13') };
-      }) } : { has: false, charId: '', sub: '', ready: '', rows: [] };
+      };
+    const mkRest = mkRows.filter((r) => !mkFirst(r));
+    const mkRestFold = groupedSection('gear.make.' + (c ? c.id : ''), [{ key: 'rest', label: mkHasFits ? 'Other calibres' : 'Special rounds', items: mkRest, dflt: false }],
+      { ink: '#E7EBF3', rerender: () => this.setState({ wsTick: (this.state.wsTick || 0) + 1 }), keepEmpty: true }).groups[0];
+    const mk = MV && MV.shown ? { has: true, charId: MV.charId, sub: 'Free, between fights: what a recipe needs comes out of your pack.', ready: mkRows.filter((r) => !r.why && r.most > 0).length + ' ready now',
+      rows: mkRows.filter(mkFirst).map(mkRowV), hasRest: mkRest.length > 0, rest: mkRest.map(mkRowV), restOpen: mkRestFold.open, restExpanded: mkRestFold.expanded, restChev: mkRestFold.chev, restToggle: mkRestFold.toggle,
+      restLabel: mkRestFold.label + ' (' + mkRest.length + ')' } : { has: false, charId: '', sub: '', ready: '', rows: [], hasRest: false, rest: [] };
     // Leon, 15 Nov 2026 (the GEAR tab: "the backpack need to be colapasble and expanable, the backpack is the most important
     // UI of that screen"): every section of the tab folds under the same header (the sheet's one fold, workshopGroups'
     // groupedSection, remembered per character in this browser); the Backpack is first after the hands and worn, and opens
@@ -914,7 +927,7 @@ export class MainLogic extends DCLogic {
           title: (dw ? dw.title : def.word + ' · ' + def.text) + (wm ? ' · ' + wm.text : ''), pressed: on ? 'true' : 'false', disabled: off ? 'true' : 'false', onKey: glyphKeyNav,
           hasUses: !!wm, uses: wm ? String(wm.uses) : '', hasStar: !!(wm && wm.hasStar), star: wm ? wm.star : '', starAlt: wm ? wm.starAlt : '',
           aria: def.word + ', ' + (wordClassName(w) || 'word') + ', ' + (off ? 'can\'t draw now: ' + dw.why : def.charge + ' charge') + (wm ? '; ' + wm.text : ''),
-          pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; width: 66px; padding: 4px 2px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (off ? '#A3AEC2' : on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px ' + (off && !on ? 'dashed #2A3A48' : 'solid ' + (on ? SIG_CYAN : '#232D3F')) + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') + (off ? '; opacity: 0.8' : '') }; }),
+          pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 66px; max-width: 100%; padding: 4px 6px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (off ? '#A3AEC2' : on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px ' + (off && !on ? 'dashed #2A3A48' : 'solid ' + (on ? SIG_CYAN : '#232D3F')) + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') + (off ? '; opacity: 0.8' : '') }; }),
       designs: wCards.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: d.line, icon: d.icon, title: d.title + ' ' + d.costText + '.', subStyle: 'font-size: 13px; font-weight: 700; color: ' + d.ink,
         pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; align-items: center; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? d.ink : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') + (d.canBegin ? '' : '; opacity: 0.6') }; }),
       modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (×' + STAGE_MULT[0] + ')']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),

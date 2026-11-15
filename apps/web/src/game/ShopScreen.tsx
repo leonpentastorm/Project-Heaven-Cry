@@ -8,7 +8,7 @@
 import React from 'react';
 import { act, getState } from './store';
 import { shopView, compareGear, type ShopCardV, type ShopViewV, type Rarity } from '@engine';
-import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
+import { gearIconUri, magGearId } from './gearIcons';
 import { tipProps } from './actionTip';
 import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
@@ -25,7 +25,7 @@ const MARK = '◆';
 /** A card's picture: the painted icon (rounds and magazines by their gear ids), else the line icon. */
 function iconOf(id: string): string {
   const r = /^rounds:([^:]+)/.exec(id), m = /^mag:([^:]+)/.exec(id); // rules 1.55: mag:<weapon>:0 is an empty one; rules 1.56: rounds:<calibre>:<type> a special round of it
-  if (r) return gearIconUri(roundsGearId(r[1]), undefined, { large: true });
+  if (r) return gearIconUri(id, undefined, { large: true }); // gearIconUri reads a rounds id (a special round: its own picture)
   if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
   return gearIconUri(id, undefined, { large: true });
 }
@@ -37,14 +37,16 @@ const shelfHead = (name: string, note?: string) => (
     <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
   </div>
 );
-const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gridAutoFlow: 'row dense', gap: 16, marginBottom: 28 };
+/** A big card takes two columns where there are two; on a phone's one column, one (a span of 2 there widened the page). */
+const BIG_CSS = '.phc-shop-big{grid-column:span 2}@media (max-width:640px){.phc-shop-big{grid-column:auto}}';
+const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))', gridAutoFlow: 'row dense', gap: 16, marginBottom: 28 };
 
 function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: number; setQty: (n: number) => void; onFocus: () => void; onBuy: () => void; big?: boolean }) {
   const why = c.whys[qty - 1] ?? c.why, total = c.totals[qty - 1] ?? c.price, sold = !!c.sold, graded = c.rarity !== 'standard';
   const icon = iconOf(c.id);
   return (
-    <article data-phc-card={c.key} data-phc-card-id={c.id} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps(c.name + '. ' + c.text)}
-      style={{ gridColumn: big ? 'span 2' : undefined, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 236, padding: 18, borderRadius: 16, background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (graded ? '#7A879E' : I.line), boxShadow: graded ? 'inset 0 0 0 1px rgba(255,255,255,0.06)' : 'none', opacity: sold ? 0.55 : 1, position: 'relative' }}>
+    <article data-phc-card={c.key} data-phc-card-id={c.id} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps(c.name + '. ' + c.text)} className={big ? 'phc-shop-big' : undefined}
+      style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 236, padding: 18, borderRadius: 16, background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (graded ? '#7A879E' : I.line), boxShadow: graded ? 'inset 0 0 0 1px rgba(255,255,255,0.06)' : 'none', opacity: sold ? 0.55 : 1, position: 'relative' }}>
       {graded ? <span aria-hidden="true" style={{ position: 'absolute', top: 10, right: 14, fontSize: 13, letterSpacing: '0.3em', color: I.white }}>{MARK.repeat(c.marks)}</span> : null}
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
         <div style={{ flexShrink: 0, width: big ? 112 : 88, height: big ? 112 : 88, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
@@ -158,6 +160,7 @@ export function ShopScreen() {
     <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.setting} line={say.text} lineKey={say.key}
       tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0} actions={<MoveOn />}
       onClose={v.isHost && v.party.length > 1 ? () => act({ type: 'run/leave', close: true }) : undefined} closeTip="Takes everyone back to the map.">
+      <style>{BIG_CSS}</style>
       {body}
       {tab !== 'give' ? <section data-phc-compare-panel="" style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 14, background: 'rgba(16,21,31,0.9)', border: '1px solid ' + I.line }}>
         <span style={kick}>COMPARE</span>
