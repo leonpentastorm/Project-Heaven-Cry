@@ -13,6 +13,7 @@
 // extends window.__phcHold). Reduced motion: nothing travels, rotates or shakes; each beat shows its end state and fades.
 // Fog: every point comes through the kit's at() (null out of sight); a line between two units needs both ends seen; the
 // user's own part (the jab, the draw, the guard, the afterimage) also needs the engine's seen stamp (sawThen).
+import { guardMarkup } from './guard';
 import type { FxEvent, GameState } from '@engine';
 import { phys } from '@engine';
 import type { Sfx } from '../sfx';
@@ -167,16 +168,7 @@ export function linkMarkup(a: { x: number; y: number }, b: { x: number; y: numbe
     : '<rect x="' + (m.x - s * 0.11).toFixed(1) + '" y="' + (m.y - s * 0.11).toFixed(1) + '" width="' + (s * 0.22).toFixed(1) + '" height="' + (s * 0.22).toFixed(1) + '" transform="rotate(45 ' + m.x.toFixed(1) + ' ' + m.y.toFixed(1) + ')" fill="#0A0D13" stroke="' + color + '" stroke-width="' + Math.max(2, s * 0.06).toFixed(1) + '"/>';
   return line(g) + line(-g) + knot;
 }
-/** The raised guard: an arc on the front side of a token (100°), with Heavy's second arc and Reach's dotted ring. */
-export function guardMarkup(p: { x: number; y: number }, s: number, front: number[], o: { heavy?: boolean; reach?: boolean } = {}): string {
-  const ang = Math.atan2(front[1] || 0, front[0] || 1), half = (50 * Math.PI) / 180;
-  const arc = (r: number, w: number, op: number) => {
-    const a0 = ang - half, a1 = ang + half, x0 = p.x + Math.cos(a0) * r, y0 = p.y + Math.sin(a0) * r, x1 = p.x + Math.cos(a1) * r, y1 = p.y + Math.sin(a1) * r;
-    return '<path d="M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + ' A' + r.toFixed(1) + ' ' + r.toFixed(1) + ' 0 0 1 ' + x1.toFixed(1) + ' ' + y1.toFixed(1) + '" stroke="' + GUARD + '" stroke-width="' + w.toFixed(1) + '" stroke-linecap="round" fill="none" opacity="' + op + '"/>';
-  };
-  return arc(s * 0.6, Math.max(3.5, s * 0.12), 1) + (o.heavy ? arc(s * 0.72, Math.max(1.5, s * 0.04), 0.8) : '')
-    + (o.reach ? '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + (s * 1.5).toFixed(1) + '" fill="none" stroke="' + GUARD + '" stroke-width="1.5" stroke-dasharray="3 5" opacity=".7"/>' : '');
-}
+/** The raised guard and the Guard plates: fx/guard.ts guardMarkup (one copy). */
 /** A Feint's set-up mark: four white corner brackets around a tile. */
 export function bracketsMarkup(p: { x: number; y: number }, s: number, k = 1): string {
   const r = s * 0.48 * k, l = s * 0.16, w = Math.max(2, s * 0.06);
@@ -588,6 +580,7 @@ export interface MeleeMark {
   /** a stuck weapon (rules 1.55): its place among the unit's stuck weapons (0 to 2) and its thrower's side ink */ n?: number; ink?: string;
   /** the holder's (or the marked unit's) tile, and the other end for a link */ a: string; b?: string;
   unit: string; other?: string; weapon?: string | null; ap?: number; front?: number[]; heavy?: boolean; reach?: boolean;
+  /** Guard: the points held and the pool's size (fx/guard.ts plates) */ plates?: number; max?: number;
 }
 /** A stuck weapon's outline: its thrower's side (the token colours of the sheet: the squad blue, the foes' HP red). */
 const STUCK_INK = { pc: '#7FD4FF', foe: '#F65157' } as const;
@@ -611,8 +604,10 @@ export function meleeMarksOf(g: GameState | null | undefined, seen?: Set<string>
     if (u.nailed && sees(u)) out.push({ key: 'nailed|' + u.id + '|' + (u.nailed.weapon || ''), kind: 'nailed', a: u.pos, unit: u.id, weapon: u.nailed.weapon || null, ap: u.nailed.ap });
     // rules 1.55: each thrown weapon stuck in the unit (a Throw that hit; Pull Out or the unit's fall ends it), up to 3
     if (Array.isArray(u.stuck) && sees(u)) u.stuck.slice(0, 3).forEach((x: any, i: number) => { const by = byId.get(x?.by); out.push({ key: 'stuck|' + u.id + '|' + i + '|' + (x?.weapon || '') + '|' + (x?.by || ''), kind: 'stuck', a: u.pos, unit: u.id, other: x?.by, weapon: x?.weapon || null, n: i, ink: (by?.side || 'pc') === 'pc' ? STUCK_INK.pc : STUCK_INK.foe }); });
-    const gd = u.tech?.guard;
-    if (gd?.on && sees(u)) out.push({ key: 'guard|' + u.id + '|' + (gd.front || []).join(','), kind: 'guard', a: u.pos, unit: u.id, front: gd.front || [1, 0], heavy: !!gd.heavy, reach: !!gd.reach });
+    // The Guard look (Guard 2.0, rules 1.56 item 4300; fx/guard.ts): the pool's plates (one per Guard point held, the
+    // empty slots faint) and the Guard stance's front arc, as one mark. Shown while either is up.
+    const gd = u.tech?.guard, gmax = Number(u.resMax?.guard) || 0, gnow = gmax ? Number(u.res?.guard) || 0 : 0;
+    if ((gd?.on || gnow > 0) && sees(u)) out.push({ key: 'guard|' + u.id, kind: 'guard', a: u.pos, unit: u.id, front: gd?.on ? gd.front || [1, 0] : undefined, heavy: !!gd?.on && !!gd.heavy, reach: !!gd?.on && !!gd.reach, plates: gnow, max: gmax });
     const su = u.setUp;
     if (su && su.label === 'Feint' && (!stamp || su.t === stamp) && su.target) { const t = byId.get(su.target); if (live(t) && sees(u) && sees(t)) out.push({ key: 'feint|' + u.id + '|' + t.id, kind: 'feint', a: t.pos, unit: u.id, other: t.id }); }
   }
@@ -649,12 +644,12 @@ function endAt(id: string | undefined, key: string): Pt | null {
 function drawMark(n: MarkNode): boolean {
   const [ia, ib] = endIds(n.m), a = endAt(ia, n.m.a), b = n.m.b ? endAt(ib, n.m.b) : null; if (!a || (n.m.b && !b)) return false;
   // Rebuilt only when it moved or changed (review fix: it was rebuilt every frame, the nailed weapon's 7 images with it).
-  const sig = [a.x, a.y, a.s, b?.x, b?.y].map((v) => (v == null ? '' : v.toFixed(1))).join('|') + '|' + n.m.key + '|' + (n.m.ap ?? '') + '|' + (n.m.front || []).join(',') + (n.m.heavy ? 'h' : '') + (n.m.reach ? 'r' : '');
+  const sig = [a.x, a.y, a.s, b?.x, b?.y].map((v) => (v == null ? '' : v.toFixed(1))).join('|') + '|' + n.m.key + '|' + (n.m.ap ?? '') + '|' + (n.m.front || []).join(',') + (n.m.heavy ? 'h' : '') + (n.m.reach ? 'r' : '') + '|' + (n.m.plates ?? '') + '/' + (n.m.max ?? '');
   if (sig === n.sig) return true;
   n.sig = sig;
   const s = a.s;
   if (n.m.kind === 'bind' || n.m.kind === 'grapple') n.g.innerHTML = linkMarkup(a, b!, s, n.m.kind === 'grapple');
-  else if (n.m.kind === 'guard') n.g.innerHTML = guardMarkup(a, s, n.m.front || [1, 0], { heavy: n.m.heavy, reach: n.m.reach });
+  else if (n.m.kind === 'guard') n.g.innerHTML = guardMarkup(a, s, n.m.front || null, { heavy: n.m.heavy, reach: n.m.reach, plates: n.m.plates, max: n.m.max });
   else if (n.m.kind === 'feint') n.g.innerHTML = bracketsMarkup(a, s, 0.92);
   else if (n.m.kind === 'nailed' || n.m.kind === 'stuck') {
     // the weapon stuck in the token at 35°, its grip standing out of the top right (a dark outline under the white ink);

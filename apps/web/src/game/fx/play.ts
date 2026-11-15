@@ -11,6 +11,7 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
+import { guardHandlers, guardBeat } from './guard';
 import { wrapRanged, rangedBeat, rangedBatch, resetRanged, drawsOwnLoose } from './ranged';
 import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
@@ -1379,6 +1380,8 @@ Object.assign(H, classHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, 
 Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, nameOf: (id) => (phys.TECHNIQUE as any)[id]?.name || id }));
 // The melee techniques' own beats (fx/melee-techniques.ts): arcs, thrown weapons, holds, slams, skids, falls, clashes…
 Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen }));
+// Guard 2.0 (fx/guard.ts): the Guard pool's plates gained, eating a blow (BLOCKED N), dropping, breaking.
+Object.assign(H, guardHandlers({ at, play, sawThen }));
 // Physical 2.0 B (fx/ranged.ts): the ranged techniques, the quiver and thrown weapons; it wraps the handlers above.
 wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
@@ -1402,6 +1405,7 @@ function baseBeat(e: FxEvent): number {
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
   const mb = meleeTechBeat(e); if (mb !== undefined) return mb;
+  const gdb = guardBeat(e); if (gdb !== undefined) return gdb;
   const rb = rangedBeat(e); if (rb !== undefined) return rb;
   const pb = physBeat(e); if (pb !== undefined) return pb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
