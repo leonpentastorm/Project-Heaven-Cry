@@ -462,5 +462,6 @@ export function sigilChip(rows: ResRow[]): SigilChip | null {
   return { text: 'C' + ch.now + ' F' + fl.now + (warn ? ' !' : ''), level, ink: level === 'alert' ? RES_INK.alert : RES_INK.mind,
     title: ch.label + ' ' + ch.now + ' / ' + ch.max + ' · ' + fl.label + ' ' + fl.now + ' / ' + fl.max + (warn ? ' · ' + warn.warn : '') };
 }
-/** The chip's style on a 48 px map token: top right, over the portrait's edge (13 px text, the ink with its letters). */
-export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: -9px; z-index: 5; padding: 0 3px; border-radius: 4px; font-size: 13px; line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;
+/** The chip's style on a 48 px map token: on the right edge, just below centre (clear of Pressure's pips and word on the top
+ *  edge and the health word chip on the bottom edge; characters only, so never under a hostile's kind badge). */
+export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 5; padding: 0 3px; border-radius: 4px; font-size: 13px; line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;

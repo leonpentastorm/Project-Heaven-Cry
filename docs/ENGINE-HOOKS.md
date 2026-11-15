@@ -20,11 +20,11 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `round_start` | `round_start` | anyone | a new round begins | `boon.script_ward` (survival.json) |
 | `turn_ap` | `turn_start_pre` | actor | a unit's turn is about to begin: its AP are being counted (grant_ap adds to or takes from this turn) | `last_wall` (perks.json) |
 | `turn_start` | `turn_start` | actor | a unit's turn has begun | `canticle` (classes.json) |
-| `turn_end` | `turn_end` | actor | a unit's turn ends | `run_and_gun` (classes.json) |
+| `turn_end` | `turn_end` | actor | a unit's turn ends | `fire_and_move` (classes.json) |
 | `attack` | `attack_preview` | actor | an attack is being sized up (to-hit terms, its AP, a refusal); also every preview | `breaker_finishers` (classes.json) |
-| `attack_roll` | `attack_roll` | actor | an attack's d20 is rolled | `run_and_gun` (classes.json) |
+| `attack_roll` | `attack_roll` | actor | an attack's d20 is rolled | `fire_and_move` (classes.json) |
 | `hit` | `on_hit` | actor | an attack hit | `charge_carries` (classes.json) |
-| `miss` | `on_miss` | actor | an attack missed | `given_edge` (conditions.json) |
+| `miss` | `on_miss` | actor | an attack missed | `relocated` (classes.json) |
 | `dealing` | `damage_out` | actor | an amount of damage is being made (before armour) | `breaker_finishers` (classes.json) |
 | `taking` | `damage_in` (reduce) | target | damage is about to land (after armour, before the shield) | `sanctuary` (classes.json) |
 | `would_drop` | `damage_in` (would_drop_to_0) | target | a blow would drop a unit to 0 HP | `take_the_weight` (classes.json) |
@@ -35,19 +35,19 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `cond_landed` | `cond_landed` | target | a condition landed | `foe_grief` (conditions.json) |
 | `cond_ended` | `cond_end` | target | a condition ended | none yet |
 | `save` | `save` | target | a save is rolled | `settled` (conditions.json) |
-| `moved` | `moved` | actor | a unit finished a move of its own | `slipping` (conditions.json) |
+| `moved` | `moved` | actor | a unit finished a move of its own | `relocated` (classes.json) |
 | `forced_move` | `forced_move` | target | a unit is about to be pushed, pulled, thrown or teleported | `siege_engine` (perks.json) |
 | `heal` | `heal_in` | target | a unit is about to be healed | `last_rites` (classes.json) |
 | `heal_given` | `heal_given` | actor | a heal landed | `ledger` (classes.json) |
 | `shield` | `shield_grant` | target | a shield is about to be given | `ledger` (classes.json) |
-| `cost` | `cost` | actor | an action is priced (every priced action) | `speed_loader` (classes.json) |
+| `cost` | `cost` | actor | an action is priced (every priced action) | `fire_and_move` (classes.json) |
 | `reload` | `reload` | actor | a reload is made | `speed_loader` (classes.json) |
 | `swap` | `swap` | actor | a weapon swap is priced | `speed_loader` (classes.json) |
 | `injury` | `injury` | target | an injury is about to be rolled on a unit | `last_wall` (perks.json) |
 | `glyph_cost` | `glyph_cost` | actor | a Sigil glyph is priced (its AP, charge and Flux; also every preview) | `barrage` (classes.json) |
 | `acted` | `acted` | actor | a unit's own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action's nested `when: acted` effects need no `if.action` | `launch` (classes.json) |
 | `reaction` | `reaction` | actor | the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves | none yet |
-| `to_hit` | `to_hit` | actor | a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term | `given_edge` (conditions.json) |
+| `to_hit` | `to_hit` | actor | a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term | `relocated` (classes.json) |
 | `spot` | `spot` | target | a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel) | `given_wonder` (conditions.json) |
 | `combat_over` | `combat_over` | anyone | the fight is decided, before the fighters are written back to their characters: a heal or a resource given here goes home with them (combat_end comes after) | `boon.mending` (survival.json) |
 
@@ -61,7 +61,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `self_hp_above` | number | self's HP is over this share of its max | `take_the_weight` (classes.json) |
 | `self_hp_at_most` | number | self's HP is at most this share of its max | `foe_mercy` (conditions.json) |
 | `self_has` | ids | self has one of these conditions | `ingenuity` (skills.json) |
-| `self_lacks` | ids | self has none of these conditions | none yet |
+| `self_lacks` | ids | self has none of these conditions | `fire_and_move` (classes.json) |
 | `self_tier` | words | self's tier is one of these (vermin, minion, soldier, elite, boss) | none yet |
 | `self_not_tier` | words | self's tier is none of these | `foe_mercy` (conditions.json) |
 | `self_kind` | words | self's kind is one of these (human, robot, crawler, ork…) | none yet |
@@ -91,7 +91,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `target_within` | number | target stands within this many tiles of the holder | `ward` (figments.json) |
 | `target_sight` | words | target's sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named) | `take_the_weight` (classes.json) |
 | `target_sees_self` | bool | target can (or cannot) see the holder: its eyes reach the holder's tile and the holder is not Hidden (shadow-spec 2.1) | `tradecraft` (classes.json) |
-| `melee` | bool | the attack or damage is (true) or is not (false) melee | `barbed` (figments.json) |
+| `melee` | bool | the attack or damage is (true) or is not (false) melee | `fire_and_move` (classes.json) |
 | `crit` | bool | the attack is (or is not) a critical | `mod_serrated` (items.json) |
 | `mode` | words | the attack's mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech) | `charge_carries` (classes.json) |
 | `damage` | words | the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true) | `holy_dread` (classes.json) |
@@ -104,10 +104,10 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `action` | words | the priced action (its cost site) is one of these | `wrecker` (classes.json) |
 | `word` | words | the Sigil word being drawn is one of these | `barrage` (classes.json) |
 | `hand` | words | the hand is one of these (main, off, both) | `speed_loader` (classes.json) |
-| `how` | words | the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread) | `last_rites` (classes.json) |
-| `ap_above` | number | the event's AP (a price, a swap) is over this | `speed_loader` (classes.json) |
-| `own_turn` | bool | it is (or is not) the holder's own turn | `run_and_gun` (classes.json) |
-| `flag` | string | the item's flag is set (the mark op sets it) | `run_and_gun` (classes.json) |
+| `how` | words | the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread) | `relocated` (classes.json) |
+| `ap_above` | number | the event's AP (a price, a swap) is over this | `fire_and_move` (classes.json) |
+| `own_turn` | bool | it is (or is not) the holder's own turn | `fire_and_move` (classes.json) |
+| `flag` | string | the item's flag is set (the mark op sets it) | `fire_and_move` (classes.json) |
 | `no_flag` | string | the item's flag is not set | `canticle` (classes.json) |
 | `self_alive` | bool | the holder is (or is not) up: not Downed, dead or surrendered | `walking_wounded` (perks.json) |
 | `actor_alive` | bool | the actor is (or is not) up: not Downed, dead or surrendered | none yet |
@@ -134,7 +134,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `toggle` | words | one of the holder's item's data toggles (its ids) is on for the action being resolved | none yet |
 | `free_tech` | bool | the attack is (true) or is not (false) made with a free technique, everyone's (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands) | `fire_discipline` (classes.json) |
 | `tech_ap_at_least` | number | the attack's own price is at least this many AP: its technique's cost with the weapon before any item (ctx.techAp), or with no technique the attack's base AP | `fire_discipline` (classes.json) |
-| `path_tiles_at_most` | number | the move (its priced walk: ctx.tiles) is at most this many tiles | `run_and_gun` (classes.json) |
+| `path_tiles_at_most` | number | the move (its priced walk: ctx.tiles) is at most this many tiles | `fire_and_move` (classes.json) |
 | `self_has_res` | words | the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…) | `ledger` (classes.json) |
 | `self_lacks_res` | words | the holder has none of one of these resources (as self_has_res) | `riposte` (classes.json) |
 | `patron` | words | the holder is Faithful to one of these patrons (patrons.json ids) | `smite` (classes.json) |
@@ -150,7 +150,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `damage_mod` | `dealing`, `taking` | `value`, `value_pct` | no | add to the amount (value), or change it by a percentage (value_pct) | `ledger` (classes.json) |
 | `damage_vs` | `dealing` | `value` | no | a bonus against this target (added with the other target bonuses) | none yet |
 | `roll_mod` | `attack`, `to_hit`, `cond_incoming`, `save`, `spot` | `value`, `roll` | no | a to-hit term on an attack (to_hit: on any roll to hit, weapon, Sigil or Outburst); on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN | `breaker_finishers` (classes.json) |
-| `cost_mod` | `cost`, `swap`, `reload`, `attack`, `glyph_cost` | `value`, `set`, `min`, `at_least`, `res` | no | change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that | `speed_loader` (classes.json) |
+| `cost_mod` | `cost`, `swap`, `reload`, `attack`, `glyph_cost` | `value`, `set`, `min`, `at_least`, `res` | no | change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that | `fire_and_move` (classes.json) |
 | `grant_ap` | any trigger | `value`, `bank` | yes | AP: at turn_ap, to this turn (a negative value takes); elsewhere perk AP now (bank: true, next turn) | `given_pride` (conditions.json) |
 | `resource` | any trigger | `resource`, `value` | yes | give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value "all" spends and "zero" loses all of it | `charge_carries` (classes.json) |
 | `condition` | any trigger | `condition`, `rounds`, `skip_save`, `via`, `by`, `same_entry` | yes | put a condition on the self, the actor or the target (target:), with its save unless skip_save; by: "source" (a condition row) puts it on as from whoever gave the row (Afraid of the giver); via: the skill whose strength the save is against (as deal's via; default the ambient source); condition "incoming" (on cond_incoming): the condition being put on, with its rounds unless rounds is given; same_entry (hidden only): the same Hidden entry as before, no new ambush (Shadow, rules 1.32) | `charge_carries` (classes.json) |
@@ -169,7 +169,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `unmake` | any trigger | `refund` | yes | unmake an owned unit (P9: owned.ts unmakeOwned; the target, else the holder): it leaves the fight; refund: what its making took goes back to its owner | `snare` (figments.json) |
 | `redirect` | `taking` | `share`, `split`, `type` | yes | move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again), or with type as damage of that type (a Bond's share: soul) | `ward` (figments.json) |
 | `use` | any trigger | (none) | yes | nothing but its limit: spends one use (for a limit another effect reads with peek) | `speed_loader` (classes.json) |
-| `mark` | any trigger | `flag`, `clear` | yes | set (or with clear: true, clear) one of the item's own flags, for a later trigger's flag / no_flag | `run_and_gun` (classes.json) |
+| `mark` | any trigger | `flag`, `clear` | yes | set (or with clear: true, clear) one of the item's own flags, for a later trigger's flag / no_flag | `fire_and_move` (classes.json) |
 | `take` | any trigger | `save`, `via` | yes | take one thing the target carries into the pile on the holder's tile: a throwable, else a spare magazine (Shadow's Lift); save: the target's save family (body, brain, heart) rolled against the holder's strength (via: by that skill), and a success keeps it | none yet |
 | `last_seen` | any trigger | (none) | yes | every other side now places the holder on the event's tile (cb.lastSeen: where its searchers go for a Hidden hostile; Shadow's Decoy) | none yet |
 | `object` | any trigger | `do`, `has`, `kind`, `amount` | yes | work the object on the event's tile that is `has` (a kind id, a kind field or a cover grade: objects.ts objectIs): do "pick" (a door: locked or closed, it opens; open, it closes and locks, not while someone stands in it), "break" (its HP to 0 through the object damage; one with no HP is put out and gone); or do "lay": make an object of `kind` (a trap) there, the holder's side's, its damage the item's amount block `amount`, one at a time (the holder's last one from this item goes). Nothing there: nothing happens (Shadow's Pick, Douse and Rig, rules 1.32) | none yet |
@@ -586,10 +586,10 @@ Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod
 
 `immune(x, what)` is also asked about: `bleed`, `knockback`, `opportunity_attack`, `shove` (`IMMUNE_IDS`).
 
-### The condition table (`data/conditions.json`, 106 rows; loader `condtable.ts`)
+### The condition table (`data/conditions.json`, 107 rows; loader `condtable.ts`)
 
 A condition is a row; these are the fields rows use (how many rows use each):
-`id` (106), `amounts` (7), `name` (106), `kind` (106), `family` (106), `save` (106), `engine` (106), `text` (106), `effects` (106), `duration` (106), `ends_on` (106), `stacks` (106), `adjudication` (106), `save_note` (1), `provisional` (77), `aliases` (2), `key` (2), `label` (60), `boon` (50), `notes` (1), `source` (71), `engine_state` (3), `params` (1), `set_by` (57).
+`id` (107), `amounts` (7), `name` (107), `kind` (107), `family` (107), `save` (107), `engine` (107), `text` (107), `effects` (107), `duration` (107), `ends_on` (107), `stacks` (107), `adjudication` (107), `save_note` (1), `provisional` (78), `aliases` (2), `key` (2), `label` (61), `boon` (51), `notes` (1), `source` (72), `engine_state` (3), `params` (1), `set_by` (57).
 Families: `body`, `brain`, `heart`.
 
 #### The item-ops runner (`effects/triggers.ts`)

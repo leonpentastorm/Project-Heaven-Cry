@@ -995,6 +995,8 @@ export function guardHint(u: Pick<Unit, 'level'>): string {
   const g = GR(), brace = g.brace_gain ?? 2, keep = g.keep_back ?? 1;
   return 'Brace gives ' + brace + ' Guard (' + (brace + (g.brace_shield_gain ?? 1)) + ' with a shield); the Guard technique gives ' + (g.gain_base ?? 1) + ', +' + (g.gain_per_point ?? 1) + ' for each Durability point above 1, +' + (g.shield_gain ?? 1) + ' with a shield. Each point takes ' + guardSoak(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
 }
+/** A Pressure state's data row (rules.pressure.states: word, says, text, text_pc). */
+const PS = (state: string): any => PHYS_RULES.pressure?.states?.[state] || {};
 function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   const max = u.resMax?.momentum;
   const hid = viewerSide === u.side ? Math.min(pressureOf(u), (u as any).pressHidden || 0) : 0, now = pressureOf(u) - hid;
@@ -1005,8 +1007,9 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
     momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
     // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
     guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: guardSoak(u), shield: !!shieldOf(u), hint: guardHint(u) } : null,
-    pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
-      cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
+    // Pressure 2.0 (rules 1.56): the state's word, its short line and its cost are data (techniques.json rules.pressure.states)
+    pressure: { now, max: pressureCap(u), state, word: state ? PS(state).word || '' : now ? 'Under fire' : '', says: state ? PS(state).says || '' : '',
+      cost: state ? (u.side === 'pc' && PS(state).text_pc) || PS(state).text || '' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,
     // rules 1.55: the thrown weapons stuck in this unit, and the ones this unit has stuck in others (the sheet's line)
     stuck: ((u.stuck || []) as any[]).map((x) => ({ weapon: x.weapon as string, name: WEAPON[x.weapon]?.name || 'weapon', by: x.by as string, byName: cb.units.find((y) => y.id === x.by)?.name || '' })),

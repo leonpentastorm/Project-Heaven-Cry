@@ -12,6 +12,8 @@ type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup;
 import { heatLimit } from '@engine';
 const { techniquePad, packPad, pairedPad, physView, weaponSystem, propText, TECHNIQUE, shieldOf } = phys;
 import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
+import { poseOf } from './fx/pressure';
+import { doorLineOf } from './doorView';
 
 export const TQ = 'tq:';
 export const TPAD = 'tpad:';
@@ -146,6 +148,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
     } else if (system === 'ranged') {
       const loaded = hand === 'off' ? u.offAmmo ?? 0 : u.ammo ?? 0;
       meter = (w.magazine != null ? loaded + ' / ' + w.magazine + ' loaded' : '') + (w.heat_limit ? (w.magazine != null ? ' · ' : '') + 'Heat ' + (u.heat || 0) + ' / ' + heatLimit(u, w) : '');
+      meterHint = pv?.pressure ? doorLineOf(String((phys as any).PHYS_RULES?.pressure?.door || '')) : ''; // Pressure 2.0 (rules 1.56): the door's one line (techniques.json rules.pressure.door names the skill; its door_line read by doorView, the one reader)
     }
     return { hand, weaponId, name: (hand === 'main' ? u.weaponName : null) || w.name, icon: gearIconUri(weaponId), iconOff: gearIconUri(weaponId, GEAR_INK_OFF), system, meter, pips, meterHint, jammed: system === 'ranged' && !!(hand === 'off' ? u.offJammed : u.jammed),
       plain: plainE ? chipOf(plainE) : null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch, ...(system === 'melee' && pips.length ? { meterKind: 'momentum' as const } : {}) };
@@ -218,25 +221,31 @@ export function physOf(g: any, cb: any, u: any, side: 'pc' | 'foe' = 'pc'): Phys
 const PRESS_INK: Record<string, string> = { '': '#E7EBF3', pressed: '#F2A54A', suppressed: '#F65157', broken: '#F65157' };
 /** The pips over a token: up to the unit's cap, filled to its Pressure (public: no Analyze needed), and the state word
  *  for its hover card and aria-label. Pips a Silent weapon put on a unit are already left out of its own side's view. */
-export function pressureLook(v: PhysView | null): { has: boolean; pips: { key: string; style: string }[]; word: string; title: string; style: string } {
-  const p = v?.pressure; if (!p || !p.now) return { has: false, pips: [], word: '', title: '', style: '' };
+export function pressureLook(v: PhysView | null): { has: boolean; pips: { key: string; style: string }[]; word: string; title: string; style: string; state: string; pose: string; tag: string; tagStyle: string } {
+  const p = v?.pressure; if (!p || !p.now) return { has: false, pips: [], word: '', title: '', style: '', state: '', pose: '', tag: '', tagStyle: '' };
   const ink = PRESS_INK[p.state] || '#E7EBF3', n = Math.min(4, p.max);
   const pips = Array.from({ length: n }, (_, i) => ({ key: 'p' + i, style: 'width: 6px; height: 6px; border-radius: 50%; box-sizing: border-box; ' + (i < p.now ? 'background: ' + ink : 'border: 1px solid rgba(231, 235, 243, 0.55); background: rgba(5, 7, 11, 0.7)') }));
   const word = p.word || 'Under fire';
-  return { has: true, pips, word, title: 'Pressure ' + p.now + ' / ' + p.max + ' · ' + word + (p.cost ? ': ' + p.cost : ''),
+  // Pressure 2.0: the token's pose (Pressed dips, Suppressed crouches, Broken lower: fx/pressure.ts poseOf, from the engine's
+  // state) and the state's word under the pips (from data, rules.pressure.states), coloured with it, so the colour has its word
+  const tag = p.state ? (p.word || '').toUpperCase() : '';
+  return { has: true, pips, word, state: p.state || '', pose: poseOf(p.state), tag,
+    tagStyle: 'position: absolute; left: 50%; top: 8px; transform: translateX(-50%); font-size: 7px; font-weight: 700; letter-spacing: 0.08em; line-height: 1; white-space: nowrap; padding: 1px 2px; border-radius: 3px; background: rgba(5, 7, 11, 0.8); color: ' + ink,
+    title: 'Pressure ' + p.now + ' / ' + p.max + ' · ' + word + (p.cost ? ': ' + p.cost : ''),
     style: 'position: absolute; left: 50%; top: 0; transform: translateX(-50%); z-index: 4; display: flex; gap: 2px; padding: 1px 2px; border-radius: 4px; pointer-events: none; background: rgba(5, 7, 11, 0.6)' };
 }
 /** Rules 1.56 (the Momentum chain 2.0): the counter on a token, "x3", in Strength's ink, from the engine's physView
  *  (its now and max) and the data's `techniques.json rules.momentum.show.counter_min`. Full: a double ring and "MAX" in
- *  its title. Nothing is worked out here: the number is the engine's. On the token's left edge, centred: the health word
- *  chip is on the bottom edge, the kind badge bottom right, the Sigil charge / Flux chip top right, Pressure top centre. */
+ *  its title. Nothing is worked out here: the number is the engine's. On the token's left edge, just below centre: the
+ *  health word chip is on the bottom edge, the kind badge bottom right (hostiles), the Sigil charge / Flux chip on the
+ *  right edge (characters), Pressure's pips and its state word top centre. */
 export const STRENGTH_INK = '#F68A38';
 export function momentumLook(v: PhysView | null): { has: boolean; text: string; title: string; style: string; full: boolean } {
   const m = v?.momentum, min = Number((phys as any).PHYS_RULES?.momentum?.show?.counter_min ?? 1);
   if (!m || m.now < min) return { has: false, text: '', title: '', style: '', full: false };
   const full = m.now >= m.max;
   return { has: true, full, text: 'x' + m.now, title: 'Momentum ' + m.now + ' / ' + m.max + (full ? ' · MAX' : '') + (m.hint ? ' · ' + m.hint : ''),
-    style: 'position: absolute; left: -6px; top: 50%; transform: translateY(-50%); z-index: 4; min-width: 18px; padding: 0 3px; border-radius: 7px; box-sizing: border-box; pointer-events: none; font: 700 10px/13px Chakra Petch, sans-serif; text-align: center; color: ' + STRENGTH_INK + '; background: rgba(5, 7, 11, 0.85); '
+    style: 'position: absolute; left: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 4; min-width: 18px; padding: 0 3px; border-radius: 7px; box-sizing: border-box; pointer-events: none; font: 700 10px/13px Chakra Petch, sans-serif; text-align: center; color: ' + STRENGTH_INK + '; background: rgba(5, 7, 11, 0.85); '
       + (full ? 'border: 3px double ' + STRENGTH_INK : 'border: 1px solid ' + STRENGTH_INK) };
 }
 /** The hover card's lines for a unit: its Pressure and state, and that it can't be stopped again this round. */

@@ -54,6 +54,7 @@ describe('rules 1.43: a focus\'s rarity on its door (spec rule 25a, item 9)', ()
   });
   it('the saves a door forces are harder by the focus\'s accuracy (a Bond\'s through Empathy, a push\'s through Will Power)', () => {
     const f = fightWith([{ kit: 'sigil' }], [{ tier: 'soldier' }]), g = f.g, u = f.pc, foe = f.foe, ch = g.characters[u.charId!];
+    delete (u as any).held; // read the sheet live: the test changes the character by hand, outside the reducer (which refreshes u.held, game.ts); a unit with Dexterity holds a door item since rules 1.56 Pressure 2.0
     W(g, () => {
       const a = saveAgainst(g.combat!, { state: 7 } as any, u, foe, 'brain', 'test', { via: 'brain_power' });
       ch.offHand = { ...ch.offHand!, rarity: 'fine' };
@@ -86,6 +87,7 @@ describe('rules 1.43: setGrade and a gear instance\'s named property (items 10, 
   });
   it('with_this: Keen works in hand, not in the pack, and not for another weapon\'s action', () => {
     const f = fightWith([{ kit: 'soldier' }], [{ tier: 'soldier' }]), g = f.g, u = f.pc, foe = f.foe, ch = g.characters[u.charId!];
+    delete (u as any).held; // read the sheet live: the test changes the character by hand, outside the reducer (which refreshes u.held, game.ts); a unit with Dexterity holds a door item since rules 1.56 Pressure 2.0
     const keen = (x: any) => (x.dmg?.mults || []).some((t: any) => t.label === relicRow('prop.keen')!.name);
     W(g, () => {
       expect(keen(previewAttack(g.combat!, u, foe, 'shot'))).toBe(false);
@@ -101,6 +103,7 @@ describe('rules 1.43: setGrade and a gear instance\'s named property (items 10, 
   });
   it('Deep (a focus property) adds to its own door\'s roll only, while in hand', () => {
     const f = fightWith([{ kit: 'sigil' }], [{ tier: 'soldier' }]), g = f.g, u = f.pc, foe = f.foe, ch = g.characters[u.charId!];
+    delete (u as any).held; // read the sheet live: the test changes the character by hand, outside the reducer (which refreshes u.held, game.ts); a unit with Dexterity holds a door item since rules 1.56 Pressure 2.0
     W(g, () => {
       const base = toHitTerms(g.combat, u, foe, 'sigil').reduce((t, x) => t + x.v, 0);
       setGrade(ch, 'off', 'relic', 'prop.deep');

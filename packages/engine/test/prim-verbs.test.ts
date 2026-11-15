@@ -39,7 +39,7 @@ describe('P6: door verbs', () => {
     expect(meetsRequires(r, { skills: { dexterity: r[0].min } })).toBe(true); expect(meetsRequires(r, { skills: { dexterity: r[0].min - 1 } })).toBe(false);
     expect(meetsRequires([{ class: 'mage', rank: 2 }], { cls: 'mage', rank: 2 })).toBe(true); expect(meetsRequires([{ class: 'mage', rank: 2 }], { cls: 'mage', rank: 1 })).toBe(false);
     expect(verbsOf({ skills: { dexterity: 1 } })).toContain('test_verb_mark'); expect(verbsOf({ skills: {} })).not.toContain('test_verb_mark');
-    const f = fight(); const held = itemsOf(heldOfChar(f.char(f.pc))).filter((i) => i.kind === 'verb').map((i) => i.id);
+    const f = fight(); const held = itemsOf(heldOfChar(f.char(f.pc))).filter((i) => i.kind === 'verb' && i.id.startsWith('test_')).map((i) => i.id); // (the data's own door verbs, Slide among them, are held by their sheets too)
     expect(held).toEqual(['test_verb_mark', 'test_verb_steady', 'test_verb_whisper']);
     expect(itemInfo('verb:test_verb_mark')!.kind).toBe('verb');
   });

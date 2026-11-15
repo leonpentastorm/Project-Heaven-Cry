@@ -1278,6 +1278,34 @@
       "source": "Classes 3.0 step 3, Run and Gun (rules 1.30, item 1808)"
     },
     {
+      "id": "free_move_spent",
+      "name": "Free move spent",
+      "label": "Free move spent (this turn)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have taken this turn's free move (Fire and Move or Run and Gun: one a turn between them); your next move costs its AP. It ends when your turn does.",
+      "effects": [
+        {
+          "op": "cleanse",
+          "when": "turn_end",
+          "condition": "free_move_spent"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "Pressure 2.0 review fix (16 Nov 2026): Fire and Move and Run and Gun share one free move a turn, the longer (Run and Gun) first"
+    },
+    {
       "id": "bonded",
       "name": "Bonded",
       "kind": "state",

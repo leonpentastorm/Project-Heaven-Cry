@@ -6509,6 +6509,46 @@ melee weapon, a shield or bare hands, never with a gun or a throw (a gun-holder 
 10. **Not tonight** (item 4409). The run carries (P12), Into the Wall (P13), Hurl (P14), Wrecker's AP (P15), the
     Demolisher and the Duelist (P8): each waits for its general piece (the draft's list).
 
+## Rules 1.56 (Balance 2.0), Pressure 2.0 (the Skirmisher)
+
+Leon, 15 Nov 2026: "All players need to feel like they do something only they do best." The Skirmisher (class id
+`marksman`) **controls where the enemy can be and what it dares to do, and never stands still itself.** Design and its
+"Built from" table: `docs/design/proposals/2026-11-pressure-2.0.md`. Every item is `adjudication: engine`; every number is
+a data field and PROVISIONAL (items 4440 to 4452). Nothing here adds an engine primitive.
+
+1. **Pressure is anyone's, by any ranged hit** (rules 1.12 stand): a gun's, a bow's, a thrown weapon's alike; a blow in
+   melee sheds the attacker's own. Its three states are data, each with a word, a short line and its cost in words
+   (`techniques.json rules.pressure.states`: Pressed "aims worse", Suppressed "loses AP", Broken "loses more AP"); the
+   engine's view of a unit (`physView`) reads them, and the map shows the word under the pips.
+2. **Fire and Move** (Skirmisher, gain): once a turn, after a ranged attack on your turn, a move of 1 tile costs no AP
+   and draws no opportunity attack (Slipping). Its own item beside Run and Gun (rank III), which keeps its longer step.
+   The two share **one free move a turn** (review fix, 16 Nov 2026): whichever is taken puts the state `free_move_spent`
+   (conditions.json; it ends with the turn) on the mover, and neither gives a free move while it is on. Run and Gun is
+   asked first (`priority` 90), so a rank III Skirmisher's free move is always the longer one, with its Pressure.
+3. **Relocated** (Skirmisher, gain): your first ranged attack after you move on your turn (walk, sprint, disengage) is
+   at +1 to hit, and a hit adds 1 more Pressure. The flag clears on that attack's hit or miss and at the end of the turn.
+4. **Break Them** (Skirmisher, gain): Rout costs 1 AP less on your turn, never under 1 (it stacks with Fire Discipline's
+   once-a-turn cut).
+5. **Dexterity's door, Pressure** (`skills.json dexterity.unlocks.1`, held from Dexterity 1; `door_line` is its one
+   line for the tab and the first-fight tip):
+   a. **Slide** (Dexterity 1; a door verb, `data/pressure.json`): 1 AP, once a turn: step to the nearest free tile next
+      to cover within 3 tiles (one out of every enemy's view first), drawing no opportunity attack, and shed 1 of your
+      own Pressure. With no such tile you stay and still shed it.
+   b. **Near Miss** (Dexterity 3): your ranged shot off your own turn (a held shot: Overwatch, Deny, Cover Me, Dead to
+      Rights) that misses a hostile still adds 1 Pressure to it, once a turn for each target: a held lane keeps heads
+      down even when the round goes wide. (Scoped to held shots so the plain gun line stays where it is: measured, the
+      draft's every-miss version lifted the all-in gun ceiling by 2 to 6 points, past the contract's band.)
+   c. **Shaken Nerves** (Dexterity 3): every save a foe makes against you (Rout, Pin Down, a Flush Out, any) has its TN
+      raised by 1 for each Pressure pip on it, at most 2.
+   d. **Flush Out** (Dexterity 5): your Flush also makes its target save (Heart, against your Dexterity) or be Afraid of
+      you (`fear`) for 1 round: it will not move toward you or attack you (the AI's existing rule).
+6. **Not in this revision** (each waits on a general primitive, listed in the proposal): the AI hugging cover and the
+   Broken morale save (P10), Open and Pin the Suppressed (P9), the Suppressor/Runner fork (P8), Broken Line (P1 + P10),
+   Pins practice (P2), and Slide's refusal with no cover in reach (P16).
+7. **Saves.** Nothing new is stored: the gain rows read the class, the door rows read Dexterity's points. A saved
+   Skirmisher loads with every move it had and gains Fire and Move, Relocated and Break Them; any character with
+   Dexterity gains Slide and the door's rows at their points.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -10152,6 +10192,22 @@ Items 4240 to 4247.
 4407. **`tech` on `on_hit` and `damage_out` (item 8):** no number.
 4408. **Every blow counts, held (item 9):** measured, not built (blade all in L5 / L10 / L20: 158 / 149 / 194% without it, 173 / 170 / 218% with it). Needs a fit before it ships.
 4409. **Items 4400 to 4409 are the Momentum chain 2.0's.**
+
+### Rules 1.56 (Balance 2.0), Pressure 2.0 (the Skirmisher)
+
+4440. **The state rows (rules 1.56 Pressure 2.0 item 1; `techniques.json rules.pressure.states`):** words and lines only; their numbers are the meter's own (`pressed_ranged_hit`, `suppressed_ap`, `broken_ap`). No new number.
+4441. **Fire and Move's step (item 2; `classes.json marksman gain fire_and_move`, `path_tiles_at_most`):** 1 tile, once a turn. PROVISIONAL.
+4442. **Relocated's to-hit (item 3; `relocated` effects.1 `value`):** +1. PROVISIONAL.
+4443. **Relocated's Pressure (item 3; `relocated` effects.2 `value`):** +1 on the hit. PROVISIONAL.
+4444. **Break Them's cut (item 4; `break_them` effects.0 `value`, `min`):** −1 AP, floor 1. PROVISIONAL.
+4445. **Slide's price (item 5a; `pressure.json pressure.slide` `ap`, `uses`):** 1 AP, once a turn. PROVISIONAL.
+4446. **Slide's reach (item 5a; `displace` `tiles`):** 3 tiles. PROVISIONAL.
+4447. **Slide's shed (item 5a; `resource` `value`):** −1 of your own Pressure. PROVISIONAL.
+4448. **Near Miss (item 5b; `skills.json dexterity.unlocks.1` effects.0):** from Dexterity 3, +1 Pressure on a ranged miss off your own turn (a held shot), once a turn a target. PROVISIONAL.
+4449. **Shaken Nerves (item 5c; effects.1 `value`):** from Dexterity 3, +1 TN a pip, at most +2 (softened from the draft's uncapped). PROVISIONAL.
+4450. **Flush Out (item 5d; effects.2):** from Dexterity 5, Afraid 1 round, a Heart save against Dexterity. PROVISIONAL.
+4451. **The door's tip (item 5; `skills.json dexterity.door_line`):** words only. No number.
+4452. **Items 4440 to 4452 are rules 1.56 Pressure 2.0's.**
 
 ### Rules 1.56 (Balance 2.0), prayer 2.0 (the Chaplain)
 

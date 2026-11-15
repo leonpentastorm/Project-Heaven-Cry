@@ -788,6 +788,190 @@
           ],
           "status": "active",
           "surface": "combat"
+        },
+        {
+          "id": "fire_and_move",
+          "name": "Fire and Move",
+          "ap_cost": 0,
+          "uses": "per_turn",
+          "text": "Once a turn, after a ranged attack, a move of {=effects.1.if.path_tiles_at_most} tile costs no AP and draws no opportunity attack. Shoot, step, shoot: standing still is the wrong answer.",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "attack_roll",
+              "flag": "fired",
+              "if": {
+                "own_turn": true,
+                "melee": false
+              }
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "set": 0,
+              "if": {
+                "action": [
+                  "move"
+                ],
+                "flag": "fired",
+                "ap_above": 0,
+                "path_tiles_at_most": 1,
+                "self_lacks": [
+                  "free_move_spent"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "step"
+              },
+              "and": [
+                {
+                  "op": "condition",
+                  "condition": "slipping",
+                  "skip_save": true
+                },
+                {
+                  "op": "condition",
+                  "condition": "free_move_spent",
+                  "skip_save": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "fired",
+              "clear": true
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "marksman",
+          "new": true,
+          "fantasy_tags": [
+            "mobility",
+            "pressure"
+          ],
+          "attributes": [
+            "agility"
+          ],
+          "status": "active",
+          "surface": "combat"
+        },
+        {
+          "id": "relocated",
+          "name": "Relocated",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Your first ranged attack after you move on your turn is at +{=effects.1.value} to hit, and a hit adds {=effects.2.value} more Pressure.",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "moved",
+              "flag": "relocated",
+              "if": {
+                "own_turn": true,
+                "how": [
+                  "move",
+                  "sprint",
+                  "disengage"
+                ]
+              }
+            },
+            {
+              "op": "roll_mod",
+              "when": "to_hit",
+              "value": 1,
+              "label": "relocated",
+              "if": {
+                "actor": "self",
+                "flag": "relocated",
+                "melee": false
+              }
+            },
+            {
+              "op": "resource",
+              "when": "hit",
+              "resource": "pressure",
+              "value": 1,
+              "target": "target",
+              "if": {
+                "flag": "relocated",
+                "melee": false,
+                "own_turn": true
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "relocated",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "miss",
+              "flag": "relocated",
+              "clear": true,
+              "if": {
+                "melee": false,
+                "own_turn": true
+              }
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "relocated",
+              "clear": true
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "marksman",
+          "new": true,
+          "fantasy_tags": [
+            "mobility",
+            "pressure"
+          ],
+          "attributes": [
+            "agility"
+          ],
+          "status": "active",
+          "surface": "combat"
+        },
+        {
+          "id": "break_them",
+          "name": "Break Them",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "text": "Rout costs you {=effects.0.value|abs} AP less on your turn (never under {=effects.0.min}).",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "value": -1,
+              "min": 1,
+              "if": {
+                "mode": [
+                  "rout"
+                ],
+                "own_turn": true
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "marksman",
+          "new": true,
+          "fantasy_tags": [
+            "pressure"
+          ],
+          "attributes": [
+            "agility"
+          ],
+          "status": "active",
+          "surface": "combat"
         }
       ],
       "ranks": {
@@ -960,16 +1144,25 @@
                     ],
                     "flag": "fired",
                     "ap_above": 0,
-                    "path_tiles_at_most": 2
+                    "path_tiles_at_most": 2,
+                    "self_lacks": [
+                      "free_move_spent"
+                    ]
                   },
                   "limit": {
                     "per": "per_turn",
                     "n": 1
                   },
+                  "priority": 90,
                   "and": [
                     {
                       "op": "condition",
                       "condition": "slipping",
+                      "skip_save": true
+                    },
+                    {
+                      "op": "condition",
+                      "condition": "free_move_spent",
                       "skip_save": true
                     },
                     {

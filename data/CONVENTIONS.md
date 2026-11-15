@@ -201,7 +201,7 @@ Every rule-bearing item carries both:
 
 ## Doors (skills.json, the alpha skills; 0.29 onboarding)
 - `door_line`: the door's one-line "how this works", in plain words. The fight screen shows it as the header of the door's tab, and the first-fight tip (`apps/web/src/game/tips.tsx`) reads it; a character has the door with 1 point in the skill. No digit typed in it: a number is a `{=placeholder}` of the skill's own field, or it is left out.
-- `door_tab`: the fight screen's tab that holds the door's actions (a descriptor group: `outbursts`, `sigils`, `shadow`, `tend`, `figments`, `faith`, `attack`). On a character's first turn of a fight that tab opens when this is the character's top door skill (the most points among the alpha skills with a `door_tab`) and the tab has an action usable now (`apps/web/src/game/doorView.ts`). Holding an Outburst still opens on the heart first; after the first turn the tab last used wins.
+- `door_tab`: the fight screen's tab that holds the door's actions (a descriptor group: `outbursts`, `sigils`, `shadow`, `tend`, `figments`, `faith`, `attack`). On a character's first turn of a fight that tab opens when this is the character's top door skill (the most points among the alpha skills with a `door_line`; a top door with no `door_tab` keeps the usual rule) and the tab has an action usable now (`apps/web/src/game/doorView.ts`). Holding an Outburst still opens on the heart first; after the first turn the tab last used wins.
 
 ## Text
 **Texts read their numbers (12 Nov 2026).** A number in a rules text (`text`, a trait's `upsides` and `downsides`, a Sigil word's `grand`) is not typed: it is a placeholder that names the field of the same item it comes from, so the card can never disagree with the field.

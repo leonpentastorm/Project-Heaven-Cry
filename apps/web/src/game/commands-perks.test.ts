@@ -11,7 +11,7 @@ beforeAllAdv(() => _setAdvancedLive(true)); afterAllAdv(() => _setAdvancedLive(n
 
 const charWith = (o: Partial<Character> = {}): Character => {
   const a = ARCHETYPES.find((x: any) => x.id === 'sharpshooter') || ARCHETYPES[0];
-  const c = newCharacter('c1', 'p1', { name: 'T', portrait: '', origin: 'x', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} });
+  const c = newCharacter('c1', 'p1', { name: 'T', portrait: '', origin: 'x', kit: 'soldier', traits: [], skills: { ...a.preset, dexterity: 0 /* no Pressure door (rules 1.56): its Slide and its passive would sit on every shelf */ }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} });
   return Object.assign(c, o);
 };
 const fight = (c: Character) => {
@@ -63,6 +63,14 @@ describe('the Perks and Class tabs', () => {
     expect(pk).toBeTruthy();
     expect(pk[1][0][0]).toBe(pkId({ id: 'perk:earthbreaker', actionId: 'earthbreaker' }));
     expect(pk[1][0][2]).toMatch(/4 AP · 1\/1 combat/);
+  });
+  it('the Pressure door of Dexterity (rules 1.56 Pressure 2.0): Slide is a button on the Perks tab with its AP and uses; the door passive is a row to read', () => {
+    const c = charWith(); c.skills = { ...c.skills, dexterity: 3 } as any; const f = fight(c);
+    const pk = actionGroups(f.cb, f.u, c, { g: f.g }).find((x) => x[3] === 'perks')!;
+    expect(pk).toBeTruthy();
+    const slide = (pk[1] as any[]).find((r) => r[0] === pkId({ id: 'verb:pressure.slide', actionId: 'slide' }));
+    expect(slide[1]).toBe('Slide'); expect(slide[2]).toMatch(/1 AP · 1\/1 turn/);
+    expect((pk[1] as any[]).some((r) => r[0] === PKI + 'skill:dexterity.1')).toBe(true);
   });
   it('the Class tab lists the moves the rank unlocks, under the class name, with its emblem', () => {
     const c = charWith({ classId: 'gunslinger' as any }); c.classId = 'marksman'; c.advancedClass = 'gunslinger';

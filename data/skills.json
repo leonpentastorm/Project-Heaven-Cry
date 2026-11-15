@@ -1007,7 +1007,81 @@
         "weapon:thrown",
         "weapon:light_melee"
       ],
+      "door_line": "Shoot to pin: every ranged hit adds Pressure (a gun, a bow, a thrown knife). Pressed foes aim worse, Suppressed ones lose AP, Broken ones lose more. Shoot, then move: Slide into cover, never stand still.",
       "unlocks": {
+        "1": {
+          "name": "Pressure",
+          "category": "Active Skill",
+          "mastery": 0,
+          "item": true,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "Any ranged hit adds Pressure to its target, a gun's, a bow's or a thrown knife's alike; a blow you land in melee sheds your own. Slide is yours from the first point (its own card). From Dexterity {=unlocks.1.effects.0.if.self_skill.dexterity}, Near Miss: a shot of yours off your own turn (a held shot: Overwatch, Deny, Cover Me, Dead to Rights) that misses still adds {=unlocks.1.effects.0.value} Pressure (once a turn for each target): your lane holds even when the round goes wide; and Shaken Nerves: every save a foe makes against you is harder by {=unlocks.1.effects.1.value.per.0.value} for each Pressure pip on it (at most {=unlocks.1.effects.1.value.max}). From Dexterity {=unlocks.1.effects.2.if.self_skill.dexterity}, Flush Out: your Flush also makes its target save (Heart) or be Afraid of you for {=unlocks.1.effects.2.rounds} round: it won't come at you or shoot at you.",
+          "effects": [
+            {
+              "op": "resource",
+              "when": "miss",
+              "label": "near_miss",
+              "resource": "pressure",
+              "value": 1,
+              "target": "target",
+              "if": {
+                "actor": "self",
+                "melee": false,
+                "hostile": true,
+                "own_turn": false,
+                "self_skill": {
+                  "dexterity": 3
+                }
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "each": "target"
+              },
+              "say": "{self}'s near miss keeps {target}'s head down."
+            },
+            {
+              "op": "roll_mod",
+              "when": "save",
+              "roll": "tn",
+              "label": "shaken nerves",
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "target:pressure",
+                    "value": 1
+                  }
+                ],
+                "max": 2
+              },
+              "if": {
+                "actor": "self",
+                "target": "foe",
+                "self_skill": {
+                  "dexterity": 3
+                }
+              }
+            },
+            {
+              "op": "condition",
+              "when": "acted",
+              "condition": "fear",
+              "rounds": 1,
+              "via": "dexterity",
+              "target": "target",
+              "if": {
+                "action": [
+                  "flush"
+                ],
+                "self_skill": {
+                  "dexterity": 5
+                }
+              }
+            }
+          ]
+        },
         "3": {
           "name": "Speed Load",
           "category": "AP Mod",

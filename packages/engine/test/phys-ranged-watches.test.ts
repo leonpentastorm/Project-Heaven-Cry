@@ -5,6 +5,9 @@ import { reactionsUsed } from '../src';
 import { phys, resolveAttack, previewAttack, toggleProne, reload, reloadHands, enemyTurn, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
+import { SKILL as SKILL_NM } from '../src';
+/** Rules 1.56 Pressure 2.0: Dexterity's Near Miss (a held shot that misses still adds Pressure) from its door's points. */
+const nearMiss = (f: any): number => { const e: any = (SKILL_NM as any).dexterity.unlocks['1'].effects[0], c: any = f.g.characters[f.pc.charId]; return (c?.skills?.dexterity || 0) >= e.if.self_skill.dexterity ? e.value : 0; };
 import { calm as reset, unchanged, type PhysF as F } from './helpers/physfight-ranged';
 
 beforeEach(() => { rig(null); ROLLS.length = 0; });
@@ -126,7 +129,7 @@ describe('Cover Me (29)', () => {
     f.turn(f.foe); rig({ hit: true, die: 12 }); attack(f, f.foe, f.pcs[1]);
     expect(f.unit(f.foe.id).hp).toBe(hp); expect(ROLLS.filter((r) => r.att === f.pc.id).length).toBe(0);
     const g = coverFight('ccec_marksman_rifle'); g.tech('cover_me', { allyId: g.pcs[1].id });
-    g.turn(g.foe); rig({ hit: false, die: 5 }); attack(g, g.foe, g.pcs[1]); expect(g.pressure(g.foe)).toBe(1);
+    g.turn(g.foe); rig({ hit: false, die: 5 }); attack(g, g.foe, g.pcs[1]); expect(g.pressure(g.foe)).toBe(1 + nearMiss(g));
   });
   it('a held shot: an attacker out of the weapon\'s range sets nothing off, though seen (review fix); the round is a shot by today\'s rules', () => {
     // the parlour pistol (range 4: 12 tiles at most) and an enemy 15 tiles off in clear sight
@@ -285,7 +288,7 @@ describe('Dead to Rights (30)', () => {
     const f = rightsFight(); f.press(f.foe, 2); f.tech('dead_to_rights', { targetId: f.foe.id });
     f.turn(f.foe); rig({ hit: true, die: 12 }); attack(f, f.foe, f.pcs[1]); expect(f.pressure(f.foe)).toBe(3);
     const m = rightsFight(); m.press(m.foe, 2); m.tech('dead_to_rights', { targetId: m.foe.id });
-    m.turn(m.foe); rig({ hit: false, die: 5 }); attack(m, m.foe, m.pcs[1]); expect(m.pressure(m.foe)).toBe(2);
+    m.turn(m.foe); rig({ hit: false, die: 5 }); attack(m, m.foe, m.pcs[1]); expect(m.pressure(m.foe)).toBe(2 + nearMiss(m));
     const e = rightsFight('service_pistol', { tier: 'elite' }); e.press(e.foe, 3); e.tech('dead_to_rights', { targetId: e.foe.id });
     e.turn(e.foe); rig({ hit: true, die: 12 }); attack(e, e.foe, e.pcs[1]); expect(e.pressure(e.foe)).toBe(3); expect(heldShots(e)).toBe(1);
     const b = rightsFight('service_pistol', { tier: 'boss' }); b.press(b.foe, 2); b.tech('dead_to_rights', { targetId: b.foe.id });

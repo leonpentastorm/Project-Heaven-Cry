@@ -7,6 +7,7 @@ import figmentsJ from '../../../../data/figments.json';
 import classesJ from '../../../../data/classes.json';
 import shadowJ from '../../../../data/shadow.json';
 import tendingJ from '../../../../data/tending.json';
+import pressureJ from '../../../../data/pressure.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
 const TRAIT: Record<string, any> = Object.fromEntries(TRAITS.map((t) => [t.id, t]));
@@ -42,7 +43,7 @@ const FIGMENT_HELD = [
   ...((FIG.traits || []) as any[]).map((x) => ({ id: 'figtrait_' + x.id, name: x.name, kind: 'verb', requires: [{ owned: 'figment' }], text: x.text, ...(x.amounts ? { amounts: x.amounts } : {}), effects: x.effects || [], adjudication: 'engine', provisional: true })),
 ];
 // A system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33), Figments' (rules 1.34).
-const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ), ...systemVerbs(FIG), ...FIGMENT_HELD] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
+const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ), ...systemVerbs(pressureJ), ...systemVerbs(FIG), ...FIGMENT_HELD] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
 const verbData = (id: string): any => DATA_VERBS[id] || EXTRA.verb[id];
 const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
 const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];

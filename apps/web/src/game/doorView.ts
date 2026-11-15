@@ -34,10 +34,12 @@ export const hasDoor = (ch: any, skill: string): boolean => pointsOf(ch, skill) 
 /** A door's one line by its skill ('' when the skill has none). */
 export const doorLineOf = (skill: string): string => DOORS.find((d) => d.skill === skill)?.line || '';
 
-/** The character's top door with a tab: the most points; a tie goes to the first in the data's order. */
+/** The character's top door: the door skill it has the most points in (1 or more); a tie goes to the first in the data's
+ *  order. A door with no tab of its own (Momentum, Pressure: their actions are on Attack) is still the top door: its tip
+ *  shows, and its first turn keeps the usual rule. */
 export function topDoor(ch: any): Door | null {
   let best: Door | null = null, n = 0;
-  for (const d of DOORS) { const p = pointsOf(ch, d.skill); if (d.tab && p > n) { best = d; n = p; } }
+  for (const d of DOORS) { const p = pointsOf(ch, d.skill); if (p > n) { best = d; n = p; } }
   return best;
 }
 

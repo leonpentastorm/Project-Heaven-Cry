@@ -8,3 +8,4 @@ dist/
 node_modules/
 .claude/worktrees/
 .check/
+apps/scr-p/

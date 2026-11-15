@@ -18,6 +18,7 @@ import { worldHandlers, worldBeat } from './world';
 import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments } from './figments';
 import { leanIn, recoil } from './sigilBody';
 import { wrapBreaker, breakerBeat, noteBreaker } from './breaker';
+import { wrapPressure, pressureBeat, resetPressure } from './pressure';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
@@ -1408,6 +1409,9 @@ wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn,
 wrapBreaker(H, { at, tokOf, posOf: (id) => unit(id)?.pos, maxOf: (id) => (unit(id) as any)?.resMax?.momentum ?? null, play });
 // Figments (fx/figments.ts): the summon (the caster, a thread, the forming), their orders and attacks, their unmaking.
 wrapFigments(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, squares, release: (id) => releaseMover(id), ghost: (id, key, life) => ghostOf(id, key, life) });
+// Pressure 2.0 (fx/pressure.ts): pins (tracer, dust, +1 PRESSURE), the states named from data, the held shots' lanes,
+// Flush's crack, Afraid's turn away, the Skirmisher's slide; it wraps everything above.
+wrapPressure(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play });
 /** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
 const streamsOwn = (v: FxEvent) => v.mode === 'dump' && fxOf(v.weapon, v.cat).mark === 'hole' && v.cat !== 'shotgun'; // a stream of rounds that hole (bullets, a charge's bolts): a spray
 
@@ -1426,6 +1430,7 @@ function baseBeat(e: FxEvent): number {
   const kb = classBeat(e); if (kb !== undefined) return kb;
   const mb = meleeTechBeat(e); if (mb !== undefined) return mb;
   const rb = rangedBeat(e); if (rb !== undefined) return rb;
+  const xb = pressureBeat(e); if (xb !== undefined) return xb;
   const pb = physBeat(e); if (pb !== undefined) return pb;
   const fb = faithBeat(e); if (fb !== undefined) return fb;
   const wb = worldBeat(e); if (wb !== undefined) return wb;
@@ -1812,7 +1817,7 @@ export function hurryFx(ms: number) {
   clearTimeout(idleTimer); idleTimer = window.setTimeout(idle, queueEnd - now + 50);
 }
 /** Drop everything queued (the game changed, the tab was hidden), a closed gate and every cut-in with it. */
-export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); }
+export function clearFx() { moved(); for (const [k, n] of queuedTo) playedTo.set(k, Math.max(playedTo.get(k) || 0, n)); turnShown.clear();  releaseAllTiles(); resetFloats(); for (const id of [...parked.keys()]) unpark(id); for (const id of [...waiting.keys()]) releaseMover(id); for (const t of walking.values()) clearTimeout(t); walking.clear(); resetSight(); for (const x of timers) clearTimeout(x.id); timers = []; queueEnd = 0; turnsUntil = 0; gateUntil = 0; gateShowing = false; held = null; decided.clear(); bumpGen(); dropCutIns(); closeCutIns(); resetRanged(); resetPressure(); }
 /** Is there a grid on screen to draw on? */
 export const canDraw = () => hasLayer() && gridShown();
 /** The Proving Ground and the e2e scripts play single effects by hand (window.__phcFx.playFx({ k: 'pump', … })). */
