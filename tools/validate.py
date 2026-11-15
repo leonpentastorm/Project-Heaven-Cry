@@ -2846,6 +2846,17 @@ if _sv is not None:
         if not _gv.get("where") or not set(_gv["where"]) <= _kinds - {"fight", "elite", "boss"}: errors.append("survival:give.where: node kinds with no fight")
         if not isinstance(_gv.get("at_start"), bool): errors.append("survival:give.at_start: true or false")
         if _gv.get("provisional") is not True: errors.append("survival:give: provisional: true")
+    # Rules 1.55 items 30 to 32 (0.28.2): what the field refuses (resource ids of actions.json, item ops of effect_ops.json)
+    _fd = _sv.get("field")
+    if _fd is not None:
+        _resids = set(((data.get("actions") or {}).get("resources") or {}).keys())
+        _opids = set((((data.get("effect_ops") or {}).get("item_ops") or {}).get("ops") or {}).keys())
+        if not _fd.get("carried_res") or not _fd.get("lasting_ops"): errors.append("survival:field: carried_res and lasting_ops, each a list")
+        for _x in _fd.get("carried_res") or []:
+            if _x not in _resids: errors.append(f"survival:field.carried_res: {_x!r} is not a resource of actions.json")
+        for _x in _fd.get("lasting_ops") or []:
+            if _x not in _opids: errors.append(f"survival:field.lasting_ops: {_x!r} is not an item op")
+        if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")
 
 # Rules 1.54 (survival-spec 14.2, 14.3): items' pack_kind and plural, the recipes (one converter, recipes.ts) and the
 # parity of every row with priceOf (credits.ts: a calibre's round price, an item's price_credits, a special round's

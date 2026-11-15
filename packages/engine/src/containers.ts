@@ -156,11 +156,12 @@ const calibreId = (s: string) => Object.keys(CALIBRE_NAME).find((k) => k.toLower
  * combat/stim spends) and an Essence of Experience joins c.essence. True when it was counted. */
 export function intoCounts(c: Character, it: PackItem): boolean {
   if (it.kind === 'plot' || it.mags) return false;
-  const id = it.item || it.id;
-  if (id === 'stim_injector') { c.stims = (c.stims || 0) + it.qty; return true; }
-  if (id === 'essence_of_experience') { c.essence = (c.essence || 0) + it.qty; return true; }
-  return false;
+  const f = COUNTED[it.item || it.id]; if (!f) return false;
+  c[f] = (c[f] || 0) + it.qty; return true;
 }
+/** The items a character keeps as counts, by item id: the count's field on the character (the one list intoCounts
+ * reads; rules 1.55 item 28: a counted item is given as an item, gear/give `count`). */
+export const COUNTED: Record<string, 'stims' | 'essence'> = { stim_injector: 'stims', essence_of_experience: 'essence' };
 /** One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3),
  * an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an empty one; a weapon
  * loaded round by round gives its rounds loose), `rounds:<calibre>` (at most 120), and anything else a plot item. */

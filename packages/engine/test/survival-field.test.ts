@@ -52,8 +52,8 @@ describe('rules 1.55: the field after a won Survival fight', () => {
     g = apply(g, { type: 'world/act', charId: u.charId!, act: 'pickup', objId: pile.id } as any, owner);
     expect(magsIn(g, u.charId!)).toBeGreaterThan(packMags); expect(g.story.ap).toEqual({}); expect(g.story.round).toBe(round);
     expect(piles(g).some((o: any) => o.id === pile.id)).toBe(false); // the whole pile in one action
-    // nothing else is done on the field
-    expect(refused(g, { type: 'world/act', charId: u.charId!, act: 'search', objId: 'x' } as any, owner)).toMatch(/^The fight is over: on the field you walk and pick things up/);
+    // the story's own actions are not done on the field (rules 1.55 item 30)
+    expect(refused(g, { type: 'world/act', charId: u.charId!, act: 'search', objId: 'x' } as any, owner)).toMatch(/^The fight is over: on the field you walk, pick things up and use what you carry/);
     // leaving: one of two ready waits; a guest may not close; both ready: the rewards
     const one = apply(g, { type: 'run/leave' }, 'host');
     expect(one.run!.state).toBe('field'); expect(one.run!.ready).toEqual({ host: true });
