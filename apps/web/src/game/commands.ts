@@ -180,6 +180,9 @@ export function catalogue(cb: any, u: any, ch: any, opts: ActionOpts = {}): CatE
   return actionGroups(cb, u, ch, opts).map(([n, items, ink, tab]) => [n, items.filter((it) => !isPerkInfo(it[0])), ink, tab] as ActionGroup).flatMap(([, items, ink, tab]) => items.map(([action, label, cost, text, why]) => ({ action, label, cost, text, tab, ink, why: u.downed ? 'Downed.' : why !== undefined ? why : whyNot(u, action, cost) })));
 }
 
+/** The heart's MP as the turn card shows it beside the held stage: what is in it, or that it draws on the air (no
+ *  Emanator in hand: the Begin is paid in Strain, heartView noEmanatorText). */
+const heartMp = (mg: any): string => (mg.emanator ? Math.round(mg.mp) + ' MP' : 'MP from the air');
 /** The smart default: an attack (or Clear jam), Move, Reload (or Shove), then the unit's signature move. */
 export function smartCommands(u: any): Command[] {
   const w: any = (WEAPON as any)[u.weapon], legacy = isLegacyUnit(u), melee = legacy ? (w ? isMelee(w) : true) : phys.weaponSystem(u.weapon) === 'melee', mg = u.mg;
@@ -189,7 +192,7 @@ export function smartCommands(u: any): Command[] {
   if (mg?.held) {
     const st = mg.held.stage ?? 0, full = st >= 4, free = (mg.freePumps || 0) > 0;
     cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : SPELL_AP.pump + ' AP'), key: '1', off: full || (!free && (u.ap ?? 0) < SPELL_AP.pump) });
-    cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' ×' + stageMult(st) + ' · ' + SPELL_AP.release + ' AP', key: '2', off: (u.ap ?? 0) < SPELL_AP.release });
+    cmds.push({ action: 'release', label: 'Release', sub: 'Held stage ' + st + ' ×' + stageMult(st) + ' · ' + heartMp(mg) + ' · ' + SPELL_AP.release + ' AP', key: '2', off: (u.ap ?? 0) < SPELL_AP.release });
     cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '3', off: !!u.prone });
     if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
     else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });
@@ -205,8 +208,7 @@ export function smartCommands(u: any): Command[] {
   if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.quiver ? rl.ap + ' AP · the other quiver' : rl.why && !/^Needs/.test(rl.why) ? rl.why.replace(/\.$/, '') : u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.quiver ? !!rl.why : u.ammo >= w.magazine || (!!rl.why && !/^Needs/.test(rl.why)) }); // rules 1.53: a bow's reload is Switch quiver
   else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an enemy next to you', key: '3' });
   else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
-  if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });
-  else if (mg && (mg.emanator || mg.designs?.length) && mg.designs?.length) cmds.push({ action: 'outburst', label: 'Outburst', sub: Math.round(mg.mp) + ' MP in the heart', key: '4' });
+  if (mg && mg.designs?.length) cmds.push({ action: 'outburst', label: 'Outburst', sub: 'Nothing held · ' + heartMp(mg), key: '4' });
   else if (mg && (mg.evoker || mg.words?.length)) cmds.push({ action: 'draw', label: 'Draw a glyph', sub: 'Evoker ' + mg.charge + ' charge', key: '4' });
   else if (!legacy) cmds.push(melee ? { action: 'tpad:main', label: 'Techniques', sub: 'What your ' + (w ? w.name : 'fists') + ' can do', key: '4' } : { action: TWATCH, label: 'Hold a shot', sub: 'Watch for their move', key: '4' });
   else if (sk && (skFx.op === 'multi_shot' || skFx.op === 'sweep')) cmds.push({ action: 'skill', label: sk.name, sub: skFx.ap + ' AP · ' + (skFx.op === 'multi_shot' ? (skFx.shots || 3) + ' shots at one target' : 'every enemy next to you'), key: '4', off: u.jammed || u.ap < (skFx.ap || 0) || (skFx.op === 'multi_shot' && w.magazine != null && u.ammo <= 0) });

@@ -128,6 +128,9 @@ const withMods = <T>(cb: any, mods: string[], fn: (cb: any) => T): T => fn(fight
 function switches(cb: any, u: any, on: string): { id: string; itemKey: string; why: string | null; on: boolean; preview: string | null }[] {
   try { return togglesFor({ u, cb } as any, on, {}, cb?.mods || []); } catch { return []; }
 }
+/** A design card's line without an Emanator in hand: the Strain it adds is the data's (soul_modules.json
+ *  cycle.no_emanator_strain, the number the engine's Begin adds). */
+export const noEmanatorText = (): string => 'No Emanator: +' + (SOUL_RULES as any).cycle.no_emanator_strain + ' Strain, paid from the air';
 const HO_AGAIN = 'perk:heart_overload#again', OVERDRAW = 'skill:will_power.3#overdraw';
 export function designCards(cb: any, u: any): DesignCard[] {
   const mg = u?.mg; if (!mg) return [];
@@ -147,7 +150,9 @@ export function designCards(cb: any, u: any): DesignCard[] {
       costText: (free ? 'Heart Overload: Begin again 0 AP' + (bloodHp ? ' · ' + bloodHp + ' HP for the mana' : '') : 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : ''))
         + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain'
         // rules 1.24: what a full heart of it comes to (the Begin and its four Pumps), when Pumps take MP
-        + (fullMp > (b.cost || 0) ? ' · full heart ' + fullMp + ' MP' : ''), fullMp };
+        + (fullMp > (b.cost || 0) ? ' · full heart ' + fullMp + ' MP' : '')
+        // no Emanator in hand: the Begin draws on the air, and the heart pays for it in Strain (soul_modules.json cycle)
+        + (mg.emanator ? '' : ' · ' + noEmanatorText()), fullMp };
   });
 }
 

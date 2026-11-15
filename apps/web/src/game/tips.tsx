@@ -3,6 +3,8 @@
 import React from 'react';
 import { getState, subscribe } from './store';
 import { usePresence, presenceCls } from './presence';
+import { active } from '@engine';
+import { DOORS } from './doorView';
 
 const LS = 'phc.tips';
 const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
@@ -13,6 +15,12 @@ export function resetTips() { seen.clear(); save(); }
 type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);
 const lines = (st: St, k: string) => (st.game?.story.entries || []).filter((e: any) => e.kind === k && !e.rerolled).length;
+/** In a fight, it is my turn and my character's: that character (or null). */
+const myTurnChar = (st: St): any => {
+  const cb: any = st.game?.combat; if (st.screen !== 'combat' || !cb || cb.over) return null;
+  const u: any = active(cb), ch: any = u && u.side === 'pc' && !u.downed && u.charId ? st.game!.characters[u.charId] : null;
+  return ch && ch.owner === st.me.id ? ch : null;
+};
 
 /** In order: the first one whose moment has come and that this browser hasn't seen is shown. */
 export const TIPS: { id: string; title: string; text: string; when: (st: St) => boolean }[] = [
@@ -26,6 +34,9 @@ export const TIPS: { id: string; title: string; text: string; when: (st: St) => 
     text: '⟲ and ✎ under a Narrator line suggest a reroll or a rewording. The host puts it to a vote; everyone must say yes, or nothing changes.' },
   { id: 'combat', title: 'COMBAT', when: (st) => st.screen === 'combat',
     text: '6 AP a turn. Pick an action, then a tile or a target: the cost and the odds show before you commit. One reaction per round. End your turn when you\'re done.' },
+  // A door (skills.json door_line): the first time it is my turn with a character that has it, its one line.
+  ...DOORS.map((d) => ({ id: 'door:' + d.skill, title: d.name.toUpperCase(), text: d.line,
+    when: (st: St) => { const ch = myTurnChar(st); return !!ch && (Number(ch.skills?.[d.skill]) || 0) > 0; } })),
   { id: 'report', title: 'SOMETHING BROKE?', when: (st) => st.screen === 'main' && seen.has('round'),
     text: '⚑ Report (top bar) downloads one file with what happened, for Leon. Nothing is sent from here, and your API key is never in it.' },
 ];
@@ -40,11 +51,11 @@ export function Tips() {
   const done = (all?: boolean) => { seen.add(all ? '*' : tip.id); save(); force(); };
   return (
     <div key={tip.id} role="status" aria-label={'Tip: ' + tip.title} className={presenceCls('phc-a-right', closing)} style={{ position: 'fixed', top: 70, right: 16, zIndex: 9, width: 'min(400px, 92vw)', padding: '12px 14px', borderRadius: 12, background: '#1C2536', border: '1px solid #FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', color: '#E7EBF3', fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: '#FFFFFF' }}>TIP · {tip.title}</span>
+      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: '#FFFFFF' }}>TIP · {tip.title}</span>
       <span style={{ fontSize: 13, lineHeight: 1.5 }}>{tip.text}</span>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={() => done(true)} style={{ minHeight: 32, padding: '0 10px', borderRadius: 8, border: 0, background: 'transparent', color: '#A3AEC2', fontFamily: 'inherit', fontSize: 12, cursor: 'pointer' }}>No more tips</button>
-        <button type="button" onClick={() => done()} style={{ minHeight: 32, padding: '0 14px', borderRadius: 8, border: 0, background: '#E7EBF3', color: '#0A0D13', fontFamily: 'inherit', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Got it</button>
+        <button type="button" onClick={() => done(true)} style={{ minHeight: 32, padding: '0 10px', borderRadius: 8, border: 0, background: 'transparent', color: '#A3AEC2', fontFamily: 'inherit', fontSize: 13, cursor: 'pointer' }}>No more tips</button>
+        <button type="button" onClick={() => done()} style={{ minHeight: 32, padding: '0 14px', borderRadius: 8, border: 0, background: '#E7EBF3', color: '#0A0D13', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Got it</button>
       </div>
     </div>
   );

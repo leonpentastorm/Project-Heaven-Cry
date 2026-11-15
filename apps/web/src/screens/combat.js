@@ -69,6 +69,7 @@ import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
+import { firstTurnTab, tabDoorLine } from '../game/doorView';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
@@ -1528,7 +1529,8 @@ export class CombatLogic extends DCLogic {
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
       const seenHostile = foes.some((u) => !u.downed);
       // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
-      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
+      // A character's first turn of a fight (0.29, the doors): its top door's tab, when that tab has an action it can use now.
+      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : firstTurnTab(cb, ch, ITEMS) || tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
       this._tabAction = S.action; this._tabShown = S.tab; this._tabCls = '';
     }
     // The tab follows the action: picked on the turn card, or implied by a tile click (a hostile → Attack).
@@ -1588,7 +1590,9 @@ export class CombatLogic extends DCLogic {
         style: 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; min-height: 44px; padding: 7px 10px; border-radius: 8px; text-align: left; font-family: inherit; cursor: pointer; '
           + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #E7EBF3' : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1') } }; };
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
+    const tabDoor = tabG ? tabDoorLine(tabG.id) : null; // the door's one line under the tab's name (skills.json door_line)
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
+      hasDoor: !!tabDoor, doorSkill: tabDoor ? tabDoor.skill : '', doorLine: tabDoor ? tabDoor.line : '', doorStyle: 'font-size: 13px; line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
