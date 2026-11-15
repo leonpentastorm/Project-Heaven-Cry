@@ -5,7 +5,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type PackItem, type Rarity, isGunId, quiversOf, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
+import { type Character, type PackItem, type Rarity, isGunId, quiversOf, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer, carriedGuns } from '../character';
 import { CORE_CHARGE, coreChargeOf, CORE_ITEM, VIS_CHARGE } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
@@ -201,8 +201,7 @@ export function runFoeDrops(u: Unit): Drops {
  * a worn piece better (dearer) than the one it wears in that slot (or for an empty slot); priced ones only (`built:
  * false` has no price). The Elite's and cache's pick of kit, the Forge's want-list and the mod reward read it. */
 export function lastingFor(c: Character): string[] {
-  const guns: { id: string; mods?: string[] }[] = [{ id: c.weapon, mods: c.weaponState?.mods }, ...(c.offHand ? [{ id: c.offHand.id, mods: c.offHand.mods }] : []),
-    ...packOf(c).filter((x) => x.kind === 'weapon' && !!x.weapon).map((x) => ({ id: x.weapon!, mods: x.mods }))];
+  const guns = carriedGuns(c);
   const free = new Set(guns.flatMap((g) => { const used = new Set((g.mods || []).map((m) => (ITEM[m] as any)?.mod_slot)); return (((WEAPON[g.id] as any)?.mod_slots || []) as string[]).filter((s) => !used.has(s)); }));
   const out: string[] = [];
   for (const it of Object.values(ITEM) as any[]) {

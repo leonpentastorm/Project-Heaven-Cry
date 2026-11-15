@@ -1407,22 +1407,44 @@ export function unequip(c: Character, slot: string): string | null {
 /** Fit a mod from the pack (line `idx`) onto a carried weapon: the main hand (default), the off hand, or a pack line
  * holding a weapon (rules 1.56 L3 item 2; one of a stack is split off to take it). A mod already in that slot comes off
  * into the pack. */
-export function fitMod(c: Character, idx: number, where: 'main' | 'off' | number = 'main'): string | null {
+/** Where a gun is carried: a hand, or a pack line by its index. */
+export type GunWhere = 'main' | 'off' | number;
+/** Every weapon a character carries with its fitted mods, the main hand first: the main hand (not bare fists), the off
+ * hand (a weapon), each weapon line of the pack (rules 1.56 L3 item 2). The one lister the Forge, the reward pick
+ * (lastingFor), fitMod and the extra mod slots read. */
+export function carriedGuns(c: Character): { where: GunWhere; id: string; mods: string[] }[] {
+  return [
+    ...(c.weapon && c.weapon !== 'fists' ? [{ where: 'main' as GunWhere, id: c.weapon, mods: [...(c.weaponState?.mods || [])] }] : []),
+    ...(c.offHand && WEAPON[c.offHand.id] ? [{ where: 'off' as GunWhere, id: c.offHand.id, mods: [...(c.offHand.mods || [])] }] : []),
+    ...packOf(c).flatMap((it, i) => (it.kind === 'weapon' && it.weapon && WEAPON[it.weapon] ? [{ where: i as GunWhere, id: it.weapon, mods: [...(it.mods || [])] }] : [])),
+  ];
+}
+/** The carried weapon at `where` and its fitted mods, or null (fists and an empty off hand hold none). */
+export const gunAt = (c: Character, where: GunWhere) => carriedGuns(c).find((g) => g.where === where) || null;
+/** The one write of a carried gun's fitted mods: a hand's state, or a pack line (one of a stack is split off to take
+ * them) in `pack` (a fresh copy the caller writes back; absent: the character's own pack, written here). */
+export function setGunMods(c: Character, where: GunWhere, mods: string[], pack?: PackItem[]) {
+  if (where === 'main') { c.weaponState = { ...(c.weaponState || {}), mods }; return; }
+  if (where === 'off') { c.offHand = { ...c.offHand!, mods }; return; }
+  const p = pack || packOf(c).map((x) => ({ ...x })), t = p[where];
+  if (t.qty > 1) { t.qty--; p.push({ ...t, qty: 1, mods }); } else t.mods = mods;
+  if (!pack) c.pack = p;
+}
+export function fitMod(c: Character, idx: number, where: GunWhere = 'main'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx], m = it && (ITEM[it.item || it.id] as any);
   if (!m || m.category !== 'mod') return 'That isn\'t a mod.';
   const t = typeof where === 'number' ? pack[where] : null;
   if (typeof where === 'number' && (!t || t.kind !== 'weapon' || !t.weapon || where === idx)) return 'That isn\'t a weapon.';
   if (where === 'off' && !c.offHand) return 'Nothing in your off hand.';
   const wid = where === 'main' ? c.weapon : where === 'off' ? c.offHand!.id : t!.weapon!;
-  const slots: string[] = (WEAPON[wid] as any)?.mod_slots || [], mods = [...((where === 'main' ? c.weaponState?.mods : where === 'off' ? c.offHand!.mods : t!.mods) || [])];
+  const slots: string[] = (WEAPON[wid] as any)?.mod_slots || [], mods = [...(gunAt(c, where)?.mods || [])];
   if (!slots.includes(m.mod_slot)) return (where === 'main' ? 'Your weapon' : 'The ' + (WEAPON[wid]?.name || wid)) + ' has no ' + m.mod_slot + ' slot.';
   if (statQuery({ c }, 'equip_ban', { mod: m.id }).add > 0) return equipBanWhy(c, { mod: m.id });
   const old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
   if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: packKindOf(old) }); }
   mods.push(m.id);
-  if (t) { if (t.qty > 1) { t.qty--; pack.push({ ...t, qty: 1, mods }); } else t.mods = mods; }
+  setGunMods(c, where, mods, pack);
   if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
-  if (where === 'main') c.weaponState = { ...(c.weaponState || {}), mods }; else if (where === 'off') c.offHand = { ...c.offHand!, mods };
   c.pack = pack; return null;
 }
 // ---------- a weapon instance's numbers (rules 1.56, plan 0.29 primitive 2) ----------
@@ -1440,7 +1462,7 @@ export function gearNum(weaponId: string | null | undefined, mods: readonly stri
 }
 /** The mods fitted to the carried instance of this weapon (the main hand's, else the off hand's; none in the pack): what
  * a spare magazine of that weapon is sized by. */
-export const modsOn = (c: Character, weaponId: string | null | undefined): string[] => (weaponId && c.weapon === weaponId ? c.weaponState?.mods : weaponId && c.offHand?.id === weaponId ? c.offHand.mods : null) || [];
+export const modsOn = (c: Character, weaponId: string | null | undefined): string[] => carriedGuns(c).find((g) => (g.where === 'main' || g.where === 'off') && g.id === weaponId)?.mods || [];
 
 // ---------- quivers (rules 1.53): graded gear, two carried, one worn ----------
 /** A quiver the character carries (rules 1.53): the item (items.json category `quiver`), its grade, the enchantment fitted
