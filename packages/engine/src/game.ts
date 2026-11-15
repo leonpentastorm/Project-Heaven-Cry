@@ -11,7 +11,7 @@ import {
 import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
-import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
+import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, given, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
@@ -4305,7 +4305,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       return;
     }
     case 'sandbox/technique': {
-      const c = mine(a.charId), ids = a.id === 'all' ? TECHNIQUES.filter((t) => !t.free && !t.needs?.shield && !t.innate).map((t) => t.id) : [a.id]; // what a shield or a skill gives is never learned
+      const c = mine(a.charId), ids = a.id === 'all' ? TECHNIQUES.filter((t) => !t.free && !given(t)).map((t) => t.id) : [a.id]; // what a shield or a skill gives is never learned
       if (ids.some((id) => !TECHNIQUE[id] || TECHNIQUE[id].free)) fail('No such technique to learn.');
       sbChange(g, c, () => {
         const p = ensurePhys(c);

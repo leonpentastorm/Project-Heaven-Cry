@@ -75,6 +75,38 @@
         "armor:heavy"
       ],
       "unlocks": {
+        "1": {
+          "name": "Guard",
+          "category": "Active Skill",
+          "mastery": 0,
+          "item": true,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your weapon attacks roll {=unlocks.1.effects.0.value.per.0.value|signed} to hit for each Durability point above {=unlocks.1.effects.0.value.base|abs}, at most +{=unlocks.1.effects.0.value.max} (the tank hits through its door).",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "attack",
+              "if": {
+                "self_has_res": [
+                  "guard"
+                ]
+              },
+              "label": "Guard (Durability)",
+              "value": {
+                "base": -3,
+                "per": [
+                  {
+                    "of": "skill:durability",
+                    "value": 1
+                  }
+                ],
+                "min": 0,
+                "max": 4
+              }
+            }
+          ]
+        },
         "3": {
           "name": "Take the Hit",
           "category": "Combat Interaction",
