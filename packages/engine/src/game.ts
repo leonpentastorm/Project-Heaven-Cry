@@ -337,7 +337,7 @@ export type Action =
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'materials' | 'credits' } | { type: 'run/skip' }
   | { type: 'run/boon'; charId: string; choice: number } | { type: 'run/tile'; tile: string } // rules 1.44 (run/stage.ts)
-  | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/repair (rules 1.50), run/forge, run/fit, run/train, run/shrine, run/trade, run/take
+  | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/repair (rules 1.50), run/forge, run/fit, run/fit_mod and run/unfit_mod (rules 1.55), run/train, run/shrine, run/trade, run/take
   /** Rules 1.42 (run/shop.ts): buy a counter line or a rolled piece (`key`), sell a pack entry, restock a class resource, leave (the host may close). */
   | { type: 'run/buy'; charId: string; key: string; qty?: number } | { type: 'run/sell'; charId: string; idx: number; qty?: number } | { type: 'run/restock'; charId: string; res: string; n?: number } | { type: 'run/leave'; close?: boolean }
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
@@ -3137,8 +3137,13 @@ export type SandboxAction =
  * gear, magic and the fight's own actions are not here. */
 const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest$)/; // rules 1.54 item 1: the action's type is `rest` (it read `rest/`, which no action is)
 /** Rules 1.54 item 1 (R6): at the camp (run state `loadout`) the gear is rebuilt from the loadout's picks after every
- * change, so every `gear/*` action is refused there, in words naming the character. Null when it is not the camp. */
+ * change, so every `gear/*` action is refused there, in words naming the character. Rules 1.55: in a run, a weapon mod
+ * is fitted, swapped or taken off only by the armourer at a Forge, for a fee (run/fit_mod, run/unfit_mod), so the free
+ * fit (gear/mod, and its fight form combat/swap with a mod) is refused; a quiver's enchantment keeps its free fit. Null
+ * when neither holds. */
 const campGearProblem = (g: GameState, a: Action): string | null => {
+  const freeFit = (a.type === 'gear/mod' && (a as { quiver?: number }).quiver == null) || (a.type === 'combat/swap' && (a as { mod?: unknown }).mod != null);
+  if (g.run && g.run.state !== 'over' && g.run.state !== 'loadout' && freeFit) return 'In a Survival run, the armourer fits mods at a Forge, for a fee.';
   if (g.run?.state !== 'loadout' || !a.type.startsWith('gear/')) return null;
   const c = g.characters[(a as { charId?: string }).charId || ''];
   return 'At the camp, change ' + (c ? c.name + '\'s' : 'your') + ' gear in the loadout.';
@@ -3214,7 +3219,7 @@ function runAction(g: GameState, a: Action, by: string) {
       runPicksDone(g);
       return;
     }
-    case 'run/upgrade': case 'run/repair': case 'run/forge': case 'run/fit': case 'run/train': case 'run/shrine': case 'run/trade': case 'run/take': { // rules 1.43 (run/progress.ts; run/repair rules 1.50)
+    case 'run/upgrade': case 'run/repair': case 'run/forge': case 'run/fit': case 'run/fit_mod': case 'run/unfit_mod': case 'run/train': case 'run/shrine': case 'run/trade': case 'run/take': { // rules 1.43 (run/progress.ts; run/repair rules 1.50)
       const said: string[] = [];
       const no = progressAction(g, a, by, (text, charId, head) => { push(g, { kind: 'system', text, ...(charId ? { charId } : {}), ...(head ? { head } : {}) }); said.push(text.replace(/\.$/, '')); });
       if (no) fail(no);
