@@ -30,6 +30,7 @@ describe('the melee pad', () => {
       const c = f.char(f.pc); c.pack = [...packOf(c), { id: 'sabre', name: 'sabre', qty: 1, kind: 'weapon' as const, weapon: 'sabre' }];
       for (const e of [...f.pad().flatMap((g) => g.entries), ...f.bound(() => phys.packPad(f.cb, f.pc)).flatMap((b) => b.entries)]) seen.add(e.id);
     }
-    expect(MELEE.filter((id) => !seen.has(id))).toEqual([]);
+    // rules 1.56: a technique that needs something stuck (Pull Out) is on no pad until something is (phys-throw-offered.test.ts)
+    expect(MELEE.filter((id) => !seen.has(id) && !phys.TECHNIQUE[id].needs.stuck)).toEqual([]);
   });
 });

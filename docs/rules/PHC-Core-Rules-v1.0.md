@@ -6180,6 +6180,22 @@ they left for 0.29. Every new number is PROVISIONAL.
    of a run the perk's free action is unchanged. Taking an extra-slot mod off is `run/unfit_mod`, the same fee.
 4. **Off-hand guns' own mods acting on the off hand's shot** are lane L1's (rules 1.56, L1): not changed here.
 
+## Rules 1.56 (Balance 2.0), L6
+
+Leon (15 Nov 2026): *"the skill increase hit chance for all weapons, melee get dmg increase from strengh attribute, small blandes and weapon that feels like it need finesse is from agility. guns comes from the gun and the ammo it self notthing from the user can really change what how hard a bullet hits"*; and *"any weapon that have pullout also need throw with it or it's useless"* (ruling B: Throw only on a throwable weapon; Pull Out only when something is stuck). A later revision overrides the body and the earlier ones; every number here is PROVISIONAL.
+
+**Melee damage from Strength or Agility (overrides rules 1.26 for a character's melee blow only):**
+1. **The skill buys the hit, on every weapon.** A weapon's skill (`phys.hits_with`) adds to the roll to hit and nothing to the damage, as since rules 1.26.
+2. **A melee weapon's damage grows with one Attribute**, the one its row names (`weapons.json phys.scales_with`): Strength for heavy melee and the fists (the machete, maul, lance, war axe, greatsword, glaive, rip-saw, bare fists, knuckledusters, servo-fist), Agility for the finesse and thrown blades (the combat knife, sabre, throwing knives, hatchet, gladius, duelling blade, katana). The row names its damage profile (`phys.profile: melee`, `rules.json output.profiles.melee`): Stat = k x (1 + 0.05 x (that Attribute - 1)), no skill slope, the Level term `deal` as before, then the melee factor (`output.factors.melee`) as before.
+3. **k re-pins the all-in build.** k is 1.15385 so that Attribute 7 (the all-in build at creation) gives 1.5, the weapon profile's number: the all-in build at level 1 deals exactly what it did, a lower Attribute less (Attribute 1: x0.77; Attribute 4: x0.88), a higher one more (Attribute 10: x1.12). The bases of the melee weapons are not changed: the enemies that carry a sabre, a knife or fists read the bases with their tier and level, and keep them.
+4. **Guns, bows, thrown charges and the foci's weapons get nothing from the user.** Their rows name no profile (the `weapon` profile, no slope). The validator refuses a slope on a weapon that is not melee. The mana arms (the Evoker blade, the Emanator gauntlet and katana, the bot-thread banner, the grand staff) are foci and name none (for the lead to rule).
+5. **The card shows it.** The weapon card's "Damage scales with" line (rules 1.55) now appears on every melee weapon, naming its Attribute.
+
+**Pull Out (overrides rules 1.55's "Throw comes with the thrown prop" where it touched Pull Out):**
+6. **Pull Out is offered only while something is stuck** for the unit to pull: one of its own weapons stuck in any living unit, or any weapon stuck in a living unit next to it (`techniques.json pull_out needs.stuck`). With nothing stuck it is on no pad and the reducer refuses it ("You don't have Pull Out ready").
+7. **With any weapon in the hand.** While something is stuck, Pull Out is on the main hand's pad whatever it holds (a gun too); the weapon comes back to a free hand as before.
+8. **Throw** stays where rules 1.55 put it: on a weapon with the thrown property, or one that lends or readies it.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9744,3 +9760,10 @@ Items 4144 to 4146.
 4145. **Fit to any gun, the extra slot for the fee (rules 1.56 L3 items 2 and 3):** `forge.fit` rate 0.2, min 25,
     unchanged. PROVISIONAL.
 4146. **Items 4144 to 4146 are rules 1.56 L3's.**
+
+### Rules 1.56 (Balance 2.0), L6
+
+4147. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
+4148. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, hatchet, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. For the lead to rule.
+4149. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
+4150. **Items 4147 to 4150 are rules 1.56 L6's.**

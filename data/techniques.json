@@ -790,7 +790,9 @@
         "value": 1
       },
       "rounds": 0,
-      "needs": {},
+      "needs": {
+        "stuck": true
+      },
       "text": "Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum.",
       "lines": [],
       "free": true,

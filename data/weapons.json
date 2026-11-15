@@ -722,6 +722,7 @@
       "type": "combat_knife",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge",
@@ -773,6 +774,7 @@
       "type": "sabre",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge"
@@ -822,6 +824,7 @@
       "type": "ork_machete",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge"
@@ -872,6 +875,7 @@
       "type": "maul",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "blunt"
@@ -923,6 +927,7 @@
       "type": "lance",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "point",
@@ -972,6 +977,7 @@
       "type": "fists",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "bare"
@@ -2423,6 +2429,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "point",
@@ -2478,6 +2485,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge",
@@ -2531,6 +2539,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "point",
@@ -2583,6 +2592,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "point"
@@ -2626,6 +2636,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge"
@@ -2678,6 +2689,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge",
@@ -2730,6 +2742,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge",
@@ -2784,6 +2797,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge",
@@ -2838,6 +2852,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge"
@@ -2885,6 +2900,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "bare",
@@ -2945,6 +2961,7 @@
       ],
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "bare",

@@ -19,6 +19,8 @@ export interface TechDef {
   /** 'up_to': it spends up to its numbers' cap (Mag Dump: rounds_per_roll × max_rolls, rules 1.38) and needs one round */
   rounds: number | 'up_to';
   needs: { momentum?: number; pressed?: boolean; hidden?: boolean; held?: boolean; last_round?: boolean; stowed?: boolean;
+    /** rules 1.56 (Leon's ruling B, 15 Nov 2026): offered only while something is stuck for this unit to pull (one of its
+     * weapons stuck in anyone, or any weapon stuck in a unit next to it: Unit.stuck), with whatever is in its hand */ stuck?: boolean;
     /** a shield's technique (rules 1.13): the off hand holds a shield, and the technique is that hand's */ shield?: boolean };
   /** a technique a skill gives to everyone who has the points (Interpose: Durability 3), whatever is in the hands */
   innate?: { skill: string; min: number };

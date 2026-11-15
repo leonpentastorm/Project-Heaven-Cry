@@ -171,11 +171,13 @@ describe('damage follows what the weapon is aimed with', () => {
     const c = newCharacter('c1', 'host', sheetOf({ archetype: 'sharpshooter' }));
     c.attrs = { ...c.attrs, strength: 3, agility: 5 }; c.skills = { ...c.skills, raw_power: 2, athletics: 4, dexterity: 6 }; c.perks = []; c.traits = []; c.classId = null;
     // rules 1.26 (the re-fit): the weapon profile is aimed (no slope: the pair buys accuracy), so the multiplier is its k for every weapon; the label still names the pair the roll reads
-    const { PROFILES } = await import('../src'); const k = PROFILES.weapon.k;
+    // rules 1.56 (Balance 2.0, L6): a melee weapon's row names the melee profile: its damage reads the Attribute only (Agility 5, Strength 3 here)
+    const { PROFILES } = await import('../src'); const k = PROFILES.weapon.k, m = PROFILES.melee;
     expect(weaponMult(c, 'service_pistol')).toBe(k); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
-    expect(weaponMult(c, 'sabre')).toBe(k); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
-    expect(weaponMult(c, 'maul')).toBe(k); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
-    expect(weaponMult(c, 'fists')).toBe(k); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Dexterity');
+    expect(weaponMult(c, 'sabre')).toBeCloseTo(m.k * (1 + m.attr * 4), 9); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
+    expect(weaponMult(c, 'maul')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
+    expect(weaponMult(c, 'fists')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Dexterity');
+    expect(weaponMultLabel('sabre', { live: true })).toBe('Agility'); expect(weaponMultLabel('service_pistol', { live: true })).toBe('');
   });
 });
 

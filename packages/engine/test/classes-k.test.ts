@@ -8,7 +8,7 @@ import './helpers/yard16'; // the 16 × 11 practice square these tests name tile
 import {
   apply, condOn, applyCond, applyDamage, resolveAttack, previewAttack, previewEvoke, previewOutburst, d20, endTurn, glyphCost, manaOf,
   coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, condTurnEnd, type Unit, type Combat, type Character,
-  PROFILES, factorOf, levelFactor,
+  factorOf, levelFactor, weaponMult,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -375,8 +375,8 @@ describe('Vessel', () => {
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
     expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);
     // fists 10 + Surge 15 × 1.0 (stage 1, ×1.0 since rules 1.19; past Empty Hand's floor of 20) + the release 15 × 1.0 × the Soul multiplier, armour 0
-    // rules 1.26: the fists and Surge's 15 go in together and take the weapon profile's k, the melee factor and the Level term (a7: an item's flat is multiplied)
-    expect(999 - f.unit(foe.id).hp).toBe(Math.floor((10 + 15) * PROFILES.weapon.k * factorOf('melee') * levelFactor('deal', f.pc.level)) + Math.floor(15 * f.pc.mg!.soulMult));
+    // rules 1.26: the fists and Surge's 15 go in together and take the weapon's multiplier (rules 1.56: the melee profile, by Strength), the melee factor and the Level term (a7: an item's flat is multiplied)
+    expect(999 - f.unit(foe.id).hp).toBe(Math.floor((10 + 15) * weaponMult(charOf(f, f.pc) as any, 'fists') * factorOf('melee') * levelFactor('deal', f.pc.level)) + Math.floor(15 * f.pc.mg!.soulMult));
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });
