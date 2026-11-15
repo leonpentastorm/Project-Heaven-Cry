@@ -66,7 +66,7 @@
       "hp": 30, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
       "actions": ["move"], "verbs": ["let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
-      "glyph": "◐",
+      "portrait": "figment-double", "glyph": "◐",
       "text": "A second you the bots build: {=hp} HP, your Defense, your pace. It draws fire: Minions and Vermin always take it for you; Soldiers, Elites and Bosses make a Brain save.",
       "adjudication": "engine", "provisional": true
     },
@@ -76,7 +76,7 @@
       "hp": 15, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
       "actions": ["move"], "verbs": ["figment_stare", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
-      "glyph": "◉",
+      "portrait": "figment-eye", "glyph": "◉",
       "text": "A floating eye: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. It sees {=vision} tiles, in the dark too, for your whole side. Stare: one unit it sees stays seen by your side until your next turn, Hidden or not.",
       "adjudication": "engine", "provisional": true
     },
@@ -86,7 +86,7 @@
       "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
       "actions": ["move"], "verbs": ["let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
       "upkeep": { "res": "vcharge", "n": 1 },
-      "glyph": "▮",
+      "portrait": "figment-wall", "glyph": "▮",
       "text": "Movable cover: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tile an AP. Full cover; it blocks movement and sight for both sides and nothing pushes it.",
       "adjudication": "engine", "provisional": true
     },
@@ -96,7 +96,7 @@
       "hp": 45, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 3, "weapon": "figment_claws",
       "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
-      "glyph": "◆",
+      "portrait": "figment-beast", "glyph": "◆",
       "text": "A fast striker: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. Strike is a melee attack with its claws; Pounce runs a short straight line and strikes, and a hit knocks the target Prone unless it passes a Body save.",
       "adjudication": "engine", "provisional": true
     },
@@ -106,7 +106,7 @@
       "hp": 25, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 2, "weapon": "figment_edge",
       "actions": ["move"], "verbs": ["figment_cut", "let_go"], "hold": { "reaction": "attack" },
       "upkeep": { "res": "vcharge", "n": 1 },
-      "glyph": "✦",
+      "portrait": "figment-blade", "glyph": "✦",
       "text": "A floating blade: {=hp} HP, Defense {=defense}, {=movement} tiles an AP. Cut strikes an enemy next to it. Hold: the first enemy each round to enter or leave a tile next to it is Cut, and that spends one of your reactions.",
       "adjudication": "engine", "provisional": true
     }

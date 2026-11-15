@@ -15,8 +15,9 @@ C = json.loads((ROOT / "art/catalog.json").read_text())
 OUT.mkdir(parents=True, exist_ok=True)
 assets = {}
 
-def emit(name, src, small, large, quality=82, versioned=False):
-    """small/large are max (w, h) boxes; images are never upscaled."""
+def emit(name, src, small, large, quality=82, versioned=False, small_crop=None):
+    """small/large are max (w, h) boxes; images are never upscaled. small_crop: (left, top, right, bottom) of the source
+    the small copy is cut from (a painting's token square), the large copy stays whole."""
     src = pathlib.Path(src)
     for suffix, box in (("", small), ("-lg", large)):
         if box is None:
@@ -25,6 +26,8 @@ def emit(name, src, small, large, quality=82, versioned=False):
         if not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime:
             im = Image.open(src)
             im = im.convert("RGBA") if im.mode in ("RGBA", "LA", "P") else im.convert("RGB")
+            if small_crop and suffix == "":
+                im = im.crop(tuple(small_crop))
             im.thumbnail(box, Image.LANCZOS)
             im.save(dst, "WEBP", quality=quality, method=4)
         # versioned: ?v=<content hash>, so art replaced under the same name is never served from an old cache
@@ -37,6 +40,17 @@ for sid, a in C["skills"].items():
 # the CSS crop of this 4:5 image (object-fit: cover); the eye line goes to eyelines.json below.
 for cid, a in C["characters"].items():
     emit("char-" + cid, ROOT / a["path"], (320, 400), (800, 1000))
+# Figment portraits (rules 1.34, ART-REQUESTS C6; catalog `figments`): built under their own catalog id, and only when
+# data names it (a form's or the turret's `portrait` in data/figments.json), so a form not in the game yet never ships.
+# A unit wears it as its face (owned.ts puts the block's portrait on the unit). A Figment fills only the painting's
+# central circle, so the small copy (the token, the HUD rows, the FIGMENTS header) is cut from the catalog's token_crop
+# square, 320 px; the large copy (the cut-in, the enlarged view) is the whole 4:5 painting, and its token_center goes to
+# eyelines.json below for the cut-in strip.
+_FIG = json.loads((ROOT / "data/figments.json").read_text(encoding="utf-8"))
+FIG_NAMED = {f["portrait"] for f in _FIG.get("forms", []) + [_FIG.get("turret") or {}] if f.get("portrait")}
+for fid, a in C.get("figments", {}).items():
+    if fid in FIG_NAMED:
+        emit(fid, ROOT / a["path"], (320, 320) if a.get("token_crop") else (320, 400), (800, 1000), versioned=True, small_crop=a.get("token_crop"))
 for fam, prefix in (("traits", "wick-trait-"), ("perks", "wick-perk-")):
     for iid, a in C[fam].items():
         small = ROOT / a.get("exports", {}).get("128", a["path"])
@@ -239,7 +253,7 @@ for seq, clip in WICK_CLIPS.items():
     f = ROOT / clip.get("presentation_strip", clip["strip"])["path"]
     if f.exists():
         emit("wick-" + seq, f, (256 * clip["count"], 256), None, 92)
-MAP.write_text(json.dumps(dict(sorted(assets.items())), indent=1) + "\n")
+MAP.write_text(json.dumps(dict(sorted(assets.items())), indent=1) + "\n", newline="\n")  # LF on every OS
 # Spotlight cut-ins (docs/design/cutin-spec.md 9.1): where each portrait's eyes are, keyed by the asset names above, for
 # the torn eye strip's crop: {"char-<id>": [x, y], "patron-<id>": [x, y]}.
 EYES = {}
@@ -249,5 +263,9 @@ for cid, a in C["characters"].items():
 for pid, a in C.get("patrons", {}).items():
     if a.get("eye_line"):
         EYES["patron-" + pathlib.Path(a["path"]).stem] = [a["eye_line"]["x"], a["eye_line"]["y"]]
-(ROOT / "apps/web/src/game/eyelines.json").write_text(json.dumps(dict(sorted(EYES.items())), separators=(",", ":")) + "\n")
+# a Figment has no eyes: its strip centres on the painting's token centre (the catalog's token_center, in pixels)
+for fid, a in C.get("figments", {}).items():
+    if fid in FIG_NAMED and a.get("token_center"):
+        EYES[fid] = [round(a["token_center"][0] / a["width"], 3), round(a["token_center"][1] / a["height"], 3)]
+(ROOT / "apps/web/src/game/eyelines.json").write_text(json.dumps(dict(sorted(EYES.items())), separators=(",", ":")) + "\n", newline="\n")
 print(f"{len(assets)} assets -> {OUT.relative_to(ROOT)}")

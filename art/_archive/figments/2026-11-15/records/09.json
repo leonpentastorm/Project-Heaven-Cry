@@ -1,0 +1,58 @@
+{
+  "number": 9,
+  "name": "Husk",
+  "path": "art/portraits/figments/figment-husk.png",
+  "mode": "portrait",
+  "transparent": false,
+  "refs": [
+    "art/icons/skills/visualization.png",
+    "art/icons/skills/charisma.png",
+    "art/icons/skills/durability.png"
+  ],
+  "prompt": "Create ONE original PHC HEAVENPRINT ABSTRACT portrait of a Figment: a picture given a temporary body by nanobots. Use visualization.png as the pigment and mark-making authority; the other skill references guide readable gestures and composition ONLY. Opaque cream gouache masses and broken directional ink on pure BLACK #000000, built of small dense cream squares, dots and flecks like filings. At least one edge MUST fray into drifting bot motes, while the main shape remains clear at 40 pixels. Moderate internal abstraction: definite readable form first, tactile brush and fleck structure second. No cubist puzzle, no ribbons, no smooth 3D mannequin or photoreal object. It is a made thing, NEVER living flesh. No face, no living eyes, no hair, no skin, no clothes or NPC identity. A lens is a simple aperture, never an iris.\nPALETTE STRICTLY: neutral CREAM #F2E5C8 carries ALL light values; Expression DEEP PETROL BLUE #075369 with only #14758B lighter and #033443 darker for every other pigment and shadow; pure black background. No red from Durability, no mint from other references, no ice blue, pink, purple, gold, white-blue glows or unrelated undertones. No luminous bloom, smooth gradients or atmospheric scene.\nFORMAT AND TOKEN COMPOSITION: opaque RGB portrait, 4:5, 800x1000 intended master. Keep the WHOLE subject, all its extremities, echo outlines and detached motes inside an INVISIBLE central circle about 560px in diameter centered at x400 y480. That circle occupies x15\u201385% and y20\u201376% of the portrait. Generous completely black headroom, footroom and corners. NEVER paint the circle, border or frame itself. Nothing spills into corners or to canvas edges. One isolated form and its one requested cue, no extra scenery or characters. Make the silhouette immediately distinct from every other form. No text, symbols resembling letters, labels, UI or watermark.\n\nTHIS FORM AND ITS GAMEPLAY MEANING:\n- **What and job:** a hollow decoy that bursts when spent. It lures like the Double; Burst blows it up on everyone within 1 tile, friend or foe.\n- **Silhouette:** a hollow human-shaped bust, empty inside, a fuse spark at the crown.\n- **Show:** a hollow shell of cream flecks, black inside; one small spark at the crown; hairline petrol-blue cracks running through it.\n- **Avoid:** a face, eyes or hair; a cartoon bomb, a skull or a fireball.\n**Form and meaning:** the Husk: a hollow decoy bust that bursts when spent. **Subject:** a hollow, faceless bust or upper body built of cream flecks like a shell, black and empty inside; it echoes the Double but is clearly empty. **Stature:** average, upright, slightly hunched. **Pose:** standing still, shoulders slightly forward, as if holding its breath; hairline cracks run up through the shell. **Cue:** a single small bright spark at the crown, like a fuse about to burn down.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "sha256": "0a8bdd310b436e2b87caf7c55a72f4cb9e5dd5d57ec56ee6f2d6dc8dd2623b4f",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-husk.png",
+  "source_sha256": "e4f63b44e4a69de3a90fb5cf048fc34a0e44e861bf2341838bb294199df6bef0",
+  "exports": {},
+  "export_crop": [
+    104,
+    117,
+    932,
+    1254
+  ],
+  "upscaled": false,
+  "export_processing": "Aspect-preserving crop/scale/placement on pure black to fit complete painted silhouette inside round-token safe area; no repaint",
+  "framing": {
+    "threshold": 4,
+    "scale": 0.42006981310716573,
+    "offset": [
+      226,
+      241
+    ],
+    "token_center": [
+      400,
+      480
+    ],
+    "token_radius": 280,
+    "paint_radius_target": 248
+  },
+  "token_crop": [
+    120,
+    200,
+    680,
+    760
+  ],
+  "catalog_family": "figments",
+  "catalog_id": "figment-husk"
+}

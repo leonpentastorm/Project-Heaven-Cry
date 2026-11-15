@@ -1,0 +1,58 @@
+{
+  "number": 6,
+  "name": "Snare",
+  "path": "art/portraits/figments/figment-snare.png",
+  "mode": "portrait",
+  "transparent": false,
+  "refs": [
+    "art/icons/skills/visualization.png",
+    "art/icons/skills/charisma.png",
+    "art/icons/skills/durability.png"
+  ],
+  "prompt": "Create ONE original PHC HEAVENPRINT ABSTRACT portrait of a Figment: a picture given a temporary body by nanobots. Use visualization.png as the pigment and mark-making authority; the other skill references guide readable gestures and composition ONLY. Opaque cream gouache masses and broken directional ink on pure BLACK #000000, built of small dense cream squares, dots and flecks like filings. At least one edge MUST fray into drifting bot motes, while the main shape remains clear at 40 pixels. Moderate internal abstraction: definite readable form first, tactile brush and fleck structure second. No cubist puzzle, no ribbons, no smooth 3D mannequin or photoreal object. It is a made thing, NEVER living flesh. No face, no living eyes, no hair, no skin, no clothes or NPC identity. A lens is a simple aperture, never an iris.\nPALETTE STRICTLY: neutral CREAM #F2E5C8 carries ALL light values; Expression DEEP PETROL BLUE #075369 with only #14758B lighter and #033443 darker for every other pigment and shadow; pure black background. No red from Durability, no mint from other references, no ice blue, pink, purple, gold, white-blue glows or unrelated undertones. No luminous bloom, smooth gradients or atmospheric scene.\nFORMAT AND TOKEN COMPOSITION: opaque RGB portrait, 4:5, 800x1000 intended master. Keep the WHOLE subject, all its extremities, echo outlines and detached motes inside an INVISIBLE central circle about 560px in diameter centered at x400 y480. That circle occupies x15\u201385% and y20\u201376% of the portrait. Generous completely black headroom, footroom and corners. NEVER paint the circle, border or frame itself. Nothing spills into corners or to canvas edges. One isolated form and its one requested cue, no extra scenery or characters. Make the silhouette immediately distinct from every other form. No text, symbols resembling letters, labels, UI or watermark.\n\nTHIS FORM AND ITS GAMEPLAY MEANING:\n- **What and job:** a small trap. Trap: holds a tile; an enemy that hits it is cut (Trip) and loses 2 AP, and it is spent.\n- **Silhouette:** a low four-pronged caltrop star inside a broken circle.\n- **Show:** four sharp prongs, one pointing up; the circle broken and fraying into motes; a low, crouched weight, ready to snap.\n- **Avoid:** a bear trap, rope, net or any recognisable real trap; heavy detail (it is small and simple).\n**Form and meaning:** the Snare: a small trap that springs when an enemy comes close. **Subject:** a four-pronged caltrop star made of cream flecks, sitting inside a ring that is broken in one place; no face. **Stature:** small and low, centred. **Pose:** resting flat and ready, one prong up, as if waiting. **Cue:** a short bright spark of cream at the point of the upturned prong.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "sha256": "c654581ddbe8257bc5be8f3b1d3001f42470610df8ee16ce3b9eb058c324832c",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-snare.png",
+  "source_sha256": "6dce3d41924a2b6f92b92722ef5cc7aa5e3d401591360166ba3a94f63584d8d9",
+  "exports": {},
+  "export_crop": [
+    125,
+    280,
+    993,
+    1071
+  ],
+  "upscaled": false,
+  "export_processing": "Aspect-preserving crop/scale/placement on pure black to fit complete painted silhouette inside round-token safe area; no repaint",
+  "framing": {
+    "threshold": 4,
+    "scale": 0.5593802737502132,
+    "offset": [
+      158,
+      259
+    ],
+    "token_center": [
+      400,
+      480
+    ],
+    "token_radius": 280,
+    "paint_radius_target": 248
+  },
+  "token_crop": [
+    120,
+    200,
+    680,
+    760
+  ],
+  "catalog_family": "figments",
+  "catalog_id": "figment-snare"
+}

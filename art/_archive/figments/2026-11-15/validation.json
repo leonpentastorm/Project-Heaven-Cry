@@ -1,0 +1,22 @@
+{
+  "count": 38,
+  "portraits": 14,
+  "trait_icons": 12,
+  "order_icons": 12,
+  "master_catalog_native_hashes_pass": true,
+  "dimensions_modes_pass": true,
+  "whole_painted_form_inside_token_circle_pass": true,
+  "portrait_token_sizes_checked": [
+    40,
+    64,
+    128
+  ],
+  "portrait_outside_circle_maximum_rgb": 4,
+  "white_ink_24_masters_and_exports_pass": true,
+  "repository_white_alpha_decoder_24_exports_pass": true,
+  "superseded_hashes_pass": true,
+  "upscaled_count": 0,
+  "full_library_validation_exit": 1,
+  "full_library_limitation": "Historical assets absent from this sparse delivery snapshot; see full-library-check.txt",
+  "palette_review": "Visual check against Expression anchors; generated gouache is not claimed to be an indexed hex palette."
+}

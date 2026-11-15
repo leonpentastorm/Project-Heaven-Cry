@@ -1,0 +1,58 @@
+{
+  "number": 5,
+  "name": "Blade",
+  "path": "art/portraits/figments/figment-blade.png",
+  "mode": "portrait",
+  "transparent": false,
+  "refs": [
+    "art/icons/skills/visualization.png",
+    "art/icons/skills/charisma.png",
+    "art/icons/skills/durability.png"
+  ],
+  "prompt": "Create ONE original PHC HEAVENPRINT ABSTRACT portrait of a Figment: a picture given a temporary body by nanobots. Use visualization.png as the pigment and mark-making authority; the other skill references guide readable gestures and composition ONLY. Opaque cream gouache masses and broken directional ink on pure BLACK #000000, built of small dense cream squares, dots and flecks like filings. At least one edge MUST fray into drifting bot motes, while the main shape remains clear at 40 pixels. Moderate internal abstraction: definite readable form first, tactile brush and fleck structure second. No cubist puzzle, no ribbons, no smooth 3D mannequin or photoreal object. It is a made thing, NEVER living flesh. No face, no living eyes, no hair, no skin, no clothes or NPC identity. A lens is a simple aperture, never an iris.\nPALETTE STRICTLY: neutral CREAM #F2E5C8 carries ALL light values; Expression DEEP PETROL BLUE #075369 with only #14758B lighter and #033443 darker for every other pigment and shadow; pure black background. No red from Durability, no mint from other references, no ice blue, pink, purple, gold, white-blue glows or unrelated undertones. No luminous bloom, smooth gradients or atmospheric scene.\nFORMAT AND TOKEN COMPOSITION: opaque RGB portrait, 4:5, 800x1000 intended master. Keep the WHOLE subject, all its extremities, echo outlines and detached motes inside an INVISIBLE central circle about 560px in diameter centered at x400 y480. That circle occupies x15\u201385% and y20\u201376% of the portrait. Generous completely black headroom, footroom and corners. NEVER paint the circle, border or frame itself. Nothing spills into corners or to canvas edges. One isolated form and its one requested cue, no extra scenery or characters. Make the silhouette immediately distinct from every other form. No text, symbols resembling letters, labels, UI or watermark.\n\nTHIS FORM AND ITS GAMEPLAY MEANING:\n- **What and job:** a floating blade that holds a tile and cuts what passes. Guard of tiles: Cut, and Hold strikes whatever moves next to it.\n- **Silhouette:** one long narrow double-edged blade hanging point-down, centred.\n- **Show:** fine bots crowding the edge like filings; the point toward the ground, very slightly swaying; a small ring on the ground under the point.\n- **Avoid:** a hilt, a hand or a recognisable sword type; a glowing energy blade.\n**Form and meaning:** the Blade: a floating blade that guards one tile and cuts what passes. **Subject:** a single long narrow double-edged blade hanging point-down in the air, its edge sharp in cream, fine bots crowding along the edge like filings; no hilt, no hand. **Stature:** tall and thin, centred. **Pose:** hanging upright and very slightly swaying, point toward the ground, ready. **Cue:** a small ring on the ground under its point, the tile it holds.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "sha256": "9a23a247e291e47184e9e8cbca5a942dc446c9c3633cb33043bd41a3c215ce16",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-blade.png",
+  "source_sha256": "06b8bfb8471ad5bf815d65822c56f34314bdc0d20bed9bf79d1b6143332f758e",
+  "exports": {},
+  "export_crop": [
+    379,
+    129,
+    782,
+    1202
+  ],
+  "upscaled": false,
+  "export_processing": "Aspect-preserving crop/scale/placement on pure black to fit complete painted silhouette inside round-token safe area; no repaint",
+  "framing": {
+    "threshold": 4,
+    "scale": 0.45925532190197843,
+    "offset": [
+      308,
+      234
+    ],
+    "token_center": [
+      400,
+      480
+    ],
+    "token_radius": 280,
+    "paint_radius_target": 248
+  },
+  "token_crop": [
+    120,
+    200,
+    680,
+    760
+  ],
+  "catalog_family": "figments",
+  "catalog_id": "figment-blade"
+}

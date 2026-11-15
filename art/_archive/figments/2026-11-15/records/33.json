@@ -1,0 +1,44 @@
+{
+  "number": 33,
+  "name": "Fix (Sentinel)",
+  "path": "art/icons/figments/order-fix.png",
+  "mode": "ink",
+  "transparent": true,
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/perks/many-hands.png",
+    "art/icons/survival/markers/shop.png"
+  ],
+  "prompt": "Draw ONE pure-white flat-ink fantasy-game pictogram for TARGETING WITH A TURRET. A simplified long straight WEAPON BARREL, a mechanical horizontal tube pointing to the RIGHT, with a small mounting block at the left end and a circular CROSSHAIR RETICLE aligned just beyond its right muzzle. This means selecting a target. NOT a wooden barrel, cask, drum, bucket, jar, tank or container. Do not draw a complete gun, a hand or a character; just the horizontal tube and its targeting ring. Bold pure WHITE #FFFFFF filled shapes and clean transparent interior cuts, readable at 32px, matching the attached house ink weight. Fully TRANSPARENT background, 1024x1024 square, central 80 percent composition. No grey, shading, colour, glow, texture, words, letters, numbers, logos, border or frame.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f1819fdfb7823dd09d2fe752bf98dd7cdbd029445c1262d9bddd214a6afd78e0",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/order-fix.png",
+  "source_sha256": "fb6705de3383d06daa35a2e9286c661881bea638758968e224db078648c8268f",
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-fix.png",
+    "64": "art/icons/figments/exports/64/order-fix.png",
+    "32": "art/icons/figments/exports/32/order-fix.png"
+  },
+  "export_crop": [
+    0,
+    294,
+    1228,
+    963
+  ],
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop, aspect-preserving fit to central 820px safe box; pure-white RGB preserving generated alpha; Lanczos exports",
+  "catalog_family": "figment_icons",
+  "catalog_id": "order-fix"
+}

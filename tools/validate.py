@@ -779,6 +779,14 @@ for o in items("objects"):
     if "electronic" in o and not isinstance(o["electronic"], bool):
         errors.append(f"objects:{o.get('id')}: electronic must be true or false")
 
+# Rules 1.34 (ART-REQUESTS C6): a Figment form's or the turret's `portrait` is a catalog id in art/catalog.json `figments`
+# (the painted 4:5 portrait; owned.ts puts it on the unit, the web build ships it under the same id). No field: the glyph.
+_figp = root.parent / "art" / "catalog.json"
+_figcat = set((json.loads(_figp.read_text()).get("figments") or {}).keys()) if _figp.exists() else None
+for _fr in (_ld("figments").get("forms") or []) + ([_ld("figments")["turret"]] if isinstance(_ld("figments").get("turret"), dict) else []):
+    if "portrait" in _fr and _figcat is not None and _fr["portrait"] not in _figcat:
+        errors.append(f"figments:{_fr.get('id')}: portrait {_fr['portrait']!r} is not in art/catalog.json figments")
+
 # World Play, rules revision 1.7: kinds and weights, avatar pools (ids in art/catalog.json), the hurt table, hazards
 wp = data.get("world_play", {})
 if wp:
