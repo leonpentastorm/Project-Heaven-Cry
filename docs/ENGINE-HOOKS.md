@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 655 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 655 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1606,6 +1606,7 @@ What fails when someone goes round a primitive, and how to re-record a pinned ta
 | `packages/engine/test/golden-damage-traits-classes.test.ts` | The golden tables of the damage-formula migration (docs/design/proposals/2026-11-unified-damage.md, stage (a), step a0): what the engine produces and what lands, action by action, exact, against test/golden/*.json. | `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-damage-traits-classes` |
 | `packages/engine/test/golden-damage.test.ts` | The golden tables of the damage-formula migration (docs/design/proposals/2026-11-unified-damage.md, stage (a), step a0): what the engine produces and what lands, action by action, exact, against test/golden/*.json. | `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-damage` |
 | `packages/engine/test/golden-itemops.test.ts` | The item-ops table (engine foundations 3: docs/design/handoffs/engine-foundations-3-item-ops.md): every live item in every situation, recorded on the engine before any item moved into data (test/golden/itemops.ts). | `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-itemops`; `GOLDEN_RECORD=log npm test -w @phc/engine -- golden-itemops` |
+| `packages/engine/test/golden-mods.test.ts` | The mods pins (build plan 0.29, section 4.1 "P1 pins"; ENGINE-GUIDE rule 3 "Pin, then move"): what every weapon mod of data does TODAY, through the reducer, with and without it fitted on a weapon it fits (same seed, same dice); the fit in each mode; a mod on… | `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-mods`; `GOLDEN_RECORD=log npm test -w @phc/engine -- golden-mods` |
 | `packages/engine/test/golden-rules.test.ts` | The rules tables of engine foundations 1 (test/golden/rules.ts): what the dice and the rules did, action by action, for the same actions as the damage tables. | `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-rules`; `GOLDEN_RECORD=log npm test -w @phc/engine -- golden-rules` |
 | `packages/engine/test/item-ops.test.ts` | Item ops (engine foundations 3: docs/design/handoffs/engine-foundations-3-item-ops.md). | `ITEM_OPS_WRITE=1 npm test -w @phc/engine -- item-ops` |
 | `packages/engine/test/lint-conditions.test.ts` | THE LINT of engine foundations 2 (conditions; the area shapes of the kit). | none (fix the code, or change the test on purpose) |
