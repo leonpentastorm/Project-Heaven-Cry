@@ -541,7 +541,7 @@
               "provisional": true
             }
           },
-          "text": "{=effects.0.ap} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. Not a Boss.",
+          "text": "{=effects.0.ap} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. A Boss takes the blow and the save but is never moved.",
           "effects": [
             {
               "op": "grant_action",
@@ -556,14 +556,10 @@
                 "tiles": 1,
                 "side": "foe",
                 "if": {
-                  "target_alive": true,
-                  "target_not_tier": [
-                    "boss"
-                  ]
+                  "target_alive": true
                 },
                 "why": {
-                  "target_alive": "{target} is already down.",
-                  "target_not_tier": "{target} is too big to throw."
+                  "target_alive": "{target} is already down."
                 }
               },
               "effects": [

@@ -1534,9 +1534,6 @@
                 "target_alive": true,
                 "target_has": [
                   "off_balance"
-                ],
-                "target_not_tier": [
-                  "boss"
                 ]
               },
               "target": "target",

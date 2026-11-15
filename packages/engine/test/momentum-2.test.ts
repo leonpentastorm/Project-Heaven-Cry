@@ -102,11 +102,17 @@ describe('four ways to finish', () => {
 });
 
 describe('Launch', () => {
-  it('refused under 2 Momentum, in the engine\'s words; refused on a Boss by the reach\'s own why', () => {
+  it('refused under 2 Momentum, in the engine\'s words', () => {
     const f = fight({ m: 1 });
     expect(refusal(() => launch(f, f.foe))).toMatch(/Momentum/);
-    const b = fight({ m: 3, foes: [{ at: 'D5', tier: 'boss' }] });
-    expect(refusal(() => launch(b, b.foe))).toBe(LAUNCH.reach.why.target_not_tier.replace('{target}', b.foe.name));
+  });
+  // The 0.29 consolidation (SF1): a Boss holds against every forced move of a player's item (rules.json
+  // forced_movement.boss_holds), Launch's flight included: it takes the blow and the save, and stays on its tile.
+  for (const tier of ['boss', 'soldier']) it('on a ' + tier + ': the blow lands; ' + (tier === 'boss' ? 'it is never moved' : 'it flies'), () => {
+    const b = fight({ m: 3, foes: [{ at: 'D5', tier }] }); weak(b.foe); const was = b.foe.pos, hp = b.foe.hp;
+    expect(refusal(() => launch(b, b.foe))).toBe('');
+    const t = b.unit(b.foe.id); expect(t.hp).toBeLessThan(hp);
+    if (tier === 'boss') expect(t.pos).toBe(was); else expect(t.pos).not.toBe(was);
   });
   it('a failed save: Off Balance, 3 tiles, Prone, a blow; all Momentum spent', () => {
     const f = fight({ m: 4 }); weak(f.foe); const hp = f.foe.hp;

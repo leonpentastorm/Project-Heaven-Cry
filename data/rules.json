@@ -2278,7 +2278,7 @@
     }
   },
   "bosses": {
-    "about": "What makes a unit a Boss for the rules every item shares (the 0.29 consolidation, the lead's rulings of 16 Nov 2026): its tier or its kind (a Celestial). Read by combat.ts isBoss. A Taunted Boss is never forced to attack its taunter: it chooses, with the Taunted row's penalty against anyone else (conditions.json taunted).",
+    "about": "What makes a unit a Boss for the rules every item shares (the 0.29 consolidation, the lead's rulings of 16 Nov 2026): its tier or its kind (a Celestial). Read by combat.ts isBoss. A Taunted Boss is never forced to attack its taunter: it chooses, with the Taunted row's penalty against anyone else (conditions.json taunted). A forced move from an opponent never moves it (forced_movement.boss_holds).",
     "tiers": [
       "boss"
     ],
@@ -2287,6 +2287,13 @@
     ]
   },
   "forced_movement": {
+    "boss_holds": {
+      "about": "A Boss (rules.json bosses) is never moved by an opponent's forced move (a push, a pull, a throw, a teleport, a swap: any item, weapon or technique); the knockback immunity and Nailed already hold any unit the data marks so. The one exception: the items named in `except` (their own rows say how far a Boss goes: Tug's Bond moves it 1 tile on a failed save).",
+      "except": [
+        "tend.tug"
+      ],
+      "why": "too big to be moved"
+    },
     "push": {
       "tiles": "each",
       "traps": true,

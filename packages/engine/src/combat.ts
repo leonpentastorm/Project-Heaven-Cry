@@ -2033,10 +2033,15 @@ export const isBoss = (u: Unit): boolean => BOSSES.tiers.includes(u.tier as stri
  *  the Taunted row's penalty to hit anyone else (conditions.json taunted, attack_mod not_vs_source). THE reading of Taunted
  *  for every target choice: the attack's refusal, the enemy AI and the healer focus. */
 export const tauntedBy = (u: Unit): string | null => (isBoss(u) ? null : condSource(u, 'taunted'));
+/** A Boss holds against an opponent's forced move (rules.json forced_movement.boss_holds), but for the items it names
+ *  (Tug: its own row says how far a Boss goes). THE rule for every push, pull, throw, teleport and swap of a player's item. */
+const BOSS_HOLDS: { except: string[]; why: string } = (RULES as any).forced_movement.boss_holds;
+const bossHolds = (u: Unit, o: DisplaceOpts): boolean => isBoss(u) && !!o.by && o.by.side !== u.side && !BOSS_HOLDS.except.some((id) => o.source === id || o.source?.endsWith(':' + id));
 /** May this unit be moved against its will? null: yes. Otherwise why not (and `tiles`, which an item may have changed). */
 function forcedRefusal(cb: Combat, rng: Rng | null | undefined, u: Unit, o: DisplaceOpts, tiles: number, to?: string): { stoppedBy: 'nailed' | 'immune' | 'held' | null; why?: string; tiles: number } {
   if (o.willing || !FORCED[o.how].immunity) return { stoppedBy: null, tiles };
   if (u.nailed) return { stoppedBy: 'nailed', why: 'nailed in place', tiles };
+  if (bossHolds(u, o)) return { stoppedBy: 'immune', why: BOSS_HOLDS.why, tiles };
   const im = immune({ u }, 'knockback'); if (im) return { stoppedBy: 'immune', why: im, tiles };
   // 'forced_move' {u, by, tiles, to, how, kind, pull, cancel}: an item may stop it (cancel) or change the distance (tiles).
   const fm: any = o.preview ? { cancel: false, tiles } : emit(cb, 'forced_move', { u, by: o.by, tiles, ...(to ? { to } : {}), how: o.source, kind: o.how, pull: o.how === 'pull', cancel: false, cb, rng });

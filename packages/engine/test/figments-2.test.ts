@@ -47,6 +47,19 @@ describe('Draw fire on a Boss: Taunted as by any other source, never forced', ()
   });
 });
 
+// The 0.29 consolidation (SF1): a Boss holds against an opponent's forced move (rules.json forced_movement.boss_holds):
+// the Wall's Press moves a Soldier, never a Boss.
+describe('Press on a Boss: it holds', () => {
+  for (const tier of ['boss', 'soldier']) it(tier, () => {
+    const f = figFight([{ skills: { visualization: 3 }, weapon: 'service_pistol', forms: ['wall'] }], [{ tier, at: '5,4', classic: true }]);
+    // the Soldier stands where the order's own test has it; a Boss walks on its first turn: the Wall is pictured below it
+    const [bx, by] = f.foe.pos.split(',').map(Number), at = tier === 'boss' ? bx + ',' + (by + 1) : '4,4';
+    let u = f.turn(f.pc); f.picture(u, 'wall', at); u = f.unit(u.id); const w = f.figments(u)[0]; u.ap = 6;
+    const was = f.foe.pos; f.order(u, w, 'figment_press', { targetId: f.foe.id });
+    if (tier === 'boss') expect(f.unit(f.foes[0].id).pos).toBe(was); else expect(f.unit(f.foes[0].id).pos).not.toBe(was);
+  });
+});
+
 describe('the orders on today\'s forms and the caster\'s orders (slice 2)', () => {
   it('Draw fire (the Double): every enemy within reach that sees it saves or is Taunted by it; the order costs the order site', () => {
     const f = figFight([{ skills: { visualization: 1 }, weapon: 'service_pistol', forms: [] }], [{ tier: 'minion', at: '5,4', classic: true }, { tier: 'minion', at: '12,9', classic: true }]);
