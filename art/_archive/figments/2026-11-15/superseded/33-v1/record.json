@@ -1,0 +1,42 @@
+{
+  "number": 33,
+  "name": "Fix (Sentinel)",
+  "path": "art/icons/figments/order-fix.png",
+  "mode": "ink",
+  "transparent": true,
+  "refs": [
+    "/workspace/phc-everything-missing-2026-11-15/references/mind-without-fog.png",
+    "/workspace/phc-figments-2026-11-15/references/mirage.png",
+    "/workspace/phc-figments-2026-11-15/references/solid-image.png",
+    "/workspace/phc-figments-2026-11-15/references/many-hands.png",
+    "/workspace/phc-everything-missing-2026-11-15/references/shop.png"
+  ],
+  "prompt": "Draw ONE game icon in the approved PHC white flat-ink mode: pure white #FFFFFF filled silhouettes on fully TRANSPARENT background. Match the substantial confident ink weight and clear interior transparent cuts of the attached house icons. This specific asset depicts ONLY an OBJECT OR GESTURE, not Wick, not a character and not a full Figment portrait. The mascot references supply line weight, NOT the mascot subject. No figure unless a tiny abstract shape is explicitly requested below. Bot particles are a few simple squares or dots.\nSUBJECT: Fix (Sentinel). Paint: a barrel with a crosshair ring.\nSilhouette first, readable at 32px; two or three interior cuts at most. Centre the subject within the central 80% of a square 1024x1024 canvas, clear transparent space on all sides. One subject and only the requested props. Flat WHITE only, NO colour, NO grey, NO shading, NO texture, NO glow, NO gradient. All interior separations MUST be true TRANSPARENT cuts rather than pale grey details over white. No backdrop, disc, border, lettering, labels, numbers, logos or watermark. Original invented motifs. For any plain plus or glint it is white and abstract, never a red medical emblem.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7c01d818da63390745a3d95e514154835ab3b6f5390ba45e4d5b29d833237e2d",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/order-fix.png",
+  "source_sha256": "ecc6a8b6a994b38655ffd15dfc5ec7c5a08b0eb06666e8a491a740ddc72d83d9",
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-fix.png",
+    "64": "art/icons/figments/exports/64/order-fix.png",
+    "32": "art/icons/figments/exports/32/order-fix.png"
+  },
+  "export_crop": [
+    0,
+    55,
+    1234,
+    1238
+  ],
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop, aspect-preserving fit to central 820px safe box; pure-white RGB preserving generated alpha; Lanczos exports"
+}

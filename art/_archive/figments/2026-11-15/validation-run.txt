@@ -1,0 +1,1 @@
+PASS: 38 unique rows; all catalog/master/native hashes and PNG dimensions/modes; 14 complete round-token silhouettes at 40/64/128px; 24 pure-white alpha-safe icons and UI exports; superseded-master/source hashes. No upscaled renders.

@@ -1,0 +1,1078 @@
+{
+  "figments": {
+    "figment-double": {
+      "label": "Double",
+      "path": "art/portraits/figments/figment-double.png",
+      "sha256": "de4f80ade6f441d24b2c99f8c16d0ff0b02dda087ddbeeaa587e4923d5cbf18a",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-double.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 1,
+      "upscaled": false,
+      "form": "double",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-eye": {
+      "label": "Eye",
+      "path": "art/portraits/figments/figment-eye.png",
+      "sha256": "9a3971964cc3616d95904aeeafcb09a6593afcea5a5834f77cfe00141447ef32",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-eye.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 2,
+      "upscaled": false,
+      "form": "eye",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-wall": {
+      "label": "Wall",
+      "path": "art/portraits/figments/figment-wall.png",
+      "sha256": "f2350f7b64cba4c03e46413c1839b681825d677d95e5fe972c12f3a820cd3c75",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-wall.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 3,
+      "upscaled": false,
+      "form": "wall",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-beast": {
+      "label": "Beast",
+      "path": "art/portraits/figments/figment-beast.png",
+      "sha256": "d35b0b19fb8e13989fe700e1aa0d12c53e1530a0bcf804ee76bf6ba155648e98",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-beast.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 4,
+      "upscaled": false,
+      "form": "beast",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-blade": {
+      "label": "Blade",
+      "path": "art/portraits/figments/figment-blade.png",
+      "sha256": "9a23a247e291e47184e9e8cbca5a942dc446c9c3633cb33043bd41a3c215ce16",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-blade.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 5,
+      "upscaled": false,
+      "form": "blade",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-snare": {
+      "label": "Snare",
+      "path": "art/portraits/figments/figment-snare.png",
+      "sha256": "c654581ddbe8257bc5be8f3b1d3001f42470610df8ee16ce3b9eb058c324832c",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-snare.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 6,
+      "upscaled": false,
+      "form": "snare",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-hand": {
+      "label": "Hand",
+      "path": "art/portraits/figments/figment-hand.png",
+      "sha256": "d280bd20720ca1ce4ef343a3c4653a3b7238aa8e0ed18b13c0dc8a6be13058ca",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-hand.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 7,
+      "upscaled": false,
+      "form": "hand",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-ward": {
+      "label": "Ward",
+      "path": "art/portraits/figments/figment-ward.png",
+      "sha256": "5a747797dfad8dfa5220d2589c7dd6c673a846ae895a1381cc8f75977b36f644",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-ward.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 8,
+      "upscaled": false,
+      "form": "ward",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-husk": {
+      "label": "Husk",
+      "path": "art/portraits/figments/figment-husk.png",
+      "sha256": "0a8bdd310b436e2b87caf7c55a72f4cb9e5dd5d57ec56ee6f2d6dc8dd2623b4f",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-husk.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 9,
+      "upscaled": false,
+      "form": "husk",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-sentinel": {
+      "label": "Sentinel",
+      "path": "art/portraits/figments/figment-sentinel.png",
+      "sha256": "5f7ab2004dca80514d1380952b9c6438aa5e262761bebe4ba6530c1309b6b7d1",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-sentinel.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 10,
+      "upscaled": false,
+      "form": "sentinel",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-glass": {
+      "label": "Glass",
+      "path": "art/portraits/figments/figment-glass.png",
+      "sha256": "48ad0891e4a3dea8316d6a5870a32c4427952f851fc7daf21b03eafd760acd6a",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-glass.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 11,
+      "upscaled": false,
+      "form": "glass",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-ferry": {
+      "label": "Ferry",
+      "path": "art/portraits/figments/figment-ferry.png",
+      "sha256": "1c16acff03fde42cbb5495ebcf9a03fddb918ef69f93dde743c4fb63ad2968ac",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-ferry.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 12,
+      "upscaled": false,
+      "form": "ferry",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-breaker": {
+      "label": "Breaker",
+      "path": "art/portraits/figments/figment-breaker.png",
+      "sha256": "c40e9e9de36e69f94cb47cb263f768b7024a35eed49a1723f842c685d743a991",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-breaker.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 13,
+      "upscaled": false,
+      "form": "breaker",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    },
+    "figment-hush": {
+      "label": "Hush",
+      "path": "art/portraits/figments/figment-hush.png",
+      "sha256": "bdfcd22c8c4c12e811b13a5939491e8742985a7bf5f1f982ab3247b0e9f2c769",
+      "width": 800,
+      "height": 1000,
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-hush.png",
+      "background": "opaque",
+      "mode": "heavenprint-abstract-figment",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 14,
+      "upscaled": false,
+      "form": "hush",
+      "token_crop": [
+        120,
+        200,
+        680,
+        760
+      ],
+      "token_center": [
+        400,
+        480
+      ],
+      "token_radius": 280
+    }
+  },
+  "figment_icons": {
+    "trait-kindling": {
+      "label": "Kindling",
+      "path": "art/icons/figments/trait-kindling.png",
+      "sha256": "eca455dc8b2a6b80024328501895679180da14b3ac8cd50d94e6dcec788f35a5",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-kindling.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 15,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-kindling.png",
+        "64": "art/icons/figments/exports/64/trait-kindling.png",
+        "32": "art/icons/figments/exports/32/trait-kindling.png"
+      },
+      "kind": "trait"
+    },
+    "trait-rime": {
+      "label": "Rime",
+      "path": "art/icons/figments/trait-rime.png",
+      "sha256": "94443d82abe031bd6ead00beb0cb0f9f76f687683dfebad0e5e20fa74699d1b9",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-rime.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 16,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-rime.png",
+        "64": "art/icons/figments/exports/64/trait-rime.png",
+        "32": "art/icons/figments/exports/32/trait-rime.png"
+      },
+      "kind": "trait"
+    },
+    "trait-static": {
+      "label": "Static",
+      "path": "art/icons/figments/trait-static.png",
+      "sha256": "72527a937dc04263a7f2911378f3e7589bee1e583d382d999fc6c1f05f7e4e27",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-static.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 17,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-static.png",
+        "64": "art/icons/figments/exports/64/trait-static.png",
+        "32": "art/icons/figments/exports/32/trait-static.png"
+      },
+      "kind": "trait"
+    },
+    "trait-bedrock": {
+      "label": "Bedrock",
+      "path": "art/icons/figments/trait-bedrock.png",
+      "sha256": "8b10d0906c10a5b8c452b32bafb71f491fe0ebac51afbfb9675b46cb83c42aa4",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-bedrock.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 18,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-bedrock.png",
+        "64": "art/icons/figments/exports/64/trait-bedrock.png",
+        "32": "art/icons/figments/exports/32/trait-bedrock.png"
+      },
+      "kind": "trait"
+    },
+    "trait-gust": {
+      "label": "Gust",
+      "path": "art/icons/figments/trait-gust.png",
+      "sha256": "1c7576218684c5325444c40a8449deaa485cab348583f5398b2dd6fa6ee25614",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-gust.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 19,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-gust.png",
+        "64": "art/icons/figments/exports/64/trait-gust.png",
+        "32": "art/icons/figments/exports/32/trait-gust.png"
+      },
+      "kind": "trait"
+    },
+    "trait-caustic": {
+      "label": "Caustic",
+      "path": "art/icons/figments/trait-caustic.png",
+      "sha256": "55839bd7e5c4bac585350b3a0c4e7d81a39d765ca1f052457f33c742bb66d199",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-caustic.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 20,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-caustic.png",
+        "64": "art/icons/figments/exports/64/trait-caustic.png",
+        "32": "art/icons/figments/exports/32/trait-caustic.png"
+      },
+      "kind": "trait"
+    },
+    "trait-skittish": {
+      "label": "Skittish",
+      "path": "art/icons/figments/trait-skittish.png",
+      "sha256": "2ad09727f0eee39fa3f725ba3859d10f2bfaf3964522f04ef94ead02e1fdb14c",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-skittish.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 21,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-skittish.png",
+        "64": "art/icons/figments/exports/64/trait-skittish.png",
+        "32": "art/icons/figments/exports/32/trait-skittish.png"
+      },
+      "kind": "trait"
+    },
+    "trait-spiteful": {
+      "label": "Spiteful",
+      "path": "art/icons/figments/trait-spiteful.png",
+      "sha256": "17434eb40733f71f22dab2c6f8521328ba1c3f2e14b61db1c5d5b77997d13f74",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-spiteful.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 22,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-spiteful.png",
+        "64": "art/icons/figments/exports/64/trait-spiteful.png",
+        "32": "art/icons/figments/exports/32/trait-spiteful.png"
+      },
+      "kind": "trait"
+    },
+    "trait-stubborn": {
+      "label": "Stubborn",
+      "path": "art/icons/figments/trait-stubborn.png",
+      "sha256": "e04261dfc8c953ac16068f6ce4780f01d83638ef160949e326a13c333b117185",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-stubborn.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 23,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-stubborn.png",
+        "64": "art/icons/figments/exports/64/trait-stubborn.png",
+        "32": "art/icons/figments/exports/32/trait-stubborn.png"
+      },
+      "kind": "trait"
+    },
+    "trait-kindred": {
+      "label": "Kindred",
+      "path": "art/icons/figments/trait-kindred.png",
+      "sha256": "8ad257af59e4fedc10cf7eedc62d773fcc69175fc1d3ea8ad75c1971d54f9f41",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-kindred.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 24,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-kindred.png",
+        "64": "art/icons/figments/exports/64/trait-kindred.png",
+        "32": "art/icons/figments/exports/32/trait-kindred.png"
+      },
+      "kind": "trait"
+    },
+    "trait-quiet": {
+      "label": "Quiet",
+      "path": "art/icons/figments/trait-quiet.png",
+      "sha256": "481e4fb63d2563c2b37447f1e28ef3aec94d52d0266210b7ddfe6f588041659c",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-quiet.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 25,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-quiet.png",
+        "64": "art/icons/figments/exports/64/trait-quiet.png",
+        "32": "art/icons/figments/exports/32/trait-quiet.png"
+      },
+      "kind": "trait"
+    },
+    "trait-overcharged": {
+      "label": "Overcharged",
+      "path": "art/icons/figments/trait-overcharged.png",
+      "sha256": "13c4a7fbb977d5ef8efb2798db74a517388891e28a5fe7698c47351ae8c66295",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-overcharged.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 26,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-overcharged.png",
+        "64": "art/icons/figments/exports/64/trait-overcharged.png",
+        "32": "art/icons/figments/exports/32/trait-overcharged.png"
+      },
+      "kind": "trait"
+    },
+    "order-draw-fire": {
+      "label": "Draw fire (Double)",
+      "path": "art/icons/figments/order-draw-fire.png",
+      "sha256": "e09758d6e4e5f044d03d6659b0dddedc1bd882c4c1435883f92a5ddbf2bff014",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-draw-fire.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 27,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-draw-fire.png",
+        "64": "art/icons/figments/exports/64/order-draw-fire.png",
+        "32": "art/icons/figments/exports/32/order-draw-fire.png"
+      },
+      "kind": "order"
+    },
+    "order-press": {
+      "label": "Press (Wall)",
+      "path": "art/icons/figments/order-press.png",
+      "sha256": "ab186e28174e1742e9a10924452ef805e03edcc3737e1ade00e6b1af78bae618",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-press.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 28,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-press.png",
+        "64": "art/icons/figments/exports/64/order-press.png",
+        "32": "art/icons/figments/exports/32/order-press.png"
+      },
+      "kind": "order"
+    },
+    "order-trip": {
+      "label": "Trip (Snare)",
+      "path": "art/icons/figments/order-trip.png",
+      "sha256": "b4843c970fea6d193b829cd4c7635f6212402878dbec2d83e81ced24ca21af75",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-trip.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 29,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-trip.png",
+        "64": "art/icons/figments/exports/64/order-trip.png",
+        "32": "art/icons/figments/exports/32/order-trip.png"
+      },
+      "kind": "order"
+    },
+    "order-hand-over": {
+      "label": "Hand over (Hand)",
+      "path": "art/icons/figments/order-hand-over.png",
+      "sha256": "d4d45ad57ef77ad288d1d762152deb44de7da0e45f44243829bf67d0fe08ad7e",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-hand-over.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 30,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-hand-over.png",
+        "64": "art/icons/figments/exports/64/order-hand-over.png",
+        "32": "art/icons/figments/exports/32/order-hand-over.png"
+      },
+      "kind": "order"
+    },
+    "order-interpose": {
+      "label": "Interpose (Ward)",
+      "path": "art/icons/figments/order-interpose.png",
+      "sha256": "3514b24e8bd52081abdbd93be1be66d0e3be103b73b058d58aebd109ad5ca912",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-interpose.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 31,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-interpose.png",
+        "64": "art/icons/figments/exports/64/order-interpose.png",
+        "32": "art/icons/figments/exports/32/order-interpose.png"
+      },
+      "kind": "order"
+    },
+    "order-burst": {
+      "label": "Burst (Husk)",
+      "path": "art/icons/figments/order-burst.png",
+      "sha256": "18ae041dbfa6dcf9aca70bd558566ed70a01ab337f435a8e33895013a508a7df",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-burst.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 32,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-burst.png",
+        "64": "art/icons/figments/exports/64/order-burst.png",
+        "32": "art/icons/figments/exports/32/order-burst.png"
+      },
+      "kind": "order"
+    },
+    "order-fix": {
+      "label": "Fix (Sentinel)",
+      "path": "art/icons/figments/order-fix.png",
+      "sha256": "f1819fdfb7823dd09d2fe752bf98dd7cdbd029445c1262d9bddd214a6afd78e0",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-fix.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 33,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-fix.png",
+        "64": "art/icons/figments/exports/64/order-fix.png",
+        "32": "art/icons/figments/exports/32/order-fix.png"
+      },
+      "kind": "order"
+    },
+    "order-reflect": {
+      "label": "Reflect (Glass)",
+      "path": "art/icons/figments/order-reflect.png",
+      "sha256": "c8f3222eb9c1706dcdecd28b269d6f867099f6b47acf120fcd244120784f2d07",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-reflect.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 34,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-reflect.png",
+        "64": "art/icons/figments/exports/64/order-reflect.png",
+        "32": "art/icons/figments/exports/32/order-reflect.png"
+      },
+      "kind": "order"
+    },
+    "order-carry": {
+      "label": "Carry (Ferry)",
+      "path": "art/icons/figments/order-carry.png",
+      "sha256": "c765877c8bda6ef5d4980eea28bf5023a9aa59ee3214bb85ca1823b7464ea945",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-carry.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 35,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-carry.png",
+        "64": "art/icons/figments/exports/64/order-carry.png",
+        "32": "art/icons/figments/exports/32/order-carry.png"
+      },
+      "kind": "order"
+    },
+    "order-batter": {
+      "label": "Batter (Breaker)",
+      "path": "art/icons/figments/order-batter.png",
+      "sha256": "c47471dd4e3560f080026a71d8903bfebe693e5f2fb7414d1854debb5cc64d78",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-batter.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 36,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-batter.png",
+        "64": "art/icons/figments/exports/64/order-batter.png",
+        "32": "art/icons/figments/exports/32/order-batter.png"
+      },
+      "kind": "order"
+    },
+    "order-jam": {
+      "label": "Jam (Hush)",
+      "path": "art/icons/figments/order-jam.png",
+      "sha256": "498dc2909da9594c62b9719c9058bbeb22f2026b6e5a5b3ae396b5c45ecbc6e0",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-jam.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 37,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-jam.png",
+        "64": "art/icons/figments/exports/64/order-jam.png",
+        "32": "art/icons/figments/exports/32/order-jam.png"
+      },
+      "kind": "order"
+    },
+    "order-redraw": {
+      "label": "Redraw (any form)",
+      "path": "art/icons/figments/order-redraw.png",
+      "sha256": "f49973e9df0caa5a80b3c631b7789ca8a0f162789be48275e5f82729b8862db6",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/figments/2026-11-15/native-renders/order-redraw.png",
+      "background": "transparent",
+      "mode": "white-flat-ink",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "figments-2026-11-15",
+      "brief_number": 38,
+      "upscaled": false,
+      "exports": {
+        "128": "art/icons/figments/exports/128/order-redraw.png",
+        "64": "art/icons/figments/exports/64/order-redraw.png",
+        "32": "art/icons/figments/exports/32/order-redraw.png"
+      },
+      "kind": "order"
+    }
+  }
+}

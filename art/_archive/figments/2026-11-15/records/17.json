@@ -1,0 +1,44 @@
+{
+  "number": 17,
+  "name": "Static",
+  "path": "art/icons/figments/trait-static.png",
+  "mode": "ink",
+  "transparent": true,
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/perks/many-hands.png",
+    "art/icons/survival/markers/shop.png"
+  ],
+  "prompt": "Draw ONE game icon in the approved PHC white flat-ink mode: pure white #FFFFFF filled silhouettes on fully TRANSPARENT background. Match the substantial confident ink weight and clear interior transparent cuts of the attached house icons. This specific asset depicts ONLY an OBJECT OR GESTURE, not Wick, not a character and not a full Figment portrait. The mascot references supply line weight, NOT the mascot subject. No figure unless a tiny abstract shape is explicitly requested below. Bot particles are a few simple squares or dots.\nSUBJECT: Static. Paint: a zigzag spark between two points.\nSilhouette first, readable at 32px; two or three interior cuts at most. Centre the subject within the central 80% of a square 1024x1024 canvas, clear transparent space on all sides. One subject and only the requested props. Flat WHITE only, NO colour, NO grey, NO shading, NO texture, NO glow, NO gradient. All interior separations MUST be true TRANSPARENT cuts rather than pale grey details over white. No backdrop, disc, border, lettering, labels, numbers, logos or watermark. Original invented motifs. For any plain plus or glint it is white and abstract, never a red medical emblem.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "72527a937dc04263a7f2911378f3e7589bee1e583d382d999fc6c1f05f7e4e27",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-static.png",
+  "source_sha256": "570c02c9a99ed6e7eb8e890e274b929044ab66894ea468283a05e52ce5f49c34",
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-static.png",
+    "64": "art/icons/figments/exports/64/trait-static.png",
+    "32": "art/icons/figments/exports/32/trait-static.png"
+  },
+  "export_crop": [
+    33,
+    162,
+    1162,
+    1040
+  ],
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop, aspect-preserving fit to central 820px safe box; pure-white RGB preserving generated alpha; Lanczos exports",
+  "catalog_family": "figment_icons",
+  "catalog_id": "trait-static"
+}

@@ -1,0 +1,47 @@
+{
+  "number": 12,
+  "name": "Ferry",
+  "path": "art/_archive/figments/2026-11-15/superseded/12-v1/master.png",
+  "mode": "portrait",
+  "transparent": false,
+  "refs": [
+    "/workspace/phc-figments-2026-11-15/references/visualization.png",
+    "/workspace/phc-figments-2026-11-15/references/charisma.png",
+    "/workspace/phc-figments-2026-11-15/references/durability.png"
+  ],
+  "prompt": "Create ONE original PHC HEAVENPRINT ABSTRACT portrait of a Figment: a picture given a temporary body by nanobots. Use visualization.png as the pigment and mark-making authority; the other skill references guide readable gestures and composition ONLY. Opaque cream gouache masses and broken directional ink on pure BLACK #000000, built of small dense cream squares, dots and flecks like filings. At least one edge MUST fray into drifting bot motes, while the main shape remains clear at 40 pixels. Moderate internal abstraction: definite readable form first, tactile brush and fleck structure second. No cubist puzzle, no ribbons, no smooth 3D mannequin or photoreal object. It is a made thing, NEVER living flesh. No face, no living eyes, no hair, no skin, no clothes or NPC identity. A lens is a simple aperture, never an iris.\nPALETTE STRICTLY: neutral CREAM #F2E5C8 carries ALL light values; Expression DEEP PETROL BLUE #075369 with only #14758B lighter and #033443 darker for every other pigment and shadow; pure black background. No red from Durability, no mint from other references, no ice blue, pink, purple, gold, white-blue glows or unrelated undertones. No luminous bloom, smooth gradients or atmospheric scene.\nFORMAT AND TOKEN COMPOSITION: opaque RGB portrait, 4:5, 800x1000 intended master. Keep the WHOLE subject, all its extremities, echo outlines and detached motes inside an INVISIBLE central circle about 560px in diameter centered at x400 y480. That circle occupies x15\u201385% and y20\u201376% of the portrait. Generous completely black headroom, footroom and corners. NEVER paint the circle, border or frame itself. Nothing spills into corners or to canvas edges. One isolated form and its one requested cue, no extra scenery or characters. Make the silhouette immediately distinct from every other form. No text, symbols resembling letters, labels, UI or watermark.\n\nTHIS FORM AND ITS GAMEPLAY MEANING:\n- **What and job:** a winged sled that carries an ally, or you. Carrier and mount: Carry moves an ally to a free tile within 3; Ride moves you.\n- **Silhouette:** a low winged sled with a saddle line along its back.\n- **Show:** a long low body with two short wing blades; a saddle line or shallow seat on its back; the tail dissolving into motes.\n- **Avoid:** a horse, a boat or a vehicle with wheels, doors or windows; a rider on it.\n**Form and meaning:** the Ferry: a low winged sled that carries an ally across the map, or its owner. **Subject:** a long low sled-shaped body of cream flecks with two short wing blades and a shallow saddle hollow along its back; no rider, no face. **Stature:** long, low and wide. **Pose:** skimming just above the ground, nose raised toward the upper right, wings level. **Cue:** long speed marks trailing from the tail, as if just set down.",
+  "source_path": "art/_archive/figments/2026-11-15/superseded/12-v1/native.png",
+  "sha256": "fcd5a5be6281cda4ee34136d432da245062dd64b2b90620e45e5781caef66344",
+  "source_sha256": "de7c95d415e385cdb8e27d70358b5fcdec2c3ba42c3491b40d0b59c04534c9ac",
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "export_crop": [
+    40,
+    443,
+    1066,
+    937
+  ],
+  "framing": {
+    "threshold": 4,
+    "scale": 0.44968102031067575,
+    "offset": [
+      170,
+      369
+    ],
+    "token_center": [
+      400,
+      480
+    ],
+    "token_radius": 280,
+    "paint_radius_target": 248
+  },
+  "status": "superseded-candidate",
+  "production_approved": false,
+  "note": "Archived master reconstructed from the unchanged original native using the original export procedure; no repaint."
+}

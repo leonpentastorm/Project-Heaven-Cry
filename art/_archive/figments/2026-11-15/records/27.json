@@ -1,0 +1,44 @@
+{
+  "number": 27,
+  "name": "Draw fire (Double)",
+  "path": "art/icons/figments/order-draw-fire.png",
+  "mode": "ink",
+  "transparent": true,
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/perks/many-hands.png",
+    "art/icons/survival/markers/shop.png"
+  ],
+  "prompt": "Draw ONE pure-white flat-ink game pictogram for REDIRECTING ATTENTION TOWARD A DECOY. A thick curved arrow starts at upper left, bends downward and ends pointing toward the torso of a small faceless geometric training dummy at lower right. The decoy is a blank oval head, a short blocky torso and a little stand. No facial features, no mascot. This is a taunt/attention action: NO FLAMES, NO FIRE, NO SMOKE. Show ONLY the curved arrow and the abstract decoy. Bold confident white shapes with two or three fully TRANSPARENT interior cuts, matching the attached house icons for line weight, not their mascot subject. Pure white #FFFFFF on fully TRANSPARENT background, no grey, shading, texture, glow or other colour. 1024x1024, central 80 percent subject box, square with clear margins, readable at 32 pixels. No words, letters, numbers, logos, border, disc or frame.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "e09758d6e4e5f044d03d6659b0dddedc1bd882c4c1435883f92a5ddbf2bff014",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/order-draw-fire.png",
+  "source_sha256": "2ca6a07c413e2ebbd42ba83e52feef3d2b33344d28c490bc165588801693ded9",
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-draw-fire.png",
+    "64": "art/icons/figments/exports/64/order-draw-fire.png",
+    "32": "art/icons/figments/exports/32/order-draw-fire.png"
+  },
+  "export_crop": [
+    0,
+    53,
+    1253,
+    1221
+  ],
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop, aspect-preserving fit to central 820px safe box; pure-white RGB preserving generated alpha; Lanczos exports",
+  "catalog_family": "figment_icons",
+  "catalog_id": "order-draw-fire"
+}

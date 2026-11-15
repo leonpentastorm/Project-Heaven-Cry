@@ -1,0 +1,36 @@
+{
+  "number": 27,
+  "name": "Draw fire (Double)",
+  "path": "art/_archive/figments/2026-11-15/superseded/27-v1/master.png",
+  "mode": "ink",
+  "transparent": true,
+  "refs": [
+    "/workspace/phc-everything-missing-2026-11-15/references/mind-without-fog.png",
+    "/workspace/phc-figments-2026-11-15/references/mirage.png",
+    "/workspace/phc-figments-2026-11-15/references/solid-image.png",
+    "/workspace/phc-figments-2026-11-15/references/many-hands.png",
+    "/workspace/phc-everything-missing-2026-11-15/references/shop.png"
+  ],
+  "prompt": "Draw ONE game icon in the approved PHC white flat-ink mode: pure white #FFFFFF filled silhouettes on fully TRANSPARENT background. Match the substantial confident ink weight and clear interior transparent cuts of the attached house icons. This specific asset depicts ONLY an OBJECT OR GESTURE, not Wick, not a character and not a full Figment portrait. The mascot references supply line weight, NOT the mascot subject. No figure unless a tiny abstract shape is explicitly requested below. Bot particles are a few simple squares or dots.\nSUBJECT: Draw fire (Double). Paint: an arrow bending toward a decoy shape.\nSilhouette first, readable at 32px; two or three interior cuts at most. Centre the subject within the central 80% of a square 1024x1024 canvas, clear transparent space on all sides. One subject and only the requested props. Flat WHITE only, NO colour, NO grey, NO shading, NO texture, NO glow, NO gradient. All interior separations MUST be true TRANSPARENT cuts rather than pale grey details over white. No backdrop, disc, border, lettering, labels, numbers, logos or watermark. Original invented motifs. For any plain plus or glint it is white and abstract, never a red medical emblem.",
+  "source_path": "art/_archive/figments/2026-11-15/superseded/27-v1/native.png",
+  "sha256": "b2404110ca8043d7b4d584c7be7cb08298ac00656d558bdc6d8b04fb5deb2a20",
+  "source_sha256": "8fbb0844092bd8a5193adf188005ef65683792530336fd06bd9eb18c124c5f7c",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "export_crop": [
+    0,
+    85,
+    1236,
+    1230
+  ],
+  "framing": null,
+  "status": "superseded-candidate",
+  "production_approved": false,
+  "note": "Archived master reconstructed from the unchanged original native using the original export procedure; no repaint."
+}

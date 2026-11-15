@@ -1,0 +1,42 @@
+{
+  "number": 21,
+  "name": "Skittish",
+  "path": "art/icons/figments/trait-skittish.png",
+  "mode": "ink",
+  "transparent": true,
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/figments/trait-static.png",
+    "art/icons/figments/trait-kindling.png"
+  ],
+  "prompt": "Create one simple white pictogram for a fantasy game's Skittish trait: a small DIAMOND partially concealed behind a low horizontal rectangular block, with two short movement strokes to show it slipping behind cover. Shapes only, no person or mascot. Bold solid pure WHITE #FFFFFF with transparent negative spaces on a fully TRANSPARENT square canvas. Match the attached non-figure shop symbol and the two white object icons for line weight and simplicity. No shading, no grey, no colour, no texture, no glow. Central 80% composition with clear margins, 1024x1024 PNG, readable at 32 pixels. No words, letters, numbers, logos, border or decorative frame.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "2ad09727f0eee39fa3f725ba3859d10f2bfaf3964522f04ef94ead02e1fdb14c",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/trait-skittish.png",
+  "source_sha256": "77e29390ad87e7d30099624151686de76347d0350ac3c18f9745496010b2f338",
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-skittish.png",
+    "64": "art/icons/figments/exports/64/trait-skittish.png",
+    "32": "art/icons/figments/exports/32/trait-skittish.png"
+  },
+  "export_crop": [
+    0,
+    232,
+    1220,
+    1178
+  ],
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop, aspect-preserving fit to central 820px safe box; pure-white RGB preserving generated alpha; Lanczos exports",
+  "catalog_family": "figment_icons",
+  "catalog_id": "trait-skittish"
+}
