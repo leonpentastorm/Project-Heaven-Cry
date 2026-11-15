@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Ward: a kite shield, a small figure sheltering behind it -->
+  <path d="M42 10 C38 14 30 16 22 14 L22 34 C22 46 30 54 42 60 C54 54 62 46 62 34 L62 14 C54 16 46 14 42 10 Z"/>
+  <path d="M42 18 L42 52 M28 30 L56 30"/>
+  <path d="M12 26 C16 26 18 29 18 32 C18 35 16 38 12 38 C8 38 6 35 6 32 C6 29 8 26 12 26 Z"/>
+  <path d="M4 58 C4 48 8 42 12 42 C15 42 17 44 18 46"/>
+</svg>

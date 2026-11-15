@@ -37,6 +37,8 @@ const FIG: any = figmentsJ;
  * `requires` names an owned kind, which no sheet meets (meetsRequires), so no character holds them. */
 const FIGMENT_HELD = [
   ...((FIG.forms || []) as any[]).map((f) => ({ id: 'fig_' + f.id, name: f.name, kind: 'verb', requires: [{ owned: 'figment' }], text: f.text, effects: [...(FIG.unit_effects?.effects || []), ...(f.effects || [])], adjudication: 'engine', provisional: true })),
+  // rules 1.56: a Figment order with its own amount block (the Husk's Burst) is the item its op reads the block from
+  ...((FIG.verbs || []) as any[]).filter((v) => v.amounts).map((v) => ({ id: v.id, name: v.name, kind: 'verb', requires: [{ owned: 'figment' }], text: v.text, amounts: v.amounts, effects: [], adjudication: 'engine', provisional: true })),
   ...((FIG.traits || []) as any[]).map((x) => ({ id: 'figtrait_' + x.id, name: x.name, kind: 'verb', requires: [{ owned: 'figment' }], text: x.text, ...(x.amounts ? { amounts: x.amounts } : {}), effects: x.effects || [], adjudication: 'engine', provisional: true })),
 ];
 // A system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33), Figments' (rules 1.34).

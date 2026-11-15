@@ -21,10 +21,10 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import figmentsJ from '../../../data/figments.json';
 import type { Combat, Unit } from './combat';
-import { unitFromEnemy, levelCompanion, say, emitFx, moveUnit, previewAttack, resolveAttack, dist, isMelee, unitSees, sideSeesUnit, type AttackMode } from './combat';
-import { canStand } from './kit';
+import { unitFromEnemy, levelCompanion, say, emitFx, moveUnit, previewAttack, resolveAttack, dist, isMelee, unitSees, sideSeesUnit, alive, useStim, type AttackMode } from './combat';
+import { canStand, tileOf } from './kit';
 import { WEAPON } from './data';
-import { apFor, pay, withAp, price, whyNot } from './effects/cost';
+import { apFor, pay, withAp, price, whyNot, costOf, type Priced } from './effects/cost';
 import { tie, untie, tiesOf, tieKind } from './kit';
 import { onHook, runOwnEffects } from './effects/hooks';
 import { resGive, resLeft } from './effects/cost';
@@ -74,7 +74,8 @@ export function ownedRecord(block: any): OwnedBlock {
   if (block?.cover) o.cover = block.cover === 'full' ? 'full' : true; // rules 1.34: "full" (the Wall), else half cover
   if (block?.lure) o.lure = true;
   if (typeof block?.owned_kind === 'string' && block.owned_kind !== 'companion') o.kind = block.owned_kind;
-  if (o.turn === 'auto' && block?.auto && (OWNED_VERBS as readonly string[]).includes(block.auto.verb)) o.auto = { verb: block.auto.verb, target: (AUTO_TARGETS as readonly string[]).includes(block.auto.target) ? block.auto.target : 'nearest_foe' };
+  // an auto unit's verb: one of OWNED_VERBS or a data verb (rules 1.56: the Sentinel's Fix)
+  if (o.turn === 'auto' && block?.auto && ((OWNED_VERBS as readonly string[]).includes(block.auto.verb) || OWNED_DATA_VERBS[block.auto.verb])) o.auto = { verb: block.auto.verb, target: (AUTO_TARGETS as readonly string[]).includes(block.auto.target) ? block.auto.target : 'nearest_foe' };
   return o;
 }
 /** Its owner: the far end of its `owned` tie, else (a fight saved before P9, the area map) its controller's unit or
@@ -132,15 +133,21 @@ export const turnless = (u: Unit): OwnedBlock | null => { const r: OwnedBlock | 
 export function ownedVerbs(u: Unit): string[] {
   const w: any = (WEAPON as any)[u.weapon], plain = w && isMelee(w) ? 'melee' : 'shot';
   const a = Array.isArray(u.allowedActions) && u.allowedActions.length ? u.allowedActions : ['move', plain];
-  return [...a.filter((v) => (OWNED_VERBS as readonly string[]).includes(v)), ...(((u as any).dataVerbs || []) as string[])];
+  // its block's data verbs, read live (rules 1.56: a Figment saved before its form gained orders has them on load); a
+  // unit whose block is gone keeps the list it was made with
+  const live = u.companion ? ownedBlock(u.companion)?.verbs : null;
+  return [...a.filter((v) => (OWNED_VERBS as readonly string[]).includes(v)), ...(Array.isArray(live) ? live.filter((v: string) => OWNED_DATA_VERBS[v]) : (((u as any).dataVerbs || []) as string[]))];
 }
 const VERB_NAMES: Record<string, string> = { move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Strike' };
 /** A data verb's name, its AP for this owner now (its site, priced on the owner), and what it is aimed at: the
  * descriptors' row. null: one of OWNED_VERBS (the descriptors price those from the weapon). */
-export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'none'; text: string } | null {
-  const dv = OWNED_DATA_VERBS[verb]; if (!dv) return null; const action: string = dv.site;
-  return { name: dv.name || VERB_NAMES[verb] || verb, ap: price({ cb, u: owner }, action, undefined, { owned: u.id }).ap, pick: dv.reach ? 'enemy' : 'none', text: dv.text || '' };
+export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'ally' | 'none'; text: string; icon: string } | null {
+  const dv = OWNED_DATA_VERBS[verb]; if (!dv) return null;
+  return { name: dv.name || VERB_NAMES[verb] || verb, ap: verbPrice(cb, owner, u, dv).ap, pick: dv.reach?.tile ? 'tile' : dv.reach?.side === 'ally' ? 'ally' : dv.reach ? 'enemy' : 'none', text: dv.text || '', icon: dv.icon || '' };
 }
+/** A data verb's price, on its owner: its site's AP (data/actions.json costs; rules 1.56: the shared order site
+ * `figment_order`), and the resources its row names (`res`: Redraw's charge), through the cost hook. */
+const verbPrice = (cb: Combat, owner: Unit, me: Unit, dv: any): Priced => { const site: string = dv.site; return price({ cb, u: owner }, site, dv.res ? { ap: costOf(site), res: { ...dv.res } } : undefined, { owned: me.id }); };
 /** The units its owner may give orders to now: its owned units with no turn of their own, standing. */
 export const orderable = (cb: Combat, owner: Unit): Unit[] => (cb.ties?.length ? ownedBy(cb, owner).filter((u) => !!turnless(u) && !u.dead && !u.downed && cb.units.includes(u)) : []);
 /** Why the owner can't give this verb to this owned unit now (null: it can): not its owned unit, no turn-less record,
@@ -178,16 +185,24 @@ export function runOwned(cb: Combat, rng: Rng, owner: Unit, u: Unit | undefined,
 /** A data verb (OWNED_DATA_VERBS) run with the owned unit as the actor, priced at its site on the owner and paid by it.
  * `free`: Overclock's (no AP, a verb of up to that many AP). Returns the refusal, or null. */
 export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any, o: { targetId?: string | null; tile?: string | null; free?: number } = {}): string | null {
-  const c = charOfUnit(owner), action: string = dv.site, pr = price({ cb, u: owner }, action, undefined, { owned: me.id });
+  const c = charOfUnit(owner), action: string = dv.site, pr = verbPrice(cb, owner, me, dv);
   if (o.free != null && pr.ap > o.free) return dv.name + ' costs more than ' + o.free + ' AP.';
-  const cost = o.free != null ? 0 : pr.ap;
+  const cost: Priced = o.free != null ? { ...pr, ap: 0 } : pr;
   { const no = whyNot(cb, owner, cost, { c }); if (no) return no; }
   if (dv.unmake) { pay(cb, me, cost, { payer: owner, c }); unmakeOwned(cb, me, { refund: true, share: dv.refund_share ?? 1, quiet: true }); say(cb, owner.name + ' lets ' + me.name + ' go.'); return null; }
   let t: Unit | null = null;
-  if (dv.reach) {
+  if (dv.reach?.tile) {
+    // a tile order (rules 1.56: Redraw, Interpose): a free tile within reach of the owned unit; `beside: ally`, one
+    // next to a standing unit of its side
+    const k = tileOf(cb, o.tile), n = dv.reach.tiles ?? 1; if (!k) return 'Pick a tile.';
+    if (dist(me.pos, k) > n) return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').';
+    if (!canStand(cb, k, me)) return 'That tile isn\'t free.';
+    if (dv.reach.beside === 'ally' && !cb.units.some((x) => x !== me && x.side === owner.side && alive(x) && dist(x.pos, k) <= 1)) return 'Pick a tile next to an ally.';
+  } else if (dv.reach) {
     t = o.targetId ? cb.units.find((x) => x.id === o.targetId) || null : null;
     if (!t || t.dead || t === me) return 'Pick a target.';
     if (dv.reach.side === 'foe' && t.side === owner.side) return 'Pick an enemy.';
+    if (dv.reach.side === 'ally' && t.side !== owner.side) return 'Pick an ally.';
     if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) { const n = dv.reach.tiles ?? 1; return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').'; }
     if (dv.reach.eyes ? !unitSees(cb, me, t.pos) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
   }
@@ -207,7 +222,10 @@ export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any
     const no = withAp(me, 99, (): string | null => { const pv = previewAttack(cb, me, tt, dv.attack as AttackMode); if (!pv.ok) return pv.why || 'Not now.'; const r = resolveAttack(cb, rng, me, tt, dv.attack as AttackMode, null, { noAp: true }); if (r.hit && dv.on_hit?.length) runOwnEffects(holder, dv.on_hit, { u: me, t: tt, action: dv.site, tile: null, toggles: [], mode: null }); return null; });
     if (no) return no;
   }
-  if (dv.effects?.length) runOwnEffects(holder, dv.effects, { u: me, t, action: dv.site, tile: o.tile || null, toggles: [], mode: null });
+  // stim (rules 1.56, the Hand's Hand over): one of the OWNER's stims, given by the owned unit as the hand (the engine's
+  // one stim: combat.ts useStim, its heal and its revive), the stim's own AP spent by the owned unit, the order paid below
+  if (dv.stim && t) { const tt = t; if (!c) return 'No stims to give.'; const no = withAp(me, 99, () => useStim(cb, me, tt, c, false)); if (no) return no; }
+  if (dv.effects?.length) runOwnEffects(holder, dv.effects, { u: me, t, action: dv.site, tile: tileOf(cb, o.tile) || null, toggles: [], mode: null });
   pay(cb, me, cost, { payer: owner, c });
   return null;
 }

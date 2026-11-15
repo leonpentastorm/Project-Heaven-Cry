@@ -6363,6 +6363,68 @@ Leon (15 Nov 2026, playtest): *"anything to spice up that class aside from some 
 5. **Last Thread** (`tend.last_thread`; Empathy 1, a passive): when an ally Bonded to you goes Down, your next Raise before the end of your next turn costs 0 AP (the MP as ever). The design's "this round" is read as "before your next turn ends", so a Down on an enemy's turn after yours is not wasted (a call for Leon).
 6. **The Bond card's numbers.** The Bond strip shows what the Bonds give now, worked out by the engine (`screenViews.ts bondGives`), never by the screen: "+5% damage a Bond · 2 Bonds · +10%" (the Bonds counted as the effect counts them, `ties:bond`), the Tending multiplier through a Bond, the damage share, the echo and the bonus to hit. It reads `tending.json bond`, and the validator holds every number there (and each Tending item's `numbers`, which their texts read) equal to the effect value the engine runs.
 
+## Rules 1.56 (Balance 2.0), Figments 2.0 (slices 2 and 3)
+
+Leon (playtest, 15 Nov 2026): *"This system need like 20 more things to be competitive with the other"*; *"feels like mf
+just standing their doing notthing"*. The design is `docs/design/proposals/2026-11-figments-2.0.md` (with Leon's rulings
+of 15 Nov 2026 at its end). This revision overrides rules 1.34's ladder and adds orders and forms; everything else of
+rules 1.34 stands. Every number is PROVISIONAL and a field of `data/figments.json` (or `actions.json costs`); every item
+is `adjudication: engine`.
+
+1. **One order site.** Every Figment order that is not an attack, and Glimmer, costs the AP of one cost site,
+   `figment_order` (`actions.json costs`, 1 AP): an item that makes orders cheaper names that one site. An attack order
+   is priced at the attack sites of rules 1.34 (`figment_strike`, `figment_cut`). An order's row may also name a
+   resource it takes (`res`: Redraw's charge). Orders are paid by the owner, as in rules 1.34.
+2. **The Visualizer is always in hand** (Leon's ruling 1). Picture, Glimmer and every order but Let go need it in a
+   hand, for every user, a Mastered Rigger included.
+3. **Every form has an order a player gives on their turn**, besides Move and Let go:
+   - the Double: **Draw fire**: every enemy within 3 tiles that can see it makes a Heart save against your
+     Visualization or is Taunted by it for 1 round;
+   - the Eye: Stare (rules 1.34);
+   - the Wall: **Press**: it shoves an enemy next to it 1 tile away;
+   - the Beast: Strike, Pounce; the Blade: Cut (rules 1.34).
+4. **Two orders every Figment has** (each form's row lists them): **Redraw** (it comes apart and reforms on a free tile
+   within 4 tiles of it; 1 charge) and **Cash in** (it is unmade and all of its made charge goes back into the core; Let
+   go still gives half for 0 AP).
+5. **Glimmer** (every Visualization user, from Visualization 1; the "false Figment"): for the order site's AP and no
+   charge, a false image of you is painted in light on a free tile your side sees within your projection range. Every
+   enemy that sees it is fooled as by a Double (rules 1.34: Minions and Vermin always; Soldiers, Elites and Bosses make
+   a Brain save with their tier's `double_save`) and takes it for you; struck, it scatters; it fades at your turn start
+   two rounds after it appeared. One false image of you at a time: a new one (a Double's, a Husk's) replaces the old.
+   The Mirage perk is not changed here.
+6. **The swap stays the Rigger's** (Leon's ruling 2): only the Rigger's Sleight swaps places with a Figment.
+7. **Five new forms** (each one row of `forms`, its body levelled with its owner as in rules 1.34):
+   - **Snare** (Visualization 1; charge 1; 10 HP, Defense 8, 1 tile an AP; the Blade's edge): it Holds as the Blade
+     does; **Trip** (the Cut's AP) cuts an enemy next to it now. Its hit Pins the target (Body save against your
+     Visualization) and the Snare is spent (unmade, nothing back, no Snap).
+   - **Hand** (Visualization 2; charge 2; 20 HP, Defense 14, 3 tiles an AP, flying): **Hand over** (the order site):
+     one of the owner's own stims, carried to an ally next to the Hand: the engine's stim (its heal, a Downed ally
+     stabilised; Leon's ruling 3: a real stim from the owner's pack); **Filch** (the order site): it lifts a throwable,
+     else a spare magazine, from an enemy next to it onto its own tile; a Body save against your Visualization keeps it.
+   - **Ward** (fork A; charge 3; 40 HP, Defense 12, armour 3, 2 tiles an AP): the first hit each round on an ally next
+     to it lands half on the Ward; **Interpose** (the order site): it steps to a free tile next to an ally, within 3
+     tiles of it.
+   - **Husk** (fork B; charge 2; 20 HP, your Defense, your pace): it lures as a Double does; **Burst** (the order site):
+     its burst (an amount on the Figment profile, explosive) on every unit next to it, both sides, and it is gone: no
+     charge back, no Snap.
+   - **Sentinel** (fork B; charge 4; 30 HP, Defense 10, armour 3; it does not walk; it sees 8 tiles): at each of its
+     owner's turn starts it **Fixes** the nearest enemy (its shot, on the owner's AP, as the Scrap Turret's); **Fix** by
+     order (the Strike's AP): its shot now at an enemy it sees within 8 tiles.
+   A new form that deals damage uses the Figment damage profile of rules 1.34, unchanged (the fit is Balance 2.0's).
+8. **The ladder with forks** (overrides rules 1.34's ladder): Visualization 1: the Double and the Snare, 1 held; 2: the
+   Hand; 3: **fork A**, one of the Eye, the Wall or the Ward; 5: **fork B**, one of the Beast, the Blade, the Husk or the
+   Sentinel, 2 held; 7: one more form from fork A, 3 held; 8: one more from fork B; 9: one more from either; 10: every
+   form. Held, designs, traits and the end of the Snap are rules 1.34's. A form chosen is kept for good.
+9. **A choice is one general action** (`door/pick`, doorpicks.ts): a door's data opens a list of options (here, a fork's
+   forms), one is taken out of a fight and kept on the character (`doorPicks`). The FIGMENTS section of the MAGIC tab
+   shows the open choice as chips; the level-up card shows the fork's forms.
+10. **Saves.** A character made before the forks keeps every form the old ladder gave it (the Eye and the Wall at
+    Visualization 3, the Beast and the Blade at 5; `figments.json migration`); each fork it passed counts as taken by a
+    form it holds, and the "one more" rows then fill from the forms it does not hold. A Figment saved in a fight takes
+    its form's orders as they are now.
+11. **Not in this revision:** sightings, practice (sketching), Look through and the crossings, Lucid, the 12 new traits,
+    and the forms of fork C (Glass, Ferry, Breaker, Hush) with the Visualization 7 fork.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9976,3 +10038,20 @@ Items 4240 to 4247.
 4245. **The Bond card's lines (item 6):** read from `tending.json bond` (per_bond 0.05, through 1.2, share 0.2, echo 0.2, hit 3); no new number.
 4246. **Heartbeat's no-Hide half (item 4): needs a ruling.** The one general piece it needs: the hide door (tactics.ts `hide`, `hideBlock`) asks the condition door for `hidden` (the `cond_apply` hook, so a data `cancel` on `cond_incoming` refuses it), or a condition row's `forbid` of action `hide` (Traced carries one today that nothing reads) is read as a refusal. Either is a new engine read; not built in this slice.
 4247. **Items 4240 to 4247 are rules 1.56 Bonds 2.0 slice 1's.** The validator check of `tending.json bond` against the effects (item 6) is new in this slice: the copies were said to be checked, and were not.
+
+### Rules 1.56 (Balance 2.0), Figments 2.0
+
+4270. **The order site (rules 1.56 Figments 2.0 item 1; `actions.json costs.figment_order`):** 1 AP for every non-attack Figment order and Glimmer. PROVISIONAL.
+4271. **Draw fire (item 3; `figments.json verbs figment_draw_fire`):** enemies within 3 tiles that see the Double, a Heart save against Visualization, Taunted 1 round. PROVISIONAL.
+4272. **Press (item 3; `figment_press`):** a 1-tile push. PROVISIONAL.
+4273. **Redraw and Cash in (item 4; `figment_redraw`, `figment_cash_in`):** Redraw within 4 tiles for 1 charge; Cash in gives back all of the made charge (`refund_share` 1). PROVISIONAL.
+4274. **Glimmer (item 5; `figments.json items glimmer`):** the order site's AP, no charge, the Double's lure, fades two rounds on (illusion.ts). Named in-universe for the "false Figment" (the lead, 15 Nov 2026). PROVISIONAL.
+4275. **The Snare (item 7; `forms snare`):** charge 1, 10 HP, Defense 8, movement 1, the Blade's edge (`figment_edge`), Hold; Trip at `figment_cut`; its hit Pins (Body save) and it is spent. PROVISIONAL (the weapon and the condition are stand-ins until Balance 2.0 fits the door).
+4276. **The Hand (item 7; `forms hand`):** charge 2, 20 HP, Defense 14, movement 3, flying; Hand over (a real stim of the owner's: Leon's ruling 3), Filch (the `take` op, Body save). PROVISIONAL.
+4277. **The Ward (item 7; `forms ward`):** charge 3, 40 HP, Defense 12, armour 3, movement 2; half of the first hit a round on an ally next to it (`redirect` share 0.5, once a round); Interpose within 3 tiles. PROVISIONAL.
+4278. **The Husk (item 7; `forms husk`):** charge 2, 20 HP, the owner's Defense and pace, lure; Burst `amounts.burst` base 20 on the Figment profile, explosive, radius 1, both sides. PROVISIONAL.
+4279. **The Sentinel (item 7; `forms sentinel`):** charge 4, 30 HP, Defense 10, armour 3, movement 0, vision 8, the service pistol with no ammunition limit; Fix at `figment_strike` within 8 tiles; the auto shot at the owner's turn start on the owner's AP (as the Scrap Turret). PROVISIONAL.
+4280. **The ladder with forks (item 8; `figments.json ladder`):** the points of each row, the forks' lists, the "one more" rows. PROVISIONAL.
+4281. **The save migration (item 10; `figments.json migration`):** rev 1; the old ladder's forms kept (`legacy`). No number to fit.
+4282. **Open, for the lead:** (a) the Husk and Glimmer share the one false image a character has (a new one replaces a Double's); (b) a Sentinel's auto shot spends its owner's AP at turn start, as the Scrap Turret's does; (c) the Snare and the Sentinel borrow `figment_edge` and the service pistol until Balance 2.0 gives them their own weapons. Needs a ruling.
+4283. **Items 4270 to 4283 are rules 1.56 Figments 2.0's.**

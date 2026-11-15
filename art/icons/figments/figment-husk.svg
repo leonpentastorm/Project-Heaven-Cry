@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Husk: a hollow bust like the Double, a fuse and its spark at the crown -->
+  <path d="M10 60 C10 50 16 45 23 43 C18 38 16 32 17 26 C18 17 25 12 32 12 C39 12 46 17 47 26 C48 32 46 38 41 43 C48 45 54 50 54 60 Z"/>
+  <path d="M24 30 L28 30 M36 30 L40 30 M28 38 L36 38"/>
+  <path d="M32 12 C32 8 36 7 38 5"/>
+  <path d="M42 2 L42 6 M38 1 L46 7 M46 1 L38 7"/>
+</svg>

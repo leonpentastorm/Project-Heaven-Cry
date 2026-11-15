@@ -70,7 +70,7 @@ describe('the FIGMENTS section on the MAGIC tab', () => {
     v.newDesign(); v = fig(L); expect(v.ed.open).toBe(true);
     // locked forms are greyed with the engine's words; an open one is picked
     const locked = v.ed.forms.find((f: any) => f.off), open = v.ed.forms.filter((f: any) => !f.off);
-    expect(locked.title).toMatch(/needs Visualization/); locked.pick(); expect(toasts.pop()).toBe(locked.title);
+    expect(locked.title).toMatch(/Visualization|chosen forms/); locked.pick(); expect(toasts.pop()).toBe(locked.title); // the engine's words (formWhy)
     open[open.length - 1].pick(); v = fig(L); const form = open[open.length - 1].key; expect(v.ed.forms.find((f: any) => f.key === form).pressed).toBe('true');
     expect(v.ed.verdict).toBe('Name the design.'); expect(v.ed.cantSave).toBe(true);
     v.ed.onName({ target: { value: 'Lookout' } }); v = fig(L);
@@ -87,6 +87,15 @@ describe('the FIGMENTS section on the MAGIC tab', () => {
     expect(G.characters[id].figments!.map((d) => d.name)).toEqual(['Watcher']);
     fig(L).designs[0].drop(); expect(G.characters[id].figments).toEqual([]);
   });
+  it('rules 1.56, the forks: a choice the ladder opened is a row of chips; a click sends door/pick and the form is open', () => {
+    const fork = F.ladder.find((r: any) => r.fork);
+    const { id, L } = story(fork.points); let v = fig(L);
+    expect(v.hasChoose).toBe(true); expect(v.choose[0].opts.map((o: any) => o.key)).toEqual(fork.fork.of);
+    for (const o of v.choose[0].opts) expect(o.icon).toMatch(/^data:image\/svg/);
+    v.choose[0].opts[0].pick(); expect((G.characters[id] as any).doorPicks.visualization).toEqual([fork.fork.of[0]]);
+    v = fig(L); expect(v.hasChoose).toBe(false);
+    expect(v.steps.find((s: any) => s.key === 'v' + fork.points).forms.map((f: any) => f.name)).toContain(FORM[fork.fork.of[0]].name + ' ✓');
+  });
   it('below the first design step, + NEW DESIGN is replaced by the engine\'s reason', () => {
     const { L } = story(1); const v = fig(L);
     expect(v.canNew).toBe(false); expect(v.newWhy).toMatch(/^Designs open at Visualization \d+\.$/);
@@ -99,7 +108,8 @@ describe('the level-up card (the moment)', () => {
     const v = figLevelUp(F.visualizer.door, at);
     expect(v).toMatchObject({ has: true, state: 'new', hasForms: true }); expect(v.head).toContain(lv.latest!.forms.map((f) => f.name).join(', '));
     expect(v.forms.map((f: any) => f.key)).toEqual(lv.latest!.forms.map((f) => f.id)); expect(v.next).toContain(String(lv.next!.points));
-    const between = figLevelUp(F.visualizer.door, at + 1); // past a step and short of the next: the next, locked
+    const gap = Array.from({ length: 10 }, (_, i) => i + 1).find((q) => q > at && !F.ladder.some((r: any) => r.points === q))!;
+    const between = figLevelUp(F.visualizer.door, gap); // past a step and short of the next: the next, locked
     expect(between.state).toBe('next'); expect(between.head).toContain('LOCKED');
     expect(figLevelUp('composure', at).has).toBe(false);
   });

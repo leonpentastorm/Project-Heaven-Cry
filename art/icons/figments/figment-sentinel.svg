@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sentinel: a tall spire on three legs, one lens, one long barrel -->
+  <path d="M26 44 L26 14 L32 6 L38 14 L38 44 Z"/>
+  <path d="M32 20 C35 20 35 26 32 26 C29 26 29 20 32 20 Z"/>
+  <path d="M38 32 L60 32 L60 36 L38 36"/>
+  <path d="M28 44 L16 60 M32 44 L32 60 M36 44 L48 60"/>
+</svg>
