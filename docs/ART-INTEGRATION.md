@@ -85,3 +85,11 @@ its own id, `survival-keeper-<setting>`, the id a face's `portrait` names in `da
 `survival_art` ids there); the marker sheet's `marker_exports` are built as `survival-node-<kind>` and drawn by
 `PathMap.tsx`'s `NodeGlyph` (a CSS mask, so the state colours apply; the line icon of `runIcons.ts` for any kind
 without one). `painted-map` entries are style-model training material and are never built.
+
+**Figments (rules 1.34, 15 Nov 2026).** A form's portrait is `catalog.figments['figment-<form>']` (4:5, abstract
+skill-portrait mode). A form row in `data/figments.json` names it by `portrait` (the validator checks the id); the engine
+puts the block's portrait on the unit it spawns (`owned.ts` spawnOwned, the road every owned unit's face takes) and
+`npm run assets` builds the named ones under the same id, so the map token, the cards and the FIGMENTS group header show
+it through `faceOf`; the cut-in strip centres on the painting's `token_center` (eyelines.json). A form with no portrait
+keeps its glyph. The trait and order icons (`figment_trait_icons`, `figment_order_icons`) wait for their traits and
+orders; the in-house monoline form icons of the 0.28.2 line are a separate map (`figment_icons`, SVG).

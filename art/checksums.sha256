@@ -1,5 +1,5 @@
 5a4a41dca4eff2d85b73921f753a63d805a44ecc5cbcba0cdec20c09ea1f16b1  .gitignore
-2ceddc3e6c4ee3f85efc156aef8e4401291f3af46fc733a19b47a4f42c047942  README.md
+612f236c4a72694552d9ea098d213206d8cb57d8a85a84b0ece8dd6d9963bdf9  README.md
 e80b981479a3b2fe1ba4314569d7b91c6fb33dd6a4df64fdf869b9d098b13ae5  art/AGENTS.md
 2b4a6aa03ea318f585e58b15c8f79885fc5a914a778c115eea4f837c5bd1a8d5  art/README.md
 d5bf3eef82c43e61dc9361633b12fa5a283f4c70a26ac8483366ea2cc25836f2  art/_archive/briefs/m813-tutorial/maps/archive-2026-11-06/outpost-layout.png
@@ -587,7 +587,7 @@ b28c477ec029ba97e6b362664004507cf62f998c070e65f203e6ec2fa839d3c4  art/_archive/e
 789c56bba83f7a4a135ad3ff07ccce275f3313dd5c57edb3acfee0fd387cfa49  art/_archive/everything-missing/2026-11-15/validate-delivery.py
 1bd4fad7ddd30e4a9c2bd9d41293b12383456f1491aeeb9c0218ffdce29fb10c  art/_archive/everything-missing/2026-11-15/validation-run.txt
 b96f711b7147cb2992fbee81159b1c69582a6c53a4c1f57d8b2448000bb37825  art/_archive/everything-missing/2026-11-15/validation.json
-2ceddc3e6c4ee3f85efc156aef8e4401291f3af46fc733a19b47a4f42c047942  art/_archive/figments/2026-11-15/README.md
+e936496e63ff4e187d19c68561cfce33c7dceb2eb0690b2ea406e61960782d23  art/_archive/figments/2026-11-15/README.md
 f1d30c5e4b556dda2de652624d17fb3099abec63045c12bfda2cb421007f1bc1  art/_archive/figments/2026-11-15/SHA256SUMS.txt
 ae2b8d34aca78fbe2ee5d613413b476ac5f1c4f58f65ca6777f70216d2bbd120  art/_archive/figments/2026-11-15/audit.json
 99a37cb53549437e851ac5eeac0ec52f9eefabc9cc437aafca0bfd5ebd9b449d  art/_archive/figments/2026-11-15/catalog-fragment.json
@@ -2492,7 +2492,7 @@ fdd7c36efe3c8a23a0d6c78c6c90875df52a8941edd04ee5a7909a6b92613462  art/_archive/u
 3e2a46e3761f429c81126e838bf4f78c273bceec495c057bc5fa5db1dae8807a  art/_archive/ui/title-screen/source-renders/title-back-native.png
 0e2bf5319cf4a3236811c008052ce53a066d29e9fd59873e974a15ab6a17f105  art/_archive/ui/title-screen/source-renders/title-front-native.png
 c116fc3201c5bc293ff601b0dae0694087512777909f5ec2293fbc49c570a635  art/_archive/ui/title-screen/source-renders/title-mid-native.png
-ddf29f7fc137b3e39f9a75ee41640094b42d1379f73371c8c086ae17e6eeaa6a  art/briefs/ART-REQUESTS.md
+d82b95337c457294e289b8cb08a121de7fe8f906d7955d4d9f2734d47e1ef543  art/briefs/ART-REQUESTS.md
 2a7124da61595c42fa024611ff6da489c3317b216034c94cbe4dcfd50e8c6e53  art/briefs/FORGE-PHC.md
 7de6e209774c1613e3d74d7fcc9b014658122a5d55e90385ead9481ccffe7387  art/briefs/GPT-CONTINUE-2026-11-13-survival.md
 5ac78bd3f6fc7dead3745784d88e9bf079638c42771d3a52e4f41b5ad221a4b3  art/briefs/GPT-PROMPTS-2026-11-12.md
@@ -2502,6 +2502,7 @@ ddf29f7fc137b3e39f9a75ee41640094b42d1379f73371c8c086ae17e6eeaa6a  art/briefs/ART
 ebf3997460b615c4c9fa5c72481a7810b0048f09b13f04b52a45930489953fa7  art/briefs/GPT-PROMPTS-2026-11-14-portraits.md
 0fc96ca2504b715723db0b7c2c5e81f6c8266ffedee308b6ccb4424d6725671a  art/briefs/GPT-PROMPTS-2026-11-14-survival-foes.md
 037a15e219ff6d9acf925fc9b626f7550a86be052b8d86199593a422f5c4659a  art/briefs/GPT-PROMPTS-2026-11-15-everything-missing.md
+c6d81b29b4cf1e77c4c25df521c47735abd5f561fe40e717c11c238fd39fde44  art/briefs/GPT-PROMPTS-2026-11-15-figments.md
 74862e11059029851b0152176699f3a057789d839b0d5926d75bd81980701040  art/briefs/archetype-portraits.md
 ca90bd7e555afdd1bad775f64454bf410cf6d1856070e566cc181ddbfe784138  art/briefs/first-patch-revival-redo.md
 821628bf1325a4023d390dbe8b0908751f860aab17ab4b138997f785aade81db  art/briefs/m813-mpat.md
@@ -2517,7 +2518,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-b516d3174f4ee5867586317b1799866fab450d18fac60e556e3db976a549df5d  art/catalog.json
+9a6870859738a6e83422c45dce8fd4e8faf92feff00fec4da382cb10e1fc8088  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -6631,8 +6632,8 @@ dd51991cab960cfbe3400aa4cde06952fba35e79639e903dfe44bc4226980a67  art/ui/title-s
 37a5a51e01e49c88689257f97739af833cd37ef0c92c470d5d978c34f528f033  art/ui/title-screen/title-front.png
 5cf1806cf75f5601f4455c90100a8b27fd242707b25b41bf1e11401af98a68fa  art/ui/title-screen/title-mid.png
 db27e0309aa0d98503c8a461c09ea1ecf1bfae303dd4f5f039c82fb5fb28b217  art/ui/title-screen/title-screen.psd
-9485120c0d8cabdbe77aa2699822ce672c7062553bb5542a127d71dbfc34ca85  docs/ART-INTEGRATION.md
-bd2cf5895038e8168175aecacfd0fb468cda8e1b382948ac54660c1b524b0a9f  docs/ASSET-DIRECTORY.md
+c871744b20e7821658f085325c02be413fa345d94dd60038c6ef50c8267ba09e  docs/ART-INTEGRATION.md
+dd9d3847c5473d01b2082898ea4d03972ee7d1a82db326169ae18cada1ec7928  docs/ASSET-DIRECTORY.md
 6de65e53e188ecbce5e1f2c19aabc745f5f6e06ee73f4bcbe82249108a8bdd0e  tools/art/export_m813_campaign.py
 7b9574a297c82a2ef925a3b4ee62827ac1281a722abcd4ed5498fd5ff165e7cd  tools/art/export_nov12_icons.py
 d11fb5d194cac8e8fd09dc4bb4bc90bea07012599d2f5942081bf57923720ea5  tools/art/export_wick_animation.py

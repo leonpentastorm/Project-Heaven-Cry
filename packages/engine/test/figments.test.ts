@@ -37,8 +37,17 @@ describe('figments: the data', () => {
   });
 });
 
+describe('figments: the portrait (ART-REQUESTS C6)', () => {
+  it('a pictured Figment wears its form\'s data `portrait` (the catalog id) as its unit face, through the reducer; the glyph stays its fallback', () => {
+    const f = figFight([{ skills: { visualization: 5 }, level: 5, weapon: 'service_pistol' }], [{ tier: 'soldier', at: '9,4', classic: true }]);
+    const u = f.turn(f.pc); f.picture(u, 'beast', SPOT);
+    const fig: any = f.figments(f.unit(u.id))[0];
+    expect(FORM.beast.portrait).toBeTruthy(); expect(fig.img).toBe(FORM.beast.portrait); expect(fig.short).toBe(FORM.beast.glyph);
+  });
+});
+
 describe('figments: rules 1.34 section 2', () => {
-  const beastFight = (o: any = {}) => figFight([{ skills: { visualization: 5, ...(o.skills || {}) }, level: o.level ?? 5, weapon: 'service_pistol', classId: o.classId, visualizer: o.visualizer }], o.foes || [{ tier: 'soldier', at: '9,4', classic: true }]);
+  const beastFight =(o: any = {}) => figFight([{ skills: { visualization: 5, ...(o.skills || {}) }, level: o.level ?? 5, weapon: 'service_pistol', classId: o.classId, visualizer: o.visualizer }], o.foes || [{ tier: 'soldier', at: '9,4', classic: true }]);
   it('rule 1: Picture needs the Visualizer in hand; a carried one keeps what is held; the core swap refills it (swap_core AP, a spare core)', () => {
     const f = beastFight({ visualizer: 'pack' }); let u = f.turn(f.pc);
     expect(() => f.picture(u, 'beast', SPOT)).toThrow(/Visualizer in hand/);

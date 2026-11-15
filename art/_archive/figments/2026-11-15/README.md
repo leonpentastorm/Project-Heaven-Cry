@@ -13,3 +13,12 @@ Catalog proposals are in the new figments (14 portraits) and figment_icons (24 i
 Run python3 art/_archive/figments/2026-11-15/validate-delivery.py from the repository root (or pass --root). It checks all 38 master/catalog/source hashes, modes and dimensions, full token-circle coverage, small-token visible content, all white-icon RGB/alpha bounds and UI exports, and superseded file hashes. The repository white-alpha decoder also checks each ink 64px export. Full historical-library validation stops on assets absent from this delivery checkout; see full-library-check.txt. The repository checksum tool is run on the delivery snapshot and its result merged with the unchanged baseline checksum entries, retaining absent historical files.
 
 All 38 artwork rows in this brief are painted. Runtime integration and Leon's visual approval remain pending. Older Classes 3.0 assets requested elsewhere remain outside this delivery.
+
+## Intake into 0.29 (15 November 2026)
+
+Taken into release 0.29 on `art/0.29-figments` (pushed as `wip/art-0.29-figments`). No file was renamed or moved. One
+catalog change: the delivery's single icon map `figment_icons` was split into **`figment_trait_icons`** (the 12
+`trait-<id>`) and **`figment_order_icons`** (the 12 `order-<id>`), ids unchanged, because the 0.28.2 hotfix line already
+uses `figment_icons` for the seven in-house monoline form icons (`art/icons/figments/figment-<form>.svg`, which its
+validator requires to be SVGs). `catalog-fragment.json` here keeps the delivery's original map name as delivered. The
+portraits keep the `figments` map; the five forms in the game name theirs by `portrait` in `data/figments.json`.
