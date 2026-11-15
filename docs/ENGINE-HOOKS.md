@@ -1230,7 +1230,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `bead` | `unit`, `at`, `target`, `to` | physical/ranged/sets.ts:66 | 1 |
 | `bead_end` | `unit`, `at`, `target`, `why` | physical/ranged/sets.ts:44 | 1 |
 | `blink` | `target`, `from`, `to`, `element` | sigil.ts:1140 | 1 |
-| `boon` | `target`, `at`, `word`, `cond`, `amount` | classes/k.ts:887 | 6 |
+| `boon` | `target`, `at`, `word`, `cond`, `amount` | classes/k.ts:887 | 7 |
 | `burn` | `unit`, `at`, `over`, `dmg` | magic.ts:961 | 1 |
 | `call` | `unit`, `id`, `target`, `at`, `step`, `kind`, `reaction` | calls/core.ts:156 | 1 |
 | `calm` | `unit`, `at`, `way`, `by`, `strain` | classes/k.ts:1430 | 5 |
@@ -1264,7 +1264,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `guard` | `unit`, `at`, `now`, `was`, `max` | physical/core.ts:108 | 1 |
 | `hazard` | `target`, `at`, `id`, `kind`, `severity`, `dmg`, `immune`, `attempt`, `spent` | hazards.ts:70 | 2 |
 | `hazard_spotted` | `id`, `kind`, `at`, `tiles`, `by`, `how` | hazards.ts:69 | 3 |
-| `heal` | `target`, `at`, `amount`, `revive` | classes/j.ts:456 | 8 |
+| `heal` | `target`, `at`, `amount`, `revive` | classes/j.ts:456 | 9 |
 | `heart_overwatch` | `unit`, `at`, `target`, `to`, `stage`, `tone` | magic.ts:1197 | 1 |
 | `heat` | `unit`, `at`, `now`, `was`, `why`, `limit` | physical/ranged/press.ts:334 | 2 |
 | `hold` | `unit`, `at`, `stage`, `tone`, `form`, `watch` | magic.ts:1181 | 2 |

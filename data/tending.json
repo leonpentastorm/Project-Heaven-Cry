@@ -99,7 +99,7 @@
           "delay": {
             "until": "target_turn_start"
           },
-          "say": "{target} will feel {self}'s care as a wound."
+          "say": "Each enemy Bonded to {self} will feel {self}'s care as a wound."
         },
         {
           "op": "deal",
@@ -120,7 +120,7 @@
           "delay": {
             "until": "target_turn_start"
           },
-          "say": "{target} will feel {self}'s care as a wound."
+          "say": "Each enemy Bonded to {self} will feel {self}'s care for {target} as a wound."
         },
         {
           "op": "damage_mult",
@@ -378,7 +378,7 @@
           "min": 1
         }
       ],
-      "text": "{=effects.0.ap} AP, with an Attuner in hand: tie yourself to a unit you see within {=effects.0.reach.tiles.base} tiles ({=effects.0.reach.tiles.steps.0.value} more from Empathy {=effects.0.reach.tiles.steps.0.at}): an ally, or an enemy that is not a machine (it makes a Heart save against your Empathy; an Elite at +{=numbers.save_elite}, a Boss at +{=numbers.save_boss}). Allies and enemies share your Bonds held.",
+      "text": "{=effects.0.ap} AP, with an Attuner in hand: tie yourself to a unit you see within {=effects.0.reach.tiles.base} tiles ({=effects.0.reach.tiles.steps.0.value} more from Empathy {=effects.0.reach.tiles.steps.0.at}): an ally, or an enemy that is not a machine (it makes a Heart save against your Empathy; an Elite at +{=numbers.save_elite}, a Boss at +{=numbers.save_boss}). Allies and enemies share your Bonds held. A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you; ×{=numbers.through} through the Bond). An enemy Bond works alone too: {=numbers.share|pct}% of the damage you take goes to it, you have +{=numbers.hit} to hit it, and when you heal yourself (Mend Yourself) or a Bonded ally it takes {=numbers.echo|pct}% of the HP restored.",
       "effects": [
         {
           "op": "grant_action",
@@ -482,6 +482,10 @@
         }
       ],
       "numbers": {
+        "through": 1.2,
+        "share": 0.2,
+        "hit": 3,
+        "echo": 0.2,
         "save_elite": 2,
         "save_boss": 5
       },
@@ -579,7 +583,7 @@
               "op": "mend",
               "amount": "heal",
               "target": "target",
-              "say": "{self} mends {target}."
+              "say": "{self} mends {target}{then}."
             },
             {
               "op": "condition",
@@ -654,7 +658,7 @@
             {
               "op": "mend",
               "amount": "heal",
-              "say": "{self} mends their own wounds."
+              "say": "{self} mends their own wounds{then}."
             }
           ],
           "why": {
@@ -727,7 +731,7 @@
               "op": "mend",
               "amount": "heal",
               "target": "target",
-              "say": "{self} lays a hand on {target}."
+              "say": "{self} lays a hand on {target}{then}."
             },
             {
               "op": "condition",
@@ -1009,7 +1013,7 @@
               "op": "mend",
               "amount": "shield",
               "target": "target",
-              "say": "{self} shields {target}."
+              "say": "{self} shields {target}{then}."
             },
             {
               "op": "condition",
@@ -1088,7 +1092,7 @@
               "op": "mend",
               "amount": "heal",
               "target": "target",
-              "say": "{self} raises {target}."
+              "say": "{self} raises {target}{then}."
             },
             {
               "op": "condition",

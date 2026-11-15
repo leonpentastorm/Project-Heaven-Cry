@@ -17,6 +17,12 @@ A hotfix (15 Nov 2026). No rule changed; only the words.
   (nothing about raising it at the top). The key's short hint says the same: "2 words max; Intelligence 3 gives 3".
 - **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
   ground), the button says so before the click: "new Line · fades FIRE".
+- **Tending shows its healing.** A Bond does not heal by itself (rules 1.33: Tending heals, ×1.2 through a Bond); the
+  engine healed, but nothing showed it. Every heal and shield from data (Mend, Mend Yourself, Touch, Shield, Raise, and
+  every other item's `mend`) now plays the heal number over the token and says it in the log ("Medic mends Gun · Gun
+  heals 34"); the Bond card says what a Bond does and what heals, solo through an enemy Bond too, and no longer says
+  "The Narrator decides the rest" (Bond, Let Go, Guide are the engine's); the echo's line names the Bonded enemies
+  instead of the healer.
 
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
