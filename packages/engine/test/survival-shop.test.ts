@@ -5,7 +5,7 @@
 // item's own rarity and mods; every refusal is in words; the party leaves when everyone is ready or the host closes.
 // The gear preview (spec item 14) gives the card's numbers from the fight's own unit build. Numbers read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, reachable, creditsOf, priceOf, counterLines, linePrice, sellValue, rollStock, faceFor, FACES, SHOP_DATA, SELL_RATE, ROUND_PRICE, emptyMagPrice,
+import { type GameState, apply, shopView, RuleError, reachable, creditsOf, priceOf, counterLines, linePrice, sellValue, rollStock, faceFor, FACES, SHOP_DATA, SELL_RATE, ROUND_PRICE, emptyMagPrice,
   gearPreview, compareGear, registerShopService, shopServices, packOf, WEAPON, ITEM, RARITY, runMoveProblem, magazineWorth, type RunNode } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { type Pc } from './helpers/replay';
