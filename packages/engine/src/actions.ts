@@ -17,7 +17,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import actionsJ from '../../../data/actions.json';
 import type { Character } from './character';
-import { isMedicChar } from './character';
+import { isMedicChar, magazineSize } from './character';
 import { WEAPON } from './data';
 import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadOffAp, reloadHands, loadMagazine, clearJam, coverOffAp, canJam, moveBlock, moveHowBlock, movePlan,
   sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, twoJammingGuns, type MoveHow } from './combat';
@@ -136,7 +136,7 @@ export function reloadOffRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): Ba
   const ap = reloadOffAp(u, cb), tac = ap + PILE.tactical_reload_extra_ap, loose = ow.reload === 'loose', unit = ow.reload_unit || 'magazine';
   const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
   const whyOf = (tactical: boolean) => dryRun(x.g || null, fight, u.id, (c2, u2) => reloadHands(c2, u2, 'off', tactical)).err;
-  const now = ' ' + (u.offAmmo ?? 0) + ' / ' + ow.magazine + ' loaded now.';
+  const now = ' ' + (u.offAmmo ?? 0) + ' / ' + magazineSize(ow.id, u.offMods) + ' loaded now.';
   if (loose) return [{ id: 'reload-off', label: 'Load the off-hand gun', tab: 'attack', ap, cost: apText(ap), text: 'Top up the off-hand gun from loose rounds. Nothing drops.' + now, why: whyOf(false) }];
   return [{ id: 'reload-off', label: 'Reload (speed)', tab: 'attack', ap, cost: apText(ap) + ' · the ' + unit + ' drops', text: 'Swap in the off-hand gun\'s fullest spare ' + unit + '. The one in the gun drops onto your tile with its rounds still in it.' + now, why: whyOf(false) },
     { id: 'reload-off-tac', label: 'Reload (tactical)', tab: 'attack', ap: tac, cost: apText(tac) + ' · the ' + unit + ' goes in your pack', text: 'Swap in the off-hand gun\'s fullest spare ' + unit + '. The one in the gun goes back in your pack with its rounds still in it.' + now, why: whyOf(true) }];
