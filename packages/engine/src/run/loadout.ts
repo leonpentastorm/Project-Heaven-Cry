@@ -13,7 +13,7 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME } from '../data';
 import { type Character, type PackItem, packOf, packKindOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM } from '../character';
-import { packAdd, intoCounts, itemLabel } from '../containers';
+import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
 import { priceOf } from '../credits';
@@ -80,7 +80,7 @@ export function loadoutSpent(c: Character, p: LoadoutPick): number {
 function rebuild(c: Character, p: LoadoutPick): string | null {
   c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete c.quivers;
   c.pack = p.base.pack.map((x) => ({ ...x })); c.worn = { ...p.base.worn };
-  const pack = c.pack, add = (its: PackItem[]) => { for (const it of its) if (!intoCounts(c, it)) packAdd(pack, it); };
+  const pack = c.pack, add = (its: PackItem[]) => grantGoods(c, pack, its);
   if (p.weapon) {
     const w: any = WEAPON[p.weapon]; c.weapon = p.weapon;
     // rules 1.53: a bow shoots from a quiver: ONE plain quiver, full (quiverHolds: the data's arrows for its grade)

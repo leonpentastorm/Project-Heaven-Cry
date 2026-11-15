@@ -3,7 +3,7 @@
 // One converter for every recipe of `data/recipes.json`, through one reducer action, `gear/make {charId, recipe, times}`
 // (game.ts; the Proving Ground takes it as it takes gear/load). The shape is give.ts's: `makeProblem` the refusal in
 // words, `makeNow` the doing, `makeView` the list a screen draws. A row takes its `needs` x times out of the pack
-// (`packTake`) and puts its `gives` x times in (`packAdd` with the counter's `lineGoods`). It is free (no AP, no credits)
+// (`packTake`) and puts its `gives` x times in (`grantGoods` with the counter's `lineGoods`). It is free (no AP, no credits)
 // and only where the row says (`between_fights`: never in a fight, never for a character at 0 HP). A tool that is an item
 // must be carried (the hold test, slot person); `{focus: "any"}` is any focus in a hand (the hold test's door `any`). No
 // recipe has code of its own and no item id is named here.
@@ -11,7 +11,7 @@ import './datatext';
 import recipesJ from '../../../data/recipes.json';
 import { ITEM, WEAPON } from './data';
 import { type Character, type PackItem, packOf, holds } from './character';
-import { packAdd, packTake, intoCounts, itemLabel, calName } from './containers';
+import { packTake, grantGoods, itemLabel, calName } from './containers';
 import { lineGoods } from './run/shop';
 import type { GameState } from './game';
 
@@ -70,7 +70,7 @@ export function makeNow(g: GameState, by: string, a: MakeAction): { ok: string }
   const c = g.characters[a.charId], r = recipeOf(a.recipe)!, t = timesOf(a.times), pack = packOf(c).map((x) => ({ ...x }));
   for (const l of r.needs) packTake(pack, l.item, l.n * t);
   const got: PackItem[] = r.gives.flatMap((l) => lineGoods(l.item, l.n * t));
-  for (const it of got) if (!intoCounts(c, it)) packAdd(pack, it);
+  grantGoods(c, pack, got);
   c.pack = pack;
   return { ok: c.name + ' makes ' + got.map((it) => itemLabel(it)).join(' and ') + ' from ' + r.needs.map((l) => countWords(l.item, l.n * t)).join(' and ') + '.' };
 }

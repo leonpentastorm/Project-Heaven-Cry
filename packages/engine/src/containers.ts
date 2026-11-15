@@ -162,6 +162,12 @@ export function intoCounts(c: Character, it: PackItem): boolean {
   if (id === 'essence_of_experience') { c.essence = (c.essence || 0) + it.qty; return true; }
   return false;
 }
+/** Grant goods to a character (consolidation 0.28 M2): each into its count (intoCounts: a stim, an Essence) or else
+ * into `pack` (packAdd, which merges). The one way the camp, the shop, making and a reward pick put goods in. */
+export function grantGoods(c: Character, pack: PackItem[], its: PackItem[]): PackItem[] {
+  for (const it of its) if (!intoCounts(c, it)) packAdd(pack, it);
+  return pack;
+}
 /** One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3),
  * an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an empty one; a weapon
  * loaded round by round gives its rounds loose), `rounds:<calibre>` (at most 120), and anything else a plot item. */

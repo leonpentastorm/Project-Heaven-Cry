@@ -27,7 +27,7 @@ import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
-import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
+import { isCache, isPile, packAdd, grantGoods, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
 import { type Drops, type LootTable, cleanDrops, cleanTables, dropsLoot } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
@@ -3195,8 +3195,8 @@ function runAction(g: GameState, a: Action, by: string) {
         earnCredits(c!, o!.instead!); stageLog(r).credits += o!.instead!; took = c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.';
       } else if (a.choice === 'materials') {
         if (!o!.materials?.length) fail('There are no materials in this pick: take a weapon.');
-        const pack = packOf(c!).map((x) => ({ ...x })), got = o!.materials!.flatMap((m) => lineGoods(m.item, m.n)); // rules 1.54 (Core Rules item 4111): whole, through packAdd
-        for (const it of got) packAdd(pack, it);
+        const pack = packOf(c!).map((x) => ({ ...x })), got = o!.materials!.flatMap((m) => lineGoods(m.item, m.n)); // rules 1.54 (Core Rules item 4111): whole, through grantGoods
+        grantGoods(c!, pack, got);
         c!.pack = pack;
         took = c!.name + ' takes the materials: ' + got.map((it) => itemLabel(it)).join(', ') + '.';
       } else {

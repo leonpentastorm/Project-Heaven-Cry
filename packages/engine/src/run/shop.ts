@@ -11,7 +11,7 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM } from '../character';
-import { lootToPack, packAdd, intoCounts, itemLabel } from '../containers';
+import { lootToPack, grantGoods, itemLabel } from '../containers';
 import { priceOf, creditsOf, payCredits, earnCredits, cantPay, ROUND_PRICE, emptyMagPrice } from '../credits';
 import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
@@ -209,7 +209,7 @@ export function buy(g: G, by: string, a: { charId: string; key: string; qty?: nu
   const no = buyProblem(g, by, a); if (no) { const sh = shopOf(g); if (sh && / credits short\.$/.test(no)) sayLine(g.run!, sh, 'cant_afford', a.charId); return { no }; }
   const sh = shopOf(g)!, c = g.characters[a.charId], q = qtyOf(a.qty), piece = sh.stock.find((p) => p.key === a.key);
   const pack = packOf(c).map((x) => ({ ...x }));
-  const into = (its: PackItem[]) => { for (const it of its) if (!intoCounts(c, it)) packAdd(pack, it); };
+  const into = (its: PackItem[]) => grantGoods(c, pack, its);
   let what: string;
   if (piece) {
     const err = payCredits(c, piece.price); if (err) return { no: err };
