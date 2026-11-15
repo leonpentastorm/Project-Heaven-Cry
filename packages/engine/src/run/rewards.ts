@@ -6,7 +6,7 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
-import { CORE_CHARGE, VIS_CHARGE } from '../magic';
+import { CORE_CHARGE, CORE_ITEM, VIS_CHARGE } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
 import { rollTable, defaultTable, type Drops, type DropEntry } from '../loot';
@@ -78,7 +78,7 @@ export function ammoPack(c: Character, n: number, guns: string[] = gunsOf(c), bu
   const base = burnt == null ? SV.ammo_pack.cores * n : Math.min(SV.ammo_pack.cores_max * n, Math.max(0, burnt));
   const coreN = Math.round(base * supplyMult(c));
   const cores = (SV.ammo_pack.core_doors as string[]).some((k) => holds(c, { slot: 'person', door: k }));
-  if (cores && coreN > 0) out.push(...lootToPack({ item: 'standard_core', qty: coreN }));
+  if (cores && coreN > 0) out.push(...lootToPack({ item: CORE_ITEM, qty: coreN }));
   return out;
 }
 /** Rules 1.51 (spec rule 52 c): the MP a character takes back with the supply pack: `ammo_pack.mp_share` x n x the stat

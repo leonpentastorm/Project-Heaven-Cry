@@ -26,6 +26,7 @@ import { deal, mend, mendSized, gatePct, gatedAmount, amountOf, term, armourAgai
 import { canReact, react, loseReactions, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
+import { grantGoods, lootToPack } from './containers';
 import { itemWords, wordCostMods, immune } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, refund, apFor } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
@@ -107,6 +108,8 @@ export interface PumpRec { design: string; stage0: number; ap: number; free: 'fi
 export const MANA_START = 15;
 export const FLUX_MAX = 6;
 export const CORE_CHARGE = 10;
+/** The standard mana core's item id (a resource's neutral item: every core line is lootToPack of it). */
+export const CORE_ITEM = 'standard_core';
 /** rules 1.34: a Visualizer's core (figments.json visualizer.charge). */
 export const VIS_CHARGE: number = (figmentsJ as any).visualizer?.charge ?? CORE_CHARGE;
 export const SOUL_REACH = 4;
@@ -187,8 +190,8 @@ export function magicToCharacter(c: Character, u: Unit) {
   if (want !== had) {
     let left = had - want; // positive: cores spent; negative: cores made
     const pack = packOf(c).map((x) => ({ ...x }));
-    if (left > 0) for (const it of pack) { if ((it.item || it.id) !== 'standard_core' || !left) continue; const n = Math.min(left, it.qty); it.qty -= n; left -= n; }
-    else { const it = pack.find((x) => (x.item || x.id) === 'standard_core'); if (it) it.qty += -left; else pack.push({ id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: -left, kind: packKindOf('standard_core') }); }
+    if (left > 0) for (const it of pack) { if ((it.item || it.id) !== CORE_ITEM || !left) continue; const n = Math.min(left, it.qty); it.qty -= n; left -= n; }
+    else grantGoods(c, pack, lootToPack({ item: CORE_ITEM, qty: -left }));
     c.pack = pack.filter((x) => x.qty > 0 || x.mags);
     m.cores = want; m.coresMade = 0;
   }

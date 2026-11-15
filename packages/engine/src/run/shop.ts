@@ -12,6 +12,7 @@ import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM } from '../character';
 import { lootToPack, grantGoods, itemLabel } from '../containers';
+import { CORE_ITEM } from '../magic';
 import { priceOf, creditsOf, payCredits, earnCredits, cantPay, ROUND_PRICE, emptyMagPrice } from '../credits';
 import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
@@ -69,7 +70,7 @@ function tagsOf(id: string): string[] {
   const w: any = WEAPON[id], it: any = ITEM[id];
   if (w) return ['weapon', ...(/melee|unarmed/.test(w.category) ? ['melee'] : []), ...(w.category === 'thrown' ? ['thrown'] : []), ...(w.category === 'mana' ? ['mana'] : [])];
   if (it?.focus) return ['focus', 'weapon'];
-  return ['item', ...(id === 'standard_core' ? ['core'] : []), ...(it?.category === 'mod' ? ['mod'] : [])];
+  return ['item', ...(id === CORE_ITEM ? ['core'] : []), ...(it?.category === 'mod' ? ['mod'] : [])];
 }
 const biasOf = (face: Face | undefined, id: string) => tagsOf(id).reduce((t, k) => t * (face?.bias?.[k] ?? 1), 1);
 /** The rarity table of the rolled stock at a stage (the last row whose `from_stage` it reaches). */

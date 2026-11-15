@@ -38,7 +38,8 @@ import { asBolt, resonanceWithout } from './soul';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround, foesOf, canStand, tilesLine } from '../kit';
 import { bill, whyNot, pay, grantAp, freely } from '../effects/cost';
 import { setDowned } from '../unitstate';
-import { hideAgain, setCondRounds } from '../magic';
+import { hideAgain, setCondRounds, CORE_ITEM } from '../magic';
+import { grantGoods, lootToPack } from '../containers';
 
 // =============================================================================================== helpers
 type Rng = { state: number };
@@ -585,8 +586,8 @@ register({
       available: (h) => (!h.c ? false : (h.c.mp ?? 0) < 100 ? 'Needs 100 MP.' : selfLeft(h) <= 0 ? 'You already made as many cores this rest as your Virtue.' : true),
       run: (h) => {
         const c = h.c!; if (!uses(h).take('per_rest', selfCap(c), h.key + '#cores')) return 'You already made as many cores this rest as your Virtue.';
-        c.mp = (c.mp ?? 0) - 100; const pack = packOf(c).map((x) => ({ ...x })), it = pack.find((x) => (x.item || x.id) === 'standard_core');
-        if (it) it.qty += 1; else pack.push({ id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 1, kind: packKindOf('standard_core') } as any);
+        c.mp = (c.mp ?? 0) - 100; const pack = packOf(c).map((x) => ({ ...x }));
+        grantGoods(c, pack, lootToPack({ item: CORE_ITEM, qty: 1 }));
         c.pack = pack; const st = charState(c); st.selfCores = (st.selfCores || 0) + 1;
         postStory(h, c.name + ' crystallises a mana core from their own heart.');
         if (h.g) pendRuling(h.g, c, h.key, c.name + ' made a core from their own MP: a pile of self-made cores is conspicuous; do the Celestials notice?');

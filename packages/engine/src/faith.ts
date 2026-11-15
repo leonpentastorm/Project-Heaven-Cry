@@ -40,7 +40,8 @@ import { feelChar } from './feelings';
 import { WEAPON, SKILL, ITEM } from './data';
 import { rngOf, overworld, tilesAround, foesOf } from './kit';
 import { setBraced, setDowned, clearStagger } from './unitstate';
-import { condNotFresh } from './magic';
+import { condNotFresh, CORE_ITEM } from './magic';
+import { grantGoods, lootToPack } from './containers';
 import { setAnsweredDoor } from './effects/triggers';
 
 export type { Belief, Vow } from './character';
@@ -1121,7 +1122,7 @@ function restock(cb: Combat, v: Unit): string {
   for (const [k, n] of Object.entries(thr) as [string, number][]) { const have = v.throwables?.[k] || 0; if (n > have) { (v.throwables ||= {})[k] = n; got += n - have; } }
   if (got) bits.push(got + ' throwable' + (got === 1 ? '' : 's') + ' back');
   if (v.res && v.resMax?.supplies != null) { v.res.supplies = v.resMax.supplies; bits.push(v.resMax.supplies + ' Supplies'); }
-  if (v.mg) v.mg.cores += 2; else if (c) c.pack = [...packOf(c).map((x) => ({ ...x })), { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: packKindOf('standard_core') } as any];
+  if (v.mg) v.mg.cores += 2; else if (c) c.pack = grantGoods(c, packOf(c).map((x) => ({ ...x })), lootToPack({ item: CORE_ITEM, qty: 2 }));
   bits.push('+2 cores');
   if (v.maxDur) v.dur = v.maxDur;
   if (c) {
@@ -1603,8 +1604,7 @@ function storyRestock(c: Character): string {
   const size = magazineSize(c.weapon, c.weaponState?.mods);
   if (size != null) c.loaded = Math.max(c.loaded ?? 0, size);
   let pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : it.weapon && it.dur != null ? { ...it, dur: maxDurOf(it.weapon, it.rarity) } : { ...it }));
-  const core = pack.find((it) => (it.item || it.id) === 'standard_core');
-  if (core) core.qty += 2; else pack = [...pack, { id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 2, kind: packKindOf('standard_core') } as any];
+  pack = grantGoods(c, [...pack], lootToPack({ item: CORE_ITEM, qty: 2 }));
   c.pack = pack;
   const sup = resourcesFor(c)?.resMax?.supplies; if (sup != null) (c.res ||= {}).supplies = sup;
   if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };
