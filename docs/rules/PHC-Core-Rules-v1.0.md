@@ -6028,12 +6028,12 @@ Leon (15 Nov 2026, before the playtest): *"lot's of the things like extra emmana
 
 ### The field after a won fight (Survival; Leon: "let people roam in the combat map to pick up stuff before voting to go back")
 
-7. **The field.** A won Survival fight does not go straight to its rewards: the run's state is **`field`**, between
+7. *(Partly superseded by rules 1.55 item 61 (0.28.3): the field is the fight still running; a character dead in the fight stands up when the field is left.)* **The field.** A won Survival fight does not go straight to its rewards: the run's state is **`field`**, between
    `fight` and `reward`. The fight's map stays, every character stands where its unit stood (a character dead in the
    fight stands up at 1 HP where it fell), and the piles stay as the fight left them: dropped magazines, thrown
    or stuck weapons (dropped where their target stood, rules 1.12), and whatever foes dropped (in Survival, materials:
    rules 1.54 item 3). PROVISIONAL.
-8. **Roaming is the Proving Ground's gearing up.** On the field the squad uses the same world actions with free
+8. *(Superseded by rules 1.55 items 61 to 64 (0.28.3).)* **Roaming is the Proving Ground's gearing up.** On the field the squad uses the same world actions with free
    movement: walk (`world/act` move, `story/move`), open a door, and pick up (`world/act` pickup, a whole pile in one
    action by default, a selection if given). No rounds, no turn order, AP always full after each action (a walk is
    still one action's reach). Nothing else is done on the field (an attack, a search, a carried body: refused in
@@ -6165,18 +6165,18 @@ in combat so you can reload, stim your friend, syphon, shit like that"*. The lea
    its heal and its stabilise, one copy), from the user's count, as if the two stood side by side; a Downed character
    is stabilised at 1 HP, anyone else healed as by a stim in a fight. On the field it is used as in a fight: walk next
    to the friend.
-33. **The field is a free fight without enemies (R3).** While the squad walks the field (item 7), every action a
+33. *(Superseded by rules 1.55 items 61 to 64 (0.28.3): every action is the fight's own.)* **The field is a free fight without enemies (R3).** While the squad walks the field (item 7), every action a
    character has on an area map is offered and works as there: reload (speed or tactical, one hand or both), load a
    magazine, clear a jam, Field Repair, prone, stim a friend, Analyze and read a glyph, every Sigil and Soul action
    (draw, Evoke, scuff, vent, swap a core, Begin, Pump, Release, Let go, Steady, Feed, Heart Overwatch, Syphon,
    Crystallise), prayers, and the perks', traits' and class moves' actions (`world/act` perk), paying what they cost
    (rounds, items, cores, MP, Flux, Strain, Echo, the mana meter). AP never limits: it is full after every action. An
    attack has no target (nothing hostile is left): it is refused in words. Gear changes work as anywhere in a run.
-34. **What stays spent.** A once-a-fight use spent in the fight stays spent on its field; a once-a-scene, once-a-session
+34. *(Superseded by rules 1.55 items 62 and 64 (0.28.3).)* **What stays spent.** A once-a-fight use spent in the fight stays spent on its field; a once-a-scene, once-a-session
    or once-a-rest use stays as it was (they live on the character). A wait counted in rounds (a Hymn's wait, a
    cooldown) does not count down on the field: the rounds a fight's wait had left are what it has left on the field.
    A once-a-round or once-a-turn use can be made once on the field (its round never ends there).
-35. **What is refused on the field.** An action that would be free without limit on the field is refused, in words:
+35. *(Its resource test superseded by rules 1.55 item 64 (0.28.3).)* **What is refused on the field.** An action that would be free without limit on the field is refused, in words:
    one whose use is at will (no once-a-fight, once-a-round or longer limit), whose every cost besides AP is one the
    area map does not carry back to the character (a resource not in `survival.json field.carried_res`), and which
    either gives something lasting (an op of `field.lasting_ops`: healing, a resource, a taken item) or states no
@@ -6184,7 +6184,7 @@ in combat so you can reload, stim your friend, syphon, shit like that"*. The lea
    to rule (0.28.2 hand-off). Prayers are not refused by this item (their own slots and waits limit them). The lead
    (0.28.2 review): the actions this rule refuses as doubtful (37 in 0.28.2) stay refused for now; an explicit field
    flag on each action in the data, read in place of this guess, is planned for 0.29.
-36. **What the fight's end clears is cleared when the field closes.** When the squad leaves the field, what a fight's end
+36. *(Superseded by rules 1.55 item 65 (0.28.3): the fight itself ends when the field is left.)* **What the fight's end clears is cleared when the field closes.** When the squad leaves the field, what a fight's end
    clears is cleared for what was done on the field (Strain, a held Outburst, conditions, shields: `magicOut` after a
    fight; Flux, rules 1.51), and the field's use counters go; the field's piles stay behind as before. *(What the fight
    itself left is still cleared as the field opens, as in 0.28.1: deferring the fight's own end to the field's close is
@@ -6206,7 +6206,7 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    attack is; nobody is hurt. One check, where harm is applied to a unit (`harmHeld`, effects/hooks.ts, read by
    applyDamage and applyCond); your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. A
    spell that misses hurts nobody and is not refused.
-39. **The field has the fight screen's actions.** Walking the field, the fight screen's own action bar and cards are
+39. *(Superseded by rules 1.55 items 61 and 67 (0.28.3).)* **The field has the fight screen's actions.** Walking the field, the fight screen's own action bar and cards are
    the field's: the same descriptors (descriptors.ts) read the field as a fight state (`fieldCombat`: the squad where
    it stands on the fight's map, AP full, no turns), with their targets and tile picks; the action a card sends is
    done as the area map's action (item 33), and the reducer's field verdict (items 33 to 38) is the refusal the card
@@ -6215,7 +6215,7 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
 40. **The Give control.** On the path map the right panel has a Give module (data/modes.json `panels`: `give`), the
    places' Give tab; the backpack line's Give has the same stepper (how many, one at a time) before the button.
    *(Superseded by rules 1.55 item 54: the amount control, a typed number with −100 to +100 steps and MAX.)*
-41. **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 34): there
+41. *(Superseded by rules 1.55 item 66 (0.28.3).)* **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 34): there
    every once-a-fight use counts as spent (the safe side). Read in the one counter door (effects/uses.ts).
 42. **Counted items are data.** Which items a character keeps as a count (item 31) is `counted` on the item's row of
    items.json (the count's field: `stims`, `essence`), read once (`COUNTED`, data.ts; the validator checks it).
@@ -6228,7 +6228,7 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    side would have their chips' words run into each other, the chip shows the rung's short form (`short` on each rung
    of `combat.health_look.ladder`, PROVISIONAL: ok, scr, hurt, bad, dying; down and dead are short already); the
    engine's `healthView` gives both, and the screen picks by measured width only. The full word everywhere else.
-44. **The field's token is the character** (item 4133; the two-player playtest, 15 Nov 2026: a stim used on a friend
+44. *(Superseded by rules 1.55 item 61 (0.28.3): the field's tokens are the fight's units.)* **The field's token is the character** (item 4133; the two-player playtest, 15 Nov 2026: a stim used on a friend
    on the field healed the character, but the friend's token kept the old HP: the field wrote to the character, and a
    token not walked onto the field read the finished fight's unit). The field's one door for its actions
    (`fieldWorld`, game.ts) now writes back to that unit after every action what a token draws (HP, Max HP, Downed,
@@ -6318,7 +6318,8 @@ not"*; the lead's rulings), PROVISIONAL:
    character holds on itself or on a party member, out of a fight (the path map, a place, the field, the rewards; in a
    fight it is refused in words; at the camp gear is the loadout's, rules 1.54 item 1). The item's row says how
    (`use`: the button's `label` and `via`): `via: "stim"` is item 32's stim (the same `world/act` stim and its one rule,
-   `useStim`: off a map as if the two stood side by side, on the field next to the friend); `via: "effects"` runs the
+   `useStim`: off a map as if the two stood side by side; on the field, which is the fight still running (item 61),
+   the fight's own `combat/stim` next to the friend); `via: "effects"` runs the
    row's `effects` through the use ops (today `xp_grant`: the one XP door, `giveXp`, with the effect's value and
    source). `requires_to_use` on the row is what the user needs, each entry must hold (`holds`: a hand or person spec,
    as a recipe's tool; `skill` and `min`; `any_of`), its `why` the refusal; an effect's `limit` (`per`, `n`: a scope
@@ -6332,6 +6333,64 @@ not"*; the lead's rulings), PROVISIONAL:
    reward, camp or Crossroads line holds it), so selling it at 150 creates nothing beyond the drop it came from; a
    give moves the count from one character to the other (nothing is copied); a sale and a crack each take one from
    the count, so one Essence pays either 150 credits or 100 XP, once. A stim sells for 20 of its 80.
+
+### The field is the fight, still running (release 0.28.3)
+
+Leon (15 Nov 2026, playing live 0.28.2), verbatim: *"cannot bond in field map after battle"* and *"ZERO effect are
+played in field map afftle battle please just write it like a normal battle why do we have to invent bullshit
+state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
+
+61. **The field is the same fight, still running, with no enemies left.** When the last enemy of a Survival fight
+   falls, the fight is not closed and nothing is translated into the area map's actions: the run's state is `field`
+   (item 7), the game stays on the fight screen in the fight's own state (`Combat.field`, the one flag), and every
+   action is the fight's own (`combat/*`, the one combat reducer path), so every effect, animation, sound, log line
+   and number plays exactly as in a fight; Bond, every class move, technique, Call and prayer works; the tokens are the
+   fight's units. Only items 62 to 65 differ, each decided in one place.
+62. **No turn order** (game.ts `combatAction`). Any player's character, or a unit it owns, acts at any time (the acting
+   unit is the one the action names; the owner check stays). Ending the turn is refused in words ("No turns here:
+   act freely, then vote to leave."). Turns and rounds do not advance (`endTurn` and the enemies' turns do nothing), so
+   nothing that happens at a turn's or a round's start or end happens on the field: no death saves (a Downed character
+   stays Downed until a stim raises them), no held Outburst swelling, no Strain falling, no bleeding, no condition
+   ticking down, no hazard at a turn's start (stepping into one still hurts: it is the ground), no Overwatch or Heart
+   Overwatch going off (nothing hostile moves); a wait counted in rounds (a Hymn's wait, a cooldown) does not count
+   down. A once-a-turn or once-a-round use is usable once on the field: its turn and round are the killing turn's and
+   round's, so one already spent there stays spent (the lead accepts this). An off-turn window still open at the kill
+   is closed as the field opens.
+63. **AP never limits** (effects/cost.ts, the one cost site: `apFor` and `pay`). An action's cost is shown as listed
+   and is never refused for AP, and no AP is taken; a walk goes anywhere reachable in one move. Syphon and Crystallise
+   stay bounded by the meter (items 47 and 48): AP is free there, the meter is not.
+64. **What stays guarded, at the same gates.** A once-a-fight, once-a-scene or once-a-session use stays spent (the same
+   fight). Nothing learned by doing grows (item 37: `growthHeld` reads `Combat.field`). Nothing harms a friend (item
+   38: `harmHeld` reads `Combat.field`; the whole action is refused in words in `combatAction`). An item's action that
+   would be free without limit is refused in words (item 35, `fieldRefusal`, read in the fight's perk action): at will,
+   no resource cost at all (the fight's units really pay what they spend, so `field.carried_res` is gone), and a
+   lasting op (`field.lasting_ops`) or no effects the data states. An attack has nothing hostile to go at.
+65. **The fight ends when the party leaves** (`run/leave` and the vote, item 9, unchanged). The pay stays where item 10
+   puts it: XP and credits as the last enemy falls, the pick (`run/pick`, `run/take`) after leaving. The fight's
+   technical end moves to the leave: the fighters written back to their characters, vows and the fight's end hooks,
+   `magicOut` (Strain, a held Outburst, conditions, shields), Flux 0 (rules 1.51), a character dead in the fight
+   standing up at `dead_return_hp` (a level its XP brought while it lay dead adds no HP: it was dead when the level
+   came; it was 1 HP plus the level's rise), and the supply pack (it is written to the pack the fight writes back, so it comes
+   with the leave). A lost fight closes at once as before.
+66. **A save from 0.28.2's field** (the run at `field` with the story phase and no running fight) loads and can be left
+   (its old close: `magicOut` on the area map, Flux 0, the picks); every other action there is refused in words
+   ("Leave this field: ..."). This bridge (and the area map's reading of the old field, `zoneMap`) goes in 0.30.
+67. **The screen.** The field is the fight screen: the same action bar, cards and effect player, fed by the same
+   effects. End turn is not offered; in its place the words "No turns here: act freely, then vote to leave." The
+   initiative strip shows the party with no "NOW". The header holds what lies on the ground, Take all (the fight's
+   pickup) and the Leave vote, where they were.
+68. **Nothing harms a surrendered foe on the field; nobody moves a friend by force** (0.28.3; the lead's ruling, 15 Nov
+   2026): the field's one harm gate (item 64) also holds a unit that has surrendered, whatever its side: the action
+   that would hurt it is refused in the words "They have surrendered." A push, pull, shove or other forced move of a
+   friend, or of a surrendered unit, is harm there too and is refused the same way (a unit's own willing move, a swap
+   it chose, is not forced).
+69. **Two characters, one player** (0.28.3): on the field a player acts as the character they pick: a click on one of
+   their own tokens, or its card in the squad panel, makes it the one acting (the action bar, the sheet and the ring
+   follow it), unless the action being aimed takes that unit as its target. A Downed character can be picked for
+   what a Downed character may do (on the field, nothing: a friend's stim). The default is the player's first
+   character that can act, by the engine's own list of its actions.
+70. **AP on the field** (0.28.3): where the AP pips stand, the field shows the word "free" (AP never limits there,
+   item 63), not the AP left when the last enemy fell.
 
 ## Maps (rules 1.16)
 
@@ -9833,7 +9892,7 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
-4128. **Items 4121 to 4133 are rules 1.55's** (4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
+4128. **Items 4121 to 4139 are rules 1.55's** (4134 to 4139: release 0.28.3: 4134 Guide's tile, 4135 healing's MP, 4136 and 4137 Syphon, 4138 and 4139 the field as the fight; 4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
 4129. **XP a node pays (rules 1.55 item 27, 0.28.2; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
     `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
     simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
@@ -9849,7 +9908,7 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
    (PROVISIONAL). The engine's view (`healthView`) is the one place it is worked out; the screen draws its word.
 4132. **The token's short health word (rules 1.55 item 43):** `short` on each rung of `combat.health_look.ladder`: ok,
    scr, hurt, bad, dying (PROVISIONAL); a token at full HP shows no chip on the map.
-4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number).
+4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number). *(Superseded by item 4138.)*
 4134. **Guide's tile (rules 1.55 item 45):** a unit-aimed verb whose own `displace` goes `to: "tile"` asks for the tile after the unit; the legal tiles are at most the op's `tiles` from the unit, free, trap-free and seen. No number.
 4135. **Healing's MP (rules 1.55 item 46):** three times 0.28.2's: Mend, Mend Yourself, Touch 24 MP (18 from Empathy 9); Shield 30 (24); Settle 15; Soothe 18; Raise 36; Guide 15; Field Surgery 45; Triage 18; Inspire 30; Rally 60. Supersedes items 2015, 2016, 2029, 2031 and 2034's MP and the tables of rules 1.33 sections 3 and 4 as they were. PROVISIONAL.
 4136. **Syphon has a floor (rules 1.55 item 47; the lead's ruling, 15 Nov 2026):** Syphon takes its draw from the ambient
@@ -9863,3 +9922,9 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
    (`data/actions.json`: an Emanator or an Attuner in hand), so a Mender with an Attuner Syphons; the gain goes through
    `resGive`, capped at Max MP. With the focus only in the pack the row is greyed ("Needs an MP focus in hand (an
    Emanator or an Attuner)."). Crystallise still needs an Emanator. PROVISIONAL.
+4138. **The field is the fight (rules 1.55 items 61 to 67, 0.28.3; PROVISIONAL):** no number changes. `survival.json
+    field.carried_res` is removed (item 64). The supply pack is given when the field is left (item 65), not as it
+    opens; XP, credits and the offers are given as before. The old field's machinery (the area-map translation, its
+    write-back and its use counters) is removed.
+4139. **The field's gates and screen (rules 1.55 items 68 to 70, 0.28.3):** no number. On the field Syphon and
+    Crystallise are bounded by the meter alone (items 4136 and the Crystallise row: 10 a core), not by AP.

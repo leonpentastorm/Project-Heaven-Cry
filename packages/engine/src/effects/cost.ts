@@ -195,9 +195,14 @@ export const needs = (n: number, what = 'AP', left?: number, have?: number) => '
  * o.left: say what is left ("Needs 2 AP (1 left)."). */
 export const poolWhyNot = (have: number, n: number, o: { left?: boolean } = {}): string | null => (have < n ? needs(n, 'AP', o.left ? have : undefined) : null);
 const FREE = new Set<Unit>();
+/** The AP an action may count on when AP does not limit it (freely: an action inside another; rules 1.55 item 63: the
+ * field, where nothing is refused for AP). */
+const FREE_AP = 99;
+/** Rules 1.55 item 63: on the field (Combat.field) AP never limits and none is taken: the one place that says so. */
+const apFree = (cb: Combat | null | undefined): boolean => !!(cb as any)?.field;
 const apOf = (p: Priced | number) => (typeof p === 'number' ? p : p.ap);
 /** The AP the unit can put toward an action now: its own, and the credit that action carries. */
-export const apFor = (cb: Combat | null | undefined, u: Unit, as?: any): number => (u.ap ?? 0) + creditFor(u, as, cb);
+export const apFor = (cb: Combat | null | undefined, u: Unit, as?: any): number => (apFree(cb) ? FREE_AP : (u.ap ?? 0) + creditFor(u, as, cb));
 /** Why the unit can't pay this (the one sentence), or null: it can. o.as: the reducer action this is (Encore's key), for
  * a preview made outside the action; o.c: the character, for a resource kept there (stims, Echo). */
 export function whyNot(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null; /** Classes 3.0 P9: who pays a price made on another (an owned unit's, paid by its owner) */ payer?: Unit | null } = {}): string | null {
@@ -230,7 +235,7 @@ export const canPay = (cb: Combat | null | undefined, u: Unit, p: Priced | numbe
  * Returns the AP taken from the unit itself. */
 export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { c?: Character | null; /** Classes 3.0 P9: the unit that pays (an owner for its owned unit) */ payer?: Unit | null } = {}): number {
   if (o.payer && o.payer !== u) return pay(cb, o.payer, p, { c: o.c });
-  let due = apOf(p);
+  let due = apFree(cb) ? 0 : apOf(p);
   const cr = FREE.has(u) ? null : creditOf(cb, u);
   if (cr && due > 0) {
     cr.paid += due;
@@ -246,7 +251,7 @@ export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, 
  * action has not used a Brief up; the rest, and everything once the action is over, to the unit. */
 export function refund(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { c?: Character | null; payer?: Unit | null } = {}): void {
   if (o.payer && o.payer !== u) return refund(cb, o.payer, p, { c: o.c });
-  let ap = apOf(p);
+  let ap = apFree(cb) ? 0 : apOf(p);
   const cr = FREE.has(u) || !(cb as any)?.acting ? null : creditOf(cb, u);
   if (cr && ap > 0) {
     const e = Math.min(cr.encoreUsed, ap); cr.encoreUsed = r10(cr.encoreUsed - e); ap = r10(ap - e);
@@ -287,7 +292,7 @@ export function setAp(u: Unit, n: number): void { (u as any).ap = n; }
 /** Run fn as an action made inside another at no AP: every check passes and nothing is taken. The unit's AP (and
  * banked tiles) are as they were afterwards; a credit is not drawn on. */
 export function freely<T>(u: Unit, fn: () => T, o: { bank?: boolean } = {}): T {
-  const keep = u.ap, bank = u.bank, was = FREE.has(u); (u as any).ap = 99; if (o.bank) u.bank = 999; FREE.add(u);
+  const keep = u.ap, bank = u.bank, was = FREE.has(u); (u as any).ap = FREE_AP; if (o.bank) u.bank = 999; FREE.add(u);
   try { return fn(); } finally { (u as any).ap = keep; if (o.bank) u.bank = bank; if (!was) FREE.delete(u); }
 }
 /** Run fn with the unit's AP set to n (a dry run: the planner, an enemy's intent), and put it back. */

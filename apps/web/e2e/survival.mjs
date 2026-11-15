@@ -253,7 +253,7 @@ ok('a lit node is taken: the fight begins (' + r.stats.fights[0].template + ', '
   ok('rules 1.51: the starting boon (' + pickId + ') is felt in the first fight (' + JSON.stringify(felt) + ')', pickId === 'start.set_feet' ? (felt?.guard ?? 0) >= 1 : pickId === 'start.zeroed' ? felt?.term?.v === 1 : true);
 }
 for (let i = 0; i < 400; i++) {
-  const s = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over || g.phase !== 'combat') return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId ? 'mine' : 'theirs'; });
+  const s = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over || cb.field || g.phase !== 'combat') return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId ? 'mine' : 'theirs'; });
   if (s === 'over') break;
   if (s !== 'mine' || !(await p.locator('text=ACTION POINTS').count()) || await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) { await settle(p, 120); continue; }
   await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
@@ -269,12 +269,13 @@ for (let i = 0; i < 400; i++) {
   await settle(p, 60);
 }
 let g = await G();
-ok('node 1 fought by hand to its end: ' + (g.combat?.summary || '?'), g.combat?.over === 'win' && g.run.state === 'field');
-// rules 1.55: the field: the header, what lies on the ground, a pickup, then Leave (solo: one click) and the rewards
-await click(p, 'Walk the field ›', { timeout: 60000 });
+ok('node 1 fought by hand to its last foe: the fight goes on as its field (' + (g.combat?.summary || '?') + ')', !!g.combat?.field && !g.combat?.over && g.phase === 'combat' && g.run.state === 'field');
+// rules 1.55 items 61 to 67: the field is the fight screen: no End turn (the words instead), no NOW; the header, what
+// lies on the ground, a pickup (the fight's own), then Leave (solo: one click) and the rewards
 await p.waitForSelector('[data-phc-field-head]', { timeout: 30000 });
 ok('the field: "The field is yours" with what lies on the ground (' + (await p.locator('[data-phc-field-ground]').innerText()) + ')', (await p.locator('[data-phc-field-head]').innerText()).includes('THE FIELD IS YOURS'));
-if (await p.locator('[data-phc-field-take]').count()) { const before = (await G()).story.objects.filter((o) => o.kind === 'pile' && o.items?.length).length; await p.locator('[data-phc-field-take]').click(); await settle(p, 300); ok('Take all picks up the pile in reach', (await G()).story.objects.filter((o) => o.kind === 'pile' && o.items?.length).length === before - 1); }
+ok('the field has no turns: End turn is not offered, the words say so, the strip has no NOW', !(await p.getByRole('button', { name: 'End turn', exact: true }).isVisible().catch(() => false)) && (await p.locator('[data-phc-no-turns]:visible').count()) > 0 && !/NOW/.test(await p.locator('.phc-init').first().innerText().catch(() => '')));
+if (await p.locator('[data-phc-field-take]').count()) { const piles = async () => (await G()).combat.objects.filter((o) => o.kind === 'pile' && o.items?.length && !o.hidden).length, before = await piles(); await p.locator('[data-phc-field-take]').click(); await settle(p, 300); ok('Take all picks up the pile in reach', (await piles()) === before - 1); }
 await shot('field');
 if (process.env.FIELD_SHOT) copyFileSync(OUT + 'field.png', process.env.FIELD_SHOT);
 await p.locator('[data-phc-field-leave]').click();
@@ -679,7 +680,7 @@ while (guard++ < 40) {
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
-    await click(p, 'Walk the field ›', { timeout: 60000 }); await p.locator('[data-phc-field-leave]').click({ timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
+    await p.locator('[data-phc-field-leave]').click({ timeout: 60000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
     await click(p, 'Back to the map ›', { timeout: 60000 });
   } else if (r.state === 'reward') {
     await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });

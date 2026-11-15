@@ -35,7 +35,6 @@ import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, s
 import { focusHand, carriesMpFocus, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS } from './character';
 import { PILE, isPile } from './containers';
 import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
-import { fieldDoor } from './effects/hooks';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
@@ -169,7 +168,7 @@ export function registerActions(s: ActionSystem): () => void {
 }
 
 function ctxOf(g: GameState, unitId: string, viewer?: string | null): DescCtx | null {
-  const cb = ((fieldDoor.f && g ? fieldDoor.f(g) : null) || g?.combat) as Combat | undefined; if (!cb) return null;
+  const cb = g?.combat as Combat | undefined; if (!cb) return null;
   const u = cb.units.find((x) => x.id === unitId); if (!u) return null;
   const c = u.charId && !u.companion ? (g.characters as any)?.[u.charId] || null : null;
   const side = (u.side === 'foe' ? 'foe' : 'pc') as 'pc' | 'foe';
@@ -883,7 +882,7 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {
     const vd = safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any);
-    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok && (g as any).run?.state !== 'field') out.ap = vd.ap; out.action = vd.ok ? action : null; // the field's AP is always full (rules 1.55): its cost is the action's own
+    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok && !x.cb.field) out.ap = vd.ap; out.action = vd.ok ? action : null; // rules 1.55 item 63: on the field no AP is taken, so the cost shown is the action's listed one
   }
   if (!out.ok && !need && !out.why) out.why = 'Not now.';
   out.cost = out.ap === d.cost.ap ? d.cost.text : apT(out.ap);

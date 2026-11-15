@@ -8,18 +8,51 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
-## 0.28.3
+## 0.28.3 — the field is the fight
 
-A patch release from Leon's playtest of 0.28.2. Not in it, waiting for the next release: the field-after-a-fight rewrite (fix/0.28.3-field-fight; its review rulings are not finished) and the Durability tank fit (fix/0.28.3-tank; not finished).
+A patch release from Leon's playtest of 0.28.2 (rules 1.55 items 45 to 70, every number PROVISIONAL). Leon on live
+0.28.2: "cannot bond in field map after battle" and "ZERO effect are played in field map". The field after a won
+Survival fight is now the same fight, still running with no enemies left (items 61 to 70), not a second "field" mode
+beside it.
 
 ### Survival
 
-- **The camp reads as a checklist** (rules 1.55 item 49): the header lists what to do, each with its state in words (1 FREE WEAPON, 2 FREE FOCUS, the BUDGET left, the STARTING BOON). The free picks carry FREE where a price would be. "Not sure? Take the recommended kit" comes first; moving on with a free pick not taken asks first.
-- **A shield at the camp** (rules 1.55 item 50): the Buckler (200 credits) is on the camp's Gear shelf; it goes in the off hand beside a one-handed weapon, and is refused in words beside a two-hander or the free focus.
-- **The tank's recommended kit** (rules 1.55 item 51): a character with Durability on top gets a one-hander, the Buckler and what the budget still pays for. Taking a focus with a shield held says how to fix it (item 52); a greyed Recommended button shows the engine's reason (item 53). PROVISIONAL.
-- **One amount control for giving and selling** (rules 1.55 item 54): type the number, or step it by 1, 10 or 100, or MAX; it shows what you hold, and the engine says why an amount is refused.
-- **Counted items can be sold** (rules 1.55 items 55 and 56): stims and Essences are on the shop's Sell list. "Never on a shelf" and "never sold" are now two facts in the data.
-- **The Essence of Experience** (rules 1.55 items 57 to 60): any focus in a hand cracks it, no skill minimum; 100 XP for yourself or a friend, one per character per rest, out of a fight. Its price is 600 (sells for 150). Using a counted item (the Essence, a stim on a friend off the map) is one action, `gear/use`. PROVISIONAL.
+- **Everything you can do in a fight works on the field, and looks and sounds the same** (rules 1.55 item 61). When the
+  last enemy falls you stay on the fight screen: Bond, Tending, class moves, techniques, Calls, prayers, reloads, stims,
+  Sigils and Outbursts are the fight's own actions, with their effects, sounds, log lines and numbers.
+- **No turns on the field** (item 62). Anyone acts at any time; End turn is gone ("No turns here: act freely, then vote
+  to leave."); no round passes, so waits (a Hymn's) do not count down, a Downed friend rolls no death saves (stim them),
+  and a once-a-turn use (a Whisper) is used once there.
+- **AP never runs out on the field** (items 63 and 70). Costs are shown as listed; nothing is refused for AP; walk
+  anywhere you can reach; the word "free" stands where the AP pips were. Syphon and Crystallise still pay the mana meter
+  there, and once it is spent neither gives anything.
+- **Still guarded** (items 64 and 68): once-a-fight uses stay spent; nothing learned by doing grows; nothing you do can
+  hurt a friend (a Bond on a friend is not harm) or a foe that surrendered ("They have surrendered."), and a shove of a
+  friend is refused like harm; the free-and-lasting actions stay refused in words.
+- **The fight ends when you vote to leave** (item 65). XP and credits are still paid as the last enemy falls and the
+  pick comes after leaving; the fight's own end (Strain, a held Outburst, conditions, Flux, the dead standing up) and
+  **the supply pack** now come as the party leaves. A character dead in the fight stands up at 1 HP with no HP from a
+  level its XP brought while it lay dead. Field Mending and Devout land as the field is left.
+- **Give, make, use and level up on the field** as anywhere out of a fight; the fight's tokens take it. A stim on a
+  friend there is the fight's own stim, next to them.
+- **A player with two characters on the field acts as either** (item 69): click one of your tokens, or its card in the
+  squad panel; a Downed one is never the default.
+- **A save made on 0.28.2's field** loads and can only be left (the vote) (item 66).
+- **The camp reads as a checklist** (item 49): the header lists what to do, each with its state in words (1 FREE
+  WEAPON, 2 FREE FOCUS, the BUDGET left, the STARTING BOON). The free picks carry FREE where a price would be. "Not
+  sure? Take the recommended kit" comes first; moving on with a free pick not taken asks first.
+- **A shield at the camp** (item 50): the Buckler (200 credits) is on the camp's Gear shelf; it goes in the off hand
+  beside a one-handed weapon, and is refused in words beside a two-hander or the free focus.
+- **The tank's recommended kit** (item 51): a character with Durability on top gets a one-hander, the Buckler and what
+  the budget still pays for. Taking a focus with a shield held says how to fix it (item 52); a greyed Recommended button
+  shows the engine's reason (item 53).
+- **One amount control for giving and selling** (item 54): type the number, or step it by 1, 10 or 100, or MAX; it
+  shows what you hold, and the engine says why an amount is refused.
+- **Counted items can be sold** (items 55 and 56): stims and Essences are on the shop's Sell list. "Never on a shelf"
+  and "never sold" are now two facts in the data.
+- **The Essence of Experience** (items 57 to 60): any focus in a hand cracks it, no skill minimum; 100 XP for yourself
+  or a friend, one per character per rest, out of a fight. Its price is 600 (sells for 150). Using a counted item (the
+  Essence, a stim on a friend) is one action, `gear/use`.
 
 ### Fights
 
@@ -28,13 +61,17 @@ A patch release from Leon's playtest of 0.28.2. Not in it, waiting for the next 
 
 ### Classes
 
-- **Healing costs three times the MP** (rules 1.55 item 46): every Tending verb and every Mender move that spends MP is 3x its 0.28.2 price (Mend 24, Shield 30, Settle 15, Soothe 18, Raise 36, Guide 15, Field Surgery 45, Triage 18, Inspire 30, Rally 60). AP, heal sizes and Max MP unchanged. Cards and bar buttons show the MP beside the AP. PROVISIONAL.
-- **Syphon through any MP focus** (rules 1.55 item 48): a Mender Syphons with the Attuner, in a fight and on the area map; with the focus in the pack the button is greyed and says why.
-- **Syphon has a floor** (rules 1.55 item 47): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). PROVISIONAL.
+- **Healing costs three times the MP** (item 46): every Tending verb and every Mender move that spends MP is 3x its 0.28.2 price (Mend 24, Shield 30, Settle 15, Soothe 18, Raise 36, Guide 15, Field Surgery 45, Triage 18, Inspire 30, Rally 60). AP, heal sizes and Max MP unchanged. Cards and bar buttons show the MP beside the AP.
+- **Syphon through any MP focus** (item 48): a Mender Syphons with the Attuner, in a fight and on the area map; with the focus in the pack the button is greyed and says why. Stowing the Attuner in a fight stops what it gives at once.
+- **Syphon has a floor** (item 47): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). From a fight's start of 15 that is at most 7 Syphons, shared by the party; deaths raise the meter.
 
 ### Fixes
 
-- **Guide works** (rules 1.55 item 45): click the ally, then one of the shaded tiles it may step to; a bad tile is refused in words before anything is paid.
+- **Guide works** (item 45): click the ally, then one of the shaded tiles it may step to; a bad tile is refused in words before anything is paid.
+- **The field is one flag** (`Combat.field`), read in one place per rule: `combatAction` (no turn order), effects/cost.ts
+  `apFor` and `pay` (AP), `endTurn`, `runEnemies` and `checkOver`, `growthHeld` and `harmHeld`. Removed: the field's
+  area-map translation, `fieldCombat`, the write-back, `fieldActs`, the field's own use counters and
+  `survival.json field.carried_res`. Two replays moved by Syphon's floor were re-recorded.
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 

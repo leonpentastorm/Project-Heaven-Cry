@@ -29,7 +29,7 @@ export interface GiveAction { type: 'gear/give'; charId: string; to: string; idx
  * keeps rules 1.46's where (the node kinds of `give.where`, the start); an item is given anywhere in a run that no fight
  * is on (rules 1.55 item 30). */
 export function giveWhereProblem(g: GameState, credits = true): string | null {
-  if (g.phase === 'combat' && g.combat && !g.combat.over) return 'Hand things over after the fight.';
+  if (g.phase === 'combat' && g.combat && !g.combat.over && !g.combat.field) return 'Hand things over after the fight.'; // rules 1.55 item 61: the field is no fight to hand things over in
   const r = g.run;
   if (r && r.state !== 'over') {
     if (r.state === 'fight') return 'Hand things over after the fight.';
@@ -130,7 +130,7 @@ const useKey = (id: string, k: number) => 'use:' + id + '#' + k;
 /** Why this use of an item `via: effects` can't be made, in words, or null. A stim (`via: stim`) is judged by the stim's
  * own rule (game.ts). */
 export function useProblem(g: GameState, by: string, a: UseAction): string | null {
-  if ((g.phase === 'combat' && g.combat && !g.combat.over) || g.run?.state === 'fight') return 'Not in a fight: use it after the fight.';
+  if ((g.phase === 'combat' && g.combat && !g.combat.over && !g.combat.field) || g.run?.state === 'fight') return 'Not in a fight: use it after the fight.'; // rules 1.55 item 45: the field is no fight
   const u = useOf(a.item), f = COUNTED[a.item]; if (!u || !f) return "That can't be used here.";
   const c = g.characters[a.charId]; if (!c || c.owner !== by) return 'Not your character.';
   if (c.dead) return 'The dead give nothing.';

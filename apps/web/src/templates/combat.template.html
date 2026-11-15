@@ -160,7 +160,7 @@
 <sc-if value="{{hasAllies}}">
 <div aria-label="Allies" style="display: flex; flex-direction: column; gap: 6px">
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">SQUAD · HOVER FOR DETAILS</span>
-<sc-for list="{{allyRows}}" as="a"><div class="phc-tok" tabindex="0" aria-label="{{a.name}}, {{a.hp}}" style="position: relative; display: flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; height: auto">
+<sc-for list="{{allyRows}}" as="a"><div class="phc-tok" tabindex="0" aria-label="{{a.name}}, {{a.hp}}" data-phc-act-as="{{a.actAs}}" onClick="{{a.pick}}" onKeyDown="{{a.pickKey}}" style="position: relative; display: flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; height: auto">
 <sc-if value="{{a.hasImg}}"><img src="{{a.img}}" alt="" style="{{a.imgStyle}}"></sc-if>
 <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="display: flex; justify-content: space-between; font-size: 12px"><span style="font-weight: 700">{{a.name}}</span><span style="color: #A3AEC2">{{a.hp}}</span></span><span style="position: relative; display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span class="phc-hp-chip" style="{{a.hpChip}}"></span><span class="phc-hp-fill" style="{{a.hpFill}}"></span></span><sc-if value="{{a.hasFx}}"><span style="font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #F65157">{{a.fx}}</span></sc-if></span>
 <!--TOKPOP:a.t-->
@@ -219,6 +219,7 @@
 <div class="phc-cb-aplabel" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2"><span>ACTION POINTS</span><span style="display: flex; align-items: center; gap: 8px"><span style="color: #E7EBF3; font-weight: 700">{{T.apText}}</span></span></div>
 <div class="phc-stagger phc-pips" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px">
 <sc-for list="{{T.apPips}}" as="p" hint-placeholder-count="6"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for>
+<sc-if value="{{T.apFree}}" hint-placeholder-val="{{false}}"><span data-phc-ap-free="" tip="On the field AP never runs out: act freely, then vote to leave." style="grid-column: 1 / -1; font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #FFFFFF">free</span></sc-if>
 </div>
 </div>
 <div class="phc-cb-dock" data-lock="{{T.lock}}" style="flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px">
@@ -350,7 +351,8 @@
 </div></sc-if>
 <div class="phc-cb-confirm" style="display: flex; gap: 10px">
 <button type="button" class="phc-cb-act" onClick="{{T.confirm}}" disabled="{{T.cantConfirm}}" hidden="{{T.noConfirm}}" data-sfx="{{T.confirmSfx}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{T.confirmText}}</button>
-<button type="button" class="phc-cb-act" onClick="{{T.endTurn}}" disabled="{{T.notMine}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
+<sc-if value="{{T.noTurns}}" hint-placeholder-val="{{false}}"><span data-phc-no-turns="" style="flex: 1; align-self: center; font-size: 13px; line-height: 1.35; color: #A3AEC2">{{T.noTurnsText}}</span></sc-if>
+<button type="button" class="phc-cb-act" onClick="{{T.endTurn}}" disabled="{{T.notMine}}" hidden="{{T.noTurns}}" style="flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
 </div>
 </div>
 </div>
@@ -368,7 +370,7 @@
 <sc-if value="{{mini.show}}">
 <div role="region" aria-label="Your turn (panel hidden)" class="phc-cb-mini" style="{{mini.style}}">
 <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 13px; font-weight: 700; font-style: italic; letter-spacing: 0.16em; color: #FFFFFF">YOUR TURN</span><span style="margin-left: auto; font-size: 11px; font-weight: 700; color: #E7EBF3">{{apText}}</span><button type="button" class="phc-cb-show" onClick="{{togglePanel}}" aria-label="Show the turn panel" tip="Show the panel (key H)" style="min-height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer">⟨ Panel</button></div>
-<div class="phc-pips" aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px"><sc-for list="{{mini.pips}}" as="p"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for></div>
+<div class="phc-pips" aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px"><sc-for list="{{mini.pips}}" as="p"><span class="{{p.cls}}" style="{{p.style}}"></span></sc-for><sc-if value="{{mini.apFree}}" hint-placeholder-val="{{false}}"><span data-phc-ap-free="" tip="On the field AP never runs out: act freely, then vote to leave." style="grid-column: 1 / -1; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #FFFFFF">free</span></sc-if></div>
 <sc-if value="{{hasMe}}"><div role="list" aria-label="Your most urgent resources" class="phc-res-urgent" style="flex: none">
 <sc-for list="{{me.res.urgent}}" as="r"><div role="listitem" class="phc-res-row phc-res-mini" data-res="{{r.key}}" data-level="{{r.level}}" tabindex="0" tip="{{r.hint}}" aria-label="{{r.aria}}">
 <span class="phc-res-line" style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="{{r.labelStyle}}">{{r.label}}</span><span aria-hidden="true" style="flex: 1 1 40px; min-width: 30px; display: flex; flex-direction: column"><sc-if value="{{r.isBar}}"><span style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if><sc-if value="{{r.isPips}}"><span style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if></span><span style="{{r.miniValueStyle}}">{{r.value}}</span><sc-if value="{{r.hasWarn}}"><span class="phc-res-chip" role="status" style="{{r.warnStyle}}">{{r.warn}}</span></sc-if></span>
@@ -380,7 +382,8 @@
 <span style="font-size: 12px; line-height: 1.35; color: #C9D3E3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden"><span style="font-weight: 700; color: #E7EBF3">{{sel.name}}</span> · {{sel.text}}</span>
 <div style="display: flex; gap: 8px">
 <button type="button" class="phc-cb-act" onClick="{{confirm}}" disabled="{{cantConfirm}}" hidden="{{noConfirm}}" data-sfx="{{confirmSfx}}" style="flex: 1; min-height: 40px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">{{confirmText}}</button>
-<button type="button" class="phc-cb-act" onClick="{{endTurn}}" disabled="{{notMine}}" style="flex: 1; min-height: 40px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
+<sc-if value="{{noTurns}}" hint-placeholder-val="{{false}}"><span data-phc-no-turns="" style="flex: 1; align-self: center; font-size: 12px; line-height: 1.35; color: #A3AEC2">{{noTurnsText}}</span></sc-if>
+<button type="button" class="phc-cb-act" onClick="{{endTurn}}" disabled="{{notMine}}" hidden="{{noTurns}}" style="flex: 1; min-height: 40px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">End turn</button>
 </div>
 </div>
 </sc-if>

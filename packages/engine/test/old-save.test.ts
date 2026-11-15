@@ -18,6 +18,12 @@
 //       picked. The script beside it (save-pre-modes-lobby.how.ts.txt) wrote it. It has no settings.play: it loads as a
 //       campaign (run-state.test.ts reads it).
 //
+//   save-live-0.28.2-field.json     written by the LIVE build's engine: origin/develop at 8d651fb1, version 0.28.2: a
+//       Survival test room of two, the first fight won, saved on the old field (rules 1.55 as 0.28.2 built it: the run at
+//       `field`, the story phase, the squad and the piles in g.story, no live fight), c1 moved, the host marked Leave.
+//       From 0.28.3 the field is the fight still running (rules 1.55 item 61): this save need not gain that, only leave
+//       (save-live-0.28.2-field.how.ts.txt wrote it).
+//
 // Each is loaded the way the client loads a save (parsed, migrateLoaded) and played on. NEVER regenerate these files:
 // they are what an old save looks like. When the saved shape changes, add a NEW fixture beside them (written by the
 // engine as it was before the change; say which commit in this list) and a migration, and these must still pass.
@@ -238,4 +244,17 @@ describe('rules 1.53: a save from before quivers were gear loads and plays on', 
     else { const qs = quiversOf(r.g.characters[archer.id]); expect(qs.length).toBe(1); expect(Object.values(qs[0].arrows).reduce((t: number, k: any) => t + k, 0)).toBe(r.g.characters[archer.id].loaded); }
     expect(() => viewFor(r.g, 'host')).not.toThrow();
   }, 60_000);
+});
+
+describe('a save written by live 0.28.2 on the old field (rules 1.55 item 66) loads and leaves', () => {
+  it('nothing but leaving is done there; the second player marks Leave, the fight is closed and the picks follow', () => {
+    const g0 = load('save-live-0.28.2-field');
+    expect(g0.run.state).toBe('field'); expect(g0.phase).toBe('story'); expect(g0.combat.field).toBeFalsy();
+    expect(() => viewFor(g0, 'host')).not.toThrow();
+    const g1 = apply(g0, { type: 'run/leave' } as any, 'p2');
+    expect(g1.run.state).toBe('reward'); expect(g1.phase).toBe('story'); expect(g1.story.positions).toEqual({});
+    for (const id of Object.keys(g1.characters)) expect(g1.story.magic?.[id]?.flux || 0).toBe(0);
+    let p = apply(g1, { type: 'run/pick', charId: 'c1', choice: 'materials' } as any, 'host'); p = apply(p, { type: 'run/pick', charId: 'c2', choice: 'materials' } as any, 'p2');
+    expect(p.run.state).toBe('map');
+  });
 });
