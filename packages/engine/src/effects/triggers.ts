@@ -197,30 +197,42 @@ for (const who of ['actor', 'target'] as Who[]) P(who + '_tied', 'tie', who + ' 
 const holdsOf = (ev: Ev, v: any): boolean => { const c = ev.h.c || charOfUnit(ev.self); return !!c && holds(c, v || {}); };
 P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; holds also reads door: any (any focus), which only recipes use: it is not a value here', (ev, v) => holdsOf(ev, v), () => FOCUS_DOORS);
 P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev, v) => !holdsOf(ev, v), () => FOCUS_DOORS);
-// Rules 1.43 (survival-spec 4.2 item 11): a named property on a gear instance (GearState.prop) works only while that
-// instance is in a hand and only for what is made with it. The event's means: a door's (a Sigil's or an Outburst's roll
+// Rules 1.43 (survival-spec 4.2 item 11), 1.56: a named property or a fitted mod on a gear instance (GearState.prop,
+// GearState.mods) works only while that instance is in a hand and only for what is made with it. The event's means: a door's (a Sigil's or an Outburst's roll
 // or damage, a save forced through a door skill, a heal or shield of a door's kind) is the hand's focus of that door; a
 // weapon's (an attack, its roll, hit or damage, a reload) is the hand that made it (the off hand while it strikes), with
 // that hand's weapon (not fists, not a thrown thing); anything else (a swap, a price) needs only the instance in a hand.
 const DOOR_OF_TYPE: Record<string, string> = { sigil: 'brain_power', soul: 'will_power' };
 const HEAL_DOOR: Record<string, string> = { tending: 'empathy', bond: 'empathy', sigil: 'brain_power', soul: 'will_power' };
 const WEAPON_HOOKS = new Set(['attack_preview', 'attack_roll', 'on_hit', 'on_miss', 'reload']);
+/** A priced action that is a weapon's own (rules 1.56: a mod's reload cost acts on the gun it is fitted to, in the hand
+ *  that reloads). */
+const WEAPON_SITES = new Set(['reload']);
 function madeWith(ev: Ev): boolean {
-  const c = ev.h.c || charOfUnit(ev.self); if (!c) return false;
+  const c = ev.h.c || charOfUnit(ev.self); if (!c) return madeWithUnit(ev);
   const hands = handProps(c).filter((p) => p.prop === ev.h.itemId).map((p) => p.hand); if (!hands.length) return false;
   const ctx = ev.ctx || {}, src = ctx.src, hook = ev.trig.hook;
   const type = ctx.type ?? src?.type, heal = hook === 'heal_in' || hook === 'shield_grant';
   const door = ctx.via && kindOfDoor(String(ctx.via)) ? String(ctx.via) : DOOR_OF_TYPE[type] || (heal ? HEAL_DOOR[ctx.kind] : null);
   if (door) { const k = kindOfDoor(door)!; return hands.some((h) => { const g = gearAt(c, h); return !!g && FOCUS_IDS[k].includes(g.id); }); }
   if (heal) return false;
-  if (type === 'weapon' || WEAPON_HOOKS.has(hook) || ctx.mode) {
+  if (type === 'weapon' || WEAPON_HOOKS.has(hook) || ctx.mode || (hook === 'cost' && WEAPON_SITES.has(ctx.action))) {
     if ((ctx.mode ?? src?.mode) === 'thrown') return false;
     const hand = ctx.hand === 'off' || ev.self.swapMain ? 'off' : 'main', g = gearAt(c, hand);
     return hands.includes(hand) && !!g && (src?.weapon ?? g.id) === g.id;
   }
   return true;
 }
-P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property (rules 1.43: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus', (ev, v) => madeWith(ev) === v);
+/** Rules 1.56: a unit with no character behind it (an enemy, a fight with no game bound) carries its weapons' mods on
+ *  itself (u.mods: the hand that strikes, the off hand's while it strikes; u.offMods otherwise): a weapon's event made
+ *  with that hand's weapon. */
+function madeWithUnit(ev: Ev): boolean {
+  const u = ev.self, ctx = ev.ctx || {}, src = ctx.src, id = ev.h.itemId;
+  if ((ctx.mode ?? src?.mode) === 'thrown') return false;
+  const off = ctx.hand === 'off' && !u.swapMain, mods = off ? u.offMods : u.mods, w = off ? u.offWeapon : u.weapon;
+  return !!w && (mods || []).includes(id) && (src?.weapon ?? w) === w;
+}
+P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus', (ev, v) => madeWith(ev) === v);
 // Rules 1.33 (Tending, Bonds and the Mender): a door's ladder, the holder's ties, the action's pick
 /** The holder's points in a skill (a character's sheet; a unit with none has 0). */
 const skillPts = (ev: Ev, sk: string): number => Number(((ev.h.c || charOfUnit(ev.self)) as any)?.skills?.[sk] || 0);

@@ -317,7 +317,6 @@
     },
     "reload": {
       "ap": 2,
-      "ap_quick_release": 1,
       "rule": "reload"
     },
     "parley": {

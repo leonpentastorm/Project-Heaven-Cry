@@ -870,7 +870,40 @@
       "clear_ap": 2,
       "cooldown_per_turn": 2
     },
-    "recoil": "each shot after the first in a turn -1 cumulative, reduced by floor(dexterity/2)",
+    "recoil": {
+      "text": "Recoil 2.0 (rules 1.56): each shot after the first in a turn is at minus the gun's Recoil (its `recoil` field with its mods': weapons_rules.gear_fields), cumulative, reduced by floor(Dexterity / dex_relief_per); halved (braced_mult, rounded toward 0) braced or Emplaced; none in a volley, a reaction or full auto.",
+      "dex_relief_per": 2,
+      "braced_mult": 0.5
+    },
+    "gear_fields": {
+      "about": "Rules 1.56 (plan 0.29 primitive 2): the closed list of a weapon instance's number fields (character.ts gearNum). Each is a field of the weapon row (its own value, else `default`) and of a mod row (its change); `combine` sum adds every mod's to the weapon's, max takes the largest; a mod's `<field>_modes` limits its value to those attack modes.",
+      "recoil": {
+        "combine": "sum",
+        "default": 1,
+        "about": "the Recoil each earlier shot this turn adds (bows and the core rifle 0; the compensator -1)",
+        "provisional": true
+      },
+      "magazine_pct": {
+        "combine": "sum",
+        "default": 0,
+        "about": "percent more rounds in every magazine of the gun, rounded down (the extended magazine)"
+      },
+      "bands": {
+        "combine": "max",
+        "default": 0,
+        "about": "range bands past the effective range with no penalty against units (the red dot; the scope on aimed shots)"
+      },
+      "silent": {
+        "combine": "max",
+        "default": 0,
+        "about": "1: the gun's shots don't reveal a Hidden shooter (the suppressor)"
+      },
+      "melee_damage": {
+        "combine": "max",
+        "default": 0,
+        "about": "the damage of a melee blow made with the gun instead of the fists' (the bayonet; the blow hits with the fists' skill)"
+      }
+    },
     "range_bands": {
       "band_length": "effective range",
       "penalty_per_band": -2,
@@ -1020,8 +1053,9 @@
       "provisional": true
     },
     "special_round_price": {
-      "about": "Rules 1.42: special rounds fit any gun, so a round's price is its `price_mult` (items.json) times this calibre's round price (Core Rules: armour-piercing x3, hollow-point x2, incendiary x3 of a rifle round); enhanced rounds have their own price.",
+      "about": "Rules 1.56 (L2; was rules 1.42): a special round with a `price_mult` (items.json: armour-piercing x3, hollow-point x2, incendiary x3) is made, sold and carried by calibre: `rounds:<calibre>:<type>` costs `price_mult` x that calibre's round, and comes in the `calibres` listed here (the guns that are not bows, flamers, launchers or core rifles). `calibre` is the reference: a bare item id (`ammo_armor_piercing`, a 0.28 save's line, a loot row) reads as rounds of it. Enhanced rounds (no `price_mult`) keep their own price and fit any gun.",
       "calibre": "rifle",
+      "calibres": [".32 decrkm", "revolver", "rifle", "shell", ".700", ".50 frontier"],
       "provisional": true
     },
     "worn": {
@@ -1819,6 +1853,16 @@
         "level": "deal",
         "pair": "weapon",
         "shape": "aimed"
+      },
+      "melee": {
+        "k": 1.15385,
+        "attr": 0.05,
+        "skill": 0,
+        "level": "deal",
+        "pair": "weapon",
+        "shape": "struck",
+        "provisional": true,
+        "note": "rules 1.56 (Balance 2.0, Leon 15 Nov 2026: melee damage grows with Strength, finesse blades with Agility; the skill buys the hit only): the profile of a character's melee blow, named by the weapon (weapons.json phys.profile); its Attribute is the weapon's phys.scales_with. +attr a point of that Attribute over 1, no skill slope; k re-pins the all-in build (Attribute 7 at creation) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so a lower Attribute deals less than before 1.56 and a higher one more. PROVISIONAL (spec item 1.56-L6)"
       },
       "sigil": {
         "k": 1.7,

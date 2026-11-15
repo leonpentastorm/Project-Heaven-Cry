@@ -548,8 +548,63 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
 /** The starting kits from the creation screen (the campaign's four; rules 1.51 added `rigger` and `mender`): what's held,
  * worn and packed (spec: Reloading, Item weights). */
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
-/** A pack line of loose rounds of a calibre (the one shape of a rounds line). */
-export const roundsOf = (calibre: string, n: number): PackItem => ({ id: 'rounds:' + calibre, name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre });
+/** A pack line of loose rounds of a calibre (the one shape of a rounds line); with `type`, special rounds of that
+ * calibre (rules 1.56, L2: `ammoType` on the line, as a typed arrow line has). */
+export const roundsOf = (calibre: string, n: number, type?: string | null): PackItem => ({ id: 'rounds:' + calibre + (type ? ':' + type : ''), name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre, ...(type ? { ammoType: type } : {}) });
+// ---------- special rounds by calibre (rules 1.56, L2) ----------
+const SRP: any = (RULES as any).weapons_rules?.special_round_price || {};
+/** The calibres special rounds are made and sold in (`weapons_rules.special_round_price.calibres`). */
+export const SPECIAL_CALIBRES: readonly string[] = SRP.calibres || [];
+/** The reference calibre: a bare special-round item (a 0.28 line, a loot row) reads as rounds of it. */
+export const SPECIAL_REF_CALIBRE: string = SRP.calibre || '';
+/** The special-round item of each type that is made and sold by calibre (items.json: an `ammo_type` with a
+ * `price_mult`), by type. An `ammo_type` item without one (enhanced rounds) is its own item and fits any gun. */
+export const SPECIAL_ROUND_ITEM: Readonly<Record<string, any>> = Object.fromEntries(Object.values(ITEM).filter((it: any) => it?.ammo_type && Number(it.price_mult) > 0).map((it: any) => [it.ammo_type, it]));
+/** The parts of a rounds id: `rounds:<calibre>` (type null) or `rounds:<calibre>:<type>` (a special round of that
+ * calibre); null for any other id. The one reader of the shape (a calibre id holds no colon). */
+export function roundsIdOf(id: string): { calibre: string; type: string | null } | null {
+  const r = /^rounds:([^:]+)(?::([^:]+))?$/.exec(id || ''); return r ? { calibre: r[1], type: r[2] || null } : null;
+}
+/** A bare special-round item id (`ammo_armor_piercing`: a 0.28 pack line, a loot or shop row) as the rounds id it
+ * reads as: that type in the reference calibre. Null for any other id. */
+export function legacySpecialId(id: string): string | null {
+  const it: any = ITEM[id]; return it?.ammo_type && SPECIAL_ROUND_ITEM[it.ammo_type] === it && SPECIAL_REF_CALIBRE ? 'rounds:' + SPECIAL_REF_CALIBRE + ':' + it.ammo_type : null;
+}
+/** A pack line of plain (standard) loose rounds of calibre `cal`: what a magazine is filled from and a round-by-round
+ * gun reloads from. A special-rounds line of the calibre (`ammoType`) is not one: it is loaded as its type. */
+export const plainRounds = (it: PackItem, cal: string | null | undefined): boolean => !!cal && it.calibre === cal && !it.mags && !it.ammoType;
+const specialTypeOf = (it: PackItem, cal: string | null | undefined): string | null => {
+  if (it.mags) return null;
+  if (it.calibre) return cal && it.calibre === cal && it.ammoType && it.ammoType !== 'standard' ? it.ammoType : null;
+  const d: any = ITEM[it.item || it.id]; return d?.ammo_type && !(Number(d.price_mult) > 0) && d.ammo_type !== 'standard' ? d.ammo_type : null;
+};
+/** The special rounds a pack holds for a gun of calibre `cal`, by type: the rounds lines of that calibre with a type,
+ * and the items of a type that fit any gun (an `ammo_type` item with no `price_mult`: enhanced rounds). */
+export function specialRoundsFor(pack: readonly PackItem[], cal: string | null | undefined): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const it of pack) { const t = specialTypeOf(it, cal); if (t && it.qty > 0) out[t] = (out[t] || 0) + it.qty; }
+  return out;
+}
+/** Take up to `n` special rounds of `type` for a gun of calibre `cal` out of a pack (a new list; emptied lines go).
+ * Returns the pack and how many were taken. */
+export function takeSpecialRounds(pack: readonly PackItem[], cal: string | null | undefined, type: string, n: number): { pack: PackItem[]; took: number } {
+  let left = Math.max(0, n), took = 0;
+  const out = pack.map((x) => { if (!left || specialTypeOf(x, cal) !== type || x.qty <= 0) return x; const k = Math.min(left, x.qty); left -= k; took += k; return { ...x, qty: x.qty - k }; }).filter((x) => x.qty > 0 || x.mags);
+  return { pack: out, took };
+}
+/** Rules 1.56 (L2): a 0.28 pack's bare special-round lines become rounds of the reference calibre (in place; merged
+ * with a line of the same calibre and type). Returns whether anything changed. */
+function migrateSpecialRounds(c: Character): boolean {
+  const pack = c.pack; if (!Array.isArray(pack) || !pack.some((x) => !x.calibre && !x.mags && legacySpecialId(x.item || x.id))) return false;
+  const out: PackItem[] = [];
+  for (const x of pack) {
+    const rid = !x.calibre && !x.mags ? legacySpecialId(x.item || x.id) : null, p = rid ? roundsIdOf(rid) : null;
+    if (!p) { out.push(x); continue; }
+    const same = out.find((y) => y.calibre === p.calibre && !y.mags && (y.ammoType || null) === p.type);
+    if (same) out[out.indexOf(same)] = { ...same, qty: same.qty + x.qty }; else out.push(roundsOf(p.calibre, x.qty, p.type));
+  }
+  c.pack = out; return true;
+}
 /** Rules 1.54 (survival-spec 14.2 item 6): the kind of pack line an item makes, the ONE rule for every place that puts
  * an item in a pack (a loadout, a kit, loot, a purchase, stowing, a trait's start item), so the same item always makes
  * the same line and stacks: its `pack_kind` in items.json, else by its category (a focus a focus, a consumable a med,
@@ -587,12 +642,12 @@ export function loadAll(c: Character): number {
   let moved = 0;
   for (const m of pack) if (m.mags && m.weapon) {
     const cap = WEAPON[m.weapon]?.magazine || 0, cal = WEAPON[m.weapon]?.ammo;
-    for (const r of pack) if (r.calibre && r.calibre === cal) for (let i = 0; i < m.mags.length && r.qty > 0; i++) { const take = Math.min(cap - m.mags[i], r.qty); m.mags[i] += take; r.qty -= take; moved += take; }
+    for (const r of pack) if (plainRounds(r, cal)) for (let i = 0; i < m.mags.length && r.qty > 0; i++) { const take = Math.min(cap - m.mags[i], r.qty); m.mags[i] += take; r.qty -= take; moved += take; }
   }
   c.pack = pack.filter((it) => it.qty > 0 || it.mags);
   return moved;
 }
-export const loadedOf = (c: Character) => c.loaded ?? (WEAPON[c.weapon]?.magazine || 0);
+export const loadedOf = (c: Character) => c.loaded ?? (magazineSize(c.weapon, c.weaponState?.mods) || 0); // rules 1.56: the magazine as its mods size it
 export const spareMags = (c: Character) => packOf(c).find((x) => x.weapon === c.weapon && x.mags)?.mags || [];
 
 // ---------- weight (spec: Item weights) ----------
@@ -664,13 +719,17 @@ export const physicalMult = (c: Character) => fx(c, 'mult_physical', statOf('phy
 export function weaponMult(c: Character, weaponId: string | null | undefined): number {
   const ph: any = (WEAPON[weaponId || ''] as any)?.phys; if (!ph) return physicalMult(c);
   const skills: string[] = ph.also_scales?.length ? ph.also_scales : [ph.hits_with];
-  return fx(c, 'mult_physical', statOf('weapon', c, { attrs: ph.scales_with as string[], skills }));
+  return fx(c, 'mult_physical', statOf(weaponProfile(weaponId), c, { attrs: ph.scales_with as string[], skills }));
 }
+/** Rules 1.56 (Balance 2.0, Leon 15 Nov 2026): the damage profile a weapon's Stat term reads (data/rules.json
+ * output.profiles): its `phys.profile` (a melee weapon: `melee`, a slope on its `scales_with` Attribute), else `weapon`
+ * (no slope: a gun's damage is the gun's and the round's). */
+const weaponProfile = (weaponId: string | null | undefined): string => (WEAPON[weaponId || ''] as any)?.phys?.profile || 'weapon';
 /** What that multiplier is made of, in words ("Agility and Dexterity"): the label on the damage line. */
 export function weaponMultLabel(weaponId: string | null | undefined, o: { /** rules 1.55: only the inputs whose slope in the profile weaponMult reads is not 0 ('' when none is) */ live?: boolean } = {}): string {
   const ph: any = (WEAPON[weaponId || ''] as any)?.phys;
   if (!ph && !o.live) return 'Strength and Raw Power';
-  const prof = ph ? 'weapon' : 'physical', p = profileOf(prof);
+  const prof = ph ? weaponProfile(weaponId) : 'physical', p = profileOf(prof);
   const attrs: string[] = ph ? ph.scales_with : pairOf(prof).attrs, skills: string[] = ph ? (ph.also_scales?.length ? ph.also_scales : [ph.hits_with]) : pairOf(prof).skills;
   return namesOf([...(!o.live || p.attr ? attrs : []), ...(!o.live || p.skill ? skills : [])]);
 }
@@ -856,12 +915,14 @@ export function focusRarity(c: Character, door: string): Rarity | null {
   if (held[1] && ids.includes(held[1])) return c.offHand?.rarity || 'standard';
   return null;
 }
-/** Rules 1.43 (item 11): the named properties of the instances in the hands, with the hand each is in (the off hand
- * unless a two-handed weapon fills both). What heldOfChar loads as relic items. */
-export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => [
-  ...(c.weaponState?.prop && c.weapon !== 'fists' ? [{ prop: c.weaponState.prop, hand: 'main' as const }] : []),
-  ...(c.offHand?.prop && !twoHands(c, c.weapon) ? [{ prop: c.offHand.prop, hand: 'off' as const }] : []),
-];
+/** Rules 1.43 (item 11), 1.56: the modifier items of the instances in the hands (a named property, the fitted mods), with
+ * the hand each is in (the off hand unless a two-handed weapon fills both). What heldOfChar loads as relic items and
+ * `with_this` reads. */
+export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => {
+  // rules 1.56 (plan 0.29 primitive 1): an instance's modifier items are its property and its fitted mods, one door
+  const carried = (st: { prop?: string; mods?: string[] } | null | undefined, hand: 'main' | 'off') => [...(st?.prop ? [st.prop] : []), ...(st?.mods || [])].map((prop) => ({ prop, hand }));
+  return [...(c.weapon !== 'fists' ? carried(c.weaponState, 'main') : []), ...(c.offHand && !twoHands(c, c.weapon) ? carried(c.offHand, 'off') : [])];
+};
 /** Rules 1.43 (item 11; survival-spec rule 31): the named property of every instance a character carries (hands and
  * pack), one per instance: what counts on its run's cap whether in hand or not. */
 export const gearProps = (c: Character): string[] => [
@@ -1156,6 +1217,7 @@ export function migrateCharacterItems(c: Character): string[] {
     c.perks = out;
   }
   if ((c.traits || []).some((t) => !knownTrait(t))) c.traits = c.traits.filter(knownTrait);
+  if (migrateSpecialRounds(c)) notes.push(c.name + ': special rounds are carried by calibre now; the old ones are ' + (CALIBRE_NAME[SPECIAL_REF_CALIBRE] || SPECIAL_REF_CALIBRE) + ' rounds.');
   return notes;
 }
 export function migrateCharacterFocus(c: Character): string[] {
@@ -1249,7 +1311,9 @@ export function twoHands(c: Character, wid: string | null | undefined): boolean 
 }
 const equipBanWhy = (c: Character, ctx: any): string => {
   const w: any = ctx.weapon ? WEAPON[ctx.weapon] : null, t: string[] = w?.tags || [];
-  if ((c.traits || []).includes('old_school')) return ctx.mod === 'mod_red_dot' || (ctx.mods || []).includes('mod_red_dot') ? 'Old School: no red dot on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';
+  // rules 1.56: a mod's tags are its data (the red dot is `electronic`); its name is the refusal's
+  const em = [ctx.mod, ...(ctx.mods || [])].map((id: string) => (id ? (ITEM[id] as any) : null)).find((m: any) => (m?.tags || []).includes('electronic'));
+  if ((c.traits || []).includes('old_school')) return em ? 'Old School: no ' + String(em.name).toLowerCase() + ' on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';
   return 'A trait won\'t let you.';
 };
 /** A pack entry that is ammunition (a magazine stack, loose rounds), never a thing for a hand (review fix). */
@@ -1331,20 +1395,43 @@ export function unequip(c: Character, slot: string): string | null {
   else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
   c.pack = pack; return null;
 }
-/** Fit a mod from the pack onto the main-hand weapon, if it has that slot free. */
-export function fitMod(c: Character, idx: number): string | null {
+/** Fit a mod from the pack (line `idx`) onto a carried weapon: the main hand (default), the off hand, or a pack line
+ * holding a weapon (rules 1.56 L3 item 2; one of a stack is split off to take it). A mod already in that slot comes off
+ * into the pack. */
+export function fitMod(c: Character, idx: number, where: 'main' | 'off' | number = 'main'): string | null {
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[idx], m = it && (ITEM[it.item || it.id] as any);
   if (!m || m.category !== 'mod') return 'That isn\'t a mod.';
-  const slots: string[] = (WEAPON[c.weapon] as any)?.mod_slots || [], mods = [...(c.weaponState?.mods || [])];
-  if (!slots.includes(m.mod_slot)) return 'Your weapon has no ' + m.mod_slot + ' slot.';
+  const t = typeof where === 'number' ? pack[where] : null;
+  if (typeof where === 'number' && (!t || t.kind !== 'weapon' || !t.weapon || where === idx)) return 'That isn\'t a weapon.';
+  if (where === 'off' && !c.offHand) return 'Nothing in your off hand.';
+  const wid = where === 'main' ? c.weapon : where === 'off' ? c.offHand!.id : t!.weapon!;
+  const slots: string[] = (WEAPON[wid] as any)?.mod_slots || [], mods = [...((where === 'main' ? c.weaponState?.mods : where === 'off' ? c.offHand!.mods : t!.mods) || [])];
+  if (!slots.includes(m.mod_slot)) return (where === 'main' ? 'Your weapon' : 'The ' + (WEAPON[wid]?.name || wid)) + ' has no ' + m.mod_slot + ' slot.';
   if (statQuery({ c }, 'equip_ban', { mod: m.id }).add > 0) return equipBanWhy(c, { mod: m.id });
   const old = mods.find((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot);
   if (old) { mods.splice(mods.indexOf(old), 1); pack.push({ id: old, item: old, name: ITEM[old].name, qty: 1, kind: packKindOf(old) }); }
-  mods.push(m.id); if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
-  c.weaponState = { ...(c.weaponState || {}), mods }; c.pack = pack; return null;
+  mods.push(m.id);
+  if (t) { if (t.qty > 1) { t.qty--; pack.push({ ...t, qty: 1, mods }); } else t.mods = mods; }
+  if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
+  if (where === 'main') c.weaponState = { ...(c.weaponState || {}), mods }; else if (where === 'off') c.offHand = { ...c.offHand!, mods };
+  c.pack = pack; return null;
 }
-/** Whether a gear's fitted mod list holds this mod id. */
-export const hasMod = (mods: string[] | undefined, id: string) => !!mods && mods.includes(id);
+// ---------- a weapon instance's numbers (rules 1.56, plan 0.29 primitive 2) ----------
+const GEAR_FIELDS: Record<string, { combine: 'sum' | 'max'; default?: number }> = (RULES as any).weapons_rules?.gear_fields || {};
+/** A weapon instance's number (the gun and its fitted mods): one of the closed list of fields in data/rules.json
+ * weapons_rules.gear_fields (recoil, magazine_pct, bands, silent, melee_damage). The weapon row's own value (else the
+ * list's `default`) and each mod row's change, combined by the list's `combine` (sum: the weapon's plus every mod's; max:
+ * the largest). A mod's `<field>_modes` limits its value to those attack modes (the scope's band: aimed shots only). An
+ * unknown field throws. */
+export function gearNum(weaponId: string | null | undefined, mods: readonly string[] | null | undefined, field: string, mode?: string): number {
+  const f = GEAR_FIELDS[field]; if (!f) throw new Error('gearNum: "' + field + '" is not in data/rules.json weapons_rules.gear_fields');
+  const w: any = weaponId ? WEAPON[weaponId] : null, own = typeof w?.[field] === 'number' ? w[field] : f.default ?? 0;
+  const vals = (mods || []).map((id) => ITEM[id] as any).filter((m) => m && typeof m[field] === 'number' && (!m[field + '_modes'] || (!!mode && m[field + '_modes'].includes(mode)))).map((m) => m[field] as number);
+  return f.combine === 'max' ? Math.max(own, ...vals) : vals.reduce((t, v) => t + v, own);
+}
+/** The mods fitted to the carried instance of this weapon (the main hand's, else the off hand's; none in the pack): what
+ * a spare magazine of that weapon is sized by. */
+export const modsOn = (c: Character, weaponId: string | null | undefined): string[] => (weaponId && c.weapon === weaponId ? c.weaponState?.mods : weaponId && c.offHand?.id === weaponId ? c.offHand.mods : null) || [];
 
 // ---------- quivers (rules 1.53): graded gear, two carried, one worn ----------
 /** A quiver the character carries (rules 1.53): the item (items.json category `quiver`), its grade, the enchantment fitted
@@ -1439,7 +1526,7 @@ export function fitQuiverMod(c: Character, idx: number, i: number): string | nul
   return null;
 }
 /** A weapon's magazine size with its fitted mods (null: it has no magazine). */
-export const magazineSize = (weaponId: string, mods?: string[]) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : hasMod(mods, 'mod_extended_mag') ? Math.floor(m * 1.5) : m; };
+export const magazineSize = (weaponId: string, mods?: readonly string[] | null) => { const m = WEAPON[weaponId]?.magazine; return m == null ? null : Math.floor(m * (1 + gearNum(weaponId, mods, 'magazine_pct') / 100)); };
 
 // ---------- class resources and advanced classes (spec: Classes; rules 1.3 shared subsystems) ----------
 /** A class resource: id, maximum now, and whether it persists between fights (Supplies, toxins; refilled at a long

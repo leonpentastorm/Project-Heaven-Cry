@@ -7,7 +7,7 @@
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, maxDurOf, quiverHolds, quiversOf } from './character';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf } from './effects/output';
@@ -114,7 +114,12 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       const mag = magazineSize(id, inst.mods);
       if (mag != null) lines.push({ key: 'mag', label: 'Magazine', value: mag + (CALIBRE_NAME[w.ammo] || w.ammo ? ' · ' + (CALIBRE_NAME[w.ammo] || w.ammo) : ''), num: mag, better: 'higher' });
       lines.push({ key: 'range', label: 'Range', value: effectiveRange(w) + ' tiles', num: effectiveRange(w), better: 'higher' });
+      // Recoil 2.0 (rules 1.56): what each earlier shot this turn costs to hit, with its mods (the one reading: gearNum)
+      const kick = Math.max(0, gearNum(id, inst.mods, 'recoil'));
+      lines.push({ key: 'recoil', label: 'Recoil a shot', value: kick ? '−' + kick : 'none', num: kick, better: 'lower' });
     }
+    // rules 1.56: each fitted mod, by its own data text
+    for (const m of inst.mods || []) { const mi: any = ITEM[m]; if (mi) lines.push({ key: 'mod:' + m, label: mi.name, value: String(mi.text || ''), num: null }); }
     { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
     lines.push(...skillLines(c, u, w));
     const traits = [...(w.properties || []), ...((w.phys?.props as string[]) || [])].map((t) => cap(String(t).replace(/_/g, ' ')));
@@ -161,12 +166,14 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   }
   // rules 1.55: `mag:<weapon>:<rounds>` is a magazine holding that many (`:0` empty)
   const r0 = /^(rounds|mag):(.+)$/.exec(id), mr = r0?.[1] === 'mag' ? /^([^:]+)(?::(\d+))?$/.exec(r0[2]) : null;
-  const r = r0 ? [r0[0], r0[1], mr ? mr[1] : r0[2]] : null, mcap = r ? (WEAPON[r[2]] as any)?.magazine ?? 0 : 0, held = mr?.[2] != null ? Math.min(mcap, Number(mr[2])) : mcap;
+  // rules 1.56 (L2): `rounds:<calibre>:<type>` is a special round of that calibre: its type's item names and tells it
+  const rs = r0?.[1] === 'rounds' ? roundsIdOf(id) : null, sp: any = rs?.type ? SPECIAL_ROUND_ITEM[rs.type] : null;
+  const r = r0 ? [r0[0], r0[1], mr ? mr[1] : rs ? rs.calibre : r0[2]] : null, mcap = r ? (WEAPON[r[2]] as any)?.magazine ?? 0 : 0, held = mr?.[2] != null ? Math.min(mcap, Number(mr[2])) : mcap;
   if (r || it?.category === 'ammo') {
     const cal = r?.[1] === 'rounds' ? r[2] : r ? (WEAPON[r[2]] as any)?.ammo : null;
     const users = cal ? Object.values(WEAPON).filter((x: any) => x.ammo === cal).map((x: any) => x.name) : [];
-    return { ...base, name: r ? (r[1] === 'rounds' ? (CALIBRE_NAME[r[2]] || r[2]) + ' rounds' : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
-      text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : 'Loose rounds.') : base.text,
+    return { ...base, name: r ? (r[1] === 'rounds' ? (sp ? sp.name + ' (' + (CALIBRE_NAME[r[2]] || r[2]) + ')' : (CALIBRE_NAME[r[2]] || r[2]) + ' rounds') : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
+      text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : sp ? sp.text : 'Loose rounds.') : base.text,
       lines: [
         ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: String(held), num: held }] : []),
         ...(cal ? [{ key: 'calibre', label: 'Calibre', value: CALIBRE_NAME[cal] || cal, num: null }] : [{ key: 'fits', label: 'Fits', value: 'any gun', num: null }]),

@@ -11,6 +11,7 @@
       "damage": 20,
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 12,
       "heat_limit": 6,
       "modes": [
@@ -66,6 +67,7 @@
       "damage": 28,
       "damage_type": "physical",
       "range_tiles": 10,
+      "recoil": 1,
       "magazine": 6,
       "heat_limit": 6,
       "modes": [
@@ -123,6 +125,7 @@
       "damage": 19,
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 30,
       "heat_limit": 10,
       "modes": [
@@ -186,6 +189,7 @@
       "damage": 30,
       "damage_type": "physical",
       "range_tiles": 16,
+      "recoil": 1,
       "magazine": 24,
       "heat_limit": 8,
       "modes": [
@@ -247,6 +251,7 @@
       "damage": 32,
       "damage_type": "physical",
       "range_tiles": 14,
+      "recoil": 1,
       "magazine": 8,
       "heat_limit": 6,
       "modes": [
@@ -312,6 +317,7 @@
       },
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 6,
       "heat_limit": 6,
       "modes": [
@@ -368,6 +374,7 @@
       "damage": 48,
       "damage_type": "physical",
       "range_tiles": 30,
+      "recoil": 1,
       "magazine": 5,
       "heat_limit": 6,
       "modes": [
@@ -430,6 +437,7 @@
       "damage": 66,
       "damage_type": "physical",
       "range_tiles": 40,
+      "recoil": 1,
       "magazine": 3,
       "heat_limit": 3,
       "modes": [
@@ -493,6 +501,7 @@
       "damage": 25,
       "damage_type": "physical",
       "range_tiles": 18,
+      "recoil": 1,
       "magazine": 100,
       "heat_limit": 14,
       "modes": [
@@ -555,6 +564,7 @@
       "damage": "20 + 5*raw_power",
       "damage_type": "physical",
       "range_tiles": 14,
+      "recoil": 0,
       "magazine": 40,
       "heat_limit": null,
       "modes": [
@@ -572,7 +582,6 @@
       "properties": [
         "silent",
         "no_heat",
-        "no_recoil",
         "quiver"
       ],
       "text": "",
@@ -613,6 +622,7 @@
       "damage": 55,
       "damage_type": "physical",
       "range_tiles": 16,
+      "recoil": 0,
       "magazine": 1,
       "heat_limit": null,
       "modes": [
@@ -630,7 +640,6 @@
       "properties": [
         "silent",
         "no_heat",
-        "no_recoil",
         "autoload"
       ],
       "text": "",
@@ -713,6 +722,7 @@
       "type": "combat_knife",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge",
@@ -764,6 +774,7 @@
       "type": "sabre",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge"
@@ -813,6 +824,7 @@
       "type": "ork_machete",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge"
@@ -863,6 +875,7 @@
       "type": "maul",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "blunt"
@@ -914,6 +927,7 @@
       "type": "lance",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "point",
@@ -963,6 +977,7 @@
       "type": "fists",
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "bare"
@@ -1146,6 +1161,7 @@
       "damage": 17,
       "damage_type": "physical",
       "range_tiles": 6,
+      "recoil": 1,
       "magazine": 20,
       "heat_limit": 8,
       "modes": [
@@ -1206,6 +1222,7 @@
       "damage": 16,
       "damage_type": "physical",
       "range_tiles": 4,
+      "recoil": 1,
       "magazine": 2,
       "heat_limit": 4,
       "modes": [
@@ -1264,6 +1281,7 @@
       "damage": 26,
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 7,
       "heat_limit": 5,
       "modes": [
@@ -1325,6 +1343,7 @@
       "damage": 38,
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 5,
       "heat_limit": 4,
       "modes": [
@@ -1387,6 +1406,7 @@
       "damage": 20,
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 25,
       "heat_limit": 9,
       "modes": [
@@ -1448,6 +1468,7 @@
       "damage": 16,
       "damage_type": "physical",
       "range_tiles": 7,
+      "recoil": 1,
       "magazine": 30,
       "heat_limit": 12,
       "modes": [
@@ -1509,6 +1530,7 @@
       "damage": 19,
       "damage_type": "physical",
       "range_tiles": 7,
+      "recoil": 1,
       "magazine": 70,
       "heat_limit": 10,
       "modes": [
@@ -1570,6 +1592,7 @@
       "damage": 30,
       "damage_type": "physical",
       "range_tiles": 18,
+      "recoil": 1,
       "magazine": 15,
       "heat_limit": 6,
       "modes": [
@@ -1634,6 +1657,7 @@
       "damage": 33,
       "damage_type": "physical",
       "range_tiles": 22,
+      "recoil": 1,
       "magazine": 10,
       "heat_limit": 6,
       "modes": [
@@ -1694,6 +1718,7 @@
       "damage": 28,
       "damage_type": "physical",
       "range_tiles": 14,
+      "recoil": 1,
       "magazine": 30,
       "heat_limit": 8,
       "modes": [
@@ -1757,6 +1782,7 @@
       },
       "damage_type": "physical",
       "range_tiles": 6,
+      "recoil": 1,
       "magazine": 2,
       "heat_limit": 4,
       "modes": [
@@ -1823,6 +1849,7 @@
       },
       "damage_type": "physical",
       "range_tiles": 6,
+      "recoil": 1,
       "magazine": 2,
       "heat_limit": 4,
       "modes": [
@@ -1885,6 +1912,7 @@
       },
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 12,
       "heat_limit": 9,
       "modes": [
@@ -1950,6 +1978,7 @@
       "damage": 22,
       "damage_type": "physical",
       "range_tiles": 16,
+      "recoil": 1,
       "magazine": 200,
       "heat_limit": 20,
       "modes": [
@@ -2014,6 +2043,7 @@
       "damage": 40,
       "damage_type": "physical",
       "range_tiles": 14,
+      "recoil": 1,
       "magazine": 6,
       "heat_limit": 4,
       "modes": [
@@ -2071,6 +2101,7 @@
       "damage": 110,
       "damage_type": "physical",
       "range_tiles": 16,
+      "recoil": 1,
       "magazine": 1,
       "heat_limit": null,
       "modes": [
@@ -2131,6 +2162,7 @@
       "damage": 20,
       "damage_type": "fire",
       "range_tiles": 3,
+      "recoil": 1,
       "magazine": 10,
       "heat_limit": null,
       "modes": [
@@ -2237,6 +2269,7 @@
       "damage": "25 + 6*raw_power",
       "damage_type": "physical",
       "range_tiles": 20,
+      "recoil": 0,
       "magazine": 40,
       "heat_limit": null,
       "modes": [
@@ -2254,7 +2287,6 @@
       "properties": [
         "silent",
         "no_heat",
-        "no_recoil",
         "quiver"
       ],
       "text": "You can shoot over full cover at a target that someone on your side can see, at −2 to hit.",
@@ -2299,6 +2331,7 @@
       "damage": 22,
       "damage_type": "physical",
       "range_tiles": 10,
+      "recoil": 0,
       "magazine": 6,
       "heat_limit": null,
       "modes": [
@@ -2315,8 +2348,7 @@
       "price_credits": 700,
       "properties": [
         "silent",
-        "no_heat",
-        "no_recoil"
+        "no_heat"
       ],
       "text": "For {=grants.effect.ap} AP, fire two bolts. Each rolls to hit on its own.",
       "mastery_family": "bows",
@@ -2397,6 +2429,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "point",
@@ -2452,6 +2485,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge",
@@ -2505,6 +2539,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "point",
@@ -2557,6 +2592,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "point"
@@ -2600,6 +2636,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "edge"
@@ -2652,6 +2689,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge",
@@ -2704,6 +2742,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge",
@@ -2758,6 +2797,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge",
@@ -2812,6 +2852,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "edge"
@@ -2859,6 +2900,7 @@
       "provisional": true,
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "light",
           "bare",
@@ -2919,6 +2961,7 @@
       ],
       "phys": {
         "system": "melee",
+        "profile": "melee",
         "props": [
           "heavy",
           "bare",
@@ -3053,6 +3096,7 @@
       "damage": 29,
       "damage_type": "elemental",
       "range_tiles": 16,
+      "recoil": 0,
       "magazine": 10,
       "heat_limit": null,
       "modes": [
@@ -3113,6 +3157,7 @@
       "damage": 22,
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 12,
       "heat_limit": 6,
       "modes": [
@@ -3364,6 +3409,7 @@
       },
       "damage_type": "physical",
       "range_tiles": 8,
+      "recoil": 1,
       "magazine": 6,
       "heat_limit": 6,
       "modes": [

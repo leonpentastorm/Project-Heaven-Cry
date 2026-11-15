@@ -5,7 +5,7 @@ import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, plainRounds, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -41,6 +41,8 @@ import { condMods, condDef } from './condtable';
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
 /** Rules 1.26 (the re-fit): what a character's melee blow is multiplied by, melee's identity (data/rules.json output.factors.melee). */
 const MELEE_FACTOR: number = factorOf('melee');
+/** Recoil 2.0 (rules 1.56): the Dexterity relief step and the braced / Emplaced share (data/rules.json weapons_rules.recoil). */
+const RECOIL: { dex_relief_per: number; braced_mult: number } = (() => { const r: any = (RULES as any).weapons_rules?.recoil; if (!r || typeof r.dex_relief_per !== 'number' || typeof r.braced_mult !== 'number') throw new Error('data/rules.json weapons_rules.recoil needs dex_relief_per and braced_mult'); return r; })();
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
   /** What is where, by grid reference (spec: Grid references): shown on hover and given to the Narrator. */
   notes?: { at: string; text: string }[];
@@ -111,7 +113,7 @@ export interface Unit {
   /** Weapons v2 (spec): the weapon's condition and mods, gear effects, and per-turn flags. */
   /** Braced for Guard only, with a weapon that has no Brace of its own: the stance, not the weapon's benefits. */
   guardBrace?: boolean;
-  dmgMult?: number; dur?: number; maxDur?: number; mods?: string[]; offWeapon?: string | null; offAmmo?: number; light?: number; darkSight?: boolean; hazardImmune?: string[];
+  dmgMult?: number; dur?: number; maxDur?: number; mods?: string[]; /** rules 1.56: the mods fitted to the off-hand weapon (u.mods while it strikes) */ offMods?: string[]; offWeapon?: string | null; offAmmo?: number; light?: number; darkSight?: boolean; hazardImmune?: string[];
   ignoreDifficult?: boolean; unarmedBonus?: number; moved?: boolean; firstShotDone?: boolean; proficiency?: number; parts?: number; baseArmour?: number; dexterity?: number; athleticsPts?: number;
   /** Magic (spec: Mana, rules 1.2): what the unit knows and carries; conditions (rounds left); a shield; the base
    * Movement and Vision a condition halved. */
@@ -515,11 +517,11 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
     vigilant: c.skills.vigilant || 0, overweight: overweightKg(c),
     dmgMult: RARITY[c.weaponState?.rarity || 'standard'].dmg, dur: weaponDurOf(c), maxDur: maxDurOf(w.id, c.weaponState?.rarity), mods: [...(c.weaponState?.mods || [])],
-    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? WEAPON[c.offHand.id].magazine ?? 0, WEAPON[c.offHand.id].magazine ?? 0) : 0, // its own rounds (item 688)
+    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, ...(c.offHand && WEAPON[c.offHand.id] && c.offHand.mods?.length ? { offMods: [...c.offHand.mods] } : {}), offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? WEAPON[c.offHand.id].magazine ?? 0, WEAPON[c.offHand.id].magazine ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
-    parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
-    mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass || c.relics?.length || skillItemsOf(c.skills).length || heldOfChar(c).verbs?.length ? { held: heldOfChar(c) } : {}),
+    parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => plainRounds(x, w.ammo)).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
+    mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass || c.relics?.length || skillItemsOf(c.skills).length || heldOfChar(c).verbs?.length || heldOfChar(c).relics?.length ? { held: heldOfChar(c) } : {}), // rules 1.56: a fitted mod is held too
     ...pcExtras(c, w),
   };
 }
@@ -533,7 +535,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   const spare = packOf(c).find((x) => x.weapon === c.weapon && x.mags);
   const offG = c.offHand && WEAPON[c.offHand.id] && c.offHand.id !== c.weapon ? WEAPON[c.offHand.id] : null;
   const offW = offG ? packOf(c).find((x) => x.weapon === offG.id && x.mags) : null;
-  const offLoose = offG && offG.reload === 'loose' && offG.ammo && offG.ammo !== w.ammo ? packOf(c).filter((x) => x.calibre === offG.ammo && !x.mags).reduce((t, x) => t + x.qty, 0) : null;
+  const offLoose = offG && offG.reload === 'loose' && offG.ammo && offG.ammo !== w.ammo ? packOf(c).filter((x) => plainRounds(x, offG.ammo)).reduce((t, x) => t + x.qty, 0) : null;
   const kind = (c as any).kind || ((c.traits || []).includes('factory_made') ? 'machine' : 'human');
   const res = resourcesFor(c);
   return {
@@ -1200,8 +1202,9 @@ export function meleeReachOf(att: Unit, mode: AttackMode): number {
   const w = WEAPON[att.weapon], useW = strikeWeapon(att, mode), fx: any = (w as any).grants?.effect || {};
   return useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1;
 }
-/** Range bands an optic adds against units (a red dot always; a scope on an aimed shot). */
-export const opticBands = (att: Unit, mode: AttackMode): number => (hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0);
+/** Range bands an optic adds against units: the gun's `bands` field with its mods' (rules 1.56: a red dot always; a
+ * scope on an aimed shot, its `bands_modes`). */
+export const opticBands = (att: Unit, mode: AttackMode): number => gearNum(att.weapon, att.mods, 'bands', mode);
 /** The last range band a shot can still be made in (previewAttack refuses past it). */
 export const MAX_RANGE_BANDS = 3;
 export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, opts: { extra?: number; free?: boolean; noRecoil?: boolean; /** the attack is an ambush whatever the attacker's Hidden state (a technique's: its damage shows the Ambush multiplier) */ ambush?: boolean } = {}): AttackPreview {
@@ -1246,13 +1249,15 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const heat = melee || thrown || !w.heat_limit ? 0 : -Math.floor(att.heat / 2);
   const prone = tgt.prone ? (melee ? condMods('prone').hit?.melee_vs_self : condMods('prone').hit?.ranged_vs_self) || 0 : 0, unbraced = !melee && (w.properties || []).includes('minus2_to_hit_unless_emplaced') && !att.braced && !att.prone ? -2 : 0;
   const skillBonus = useW !== w ? 0 : (fx.op === 'hit_bonus' && r <= fx.within ? fx.value : 0) + (fx.op === 'first_shot_bonus' && !att.firstShotDone ? fx.value : 0)
-    + (fx.op === 'aimed_still_bonus' && mode === 'aimed' && !att.moved ? fx.value : 0) + (fx.op === 'braced_bonus' && att.braced ? fx.value : 0) + (hasMod(att.mods, 'mod_scope') && mode === 'aimed' ? 1 : 0);
+    + (fx.op === 'aimed_still_bonus' && mode === 'aimed' && !att.moved ? fx.value : 0) + (fx.op === 'braced_bonus' && att.braced ? fx.value : 0); // a mod's to-hit is its own named term (rules 1.56: the scope's, an item op)
   const T = (v: number, label: string) => (v ? [{ v, label }] : []);
-  // Recoil (spec: Modifiers): −1 per earlier shot this turn, less floor(Dexterity ÷ 2); halved braced or Emplaced; bows
-  // and guns marked no_recoil have none; the compensator takes 1 off each shot.
-  const recoil = melee || thrown || mode === 'auto' || opts.noRecoil || hk.noRecoil || (useW.properties || []).includes('no_recoil') ? 0
-    : -Math.max(0, (att.shotsThisTurn || 0) * (hasMod(att.mods, 'mod_compensator') ? 0 : 1) - Math.floor((att.dexterity || 0) / 2));
-  const recoilT = weaponBraced(att) || condOn(att, 'emplaced') ? Math.ceil(recoil / 2) : recoil;
+  // Recoil 2.0 (rules 1.56): the gun's Recoil (its `recoil` field with its mods': the compensator −1; bows 0) for each
+  // earlier shot this turn, less floor(Dexterity ÷ the relief step); halved braced or Emplaced (data/rules.json
+  // weapons_rules.recoil); none in a volley, a reaction or full auto.
+  const kick = melee || thrown ? 0 : Math.max(0, gearNum(useW.id, useW === w ? att.mods : [], 'recoil'));
+  const recoil = melee || thrown || mode === 'auto' || opts.noRecoil || hk.noRecoil || !kick ? 0
+    : -Math.max(0, (att.shotsThisTurn || 0) * kick - Math.floor((att.dexterity || 0) / RECOIL.dex_relief_per));
+  const recoilT = weaponBraced(att) || condOn(att, 'emplaced') ? Math.ceil(recoil * RECOIL.braced_mult) : recoil;
   const emplaced = !melee && condOn(att, 'emplaced') ? 2 : 0;
   const skillCond = condSkillMod(att, useW.skill);
   const terms: Term[] = [...T(att.attack, 'skill'), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
@@ -1266,8 +1271,6 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const who = charFor(att);
   return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: !!opts.ambush && tgt.side !== att.side }) };
 }
-/** A weapon mod's own number (data/items.json: the bayonet's `damage`, the weighted head's and the suppressor's `damage_add`). */
-const modNum = (id: string, field: string, fallback: number): number => { const v = (ITEM as any)[id]?.[field]; return typeof v === 'number' ? v : fallback; };
 /** The live character behind a PC unit, when a game is bound (multipliers come from it). */
 const charFor = (u: Unit): Character | null => { const G = boundGameRef(); return (u.charId && G?.characters?.[u.charId]) || null; };
 
@@ -1280,11 +1283,12 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
-  const bayonet = melee && useW === WEAPON.fists && hasMod(att.mods, 'mod_bayonet');
+  // the gun's own melee blow (rules 1.56: a mod's `melee_damage`, the bayonet's) stands in for the fists' damage
+  const bayonet = melee && useW === WEAPON.fists && w !== WEAPON.fists ? gearNum(w.id, att.mods, 'melee_damage') : 0;
   // a load on a weapon with no magazine (Special Ammo on a blade or a fist, rules 1.30) counts on its hits as a gun's rounds do
   const ammo = (!melee || w.magazine == null) && useW === w ? AMMO_TYPES[ammoId(att.ammoType) || ''] || null : null;
-  // (the bayonet's blow and the two mods' numbers are the mods' own: data/items.json `damage`, `damage_add`)
-  const base = bayonet ? modNum('mod_bayonet', 'damage', 15) : weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) + (useW.category === 'unarmed' ? att.unarmedBonus || 0 : 0) + (melee && useW === w && hasMod(att.mods, 'mod_weighted') ? modNum('mod_weighted', 'damage_add', 3) : 0) + (!melee && hasMod(att.mods, 'mod_suppressor') ? modNum('mod_suppressor', 'damage_add', -2) : 0);
+  // (a mod's flat change to the damage is its item op on 'dealing', with_this: the weighted head, the suppressor)
+  const base = bayonet > 0 ? bayonet : weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) + (useW.category === 'unarmed' ? att.unarmedBonus || 0 : 0);
   // The one formula (effects/output.ts): the weapon's base; the Stat term of the weapon profile (a character: its weapon
   // multiplier, which follows the weapon's scales_with, rules 1.12, with perks and gear in it; an enemy: its tier and
   // level, rules 1.15, which is its Stat and its Level together); the Level term (×1 today); then this attack's own
@@ -1436,7 +1440,6 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     if (killed) { ev.dmg = damage; ev.killed = true; fxFell(cb, tgt); }
     if (crit) noteCrit(cb, att, tgt, 'weapon'); // the spotlight's crit (decision 113): presentation only
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt, cb, att);
-    if (crit && !tgt.dead && melee && hasMod(att.mods, 'mod_serrated') && /Bleeding/.test(applyCond(cb, rng, att, tgt, 'bleeding', undefined, undefined, { skipSave: true }))) injury += ' · Bleeding';
     // the weapon's old on-hit grant (armour break, Prone, a push…): on a plain attack only, never next to another technique's own effect (rules 1.12)
     if (!tgt.dead && fx.op === 'on_hit' && !opts.tech) injury += onHit(cb, att, tgt, fx, rng);
     // The Evoker blade's Edge Word (item 487): a hit leaves one glyph free of AP this turn (charge and Flux as usual),
@@ -2243,7 +2246,7 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   // swap the off-hand weapon in for its own swing or shot
   const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
   const skillPts = u.dexterity || 0; // rules 1.12 (item 953): an off-hand gun or light blade hits with Dexterity
-  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
+  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = u.offMods || []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
   if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else say(cb, '(off hand: ' + p2.why + ')'); }
   u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); delete u.swapMain;
   } finally { fxChain--; VOLLEY = wasV; VOLLEY_AP = wasAp; }
@@ -2432,8 +2435,8 @@ export function intoUnit(u: Unit, c: Character, it: PackItem) {
     return;
   }
   if (intoCounts(c, it)) return; // a stim joins c.stims, an Essence c.essence (usable at once)
-  if (it.calibre && it.calibre === WEAPON[u.weapon]?.ammo) u.loose = (u.loose || 0) + it.qty;
-  else if (it.calibre && u.offLoose != null && u.offWeapon && it.calibre === WEAPON[u.offWeapon]?.ammo) u.offLoose += it.qty; // the off-hand gun's own calibre (and the pack)
+  if (plainRounds(it, WEAPON[u.weapon]?.ammo)) u.loose = (u.loose || 0) + it.qty;
+  else if (u.offLoose != null && u.offWeapon && plainRounds(it, WEAPON[u.offWeapon]?.ammo)) u.offLoose += it.qty; // the off-hand gun's own calibre (and the pack)
   else if (WEAPON[it.weapon || it.id]?.category === 'thrown' && !it.mags) { const id = it.weapon || it.id; (u.throwables ||= {})[id] = (u.throwables[id] || 0) + it.qty; }
   else if ((it.item || it.id) === 'spare_parts') u.parts = (u.parts || 0) + it.qty;
   else if ((it.item || it.id) === 'standard_core' && u.mg) u.mg.cores += it.qty;
@@ -2462,7 +2465,7 @@ export const ROUNDS_PER_AP: number = costOf('load', 'rounds');
 export function loadMagazine(cb: Combat, u: Unit): string | null {
   const w = WEAPON[u.weapon];
   if (!w || w.reload !== 'magazine' || !u.mags || !weaponActions(u, cb).some((x) => x.id === 'load')) return 'Nothing to load.';
-  const cap = w.magazine || 0, open = u.mags.map((n, i) => [n, i]).filter(([n]) => n < cap).sort((a, b) => b[0] - a[0]);
+  const cap = magazineSize(w.id, u.mods) || 0 /* rules 1.56: every magazine of the gun, as its mods size it */, open = u.mags.map((n, i) => [n, i]).filter(([n]) => n < cap).sort((a, b) => b[0] - a[0]);
   if (!open.length) return 'Every spare ' + (w.reload_unit || 'magazine') + ' is full.';
   if (!u.loose) return 'No loose rounds to load.';
   const per = price({ cb, u }, 'load').ap; { const no = whyNot(cb, u, per); if (no) return no; }
@@ -2478,7 +2481,7 @@ export const setOffJam = (u: Unit, jam: boolean) => { if (jam) u.offJammed = tru
 export function withOffHand<T>(u: Unit, fn: () => T): T {
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow) return fn();
   const keep = { weapon: u.weapon, ammo: u.ammo, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
-  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
+  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = u.offMods || []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
   try { return fn(); } finally { u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); delete u.swapMain; }
 }
 /** Attack an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
@@ -2977,7 +2980,7 @@ export function canJam(w: WeaponDef | undefined): boolean {
   return w.heat_limit != null;
 }
 /** Reload AP: the weapon's reload_ap (default 2; the breacher tube 3), 1 with a quick-release magazine, then items. */
-export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb, u }, 'reload', hasMod(u.mods, 'mod_quick_release') ? costOf('reload', 'ap_quick_release') : w.reload_ap ?? costOf('reload')).ap; };
+export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb, u }, 'reload', w.reload_ap ?? costOf('reload')).ap; }; // a mod's cost (the quick-release) is its item op on the cost hook (rules 1.56)
 const RELOAD_LABEL: Record<string, string> = { magazine: 'Swap magazine', speedloader: 'Speedloader', drum: 'Swap drum', belt: 'Feed belt' };
 const LOOSE_LABEL: Record<string, string> = { bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
 export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'repair' | 'overwatch' | 'burst' | 'auto' | 'skill'; label: string; ap: number; why: string | null; text: string;
@@ -3001,7 +3004,7 @@ export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
     add({ id: 'reload', label, ap: r, why, text: w.reload === 'loose' ? 'Top up from loose rounds (' + (u.loose ?? 0) + ' carried). Nothing drops.' : 'Swap in your fullest spare ' + unit + ' (' + (u.mags ? u.mags.length + ' left' : 'unlimited') + '). Speed: the one in the gun drops into the pile on your tile, rounds still in it. Tactical (+' + PILE.tactical_reload_extra_ap + ' AP): it goes back in your pack.', ...(tac ? { tactical: tac } : {}) });
   }
   if (w.reload === 'magazine' && u.mags && u.mags.length) {
-    const cap = w.magazine || 0, open = u.mags.filter((n) => n < cap), unit = w.reload_unit || 'magazine';
+    const cap = magazineSize(w.id, u.mods) || 0 /* rules 1.56: every magazine of the gun, as its mods size it */, open = u.mags.filter((n) => n < cap), unit = w.reload_unit || 'magazine';
     const lAp = price({ cb, u }, 'load').ap, why = !open.length ? 'Every spare ' + unit + ' is full.' : !u.loose ? 'No loose rounds to load.' : need(lAp);
     add({ id: 'load', label: unit === 'magazine' ? 'Load a magazine' : 'Fill a ' + unit, ap: lAp, why, text: 'Load loose rounds into your fullest part-empty ' + unit + ', 1 AP per ' + ROUNDS_PER_AP + ' rounds.' });
   }

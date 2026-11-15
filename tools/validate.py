@@ -1696,6 +1696,17 @@ if isinstance(tq, dict):
         for sc in (ph.get("scales_with") or []) + (ph.get("also_scales") or []):
             if sc not in skill_ids and sc not in attr_ids:
                 errors.append(f"{where}: phys scales with '{sc}', not a skill or an attribute")
+        # Rules 1.56 (Balance 2.0): phys.profile names the damage profile its Stat term reads (rules.json
+        # output.profiles; absent: `weapon`, no slope). Only a melee weapon reads one with a slope: a gun's damage is the
+        # gun's and the round's (Leon, 15 Nov 2026).
+        if "profile" in ph:
+            _prof = ((((data.get("rules") or {}).get("output") or {}).get("profiles") or {}).get(ph["profile"]))
+            if not isinstance(_prof, dict):
+                errors.append(f"{where}: phys.profile '{ph['profile']}' is not a profile in rules.json output.profiles")
+            elif sysm != "melee" and (_prof.get("attr") or _prof.get("skill")):
+                errors.append(f"{where}: phys.profile '{ph['profile']}' has a slope, and only a melee weapon's damage grows with its user (rules 1.56)")
+            elif _prof.get("attr") and not any(sc in attr_ids for sc in ph.get("scales_with") or []):
+                errors.append(f"{where}: phys.profile '{ph['profile']}' reads an Attribute, and phys.scales_with names none")
         tch = ph.get("teaches")
         if tch and techs.get(tch, {}).get("system") != sysm:
             errors.append(f"{where}: phys.teaches '{tch}' is not a {sysm} technique")
@@ -2073,6 +2084,9 @@ if TRIG:
     for _x in base + adv: walk_triggers(_x, f"classes:{_x.get('id')}")
     for _m in pool: walk_triggers(_m, f"classes:pool.{_m.get('origin')}.{_m.get('id')}")
     for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
+    # Rules 1.56 (plan 0.29 primitive 1): a weapon mod's triggered effects are item ops, run with the gun it is fitted to
+    for _x in items("items"):
+        if _x.get("category") == "mod": walk_triggers(_x, f"items:{_x.get('id')}")
     # Classes 3.0 (P7, ahead of P6's door verbs): a grant_action's `if` is the holder's predicates (Vanish: out of view)
     def _walk_grant_if(o, w):
         if isinstance(o, dict):
@@ -2666,6 +2680,29 @@ if _sv is not None:
         for _id in _ls.get("fill") or []:
             if _id not in _all_ids: errors.append(f"survival:lasting.fill: {_id!r} is not an item or weapon")
         if not (_num(_ls.get("offer")) and _num(_ls.get("min")) and _ls["min"] <= _ls["offer"]): errors.append("survival:lasting: offer and min (min at most offer)")
+    # Rules 1.56 (plan 0.29 primitives 2 and 3): a weapon instance's number fields are a closed list in rules.json
+    # (weapons_rules.gear_fields, read by character.ts gearNum); every gun names its Recoil; `no_recoil` is retired into it;
+    # a weapon mod's flat damage is its item op (no `damage_add`); a mod with a triggered effect gates it on `with_this`.
+    _gf = ((data.get("rules") or {}).get("weapons_rules") or {}).get("gear_fields") or {}
+    _GF = {k for k in _gf if k != "about"}
+    for _k in _GF:
+        if (_gf[_k] or {}).get("combine") not in ("sum", "max"): errors.append(f"rules:weapons_rules.gear_fields.{_k}: combine is sum or max")
+    _rc = ((data.get("rules") or {}).get("weapons_rules") or {}).get("recoil") or {}
+    if not (isinstance(_rc, dict) and _num(_rc.get("dex_relief_per")) and _rc["dex_relief_per"] > 0 and _num(_rc.get("braced_mult"))): errors.append("rules:weapons_rules.recoil: dex_relief_per (above 0) and braced_mult")
+    _GUNCAT = {"pistol", "revolver", "smg", "rifle", "shotgun", "heavy", "bow"}
+    for _w in items("weapons"):
+        if "no_recoil" in (_w.get("properties") or []): errors.append(f"weapons:{_w.get('id')}: no_recoil is retired (rules 1.56): write recoil 0")
+        if (_w.get("category") in _GUNCAT or (_w.get("category") == "mana" and _w.get("magazine") is not None)) and not (_num(_w.get("recoil")) and _w["recoil"] >= 0): errors.append(f"weapons:{_w.get('id')}: a gun names its recoil (a number, 0 or more; rules 1.56)")
+    for _m in items("items"):
+        if _m.get("category") != "mod": continue
+        _w = f"items:{_m.get('id')}"
+        if "damage_add" in _m or "damage" in _m: errors.append(f"{_w}: a mod's damage is its item op (damage_mod on dealing) or melee_damage, not damage / damage_add (rules 1.56)")
+        for _k, _v in _m.items():
+            if _k.endswith("_modes"):
+                if _k[:-6] not in _GF or not (isinstance(_v, list) and _v): errors.append(f"{_w}: {_k} is a list of attack modes for the gear field {_k[:-6]!r} (one of {sorted(_GF)})")
+            elif _k in _GF and not _num(_v): errors.append(f"{_w}: {_k} is a gear field: a number")
+        for _e in _m.get("effects") or []:
+            if isinstance(_e, dict) and _e.get("when") and (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_w}: a mod's triggered effect acts only with the gun it is fitted to (if.with_this: true)")
     # Rules 1.55: an item the engine does not run yet (`built: false`) has no price (credits.ts priceOf), so no rolled
     # pool holds it; a fixed stock list must not name it either (the shop's counter, the lasting fill, the loadout, a loot table).
     _unbuilt = {i["id"] for i in items("items") if i.get("built") is False} | {i["id"] for i in items("weapons") if i.get("built") is False}
@@ -2760,6 +2797,10 @@ if _sv is not None:
     if _sv.get("shop") is not None:
         if not (_num(_mp.get("default")) and isinstance(_mp.get("by_unit"), dict) and isinstance(_mp.get("by_category"), dict)): errors.append("rules:weapons_rules.magazine_prices: by_unit, by_category and a default price")
         if (_wr.get("special_round_price") or {}).get("calibre") not in _cal: errors.append("rules:weapons_rules.special_round_price.calibre: not a calibre")
+        # rules 1.56 (L2): special rounds by calibre: every listed calibre is a calibre, the reference among them
+        _spc = (_wr.get("special_round_price") or {}).get("calibres")
+        if not (isinstance(_spc, list) and _spc and all(_x in _cal for _x in _spc)): errors.append("rules:weapons_rules.special_round_price.calibres: a list of calibres")
+        elif (_wr.get("special_round_price") or {}).get("calibre") not in _spc: errors.append("rules:weapons_rules.special_round_price.calibres: must hold the reference calibre")
         def _priced(_id):
             if _id.startswith("rounds:"): return _num(_cal.get(_id[7:])) and _cal[_id[7:]] > 0
             _d = _wmap.get(_id) or _imap.get(_id)
@@ -2860,21 +2901,62 @@ _PACK_KINDS = {"weapon", "ammo", "tool", "focus", "food", "med", "loot", "plot"}
 for _i in _rimap.values():
     if "pack_kind" in _i and _i["pack_kind"] not in _PACK_KINDS: errors.append(f"items:{_i.get('id')}: pack_kind {_i['pack_kind']!r} is not a pack line's kind ({', '.join(sorted(_PACK_KINDS))})")
     if "plural" in _i and not (isinstance(_i["plural"], str) and _i["plural"].strip()): errors.append(f"items:{_i.get('id')}: plural must be a name")
+# rules 1.56 (L2): the special round of each type made and sold by calibre (an ammo_type with a price_mult), and the
+# calibres it comes in (credits.ts specialRoundPrice; character.ts SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES)
+_rspc = (_rw.get("special_round_price") or {}).get("calibres") or []
+_rsp = {_i.get("ammo_type"): _i for _i in _rimap.values() if _i.get("ammo_type") and _num(_i.get("price_mult")) and _i["price_mult"] > 0}
+def _rspecial(_cal, _type):
+    _d, _p = _rsp.get(_type), _rcal.get(_cal)
+    if not _d or _d.get("stock") is False or _d.get("built") is False or not (_num(_p) and _p > 0) or _cal not in _rspc: return None
+    return _d["price_mult"] * _p
 def _rprice(_id):
     """credits.ts priceOf at the standard grade, or None (unpriced or stock: false)."""
-    if _id.startswith("rounds:"): _p = _rcal.get(_id[7:]); return _p if _num(_p) and _p > 0 else None
+    if _id.startswith("rounds:"):
+        _parts = _id[7:].split(":")
+        if len(_parts) == 2: return _rspecial(_parts[0], _parts[1])
+        _p = _rcal.get(_id[7:]); return _p if _num(_p) and _p > 0 else None
     _d = _rwmap.get(_id) or _rimap.get(_id)
     if not _d or _d.get("stock") is False: return None
     if _num(_d.get("price_credits")) and _d["price_credits"] > 0: return _d["price_credits"]
-    if _num(_d.get("price_mult")) and _d["price_mult"] > 0 and _num(_rref): return _d["price_mult"] * _rref
+    if _num(_d.get("price_mult")) and _d["price_mult"] > 0: return _rspecial((_rw.get("special_round_price") or {}).get("calibre"), _d.get("ammo_type"))
     return None
+_EACH_CALIBRE_MOST = 100  # recipes.ts EACH_CALIBRE_MOST
+def _rexpand(_r):
+    """recipes.ts expandRow: an each_calibre row as one row per calibre of special_round_price.calibres (changed together)."""
+    if not _r.get("each_calibre"): return [_r]
+    _w = f"recipes:{_r.get('id')}"
+    _g = _r.get("gives") or []
+    if not (isinstance(_g, list) and len(_g) == 1 and (_g[0] or {}).get("item") in _rimap and set(_g[0]) == {"item"}):
+        errors.append(f"{_w}: an each_calibre row gives one line, {{item}}: the special round's item"); return []
+    _sp = _rimap[_g[0]["item"]]; _type = _sp.get("ammo_type")
+    if _rsp.get(_type) is not _sp: errors.append(f"{_w}: an each_calibre row gives a special round made by calibre (an ammo_type with a price_mult)"); return []
+    _nd = _r.get("needs") or []
+    if not (isinstance(_nd, list) and _nd and all(isinstance(_l, dict) and set(_l) == {"item", "share"} and _num(_l.get("share")) and _l["share"] > 0 for _l in _nd)):
+        errors.append(f"{_w}: an each_calibre row's needs are {{item, share}} lines"); return []
+    if abs(sum(_l["share"] for _l in _nd) - 1) > 1e-9: errors.append(f"{_w}: the needs' shares add up to 1 (a row is worth what it makes)")
+    _out = []
+    for _cal in _rspc:
+        _id = f"rounds:{_cal}:{_type}"; _v = _rspecial(_cal, _type)
+        if not _v: continue
+        for _n in range(1, _EACH_CALIBRE_MOST + 1):
+            _ns = []
+            for _l in _nd:
+                _pp = _rprice(_l["item"])
+                _ns.append(None if not _pp else _l["share"] * _v * _n / _pp)
+            if all(_x is not None and abs(_x - round(_x)) < 1e-9 and round(_x) >= 1 for _x in _ns):
+                _row = {k: v for k, v in _r.items() if k != "each_calibre"}
+                _row.update(id=f"{_r.get('id')}:{_cal}", needs=[{"item": _l["item"], "n": int(round(_x))} for _l, _x in zip(_nd, _ns)], gives=[{"item": _id, "n": _n}])
+                _out.append(_row); break
+        else: errors.append(f"{_w}: no whole making of {_id} within {_EACH_CALIBRE_MOST} rounds")
+    return _out
 _rc = data.get("recipes")
 if _rc is not None:
     if _rc.get("provisional") is not True: errors.append("recipes: provisional: true")
-    _seen = collections.Counter(r.get("id") for r in items("recipes"))
+    _rows = [_x for _r in items("recipes") for _x in _rexpand(_r)]
+    _seen = collections.Counter(r.get("id") for r in _rows)
     for _k, _n in _seen.items():
         if _n > 1: errors.append(f"recipes: id {_k!r} is used {_n} times")
-    for _r in items("recipes"):
+    for _r in _rows:
         _w = f"recipes:{_r.get('id')}"
         for _f in ("id", "name", "does"):
             if not (isinstance(_r.get(_f), str) and _r[_f].strip()): errors.append(f"{_w}: needs a {_f}")
@@ -2890,7 +2972,7 @@ if _rc is not None:
                 _id, _n = (_e or {}).get("item", ""), (_e or {}).get("n")
                 if not (isinstance(_n, int) and _n >= 1): errors.append(f"{_w}.{_side}: {_id!r} needs n, a whole number of 1 or more")
                 if _side == "needs" and _id not in _rimap: errors.append(f"{_w}.needs: {_id!r} is not an items.json item")
-                if _side == "gives" and not (_id in _rimap or (_id.startswith("rounds:") and _id[7:] in _rcal)): errors.append(f"{_w}.gives: {_id!r} is not an item or rounds:<calibre>")
+                if _side == "gives" and not (_id in _rimap or (_id.startswith("rounds:") and (_id[7:] in _rcal or _rprice(_id) is not None))): errors.append(f"{_w}.gives: {_id!r} is not an item, rounds:<calibre> or rounds:<calibre>:<type>")
                 _p = _rprice(_id)
                 if _p is None: errors.append(f"{_w}.{_side}: {_id!r} has no price (priceOf), so the row can't be held to it"); _sum = None
                 elif _sum is not None and isinstance(_n, int): _sum += _p * _n

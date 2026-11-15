@@ -139,7 +139,7 @@ describe('Rake', () => {
     const g = fight('brigade_auto_shotgun', [{ at: 'G5' }, { at: 'G6' }, { at: 'G7' }], { pc: { skills: { dexterity: 0 } } }); rig({ hit: false, die: 5 });
     g.tech('shot', { targetId: g.foes[2].id }); g.pc.ap = 9;
     const gv = g.pv('rake', { targetId: g.foes[0].id, line: 'spread' }); expect(gv.attacks.length).toBe(3);
-    expect(gv.attacks.map((x) => x.pv.terms!.find((t) => t.label === 'recoil')?.v)).toEqual([-1, undefined, undefined]);
+    expect(gv.attacks.map((x) => x.pv.terms!.find((t) => t.label === 'recoil')?.v)).toEqual([-(WEAPON as any).brigade_auto_shotgun.recoil, undefined, undefined]); // its Recoil (rules 1.56)
     const at2 = g.cb.log.length; g.tech('rake', { targetId: g.foes[0].id, line: 'spread' }); expect(rolledToHit(g, at2, g.pc)).toEqual(pvToHit(gv));
   });
   it('one attack action wears the weapon 1 (the 3-target Rake), or today\'s full auto 2 (review fix)', () => {

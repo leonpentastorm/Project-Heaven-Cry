@@ -2,7 +2,7 @@
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
-import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL } from '../data';
+import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL, ITEM } from '../data';
 import figmentsJ from '../../../../data/figments.json';
 import classesJ from '../../../../data/classes.json';
 import shadowJ from '../../../../data/shadow.json';
@@ -19,6 +19,12 @@ const EXTRA: Record<'perk' | 'trait' | 'relic' | 'verb', Record<string, any>> = 
 /** Add (or replace) items of a kind. Use effects/hooks.ts addItems, which also refreshes the dispatch. */
 export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: any[]) { for (const x of items) EXTRA[kind][x.id] = x; infoCache.clear(); itemsCache.clear(); }
 /** Forget every item added at run time (tests). */
+/** Rules 1.56 (plan 0.29 primitive 1): a weapon mod (data/items.json, category `mod`) is a modifier item held like a
+ * Relic's property: the instance it is fitted to carries it (hooks.ts heldOfChar), and its triggered effects act only
+ * through the predicate `with_this`. Read from the data table itself, so a mod written as one data line is held with no
+ * code (a quiver's enchantment is a mod too: it has no triggered effects). */
+const gearModRow = (id: string): any | null => { const x: any = (ITEM as any)[id]; return x && x.category === 'mod' ? x : null; };
+const relicRow = (id: string): any | null => EXTRA.relic[id] || gearModRow(id);
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
@@ -131,8 +137,8 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
     return { key, kind, id, name: x.name, tier: 'I', effects, effTier: effects.map(() => 'I'), text: x.text || '', adjudication: x.adjudication || 'engine', active: !!g, bound: !!g, ap: g?.ap ?? x.ap_cost ?? null, /* rules 1.33: a passive verb (no grant_action: Threads, the ladder) answers stats like any item */ uses: g?.uses || x.uses || 'at_will', provisional: !!x.provisional };
   }
   if (kind === 'relic') {
-    const x = EXTRA.relic[id]; if (!x) return null;
-    const effects = [...(x.effects || [])];
+    const x = relicRow(id); if (!x) return null;
+    const effects = EXTRA.relic[id] ? [...(x.effects || [])] : (x.effects || []).filter((e: any) => e && typeof e.when === 'string'); // a mod's: its triggered effects (its `mod` marker is the slot, not a rule)
     return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'relic'), text: x.text || '', adjudication: x.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will', provisional: !!x.provisional };
   }
   if (kind === 'trait') {
@@ -172,7 +178,7 @@ export function rawItem(key: string): any | null {
   const [kind, id] = splitKey(key);
   if (kind === 'perk') return perkData(id) || null;
   if (kind === 'trait') return traitData(id) || null;
-  if (kind === 'relic') return EXTRA.relic[id] || null;
+  if (kind === 'relic') return relicRow(id);
   if (kind === 'verb') return verbData(id) || null;
   if (kind === 'skill') { const [sid, lvl] = id.split('.'); return (SKILL[sid] as any)?.unlocks?.[lvl] || null; }
   if (kind === 'class') { const [cls, mv] = id.split('.'); return classMove(cls, mv)?.move || null; }
@@ -182,7 +188,7 @@ export function splitKey(key: string): [ItemKind, string] {
   const i = key.indexOf(':'); if (i < 0) return [guessKind(key), key];
   return [key.slice(0, i) as ItemKind, key.slice(i + 1)];
 }
-const guessKind = (id: string): ItemKind => (perkData(id) ? 'perk' : traitData(id) ? 'trait' : EXTRA.relic[id] ? 'relic' : verbData(id) ? 'verb' : SKILL_ITEMS.includes(id) ? 'skill' : id.includes('.') ? 'class' : 'perk');
+const guessKind = (id: string): ItemKind => (perkData(id) ? 'perk' : traitData(id) ? 'trait' : relicRow(id) ? 'relic' : verbData(id) ? 'verb' : SKILL_ITEMS.includes(id) ? 'skill' : id.includes('.') ? 'class' : 'perk');
 /** "bulwark" → "perk:bulwark"; "gambler" → "trait:gambler"; "marksman.killzone" → "class:marksman.killzone"; keys pass through. */
 export const keyOf = (idOrKey: string, kind?: ItemKind) => (idOrKey.includes(':') ? idOrKey : (kind || guessKind(idOrKey)) + ':' + idOrKey);
 
@@ -285,6 +291,7 @@ export function allItems(): ItemInfo[] {
   for (const id of Object.keys(EXTRA.perk)) { const p = EXTRA.perk[id]; for (const t of p.tiers ? Object.keys(p.tiers) : [p.tier === 'acquired' ? 'I' : p.tier || 'I']) out.push(itemInfo('perk:' + id, t)!); }
   for (const id of Object.keys(EXTRA.trait)) out.push(itemInfo('trait:' + id)!);
   for (const id of Object.keys(EXTRA.relic)) out.push(itemInfo('relic:' + id)!);
+  for (const id of Object.keys(ITEM)) if (gearModRow(id)) out.push(itemInfo('relic:' + id)!); // the weapon mods (rules 1.56)
   for (const v of allVerbs()) out.push(itemInfo('verb:' + v.id)!);
   return out.filter(Boolean);
 }

@@ -17,10 +17,10 @@ describe('Throw comes with the thrown property', () => {
     const ids = thrownWeapons(); expect(ids.length).toBeGreaterThan(1);
     for (const id of ids) expect(offered(fight(id)), id).toContain('throw');
   });
-  it('a maul (no thrown property) is offered neither Throw nor a usable Pull Out', () => {
-    const f = fight('maul'); expect(offered(f)).not.toContain('throw');
+  it('a maul (no thrown property) is offered neither Throw nor Pull Out (rules 1.56: nothing is stuck)', () => {
+    const f = fight('maul'); expect(offered(f)).not.toContain('throw'); expect(offered(f)).not.toContain('pull_out');
     expect(f.tech('throw', { targetId: f.foe.id })).toMatch(/don't have Throw ready/);
-    expect(f.tech('pull_out', { targetId: f.foe.id })).toMatch(/No weapon is stuck/);
+    expect(f.tech('pull_out', { targetId: f.foe.id })).toMatch(/don't have Pull Out ready/);
   });
   it('a throw that hits and does not kill leaves the knife stuck; Pull Out from next to it brings it back', () => {
     const f = fight('combat_knife', 'G5');
@@ -37,5 +37,28 @@ describe('Throw comes with the thrown property', () => {
     expect(f.tech('pull_out', { targetId: f.foe.id })).toBeNull();
     expect(f.foe.stuck).toBeFalsy(); expect(f.pc.weapon).toBe('combat_knife');
     expect(phys.physView(f.cb, f.pc, 'pc', f.g).thrown).toEqual([]);
+  });
+});
+
+// Rules 1.56 (Leon's ruling B, 15 Nov 2026: "Pull Out only when something is stuck"): Pull Out's data says needs.stuck,
+// read by usable(): offered on no weapon while nothing is stuck, and on any weapon (a gun too) while something is.
+describe('Pull Out is offered only while something is stuck (needs.stuck)', () => {
+  it('no melee weapon offers Pull Out while nothing is stuck', () => {
+    for (const id of Object.values(WEAPON as any).filter((w: any) => phys.weaponSystem(w.id) === 'melee' && !w.companion_only).map((w: any) => w.id as string)) expect(offered(fight(id)), id).not.toContain('pull_out');
+  });
+  it('a knife thrown, a pistol drawn: the pistol pad offers Pull Out next to the target, and it brings the knife back', () => {
+    const f = fight('combat_knife', 'G5');
+    f.char(f.pc).pack = [...(f.char(f.pc).pack || []), { id: 'service_pistol', name: WEAPON.service_pistol.name, qty: 1, kind: 'weapon', weapon: 'service_pistol', loaded: 12 } as any];
+    expect(offered(f)).not.toContain('pull_out');
+    rig({ hit: true, die: 12 }); expect(f.tech('throw', { targetId: f.foe.id })).toBeNull(); rig(null);
+    expect((f.foe.stuck || []).map((x: any) => x.weapon)).toEqual(['combat_knife']);
+    f.act({ type: 'combat/equip', unitId: f.pc.id, item: 'service_pistol', to: 'main' } as any);
+    expect(f.unit(f.pc.id).weapon).toBe('service_pistol');
+    expect(offered(f), 'my knife is stuck in someone: offered with a gun in the hand').toContain('pull_out');
+    f.put(f.pc, 'F5'); f.unit(f.pc.id).ap = 6;
+    expect(f.tech('pull_out', { targetId: f.foe.id })).toBeNull();
+    expect(f.foe.stuck).toBeFalsy();
+    expect([f.unit(f.pc.id).weapon, f.unit(f.pc.id).offWeapon]).toContain('combat_knife');
+    expect(offered(f), 'nothing stuck any more').not.toContain('pull_out');
   });
 });

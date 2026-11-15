@@ -586,7 +586,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 **Guns.**
 
 - **Heat:** a single shot adds 1, a burst 2 (one a roll: rules 1.18), full auto 4. Each 2 Heat is −1 to hit. When Heat reaches the weapon's limit, it jams (2 AP to clear). Heat drops by 2 at the start of each of your turns.
-- **Recoil:** each shot after the first in the same turn is −1 to hit, cumulative, reduced by floor(Dexterity ÷ 2).
+- **Recoil:** each shot after the first in the same turn is −1 to hit, cumulative, reduced by floor(Dexterity ÷ 2). *(Superseded by rules 1.56 item 1: minus the gun's own Recoil, 0 to 2.)*
 - **Range:** each weapon has an effective range in tiles. Each further band of the same length is −2 to hit, out to two bands.
 - **Modes:** a weapon lists which of single, burst and auto it supports.
 
@@ -707,7 +707,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 | Muzzle | Compensator | Recoil −1 per shot | 0.2 | 250 |
 | Magazine | Extended magazine | +50% capacity (round down) | 0.2 | 300 |
 | Magazine | Quick-release | Reload costs 1 AP | 0.1 | 350 |
-| Underbarrel | Foregrip | First burst each turn ignores recoil | 0.2 | 150 |
+| Underbarrel | Foregrip | First burst each turn ignores recoil *(superseded by rules 1.56 item 3: +1 to hit on Bursts and full auto)* | 0.2 | 150 |
 | Underbarrel | Bayonet | Melee strike 15 damage, Dexterity, 2 AP | 0.4 | 120 |
 | Underbarrel | Underslung launcher | Holds 1 grenade round (Heavy: grenade launcher, single) | 1.5 | 900 |
 | Edge (melee) | Serrated edge | Crits also cause Bleeding | 0.1 | 250 |
@@ -2322,9 +2322,9 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel; Case Closed and Weak Point left this list with rules 1.13 *(Case Closed is back on it: Leon, 10 Nov 2026, item 1503)*) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
 
-**Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type.
+**Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type. (Superseded by rules 1.56, L2: armour-piercing, hollow-point and incendiary rounds are rounds of one calibre.)
 
-**Recoil** (spec: Modifiers, now run by the engine): −1 to hit for each earlier shot this turn, reduced by floor(Dexterity ÷ 2); halved while braced or Emplaced; none for bows and weapons marked no_recoil; the compensator removes it. Shots inside one burst, full auto or weapon skill use the burst's own penalty instead, and reactions take none.
+**Recoil** (spec: Modifiers, now run by the engine): −1 to hit for each earlier shot this turn, reduced by floor(Dexterity ÷ 2); halved while braced or Emplaced; none for bows and weapons marked no_recoil; the compensator removes it. *(Superseded by rules 1.56 items 1 and 3: the gun's own Recoil, bows 0; the compensator −1.)* Shots inside one burst, full auto or weapon skill use the burst's own penalty instead, and reactions take none.
 
 **Guns that can't jam.** Only weapons with a Heat limit jam. Bows, crossbows, the flamer, the breacher tube and the core rifle build no Heat; a natural 1 is a fumble (−1 AP next turn).
 
@@ -5985,7 +5985,7 @@ standard core's 150 credits (Magic, "Mana cores").
    pack line's kind by an item's id (the core, the two focus gloves, the ration pack; the same kinds as today); the pack's
    quantity cap (20, a literal in `lootToPack`) moved into data (item 4111: its value, and why the Materials card's grant
    does not pass through it). **No new trigger, predicate, op, hook, stat or cost site.**
-9. **The slower climb** (`survival.json` only; the shared `xp_total` is untouched): f(d) = `xp.base` **10** +
+9. *(Superseded by rules 1.56 (Balance 2.0), XP: `xp.base` 35, `xp.per_depth` 0; level 3 after the gate and before the Boss.)* **The slower climb** (`survival.json` only; the shared `xp_total` is untouched): f(d) = `xp.base` **10** +
    `xp.per_depth` **2** × (d − 1) (was 100 and 22); the Boss × `xp.boss` **5** (was 2); `stage.xp` **[1, 2.6, 4, 4,
    4.5]** (was [1, 1, 1.1, 1.25, 1.25]; the last repeats). **Stage 1 is played before the class is earned:** on the
    reference path (survival-spec 5.4) a character reaches level 2 at the gate, has 210 XP at the Boss's door and 400
@@ -6118,6 +6118,102 @@ make what rare actually rare". The numbers and the arithmetic are in section 14,
    pack, as part of the gun.
 26. **What a killed foe leaves** (item 4127): in Survival the kind's loot table is not rolled (`drops.kind_table`
    false); a gun foe leaves gunpowder or casings and a caster residue only with a small chance.
+
+## Rules 1.56 (Balance 2.0), L1: the modifier carrier, Recoil 2.0 and weapon mods as data
+
+Leon (15 Nov 2026), on the Balance 2.0 draft: Recoil 2.0 *"ok display them rightly"*; the compensator *"ok"* (Recoil
+−1); weapon damage: *"guns comes from the gun and the ammo it self notthing from the user can really change what how
+hard a bullet hits"* (nothing here adds gun damage from the user). The lead's rulings of 15 Nov (build plan 0.29
+sections 9 and 10): fitted mods are held like a Relic's property; one helper reads a weapon instance's numbers; mods
+act on the gun they are fitted to in either hand; the foregrip is redesigned. A later revision overrides the body and
+the earlier ones; every new number here is PROVISIONAL (items 4130 to 4136).
+
+1. **Recoil 2.0.** Every gun names its **Recoil** (`weapons.json` `recoil`): each shot after the first in a turn is at
+   minus the gun's Recoil (with its mods') for each earlier shot, cumulative, reduced by floor(Dexterity ÷ 2)
+   (`rules.json weapons_rules.recoil.dex_relief_per`), halved toward 0 while braced or Emplaced (`braced_mult` 0.5);
+   none in a volley (a Burst's or full auto's own penalty stands instead), a reaction or full auto. Every gun 1 (as
+   the old rule's −1), bows, crossbows and the core rifle 0; the draft's 2 for the long rifle, the battle rifle, the
+   hand cannon, the shotguns and the heavy weapons is a number for the P3 refit (item 4130), not set here. The old
+   `no_recoil` property is retired into it (a bow is Recoil 0). The weapon card shows **Recoil a shot** (the gun's with
+   its mods'). Overrides item 88, the Modifiers line (−1 a shot), and the Recoil paragraph of the attack rules. The
+   Emplaced row's own recoil number is removed: the one formula halves it.
+2. **Mods are data.** A weapon mod is one row of `items.json` (category `mod`): its **effects** are item ops (the closed
+   lists of `effect_ops.json item_ops`) that act only with the gun it is fitted to (`if.with_this`: the event made with
+   that instance, in whichever hand it is), and its **number fields** are the closed list of
+   `rules.json weapons_rules.gear_fields`: `recoil` (summed with the gun's), `magazine_pct` (summed), `bands`
+   (the largest; `bands_modes` limits it to attack modes), `silent` and `melee_damage` (the largest). No mod is named
+   in the engine's code: a mod written as one data line is fitted, shown and played with no code.
+3. **Each mod, as data says it:** red dot `bands` 1; scope `bands` 1 on aimed shots and **+1 to hit on aimed shots
+   as its own term, "Scope"** (it was inside the weapon-skill term); suppressor `silent` and −2 damage on **this gun's
+   shots only** (a thrown grenade or a gun-melee blow is untouched); compensator **Recoil −1 a shot** (it took all of
+   it: on a Recoil 1 gun the same, on a Recoil 2 gun 1 is left); extended magazine `magazine_pct` 50: **every magazine
+   of that gun** is that size (the one in it, a spare loaded or refilled, a fight's first magazine); quick-release:
+   reloading this gun costs 1 AP (an item op on the price; the old typed reload price is gone); **foregrip (built):
+   Bursts and full auto with this gun +1 to hit** (it was not run); bayonet `melee_damage` 15; serrated edge: a melee
+   critical with this weapon puts on Bleeding (no save); weighted head +3 damage to this weapon's blows. The wrapped
+   grip, the underslung launcher and the sigil-etched magazine stay `built: false` (rules 1.55).
+4. **Either hand.** The mods on an off-hand gun act with that gun (its bands, Recoil, silence, terms and damage), as
+   the main hand's do with the main hand's.
+5. **Old School** refuses a mod tagged `electronic` (the red dot), by the mod's own name.
+
+## Rules 1.56 (Balance 2.0), L3 mods in Survival
+
+Leon (15 Nov 2026): *"weapon mod can be a reward just like raw weapon. maybe at the forge you pay some dough to get
+them attached"*. Rules 1.55 items 15 and 16 (the `built: false` filter, the Forge's fee) stand; these items finish what
+they left for 0.29. Every new number is PROVISIONAL.
+
+1. **A mod can be a reward pick.** Where a pick holds the One-weapon card, the card may be a weapon mod instead of a
+   weapon: one roll for the character at the node (`rewards.mods.chance`, by where the pick is made, through
+   `rewards.reads`; absent: never), from its own stream. The mod is drawn from the mods that fit a free slot on a gun
+   the character carries (the main hand, the off hand, a gun in the pack; a carried quiver's empty enchantment slot)
+   and whose price is within `rewards.mods.band` x the node's price band. None that fits: the weapon stays. It goes in
+   the pack (the one grant); fitting it is the Forge's service. Odds (PROVISIONAL, rare): an ordinary fight and a cache
+   0.05, an Elite and the gate 0.1, a vault guard and a Boss 0.35, the vault's chest and a sealed crate never; band 0.5.
+   An Elite's, the gate's and a cache's pick of kit keep their mods (rule 41), now read from every gun carried.
+2. **The armourer fits to any gun carried.** `run/fit_mod` and `run/unfit_mod` take `where` (the main hand when
+   absent, the off hand, or a pack line holding a gun; one of a stack of guns is split off to take it). Same fee
+   (rules 1.55 item 16), same refusals, in words naming the gun. The Forge's stock reads every gun carried for what the
+   party lacks. Supersedes rules 1.55 item 16's "the fit is to the weapon in the main hand".
+3. **The extra mod slot at the Forge, for the same fee.** The extra slot of Gun Nut, Blade Recluse and Overhaul (a second
+   mod in a slot type the weapon already fills; the main hand only, as the perks give it) is fitted in a run by the
+   armourer for the fee of item 2 (`run/fit_mod` with `extra: true`, through the perk's own action and its rules). Out
+   of a run the perk's free action is unchanged. Taking an extra-slot mod off is `run/unfit_mod`, the same fee.
+4. **Off-hand guns' own mods acting on the off hand's shot** are lane L1's (rules 1.56, L1): not changed here.
+
+## Rules 1.56 (Balance 2.0), L6
+
+Leon (15 Nov 2026): *"the skill increase hit chance for all weapons, melee get dmg increase from strengh attribute, small blandes and weapon that feels like it need finesse is from agility. guns comes from the gun and the ammo it self notthing from the user can really change what how hard a bullet hits"*; and *"any weapon that have pullout also need throw with it or it's useless"* (ruling B: Throw only on a throwable weapon; Pull Out only when something is stuck). A later revision overrides the body and the earlier ones; every number here is PROVISIONAL.
+
+**Melee damage from Strength or Agility (overrides rules 1.26 for a character's melee blow only):**
+1. **The skill buys the hit, on every weapon.** A weapon's skill (`phys.hits_with`) adds to the roll to hit and nothing to the damage, as since rules 1.26.
+2. **A melee weapon's damage grows with one Attribute**, the one its row names (`weapons.json phys.scales_with`): Strength for heavy melee and the fists (the machete, maul, lance, war axe, greatsword, glaive, rip-saw, bare fists, knuckledusters, servo-fist), Agility for the finesse and thrown blades (the combat knife, sabre, throwing knives, hatchet, gladius, duelling blade, katana). The row names its damage profile (`phys.profile: melee`, `rules.json output.profiles.melee`): Stat = k x (1 + 0.05 x (that Attribute - 1)), no skill slope, the Level term `deal` as before, then the melee factor (`output.factors.melee`) as before.
+3. **k re-pins the all-in build.** k is 1.15385 so that Attribute 7 (the all-in build at creation) gives 1.5, the weapon profile's number: the all-in build at level 1 deals exactly what it did, a lower Attribute less (Attribute 1: x0.77; Attribute 4: x0.88), a higher one more (Attribute 10: x1.12). The bases of the melee weapons are not changed: the enemies that carry a sabre, a knife or fists read the bases with their tier and level, and keep them.
+4. **Guns, bows, thrown charges and the foci's weapons get nothing from the user.** Their rows name no profile (the `weapon` profile, no slope). The validator refuses a slope on a weapon that is not melee. The mana arms (the Evoker blade, the Emanator gauntlet and katana, the bot-thread banner, the grand staff) are foci and name none (for the lead to rule).
+5. **The card shows it.** The weapon card's "Damage scales with" line (rules 1.55) now appears on every melee weapon, naming its Attribute.
+
+**Pull Out (overrides rules 1.55's "Throw comes with the thrown prop" where it touched Pull Out):**
+6. **Pull Out is offered only while something is stuck** for the unit to pull: one of its own weapons stuck in any living unit, or any weapon stuck in a living unit next to it (`techniques.json pull_out needs.stuck`). With nothing stuck it is on no pad and the reducer refuses it ("You don't have Pull Out ready").
+7. **With any weapon in the hand.** While something is stuck, Pull Out is on the main hand's pad whatever it holds (a gun too); the weapon comes back to a free hand as before.
+8. **Throw** stays where rules 1.55 put it: on a weapon with the thrown property, or one that lends or readies it.
+
+## Rules 1.56 (Balance 2.0), XP
+
+Survival's XP refitted for release 0.29 (the lead's finding 10.C.1 of the 0.29 plan: no level-up in stage 1; Leon's
+target from rules 1.54 item 9 stands: "only get to level 3 as you are about to take on the first boss, if your whole
+first run you focus on taking as many fight as possible"). Measured with the simulator, 24 seeds a cell, and the static
+route walk (`docs/design/proposals/2026-11-xp-fit-0.29.md`). Overrides rules 1.54 item 9's numbers and keeps its words;
+the shared `xp_total` is untouched. PROVISIONAL.
+
+1. **Every stage-1 fight pays the same** (item 4151): f(d) = `xp.base` **35** + `xp.per_depth` **0** x (d - 1) (was 10
+   and 2); `xp.elite` 1.5, `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5 and `stage.xp` [1, 2.6, 4, 4, 4.5]
+   unchanged. Level 2 comes after about three fights (stop 5 on the most-fights route, stop 6 to 7 on the gear route);
+   level 3 after the gate and before the Boss (at stops 9 to 12; at the Boss's door on 100% of most-fights routes and
+   71% to 86% of characters on the gear route); no character above level 3 after stage 1's Boss in the simulator, and
+   none above 4 on any route of the static walk.
+2. **The guard** (item 4152; `survival-run-levels.test.ts`, in `npm run check`) reads the pay from data and asserts the
+   lead's targets: level 3 at the Boss's door on at least 80% of most-fights routes and 50% of typical ones, no route
+   above level 4 after the Boss, level 3 before the gate (`map.gate_row`) on at most 1% of routes and never before the
+   row above it, level 3 from the Boss on 99% of routes.
 
 ## Maps (rules 1.16)
 
@@ -6665,7 +6761,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 85. **Target-specific damage bonuses add, capped at ×2.0** (plan 6a-1: True Name + Judgement Day + Case Closed + Weak Point reached about ×3.7 on one boss). Self multipliers still multiply.
 86. **Derived damage stats now run:** Critical, Elemental and Ambush damage taken (each capped at 60%), Healing and shields received (+10% × Sensory), the air's Healing given multiplier on magical healing.
 87. **Special ammo:** the five ammo types' effects as listed, one type per magazine, special rounds bought or found as items (ammo_*) and loaded out of combat; Enhanced and mana-arm hits put +1 on the meter.
-88. **Recoil runs** (−1 a shot after the first, less floor(Dexterity ÷ 2), halved braced or Emplaced, none in a volley or a reaction). Emplaced: +2 to attacks with the weapon.
+88. *(Superseded by rules 1.56 item 1: the gun's own Recoil.)* **Recoil runs** (−1 a shot after the first, less floor(Dexterity ÷ 2), halved braced or Emplaced, none in a volley or a reaction). Emplaced: +2 to attacks with the weapon.
 89. **Reactions are counted** (1 a round; items add; none while Suppressed or Stunned *(Superseded by rules 1.28: Suppressed forbids attacking and moving ones only, item 1751)*); Overwatch can hold several shots on one reaction (class moves).
 90. **The walk is tile by tile:** opportunity attacks and Overwatch on every step; a walk cut short keeps its unwalked tiles in the bank; **one Sprint per turn for everyone** (plan 6a-12, the Drill Echo fix). Path options (wall running, a 2-tile jump, passing allies, rough ground) are opened by items. Traps a side set itself or spotted are known to that side only.
 91. **Hidden in a fight:** Hide is 2 AP, only out of every enemy's sight; the ambush (crit 19–20, × Ambush) applies to the first attack of each time you hide (plan 6a-8); silent weapons don't reveal; spotting at the end of every turn (d20 + notice, enemies +0/+2/+4/+6 by tier, against 10 + Ingenuity modifier + Stealth); adjacency reveals. *Still to do (lane B): the stay-hidden TN rising +2 per success for Shadow Step II.*
@@ -9537,10 +9633,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     data cap": a question for the lead. PROVISIONAL.
 4112. **XP (rules 1.54 item 9; `survival.json`):** `xp.base` 10, `xp.per_depth` 2, `xp.boss` 5, `stage.xp` [1, 2.6, 4,
     4, 4.5]; `xp.elite` 1.5, `xp.vault_guard` 1.5 and `xp.cache` 0.25 unchanged; the shared `xp_total` untouched.
-    Supersedes items 2821 and 3606. PROVISIONAL.
+    Supersedes items 2821 and 3606. PROVISIONAL. *(Superseded by rules 1.56: item 4151, base 35, per_depth 0.)*
 4113. **Levels by stage (rules 1.54 item 9):** on the reference path (survival-spec 5.4) 400 XP after stage 1's Boss
     (level 3), 1,440 after stage 2 (5), 3,040 (7), 4,640 (9), 6,440 (11), 8,240 after stage 6 (13); the scout's
-    count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13).
+    count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13). *(Superseded by rules 1.56, item 4151: level 3 before the Boss on 88% of typical routes, at depths 9 to 13.)*
     Supersedes item 3611. PROVISIONAL.
 4114. **The curve measured again (rules 1.54 item 9; `docs/design/handoffs/survival-0.28-fit.md`):** 6 seeds a cell,
     stages capped at 5, routes gear and training. On the new XP a squad of four ended at means 1.6 (gear) and 3.1
@@ -9620,3 +9716,87 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
 4128. **Items 4121 to 4128 are rules 1.55's.**
+
+### Rules 1.56 (Balance 2.0), L1
+
+The modifier carrier, Recoil 2.0 and the weapon mods as data (rules 1.56 body, items 1 to 5). Every number is
+PROVISIONAL.
+
+4130. **Recoil by gun** (rules 1.56 item 1): every gun 1 (the old −1 a shot), the four bows and the core rifle 0
+    (`weapons.json recoil`, `rules.json weapons_rules.gear_fields.recoil` provisional). The draft's 2 for the long
+    rifle, the battle rifle, the hand cannon, the four shotguns and the six heavy weapons is left to the P3 refit: set
+    on L1 it turned the Survival replay guard red (seed PHC-0003, the stage-1 Boss: a braced Boss with no target in
+    sight stands still and an Outburst caster Mana-Shorts itself every turn, 40 rounds), an enemy-AI and policy dead
+    end the new dice reached, not a recoil rule. PROVISIONAL.
+4131. **The Dexterity relief and the braced share** (rules 1.56 item 1): floor(Dexterity ÷ 2) and ×0.5 toward 0, as
+    before, now `weapons_rules.recoil.dex_relief_per` 2 and `braced_mult` 0.5. PROVISIONAL.
+4132. **The compensator** (rules 1.56 item 3; Leon "ok"): `recoil` −1 (was: all Recoil). PROVISIONAL.
+4133. **The foregrip** (rules 1.56 item 3): +1 to hit on Bursts and full auto with its gun (an item op), built and sold
+    at 150 (was not run, `built: false`). PROVISIONAL.
+4134. **The extended magazine** (rules 1.56 item 3): `magazine_pct` 50, every magazine of its gun (was the first one
+    only). PROVISIONAL.
+4135. **The scope's +1** is its own to-hit term, "Scope", on aimed shots with its gun; **the suppressor's −2** is on its
+    gun's shots only; **mods act in either hand** (rules 1.56 items 3 and 4). PROVISIONAL.
+4136. **Items 4130 to 4136 are rules 1.56 L1's.**
+
+### Rules 1.56 (Balance 2.0), L2 special rounds by calibre
+
+Release 0.29 item D3 (the 0.28 review's leftover: "special rounds made at 2 gunpowder + 2 casings fit heavy guns").
+Lane L2 of the 0.29 build plan; items 4137 to 4143. Every number here is PROVISIONAL.
+
+4137. **Special rounds belong to a calibre.** Armour-piercing, hollow-point and incendiary rounds (the items with an
+    `ammo_type` and a `price_mult`) are carried, bought, made and loaded as rounds of one calibre: a pack line of that
+    calibre with the round's type (`rounds:<calibre>:<type>`, the shape a typed arrow line already has). A gun loads
+    and chambers (Load Special, `gear/ammo`) only special rounds of its own calibre. Enhanced rounds (no `price_mult`)
+    are unchanged: their own item, their own price, any gun. Supersedes the body's "Special rounds are carried as items"
+    and rules 1.42's "they fit any gun". PROVISIONAL.
+4138. **The calibres** special rounds come in: `rules.json weapons_rules.special_round_price.calibres` (.32 Decrkm,
+    revolver, rifle, shell, .700 Blackpoint, .50 Frontier: every gun's calibre but bows' and crossbows' (their arrows
+    have their own types), the 40 mm grenade, the rocket, the fuel canister and the core charge). PROVISIONAL.
+4139. **The price** of a special round is its type's `price_mult` x that calibre's round, through the one `priceOf`:
+    an armour-piercing .700 round is 3 x 40 = 120 credits (was 3 x a rifle round, 6, for every gun). A sale is the sell
+    rate of that price. PROVISIONAL.
+4140. **The shop** lists each special round, for each character, as rounds of every calibre in item 4138 that a gun it
+    holds or carries (not a bow) takes, `per` a purchase as the special shelf's row (10). PROVISIONAL.
+4141. **Making** (rules 1.54 items 5 to 7): a recipe row with `each_calibre: true` (`data/recipes.json`) is read as one
+    row for each calibre of item 4138 (id `<row>:<calibre>`): it makes rounds of that calibre and type, in the fewest rounds
+    whose worth at `priceOf` splits into whole needs, each need its `share` of the worth (half gunpowder, half casings:
+    V/2 + V/2). An armour-piercing .700 round needs 60 gunpowder and 60 casings; the rifle's rows make what the old rows
+    made (armour-piercing and incendiary 3 + 3 a round, hollow-point 2 + 2). The validator holds every expanded row to
+    the parity. PROVISIONAL.
+4142. **Old saves.** A 0.28 pack line of a bare special-round item (`ammo_armor_piercing`, `ammo_hollow_point`,
+    `ammo_incendiary`) reads as the same count of rounds of the reference calibre (`special_round_price.calibre`,
+    rifle), at the price it had; so does a loot or shop row that names the bare item.
+4143. **Items 4137 to 4143 are rules 1.56 L2's.**
+
+### Rules 1.56 (Balance 2.0), L3 mods in Survival
+
+Items 4144 to 4146.
+
+4144. **A mod as a reward (rules 1.56 L3 item 1):** `survival.json rewards.mods.chance` fight 0.05, elite 0.1, vault_guard
+    0.35, boss 0.35, vault 0, crate 0 (the gate reads the Elite's, a cache the fight's); `rewards.mods.band` 0.5 of the
+    node's price band. PROVISIONAL (to fit in P3: mods held per character by the end of stage 2, target 1 to 2).
+4145. **Fit to any gun, the extra slot for the fee (rules 1.56 L3 items 2 and 3):** `forge.fit` rate 0.2, min 25,
+    unchanged. PROVISIONAL.
+4146. **Items 4144 to 4146 are rules 1.56 L3's.**
+
+### Rules 1.56 (Balance 2.0), L6
+
+4147. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
+4148. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, hatchet, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. For the lead to rule.
+4149. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
+4150. **Items 4147 to 4150 are rules 1.56 L6's.**
+
+### Rules 1.56 (Balance 2.0), XP
+
+4151. **XP a node pays (rules 1.56 XP item 1; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
+    `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
+    simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
+    5 for 80% on a typical route" is not met (25% to 46% of characters on the gear route: level 2 at stop 6 to 7): meeting it needs
+    base 50, which brings level 3 to stop 8, before the gate, against Leon's words. Supersedes item 4112's base and
+    per_depth. PROVISIONAL.
+4152. **The levels guard (rules 1.56 XP item 2):** the static route walk, 60 maps: level 3 at the door on 80% of
+    most-fights and 50% of typical routes; at most level 4 after the Boss; at most 1% of routes at level 3 before the
+    gate row, none before the row above it; 99% at level 3 after the Boss. Replaces the 1.54 guard (level 3 never
+    before depth 12). PROVISIONAL.
+4153. **Items 4151 to 4153 are rules 1.56 XP's.**

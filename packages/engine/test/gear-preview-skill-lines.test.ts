@@ -1,7 +1,7 @@
 // Rules 1.55 (Leon, 15 Nov 2026): every weapon card says which skill the weapon rolls to hit with and what its damage
 // scales with. The preview's "Hits with" must name the skill whose modifier the real attack's dice breakdown adds.
 import { describe, it, expect } from 'vitest';
-import { gearPreview, previewAttack, SKILL, ITEM, WEAPONS, checkMod, weaponMultLabel } from '../src';
+import { gearPreview, previewAttack, SKILL, ITEM, WEAPONS, ATTRS, checkMod, weaponMultLabel } from '../src';
 import { PROFILES, pairOf } from '../src/effects/output';
 import { fightWith, withGame } from './helpers/perkfight';
 
@@ -37,15 +37,19 @@ describe('the gear preview names the skill a weapon hits with and what its damag
     const c = f.g.characters[f.pc.charId!], p = gearPreview(c, { id: 'evoker' }), door = (ITEM as any).evoker.focus.door;
     expect(line(p, 'hits_with').value).toBe(SKILL[door].name + ' · +' + checkMod(c, door));
   });
-  it('"Damage scales with" names only inputs whose slope is not 0: none today, so no weapon or focus has the line', () => {
+  it('"Damage scales with" names only inputs whose slope is not 0: a melee weapon its Attribute (rules 1.56), no gun and no focus', () => {
     const f = fightWith([{ skills: SKILLS }], [{ tier: 'soldier', classic: true }]);
     const c = f.g.characters[f.pc.charId!];
     const zero = (id: string) => !PROFILES[id].attr && !PROFILES[id].skill;
     expect(zero('weapon')).toBe(true); // rules 1.26: level buys damage; if this changes, the line must come back
+    const nm = (id: string) => ATTRS.find((a) => a.id === id)!.name;
     for (const w of WEAPONS) {
-      const s = line(gearPreview(c, { id: w.id }), 'scales_with');
-      if ((w as any).phys) expect(s, w.id).toBeUndefined();
+      const s = line(gearPreview(c, { id: w.id }), 'scales_with'), ph = (w as any).phys;
+      if (!ph) continue;
+      if (zero(ph.profile || 'weapon')) expect(s, w.id).toBeUndefined();
+      else expect(s?.value, w.id).toBe((ph.scales_with as string[]).filter((x) => ATTRS.some((a) => a.id === x)).map(nm).join(' and ')); // rules 1.56: the Attribute, never the skill
     }
+    expect(WEAPONS.filter((w) => line(gearPreview(c, { id: w.id }), 'scales_with')).length, 'every melee weapon with the melee profile shows it').toBeGreaterThan(10);
     for (const id of ['evoker', 'emanator', 'attuner', 'visualizer']) {
       const s = line(gearPreview(c, { id }), 'scales_with');
       const prof = Object.keys(PROFILES).find((k) => PROFILES[k].level === 'deal' && pairOf(k).skills.includes((ITEM as any)[id].focus.door));

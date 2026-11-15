@@ -6,7 +6,7 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, specialRoundsFor, takeSpecialRounds, plainRounds, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, modsOn, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
@@ -873,8 +873,9 @@ function reduce(g: GameState, a: Action, by: string) {
       const type = ammoId(a.ammo) || ''; if (!type || (type !== 'standard' && !AMMO_TYPES[type])) fail('No such ammo type.');
       const w = WEAPON[c!.weapon]; if (!w || w.magazine == null || !w.ammo) fail('Your weapon takes no rounds.');
       if (type === 'standard') { c!.loadedType = null; push(g, { kind: 'system', text: c!.name + ' loads standard rounds.' }); return; }
-      const pack = packOf(c!).map((x) => ({ ...x })), it = pack.find((x) => (x.item || x.id) === 'ammo_' + type && x.qty > 0); if (!it) fail('You carry no ' + type.replace(/_/g, '-') + ' rounds.');
-      const n = Math.min(it!.qty, magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine!); it!.qty -= n; c!.loaded = n; c!.loadedType = type; c!.pack = pack.filter((x) => x.qty > 0 || x.mags);
+      // rules 1.56 (L2): rounds of the gun's own calibre of that type (or enhanced rounds, which fit any gun)
+      if (!specialRoundsFor(packOf(c!), w!.ammo)[type]) fail('You carry no ' + type.replace(/_/g, '-') + ' rounds for the ' + w!.name.toLowerCase() + '.');
+      const took = takeSpecialRounds(packOf(c!), w!.ammo, type, magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine!), n = took.took; c!.loaded = n; c!.loadedType = type; c!.pack = took.pack;
       push(g, { kind: 'system', text: c!.name + ' loads ' + n + ' ' + type.replace(/_/g, '-') + ' rounds.' }); return;
     }
     case 'levelup/perk': {
@@ -1914,7 +1915,7 @@ function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'ge
 }
 /** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
  * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
-const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offWeapon', 'offItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offMods', 'held', 'offWeapon', 'offItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
   'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'shieldRecv', 'stealth', 'injResist'] as const;
 /** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
@@ -2317,9 +2318,9 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     const w = WEAPON[c.weapon];
     if (u.loose != null) {
       // Loose rounds for the gun's calibre: used ones come off the stacks; rounds picked up mid-fight (rules 1.9) are added.
-      const have = pack.filter((it) => it.calibre && it.calibre === w?.ammo && !it.mags).reduce((t, it) => t + it.qty, 0);
+      const have = pack.filter((it) => plainRounds(it, w?.ammo)).reduce((t, it) => t + it.qty, 0);
       if (u.loose > have && w?.ammo) packAdd(pack, roundsOf(w.ammo, u.loose - have));
-      else { let left = u.loose; for (const it of pack) if (it.calibre && it.calibre === w?.ammo) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
+      else { let left = u.loose; for (const it of pack) if (plainRounds(it, w?.ammo)) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
     }
     // Rules 1.3: the off-hand gun's spares, thrown items used, special ammo, persisting class resources. The off hand's
     // spares are written before u.extra (rules 1.9 fix: they used to overwrite magazines u.extra had just added).
@@ -2327,7 +2328,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
       // Each off-hand magazine keeps its type, in line with the magazines (review fix: picked-up types were lost).
       if (u.offMagTypes || pack[oi].magTypes) { const t = Array.from({ length: u.offMags.length }, (_, i) => (u.offMagTypes ? u.offMagTypes[i] ?? null : pack[oi].magTypes?.[i] ?? null)); if (t.some(Boolean)) pack[oi].magTypes = t; else delete pack[oi].magTypes; } } }
     // An off-hand gun loaded round by round, of another calibre: the rounds it used come off that calibre's stacks.
-    if (u.offLoose != null && c.offHand && WEAPON[c.offHand.id]?.ammo) { const cal = WEAPON[c.offHand.id].ammo; let left = u.offLoose; for (const it of pack) if (it.calibre === cal && !it.mags) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
+    if (u.offLoose != null && c.offHand && WEAPON[c.offHand.id]?.ammo) { const cal = WEAPON[c.offHand.id].ammo; let left = u.offLoose; for (const it of pack) if (plainRounds(it, cal)) { it.qty = Math.min(it.qty, left); left -= it.qty; } }
     for (const x of u.extra || []) packAdd(pack, magItem(x.weapon, x.rounds, x.type || null));
     delete u.extra; // written back once (rules 1.9 fix: a mid-fight swap wrote them twice)
     if (u.throwables) for (const [item, left] of Object.entries(u.throwables)) { let have = pack.filter((it) => (it.weapon || it.id) === item && !it.mags).reduce((t, it) => t + it.qty, 0), drop = have - left;
@@ -3206,7 +3207,7 @@ function runAction(g: GameState, a: Action, by: string) {
       } else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
         const pack = packOf(c!).map((x) => ({ ...x }));
-        for (const it of pickedItem(w!)) packAdd(pack, it);
+        grantGoods(c!, pack, pickedItem(w!)); // the one grant (a weapon, a focus, or rules 1.56 L3 a mod)
         for (let i = 0; i < Math.round(o!.ammo * ammoMult(c!)); i++) for (const it of magazineWorth(w!.id)) packAdd(pack, it); // rule 23: a picked gun takes its share of the pack (rules 1.44: Bandolier's too)
         c!.pack = pack;
         took = c!.name + ' takes the ' + (w!.rarity !== 'standard' ? w!.rarity[0].toUpperCase() + w!.rarity.slice(1) + ' ' : '') + itemName(w!.id) + '.';
@@ -3556,7 +3557,7 @@ function sbRefill(c: Character) {
   c.dead = false; c.hp = maxHp(c); c.injuries = []; c.downedFails = 0;
   c.loaded = magazineSize(c.weapon, c.weaponState?.mods) ?? 0;
   if (c.offHand && WEAPON[c.offHand.id]?.magazine != null) c.offHand = { ...c.offHand, loaded: magazineSize(c.offHand.id, c.offHand.mods) ?? 0 }; // the off-hand gun keeps its own rounds now (item 688)
-  const pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!) ?? 0) } : { ...it }));
+  const pack = packOf(c).map((it) => (it.mags && it.weapon ? { ...it, mags: it.mags.map(() => magazineSize(it.weapon!, modsOn(c, it.weapon)) ?? 0) } : { ...it }));
   const w = WEAPON[c.weapon];
   if (w?.magazine != null && w.reload !== 'loose' && !pack.some((it) => it.weapon === c.weapon && it.mags)) pack.push(magsOf(c.weapon, 3));
   if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }

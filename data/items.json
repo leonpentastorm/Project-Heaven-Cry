@@ -349,7 +349,7 @@
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Optic: no −2 to hit in the first range band past the weapon's effective range.",
+      "text": "Optic: no −2 to hit in the first {=bands} range band past the weapon's effective range.",
       "effects": [
         {
           "op": "mod",
@@ -359,7 +359,8 @@
       "mod_slot": "optic",
       "tags": [
         "electronic"
-      ]
+      ],
+      "bands": 1
     },
     {
       "id": "mod_scope",
@@ -369,32 +370,56 @@
       "price_credits": 450,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Optic: Aimed Shots get +1 to hit and one more range band before penalties start.",
+      "text": "Optic: Aimed Shots with this gun get {=effects.1.value|signed} to hit (its own term, Scope) and {=bands} more range band before penalties start.",
       "effects": [
         {
           "op": "mod",
           "slot": "optic"
+        },
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "with_this": true,
+            "mode": [
+              "aimed"
+            ]
+          },
+          "value": 1
         }
       ],
-      "mod_slot": "optic"
+      "mod_slot": "optic",
+      "bands": 1,
+      "bands_modes": [
+        "aimed"
+      ]
     },
     {
       "id": "mod_suppressor",
       "name": "Suppressor",
       "category": "mod",
-      "damage_add": -2,
       "weight_kg": 0.3,
       "price_credits": 400,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Muzzle: shots don't reveal you while you are Hidden. {=damage_add} damage.",
+      "text": "Muzzle: this gun's shots don't reveal you while you are Hidden. {=effects.1.value} damage to its shots.",
       "effects": [
         {
           "op": "mod",
           "slot": "muzzle"
+        },
+        {
+          "op": "damage_mod",
+          "when": "dealing",
+          "if": {
+            "with_this": true,
+            "melee": false
+          },
+          "value": -2
         }
       ],
-      "mod_slot": "muzzle"
+      "mod_slot": "muzzle",
+      "silent": 1
     },
     {
       "id": "mod_compensator",
@@ -404,14 +429,15 @@
       "price_credits": 250,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Muzzle: Recoil −1 per shot.",
+      "text": "Muzzle: Recoil {=recoil|signed} per shot.",
       "effects": [
         {
           "op": "mod",
           "slot": "muzzle"
         }
       ],
-      "mod_slot": "muzzle"
+      "mod_slot": "muzzle",
+      "recoil": -1
     },
     {
       "id": "mod_extended_mag",
@@ -421,14 +447,15 @@
       "price_credits": 300,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Magazine: +50% capacity (rounded down).",
+      "text": "Magazine: +{=magazine_pct}% capacity (rounded down), in every magazine of the gun.",
       "effects": [
         {
           "op": "mod",
           "slot": "magazine"
         }
       ],
-      "mod_slot": "magazine"
+      "mod_slot": "magazine",
+      "magazine_pct": 50
     },
     {
       "id": "mod_quick_release",
@@ -438,11 +465,23 @@
       "price_credits": 350,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Magazine: reloading costs 1 AP.",
+      "text": "Magazine: reloading this gun costs {=effects.1.set} AP.",
       "effects": [
         {
           "op": "mod",
           "slot": "magazine"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "with_this": true,
+            "action": [
+              "reload"
+            ]
+          },
+          "set": 1,
+          "priority": 1
         }
       ],
       "mod_slot": "magazine"
@@ -453,9 +492,38 @@
       "category": "mod",
       "weight_kg": 0.2,
       "price_credits": 150,
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "provisional": true,
-      "text": "Underbarrel: the first burst each turn ignores Recoil.",
+      "text": "Underbarrel: Bursts and full auto with this gun are {=effects.1.value|signed} to hit.",
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "underbarrel"
+        },
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "with_this": true,
+            "mode": [
+              "burst",
+              "auto"
+            ]
+          },
+          "value": 1
+        }
+      ],
+      "mod_slot": "underbarrel"
+    },
+    {
+      "id": "mod_bayonet",
+      "name": "Bayonet",
+      "category": "mod",
+      "weight_kg": 0.4,
+      "price_credits": 120,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Underbarrel: melee attacks with the gun deal {=melee_damage} damage (Dexterity) instead of your fists' damage.",
       "effects": [
         {
           "op": "mod",
@@ -463,25 +531,7 @@
         }
       ],
       "mod_slot": "underbarrel",
-      "built": false
-    },
-    {
-      "id": "mod_bayonet",
-      "name": "Bayonet",
-      "category": "mod",
-      "damage": 15,
-      "weight_kg": 0.4,
-      "price_credits": 120,
-      "adjudication": "engine",
-      "provisional": true,
-      "text": "Underbarrel: melee attacks with the gun deal {=damage} damage (Dexterity) instead of your fists' damage.",
-      "effects": [
-        {
-          "op": "mod",
-          "slot": "underbarrel"
-        }
-      ],
-      "mod_slot": "underbarrel"
+      "melee_damage": 15
     },
     {
       "id": "mod_underslung",
@@ -509,11 +559,25 @@
       "price_credits": 250,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Edge: critical hits also cause Bleeding.",
+      "text": "Edge: critical hits with this weapon also cause Bleeding.",
       "effects": [
         {
           "op": "mod",
           "slot": "edge"
+        },
+        {
+          "op": "condition",
+          "when": "hit",
+          "if": {
+            "with_this": true,
+            "crit": true,
+            "melee": true,
+            "target_alive": true
+          },
+          "target": "target",
+          "condition": "bleeding",
+          "skip_save": true,
+          "say": "{target} is cut by the serrated edge{then}."
         }
       ],
       "mod_slot": "edge"
@@ -522,16 +586,24 @@
       "id": "mod_weighted",
       "name": "Weighted head",
       "category": "mod",
-      "damage_add": 3,
       "weight_kg": 0.5,
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Edge: +{=damage_add} damage.",
+      "text": "Edge: {=effects.1.value|signed} damage to this weapon's blows.",
       "effects": [
         {
           "op": "mod",
           "slot": "edge"
+        },
+        {
+          "op": "damage_mod",
+          "when": "dealing",
+          "if": {
+            "with_this": true,
+            "melee": true
+          },
+          "value": 3
         }
       ],
       "mod_slot": "edge"
@@ -1089,7 +1161,7 @@
       "price_mult": 3,
       "effects": [],
       "adjudication": "engine",
-      "text": "Armour-piercing rounds for any gun. Load them outside a fight to fill the magazine in the gun. They ignore armour and deal 20% less damage.",
+      "text": "Armour-piercing rounds of one calibre (bought and made for each gun's own rounds). Load them outside a fight to fill the magazine in the gun. They ignore armour and deal 20% less damage.",
       "provisional": true
     },
     {
@@ -1102,7 +1174,7 @@
       "price_mult": 2,
       "effects": [],
       "adjudication": "engine",
-      "text": "Hollow-point rounds for any gun. Load them outside a fight to fill the magazine in the gun. They deal 30% more damage, but the target's armour counts double.",
+      "text": "Hollow-point rounds of one calibre (bought and made for each gun's own rounds). Load them outside a fight to fill the magazine in the gun. They deal 30% more damage, but the target's armour counts double.",
       "provisional": true
     },
     {
@@ -1115,7 +1187,7 @@
       "price_mult": 3,
       "effects": [],
       "adjudication": "engine",
-      "text": "Incendiary rounds for any gun. Load them outside a fight to fill the magazine in the gun. A hit sets the target Burning, and they deal 10% less damage.",
+      "text": "Incendiary rounds of one calibre (bought and made for each gun's own rounds). Load them outside a fight to fill the magazine in the gun. A hit sets the target Burning, and they deal 10% less damage.",
       "provisional": true
     },
     {

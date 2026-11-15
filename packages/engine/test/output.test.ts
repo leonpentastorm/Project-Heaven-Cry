@@ -5,7 +5,7 @@
 // tables' job (golden-damage*.test.ts).
 import { describe, expect, it } from 'vitest';
 import { scaleOf,
-  RULES, ENEMY_LEVELS, enemyLevelRow, ARCHETYPES, newCharacter, WEAPON,
+  RULES, ENEMY_LEVELS, enemyLevelRow, ARCHETYPES, ATTRS, newCharacter, WEAPON,
   PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, stackDamage, VS_CAP, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend,
   physicalMult, weaponMult, sigilMult, soulMult, elementalMult, healingMult, blessingPower, mendFactor, mendFactorOf, hurtUnit, harm,
   type Sheet, type Unit,
@@ -21,8 +21,10 @@ describe('the data (rules.json output): the profiles of rules 1.26 (the re-fit)'
     const P = (RULES as any).output.profiles;
     for (const [id, p] of Object.entries(PROFILES)) {
       const shape = P[id].shape;
-      expect(['aimed', 'landed', 'flat', undefined], id).toContain(shape);
+      expect(['aimed', 'landed', 'flat', 'struck', undefined], id).toContain(shape);
       if (shape === 'aimed') { expect(p.attr, id).toBe(0); expect(p.skill, id).toBe(0); }
+      // rules 1.56 (Balance 2.0, L6): a character's melee blow; an Attribute slope (the weapon's scales_with), never a skill one
+      if (shape === 'struck') { expect(p.attr, id).toBeGreaterThan(0); expect(p.skill, id).toBe(0); expect(p.level, id).toBe('deal'); expect(p.k * (1 + p.attr * 6), id + ': Attribute 7 re-pinned to the weapon profile').toBeCloseTo(PROFILES.weapon.k, 4); }
       if (shape === 'landed') { expect(p.attr, id).toBe(0.06); expect(p.skill, id).toBe(0.06); }
       if (shape === 'flat') expect([p.k, p.attr, p.skill, p.level]).toEqual([1, 0, 0, 'deal']);
     }
@@ -66,7 +68,11 @@ describe('the Stat term: k x (1 + attr x (Attribute - 1) + skill x Skill), read 
       const ph = w.phys; if (!ph) continue;
       const skills: string[] = ph.also_scales?.length ? ph.also_scales : [ph.hits_with];
       const c = withStats(Object.fromEntries((ph.scales_with as string[]).map((x, i) => [x, 4 + i * 3])), Object.fromEntries(skills.map((x, i) => [x, 7 - i * 2])));
-      expect(weaponMult(c, w.id), w.id).toBe(PROFILES.weapon.k);
+      // rules 1.56 (Balance 2.0, L6): a melee row names the melee profile, which reads its scales_with Attribute only
+      const p = PROFILES[ph.profile || 'weapon'], attrs = (ph.scales_with as string[]).map((x, i) => (ATTRS.some((a) => a.id === x) ? 4 + i * 3 : null)).filter((v) => v != null) as number[];
+      expect(weaponMult(c, w.id), w.id).toBeCloseTo(p.k * (1 + attrs.reduce((t, a) => t + p.attr * (a - 1), 0)), 9);
+      if (!ph.profile) expect(weaponMult(c, w.id), w.id).toBe(PROFILES.weapon.k);
+      else expect(ph.system, w.id + ': only a melee weapon names a profile').toBe('melee');
     }
     const c = withStats({ strength: 6 }, { raw_power: 4 }); expect(weaponMult(c, 'no_such_weapon')).toBe(physicalMult(c)); expect(weaponMult(c, null)).toBe(1.7);
   });

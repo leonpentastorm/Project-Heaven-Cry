@@ -12,7 +12,8 @@ import { FRAME_INK as I } from './FullScreenFrame';
 import { WearBar, type WearData } from './WearBar';
 
 /** What an upgrade card draws: a services-shelf card (the shop) or a place's option card (the Forge), as one shape. */
-export interface UpgradeCardData { key: string; title: string; id?: string | null; price: number | null; why: string | null; note?: string; lines: { label: string; before: string; after: string }[]; action: { type: string; [k: string]: unknown }; wear?: WearData | null }
+export interface UpgradeCardData { key: string; title: string; id?: string | null; price: number | null; why: string | null; note?: string; lines: { label: string; before: string; after: string }[]; action: { type: string; [k: string]: unknown }; wear?: WearData | null;
+  /** the button's word when the engine names one (the Forge's mod cards: Fit, Take off); else Upgrade, or Repair with `wear` */ verb?: string }
 
 /** One grade step as a large card (rules 1.46); `choice` marks its button as a place's option (data-phc-choice). */
 export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocus?: () => void; choice?: boolean }) {
@@ -39,9 +40,9 @@ export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocu
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
         {s.price != null ? <div style={{ display: 'flex', flexDirection: 'column' }}><span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.price ? s.price.toLocaleString('en') : 'Free'}</span>{s.price ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : null}</div> : null}
         <button type="button" data-phc-upgrade-go="" data-phc-choice={choice ? s.key : undefined} data-phc-why={choice && s.why ? '' : undefined} aria-disabled={s.why ? 'true' : undefined} onClick={(e) => { if (s.why) openTipOn(e.currentTarget.closest('article')); else act(s.action as any); }}
-          style={{ marginLeft: 'auto', minHeight: 42, padding: '0 18px', borderRadius: 10, border: 0, background: s.why ? 'transparent' : I.text, outline: s.why ? '1px solid #3B475D' : 'none', color: s.why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>{w ? 'Repair' : 'Upgrade'}</button>
+          style={{ marginLeft: 'auto', minHeight: 42, padding: '0 18px', borderRadius: 10, border: 0, background: s.why ? 'transparent' : I.text, outline: s.why ? '1px solid #3B475D' : 'none', color: s.why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>{s.verb || (w ? 'Repair' : 'Upgrade')}</button>
       </div>
-      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: s.why ? I.muted : I.ok }}>{s.why || (w ? '✓ You can repair it' : '✓ You can upgrade it')}</span>
+      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: s.why ? I.muted : I.ok }}>{s.why || (s.verb ? '✓ The armourer can do it' : w ? '✓ You can repair it' : '✓ You can upgrade it')}</span>
     </article>
   );
 }

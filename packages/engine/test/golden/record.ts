@@ -163,10 +163,12 @@ export function recordWeapons(T: Table) {
       plainAttack(T, 'weapon-bend/' + name + '/' + wid + '/' + tier, g, u.id, t.id, mode);
     }
   };
+  // rules 1.56: a mod is fitted to the character's weapon (its item ops ride the instance: with_this), and the unit's list
+  const fitOn = (g: any, u: any, m: string) => { u.mods = [...(u.mods || []), m]; const c = g.characters?.[u.charId]; if (c) { c.weaponState = { ...(c.weaponState || {}), mods: [...(c.weaponState?.mods || []), m] }; if (u.held) u.held = A.heldOfChar(c); } };
   for (const a of Object.keys(A.AMMO_TYPES)) bend('round-' + a, 'hellraiser_service_rifle', (g, u) => { u.ammoType = a; });
-  for (const m of ['mod_suppressor', 'mod_bayonet']) bend(m, 'hellraiser_service_rifle', (g, u) => { u.mods = [...(u.mods || []), m]; });
-  bend('mod_bayonet-blow', 'hellraiser_service_rifle', (g, u, t) => { u.mods = [...(u.mods || []), 'mod_bayonet']; u.pos = '6,5'; }, 'melee');
-  for (const m of ['mod_weighted', 'mod_serrated']) bend(m, 'sabre', (g, u) => { u.mods = [...(u.mods || []), m]; });
+  for (const m of ['mod_suppressor', 'mod_bayonet']) bend(m, 'hellraiser_service_rifle', (g, u) => { fitOn(g, u, m); });
+  bend('mod_bayonet-blow', 'hellraiser_service_rifle', (g, u, t) => { fitOn(g, u, 'mod_bayonet'); u.pos = '6,5'; }, 'melee');
+  for (const m of ['mod_weighted', 'mod_serrated']) bend(m, 'sabre', (g, u) => { fitOn(g, u, m); });
   bend('worn', 'sabre', (g, u) => { u.maxDur = u.maxDur || 40; u.dur = Math.floor(u.maxDur * 0.2); });
   bend('broken', 'sabre', (g, u) => { u.maxDur = u.maxDur || 40; u.dur = 0; });
   for (const cnd of ['weakened', 'sharpened']) for (const wid of ['hellraiser_service_rifle', 'sabre']) bend(cnd, wid, (g, u) => { (u.conds ||= {})[cnd] = 2; });

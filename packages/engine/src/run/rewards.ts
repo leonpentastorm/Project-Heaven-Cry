@@ -5,7 +5,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type PackItem, type Rarity, isGunId, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
+import { type Character, type PackItem, type Rarity, isGunId, quiversOf, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
 import { CORE_CHARGE, CORE_ITEM, VIS_CHARGE } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
@@ -195,6 +195,33 @@ export function runFoeDrops(u: Unit): Drops {
   const D = SV.drops, table = defaultTable(u); // rules 1.55 item 26: `kind_table` false: the kind's table is not rolled
   return { gear: false, ...(D.kind_table === false ? {} : { table }), items: [...(isGunId(u.weapon) ? D.gun : []), ...(D.by_table[table] || [])].map((e: DropEntry) => ({ ...e })) };
 }
+/** The mods and worn pieces that would last for this character (rule 41; rules 1.56 L3 item 1): a mod for a slot free
+ * on any gun it carries (the main hand, the off hand, a gun in the pack), an enchantment when a carried quiver has none,
+ * a worn piece better (dearer) than the one it wears in that slot (or for an empty slot); priced ones only (`built:
+ * false` has no price). The Elite's and cache's pick of kit, the Forge's want-list and the mod reward read it. */
+export function lastingFor(c: Character): string[] {
+  const guns: { id: string; mods?: string[] }[] = [{ id: c.weapon, mods: c.weaponState?.mods }, ...(c.offHand ? [{ id: c.offHand.id, mods: c.offHand.mods }] : []),
+    ...packOf(c).filter((x) => x.kind === 'weapon' && !!x.weapon).map((x) => ({ id: x.weapon!, mods: x.mods }))];
+  const free = new Set(guns.flatMap((g) => { const used = new Set((g.mods || []).map((m) => (ITEM[m] as any)?.mod_slot)); return (((WEAPON[g.id] as any)?.mod_slots || []) as string[]).filter((s) => !used.has(s)); }));
+  const out: string[] = [];
+  for (const it of Object.values(ITEM) as any[]) {
+    if (priceOf(it.id) == null) continue;
+    if (it.category === 'mod' && free.has(it.mod_slot)) out.push(it.id);
+    if (it.category === 'mod' && it.mod_slot === 'enchantment' && quiversOf(c).some((q) => !(q.mods || []).length)) out.push(it.id); // rules 1.53: a quiver's one enchantment
+    if (it.category === 'armour' && it.slot) { const worn = c.worn?.[it.slot]; if (!worn || (priceOf(it.id) || 0) > (priceOf(worn) || 0)) out.push(it.id); }
+  }
+  return out;
+}
+/** Rules 1.56 L3 item 1: the mod a pick's One-weapon card becomes, or null: `rewards.mods.chance` by where it is made
+ * (through rowKind; absent: never), rolled from its own stream `rngFor(seed, node + '#mod#' + id)`; a mod of lastingFor
+ * priced within `rewards.mods.band` x the pick's price band. */
+function modReward(c: Character, node: string, w: OfferWhere, band: number, seed: string): string | null {
+  const M = SV.rewards.mods; if (!M) return null;
+  const row = rowKind(w, M.chance), p = row == null ? 0 : Number(M.chance[row]) || 0; if (p <= 0) return null;
+  const rng = rngFor(seed, node + '#mod#' + c.id); if (!(next(rng) < p)) return null;
+  const pool = lastingFor(c).filter((id) => (ITEM[id] as any)?.category === 'mod' && (priceOf(id) ?? Infinity) <= band * M.band);
+  return pool.length ? pool[die(rng, pool.length) - 1] : null;
+}
 /** The pick at a node (rule 26; rules 1.54 item 2): `offerSize(where)` weapons within the price band, the first for the
  * character's own door (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled
  * rarity capped by the stage; and where it is offered, the Materials card for the node's credits. From
@@ -220,6 +247,9 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
     if (rarity === 'relic' && id !== QUIVER_ITEM) { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
     return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };
   });
+  // rules 1.56 L3 item 1: the One-weapon card may be a mod instead (the last weapon; the weapons' own rolls unchanged)
+  const mod = weapons.length ? modReward(c, node.id, where, band, seed) : null;
+  if (mod) weapons[weapons.length - 1] = { id: mod, rarity: 'standard', price: priceOf(mod) || 0 };
   const materials = materialsCard(where, k, node.depth, stage, rng);
   return { node: node.id, weapons, ...(materials ? { materials } : {}), ammo: o.ammo ?? packCount(k).mags };
 }

@@ -185,7 +185,7 @@ export function recordConditions(): { state: Record<string, string>; log: Record
   }
   // a serrated critical and a fumble need their die: the attack hook forces it
   for (const [site, die] of [['serrated-crit', 20], ['fumble', 1]] as any[]) for (const door of ['plain', 'query', 'hook']) {
-    const s = stageOf(g0, 'soldier'); s.src.weapon = 'sabre'; s.src.mods = ['mod_serrated']; s.t.injResist = 100;
+    const s = stageOf(g0, 'soldier'); s.src.weapon = 'sabre'; s.src.mods = ['mod_serrated']; { const c = s.g.characters[s.src.charId]; c.weapon = 'sabre'; c.weaponState = { ...(c.weaponState || {}), mods: ['mod_serrated'] }; if (s.src.held) s.src.held = A.heldOfChar(c); } s.t.injResist = 100; // rules 1.56: the mod is fitted to the character's sabre (with_this)
     if (door === 'hook') { MARK.hooked = s.t.id; MARK.hookIds = ['bleeding']; } else if (door === 'query') { MARK.immune = s.t.id; MARK.what = ['bleed']; }
     const n0 = s.cb.log.length, sb = snap(s.src); let r = '';
     try { const out = W(s.g, () => FORCE(die, () => A.resolveAttack(s.cb, s.g.rng, s.src, s.t, 'strike', s.g.characters[s.src.charId]))); r = out?.refused ? 'REFUSED ' + out.refused : ''; } catch (e: any) { r = 'THREW ' + short(e); }

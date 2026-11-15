@@ -8,7 +8,7 @@ import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
 import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
-import { type Character, mod, prayerCooldown } from './character';
+import { type Character, mod, prayerCooldown, gearNum } from './character';
 import { say, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
@@ -51,7 +51,7 @@ export function dropHeldShot(cb: Combat | null | undefined, u: Unit, why = 'lost
   if (w) { delete u.watch; if (cb) emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why }); }
   return had;
 }
-export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.properties || []).includes('silent') || !!(w as any)?.phys?.props?.includes('silent') || (u.mods || []).includes('mod_suppressor'); }; // rules 1.12: the Silent property counts
+export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.properties || []).includes('silent') || !!(w as any)?.phys?.props?.includes('silent') || gearNum(u.weapon, u.mods, 'silent') > 0; }; // rules 1.12: the Silent property counts; rules 1.56: a mod's `silent` (the suppressor)
 // The stacking rule (target bonuses add and are capped at +100%; own multipliers multiply) lives with the one formula:
 // effects/output.ts. Re-exported here for the callers that always took it from tactics.
 export { VS_CAP, stackDamage } from './effects/output';
