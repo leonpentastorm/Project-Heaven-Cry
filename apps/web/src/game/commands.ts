@@ -114,10 +114,10 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   const figRows = by('figments'); // rules 1.34: Expression's door (Picture, then each held Figment's verbs), in Expression ink
   if (figRows.length) out.push(['FIGMENTS · PICTURED', figRows, '#5394AC', 'figments']);
   const sig0 = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
-  // An Evoker in the pack, not in hand (nine doors audit, 0.29): the tab is one row that says so, priced as the pack's
+  // An Evoker in the pack, not in hand (nine doors audit, 0.29): the rows refused for it become one row that says so, priced as the pack's
   // own Draw prices the gear change; picking it opens the backpack (screens/combat.js). The engine's rows return the
   // moment the Evoker is in hand.
-  const pd = evokerInPack(cb, cur, ch, opts.g), sig: ActionItem[] = pd ? [[PACK_EVOKER, NEEDS_EVOKER.replace(/\.$/, '') + ': draw it from the pack', pd.cost, 'Open your backpack and Draw the Evoker into your hand; then Draw a glyph.', pd.why || NEEDS_EVOKER]] : sig0;
+  const pd = evokerInPack(cb, cur, ch, opts.g), sig: ActionItem[] = pd ? [[PACK_EVOKER, NEEDS_EVOKER.replace(/\.$/, '') + ': draw it from the pack', pd.cost, 'Open your backpack and Draw the Evoker into your hand; then Draw a glyph.', pd.why || NEEDS_EVOKER], ...sig0.filter((it) => it[4] !== NEEDS_EVOKER)] : sig0; // the engine's rows it did not refuse for the Evoker (Scuff) stay
   if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
   if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);
   if (pray.length) out.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
