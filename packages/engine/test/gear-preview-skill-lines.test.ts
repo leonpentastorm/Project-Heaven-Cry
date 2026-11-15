@@ -1,7 +1,8 @@
 // Rules 1.55 (Leon, 15 Nov 2026): every weapon card says which skill the weapon rolls to hit with and what its damage
 // scales with. The preview's "Hits with" must name the skill whose modifier the real attack's dice breakdown adds.
 import { describe, it, expect } from 'vitest';
-import { gearPreview, previewAttack, SKILL, ITEM, checkMod } from '../src';
+import { gearPreview, previewAttack, SKILL, ITEM, WEAPONS, checkMod, weaponMultLabel } from '../src';
+import { PROFILES, pairOf } from '../src/effects/output';
 import { fightWith, withGame } from './helpers/perkfight';
 
 const line = (p: any, k: string) => p.lines.find((l: any) => l.key === k);
@@ -13,8 +14,8 @@ describe('the gear preview names the skill a weapon hits with and what its damag
     it(weapon + ': "Hits with" is the skill whose modifier the attack roll adds', () => {
       const f = fightWith([{ weapon, skills: SKILLS }], [{ tier: 'soldier', classic: true }]);
       const c = f.g.characters[f.pc.charId!], p = gearPreview(c, { id: weapon });
-      const hits = line(p, 'hits_with'), scales = line(p, 'scales_with');
-      expect(hits && scales, weapon).toBeTruthy();
+      const hits = line(p, 'hits_with');
+      expect(hits, weapon).toBeTruthy();
       const sk = Object.keys(SKILLS).find((id) => hits.value.startsWith(SKILL[id].name + ' · '))!;
       expect(sk, hits.value).toBeTruthy();
       expect(hits.value).toBe(SKILL[sk].name + ' · +' + checkMod(c, sk));
@@ -29,14 +30,30 @@ describe('the gear preview names the skill a weapon hits with and what its damag
       f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode } as any);
       const said = f.cb.log.slice(n).map((l: any) => (typeof l === 'string' ? l : l?.text || '')).join('\n');
       expect(said).toMatch(new RegExp(': d20 \\d+ ' + (pv.toHit >= 0 ? '\\+' : '−') + Math.abs(pv.toHit) + '\\b'));
-      expect(scales.value).toMatch(/^(Agility and Dexterity|Strength and Raw Power)$/);
     });
   }
-  it('a focus (the Evoker) hits through its door and scales with its damage profile\'s pair', () => {
+  it('a focus (the Evoker) hits through its door', () => {
     const f = fightWith([{ skills: SKILLS }], [{ tier: 'soldier', classic: true }]);
     const c = f.g.characters[f.pc.charId!], p = gearPreview(c, { id: 'evoker' }), door = (ITEM as any).evoker.focus.door;
     expect(line(p, 'hits_with').value).toBe(SKILL[door].name + ' · +' + checkMod(c, door));
-    expect(line(p, 'scales_with').value).toContain(SKILL[door].name);
+  });
+  it('"Damage scales with" names only inputs whose slope is not 0: none today, so no weapon or focus has the line', () => {
+    const f = fightWith([{ skills: SKILLS }], [{ tier: 'soldier', classic: true }]);
+    const c = f.g.characters[f.pc.charId!];
+    const zero = (id: string) => !PROFILES[id].attr && !PROFILES[id].skill;
+    expect(zero('weapon')).toBe(true); // rules 1.26: level buys damage; if this changes, the line must come back
+    for (const w of WEAPONS) {
+      const s = line(gearPreview(c, { id: w.id }), 'scales_with');
+      if ((w as any).phys) expect(s, w.id).toBeUndefined();
+    }
+    for (const id of ['evoker', 'emanator', 'attuner', 'visualizer']) {
+      const s = line(gearPreview(c, { id }), 'scales_with');
+      const prof = Object.keys(PROFILES).find((k) => PROFILES[k].level === 'deal' && pairOf(k).skills.includes((ITEM as any)[id].focus.door));
+      if (!prof || zero(prof)) expect(s, id).toBeUndefined(); else expect(s, id).toBeTruthy();
+    }
+    // a non-zero slope names exactly its own inputs: the physical profile (a weapon with no phys block) has both
+    expect(PROFILES.physical.attr && PROFILES.physical.skill).toBeTruthy();
+    expect(weaponMultLabel('no_such_weapon', { live: true })).toBe('Strength and Raw Power');
   });
   it('the magazine reads rounds, a middle dot, the calibre', () => {
     const f = fightWith([{ weapon: 'decrkm_smg', skills: SKILLS }], [{ tier: 'soldier', classic: true }]);

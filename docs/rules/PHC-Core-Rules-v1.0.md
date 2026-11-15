@@ -6020,14 +6020,14 @@ Leon (15 Nov 2026), verbatim: "on weapons ui, list out what skill it scale it's 
 1. **Every weapon's numbers say what it is aimed with.** The gear preview (rules 1.42) of a weapon, a thrown weapon or
    a focus gains two lines: **Hits with**, the skill its roll to hit is made with, as the attack itself resolves it (a
    weapon's `skill`, a focus's door), with the character's own check modifier ("Dexterity · +3"); and **Damage scales
-   with**, what its damage multiplier reads, in the words of the damage breakdown (a weapon's `phys.scales_with` and
-   the skill it hits with, or `also_scales`: "Agility and Dexterity", "Strength, Raw Power and Dexterity"; a focus:
-   its damage profile's pair, "Intelligence and Brain Power"; a focus with no damage profile, the Attuner, has no such
-   line). A weapon with more than one way of use shows its default (a melee weapon in melee, any other as a shot or a
-   throw). Every card that shows a weapon's numbers shows both (`docs/design/ui-screens.md`). The magazine line reads
-   rounds, a middle dot and the calibre ("30 · .32 Decrkm"). No number changes. Note: since rules 1.26 the weapon,
-   Sigil and Soul profiles have no attribute or skill slope (level buys damage), so the second line names what the
-   multiplier reads, which today is a constant; the line is the breakdown's own label and moves with it.
+   with**, only the inputs of its damage multiplier whose slope is not 0 in the profile the damage reads (a weapon:
+   `phys.scales_with` for the profile's attribute slope, the skill it hits with or `also_scales` for its skill slope;
+   a focus: its damage profile's pair). **A card never names a scaling that changes nothing** (lead's ruling, 15 Nov
+   2026): when every slope is 0 the line is left out. Today, since rules 1.26 (level buys damage), the weapon, Sigil,
+   Soul and Figment profiles have no slope, so no weapon or focus shows the line; it comes back by itself when a slope
+   does. A weapon with more than one way of use shows its default (a melee weapon in melee, any other as a shot or a
+   throw). Every card that shows a weapon's numbers shows them (`docs/design/ui-screens.md`). The magazine line reads
+   rounds, a middle dot and the calibre ("30 · .32 Decrkm"). No number changes.
 
 ## Maps (rules 1.16)
 

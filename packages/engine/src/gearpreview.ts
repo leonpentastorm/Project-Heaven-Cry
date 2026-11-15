@@ -56,10 +56,11 @@ const signed = (n: number) => (n >= 0 ? '+' : '') + n;
  * check modifier (checkMod), and what its damage multiplier reads, in the words the damage breakdown labels it with
  * (character.ts weaponMultLabel). A melee weapon is read in melee, anything else as a shot or a throw. */
 function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
-  const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot');
+  const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot'), sc = weaponMultLabel(w.id, { live: true });
   return [
     { key: 'hits_with', label: 'Hits with', value: (SKILL[sk]?.name || sk) + ' · ' + signed(checkMod(c, sk)), num: null },
-    { key: 'scales_with', label: 'Damage scales with', value: weaponMultLabel(w.id), num: null },
+    // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
+    ...(sc ? [{ key: 'scales_with', label: 'Damage scales with', value: sc, num: null }] : []),
   ];
 }
 /** A focus hits through its door skill (the door its rolls to hit are made through, rolls.ts toHitTerms); its damage
@@ -67,9 +68,11 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
 function focusSkillLines(c: Character, door: string): PreviewLine[] {
   const nm = (id: string) => ATTRS.find((a) => a.id === id)?.name || SKILL[id]?.name || id;
   const prof = Object.keys(PROFILES).find((id) => PROFILES[id].level === 'deal' && pairOf(id).skills.includes(door)), pr = prof ? pairOf(prof) : null;
+  // only the inputs whose slope is not 0 (lead's ruling, 15 Nov 2026): none, no line
+  const live = pr ? [...(PROFILES[prof!].attr ? pr.attrs : []), ...(PROFILES[prof!].skill ? pr.skills : [])] : [];
   return [
     { key: 'hits_with', label: 'Hits with', value: nm(door) + ' · ' + signed(checkMod(c, door)), num: null },
-    ...(pr ? [{ key: 'scales_with', label: 'Damage scales with', value: [...pr.attrs, ...pr.skills].map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1'), num: null }] : []),
+    ...(live.length ? [{ key: 'scales_with', label: 'Damage scales with', value: live.map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1'), num: null }] : []),
   ];
 }
 /** The attack's numbers in this mode, or null when the weapon has no such mode or can't attack (its words in `why`). */

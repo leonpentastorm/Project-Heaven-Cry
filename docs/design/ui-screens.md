@@ -37,7 +37,7 @@ Leon, 14 Nov 2026 (rules 1.54 item 11; a standing rule): *"Make a rule that ever
 | Roguelike | not open | not open | Survival's list until it has its own |
 | Any mode's fight | none | the fight | none (excepted) |
 
-**Weapon cards say what a weapon is aimed with** (rules 1.55; Leon, 15 Nov 2026): every card that shows a weapon's or a focus's numbers (the camp's cards and shelf lines, the shop and the Forge, the reward's One-weapon card, the sheet's GEAR weapon lines, the hover cards) also shows the gear preview's **Hits with** (the skill and the character's modifier, "Dexterity · +3") and **Damage scales with** ("Agility and Dexterity") lines; a short card shows its first number lines and these two (`game/previewLines.ts`). The magazine reads "30 · .32 Decrkm".
+**Weapon cards say what a weapon is aimed with** (rules 1.55; Leon, 15 Nov 2026): every card that shows a weapon's or a focus's numbers (the camp's cards and shelf lines, the shop and the Forge, the reward's One-weapon card, the sheet's GEAR weapon lines, the hover cards) also shows the gear preview's **Hits with** (the skill and the character's modifier, "Dexterity · +3") and **Damage scales with** lines (the second only names inputs whose slope is not 0, and is left out when none is: today no weapon has it, rules 1.26); a short card shows its first number lines and these two (`game/previewLines.ts`). The magazine reads "30 · .32 Decrkm".
 
 **Skill texts on the three skill screens** (Leon, 14 Nov: *"Redo skill menu in character creation, ? menu text, and level up menu text, especially will power ... no proper line break."*; rules 1.54, survival-spec 14.1 R16):
 
