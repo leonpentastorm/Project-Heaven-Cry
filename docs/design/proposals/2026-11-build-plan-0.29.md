@@ -37,10 +37,10 @@ goes live without Leon's word for 0.29.0.
 | B3 | The extended magazine sizes every magazine of that gun (one `magazineSize` of the gun instance in every path: load, refill, a companion's reload, the pack row) | Report 5.4 (card says +50%; engine gives it to the first magazine only) |
 | B4 | The scope's +1 is its own labelled to-hit term (no longer inside the weapon skill's term) | Report 5.6; dice are transparent (CLAUDE.md UI) |
 | B5 | The suppressor's −2 applies only to attacks made with the gun it is on | Report 5.7 |
-| B6 | Mods act on the gun they are fitted to in either hand (paired attacks keep the off hand's mods); the Forge's want-list reads every gun carried | Report 5.8, 5.9; **Leon question 5** (no answer: built) |
-| B7 | In Survival a mod is fitted, swapped or taken off **only at a Forge, for a fee**; the sheet's Fit and the fight's Fit are refused in a run with the reducer's words (one gate, `gearLockWhy`); campaign and Proving Ground unchanged | Leon "at the forge you pay some dough to get them attached"; **Leon question 1** |
+| B6 (off-hand copy and free extra slots: see section 10, item B5) | Mods act on the gun they are fitted to in either hand (paired attacks keep the off hand's mods); the Forge's want-list reads every gun carried | Report 5.8, 5.9; **Leon question 5** (no answer: built) |
+| B7 (live in 0.28.1: see section 10, item A1) | In Survival a mod is fitted, swapped or taken off **only at a Forge, for a fee**; the sheet's Fit and the fight's Fit are refused in a run with the reducer's words (one gate, `gearLockWhy`); campaign and Proving Ground unchanged | Leon "at the forge you pay some dough to get them attached"; **Leon question 1** |
 | B8 | A "take it off" path (today none): a Forge service card that puts the fitted mod back in the pack, same fee | Report 5.8, 7 item 6 |
-| B9 | The four dead mods: foregrip rewritten into an op that exists ("+1 to hit on Bursts and full auto with it"), wrapped grip, underslung launcher and sigil-etched magazine shelved (`stock: false`, `built: false`; never stocked, never offered, never priced); anything `built: false` is filtered by the one stock/offer door | Report 5.1; **Leon question 3** |
+| B9 (live in 0.28.1: see section 10, item A2) | The four dead mods: foregrip rewritten into an op that exists ("+1 to hit on Bursts and full auto with it"), wrapped grip, underslung launcher and sigil-etched magazine shelved (`stock: false`, `built: false`; never stocked, never offered, never priced); anything `built: false` is filtered by the one stock/offer door | Report 5.1; **Leon question 3** |
 | B10 | A mod can be a reward: the post-fight pick offers a mod (one that fits a free slot on a gun the character carries, inside the node's price band) as **Leon question 2** rules (recommended: a third card "One mod" at Elites, the gate, Bosses and the vault's guard) | Leon "weapon mod can be a reward just like raw weapon" |
 | B11 | Mods balanced under the same ceiling: the best legal mod set on each gun is measured in that gun's niche; the hand cannon (red dot, Gun Nut + two optics: 161) and the auto-shotgun (red dot + extended: +54%) are the two to fit; mod prices refitted from their measured worth | Lead ruling "mods are balanced under the same ceiling"; Report section 6 |
 | B12 | Gun Nut's measured +38% / +61% on the CCEC marksman rifle with no mods is traced and fixed | Report 5.11 |
@@ -68,8 +68,8 @@ goes live without Leon's word for 0.29.0.
 | D1 | **The fit simulator plays like a player**: makes rounds and cores from materials (`gear/make`), buys the ammo maker when it pays, sells surplus materials, uses mods through the Forge (buy, pay the fee, fit) and picks a mod reward when it beats the weapon; the run report prints materials got / made / sold, cores pressed, mod fees | Lead ruling: "must make and sell materials and use mods before any number is refitted"; START-HERE (a) |
 | D2 | **The caster policy and overkill count** before any caster number: area words (SPREAD, ARC, CHAIN) when two or more foes are in the shape, stay on the glyphs, the caster buys armour like the gunner, `sim.ts` keeps dealt beside removed, `run/tally.ts` adds uncapped damage, every caster report prints both and the overkill share | Draft 6 fixes 1 to 4; Leon 14 Nov "Do NOT fix Sigil damage on the bot's numbers" |
 | D3 | **Special rounds priced and made by calibre**: an armour-piercing .700 round costs 3 × a .700 round (120), not 3 × a rifle round (6); recipes make a special round of a calibre from materials worth its price | 0.28 review leftover ("special rounds made at 2 gunpowder + 2 casings fit heavy guns") |
-| D4 | **The camp gives a caster fight in hand**: the camp budget stays 300; a core-burning focus (Evoker, Visualizer) comes with a starting set of cores (`loadout.focus_with`), sized by the simulator so a caster leaves camp with as many fights in hand as a gunner | Leon Q11 "300 is not enough for caster even now, they get like 3 core and notthing else"; Lead ruling Q11 |
-| D5 | **XP refit**: on the most-fights route level 3 comes as the party is about to take on the first Boss (today: before the Boss on only 42% of most-fights routes); the always-on guard reads the same target | Rules 1.54 item 9 (Leon: "only get to level 3 as you are about to take on the first boss, if your whole first run you focus on taking as many fight as possible"); START-HERE (a) |
+| D4 (casters start with 4 cores, live in 0.28.1: see section 10, item A8) | **The camp gives a caster fight in hand**: the camp budget stays 300; a core-burning focus (Evoker, Visualizer) comes with a starting set of cores (`loadout.focus_with`), sized by the simulator so a caster leaves camp with as many fights in hand as a gunner | Leon Q11 "300 is not enough for caster even now, they get like 3 core and notthing else"; Lead ruling Q11 |
+| D5 (see section 10, item C1) | **XP refit**: on the most-fights route level 3 comes as the party is about to take on the first Boss (today: before the Boss on only 42% of most-fights routes); the always-on guard reads the same target | Rules 1.54 item 9 (Leon: "only get to level 3 as you are about to take on the first boss, if your whole first run you focus on taking as many fight as possible"); START-HERE (a) |
 | D6 | Small parties, the supply pack's rounds against making, and the trainings: re-measured once D1 to D5 are in; changed only where a cell fails | Draft 7.2 |
 | D7 | Materials card's worth tied to `priceOf` (today 1.5 × the node's credits, a second value scale) | Report N11 (a balance call: the lead's) |
 
@@ -228,13 +228,15 @@ P0 consolidation (A1-A5)  ->  P1 pins on old code  ->  P2 simulator + measure ro
 | --- | --- | --- | --- | --- |
 | **L1 Modifier carrier + Recoil 2.0 + mods to data** (B1 to B6, B9 data, C1, C2, primitives 1 to 3) | the widening of `heldOfChar` / `with_this`; `gearNum`; `recoil` field; every `hasMod` site moved; the four dead mods' rows | `effects/hooks.ts`, `effects/triggers.ts` (with_this), `character.ts` (gear section, `magazineSize`), `combat.ts` (recoil line, optic bands, gun melee, damage_add, serrated), `press.ts`, `tactics.ts`, `perks/c.ts` (Old School, extra slots), `faith.ts:1605`, `game.ts:3553` (refills), `gearpreview.ts`, `data/items.json` (mods), `data/weapons.json` (`recoil`), `data/effect_ops.json`, `tools/validate.py` (mod fields, `no_recoil` retired) | **opus** (the lead approves primitives 1 to 3 before it starts) | P1's pins pass unchanged for every mod except the four named moves (compensator −1, extended spares, scope label, suppressor scope) which are re-recorded on purpose and named in the commit; `grep -rn "mod_[a-z_]*'" packages/engine/src` returns nothing; `lint-item-ops`, `lint-costs`, `lint-foundations` baselines not raised (the literal count falls); `golden-damage*` move only on the recoil lines and the four mods; a reducer test: a mod with a never-seen id, written as one data line, shows on the card and acts in a fight (the "hundredth item" test) |
 | **L2 Special rounds by calibre** (D3, primitive 5) | priced and made by calibre; migration | `credits.ts` (`priceOf` special branch), `containers.ts` (special rounds line), `recipes.ts` (expansion), `data/recipes.json`, `data/items.json` (special rounds rows only), `data/rules.json` (if needed), `tools/validate.py` (`_rprice` parity, N3: changed together), `test/fixtures/save-*.json` (one new fixture) | **opus** | `survival-materials.test.ts` parity holds for every expanded row; a reducer test: AP rounds for the .700 cost 120 at the shop and need materials worth 120 to make; `old-save.test.ts` loads a 0.28 save holding `ammo_armor_piercing`; validator 0 errors. Conflict note: `items.json` is also L1's: L2 touches only the three special-round rows, L1 only `category: mod` rows: merge by hunk |
-| **L3 Mods in Survival** (B7, B8, B10, primitive 6) | the Forge fit/unfit service and fee; the gate; the mod reward; `built: false` filter | `run/progress.ts` (forge stock, want-list across guns, the service cards), `run/shop.ts` (service registration only), `run/rewards.ts` (offer pool, the mod card), `run/state.ts` (`RunOffer` field), `game.ts` (two action types, the gate via `gearLockWhy`), `data/survival.json` (`forge.fit`, `rewards.mods`), `apps/web` run screens (the pick's third card if Leon says so; the Forge card renders `ServiceCard` already) | **opus** | reducer tests: in a run `gear/mod` is refused with the gate's words; at a Forge the fit charges the fee and fits; unfit returns the mod to the pack and charges; a pick offers a mod only for a free slot and only inside the band; a `built: false` mod is never stocked or offered; `boundary.test.ts` green; `npm run e2e -- survival` |
+| **L3 Mods in Survival** (B7, B8, B10, primitive 6; B7 live, see section 10, items A1 and B5) | the Forge fit/unfit service and fee; the gate; the mod reward; `built: false` filter | `run/progress.ts` (forge stock, want-list across guns, the service cards), `run/shop.ts` (service registration only), `run/rewards.ts` (offer pool, the mod card), `run/state.ts` (`RunOffer` field), `game.ts` (two action types, the gate via `gearLockWhy`), `data/survival.json` (`forge.fit`, `rewards.mods`), `apps/web` run screens (the pick's third card if Leon says so; the Forge card renders `ServiceCard` already) | **opus** | reducer tests: in a run `gear/mod` is refused with the gate's words; at a Forge the fit charges the fee and fits; unfit returns the mod to the pack and charges; a pick offers a mod only for a free slot and only inside the band; a `built: false` mod is never stocked or offered; `boundary.test.ts` green; `npm run e2e -- survival` |
 | **L4 Variants** (C10, primitive 4 if approved) | `data/variants.json`, its loader, ten gun and ten focus lines | new `variants.ts` (or in `character.ts`'s loader), `data/variants.json`, `tools/validate.py` (kinds, fits, cap), `magic.ts` (`FLUX_MAX`, `CORE_CHARGE` to data: C11), `effects/stats.ts` (two ids) | **opus** for the loader and C11; **sonnet** for the twenty data lines once the loader passes | starts **after L1 merges** (it reads L1's carrier and `gearNum`); a variant written as one data line shows on the card, prices in the shop, acts in a fight through the reducer and is measured by the loop (Draft 8 step 5's test); validator refuses a third modifier, an unknown kind, a misfit, a duplicate, worth over 20 |
-| **L5 Client display** (C1's sheet line, B4's term name, mod lines) | the sheet's weapon line shows recoil and fitted mods; nothing computed client-side | `apps/web/src/screens/main.js` (GEAR tab), `apps/web/src/game/backpack.ts` (pack row magazine from the engine view, report 5.4) | **sonnet** | `boundary.test.ts` green; `npm run e2e -- smoke`, `-- survival`; a screenshot pass by the lead |
+| **L5 Client display** (C1's sheet line, B4's term name, mod lines; see also section 10, item D) | the sheet's weapon line shows recoil and fitted mods; nothing computed client-side | `apps/web/src/screens/main.js` (GEAR tab), `apps/web/src/game/backpack.ts` (pack row magazine from the engine view, report 5.4) | **sonnet** | `boundary.test.ts` green; `npm run e2e -- smoke`, `-- survival`; a screenshot pass by the lead |
+
+New lane L6 (melee damage from Strength / Agility, Pull Out's availability) is added: see section 10, items B1 and B2.
 
 L4 is the only lane that waits on another lane. L5 waits for L1's views but touches no engine file.
 
-### 4.3 P3 numbers (sequential, the lead fits; one family or dial a commit)
+### 4.3 P3 numbers (sequential, the lead fits; one family or dial a commit; add section 10, item C's findings)
 
 Only after P2 and L1 to L3 are merged on the branch. Order: (1) mods' worth and price (B11, B12), (2) weapon refit by
 family against the niche rows (C5, C6), (3) variants' worth (C10), (4) camp caster cores (D4), (5) XP (D5), (6)
@@ -328,7 +330,7 @@ baseline; a builder who needs to raise one stops and hands back (CLAUDE.md rule 
 
 ---
 
-## 8. Candidate questions for Leon (checked: each is his call, not the repo's)
+## 8. Candidate questions for Leon (checked: each is his call, not the repo's; question 1 is answered, see section 10, item A1)
 
 1. **Fitting only at a Forge.** In Survival, is a mod fitted, swapped or taken off only at a Forge for a fee (no free
    Fit on the sheet, none mid-fight)? *Recommend yes*, fee 20% of the mod's price (at least 25 credits), taking one
@@ -374,6 +376,86 @@ mods count against the run-power cap (they are gear, like weapons; the lead's).
 
 1. **Primitives approved:** 1 (fitted mods and variant modifiers held through `heldOfChar` / `with_this`), 2 (`gearNum`, one helper, a closed field list in data), 3 (`recoil` weapon field), 5 (special rounds bound to a calibre), 6 (a Forge fit / unfit action). 4 (stat ids `flux_max`, `core_charge`, `with_this` in stat answers) is approved for lane L4 only, and only when L4 starts. Nothing else is added to a closed list without coming back to the lead.
 2. **Section 8's questions were checked against the repo** and six of seven are not Leon's: the four inert mods come off sale by a data flag and one general filter (the foregrip is redesigned with Recoil 2.0); the niche table is built, measured and reported as a result; off-hand guns carry mods, grade and wear if the paired hand cannon stays under the ceiling; a better-everywhere weapon is gated by price (no `min_grade` unless a measurement shows one landing too early); variants ship in 0.29 as the last lane and drop to 0.30 if they hold the release; a mod may appear inside the Boss's and the vault guard's pick (no third card).
-3. **Open with Leon:** whether fitting a mod costs a fee at the Forge or stays free. Until he answers, lane L3 builds the unfit path, the mod-in-pick and the inert filter, and NOT the Forge-only gate or the fee.
+3. (Answered, see section 10, item A1: "Forge fee only", live in 0.28.1.) **Open with Leon:** whether fitting a mod costs a fee at the Forge or stays free. Until he answers, lane L3 builds the unfit path, the mod-in-pick and the inert filter, and NOT the Forge-only gate or the fee.
 4. **A disagreement to settle in code before L3:** the mods report says a mod is never a reward pick in Survival; the question check reads survival-spec rules 40, 41, 44 as Elite and cache lasting picks holding mods. L3's first step is to establish which is true through the reducer.
 5. **Order stands:** P0 (consolidation M1 to M3, then S1 to S10) -> P1 (pins) -> P2 (simulator) -> lanes -> P3 (numbers, the lead) -> P4 (consolidation pass) -> gate -> Leon's word -> live.
+
+---
+
+## 10. Rulings and findings of 15 Nov, after the plan was written (these override anything above)
+
+0.28.1 is LIVE (rules 1.55; main = develop = `8e51df38`; `backup/live-0.28.1` pushed). The items below were decided
+or found after sections 1 to 9 were written. Where they disagree with an earlier section, this section wins.
+
+### 10.A Already LIVE in 0.28.1 (rules 1.55): no longer 0.29 work, but 0.29 builds on them
+
+1. Forge-only fitting, swapping and removing of mods in a run, for a fee (Leon: "Forge fee only"; `forge.fit` rate 0.2,
+   minimum 25, PROVISIONAL).
+2. The four inert mods are off sale by `built: false`.
+3. Throw comes with the thrown prop (Leon chose "B"); the stuck-weapon marker.
+4. The field after a won fight: free roaming, Take all, a Leave vote.
+5. No magazines after a fight (Leon: "Naww wtf, no refill mag between fight alright"); casters keep cores and MP.
+6. Scarce drops: a weapon card 1 fight in 5; residue 1 card in 4; grades; materials sized to about a fight's
+   ammunition.
+7. A Magazines shelf selling full and empty magazines.
+8. The camp lists nothing over the budget, no second focus or two-hander, and ammunition only for what the character
+   holds; casters start with 4 cores; weapon cards say "Hits with".
+9. The visibility standard (the place header stays) and the side-panel rule.
+
+### 10.B New 0.29 scope from Leon, 15 Nov
+
+1. **Weapon damage scaling.** Leon: "design talk was that the skill increase hit chance for all weapons, melee get dmg
+   increase from strengh attribute, small blandes and weapon that feels like it need finesse is from agility. guns
+   comes from the gun and the ammo it self notthing from the user can really change what how hard a bullet hits".
+   Lead's ruling: every weapon: the skill raises the hit chance only. Heavy melee (mauls, axes, greatswords, fists):
+   damage grows with the Strength attribute. Light and finesse melee (knives, light blades, anything tagged finesse or
+   thrown): with the Agility attribute. Guns, bows and foci: nothing from the user. Which attribute a melee weapon
+   uses is a data field on the weapon. Rules 1.26 removed the slope from every aimed action so an all-in build is about
+   125% of a normal one: the new slope (starting point +5% damage per attribute point above 1, PROVISIONAL) is fitted
+   with the simulator against the gun ceiling so an all-in Strength build does not run away. The weapon card's "Damage
+   scales with" line (already built, shown only for a non-zero slope) then appears by itself.
+2. **Pull Out** is still listed on every melee weapon: hiding it unless a weapon is stuck next to the actor needs a
+   technique-availability check. Lead approves ONE general addition: a technique row's data field naming a condition
+   already known to the engine's predicates ("an adjacent unit has a stuck weapon the actor may pull"), read by the
+   existing `usable()` path; the builder first shows no existing predicate covers it.
+3. **Credits as a foe's common ground drop** were not built: a pile cannot hold money. Lead's ruling for 0.29: no new
+   pile kind; a killed foe's purse is paid as credits when its pile is picked up only if an existing item can carry it
+   (a "credit chit" item sold back at face value by the one sell rule); otherwise foes keep leaving only rare
+   materials.
+4. The **make view** needs a field saying which recipes fit what the character holds ("For what you carry" group), and
+   the **pack view** a line cap, for the 0.28.1 screens: both are fields on existing views, approved.
+5. A weapon's **off-hand copy**, mods in the off hand, and Gun Nut / Blade Recluse / Overhaul extra mod slots still
+   fitted free in a run: fold into lane L3.
+
+### 10.C Findings from the two playtest hunters and Leon, to fit in P3 (numbers; the lead fits; each with its data field)
+
+1. No level-up in stage 1 (`survival.json` `xp.base` 10, `per_depth` 2: the 0.28 cut overshot). Leon's target stays
+   "only get to level 3 as you are about to take on the first boss" on a most-fights route; today's measured share was
+   42% reaching 3, and a first session may see no level at all: fit level 2 by about stop 4-5 and level 3 at the Boss on
+   at least 80% of most-fights routes.
+2. The squad is near death by stop 4 with no healing on the lane (rests, light-rest training, field kit price).
+3. The first fight can wipe a party to drones firing from out of sight (the 'A firing line' template: reproduce with
+   `npm run try` first).
+4. Throwing knives are called "the better one" at 80 credits with 12 damage against the free knife's 15.
+5. The Recommended loadout gives every build the lever carbine and leaves 6 credits.
+6. The shop counter lists rifle and shell rounds on two shelves.
+7. A gunner's run-dry risk before the first shop, now that no magazines are refilled (the simulator must make rounds
+   and pick magazines up before this can be measured).
+8. Over-ceiling mods: the Frontier hand cannon with red dot and scope at 161%, the Brigade auto-shotgun with red dot
+   and extended magazine at 150%.
+
+### 10.D UI left from 0.28.1 for 0.29
+
+1. Text under 13 px across the UI (initiative chips, mana forecast, header, sheet).
+2. The Outburst heart panel clips the feelings row at 1920x1080.
+3. A level-1 caster sees the Tend and Figments tabs without their focus.
+4. The reward weapon card's hover covers the Materials counts.
+5. The camp screen has no backdrop slot and the right-panel headers no icon slot (three delivered images unwired).
+6. The Forge's mod-fit cards were never checked in a browser.
+
+### 10.E Order stands, with one new lane
+
+P1 pins -> P2 simulator and baseline -> lanes (L1 modifier carrier + Recoil 2.0 + mods to data; L2 special rounds by
+calibre; L3 mods in Survival: what 0.28.1 did not cover; L4 variants last; L5 display; new **L6** melee damage from
+Strength / Agility + Pull Out's availability) -> P3 numbers (the lead) -> P4 consolidation pass -> gate -> Leon's word
+-> live.
