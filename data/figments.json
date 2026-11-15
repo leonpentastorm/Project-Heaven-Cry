@@ -247,19 +247,19 @@
     {
       "id": "picture", "name": "Picture", "icon": "figment-picture", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP and the form's charge (more for each trait) from your Visualizer. A Figment of a ready design or a bare form you have opened appears on a free tile your side sees within your projection range. Needs the Visualizer in hand.",
-      "effects": [{ "op": "grant_action", "action": "picture", "ap": 2, "uses": "at_will", "pick": "forms", "pick_label": "What to picture", "reach": { "tile": true } }],
+      "effects": [{ "op": "grant_action", "action": "picture", "site": "picture", "ap": 2, "uses": "at_will", "pick": "forms", "pick_label": "What to picture", "reach": { "tile": true } }],
       "adjudication": "engine", "provisional": true
     },
     {
       "id": "glimmer", "name": "Glimmer", "icon": "", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP, no charge: the bots paint you in light on a free tile your side sees within your projection range. Every enemy that sees it is fooled as by a Double (Minions and Vermin always; Soldiers, Elites and Bosses make a Brain save) and takes it for you until it is struck or fades. One false image of you at a time: a new one (a Double's too) replaces the old. Needs the Visualizer in hand.",
-      "effects": [{ "op": "grant_action", "action": "glimmer", "ap": 1, "uses": "at_will", "reach": { "tile": true } }],
+      "effects": [{ "op": "grant_action", "action": "glimmer", "site": "figment_order", "ap": 1, "uses": "at_will", "reach": { "tile": true } }],
       "adjudication": "engine", "provisional": true
     },
     {
       "id": "visualizer_core", "name": "Load the Visualizer", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP and a spare core: the Visualizer's core is swapped for a fresh one, full.",
-      "effects": [{ "op": "grant_action", "action": "visualizer_core", "ap": 2, "uses": "at_will", "res": { "cores": 1 } }],
+      "effects": [{ "op": "grant_action", "action": "visualizer_core", "site": "swap_core", "ap": 2, "uses": "at_will", "res": { "cores": 1 } }],
       "adjudication": "engine", "provisional": true
     }
   ]

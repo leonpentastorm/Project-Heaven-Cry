@@ -2150,6 +2150,10 @@ if TRIG:
         for k, v in (g.get("res") or {}).items() if isinstance(g.get("res"), dict) else []:
             if isinstance(v, dict): check_number_block(v, f"{w}: res.{k}")
         if "scope" in g and not (isinstance(g["scope"], list) and g["scope"] and set(g["scope"]) <= {"combat", "world", "story"}): errors.append(f"{w}: a grant_action's scope lists combat, world, story")
+        # 0.29 wave-2 review MF1: a grant that names an actions.json cost site is priced by that site (its handler charges
+        # it), so its own `ap` (what its text reads) must be the site's: one number, held equal here
+        _cs = ((data.get("actions") or {}).get("costs") or {}).get(g.get("site")) if isinstance(g.get("site"), str) else None
+        if isinstance(_cs, dict) and isinstance(_cs.get("ap"), (int, float)) and g.get("ap") != _cs["ap"]: errors.append(f"{w}: its ap {g.get('ap')} is not its cost site '{g['site']}' ({_cs['ap']} AP, actions.json costs)")
     def _walk_grant(o, w):
         if isinstance(o, dict):
             if o.get("op") == "grant_action": _check_grant(o, w)
