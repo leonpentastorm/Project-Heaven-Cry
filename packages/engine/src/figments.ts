@@ -340,7 +340,7 @@ const siteOf = (h: { info: { key: string; effects: any[] } }, action: string): s
 register({
   id: 'picture', kind: 'verb',
   actions: [{
-    id: 'picture', label: 'Picture', scope: ['combat'], target: 'tile', ap: (h) => price({ cb: h.cb, u: h.u }, siteOf(h, 'picture')).ap, pick: 'forms', pickLabel: 'What to picture',
+    id: 'picture', label: 'Picture', scope: ['combat'], target: 'tile', ap: (h) => { const site = siteOf(h, 'picture'); return price({ cb: h.cb, u: h.u }, site).ap; }, pick: 'forms', pickLabel: 'What to picture',
     res: (h, args) => { const p = pictureChoice(h.c, args.choice); return p ? { vcharge: figmentCharge(p.form, p.traits) } : null; },
     available: (h) => { const no = visFocusWhy(h.u); if (no) return no; if (h.cb && h.u && heldFigments(h.cb, h.u).length >= heldMax(h.u, h.c)) return 'Hold is full: let one go first.'; return true; },
     preview: (h, args) => {
@@ -360,7 +360,7 @@ register({
 register({
   id: 'visualizer_core', kind: 'verb',
   actions: [{
-    id: 'visualizer_core', label: 'Load the Visualizer', scope: ['combat'], target: 'none', ap: (h) => price({ cb: h.cb, u: h.u }, siteOf(h, 'visualizer_core')).ap, res: { cores: 1 },
+    id: 'visualizer_core', label: 'Load the Visualizer', scope: ['combat'], target: 'none', ap: (h) => { const site = siteOf(h, 'visualizer_core'); return price({ cb: h.cb, u: h.u }, site).ap; }, res: { cores: 1 },
     available: (h) => (!h.u?.mg?.visualizer ? 'Needs the Visualizer in hand.' : (h.u.mg.vcharge ?? 0) >= (h.u.mg.vchargeMax ?? 0) ? 'The core is full.' : true),
     run: (h) => { const m = h.u!.mg!; resGive(h.cb, h.u!, 'vcharge', (m.vchargeMax ?? 0) - (m.vcharge ?? 0), { c: h.c, why: 'core' }); emitFx(h.cb!, 'core', { unit: h.u!.id, at: h.u!.pos, dur: 1000, focus: 'visualizer' }); say(h.cb!, h.u!.name + ' loads a fresh core into the Visualizer (' + m.vcharge + ' charge).'); return null; },
   }],
@@ -372,7 +372,7 @@ register({
 register({
   id: 'glimmer', kind: 'verb',
   actions: [{
-    id: 'glimmer', label: 'Glimmer', scope: ['combat'], target: 'tile', ap: (h) => price({ cb: h.cb, u: h.u }, siteOf(h, 'glimmer')).ap,
+    id: 'glimmer', label: 'Glimmer', scope: ['combat'], target: 'tile', ap: (h) => { const site = siteOf(h, 'glimmer'); return price({ cb: h.cb, u: h.u }, site).ap; },
     available: (h) => visFocusWhy(h.u) || true,
     preview: (h, args) => { const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile), no = pictureTileWhy(cb, u, k); return no ? { ok: false, why: no } : { tiles: [k!], lines: ['A false image of ' + u.name + ' at ' + refOf(k!) + '.'] }; },
     run: (h, args, rng) => {
