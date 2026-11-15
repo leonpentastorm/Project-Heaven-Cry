@@ -2,7 +2,7 @@
 // It parses a template once (its own strict parser: the templates are well-formed, and the browser's HTML parser
 // would drop <sc-for> inside <select> and lowercase onClick), then renders it with React against the values a
 // screen's logic returns from renderVals(). Supported: {{dotted.holes}} in text and attributes, <sc-for list as>,
-// <sc-for list as memo> (memo: each item re-renders only when its own values changed; see MemoItem), <sc-if value>, style strings, class, on* handlers, form attributes, tip (the hover card; a template never has title). <helmet> and <dc-import> are skipped (the
+// <sc-for list as memo> (memo: each item re-renders only when its own values changed; see MemoItem), <sc-if value>, <sc-mount is props> (a React component the game registered by name: registerMount), style strings, class, on* handlers, form attributes, tip (the hover card; a template never has title). <helmet> and <dc-import> are skipped (the
 // app loads fonts and CSS globally, and screens are routed by the app, not imported).
 import React from 'react';
 
@@ -81,6 +81,10 @@ export function parseStyle(s: string): React.CSSProperties {
 
 const ATTR_MAP: Record<string, string> = { class: 'className', for: 'htmlFor', tabindex: 'tabIndex', readonly: 'readOnly', maxlength: 'maxLength', autofocus: 'autoFocus', spellcheck: 'spellCheck', colspan: 'colSpan', rowspan: 'rowSpan', autocomplete: 'autoComplete', 'xlink:href': 'xlinkHref', viewbox: 'viewBox' };
 const SKIP = new Set(['helmet', 'dc-import', 'script']);
+/** React components a template may host by name (`<sc-mount is="name" props="{{x}}">`): a shared control the game draws
+ * inside a template's own markup (rules 1.55, 0.28.3-B.1: the amount control in the backpack's Give). */
+const MOUNTS = new Map<string, React.ComponentType<any>>();
+export const registerMount = (name: string, c: React.ComponentType<any>) => { MOUNTS.set(name, c); };
 
 function attrValue(v: string | true, scope: any): any {
   if (v === true) return true;
@@ -121,6 +125,11 @@ function renderNode(n: Node, scope: any, key: React.Key): React.ReactNode {
       s[as] = item; s.$index = i;
       return <React.Fragment key={item && typeof item === 'object' && item.key != null ? item.key : i}>{renderKids(n.kids, s)}</React.Fragment>;
     });
+  }
+  if (n.tag === 'sc-mount') {
+    const isA = n.attrs.find((a) => a[0] === 'is'), propsA = n.attrs.find((a) => a[0] === 'props');
+    const C = isA && isA[1] !== true ? MOUNTS.get(isA[1]) : undefined, props = propsA ? attrValue(propsA[1], scope) : null;
+    return C ? React.createElement(C, { key, ...(props && typeof props === 'object' ? props : {}) }) : null;
   }
   if (n.tag === 'sc-if') {
     const valA = n.attrs.find((a) => a[0] === 'value');

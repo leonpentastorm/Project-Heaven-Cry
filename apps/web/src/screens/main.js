@@ -526,15 +526,11 @@ export class MainLogic extends DCLogic {
     // on a friend or yourself, from the engine's Give view (give.ts giveView: its rows, each receiver's reason, the
     // row's action and its use's action); a line the engine refuses for everyone shows nothing; solo lists no friend.
     const GV = c && !gearLocked ? giveView(g, me, c.id) : null;
-    // Rules 1.55 item 40: how many, with the Give tab's stepper (‹ ›, one at a time), kept per line while the sheet is open.
-    const giveQ = this.state.giveQ || {};
-    const giveActs = (gkey) => { const row = GV && GV.rows.find((x) => x.key === gkey); if (!row) return [];
-      const out = [], open = GV.to.filter((t) => !row.why[t.id]), n = Math.max(1, Math.min(row.qty, giveQ[gkey] || 1)), setQ = (q) => this.setState({ giveQ: { ...giveQ, [gkey]: Math.max(1, Math.min(row.qty, q)) } });
-      if (open.length && row.qty > 1) { out.push({ key: 'q-' + gkey, label: '‹ fewer', go: () => setQ(n - 1) }); out.push({ key: 'q+' + gkey, label: 'more ›', go: () => setQ(n + 1) }); }
-      for (const t of open) out.push({ key: 'g1' + t.id, label: 'Give ' + (row.qty > 1 ? n + ' ' : '') + 'to ' + t.name, go: () => { act({ ...row.action, to: t.id, qty: n }); setQ(1); } });
-      if (row.use) for (const x of Object.values(g.characters)) { if (x.dead || row.use.why[x.id]) continue;
-        out.push({ key: 'u' + x.id, label: row.use.label + ' ' + (x.id === c.id ? 'yourself' : x.name), go: () => act({ ...row.use.action, targetId: x.id }) }); }
-      return out; };
+    // Rules 1.55 0.28.3-B.1: how many, with the one amount control (AmountField.tsx), the Give buttons and the line's Use
+    // drawn by GiveInline (GiveTab.tsx) inside the open row (<sc-mount is="give-inline">); here only whether there is one.
+    const giveOf = (gkey) => { const row = GV && GV.rows.find((x) => x.key === gkey); if (!row) return null;
+      const can = GV.to.some((t) => !row.why[t.id]) || (!!row.use && Object.values(g.characters).some((x) => !x.dead && !row.use.why[x.id]));
+      return can ? { rowKey: gkey, charId: c.id } : null; };
     const rig = pack.flatMap((it, ri) => {
       if (!it.mags) { const pi0 = ri - (c && c.stims ? 1 : 0), pi = c && pi0 >= 0 && pi0 < packOf(c).length && it.id !== 'eoe' && it.id !== 'stim' ? pi0 : -1, def = ITEM[it.item || it.id] || {}, wdef = it.weapon ? WEAPON[it.weapon] : null, acts = [];
         if (pi >= 0 && !gearLocked) {
@@ -546,14 +542,14 @@ export class MainLogic extends DCLogic {
             Object.values(g.characters).filter((x) => x.id !== c.id && !x.dead).forEach((x) => acts.push({ key: 'g' + x.id, label: 'Give to ' + x.name, go: () => act({ type: 'gear/give', charId: c.id, idx: pi, to: x.id }) }));
             acts.push({ key: 'd', label: 'Drop', go: () => act({ type: 'gear/drop', charId: c.id, idx: pi }) }); }
         }
-        if (it.kind !== 'plot') acts.push(...giveActs(pi >= 0 ? 'pack:' + pi : 'count:' + (it.item || it.id)));
+        const give = it.kind !== 'plot' ? giveOf(pi >= 0 ? 'pack:' + pi : 'count:' + (it.item || it.id)) : null;
         const tag = wdef ? 'WEAPON' : def.category === 'armour' ? 'ARMOUR' : def.category === 'mod' ? 'MOD' : def.slot === 'off_hand' ? 'OFF HAND' : KIND[it.kind] || 'ITEM';
-        return [{ key: it.id + ':' + pi, tag, name: it.name + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''), qty: '×' + it.qty, kg: kg(itemKg(it)),
+        return [{ key: it.id + ':' + pi, tag, name: it.name + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''), qty: '×' + it.qty, kg: kg(itemKg(it)), give: give || {}, hasGive: !!give,
           note: (focusKindOf(it.weapon || it.item || it.id) ? 'In the pack: it counts only in a hand (Off hand). ' : '') + (wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, armsLine(wdef.id)].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || ''), acts, hasActs: acts.length > 0, src: it }]; }
       const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
       it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
       return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
-        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: n === it.mags[0] ? giveActs('pack:' + packOf(c).indexOf(it)).map((x) => ({ ...x, label: x.label.replace(/^Give (\d+) /, (_m, k) => (k === '1' ? 'Give a magazine ' : 'Give ' + k + ' magazines ')) })) : [], hasActs: false, src: it }))
+        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: [], give: (n === it.mags[0] && giveOf('pack:' + packOf(c).indexOf(it))) || {}, hasGive: n === it.mags[0] && !!giveOf('pack:' + packOf(c).indexOf(it)), hasActs: false, src: it }))
         .map((x) => ({ ...x, hasActs: x.acts.length > 0 }));
     });
     const canLoad = !!c && packOf(c).some((m) => m.mags && m.mags.some((n) => n < (WEAPON[m.weapon]?.magazine || 0)) && packOf(c).some((r) => r.calibre && r.calibre === WEAPON[m.weapon]?.ammo && r.qty > 0));
@@ -617,7 +613,7 @@ export class MainLogic extends DCLogic {
     const rigView = rig.map((r) => { const key = 'rig-' + r.key, it = r.src || {}, id = it.item || it.id;
       tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : it.kind === 'plot' ? '◈' : '▪', img: gearIconUri(it.mags ? magGearId(it.weapon) : it.calibre ? roundsGearId(it.calibre) : '', GEAR_INK, { large: true }), lines: [r.note, r.kg].filter(Boolean), lore: '' };
       const acts = [...r.acts.map((a) => ({ ...a, go: () => { a.go(); this.setState({ gearMenu: null }); } })), ...((it.mags || it.calibre) && canLoad && !gearLocked ? [{ key: 'load', label: 'Load magazines', go: () => { act({ type: 'gear/load', charId: c.id }); this.setState({ gearMenu: null }); } }] : [])];
-      return { ...r, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : 'Nothing to do with it here yet.',
+      return { ...r, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0 || r.hasGive, noActs: !acts.length && !r.hasGive, noActText: gearLocked ? IN_FIGHT : 'Nothing to do with it here yet.',
         img: tips[key].img, hasImg: !!tips[key].img, noImg: !tips[key].img, glyph: tips[key].glyph,
         style: 'display: grid; grid-template-columns: 28px minmax(0, 1fr) auto auto; gap: 2px 8px; align-items: center; width: 100%; padding: 5px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; background: ' + (S.gearMenu === key ? '#1C2536' : '#0D1119') + '; border: 1px solid #1C2536' }; });
     // Plot items (the Narrator's story things) get their own group under the backpack.
@@ -1457,7 +1453,7 @@ export class MainLogic extends DCLogic {
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up · pick a perk' : 'Level up · spend points', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
-      load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 13px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' },  bio,
+      load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 13px; color: ' + (over ? '#F65157' : '#A3AEC2'), bio,
       hero, stream, pushes,
       hasChecks: actions.length > 0, actions, waitRolls, hasWaitRolls: waitRolls.length > 0,
       dice: !!ck, roll, diceCls: modalCls(this, 'dice'),

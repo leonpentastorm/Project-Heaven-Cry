@@ -8,6 +8,23 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3
+
+### Give, sell and the Essence (rules 1.55, 0.28.3-B.1 to B.7, PROVISIONAL)
+
+- **The amount control.** Every place you choose how much to give (the places' Give tab, the path map's Give module,
+  the backpack line's Give) and the shop's Sell quantity now use one control: type the number, or step it −100, −10,
+  −1, +1, +10, +100, or MAX; it shows what you hold ("of 1,240"); Enter gives. The engine judges the amount and says
+  why it won't (0, more than you hold, not a number). It replaces the one-at-a-time stepper.
+- **Counted items can be sold.** The shop's Sell list shows your stims and Essences; they sell at the shop's sell rate.
+  "Never on a shelf" (`stock: false`) and "never sold" (`sell: false`) are now two facts in the data; a trait's gear is
+  still neither.
+- **The Essence of Experience is cracked with any focus in a hand** (Evoker, Emanator, Visualizer or Attuner; no skill
+  minimum): the backpack and the Give view offer "Crack for yourself" or for a friend, out of a fight; 100 XP, one per
+  character per rest. Its price is 600, so it sells for 150.
+- **Using a counted item is one action** (`gear/use`): the Essence's crack and the stim on a friend off the map both go
+  through it (the stim keeps its own rule).
+
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP

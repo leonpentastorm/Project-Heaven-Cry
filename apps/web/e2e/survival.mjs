@@ -882,8 +882,10 @@ ok('C: the Give tab: the party as cards (' + (await GV.locator('[data-phc-give-t
   && /can't be handed over/.test(await GV.locator('[data-phc-give-row="train"]').textContent()));
 const haC0 = (await GG()).characters[ha.id].credits;
 await GV.locator('[data-phc-give-row="credits"]').click();
-for (let i = 0; i < 3; i++) await GV.locator('[data-phc-give-send] [aria-label="More"]').click(); // 100 → 130 → 140 → 150? (steps of 10 above 10)
-const n = Number((await GV.locator('[data-phc-give-n]').textContent()).replace(/\D/g, ''));
+for (let i = 0; i < 3; i++) await GV.locator('[data-phc-give-send] [data-phc-amount-step="10"]').click(); // rules 1.55 0.28.3-B.1: the amount control, 100 → 130
+await GV.locator('[data-phc-give-send] [data-phc-amount-input]').fill('125'); // a typed amount
+const n = Number((await GV.locator('[data-phc-give-send] [data-phc-amount-input]').inputValue()).replace(/\D/g, ''));
+ok('C: the amount control: a typed 125 is the amount, of what Kade holds (' + (await GV.locator('[data-phc-amount-held]').textContent()) + ')', n === 125 && /^of [\d,]+$/.test(await GV.locator('[data-phc-amount-held]').textContent()));
 ok('C: the button reads what it does ("' + (await GV.locator('[data-phc-give-go]').textContent()) + '")', new RegExp('^Give ' + n + ' credits to Ha$').test(await GV.locator('[data-phc-give-go]').textContent()));
 await h.screenshot({ path: OUT + 'survival-shop-give-1280.png' });
 await GV.locator('[data-phc-give-go]').click();
