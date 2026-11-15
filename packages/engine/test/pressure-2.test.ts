@@ -4,7 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
-import { CLASS, SKILL, condOn, itemInfo, type Unit } from '../src';
+import { CLASS, SKILL, condOn, itemInfo, moveUnit, type Unit } from '../src';
 import { pressureOf } from '../src/physical/pressure';
 import { physView } from '../src/physical/core';
 import { onHook } from '../src/effects/hooks';
@@ -113,16 +113,21 @@ describe('Dexterity\'s door (skills.json dexterity.unlocks.1)', () => {
     expect(pressureOf(f.unit(u.id))).toBe(2 + g.effects[2].value);
     expect(() => f.act({ unitId: u.id, type: 'combat/perk', id: 'verb:pressure.slide' } as any)).toThrow(); // once a turn
   });
-  it('Near Miss (Dexterity 3): a ranged miss adds value Pressure, once a turn for each target; below 3 it adds none', () => {
+  it('Near Miss (Dexterity 3): a held shot that misses still adds value Pressure, once a turn for each target; below 3 none; a plain shot misses with none', () => {
     const d = door(), need = d.effects[0].if.self_skill.dexterity;
-    const after = (dex: number) => {
-      const { f, u } = setUp(sk({ skills: { dexterity: dex } })); f.unit(u.id).attack = -60; const L = f.cb.log.length;
-      shoot(f, u); const p1 = pressureOf(f.unit(f.foe.id)); cool(f, u); shoot(f, u); cool(f, u); shoot(f, u);
-      return { p1, lines: count(f, /near miss/, L) };
+    const held = (dex: number) => {
+      const { f, u } = setUp(sk({ skills: { dexterity: dex } }), '10,4'); f.unit(u.id).attack = -60;
+      f.act({ unitId: u.id, type: 'combat/technique', id: 'overwatch' } as any);
+      const L = f.cb.log.length; f.turn(f.foe); f.unit(f.foe.id).ap = 6;
+      withGame(f.g, () => moveUnit(f.cb, f.unit(f.foe.id), '9,4', f.g.rng));
+      return { fired: count(f, /overwatch/i, L), p: pressureOf(f.unit(f.foe.id)), lines: count(f, /near miss/, L) };
     };
-    // the first shot misses on the fixed seed (a natural 20 still hits: the count of near misses is the rule)
-    expect(after(need)).toEqual({ p1: d.effects[0].value, lines: 1 });
-    expect(after(need - 1)).toEqual({ p1: 0, lines: 0 });
+    const a = held(need), b = held(need - 1);
+    expect(a.fired).toBeGreaterThan(0);
+    // the fixed seed's held round goes wide (a natural 20 would hit: the near-miss line is the rule)
+    expect(a.lines).toBe(1); expect(b.lines).toBe(0); expect(a.p - b.p).toBe(d.effects[0].value);
+    const { f, u } = setUp(sk({ skills: { dexterity: need } })); f.unit(u.id).attack = -60; const L = f.cb.log.length;
+    shoot(f, u); expect(count(f, /near miss/, L)).toBe(0);
   });
   it('Shaken Nerves (Dexterity 3): a real Rout\'s save TN rises by the pips, at most value.max', () => {
     const d = door(), sn = d.effects[1].value;

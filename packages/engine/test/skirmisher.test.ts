@@ -207,7 +207,9 @@ describe('Run and Gun (rules 1.30 item 1808)', () => {
       g.act({ unitId: v.id, type: 'combat/attack', targetId: g.foe.id, mode: 'shot' } as any);
       return pressureOf(g.unit(g.foe.id)) - p1;
     };
-    expect(added(true) - added(false)).toBe(rg().numbers.pressure);
+    // the move also sets up Relocated (rules 1.56 Pressure 2.0, the Skirmisher's gain): its own +Pressure on that hit
+    const rel = (CLASS.marksman as any).gain.find((m: any) => m.id === 'relocated').effects[2].value;
+    expect(added(true) - added(false)).toBe(rg().numbers.pressure + rel);
   });
 });
 
