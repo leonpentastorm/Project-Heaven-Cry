@@ -2494,7 +2494,7 @@
         ],
         "hits_with": "dexterity",
         "scales_with": [
-          "agility"
+          "strength"
         ],
         "teaches": "drag"
       }

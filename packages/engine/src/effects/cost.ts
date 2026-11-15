@@ -65,6 +65,9 @@ export function costOf(action: string, field = 'ap'): number {
   if (typeof n !== 'number') throw new Error('No ' + field + ' for the action "' + action + '" in data/actions.json.');
   return n;
 }
+/** Is this priced action a weapon's own (its row's `weapon_own`, data/actions.json): a mod's cost acts on it only for
+ * the gun it is fitted to, in the hand that does it (rules 1.56; triggers.ts with_this). */
+export const weaponOwnSite = (action: string): boolean => verbOf(action)?.weapon_own === true;
 /** Does data/actions.json give this action a number in this field (default `ap`)? */
 export const hasCost = (action: string, field = 'ap'): boolean => typeof verbOf(action)?.[field] === 'number';
 /** THE name of a priced action: its cost site. A row's id ('pullfree', 'reload2', 'cover') becomes its site ('pull_free',

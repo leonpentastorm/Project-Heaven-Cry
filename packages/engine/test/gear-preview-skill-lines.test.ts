@@ -1,7 +1,7 @@
 // Rules 1.55 (Leon, 15 Nov 2026): every weapon card says which skill the weapon rolls to hit with and what its damage
 // scales with. The preview's "Hits with" must name the skill whose modifier the real attack's dice breakdown adds.
 import { describe, it, expect } from 'vitest';
-import { gearPreview, previewAttack, SKILL, ITEM, WEAPONS, ATTRS, checkMod, weaponMultLabel } from '../src';
+import { gearPreview, previewAttack, SKILL, ITEM, WEAPONS, ATTRS, checkMod, weaponMultLabel, weaponMult } from '../src';
 import { PROFILES, pairOf } from '../src/effects/output';
 import { fightWith, withGame } from './helpers/perkfight';
 
@@ -47,7 +47,11 @@ describe('the gear preview names the skill a weapon hits with and what its damag
       const s = line(gearPreview(c, { id: w.id }), 'scales_with'), ph = (w as any).phys;
       if (!ph) continue;
       if (zero(ph.profile || 'weapon')) expect(s, w.id).toBeUndefined();
-      else expect(s?.value, w.id).toBe((ph.scales_with as string[]).filter((x) => ATTRS.some((a) => a.id === x)).map(nm).join(' and ')); // rules 1.56: the Attribute, never the skill
+      else { // rules 1.56: the Attribute, never the skill; with the percent the hit's own multiplier adds for this character (consolidation 0.29, ruling i)
+        const n = Math.round((weaponMult(c, w.id) - 1) * 100);
+        expect(s?.label, w.id).toBe('Damage');
+        expect(s?.value, w.id).toBe((ph.scales_with as string[]).filter((x) => ATTRS.some((a) => a.id === x)).map(nm).join(' and ') + ' · ' + (n >= 0 ? '+' : '') + n + '%');
+      }
     }
     expect(WEAPONS.filter((w) => line(gearPreview(c, { id: w.id }), 'scales_with')).length, 'every melee weapon with the melee profile shows it').toBeGreaterThan(10);
     for (const id of ['evoker', 'emanator', 'attuner', 'visualizer']) {
@@ -58,6 +62,15 @@ describe('the gear preview names the skill a weapon hits with and what its damag
     // a non-zero slope names exactly its own inputs: the physical profile (a weapon with no phys block) has both
     expect(PROFILES.physical.attr && PROFILES.physical.skill).toBeTruthy();
     expect(weaponMultLabel('no_such_weapon', { live: true })).toBe('Strength and Raw Power');
+  });
+  it('the percent on the damage line is the multiplier a real melee hit is dealt with (the maul, Strength 7)', () => {
+    const f = fightWith([{ weapon: 'maul', skills: SKILLS, attrs: { strength: 7 } }], [{ tier: 'soldier', classic: true }]);
+    const c = f.g.characters[f.pc.charId!], s = line(gearPreview(c, { id: 'maul' }), 'scales_with');
+    f.pc.ap = 6; f.foe.pos = '4,5'; f.pc.pos = '3,5';
+    const pv: any = withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'melee'));
+    const stat = (pv.dmg?.mults || []).find((t: any) => Math.abs(t.v - weaponMult(c, 'maul')) < 1e-9);
+    expect(stat, JSON.stringify(pv.dmg?.mults)).toBeTruthy(); expect(weaponMult(c, 'maul')).toBeGreaterThan(1);
+    expect(s.value.endsWith(' · +' + Math.round((stat.v - 1) * 100) + '%'), s.value).toBe(true);
   });
   it('the magazine reads rounds, a middle dot, the calibre', () => {
     const f = fightWith([{ weapon: 'decrkm_smg', skills: SKILLS }], [{ tier: 'soldier', classic: true }]);

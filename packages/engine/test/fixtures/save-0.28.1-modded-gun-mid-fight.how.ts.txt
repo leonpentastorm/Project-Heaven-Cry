@@ -1,0 +1,20 @@
+// Writes test/fixtures/save-0.28.1-modded-gun-mid-fight.json with the engine at 69fbd66f (origin/develop = origin/main,
+// the LIVE 0.28.1 build, 15 Nov 2026): a story room, c1 a Gun Nut with the service rifle carrying a scope, a suppressor
+// and a quick-release magazine (fitted the free way, gear/mod, outside a run), then a fight against two Soldiers, saved
+// in its first round. Its PC unit's `held` is the 0.28 snapshot: the traits, no mod relics. Run once (as a vitest file
+// in that engine's test/ folder, OUT=<path>); never regenerate.
+import { it } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { apply, packOf, ITEM } from '../src';
+import { storyWith } from './helpers/perkfight';
+it('writes the fixture', () => {
+  const s = storyWith([{ weapon: 'hellraiser_service_rifle', traits: ['gun_nut'] }], 'OLD-MODS');
+  let g: any = s.g;
+  for (const m of ['mod_scope', 'mod_suppressor', 'mod_quick_release']) {
+    const c = g.characters.c1; c.pack = [...packOf(c), { id: m, item: m, name: (ITEM as any)[m].name, qty: 1, kind: 'tool' }];
+    g = apply(g, { type: 'gear/mod', charId: 'c1', idx: packOf(g.characters.c1).length - 1 } as any, 'host');
+  }
+  const foe = (name: string) => ({ name, tier: 'soldier', weapon: 'hellraiser_service_rifle', no_surrender: true });
+  g = apply(g, { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Old mods', map: 'yard16', difficulty: 'standard', enemies: [foe('Near'), foe('Far')] } } } as any, 'host');
+  writeFileSync(process.env.OUT!, JSON.stringify(g));
+});

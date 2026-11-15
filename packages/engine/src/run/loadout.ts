@@ -12,7 +12,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME } from '../data';
-import { type Character, type PackItem, packOf, packKindOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, SPECIAL_ROUND_ITEM } from '../character';
+import { type Character, type PackItem, packOf, packKindOf, twoHands, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName } from '../character';
 import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
@@ -30,6 +30,8 @@ export const LOADOUT: {
   budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string> }; gun: { loaded: number; spare: number }; bow: { spare: number };
   focuses: string[]; focus_with: Record<string, { id: string; qty: number }[]>; counter: { skip: string[] }; stock: { ids: string[] }; max_qty: number;
   recommended: { focus_by_door: Record<string, string>; weapon: { when?: 'focus'; skill?: string; over?: string; archetype: string }[]; buys: Record<string, string[]>; fill: string };
+  /** The camp screen's backdrop, an art catalog id (optional; consolidation 0.29 ruling i, plan 10.D item 5). */
+  backdrop?: string;
 } = SV.loadout;
 /** A weapon archetype (survival.json `loadout.archetypes`; Leon, 14 Nov 2026): a weapons.json family as the data groups
  * it (its mastery_family and category), less `skip`. */
@@ -78,7 +80,7 @@ function usableBeside(c: Character, id: string, bought = 0): boolean {
   return !twoHands(c, id) || !weapons.some((h) => twoHands(c, h));
 }
 const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if (a) return 'Class ' + a[1] + ' body armour';
-  const rd = roundsIdOf(id); if (rd) return (rd.type && SPECIAL_ROUND_ITEM[rd.type] ? SPECIAL_ROUND_ITEM[rd.type].name + ' (' + (CALIBRE_NAME[rd.calibre] || rd.calibre) + ')' : (CALIBRE_NAME[rd.calibre] || rd.calibre) + ' rounds');
+  const rd = roundsIdOf(id); if (rd) return specialRoundName(rd.calibre, rd.type) ?? (CALIBRE_NAME[rd.calibre] || rd.calibre) + ' rounds';
   const mg = /^mag:([^:]+)(:0)?/.exec(id); if (mg) return String((WEAPON[mg[1]] as any)?.name || mg[1]).replace(/ \(.*\)$/, '') + ' magazine' + (mg[2] ? ' (empty)' : '');
   return (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id; };
 const focusEntry = (id: string): PackItem => ({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) });

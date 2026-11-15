@@ -517,7 +517,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
     vigilant: c.skills.vigilant || 0, overweight: overweightKg(c),
     dmgMult: RARITY[c.weaponState?.rarity || 'standard'].dmg, dur: weaponDurOf(c), maxDur: maxDurOf(w.id, c.weaponState?.rarity), mods: [...(c.weaponState?.mods || [])],
-    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, ...(c.offHand && WEAPON[c.offHand.id] && c.offHand.mods?.length ? { offMods: [...c.offHand.mods] } : {}), offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? WEAPON[c.offHand.id].magazine ?? 0, WEAPON[c.offHand.id].magazine ?? 0) : 0, // its own rounds (item 688)
+    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, ...(c.offHand && WEAPON[c.offHand.id] && c.offHand.mods?.length ? { offMods: [...c.offHand.mods] } : {}), offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? magazineSize(c.offHand.id, c.offHand.mods) ?? 0, magazineSize(c.offHand.id, c.offHand.mods) ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
     parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => plainRounds(x, w.ammo)).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
@@ -1412,9 +1412,10 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     if (w.magazine != null && !att.infiniteAmmo) att.ammo = Math.max(0, att.ammo - 1);
     // A crossbow's shot loads the next bolt as part of it (the "autoload" property; Leon, 10 Nov 2026): from the bolts
     // carried, or freely for a unit whose spares aren't counted. With none left it stays empty.
-    if (w.magazine != null && !att.infiniteAmmo && (w.properties || []).includes('autoload') && att.ammo < w.magazine) {
-      if (!att.mags) att.ammo = w.magazine;
-      else { const take = Math.min(w.magazine - att.ammo, att.loose || 0); if (take > 0) { att.loose = (att.loose || 0) - take; att.ammo += take; } }
+    const full = magazineSize(w.id, att.mods);
+    if (full != null && !att.infiniteAmmo && (w.properties || []).includes('autoload') && att.ammo < full) {
+      if (!att.mags) att.ammo = full;
+      else { const take = Math.min(full - att.ammo, att.loose || 0); if (take > 0) { att.loose = (att.loose || 0) - take; att.ammo += take; } }
     }
     if (w.heat_limit && !att.infiniteAmmo) att.heat += 1; att.shotsThisTurn++;
     // A weapon that can't jam (no Heat limit: bows, the flamer, the breacher tube) fumbles instead: −1 AP next turn (plan 2.9; provisional).
@@ -2980,7 +2981,12 @@ export function canJam(w: WeaponDef | undefined): boolean {
   return w.heat_limit != null;
 }
 /** Reload AP: the weapon's reload_ap (default 2; the breacher tube 3), 1 with a quick-release magazine, then items. */
-export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb, u }, 'reload', w.reload_ap ?? costOf('reload')).ap; }; // a mod's cost (the quick-release) is its item op on the cost hook (rules 1.56)
+/** A bare fight around one unit (a card's, with no fight at hand): what a view prices or dry-runs an action against so
+ * the item ops (combat only) answer as they would in a fight. Nothing is written to it that anyone keeps. */
+export const cardFight = (u: Unit): Combat => ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
+// a mod's cost (the quick-release) is its item op on the cost hook (rules 1.56); with no fight at hand (a view: the
+// sheet's ammo row) it is priced on a card fight, so the one cost site answers as the fight will (consolidation 0.29, iii)
+export const reloadAp = (u: Unit, cb?: Combat | null) => { const w: any = WEAPON[u.weapon] || {}; return price({ cb: cb || cardFight(u), u }, 'reload', w.reload_ap ?? costOf('reload')).ap; };
 const RELOAD_LABEL: Record<string, string> = { magazine: 'Swap magazine', speedloader: 'Speedloader', drum: 'Swap drum', belt: 'Feed belt' };
 const LOOSE_LABEL: Record<string, string> = { bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
 export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'repair' | 'overwatch' | 'burst' | 'auto' | 'skill'; label: string; ap: number; why: string | null; text: string;

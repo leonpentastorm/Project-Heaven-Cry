@@ -21,7 +21,7 @@ import {
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, hasAttuner, packOf, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
-  classResources, migrateDesign, quiversOf, setQuivers, quiverHolds,
+  classResources, migrateDesign, quiversOf, setQuivers, quiverHolds, magazineSize,
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
@@ -194,8 +194,8 @@ register({
         }
         // The magazine in the gun goes back to the pouch (a partly spent standard one keeps its rounds; a spent special one is dropped).
         const was = u.ammo, wasType = u.ammoType || null;
-        if (w.reload === 'loose') { if (!wasType) u.loose = (u.loose || 0) + was; u.ammo = Math.min(w.magazine!, loadOf(h)); }
-        else { if (u.mags && !wasType && was > 0) u.mags.push(was); u.ammo = w.magazine!; }
+        if (w.reload === 'loose') { if (!wasType) u.loose = (u.loose || 0) + was; u.ammo = Math.min(magazineSize(w.id, u.mods)!, loadOf(h)); }
+        else { if (u.mags && !wasType && was > 0) u.mags.push(was); u.ammo = magazineSize(w.id, u.mods)!; }
         u.ammoType = id; u.jammed = false; stateOf(h).special = id;
         emit(cb, 'reload', { u, ap: 0, cb, special: id });
         emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: 1200 });
@@ -211,7 +211,7 @@ register({
         // back to the pack, and the quiver is the special arrows, typed (review fix: c.loadedType alone was lost).
         if (isDrawn(c.weapon)) { loadQuiverWith(c, c.weapon, {}); const qs = quiversOf(c); if (qs[0]) setQuivers(c, qs.map((q, k) => (k ? q : { ...q, arrows: { [id]: Math.min(quiverHolds(q.id, q.rarity || 'standard'), loadOf(h)) } }))); postStory(h, c.name + ' fills the quiver with ' + name + ' arrows.'); return; }
         if (noMag(c.weapon)) { c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' on the ' + w.name + ' for the next fight.'); return; }
-        c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, loadOf(h)) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.');
+        c.loaded = w.reload === 'loose' ? Math.min(magazineSize(w.id, c.weaponState?.mods)!, loadOf(h)) : magazineSize(w.id, c.weaponState?.mods)!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.');
       },
     })),
   ],

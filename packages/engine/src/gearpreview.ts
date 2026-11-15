@@ -7,7 +7,7 @@
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM } from './character';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf } from './effects/output';
@@ -60,7 +60,9 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
   return [
     { key: 'hits_with', label: 'Hits with', value: (SKILL[sk]?.name || sk) + ' · ' + signed(checkMod(c, sk)), num: null },
     // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
-    ...(sc ? [{ key: 'scales_with', label: 'Damage scales with', value: sc, num: null }] : []),
+    // consolidation 0.29 (ruling i): with the percent the hit's own multiplier adds for this character (weaponMult, the
+    // Stat term of the damage line the attack deals): "Damage: Strength · +30%"
+    ...(sc ? [{ key: 'scales_with', label: 'Damage', value: sc + ' · ' + signed(Math.round((weaponMult(c, w.id) - 1) * 100)) + '%', num: null }] : []),
   ];
 }
 /** A focus hits through its door skill (the door its rolls to hit are made through, rolls.ts toHitTerms); its damage
@@ -177,7 +179,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   if (r || it?.category === 'ammo') {
     const cal = r?.[1] === 'rounds' ? r[2] : r ? (WEAPON[r[2]] as any)?.ammo : null;
     const users = cal ? Object.values(WEAPON).filter((x: any) => x.ammo === cal && !x.variant_of).map((x: any) => x.name) : [];
-    return { ...base, name: r ? (r[1] === 'rounds' ? (sp ? sp.name + ' (' + (CALIBRE_NAME[r[2]] || r[2]) + ')' : (CALIBRE_NAME[r[2]] || r[2]) + ' rounds') : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
+    return { ...base, name: r ? (r[1] === 'rounds' ? (specialRoundName(r[2], rs?.type) ?? (CALIBRE_NAME[r[2]] || r[2]) + ' rounds') : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
       text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : sp ? sp.text : 'Loose rounds.') : base.text,
       lines: [
         ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: String(held), num: held }] : []),

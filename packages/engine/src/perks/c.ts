@@ -17,7 +17,7 @@ import {
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { factorOf } from '../effects/output';
-import { mod, packOf, physicalMult, carryLimit, collectionOf, isGunId } from '../character';
+import { mod, packOf, physicalMult, carryLimit, collectionOf, isGunId, carriedGuns, gunAt, setGunMods, type GunWhere } from '../character';
 import { applyCond, condOn } from '../magic';
 import { throwItem, blast, radiusOf, canReact, react, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
@@ -354,38 +354,42 @@ const maxDur = (c: Character) => { const w: any = WEAPON[c.weapon]; return Math.
 // ---------- extra mod slots (Gun Nut, Blade Recluse, Overhaul) ----------
 // A weapon's extra slot is a second slot of a type it already has (plan 6b; PROVISIONAL): the mod goes in beside the one
 // already fitted there. Extra slots a weapon has: Gun Nut (any gun), Blade Recluse (the named weapon), Overhaul (a
-// weapon it overhauled).
-function extraSlots(c: Character): number {
-  const w: any = WEAPON[c.weapon]; let n = 0;
-  if (has(c, 'gun_nut') && isGunId(c.weapon)) n++;
-  if (has(c, 'blade_recluse') && cs(c).oneBlade?.weapon === c.weapon) n++;
-  if (has(c, 'overhaul') && cs(c).overhauled?.[c.weapon]) n++;
+// weapon it overhauled). Counted on the gun being fitted (consolidation 0.29, ruling iv: any carried gun, character.ts
+// carriedGuns / gunAt; the hand's when no gun is named).
+function extraSlots(c: Character, wid: string): number {
+  let n = 0;
+  if (has(c, 'gun_nut') && isGunId(wid)) n++;
+  if (has(c, 'blade_recluse') && cs(c).oneBlade?.weapon === wid) n++;
+  if (has(c, 'overhaul') && cs(c).overhauled?.[wid]) n++;
   return n;
 }
-function extraUsed(c: Character): number { const t = (c.weaponState?.mods || []).map((m) => (ITEM[m] as any)?.mod_slot); return t.length - new Set(t).size; }
-function extraFitCheck(c: Character, choice: string | undefined, plus = 0): string | null {
+function extraUsed(mods: readonly string[]): number { const t = mods.map((m) => (ITEM[m] as any)?.mod_slot); return t.length - new Set(t).size; }
+/** Does any carried gun of this kind have an extra slot free? */
+const extraFree = (c: Character, which: (wid: string) => boolean) => carriedGuns(c).some((g) => which(g.id) && extraUsed(g.mods) < extraSlots(c, g.id));
+function extraFitCheck(c: Character, choice: string | undefined, plus = 0, where: GunWhere = 'main'): string | null {
   const pack = packOf(c), idx = /^\d+$/.test(String(choice ?? '')) ? +choice! : pack.findIndex((p) => (p.item || p.id) === choice);
   const it = pack[idx], m: any = it && ITEM[it.item || it.id]; if (!m || m.category !== 'mod') return 'Pick a mod from your pack.';
-  const slots: string[] = (WEAPON[c.weapon] as any)?.mod_slots || [], mods = c.weaponState?.mods || [];
-  if (!slots.includes(m.mod_slot)) return 'Your weapon has no ' + m.mod_slot + ' slot to double.';
+  const gun = gunAt(c, where), slots: string[] = (WEAPON[gun?.id || ''] as any)?.mod_slots || [], mods = gun?.mods || [];
+  if (!slots.includes(m.mod_slot)) return (where === 'main' ? 'Your weapon' : 'The ' + (WEAPON[gun?.id || '']?.name || 'weapon')) + ' has no ' + m.mod_slot + ' slot to double.';
   if (!mods.some((x) => (ITEM[x] as any)?.mod_slot === m.mod_slot)) return 'The ' + m.mod_slot + ' slot is free: fit it the normal way.';
   if (mods.includes(m.id)) return 'That mod is already fitted.';
-  if (extraUsed(c) >= extraSlots(c) + plus) return 'No extra slot free on this weapon.';
+  if (extraUsed(mods) >= extraSlots(c, gun!.id) + plus) return 'No extra slot free on this weapon.';
   return null;
 }
-function fitExtra(c: Character, choice: string | undefined, why: string): string | null {
-  const e = extraFitCheck(c, choice); if (e) return e;
+function fitExtra(c: Character, choice: string | undefined, why: string, where: GunWhere = 'main'): string | null {
+  const e = extraFitCheck(c, choice, 0, where); if (e) return e;
   const pack = packOf(c).map((x) => ({ ...x })), idx = /^\d+$/.test(String(choice ?? '')) ? +choice! : pack.findIndex((p) => (p.item || p.id) === choice), it = pack[idx], m: any = ITEM[it.item || it.id];
+  setGunMods(c, where, [...gunAt(c, where)!.mods, m.id], pack); // the one write (a pack gun of a stack is split off)
   if (it.qty > 1) it.qty--; else pack.splice(idx, 1);
-  c.pack = pack; c.weaponState = { ...(c.weaponState || {}), mods: [...(c.weaponState?.mods || []), m.id] };
+  c.pack = pack;
   void why; return null;
 }
 const extraModAction = (label: string, avail: (h: Holder) => boolean | string) => ({
   id: 'extra_mod', label, scope: ['story', 'world'] as ('story' | 'world')[], pickLabel: 'The mod in your pack', ap: 0, target: 'none' as const,
   text: 'Out of a fight: fit a second mod into a slot type your weapon already has.',
   available: (h: Holder) => (!h.c ? false : avail(h)),
-  preview: (h: Holder, args: any) => { const e = extraFitCheck(h.c!, args.choice); return e ? { ok: false, why: e } : {}; },
-  run: (h: Holder, args: any) => fitExtra(h.c!, args.choice, label),
+  preview: (h: Holder, args: any) => { const e = extraFitCheck(h.c!, args.choice, 0, args.where ?? 'main'); return e ? { ok: false, why: e } : {}; },
+  run: (h: Holder, args: any) => fitExtra(h.c!, args.choice, label, args.where ?? 'main'),
 });
 
 // ---------- Nothing Gets Past (Vigilance Mastered) ----------
@@ -500,7 +504,7 @@ function knowIron(h: Holder, seen: Unit[]) {
 }
 register({
   id: 'gun_nut', claims: [1, 3], narrator: [4, 5],
-  actions: [extraModAction('Fit a second mod', (h) => (isGunId(h.c!.weapon) ? (extraUsed(h.c!) < extraSlots(h.c!) ? true : 'No extra slot free.') : 'Only on a gun.'))],
+  actions: [extraModAction('Fit a second mod', (h) => (carriedGuns(h.c!).some((g) => isGunId(g.id)) ? (extraFree(h.c!, isGunId) ? true : 'No extra slot free.') : 'Only on a gun.'))],
   on: {
     jam_clear: (ctx, h) => { if (ctx.u === h.u && ctx.ap === 0) ctx.keepHeat = true; },
     combat_start: (ctx, h) => knowIron(h, h.cb ? h.cb.units.filter((v) => h.u && v.side !== h.u.side && !v.hidden && sideSees(h.cb!, h.u.side, v)) : []),
@@ -790,7 +794,7 @@ register({
       text: 'The weapon in your hand becomes your One Blade: it can\'t be Disarmed, and it gains an extra mod slot.',
       available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon] || c.weapon === 'fists') return false; return cs(c).oneBlade?.weapon === c.weapon ? 'Already your One Blade.' : true; },
       run: (h) => { const c = h.c!, w: any = WEAPON[c.weapon]; charState(c).oneBlade = { weapon: c.weapon, fam: w.mastery_family || null }; say(h.cb, c.name + ' names the ' + w.name + ' the One Blade.'); note(h, c.name + ' named the ' + w.name + ' as the One Blade'); return null; } },
-    extraModAction('Fit a second mod (One Blade)', (h) => (cs(h.c).oneBlade?.weapon === h.c!.weapon ? (extraUsed(h.c!) < extraSlots(h.c!) ? true : 'No extra slot free.') : 'Only on your named weapon.')),
+    extraModAction('Fit a second mod (One Blade)', (h) => (carriedGuns(h.c!).some((g) => g.id === cs(h.c).oneBlade?.weapon) ? (extraFree(h.c!, (wid) => wid === cs(h.c).oneBlade?.weapon) ? true : 'No extra slot free.') : 'Only on your named weapon.')),
   ],
   on: {
     cond_apply: (ctx, h) => { if (ctx.t === h.u && h.u && ['disarmed', 'lowered'].includes(ctx.id) && cs(h.c).oneBlade?.weapon === h.u.weapon) { ctx.cancel = true; ctx.why = 'Blade Recluse: the One Blade stays in hand'; } },

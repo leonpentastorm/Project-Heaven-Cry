@@ -18,7 +18,7 @@ import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
 import { setTriggerRunner, setAllItems, onHook } from './hooks';
-import { allItems, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
+import { allItems, instanceMods, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
 import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, tieCap, canStand, tiesOf as tiesOfK, type Area } from '../kit';
 import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
 import { applyDamage } from './damage';
@@ -37,7 +37,7 @@ import patronsJ from '../../../../data/patrons.json';
 import techniquesJ from '../../../../data/techniques.json';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
-import { loseAp } from './cost';
+import { loseAp, weaponOwnSite } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { deal, mend, amountOf, type AmountSpec } from './output';
@@ -205,9 +205,6 @@ P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev,
 const DOOR_OF_TYPE: Record<string, string> = { sigil: 'brain_power', soul: 'will_power' };
 const HEAL_DOOR: Record<string, string> = { tending: 'empathy', bond: 'empathy', sigil: 'brain_power', soul: 'will_power' };
 const WEAPON_HOOKS = new Set(['attack_preview', 'attack_roll', 'on_hit', 'on_miss', 'reload']);
-/** A priced action that is a weapon's own (rules 1.56: a mod's reload cost acts on the gun it is fitted to, in the hand
- *  that reloads). */
-const WEAPON_SITES = new Set(['reload']);
 function madeWith(ev: Ev): boolean {
   const c = ev.h.c || charOfUnit(ev.self); if (!c) return madeWithUnit(ev);
   const hands = handProps(c).filter((p) => p.prop === ev.h.itemId).map((p) => p.hand); if (!hands.length) return false;
@@ -216,7 +213,7 @@ function madeWith(ev: Ev): boolean {
   const door = ctx.via && kindOfDoor(String(ctx.via)) ? String(ctx.via) : DOOR_OF_TYPE[type] || (heal ? HEAL_DOOR[ctx.kind] : null);
   if (door) { const k = kindOfDoor(door)!; return hands.some((h) => { const g = gearAt(c, h); return !!g && FOCUS_IDS[k].includes(g.id); }); }
   if (heal) return false;
-  if (type === 'weapon' || WEAPON_HOOKS.has(hook) || ctx.mode || (hook === 'cost' && WEAPON_SITES.has(ctx.action))) {
+  if (type === 'weapon' || WEAPON_HOOKS.has(hook) || ctx.mode || (hook === 'cost' && weaponOwnSite(ctx.action))) {
     if ((ctx.mode ?? src?.mode) === 'thrown') return false;
     const hand = ctx.hand === 'off' || ev.self.swapMain ? 'off' : 'main', g = gearAt(c, hand);
     return hands.includes(hand) && !!g && (src?.weapon ?? g.id) === g.id;
@@ -231,7 +228,7 @@ function madeWithUnit(ev: Ev): boolean {
   if ((ctx.mode ?? src?.mode) === 'thrown') return false;
   const off = ctx.hand === 'off' && !u.swapMain, mods = off ? u.offMods : u.mods, w = off ? u.offWeapon : u.weapon;
   // rules 1.56 L4: a variant's modifiers are its row's own (data/variants.json `variant_mods`)
-  return !!w && ((mods || []).includes(id) || ((WEAPON[w] as any)?.variant_mods || []).includes(id)) && (src?.weapon ?? w) === w;
+  return !!w && instanceMods(w, { mods }).all.includes(id) && (src?.weapon ?? w) === w;
 }
 P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus', (ev, v) => madeWith(ev) === v);
 // Rules 1.33 (Tending, Bonds and the Mender): a door's ladder, the holder's ties, the action's pick

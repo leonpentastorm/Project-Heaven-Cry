@@ -955,6 +955,8 @@ if "actions" in data:
         for k, v in c.items():
             if (k == "ap" or k.startswith("ap_") or k in ("min", "rounds")) and not (isinstance(v, int) and not isinstance(v, bool) and v >= 0):
                 errors.append(f"actions: costs.{cid}.{k} must be a whole number of 0 or more")
+        if "weapon_own" in c and c["weapon_own"] is not True:
+            errors.append(f"actions: costs.{cid}.weapon_own is true or absent (a weapon's own priced action: effects/cost.ts weaponOwnSite)")
         r = c.get("rule")
         if r is not None:
             if r not in _rule_acts:
@@ -2903,6 +2905,9 @@ _PACK_KINDS = {"weapon", "ammo", "tool", "focus", "food", "med", "loot", "plot"}
 for _i in _rimap.values():
     if "pack_kind" in _i and _i["pack_kind"] not in _PACK_KINDS: errors.append(f"items:{_i.get('id')}: pack_kind {_i['pack_kind']!r} is not a pack line's kind ({', '.join(sorted(_PACK_KINDS))})")
     if "plural" in _i and not (isinstance(_i["plural"], str) and _i["plural"].strip()): errors.append(f"items:{_i.get('id')}: plural must be a name")
+    # consolidation 0.29 (should-fix 4): an item counted into a character's count (containers.ts COUNTED), not a pack line
+    if "counts_into" in _i and not (isinstance(_i["counts_into"], dict) and _i["counts_into"].get("count") in ("stims", "essence") and _i["counts_into"].get("at") in ("first", "last") and set(_i["counts_into"]) == {"count", "at"}):
+        errors.append(f"items:{_i.get('id')}: counts_into is {{count: stims | essence, at: first | last}} (the character's counts, containers.ts)")
 # rules 1.56 (L2): the special round of each type made and sold by calibre (an ammo_type with a price_mult), and the
 # calibres it comes in (credits.ts specialRoundPrice; character.ts SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES)
 _rspc = (_rw.get("special_round_price") or {}).get("calibres") or []
@@ -2922,7 +2927,8 @@ def _rprice(_id):
     if _num(_d.get("price_credits")) and _d["price_credits"] > 0: return _d["price_credits"]
     if _num(_d.get("price_mult")) and _d["price_mult"] > 0: return _rspecial((_rw.get("special_round_price") or {}).get("calibre"), _d.get("ammo_type"))
     return None
-_EACH_CALIBRE_MOST = 100  # recipes.ts EACH_CALIBRE_MOST
+_EACH_CALIBRE_MOST = (data.get("recipes") or {}).get("each_calibre_most")  # recipes.json each_calibre_most (recipes.ts reads it too)
+if not (isinstance(_EACH_CALIBRE_MOST, int) and _EACH_CALIBRE_MOST > 0): errors.append("recipes: each_calibre_most must be a whole number above 0"); _EACH_CALIBRE_MOST = 0
 def _rexpand(_r):
     """recipes.ts expandRow: an each_calibre row as one row per calibre of special_round_price.calibres (changed together)."""
     if not _r.get("each_calibre"): return [_r]

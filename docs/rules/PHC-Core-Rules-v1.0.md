@@ -1263,7 +1263,7 @@ Melee:
 | Lance | Heavy, Point, Reach | Raw Power | Strength | Charge |
 | Gloves or bare fists | Light, Bare | Raw Power | Strength, Raw Power, Dexterity | Bind |
 | Throwing knives | Light, Point, Thrown | Dexterity | Agility | Flurry |
-| Hatchet | Light, Edge, Hook, Thrown | Dexterity | Agility | Drag *(rules 1.55; it lent Throw, which now comes with Thrown)* |
+| Hatchet | Light, Edge, Hook, Thrown | Dexterity | Strength *(rules 1.56: a hatchet is not finesse, lead's ruling 15 Nov)* | Drag *(rules 1.55; it lent Throw, which now comes with Thrown)* |
 | Legion gladius | Light, Point, Edge | Dexterity | Agility | Parry |
 | Kemizuchi duelling blade | Light, Point | Dexterity | Agility | Lunge |
 | War axe | Heavy, Edge, Hook | Raw Power | Strength | Sunder |
@@ -6186,7 +6186,7 @@ Leon (15 Nov 2026): *"the skill increase hit chance for all weapons, melee get d
 
 **Melee damage from Strength or Agility (overrides rules 1.26 for a character's melee blow only):**
 1. **The skill buys the hit, on every weapon.** A weapon's skill (`phys.hits_with`) adds to the roll to hit and nothing to the damage, as since rules 1.26.
-2. **A melee weapon's damage grows with one Attribute**, the one its row names (`weapons.json phys.scales_with`): Strength for heavy melee and the fists (the machete, maul, lance, war axe, greatsword, glaive, rip-saw, bare fists, knuckledusters, servo-fist), Agility for the finesse and thrown blades (the combat knife, sabre, throwing knives, hatchet, gladius, duelling blade, katana). The row names its damage profile (`phys.profile: melee`, `rules.json output.profiles.melee`): Stat = k x (1 + 0.05 x (that Attribute - 1)), no skill slope, the Level term `deal` as before, then the melee factor (`output.factors.melee`) as before.
+2. **A melee weapon's damage grows with one Attribute**, the one its row names (`weapons.json phys.scales_with`): Strength for heavy melee, the hatchet and the fists (the machete, maul, lance, war axe, hatchet, greatsword, glaive, rip-saw, bare fists, knuckledusters, servo-fist), Agility for the finesse and thrown blades (the combat knife, sabre, throwing knives, gladius, duelling blade, katana). The hatchet scales with Strength though it is light and thrown (lead's ruling, 15 Nov 2026, after Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not). The row names its damage profile (`phys.profile: melee`, `rules.json output.profiles.melee`): Stat = k x (1 + 0.05 x (that Attribute - 1)), no skill slope, the Level term `deal` as before, then the melee factor (`output.factors.melee`) as before.
 3. **k re-pins the all-in build.** k is 1.15385 so that Attribute 7 (the all-in build at creation) gives 1.5, the weapon profile's number: the all-in build at level 1 deals exactly what it did, a lower Attribute less (Attribute 1: x0.77; Attribute 4: x0.88), a higher one more (Attribute 10: x1.12). The bases of the melee weapons are not changed: the enemies that carry a sabre, a knife or fists read the bases with their tier and level, and keep them.
 4. **Guns, bows, thrown charges and the foci's weapons get nothing from the user.** Their rows name no profile (the `weapon` profile, no slope). The validator refuses a slope on a weapon that is not melee. The mana arms (the Evoker blade, the Emanator gauntlet and katana, the bot-thread banner, the grand staff) are foci and name none (for the lead to rule).
 5. **The card shows it.** The weapon card's "Damage scales with" line (rules 1.55) now appears on every melee weapon, naming its Attribute.
@@ -9813,7 +9813,7 @@ Items 4144 to 4146.
 ### Rules 1.56 (Balance 2.0), L6
 
 4147. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
-4148. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, hatchet, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. For the lead to rule.
+4148. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, hatchet, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. Ruled by the lead (15 Nov 2026): the list stands except the hatchet, which scales with Strength (Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not).
 4149. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
 4150. **Items 4147 to 4150 are rules 1.56 L6's.**
 

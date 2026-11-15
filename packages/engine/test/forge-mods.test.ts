@@ -137,6 +137,16 @@ describe('rules 1.56 L3: the armourer fits to any gun carried', () => {
     expect(runOptions(plain, 'c1').some((x) => x.key === 'mod:extra:' + pi)).toBe(false);
     expect(refused(plain, { type: 'run/fit_mod', charId: 'c1', idx: pi, extra: true })).toMatch(/no extra mod slot/);
   });
+  it('the extra slot is the gun being fitted\'s (consolidation 0.29, ruling iv): Gun Nut doubles a slot on a pack gun, the hand\'s untouched', () => {
+    let j = -1;
+    const g = visit('forge', 'PHC-0001', (x) => { j = gunLine(x, 'service_pistol', { mods: ['mod_red_dot'] }); x.characters.c1.traits = [...(x.characters.c1.traits || []), 'gun_nut']; });
+    const main0 = [...(g.characters.c1.weaponState?.mods || [])], i = give(g, 'mod_scope');
+    const o = runOptions(g, 'c1').find((x) => x.key === 'mod:extra:' + i + ':' + j)!;
+    expect(o, 'the card for the pack gun\'s extra slot').toBeTruthy(); expect(o.why).toBeNull(); expect(o.price).toBe(fee('mod_scope'));
+    const a = apply(g, o.action as any, 'host'), c = a.characters.c1;
+    expect([...(packOf(c).find((x) => x.weapon === 'service_pistol')!.mods || [])].sort()).toEqual(['mod_red_dot', 'mod_scope']);
+    expect(c.weaponState?.mods || []).toEqual(main0); expect(creditsOf(c)).toBe(10000 - fee('mod_scope'));
+  });
 });
 
 describe('rules 1.56 L3: a mod can be a reward pick', () => {

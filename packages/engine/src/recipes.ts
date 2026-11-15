@@ -10,7 +10,7 @@
 import './datatext';
 import recipesJ from '../../../data/recipes.json';
 import { ITEM, WEAPON, CALIBRE_NAME } from './data';
-import { type Character, type PackItem, packOf, holds, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from './character';
+import { type Character, type PackItem, packOf, holds, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES, specialRoundName } from './character';
 import { priceOf } from './credits';
 import { packTake, grantGoods, itemLabel, calName } from './containers';
 import { lineGoods } from './run/shop';
@@ -26,8 +26,8 @@ export interface Recipe { id: string; name: string; needs: RecipeLine[]; tool: {
  * round's item (an `ammo_type` with a `price_mult`), each need a `share` of the worth. It becomes one row for every
  * calibre of `special_round_price.calibres` (id `<id>:<calibre>`), giving `rounds:<calibre>:<type>` in the fewest
  * rounds n whose worth (priceOf) splits into whole needs: each need is share x n x the round's price / its own price.
- * A calibre with no such n up to `EACH_CALIBRE_MOST` rounds gets no row (the validator says so). */
-const EACH_CALIBRE_MOST = 100;
+ * A calibre with no such n up to `each_calibre_most` rounds (the file's own field) gets no row (the validator says so). */
+const EACH_CALIBRE_MOST: number = (recipesJ as any).each_calibre_most;
 function expandRow(r: any): Recipe[] {
   if (!r.each_calibre) return [r];
   const sp: any = ITEM[r.gives?.[0]?.item], type = sp?.ammo_type; if (!type || SPECIAL_ROUND_ITEM[type] !== sp) return [];
@@ -58,7 +58,7 @@ function countWords(id: string, n: number): string {
   return n + ' ' + name.charAt(0).toLowerCase() + name.slice(1);
 }
 /** Rounds in words: ".32 Decrkm", or a special round "Armour-piercing rounds (.700 Blackpoint)" (rules 1.56). */
-const roundsWords = (r: { calibre: string; type: string | null }): string => (r.type && SPECIAL_ROUND_ITEM[r.type] ? SPECIAL_ROUND_ITEM[r.type].name + ' (' + (CALIBRE_NAME[r.calibre] || r.calibre) + ')' : calName(r.calibre));
+const roundsWords = (r: { calibre: string; type: string | null }): string => specialRoundName(r.calibre, r.type) ?? calName(r.calibre);
 const nameOfId = (id: string): string => { const r = roundsIdOf(id); return r ? roundsWords(r) : String((ITEM[id] as any)?.name || (WEAPON[id] as any)?.name || id); };
 /** How many of a need's id the character carries (packTake counting). */
 const hasOf = (c: Character, id: string) => packTake(packOf(c).map((x) => ({ ...x })), id, 0);

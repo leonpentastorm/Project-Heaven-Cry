@@ -484,6 +484,17 @@ def section_c():
     for rel, only, title in PRIMITIVE_FILES:
         t, n = export_table(rel, only, title); out.append(t); total += n
     counts['primitive exports'] = total
+    # every other export, found by the scan (nothing is left out by a hand list)
+    shown = {(rel, e['name']) for rel, only, _ in PRIMITIVE_FILES for e in exports_of(rel) if only is None or e['name'] in only}
+    rows = []
+    for rel in sorted(ts_files()):
+        rest = [e for e in exports_of(rel) if (rel, e['name']) not in shown]
+        if rest: rows.append(['`' + short(rel) + '`', ', '.join('`' + e['name'] + '`' for e in rest)])
+    n_other = sum(len(r[1].split(', ')) for r in rows)
+    out.append(f'#### Every other export, by file ({n_other})\n\nThe scan of every file in the engine\'s source: '
+               'what the tables above do not show. Read the doc comment in the file before writing a second one.\n\n'
+               + md_table(['file', 'exports'], rows) + '\n')
+    counts['other exports'] = n_other
     # the action descriptor's fields
     # fx event kinds
     kinds = {}
@@ -580,6 +591,11 @@ def section_d():
     return ''.join(out), {'guards': len(rows)}
 
 
+def unlisted(text):
+    """Every export of the engine's source that the catalogue does not name (rule 4: the next builder must find it)."""
+    return [short(e['file']) + ' ' + e['name'] for rel in ts_files() for e in exports_of(rel) if '`' + e['name'] + '`' not in text]
+
+
 def build():
     MISSING.clear()
     a, ca = section_a(); b, cb_ = section_b(); c, cc = section_c(); d, cd = section_d()
@@ -602,7 +618,7 @@ def main():
     path = os.path.join(ROOT, OUT)
     if '--check' in sys.argv:
         cur = open(path, encoding='utf-8').read() if os.path.exists(path) else ''
-        errs = (['docs/ENGINE-HOOKS.md is stale: run python3 tools/engine_catalog.py'] if cur != text else []) + ['no doc comment on ' + m + ': add a one-line comment above it in the source' for m in MISSING]
+        errs = (['docs/ENGINE-HOOKS.md is stale: run python3 tools/engine_catalog.py'] if cur != text else []) + ['no doc comment on ' + m + ': add a one-line comment above it in the source' for m in MISSING]             + ['not in the catalogue: ' + n for n in unlisted(text)]
         if errs:
             print(f'{len(errs)} errors: ' + '\n'.join(errs)); sys.exit(1)
         print('0 errors (' + ', '.join(f'{v} {k}' for k, v in counts.items()) + ')'); return
