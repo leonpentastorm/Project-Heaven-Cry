@@ -1820,6 +1820,16 @@
         "pair": "weapon",
         "shape": "aimed"
       },
+      "melee": {
+        "k": 1.15385,
+        "attr": 0.05,
+        "skill": 0,
+        "level": "deal",
+        "pair": "weapon",
+        "shape": "struck",
+        "provisional": true,
+        "note": "rules 1.56 (Balance 2.0, Leon 15 Nov 2026: melee damage grows with Strength, finesse blades with Agility; the skill buys the hit only): the profile of a character's melee blow, named by the weapon (weapons.json phys.profile); its Attribute is the weapon's phys.scales_with. +attr a point of that Attribute over 1, no skill slope; k re-pins the all-in build (Attribute 7 at creation) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so a lower Attribute deals less than before 1.56 and a higher one more. PROVISIONAL (spec item 1.56-L6)"
+      },
       "sigil": {
         "k": 1.7,
         "attr": 0,

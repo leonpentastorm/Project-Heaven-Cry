@@ -1696,6 +1696,17 @@ if isinstance(tq, dict):
         for sc in (ph.get("scales_with") or []) + (ph.get("also_scales") or []):
             if sc not in skill_ids and sc not in attr_ids:
                 errors.append(f"{where}: phys scales with '{sc}', not a skill or an attribute")
+        # Rules 1.56 (Balance 2.0): phys.profile names the damage profile its Stat term reads (rules.json
+        # output.profiles; absent: `weapon`, no slope). Only a melee weapon reads one with a slope: a gun's damage is the
+        # gun's and the round's (Leon, 15 Nov 2026).
+        if "profile" in ph:
+            _prof = ((((data.get("rules") or {}).get("output") or {}).get("profiles") or {}).get(ph["profile"]))
+            if not isinstance(_prof, dict):
+                errors.append(f"{where}: phys.profile '{ph['profile']}' is not a profile in rules.json output.profiles")
+            elif sysm != "melee" and (_prof.get("attr") or _prof.get("skill")):
+                errors.append(f"{where}: phys.profile '{ph['profile']}' has a slope, and only a melee weapon's damage grows with its user (rules 1.56)")
+            elif _prof.get("attr") and not any(sc in attr_ids for sc in ph.get("scales_with") or []):
+                errors.append(f"{where}: phys.profile '{ph['profile']}' reads an Attribute, and phys.scales_with names none")
         tch = ph.get("teaches")
         if tch and techs.get(tch, {}).get("system") != sysm:
             errors.append(f"{where}: phys.teaches '{tch}' is not a {sysm} technique")
