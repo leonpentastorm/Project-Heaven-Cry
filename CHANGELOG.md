@@ -10,7 +10,7 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
-The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). On the branch `release/0.28.1`; not live.
+The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). **Live since 15 Nov 2026**.
 
 - **The camp and the shops offer what you can use.** Nothing at the camp costs more than the camp budget (the foci and
   Medium armour are gone from it); "another one" of a weapon only for a one-hander you can dual-wield, never a second
