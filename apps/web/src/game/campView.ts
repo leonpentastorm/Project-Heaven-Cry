@@ -21,6 +21,6 @@ export function boonCards(v: LoadoutViewV): CampCardV[] {
 
 /** Rules 1.56 (L5): the camp's backdrop, the art asset its data names (survival.json `loadout.backdrop`, a catalogued painting); '' when it names none or the asset is not built (the header stays plain). */
 export function campBackdrop(): string {
-  const id = (LOADOUT as { backdrop?: string }).backdrop, A = ASSETS as Record<string, string>;
+  const id = LOADOUT.backdrop, A = ASSETS as Record<string, string>;
   return id ? A[id + '-lg'] || A[id] || '' : '';
 }

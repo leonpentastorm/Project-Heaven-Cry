@@ -45,8 +45,9 @@ import { STORY_PANEL_NAME, STORY_PANELS_CSS, readStoryPanels, saveStoryPanels, i
 import { panelsOf, PANEL_DRAW, offersAreaMap } from '../game/panels';
 /** A weapon's line on the GEAR tab (Physical 2.0): its properties and the technique it teaches (drill replaced the
  *  old weapon skill and mastery). */
-/** Rules 1.55: the engine's two skill lines of a weapon in this character's hands ("Hits with Dexterity · +3 · Damage scales with …"). */
-const skillLine = (c, inst) => (c && inst && inst.id && (WEAPON[inst.id] || ITEM[inst.id]?.focus) ? gearPreview(c, inst).lines.filter((l) => SHEET_LINE_KEYS.includes(l.key) && !(l.key === 'recoil' && l.num === 0)).map((l) => l.label + ' ' + l.value).join(' · ') : '');
+/** Rules 1.55: the engine's two skill lines of a weapon in this character's hands ("Hits with Dexterity · +3 · Damage: Strength · +30%";
+ *  a focus still says "Damage scales with …"). A label ending in "with" runs into its value, any other takes a colon. */
+const skillLine = (c, inst) => (c && inst && inst.id && (WEAPON[inst.id] || ITEM[inst.id]?.focus) ? gearPreview(c, inst).lines.filter((l) => SHEET_LINE_KEYS.includes(l.key) && !(l.key === 'recoil' && l.num === 0)).map((l) => l.label + (/ with$/.test(l.label) ? ' ' : ': ') + l.value).join(' · ') : '');
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
