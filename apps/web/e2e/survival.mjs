@@ -125,6 +125,7 @@ const KN = FREE('light_blades'), knife = await numIn('[data-phc-camp-card="stock
 await p.locator('[data-phc-camp-more="stock:' + KN + '"]').click(); await settle(p, 300);
 ok('a second weapon from the rack at its price (' + knife + '): it goes in the pack', (await me0()).pack.some((x) => x.weapon === KN) && knife === WPN[KN].price_credits);
 await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
+if (process.env.CAMP_SHOT) { await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 500); await p.screenshot({ path: process.env.CAMP_SHOT }); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); } // the camp at 1920, on request
 await sidePanels(p, 'the camp');
 // Leon, 15 Nov: the camp's top bar (the budget, Next) stays in sight however far the camp is scrolled; nothing on a card
 // spills (a name, a stat row: its scrollWidth inside its box); two cards a family ("another one" at the free one's foot);

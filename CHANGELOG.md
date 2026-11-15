@@ -27,8 +27,17 @@ The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). On the
 - **Weapon mods are fitted at the Forge**, for a fee (a fifth of the mod's price, at least 25 credits), in a run; a swap
   puts the old mod in the pack. Mods the engine does not run yet (the foregrip, the wrapped grip, the underslung
   launcher, the sigil-etched magazine, the pavise) are no longer sold anywhere.
-- **The camp and the places are laid out again.** The camp's budget bar stays at the top; two cards a family fill the
-  width; the path map fits its box. Every place (the camp, the shop, each place, the rewards, the stage's end) keeps its
+- **Weapon cards say what a weapon hits with.** Every card that shows a weapon's or a focus's numbers (the camp, the
+  shop, the Forge, the reward, the sheet, the hover cards) names the skill you aim it with and your modifier
+  ("Hits with: Dexterity · +3"); a magazine reads "30 · .32 Decrkm".
+- **The artist's new art is in.** 66 new images: gear and boon icons, the path map's markers, the keepers' portraits,
+  the places' backdrops, the signs on the fight cards and the Roguelike card in the lobby.
+- **Loot is scarce now.** No free magazines after a fight (casters still get their burnt cores and MP back); the camp's
+  free gun has two spare magazines; an ordinary fight offers a weapon card only about one time in five (Elites, Bosses,
+  the vault and caches always do), better grades are rarer, mana residue is scarce, and foes leave little on the
+  ground. A gun you pick or buy comes loaded, with a spare magazine.
+- **The camp and the places are laid out again.** The camp's budget bar stays at the top; each family is only as wide as its
+  cards, and they wrap to fill the width; the path map fits its box. Every place (the camp, the shop, each place, the rewards, the stage's end) keeps its
   header in sight as you scroll, with the money and the button that moves on. On the GEAR tab every section folds, the
   Backpack comes first and opens large over the middle (both side panels stay), and Make is one compact row a recipe.
 

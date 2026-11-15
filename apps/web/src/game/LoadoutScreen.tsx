@@ -31,14 +31,17 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
   + '.phc-camp *{min-width:0}'
   // the families of the rack, the foci and the shop's cards flow in grids that use the middle's width (auto-fit: an empty
   // track collapses, so a short row leaves no dead space on the right)
-  + '.phc-camp-families{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px 16px}'
-  + '.phc-camp-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}'
-  + '.phc-camp-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}'
-  + '.phc-camp-shelves{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:4px 16px;align-items:start}'
-  + '.phc-camp-shelf{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px}'
+  // (0.28.1 gate: with one card a family, the two-card blocks left half of every block empty) the families, the foci and
+  // the shelves flow and wrap; a group is only as wide as its own cards, and every card is one fixed width
+  + '.phc-camp-families{display:flex;flex-wrap:wrap;gap:18px 22px;align-items:flex-start}'
+  + '.phc-camp-families>*{flex:0 1 auto;max-width:100%}'
+  + '.phc-camp-pair,.phc-camp-pick,.phc-camp-shelf{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}'
+  + '.phc-camp .phc-camp-pair>*,.phc-camp .phc-camp-pick>*,.phc-camp .phc-camp-shelf>*{flex:0 1 270px;width:270px;min-width:min(250px,100%);max-width:100%}'
+  + '.phc-camp-shelves{display:flex;flex-wrap:wrap;gap:4px 22px;align-items:flex-start}'
+  + '.phc-camp-shelves>*{flex:0 1 auto;max-width:100%}'
   + '.phc-camp-boons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),340px));justify-content:center;gap:18px}'
   + '.phc-camp-carry{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}'
-  + '@media (max-width:700px){.phc-camp-pair,.phc-camp-carry{grid-template-columns:minmax(0,1fr)}}'
+  + '@media (max-width:700px){.phc-camp-carry{grid-template-columns:minmax(0,1fr)}}'
   // a stat row: label | value (| the better one's value); the label always shown, whole, wrapping
   + '.phc-camp-stats{margin:0;display:grid;gap:3px 10px;font-size:14px;line-height:1.3}'
   + '.phc-camp-stats dt{color:#A3AEC2;overflow-wrap:break-word}.phc-camp-stats dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:break-word}';
@@ -265,7 +268,7 @@ export function LoadoutScreen() {
           </section>
           <div className="phc-camp-shelves">
             {groups.map((gr) => (
-              <section key={gr.name} data-phc-camp-shelf={gr.name} style={{ marginBottom: 22, minWidth: 0, gridColumn: gr.cards.length > 2 ? '1 / -1' : undefined }}>
+              <section key={gr.name} data-phc-camp-shelf={gr.name} style={{ marginBottom: 22, minWidth: 0 }}>
                 {head(gr.name)}
                 <div className="phc-camp-shelf">{gr.cards.map((c) => <ShelfCard key={c.key} c={c} charId={charId} />)}</div>
               </section>))}

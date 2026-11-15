@@ -68,11 +68,23 @@ export function layoutPathMap(v: Pick<RunViewV, 'nodes' | 'rows' | 'lanes'>): { 
   return { pos, camp: { x: 62, y: H / 2 }, dx };
 }
 
+/** Does a marker's word fit inside the map's frame on this side (true: below)? In the map's own pixels (ICON.pathMap
+ * wide; the whole layer scales as one): the marker's half, the word's 3 px gap and its line (the label's size x 1.3). */
+export function labelFits(n: RunNodeV, y: number, below: boolean): boolean {
+  const k = ICON.pathMap / W, px = y * k, need = markerSize(n) / 2 + 3 + Math.ceil((n.kind === 'boss' ? ICON.bossLabel : ICON.label) * 1.3) + 1;
+  return below ? px + need <= H * k : px - need >= 0;
+}
 /** Which side of its marker a node's word goes (true: below), or undefined for the usual alternation. The vault's spur
- * puts its words on the side away from the lanes (beside the marker they ran into the next column's node and word:
+ * puts its words on the side away from the lanes when they fit inside the frame there, else on the other side (beside the marker they ran into the next column's node and word:
  * 0.28.0 playtest, "…ULT GUARD"); the fork it leaves puts its own word on the other side. */
 export function labelSide(n: RunNodeV, nodes: RunNodeV[], pos: Record<string, { x: number; y: number }>): boolean | undefined {
-  if (n.spur) { const f = n.from ? pos[n.from] : null; return f && pos[n.id] ? pos[n.id].y >= f.y : undefined; }
+  if (n.spur) {
+    const f = n.from ? pos[n.from] : null, at = pos[n.id]; if (!f || !at) return undefined;
+    const out = at.y >= f.y;
+    // outward only when the word stays inside the map's frame there (a spur at the map's top or bottom edge: the
+    // survival suite's rules 1.49 check); else the other side, which faces the map's middle
+    return labelFits(n, at.y, out) ? out : labelFits(n, at.y, !out) ? !out : at.y < H / 2;
+  }
   const sp = nodes.find((x) => x.spur === 'guard' && x.from === n.id);
   return sp && pos[sp.id] && pos[n.id] ? pos[sp.id].y < pos[n.id].y : undefined;
 }
