@@ -19,7 +19,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `combat_end` | `combat_end` | anyone | the fight ends | `ingenuity` (skills.json) |
 | `round_start` | `round_start` | anyone | a new round begins | `boon.script_ward` (survival.json) |
 | `turn_ap` | `turn_start_pre` | actor | a unit's turn is about to begin: its AP are being counted (grant_ap adds to or takes from this turn) | `last_wall` (perks.json) |
-| `turn_start` | `turn_start` | actor | a unit's turn has begun | `sanctuary` (classes.json) |
+| `turn_start` | `turn_start` | actor | a unit's turn has begun | `canticle` (classes.json) |
 | `turn_end` | `turn_end` | actor | a unit's turn ends | `run_and_gun` (classes.json) |
 | `attack` | `attack_preview` | actor | an attack is being sized up (to-hit terms, its AP, a refusal); also every preview | `fire_discipline` (classes.json) |
 | `attack_roll` | `attack_roll` | actor | an attack's d20 is rolled | `run_and_gun` (classes.json) |
@@ -28,7 +28,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `dealing` | `damage_out` | actor | an amount of damage is being made (before armour) | `ledger` (classes.json) |
 | `taking` | `damage_in` (reduce) | target | damage is about to land (after armour, before the shield) | `sanctuary` (classes.json) |
 | `would_drop` | `damage_in` (would_drop_to_0) | target | a blow would drop a unit to 0 HP | `take_the_weight` (classes.json) |
-| `damaged` | `on_damaged` | target | a unit lost HP | `given_spite` (conditions.json) |
+| `damaged` | `on_damaged` | target | a unit lost HP | `canticle` (classes.json) |
 | `downed` | `on_downed` | target | a unit went down (Downed or dead) | `volatile` (figments.json) |
 | `kill` | `on_kill` | actor | a unit was dropped by an enemy | `lingering_dread` (classes.json) |
 | `cond_incoming` | `cond_apply` | target | a condition is about to be put on a unit (its save, its rounds, a refusal) | `take_the_weight` (classes.json) |
@@ -37,7 +37,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `save` | `save` | target | a save is rolled | `settled` (conditions.json) |
 | `moved` | `moved` | actor | a unit finished a move of its own | `slipping` (conditions.json) |
 | `forced_move` | `forced_move` | target | a unit is about to be pushed, pulled, thrown or teleported | `siege_engine` (perks.json) |
-| `heal` | `heal_in` | target | a unit is about to be healed | `prop.gentle` (survival.json) |
+| `heal` | `heal_in` | target | a unit is about to be healed | `last_rites` (classes.json) |
 | `heal_given` | `heal_given` | actor | a heal landed | `ledger` (classes.json) |
 | `shield` | `shield_grant` | target | a shield is about to be given | `ledger` (classes.json) |
 | `cost` | `cost` | actor | an action is priced (every priced action) | `speed_loader` (classes.json) |
@@ -81,7 +81,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `actor_sees_self` | bool | actor can (or cannot) see the holder: its eyes reach the holder's tile and the holder is not Hidden (shadow-spec 2.1) | `nothing_left_to_fear` (perks.json) |
 | `target_hp_below` | number | target's HP is under this share of its max | none yet |
 | `target_hp_above` | number | target's HP is over this share of its max | none yet |
-| `target_hp_at_most` | number | target's HP is at most this share of its max | `given_mercy` (conditions.json) |
+| `target_hp_at_most` | number | target's HP is at most this share of its max | `holy_dread` (classes.json) |
 | `target_has` | ids | target has one of these conditions | `lunge` (classes.json) |
 | `target_lacks` | ids | target has none of these conditions | none yet |
 | `target_tier` | words | target's tier is one of these (vermin, minion, soldier, elite, boss) | `tend.threads` (tending.json) |
@@ -94,21 +94,21 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `melee` | bool | the attack or damage is (true) or is not (false) melee | `barbed` (figments.json) |
 | `crit` | bool | the attack is (or is not) a critical | `mod_serrated` (items.json) |
 | `mode` | words | the attack's mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech) | `fire_discipline` (classes.json) |
-| `damage` | words | the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true) | `prop.keen` (survival.json) |
+| `damage` | words | the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true) | `holy_dread` (classes.json) |
 | `not_damage` | words | the damage is of none of these kinds (as damage; also a source type: strain, short) | `sanctuary` (classes.json) |
 | `by_hit` | bool | the damage came (or did not come) from someone's blow, not a hazard, trap, Bleeding or Burning | `ledger` (classes.json) |
 | `self_harm` | bool | the damage is (or is not) the unit's own doing (a Mana Short, an overload, Strain, Flux) | `last_wall` (perks.json) |
 | `hostile` | bool | the actor and the target are (or are not) on different sides | `smite` (classes.json) |
 | `cond` | ids | the condition is one of these | `take_the_weight` (classes.json) |
-| `cond_family` | words | the condition's family is one of these (body, brain, heart) | none yet |
+| `cond_family` | words | the condition's family is one of these (body, brain, heart) | `canticle_the_matchmaker` (conditions.json) |
 | `action` | words | the priced action (its cost site) is one of these | `speed_loader` (classes.json) |
 | `word` | words | the Sigil word being drawn is one of these | `barrage` (classes.json) |
 | `hand` | words | the hand is one of these (main, off, both) | `speed_loader` (classes.json) |
-| `how` | words | the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread) | `mend` (classes.json) |
+| `how` | words | the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread) | `last_rites` (classes.json) |
 | `ap_above` | number | the event's AP (a price, a swap) is over this | `speed_loader` (classes.json) |
 | `own_turn` | bool | it is (or is not) the holder's own turn | `run_and_gun` (classes.json) |
 | `flag` | string | the item's flag is set (the mark op sets it) | `run_and_gun` (classes.json) |
-| `no_flag` | string | the item's flag is not set | `used_to_the_pain` (perks.json) |
+| `no_flag` | string | the item's flag is not set | `canticle` (classes.json) |
 | `self_alive` | bool | the holder is (or is not) up: not Downed, dead or surrendered | `walking_wounded` (perks.json) |
 | `actor_alive` | bool | the actor is (or is not) up: not Downed, dead or surrendered | none yet |
 | `target_alive` | bool | the target is (or is not) up: not Downed, dead or surrendered | `smite` (classes.json) |
@@ -123,7 +123,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `self_holds` | hold | the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; holds also reads door: any (any focus), which only recipes use: it is not a value here | `ledger` (classes.json) |
 | `self_lacks_gear` | hold | the holder does not have it (as self_holds) | none yet |
 | `with_this` | bool | the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic's property): the instance in a hand, and a weapon's event made with that hand's weapon, a door's event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door's focus | `mod_scope` (items.json) |
-| `self_skill` | skill | the holder has at least these points in each skill named ({empathy: 7}: a door's ladder) | `camaraderie` (skills.json) |
+| `self_skill` | skill | the holder has at least these points in each skill named ({empathy: 7}: a door's ladder) | `canticle` (classes.json) |
 | `self_skill_below` | skill | the holder has fewer than these points in each skill named (as self_skill) | none yet |
 | `self_tied` | tie | the holder holds a tie of this kind (a kind, or {kind, side: foe, ally or any}: its far end of that side to the holder) | `start.held_close` (survival.json) |
 | `choice` | words | the action's pick (its `pick` list: a felt feeling, a word…) is one of these | `inspire` (classes.json) |
@@ -158,7 +158,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `cond_rounds` | `cond_incoming` | `max`, `add` | no | change the rounds of the condition being put on: at most max, or add | `iron_stomach` (perks.json) |
 | `skip_save` | `cond_incoming` | (none) | no | the condition being put on gets no save | none yet |
 | `cancel` | `cond_incoming`, `forced_move`, `injury`, `attack`, `spot` | `why` | no | stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown) | `take_the_weight` (classes.json) |
-| `mend_mult` | `heal`, `shield` | `value` | no | multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk…) | `prop.gentle` (survival.json) |
+| `mend_mult` | `heal`, `shield` | `value` | no | multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk…) | `last_rites` (classes.json) |
 | `floor` | `would_drop` | `value` | no | the blow leaves the unit at this many HP | `take_the_weight` (classes.json) |
 | `deal` | any trigger | `amount`, `via`, `nonlethal`, `by` | yes | deal an amount block (amounts) to the self, actor or target (by: "source", a condition row: dealt as by whoever gave it); via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues | `take_the_weight` (classes.json) |
 | `mend` | any trigger | `amount`, `layer`, `holders` | yes | heal or shield by an amount block (its heal_kind is the heal's kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder's layer) | `rally` (classes.json) |
@@ -585,10 +585,10 @@ Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod
 
 `immune(x, what)` is also asked about: `bleed`, `knockback`, `opportunity_attack`, `shove` (`IMMUNE_IDS`).
 
-### The condition table (`data/conditions.json`, 94 rows; loader `condtable.ts`)
+### The condition table (`data/conditions.json`, 104 rows; loader `condtable.ts`)
 
 A condition is a row; these are the fields rows use (how many rows use each):
-`id` (94), `amounts` (7), `name` (94), `kind` (94), `family` (94), `save` (94), `engine` (94), `text` (94), `effects` (94), `duration` (94), `ends_on` (94), `stacks` (94), `adjudication` (94), `save_note` (1), `provisional` (65), `aliases` (2), `key` (2), `label` (49), `boon` (39), `notes` (1), `source` (59), `engine_state` (3), `params` (1), `set_by` (46).
+`id` (104), `amounts` (7), `name` (104), `kind` (104), `family` (104), `save` (104), `engine` (104), `text` (104), `effects` (104), `duration` (104), `ends_on` (104), `stacks` (104), `adjudication` (104), `save_note` (1), `provisional` (75), `aliases` (2), `key` (2), `label` (59), `boon` (49), `notes` (1), `source` (69), `engine_state` (3), `params` (1), `set_by` (56).
 Families: `body`, `brain`, `heart`.
 
 #### The item-ops runner (`effects/triggers.ts`)

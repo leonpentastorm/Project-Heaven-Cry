@@ -20,15 +20,19 @@
 //                line, the pull-away and the zoom to where it lands, the effect, then a box of what it did (~6 s, skippable)
 // Fog: every map effect goes through the kit's at() (null where the viewer can't see); a Miracle's answer is heard by
 // everyone. Reduce motion: still marks and short fades, no rays or particles.
-import { FAITH_PATRON, type FxEvent } from '@engine';
+import { FAITH_PATRON, FAITH_RULES, FAITH_TAG, type FxEvent } from '@engine';
 import { reducedMotion, type Sfx } from '../sfx';
-import { type Pt, anim, after, burst, floatText, put, ring } from './dom';
+import { type Pt, anim, after, burst, floatText, put, ring, svg } from './dom';
 import { FAITH_GOLD, FAITH_INK, accentOf, patronFace, patronMarkUri, witnessedUri, vowIconUri, prayerIconUri } from '../faithArt';
 import { cutInTiming, miracleCutIn, playIntervention, showCutIn } from '../cutIn';
 
 export interface FaithKit {
   at: (k: string | null | undefined) => Pt | null;
   posOf: (unitId: string | null | undefined) => string | undefined;
+  /** A unit's token on the map (the one who prays bows or raises a hand before the light travels). */
+  tokOf?: (unitId: string | null | undefined, fallback?: string) => HTMLElement | null;
+  /** The patron a fighting character is Faithful to (null: an Atheist, or no character). */
+  patronOfUnit?: (unitId: string | null | undefined) => string | null;
   /** A character's tile in the fight on screen (Devotion events name the character). */
   posOfChar?: (charId: string | null | undefined) => string | undefined;
   play: (s: Sfx, p: Pt | null, o?: { rate?: number; gain?: number; delay?: number; lowpass?: number }) => void;
@@ -124,6 +128,115 @@ export function devotionWord(e: { delta?: number; tag?: string }): string {
   return (d > 0 ? '+' : '−') + Math.abs(d) + ' DEVOTION XP' + (e.tag ? ' · ' + String(e.tag).toUpperCase() : '');
 }
 
+// ---------- prayer 2.0 (rules 1.56): the Chaplain's own moments ----------
+// The engine sends these as the fx of a data row (classes.json guardian): emitted at the row's holder, after its effect.
+//   smite      {target: the Chaplain}            after the Smite's damage on the foe (the batch's hurt before it)
+//   ward_seal  {target: the Chaplain}            after the Ward's shield on the ally (the batch's boon ward before it)
+//   canticle   {target: the Chaplain, verse}     the song sung, the verse it reached (1, 2, 3)
+//   canticle_break {target: the Chaplain}        a wound broke the song
+//   amen       {target: the Chaplain}            after the Amen's damage on the foe (the hurt before it)
+//   holy_dread {target: the Chaplain}            after Shaken was put on (or resisted by) the foe (the cond before it)
+//   last_rites {target: the Chaplain}            before a prayer's heal on a Downed ally (the prayer after it names them)
+//   roll       {why: 'pray', die, total, tn, ok} an Atheist's prayer by dice (rolls.ts rollVs)
+/** The kinds this part draws. */
+export const CHAPLAIN_FX = ['smite', 'ward_seal', 'canticle', 'canticle_break', 'amen', 'holy_dread', 'last_rites'] as const;
+const ROMAN = ['', 'I', 'II', 'III', 'IV'];
+/** A Devotion change in words, from the data's lines (patrons.json devotion.lines): who saw what. Pure (tests). */
+export function devotionLine(e: { delta?: number; tag?: string; reason?: string }, patron: string | null | undefined): string {
+  const d = Number(e.delta) || 0, L: any = (FAITH_RULES as any)?.devotion?.lines || {};
+  const name = String((FAITH_PATRON as any)[patron || '']?.name || 'Your patron'), tag = e.tag ? String((FAITH_TAG as any)[e.tag]?.name || e.tag) : '';
+  const which = e.tag ? (d < 0 ? 'taboo' : 'liked') : /vow/i.test(e.reason || '') ? 'vow' : /rite/i.test(e.reason || '') ? 'rite' : 'other';
+  const line = String(L[which] || '').replace(/\{patron\}/g, name).replace(/\{tag\}/g, tag);
+  return (d > 0 ? '+' : '−') + Math.abs(d) + ' DEVOTION XP' + (line ? ' · ' + line : '');
+}
+/** The word a Chaplain's moment shows (pure, tests). on: the unit it landed on, from faithBatch. */
+export function chaplainWord(e: any): string {
+  const n = Math.round(Number(e._on?.dmg ?? e._on?.amount) || 0);
+  switch (e.k) {
+    case 'smite': return 'SMITE' + (n ? ' −' + n : '');
+    case 'ward_seal': return 'WARD' + (n ? ' +' + n : '');
+    case 'canticle': return 'CANTICLE · VERSE ' + (ROMAN[Number(e.verse) || 1] || e.verse);
+    case 'canticle_break': return 'THE SONG BREAKS';
+    case 'amen': return 'AMEN' + (n ? ' −' + n : '');
+    case 'holy_dread': return e._on?.resisted ? 'HOLY DREAD · HELD FAST' : 'HOLY DREAD';
+    case 'last_rites': return 'LAST RITES';
+    case 'roll': return (e.total ?? e.die) + ' vs ' + e.tn + ' · ' + (e.ok ? 'ANSWERED' : 'UNANSWERED');
+    default: return '';
+  }
+}
+/** Ties each Chaplain moment of a batch to the unit it landed on (pure; the queue calls it as a batch arrives): a row's
+ *  fx is emitted at its holder, after its effect, so the effect's own event (the hurt of a Smite or an Amen, the boon of
+ *  a Ward, the cond of Holy Dread) is just before it; Last Rites comes before its heal, and the prayer after it names the
+ *  Downed ally. A Ward drawn as the Chaplain's seal tells its boon (_seal) not to draw the Sigil's brackets. */
+export function faithBatch(evs: any[]): void {
+  const back = (i: number, f: (x: any) => boolean) => { for (let j = i - 1; j >= Math.max(0, i - 6); j--) if (f(evs[j])) return evs[j]; return null; };
+  const fwd = (i: number, f: (x: any) => boolean) => { for (let j = i + 1; j < Math.min(evs.length, i + 6); j++) if (f(evs[j])) return evs[j]; return null; };
+  for (let i = 0; i < evs.length; i++) {
+    const e = evs[i]; if (!e || e._on) continue;
+    if (e.k === 'smite' || e.k === 'amen') { const h = back(i, (x) => x.k === 'hurt'); if (h) e._on = { target: h.target, at: h.at, dmg: h.dmg }; }
+    else if (e.k === 'ward_seal') { const b = back(i, (x) => x.k === 'boon' && x.word === 'ward'); if (b) { e._on = { target: b.target, at: b.at, amount: b.amount }; b._seal = 1; } }
+    else if (e.k === 'holy_dread') { const c = back(i, (x) => x.k === 'cond' && x.id === 'shaken'); if (c) e._on = { target: c.target, at: c.at, resisted: !!c.resisted }; }
+    else if (e.k === 'last_rites') { const p = fwd(i, (x) => x.k === 'prayer' && x.target) || back(i, (x) => x.k === 'prayer' && x.target); if (p) e._on = { target: p.target }; }
+  }
+}
+/** A Ward that is the Chaplain's (faithBatch marked its boon): the boon draws nothing; the seal is drawn instead. */
+export const sealedBoon = (e: any): boolean => !!e && e.k === 'boon' && !!e._seal;
+
+/** An SVG line drawn by stroke-dashoffset (the light of a prayer travelling). */
+function lightLine(a: Pt, b: Pt, color: string, ms: number, o: { width?: number; delay?: number; jag?: boolean } = {}) {
+  const run = () => {
+    const x0 = Math.min(a.x, b.x) - 8, y0 = Math.min(a.y, b.y) - 8, w = Math.abs(a.x - b.x) + 16, h = Math.abs(a.y - b.y) + 16;
+    const ax = a.x - x0, ay = a.y - y0, bx = b.x - x0, by = b.y - y0, len = Math.hypot(bx - ax, by - ay) || 1;
+    // a crack: three segments that jog off the straight line
+    const d = o.jag ? (() => { const nx = -(by - ay) / len, ny = (bx - ax) / len, j = Math.min(10, len * 0.08); const p1 = [ax + (bx - ax) / 3 + nx * j, ay + (by - ay) / 3 + ny * j], p2 = [ax + (bx - ax) * 2 / 3 - nx * j, ay + (by - ay) * 2 / 3 - ny * j]; return 'M' + ax + ' ' + ay + ' L' + p1.join(' ') + ' L' + p2.join(' ') + ' L' + bx + ' ' + by; })() : 'M' + ax + ' ' + ay + ' L' + bx + ' ' + by;
+    const s = svg(w, h, '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="' + (o.width || 1.5) + '" stroke-linecap="round" stroke-dasharray="' + (len * 1.4) + '" stroke-dashoffset="' + (len * 1.4) + '" style="filter:drop-shadow(0 0 3px ' + color + ')"/>');
+    const box = put(s, { x: x0 + w / 2, y: y0 + h / 2 }, w, h, ms + 300); box.style.zIndex = '4';
+    const path = s.querySelector('path'); if (path) anim(path, [{ strokeDashoffset: String(len * 1.4) }, { strokeDashoffset: '0', offset: 0.6 }, { strokeDashoffset: '0', opacity: 0 }], { duration: ms + 300, easing: 'ease-out', fill: 'forwards' });
+  };
+  if (o.delay) after(run, o.delay); else run();
+}
+/** The acting token's own move: a bow (dip), a raised hand (rise and hold), a sway, a step toward. Off under Reduce motion. */
+function tokenMove(tok: HTMLElement | null | undefined, how: 'bow' | 'raise' | 'sway' | 'tilt', ms = 220) {
+  if (!tok || reducedMotion()) return;
+  const f: Record<string, Keyframe[]> = {
+    bow: [{ translate: '0 0' }, { translate: '0 3px', offset: 0.45 }, { translate: '0 0' }],
+    raise: [{ translate: '0 0' }, { translate: '0 -4px', offset: 0.3 }, { translate: '0 -4px', offset: 0.75 }, { translate: '0 0' }],
+    sway: [{ rotate: '0deg' }, { rotate: '-3deg', offset: 0.25 }, { rotate: '3deg', offset: 0.75 }, { rotate: '0deg' }],
+    tilt: [{ translate: '0 0' }, { translate: '0 -2px', offset: 0.4 }, { translate: '0 0' }],
+  };
+  anim(tok, f[how], { duration: ms, easing: 'ease-in-out' });
+}
+/** A hexagon of six strokes closing around a point, one stroke at a time (the Chaplain's Ward). */
+function hexSeal(p: Pt, color: string, ms: number) {
+  const r = p.s * 0.62, pts = Array.from({ length: 6 }, (_, i) => { const a = Math.PI / 6 + (i * Math.PI) / 3; return [r + 4 + Math.cos(a) * r, r + 4 + Math.sin(a) * r]; });
+  const segs = pts.map((q, i) => { const n = pts[(i + 1) % 6]; return '<line x1="' + q[0] + '" y1="' + q[1] + '" x2="' + n[0] + '" y2="' + n[1] + '" stroke="' + color + '" stroke-width="1.5" stroke-linecap="round" opacity="0"/>'; }).join('');
+  const s = svg(2 * r + 8, 2 * r + 8, segs), box = put(s, p, 2 * r + 8, 2 * r + 8, ms + 900); box.style.zIndex = '4';
+  s.querySelectorAll('line').forEach((l, i) => anim(l, [{ opacity: 0 }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }], { duration: ms + 900, delay: reducedMotion() ? 0 : i * (ms / 6), fill: 'forwards' }));
+}
+/** A small eighth note (two lines and a dot), rising and drifting. */
+function notes(p: Pt, color: string, n: number, ms: number) {
+  if (reducedMotion()) return;
+  for (let i = 0; i < n; i++) after(() => {
+    const s = svg(10, 14, '<circle cx="3" cy="11" r="2.2" fill="' + color + '"/><line x1="5" y1="11" x2="5" y2="2" stroke="' + color + '" stroke-width="1.3"/><line x1="5" y1="2" x2="9" y2="4" stroke="' + color + '" stroke-width="1.3"/>');
+    const box = put(s, { x: p.x + (i - 1) * p.s * 0.25, y: p.y - p.s * 0.4 }, 10, 14, ms); box.style.zIndex = '4';
+    anim(box, [{ opacity: 0, transform: 'translate(0,0)' }, { opacity: 1, offset: 0.2 }, { opacity: 0, transform: 'translate(' + ((i - 1) * 6) + 'px,' + (-p.s * 0.8) + 'px)' }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
+  }, i * 110);
+}
+/** The song's ground: a dotted square outline of the tiles within `r` of a point (dashes that break when the song does). */
+function songGround(p: Pt, r: number, color: string, ms: number, broken = false) {
+  const side = (2 * r + 1) * p.s, s = svg(side + 4, side + 4, '<rect x="2" y="2" width="' + side + '" height="' + side + '" fill="none" stroke="' + color + '" stroke-width="1" stroke-dasharray="' + (broken ? '6 10' : '2 4') + '" rx="3"/>');
+  const box = put(s, p, side + 4, side + 4, ms); box.style.zIndex = '2';
+  anim(box, broken ? [{ opacity: 0.8 }, { opacity: 0, transform: 'scale(1.06)' }] : [{ opacity: 0 }, { opacity: 0.85, offset: 0.25 }, { opacity: 0.85, offset: 0.7 }, { opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
+}
+/** A d20 outline (a hexagon with its inner triangle) spinning once over a point: an Atheist's prayer by dice. */
+function d20Spin(p: Pt, color: string, ms: number) {
+  const r = p.s * 0.3, c0 = r + 3, hex = Array.from({ length: 6 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / 3; return (c0 + Math.cos(a) * r) + ',' + (c0 + Math.sin(a) * r); }).join(' ');
+  const tri = [0, 2, 4].map((i) => { const a = -Math.PI / 2 + (i * Math.PI) / 3; return (c0 + Math.cos(a) * r * 0.6) + ',' + (c0 + Math.sin(a) * r * 0.6); }).join(' ');
+  const s = svg(2 * c0, 2 * c0, '<polygon points="' + hex + '" fill="none" stroke="' + color + '" stroke-width="1.5"/><polygon points="' + tri + '" fill="none" stroke="' + color + '" stroke-width="1"/>');
+  const box = put(s, { x: p.x, y: p.y - p.s * 0.95 }, 2 * c0, 2 * c0, ms); box.style.zIndex = '5';
+  anim(box, reducedMotion() ? [{ opacity: 0 }, { opacity: 1, offset: 0.2 }, { opacity: 1, offset: 0.8 }, { opacity: 0 }] : [{ opacity: 0, rotate: '0deg' }, { opacity: 1, rotate: '300deg', offset: 0.5 }, { opacity: 1, rotate: '360deg', offset: 0.8 }, { opacity: 0, rotate: '360deg' }], { duration: ms, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+}
+
 export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void> {
   const { at, posOf, play } = K;
   // In the story the events name characters (the area map's tokens are theirs): a unit's tile, else the character's.
@@ -133,19 +246,36 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
   /** The one who prays: their own tile (where the icon or the face goes over the head). */
   const prayerAt = (e: any) => at(e.at || posAny(e.unit));
   const charAt = (e: any) => at(e.at || (K.posOfChar ? K.posOfChar(e.char) : null));
+  /** The Chaplain's patron (a row's fx names its holder) and its light: the data's accent. */
+  const patronOf = (e: any): string | null => e.patron || (K.patronOfUnit ? K.patronOfUnit(e.target || e.unit) : null);
+  const accOf = (pat: string | null) => accentOf(pat, pat ? (FAITH_PATRON as any)[pat]?.accent : null);
   return {
     // Whisper (spec 2.1): a soft chime, the Whisper's icon rising over the head of the one who prays, a small gold ray
     // where it lands. Hymn (spec 2.2): a choir swell, the patron's face over the head of the one who prays, framed in the
     // accent; rays and a ring in the accent where the Hymn lands.
     prayer(e: any) {
-      const p = targetAt(e), from = prayerAt(e) || p, acc = accentOf(e.patron, e.accent);
+      const p = targetAt(e), from = prayerAt(e) || p, acc = accentOf(e.patron, e.accent || (FAITH_PATRON as any)[e.patron]?.accent);
+      const tok = K.tokOf ? K.tokOf(e.unit, e.at) : null, apart = !!p && !!from && (p.x !== from.x || p.y !== from.y);
       if (e.kind === 'whisper') {
+        // prayer 2.0: the one who prays bows first, then the light travels to the target and its ring lands
+        tokenMove(tok, 'bow', 180);
         play('crystal', from || p, { rate: 1.8, gain: 0.45 });
         if (from) { whisperOverHead(e.id, from); rays(from, FAITH_GOLD, 3, 520); }
-        if (p && p !== from && (!from || p.x !== from.x || p.y !== from.y) && !reducedMotion()) burst('glow', p, p.s * 1.1, 600, { color: FAITH_GOLD, blend: 'screen', delay: 200 });
+        if (apart && from) {
+          const rebuke = e.id === 'rebuke';
+          lightLine({ ...from, y: from.y - from.s * 0.4 }, p!, rebuke ? acc : FAITH_GOLD, 220, { delay: 180, jag: rebuke, width: rebuke ? 2 : 1.5 });
+          if (!reducedMotion()) ring(p!, rebuke ? acc : FAITH_GOLD, 500, { from: 0.3, to: 0.8, width: 2, delay: 400 });
+          if (rebuke) {
+            const tt = K.tokOf ? K.tokOf(e.target) : null;
+            if (tt && !reducedMotion()) after(() => { anim(tt, [{ translate: '0 0' }, { translate: (p!.x > from.x ? 3 : -3) + 'px 0', offset: 0.3 }, { translate: '0 0' }], { duration: 200 }); }, 400);
+            floatText('REBUKED', { ...p!, y: p!.y - p!.s * 0.55 }, FAITH_INK, { small: true, delay: 420 });
+          }
+        }
         return;
       }
       if (e.kind === 'miracle') return; // the 'miracle' event plays it
+      tokenMove(tok, 'raise', 900); // a Hymn: the hand raised while the face is over the head
+      if (apart && from) [-0.25, 0, 0.25].forEach((dx, i) => lightLine({ x: from.x + dx * from.s, y: from.y - from.s * 0.9, s: from.s }, p!, acc, 300, { delay: 200 + i * 40 }));
       play('soul_choir' as Sfx, from || p, { rate: 1.1, gain: 0.7 });
       if (from) faceOverHead(e.patron || '', from, { accent: acc, unit: e.unit });
       if (p) {
@@ -178,11 +308,11 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     // Devotion (rules 1.6.1): the XP as a float in Virtue ink, with a small gold mark; a level change says the new level.
     devotion(e: any) {
       const p = charAt(e); if (!p) return;
-      const d = Number(e.delta) || 0, word = devotionWord(e);
+      const d = Number(e.delta) || 0, word = devotionLine(e, e.patron || (K.patronOfUnit ? K.patronOfUnit(e.char) : null));
       // A pact names the patron; the XP float only when the XP moved (a switch can keep it, or take some: item 719).
       if (e.pact) floatText('PACT · ' + String(FAITH_PATRON[e.pact]?.name || e.pact).toUpperCase(), { ...p, y: p.y + p.s * 0.45 }, FAITH_INK, { small: true, delay: 250 });
       if (d) floatText(word, { ...p, y: p.y + p.s * (e.pact ? 0.9 : 0.45) }, FAITH_INK, { small: true, delay: 250 }); // below and after Witnessed's word, which often comes with it
-      mark(patronMarkUri(e.patron || ''), { x: p.x - p.s * 0.55, y: p.y - p.s * 0.55, s: p.s }, p.s * 0.35, 1100, { glow: FAITH_GOLD, opacity: d > 0 ? 1 : 0.5 });
+      mark(patronMarkUri(e.patron || (K.patronOfUnit ? K.patronOfUnit(e.char) : null) || ''), { x: p.x - p.s * 0.55, y: p.y - p.s * 0.55, s: p.s }, p.s * 0.35, 1100, { glow: FAITH_GOLD, opacity: d > 0 ? 1 : 0.5 });
       if (e.level != null) {
         floatText('DEVOTION ' + e.level, { ...p, y: p.y - p.s * 0.75 }, FAITH_INK, { delay: 650 }); // well above the XP float, which rises into the space below
         if (Number(e.level) > Number(e.was ?? -1) && !reducedMotion()) burst('glow', p, p.s * 1.3, 700, { color: FAITH_GOLD, blend: 'screen' });
@@ -215,6 +345,67 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     },
     // The patron speaks: the screens draw the line as a card in the log; on the map, only a glint over the one it is for.
     patron_line(e: any) { const p = at(e.at || posOf(e.unit)); if (p && !reducedMotion()) burst('glow', { ...p, y: p.y - p.s * 0.8 }, p.s * 0.6, 500, { color: accentOf(e.patron, e.accent), blend: 'screen' }); },
+    // ---------- prayer 2.0: the Chaplain's own moments (faithBatch tied each to where it landed: e._on) ----------
+    smite(e: any) {
+      const o = e._on, q = at(o?.at || posAny(o?.target)), pat = patronOf(e), acc = accOf(pat); if (!q) return;
+      // the patron's mark falls along a line of light onto the foe; a white flash; the word and its number
+      lightLine({ x: q.x, y: q.y - q.s * 1.6, s: q.s }, { ...q, y: q.y - q.s * 0.2 }, acc, 160, { width: 1 });
+      mark(patronMarkUri(pat || ''), { ...q, y: q.y - q.s * 0.5 }, q.s * 0.45, 700, { glow: acc, from: 1.4, to: 0.9, delay: 60 });
+      if (!reducedMotion()) burst('glow', q, q.s * 0.9, 240, { color: '#FFFFFF', blend: 'screen', delay: 200 });
+      play('crystal', q, { rate: 0.7, gain: 0.5 });
+      floatText(chaplainWord(e), { ...q, y: q.y - q.s * 0.75 }, FAITH_INK, { small: true, delay: 220 });
+    },
+    ward_seal(e: any) {
+      const o = e._on, q = at(o?.at || posAny(o?.target)), from = where(e), acc = accOf(patronOf(e)); if (!q) return;
+      if (from && (from.x !== q.x || from.y !== q.y)) lightLine({ ...from, y: from.y - from.s * 0.4 }, q, acc, 200);
+      after(() => { hexSeal(q, acc, 240); floatText(chaplainWord(e), q, FAITH_INK, { small: true, delay: 160 }); }, 160);
+      play('crystal', q, { rate: 1.3, gain: 0.4, delay: 160 });
+    },
+    canticle(e: any) {
+      const p = where(e), acc = accOf(patronOf(e)); if (!p) return;
+      tokenMove(K.tokOf ? K.tokOf(e.target, e.at) : null, 'sway', 360);
+      play('crystal', p, { rate: 1 + 0.12 * (Number(e.verse) || 1), gain: 0.35 });
+      notes(p, acc, 3, 900);
+      songGround(p, Number(e.verse) >= 3 ? 3 : 2, acc, 1400);
+      if (Number(e.verse) >= 3 && !reducedMotion()) ring(p, acc, 700, { from: 0.6, to: 1.5, width: 2 });
+      floatText(chaplainWord(e), { ...p, y: p.y - p.s * 0.6 }, FAITH_INK, { small: true, delay: 160 });
+    },
+    canticle_break(e: any) {
+      const p = where(e), acc = accOf(patronOf(e)); if (!p) return;
+      songGround(p, 2, acc, 500, true);
+      if (!reducedMotion()) for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + (i - 1) * 0.7; lightLine({ ...p, y: p.y - p.s * 0.4 }, { x: p.x + Math.cos(a) * p.s * 0.7, y: p.y - p.s * 0.4 + Math.sin(a) * p.s * 0.7, s: p.s }, '#A3AEC2', 120, { width: 1.5 }); }
+      play('hit_metal', p, { rate: 0.6, gain: 0.35 });
+      floatText(chaplainWord(e), { ...p, y: p.y - p.s * 0.6 }, '#A3AEC2', { small: true, delay: 120 });
+    },
+    amen(e: any) {
+      const o = e._on, q = at(o?.at || posAny(o?.target)), from = where(e), acc = accOf(patronOf(e)); if (!q) return;
+      if (from) { if (!reducedMotion()) burst('glow', { ...from, y: from.y - from.s * 0.5 }, from.s * 0.5, 300, { color: acc, blend: 'screen' }); lightLine({ ...from, y: from.y - from.s * 0.4 }, q, acc, 200, { delay: 80 }); }
+      if (!reducedMotion()) { ring(q, acc, 500, { from: 0.4, to: 1.0, width: 2, delay: 260 }); ring(q, acc, 600, { from: 0.4, to: 1.35, width: 1.5, delay: 340 }); }
+      play('crystal', q, { rate: 1.5, gain: 0.4, delay: 260 });
+      floatText(chaplainWord(e), { ...q, y: q.y - q.s * 0.75 }, FAITH_INK, { small: true, delay: 280 });
+    },
+    holy_dread(e: any) {
+      const o = e._on, q = at(o?.at || posAny(o?.target)), acc = accOf(patronOf(e)); if (!q) return;
+      // the patron's mark over the foe, with a crack through it
+      mark(patronMarkUri(patronOf(e) || ''), { ...q, y: q.y - q.s * 0.8 }, q.s * 0.4, 800, { glow: acc, opacity: 0.9 });
+      lightLine({ x: q.x - q.s * 0.15, y: q.y - q.s * 1.0, s: q.s }, { x: q.x + q.s * 0.15, y: q.y - q.s * 0.6, s: q.s }, '#FFFFFF', 140, { jag: true, delay: 200 });
+      floatText(chaplainWord(e), { ...q, y: q.y - q.s * 1.1 }, o?.resisted ? '#A3AEC2' : FAITH_INK, { small: true, delay: 260 });
+    },
+    last_rites(e: any) {
+      const o = e._on, q = at(posAny(o?.target)), acc = accOf(patronOf(e)); if (!q) return;
+      // a column of two lines of light from above onto the Downed ally
+      for (const dx of [-0.12, 0.12]) lightLine({ x: q.x + dx * q.s, y: Math.max(4, q.y - q.s * 4), s: q.s }, { x: q.x + dx * q.s, y: q.y + q.s * 0.3, s: q.s }, acc, 260);
+      if (!reducedMotion()) burst('glow', q, q.s * 1.2, 700, { color: acc, blend: 'screen', delay: 200 });
+      floatText(chaplainWord(e), { ...q, y: q.y - q.s * 0.7 }, '#6FEA77', { small: true, delay: 240 });
+    },
+    // An Atheist prays by dice (rules 1.6): the d20 spins over the head and lands on its number against the TN.
+    roll(e: any) {
+      if (e.why !== 'pray') return;
+      const p = where(e); if (!p) return;
+      tokenMove(K.tokOf ? K.tokOf(e.unit, e.at) : null, 'tilt', 300);
+      d20Spin(p, e.ok ? FAITH_GOLD : '#A3AEC2', 700);
+      floatText(chaplainWord(e), { ...p, y: p.y - p.s * 1.3 }, e.ok ? FAITH_INK : '#A3AEC2', { small: true, delay: 420 });
+    },
     // A Miracle (Faith 2.2, spec 2.3): the cut-in over the whole screen (everyone sees it: it is this fx event), the
     // god calling the devoted by name; the view lands on the spot and the answer pours onto its area (the queue's next
     // events are the Miracle's own effects, which play as it lands); then the box of what it did.
@@ -251,6 +442,13 @@ export function faithBeat(e: FxEvent): number | undefined {
     case 'vow': return 450;
     case 'leave': case 'grudge': return 600;
     case 'patron_line': return 200;
+    case 'smite': case 'amen': return 420;
+    case 'ward_seal': return 460;
+    case 'canticle': return 560;
+    case 'canticle_break': return 480;
+    case 'holy_dread': return 380;
+    case 'last_rites': return 420;
+    case 'roll': return x.why === 'pray' ? 620 : undefined;
     default: return undefined;
   }
 }

@@ -3,7 +3,7 @@
 // its actions). One module reads them for the three places that show a door: the tab's header line, the first-fight
 // tip, and the tab a character's first turn opens on. Nothing here is a rule: the line is data, and whether an action
 // can be used now is the engine's own refusal on the row (commands.ts actionGroups).
-import { SKILLS } from '@engine';
+import { SKILLS, CLASS } from '@engine';
 import type { ActionGroup } from './commands';
 
 export interface Door { skill: string; name: string; attribute: string; line: string; tab: string | null }
@@ -13,6 +13,14 @@ export const DOORS: Door[] = (SKILLS as any[]).filter((s) => s.slot === 'alpha' 
   .map((s) => ({ skill: s.id, name: s.name, attribute: s.attribute, line: s.door_line, tab: s.door_tab || null }));
 
 const pointsOf = (ch: any, skill: string): number => Number(ch?.skills?.[skill]) || 0;
+
+/** A class's own job on a door (prayer 2.0: the Chaplain's Canticle): a base class's gain with a `door_line`. */
+export interface ClassDoor { cls: string; id: string; name: string; line: string }
+/** Every class gain the data gives a door line, in the data's order. */
+export const CLASS_DOORS: ClassDoor[] = Object.values(CLASS as any).flatMap((c: any) => ((c?.gain || []) as any[])
+  .filter((g) => typeof g?.door_line === 'string' && g.door_line).map((g) => ({ cls: String(c.id), id: String(g.id), name: String(g.name || g.id), line: String(g.door_line) })));
+/** The class doors a character holds (its class is that class). */
+export const classDoorsOf = (ch: any): ClassDoor[] => CLASS_DOORS.filter((d) => !!ch && ch.classId === d.cls);
 
 /** The doors a character has opened (1 point or more in the skill). */
 export const doorsOf = (ch: any): Door[] => DOORS.filter((d) => pointsOf(ch, d.skill) > 0);

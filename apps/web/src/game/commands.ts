@@ -5,7 +5,7 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
-  PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText } from '@engine';
+  PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
@@ -112,13 +112,22 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   if (tendRows.length) out.push(['TEND · BONDS AND CARE', tendRows, '#EB95B7', 'tend']);
   const figRows = by('figments'); // rules 1.34: Expression's door (Picture, then each held Figment's verbs), in Expression ink
   if (figRows.length) out.push(['FIGMENTS · PICTURED', figRows, '#5394AC', 'figments']);
-  const sig = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
+  const sig = by('sigils'), soul = by('outbursts'), pray = hymnWaitShown(by('faith'), gameFor(opts.g, cb, ch), ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null)), cl = by('calls');
   if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
   if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);
   if (pray.length) out.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
   if (cl.length) out.push(['CALLS · SPOKEN TO SOMEONE WHO CAN HEAR YOU', cl, null, 'calls']);
   if (opts.noNarrator) return out.map(([n, items, ink, tab]) => [n, items.filter((it) => it[2] !== 'Narrator'), ink, tab] as ActionGroup).filter((gr) => gr[1].length);
   return out;
+}
+
+/** Prayer 2.0: a Hymn that must wait says so on its row: "HYMN IN 3" where its cost was (the rounds are the engine's,
+ *  faithView's cooldowns.hymnRoundsLeft; the reason stays the engine's own). */
+export function hymnWaitShown(rows: ActionItem[], g: any, ch: any): ActionItem[] {
+  if (!ch || !rows.some((r) => r[5]?.sub === 'Hymns' && r[4])) return rows;
+  let left = 0; try { left = Number(faithView(g, ch.id)?.cooldowns.hymnRoundsLeft) || 0; } catch { left = 0; }
+  if (left <= 0) return rows;
+  return rows.map((r) => (r[5]?.sub === 'Hymns' && r[4] ? [r[0], r[1], 'HYMN IN ' + left, r[3], r[4], r[5]] as ActionItem : r));
 }
 
 /** A unit that can't use techniques (the engine's gate: a companion, a puppet, a unit with a fixed action list) keeps

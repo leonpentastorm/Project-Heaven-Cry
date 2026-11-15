@@ -4,7 +4,7 @@ import React from 'react';
 import { getState, subscribe } from './store';
 import { usePresence, presenceCls } from './presence';
 import { active } from '@engine';
-import { DOORS } from './doorView';
+import { DOORS, CLASS_DOORS } from './doorView';
 
 const LS = 'phc.tips';
 const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
@@ -37,6 +37,9 @@ export const TIPS: { id: string; title: string; text: string; when: (st: St) => 
   // A door (skills.json door_line): the first time it is my turn with a character that has it, its one line.
   ...DOORS.map((d) => ({ id: 'door:' + d.skill, title: d.name.toUpperCase(), text: d.line,
     when: (st: St) => { const ch = myTurnChar(st); return !!ch && (Number(ch.skills?.[d.skill]) || 0) > 0; } })),
+  // A class's own job on its door (classes.json gain door_line: the Chaplain's Canticle): the first time it is my turn with it.
+  ...CLASS_DOORS.map((d) => ({ id: 'class-door:' + d.cls + '.' + d.id, title: d.name.toUpperCase(), text: d.line,
+    when: (st: St) => { const ch = myTurnChar(st); return !!ch && ch.classId === d.cls; } })),
   { id: 'report', title: 'SOMETHING BROKE?', when: (st) => st.screen === 'main' && seen.has('round'),
     text: '⚑ Report (top bar) downloads one file with what happened, for Leon. Nothing is sent from here, and your API key is never in it.' },
 ];
