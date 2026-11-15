@@ -487,7 +487,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 - Enemies see by the same rule (Vision 12, halved in darkness).
 - **What a player is sent** (engine review 4, finding 4; 12 Nov 2026): fog of war is kept by the engine, not the screen. Each player's view holds only what their side sees: an unseen hostile is not in it at all (a sensed one is a presence on a tile, nothing more), nor are the other side's glyphs, zones and False Images out of sight, nor the tiles or names of the unseen in the fight's effects or its log (a log line about only what their side did not see when it happened is not sent). The human Narrator is sent everything. See item 1600.
 
-**Analyze.** 2 AP (1 with Acuity's Quick Read), at an enemy you can see within 4 + Acuity tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has **Read Them** (Acuity 5; it was Weak Point), that enemy deals 15% less damage to the whole squad (rules 1.13: a beta is defence; the +15% squad damage is gone). Details are provisional (item 56).
+**Analyze.** 2 AP (1 with Acuity's Quick Read), at an enemy you can see within 4 + Acuity tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks, as one word and nothing else (no bar, no number): **unhurt** (full HP), **scratched** (above 75%), **hurt** (75% to above 50%), **badly hurt** (50% to above 25%), **near death** (25% and below), or **down** (`rules.json combat.health_look`; PROVISIONAL) *(rules 1.55 item 29; it was three looks, unhurt, wounded, badly hurt, drawn as a banded bar)*. If the analyst has **Read Them** (Acuity 5; it was Weak Point), that enemy deals 15% less damage to the whole squad (rules 1.13: a beta is defence; the +15% squad damage is gone). Details are provisional (item 56).
 
 **Attack roll.** d20 + attack skill modifier + weapon accuracy + situational modifiers, against the target's **Defense** (10 + Dodge).
 
@@ -6135,6 +6135,14 @@ the shared `xp_total` is untouched. PROVISIONAL.
    lead's targets: level 3 at the Boss's door on at least 80% of most-fights routes and 50% of typical ones, no route
    above level 4 after the Boss, level 3 before the gate (`map.gate_row`) on at most 1% of routes and never before the
    row above it, level 3 from the Boss on 99% of routes.
+29. **An un-Analyzed creature's health is a word, not a bar** (item 4131; Leon's playtest, 15 Nov 2026: "the health
+   bar of the enemy shows at most 20 left, then we shot another shot for 43 dmg, but the hp bar does not goes down";
+   his ruling: "just display the status like put the word HURT their instead of % HP"). The bar drew the three looks
+   as 100 / 66 / 33%, so it stood still from half HP down to 1 and the shot before the kill looked eaten. Now no bar
+   and no number: one word of a five-rung ladder in data (`combat.health_look.ladder`, words and thresholds both,
+   PROVISIONAL): unhurt, scratched, hurt, badly hurt, near death, so the last word means the next solid hit can kill.
+   Analyze gives what it gave; the squad reads as before; the damage shown for a hit is unchanged (it was always the
+   HP lost).
 
 ## Maps (rules 1.16)
 
@@ -9636,7 +9644,7 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
-4128. **Items 4121 to 4130 are rules 1.55's** (4129 and 4130: release 0.28.2, Survival XP pace).
+4128. **Items 4121 to 4131 are rules 1.55's** (4129 to 4131: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word).
 4129. **XP a node pays (rules 1.55 item 27, 0.28.2; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
     `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
     simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
@@ -9647,3 +9655,6 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     most-fights and 50% of typical routes; at most level 4 after the Boss; at most 1% of routes at level 3 before the
     gate row, none before the row above it; 99% at level 3 after the Boss. Replaces the 1.54 guard (level 3 never
     before depth 12). PROVISIONAL.
+4131. **The health word (rules 1.55 item 29):** a 140 HP foe nobody has Analyzed, hit for 43 three times, reads hurt
+   (97, 69%), badly hurt (54, 39%), near death (11, 8%); the ladder is `rules.json combat.health_look.ladder`
+   (PROVISIONAL). The engine's view (`healthView`) is the one place it is worked out; the screen draws its word.

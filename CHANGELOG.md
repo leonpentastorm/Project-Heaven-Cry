@@ -15,6 +15,16 @@ A hotfix (15 Nov 2026): the Sigil words, and one number change, Survival's XP (r
 - **Survival XP pace.** Every stage-1 fight now pays 35 XP (an Elite or the gate about 52, the Boss 175), the same
   at every stop (was 10 plus 2 a stop). A character is usually level 2 around stops 5 to 7 and level 3 by the first
   Boss. The measure is in `docs/design/proposals/2026-11-xp-fit-0.29.md`.
+- **A held hit says 0 damage.** A roll that a protection holds at its floor (a Burst's later rolls at an Elite or Boss the
+  guard already left on 1 HP, Hold the Gate, the Toll Keeper) reported the roll's own number ("63834 damage · no damage")
+  in the log and on the shot's floating number while the target lost nothing; it now reports 0 (`effects/damage.ts`).
+  Test: `packages/engine/test/last-shot-0283.test.ts` (a real Burst through the reducer).
+- **An un-Analyzed foe shows a health word, not a bar** (rules 1.55 item 29; Leon's playtest: "the hp bar does not
+  goes down", and his ruling "put the word HURT there instead of % HP"). The bar drew unhurt / wounded / badly hurt as
+  100 / 66 / 33%, so it stood still from half HP to 1 and the shot before the kill looked eaten. Now one word of a
+  five-rung ladder in data (`rules.json combat.health_look`, provisional): UNHURT, SCRATCHED, HURT, BADLY HURT,
+  NEAR DEATH, as a chip on the token, the turn strip and the target card, no bar, no number. The engine's `healthView`
+  works it out. Analyzed foes and the squad unchanged.
 
 - **A Line past your Max Sigil words now says why.** Drawing a glyph that would make a Line longer than your Max Sigil
   words says how long the Line would be, your Max Sigil words at your Intelligence, and which Intelligence raises it

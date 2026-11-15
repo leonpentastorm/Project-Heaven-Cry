@@ -316,7 +316,8 @@ export function fxHeldUnits(g: GameState | null | undefined): Set<string> {
 }
 /** What each unit's token looks like (the combat screen tells the layer every render): a walk whose unit has no token
  *  on screen (it died at the end of it, it was never in sight before) is drawn from this. */
-export interface TokenLook { id: string; src: string; style: string; kind?: { text: string; style: string } | null; hp?: { box: string; chip: string; fill: string } | null }
+export interface TokenLook { id: string; src: string; style: string; kind?: { text: string; style: string } | null; hp?: { box: string; chip: string; fill: string } | null;
+  /** rules 1.55 item 29: an un-Analyzed creature's health word (the engine's healthView) in place of the bar */ word?: { text: string; style: string } | null }
 const looks = new Map<string, TokenLook>();
 export function setTokenLooks(list: TokenLook[]) { looks.clear(); for (const l of list) looks.set(l.id, l); }
 function lookEl(id: string): HTMLElement | null {
@@ -347,6 +348,7 @@ function unitCopy(id: string, src: HTMLElement, p: Pt): HTMLElement {
     const c1 = document.createElement('span'); c1.setAttribute('style', l.hp.chip); const c2 = document.createElement('span'); c2.setAttribute('style', l.hp.fill);
     b.append(c1, c2); wrap.appendChild(b);
   }
+  if (l?.word) { const w = document.createElement('span'); w.textContent = l.word.text; w.setAttribute('style', l.word.style); wrap.appendChild(w); }
   return wrap;
 }
 /** Put a unit copy on the layer over a tile (p) for ms; returns the layer box (the copy is its first child). */
