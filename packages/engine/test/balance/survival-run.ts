@@ -289,6 +289,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       continue;
     }
     if (run.state === 'tile') { const t = run.tiles[0].id; for (let i = 0; i < n && r.g.run.state === 'tile'; i++) must({ type: 'run/tile', tile: t }, ownerOf(i)); newStage(); continue; }
+    if (run.state === 'field') { for (let i = 0; i < n && r.g.run.state === 'field'; i++) must({ type: 'run/leave' }, ownerOf(i)); continue; } // rules 1.55: the walker leaves the field at once
     if (run.state === 'reward') { picks(); for (const id of ids) act({ type: 'gear/load', charId: id }, by(id)); continue; } // loose rounds into the magazines (free out of a fight; a refusal: nothing to load)
     if (run.state === 'shop') { atShop(); continue; }
     if (run.state === 'fight') {

@@ -6013,6 +6013,29 @@ standard core's 150 credits (Magic, "Mana cores").
    board and the squad, with no area map and no quest board. Every "full screen" of rules 1.42 to 1.52 is superseded by
    it.
 
+## Rules 1.55 (15 Nov 2026)
+
+### The field after a won fight (Survival; Leon: "let people roam in the combat map to pick up stuff before voting to go back")
+
+1. **The field.** A won Survival fight does not go straight to its rewards: the run's state is **`field`**, between
+   `fight` and `reward`. The fight's map stays, every character stands where its unit stood (a character dead in the
+   fight stands up at 1 HP where it fell, rule 5), and the piles stay as the fight left them: dropped magazines, thrown
+   or stuck weapons (dropped where their target stood, rules 1.12), and whatever foes dropped (in Survival, materials:
+   rules 1.54 item 3). PROVISIONAL.
+2. **Roaming is the Proving Ground's gearing up.** On the field the squad uses the same world actions with free
+   movement: walk (`world/act` move, `story/move`), open a door, and pick up (`world/act` pickup, a whole pile in one
+   action by default, a selection if given). No rounds, no turn order, AP always full after each action (a walk is
+   still one action's reach). Nothing else is done on the field (an attack, a search, a carried body: refused in
+   words); gear changes out of a fight work as anywhere in a run. PROVISIONAL.
+3. **Leaving is the shop's vote.** Each player marks **Leave the field** (`run/leave`, the same mark as leaving a shop:
+   `r.ready`); when every online player has marked it, or the host closes the field (`run/leave` with close), the run
+   goes on to `reward`. A field with nothing on it still opens, and Leave is offered at once: solo it is one click.
+   PROVISIONAL.
+4. **The pay is unchanged and given as the fight is won**, as before: XP, credits, the supply pack and the rolled
+   pick are given on entering the field; the pick (`run/pick`, `run/take`) waits until the field is left. A lost
+   fight (the run is over), an Extraction and a Proving Ground fight are unchanged. What still lies on the field when
+   the squad leaves stays behind.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.

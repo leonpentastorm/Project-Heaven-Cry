@@ -618,9 +618,10 @@ function reduce(g: GameState, a: Action, by: string) {
   if (a.type.startsWith('faith/')) { faithAction(g, a as FaithAction, by); return; } // rules 1.6 (faith.ts)
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
   if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
+  if (g.run?.state === 'field' && FREE_WORLD.test(a.type)) { fieldWorld(g, a, by); return; } // rules 1.55: the won fight's field, roamed as the Proving Ground's gearing up
   if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
   { const no = campGearProblem(g, a); if (no) fail(no); }
-  if (g.sandbox && /^(world\/act|story\/(move|door))$/.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
+  if (g.sandbox && FREE_WORLD.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
   switch (a.type) {
     case 'player/join': {
@@ -2198,7 +2199,7 @@ export function mapFor(g: GameState, id: string): MapDef | null {
   if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } if (!cache[id]) { cache[id] = zoneToMap(z, Object.fromEntries(c!.zones.map((x) => [x.id, x.name]))); if (freezing()) deepFreeze(cache[id]); } return cache[id]; }
   return MAPS[id] || null;
 }
-export const zoneMap = (g: GameState): MapDef => mapFor(g, g.story.zone || campaignOf(g)?.startZone || 'yard') || MAPS.yard;
+export const zoneMap = (g: GameState): MapDef => (g.run?.state === 'field' && g.combat?.map) || mapFor(g, g.story.zone || campaignOf(g)?.startZone || 'yard') || MAPS.yard; // rules 1.55: a won run fight's field is its own map
 export function positionsOf(g: GameState): Record<string, string> {
   const map = zoneMap(g), pos = (g.story.positions ||= {}), taken = new Set(Object.values(pos));
   for (const c of Object.values(g.characters)) if (!pos[c.id] && !c.dead) { const k = map.pcStart.find((t) => !taken.has(t)) || map.pcStart[0]; pos[c.id] = k; taken.add(k); }
@@ -3229,7 +3230,8 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     case 'run/sell': { const res = shopSell(g, by, a); if ('no' in res) fail(res.no); return; } // rules 1.42 (spec rule 27)
     case 'run/leave': { // rules 1.42 (spec rule 11, 8.3): Ready to leave; the party goes when everyone is, or when the host closes
-      const res = leaveShop(g, by, !!a.close); if ('no' in res) fail(res.no);
+      const field = g.run?.state === 'field', res = leaveShop(g, by, !!a.close); if ('no' in res) fail(res.no);
+      if (field) { if ('left' in res && res.left) { closeField(g); push(g, { kind: 'system', head: 'REWARDS', text: 'The squad leaves the field. Take your pick.' }); runPicksDone(g); } return; } // rules 1.55
       if ('left' in res && res.left) push(g, { kind: 'system', head: 'THE SHOP', text: (res.line ? res.line + ' ' : '') + 'The squad is back on the trail.' });
       return;
     }
@@ -3436,7 +3438,8 @@ function runFightOver(g: GameState) {
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
   push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the supply pack, and a pick: the materials or a weapon.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
-  r.out = []; r.state = 'reward'; r.offers = offers;
+  // rules 1.55: the pay is given now, as before; the picks wait on the field, which the squad leaves together (run/leave)
+  r.out = []; r.state = 'field'; r.ready = {}; r.offers = offers; openField(g, cb);
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
   r.note = { node: n.id, kind: n.kind, xp, credits: cr, ammo, won: true, rounds: cb.round, ...(back.length ? { back } : {}) };
 }
@@ -3761,19 +3764,46 @@ function sandboxOver(g: GameState) {
 }
 /** The area map while gearing up: the ordinary overworld actions with free movement (AP is always full, there are no
  * rounds and no Narrator). An attack or a spell on a drill unit starts the fight, as on any map, and is the next wave's. */
+/** The actions of free movement on an area map with no rounds (the Proving Ground's gearing up; rules 1.55, a won run
+ * fight's field). */
+const FREE_WORLD = /^(world\/act|story\/(move|door))$/;
+/** Free movement's action as a world/act (story/move and story/door are its older spellings). */
+const asWorldAct = (a: Action) => (a.type === 'story/move' ? { type: 'world/act', charId: (a as any).charId, act: 'move', to: (a as any).to, how: 'move' }
+  : a.type === 'story/door' ? { type: 'world/act', charId: (a as any).charId, act: 'door', objId: (a as any).objId } : a) as Extract<Action, { type: 'world/act' }>;
+/** No rounds in free movement, so each action is the acting character's own fresh round: the last move's trail only,
+ * the weapon cooled as a new round cools it, and the drill units get a fresh look at a sneaker. */
+function freshRound(g: GameState, charId: string | undefined) {
+  if (!charId) return;
+  if (g.story.trail) delete g.story.trail[charId];
+  if (g.story.heat?.[charId]) g.story.heat[charId] = Math.max(0, g.story.heat[charId] - 2);
+  for (const k in g.story.noticed || {}) if (k.endsWith('|' + charId)) delete g.story.noticed![k];
+}
+/** After a free-movement action: AP full again, nothing waits for a Narrator, the map open to everyone. */
+function freeAgain(g: GameState) { g.story.ap = {}; g.story.ended = {}; g.story.spoken = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players'; }
+/** Rules 1.55: a won run fight's field: the squad walks it and picks up what lies there, as the Proving Ground's gearing
+ * up (the same world actions, AP always full, no rounds); nothing else is done on it. */
+function fieldWorld(g: GameState, a: Action, by: string) {
+  const w = asWorldAct(a);
+  if (w.act !== 'move' && w.act !== 'pickup' && w.act !== 'door') fail('The fight is over: on the field you walk and pick things up. Leave the field for the rewards.');
+  if (w.unit) fail('On the field only the squad walks.');
+  freshRound(g, w.charId); worldAct(g, w, by); freeAgain(g);
+}
+/** Rules 1.55: a won run fight becomes its field: the map, the squad where it stood, the piles as the fight left them. */
+function openField(g: GameState, cb: Combat) {
+  const pos: Record<string, string> = {}; for (const u of cb.units) if (u.charId && !u.companion) pos[u.charId] = u.pos;
+  g.story.positions = pos; g.story.objects = JSON.parse(JSON.stringify((cb.objects || []).filter((o: any) => !o.grandWall))); g.story.npcs = [];
+  positionsOf(g); g.story.trail = {}; g.story.focus = null; freeAgain(g);
+}
+/** Rules 1.55: the field is left: the area map is the run's own again (what still lies there stays behind). */
+function closeField(g: GameState) {
+  g.story.positions = {}; delete g.story.objects; g.story.npcs = []; g.story.trail = {}; freeAgain(g); g.story.await = 'none';
+}
 function sandboxWorld(g: GameState, a: Action, by: string) {
   const sb = sbOf(g);
   if (g.phase !== 'story') fail('The fight is on: act on the combat grid.');
-  const w = (a.type === 'story/move' ? { type: 'world/act', charId: (a as any).charId, act: 'move', to: (a as any).to, how: 'move' }
-    : a.type === 'story/door' ? { type: 'world/act', charId: (a as any).charId, act: 'door', objId: (a as any).objId } : a) as Extract<Action, { type: 'world/act' }>;
+  const w = asWorldAct(a);
   if (w.act === 'end') return; // no rounds to end while gearing up
-  // No rounds while gearing up, so each action is the acting character's own fresh round: the last move's trail only,
-  // the weapon cooled as a new round cools it, and the drill units get a fresh look at a sneaker.
-  if (w.charId) {
-    if (g.story.trail) delete g.story.trail[w.charId];
-    if (g.story.heat?.[w.charId]) g.story.heat[w.charId] = Math.max(0, g.story.heat[w.charId] - 2);
-    for (const k in g.story.noticed || {}) if (k.endsWith('|' + w.charId)) delete g.story.noticed![k];
-  }
+  freshRound(g, w.charId);
   const before = { state: sb.state, wave: sb.wave, attempt: sb.attempt, last: sb.last }, n = sandboxNext(sb), had = g.combat;
   // Set up first: a fight this starts (and even wins in the same blow) is wave n.
   sbAttempt(sb, n); sb.wave = n; sb.state = 'fighting';
@@ -3790,7 +3820,7 @@ function sandboxWorld(g: GameState, a: Action, by: string) {
     return;
   }
   Object.assign(sb, before);
-  g.story.ap = {}; g.story.ended = {}; g.story.spoken = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players';
+  freeAgain(g);
 }
 /** The Narrator's avatar (Wick), the Proving Ground's stand-in face: a test character is nobody in particular. */
 export const SANDBOX_PORTRAIT = '/assets/wick-narrator-placeholder.webp';

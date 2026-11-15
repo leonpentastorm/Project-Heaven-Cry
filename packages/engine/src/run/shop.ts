@@ -253,16 +253,19 @@ export function sell(g: G, by: string, a: { charId: string; idx: number; qty?: n
   const text = c.name + ' sold ' + (q > 1 && !it.calibre ? q + ' × ' : '') + label + ' for ' + v + ' credits'; logLine(sh, text);
   return { ok: text };
 }
-/** A player's "Ready to leave", or the host's close (rule 11, spec 8.3). Returns true when the party leaves now. */
+/** A player's "Ready to leave", or the host's close (rule 11, spec 8.3), of the shop or (rules 1.55) of a won fight's
+ * field: one vote for both. Returns true when the party leaves now: the shop goes back to the map, the field to `reward`. */
 export function leaveShop(g: G, by: string, close = false): { left: boolean; line?: string } | { no: string } {
-  const r = g.run, sh = shopOf(g); if (!r || !sh) return { no: 'No shop is open here.' };
-  if (!g.players.some((p) => p.id === by)) return { no: 'Only a player in the room leaves the shop.' };
-  if (close && by !== g.hostId) return { no: 'Only the host can close the shop for everyone. Mark yourself ready to leave instead.' };
+  const r = g.run, sh = shopOf(g), field = r?.state === 'field'; if (!r || (!sh && !field)) return { no: 'No shop is open here.' };
+  const where = field ? 'the field' : 'the shop';
+  if (!g.players.some((p) => p.id === by)) return { no: 'Only a player in the room leaves ' + where + '.' };
+  if (close && by !== g.hostId) return { no: 'Only the host can close ' + where + ' for everyone. Mark yourself ready to leave instead.' };
   r.ready = { ...r.ready, [by]: true };
   const on = g.players.filter((p) => p.online);
   if (!close && on.some((p) => !r.ready[p.id])) return { left: false };
-  sayLine(r, sh, 'leave');
-  const f = FACES.find((x) => x.id === sh.face), line = f ? f.name + ': "' + sh.line.text + '"' : undefined;
+  if (field) { r.state = 'reward'; r.ready = {}; return { left: true }; }
+  sayLine(r, sh!, 'leave');
+  const f = FACES.find((x) => x.id === sh!.face), line = f ? f.name + ': "' + sh!.line.text + '"' : undefined;
   r.shop = null; r.state = 'map'; r.ready = {};
   return { left: true, line };
 }
