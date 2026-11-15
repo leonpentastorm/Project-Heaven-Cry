@@ -15,8 +15,8 @@ export const SIGIL_REV = 14;
 export const MAX_GLYPHS: number = G.max_glyphs ?? 4;
 export const MIN_GLYPHS: number = G.min_glyphs ?? 2;
 export const REPEAT_MULT: number = G.repeats?.mult_per_repeated_glyph ?? 0.9;
-/** Rules 1.17, the Line multiplier: a character's Line multiplies its direct damage by its length (2 glyphs ×1.7,
- * 3 ×1.75, 4 ×1.8; sigils.json grammar.line_mult). Damage only (never healing, shields, ranges or conditions), and
+/** Rules 1.17, the Line multiplier: a character's Line multiplies its direct damage by its length (sigils.json
+ * grammar.line_mult by_glyphs, re-fit in rules 1.26; its text reads the same fields). Damage only (never healing, shields, ranges or conditions), and
  * only for characters and the units fighting for them: an enemy caster's damage comes from the enemy table. */
 export const LINE_MULT: Record<string, number> = G.line_mult?.by_glyphs || {};
 export const lineMult = (glyphs: number): number => (glyphs >= MIN_GLYPHS ? LINE_MULT[String(Math.min(MAX_GLYPHS, glyphs))] ?? 1 : 1);

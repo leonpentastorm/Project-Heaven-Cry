@@ -102,6 +102,7 @@
       ]
     },
     "line_mult": {
+      "id": "line_mult",
       "by_glyphs": {
         "2": 1.87,
         "3": 1.93,
@@ -112,7 +113,7 @@
       ],
       "who": "characters and the units that fight for them; an enemy caster's damage comes from the enemy table",
       "provisional": true,
-      "text": "A Line's direct damage is multiplied by its length: ×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4. Healing, shields, ranges and conditions are not changed."
+      "text": "A Line's direct damage is multiplied by its length: ×{=by_glyphs.2} for two glyphs, ×{=by_glyphs.3} for three, ×{=by_glyphs.4} for four. Healing, shields, ranges and conditions are not changed."
     },
     "critical": {
       "mult": 1.5,

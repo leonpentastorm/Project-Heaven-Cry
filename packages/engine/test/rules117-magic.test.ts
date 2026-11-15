@@ -49,6 +49,9 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
     expect(LINE_MULT).toEqual({ 2: 1.87, 3: 1.93, 4: 1.98 }); expect([1, 2, 3, 4, 5].map(lineMult)).toEqual([1, 1.87, 1.93, 1.98, 1.98]);
     expect(SIGIL_GRAMMAR.line_mult.provisional).toBe(true);
   });
+  it('the player-facing text (the glossary reads it) shows the numbers the engine multiplies by, from its own fields', () => {
+    for (const n of [2, 3, 4]) expect(SIGIL_GRAMMAR.line_mult.text).toContain('×' + LINE_MULT[n] + ' ');
+  });
   it('a character\'s Line multiplies its damage by its length, in the preview and in the hit', () => {
     const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(30 * LINE_MULT[2])); // 56
     const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(30 * 1.5 * LINE_MULT[3])); // 87
