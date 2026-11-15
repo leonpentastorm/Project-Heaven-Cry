@@ -518,6 +518,52 @@ def section_c():
                'What the client animates. Name units by `unit` / `target`, tiles as `\'x,y\'`, `only: side` for one side\'s eyes (`docs/ENGINE-GUIDE.md`, fog).\n\n')
     out.append(md_table(['kind', 'fields', 'first emitted at', 'sites'], [['`' + k + '`', ', '.join('`' + f + '`' for f in v['fields']), v['at'], v['n']] for k, v in sorted(kinds.items())]))
     counts['fx kinds'] = len(kinds)
+    # fx kinds a DATA row emits (an item op's `fx: {k, ...}`, run by effects/triggers.ts: the scan of emitFx above cannot see
+    # them), with the client module that handles each (a quoted mention of the kind in apps/web/src/game, tests aside), and
+    # the `stance` words (`what`) the data names (the 0.29 consolidation: the catalogue sees every fx a data row can emit)
+    CLIENT = 'apps/web/src/game'
+    client = {}
+    for d, _, fs in os.walk(os.path.join(ROOT, CLIENT)):
+        for f in fs:
+            if (f.endswith('.ts') or f.endswith('.tsx') or f.endswith('.js')) and '.test.' not in f and f != 'protodata.json':
+                rel = os.path.relpath(os.path.join(d, f), ROOT).replace(os.sep, '/'); client[rel[len(CLIENT) + 1:]] = read(rel)
+    def handlers(word):
+        pat = re.compile(r"""['"`]""" + re.escape(word) + r"""['"`]""")
+        return [k for k, v in sorted(client.items()) if pat.search(v)]
+    dfx, words = {}, {}
+    def walk_fx(node, where):
+        if isinstance(node, dict):
+            fx = node.get('fx')
+            if isinstance(fx, dict) and isinstance(fx.get('k'), str):
+                d = dfx.setdefault(fx['k'], {'rows': [], 'fields': []})
+                if where not in d['rows']: d['rows'].append(where)
+                for f in fx:
+                    if f != 'k' and f not in d['fields']: d['fields'].append(f)
+                if fx['k'] == 'stance' and isinstance(fx.get('what'), str):
+                    w = words.setdefault(fx['what'], {'rows': [], 'word': fx.get('word')})
+                    if where not in w['rows']: w['rows'].append(where)
+            here = where
+            if isinstance(node.get('id'), (str, int)) and not isinstance(node.get('op'), str): here = where.split(':')[0] + ':' + str(node['id'])
+            for v in node.values(): walk_fx(v, here)
+        elif isinstance(node, list):
+            for v in node: walk_fx(v, where)
+    for fn in sorted(os.listdir(os.path.join(ROOT, 'data'))):
+        if fn.endswith('.json'): walk_fx(jload('data/' + fn), fn[:-5])
+    def rows_of(r): return ', '.join('`' + x + '`' for x in r[:4]) + (' (+' + str(len(r) - 4) + ')' if len(r) > 4 else '')
+    out.append(f'\n### Fx kinds emitted from data ({len(dfx)}; an item op\'s `fx: {{k, ...}}`, effects/triggers.ts; not in the scan above)\n\n'
+               'A data row may name an fx kind for its op; the client draws it if a module there handles the kind. "no handler": nothing draws it.\n\n')
+    out.append(md_table(['kind', 'fields', 'data rows', 'in the code scan', 'client modules'], [['`' + k + '`', ', '.join('`' + f + '`' for f in v['fields']), rows_of(v['rows']), 'yes' if k in kinds else 'no', ', '.join('`' + h + '`' for h in handlers(k)) or '**no handler**'] for k, v in sorted(dfx.items())]))
+    out.append(f'\n#### `stance` words from data ({len(words)}; fx `{{k: "stance", what, word}}`)\n\n'
+               'The client draws a stance by its `what` (a module naming it) or, failing that, the row\'s own `word` over the token.\n\n')
+    out.append(md_table(['what', 'word', 'data rows', 'client modules'], [['`' + k + '`', v['word'] or '', rows_of(v['rows']), ', '.join('`' + h + '`' for h in handlers(k)) or ('the generic word' if v['word'] else '**no handler**')] for k, v in sorted(words.items())]))
+    counts['data fx kinds'] = len(dfx)
+    # context fields the item ops write on a hook's context (effects/triggers.ts: the runner's `c` / `ev.ctx`), read by
+    # handlers after the op ran (Interpose reads the redirect op's moved / movedTo): not visible at the emit sites above
+    tcode = blank_comments(read(SRC + '/effects/triggers.ts'))
+    wrote = sorted(set(re.findall(r"\b(?:c|ctx|ev\.ctx|ev1\.ctx)\.([a-zA-Z_]\w*)\s*(?:\|\|=|\+=|-=|=(?!=))", tcode)) | set(re.findall(r"\(\s*(?:c|ctx|ev\.ctx)\.([a-zA-Z_]\w*)\s*\|\|=", tcode)))
+    out.append(f'\n### Hook context fields the item ops write ({len(wrote)}; `effects/triggers.ts`)\n\n'
+               'Set on the hook\'s context by an op as it runs, for a later listener of the same event: ' + ', '.join('`' + w + '`' for w in wrote) + '.\n\n')
+    counts['op-written context fields'] = len(wrote)
     # placeholders
     fm = re.search(r"const FORMATS = \[([^\]]*)\]", read(SRC + '/datatext.ts'))
     fmts = [x for x in re.findall(r"'(\w*)'", fm.group(1)) if x]

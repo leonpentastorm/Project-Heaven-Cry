@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 87 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 17 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 663 primitive exports, 2066 other exports, 130 fx kinds, 174 Unit fields, 59 Combat fields, 41 guards.
+Counts: 35 triggers, 87 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 17 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 663 primitive exports, 2066 other exports, 130 fx kinds, 11 data fx kinds, 18 op-written context fields, 174 Unit fields, 59 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1666,6 +1666,48 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `watch_end` | `unit`, `at`, `id`, `why` | physical/core.ts:809 | 5 |
 | `watch_fire` | `unit`, `target`, `from`, `at`, `id`, `mode` | physical/core.ts:821 | 1 |
 | `watch_set` | `unit`, `at`, `id`, `trigger`, `tile`, `tiles`, `allyId`, `targetId` | physical/core.ts:803 | 1 |
+
+### Fx kinds emitted from data (11; an item op's `fx: {k, ...}`, effects/triggers.ts; not in the scan above)
+
+A data row may name an fx kind for its op; the client draws it if a module there handles the kind. "no handler": nothing draws it.
+
+| kind | fields | data rows | in the code scan | client modules |
+| --- | --- | --- | --- | --- |
+| `amen` |  | `classes:amen` | no | `fx/faith.ts` |
+| `canticle` | `verse` | `classes:canticle` | no | `fx/faith.ts` |
+| `canticle_break` |  | `classes:canticle` | no | `fx/faith.ts` |
+| `guard_move` | `move`, `within` | `skills:durability` | no | `fx/guard.ts` |
+| `holy_dread` |  | `classes:holy_dread` | no | `fx/faith.ts` |
+| `last_rites` |  | `classes:last_rites` | no | `fx/faith.ts` |
+| `rally` | `radius` | `classes:rally` | no | `fx/classes.ts` |
+| `shield` | `amount` | `perks:last_wall` | yes | `actionPickers.ts`, `camera.ts`, `faithArt.ts`, `fx/faith.ts`, `fx/play.ts`, `fx/soul.ts`, `sandbox.tsx` |
+| `smite` |  | `classes:smite` | no | `fx/faith.ts` |
+| `stance` | `what`, `word` | `items:open_hand`, `items:jab`, `items:palm`, `items:sweep` (+4) | yes | `camera.ts`, `fx/melee-techniques.ts`, `fx/openhand.ts`, `fx/ranged.ts`, `fx/shadow.ts` |
+| `ward_seal` |  | `classes:ward` | no | `fx/faith.ts` |
+
+#### `stance` words from data (12; fx `{k: "stance", what, word}`)
+
+The client draws a stance by its `what` (a module naming it) or, failing that, the row's own `word` over the token.
+
+| what | word | data rows | client modules |
+| --- | --- | --- | --- |
+| `break` |  | `skills:shadow.break` | `fx/brass.ts`, `fx/breaker.ts`, `fx/melee-techniques.ts`, `fx/rangedParts.ts`, `fx/shadow.ts` |
+| `breath` | BREATH | `items:open_hand` | `feelingsView.ts`, `fx/feelings.ts`, `fx/openhand.ts` |
+| `ghost` |  | `skills:ingenuity` | `fx/shadow.ts` |
+| `jab` | JAB | `items:jab` | `fx/openhand.ts`, `fx/techniqueFx.ts`, `fx/techniqueParts.ts` |
+| `palm` | PALM | `items:palm` | `fx/openhand.ts` |
+| `shadow_gain` |  | `skills:ingenuity` | `fx/shadow.ts` |
+| `shadow_loss` |  | `skills:ingenuity` | `fx/shadow.ts` |
+| `snatch` | SNATCH | `items:snatch` | `fx/openhand.ts` |
+| `sway` | SWAY | `items:open_hand` | `fx/faith.ts`, `fx/openhand.ts` |
+| `sweep` | SWEEP | `items:sweep` | `commands.ts`, `fx/elements.ts`, `fx/openhand.ts`, `fx/rangedParts.ts`, `fx/techniqueFx.ts`, `fx/techniqueParts.ts` |
+| `swept` | PRONE | `items:sweep` | `fx/openhand.ts` |
+| `tag` |  | `shadow:shadow.tag` | `fx/shadow.ts` |
+
+### Hook context fields the item ops write (18; `effects/triggers.ts`)
+
+Set on the hook's context by an op as it runs, for a later listener of the same event: `add`, `cancel`, `dmg`, `fail`, `floor`, `mod`, `moved`, `movedTo`, `n`, `outright`, `res`, `rollWith`, `rounds`, `saveAdd`, `skipSave`, `tn`, `tnAdd`, `why`.
+
 
 ### `{=placeholder}` formats (`datatext.ts` `FORMATS`)
 
