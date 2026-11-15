@@ -11,7 +11,7 @@ import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
-import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
+import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, tauntedBy, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
 import { WEAPON, PERK } from '../data';
@@ -381,7 +381,7 @@ register({
 // reads you: enemy AI picks targets as if you were at full HP, and hostile reads (Analyze, Empathy, lie-reading by
 // NPCs) reveal nothing; allies' reads still work (plan 6, Still Water 3; PROVISIONAL).
 function aiPick(cb: Combat, att: Unit, mode: AttackMode): Unit | null {
-  const tauntBy = condSource(att, 'taunted');
+  const tauntBy = tauntedBy(att);
   const hpOf = (t: Unit) => (has(t, 'still_water') ? t.maxHp : t.hp);
   const pcs = cb.units.filter((t) => t.side !== att.side && !t.dead && !t.hidden && !t.surrendered);
   const ok = pcs.map((t) => ({ t, pv: previewAttack(cb, att, t, mode) })).filter((x) => x.pv.ok)

@@ -9,6 +9,9 @@ import { storyWith, withGame } from './helpers/perkfight';
 import FIGJ from '../../../data/figments.json';
 import ACTIONSJ from '../../../data/actions.json';
 import PERKSJ from '../../../data/perks.json';
+import CONDJ from '../../../data/conditions.json';
+import { onHook } from '../src/effects/hooks';
+import { previewAttack } from '../src';
 import { FORM, COST_SITE_IDS, condOn, perceivedFoes, isGhost, formsOf, pendingDoorPicks, pictureOptions, actionsFor, previewDescriptor, sendDescriptor, migrateLoaded, active, FIG_REV, ladderAt } from '../src';
 
 const F: any = FIGJ, ACT: any = ACTIONSJ;
@@ -24,6 +27,23 @@ describe('P4: one cost site for the Figment orders', () => {
   });
   it('every form has at least one order a player gives on their turn besides Move and Let go', () => {
     for (const f of F.forms) expect(f.verbs.filter((v: string) => !['let_go', 'figment_redraw', 'figment_cash_in'].includes(v)).length, f.id).toBeGreaterThan(0);
+  });
+});
+
+// The 0.29 consolidation (MF2, the lead's ruling): the Double's Draw fire Taunts by the one rule every Taunt shares
+// (conditions.json taunted; combat.ts tauntedBy): a Soldier is forced to attack the Double; a Boss is Taunted but never
+// forced, with the row's penalty to hit anyone else (here the caster).
+let FAIL_SAVES = false; onHook('save', (ctx: any) => { if (FAIL_SAVES) ctx.fail = true; });
+const TAUNT_OTHERS = (CONDJ as any).items.find((c: any) => c.id === 'taunted').effects.find((e: any) => e.context === 'not_vs_source').value;
+describe('Draw fire on a Boss: Taunted as by any other source, never forced', () => {
+  for (const tier of ['boss', 'soldier']) it(tier, () => {
+    const f = figFight([{ skills: { visualization: 1 }, weapon: 'service_pistol', forms: [] }], [{ tier, at: '5,4', classic: true }]);
+    let u = f.turn(f.pc); f.picture(u, 'double', '3,4'); u = f.unit(u.id); const d = f.figments(u)[0]; u.ap = 6;
+    FAIL_SAVES = true; try { f.order(u, d, 'figment_draw_fire'); } finally { FAIL_SAVES = false; }
+    const foe = f.unit(f.foes[0].id); expect(condOn(foe, 'taunted')).toBe(true);
+    const pv = withGame(f.g, () => previewAttack(f.cb, foe, f.unit(f.pc.id), 'shot', { free: true }));
+    if (tier === 'boss') { expect(pv.ok, pv.why).toBe(true); expect(pv.terms!.find((t: any) => t.label === 'conditions')?.v).toBe(TAUNT_OTHERS); }
+    else { expect(pv.ok).toBe(false); expect(pv.why).toMatch(/Taunted/); }
   });
 });
 

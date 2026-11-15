@@ -3641,7 +3641,7 @@
         "name": "Draw Fire",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP and {=effects.0.value|abs} Guard. An enemy you can see is Taunted for 1 round, with no save: its next attack must be aimed at you if it can see you, and it has −2 to hit anyone else. A boss or a Celestial isn't forced to attack you, but still has −2 to hit anyone else on its next turn.",
+        "text": "Costs {=ap_cost} AP and {=effects.0.value|abs} Guard. An enemy you can see is Taunted, with no save: its next attack must be aimed at you if it can see you, and it is worse at hitting anyone else. A Boss or a Celestial is Taunted too but never forced: it chooses its target, with the same penalty against anyone but you.",
         "effects": [
           {
             "op": "resource",

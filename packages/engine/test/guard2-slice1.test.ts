@@ -2,8 +2,9 @@
 // line of Durability's door (skills.json durability.unlocks.1), run by the generic item ops, proved through the reducer
 // (the PC's own actions through f.act; a foe's blow through resolveAttack, as the enemy turn makes it).
 import { describe, it, expect, beforeEach } from 'vitest';
-import { resolveAttack, SKILL, dist, type Unit } from '../src';
+import { resolveAttack, previewAttack, SKILL, dist, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
+import { onHook } from '../src/effects/hooks';
 
 beforeEach(() => rig(null));
 const DOOR: any = (SKILL as any).durability.unlocks['1'];
@@ -124,8 +125,8 @@ describe('item 15, Retort: a melee blow on the tank holding Guard goes back half
   });
 });
 
-describe('item 10, Challenge: 1 AP and 1 Guard, foes within 2 save or are Taunted; a Boss answers no challenge', () => {
-  it('through the reducer: the price, each foe in reach Taunted or saved, the Boss never Taunted, the far foe untouched', () => {
+describe('item 10, Challenge: 1 AP and 1 Guard, foes within 2 save or are Taunted', () => {
+  it('through the reducer: the price, each foe in reach Taunted or saved, the far foe untouched', () => {
     const f = fight(3, { foes: [{ at: 'D5' }, { at: 'E5' }, { at: 'C7', tier: 'boss' }, { at: 'K5' }] }); guard(f, 3);
     const ap = tank(f).ap, g = DOOR.effects.find((e: any) => e.action === 'guard_challenge');
     f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any);
@@ -133,7 +134,7 @@ describe('item 10, Challenge: 1 AP and 1 Guard, foes within 2 save or are Taunte
     const [a, b, boss, far] = foes(f).map((u) => f.unit(u.id));
     const log = f.cb.log.join(' ');
     for (const u of [a, b]) expect(!!u.conds?.taunted || new RegExp(u.name + '[^.]*(resists|saves|shakes)').test(log), log).toBe(true);
-    expect(boss.conds?.taunted).toBeFalsy(); expect(far.conds?.taunted).toBeFalsy();
+    expect(!!boss.conds?.taunted || new RegExp(boss.name + '[^.]*(resists|saves|shakes)').test(log), log).toBe(true); expect(far.conds?.taunted).toBeFalsy();
     expect(moves(f, 'challenge').length).toBe(1);
   });
   it('refused below Durability 3 and with no Guard', () => {
@@ -144,17 +145,24 @@ describe('item 10, Challenge: 1 AP and 1 Guard, foes within 2 save or are Taunte
   });
 });
 
-describe('item 10, Challenge and a Boss (item 2 of the review): only the Taunt of Challenge itself misses a Boss', () => {
-  it('Challenge does not Taunt a Boss that fails every save; the same tank Taunting by a Call does, as before', () => {
-    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: [], skills: { durability: 3, implication: 7, dexterity: 0, athletics: 0, raw_power: 0 } }], [{ tier: 'boss', weapon: 'maul' }]);
-    f.cb.objects = []; f.put(f.pcs[0], 'C5'); const boss = f.cb.units.find((u) => u.side === 'foe')!; f.put(boss, 'D5'); boss.hp = boss.maxHp = 900;
-    f.cb.order = [f.pcs[0].id, boss.id]; f.cb.round = 1; f.turn(f.pcs[0]);
-    guard(f, 3); f.unit(boss.id).sv = { body: -99, brain: -99, heart: -99 };
-    f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any);
-    expect(f.unit(boss.id).conds?.taunted).toBeFalsy();
-    expect((tank(f).ps as any)?.['skill:durability.1']?.flags?.challenge).toBeFalsy(); // the flag lives only while Challenge resolves
-    f.act({ type: 'combat/call', unitId: f.pcs[0].id, id: 'call.taunt', targetId: boss.id } as any);
-    expect(f.unit(boss.id).conds?.taunted, f.cb.log.slice(-4).join(' | ')).toBeTruthy();
+// The 0.29 consolidation (MF2, the lead's ruling): one rule for every Taunt, the condition's own (conditions.json taunted;
+// combat.ts tauntedBy). Challenge Taunts a Boss as Draw Fire and a Call do; the Boss is never forced, and has the row's
+// penalty against anyone else. A Soldier it Taunts is forced.
+import CONDJ0 from '../../../data/conditions.json';
+const CONDJ: any = CONDJ0;
+let FAIL_SAVES = false; onHook('save', (ctx: any) => { if (FAIL_SAVES) ctx.fail = true; });
+const TAUNT_OTHERS = CONDJ.items.find((c: any) => c.id === 'taunted').effects.find((e: any) => e.context === 'not_vs_source').value;
+describe('item 10, Challenge and a Boss: Taunted as by any other source, never forced', () => {
+  for (const tier of ['boss', 'soldier']) it(tier + ': Challenge Taunts it (failing every save); ' + (tier === 'boss' ? 'it may attack the ally, with the penalty' : 'it must attack the tank'), () => {
+    const f = physFight([{ weapon: 'hellraiser_service_rifle', known: [], skills: { durability: 3, dexterity: 0, athletics: 0, raw_power: 0 } }, { weapon: 'hellraiser_service_rifle', known: [], skills: { durability: 0 } }], [{ tier, weapon: 'maul' }]);
+    f.cb.objects = []; f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'E6'); const foe = f.cb.units.find((u) => u.side === 'foe')!; f.put(foe, 'D5'); foe.hp = foe.maxHp = 900;
+    f.cb.order = [f.pcs[0].id, f.pcs[1].id, foe.id]; f.cb.round = 1; f.turn(f.pcs[0]);
+    guard(f, 3); FAIL_SAVES = true;
+    try { f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any); } finally { FAIL_SAVES = false; }
+    expect(f.unit(foe.id).conds?.taunted, f.cb.log.slice(-4).join(' | ')).toBeTruthy();
+    const pv = f.bound(() => previewAttack(f.cb, f.unit(foe.id), f.unit(f.pcs[1].id), 'melee', { free: true }));
+    if (tier === 'boss') { expect(pv.ok, pv.why).toBe(true); expect(pv.terms!.find((t) => t.label === 'conditions')?.v).toBe(TAUNT_OTHERS); }
+    else { expect(pv.ok).toBe(false); expect(pv.why).toMatch(/Taunted/); }
   });
 });
 

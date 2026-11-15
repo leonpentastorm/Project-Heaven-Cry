@@ -2277,8 +2277,16 @@
       "boss": 2
     }
   },
+  "bosses": {
+    "about": "What makes a unit a Boss for the rules every item shares (the 0.29 consolidation, the lead's rulings of 16 Nov 2026): its tier or its kind (a Celestial). Read by combat.ts isBoss. A Taunted Boss is never forced to attack its taunter: it chooses, with the Taunted row's penalty against anyone else (conditions.json taunted).",
+    "tiers": [
+      "boss"
+    ],
+    "kinds": [
+      "celestial"
+    ]
+  },
   "forced_movement": {
-    "note": "Read by combat.ts displace(), the one function that moves a unit against its will (engine foundations 1, 12 Nov 2026; spec: Combat on the grid, Forced movement). For each kind of move: `tiles` is how the tiles are entered (each: tile by tile, and a trap, a field and a hazard act on every tile entered, a trap stopping the move there; landing: only the tile it ends on), `immunity` is whether Nailed, the knockback immunity and the forced_move hook can stop it, `reactions` is whether held Watches, Overwatch and opportunity attacks answer it (never: the mover did not choose to move). A move its own unit chose (`willing`) is never stopped by immunity.",
     "push": {
       "tiles": "each",
       "traps": true,

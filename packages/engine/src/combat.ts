@@ -1243,7 +1243,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   // Conditions on the attacker (spec: Conditions): Afraid can't attack its source; Taunted must attack the taunter while
   // it can see them; Disarmed or a lowered weapon attacks with nothing but fists.
   { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
-  { const ts = condSource(att, 'taunted'), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
+  { const ts = tauntedBy(att), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && useW !== WEAPON.fists && !isMelee(useW)) return fail(condOn(att, 'disarmed') ? 'Disarmed: recover your weapon (2 AP), or strike with your fists.' : 'Your weapon is lowered: raise it (1 AP).');
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && isMelee(useW) && useW !== WEAPON.fists && mode !== 'melee') return fail('Disarmed: recover your weapon first.');
   { const no = whyNot(cb, att, ap, { as: { type: 'combat/attack', mode } }); if (no) return fail(no); } // a repeat's credit counts (Encore, item 737)
@@ -2026,6 +2026,13 @@ export interface DisplaceResult {
   /** The item or reason behind 'immune' / 'held'. */ why?: string;
   /** What the tiles did, for the caller's sentence (' · lands on a trap, 12 damage'). */ text: string;
 }
+/** A Boss for the rules every item shares (data/rules.json bosses: its tier or its kind, a Celestial). */
+const BOSSES: { tiers: string[]; kinds: string[] } = (RULES as any).bosses;
+export const isBoss = (u: Unit): boolean => BOSSES.tiers.includes(u.tier as string) || BOSSES.kinds.includes((u as any).kind);
+/** Who a Taunted unit is forced to attack (null: nobody). A Boss is never forced (rules.json bosses): it chooses, with
+ *  the Taunted row's penalty to hit anyone else (conditions.json taunted, attack_mod not_vs_source). THE reading of Taunted
+ *  for every target choice: the attack's refusal, the enemy AI and the healer focus. */
+export const tauntedBy = (u: Unit): string | null => (isBoss(u) ? null : condSource(u, 'taunted'));
 /** May this unit be moved against its will? null: yes. Otherwise why not (and `tiles`, which an item may have changed). */
 function forcedRefusal(cb: Combat, rng: Rng | null | undefined, u: Unit, o: DisplaceOpts, tiles: number, to?: string): { stoppedBy: 'nailed' | 'immune' | 'held' | null; why?: string; tiles: number } {
   if (o.willing || !FORCED[o.how].immunity) return { stoppedBy: null, tiles };
@@ -2802,7 +2809,7 @@ export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
  * given to; `why` on the first, when the choice was a choice. Pure. */
 interface Aim { t: Unit; pv: AttackPreview; healer: boolean; fire: number; far: number; why?: AimWhy }
 function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], reachOnly: boolean): Aim[] {
-  const tauntBy = condSource(u, 'taunted'), d = doctrineOf(u);
+  const tauntBy = tauntedBy(u), d = doctrineOf(u);
   // Rules 1.37: a tier that leaves Figments for last (Soldiers, Elites, Bosses) sizes up no Figment while a character is
   // in reach (the twelve-Figment End turn: each enemy previewed sixteen targets instead of four); they follow the
   // characters, unpreviewed, in a list that keeps everyone.
@@ -2839,7 +2846,7 @@ export function enemyPreference(cb: Combat, u: Unit, pcs: Unit[]): { order: Unit
  * turn after it. Never a melee enemy (it does not run through the squad), never when Taunted, ordered or afraid of
  * the healer, once a turn. Pure: the tile, or null. */
 function enemyHuntTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], targets: { t: Unit; healer: boolean }[], stood?: Set<string>): { tile: string; mark: Unit } | null {
-  if (mode !== 'shot' || healerFocus(u) < 1 || condSource(u, 'taunted') || moveBlock(u)) return null;
+  if (mode !== 'shot' || healerFocus(u) < 1 || tauntedBy(u) || moveBlock(u)) return null;
   const mark = healerMark(cb, u); if (!mark || !pcs.includes(mark)) return null; // (a False Image it was fooled by stands in pcs in the healer's place: it shoots that)
   if (targets.some((x) => x.t === mark)) return null; // it has the shot already (or the healer is too well covered to be worth it: then it stays on its target)
   if (condSource(u, 'fear') === mark.id || u.call?.cowed?.by === mark.id) return null;

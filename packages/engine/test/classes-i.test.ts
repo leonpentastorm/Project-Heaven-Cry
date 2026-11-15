@@ -12,6 +12,9 @@ import {
 import { fightWith, storyWith, withGame, rng, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 import { CLASS_MOVE_POOL, REV2_CLASSES, mendFactor, grantShield } from '../src';
+import CONDJ from '../../../data/conditions.json';
+/** Taunted's penalty to hit anyone but its giver (conditions.json taunted: attack_mod not_vs_source). */
+const TAUNT_OTHERS = (CONDJ as any).items.find((c: any) => c.id === 'taunted').effects.find((e: any) => e.context === 'not_vs_source').value;
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
@@ -156,16 +159,23 @@ describe('Defender', () => {
     act(f, f.unit(d.id), { type: 'combat/move', to: '3,3' });
     expect(f.unit(d.id).def).toBe(def0);
   });
-  it('Draw Fire: 1 Guard, the enemy is Taunted (no save); a boss is not, but takes −2 against anyone else', () => {
+  // The 0.29 consolidation (MF2): one rule for every Taunt, the condition's own (conditions.json taunted; combat.ts
+  // tauntedBy): a Boss is Taunted too but never forced; it has the row's penalty against anyone else, as every Taunted unit.
+  it('Draw Fire: 1 Guard, the enemy is Taunted (no save) and forced; a Boss is Taunted, never forced, with the Taunted penalty against anyone else', () => {
     const f = fightWith([cls('defender', 2), {}], [{}, { tier: 'boss' }]);
     const [d, ally] = f.pcs, [s, boss] = f.foes; line(f, [d, 3], [ally, 5], [s, 9], [boss, 11]);
     const u = f.turn(d); f.unit(d.id).res!.guard = 2;
     act(f, u, { type: 'combat/perk', id: 'class:defender.draw_fire', targetId: s.id });
     expect(condOn(f.unit(s.id), 'taunted')).toBe(true); expect(f.unit(d.id).res!.guard).toBe(1);
+    const forced = withGame(f.g, () => previewAttack(f.cb, f.unit(s.id), f.unit(ally.id), 'shot', { free: true }));
+    expect(forced.ok).toBe(false); expect(forced.why).toMatch(/Taunted/);
     act(f, f.unit(d.id), { type: 'combat/perk', id: 'class:defender.draw_fire', targetId: boss.id });
-    expect(condOn(f.unit(boss.id), 'taunted')).toBe(false);
+    expect(condOn(f.unit(boss.id), 'taunted')).toBe(true);
     const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(boss.id), f.unit(ally.id), 'shot', { free: true }));
-    expect(pv.terms!.some((t) => /Taunted by/.test(t.label) && t.v === -2)).toBe(true);
+    expect(pv.ok).toBe(true);
+    expect(pv.terms!.find((t) => t.label === 'conditions')?.v).toBe(TAUNT_OTHERS);
+    const onMe = withGame(f.g, () => previewAttack(f.cb, f.unit(boss.id), f.unit(d.id), 'shot', { free: true }));
+    expect(onMe.terms!.find((t) => t.label === 'conditions')?.v ?? 0).toBe(0);
   });
   it('Reactive Plate: each Guard cuts 10 damage; 3 Guard lost raise the meter by 2', () => {
     const f = fightWith([cls('defender', 3)], [{}]);

@@ -40,7 +40,7 @@ import { condNotFresh } from '../magic';
 // =================================================================================================== helpers
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
-const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
+import { isBoss } from '../combat'; // one reading of a Boss (rules.json bosses)
 /** The fight a stat query is asked in (statQuery's holder has no fight when actionAp is called with {u} alone). */
 const fightOf = (h: Holder): Combat | null => h.cb || (h.g?.combat && h.u && h.g.combat.units.includes(h.u) ? h.g.combat : null);
 /** An off-turn policy set for the fight with a 0-AP action (as lane I's Riposte and Interpose). */

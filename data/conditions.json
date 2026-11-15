@@ -718,11 +718,16 @@
       "family": "heart",
       "save": true,
       "engine": "table",
-      "text": "Your next attack must be aimed at the one who Taunted you, if you can see them. Lasts {=duration.rounds} round, and ends early if you attack them or they go down.",
+      "text": "Your next attack must be aimed at the one who Taunted you, if you can see them, and you have {=effects.1.value} to hit anyone else. A Boss is never forced: it chooses its target, with the same penalty against anyone else. Lasts {=duration.rounds} round, and ends early if you attack them or they go down.",
       "effects": [
         {
           "op": "forbid",
           "action": "attack_other_than_source"
+        },
+        {
+          "op": "attack_mod",
+          "value": -2,
+          "context": "not_vs_source"
         }
       ],
       "duration": {

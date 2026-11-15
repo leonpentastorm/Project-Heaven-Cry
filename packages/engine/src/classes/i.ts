@@ -50,7 +50,7 @@ import { condMods } from '../condtable';
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
 const foeOf = (a: Unit, b: Unit) => a.side !== b.side;
-const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
+import { isBoss } from '../combat'; // one reading of a Boss (rules.json bosses)
 /** Story-level item state (outlives fights: inscriptions, stored spells, a Gift, an Inspire waiting for its roll). */
 function keep(h: Holder): Record<string, any> {
   const g = h.g, id = h.c?.id || h.u?.charId; if (!g?.story || !id) return {};
@@ -416,8 +416,8 @@ register({
 });
 
 // ---------- Draw Fire (rank II, 1 AP) ----------
-// Spend 1 Guard: an enemy you can see is Taunted (no save; it costs Guard, PROVISIONAL): on its next turn it must attack
-// you if it can, else it takes −2 to hit anyone else. Bosses and Celestials choose freely, at −2 against anyone else.
+// Spend 1 Guard: an enemy you can see is Taunted (no save; it costs Guard, PROVISIONAL): the condition's own rule does the
+// rest (a Boss too: never forced, with Taunted's penalty against anyone else).
 register({
   id: 'defender.draw_fire', claims: 'all',
   actions: [{
@@ -426,18 +426,12 @@ register({
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && !sideSees(h.cb!, h.u!.side, t)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-      if (isBoss(t)) { (stateOf(h).boss ||= {})[t.id] = true; say(cb, u.name + ' draws ' + t.name + '\'s fire: −2 to hit anyone else on its next turn (it chooses freely).'); return; }
       say(cb, u.name + ' draws ' + t.name + '\'s fire' + applyCond(cb, rng as Rng, u, t, 'taunted', 1, undefined, { skipSave: true }) + '.');
     },
   }],
-  on: {
-    attack_preview: (ctx, h) => {
-      const me = h.u!, a: Unit = ctx.att; if (ctx.tgt === me || a.side === me.side) return;
-      if (condSource(a, 'taunted') === me.id || stateOf(h).boss?.[a.id]) ctx.terms.push({ v: -2, label: 'Taunted by ' + me.name });
-    },
-    turn_end: (ctx, h) => { const b = stateOf(h).boss; if (b && b[ctx.u.id]) delete b[ctx.u.id]; },
-  },
-  brief: () => 'Celestials (Narrator-run) honour the −2 against anyone but the Bulwark.',
+  // Taunted's penalty to hit anyone else, and a Boss never forced, are the condition's own rule (combat.ts tauntedBy;
+  // conditions.json taunted): one rule for every Taunt (Draw Fire, Challenge, a Figment's Draw fire, a Call).
+  brief: () => 'Celestials (Narrator-run) honour the Taunted penalty against anyone but the Bulwark.',
 });
 
 // ---------- Reactive Plate (rank III, passive; no reaction, PROVISIONAL) ----------

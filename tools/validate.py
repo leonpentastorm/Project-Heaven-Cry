@@ -1923,7 +1923,7 @@ COND_READS = {
     "weakened": ["stat_mod:damage_dealt_pct"], "slowed": ["stat_mod:move_mult"], "nausea": ["stat_mod:ap"], "pinned": ["attack_mod:own_attacks"],
     "dazed": ["stat_mod:ap"], "blinded": ["attack_mod:own_attacks", "stat_mod:vision"], "prone": ["attack_mod:melee_vs_self", "attack_mod:ranged_vs_self"],
     "left_brain_debuff": ["skill_mod_tag:core:mind", "stat_mod:sigil_ap"], "right_brain_debuff": ["skill_mod_tag:attr:expression", "skill_mod_tag:core:soul", "stat_mod:soul_cost_pct"],
-    "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"],
+    "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"], "taunted": ["attack_mod:not_vs_source"],
     "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
     "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
     "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"],

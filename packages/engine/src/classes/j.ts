@@ -40,7 +40,7 @@ const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?
 const W = (u: Unit) => WEAPON[u.weapon];
 const isHandgun = (u: Unit) => ['pistol', 'revolver'].includes(W(u)?.category || '');
 const isRanged = (u: Unit) => { const w = W(u); return !!w && !isMelee(w) && w.category !== 'thrown'; };
-const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
+import { isBoss } from '../combat'; // one reading of a Boss (rules.json bosses)
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const adj = (a: string, b: string) => dist(a, b) <= 1;
 /** Run f with the weapon's state put back afterwards (a shot paid for elsewhere: no ammo, Heat, recoil count, wear). */
