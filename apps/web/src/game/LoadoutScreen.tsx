@@ -14,7 +14,7 @@
 import React from 'react';
 import { act, getState } from './store';
 import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, type CarryRowV } from '@engine';
-import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
+import { gearIconUri, magGearId } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
 import { boonCards, campBackdrop } from './campView';
@@ -48,7 +48,7 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
 /** A card's picture: the painted gear icon (rounds and magazines by their gear ids), else the line icon. */
 function iconOf(id: string): string {
   const r = /^rounds:([^:]+)/.exec(id), m = /^mag:([^:]+)/.exec(id); // rules 1.55: mag:<weapon>:0 is an empty one; rules 1.56: rounds:<calibre>:<type> a special round of it
-  if (r) return gearIconUri(roundsGearId(r[1]), undefined, { large: true });
+  if (r) return gearIconUri(id, undefined, { large: true }); // gearIconUri reads a rounds id (a special round: its own picture)
   if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
   return gearIconUri(id.replace(/^armour:\d$/, 'armour'), undefined, { large: true });
 }

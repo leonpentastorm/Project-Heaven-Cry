@@ -8,6 +8,7 @@
 // the string straight into the DOM and tint it with CSS `color`. Adding an icon needs no code change: put the file in
 // the folder, named by the item's id.
 import ASSETS from './assets.json';
+import { WEAPON, ITEM, SPECIAL_ROUND_ITEM } from '@engine';
 const FILES = import.meta.glob('../../../../art/icons/{weapons,armour,focus}/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 
 const ICONS: Record<string, string> = {};
@@ -16,9 +17,14 @@ for (const [path, svg] of Object.entries(FILES)) {
   ICONS[id] = svg.trim();
 }
 
-/** The icon's SVG markup for a weapon, armour or shield id, or null when the item has no icon. */
+/** Rules 1.56 (L4): a variant's row names its base (`variant_of`, made at load from data/variants.json); a variant with
+ * no picture of its own shows its base's. '' for anything else. */
+const variantBase = (id: string): string => String((WEAPON as any)[id]?.variant_of || (ITEM as any)[id]?.variant_of || '');
+/** The icon's SVG markup for a weapon, armour or shield id (a variant: its base's when it has none), or null when the item has no icon. */
 export function gearIcon(id: string | null | undefined): string | null {
-  return (id && Object.prototype.hasOwnProperty.call(ICONS, id) && ICONS[id]) || null;
+  if (!id) return null;
+  if (Object.prototype.hasOwnProperty.call(ICONS, id)) return ICONS[id];
+  const b = variantBase(id); return b ? gearIcon(b) : null;
 }
 
 /** Whether the item has an icon. */
@@ -40,14 +46,23 @@ const own = (k: string): string => (Object.prototype.hasOwnProperty.call(ART, k)
 /** The painted icon's URL for an item (or derived gear) id, '' when it has none. large: the 256 px size. */
 const paintedGear = (id: string, large: boolean): string => (large && own('gear-' + id + '-lg')) || own('gear-' + id);
 /** Whether the item has a painted icon (it is then drawn as it is: full colour, no ink). */
-export const hasPaintedGear = (id: string | null | undefined): boolean => !!id && !!paintedGear(id, false);
+export const hasPaintedGear = (id: string | null | undefined): boolean => !!id && (id.startsWith('rounds:') ? hasPaintedGear(roundsIdGear(id))
+  : !!paintedGear(id, false) || (!Object.prototype.hasOwnProperty.call(ICONS, id) && !!variantBase(id) && hasPaintedGear(variantBase(id))));
 
 const slug = (s: string) => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
-/** The gear id of a calibre's loose rounds ('.32 decrkm' -> 'rounds-32_decrkm', '40 mm grenade' -> 'rounds-40mm_grenade'). */
-export function roundsGearId(calibre: string | null | undefined): string {
+/** The gear id of a calibre's loose rounds ('.32 decrkm' -> 'rounds-32_decrkm', '40 mm grenade' -> 'rounds-40mm_grenade').
+ * A special round (rules 1.56: `type`, an `ammo_type` of data/items.json) shows its own item's picture when it has one
+ * ('ammo_hollow_point'), else its calibre's plain rounds. */
+export function roundsGearId(calibre: string | null | undefined, type?: string | null): string {
+  const sp: any = type ? (SPECIAL_ROUND_ITEM as any)[type] : null;
+  if (sp && (paintedGear(sp.id, false) || gearIcon(sp.id))) return sp.id;
   if (!calibre) return '';
   const want = slug(calibre), k = Object.keys(ART).find((x) => x.startsWith('gear-rounds-') && !x.endsWith('-lg') && slug(x.slice('gear-rounds-'.length)) === want);
   return k ? k.slice('gear-'.length) : '';
+}
+/** The gear id of a rounds id of the engine (`rounds:<calibre>` or, rules 1.56, `rounds:<calibre>:<type>`). */
+export function roundsIdGear(id: string): string {
+  const m = /^rounds:([^:]+)(?::(.+))?$/.exec(id || ''); return m ? roundsGearId(m[1], m[2] || null) : '';
 }
 /** Which painted magazine each gun's magazines are (the art brief's "drawn for" lists; a gun not listed has none yet). */
 export const MAG_ART: Record<string, string> = {
@@ -77,7 +92,10 @@ const URIS = new Map<string, string>();
  *  tinted marks (Sunder's weapon strike, the reload chip), where Leon's rule keeps the line art (gearLineUri). */
 export function gearIconUri(id: string | null | undefined, ink: string = GEAR_INK, opts: { line?: boolean; large?: boolean } = {}): string {
   if (!id) return '';
+  if (id.startsWith('rounds:')) return gearIconUri(roundsIdGear(id), ink, opts);
   if (!opts.line) { const p = paintedGear(id, !!opts.large); if (p) return p; }
+  const vb = Object.prototype.hasOwnProperty.call(ICONS, id) ? '' : variantBase(id);
+  if (vb) return gearIconUri(vb, ink, opts); // a variant with no picture of its own: its base's (painted first)
   const svg = gearIcon(id);
   if (!svg) return '';
   const key = id + '|' + ink, hit = URIS.get(key);

@@ -27,12 +27,12 @@ for (const p of PERKS) { const sk = p.skills && p.skills[0]; if (!sk) continue; 
 const nice = (why) => (why ? why.replace(/Needs (\w+) (\d+)/, (m, a, n) => 'Needs ' + (ATTR[a] ? ATTR[a].name : a) + ' ' + n) : '');
 const OWNED = '#6FEA77', LOCKED = '#7F8BA1';
 const dia = (n, filled, color) => Array.from({ length: n }, (_, i) => ({ style: 'width: 8px; height: 8px; transform: rotate(45deg); box-sizing: border-box; ' + (i < filled ? 'background: ' + color : 'border: 1px solid #3B475D') }));
-const chip = (ok) => 'padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (ok ? '#6FEA77' : '#FFFFFF') + '; color: ' + (ok ? '#6FEA77' : '#FFFFFF');
+const chip = (ok) => 'padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid ' + (ok ? '#6FEA77' : '#FFFFFF') + '; color: ' + (ok ? '#6FEA77' : '#FFFFFF');
 /** A skill's mastery steps (M1 to M4, then the Mastered perk) where its data puts them: the road map's steps (shared.js). */
 const masteryOf = (id) => roadMap(id).steps.filter((s) => s.step);
 // Who runs it, always in words (colour pairs with the word): solid for the engine, dashed for the Narrator.
 const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
-const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
+const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
 ensureStyle('phc-levelup', [
   '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:24px;padding:24px 32px;align-items:start}',
   '.phc-lu-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}',
@@ -68,7 +68,7 @@ export class LevelUpLogic extends DCLogic {
     const sel = choosing ? (offered.some((t) => t.id === this.state.pickCls) ? this.state.pickCls : onlyOne ? offered[0].id : null) : null;
     const classCards = offered.map((t) => { const v = classCard(c, t.id), on = sel === t.id, ink = D.core[v.core];
       return { ...v, key: v.id, pick: () => this.setState({ pickCls: v.id }), pressed: on ? 'true' : 'false', label: v.name + ', ' + v.attributeName + ' ' + v.value + (on ? ', selected' : ''),
-        attr: v.attributeName.toUpperCase() + ' ' + v.value, attrStyle: 'flex: none; margin-left: auto; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; border: 1px solid ' + v.attrInk + '; color: ' + v.attrInk,
+        attr: v.attributeName.toUpperCase() + ' ' + v.value, attrStyle: 'flex: none; margin-left: auto; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; border: 1px solid ' + v.attrInk + '; color: ' + v.attrInk,
         coreLine: v.core.toUpperCase() + ' CLASS · ' + v.skills.join(' · '), nameStyle: 'font-size: 22px; font-weight: 700; line-height: 1.1; color: ' + ink,
         moves: v.moves.map((m) => ({ ...m, head: m.name + (m.ap ? ' · ' + m.ap : '') })),
         style: 'display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-width: 0; text-align: left; padding: 14px 16px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; background: ' + (on ? '#1C2536' : '#10151F') + '; border: 2px solid ' + (on ? ink : '#232D3F') + (on ? '; box-shadow: 0 0 0 1px ' + ink + '55, 0 0 24px ' + ink + '22' : '') }; });
@@ -87,7 +87,7 @@ export class LevelUpLogic extends DCLogic {
     const pend = {}; for (const x of pendingPerkSteps(c)) pend[x.skill] = x;
     const held = (id) => (c.perks || []).find((h) => h.id === id) || null;
     const raiseStyle = (ok, ink) => 'flex: none; min-width: 34px; min-height: 30px; padding: 0 8px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: ' + (ok ? 'pointer' : 'not-allowed') + '; border: 1px solid ' + (ok ? ink : '#2E3A50') + '; background: transparent; color: ' + (ok ? ink : LOCKED);
-    const chipStyle = (ink, solid) => 'flex: none; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; border: 1px ' + (solid ? 'solid' : 'dashed') + ' ' + ink + '; color: ' + ink;
+    const chipStyle = (ink, solid) => 'flex: none; padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; border: 1px ' + (solid ? 'solid' : 'dashed') + ' ' + ink + '; color: ' + ink;
     const perkRow = (pk, x, p) => {
       const h = held(pk.id), ch = x ? x.choices.find((y) => y.id === pk.id) : null, nextAt = (masteryOf(pk.skills[0]).find((s) => s.step !== 'mastered' && s.n > p) || {}).n;
       const tier = ch ? ch.tier : h && h.tier === 'II' ? 'II' : 'I', t = (pk.tiers[tier] || pk.tiers.I || {}).text || pk.text || '', v = verdictFor('perk:' + pk.id, tier);
@@ -104,10 +104,10 @@ export class LevelUpLogic extends DCLogic {
         text: ch || h ? t.charAt(0).toUpperCase() + t.slice(1) : '', hasText: !!(ch || h),
         textStyle: 'grid-column: 2 / -1; font-size: 13px; line-height: 1.4; color: ' + (ch ? '#C9D3E3' : '#A3AEC2'),
         pick: () => act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }),
-        nameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (state === 'locked' ? LOCKED : '#E7EBF3'),
+        nameStyle: 'font-size: 13px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (state === 'locked' ? LOCKED : '#E7EBF3'),
         iconStyle: 'width: 22px; height: 22px; object-fit: contain' + (state === 'locked' ? '; opacity: 0.4; filter: grayscale(1)' : ''),
         chipStyle: state === 'owned' ? chipStyle(OWNED, true) : chipStyle(LOCKED, false),
-        btnStyle: 'flex: none; padding: 3px 10px; border-radius: 999px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' };
+        btnStyle: 'flex: none; padding: 3px 10px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' };
     };
     const skillCard = (s) => {
       const p = c.skills[s.id] || 0, ink = ATTR[s.attr].ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], free = x ? x.free || 1 : 0;
@@ -115,18 +115,18 @@ export class LevelUpLogic extends DCLogic {
       // The next point, from the road map (rules 1.54 item 4119); the mastery pips, with the perks of the next one in reach.
       const nxt = nextLine(s.id, p);
       const [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
-      return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: ' + ink, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
+      return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, tagStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ink, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (free ? ' phc-lu-step' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }), raiseStyle: raiseStyle(!why, ink), raiseLabel: 'Raise ' + s.name,
         hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'Next point (' + np + '): ' + nxt, nextAt: np,
         marks: steps.map((t) => ({ key: t.n, label: t.step === 'mastered' ? '★' : t.step, title: (t.step === 'mastered' ? 'Mastered: ' + t.perks.map((q) => q.name).join('') : t.step + ': a perk step, ' + t.perks.map((q) => q.name).join(' or ')) + ' at ' + t.n + ' points',
-          style: 'flex: 1; text-align: center; padding: 1px 0; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; ' + (p >= t.n ? 'background: ' + ink + '; color: #0A0D13' : t === reach ? 'border: 1px solid ' + ink + '; color: ' + ink : 'border: 1px solid #2E3A50; color: ' + LOCKED) })),
+          style: 'flex: 1; text-align: center; padding: 1px 0; border-radius: 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; ' + (p >= t.n ? 'background: ' + ink + '; color: #0A0D13' : t === reach ? 'border: 1px solid ' + ink + '; color: ' + ink : 'border: 1px solid #2E3A50; color: ' + LOCKED) })),
         hasReach: !!reach, reachAt: reach ? reach.n : 0, reach: reach ? (reach.step === 'mastered' ? '★ at ' + reach.n + ': ' : reach.step + ' at ' + reach.n + ': ') + reach.perks.map((q) => q.name).join(reach.step === 'mastered' ? '' : ' or ') : '',
         hasSteps: free > 0, stepsLine: '◆ ' + free + ' PERK STEP' + (free > 1 ? 'S' : '') + ' TO TAKE',
         perks: (ACQUIRED[s.id] || []).map((pk) => perkRow(pk, x, p)),
         hasMastered: !!m, mName: m ? m.name : '', mIcon: m ? PERK_ICON[m.id] || IMG['wick-mind-without-fog'] : '', mHeld: !!mh, mLabel: mh ? '✓ MASTERED' : 'AT 10 PTS',
         mTitle: m ? m.name + ' · Mastered' + (mh ? ' (yours)' : ' · at 10 points') + ': ' + (m.text || m.flavour || '') : '',
-        mNameStyle: 'font-size: 12.5px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (mh ? '#F2C46A' : LOCKED),
+        mNameStyle: 'font-size: 13px; font-weight: 700; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; color: ' + (mh ? '#F2C46A' : LOCKED),
         mIconStyle: 'width: 22px; height: 22px; object-fit: contain' + (mh ? '' : '; opacity: 0.4; filter: grayscale(1)'), mChipStyle: mh ? chipStyle('#F2C46A', true) : chipStyle(LOCKED, false),
         nameStyle: 'font-size: 14px; font-weight: 700; line-height: 1.15; color: ' + ink,
         style: 'display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (free ? '#FFFFFF' : '#232D3F') + '; border-left: 3px solid ' + ink + (free ? '; box-shadow: 0 0 0 1px rgba(255,255,255,0.25)' : '') };
@@ -150,7 +150,7 @@ export class LevelUpLogic extends DCLogic {
     const steps = pendingPerkSteps(c).map((x) => ({ key: x.skill, name: SKILL[x.skill].name, n: x.free || 1,
       go: () => { const el = document.querySelector('.phc-lu-skill[data-skill="' + x.skill + '"]'); if (!el) return; if (el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const b = el.querySelector('button.phc-lu-choice'); if (b) b.focus({ preventScroll: true }); },
-      style: 'padding: 3px 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; border: 1px solid ' + ATTR[SK[x.skill].attr].ink + '; color: ' + ATTR[SK[x.skill].attr].ink }));
+      style: 'padding: 3px 10px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; border: 1px solid ' + ATTR[SK[x.skill].attr].ink + '; color: ' + ATTR[SK[x.skill].attr].ink }));
     // ---------- the class panel (the held class, or while picking a preview of the selected one) ----------
     const id = c.classId || sel, preview = !c.classId && !!sel, k = id ? CLASS[id] : null;
     const pc = preview ? { ...c, classId: sel } : c, rank = id ? classRank(pc) : 0, prog = id ? attributeProgress(c, id) : null, em = emblemOf(id);
@@ -158,9 +158,9 @@ export class LevelUpLogic extends DCLogic {
       nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (m.earned ? '#E7EBF3' : '#7F8BA1'),
       style: 'display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (m.earned ? em.ink : '#232D3F') + (m.earned ? '' : '; opacity: 0.6') });
     const ranks = id ? classRanks(g, pc, id).map((r) => ({ ...r, key: r.rank, state: r.unlocked ? (preview ? '✓ WITH THE CLASS' : '✓ UNLOCKED') : 'LOCKED',
-      stateStyle: 'font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; color: ' + (r.unlocked ? '#6FEA77' : '#FFFFFF'), moves: r.moves.map(moveRow) })) : [];
+      stateStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + (r.unlocked ? '#6FEA77' : '#FFFFFF'), moves: r.moves.map(moveRow) })) : [];
     const closest = !id && c.level < 3 ? closestClasses(c, 4).map((x) => ({ ...x, key: x.id, tag: x.offered ? 'LEADS' : '', hasTag: x.offered, nameStyle: 'font-size: 14px; font-weight: 700; color: ' + x.ink,
-      sigStyle: 'font-size: 11px; font-weight: 700; color: ' + x.attrInk,
+      sigStyle: 'font-size: 13px; font-weight: 700; color: ' + x.attrInk,
       style: 'display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (x.offered ? x.ink : '#232D3F') })) : [];
     const cls = {
       has: !!id, none: !id, icon: em.icon, ink: em.ink, preview, kicker: preview ? 'PREVIEW · NOT CHOSEN YET' : 'CLASS',
@@ -169,7 +169,7 @@ export class LevelUpLogic extends DCLogic {
       rank: id ? 'RANK ' + ROMAN_RANK[rank] : '', rankStyle: 'font-size: 22px; font-weight: 700; letter-spacing: 0.14em; color: #E7EBF3',
       sub: id ? k.core.toUpperCase() + ' · ' + (k.tagline || '') : c.level >= 3 ? 'Pick one of the classes above, then confirm.' : 'Your class finds you at level 3 (250 XP): the class of your highest attribute (on a tie, you choose). Until then, these lead.',
       sig: prog ? prog.skills.map((s) => ({ key: s.id, name: s.name, pts: s.pts, style: 'font-size: 13px; font-weight: 700; color: ' + ATTR[SK[s.id].attr].ink })) : [],
-      total: prog ? prog.label : '', totalStyle: 'font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: ' + (prog ? prog.ink : '#A3AEC2'), nextLine: prog ? prog.nextLine : '',
+      total: prog ? prog.label : '', totalStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: ' + (prog ? prog.ink : '#A3AEC2'), nextLine: prog ? prog.nextLine : '',
       bar: prog ? 'height: 100%; border-radius: 99px; background: ' + (prog.ink) + '; width: ' + prog.pct + '%' : '',
       movesHead: k ? 'MOVES · RANK II AT ' + (ATTR[k.attribute]?.name || k.attribute).toUpperCase() + ' 5 AND LEVEL 6, RANK III AT 8 AND LEVEL 12' : '',
       ranks, closest, hasClosest: closest.length > 0,

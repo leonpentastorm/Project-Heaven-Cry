@@ -350,7 +350,7 @@ export function Title() {
               <button key={it.id} type="button" data-item={it.id} data-sfx="none" className={'phc-item' + (i === selIdx ? ' on' : '') + (i === pressIdx ? ' pressed' : '')} style={{ animationDelay: (i * 40) + 'ms' }}
                 onMouseEnter={() => choose(i, true)} onFocus={() => choose(i)} onClick={(e) => press(it, i, e)}>
                 <span className="phc-label">{it.label}</span>
-                {it.sub && <span style={{ display: 'block', fontSize: 12, letterSpacing: '0.12em', color: ink.dim, marginTop: 2 }}>{it.sub}</span>}
+                {it.sub && <span style={{ display: 'block', fontSize: 13, letterSpacing: '0.12em', color: ink.dim, marginTop: 2 }}>{it.sub}</span>}
               </button>
             ))}
             {wickY !== null && (
@@ -380,11 +380,11 @@ export function Title() {
         </section>
       )}
 
-      <footer style={{ position: 'absolute', left: 'clamp(24px, 6vw, 120px)', bottom: 16, display: 'flex', gap: 16, alignItems: 'center', fontSize: 12, color: ink.dim, flexWrap: 'wrap' }}>
-        <button type="button" onClick={openReport} style={{ padding: 0, border: 0, background: 'none', color: ink.dim, fontFamily: 'inherit', fontSize: 12, textDecoration: 'underline', cursor: 'pointer' }}>⚑ Report a problem</button>
+      <footer style={{ position: 'absolute', left: 'clamp(24px, 6vw, 120px)', bottom: 16, display: 'flex', gap: 16, alignItems: 'center', fontSize: 13, color: ink.dim, flexWrap: 'wrap' }}>
+        <button type="button" onClick={openReport} style={{ padding: 0, border: 0, background: 'none', color: ink.dim, fontFamily: 'inherit', fontSize: 13, textDecoration: 'underline', cursor: 'pointer' }}>⚑ Report a problem</button>
         <span>Your API key stays in your browser and goes only to the AI service you pick.</span>
       </footer>
-      <div className="phc-version" {...tipProps("Game version (CHANGELOG.md)")} style={{ position: 'absolute', right: 16, bottom: 16, fontSize: 11, letterSpacing: '0.08em', color: ink.dim, pointerEvents: 'none' }}>v{GAME_VERSION}</div>
+      <div className="phc-version" {...tipProps("Game version (CHANGELOG.md)")} style={{ position: 'absolute', right: 16, bottom: 16, fontSize: 13, letterSpacing: '0.08em', color: ink.dim, pointerEvents: 'none' }}>v{GAME_VERSION}</div>
     </div>
   );
 }
@@ -431,7 +431,7 @@ function Burst({ x, y }: { x: number; y: number }) {
 const btn: React.CSSProperties = { minHeight: 42, padding: '0 16px', borderRadius: 10, border: '1px solid #2E3A50', background: 'transparent', color: ink.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' };
 const primary: React.CSSProperties = { ...btn, border: 0, background: '#E7EBF3', color: '#0A0D13' };
 const h2: React.CSSProperties = { margin: 0, fontFamily: "'Spectral', serif", fontSize: 32, fontWeight: 600 };
-const lab: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, letterSpacing: '0.14em', color: ink.muted };
+const lab: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, letterSpacing: '0.14em', color: ink.muted };
 const field: React.CSSProperties = { minHeight: 46, padding: '0 14px', borderRadius: 10, border: '1px solid #2E3A50', background: '#0A0D13', color: ink.text, fontFamily: 'inherit', fontSize: 17, letterSpacing: 0 };
 
 function NameInput() {
@@ -457,9 +457,9 @@ function ProvingPanel() {
     <NameInput />
     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
       <button type="button" data-sfx="start" disabled={!named} style={{ ...card, ...(named ? {} : { opacity: 0.5, cursor: 'default' }) }} onClick={() => startProvingGround()}>
-        <span style={{ fontSize: 18 }}>Solo ›</span><span style={{ fontSize: 12, fontWeight: 600, color: ink.muted }}>Just you and a test fighter.</span></button>
+        <span style={{ fontSize: 18 }}>Solo ›</span><span style={{ fontSize: 13, fontWeight: 600, color: ink.muted }}>Just you and a test fighter.</span></button>
       <button type="button" data-sfx="start" disabled={!named} style={{ ...card, border: '1px solid #E7EBF3', ...(named ? {} : { opacity: 0.5, cursor: 'default' }) }} onClick={() => startProvingGround(undefined, { friends: true })}>
-        <span style={{ fontSize: 18 }}>With friends ›</span><span style={{ fontSize: 12, fontWeight: 600, color: ink.muted }}>Share a room code: up to 4 players, co-op waves or a team fight.</span></button>
+        <span style={{ fontSize: 18 }}>With friends ›</span><span style={{ fontSize: 13, fontWeight: 600, color: ink.muted }}>Share a room code: up to 4 players, co-op waves or a team fight.</span></button>
     </div>
     {!named && <span style={{ fontSize: 13, color: ink.muted }}>Enter your name first.</span>}
   </>;
@@ -485,7 +485,7 @@ function CharactersPanel() {
       {st.library.map((c) => (
         <div key={c.name} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: 10, borderRadius: 12, background: '#10151F', border: '1px solid ' + ink.line }}>
           <img src={ART(c.portrait) || c.portrait} alt="" style={{ width: 56, height: 70, objectFit: 'cover', borderRadius: 8, background: '#000' }} />
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontWeight: 700 }}>{c.name}{(c as any).draft ? ' (draft)' : ''}</span><span style={{ fontSize: 12, color: ink.muted }}>{c.origin || 'no origin'} · Classless</span></div>
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontWeight: 700 }}>{c.name}{(c as any).draft ? ' (draft)' : ''}</span><span style={{ fontSize: 13, color: ink.muted }}>{c.origin || 'no origin'} · Classless</span></div>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} onClick={() => toCreate(c)}>Open</button>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} aria-label={'Download ' + c.name + ' as a file'} {...tipProps("Download as a file to keep or send to a friend")} onClick={() => exportCharacter(c)}>⬇</button>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px', color: ink.muted }} aria-label={'Delete ' + c.name} onClick={() => { askConfirm({ title: 'Delete ' + c.name + '?', body: 'The character is removed from this browser. Export it first if you want to keep a copy.', confirm: 'Delete', danger: true }).then((ok) => { if (ok) removeFromLibrary(c.name); }); }}>✕</button>
@@ -503,10 +503,10 @@ function SavedPanel() {
     {listSessions().map((x) => (
       <div key={x.code} style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', padding: '12px 14px', borderRadius: 12, background: '#10151F', border: '1px solid ' + (last?.code === x.code ? '#FFFFFF' : ink.line) }}>
         <div style={{ flex: '1 1 260px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.16em' }}>ROOM {x.code}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.16em' }}>ROOM {x.code}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600 }}>{x.title}</span>
           <span style={{ fontSize: 13 }}>{[x.chars || 'no characters yet', x.players].filter(Boolean).join(' · ')}</span>
-          <span style={{ fontSize: 10, letterSpacing: '0.12em', color: ink.muted }}>{(x.role === 'host' ? 'YOU HOST · SAVED IN THIS BROWSER' : 'YOU JOINED · THE HOST KEEPS THE SAVE') + ' · ' + (x.phase === 'lobby' ? 'LOBBY' : x.phase === 'combat' ? 'IN A FIGHT' : 'ROUND ' + x.round) + ' · ' + ago(x.savedAt).toUpperCase()}</span>
+          <span style={{ fontSize: 13, letterSpacing: '0.12em', color: ink.muted }}>{(x.role === 'host' ? 'YOU HOST · SAVED IN THIS BROWSER' : 'YOU JOINED · THE HOST KEEPS THE SAVE') + ' · ' + (x.phase === 'lobby' ? 'LOBBY' : x.phase === 'combat' ? 'IN A FIGHT' : 'ROUND ' + x.round) + ' · ' + ago(x.savedAt).toUpperCase()}</span>
         </div>
         <button type="button" data-sfx="start" style={{ ...btn, borderColor: '#FFFFFF' }} onClick={() => resumeSession(x.code)}>{last?.code === x.code ? 'Continue ›' : 'Resume ›'}</button>
         <button type="button" style={{ ...btn, padding: '0 12px', color: ink.muted }} aria-label={'Remove room ' + x.code} onClick={() => { askConfirm({ title: 'Remove room ' + x.code + '?', body: x.role === 'host' ? 'This deletes the save in this browser. The room can\'t be resumed from here after that.' : 'It leaves this list. You can rejoin with the code while the host keeps the room.', confirm: 'Remove', danger: true }).then((ok) => { if (ok) { forgetSession(x.code); force(); } }); }}>✕</button>

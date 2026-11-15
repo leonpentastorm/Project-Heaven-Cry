@@ -80,4 +80,26 @@ describe('painted gear icons', () => {
     expect(torsoGearId(2)).toBe('armour-torso_class2_medium');
     expect(gearIconUri(roundsGearId('rifle'))).toMatch(/gear-rounds-rifle\.webp/);
   });
+  it("rules 1.56: a special round shows its own item's picture, a plain one its calibre's; a rounds id resolves either", async () => {
+    const { roundsGearId, roundsIdGear, gearIconUri } = await import('./gearIcons');
+    const { SPECIAL_ROUND_ITEM } = await import('@engine');
+    const [type, sp] = Object.entries(SPECIAL_ROUND_ITEM as Record<string, any>)[0];
+    expect(roundsGearId('rifle', type)).toBe(sp.id);
+    expect(roundsGearId('rifle', null)).toBe('rounds-rifle');
+    expect(roundsIdGear('rounds:rifle:' + type)).toBe(sp.id);
+    expect(roundsIdGear('rounds:rifle')).toBe('rounds-rifle');
+    expect(gearIconUri('rounds:rifle:' + type)).toBe(gearIconUri(sp.id));
+    expect(gearIconUri('rounds:rifle:' + type)).not.toBe(gearIconUri('rounds:rifle'));
+  });
+  it("rules 1.56 (L4): a variant with no picture of its own shows its base's (variant_of, by data)", async () => {
+    const { gearIconUri, gearIcon, hasPaintedGear } = await import('./gearIcons');
+    const { WEAPON, ITEM } = await import('@engine');
+    const vs = [...Object.values(WEAPON as Record<string, any>), ...Object.values(ITEM as Record<string, any>)].filter((r) => r?.variant_of);
+    expect(vs.length).toBeGreaterThan(0);
+    for (const v of vs) {
+      expect(gearIconUri(v.id, '#FFFFFF', { large: true }), v.id).toBe(gearIconUri(v.variant_of, '#FFFFFF', { large: true }));
+      expect(gearIcon(v.id), v.id).toBe(gearIcon(v.variant_of));
+      expect(hasPaintedGear(v.id), v.id).toBe(hasPaintedGear(v.variant_of));
+    }
+  });
 });

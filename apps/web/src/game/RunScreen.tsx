@@ -67,14 +67,14 @@ function Offer({ o }: { o: OfferV }) {
           {o.cards.map((c) => (
             <button key={c.i} type="button" data-phc-pick={c.i} {...tipProps(c.tip)} onClick={() => act({ type: 'run/pick', charId: o.charId, choice: c.i })}
               style={{ ...bigCard(c.rarity !== 'standard'), alignItems: 'center', textAlign: 'center', minHeight: m ? 300 : 240 }}>
-              {m ? <span style={{ ...kick, alignSelf: 'flex-start' }}>ONE WEAPON</span> : null}
+              {m ? <span style={{ ...kick, alignSelf: 'flex-start' }}>{c.kick}</span> : null}
               <img src={gearIconUri(c.id, undefined, { large: true })} alt="" width={ICON.reward} height={ICON.reward} style={{ display: 'block', objectFit: 'contain' }} />
               <span style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.2 }}>{c.name}</span>
               <span style={{ fontSize: 13, letterSpacing: '0.1em', color: c.rarity === 'standard' ? ink.muted : ink.white }}>{c.rarityWord.toUpperCase()} {marks(c.marks)}</span>
               <span style={{ fontSize: 13, color: ink.muted }}>{c.category}</span>
               {c.lines.map((l) => <span key={l.key} data-phc-pick-line={l.key} style={{ fontSize: 13, color: ink.text }}>{l.label}: <b>{l.value}</b></span>)}
               <span style={{ fontSize: 13, color: ink.muted }}>Worth {c.price} credits</span>
-              {m ? <span style={takeBtn}>Take the weapon</span> : null}
+              {m ? <span data-phc-pick-take="" style={takeBtn}>{c.take}</span> : null}
             </button>
           ))}
         </div>

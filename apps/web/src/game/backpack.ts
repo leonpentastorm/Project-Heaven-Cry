@@ -101,7 +101,7 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
     if (it.mags && it.weapon && it.weapon !== u.weapon && it.weapon !== u.offWeapon && it.mags.length) { const xw: any = (WEAPON as any)[it.weapon];
       ammo.push({ key: 'pmags-' + i, tag: ((xw?.reload_unit || 'magazine') + 's').toUpperCase(), name: it.mags.length + ' × ' + (xw ? xw.name : it.weapon), sub: it.mags.map((n: number, k: number) => typed(n, xw?.magazine || 0, it.magTypes?.[k])).join(' · ') + ' · in the pack', note: '', acts: [], item: magGearId(it.weapon) || undefined }); }
     else if (it.calibre && !it.mags && it.qty > 0 && it.calibre !== (w && w.ammo) && it.calibre !== offCal)
-      ammo.push({ key: 'prounds-' + i, tag: 'ROUNDS', name: it.qty + ' × ' + calName(it.calibre) + (it.ammoType ? ' ' + (TYPE[it.ammoType] || it.ammoType) : ''), sub: 'In the pack.', note: '', acts: [], item: roundsGearId(it.calibre) || undefined });
+      ammo.push({ key: 'prounds-' + i, tag: 'ROUNDS', name: it.qty + ' × ' + calName(it.calibre) + (it.ammoType ? ' ' + (TYPE[it.ammoType] || it.ammoType) : ''), sub: 'In the pack.', note: '', acts: [], item: roundsGearId(it.calibre, it.ammoType) || undefined });
   });
   if (offCal) ammo.push({ key: 'offloose', tag: 'OFF-HAND ROUNDS', name: (u.offLoose ?? 0) + ' × ' + calName(offCal), sub: 'Loaded round by round into the off-hand gun.', note: '', acts: [], item: roundsGearId(offCal) || undefined });
   for (const [id, n] of Object.entries(u.throwables || {})) if ((n as number) > 0) ammo.push({ key: 'thr-' + id, tag: 'THROWABLE', name: n + ' × ' + nameOf(id), sub: 'Throw it from the Attack tab.', note: '', acts: [], item: id });

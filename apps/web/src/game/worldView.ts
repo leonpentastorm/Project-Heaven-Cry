@@ -10,7 +10,7 @@ import { type GameState, type Character, type TalkOption, type Marker, type Haza
   hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable, SIGIL, MARK, markTn, dayOf,
   pileEntries, PICKUP_AP } from '@engine';
 import { markUri, SIGIL_INK } from './glyphs';
-import { gearIconUri, GEAR_INK_OFF, magGearId, roundsGearId } from './gearIcons';
+import { gearIconUri, GEAR_INK_OFF, magGearId, roundsGearId, roundsIdGear } from './gearIcons';
 
 // ---------- kinds: a robot looks like a robot ----------
 export const KIND_WORD: Record<string, string> = { human: 'HUMAN', robot: 'ROBOT', drone: 'DRONE', crawler: 'CRAWLER', beast: 'BEAST', machine: 'MACHINE' };
@@ -128,7 +128,7 @@ export function pileGearId(e: any): string {
   if (!e) return '';
   const it = typeof e.item === 'string' ? e.item : '';
   if (e.pack?.mags || it.startsWith('mag:')) return magGearId(e.pack?.weapon || it.slice(4));
-  if (e.pack?.calibre || it.startsWith('rounds:')) return roundsGearId(e.pack?.calibre || it.slice(7).split(':')[0]); // rules 1.56: rounds:<calibre>:<type>
+  if (e.pack?.calibre || it.startsWith('rounds:')) return e.pack?.calibre ? roundsGearId(e.pack.calibre, e.pack.ammoType) : roundsIdGear(it); // rules 1.56: rounds:<calibre>:<type>, a special round its own picture
   return id;
 }
 const TIP_ROW = 'display: flex; gap: 6px; align-items: center; min-height: 24px', TIP_HEAD = 'display: block; padding-bottom: 2px';
