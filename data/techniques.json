@@ -21,7 +21,7 @@
       "shield_gain": 1,
       "brace_gain": 2,
       "brace_shield_gain": 1,
-      "soak": 10,
+      "soak": 6,
       "keep_back": 1,
       "pressure_per_point": 1,
       "interpose_durability": 3,
@@ -851,7 +851,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "+{=numbers.defense} Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard: 1, +1 for each Durability point above 1, +1 with a shield.",
+      "text": "+{=numbers.defense} Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard: 1, +1 for each Durability point above 1, +1 with a shield. Durability's own technique: anyone with a point of it has it, whatever is in the hands.",
       "lines": [
         {
           "props": [
@@ -870,6 +870,10 @@
       "comes_with": [],
       "home": [],
       "particular": false,
+      "innate": {
+        "skill": "durability",
+        "min": 1
+      },
       "numbers": {
         "defense": 2
       },

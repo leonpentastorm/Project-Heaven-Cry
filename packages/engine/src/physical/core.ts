@@ -20,7 +20,7 @@ import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
-import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
+import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName, given } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 import { setBraced, setNailed, bracedAs } from '../unitstate';
 import { condsAside } from '../magic';
@@ -267,7 +267,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
     // and that hand offers nothing else. Neither is ever learned, readied or lent.
     if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
-    if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) { out.push({ id: d.id, how: 'comes' }); continue; } if (given(d)) continue; } // a skill's pressed technique: learned as before without the points (rules 1.55, 0.28.3-T.1)
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     // Rules 1.56 (Leon's ruling B): a technique that needs something stuck (Pull Out) is offered only while there is one
     // to pull, and then with any weapon in the main hand (what is in the hand does not wrench a blade out of a body).
@@ -952,8 +952,11 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
   const more = shieldHand(u, hand) && weaponSystem(u.weapon) !== 'melee' ? usable(cb, u, 'main').filter((x) => TECHNIQUE[x.id].innate) : [];
   const sys = weaponSystem(weaponId), have = [...usable(cb, u, hand), ...more], c = u.companion ? null : charOfUnit(u), knownSig = new Set(((c as any)?.phys?.known as string[]) || []);
   const taught = new Set(Object.values(WEAPON).map((w) => weaponTeaches(w.id)).filter(Boolean) as string[]);
-  // the hand's system's groups, then the group of a technique offered with any weapon (needs.stuck, rules 1.56: Pull Out with a gun)
-  return [...new Set([...groupsOf(sys), ...have.filter((x) => TECHNIQUE[x.id].needs.stuck).map((x) => TECHNIQUE[x.id].group)])].map((group) => ({
+  // the hand's system's groups, then the group of a technique offered with any weapon (needs.stuck, rules 1.56: Pull Out
+  // with a gun), then a door's own pressed technique (not an Answer: Durability's Guard, techniques.json innate; the 0.28.3
+  // tank fit) drawn with any weapon under its own group
+  const doorGroups = have.map((x) => TECHNIQUE[x.id]).filter((d) => d.needs.stuck || (d.innate && d.group !== 'answer')).map((d) => d.group);
+  return [...new Set([...groupsOf(sys), ...doorGroups])].map((group) => ({
     group, label: groupName(group),
     entries: have.filter((x) => TECHNIQUE[x.id].group === group).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);

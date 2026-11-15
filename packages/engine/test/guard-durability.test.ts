@@ -1,7 +1,7 @@
 // Rules 1.13, Durability's door (docs/design/proposals/2026-11-nine-doors.md, section 19). One block per rule:
 //   1. the pool: anyone with Durability (its points, 5 at most); the Defender keeps its own; a client's view carries it
 //   2. gained by Brace and by the Guard technique: 1, +1 a Durability point above 1, +1 with a shield, never above the pool
-//   3. it soaks: 10 damage a point, on what would reach HP (after armour and the shield); not a condition's tick
+//   3. it soaks: rules.guard.soak damage a point (6 since rules 1.55, 0.28.3-T.2), on what would reach HP (after armour and the shield); not a condition's tick
 //   4. Pressure comes off Guard first
 //   5. Interpose from Durability 3
 //   6. lost when the fight ends; a hit on a unit holding Guard costs no Momentum
@@ -30,7 +30,7 @@ const hit = (f: F, tgt: Unit = f.pc, mode: 'melee' | 'shot' = 'shot') => { rig({
 
 describe('1. the pool', () => {
   it('the numbers are in the data, provisional', () => {
-    expect(G).toMatchObject({ max: 5, per_durability: 1, gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: 10, keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
+    expect(G).toMatchObject({ max: 5, per_durability: 1, gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: 6, keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
   });
   it('no Durability, no pool; the pool is the Durability points, 5 at most', () => {
     expect(guardPool({ skills: {} })).toBe(0); expect(guardPool({ skills: { durability: 2 } })).toBe(2); expect(guardPool({ skills: { durability: 9 } })).toBe(5);
@@ -47,7 +47,7 @@ describe('1. the pool', () => {
     const f = fight([{ dur: 3 }]); guard(f, f.pc, 2);
     const u = viewFor(f.g, 'host').combat!.units.find((x) => x.id === f.pc.id)!;
     expect(u.resMax!.guard).toBe(3); expect(u.res!.guard).toBe(2);
-    expect(f.bound(() => phys.physView(f.cb, f.pc, 'pc')).guard).toMatchObject({ now: 2, max: 3, gain: 3, soak: 10, shield: false });
+    expect(f.bound(() => phys.physView(f.cb, f.pc, 'pc')).guard).toMatchObject({ now: 2, max: 3, gain: 3, soak: G.soak, shield: false });
     expect(f.bound(() => phys.physView(f.cb, f.foe, 'pc')).guard).toBeNull();
   });
 });
@@ -103,15 +103,15 @@ describe('2. gained by Brace and by the Guard technique', () => {
 describe('3. Guard soaks', () => {
   // melee blows here: a ranged hit also adds Pressure, which comes off Guard too (block 4)
   const fight0 = fight; const hit0 = hit;
-  it('each point takes 10 off the hit, as many as it needs but the last, after armour', () => {
+  it('each point takes the soak off the hit, as many as it needs but the last, after armour', () => {
     const fight = (s: Parameters<typeof fight0>[0]) => fight0(s, { foeWeapon: 'maul' }), hit = (f: F, t?: Unit) => hit0(f, t, 'melee');
-    const base = hit(fight([{ dur: 0 }])); expect(base).toBeGreaterThan(10); // the same blow with no Guard
-    const need = Math.ceil(base / 10);
+    const base = hit(fight([{ dur: 0 }])); expect(base).toBeGreaterThan(G.soak); // the same blow with no Guard
+    const need = Math.ceil(base / G.soak);
     const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; guard(f, f.pc, need + 2);
     expect(hit(f)).toBe(0); expect(guard(f)).toBe(2); // as many points as the hit needs, no more
     const two = fight([{ dur: 5 }]); guard(two, two.pc, 2);
-    expect(hit(two)).toBe(base - 10); expect(guard(two)).toBe(1); // the last point is kept back for a reaction
-    expect(two.cb.log.some((l) => /Guard takes 10 of it \(1 Guard, 1 left\)/.test(l))).toBe(true);
+    expect(hit(two)).toBe(base - G.soak); expect(guard(two)).toBe(1); // the last point is kept back for a reaction
+    expect(two.cb.log.some((l) => l.includes('Guard takes ' + G.soak + ' of it (1 Guard, 1 left)'))).toBe(true);
     const one = fight([{ dur: 5 }]); guard(one, one.pc, 1);
     expect(hit(one)).toBe(base); expect(guard(one)).toBe(1); expect(one.cb.log.some((l) => /Guard takes/.test(l))).toBe(false);
     // armour first: a hit armour stops down to 1 costs one point, not the points the raw damage would
@@ -120,9 +120,9 @@ describe('3. Guard soaks', () => {
   });
   it('the last point is spent too when the hit would otherwise take the unit down', () => {
     const fight = (s: Parameters<typeof fight0>[0]) => fight0(s, { foeWeapon: 'maul' }), hit = (f: F, t?: Unit) => hit0(f, t, 'melee');
-    const base = hit(fight([{ dur: 0 }])), need = Math.ceil(base / 10);
-    const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; guard(f, f.pc, need); f.pc.hp = 5; // need − 1 points would let 10 through: down
-    expect(hit(f)).toBe(0); expect(guard(f)).toBe(0); expect(f.pc.hp).toBe(5);
+    const base = hit(fight([{ dur: 0 }])), need = Math.ceil(base / G.soak);
+    const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; const hp0 = base - (need - 1) * G.soak; guard(f, f.pc, need); f.pc.hp = hp0; // need − 1 points would let what is left through: down
+    expect(hit(f)).toBe(0); expect(guard(f)).toBe(0); expect(f.pc.hp).toBe(hp0);
     const g = fight([{ dur: 5 }]); g.pc.resMax!.guard = 9; guard(g, g.pc, need); g.pc.hp = 50; // it survives what gets through: 1 kept
     expect(hit(g)).toBeGreaterThan(0); expect(guard(g)).toBe(1); expect(g.pc.hp).toBeGreaterThan(0);
   });
@@ -138,7 +138,7 @@ describe('3. Guard soaks', () => {
     const f = fight([{ dur: 5 }]); guard(f, f.pc, 3);
     f.bound(() => applyDamage(f.cb, f.pc, 5, { type: 'bleed', shield: false })); expect(guard(f)).toBe(3); expect(f.pc.maxHp - f.pc.hp).toBe(5);
     f.bound(() => applyDamage(f.cb, f.pc, 8, { type: 'soul', by: f.pc })); expect(guard(f)).toBe(3);
-    const hp = f.pc.hp; f.bound(() => applyDamage(f.cb, f.pc, 25, { type: 'trap', shield: false })); expect(guard(f)).toBe(1); expect(hp - f.pc.hp).toBe(5); // 2 points soak 20, 1 kept
+    const hp = f.pc.hp; f.bound(() => applyDamage(f.cb, f.pc, 25, { type: 'trap', shield: false })); expect(guard(f)).toBe(1); expect(hp - f.pc.hp).toBe(25 - 2 * G.soak); // 2 points soak, 1 kept
   });
   it('a unit that holds the Defender\'s Reactive Plate spends Guard through the plate, once', () => {
     const base = hit(fight([{ dur: 0 }]), undefined, 'melee');

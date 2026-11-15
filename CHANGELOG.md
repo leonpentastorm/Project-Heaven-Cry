@@ -8,11 +8,20 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3
+
+### The Durability tank (lane T; rules 1.55 items 0.28.3-T.1 to T.3, PROVISIONAL; `docs/design/proposals/2026-11-tank-fit.md`)
+
+- The Guard technique is Durability's own: on the pad with any weapon from Durability 1 (a tank with the camp's rifle could only Brace, once until it moved). Still learned for a melee weapon without the points.
+- Guard soaks 6 a point (was 10): in Survival stage 1 an all-in tank's Guard now takes 45% of the damage aimed at it beside a gunner (9% before), 70% alone (13%).
+- While you hold Guard, weapon attacks roll +1 a Durability point above 3, at most +4 (skills.json `durability.1`): the all-in tank hits 49-50% (39% before; the gunner 63%).
+- Golden tables and replay hashes re-recorded on purpose (Guard on the pad of every Durability holder, the soak, the to-hit door).
+
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP
 (items 27 and 28), the health word (item 29), hand-overs and the field's actions (items 30 to 36, and the lead's rulings
-on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words.
+on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words. **Live since 15 Nov 2026**.
 
 ### Survival
 
