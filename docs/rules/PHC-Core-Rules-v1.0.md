@@ -6131,9 +6131,9 @@ the earlier ones; every new number here is PROVISIONAL (items 4130 to 4136).
 1. **Recoil 2.0.** Every gun names its **Recoil** (`weapons.json` `recoil`): each shot after the first in a turn is at
    minus the gun's Recoil (with its mods') for each earlier shot, cumulative, reduced by floor(Dexterity ÷ 2)
    (`rules.json weapons_rules.recoil.dex_relief_per`), halved toward 0 while braced or Emplaced (`braced_mult` 0.5);
-   none in a volley (a Burst's or full auto's own penalty stands instead), a reaction or full auto. Every gun 1 (as
-   the old rule's −1), bows, crossbows and the core rifle 0; the draft's 2 for the long rifle, the battle rifle, the
-   hand cannon, the shotguns and the heavy weapons is a number for the P3 refit (item 4130), not set here. The old
+   none in a volley (a Burst's or full auto's own penalty stands instead), a reaction or full auto. Pistols, SMGs,
+   rifles and carbines, the drifter revolver, the Spellslinger pistol and the censer gun 1; the long rifle, the
+   battle rifle, the hand cannon, the shotguns and the heavy weapons 2; bows, crossbows and the core rifle 0. The old
    `no_recoil` property is retired into it (a bow is Recoil 0). The weapon card shows **Recoil a shot** (the gun's with
    its mods'). Overrides item 88, the Modifiers line (−1 a shot), and the Recoil paragraph of the attack rules. The
    Emplaced row's own recoil number is removed: the one formula halves it.
@@ -9663,12 +9663,10 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
 The modifier carrier, Recoil 2.0 and the weapon mods as data (rules 1.56 body, items 1 to 5). Every number is
 PROVISIONAL.
 
-4130. **Recoil by gun** (rules 1.56 item 1): every gun 1 (the old −1 a shot), the four bows and the core rifle 0
-    (`weapons.json recoil`, `rules.json weapons_rules.gear_fields.recoil` provisional). The draft's 2 for the long
-    rifle, the battle rifle, the hand cannon, the four shotguns and the six heavy weapons is left to the P3 refit: set
-    on L1 it turned the Survival replay guard red (seed PHC-0003, the stage-1 Boss: a braced Boss with no target in
-    sight stands still and an Outburst caster Mana-Shorts itself every turn, 40 rounds), an enemy-AI and policy dead
-    end the new dice reached, not a recoil rule. PROVISIONAL.
+4130. **Recoil by gun** (rules 1.56 item 1): 1 for pistols, SMGs, rifles, carbines, the drifter revolver, the
+    Spellslinger pistol and the censer gun; 2 for the long rifle, the battle rifle, the hand cannon, the four shotguns
+    and the six heavy weapons; 0 for the four bows and the core rifle (`weapons.json recoil`, `rules.json
+    weapons_rules.gear_fields.recoil` provisional). To be fitted in P3 against the low-Dexterity row. PROVISIONAL.
 4131. **The Dexterity relief and the braced share** (rules 1.56 item 1): floor(Dexterity ÷ 2) and ×0.5 toward 0, as
     before, now `weapons_rules.recoil.dex_relief_per` 2 and `braced_mult` 0.5. PROVISIONAL.
 4132. **The compensator** (rules 1.56 item 3; Leon "ok"): `recoil` −1 (was: all Recoil). PROVISIONAL.
