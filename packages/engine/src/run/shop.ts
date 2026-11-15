@@ -11,7 +11,7 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM } from '../character';
-import { lootToPack, packAdd, intoCounts, itemLabel, magItem } from '../containers';
+import { lootToPack, packAdd, intoCounts, itemLabel, magItem, COUNTED } from '../containers';
 import { priceOf, creditsOf, payCredits, earnCredits, cantPay, ROUND_PRICE, emptyMagPrice } from '../credits';
 import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
@@ -156,7 +156,7 @@ export function sellValue(it: PackItem, qty = it.mags ? 1 : it.qty): number | nu
   if (it.mags) { const e = emptyMagPrice(it.weapon || ''), rp = ROUND_PRICE[(WEAPON[it.weapon || ''] as any)?.ammo] || 0; if (e == null) return null;
     const take = it.mags.slice(0, Math.max(1, qty)); return Math.floor(take.reduce((t, n) => t + e + n * rp, 0) * SELL_RATE); }
   else if (it.calibre) each = ROUND_PRICE[it.calibre] || null;
-  else each = priceOf(it.weapon || it.item || it.id, (it.rarity || 'standard') as Rarity, it.mods || []);
+  else each = priceOf(it.weapon || it.item || it.id, (it.rarity || 'standard') as Rarity, it.mods || [], { sale: true }); // rules 1.55, 0.28.3-B.2: the sale mode
   return each == null ? null : Math.floor(each * Math.max(1, qty) * SELL_RATE);
 }
 
@@ -248,26 +248,45 @@ export function buy(g: G, by: string, a: { charId: string; key: string; qty?: nu
   const text = c.name + ' bought ' + what; logLine(sh, text);
   return { ok: text };
 }
+/** A sale (rule 27): `qty` of the pack entry at `idx`, or (rules 1.55, 0.28.3-B.3) of a counted item, `count` its id
+ * (containers COUNTED: a stim, an Essence), as a give names one. */
+export interface SellAsk { charId: string; idx?: number; qty?: number; count?: string }
+/** A counted item as the pack line a sale prices (all the character holds of it), or null when it holds none. */
+export function countedLine(c: Character, id: string): PackItem | null {
+  const f = COUNTED[id], n = f ? Number((c as any)[f]) || 0 : 0; if (n < 1) return null;
+  return { id, item: id, name: (ITEM[id] as any)?.name || id, qty: n, kind: 'med' } as PackItem;
+}
 /** Why this sale can't be made, in words, or null (rule 27). */
-export function sellProblem(g: G, by: string, a: { charId: string; idx: number; qty?: number }): string | null {
+export function sellProblem(g: G, by: string, a: SellAsk): string | null {
   const no = whoProblem(g, by, a.charId); if (no) return no;
-  const c = g.characters[a.charId], it = packOf(c)[a.idx]; if (!it) return 'Nothing there in ' + c.name + '\'s pack.';
-  const q = qtyOf(a.qty ?? (it.mags ? 1 : it.qty)), most = it.mags ? it.mags.length : it.qty;
+  const c = g.characters[a.charId];
+  const it = a.count != null ? (COUNTED[a.count] ? countedLine(c, a.count) : null) : a.idx == null ? undefined : packOf(c)[a.idx];
+  if (!it) return a.count != null ? c.name + ' has none of those.' : 'Nothing there in ' + c.name + '\'s pack.';
+  const q = qtyOf(a.qty ?? (a.count != null ? 1 : it.mags ? 1 : it.qty)), most = it.mags ? it.mags.length : it.qty;
   if (!(q >= 1 && q <= most)) return 'You can sell 1 to ' + most + ' of those.';
   const v = sellValue(it, q); if (v == null) return itemLabel(it) + ' can\'t be sold.';
   if (v <= 0) return itemLabel(it) + ' is worth nothing here.';
   return null;
 }
-/** Sell `qty` of a pack entry (rule 27): out of the pack, `sellValue` into the seller's purse. The log line or the refusal. */
-export function sell(g: G, by: string, a: { charId: string; idx: number; qty?: number }): { ok: string } | { no: string } {
+/** Sell `qty` of a pack entry or of a counted item (rule 27; rules 1.55, 0.28.3-B.3): out of the pack (or the count),
+ * `sellValue` into the seller's purse. The log line or the refusal. */
+export function sell(g: G, by: string, a: SellAsk): { ok: string } | { no: string } {
   const no = sellProblem(g, by, a); if (no) return { no };
-  const sh = shopOf(g)!, c = g.characters[a.charId], pack = packOf(c).map((x) => ({ ...x })), it = pack[a.idx];
-  const q = qtyOf(a.qty ?? (it.mags ? 1 : it.qty)), v = sellValue(it, q)!, label = itemLabel(it);
-  if (it.mags) { const left = it.mags.slice(q); if (left.length) pack[a.idx] = { ...it, mags: left, qty: 1, ...(it.magTypes ? { magTypes: it.magTypes.slice(q) } : {}) }; else pack.splice(a.idx, 1); }
-  else if (it.qty > q) pack[a.idx] = { ...it, qty: it.qty - q }; else pack.splice(a.idx, 1);
-  c.pack = pack; earnCredits(c, v);
+  const sh = shopOf(g)!, c = g.characters[a.charId];
+  let q: number, v: number, label: string, loose = false;
+  if (a.count != null) {
+    const it = countedLine(c, a.count)!, f = COUNTED[a.count]; q = qtyOf(a.qty ?? 1); v = sellValue(it, q)!; label = itemLabel(it);
+    (c as any)[f] = it.qty - q;
+  } else {
+    const pack = packOf(c).map((x) => ({ ...x })), it = pack[a.idx!];
+    q = qtyOf(a.qty ?? (it.mags ? 1 : it.qty)); v = sellValue(it, q)!; label = itemLabel(it); loose = !!it.calibre;
+    if (it.mags) { const left = it.mags.slice(q); if (left.length) pack[a.idx!] = { ...it, mags: left, qty: 1, ...(it.magTypes ? { magTypes: it.magTypes.slice(q) } : {}) }; else pack.splice(a.idx!, 1); }
+    else if (it.qty > q) pack[a.idx!] = { ...it, qty: it.qty - q }; else pack.splice(a.idx!, 1);
+    c.pack = pack;
+  }
+  earnCredits(c, v);
   sayLine(g.run!, sh, 'sold', c.id);
-  const text = c.name + ' sold ' + (q > 1 && !it.calibre ? q + ' × ' : '') + label + ' for ' + v + ' credits'; logLine(sh, text);
+  const text = c.name + ' sold ' + (q > 1 && !loose ? q + ' × ' : '') + label + ' for ' + v + ' credits'; logLine(sh, text);
   return { ok: text };
 }
 /** A player's "Ready to leave", or the host's close (rule 11, spec 8.3), of the shop or (rules 1.55) of a won fight's

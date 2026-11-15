@@ -2954,6 +2954,35 @@ for _tr in items("traits"):
         _gi = _rimap.get(_gid)
         if _gi and _gi.get("category") != "food" and _gi.get("stock") is not False:
             errors.append(f"items:{_gid}: the trait {_tr.get('id')} grants it, so it is not sold (stock: false; food and drink are the exception)")
+        # rules 1.55, 0.28.3-B.2: never stocked and never sold are two facts; a granted item is neither bought nor sold
+        if _gi and _gi.get("category") != "food" and _gi.get("sell") is not False:
+            errors.append(f"items:{_gid}: the trait {_tr.get('id')} grants it, so no shop buys it either (sell: false; food and drink are the exception)")
+
+# Rules 1.55, 0.28.3-B.2 and B.5: `sell` is false or left out; a usable counted item says how it is used (`use`: label,
+# via stim or effects) and what its user needs (`requires_to_use`: entries of holds, skill and min, or any_of, each
+# with its refusal `why`).
+for _it in items("items"):
+    _w = f"items:{_it.get('id')}"
+    if "sell" in _it and _it["sell"] is not False: errors.append(f"{_w}: sell is false or left out (rules 1.55, 0.28.3-B.2)")
+    _u = _it.get("use")
+    if _u is not None:
+        if not (isinstance(_u, dict) and isinstance(_u.get("label"), str) and _u["label"].strip() and _u.get("via") in ("stim", "effects")):
+            errors.append(f"{_w}: use is {{label, via: stim or effects}} (rules 1.55, 0.28.3-B.5)")
+        if not _it.get("counted"): errors.append(f"{_w}: use is for a counted item (rules 1.55, 0.28.3-B.5)")
+        if isinstance(_u, dict) and _u.get("via") == "effects" and not any(isinstance(e, dict) and e.get("op") == "xp_grant" for e in (_it.get("effects") or [])):
+            errors.append(f"{_w}: use via effects needs an effect the use runs (xp_grant; rules 1.55, 0.28.3-B.5)")
+    for _e in (_it.get("effects") or []):
+        if isinstance(_e, dict) and _e.get("op") == "xp_grant" and _u is not None and isinstance(_e.get("limit"), dict):
+            if _e["limit"].get("per") not in ("per_scene", "per_session", "per_rest", "per_campaign") or not (isinstance(_e["limit"].get("n"), int) and _e["limit"]["n"] >= 1):
+                errors.append(f"{_w}: xp_grant limit is {{per: a character's scope (per_scene, per_session, per_rest, per_campaign), n >= 1}}")
+    def _req_ok(r):
+        if not isinstance(r, dict): return False
+        if "any_of" in r: return isinstance(r["any_of"], list) and bool(r["any_of"]) and all(_req_ok(x) for x in r["any_of"])
+        if "holds" in r: return isinstance(r["holds"], dict) and (r["holds"].get("door") or r["holds"].get("item")) and r["holds"].get("slot", "hand") in ("hand", "person")
+        return r.get("skill") in {k.get("id") for k in items("skills")} and isinstance(r.get("min"), int)
+    for _r in (_it.get("requires_to_use") or []):
+        if not (_req_ok(_r) and isinstance(_r.get("why"), str) and _r["why"].strip()):
+            errors.append(f"{_w}: requires_to_use entries are holds {{slot, door or item}}, skill and min, or any_of, each with its refusal why (rules 1.55, 0.28.3-B.5)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

@@ -70,7 +70,7 @@ describe('rules 1.55 item 32: a stim on a friend with no map under the squad', (
     const self = clone(healed); self.characters.c1.hp = 1;
     const me = apply(self, { type: 'world/act', charId: 'c1', act: 'stim', targetId: 'c1' } as any, 'host'); expect(me.characters.c1.hp).toBeGreaterThan(1); expect(me.characters.c1.stims).toBe(0);
     expect(refused(me, { type: 'world/act', charId: 'c1', act: 'stim', targetId: 'c2' } as any)).toBe('No stims left.');
-    expect(giveView(healed, 'host').rows.find((r) => r.kind === 'count' && r.use)!.use!.why.c2).toBeNull();
+    expect(giveView(healed, 'host').rows.find((r) => r.kind === 'count' && r.id === 'stim_injector')!.use!.why.c2).toBeNull();
     expect(refused(healed, { type: 'world/act', charId: 'c2', act: 'stim', targetId: 'c1' } as any)).toBe('Not your character.');
   });
 });

@@ -4,13 +4,13 @@
 // here (priceOf, the gear preview, the reducer's own refusals: `buyProblem`, `sellProblem`); the client builds none.
 import { WEAPON, ITEM, SKILL } from '../data';
 import { type Character, type Rarity, type GearWhere, packOf, carriedKg, carryLimit, kindOfDoor, classResources, wearAt } from '../character';
-import { itemLabel } from '../containers';
+import { itemLabel, COUNTED } from '../containers';
 import { creditsOf } from '../credits';
 import { type GearPreview, gearPreview, rarityWord, rarityMarks } from '../gearpreview';
 import { SETTING } from './encounter';
 import { relicRow } from './power';
 import { runSetting, type RunState } from './state';
-import { type ServiceCard, type ShopState, FACES, SHOP_DATA, counterLines, linePrice, buyProblem, sellProblem, sellValue, shopOf, shopServices, restockRoom, faceTabLines, lineGoods } from './shop';
+import { type ServiceCard, type ShopState, FACES, SHOP_DATA, counterLines, linePrice, buyProblem, sellProblem, sellValue, shopOf, shopServices, restockRoom, faceTabLines, lineGoods, countedLine } from './shop';
 
 /** One card on a shelf: what it is, its grade, what it is for (the door's attribute for its ink), its numbers (the gear
  * preview), the price of one purchase and how many that gives, and the reason it can't be bought now (null: it can). */
@@ -19,7 +19,7 @@ export interface ShopCardV { key: string; id: string; name: string; rarity: Rari
   /** For quantities 1 to qtyMax: what that many purchases cost, and the reason that many can't be bought (null: it can). */
   totals: number[]; whys: (string | null)[] }
 /** One line of the Sell tab: the pack entry, how many, what it sells for (all of it), and why not. */
-export interface SellRowV { idx: number; id: string; label: string; rarity: Rarity; qty: number; value: number | null; why: string | null; ask: string | null; kg: number;
+export interface SellRowV { idx: number; /** rules 1.55, 0.28.3-B.3: a counted item's line (idx -1): `run/sell` with `count` */ count?: string; id: string; label: string; rarity: Rarity; qty: number; value: number | null; why: string | null; ask: string | null; kg: number;
   /** For quantities 1 to qty: what selling that many brings (`sellValue`), and the reducer's refusal for that many (null: it can). */
   totals: (number | null)[]; whys: (string | null)[] }
 /** The full-screen shop for one player and one character (spec 8.3). */
@@ -100,6 +100,11 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
       totals: Array.from({ length: Math.max(1, it.mags ? it.mags.length : it.qty) }, (_, i) => sellValue(it, i + 1)),
       whys: Array.from({ length: Math.max(1, it.mags ? it.mags.length : it.qty) }, (_, i) => sellProblem(g as any, c.owner, { charId: c.id, idx, qty: i + 1 })) };
   }) : [];
+  // rules 1.55, 0.28.3-B.3: the counted items the character holds that have a price (a stim, an Essence), sold by `count`
+  if (c) for (const id of Object.keys(COUNTED)) { const it = countedLine(c, id); if (!it || sellValue(it, 1) == null) continue;
+    sell.push({ idx: -1, count: id, id, label: itemLabel(it), rarity: 'standard', qty: it.qty, value: sellValue(it), why: sellProblem(g as any, c.owner, { charId: c.id, count: id, qty: it.qty }), ask: null,
+      kg: Math.round((carriedKg({ ...c, pack: [], stims: 0, essence: 0, carried: [], [COUNTED[id]]: it.qty } as Character).pack) * 100) / 100,
+      totals: Array.from({ length: it.qty }, (_, i) => sellValue(it, i + 1)), whys: Array.from({ length: it.qty }, (_, i) => sellProblem(g as any, c.owner, { charId: c.id, count: id, qty: i + 1 })) }); }
   const owner = (pid: string) => chars.find((x) => x.owner === pid) || null;
   const party = g.players.map((p) => ({ id: p.id, charId: owner(p.id)?.id || null, name: p.name, charName: owner(p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', ready: !!r.ready[p.id], online: p.online, mine: p.id === me }));
   return {

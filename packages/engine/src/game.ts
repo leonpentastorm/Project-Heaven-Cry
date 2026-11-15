@@ -69,7 +69,7 @@ import { type ProgressAction, progressAction, openVisit, lastingOffer } from './
 import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays, lineGoods } from './run/shop';
 import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutAction, type CampBoons } from './run/loadout';
 import { gearIfBare, campaignLoadout } from './loadout';
-import { type GiveAction, giveNow, setUseDoor } from './give';
+import { type GiveAction, type UseAction, giveNow, setUseDoor, useOf, useNow, useProblem, registerUseOp } from './give';
 import survivalFieldJ from '../../../data/survival.json';
 import { type MakeAction, makeNow } from './recipes';
 import { earnCredits, creditsOf } from './credits';
@@ -341,7 +341,7 @@ export type Action =
   | { type: 'run/boon'; charId: string; choice: number } | { type: 'run/tile'; tile: string } // rules 1.44 (run/stage.ts)
   | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/repair (rules 1.50), run/forge, run/fit, run/fit_mod and run/unfit_mod (rules 1.55), run/train, run/shrine, run/trade, run/take
   /** Rules 1.42 (run/shop.ts): buy a counter line or a rolled piece (`key`), sell a pack entry, restock a class resource, leave (the host may close). */
-  | { type: 'run/buy'; charId: string; key: string; qty?: number } | { type: 'run/sell'; charId: string; idx: number; qty?: number } | { type: 'run/restock'; charId: string; res: string; n?: number } | { type: 'run/leave'; close?: boolean }
+  | { type: 'run/buy'; charId: string; key: string; qty?: number } | { type: 'run/sell'; charId: string; idx?: number; qty?: number; /** rules 1.55, 0.28.3-B.3: a counted item's id (a stim, an Essence) in place of idx */ count?: string } | { type: 'run/restock'; charId: string; res: string; n?: number } | { type: 'run/leave'; close?: boolean }
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
   | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
@@ -376,7 +376,7 @@ export type Action =
   | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/ask-rest'; charId: string; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string; choice?: string }
   | { type: 'gear/ammo'; charId: string; ammo: string }
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
-  | GiveAction | MakeAction | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
+  | GiveAction | UseAction | MakeAction | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   /** Classes 3.0 P9: the owner gives one of its turn-less owned units a verb (owned.ts runOwned; paid by the owner) */
   | { type: 'combat/owned'; unitId: string; owned: string; verb: string; targetId?: string; tile?: any }
@@ -1058,6 +1058,11 @@ function reduce(g: GameState, a: Action, by: string) {
       visitNote(g, done.ok.replace(/\.$/, ''), 'gave');
       if (g.phase === 'story' && !g.run) canon(g, done.ok.replace(/\.$/, '') + ' (scene ' + g.story.scene.n + ').', [], 1);
       return;
+    }
+    case 'gear/use': { // rules 1.55, 0.28.3-B.5 (give.ts): the one door for using a counted item on yourself or a friend
+      if (useOf(a.item)?.via === 'stim') { reduce(g, { type: 'world/act', charId: a.charId, act: 'stim', targetId: a.targetId } as Action, by); return; } // the stim's own act (item 32), one rule (useStim)
+      const no = useNow(g, by, a, (line, t) => { push(g, { kind: 'system', text: line, charId: t.id }); visitNote(g, line.replace(/\.$/, ''), null); });
+      if (no) fail(no); return;
     }
     case 'gear/make': { // rules 1.54 item 5 (recipes.ts): one converter for every recipe; free, between fights only
       const res = makeNow(g, by, a); if ('no' in res) fail(res.no);
@@ -3929,13 +3934,19 @@ const FIELD_BASIC: [string, string, Record<string, unknown>][] = [
 ];
 /** The strip a stim off the map is used on (rules 1.55 item 32). */
 const OFF_GRID: MapDef = layoutMap('off-grid', { name: 'Off the map', w: 2, h: 1, rows: ['..'] });
-// rules 1.55 item 32: the Give view's "Use on..." for the counted item a stim is (the count combat/stim spends)
+// rules 1.55 item 32 and 0.28.3-B.5: the Give view's "Use on..." for a counted item with a `use` (items.json): the one
+// action, gear/use; its reason for each character is the reducer's own (the stim's: walk next to them on the field, or
+// stimOffGrid; an item's effects: give.ts useProblem), after the camp's (gear is the loadout's there)
 setUseDoor((g, me, from, item) => {
-  if (COUNTED[item] !== 'stims') return null;
+  const u = useOf(item); if (!u) return null;
+  const action = { type: 'gear/use' as const, charId: from, item }, camp = campGearProblem(g, action as Action);
   const field = g.run?.state === 'field', at = g.story.positions || {};
-  const why = Object.fromEntries(Object.values(g.characters).map((t) => [t.id, field ? (at[from] && at[t.id] && dist(at[from], at[t.id]) <= 1 ? null : 'Walk next to ' + t.name + ' first.') : stimOffGrid(g, { charId: from, targetId: t.id }, me, true)]));
-  return { label: 'Stim', action: { type: 'world/act', charId: from, act: 'stim' }, why };
+  const one = (t: Character): string | null => camp || (u.via !== 'stim' ? useProblem(g, me, { ...action, targetId: t.id })
+    : field ? (at[from] && at[t.id] && dist(at[from], at[t.id]) <= 1 ? null : 'Walk next to ' + t.name + ' first.') : stimOffGrid(g, { charId: from, targetId: t.id }, me, true));
+  return { label: u.label, action, why: Object.fromEntries(Object.values(g.characters).map((t) => [t.id, one(t)])) };
 });
+// rules 1.55, 0.28.3-B.6: a used item's XP (the Essence) through the one XP door, its value and its source from the row
+registerUseOp('xp_grant', (g, _user, on, e, item) => giveXp(g, on, String(e.source || item), Number(e.value) || 0, (ITEM[item] as any)?.name || item));
 /** Rules 1.55: a won run fight becomes its field: the map, the squad where it stood, the piles as the fight left them. */
 function openField(g: GameState, cb: Combat) {
   carryFightLimits(g, cb); // rules 1.55 item 34

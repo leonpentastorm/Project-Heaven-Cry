@@ -1818,7 +1818,7 @@
     {
       "id": "xp_grant",
       "tier": "bespoke",
-      "summary": "",
+      "summary": "Grant XP (value, tagged source) through the one XP door: run for a counted item's use (gear/use, rules 1.55 0.28.3-B.5; limit counted on the receiver); the Rival's is its trait's own.",
       "count": 2,
       "params": [
         "limit",
@@ -1837,8 +1837,10 @@
         "value": 100,
         "source": "essence",
         "target": "self_or_party_member_present",
-        "when": "cracked out of combat (10 minutes)",
-        "limit": "one absorbed per character per long rest"
+        "limit": {
+          "per": "per_rest",
+          "n": 1
+        }
       }
     },
     {

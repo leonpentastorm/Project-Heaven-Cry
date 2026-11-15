@@ -161,10 +161,10 @@ A **Legendary Deed**, at the Narrator's call, grants **1 Attribute point**, and 
 | Essence: one Essence of Experience absorbed | 100 |
 | Bond: your rival reaches a new level (Rival trait, both ways) | 50 |
 
-**Essence of Experience** is experience sealed in mana: an item worth 100 XP to whoever absorbs it. It weighs nothing, sells for 300 credits, and every character starts with one.
+**Essence of Experience** is experience sealed in mana: an item worth 100 XP to whoever absorbs it. It weighs nothing, sells for 300 credits, and every character starts with one. *(Rules 1.55, 0.28.3-B.4: its price is 600 PROVISIONAL and it sells at the shop's sell rate like anything else.)*
 
-- **Cracking it** takes someone with Mastery 2 (5 points) in the skill that drives their focus: **Brain Power with an Evoker**, or **Will Power with an Emanator**. It takes 10 minutes out of combat.
-- **Absorbing it:** whoever cracks it chooses who takes the XP: themselves or a party member present. A character can absorb **one per long rest**.
+- **Cracking it** takes someone with Mastery 2 (5 points) in the skill that drives their focus: **Brain Power with an Evoker**, or **Will Power with an Emanator**. It takes 10 minutes out of combat. *(Superseded by rules 1.55, 0.28.3-B.6: any focus in a hand, no skill minimum.)*
+- **Absorbing it:** whoever cracks it chooses who takes the XP: themselves or a party member present. A character can absorb **one per long rest**. *(Rules 1.55, 0.28.3-B.6: one per rest, the engine's per-rest window.)*
 - Essence XP counts toward the Narrator's pacing target. It is tagged `essence`, so traits that change combat or dialogue XP don't touch it.
 
 ## Derived stats
@@ -955,8 +955,8 @@ Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanc
 | Standard mana core (spec) | 150 (small 75, heavy 300) |
 | Chalk and wax | 15 |
 | Prayer beads and incense | 20 |
-| Essence of Experience (spec) | 300 |
-| Selling | Shops buy at 40% of price; the Essence sells for its full 300 (spec) |
+| Essence of Experience (spec) | 300 *(rules 1.55, 0.28.3-B.4: 600 PROVISIONAL)* |
+| Selling | Shops buy at 40% of price; the Essence sells for its full 300 (spec) *(superseded: rules 1.42's sell rate for everything, the Essence included; rules 1.55, 0.28.3-B.4)* |
 
 
 ### Weapon mastery
@@ -6214,6 +6214,7 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    words. There are no turns: End turn is not offered.
 40. **The Give control.** On the path map the right panel has a Give module (data/modes.json `panels`: `give`), the
    places' Give tab; the backpack line's Give has the same stepper (how many, one at a time) before the button.
+   *(Superseded by 0.28.3-B.1: the amount control, a typed number with −100 to +100 steps and MAX.)*
 41. **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 34): there
    every once-a-fight use counts as spent (the safe side). Read in the one counter door (effects/uses.ts).
 42. **Counted items are data.** Which items a character keeps as a count (item 31) is `counted` on the item's row of
@@ -6233,6 +6234,49 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    (`fieldWorld`, game.ts) now writes back to that unit after every action what a token draws (HP, Max HP, Downed,
    conditions, shields, MP), read from the character as the field builds it (`storyCb`), so the token, its bar and the
    sheet agree; the fight's record (initiative, kills) stays.
+
+Release 0.28.3 (Leon, playing live 0.28.2, 15 Nov 2026: *"Give menu need +10, +100, max and editable number, giving
+credit is nightmare"* and *"Essense of esperience need to be crackable by all 4 focus type and sellable currently it is
+not"*; the lead's rulings), PROVISIONAL:
+
+0.28.3-B.1. **The amount control.** Every place an amount is chosen for a give (the places' Give tab, the path map's
+   Give module, the backpack line's Give; credits and quantities alike) and the shop's Sell quantity use one control: a
+   number field you type into (kept between 0 and what you hold; anything not a number is ignored; Enter confirms),
+   buttons −100, −10, −1, +1, +10, +100 and MAX (one that cannot apply is greyed), and the total held ("of 1,240"). In
+   the narrow right panel it wraps to two rows. The client sends the same give (or sale) with the amount; the engine
+   judges it (a whole number from 1 to what is held: 0, a negative, more than is held, not a number and an absurd
+   amount are refused in words; a fraction is rounded to the nearest whole) and its refusal shows under the field.
+   Supersedes item 40's stepper.
+0.28.3-B.2. **Never stocked and never sold are two facts.** `stock: false` on an item row: no counter, rolled stock,
+   reward, loot or camp pool holds it (it has no price to buy at). `sell: false`: no shop buys it. A sale is priced by
+   the one price door (credits.ts `priceOf`) in its sale mode, which reads `sell: false` and not `stock: false`; a row
+   with no price is never sold either. Every row that was `stock: false` before keeps `sell: false` (the armourer's
+   chit, the items traits grant, the documents, the contraband, the grimoire) except the Essence of Experience. An item
+   a trait grants is never sold (the validator checks it).
+0.28.3-B.3. **Counted items are sold.** A sale (`run/sell`) takes a counted item (item 31: `count`, its item id, as a
+   give does) and a quantity; the shop's Sell list shows every counted item the character holds that has a price (a
+   stim, an Essence), each at the shop's sell rate (`survival.json sell_rate`).
+0.28.3-B.4. **The Essence's price.** `price_credits` 600 (PROVISIONAL; it was 300): it sells for 150 at the sell rate of
+   0.25. It is never on a shelf (`stock: false`): it comes from a Boss's notable table and the one a character starts
+   with.
+0.28.3-B.5. **Using a counted item is one action.** `gear/use {charId, item, targetId}` uses one of a counted item the
+   character holds on itself or on a party member, out of a fight (the path map, a place, the field, the rewards; in a
+   fight it is refused in words; at the camp gear is the loadout's, rules 1.54 item 1). The item's row says how
+   (`use`: the button's `label` and `via`): `via: "stim"` is item 32's stim (the same `world/act` stim and its one rule,
+   `useStim`: off a map as if the two stood side by side, on the field next to the friend); `via: "effects"` runs the
+   row's `effects` through the use ops (today `xp_grant`: the one XP door, `giveXp`, with the effect's value and
+   source). `requires_to_use` on the row is what the user needs, each entry must hold (`holds`: a hand or person spec,
+   as a recipe's tool; `skill` and `min`; `any_of`), its `why` the refusal; an effect's `limit` (`per`, `n`: a scope
+   of effects/uses.ts) is counted on the one who receives it. The Give view's "Use on…" sends it.
+0.28.3-B.6. **Cracking the Essence.** Any focus in a hand cracks it (`holds` door `any`: an Evoker, an Emanator, a
+   Visualizer, an Attuner, and any focus row added later), with no skill minimum (the Brain Power 5 and Will Power 5
+   lines are dropped). The cracker picks who absorbs it, themselves or a party member, and that one gains its XP
+   (`effects.0.value`, 100, tagged `essence`), at most one per character per rest (`per_rest`: the window every rest
+   opens, short or long, and a new session). A character with no focus can still give it or sell it.
+0.28.3-B.7. **The money loops** (checked for 0.28.3): an Essence is never bought (no price in the buy mode: no shelf,
+   reward, camp or Crossroads line holds it), so selling it at 150 creates nothing beyond the drop it came from; a
+   give moves the count from one character to the other (nothing is copied); a sale and a crack each take one from
+   the count, so one Essence pays either 150 credits or 100 XP, once. A stim sells for 20 of its 80.
 
 ## Maps (rules 1.16)
 
@@ -6734,7 +6778,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 43. **Weapon mastery thresholds** (5 / 15 / 40 / 80 / 140 kills), the attack bonus (+1 at level 2, +2 at level 4), a boss counting as 3 kills, and only XP-awarding fights counting. Check the pacing (Master around session 35 for a one-family character).
 44. **The 30 weapon perks** are all new.
-45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest.
+45. **Essence of Experience:** 100 XP each, sells for 300 credits, one at creation, cracking needs Mastery 2 in Brain Power (Evoker) or Will Power (Emanator), and one absorbed per long rest. *(Rules 1.55, 0.28.3-B.4 and B.6: price 600, sold at the sell rate; any focus in a hand cracks it, no skill minimum; one per rest.)*
 46. **One Blade** (Blade Recluse trait): "weapon mastery levels 25% faster" now means each kill with the named weapon's family counts as 1.25. *(Retired with weapon mastery by rules 1.12, item 947: the trait no longer promises it; the engine keeps the 1.25 as a record nothing reads (13 Nov 2026, item 1743).)*
 47. **Creation budgets restored** (archetypes spend all of them; their extra Attribute and Core placements are provisional too) (the 2020 EPCCG's 6 Core, 10 Attribute, 10 Skill points), with skills spending the Attribute and Core points they need automatically, no creation caps beyond the tree's own (so up to 7 in one Core, Attribute or skill), and (until rules 1.11 removed it, item 928) the exchange rate of 1 unspent Core point for 2 Attribute points (the 2020 line "one Core point represents two Attribute points", read as an exchange rate). Replaces 1.1's free automatic rise, which let builds spread across three Cores finish with up to 4 more Core points than single-Core builds.
 48. **Movement is tiles per AP** (Leon: moving 4 tiles costs 4 AP unless you have good Agility). Restores the 2020 rule: Movement 1 + 0.5 × (Agility − 1) tiles per AP, never below 0.5, paid-for tiles carry over within the turn. Replaces 1.1's "3 + 0.5 × (Agility − 1) tiles for 1 AP". Check the pace in playtest (an Agility 1 character spending 4 of 6 AP to cross 4 tiles), and the converted armour penalties (−0.5 / −0.5 / −1 Movement).
