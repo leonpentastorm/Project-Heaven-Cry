@@ -14,6 +14,7 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
+import { seenFigments } from '../game/fx/figments';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
 /** Rules 1.55: the field's header (the engine's field: fieldView): what lies on the ground, Take all, Leave and the vote. */
@@ -59,6 +60,7 @@ import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
+import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
@@ -333,7 +335,9 @@ function pickerVals(self, cb, P, V, whyOpt) {
       // A chip the engine would refuse right now (its own data, or the move's preview with that choice) is greyed, its
       // reason on it: Field Fix's "isn't jammed", Shove's "nothing behind them".
       const opts = f.options.map((o) => { const why = on.includes(o.id) ? '' : o.off || (whyOpt && f.key === 'choice' && (f.multi || 1) === 1 ? whyOpt(o.id) : '') || '';
-        return { key: o.id, label: o.label + (why ? ' · ' + chipWhy(why) : ''), title: why || o.title || '', pressed: on.includes(o.id) ? 'true' : 'false', off: !!why, style: CHIP(on.includes(o.id)) + (why ? '; opacity: 0.5; cursor: default' : ''),
+        // a choice that names an icon (Picture's forms and designs: the form's line icon, figmentIcons.ts) shows it before its name
+        const icon = o.icon ? figmentIconUri(o.icon, on.includes(o.id) ? '#FFFFFF' : FIG_LINE) : '';
+        return { key: o.id, label: o.label + (why ? ' · ' + chipWhy(why) : ''), title: why || o.title || '', pressed: on.includes(o.id) ? 'true' : 'false', off: !!why, hasIcon: !!icon, icon, style: CHIP(on.includes(o.id)) + (icon ? '; display: inline-flex; align-items: center; gap: 6px; padding-left: 6px' : '') + (why ? '; opacity: 0.5; cursor: default' : ''),
         pick: () => { if (why) return; const now = Array.isArray(form()[f.key]) ? form()[f.key] : []; setV({ [f.key]: now.includes(o.id) ? now.filter((y) => y !== o.id) : multi > 1 ? [...now, o.id].slice(-multi) : [o.id] }); } }; });
       return { ...base, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: f.empty || 'Nothing to pick.' };
     }
@@ -347,6 +351,13 @@ function pickerVals(self, cb, P, V, whyOpt) {
     return base;
   });
   return { hasPick: true, pickHead: P.head, pickFields, pickWarn: P.warn || '', hasPickWarn: !!P.warn };
+}
+/** The Figments (and turrets) this fight has had, by name and icon, for the log's chips: the ones standing now and the
+ *  ones the fight map has seen (fx/figments.ts keeps them for the fight, so a line about one that came apart has it too). */
+function figLogNames(cb) {
+  const out = new Map(seenFigments().map((f) => [f.name, f.icon]));
+  for (const u of cb.units) { const icon = figmentIconOfUnit(u); if (icon && u.name) out.set(u.name, icon); }
+  return [...out].filter(([, icon]) => !!icon).map(([name, icon]) => ({ name, icon }));
 }
 /** A refusal cut to its first clause, for a chip's label (the whole reason is its title). */
 const chipWhy = (t) => { const s = String(t || '').split(/[:.]/)[0].trim(); return s.length > 34 ? s.slice(0, 32) + '…' : s; };
@@ -1641,7 +1652,10 @@ export class CombatLogic extends DCLogic {
       // The whole fight (the last 120 lines), newest first: the box is a reversed column, so it rests on the newest line
       // and scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).
       // …and only the lines written before the effect now playing: the log keeps step with what is on screen.
-      log: [...(() => { const upTo = fxShownLog(g), lines = upTo == null ? cb.log : cb.log.slice(0, Math.max(0, upTo)); return lines.slice(-120).map((text, i, all) => { const pl = patronLogCard(text); return { key: lines.length - all.length + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {} }; }); })(),
+      log: [...(() => { const upTo = fxShownLog(g), lines = upTo == null ? cb.log : cb.log.slice(0, Math.max(0, upTo));
+        // 0.28.2: a line naming a Figment of this fight carries its line icon (figmentIcons.ts: by the names it had here)
+        const figs = figLogNames(cb);
+        return lines.slice(-120).map((text, i, all) => { const pl = patronLogCard(text), fi = pl ? '' : figmentLogIcon(text, figs); return { key: lines.length - all.length + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {}, hasFig: !!fi, figIcon: fi }; }); })(),
         // Rules 1.9 (item 695): what the loot cap held back, for the host's eyes only (the engine strips lootLog from
         // everyone else's view).
         ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),

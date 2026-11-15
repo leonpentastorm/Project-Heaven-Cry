@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Scrap Turret: a squat patched dome on a tripod, a short barrel to the right -->
+  <path d="M18 37 L18 30 C18 21 25 15 33 15 C39 15 44 18 46 22 L58 22 L58 29 L46 29 L46 37 Z"/>
+  <path d="M23 37 L11 59 M32 37 L32 59 M41 37 L53 59"/>
+  <path d="M25 20 L29 26 L25 31 L31 33"/>
+  <path d="M50 22 L50 29"/>
+</svg>

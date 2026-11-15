@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Wall: a tower-shield slab with a notched top and three seams -->
+  <path d="M13 11 L22 11 L22 6 L28 6 L28 11 L36 11 L36 6 L42 6 L42 11 L51 11 L51 50 L32 60 L13 50 Z"/>
+  <path d="M13 25 L51 25"/>
+  <path d="M13 39 L51 39"/>
+  <path d="M32 11 L32 60"/>
+</svg>

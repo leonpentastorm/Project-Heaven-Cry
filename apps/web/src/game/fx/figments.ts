@@ -9,24 +9,26 @@
 //   unmake {unit, at}                 it comes apart (the summon reversed) on the copy of its token; the bots stream
 //                                     back to its maker
 // Which kind it is comes from its own row in data/figments.json (the engine's FORM, by the spawn's `block` or the unit's
-// `figment.form`): its name and its glyph. No id is named here. Nothing loops (the idle shimmer is the token's CSS,
+// `figment.form`): its name, its line icon (the row's `icon`, game/figmentIcons.ts; its glyph only when it names none).
+// No id is named here. Nothing loops (the idle shimmer is the token's CSS,
 // screens/combat.js); every duration goes through dom.ts (the combat speed and the tempo).
-import { FORM, type FxEvent } from '@engine';
+import { FORM, figmentLookOf, type FxEvent } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
 import { type Pt, after, anim, floatText, put, ring, svg, trace, lunge, angle } from './dom';
+import { figmentIcon } from '../figmentIcons';
 
 export const FIG_INK = '#5394AC';
 const FIG_CORE = '#CFE6F0', WHITE = '#FFFFFF', MUTED = '#A3AEC2';
 /** The summon's three steps (ms at Fast): the caster's wind-up, the thread's travel, the forming. */
 export const FIG_MS = { cast: 170, travel: 230, form: 440, unmake: 560, command: 150 } as const;
 
-export interface FigInfo { form: string; owner: string | null; name: string; glyph: string }
+export interface FigInfo { form: string; owner: string | null; name: string; glyph: string; icon: string }
 /** A form's look from its row (data/figments.json via the engine's FORM): null when the block is no Figment's. */
-export function figLook(form: string | null | undefined): { name: string; glyph: string } | null {
+export function figLook(form: string | null | undefined): { name: string; glyph: string; icon: string } | null {
   const f: any = form ? (FORM as any)[form] : null;
   if (!f || f.owned_kind !== 'figment') return null;
-  return { name: String(f.name || form), glyph: String(f.glyph || '◇') };
+  return { name: String(f.name || form), glyph: String(f.glyph || '◇'), icon: String(f.icon || '') };
 }
 // Figments seen in this fight: id → its form and its maker (kept after it leaves the board, so its unmaking plays).
 const FIGS = new Map<string, FigInfo>();
@@ -37,14 +39,16 @@ export function noteFigments(units: readonly any[]) {
   for (const u of units) {
     const form = u?.figment?.form || (u?.owned?.kind === 'figment' ? u.companion : null), look = figLook(form); if (!look) continue;
     const owner = units.find((x) => x && x !== u && x.side === u.side && x.charId && x.charId === u.ctrl);
-    FIGS.set(String(u.id), { form, owner: owner ? String(owner.id) : FIGS.get(String(u.id))?.owner ?? null, name: String(u.name || look.name), glyph: look.glyph });
+    FIGS.set(String(u.id), { form, owner: owner ? String(owner.id) : FIGS.get(String(u.id))?.owner ?? null, name: String(u.name || look.name), glyph: look.glyph, icon: look.icon });
   }
 }
+/** Every Figment seen in this fight, by its name and its icon (the fight log's chips, screens/combat.js). */
+export const seenFigments = (): { name: string; icon: string }[] => [...FIGS.values()].map((f) => ({ name: f.name, icon: f.icon }));
 /** The Figment an event's unit is (or was), else null. A spawn carries its own form and maker. */
 export function figOf(id: string | null | undefined): FigInfo | null { return id ? FIGS.get(String(id)) || null : null; }
 function noteSpawn(e: FxEvent): FigInfo | null {
   const look = figLook(e.block); if (!look || !e.unit) return null;
-  const had = FIGS.get(String(e.unit)), info = { form: String(e.block), owner: e.owner ? String(e.owner) : had?.owner ?? null, name: had?.name || look.name, glyph: look.glyph };
+  const had = FIGS.get(String(e.unit)), info = { form: String(e.block), owner: e.owner ? String(e.owner) : had?.owner ?? null, name: had?.name || look.name, glyph: look.glyph, icon: look.icon };
   FIGS.set(String(e.unit), info); return info;
 }
 
@@ -118,9 +122,15 @@ function lines(p: Pt, inward: boolean, ms: number) {
   const s = svg(100, 100, inner), box = put(s, p, p.s * 1.7, p.s * 1.7, ms + 80); box.style.zIndex = '3';
   for (const l of Array.from(s.querySelectorAll('line'))) anim(l, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.55 }, { strokeDashoffset: -1 }], { duration: ms, easing: 'ease-out', fill: 'forwards' });
 }
-/** The form's glyph over its tile (its own row's glyph): flickering on (forming) or breaking up (unmaking). */
-function glyphMark(p: Pt, glyph: string, on: boolean, ms: number) {
-  const s = svg(40, 40, '<text x="20" y="27" text-anchor="middle" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="22" fill="none" stroke="' + FIG_CORE + '" stroke-width="1.2" style="filter:drop-shadow(0 0 4px ' + FIG_INK + ')">' + glyph.replace(/[<&]/g, '') + '</text>');
+/** The form's mark over its tile: its line icon (its row's `icon`; its glyph when it names none), flickering on
+ *  (forming) or breaking up (unmaking). */
+export function figMarkSvg(f: Pick<FigInfo, 'icon' | 'glyph'>): string {
+  const icon = figmentIcon(f.icon);
+  if (icon) return icon.replace(/<!--[\s\S]*?-->/g, '').replace('<svg ', '<svg width="100%" height="100%" style="overflow:visible;filter:drop-shadow(0 0 4px ' + FIG_INK + ')" ').replace(/currentColor/g, FIG_CORE);
+  return '<svg viewBox="0 0 40 40" width="100%" height="100%" style="overflow:visible"><text x="20" y="27" text-anchor="middle" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="22" fill="none" stroke="' + FIG_CORE + '" stroke-width="1.2" style="filter:drop-shadow(0 0 4px ' + FIG_INK + ')">' + f.glyph.replace(/[<&]/g, '') + '</text></svg>';
+}
+function glyphMark(p: Pt, f: Pick<FigInfo, 'icon' | 'glyph'>, on: boolean, ms: number) {
+  const s = document.createElement('div'); s.style.cssText = 'width:100%;height:100%'; s.setAttribute('data-fig-mark', f.icon || f.glyph); s.innerHTML = figMarkSvg(f);
   const box = put(s, p, p.s * 0.9, p.s * 0.9, ms + 60); box.style.zIndex = '3';
   anim(box, on ? [{ opacity: 0, transform: 'scale(1.5)' }, { opacity: 1, transform: 'scale(1)', offset: 0.3 }, { opacity: 0.3, offset: 0.45 }, { opacity: 1, offset: 0.6 }, { opacity: 0, transform: 'scale(.9)' }]
     : [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0.2, offset: 0.2 }, { opacity: 0.9, offset: 0.35 }, { opacity: 0, transform: 'scale(1.6)' }], { duration: ms, easing: 'steps(8, end)', fill: 'forwards' });
@@ -142,7 +152,8 @@ export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit)
   H.spawn = (e) => {
     const id = String(e.unit || ''), f = noteSpawn(e), p = K.at(e.at);
     if (!f) { // another owned unit (a Scrap Turret): it stands up out of a ring
-      K.release(id); if (p) { ring(p, WHITE, 420, { from: 1.3, to: 0.9, width: 3 }); K.squares(p, MUTED, 5, 0.5, 400); } K.play('sg_turret', p, { gain: 0.5 }); return;
+      K.release(id); const tl = figmentLookOf(e.block); // its own row's icon, when it has one (the Scrap Turret's)
+      if (p) { ring(p, WHITE, 420, { from: 1.3, to: 0.9, width: 3 }); K.squares(p, MUTED, 5, 0.5, 400); if (tl?.icon) glyphMark(p, { icon: tl.icon, glyph: '' }, true, 420); } K.play('sg_turret', p, { gain: 0.5 }); return;
     }
     trace('figment', { what: 'summon', unit: id, form: f.form, owner: f.owner });
     // 1. the caster: a wind-up on its own token (the gesture toward the tile)
@@ -155,7 +166,7 @@ export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit)
     after(() => {
       K.release(id); trace('figment', { what: 'formed', unit: id });
       if (!p) return;
-      lines(p, true, FIG_MS.form); ring(p, FIG_INK, FIG_MS.form, { from: 1.7, to: 0.9, width: 3 }); glyphMark(p, f.glyph, true, FIG_MS.form);
+      lines(p, true, FIG_MS.form); ring(p, FIG_INK, FIG_MS.form, { from: 1.7, to: 0.9, width: 3 }); glyphMark(p, f, true, FIG_MS.form);
       K.squares(p, FIG_INK, 6, 0.55, FIG_MS.form * 0.8, FIG_MS.form * 0.2);
       const tok = K.tokOf(id, e.at);
       if (tok) anim(tok, reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, filter: 'brightness(2.4) saturate(0)' }, { opacity: 0.25, offset: 0.3 }, { opacity: 0.05, offset: 0.42 }, { opacity: 0.8, filter: 'brightness(1.8) drop-shadow(0 0 8px ' + FIG_INK + ')', offset: 0.62 }, { opacity: 0.45, offset: 0.72 }, { opacity: 1, filter: 'none' }], { duration: FIG_MS.form, easing: 'steps(10, end)' });
@@ -170,7 +181,7 @@ export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit)
     if (!p) return;
     const g = K.ghost(id, String(e.at), FIG_MS.unmake + 400);
     if (g) anim(g, reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 1, filter: 'none', transform: 'scale(1)' }, { opacity: 0.4, filter: 'brightness(2) drop-shadow(0 0 8px ' + FIG_INK + ')', offset: 0.2 }, { opacity: 0.85, offset: 0.32 }, { opacity: 0.2, filter: 'brightness(2.4) saturate(0) blur(1px)', transform: 'scale(1.06)', offset: 0.55 }, { opacity: 0, filter: 'blur(3px)', transform: 'scale(.8)' }], { duration: FIG_MS.unmake, easing: 'steps(9, end)', fill: 'forwards' });
-    glyphMark(p, f.glyph, false, FIG_MS.unmake); lines(p, false, FIG_MS.unmake); ring(p, FIG_INK, FIG_MS.unmake, { from: 0.8, to: 1.6, width: 2 });
+    glyphMark(p, f, false, FIG_MS.unmake); lines(p, false, FIG_MS.unmake); ring(p, FIG_INK, FIG_MS.unmake, { from: 0.8, to: 1.6, width: 2 });
     K.squares(p, FIG_INK, 8, 0.9, FIG_MS.unmake);
     // the bots stream back to its maker
     const op = f.owner ? K.at(K.posOf(f.owner)) : null; if (op) thread(p, op, FIG_MS.travel, { faint: true, delay: FIG_MS.unmake * 0.35 });
@@ -199,7 +210,7 @@ function trail(K: FigKit, e: FxEvent, f: FigInfo) {
   }
   thread(a, b, 110, { faint: true });
   after(() => {
-    if (e.hit) { glyphMark(b, f.glyph, false, 420); K.squares(b, FIG_INK, 5, 0.6, 380); }
+    if (e.hit) { glyphMark(b, f, false, 420); K.squares(b, FIG_INK, 5, 0.6, 380); }
     else K.squares(b, MUTED, 3, 0.5, 300);
   }, 120);
 }

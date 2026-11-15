@@ -23,6 +23,23 @@ A hotfix (15 Nov 2026). No rule changed; only the words.
   usual lunge, hit or MISS with the Figment's afterimages and its glyph on the target; Let go, unravelling or a destroyed
   one comes apart and streams back to its maker; a held Figment's token shimmers (off under Reduce motion). Effects only
   (`apps/web/src/game/fx/figments.ts`), from the engine's existing spawn, attack and unmake events.
+- **Every Figment has its own icon** (Leon's playtest: "there isn't even a special icon for each summon"). Seven
+  monoline line icons (`art/icons/figments/`, catalogue `figment_icons`): the Double, the Eye, the Wall, the Beast, the
+  Blade, the Scrap Turret and Picture, each named by its row's `icon` in `data/figments.json`. A Figment's map token, its
+  group header and the target and turn cards draw it (on a dark plate) where a portrait would be; Picture's chips, the
+  summon and strike effects (in place of the text glyph) and a fight log line naming a Figment show it too. The painted
+  portraits are still wanted (ART-REQUESTS C6). `tools/validate_art.py` checks every row has one and every icon keeps the
+  line rule.
+- **What Visualization opens is shown** ("no unlocks, no nothing"). The MAGIC tab has a FIGMENTS section: every step of
+  the ladder, open or locked with the Visualization it needs, the latest step as NEW with its forms' icons, and the next
+  one locked; the level-up card of Visualization says "NEW · FIGMENTS AT VISUALIZATION 3: Eye, Wall" with the icons when
+  a point reaches a step, else the next step, locked. From the engine's new `figmentLadderView`.
+- **Figment designs can be made** (the engine had `figments/design`; the screen never sent it). The FIGMENTS section keeps
+  your designs (form icon, traits, charge) with Edit and Drop, and a small editor: a name, a form (locked ones greyed with
+  the engine's reason), its traits (refused past what a design may carry, with the reason), the charge it will take, and
+  Keep. Every option and refusal is the engine's `figmentDesignView` (its `draftWhy` is the reducer's own check; the room
+  check is one function, `designRoomWhy`, for both). In a fight, Picture offers the ready designs first, each with its
+  form's icon.
 
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 

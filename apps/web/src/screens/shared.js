@@ -10,6 +10,7 @@ import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
 import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION } from '@engine';
 import { kitSprite } from '../game/kitMap';
+import { figmentFaceOf } from '../game/figmentIcons';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
@@ -82,8 +83,9 @@ export const ART = (n) => (!n ? '' : ASSETS[n] || (/^(\/|https?:|data:|blob:)/.t
 export const ART_BIG = (n) => ASSETS[n + '-lg'] || ART(n);
 /** A unit's face as its token draws it: the portrait or avatar resolved through the art library (an asset name like
  *  'char-m813-scavenger-drone', a built URL, an upload). '' when nothing resolves (an archived or unknown id): the
- *  token, the target card and the HUD then show the unit's initials, never a broken black square. */
-export const faceOf = (u) => (u && u.img ? ART(u.img) : '');
+ *  token, the target card and the HUD then show the unit's initials, never a broken black square. A Figment or a Scrap
+ *  Turret with no portrait shows its row's line icon on a dark plate (game/figmentIcons.ts; 0.28.2). */
+export const faceOf = (u) => (u && u.img && ART(u.img)) || (u && u.owned ? figmentFaceOf(u) : '');
 /** The campaign zone a state is in (the fight's map during a fight). */
 export const zoneOf = (g) => g?.campaign?.zones?.find((z) => z.id === (g.phase === 'combat' && g.combat ? g.combat.map.id : g.story.zone)) || null;
 /** An object's sprite: its own, else the campaign's for its kind (an open door has its own), else (rules 1.45) the fight

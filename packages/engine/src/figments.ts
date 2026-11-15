@@ -82,11 +82,20 @@ export function designWhy(c: Character, d: FigmentDesign): string | null {
   if (tr.length > traitsMax(p)) return traitsMax(p) ? 'At most ' + traitsMax(p) + ' trait' + (traitsMax(p) > 1 ? 's' : '') + ' a design.' : 'Traits open at Visualization 3.';
   return null;
 }
+/** Why a new design can't be kept now (no room in the ready count), null when there is room; one copy of the rule for the
+ * reducer (setFigmentDesign) and the screens' view (figmentDesignView). An existing id always has room (it replaces). */
+export function designRoomWhy(c: Character, id?: string | null): string | null {
+  const list = c.figments || [];
+  if (id && list.some((x) => x.id === id)) return null;
+  if (list.length < designsMax(c)) return null;
+  if (designsMax(c)) return 'You keep ' + designsMax(c) + ' designs ready: drop one first.';
+  const at = (LADDER.find((r) => (r.designs || 0) > 0) || {}).points;
+  return 'Designs open at Visualization ' + at + '.';
+}
 /** Keep a design (out of a fight): replaces one with the same id, refused past the ready count. */
 export function setFigmentDesign(c: Character, d: FigmentDesign): string | null {
-  const no = designWhy(c, d); if (no) return no;
+  const no = designWhy(c, d) || designRoomWhy(c, d.id); if (no) return no;
   const list = [...(c.figments || [])], i = list.findIndex((x) => x.id === d.id);
-  if (i < 0 && list.length >= designsMax(c)) return designsMax(c) ? 'You keep ' + designsMax(c) + ' designs ready: drop one first.' : 'Designs open at Visualization 3.';
   const v: FigmentDesign = { id: d.id, name: String(d.name).trim().slice(0, 40), form: d.form, traits: [...(d.traits || [])] };
   if (i < 0) list.push(v); else list[i] = v; c.figments = list; return null;
 }
@@ -102,12 +111,57 @@ export function pictureChoice(c: Character | null | undefined, choice: string | 
   return { form: pick, traits: [], name: FORM[pick].name };
 }
 /** Picture's choices: the ready designs, then the bare forms opened (every bare form is always ready). */
-export function pictureOptions(c: Character): { id: string; label: string }[] {
-  return [...readyFigments(c).map((d) => ({ id: 'd:' + d.id, label: d.name + ' (' + FORM[d.form].name + (d.traits.length ? ' + ' + d.traits.map((t) => FIG_TRAIT[t].name).join(', ') : '') + ')' })),
-    ...formsOpen(c.skills?.visualization || 0).map((f) => ({ id: f, label: FORM[f].name }))];
+export function pictureOptions(c: Character): { id: string; label: string; icon: string }[] {
+  return [...readyFigments(c).map((d) => ({ id: 'd:' + d.id, label: d.name + ' (' + FORM[d.form].name + (d.traits.length ? ' + ' + d.traits.map((t) => FIG_TRAIT[t].name).join(', ') : '') + ')', icon: FORM[d.form].icon || '' })),
+    ...formsOpen(c.skills?.visualization || 0).map((f) => ({ id: f, label: FORM[f].name, icon: FORM[f].icon || '' }))];
 }
 /** A design's charge: the form's, +trait_charge a trait, each trait's own `charge` (Hollow −2), never under 1. */
 export const figmentCharge = (form: string, traits: string[]): number => Math.max(1, (FORM[form]?.charge || 0) + traits.reduce((s, t) => s + FIG.trait_charge + (FIG_TRAIT[t]?.charge || 0), 0));
+
+// ---------------------------------------------------------------------------------------------- views (the screens)
+/** A Figment row as the screens show it: its name, its icon (the catalog id its data row names: `figment_icons`), its
+ * words, its charge. Forms, the Scrap Turret and the Picture verb all have one. */
+export interface FigLook { id: string; name: string; icon: string; text: string; charge: number }
+const lookOf = (f: any): FigLook => ({ id: f.id, name: f.name, icon: f.icon || '', text: f.text || '', charge: f.charge || 0 });
+/** The look of the row a unit was made from (its `companion`: a form id, or the Scrap Turret's), else null. */
+export function figmentLookOf(rowId: string | null | undefined): FigLook | null {
+  if (!rowId) return null;
+  if (FORM[rowId]) return lookOf(FORM[rowId]);
+  if (FIG.turret?.id === rowId) return lookOf(FIG.turret);
+  const it = (FIG.items as any[]).find((x) => x.id === rowId); return it ? lookOf(it) : null;
+}
+/** One step of the ladder as the screens show it: what it opens, open or locked at these points. */
+export interface FigLadderStep { points: number; open: boolean; latest: boolean; forms: FigLook[]; held: number | null; designs: number | null; traits: number | null; noSnap: boolean; text: string }
+/** The ladder (figments.json `ladder`) at these Visualization points: every step, open or locked with its requirement,
+ * the latest step reached (what is "new") and the next one to open. The door skill is figments.json visualizer.door. */
+export function figmentLadderView(points: number): { door: string; points: number; steps: FigLadderStep[]; latest: FigLadderStep | null; next: FigLadderStep | null } {
+  const steps: FigLadderStep[] = LADDER.map((r) => ({ points: r.points, open: points >= r.points, latest: false, forms: (r.forms || []).map((f: string) => lookOf(FORM[f])),
+    held: r.held ?? null, designs: r.designs ?? null, traits: r.traits ?? null, noSnap: !!r.no_snap, text: r.text || '' }));
+  const latest = [...steps].reverse().find((s) => s.open) || null; if (latest) latest.latest = true;
+  return { door: FIG.visualizer.door, points, steps, latest, next: steps.find((s) => !s.open) || null };
+}
+/** The design workshop as the screens show it (rules 1.34: designs are made out of a fight, figments/design): the
+ * designs kept (each with its form's look, its traits, its charge, and why it can't be pictured now), every form (open,
+ * or locked with why), every trait, the ready count and the traits a design may carry, and why a new one can't be kept. */
+/** Designs are made out of a fight (the reducer's refusal, and the view's, in one place). */
+export const FIG_DESIGN_IN_FIGHT = 'Design Figments out of combat.';
+export function figmentDesignView(c: Character, o: { inFight?: boolean } = {}) {
+  const fight = o.inFight ? FIG_DESIGN_IN_FIGHT : null;
+  const p = c.skills?.visualization || 0, ready = new Set(readyFigments(c).map((d) => d.id)), tmax = traitsMax(p);
+  const designs = (c.figments || []).map((d) => ({ id: d.id, name: d.name, form: d.form, look: FORM[d.form] ? lookOf(FORM[d.form]) : null,
+    traits: (d.traits || []).map((t) => ({ id: t, name: FIG_TRAIT[t]?.name || t })), charge: figmentCharge(d.form, d.traits || []), why: designWhy(c, d), ready: ready.has(d.id) }));
+  const open = formsOpen(p);
+  return {
+    points: p, designsMax: designsMax(c), traitsMax: tmax, traitCharge: FIG.trait_charge as number,
+    designs, newWhy: fight || designRoomWhy(c), fightWhy: fight,
+    forms: (FIG.forms as any[]).map((f) => ({ ...lookOf(f), open: open.includes(f.id), why: open.includes(f.id) ? null : f.name + ' needs Visualization ' + f.opens.min + '.' })),
+    traits: (FIG.traits as any[]).map((t) => ({ id: t.id, name: t.name, text: t.text || '', charge: FIG.trait_charge + (t.charge || 0) })),
+    /** Why this draft can't be kept now (null: it can): the reducer's own checks. */
+    draftWhy: (d: FigmentDesign) => fight || designWhy(c, d) || designRoomWhy(c, d.id),
+    /** A draft's charge. */
+    chargeOf: (form: string, traits: string[]) => figmentCharge(form, traits),
+  };
+}
 
 // ---------------------------------------------------------------------------------------------- the block and the unit
 /** The block op `spawn` makes for a form with these traits, for this owner (spawnOwned levels it by its owner's level:

@@ -43,6 +43,7 @@ import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVa
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
+import { figmentSectionVals } from './figmentsTab';
 import { STORY_PANEL_NAME, STORY_PANELS_CSS, readStoryPanels, saveStoryPanels, isDefaultOrder, startStoryDrag, keyMoveStoryPanel, squadMinHeight, SQUAD_SEATS, SQUAD_ROW_PX, SQUAD_GAP_PX } from '../game/storyPanels';
 import { panelsOf, PANEL_DRAW, offersAreaMap } from '../game/panels';
 /** A weapon's line on the GEAR tab (Physical 2.0): its properties and the technique it teaches (drill replaced the
@@ -147,7 +148,7 @@ const handWord = (at) => (at === 'main' ? 'in your main hand' : at === 'off' ? '
 const focusKindOf = (id) => (FOCUS_IDS.evoker.includes(id) ? 'evoker' : FOCUS_IDS.emanator.includes(id) ? 'emanator' : null);
 function magicVals(self, g, c) {
   const S = self.state, set = (p) => self.setState({ mgDraft: { ...self.state.mgDraft, ...p } });
-  const none = { has: false, empty: true, emptyText: '', showSigil: false, showSoul: false, st: { pick: { groups: [] }, toStudy: [] }, sig: { ws: { groups: [] }, words: [], stats: [] }, soul: { ws: { groups: [] }, designs: [], stats: [] }, b: { open: false, schools: [], schools2: [], options: [], modules: [] }, learn: { ally: [], plates: [] } };
+  const none = { has: false, empty: true, emptyText: '', showSigil: false, showSoul: false, fig: { show: false, ws: { groups: [] }, steps: [], newForms: [], nextForms: [], designs: [], ed: { open: false, forms: [], traits: [] } }, st: { pick: { groups: [] }, toStudy: [] }, sig: { ws: { groups: [] }, words: [], stats: [] }, soul: { ws: { groups: [] }, designs: [], stats: [] }, b: { open: false, schools: [], schools2: [], options: [], modules: [] }, learn: { ally: [], plates: [] } };
   if (!c) return { ...none, emptyText: 'You have no character in this session.' };
   const words = c.sigils || [], designs = c.outbursts || [], known = c.soulKnown || { schools: [], modules: [] }, evo = hasEvoker(c), ema = hasEmanator(c);
   // A focus counts only in a hand (spec: Hands 2, item 630); carried, it keeps its store (charge, MP), so the sheet shows it.
@@ -302,9 +303,10 @@ function magicVals(self, g, c) {
     { key: 'feelings', label: 'Feelings', count: codex.feltCount, dflt: false, items: [{ key: 'feelings', isFeelings: true }] },
     { key: 'modules', label: 'Modules · by gate skill', count: codex.groups.reduce((n, gr) => n + gr.modules.filter((x) => x.known).length, 0) + ' / ' + codex.groups.reduce((n, gr) => n + gr.modules.length, 0), dflt: false, items: [{ key: 'gates', isGates: true, gates }] },
   ], { ink: SOUL_VIOLET, rerender });
-  const anyMagic = showSigil || showSoul;
+  const fig = figmentSectionVals(self, g, c, rerender); // rules 1.34: the FIGMENTS section (screens/figmentsTab.js)
+  const anyMagic = showSigil || showSoul || fig.show;
   return {
-    has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
+    fig, has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
     showSigil, showSoul, noEvoker: words.length > 0 && !evo, noEvokerText: evoC ? '⚠ ' + NEEDS_EVOKER + ' Yours is in the pack: it keeps its charge, but you can\'t draw until you hold it (GEAR: the off hand).' : '⚠ No Evoker carried: you know the words but can\'t draw them until you hold one.',
     st, sig: { ws: sigWs, words: wordCards, stats: sigStats, noWords: !wordCards.length, head: 'SIGILS · MIND · ' + words.length + (words.length === 1 ? ' WORD' : ' WORDS') },
     soul: { ws: soulWs, designs: designCards, noDesigns: !designs.length, stats: soulStats, ema: emaC, noEma: !ema, noEmaText: emaC ? NEEDS_EMANATOR + ' Yours is in the pack: it keeps its MP, but an Outburst pulls from the air instead, at +2 Strain a cast, and Syphon waits (GEAR: the off hand).' : 'No Emanator carried: an Outburst pulls from the air instead of your MP, at +2 Strain a cast.',

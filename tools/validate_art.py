@@ -456,6 +456,7 @@ def validate():
     validate_production_icons(catalog)
     validate_campaign_art(catalog)
     validate_map_kits(catalog)
+    validate_figment_icons(catalog)
     sys.path.insert(0, str(ROOT / 'tools/art'))
     from export_nov12_icons import validate_delivery
     validate_delivery(PIXEL_ASSET)
@@ -472,6 +473,29 @@ def validate():
           f'{len(catalog.get("emblems", {}))} emblems; '
           f'{len(checksums)} file checksums; metadata, exports, spoilers and palette valid; '
           f'white-ink/alpha pixel checks: {PIXEL_ASSET or "all icons"}.')
+
+SVG_LINE_ROOT = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+
+def validate_figment_icons(catalog):
+    """Figment line icons (rules 1.34; art/style-guide/weapon-icons.md): every figment row in data/figments.json (the
+    forms, the Scrap Turret, the Picture verb) names an `icon` in the catalog's `figment_icons`, and every entry is a
+    monoline SVG at art/icons/figments/<id>.svg with the line-icon root, no fill, no colour but currentColor."""
+    icons = catalog.get('figment_icons', {})
+    data = json.loads(local('data/figments.json').read_text(encoding='utf-8'))
+    rows = list(data['forms']) + [data['turret']] + [i for i in data.get('items', []) if i.get('icon')]
+    for row in data['forms'] + [data['turret']]:
+        require(row.get('icon') in icons, f"Figment {row['id']} has no icon in the catalog's figment_icons")
+    for row in rows:
+        require(row['icon'] in icons, f"Figment row {row['id']} names an unknown icon {row['icon']}")
+    for asset_id, asset in icons.items():
+        path = asset['path']
+        require(path == f'art/icons/figments/{asset_id}.svg', f'Figment icon path must be art/icons/figments/<id>.svg: {asset_id}')
+        data_bytes = local(path).read_bytes()
+        require(hashlib.sha256(data_bytes).hexdigest() == asset['sha256'], f'Checksum mismatch: {path}')
+        text = data_bytes.decode('utf-8')
+        require(text.lstrip().startswith(SVG_LINE_ROOT), f'Figment icon root is not the line-icon root: {path}')
+        require('fill="#' not in text and '<text' not in text and '<image' not in text and 'filter' not in text, f'Figment icon draws fills, text, images or filters: {path}')
+        require(all(c == 'currentColor' for c in __import__('re').findall(r'stroke="([^"]+)"', text)), f'Figment icon strokes in a colour of its own: {path}')
 
 KIT_KINDS = {'floor', 'wall', 'doorway', 'breach', 'cover-half', 'cover-full', 'broken', 'door', 'prop', 'decal', 'dressing'}
 

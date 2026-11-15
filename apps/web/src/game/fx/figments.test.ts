@@ -6,7 +6,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf, FORM } from '@engine';
 import { setLayer, slow } from './dom';
 import { playFx, setContext, clearFx } from './play';
-import { figmentFxOf, figmentBeat, figmentExtraBeat, figLook, FIG_MS, resetFigments } from './figments';
+import { figmentFxOf, figmentBeat, figmentExtraBeat, figLook, figMarkSvg, FIG_MS, resetFigments } from './figments';
 
 function grid(w = 8, h = 6) {
   const root = document.createElement('div'); document.body.appendChild(root);
@@ -32,7 +32,7 @@ describe('figments on the fight map', () => {
   afterEach(() => { clearFx(); vi.useRealTimers(); g.root.remove(); g.layer.remove(); delete (window as any).__phcFxTrace; });
 
   it('the kind comes from its row: every form in data/figments.json has a look (its name and glyph); a block that is no Figment has none', () => {
-    for (const [id, f] of Object.entries(FORM as Record<string, any>)) expect(figLook(id)).toEqual({ name: f.name, glyph: f.glyph || '◇' });
+    for (const [id, f] of Object.entries(FORM as Record<string, any>)) expect(figLook(id)).toEqual({ name: f.name, glyph: f.glyph || '◇', icon: f.icon || '' });
     expect(figLook('scrap_turret')).toBeNull(); expect(figLook(null)).toBeNull();
   });
   it('summon: the spawn event plays the caster wind-up, the thread and then the forming, in that order, inside its beat', () => {
@@ -57,6 +57,15 @@ describe('figments on the fight map', () => {
     vi.advanceTimersByTime(slow(FIG_MS.command) + 10); expect(traces()).toEqual(['command', 'act']);
     const sw = ((window as any).__phcFxTrace as any[]).filter((t) => t.w === 'swing'); expect(sw.length).toBe(1); // the ordinary strike played
     const other = { ...hit, unit: PC.id, from: PC.pos, n: 3 }; expect(figmentFxOf(other)).toBeNull(); expect(figmentExtraBeat(other)).toBe(0);
+    vi.advanceTimersByTime(3000);
+  });
+  it("the forming draws the form's own line icon (its row's `icon`), not a text glyph", () => {
+    setContext(game([PC, FIG, FOE]), 'combat');
+    playFx({ k: 'spawn', unit: FIG.id, at: FIG.pos, owner: PC.id, block: FORM_ID, n: 11 } as any);
+    vi.advanceTimersByTime(slow(FIG_MS.cast + FIG_MS.travel) + 40);
+    const mark = g.layer.querySelector('[data-fig-mark]') as HTMLElement;
+    expect(mark.getAttribute('data-fig-mark')).toBe((FORM as any)[FORM_ID].icon); expect(mark.querySelector('path')).not.toBeNull(); expect(mark.querySelector('text')).toBeNull();
+    expect(figMarkSvg({ icon: (FORM as any)[FORM_ID].icon, glyph: 'x' })).not.toContain('currentColor');
     vi.advanceTimersByTime(3000);
   });
   it('a walk it is ordered on is a command too (and the strike right after it is not commanded twice)', () => {
