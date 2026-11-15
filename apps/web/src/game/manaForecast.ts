@@ -141,9 +141,9 @@ export function forecastVals(cb: any, open: boolean, toggle: () => void, drop = 
     headStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; color: ' + f.ink,
     // One line each, cut with an ellipsis (the full text in the title), so the panel's height never changes with the
     // numbers and the map never rescales mid-fight.
-    lineStyle: 'font-size: 12px; line-height: 1.35; color: #C9D3E3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
-    outlookStyle: 'font-size: 11px; line-height: 1.35; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
-    trendStyle: 'flex: 0 1 auto; max-width: 60%; min-width: 0; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + tInk,
+    lineStyle: 'font-size: 13px; line-height: 1.35; color: #C9D3E3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
+    outlookStyle: 'font-size: 13px; line-height: 1.35; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
+    trendStyle: 'flex: 0 1 auto; max-width: 60%; min-width: 0; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + tInk,
     boxStyle: 'display: flex; flex-direction: column; padding: 8px 12px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + f.ink,
     detailsStyle: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; padding: 8px 12px; border-top: 1px solid #232D3F' + (!drop ? '; margin-top: 6px' : '; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 7; border-radius: 12px; background: #10151F; border: 1px solid #2E3A50; border-left: 3px solid ' + f.ink + '; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55)'),
   };

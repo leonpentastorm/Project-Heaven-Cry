@@ -157,7 +157,7 @@ export const TIP_CSS = [
   'color:#E7EBF3;font:400 12px/1.4 \'Chakra Petch\',sans-serif;pointer-events:none;display:flex;flex-direction:column;gap:3px;text-align:left;letter-spacing:normal;text-transform:none;white-space:normal}',
   '.phc-atip-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px;margin-bottom:2px}',
   '.phc-atip-n{font-size:13px;font-weight:700;margin-right:3px}',
-  '.phc-atip-c{font-size:10.5px;font-weight:700;padding:0 6px;border-radius:99px;border:1px solid #3B475D;color:#E7EBF3;white-space:nowrap}',
+  '.phc-atip-c{font-size:13px;font-weight:700;padding:0 6px;border-radius:99px;border:1px solid #3B475D;color:#E7EBF3;white-space:nowrap}',
   '.phc-atip-l b{font-weight:700}',
 ].join('');
 /** Lay a card out as elements (the name and its chips if any, a line each). */

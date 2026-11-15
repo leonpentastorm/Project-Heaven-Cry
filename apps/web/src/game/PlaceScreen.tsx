@@ -21,7 +21,7 @@ import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
-const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
+const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 28 };
 /** The words over each group of cards (the engine names the group; the client its heading and its note). */
 const HEAD: Record<string, [string, string]> = {
@@ -45,7 +45,7 @@ function TrainBarView({ b }: { b: NonNullable<PlaceCardV['bar']> }) {
         <span style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: at(b.now) + '%', background: '#7A879E' }} />
         {b.to != null ? <span style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 2, background: I.white }} /> : null}
       </span>
-      <span aria-hidden="true" style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 12, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>
+      <span aria-hidden="true" style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>
         <span>{b.now} now · <b style={{ color: I.white }}>+{b.add}</b></span>
         {b.reaches ? <span style={{ color: I.ok, fontWeight: 700 }}>✓ Reaches it</span> : null}
       </span>
@@ -70,7 +70,7 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
       <span style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: o.pays ? I.ok : I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : o.pays ? '+' + o.pays.toLocaleString('en') : o.costs || 'Free'}</span>
-          {o.price ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS PAID TO YOU</span> : null}
+          {o.price ? <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS PAID TO YOU</span> : null}
         </span>
         <span style={{ marginLeft: 'auto', minHeight: 40, padding: '0 16px', display: 'inline-grid', placeItems: 'center', borderRadius: 10, background: o.why ? 'transparent' : I.text, outline: o.why ? '1px solid #3B475D' : 'none', color: o.why ? I.muted : I.ground, fontWeight: 700, fontSize: 15 }}>Take it</span>
       </span>
@@ -90,7 +90,7 @@ function TabBody({ v, tab }: { v: PlaceViewV; tab: string }) {
         <section key={gname} data-phc-group={gname}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '6px 0 12px' }}>
             <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>{HEAD[gname]?.[0] || gname}</h2>
-            {HEAD[gname]?.[1] ? <span style={{ fontSize: 12, color: I.muted }}>{HEAD[gname][1]}</span> : null}
+            {HEAD[gname]?.[1] ? <span style={{ fontSize: 13, color: I.muted }}>{HEAD[gname][1]}</span> : null}
             <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
           </div>
           <div style={GRID}>
