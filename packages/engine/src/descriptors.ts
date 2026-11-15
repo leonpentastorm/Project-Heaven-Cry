@@ -20,7 +20,7 @@ import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange } from './combat';
 import { kindOf } from './objects';
-import { apFor } from './effects/cost';
+import { apFor, RESOURCES } from './effects/cost';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
 import type { Action, GameState } from './game';
@@ -303,7 +303,9 @@ function prayPicks(target: string, valid: string[], seenTiles?: string[]): PickS
 export const PK = 'pk:';
 export const perkId = (e: { id: string; actionId: string }) => PK + e.id + '#' + e.actionId;
 export function parsePerkId(id: string | null | undefined): { id: string; actionId: string } | null { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; }
-export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : priceOf(e) + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
+/** What an entry costs besides AP, from the cost site's figures (0.28.3, rules 1.55 item 46: "24 MP"). */
+const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + (RESOURCES[k]?.name || k));
+export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : [priceOf(e) + ' AP', ...perkResText(e)].join(' · ')) + (e.uses.label ? ' · ' + e.uses.label : '');
 /** An on/off policy pair names the one in force; Eye of the Storm reads ARMED once armed. */
 export function perkState(e: PerkActionEntry): { tag: string; why: string | null } {
   const pol = /^(.*)_(on|off)$/.exec(e.actionId);
@@ -590,7 +592,7 @@ const PERKS: ActionSystem = {
       if (e.thenTile) picks.push({ key: 'tile', kind: 'tile', prompt: 'Now click the tile they step to.' }); // 0.28.3: Guide's second pick (the engine's preview shades the legal tiles)
       if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label, ...(o.off ? { why: o.off } : {}) })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules
-      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.sub ? { sub: e.sub } : {}), ...(e.arm ? { available: true } : {}) });
+      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.res ? { cost: { ap: priceOf(e), text: perkCost(e), res: e.res } } : {}), ...(e.sub ? { sub: e.sub } : {}), ...(e.arm ? { available: true } : {}) });
     });
   },
   send(x, d, p) {

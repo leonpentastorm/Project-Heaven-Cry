@@ -1559,7 +1559,7 @@
                   "ap": 2,
                   "uses": "per_scene",
                   "res": {
-                    "mp": 20
+                    "mp": 60
                   },
                   "scope": [
                     "combat"
@@ -2495,7 +2495,7 @@
             "ap": 2,
             "uses": "at_will",
             "res": {
-              "mp": 6
+              "mp": 18
             },
             "scope": [
               "combat"
@@ -3365,7 +3365,7 @@
             "ap": 1,
             "uses": "at_will",
             "res": {
-              "mp": 10
+              "mp": 30
             },
             "scope": [
               "combat"

@@ -51,10 +51,10 @@ describe('whyNot() / canPay(): one refusal sentence', () => {
   it('"Needs N AP.", "Needs N charge.": the resource\'s own word; what the action declares is asked before the AP', () => {
     const f = fight({ kit: 'sigil', classId: 'mage' }), u = f.pc; u.ap = 1; u.mg!.charge = 1;
     expect(whyNot(f.cb, u, 2)).toBe('Needs 2 AP.'); expect(whyNot(f.cb, u, 1)).toBeNull(); expect(canPay(f.cb, u, 0)).toBe(true);
-    expect(whyNot(f.cb, u, { action: 'x', ap: 1, res: { charge: 3 }, labels: [], free: false })).toBe('Needs 3 charge.');
-    expect(whyNot(f.cb, u, { action: 'x', ap: 5, res: { charge: 3 }, labels: [], free: false })).toBe('Needs 3 charge.');
+    expect(whyNot(f.cb, u, { action: 'x', ap: 1, res: { charge: 3 }, labels: [], free: false })).toBe('Needs 3 charge (you have 1).');
+    expect(whyNot(f.cb, u, { action: 'x', ap: 5, res: { charge: 3 }, labels: [], free: false })).toBe('Needs 3 charge (you have 1).');
     expect(whyNot(f.cb, u, { action: 'x', ap: 5, res: { charge: 1 }, labels: [], free: false })).toBe('Needs 5 AP.');
-    expect(needs(2)).toBe('Needs 2 AP.'); expect(needs(2, 'AP', 1)).toBe('Needs 2 AP (1 left).');
+    expect(needs(2)).toBe('Needs 2 AP.'); expect(needs(2, 'AP', 1)).toBe('Needs 2 AP (1 left).'); expect(needs(24, 'MP', undefined, 10)).toBe('Needs 24 MP (you have 10).'); // 0.28.3 (rules 1.55 item 46)
     expect(poolWhyNot(1, 2)).toBe('Needs 2 AP.'); expect(poolWhyNot(1, 2, { left: true })).toBe('Needs 2 AP (1 left).'); expect(poolWhyNot(2, 2)).toBeNull();
   });
   it('every resource of data/actions.json can be read on a unit that has it and is 0 on one that has not', () => {
@@ -77,7 +77,7 @@ describe('pay(), refund(), spend(): nothing else takes AP or a resource', () => 
     onlyHandlers([{ id: 'chain_smoker', kind: 'trait', actions: [{ id: 'burn', label: 'Burn', scope: ['combat'], target: 'none', ap: 2, res: { charge: 3 }, run: () => null }] } as any], () => {
       const f = fight({ kit: 'sigil', classId: 'mage', traits: ['chain_smoker'] }), v = f.pc, c = f.g.characters[v.charId!]; v.mg!.charge = 2;
       const x = { u: v, c, cb: f.cb, g: f.g };
-      expect(withGame(f.g, () => perkActionsFor(x, 'combat').find((e) => e.id === 'trait:chain_smoker')!.why)).toBe('Needs 3 charge.');
+      expect(withGame(f.g, () => perkActionsFor(x, 'combat').find((e) => e.id === 'trait:chain_smoker')!.why)).toBe('Needs 3 charge (you have 2).');
       v.mg!.charge = 5;
       expect(withGame(f.g, () => previewPerkAction(x, 'trait:chain_smoker', {}, 'combat').ok)).toBe(true);
       const g2 = apply(f.g, { type: 'combat/perk', unitId: v.id, id: 'trait:chain_smoker' } as any, 'host'), u2 = g2.combat!.units.find((y) => y.id === v.id)!;
@@ -298,8 +298,8 @@ describe('review, problem 5: a declared `res` is refused and paid in a story too
     onlyHandlers([act({ echo: 1 })], () => {
       const s = storyWith([{ traits: ['chain_smoker'] }]), c = s.chars[0], x = { c, g: s.g }; RAN = 0;
       c.echo = 0;
-      expect(withGame(s.g, () => perkActionsFor(x, 'story').find((e) => e.id === 'trait:chain_smoker')!.why)).toBe('Needs 1 Echo.');
-      expect(withGame(s.g, () => runPerkAction(x, 'trait:chain_smoker', {}, { state: 7 }, 'story'))).toBe('Needs 1 Echo.'); expect(RAN).toBe(0);
+      expect(withGame(s.g, () => perkActionsFor(x, 'story').find((e) => e.id === 'trait:chain_smoker')!.why)).toBe('Needs 1 Echo (you have 0).');
+      expect(withGame(s.g, () => runPerkAction(x, 'trait:chain_smoker', {}, { state: 7 }, 'story'))).toBe('Needs 1 Echo (you have 0).'); expect(RAN).toBe(0);
       c.echo = 1;
       expect(withGame(s.g, () => perkActionsFor(x, 'story').find((e) => e.id === 'trait:chain_smoker')!.why)).toBeNull();
       expect(withGame(s.g, () => runPerkAction(x, 'trait:chain_smoker', {}, { state: 7 }, 'story'))).toBeNull(); expect(RAN).toBe(1); expect(c.echo).toBe(0);

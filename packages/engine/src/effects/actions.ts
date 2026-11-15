@@ -248,6 +248,8 @@ export interface PerkActionEntry {
   /** What combat/perk, world/act perk and story/perk take as id (item key), plus actionId when an item has several. */
   id: string; actionId: string; itemId: string; kind: string; label: string; text: string;
   ap: number; uses: { per: UseScope; n: number; left: number; label: string };
+  /** 0.28.3: what else it costs this holder now (MP, charge, Supplies…), the cost site's own figures (rules 1.55 item 46). */
+  res?: Record<string, number>;
   target: ActionDef['target']; range?: number; scope: ActionScope[];
   /** null: can be used now; otherwise why not. */
   why: string | null;
@@ -316,7 +318,8 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   if (!why && scope !== 'story' && h.u) why = whyNot(h.cb, h.u, cost, { as: { type: 'combat/perk', id: h.key }, c: h.c });
   else if (!why) why = resWhyNot(cost.res, null, h.c); // no unit pays here (a story action): what the character holds (stims, Echo) is still asked for
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
-  return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
+  const res = Object.fromEntries(Object.entries(cost.res || {}).filter(([, v]) => v > 0));
+  return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, ...(Object.keys(res).length ? { res } : {}), uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
     target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h, d), ...(subOf(h, d) ? { sub: subOf(h, d) } : {}), cls: h.info.classId,
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
     ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}), ...(d.thenTile ? { thenTile: true } : {}) };

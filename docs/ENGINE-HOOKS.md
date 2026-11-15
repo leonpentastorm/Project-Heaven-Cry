@@ -705,7 +705,7 @@ Families: `body`, `brain`, `heart`.
 | `lend` | `lend(cb: Combat, u: Unit, a: any): Credit \| null` | Before a reducer action: open its credit (Encore's repeat, unless in a window; a Brief's cut). |
 | `settleCredit` | `settleCredit(cb: Combat, loan: Credit \| null): { brief: number; encore: number; spent: number; hadEncore: boolean } \| null` | After it: close the credit. |
 | `unlend` | `unlend(cb: Combat \| null \| undefined)` | Drop an open credit without settling it (the action was refused). |
-| `needs` | `needs(n: number, what = 'AP', left?: number)` | THE refusal sentence for a resource the unit is short of. |
+| `needs` | `needs(n: number, what = 'AP', left?: number, have?: number)` | THE refusal sentence for a resource the unit is short of. |
 | `poolWhyNot` | `poolWhyNot(have: number, n: number, o: { left?: boolean } = {}): string \| null` | The same question for a pool that is not a unit's (the area map's round AP, g.story.ap): the sentence, or null. o.left: say what is left ("Needs 2 AP (1 left)."). |
 | `apFor` | `apFor(cb: Combat \| null \| undefined, u: Unit, as?: any): number` | The AP the unit can put toward an action now: its own, and the credit that action carries. |
 | `whyNot` | `whyNot(cb: Combat \| null \| undefined, u: Unit, p: Priced \| number, o: { as?: any; c?: Character \| null; /** Classes 3.0 P9: who pays a price made on another (an owned un…` | Why the unit can't pay this (the one sentence), or null: it can. o.as: the reducer action this is (Encore's key), for a preview made outside the action; o.c: the character, for a resource kept there (stims, Ec… |
@@ -835,7 +835,7 @@ Families: `body`, `brain`, `heart`.
 | `ItemTab` | `type ItemTab = 'perks' \| 'class' \| 'shadow' \| 'tend' \| 'figments' \| 'faith'` | The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`: Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. |
 | `VERB_TABS` | `VERB_TABS: ItemTab[]` | The system tabs a door verb's data file may name (`tab`, rules 1.32-1.33): Shadow's verbs, Tending's. |
 | `PRAYER_SUB` | `PRAYER_SUB: Record<string, string>` | The Faith tab's prayer groups (the prayer rows' own: descriptors.ts FAITH). |
-| `PerkActionEntry` | `interface PerkActionEntry { id, actionId, itemId, kind, label, text, ap, uses, target, range, scope, why, engine, tab, cls, arm, armed, sub, tier, options, pickMulti, pi…` | One action as the UI shows it. |
+| `PerkActionEntry` | `interface PerkActionEntry { id, actionId, itemId, kind, label, text, ap, uses, res, target, range, scope, why, engine, tab, cls, arm, armed, sub, tier, options, pickMult…` | One action as the UI shows it. |
 | `perkActionsFor` | `perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[]` | Every action a holder's items give on this surface, available or greyed (hidden ones left out). |
 | `PerkInfoEntry` | `interface PerkInfoEntry { id, itemId, kind, label, text, tab, tier, via, uses }` | An item the data makes an action, but which is used another way: from another action (a chip on Pump, Begin, an attack: its toggles) or by itself (a hook). |
 | `perkInfoFor` | `perkInfoFor(x: Who, scope: ActionScope): PerkInfoEntry[]` | The read-only Perks-tab entries of a holder's items on this surface (see PerkInfoEntry). |
