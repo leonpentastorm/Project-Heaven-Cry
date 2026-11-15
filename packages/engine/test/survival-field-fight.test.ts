@@ -228,4 +228,12 @@ describe('rules 1.55 item 49: the party votes, the fight ends', () => {
     const left = leaveField(g); expect(left.characters[gun].stims).toBe(stims + 2);
     void gu;
   });
+
+  it('a give on the field rebuilds the fighters but hands back nothing the fight spent: the free first Pump, the Strain owed', () => {
+    const prep = (x: any) => { Object.values(x.characters).find((c: any) => c.name === 'Medic').stims = 2; };
+    const g0 = toField(inFight(prep)), { med, gun, mu } = ids(g0), m = U(g0, mu).mg;
+    m.firstUsed = true; m.freeUsed = 1; m.debt = 3;
+    const g = apply(g0, { type: 'gear/give', charId: med, to: gun, count: 'stim_injector', qty: 1 }, 'host'), v = U(g, mu).mg;
+    expect(v.firstUsed).toBe(true); expect(v.freeUsed).toBe(1); expect(v.debt).toBe(3);
+  });
 });

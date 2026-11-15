@@ -3567,6 +3567,10 @@ const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed'
   // Calls (rules 1.13): the marks Calls left and the unit's own Call counters
   'call'] as const;
 
+/** What a fighter's heart keeps when it is rebuilt (SB_KEEP's part for u.mg): Flux, Strain, a held Outburst, and the
+ * fight's own counters (rules 1.55 item 45: a give on the field must not hand back the free first Pump, this turn's free
+ * stages or the Strain owed). */
+const SB_KEEP_MG = ['flux', 'strain', 'held', 'cast', 'lockRound', 'firstUsed', 'freeUsed', 'freePumps', 'pumps', 'debt', 'calmFight', 'calmTend'] as const;
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
 function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
@@ -3578,7 +3582,7 @@ function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
   if (mode === 'keep') {
     for (const k of SB_KEEP) if (old[k] !== undefined) (u as any)[k] = JSON.parse(JSON.stringify(old[k]));
     if (old.offWeapon && old.offWeapon === u.offWeapon) u.offAmmo = old.offAmmo;
-    if (old.mg && u.mg) { u.mg.flux = old.mg.flux; u.mg.strain = old.mg.strain; u.mg.held = old.mg.held; u.mg.cast = old.mg.cast; u.mg.lockRound = old.mg.lockRound; }
+    if (old.mg && u.mg) { for (const k of SB_KEEP_MG) if ((old.mg as any)[k] !== undefined) (u.mg as any)[k] = JSON.parse(JSON.stringify((old.mg as any)[k])); }
     if (u.conds?.slowed) { u.baseMove = u.movement; u.movement /= 2; }
     if (u.conds?.blinded) { u.baseVision = u.vision || 12; u.vision = 1; }
     if (u.conds?.guarded) u.def += 2;

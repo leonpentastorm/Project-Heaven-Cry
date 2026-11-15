@@ -1282,7 +1282,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `light` | `at`, `tiles`, `side` | sigil.ts:1146 | 1 |
 | `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1576 | 1 |
 | `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2476 | 2 |
-| `mana` | `band`, `mana` | game.ts:4074 | 2 |
+| `mana` | `band`, `mana` | game.ts:4078 | 2 |
 | `mask` | `target`, `at`, `fade` | magic.ts:491 | 2 |
 | `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image` | combat.ts:1428 | 6 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:35 | 3 |
