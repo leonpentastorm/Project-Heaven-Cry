@@ -6233,6 +6233,23 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
    (`fieldWorld`, game.ts) now writes back to that unit after every action what a token draws (HP, Max HP, Downed,
    conditions, shields, MP), read from the character as the field builds it (`storyCb`), so the token, its bar and the
    sheet agree; the fight's record (initiative, kills) stays.
+0.28.3-C.1. **The camp reads as a checklist** (Leon, 15 Nov 2026: "nobody understand shit, i have players only realizing
+   you can take a free weapon 3 runs in"). The camp's screen is three steps in order: STEP 1 the free weapon, STEP 2 the
+   free focus (only for a character with a point in a focus's door skill: the same test the Recommended loadout uses),
+   STEP 3 the budget. The free picks are no longer drawn among priced shelves: their cards carry FREE where a price
+   would be. The place header is the checklist (each step's state in words: NOT PICKED or the name taken; the budget
+   left of the total) and the button that moves on. "Not sure? Take the recommended kit" is the first thing in the body,
+   with one line naming what it gives. Moving on (to the starting boon, or Ready) with a free pick not taken asks first
+   in plain words ("You have not taken your free weapon. It costs nothing."); starting without one stays allowed. The
+   engine's camp view says which cards are free (`free` on a card), what each free pick holds and whether it is still
+   open (`freePicks`), and what the Recommended loadout gives (`recommended`). No rule changed. PROVISIONAL (the layout).
+0.28.3-C.2. **A shield at the camp** (Leon, 15 Nov 2026: "first weapon shop have no shield for tanks"). The camp's gear
+   shelf (`survival.json loadout.stock`) lists the Buckler at its shop price (priceOf, within the budget; the Legion
+   riot shield and the Pavise cost more than the budget and are not listed, rule 1.55). A bought off-hand item goes in
+   the off hand through the one equip rule (character.ts `equip`, 'off'): one at a time; refused in words beside a
+   two-handed weapon ("Buckler: your main-hand weapon needs both hands.") or when the free focus already holds the off
+   hand. The Recommended loadout is data by profile (focus fuel, gun or melee), not by archetype, so it does not add a
+   shield. PROVISIONAL.
 
 ## Maps (rules 1.16)
 

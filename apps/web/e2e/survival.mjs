@@ -47,7 +47,7 @@
 // hand), and ten mana residue are pressed into a core through Make. TOP_SHOTS=dir copies top-make, top-lootcards and
 // top-trainingbar there.
 import { readFileSync, copyFileSync } from 'node:fs';
-import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart, sidePanels } from './lib.mjs';
+import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart, campConfirmGo, sidePanels } from './lib.mjs';
 const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
 const SVD = DATA('survival.json'), WPN = Object.fromEntries(DATA('weapons.json').items.map((w) => [w.id, w])), RAR = DATA('rules.json').rarity;
 // rules 1.54 (materials and making): the recipes and the items, from data (no item id typed here)
@@ -99,12 +99,25 @@ const FREE = (id) => archOf(id)[0], GUN = FREE('smgs');
 const pick0 = () => G().then((g) => g.run.loadout?.[campId]), me0 = () => G().then((g) => g.characters[campId]);
 const numIn = (sel) => p.locator(sel).textContent().then((t) => Number((t.match(/\d+/g) || []).pop()));
 ok('Start the run opens the camp first (state loadout), the budget whole: ' + LO.budget, (await run()).state === 'loadout' && await numIn('[data-phc-camp-left]') === LO.budget && await numIn('[data-phc-camp-used]') === 0);
-ok('the weapon rack: one row an archetype (' + LO.archetypes.list.length + '), each the free one, another one and the better one; the Focus row the four foci',
+// rules 0.28.3-C.1: the camp is a checklist: step 1 the free weapon (one FREE card an archetype, no price), step 2 the free
+// focus (the four, only for a character with a door skill: its chip says so), step 3 the budget (another one and the better
+// one of each family, priced, the better one compared with the free one)
+const focusStep = await p.locator('[data-phc-camp-check="focus"]').count() === 1;
+ok('the checklist and step 1: one FREE card an archetype (' + LO.archetypes.list.length + '), no price among them; the focus step ' + (focusStep ? 'with the four foci' : 'absent (no door skill)') + '; the better ones priced on step 3',
   await p.locator('[data-phc-camp-rack]').count() === LO.archetypes.list.length && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-pick]').count() === LO.archetypes.list.length
-  && await p.locator('[data-phc-camp-row="focus"] [data-phc-camp-pick]').count() === 4 && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-compare]').count() > 0);
+  && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-price]').count() === 0 && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-freetag]').count() === LO.archetypes.list.length
+  && await p.locator('[data-phc-camp-row="focus"] [data-phc-camp-pick]').count() === (focusStep ? 4 : 0) && await p.locator('[data-phc-camp-row="budget"] [data-phc-camp-compare]').count() > 0
+  && /NOT PICKED/.test(await p.locator('[data-phc-camp-check="weapon"]').textContent()) && /take one free weapon/.test(await p.locator('[data-phc-camp-help]').textContent()));
+// moving on with nothing taken asks first, in plain words; Go back and pick closes it and leaves the camp as it was
+await p.locator('[data-phc-camp-next]').click(); await settle(p, 300);
+const askText = await p.locator('[data-phc-dialog] p').textContent().catch(() => '');
+await p.locator('[data-phc-dialog] button', { hasText: 'Go back and pick' }).click(); await settle(p, 300);
+ok('Next with the free weapon not taken asks first ("' + askText + '"); Go back and pick stays on the loadout', /You have not taken your free weapon/.test(askText) && /costs? nothing/.test(askText)
+  && !(await p.locator('[data-phc-dialog]').count()) && await p.locator('[data-phc-camp-row="weapon"]').count() === 1 && !(await pick0()).weapon);
 await p.locator('[data-phc-camp-recommended]').click(); await settle(p, 300);
 const rec = await pick0();
-ok('Recommended fills a weapon and spends from the budget (' + rec.weapon + ', ' + JSON.stringify(rec.take) + ')', !!rec.weapon && Object.keys(rec.take).length > 0 && await numIn('[data-phc-camp-left]') < LO.budget);
+ok('Recommended fills a weapon and spends from the budget (' + rec.weapon + ', ' + JSON.stringify(rec.take) + '); the weapon chip is ticked', !!rec.weapon && Object.keys(rec.take).length > 0 && await numIn('[data-phc-camp-left]') < LO.budget
+  && (await p.locator('[data-phc-camp-check="weapon"]').getAttribute('data-phc-done')) === '1');
 await p.locator('[data-phc-camp-pick="weapon:' + FREE('bows') + '"]').click(); await settle(p, 300);
 ok('ONE weapon: the bow taken replaces the last pick, with one quiver loaded', (await pick0()).weapon === FREE('bows') && (await me0()).weapon === FREE('bows') && (await me0()).quivers?.length === 1 && (await me0()).loaded > 0); // rules 1.53: one quiver, full
 await p.locator('[data-phc-camp-pick="weapon:' + GUN + '"]').click(); await settle(p, 300);
@@ -135,7 +148,7 @@ for (const [w, hh] of [[1280, 720], [1920, 1080]]) {
   await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
   const bad = await campOverflow();
   ok('the camp at ' + w + ': no card\'s name or stat row overflows its box' + (bad.length ? ' (' + bad.join(' | ') + ')' : ''), !bad.length);
-  const fam = await p.evaluate(() => [...document.querySelectorAll('[data-phc-camp-rack]')].map((f) => f.querySelectorAll('.phc-camp-pair > *').length));
+  const fam = await p.evaluate(() => [...document.querySelectorAll('[data-phc-camp-family]')].map((f) => f.querySelectorAll('.phc-camp-pair > *').length)); // step 3: another one, the better one
   const gap = await p.evaluate(() => { const g = document.querySelector('.phc-camp-families'), r = g.getBoundingClientRect(); let right = 0, card = 0; for (const k of g.children) { const b = k.getBoundingClientRect(); if (b.top - r.top < 5) { right = Math.max(right, b.right); card = b.width; } } return { empty: r.right - right, card }; });
   ok('the camp at ' + w + ': each weapon family two cards at most (' + fam.join('') + '), the first row of families fills the width (' + Math.round(gap.empty) + ' px empty)', fam.every((n) => n >= 1 && n <= 2) && gap.empty < gap.card);
   const bar = await p.evaluate(async () => { const s = document.querySelector('[data-phc-camp]').parentElement; s.scrollTop = s.scrollHeight; await new Promise((r) => setTimeout(r, 300));
@@ -148,7 +161,7 @@ await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 const kept = (await me0()).credits;
 // the starting boon: the camp's second step, three large cards offered by what the loadout holds
 ok('Ready waits for the starting boon: the button reads Next', await p.locator('[data-phc-camp-next]').count() === 1 && !(await p.locator('[data-phc-camp-ready]').count()));
-await p.locator('[data-phc-camp-next]').click(); await p.waitForSelector('[data-phc-startboon]', { timeout: 30000 });
+await p.locator('[data-phc-camp-next]').click(); await campConfirmGo(p); await p.waitForSelector('[data-phc-startboon]', { timeout: 30000 });
 const campCards = await p.locator('[data-phc-startboon]').allTextContents(), offer0 = await p.locator('[data-phc-startboon]').evaluateAll((e) => e.map((x) => x.getAttribute('data-phc-startboon')));
 ok('the starting boon: three large cards, each its name, its sentence with its number from data, its line\'s word and its worth on the cap (' + offer0.join(', ') + ')', campCards.length === 3
   && campCards.every((t) => /\d/.test(t) && /of your 50/.test(t) && /GUNS|BLADES|GUARD|SHADOW|SIGIL|OUTBURST|BONDS|FIGMENTS|FAITH/.test(t)) && await p.locator('[data-phc-startboon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon (its line's)

@@ -8,6 +8,23 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.3
+
+### Survival
+
+- **The camp reads as a checklist** (rules 0.28.3-C.1; Leon, 15 Nov 2026: players found the free weapon three runs in).
+  The camp's header lists what to do, each with its state in words: 1 FREE WEAPON (NOT PICKED, or ✓ and its name),
+  2 FREE FOCUS (only for a character with a focus door skill), the BUDGET left of the total with a meter, and the
+  STARTING BOON; a click opens its section. One sentence of help under the title. The body is in steps: "Step 1 · Your
+  free weapon" (one FREE card an archetype, "Take (free)", "Swap to this (free)", "✓ YOURS"), "Step 2 · Your free focus",
+  then "Spend your budget" (another one and the better one of each weapon family, then the shop's shelves, all priced).
+  "Not sure? Take the recommended kit" is first, naming what it gives. Moving on with a free pick not taken asks first
+  ("You have not taken your free weapon. It costs nothing."). The engine's camp view now says which cards are free, the
+  free picks' state and what Recommended gives.
+- **A shield at the camp** (rules 0.28.3-C.2; Leon: "first weapon shop have no shield for tanks"): the Buckler (200
+  credits) is on the camp's Gear shelf; bought, it goes in the off hand beside a one-handed weapon, and is refused in
+  words beside a two-hander or the free focus.
+
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP
