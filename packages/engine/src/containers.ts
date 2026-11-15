@@ -162,11 +162,12 @@ export function intoCounts(c: Character, it: PackItem): boolean {
   const row = COUNTED.find((r) => r.item === (it.item || it.id)); if (!row) return false;
   c[row.count] = (c[row.count] || 0) + it.qty; return true;
 }
-/** The counted things (intoCounts): each item id, the character's count it joins, and where the sheet lists it
- * (before or after the pack lines). The one list intoCounts and countedLines read. */
-const COUNTED: { item: string; count: 'stims' | 'essence'; at: 'first' | 'last' }[] = [
-  { item: 'stim_injector', count: 'stims', at: 'first' }, { item: 'essence_of_experience', count: 'essence', at: 'last' },
-];
+/** The counted things (intoCounts): each item whose row has `counts_into` (items.json: the character's count it joins,
+ * and where the sheet lists it, before or after the pack lines), the `first` ones first. The one list intoCounts and
+ * countedLines read (consolidation 0.29 should-fix 4: no item id named here). */
+const COUNTED: { item: string; count: 'stims' | 'essence'; at: 'first' | 'last' }[] = (Object.values(ITEM) as any[])
+  .filter((it) => it?.counts_into).map((it) => ({ item: it.id as string, count: it.counts_into.count, at: it.counts_into.at }))
+  .sort((a, b) => (a.at === b.at ? 0 : a.at === 'first' ? -1 : 1));
 /** A character's counted things as pack-shaped lines for a list (consolidation 0.28 S8): each held count (COUNTED) as
  * {id and item: its item id, name, qty, kind: packKindOf, counted: true}, with where it is listed. */
 export const countedLines = (c: Character): { line: PackItem & { item: string; counted: true }; at: 'first' | 'last' }[] =>

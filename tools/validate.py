@@ -2903,6 +2903,9 @@ _PACK_KINDS = {"weapon", "ammo", "tool", "focus", "food", "med", "loot", "plot"}
 for _i in _rimap.values():
     if "pack_kind" in _i and _i["pack_kind"] not in _PACK_KINDS: errors.append(f"items:{_i.get('id')}: pack_kind {_i['pack_kind']!r} is not a pack line's kind ({', '.join(sorted(_PACK_KINDS))})")
     if "plural" in _i and not (isinstance(_i["plural"], str) and _i["plural"].strip()): errors.append(f"items:{_i.get('id')}: plural must be a name")
+    # consolidation 0.29 (should-fix 4): an item counted into a character's count (containers.ts COUNTED), not a pack line
+    if "counts_into" in _i and not (isinstance(_i["counts_into"], dict) and _i["counts_into"].get("count") in ("stims", "essence") and _i["counts_into"].get("at") in ("first", "last") and set(_i["counts_into"]) == {"count", "at"}):
+        errors.append(f"items:{_i.get('id')}: counts_into is {{count: stims | essence, at: first | last}} (the character's counts, containers.ts)")
 # rules 1.56 (L2): the special round of each type made and sold by calibre (an ammo_type with a price_mult), and the
 # calibres it comes in (credits.ts specialRoundPrice; character.ts SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES)
 _rspc = (_rw.get("special_round_price") or {}).get("calibres") or []
