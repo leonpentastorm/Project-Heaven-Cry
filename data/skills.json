@@ -3614,6 +3614,8 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
+      "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays.",
+      "door_tab": "outbursts",
       "per_point": {
         "numbers": {
           "soul": 0.1,
