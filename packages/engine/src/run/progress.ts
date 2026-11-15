@@ -11,7 +11,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, fitMod, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem,
+import { type Character, type Rarity, type GearWhere, type PackItem, gearAt, setGrade, packOf, fitMod, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem,
   practiceOf, picksAt, nextPickAt, devotionXpOf, devotionLevelOf, devotionThreshold, DEVOTION_MAX_LEVEL } from '../character';
 import { payCredits, earnCredits, cantPay, priceOf } from '../credits';
 import { addDrill, drillOf, drillMarks, TECHNIQUE } from '../physical/data';
@@ -20,10 +20,11 @@ import { addPractice } from '../magic';
 import { shiftDevotion, grantPiece, GATE } from '../faith';
 import { beliefOf, FAITH_PATRONS, FAITH_PATRON } from '../belief';
 import { lootToPack, packAdd, grantGoods } from '../containers';
+import { perkActionsFor, previewPerkAction, runPerkAction } from '../effects';
 import { rngFor, die } from '../rng';
 import { type RunState, type RunVisit, type RunLasting, type RunStock, runNode, runSetting } from './state';
 import { SETTING } from './encounter';
-import { stageCeiling, weaponOffer } from './rewards';
+import { stageCeiling, weaponOffer, lastingFor } from './rewards';
 import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
 import { nextPools } from './stage';
 import type { GameState } from '../game';
@@ -62,8 +63,10 @@ export type ProgressAction =
   | { type: 'run/upgrade'; charId: string; where: GearWhere; place: GradePlace; chit?: boolean; prop?: string }
   | { type: 'run/repair'; charId: string; where: GearWhere; place: GradePlace }
   | { type: 'run/forge'; charId: string; slot: number } | { type: 'run/fit'; charId: string }
-  /** rules 1.55: the armourer fits the mod at pack line `idx` to the main-hand weapon (a mod in that slot comes off into the pack), or takes `mod` off it, for a fee */
-  | { type: 'run/fit_mod'; charId: string; idx: number } | { type: 'run/unfit_mod'; charId: string; mod: string }
+  /** rules 1.55, 1.56 L3: the armourer fits the mod at pack line `idx` to a carried gun (`where`: the main hand when
+   * absent, the off hand, or a pack line holding a gun; a mod in that slot comes off into the pack), or with `extra` into
+   * the main hand's extra slot (Gun Nut, Blade Recluse, Overhaul: the perk's own action), or takes `mod` off a gun, for a fee */
+  | { type: 'run/fit_mod'; charId: string; idx: number; where?: 'off' | number; extra?: boolean } | { type: 'run/unfit_mod'; charId: string; mod: string; where?: 'off' | number }
   | { type: 'run/train'; charId: string; train: 'drill' | 'study' | 'practice' | 'devotion'; weapon?: string }
   | { type: 'run/shrine'; charId: string; choice: 'rite' | 'piece' | 'token' }
   | { type: 'run/trade'; charId: string; trade: string; where?: GearWhere; weapon?: string; train?: 'devotion' | 'study' | 'practice'; pick?: number }
@@ -180,20 +183,8 @@ const wornOf = (c: Character): { where: GearWhere; w: Wear }[] => (['main', 'off
   .map((where) => ({ where, w: wearAt(c, where) })).filter((x): x is { where: GearWhere; w: Wear } => !!x.w && x.w.max > 0 && x.w.now < x.w.max);
 
 // ---------------------------------------------------------------------------------------------- the Forge
-/** The mods and worn pieces that would last for this character (rule 41): a mod for a slot its main weapon has free, a
- * worn piece better (dearer) than the one it wears in that slot (or for an empty slot); priced ones only. */
-export function lastingFor(c: Character): string[] {
-  const w: any = WEAPON[c.weapon], used = new Set((c.weaponState?.mods || []).map((m) => (ITEM[m] as any)?.mod_slot));
-  const free = ((w?.mod_slots || []) as string[]).filter((s) => !used.has(s));
-  const out: string[] = [];
-  for (const it of Object.values(ITEM) as any[]) {
-    if (priceOf(it.id) == null) continue;
-    if (it.category === 'mod' && free.includes(it.mod_slot)) out.push(it.id);
-    if (it.category === 'mod' && it.mod_slot === 'enchantment' && quiversOf(c).some((q) => !(q.mods || []).length)) out.push(it.id); // rules 1.53: a quiver's one enchantment
-    if (it.category === 'armour' && it.slot) { const worn = c.worn?.[it.slot]; if (!worn || (priceOf(it.id) || 0) > (priceOf(worn) || 0)) out.push(it.id); }
-  }
-  return out;
-}
+// The mods and worn pieces that would last for a character (rule 41): run/rewards.ts `lastingFor` (rules 1.56 L3: a mod
+// for a free slot on any gun carried; it is also the mod reward's pool).
 /** The Forge's stock (rules 1.46): what the living party lacks first (lastingFor), then any mod or armour, FORGE_SLOTS in all, at priceOf. */
 export function forgeStock(g: GameState, rng: ReturnType<typeof rngFor>): RunStock[] {
   const chars = Object.values(g.characters).filter((c) => !c.dead);
@@ -225,18 +216,49 @@ export function fitOf(g: GameState, c: Character): { cls: number; price: number;
 const modFee = (mod: string): number => Math.ceil(Math.max(MOD_FIT.min, MOD_FIT.rate * (priceOf(mod) || 0)));
 /** A weapon mod (not a quiver's enchantment, which is fitted to a quiver), by pack line. */
 const weaponModAt = (c: Character, idx: number): string | null => { const it = packOf(c)[idx], m: any = it && ITEM[it.item || it.id]; return m && m.category === 'mod' && m.mod_slot !== 'enchantment' ? m.id : null; };
-/** Why the armourer can't fit the mod at pack line `idx` now, in words, or null (rules 1.55: at a Forge; the fit's own
- * rules are fitMod's: the main hand's slot, an equip ban; then the fee). */
-function fitModProblem(g: GameState, c: Character, idx: number): string | null {
+/** Where the armourer may fit: the main hand, the off hand, a pack line holding a gun (rules 1.56 L3 item 2). */
+type ModWhere = 'main' | 'off' | number;
+/** The weapon at `where` and its fitted mods, or null (fists and an empty off hand hold none). */
+const gunAt = (c: Character, where: ModWhere): { id: string; mods: string[] } | null => {
+  if (where === 'main') return c.weapon && c.weapon !== 'fists' ? { id: c.weapon, mods: c.weaponState?.mods || [] } : null;
+  if (where === 'off') return c.offHand && WEAPON[c.offHand.id] ? { id: c.offHand.id, mods: c.offHand.mods || [] } : null;
+  const it = packOf(c)[where]; return it && it.kind === 'weapon' && it.weapon && WEAPON[it.weapon] ? { id: it.weapon, mods: it.mods || [] } : null;
+};
+/** Every carried gun with mod slots, the main hand first (rules 1.56 L3 item 2). */
+const modWheres = (c: Character): ModWhere[] => (['main', 'off', ...packOf(c).map((_, i) => i)] as ModWhere[]).filter((w) => ((WEAPON[gunAt(c, w)?.id || ''] as any)?.mod_slots || []).length);
+/** The gun at `where` in a card's or a refusal's words ("your Service rifle", "the Service pistol in your off hand"). */
+const gunWord = (c: Character, where: ModWhere) => { const n = nameOf(gunAt(c, where)?.id || c.weapon); return where === 'main' ? 'your ' + n : 'the ' + n + (where === 'off' ? ' in your off hand' : ' in your pack'); };
+/** The action's `where` as the fit reads it (absent: the main hand). */
+const whereOf = (a: { where?: 'off' | number }): ModWhere => a.where ?? 'main';
+/** The perk action that fits a second mod in a slot type the main weapon already fills (Gun Nut, Blade Recluse,
+ * Overhaul: perks/c.ts `extra_mod`), as the character holds it, or null. Its own rules answer (the one copy). */
+const EXTRA_MOD = 'extra_mod';
+const extraEntry = (g: GameState, c: Character) => { const l = perkActionsFor({ c, g } as any, 'story').filter((e) => e.actionId === EXTRA_MOD); return l.find((e) => !e.why) || l[0] || null; };
+/** Why the armourer can't fit the mod at pack line `idx` now, in words, or null (rules 1.55, 1.56 L3: at a Forge; the
+ * fit's own rules are fitMod's (the gun's slot, an equip ban) or, into an extra slot, the perk action's; then the fee). */
+function fitModProblem(g: GameState, c: Character, idx: number, where: ModWhere = 'main', extra = false): string | null {
   const h = here(g); if (!h || h.n.kind !== 'forge') return notHere('a Forge');
   if (!weaponModAt(c, idx)) return 'Pick a weapon mod from your pack.';
-  return fitMod({ ...c }, idx) || cantPay(c, modFee(weaponModAt(c, idx)!)); // fitMod on a copy: it writes fresh pack and mod lists, so the character is untouched
+  if (extra) {
+    if (where !== 'main') return 'An extra mod slot is on the weapon in your hand.';
+    const e = extraEntry(g, c); if (!e) return c.name + ' has no extra mod slot.';
+    const pv = previewPerkAction({ c, g } as any, e.id, { actionId: EXTRA_MOD, choice: String(idx) } as any, 'story'); if (!pv.ok) return pv.why || 'Not now.';
+  } else { const no = fitMod({ ...c }, idx, where); if (no) return no; } // fitMod on a copy: it writes fresh pack and mod lists, so the character is untouched
+  return cantPay(c, modFee(weaponModAt(c, idx)!));
 }
-/** Why the armourer can't take `mod` off the main-hand weapon now, or null (rules 1.55). */
-function unfitModProblem(g: GameState, c: Character, mod: string): string | null {
+/** Why the armourer can't take `mod` off the gun at `where` now, or null (rules 1.55, 1.56 L3). */
+function unfitModProblem(g: GameState, c: Character, mod: string, where: ModWhere = 'main'): string | null {
   const h = here(g); if (!h || h.n.kind !== 'forge') return notHere('a Forge');
-  if (!(c.weaponState?.mods || []).includes(mod)) return 'That mod is not on ' + c.name + '\'s weapon.';
+  if (!(gunAt(c, where)?.mods || []).includes(mod)) return where === 'main' ? 'That mod is not on ' + c.name + '\'s weapon.' : 'That mod is not on ' + gunWord(c, where) + '.';
   return cantPay(c, modFee(mod));
+}
+/** Write the fitted mods of the gun at `where` (one of a stack of guns in the pack is split off to take them). */
+function setModsAt(c: Character, where: ModWhere, mods: string[]) {
+  if (where === 'main') { c.weaponState = { ...(c.weaponState || {}), mods }; return; }
+  if (where === 'off') { c.offHand = { ...c.offHand!, mods }; return; }
+  const pack: PackItem[] = packOf(c).map((x) => ({ ...x })), t = pack[where];
+  if (t.qty > 1) { t.qty--; pack.push({ ...t, qty: 1, mods }); } else t.mods = mods;
+  c.pack = pack;
 }
 
 // ---------------------------------------------------------------------------------------------- trainings
@@ -408,19 +430,20 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       say(c.name + ' is fitted for armour class ' + f.cls + ': ' + f.price + ' credits.', c.id); return null;
     }
     case 'run/fit_mod': {
-      const no = fitModProblem(g, c, a.idx); if (no) return no;
-      const mod = weaponModAt(c, a.idx)!, fee = modFee(mod), before = new Set(c.weaponState?.mods || []);
-      const err = fitMod(c, a.idx); if (err) return err;
+      const where = whereOf(a), no = fitModProblem(g, c, a.idx, where, !!a.extra); if (no) return no;
+      const mod = weaponModAt(c, a.idx)!, fee = modFee(mod), gun = gunWord(c, where), before = new Set(gunAt(c, where)?.mods || []);
+      if (a.extra) { const err = runPerkAction({ c, g } as any, extraEntry(g, c)!.id, { actionId: EXTRA_MOD, choice: String(a.idx) } as any, g.rng, 'story'); if (err) return err; }
+      else { const err = fitMod(c, a.idx, where); if (err) return err; }
       payCredits(c, fee);
-      const off = [...before].find((x) => !(c.weaponState?.mods || []).includes(x));
-      say('The armourer fits the ' + nameOf(mod) + ' to ' + c.name + '\'s ' + nameOf(c.weapon) + (off ? ', and the ' + nameOf(off) + ' goes in the pack' : '') + ': ' + fee + ' credits.', c.id); return null;
+      const off = [...before].find((x) => !(gunAt(c, where)?.mods || []).includes(x));
+      say('The armourer fits the ' + nameOf(mod) + (a.extra ? ' in the extra slot of ' : ' to ') + c.name + '\'s ' + gun.replace(/^(your|the) /, '') + (off ? ', and the ' + nameOf(off) + ' goes in the pack' : '') + ': ' + fee + ' credits.', c.id); return null;
     }
     case 'run/unfit_mod': {
-      const no = unfitModProblem(g, c, a.mod); if (no) return no;
-      const fee = modFee(a.mod), mods = [...(c.weaponState?.mods || [])]; mods.splice(mods.indexOf(a.mod), 1);
-      payCredits(c, fee); c.weaponState = { ...(c.weaponState || {}), mods };
+      const where = whereOf(a), no = unfitModProblem(g, c, a.mod, where); if (no) return no;
+      const fee = modFee(a.mod), gun = gunWord(c, where), mods = [...(gunAt(c, where)?.mods || [])]; mods.splice(mods.indexOf(a.mod), 1);
+      payCredits(c, fee); setModsAt(c, where, mods);
       c.pack = grantGoods(c, packOf(c).map((x) => ({ ...x })), lootToPack({ item: a.mod })); // the one grant (containers.ts)
-      say('The armourer takes the ' + nameOf(a.mod) + ' off ' + c.name + '\'s ' + nameOf(c.weapon) + ' and puts it in the pack: ' + fee + ' credits.', c.id); return null;
+      say('The armourer takes the ' + nameOf(a.mod) + ' off ' + c.name + '\'s ' + gun.replace(/^(your|the) /, '') + ' and puts it in the pack: ' + fee + ' credits.', c.id); return null;
     }
     case 'run/train': {
       const no = trainProblem(g, c, a); if (no) return no;
@@ -474,7 +497,8 @@ export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'mo
   /** credits the option PAYS the character (a salvage), shown in place of a price */ pays?: number;
   /** what the option costs when it is not credits ("40 HP": a hard sparring), shown in place of a price */ costs?: string;
   /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] };
-  /** rules 1.54 item 10: a training's bar (trainBar), for the card to draw */ bar?: TrainBar | null }
+  /** rules 1.54 item 10: a training's bar (trainBar), for the card to draw */ bar?: TrainBar | null;
+  /** rules 1.56 L3: the card's button when it is not the default (the Forge's mod cards: "Fit", "Take off") */ verb?: string }
 /** Every choice the node the party stands on offers this character, with prices and reasons (rules 1.43). */
 export function runOptions(g: GameState, charId: string): RunOption[] {
   const c = g.characters[charId], h = here(g); if (!c || !h) return [];
@@ -500,11 +524,16 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   }
   if (k === 'forge') {
     (h.v.stock || []).forEach((s, i) => out.push({ group: 'forge', key: 'forge:' + i, label: nameOf(s.id), detail: String((ITEM[s.id] as any)?.text || ''), price: s.price, why: forgeProblem(g, c, i), action: { type: 'run/forge', charId, slot: i } }));
-    // rules 1.55: the armourer fits each weapon mod in the pack to the main-hand weapon, or takes one off it, for a fee
-    const wn = nameOf(c.weapon), on = c.weaponState?.mods || [];
-    packOf(c).forEach((_, i) => { const m = weaponModAt(c, i); if (!m) return; const old = on.find((x) => x !== m && (ITEM[x] as any)?.mod_slot === (ITEM[m] as any).mod_slot);
-      out.push({ group: 'mod', key: 'mod:fit:' + i, label: 'Fit the ' + nameOf(m) + ' to your ' + wn, detail: String((ITEM[m] as any).text || '') + (old ? ' Swaps out the ' + nameOf(old) + ' (it goes in your pack).' : ''), price: modFee(m), why: fitModProblem(g, c, i), action: { type: 'run/fit_mod', charId, idx: i } }); });
-    for (const m of on) out.push({ group: 'mod', key: 'mod:off:' + m, label: 'Take the ' + nameOf(m) + ' off your ' + wn, detail: 'It goes in your pack.', price: modFee(m), why: unfitModProblem(g, c, m), action: { type: 'run/unfit_mod', charId, mod: m } });
+    // rules 1.55, 1.56 L3: the armourer fits each weapon mod in the pack to a carried gun with its slot (the main hand
+    // first), into the main hand's extra slot (Gun Nut and the like), or takes one off a gun, for a fee
+    const guns = modWheres(c), extra = extraEntry(g, c), act = (w: ModWhere) => (w === 'main' ? {} : { where: w }), at = (w: ModWhere) => (w === 'main' ? '' : ':' + w);
+    packOf(c).forEach((_, i) => { const m = weaponModAt(c, i); if (!m) return; const slot = (ITEM[m] as any).mod_slot;
+      for (const w of guns) { const gn = gunAt(c, w)!; if (!(((WEAPON[gn.id] as any)?.mod_slots || []) as string[]).includes(slot)) continue;
+        const old = gn.mods.find((x) => x !== m && (ITEM[x] as any)?.mod_slot === slot);
+        out.push({ group: 'mod', key: 'mod:fit:' + i + at(w), label: nameOf(m) + ': fit to ' + gunWord(c, w), verb: 'Fit', detail: String((ITEM[m] as any).text || '') + (old ? ' Swaps out the ' + nameOf(old) + ' (it goes in your pack).' : ''), price: modFee(m), why: fitModProblem(g, c, i, w), action: { type: 'run/fit_mod', charId, idx: i, ...act(w) } });
+        if (w === 'main' && extra && old) out.push({ group: 'mod', key: 'mod:extra:' + i, label: nameOf(m) + ': fit beside the ' + nameOf(old) + ' on ' + gunWord(c, w), verb: 'Fit', detail: String((ITEM[m] as any).text || '') + ' Into the extra ' + slot + ' slot (' + extra.label + ').', price: modFee(m), why: fitModProblem(g, c, i, w, true), action: { type: 'run/fit_mod', charId, idx: i, extra: true } });
+      } });
+    for (const w of guns) for (const m of gunAt(c, w)!.mods) out.push({ group: 'mod', key: 'mod:off:' + m + at(w), label: nameOf(m) + ': take off ' + gunWord(c, w), verb: 'Take off', detail: 'It goes in your pack.', price: modFee(m), why: unfitModProblem(g, c, m, w), action: { type: 'run/unfit_mod', charId, mod: m, ...act(w) } });
     const f = fitOf(g, c); if (f) out.push({ group: 'fit', key: 'fit', label: 'Armour class ' + c.armourClass + ' to ' + f.cls, detail: 'The armourer fits you for heavier armour.', price: f.price, why: f.why, action: { type: 'run/fit', charId } });
   }
   if (k === 'rest' || k === 'training') {
@@ -568,7 +597,7 @@ registerShopService({ id: 'repair', tab: 'upgrade', kinds: ['shop'], cards: (g, 
 function modCards(g: GameState, c: Character): ServiceCard[] {
   return runOptions(g, c.id).filter((o) => o.group === 'mod').map((o) => {
     const a: any = o.action, id = a.type === 'run/fit_mod' ? weaponModAt(c, a.idx) : a.mod;
-    return { key: o.key, title: o.label, ...(id ? { id } : {}), price: o.price, why: o.why, note: o.detail, lines: [], action: o.action as any };
+    return { key: o.key, title: o.label, ...(id ? { id } : {}), price: o.price, why: o.why, note: o.detail, lines: [], action: o.action as any, ...(o.verb ? { verb: o.verb } : {}) };
   });
 }
 registerShopService({ id: 'mod_fit', tab: 'services', kinds: ['forge'], cards: (g, c) => modCards(g as GameState, c) });
