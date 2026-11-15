@@ -8,6 +8,16 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.2 — the Sigil word cap says why
+
+A hotfix (15 Nov 2026). No rule changed; only the words.
+
+- **A Line past your Max Sigil words now says why.** Drawing a glyph that would make a Line longer than your Max Sigil
+  words says how long the Line would be, your Max Sigil words at your Intelligence, and which Intelligence raises it
+  (nothing about raising it at the top). The key's short hint says the same: "2 words max; Intelligence 3 gives 3".
+- **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
+  ground), the button says so before the click: "new Line · fades FIRE".
+
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
 The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). **Live since 15 Nov 2026**.

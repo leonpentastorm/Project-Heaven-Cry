@@ -8,7 +8,7 @@
 // Rules revision 1.10 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
 // strokeRuns, strokePick); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the
 // 1.4 touching-group reading (groupAt) until they fade.
-import { WEAPON, SKILL, type SigilDef } from './data';
+import { WEAPON, SKILL, ATTR, type SigilDef } from './data';
 import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
@@ -27,7 +27,7 @@ import { itemAmount } from './effects/amounts';
 import { mendFactorOf, flatLevelOf } from './effects/mending';
 import { armourAgainst, landed, amountOf, term, gatedAmount, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
-import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
+import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE, maxSigilWords, attrCapAt } from './character';
 import { ENEMY_LEVELS } from './data';
 import {
   type Glyph, type Zone, type SpellAmount, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, saveAgainst, strengthFor, withVia,
@@ -770,6 +770,9 @@ export interface StrokeOption {
   /** Rules 1.10 Junctions: 'junction:A,B' (extends both) or 'junction:A,new' (extends A and starts a stroke); the second
    * stroke's words and tiles as it would read. */
   junction?: boolean; words2?: string[]; tiles2?: string[];
+  /** The glyph of yours that fades if this one is drawn (past your cap of glyphs on the ground), so the picker can warn
+   * before the click; null when none does. */
+  fades?: Glyph | null;
 }
 export interface DrawPreview {
   ok: boolean; why?: string; tile: string; cost: { ap: number; charge: number; flux: number }; effect: 'starts' | 'extends' | 'breaks' | 'stacks' | null; words: string[]; fades: Glyph | null; overload: boolean; capLeft: number;
@@ -781,6 +784,19 @@ export interface DrawPreview {
   junction?: boolean; strokeId2?: string; words2?: string[]; joins2?: string[];
 }
 const up = (w: string) => w.toUpperCase();
+/** For the word-cap refusal: " at Intelligence N. Intelligence N' raises it to M'." read from the one Max Sigil words
+ * formula (character.ts maxSigilWords) on the drawer's character with Intelligence raised; the second sentence is left
+ * out when no Intelligence up to the attributes' top raises it. Enemies and companions: ''. */
+function wordsAt(cb: Combat, u: Unit): string {
+  const c = charOfUnit(cb, u);
+  const id = 'intelligence', name = ATTR[id]?.name || id; if (!c?.attrs) return '';
+  const now = c.attrs[id] || 1, have = u.mg?.maxWords || maxSigilWords(c);
+  for (let i = now + 1; i <= attrCapAt(Infinity); i++) {
+    const m = maxSigilWords({ ...c, attrs: { ...c.attrs, [id]: i } } as Character);
+    if (m > have) return ' at ' + name + ' ' + now + '. ' + name + ' ' + i + ' raises it to ' + m;
+  }
+  return ' at ' + name + ' ' + now;
+}
 /** The refusals a draw has for the stroke it would make (spec: Drawing; item 447): past 4 glyphs, past the Max Sigil
  * words of its drawers, a second Reach word, a second KIN, WATCH with STAY. */
 function strokeRefusal(cb: Combat, u: Unit, ws: string[], tiles: number, drawers: string[]): string | null {
@@ -788,7 +804,7 @@ function strokeRefusal(cb: Combat, u: Unit, ws: string[], tiles: number, drawers
   const caps = drawers.map((id) => cb.units.find((x) => x.id === id)?.mg?.maxWords || 0);
   const cap4 = Math.min(MAX_GLYPHS, Math.max(u.mg!.maxWords, ...caps));
   if (ws.length > MAX_GLYPHS || tiles > MAX_GLYPHS) return 'Past the cap: a spell holds at most ' + MAX_GLYPHS + ' glyphs.';
-  if (ws.length > cap4) return 'Past your cap: ' + ws.length + ' glyphs, and your Max Sigil words is ' + u.mg!.maxWords + '.';
+  if (ws.length > cap4) return 'Past your cap: this Line would be ' + ws.length + ' glyphs, and your Max Sigil words is ' + u.mg!.maxWords + wordsAt(cb, u) + '.';
   if (reaches.length > 1) return 'A second Reach word is refused: one Reach word per spell (' + reaches.map(up).join(', ') + ').';
   if ((cnt.kin || 0) > 1) return 'KIN takes one copy.';
   if (cnt.watch && cnt.stay) return 'WATCH and STAY are refused together: a turret already lasts.';
@@ -862,20 +878,21 @@ export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, st
     return { p, ws, tiles: typeof p === 'string' ? mm.tiles : p.tiles, drawers: [...new Set(mm.glyphs.map(glyphDrawer))] };
   };
   const sp = strokePick(cb, u, at, stroke), def = sp.def, pick = sp.pick, sid = sp.sid;
+  const mine = myGlyphs(cb, u), capG = groundCap(u, cb), fades = mine.length + 1 > capG ? mine[0] : null; // whichever stroke it goes into
   let effect: DrawPreview['effect'] = sp.effect;
-  const strokes: StrokeOption[] = sp.cands.map((s) => { const r = read(s.src), why = strokeRefusal(cb, u, r.ws, r.tiles.length, r.drawers); return { id: s.id, label: 'extends ' + s.words.map(up).join('·'), words: r.ws, tiles: r.tiles, owner: s.owner, ownerName: nameOf(s.owner), mine: s.glyphs.some((g) => glyphDrawer(g) === u.id), ok: !why, ...(why ? { why } : {}), isDefault: s.id === def }; });
+  const strokes: StrokeOption[] = sp.cands.map((s) => { const r = read(s.src), why = strokeRefusal(cb, u, r.ws, r.tiles.length, r.drawers); return { id: s.id, label: 'extends ' + s.words.map(up).join('·'), words: r.ws, tiles: r.tiles, owner: s.owner, ownerName: nameOf(s.owner), mine: s.glyphs.some((g) => glyphDrawer(g) === u.id), ok: !why, ...(why ? { why } : {}), isDefault: s.id === def, fades }; });
   // Junctions (rules 1.10, items 917-918): with the gate, each stroke it could extend also as a crossing, with a second
   // stroke it could extend or a new Line. Never the default.
   const jx = (A: Stroke, B: Stroke | null): StrokeOption => {
     const sid2 = B ? B.src : newId, r1 = read(A.src, sid2, A.src), r2 = read(A.src, sid2, sid2);
     const why = strokeRefusal(cb, u, r1.ws, r1.tiles.length, r1.drawers) || (B ? strokeRefusal(cb, u, r2.ws, r2.tiles.length, r2.drawers) : null) || (B && A.glyphs.some((g) => B.glyphs.includes(g)) ? 'Those strokes already share a glyph.' : null);
-    return { id: 'junction:' + A.id + ',' + (B ? B.id : 'new'), label: 'junction: extends ' + A.words.map(up).join('·') + (B ? ' and ' + B.words.map(up).join('·') : ' + a new Line'), words: r1.ws, tiles: r1.tiles, owner: A.owner, ownerName: nameOf(A.owner), mine: A.glyphs.some((g) => glyphDrawer(g) === u.id), ok: !why, ...(why ? { why } : {}), isDefault: false, junction: true, words2: r2.ws, tiles2: r2.tiles };
+    return { id: 'junction:' + A.id + ',' + (B ? B.id : 'new'), label: 'junction: extends ' + A.words.map(up).join('·') + (B ? ' and ' + B.words.map(up).join('·') : ' + a new Line'), words: r1.ws, tiles: r1.tiles, owner: A.owner, ownerName: nameOf(A.owner), mine: A.glyphs.some((g) => glyphDrawer(g) === u.id), ok: !why, ...(why ? { why } : {}), isDefault: false, junction: true, words2: r2.ws, tiles2: r2.tiles, fades };
   };
   if (sp.cands.length && !junctionsFor(cb, u)) for (let i = 0; i < sp.cands.length; i++) {
     for (let j = i + 1; j < sp.cands.length; j++) strokes.push(jx(sp.cands[i], sp.cands[j]));
     strokes.push(jx(sp.cands[i], null));
   }
-  if (strokes.length) strokes.push({ id: 'new', label: 'new Line', words: [word], tiles: [at], owner: u.id, ownerName: u.name, mine: true, ok: true, isDefault: def === 'new' });
+  if (strokes.length) strokes.push({ id: 'new', label: 'new Line', words: [word], tiles: [at], owner: u.id, ownerName: u.name, mine: true, ok: true, isDefault: def === 'new', fades });
   if (sp.error) return no(sp.error, { cost, strokes, defaultStroke: def });
   const r = read(sid || undefined, sp.sid2, sid || undefined), words = r.ws;
   const r2 = sp.sid2 ? read(sid, sp.sid2, sp.sid2) : null;
@@ -888,7 +905,6 @@ export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, st
   }
   { const n0 = whyNot(cb, u, gc.ap); if (n0) return no(n0, base); }
   if (m!.charge < gc.charge) return no('Not enough charge in the core (' + m!.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).', base);
-  const mine = myGlyphs(cb, u), capG = groundCap(u, cb), fades = mine.length + 1 > capG ? mine[0] : null;
   return { ok: true, tile: at, ...base, fades, overload: m!.flux + gc.flux > FLUX_MAX, capLeft: Math.max(0, capG - mine.length - 1) };
 }
 /** Draw one glyph on your own tile (spec: Drawing): Glyph AP, the word's charge, its Flux. The oldest of yours fades past

@@ -355,7 +355,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `acted` | a unit's own action (or a verb inside it, as Analyze) succeeded: {u, t, action, tile, toggles, mode}; the item ops trigger `acted` listens here (Classes 3.0 P2) | `u`, `t`, `action`, `tile`, `toggles`, `mode`, `ap`, `choice` | combat.ts:2516 | classes/j.ts:303 (+3) | `acted` |
 | `combat_end` | the fight ends, after the fighters are written back to their characters | `won` | game.ts:2066 | classes/j.ts:410 (+15) | `combat_end` |
 | `combat_over` | the fight is decided (won or lost), before the fighters are written back to their characters: {cb, won, g} (rules 1.44) | `won` | game.ts:2059 | none | `combat_over` |
-| `evoked` | a Sigil spell was Evoked (or fizzled), after it resolved | `u`, `pattern`, `spell`, `plan`, `targets`, `impact`, `fizzle`, `charge`, `ap`, `stay`, `zone`, `dealt` | sigil.ts:998 (+1) | classes/i.ts:666 (+6) |  |
+| `evoked` | a Sigil spell was Evoked (or fizzled), after it resolved | `u`, `pattern`, `spell`, `plan`, `targets`, `impact`, `fizzle`, `charge`, `ap`, `stay`, `zone`, `dealt` | sigil.ts:1014 (+1) | classes/i.ts:666 (+6) |  |
 | `release_cost` | an Outburst Release is priced: its AP and range | `u`, `design`, `ap`, `range`, `fail`, `preview`, `surge`, `mult`, `notes` | magic.ts:1124 (+2) | classes/i.ts:1259 (+3) |  |
 | `outburst_hold` | a held Outburst swells at turn start: the Strain it adds may change | `u`, `strain` | magic.ts:1672 | perks/d.ts:385 |  |
 | `outburst_pump` | an Outburst is Pumped (priced in preview, then done): its AP, free stages, the feeling | `u`, `design`, `stage`, `ap`, `free`, `capLeft`, `fail`, `preview`, `feeling`, `stages`, `note`, `mpMult`, `freeKind` | magic.ts:1040 (+2) | classes/i.ts:1181 (+2) |  |
@@ -383,10 +383,10 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `evoke_area` | a spell's area is being built (its depth may change) | `u`, `spell`, `pattern`, `depth` | sigil.ts:262 | none |  |
 | `spell_mult` | a Sigil spell's damage, healing or shield multiplier for one target | `u`, `t`, `spell`, `kind`, `mult` | sigil.ts:451 (+1) | none |  |
 | `glyph_drawn` | a Sigil glyph was drawn | `u`, `glyph` | classes/k.ts:353 (+2) | classes/j.ts:776 (+5) |  |
-| `spell_fizzle` | a Sigil spell fizzled | `u`, `pattern`, `spell` | sigil.ts:997 | none |  |
-| `sigil_placed` | a Sigil field, trap or turret was placed on the grid | `u`, `zone` | sigil.ts:1153 (+2) | none |  |
-| `sigil_trap_sprung` | a Sigil trap was sprung by a unit | `u`, `trap`, `owner` | sigil.ts:1224 | none |  |
-| `turret_shot` | a Sigil turret fired at a unit | `turret`, `owner`, `target` | sigil.ts:1250 | none |  |
+| `spell_fizzle` | a Sigil spell fizzled | `u`, `pattern`, `spell` | sigil.ts:1013 | none |  |
+| `sigil_placed` | a Sigil field, trap or turret was placed on the grid | `u`, `zone` | sigil.ts:1169 (+2) | none |  |
+| `sigil_trap_sprung` | a Sigil trap was sprung by a unit | `u`, `trap`, `owner` | sigil.ts:1240 | none |  |
+| `turret_shot` | a Sigil turret fired at a unit | `turret`, `owner`, `target` | sigil.ts:1266 | none |  |
 | `spell_shape` | a spell is compiled from its words (items may change its shape) | `u`, `pattern`, `spell`, `opts` | sigil.ts:616 | classes/i.ts:743 |  |
 | `ground_cap` | how many Sigil words a caster may keep on the ground at once | `u`, `n` | sigil.ts:87 | perks/d.ts:78 |  |
 | `check_build` | a story check is being built (items add tags or flags) | `c`, `ck` | game.ts:1414 | perks/a.ts:161 (+9) |  |
@@ -1229,7 +1229,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `aura_tick` | `unit`, `at`, `tone`, `element`, `targets`, `riderStage` | magic.ts:1681 | 1 |
 | `bead` | `unit`, `at`, `target`, `to` | physical/ranged/sets.ts:66 | 1 |
 | `bead_end` | `unit`, `at`, `target`, `why` | physical/ranged/sets.ts:44 | 1 |
-| `blink` | `target`, `from`, `to`, `element` | sigil.ts:1124 | 1 |
+| `blink` | `target`, `from`, `to`, `element` | sigil.ts:1140 | 1 |
 | `boon` | `target`, `at`, `word`, `cond`, `amount` | classes/k.ts:887 | 6 |
 | `burn` | `unit`, `at`, `over`, `dmg` | magic.ts:961 | 1 |
 | `call` | `unit`, `id`, `target`, `at`, `step`, `kind`, `reaction` | calls/core.ts:156 | 1 |
@@ -1238,7 +1238,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `chain` | `unit`, `from`, `to`, `target`, `element`, `storm`, `jump`, `mult`, `grand`, `feeling` | classes/i.ts:1236 | 6 |
 | `charge` | `unit`, `at`, `charges` | classes/j.ts:1064 | 1 |
 | `clear` | `unit`, `at`, `dur`, `by`, `hand` | combat.ts:2217 | 4 |
-| `command` | `target`, `at`, `order`, `to`, `by` | sigil.ts:1078 | 1 |
+| `command` | `target`, `at`, `order`, `to`, `by` | sigil.ts:1094 | 1 |
 | `cond` | `target`, `at`, `id`, `resisted`, `element` | magic.ts:339 | 5 |
 | `core` | `unit`, `at`, `dur`, `focus` | faith.ts:705 | 3 |
 | `crystallise` | `unit`, `at`, `dur`, `self` | classes/k.ts:579 | 2 |
@@ -1254,10 +1254,10 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `eye_storm_spent` | `unit`, `at`, `riderStage` | classes/rev3.ts:652 | 1 |
 | `feed` | `unit`, `at`, `word`, `glyph`, `stage`, `mult` | magic.ts:1172 | 1 |
 | `felt` | `unit`, `char`, `feeling`, `name`, `family`, `why` | feelings.ts:68 | 1 |
-| `field` | `id`, `tiles`, `words`, `element`, `side`, `by`, `rounds` | sigil.ts:1172 | 1 |
-| `field_gone` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1196 | 1 |
-| `field_tick` | `id`, `target`, `at`, `element`, `side` | sigil.ts:1215 | 1 |
-| `fizzle` | `unit`, `at`, `tiles`, `words`, `element` | sigil.ts:995 | 1 |
+| `field` | `id`, `tiles`, `words`, `element`, `side`, `by`, `rounds` | sigil.ts:1188 | 1 |
+| `field_gone` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1212 | 1 |
+| `field_tick` | `id`, `target`, `at`, `element`, `side` | sigil.ts:1231 | 1 |
+| `fizzle` | `unit`, `at`, `tiles`, `words`, `element` | sigil.ts:1011 | 1 |
 | `free_reload` | `unit`, `at`, `tech` | physical/ranged/takes.ts:208 | 1 |
 | `fuse` | `unit`, `at`, `to`, `tiles`, `tone`, `element`, `stage` | magic.ts:1425 | 1 |
 | `glyph_fade` | `tile`, `word`, `side`, `why` | classes/k.ts:351 | 6 |
@@ -1277,7 +1277,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `lane_end` | `unit`, `why` | physical/ranged/press.ts:61 | 2 |
 | `leech` | `unit`, `to`, `from`, `amount`, `element` | classes/k.ts:681 | 4 |
 | `letgo` | `unit`, `at`, `stage`, `by`, `strain` | magic.ts:1141 | 1 |
-| `light` | `at`, `tiles`, `side` | sigil.ts:1129 | 1 |
+| `light` | `at`, `tiles`, `side` | sigil.ts:1145 | 1 |
 | `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1575 | 1 |
 | `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2470 | 2 |
 | `mana` | `band`, `mana` | game.ts:3980 | 2 |
@@ -1311,7 +1311,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `sabotage` | `unit`, `target`, `at`, `rounds`, `what` | classes/rev3.ts:304 | 2 |
 | `sabotage_end` | `at`, `what` | classes/rev3.ts:349 | 2 |
 | `save` | `unit`, `at`, `ok`, `tech`, `die`, `only` | physical/core.ts:505 | 1 |
-| `scuff` | `unit`, `at` | sigil.ts:924 | 1 |
+| `scuff` | `unit`, `at` | sigil.ts:940 | 1 |
 | `search` | `unit`, `at`, `obj`, `items` | world.ts:356 | 1 |
 | `shield` | `target`, `at`, `absorbed`, `gained`, `amount` | classes/i.ts:832 | 7 |
 | `short` | `unit`, `at`, `held`, `tone`, `element`, `strain`, `limit` | magic.ts:939 | 1 |
@@ -1336,17 +1336,17 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `technique` | `unit`, `id`, `group`, `system`, `target`, `hand`, `at`, `reaction`, `tile`, `line`, `opt`, `ammo`, `weapon` | physical/core.ts:810 | 2 |
 | `thread` | `unit`, `a`, `b` | magic.ts:1574 | 1 |
 | `trap` | `unit`, `at` | combat.ts:2017 | 1 |
-| `trap_gone` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1196 | 1 |
-| `trap_set` | `id`, `tile`, `side`, `by`, `words`, `element`, `only` | sigil.ts:1159 | 1 |
+| `trap_gone` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1212 | 1 |
+| `trap_set` | `id`, `tile`, `side`, `by`, `words`, `element`, `only` | sigil.ts:1175 | 1 |
 | `trap_spotted` | `id`, `tile`, `by`, `side`, `only`, `kind` | magic.ts:1566 | 2 |
-| `trap_sprung` | `id`, `tile`, `target`, `element`, `side`, `words` | sigil.ts:1223 | 1 |
+| `trap_sprung` | `id`, `tile`, `target`, `element`, `side`, `words` | sigil.ts:1239 | 1 |
 | `turn` | `unit`, `side`, `at`, `summon`, `round` | classes/k.ts:1663 | 3 |
-| `turret_destroyed` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1196 | 1 |
-| `turret_placed` | `id`, `tile`, `side`, `by`, `words`, `element`, `hidden`, `only` | sigil.ts:1152 | 1 |
+| `turret_destroyed` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1212 | 1 |
+| `turret_placed` | `id`, `tile`, `side`, `by`, `words`, `element`, `hidden`, `only` | sigil.ts:1168 | 1 |
 | `turret_shot` | `id`, `tile`, `target`, `at`, `side`, `grand`, `lob`, `from`, `to`, `element`, `path`, `kind`, `burst`, `chain` | classes/k.ts:943 | 4 |
 | `unmake` | `unit`, `at` | owned.ts:125 | 1 |
 | `unstoppable` | `unit`, `at`, `ignored` | classes/rev3.ts:204 | 1 |
-| `veil` | `at`, `tiles`, `side` | sigil.ts:1128 | 1 |
+| `veil` | `at`, `tiles`, `side` | sigil.ts:1144 | 1 |
 | `vent` | `unit`, `at`, `flux`, `heart`, `bleed` | classes/k.ts:558 | 3 |
 | `volley` | `unit`, `target`, `from`, `weapon`, `cat`, `mode`, `name`, `shots`, `to`, `tech` | classes/j.ts:110 | 11 |
 | `wall_crumbled` | `tiles`, `why` | classes/k.ts:915 | 3 |
