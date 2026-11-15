@@ -4,9 +4,8 @@
 // real action; the numbers read from data (tending.json), never typed here.
 import { describe, it, expect } from 'vitest';
 import { storyWith, withGame } from './helpers/perkfight';
-import { beginTurn, actionsFor, bondView, condOn } from '../src';
-import { applyDamage } from '../src/effects/damage';
-import { tie, tiesOf } from '../src/kit';
+import { beginTurn, actionsFor, bondView, condOn, active } from '../src';
+import { tiesOf } from '../src/kit';
 import { ledgerCap } from '../src/character';
 import tendingJ from '../../../data/tending.json';
 
@@ -16,11 +15,12 @@ const grant = (id: string) => item(id).effects.find((e: any) => e.op === 'grant_
 const nested = (id: string, i: number) => grant(id).effects[i];
 const dist = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
 
-/** A Mender (or a door user: mender false) with an Attuner in the off hand, an ally and two Soldiers, on the practice square. */
-function rig(o: { mender?: boolean; empathy?: number; level?: number; attuner?: boolean; foeTier?: string; seed?: string } = {}) {
+/** A Mender (or a door user: mender false) with an Attuner in the off hand, an ally and two Soldiers, on the practice square.
+ * Every Bond is made by the tend.bond action (0.29 wave-2 review MF4), never tied by hand. */
+function rig(o: { mender?: boolean; empathy?: number; level?: number; foeTier?: string; seed?: string } = {}) {
   const level = o.level ?? 5;
   const s: any = storyWith([{ name: 'Medic', level, classId: o.mender ? 'bard' : null, skills: { empathy: o.empathy ?? 5 }, attrs: { insight: 5 }, weapon: 'service_pistol' }, { name: 'Gun', level }], o.seed);
-  if (o.attuner !== false) s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
+  s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight', combat: { name: 'Bonds', map: 'yard16', difficulty: 'standard', level,
     enemies: [{ name: 'Soldier 1', tier: o.foeTier || 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level }, { name: 'Soldier 2', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level }] } } });
   const cb = () => s.g.combat, U = (id: string) => cb().units.find((u: any) => u.id === id);
@@ -34,7 +34,15 @@ function rig(o: { mender?: boolean; empathy?: number; level?: number; attuner?: 
     try { s.act({ type: 'combat/perk', unitId: me.id, id, ...(actionId ? { actionId } : {}), ...(t ? { targetId: t.id } : {}) }); } catch (e: any) { err = String(e?.message || e); }
     return { err, log: cb().log.slice(n).map((l: any) => typeof l === 'string' ? l : l.text || JSON.stringify(l)).join(' ') };
   };
-  const bond = (t: any) => withGame(s.g, () => tie(cb(), U(me.id), U(t.id), 'bond'));
+  // a Bond through the real action (tend.bond: its reach, its AP, its cap, an enemy's Heart save failed for the test);
+  // the Medic's AP and the target's saves are put back after, so each test reads its own order's cost
+  const bond = (t: any) => {
+    const m = U(me.id), x = U(t.id), ap = m.ap, sv = x.sv; if (x.side === 'foe') x.sv = { ...(sv || {}), heart: -99 };
+    const held = () => tiesOf(cb(), U(me.id), 'bond', 'from').some((k: any) => k.to === x.id);
+    for (let i = 0; i < 6 && !held(); i++) { U(me.id).ap = 9; expect(act('verb:tend.bond', U(t.id)).err, 'Bond ' + x.name).toBeNull(); } // a natural 20 saves
+    expect(held(), 'Bonded to ' + x.name).toBe(true);
+    U(me.id).ap = ap; if (sv === undefined) delete U(t.id).sv; else U(t.id).sv = sv;
+  };
   const row = (name: string) => actionsFor(s.g, me.id, null).find((d: any) => d.group === 'tend' && d.name === name);
   return { s, cb, U, me, al, f1, f2, act, bond, turn, row };
 }
@@ -65,7 +73,7 @@ describe('Bonds 2.0 slice 1: Tug', () => {
   it('refusals in plain words: no Bond, no Attuner', () => {
     const r = rig();
     expect(r.act('verb:tend.tug', r.f1).err).toMatch(/isn't tied to you/);
-    const q = rig({ attuner: false }); q.bond(q.f1);
+    const q = rig(); q.bond(q.f1); q.s.g.characters[q.me.charId].offHand = null; // Bonded, then the Attuner is out of hand
     expect(q.act('verb:tend.tug', q.f1).err).toMatch(/Needs an Attuner in hand/);
     expect(q.row('Tug').available).toBe(false);
   });
@@ -120,12 +128,20 @@ describe('Bonds 2.0 slice 1: Snap', () => {
 });
 
 describe('Bonds 2.0 slice 1: Last Thread', () => {
+  /** The ally goes Down to the enemies' own turns (combat/end-turn, the hostile phase): it stands beside them with 1 HP and
+   * no Defense, the Medic far off and out of their harm; back to the Medic's turn (the ally's own, if any, is ended). */
+  const downedByFoes = (r: any) => {
+    const A = r.U(r.al.id), M = r.U(r.me.id); A.pos = '8,5'; A.hp = 1; A.def = -50; M.pos = '3,5'; M.maxHp = M.hp = 50000; M.def = 99;
+    r.U(r.f1.id).pos = '9,5'; r.U(r.f2.id).pos = '9,6';
+    for (let i = 0; i < 12 && !r.U(r.al.id).downed; i++) { const a = active(r.cb()); r.s.act({ type: 'combat/end-turn', unitId: a.id }); }
+    expect(r.U(r.al.id).downed, 'the enemies Downed the ally').toBe(true);
+    for (let i = 0; i < 12 && active(r.cb())?.id !== r.me.id; i++) r.s.act({ type: 'combat/end-turn', unitId: active(r.cb()).id });
+    expect(active(r.cb())?.id).toBe(r.me.id);
+  };
   it('a Bonded ally goes Down: your next Raise costs 0 AP; the one after is full price again', () => {
     const r = rig({ empathy: 5 }); r.bond(r.al);
-    const A = r.U(r.al.id); A.pos = '3,6';
     expect(r.row('Raise')?.cost?.ap ?? r.row('Raise')?.cost).not.toBe(0);
-    withGame(r.s.g, () => applyDamage(r.cb(), A, A.hp + 5, { by: r.U(r.f1.id), type: 'physical' }));
-    expect(r.U(r.al.id).downed).toBe(true);
+    downedByFoes(r);
     const ap = r.U(r.me.id).ap;
     expect(r.act('verb:tend.raise', r.U(r.al.id)).err).toBeNull();
     expect(r.U(r.me.id).ap).toBe(ap);
@@ -133,8 +149,7 @@ describe('Bonds 2.0 slice 1: Last Thread', () => {
   });
   it('an ally that is not Bonded going Down gives nothing', () => {
     const r = rig({ empathy: 5 });
-    const A = r.U(r.al.id); A.pos = '3,6';
-    withGame(r.s.g, () => applyDamage(r.cb(), A, A.hp + 5, { by: r.U(r.f1.id), type: 'physical' }));
+    downedByFoes(r); r.U(r.al.id).pos = '4,5'; // beside the Medic: Raise reaches it without a Bond
     const ap = r.U(r.me.id).ap;
     expect(r.act('verb:tend.raise', r.U(r.al.id)).err).toBeNull();
     expect(ap - r.U(r.me.id).ap).toBe(grant('tend.raise').ap);

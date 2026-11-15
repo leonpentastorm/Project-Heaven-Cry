@@ -8,7 +8,7 @@ import { figFight } from './helpers/figfight';
 import { storyWith, withGame } from './helpers/perkfight';
 import FIGJ from '../../../data/figments.json';
 import ACTIONSJ from '../../../data/actions.json';
-import { FORM, COST_SITE_IDS, condOn, perceivedFoes, isGhost, formsOf, pendingDoorPicks, pictureOptions, actionsFor, previewDescriptor, sendDescriptor, resolveAttack, migrateCharacterFigments, FIG_REV, ladderAt } from '../src';
+import { FORM, COST_SITE_IDS, condOn, perceivedFoes, isGhost, formsOf, pendingDoorPicks, pictureOptions, actionsFor, previewDescriptor, sendDescriptor, migrateLoaded, active, FIG_REV, ladderAt } from '../src';
 
 const F: any = FIGJ, ACT: any = ACTIONSJ;
 const cost = (site: string) => ACT.costs[site].ap;
@@ -106,14 +106,17 @@ describe('the new forms (slice 3)', () => {
     expect(JSON.stringify((f.cb.objects || []).filter((o: any) => o.kind === 'pile' && o.pos === f.unit(h.id).pos))).toContain('frag_grenade'); // onto the Hand's tile
   });
   it('the Ward (fork A): the first hit a round on an ally next to it lands its share on the Ward; Interpose steps it next to an ally', () => {
-    const f = figFight([{ skills: { visualization: 3 }, level: 3, weapon: 'service_pistol', forms: ['ward'] }, { weapon: 'service_pistol' }], [{ tier: 'soldier', at: '9,4', classic: true }]);
+    const f = figFight([{ skills: { visualization: 3 }, level: 3, weapon: 'service_pistol', forms: ['ward'] }, { weapon: 'service_pistol' }], [{ tier: 'minion', at: '9,4', classic: true }]);
     let u = f.turn(f.pc); const al = f.pcs[1]; al.pos = '5,6';
     f.picture(u, 'ward', '4,4'); u = f.unit(u.id); const w = f.figments(u)[0]; u.ap = 6;
     expect(() => f.order(u, w, 'figment_interpose', { tile: '4,2' })).toThrow(/next to an ally/);
     f.order(u, w, 'figment_interpose', { tile: '5,5' }); u = f.unit(u.id); expect(f.unit(w.id).pos).toBe('5,5'); expect(6 - u.ap).toBe(ORDER);
-    const wHp = f.unit(w.id).hp, aHp = f.unit(al.id).hp; f.unit(al.id).def = -50;
-    for (let i = 0; i < 6 && f.unit(al.id).hp === aHp; i++) { f.foe.jammed = false; withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.foe, f.unit(al.id), 'shot', null, { noAp: true })); } // a natural 1 misses
-    expect(f.unit(w.id).hp).toBeLessThan(wHp); expect(f.unit(al.id).hp).toBeLessThan(aHp);
+    // the enemy's own turn (combat/end-turn, its hostile phase) shoots the ally: no Defense on the ally, the Ward and the
+    // caster out of its reach to hit (Defense 99), so the Ward's HP moves only by the redirect
+    f.unit(al.id).def = -50; f.unit(w.id).def = 99; f.unit(u.id).def = 99; f.foe.pos = '9,6';
+    const wHp = f.unit(w.id).hp, aHp = f.unit(al.id).hp;
+    for (let i = 0; i < 24 && f.unit(w.id) && f.unit(w.id).hp === wHp; i++) { const a = active(f.cb)!; f.act({ type: 'combat/end-turn', unitId: a.id } as any); }
+    expect(f.unit(al.id).hp, 'the enemy hit the ally').toBeLessThan(aHp); expect(f.unit(w.id).hp, 'its share landed on the Ward').toBeLessThan(wHp);
   });
   it('the Husk (fork B): Burst hits every unit next to it, both sides, and it is gone: no charge back, no Snap', () => {
     const f = figFight([{ skills: { visualization: 5 }, level: 5, weapon: 'service_pistol', forms: ['husk'] }], [{ tier: 'soldier', at: '5,4', classic: true }]);
@@ -162,12 +165,15 @@ describe('the forks (door/pick) and the save migration', () => {
     expect(() => s.act({ type: 'door/pick', charId: s.chars[0].id, door: 'no_such_door', option: 'eye' } as any)).toThrow(/Nothing to choose/);
   });
   it('the migration: a character made before the forks keeps every form the old ladder gave it; each fork it passed counts as taken', () => {
-    const s = storyWith([{ skills: { visualization: 5 }, classId: 'trickster' }]); const c = s.g.characters[s.chars[0].id];
-    expect(c.figRev).toBe(FIG_REV); // migrated on the first action after it was made by hand
+    // a sheet with no fork stamp (as a save from before the forks holds it), saved and loaded through the load door
+    const s = storyWith([{ skills: { visualization: 5 }, classId: 'trickster' }]), id = s.chars[0].id;
+    const old = JSON.parse(JSON.stringify(s.g)); delete old.characters[id].figRev; delete old.characters[id].doorPicks; delete old.characters[id].doorKept;
+    const g = migrateLoaded(old), c = g.characters[id];
+    expect(c.figRev).toBe(FIG_REV); // migrated at the load
     for (const r of F.migration.legacy) for (const fm of r.forms) expect(formsOf(c)).toContain(fm);
     expect(pendingDoorPicks(c, F.visualizer.door)).toEqual([]);
     c.skills.visualization = 7; // the "one more" of fork A opens; the Ward is still to be had
     expect(pendingDoorPicks(c, F.visualizer.door).flatMap((p) => p.options.map((o) => o.id))).toEqual(['ward']);
-    expect(migrateCharacterFigments(c)).toEqual([]); // once
+    c.skills.visualization = 5; const once = JSON.stringify(g); expect(JSON.stringify(migrateLoaded(JSON.parse(once)))).toBe(once); // once: a second load changes nothing
   });
 });
