@@ -195,7 +195,7 @@
                 "k": "guard_move",
                 "move": "last_plate"
               },
-              "say": "{self} holds on the last plate: 1 HP, every plate broken (Last Plate)."
+              "say": "{self} holds on the last plate: {=unlocks.1.effects.4.value} HP, every plate broken (Last Plate)."
             },
             {
               "op": "deal",
@@ -251,7 +251,7 @@
                 }
               },
               "why": {
-                "self_skill": "Challenge needs Durability 3."
+                "self_skill": "Challenge needs Durability {=unlocks.1.effects.6.if.self_skill.durability}."
               },
               "effects": [
                 {
@@ -292,7 +292,7 @@
                 }
               },
               "why": {
-                "self_skill": "Slam needs Durability 5."
+                "self_skill": "Slam needs Durability {=unlocks.1.effects.7.if.self_skill.durability}."
               },
               "effects": [
                 {

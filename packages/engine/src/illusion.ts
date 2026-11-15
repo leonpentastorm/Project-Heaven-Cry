@@ -82,5 +82,7 @@ export function strikeImage(cb: Combat, att: Unit, ghost: Unit, mode: 'melee' | 
  * numbers.fade_rounds), or when its owner falls. */
 export function imageTurnStart(cb: Combat, u: Unit) {
   const img = imageOfOwner(cb, u.id); if (!img) return;
-  if (u.dead || cb.round >= img.round + (img.fade ?? 0)) { dropImage(cb, img, u.dead ? 'owner down' : 'faded'); say(cb, u.name + '\'s False Image fades.'); }
+  // a body-less image (Glimmer) carries its row's rounds (figments.ts refuses one without); an image with a body (a
+  // Double's lure) has none and is gone at its owner's next turn start, as before
+  if (u.dead || cb.round >= img.round + (img.body ? 0 : img.fade!)) { dropImage(cb, img, u.dead ? 'owner down' : 'faded'); say(cb, u.name + '\'s False Image fades.'); }
 }

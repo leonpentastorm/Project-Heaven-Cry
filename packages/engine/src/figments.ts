@@ -378,7 +378,8 @@ register({
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile), no = pictureTileWhy(cb, u, k); if (no) return no;
       say(cb, u.name + ' glimmers a false image of ' + u.name + ' at ' + refOf(k!) + '.');
-      lure(cb, rng as Rng, u, null, u, k!, 'The Glimmer', rawItem(h.key)?.numbers?.fade_rounds);
+      const fade = rawItem(h.key)?.numbers?.fade_rounds; if (typeof fade !== 'number') throw new Error(h.key + ': numbers.fade_rounds is missing (the rounds a Glimmer lasts).'); // data, never a fallback
+      lure(cb, rng as Rng, u, null, u, k!, 'The Glimmer', fade);
       return null;
     },
   }],
