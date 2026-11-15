@@ -1,0 +1,58 @@
+{
+  "number": 11,
+  "name": "Glass",
+  "path": "art/portraits/figments/figment-glass.png",
+  "mode": "portrait",
+  "transparent": false,
+  "refs": [
+    "art/icons/skills/visualization.png",
+    "art/icons/skills/charisma.png",
+    "art/icons/skills/durability.png"
+  ],
+  "prompt": "Create ONE original PHC HEAVENPRINT ABSTRACT portrait of a Figment: a picture given a temporary body by nanobots. Use visualization.png as the pigment and mark-making authority; the other skill references guide readable gestures and composition ONLY. Opaque cream gouache masses and broken directional ink on pure BLACK #000000, built of small dense cream squares, dots and flecks like filings. At least one edge MUST fray into drifting bot motes, while the main shape remains clear at 40 pixels. Moderate internal abstraction: definite readable form first, tactile brush and fleck structure second. No cubist puzzle, no ribbons, no smooth 3D mannequin or photoreal object. It is a made thing, NEVER living flesh. No face, no living eyes, no hair, no skin, no clothes or NPC identity. A lens is a simple aperture, never an iris.\nPALETTE STRICTLY: neutral CREAM #F2E5C8 carries ALL light values; Expression DEEP PETROL BLUE #075369 with only #14758B lighter and #033443 darker for every other pigment and shadow; pure black background. No red from Durability, no mint from other references, no ice blue, pink, purple, gold, white-blue glows or unrelated undertones. No luminous bloom, smooth gradients or atmospheric scene.\nFORMAT AND TOKEN COMPOSITION: opaque RGB portrait, 4:5, 800x1000 intended master. Keep the WHOLE subject, all its extremities, echo outlines and detached motes inside an INVISIBLE central circle about 560px in diameter centered at x400 y480. That circle occupies x15\u201385% and y20\u201376% of the portrait. Generous completely black headroom, footroom and corners. NEVER paint the circle, border or frame itself. Nothing spills into corners or to canvas edges. One isolated form and its one requested cue, no extra scenery or characters. Make the silhouette immediately distinct from every other form. No text, symbols resembling letters, labels, UI or watermark.\n\nTHIS FORM AND ITS GAMEPLAY MEANING:\n- **What and job:** a mirror that returns healing. Mender's mirror: it flies; when an ally near it is healed, another ally next to it is healed too; Reflect heals on order.\n- **Silhouette:** a hand mirror with a cross-shaped glint on its face.\n- **Show:** a round mirror face on a short handle; a plain plus-shaped glint of cream on the glass; the handle fraying into motes.\n- **Avoid:** a reflection of a face or any person in the glass; a red cross or any real medical symbol (a plain plus-shaped glint only).\n**Form and meaning:** the Glass: a floating mirror that returns healing to another ally. **Subject:** a round hand mirror made of cream flecks with a plain plus-shaped glint on its face and a short handle; the glass shows no reflection and no face. **Stature:** small and slim, centred. **Pose:** hovering, tilted slightly toward the upper right as if catching light. **Cue:** a few thin rays of cream leaving the glint in two directions, the mended pair.",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "sha256": "48ad0891e4a3dea8316d6a5870a32c4427952f851fc7daf21b03eafd760acd6a",
+  "source_path": "art/_archive/figments/2026-11-15/native-renders/figment-glass.png",
+  "source_sha256": "99956946c8241e2f010ffb72d0ed4cdd6042bc469687a30a35e94a0b44aeb262",
+  "exports": {},
+  "export_crop": [
+    164,
+    282,
+    957,
+    1147
+  ],
+  "upscaled": false,
+  "export_processing": "Aspect-preserving crop/scale/placement on pure black to fit complete painted silhouette inside round-token safe area; no repaint",
+  "framing": {
+    "threshold": 4,
+    "scale": 0.43321106935535997,
+    "offset": [
+      228,
+      293
+    ],
+    "token_center": [
+      400,
+      480
+    ],
+    "token_radius": 280,
+    "paint_radius_target": 248
+  },
+  "token_crop": [
+    120,
+    200,
+    680,
+    760
+  ],
+  "catalog_family": "figments",
+  "catalog_id": "figment-glass"
+}

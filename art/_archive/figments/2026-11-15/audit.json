@@ -1,0 +1,196 @@
+{
+  "base": "89c59126941eb2ae074616adff26ef001104c117",
+  "branch": "wip/design-figments-2",
+  "assets": [
+    {
+      "number": 1,
+      "path": "art/portraits/figments/figment-double.png",
+      "exists": false
+    },
+    {
+      "number": 2,
+      "path": "art/portraits/figments/figment-eye.png",
+      "exists": false
+    },
+    {
+      "number": 3,
+      "path": "art/portraits/figments/figment-wall.png",
+      "exists": false
+    },
+    {
+      "number": 4,
+      "path": "art/portraits/figments/figment-beast.png",
+      "exists": false
+    },
+    {
+      "number": 5,
+      "path": "art/portraits/figments/figment-blade.png",
+      "exists": false
+    },
+    {
+      "number": 6,
+      "path": "art/portraits/figments/figment-snare.png",
+      "exists": false
+    },
+    {
+      "number": 7,
+      "path": "art/portraits/figments/figment-hand.png",
+      "exists": false
+    },
+    {
+      "number": 8,
+      "path": "art/portraits/figments/figment-ward.png",
+      "exists": false
+    },
+    {
+      "number": 9,
+      "path": "art/portraits/figments/figment-husk.png",
+      "exists": false
+    },
+    {
+      "number": 10,
+      "path": "art/portraits/figments/figment-sentinel.png",
+      "exists": false
+    },
+    {
+      "number": 11,
+      "path": "art/portraits/figments/figment-glass.png",
+      "exists": false
+    },
+    {
+      "number": 12,
+      "path": "art/portraits/figments/figment-ferry.png",
+      "exists": false
+    },
+    {
+      "number": 13,
+      "path": "art/portraits/figments/figment-breaker.png",
+      "exists": false
+    },
+    {
+      "number": 14,
+      "path": "art/portraits/figments/figment-hush.png",
+      "exists": false
+    },
+    {
+      "number": 15,
+      "path": "art/icons/figments/trait-kindling.png",
+      "exists": false
+    },
+    {
+      "number": 16,
+      "path": "art/icons/figments/trait-rime.png",
+      "exists": false
+    },
+    {
+      "number": 17,
+      "path": "art/icons/figments/trait-static.png",
+      "exists": false
+    },
+    {
+      "number": 18,
+      "path": "art/icons/figments/trait-bedrock.png",
+      "exists": false
+    },
+    {
+      "number": 19,
+      "path": "art/icons/figments/trait-gust.png",
+      "exists": false
+    },
+    {
+      "number": 20,
+      "path": "art/icons/figments/trait-caustic.png",
+      "exists": false
+    },
+    {
+      "number": 21,
+      "path": "art/icons/figments/trait-skittish.png",
+      "exists": false
+    },
+    {
+      "number": 22,
+      "path": "art/icons/figments/trait-spiteful.png",
+      "exists": false
+    },
+    {
+      "number": 23,
+      "path": "art/icons/figments/trait-stubborn.png",
+      "exists": false
+    },
+    {
+      "number": 24,
+      "path": "art/icons/figments/trait-kindred.png",
+      "exists": false
+    },
+    {
+      "number": 25,
+      "path": "art/icons/figments/trait-quiet.png",
+      "exists": false
+    },
+    {
+      "number": 26,
+      "path": "art/icons/figments/trait-overcharged.png",
+      "exists": false
+    },
+    {
+      "number": 27,
+      "path": "art/icons/figments/order-draw-fire.png",
+      "exists": false
+    },
+    {
+      "number": 28,
+      "path": "art/icons/figments/order-press.png",
+      "exists": false
+    },
+    {
+      "number": 29,
+      "path": "art/icons/figments/order-trip.png",
+      "exists": false
+    },
+    {
+      "number": 30,
+      "path": "art/icons/figments/order-hand-over.png",
+      "exists": false
+    },
+    {
+      "number": 31,
+      "path": "art/icons/figments/order-interpose.png",
+      "exists": false
+    },
+    {
+      "number": 32,
+      "path": "art/icons/figments/order-burst.png",
+      "exists": false
+    },
+    {
+      "number": 33,
+      "path": "art/icons/figments/order-fix.png",
+      "exists": false
+    },
+    {
+      "number": 34,
+      "path": "art/icons/figments/order-reflect.png",
+      "exists": false
+    },
+    {
+      "number": 35,
+      "path": "art/icons/figments/order-carry.png",
+      "exists": false
+    },
+    {
+      "number": 36,
+      "path": "art/icons/figments/order-batter.png",
+      "exists": false
+    },
+    {
+      "number": 37,
+      "path": "art/icons/figments/order-jam.png",
+      "exists": false
+    },
+    {
+      "number": 38,
+      "path": "art/icons/figments/order-redraw.png",
+      "exists": false
+    }
+  ]
+}
