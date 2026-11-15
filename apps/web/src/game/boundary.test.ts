@@ -71,6 +71,10 @@ describe('the client asks the engine; it does not go round it', () => {
     // a status line (who the squad waits for) is not a refusal; any other literal reason is the client deciding legality
     expect(hits(/\bwhy: ['"](?!Waiting for )/, RUN)).toEqual([]);
   });
+  it('the sheet decides no gear lock of its own: why gear is locked (the camp, a fight) is the engine\'s gearLockWhy', () => {
+    const SHEET = /[\\/]screens[\\/]main\.js$/;
+    expect(hits(/At the camp|backpack on the combat screen|run\.state === 'loadout'/, SHEET)).toEqual([]);
+  });
   it('no screen works out an action\'s cost, legality or targets: the descriptor and the engine\'s preview do (finding 3)', () => {
     const SCREENS = /[\\/](screens[\\/](combat|faithCombat)\.js|game[\\/](actionFlow|callView|techView)\.ts)$/; // (commands.ts: the turn card's smartCommands still prints its own costs; client-boundary-3-actions.md, what is left)
     // the old per-system pickers, prompts and previews the flow replaced

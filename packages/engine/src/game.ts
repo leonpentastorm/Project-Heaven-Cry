@@ -57,7 +57,7 @@ import { setBraced, setDowned, stagger, startHidden } from './unitstate';
 import { clearConds, restoreConds } from './magic';
 import { condMods } from './condtable';
 import { runOwned } from './owned';
-import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, survivalRun, runSetting, runNode, runMoveProblem, leanWinner, reachable } from './run/state';
+import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, survivalRun, runSetting, runNode, runMoveProblem, leanWinner, reachable, gearLockWhy } from './run/state';
 import { MAP_DATA } from './run/map';
 import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
@@ -3138,11 +3138,8 @@ export type SandboxAction =
 const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest$)/; // rules 1.54 item 1: the action's type is `rest` (it read `rest/`, which no action is)
 /** Rules 1.54 item 1 (R6): at the camp (run state `loadout`) the gear is rebuilt from the loadout's picks after every
  * change, so every `gear/*` action is refused there, in words naming the character. Null when it is not the camp. */
-const campGearProblem = (g: GameState, a: Action): string | null => {
-  if (g.run?.state !== 'loadout' || !a.type.startsWith('gear/')) return null;
-  const c = g.characters[(a as { charId?: string }).charId || ''];
-  return 'At the camp, change ' + (c ? c.name + '\'s' : 'your') + ' gear in the loadout.';
-};
+const campGearProblem = (g: GameState, a: Action): string | null =>
+  (g.run?.state === 'loadout' && a.type.startsWith('gear/') ? gearLockWhy(g, (a as { charId?: string }).charId) : null); // gearLockWhy's camp words (run/state.ts)
 /** Rules 1.39: a run's actions through the one reducer (the state and the refusals are run/state.ts). */
 function runAction(g: GameState, a: Action, by: string) {
   switch (a.type) {

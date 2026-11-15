@@ -13,6 +13,7 @@ import { ITEM, WEAPON } from './data';
 import { type Character, type PackItem, packOf, holds } from './character';
 import { packTake, grantGoods, itemLabel, calName } from './containers';
 import { lineGoods } from './run/shop';
+import { gearLockWhy } from './run/state';
 import type { GameState } from './game';
 
 /** One line of a recipe: an id (an item, or `rounds:<calibre>` among the gives) and how many a making takes or gives. */
@@ -87,7 +88,7 @@ export interface MakeViewV { charId: string; name: string; shown: boolean; rows:
 /** The Make group's view (rules 1.54) for player `me`'s character (or `charId`). */
 export function makeView(g: GameState, me: string, charId?: string | null): MakeViewV | null {
   const c = (charId && g.characters[charId]) || Object.values(g.characters).find((x) => x.owner === me) || null;
-  if (!c || g.run?.state === 'loadout') return null;
+  if (!c || (!inFight(g) && gearLockWhy(g, c.id))) return null; // the camp's gear lock (out of a fight, the only one)
   const rows: MakeRowV[] = RECIPES.map((r) => {
     const action: MakeAction = { type: 'gear/make', charId: c.id, recipe: r.id, times: 1 };
     const needs = r.needs.map((l) => ({ item: l.item, name: nameOfId(l.item), n: l.n, have: hasOf(c, l.item) }));

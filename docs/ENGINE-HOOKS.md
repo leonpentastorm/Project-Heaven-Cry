@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 654 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 655 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1090,6 +1090,7 @@ Families: `body`, `brain`, `heart`.
 | `OLD_SAVE_PLAY` | `OLD_SAVE_PLAY: PlayMode` | The mode a save written before modes existed reads (data/modes.json old_save: Campaign, the only thing it could be). |
 | `modeOf` | `modeOf(id: string \| null \| undefined): ModeDef \| undefined` | A mode's row by id, or undefined. |
 | `playOf` | `playOf(g: { settings: { play?: PlayMode } }): PlayMode` | The mode a room plays: its `settings.play`, or the old-save mode when the room was saved before there were modes. |
+| `gearLockWhy` | `gearLockWhy(g: { run?: { state: string } \| null; phase?: string; characters: Record<string, { name: string }> }, charId: string \| null \| undefined): string \| null` | the camp (run state `loadout`) the reducer refuses every `gear/*` action, as these words (rules 1.54 item 1, R6: the gear is rebuilt from the loadout's picks); in a fight a change goes through the combat scree… |
 | `RunPhase` | `type RunPhase = 'loadout' \| 'map' \| 'fight' \| 'reward' \| 'shop' \| 'boon' \| 'tile' \| 'over'` | Where a run stands. |
 | `RunNode` | `type RunNode = PathNode` | A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. |
 | `RunTile` | `interface RunTile { id, setting, stage, links, boons }` | A tile of the world the party walks (rule 32): a stage's setting and its boon pool. |
@@ -1484,7 +1485,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `light` | `at`, `tiles`, `side` | sigil.ts:1129 | 1 |
 | `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1578 | 1 |
 | `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2470 | 2 |
-| `mana` | `band`, `mana` | game.ts:3945 | 2 |
+| `mana` | `band`, `mana` | game.ts:3942 | 2 |
 | `mask` | `target`, `at`, `fade` | magic.ts:493 | 2 |
 | `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image` | combat.ts:1424 | 6 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:35 | 3 |

@@ -41,6 +41,15 @@ export const OLD_SAVE_PLAY: PlayMode = (modesJ as any).old_save;
 export const modeOf = (id: string | null | undefined): ModeDef | undefined => MODES.find((m) => m.id === id);
 /** The mode a room plays: its `settings.play`, or the old-save mode when the room was saved before there were modes. */
 export const playOf = (g: { settings: { play?: PlayMode } }): PlayMode => g.settings.play || OLD_SAVE_PLAY;
+/** Why a character's gear can't be changed on the sheet now, in words naming it, or null (consolidation 0.28 S7): at
+ * the camp (run state `loadout`) the reducer refuses every `gear/*` action, as these words (rules 1.54 item 1, R6: the
+ * gear is rebuilt from the loadout's picks); in a fight a change goes through the combat screen's backpack at its AP
+ * cost (rules 1.9). The one gate the reducer, the sheet and the Make list read. */
+export function gearLockWhy(g: { run?: { state: string } | null; phase?: string; characters: Record<string, { name: string }> }, charId: string | null | undefined): string | null {
+  if (g.run?.state === 'loadout') { const c = g.characters[charId || '']; return 'At the camp, change ' + (c ? c.name + '\'s' : 'your') + ' gear in the loadout.'; }
+  if (g.phase === 'combat') return 'In a fight: use the backpack on the combat screen (1 AP a hand).';
+  return null;
+}
 
 /** Where a run stands. `loadout`: the camp before node 1 (rules 1.52, run/loadout.ts); `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
  * after a won fight (offers); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:

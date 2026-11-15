@@ -19,7 +19,7 @@ import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, phys, sellValue } from '@engine';
+import { previewPerkAction, phys, sellValue, gearLockWhy } from '@engine';
 /** The Essence line's note: what one sells for by the engine's own sell rule (rule 27), or that it can't be sold. */
 const eoeSells = () => { const v = sellValue({ id: 'eoe', item: 'essence_of_experience', qty: 1 }, 1); return v == null ? "Can't be sold" : 'Sells for ' + v; };
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
@@ -504,10 +504,9 @@ export class MainLogic extends DCLogic {
     const hotParts = S.hotSlot ? (S.hotSlot === 'main' ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[S.hotSlot] || []) : [];
     const wornParts = Object.keys(worn).filter((k) => worn[k]).flatMap((k) => (k === 'main' ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[k] || []));
     const gearFig = bodyFigure({ worn: wornParts, hot: hotParts, mainSide: side, weapon: !!c, injuries: [] });
-    // Rules 1.9 (Gear in a fight): in a fight gear changes cost AP and go through the fight's own checks, from the
-    // backpack on the combat screen (1 AP a hand); the sheet only points there.
-    const atCamp = !!(g.run && g.run.state === 'loadout'), gearLocked = g.phase === 'combat' || atCamp;
-    const IN_FIGHT = atCamp ? 'At the camp, your gear comes from the loadout.' : 'In a fight: use the backpack on the combat screen (1 AP a hand).';
+    // Rules 1.9 (Gear in a fight): in a fight gear changes cost AP and go through the fight's own checks (the combat
+    // screen's pack); the sheet only points there, in the engine's words.
+    const IN_FIGHT = gearLockWhy(g, c ? c.id : null), gearLocked = !!IN_FIGHT; // the engine's one gear gate (run/state.ts gearLockWhy: the camp, a fight)
     const slots = SLOTS.map(([id, label]) => { const x = worn[id], removable = !!x && (id === 'off' || !!SLOT_TO_WORN[id]);
       return { key: id, label, name: x ? x[0] : '—', note: x ? x[1] : '', canRemove: removable && !gearLocked, remove: () => act({ type: 'gear/unequip', charId: c.id, slot: id === 'off' ? 'off' : SLOT_TO_WORN[id] }), hover: () => this.setState({ hotSlot: id }), leave: () => this.setState({ hotSlot: null }),
         style: 'display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; padding: 4px 6px; border-radius: 6px; font-size: 12px; ' + (S.hotSlot === id ? 'background: #1C2536' : '') ,
