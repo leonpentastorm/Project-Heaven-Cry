@@ -460,7 +460,7 @@
         "provisional": true,
         "presence": {
           "judged_harms_below": 0.25,
-          "text": "Also when an enemy your weapon has Judged damages an ally at or under {=intervention.presence.judged_harms_below|pct} of their HP: that enemy takes the same.",
+          "text": "Also when an enemy your weapon has Judged damages an ally at or under {=intervention.presence.judged_harms_below|pct}% of their HP: that enemy takes the same.",
           "provisional": true
         }
       },
@@ -1389,7 +1389,7 @@
         "below": 0.25,
         "presence": {
           "below": 0.5,
-          "text": "It fires when an ally drops below {=intervention.presence.below|pct} of their HP instead.",
+          "text": "It fires when an ally drops below {=intervention.presence.below|pct}% of their HP instead.",
           "provisional": true
         }
       },

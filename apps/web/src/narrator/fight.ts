@@ -3,7 +3,7 @@
 // The prompt is the fight as it stands, the words, and the exact list of what the answer may ask the engine for; the
 // answer comes back through one tool (or as JSON), is reshaped here, and the engine validates it again before anything
 // happens (narrator/fight-ruling). Nothing here sets a number.
-import { FIGHT_CONDS, FIGHT_COND_NAME, SKILL, TN_LADDER, condName, condOn, refOf, talkOf, type FightEffect, type FightRuling, type GameState, type Unit } from '@engine';
+import { FIGHT_CONDS, FIGHT_COND_NAME, SKILL, TN_LADDER, condName, condOn, healthView, refOf, talkOf, type FightEffect, type FightRuling, type GameState, type Unit } from '@engine';
 
 /** How long the host waits for a fight answer before the attempt is given back (ms). */
 export const FIGHT_TIMEOUT_MS = 20_000;
@@ -26,7 +26,8 @@ You never deal damage, heal, move anyone, or change AP in any other way. The eng
 A check comes first whenever the outcome is in doubt. A condition or a surrender with no check is only for what the fight has already earned (a beaten enemy, a threat the squad just carried out).
 Plain speech, a taunt with nothing behind it, or words nobody could hear: answer with lines and kind "none".`;
 
-const band = (u: Unit) => (u.dead ? 'dead' : u.surrendered ? 'surrendered' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'hurt' : u.hp > u.maxHp / 4 ? 'at half or less' : 'nearly down');
+/** How hurt a unit reads to the Narrator: the engine's word (healthView, rules.json combat.health_look), never a ladder of its own. */
+const band = (u: Unit) => (u.surrendered && !u.dead ? 'surrendered' : healthView(u).word);
 const condsOf = (u: Unit) => Object.keys(u.conds || {}).filter((c) => condOn(u, c)).map((c) => condName(c)).join(', ');
 const NEVER = ['machine', 'robot', 'turret', 'drone'];
 /** May this enemy be named in a surrender with no check (the engine checks again)? */

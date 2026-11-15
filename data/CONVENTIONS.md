@@ -185,6 +185,29 @@ Every rule-bearing item carries both:
 - Rules 1.52 (gear by mode): `modes.json` items[].`loadout` (`kind` `camp`: the Survival camp; `kind` `kit`: a fixed loadout, `by_door` skill → kit id and `default`, the old creation kits of `character.ts KITS`; a campaign's own json may carry a `loadout` of the same shape). `survival.json loadout`: `budget` (credits), `weapons` {melee, gun, bow} (the free list), `gun` {loaded, spare}, `bow` {spare}, `focuses`, `focus_with` (items a focus brings), `counter.skip` (the shop's counter shelves left out), `stock.ids` (the camp's fixed gear: weapon and item ids, `armour:<class>` priced from `rules.json armor.classes`), `max_qty`, `recommended` (`focus_by_door`, `weapon` rows, `buys` by profile core/mp/gun/melee, `fill`). Read by `src/loadout.ts` and `run/loadout.ts`.
 - Rules 1.41 (build step 3; read by `run/encounter.ts`, `run/rewards.ts`, the run reducer in `game.ts`): `run` (`start_credits`, `dead_return_hp`, `first_setting`), `stage` (the stage term: `bulk`, `pressure`, `credits`, `xp` by stage, `elite_up`), the budget (`rounds`, `bulk_per_char_round`, `pressure_per_char` and `max_foes` by party size 1 to 4, `bulk_band`, `pressure_band`, `tiers` {bulk, pressure} for every enemy tier, `lag_factor`, `share` by party size), `map_size` (`steps` of {units, size}, `squad_cols`), what a node pays (`xp`, `credits`, `ammo_pack`), the pick (`rewards`: `offer`, `rarity` by node kind, `ceiling` by stage, `price_band`, `instead_rate`), the words (`nodes`: the panel of a node without a fight; `tips`: every kind's hover card), and the content (`pools` of weapons by tier and range, `names` by kind and tier, `templates` with their slots, `settings` with kinds, Boss and boon pool). The tiers' lag is `enemies.json items[].lag` (rows `{from, lag}` by fight level, each lag 0 to 4). A new template is one row (see the step 3 hand-off, "How to add an encounter template").
 
+## Owned units' data verbs (figments.json `verbs`, rules 1.56)
+
+The orders an owned unit with no turn of its own (a Figment) can be given, beside the engine's own `move`, `shot`,
+`aimed`, `melee` (owned.ts `OWNED_VERBS`), are rows of `figments.json` `verbs`, run by one door (owned.ts
+`runDataVerb`). This is the closed vocabulary (the lead's ruling on the 0.29 wave-2 review); `tools/validate.py`
+checks every key, and an unknown key is an error:
+
+- `id`, `name`, `icon`, `text`, `provisional`; `site`: its actions.json cost site (priced on the owner; `figment_order`
+  is the shared order site); `res`: resources it also costs (`{vcharge: 1}`), through the same price.
+- `reach`: what it aims at. `tiles` (from the owned unit; default 1), `side` (`foe` or `ally`), `eyes: true` (the
+  owned unit's own sight, not its side's). Or a tile: `tile: true` with `tiles`, and `beside: ally` (the tile must
+  be next to a standing ally). No reach: no target.
+- `attack` (`shot`, `aimed`, `melee`: the unit's weapon attack), with `on_hit` (ops run on a hit) and `dash` (a
+  straight run of up to that many free tiles to the target first).
+- `effects`: item ops run with the owned unit as the actor (and `amounts` they read).
+- `unmake: true` with `refund_share` (0 to 1): it is let go, that share of its made charge back.
+- `use`: one of its OWNER's item uses, named by its actions.json row id (`stim`: the Hand's Hand over), run through
+  that use's one engine door with the owned unit as the hand (owned.ts `OWNER_USES`, by the row's reducer type;
+  today `combat/stim`, hand to hand). It goes with `reach.side: ally`.
+
+A form's `verbs` name these rows (or the engine's own and `let_go`); a form of `turn: auto` names its `auto`
+`{verb, target}`: the verb an engine verb or one of these rows, the target `nearest_foe` or `weakest_foe`.
+
 ## The one formula (rules.json `output`; unified damage, stage (a))
 - `rules.json` `output` holds the terms of the formula every amount of damage, healing and shield is built from (`packages/engine/src/effects/output.ts`): `profiles` (`k`, `attr`, `skill`: the slopes of a Stat term; `level`: the Level column it reads, `"deal"`, `"mend"` or `null`; `pair`), `pairs` (`attrs`, `skills`: what a Stat term reads; a weapon's own pair comes from its `phys` block) and `level` (`deal`: 20 numbers, one a level; `mend`: the path of the enemy table's damage column, read and not copied).
 - A system is re-fitted by changing its profile or the Level table here. Do not add a multiplier in code for it.

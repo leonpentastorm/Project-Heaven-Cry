@@ -20,7 +20,9 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import figmentsJ from '../../../data/figments.json';
+import actionsJ from '../../../data/actions.json';
 import type { Combat, Unit } from './combat';
+import type { Character } from './character';
 import { unitFromEnemy, levelCompanion, say, emitFx, moveUnit, previewAttack, resolveAttack, dist, isMelee, unitSees, sideSeesUnit, alive, useStim, type AttackMode } from './combat';
 import { canStand, tileOf } from './kit';
 import { WEAPON } from './data';
@@ -53,6 +55,13 @@ const BLOCKS: Record<string, any> = Object.fromEntries([...(((enemiesJ as any).c
  * shot), `dash` (tiles in a straight line before it), `reach` {tiles, side, eyes: the unit itself must see it},
  * `on_hit` and `effects` (item ops run with the owned unit as the holder, its owner's sheet behind it), `unmake`
  * (refund_share: what share of its making comes back). One line here as each system's file comes. */
+/** The actions.json rows (gear actions) by id: what a data verb's `use` names. */
+const ACTION_ROWS: Record<string, any> = Object.fromEntries((((actionsJ as any).items || []) as any[]).map((r) => [r.id, r]));
+/** The item uses an owned unit can run for its owner (a data verb's `use`), by the named row's reducer type: each is the
+ * engine's one door for that use, with the owned unit as the hand. The validator holds `use` to these types. */
+const OWNER_USES: Record<string, (cb: Combat, me: Unit, t: Unit, c: Character) => string | null> = {
+  'combat/stim': (cb, me, t, c) => useStim(cb, me, t, c, false),
+};
 export const OWNED_DATA_VERBS: Record<string, any> = Object.fromEntries((((figmentsJ as any).verbs || []) as any[]).map((v) => [v.id, v]));
 /** Each system's gate on giving its owned units orders (figments.ts: the Visualizer in hand, not Silenced, in range). */
 const GATES: ((cb: Combat, owner: Unit, u: Unit, verb: string) => string | null)[] = [];
@@ -222,9 +231,11 @@ export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any
     const no = withAp(me, 99, (): string | null => { const pv = previewAttack(cb, me, tt, dv.attack as AttackMode); if (!pv.ok) return pv.why || 'Not now.'; const r = resolveAttack(cb, rng, me, tt, dv.attack as AttackMode, null, { noAp: true }); if (r.hit && dv.on_hit?.length) runOwnEffects(holder, dv.on_hit, { u: me, t: tt, action: dv.site, tile: null, toggles: [], mode: null }); return null; });
     if (no) return no;
   }
-  // stim (rules 1.56, the Hand's Hand over): one of the OWNER's stims, given by the owned unit as the hand (the engine's
-  // one stim: combat.ts useStim, its heal and its revive), the stim's own AP spent by the owned unit, the order paid below
-  if (dv.stim && t) { const tt = t; if (!c) return 'No stims to give.'; const no = withAp(me, 99, () => useStim(cb, me, tt, c, false)); if (no) return no; }
+  // use (rules 1.56, the Hand's Hand over; the lead's ruling on the wave-2 review, MF5 b): the owned unit runs one of
+  // its OWNER's item uses, named by its actions.json row (`use`); the row's reducer type picks the engine's one door for
+  // it (OWNER_USES: a stim is combat.ts useStim, its heal and its revive), its own AP spent by the owned unit, the order
+  // paid below
+  if (dv.use && t) { const tt = t, run = OWNER_USES[ACTION_ROWS[dv.use]?.type]; if (!run) return dv.name + ' has nothing to hand over.'; if (!c) return owner.name + ' has none to give.'; const no = withAp(me, 99, () => run(cb, me, tt, c)); if (no) return no; }
   if (dv.effects?.length) runOwnEffects(holder, dv.effects, { u: me, t, action: dv.site, tile: tileOf(cb, o.tile) || null, toggles: [], mode: null });
   pay(cb, me, cost, { payer: owner, c });
   return null;

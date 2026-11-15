@@ -510,10 +510,13 @@ function migrateFloor(g: GameState) {
   for (const f of list) dropOnTile(objectsOf(cb), f.pos, [magItem(f.weapon!, f.rounds || 0)]);
   if (cb.over && g.phase !== 'combat' && zoneMap(g).id === cb.map.id) for (const f of list) dropOnTile(storyObjects(g), f.pos, [magItem(f.weapon!, f.rounds || 0)]);
 }
-/** A save as it comes off the disk or the wire, before any screen draws it: renamed and removed perks and traits are
+/** A save as it comes off the disk or the wire, before any screen draws it: renamed and removed perks and traits and the Figment forks are
  * settled on every sheet (the other migrations wait for the first action, as before). */
 export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
+  // rules 1.56 (Figments 2.0; 0.29 wave-2 review MF3): a sheet from before the forks keeps the old ladder's forms here,
+  // at the load door, so the first view (the Figments tab, the level-up card, Picture) is right before any action
+  try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterFigments(c as any); } catch { /* a save this old is handled by apply */ }
   // rules 1.56 (consolidation 0.29 M5): a fight saved before fitted mods were held (0.28) keeps a held snapshot with no
   // mod relics, and a mod acts only as a held item now: each PC unit holding a snapshot takes the modifiers on its own
   // weapon instances (instanceMods of u.weapon with u.mods, u.offWeapon with u.offMods) that it lacks. Nothing is

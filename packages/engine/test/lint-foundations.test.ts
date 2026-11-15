@@ -10,6 +10,7 @@ import { STATS, STAT_FAMILIES, COST_SITE_IDS, COST_SITES, IMMUNE_IDS, isStatId, 
 import ACTIONS_JSON from '../../../data/actions.json';
 import CLASSES_JSON from '../../../data/classes.json';
 import TENDING_JSON from '../../../data/tending.json';
+import FIGMENTS_JSON from '../../../data/figments.json'; // (MF1: Picture's, Glimmer's and the Visualizer's grants name their sites)
 import LINT_PATTERNS from './lint-patterns.json';
 /** A pattern shared with tools/built_from.py (test/lint-patterns.json): one list, read by both. */
 const RE = (id: string) => new RegExp((LINT_PATTERNS as any).patterns[id].re);
@@ -48,7 +49,7 @@ describe('F14: stat ids are declared, asked and answered', () => {
     for (const m of f.code.matchAll(/\b(?:price|affords)\(\s*(?:\{[^{}]*\}|cb, u),\s*([^,)]+)[,)]/g)) { if (f.rel === 'effects/cost.ts') continue; const lit = [...m[1].matchAll(/'([a-z_0-9]+)'/g)].map((x) => x[1]); for (const s of lit) costSites.add(SITE_OF[s] || s); if (!lit.length && !/^def\.id$|^action$|^id$|^site$|^h\.key/.test(m[1].trim())) throw new Error('price() with an action the lint cannot read: ' + f.rel + ':' + lineOf(f.code, m.index!) + ' ' + m[0]); }
     // actions.ts prices the basic actions from data/actions.json (`site as CostSite`, asked only when the site is declared)
     // rules 1.33: a data grant_action that names its cost site (Triage: 'triage') is priced there (effects/actions.ts costOf)
-    if (f.rel === 'effects/actions.ts') { const walk = (o: any): void => { if (Array.isArray(o)) o.forEach(walk); else if (o && typeof o === 'object') { if (o.op === 'grant_action' && typeof o.site === 'string') costSites.add(o.site); Object.values(o).forEach(walk); } }; walk([CLASSES_JSON, TENDING_JSON]); }
+    if (f.rel === 'effects/actions.ts') { const walk = (o: any): void => { if (Array.isArray(o)) o.forEach(walk); else if (o && typeof o === 'object') { if (o.op === 'grant_action' && typeof o.site === 'string') costSites.add(o.site); Object.values(o).forEach(walk); } }; walk([CLASSES_JSON, TENDING_JSON, FIGMENTS_JSON]); }
     if (f.rel === 'actions.ts') for (const x of (ACTIONS_JSON as any).items) { const site = x.site || x.id; if ((COST_SITE_IDS as readonly string[]).includes(site)) costSites.add(site); } // (a row with no site of its own and no fixed AP is priced by its own pipeline: Move by tiles)
     for (const m of f.code.matchAll(/AP_BY_NAME[^=]*= new Set<CostSite>\(\[([^\]]+)\]/g)) for (const x of m[1].matchAll(/'([a-z_]+)'/g)) costSites.add(x[1]);
     for (const m of f.code.matchAll(/\bimmune\(\s*\{[^{}]*\},\s*'([a-z_]+)'/g)) immuneAsked.add(m[1]);
