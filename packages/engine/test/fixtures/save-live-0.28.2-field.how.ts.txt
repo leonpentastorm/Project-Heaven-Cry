@@ -1,0 +1,21 @@
+// Writes test/fixtures/save-live-0.28.2-field.json with the engine at 8d651fb1 (origin/develop = live 0.28.2): a
+// Survival test room of two players (one character each, the pistol and two spare magazines), the first fight won at
+// once (run/skip), then the old field (rules 1.55 as 0.28.2 built it: the run at `field`, the story phase, the squad's
+// positions and the piles in g.story, no live fight): c1 steps off its tile, and the host has marked Leave. Run once
+// (as a vitest file in that engine's test/ folder, OUT=<path>); never regenerate.
+import { it } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { apply, reachable, magazineWorth, standable, zoneMap } from '../src';
+import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+it('writes the fixture', () => {
+  let g: any = JSON.parse(JSON.stringify(startRun(survivalRoom('PHC-OLDFIELD', [{ build: 'plain_gun', level: 1 }, { build: 'plain_gun', level: 1 }], { test: true }), 'PHC-OLDFIELD')));
+  for (const c of Object.values(g.characters) as any[]) { c.weapon = 'service_pistol'; c.pack = [...(c.pack || []), ...magazineWorth('service_pistol'), ...magazineWorth('service_pistol')]; }
+  const n = reachable(g.run).find((x: any) => x.kind === 'fight')!;
+  for (let i = 0; i < 2 && g.run.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+  g = apply(g, { type: 'run/skip' }, 'host');
+  const at = g.story.positions.c1, [x0, y0] = at.split(',').map(Number), map = zoneMap(g), taken = new Set(Object.values(g.story.positions));
+  const step = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (x0 + dx) + ',' + (y0 + dy)).find((k) => standable(map, k) && !taken.has(k) && !(g.story.objects || []).some((o: any) => o.pos === k && o.kind !== 'pile'))!;
+  g = apply(g, { type: 'world/act', charId: 'c1', act: 'move', to: step } as any, 'host');
+  g = apply(g, { type: 'run/leave' } as any, 'host');
+  writeFileSync(process.env.OUT!, JSON.stringify(g));
+});
