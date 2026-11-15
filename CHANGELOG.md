@@ -12,7 +12,7 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP
 (items 27 and 28), the health word (item 29), hand-overs and the field's actions (items 30 to 36, and the lead's rulings
-on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words.
+on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words. **Live since 15 Nov 2026**.
 
 ### Survival
 
