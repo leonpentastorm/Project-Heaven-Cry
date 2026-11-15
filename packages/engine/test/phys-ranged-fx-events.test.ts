@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Saves roll a d20 that the attack rig doesn't reach: D.die forces every d20 (an attack's own is then set by rig()).
 const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
-import { TECHNIQUE, WEAPON, heatLimit, resolveAttack, objectsAt, packOf, type Unit } from '../src';
+import { TECHNIQUE, WEAPON, heatLimit, resolveAttack, objectsAt, packOf, roundsOf, SPECIAL_ROUND_ITEM, type Unit } from '../src';
 import { fxTaps } from '../src/fxtap';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
@@ -31,7 +31,7 @@ function gunner(weapon: string, known: string[], foes: any[] = [{ at: 'H5', tier
   return f;
 }
 const tough = (f: F, u: Unit) => { f.unit(u.id).hp = 999; f.unit(u.id).maxHp = 999; };
-const give = (f: F, type: string, qty: number) => { const c = f.char(f.pc); c.pack = [...packOf(c), { id: 'ammo_' + type, item: 'ammo_' + type, name: type + ' rounds', qty, kind: 'ammo' } as any]; };
+const give = (f: F, type: string, qty: number) => { const c = f.char(f.pc); c.pack = [...packOf(c), SPECIAL_ROUND_ITEM[type] ? roundsOf((WEAPON[c.weapon] as any).ammo, qty, type) : { id: 'ammo_' + type, item: 'ammo_' + type, name: type + ' rounds', qty, kind: 'ammo' } as any]; /* rules 1.56: rounds of the gun's calibre */ };
 
 describe('E1 technique: line, opt, ammo (and the weapon)', () => {
   it('Burst on an automatic weapon says its Auto line; Called Shot its part; Load Special its round', () => {

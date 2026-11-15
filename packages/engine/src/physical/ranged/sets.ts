@@ -16,7 +16,7 @@ import { technique, stepUser, stepsWithin, endWatch, ownSideOnly, lowerPressure,
 import { say, type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponBraces, weaponBraced, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
 import { condSource } from '../../magic';
 import { WEAPON } from '../../data';
-import { packOf } from '../../character';
+import { packOf, specialRoundsFor, takeSpecialRounds } from '../../character';
 import { AMMO_TYPES, ammoId } from '../../tactics';
 import { TECHNIQUE, weaponProps } from '../data';
 import { foesOf, alliesOf } from '../../kit';
@@ -185,11 +185,12 @@ const bracedAuto = (u: Unit) => { const b = techStateOf(u, 'brace'); return !!u.
 export const bracedSuppress = (u: Unit): number => (bracedAuto(u) ? num('brace', 'auto_suppress_pressure', 1) : 0);
 
 // ---------- 17. Load Special ----------
-/** The special rounds a character carries, by type (an enemy or a companion carries none). */
+/** The special rounds a character carries for this weapon, by type (rules 1.56: rounds of its calibre, and enhanced
+ * rounds that fit any gun; an enemy or a companion carries none). */
 function carried(t: Tech): Record<string, number> {
-  const out: Record<string, number> = {}; if (!t.c) return out;
-  for (const it of packOf(t.c)) { const m = /^ammo_(.+)$/.exec(it.item || it.id); if (m && m[1] !== 'standard' && AMMO_TYPES[m[1]] && it.qty > 0) out[m[1]] = (out[m[1]] || 0) + it.qty; }
-  return out;
+  if (!t.c) return {};
+  const all = specialRoundsFor(packOf(t.c), t.w.ammo);
+  return Object.fromEntries(Object.entries(all).filter(([k]) => !!AMMO_TYPES[k]));
 }
 /** The round the player named (args.ammo), else the one they carry most of. */
 function chosen(t: Tech): string | null {
@@ -212,8 +213,7 @@ technique({
     const type = chosen(t)!, spread = t.line('spread') === 'spread';
     t.note('Chambers 1 ' + roundName(type) + ' round for your next Fire' + (spread ? ': every target of it gets the round' : '') + '. The magazine stays as it is.');
     if (t.preview) return null;
-    let left = 1; // the round comes out of the pack now
-    t.c!.pack = packOf(t.c!).map((x) => { if (!left || (x.item || x.id) !== 'ammo_' + type || x.qty <= 0) return x; left -= 1; return { ...x, qty: x.qty - 1 }; }).filter((x) => x.qty > 0 || (x as any).mags);
+    t.c!.pack = takeSpecialRounds(packOf(t.c!), t.w.ammo, type, 1).pack; // the round comes out of the pack now
     Object.assign(techState(t.u, 'load_special'), { type, weaponId: t.weaponId, hand: t.hand });
     emitFx(t.cb, 'load', { unit: t.u.id, at: t.u.pos, rounds: 1, special: type, dur: 400, weapon: t.weaponId, hand: t.hand });
     return null;

@@ -1,6 +1,6 @@
 // Physical 2.0 (rules 1.12), the ranged Sets: Bead, Spot, Brace, Load Special, Shift, Vent and Head Down.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, packOf, resolveAttack, type Unit, type TechArgs } from '../src';
+import { phys, packOf, resolveAttack, roundsOf, specialRoundsFor, SPECIAL_ROUND_ITEM, WEAPON, type Unit, type TechArgs } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { unchanged, calm, type PhysF as F } from './helpers/physfight-ranged';
 
@@ -15,11 +15,13 @@ function squadFight(spotter: string, shooter: string, o: { tier?: string; foeAt?
   const f = physFight([{ weapon: spotter, known: ['spot', 'dead_centre'], skills: { dexterity: 6 } }, { weapon: shooter, known: ['dead_centre'], skills: { dexterity: 6 } }], [{ at: o.foeAt || 'H5', tier: o.tier || 'soldier' }]);
   f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'C7'); f.put(f.foe, o.foeAt || 'H5'); calm(f); f.turn(f.pcs[0]); return f;
 }
-/** Put special rounds in the first PC's pack. */
+/** Put special rounds in the first PC's pack: rules 1.56, rounds of the held gun's calibre of that type (a type made by
+ * calibre), else the type's own item (enhanced rounds, which fit any gun). */
 function give(f: F, type: string, qty: number, u?: Unit) {
-  const c = f.char(u || f.pc); c.pack = [...packOf(c), { id: 'ammo_' + type, item: 'ammo_' + type, name: type + ' rounds', qty, kind: 'ammo' } as any];
+  const c = f.char(u || f.pc), cal = (WEAPON[c.weapon] as any)?.ammo;
+  c.pack = [...packOf(c), SPECIAL_ROUND_ITEM[type] ? roundsOf(cal, qty, type) : { id: 'ammo_' + type, item: 'ammo_' + type, name: type + ' rounds', qty, kind: 'ammo' } as any];
 }
-const carriedOf = (f: F, type: string, u?: Unit) => packOf(f.char(u || f.pc)).filter((x) => (x.item || x.id) === 'ammo_' + type).reduce((t, x) => t + x.qty, 0);
+const carriedOf = (f: F, type: string, u?: Unit) => { const c = f.char(u || f.pc); return specialRoundsFor(packOf(c), (WEAPON[c.weapon] as any)?.ammo)[type] || 0; };
 const term = (pv: phys.TechPreview, label: string) => { expect(pv.attacks.length, pv.why || '').toBeGreaterThan(0); return pv.attacks[0].pv.terms?.find((t) => t.label === label)?.v; };
 /** A Shot's attack preview (a unit whose turn it isn't is given its AP to look with). */
 function shotPv(f: F, targetId: string, u?: Unit, args: TechArgs = {}) {

@@ -4,6 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, gearLockWhy, sheetPack, sellValue, NODE_TIP, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
 import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
+import { counterLines, linePrice, ROUND_PRICE, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from '../src';
+import rulesJ from '../../../data/rules.json';
+const RJ: any = rulesJ;
 import { Rec, type Pc } from './helpers/replay';
 
 const SV: any = svJ;
@@ -223,3 +226,45 @@ describe('rules 1.54 items 5 to 7: making (gear/make, one converter for every re
     expect(has(g, c.id, (x) => (x.item || x.id) === POWDER)).toBe(10 - 3 * ROUNDS.needs[0].n);
   });
 });
+
+// Rules 1.56 (L2, D3): special rounds are priced and made by calibre through the one priceOf and the one recipe path:
+// a special round for a heavy gun costs and needs materials in proportion. Numbers read from data.
+describe('rules 1.56: special rounds by calibre (the shop and gear/make, through the reducer)', () => {
+  const HEAVY = Object.values(WEAPON).filter((w: any) => SPECIAL_CALIBRES.includes(w.ammo)).sort((a: any, b: any) => ROUND_PRICE[b.ammo] - ROUND_PRICE[a.ammo])[0] as any;
+  const CAL = HEAVY.ammo, TYPE = 'armor_piercing', ID = 'rounds:' + CAL + ':' + TYPE;
+  const each = Number(SPECIAL_ROUND_ITEM[TYPE].price_mult) * ROUND_PRICE[CAL];
+  it('the heaviest calibre\'s armour-piercing round costs price_mult x its own round at the counter, and buying it puts rounds of that calibre and type in the pack', () => {
+    expect(ROUND_PRICE[CAL]).toBeGreaterThan(ROUND_PRICE[RJ.weapons_rules.special_round_price.calibre]); // a heavy gun's round, not the reference's
+    expect(priceOf(ID)).toBe(each);
+    let g = at('shop', { prep: (x) => { x.characters.c1.credits = 100000; x.characters.c1.weapon = HEAVY.id; } });
+    const l = counterLines(Object.values(g.characters)).find((x) => x.id === ID)!; expect(l).toBeTruthy();
+    expect(linePrice(l)).toBe(each * l.per);
+    g = apply(g, { type: 'run/buy', charId: 'c1', key: l.key, qty: 1 }, 'host');
+    expect(g.characters.c1.credits).toBe(100000 - each * l.per);
+    expect(has(g, 'c1', (x) => x.calibre === CAL && x.ammoType === TYPE)).toBe(l.per);
+    // out of a fight the heavy gun loads them; rounds of another calibre would not do
+    g = apply(g, { type: 'gear/ammo', charId: 'c1', ammo: TYPE } as any, 'host');
+    expect(g.characters.c1.loadedType).toBe(TYPE); expect(g.characters.c1.loaded).toBe(Math.min(l.per, HEAVY.magazine));
+  });
+  it('the recipe of that round needs materials worth its price (half gunpowder, half casings), made through gear/make', () => {
+    const row = RECIPES.find((r) => r.gives[0].item === ID)!; expect(row).toBeTruthy();
+    const worth = (ls: { item: string; n: number }[]) => ls.reduce((t, x) => t + (priceOf(x.item) || NaN) * x.n, 0);
+    expect(worth(row.needs)).toBe(each * row.gives[0].n); expect(worth(row.needs)).toBe(worth(row.gives));
+    for (const l of row.needs) expect((priceOf(l.item) || 0) * l.n).toBe(worth(row.needs) / row.needs.length);
+    const pack = (x: GameState) => { x.characters.c1.pack = [...packOf(x.characters.c1), line(TOOL, 1, { kind: 'tool' }), ...row.needs.map((l) => line(l.item, l.n))]; };
+    let g = at('rest', { prep: pack });
+    g = apply(g, { type: 'gear/make', charId: 'c1', recipe: row.id, times: 1 }, 'host');
+    expect(has(g, 'c1', (x) => x.calibre === CAL && x.ammoType === TYPE)).toBe(row.gives[0].n);
+    for (const l of row.needs) expect(has(g, 'c1', (x) => (x.item || x.id) === l.item)).toBe(0);
+    // the reference calibre's row makes what the old one-for-every-gun row made, for the same materials
+    const ref = RECIPES.find((r) => r.gives[0].item === 'rounds:' + RJ.weapons_rules.special_round_price.calibre + ':' + TYPE)!;
+    expect(worth(ref.needs)).toBe(priceOf(SPECIAL_ROUND_ITEM[TYPE].id)! * ref.gives[0].n);
+  });
+  it('every each_calibre row is expanded for every calibre that sells the round, and each holds the parity', () => {
+    for (const t of Object.keys(SPECIAL_ROUND_ITEM)) for (const cal of SPECIAL_CALIBRES) {
+      const id = 'rounds:' + cal + ':' + t; if (priceOf(id) == null) continue;
+      expect(RECIPES.filter((r) => r.gives[0].item === id).length, id).toBe(1);
+    }
+  });
+});
+

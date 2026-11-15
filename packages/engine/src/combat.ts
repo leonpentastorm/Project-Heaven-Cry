@@ -5,7 +5,7 @@ import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, plainRounds, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -520,7 +520,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, ...(c.offHand && WEAPON[c.offHand.id] && c.offHand.mods?.length ? { offMods: [...c.offHand.mods] } : {}), offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? WEAPON[c.offHand.id].magazine ?? 0, WEAPON[c.offHand.id].magazine ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
-    parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => x.calibre && x.calibre === w.ammo).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
+    parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => plainRounds(x, w.ammo)).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
     mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass || c.relics?.length || skillItemsOf(c.skills).length || heldOfChar(c).verbs?.length || heldOfChar(c).relics?.length ? { held: heldOfChar(c) } : {}), // rules 1.56: a fitted mod is held too
     ...pcExtras(c, w),
   };
@@ -535,7 +535,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   const spare = packOf(c).find((x) => x.weapon === c.weapon && x.mags);
   const offG = c.offHand && WEAPON[c.offHand.id] && c.offHand.id !== c.weapon ? WEAPON[c.offHand.id] : null;
   const offW = offG ? packOf(c).find((x) => x.weapon === offG.id && x.mags) : null;
-  const offLoose = offG && offG.reload === 'loose' && offG.ammo && offG.ammo !== w.ammo ? packOf(c).filter((x) => x.calibre === offG.ammo && !x.mags).reduce((t, x) => t + x.qty, 0) : null;
+  const offLoose = offG && offG.reload === 'loose' && offG.ammo && offG.ammo !== w.ammo ? packOf(c).filter((x) => plainRounds(x, offG.ammo)).reduce((t, x) => t + x.qty, 0) : null;
   const kind = (c as any).kind || ((c.traits || []).includes('factory_made') ? 'machine' : 'human');
   const res = resourcesFor(c);
   return {
@@ -2435,8 +2435,8 @@ export function intoUnit(u: Unit, c: Character, it: PackItem) {
     return;
   }
   if (intoCounts(c, it)) return; // a stim joins c.stims, an Essence c.essence (usable at once)
-  if (it.calibre && it.calibre === WEAPON[u.weapon]?.ammo) u.loose = (u.loose || 0) + it.qty;
-  else if (it.calibre && u.offLoose != null && u.offWeapon && it.calibre === WEAPON[u.offWeapon]?.ammo) u.offLoose += it.qty; // the off-hand gun's own calibre (and the pack)
+  if (plainRounds(it, WEAPON[u.weapon]?.ammo)) u.loose = (u.loose || 0) + it.qty;
+  else if (u.offLoose != null && u.offWeapon && plainRounds(it, WEAPON[u.offWeapon]?.ammo)) u.offLoose += it.qty; // the off-hand gun's own calibre (and the pack)
   else if (WEAPON[it.weapon || it.id]?.category === 'thrown' && !it.mags) { const id = it.weapon || it.id; (u.throwables ||= {})[id] = (u.throwables[id] || 0) + it.qty; }
   else if ((it.item || it.id) === 'spare_parts') u.parts = (u.parts || 0) + it.qty;
   else if ((it.item || it.id) === 'standard_core' && u.mg) u.mg.cores += it.qty;

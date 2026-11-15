@@ -2322,7 +2322,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel; Case Closed and Weak Point left this list with rules 1.13 *(Case Closed is back on it: Leon, 10 Nov 2026, item 1503)*) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
 
-**Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type.
+**Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type. (Superseded by rules 1.56, L2: armour-piercing, hollow-point and incendiary rounds are rounds of one calibre.)
 
 **Recoil** (spec: Modifiers, now run by the engine): −1 to hit for each earlier shot this turn, reduced by floor(Dexterity ÷ 2); halved while braced or Emplaced; none for bows and weapons marked no_recoil; the compensator removes it. *(Superseded by rules 1.56 items 1 and 3: the gun's own Recoil, bows 0; the compensator −1.)* Shots inside one burst, full auto or weapon skill use the burst's own penalty instead, and reactions take none.
 
@@ -9679,3 +9679,33 @@ PROVISIONAL.
 4135. **The scope's +1** is its own to-hit term, "Scope", on aimed shots with its gun; **the suppressor's −2** is on its
     gun's shots only; **mods act in either hand** (rules 1.56 items 3 and 4). PROVISIONAL.
 4136. **Items 4130 to 4136 are rules 1.56 L1's.**
+
+### Rules 1.56 (Balance 2.0), L2 special rounds by calibre
+
+Release 0.29 item D3 (the 0.28 review's leftover: "special rounds made at 2 gunpowder + 2 casings fit heavy guns").
+Lane L2 of the 0.29 build plan; items 4137 to 4142. Every number here is PROVISIONAL.
+
+4137. **Special rounds belong to a calibre.** Armour-piercing, hollow-point and incendiary rounds (the items with an
+    `ammo_type` and a `price_mult`) are carried, bought, made and loaded as rounds of one calibre: a pack line of that
+    calibre with the round's type (`rounds:<calibre>:<type>`, the shape a typed arrow line already has). A gun loads
+    and chambers (Load Special, `gear/ammo`) only special rounds of its own calibre. Enhanced rounds (no `price_mult`)
+    are unchanged: their own item, their own price, any gun. Supersedes the body's "Special rounds are carried as items"
+    and rules 1.42's "they fit any gun". PROVISIONAL.
+4138. **The calibres** special rounds come in: `rules.json weapons_rules.special_round_price.calibres` (.32 Decrkm,
+    revolver, rifle, shell, .700 Blackpoint, .50 Frontier: every gun's calibre but bows' and crossbows' (their arrows
+    have their own types), the 40 mm grenade, the rocket, the fuel canister and the core charge). PROVISIONAL.
+4139. **The price** of a special round is its type's `price_mult` x that calibre's round, through the one `priceOf`:
+    an armour-piercing .700 round is 3 x 40 = 120 credits (was 3 x a rifle round, 6, for every gun). A sale is the sell
+    rate of that price. PROVISIONAL.
+4140. **The shop** lists each special round, for each character, as rounds of every calibre in item 4138 that a gun it
+    holds or carries (not a bow) takes, `per` a purchase as the special shelf's row (10). PROVISIONAL.
+4141. **Making** (rules 1.54 items 5 to 7): a recipe row with `each_calibre: true` (`data/recipes.json`) is read as one
+    row for each calibre of item 4138 (id `<row>:<calibre>`): it makes rounds of that calibre and type, in the fewest rounds
+    whose worth at `priceOf` splits into whole needs, each need its `share` of the worth (half gunpowder, half casings:
+    V/2 + V/2). An armour-piercing .700 round needs 60 gunpowder and 60 casings; the rifle's rows make what the old rows
+    made (armour-piercing and incendiary 3 + 3 a round, hollow-point 2 + 2). The validator holds every expanded row to
+    the parity. PROVISIONAL.
+4142. **Old saves.** A 0.28 pack line of a bare special-round item (`ammo_armor_piercing`, `ammo_hollow_point`,
+    `ammo_incendiary`) reads as the same count of rounds of the reference calibre (`special_round_price.calibre`,
+    rifle), at the price it had; so does a loot or shop row that names the bare item.
+4143. **Items 4137 to 4143 are rules 1.56 L2's.**

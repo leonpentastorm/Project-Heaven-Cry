@@ -10,7 +10,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM } from '../character';
+import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from '../character';
 import { lootToPack, grantGoods, itemLabel, magItem } from '../containers';
 import { CORE_ITEM } from '../magic';
 import { priceOf, creditsOf, payCredits, earnCredits, cantPay, ROUND_PRICE, emptyMagPrice } from '../credits';
@@ -118,7 +118,13 @@ export function counterLines(chars: Character[]): CounterLine[] {
         put({ key: 'mag:' + g, id: 'mag:' + g, per: 1, shelf: s.shelf }); put({ key: 'mag:' + g + ':0', id: 'mag:' + g + ':0', per: 1, shelf: s.shelf }); }
     } else if (s.shelf === 'restock') {
       for (const c of chars) for (const r of classResources(c)) if (r.persist) put({ key: 'restock:' + r.id, id: 'restock:' + r.id, per: 1, shelf: 'restock', res: r.id });
-    } else for (const x of s.ids) if (priceOf(x.id) != null && fitsSomeone(chars, x.id)) put({ key: x.id, id: x.id, per: x.per, shelf: s.shelf });
+    } else for (const x of s.ids) {
+      // rules 1.56 (L2): a special round made by calibre is listed as rounds of each calibre a carried gun takes
+      const sp: any = ITEM[x.id], t = sp?.ammo_type && SPECIAL_ROUND_ITEM[sp.ammo_type] === sp ? sp.ammo_type : null;
+      if (t) { for (const c of chars) for (const g of gunsOf(c)) { const cal = (WEAPON[g] as any).ammo, id = 'rounds:' + cal + ':' + t;
+        if (!drawnWeapon(g) && SPECIAL_CALIBRES.includes(cal) && priceOf(id) != null) put({ key: 'special:' + cal + ':' + t, id, per: x.per, shelf: s.shelf }); } }
+      else if (priceOf(x.id) != null && fitsSomeone(chars, x.id)) put({ key: x.id, id: x.id, per: x.per, shelf: s.shelf });
+    }
   }
   return out;
 }
@@ -128,8 +134,8 @@ const heldIds = (c: Character): string[] => [c.weapon, c.offHand?.id, ...packOf(
  * (an item with `ammo_type`) when a gun that is not a bow is carried; an item that fuels a focus (`fuel`) when a focus
  * of that fuel (`focus.fuel`) is held. Anything else is always listed. */
 function fitsSomeone(chars: Character[], id: string): boolean {
-  const r = /^rounds:(.+)$/.exec(id), it: any = ITEM[id];
-  if (r) return chars.some((c) => gunsOf(c).some((g) => (WEAPON[g] as any).ammo === r[1]));
+  const r = roundsIdOf(id), it: any = ITEM[id];
+  if (r) return chars.some((c) => gunsOf(c).some((g) => (WEAPON[g] as any).ammo === r.calibre));
   if (it?.ammo_type) return chars.some((c) => gunsOf(c).some((g) => !drawnWeapon(g)));
   if (it?.fuel) return chars.some((c) => heldIds(c).some((h) => (ITEM[h] as any)?.focus?.fuel === it.fuel));
   return true;
@@ -137,9 +143,9 @@ function fitsSomeone(chars: Character[], id: string): boolean {
 /** The goods `n` units of a counter id are, as pack entries (rounds, full magazines, weapons one by one, an item's
  * stack): what a purchase puts in the pack (rules 1.42; rules 1.52: the camp's loadout too). */
 export function lineGoods(id: string, n: number): PackItem[] {
-  const r = /^rounds:(.+)$/.exec(id), m = /^mag:(.+)$/.exec(id), mr = /^mag:([^:]+):(\d+)$/.exec(id);
+  const r = roundsIdOf(id), m = /^mag:(.+)$/.exec(id), mr = /^mag:([^:]+):(\d+)$/.exec(id);
   if (mr) return Array.from({ length: n }, () => magItem(mr[1], Math.min(Number(mr[2]), (WEAPON[mr[1]] as any)?.magazine || 0)));
-  return r ? [roundsOf(r[1], n)] : m || (WEAPON[id] as any) ? Array.from({ length: n }, () => lootToPack({ item: id })).flat()
+  return r ? [roundsOf(r.calibre, n, r.type)] : m || (WEAPON[id] as any) ? Array.from({ length: n }, () => lootToPack({ item: id })).flat()
     : lootToPack({ item: id }).map((it) => ({ ...it, qty: n }));
 }
 /** What one purchase of a counter line costs (the price of one unit x `per`; a restock point at `restock_price`). */
@@ -156,7 +162,7 @@ export function sellValue(it: PackItem, qty = it.mags ? 1 : it.qty): number | nu
   let each: number | null;
   if (it.mags) { const e = emptyMagPrice(it.weapon || ''), rp = ROUND_PRICE[(WEAPON[it.weapon || ''] as any)?.ammo] || 0; if (e == null) return null;
     const take = it.mags.slice(0, Math.max(1, qty)); return Math.floor(take.reduce((t, n) => t + e + n * rp, 0) * SELL_RATE); }
-  else if (it.calibre) each = ROUND_PRICE[it.calibre] || null;
+  else if (it.calibre) each = (it.ammoType ? priceOf('rounds:' + it.calibre + ':' + it.ammoType) : null) ?? (ROUND_PRICE[it.calibre] || null); // rules 1.56: a special round of a calibre at its own price
   else each = priceOf(it.weapon || it.item || it.id, (it.rarity || 'standard') as Rarity, it.mods || []);
   return each == null ? null : Math.floor(each * Math.max(1, qty) * SELL_RATE);
 }

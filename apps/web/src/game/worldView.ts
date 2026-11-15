@@ -128,7 +128,7 @@ export function pileGearId(e: any): string {
   if (!e) return '';
   const it = typeof e.item === 'string' ? e.item : '';
   if (e.pack?.mags || it.startsWith('mag:')) return magGearId(e.pack?.weapon || it.slice(4));
-  if (e.pack?.calibre || it.startsWith('rounds:')) return roundsGearId(e.pack?.calibre || it.slice(7));
+  if (e.pack?.calibre || it.startsWith('rounds:')) return roundsGearId(e.pack?.calibre || it.slice(7).split(':')[0]); // rules 1.56: rounds:<calibre>:<type>
   return id;
 }
 const TIP_ROW = 'display: flex; gap: 6px; align-items: center; min-height: 24px', TIP_HEAD = 'display: block; padding-bottom: 2px';

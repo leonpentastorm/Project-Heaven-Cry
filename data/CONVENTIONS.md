@@ -74,7 +74,10 @@ Every rule-bearing item carries both:
   count as Elemental for Elemental damage taken. `explosive: true` for grenades, launchers and satchels; `area_radius_<n>`
   in `properties` gives the blast radius. `tags`: `electronic`, `evoker_linked`, `lever` (items read them).
 - Special ammo (rules.json `weapons_rules.ammo_types`): items with `ammo_type` (`ammo_armor_piercing` etc.) are loaded out of
-  combat; a pack magazine entry may carry `magTypes` (one per spare magazine, null for standard).
+  combat; a pack magazine entry may carry `magTypes` (one per spare magazine, null for standard). Rules 1.56: an item with
+  `ammo_type` and `price_mult` is a special round made by calibre: carried as a rounds line `{calibre, ammoType}`, sold and
+  made as `rounds:<calibre>:<type>` for the calibres of `weapons_rules.special_round_price.calibres`; a recipe row with
+  `each_calibre: true` (needs `{item, share}`) expands into one row per calibre.
 
 ## Items, making and loot (rules 1.54)
 - `pack_kind` (items.json, optional): the kind of pack line the item makes (`weapon`, `ammo`, `tool`, `focus`, `food`,

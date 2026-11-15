@@ -7,7 +7,7 @@
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf } from './character';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf } from './effects/output';
@@ -166,12 +166,14 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   }
   // rules 1.55: `mag:<weapon>:<rounds>` is a magazine holding that many (`:0` empty)
   const r0 = /^(rounds|mag):(.+)$/.exec(id), mr = r0?.[1] === 'mag' ? /^([^:]+)(?::(\d+))?$/.exec(r0[2]) : null;
-  const r = r0 ? [r0[0], r0[1], mr ? mr[1] : r0[2]] : null, mcap = r ? (WEAPON[r[2]] as any)?.magazine ?? 0 : 0, held = mr?.[2] != null ? Math.min(mcap, Number(mr[2])) : mcap;
+  // rules 1.56 (L2): `rounds:<calibre>:<type>` is a special round of that calibre: its type's item names and tells it
+  const rs = r0?.[1] === 'rounds' ? roundsIdOf(id) : null, sp: any = rs?.type ? SPECIAL_ROUND_ITEM[rs.type] : null;
+  const r = r0 ? [r0[0], r0[1], mr ? mr[1] : rs ? rs.calibre : r0[2]] : null, mcap = r ? (WEAPON[r[2]] as any)?.magazine ?? 0 : 0, held = mr?.[2] != null ? Math.min(mcap, Number(mr[2])) : mcap;
   if (r || it?.category === 'ammo') {
     const cal = r?.[1] === 'rounds' ? r[2] : r ? (WEAPON[r[2]] as any)?.ammo : null;
     const users = cal ? Object.values(WEAPON).filter((x: any) => x.ammo === cal).map((x: any) => x.name) : [];
-    return { ...base, name: r ? (r[1] === 'rounds' ? (CALIBRE_NAME[r[2]] || r[2]) + ' rounds' : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
-      text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : 'Loose rounds.') : base.text,
+    return { ...base, name: r ? (r[1] === 'rounds' ? (sp ? sp.name + ' (' + (CALIBRE_NAME[r[2]] || r[2]) + ')' : (CALIBRE_NAME[r[2]] || r[2]) + ' rounds') : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
+      text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : sp ? sp.text : 'Loose rounds.') : base.text,
       lines: [
         ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: String(held), num: held }] : []),
         ...(cal ? [{ key: 'calibre', label: 'Calibre', value: CALIBRE_NAME[cal] || cal, num: null }] : [{ key: 'fits', label: 'Fits', value: 'any gun', num: null }]),

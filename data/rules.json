@@ -1053,8 +1053,9 @@
       "provisional": true
     },
     "special_round_price": {
-      "about": "Rules 1.42: special rounds fit any gun, so a round's price is its `price_mult` (items.json) times this calibre's round price (Core Rules: armour-piercing x3, hollow-point x2, incendiary x3 of a rifle round); enhanced rounds have their own price.",
+      "about": "Rules 1.56 (L2; was rules 1.42): a special round with a `price_mult` (items.json: armour-piercing x3, hollow-point x2, incendiary x3) is made, sold and carried by calibre: `rounds:<calibre>:<type>` costs `price_mult` x that calibre's round, and comes in the `calibres` listed here (the guns that are not bows, flamers, launchers or core rifles). `calibre` is the reference: a bare item id (`ammo_armor_piercing`, a 0.28 save's line, a loot row) reads as rounds of it. Enhanced rounds (no `price_mult`) keep their own price and fit any gun.",
       "calibre": "rifle",
+      "calibres": [".32 decrkm", "revolver", "rifle", "shell", ".700", ".50 frontier"],
       "provisional": true
     },
     "worn": {
