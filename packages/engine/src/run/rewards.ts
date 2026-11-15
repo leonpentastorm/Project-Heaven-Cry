@@ -5,7 +5,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type PackItem, type Rarity, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
+import { type Character, type PackItem, type Rarity, isGunId, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer } from '../character';
 import { CORE_CHARGE, CORE_ITEM, VIS_CHARGE } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
@@ -51,14 +51,15 @@ export const vaultGrade = (stage: number): Rarity => {
   return RARITIES[Math.max(0, i)];
 };
 
-/** Is this a gun (a weapon with a magazine and a calibre)? Thrown things and blades are not. */
-const isGun = (id: string) => { const w: any = WEAPON[id]; return !!w && w.magazine != null && !!w.ammo && w.category !== 'thrown'; };
-/** The guns a character carries, one entry each (in hand, off hand, pack). */
+/** Does this weapon fire ammunition the supply pack fills (rule 23): a magazine and a calibre, a gun or a bow or
+ * crossbow (its arrows or bolts); thrown things and blades do not. Not "is it a gun" (that is isGunId). */
+const firesAmmo = (id: string) => { const w: any = WEAPON[id]; return !!w && w.magazine != null && !!w.ammo && w.category !== 'thrown'; };
+/** The weapons firing ammunition a character carries (firesAmmo), one entry each (in hand, off hand, pack). */
 export function gunsOf(c: Character): string[] {
   const out: string[] = [];
-  if (isGun(c.weapon)) out.push(c.weapon);
-  if (c.offHand && isGun(c.offHand.id)) out.push(c.offHand.id);
-  for (const it of packOf(c)) if (it.kind === 'weapon' && it.weapon && isGun(it.weapon)) for (let i = 0; i < Math.max(1, it.qty || 1); i++) out.push(it.weapon);
+  if (firesAmmo(c.weapon)) out.push(c.weapon);
+  if (c.offHand && firesAmmo(c.offHand.id)) out.push(c.offHand.id);
+  for (const it of packOf(c)) if (it.kind === 'weapon' && it.weapon && firesAmmo(it.weapon)) for (let i = 0; i < Math.max(1, it.qty || 1); i++) out.push(it.weapon);
   return out;
 }
 /** A magazine's worth for one gun (rule 23): a full magazine, or a magazine's capacity of loose rounds. */
@@ -146,7 +147,7 @@ function materialsCard(w: OfferWhere, credits: number): { item: string; n: numbe
  * `gun` for a gun, `by_table` by its table (a caster's, a machine's). */
 export function runFoeDrops(u: Unit): Drops {
   const D = SV.drops, table = defaultTable(u);
-  return { gear: false, table, items: [...(isGun(u.weapon) ? D.gun : []), ...(D.by_table[table] || [])].map((e: DropEntry) => ({ ...e })) };
+  return { gear: false, table, items: [...(isGunId(u.weapon) ? D.gun : []), ...(D.by_table[table] || [])].map((e: DropEntry) => ({ ...e })) };
 }
 /** The pick at a node (rule 26; rules 1.54 item 2): `offerSize(where)` weapons within the price band, the first for the
  * character's own door (a focus of its kind) or the category of the weapon in its hand, the rest any; each at a rolled

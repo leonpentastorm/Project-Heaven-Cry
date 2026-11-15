@@ -338,11 +338,11 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `spend`, `cancel`, `at` | tactics.ts:146 | classes/i.ts:253 (+5) |  |
 | `reaction` | a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves | `u`, `kind`, `event`, `payer` | tactics.ts:150 | none | `reaction` |
 | `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2639 | calls/rules.ts:81 (+6) |  |
-| `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:1846 | perks/c.ts:508 |  |
+| `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:1846 | perks/c.ts:507 |  |
 | `sees` | a side's sight of a unit is decided: items may make it seen or unseen | `side`, `t`, `by`, `seen`, `sensed` | combat.ts:1024 | calls/rules.ts:85 (+4) |  |
 | `object_destroyed` | an object on the grid was destroyed | `obj`, `by` | classes/k.ts:927 (+1) | deeds.ts:179 (+3) |  |
 | `reload` | a reload is made (its AP, the hand, tactical or speed) | `u`, `ap`, `special`, `quiver`, `both`, `tactical`, `hand` | classes/i.ts:200 (+3) | classes/i.ts:220 (+3) | `reload` |
-| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2550 (+2) | perks/c.ts:506 |  |
+| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2550 (+2) | perks/c.ts:505 |  |
 | `swap` | a weapon swap is priced (declared; the item ops trigger `swap` listens here) | `u`, `c`, `from`, `mod`, `ap` | game.ts:1947 | classes/k.ts:1162 (+1) | `swap` |
 | `stood_up` | a prone unit stood up | `u` | combat.ts:2117 | none |  |
 | `glyph_cost` | a Sigil glyph is priced: its AP, charge and Flux; also every preview | `u`, `word`, `ap`, `charge`, `flux`, `preview`, `tile`, `fail` | sigil.ts:75 | classes/i.ts:660 (+14) | `glyph_cost` |
@@ -375,7 +375,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `spotted` | a hidden unit was revealed | `u`, `why` | magic.ts:1443 (+2) | perks/b.ts:244 (+2) |  |
 | `on_surrender` | a unit surrendered or was subdued | `t`, `by`, `why` | effects/damage.ts:106 (+2) | deeds.ts:193 (+5) |  |
 | `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:313 | perks/g.ts:207 |  |
-| `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:146 (+2) |  |
+| `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:145 (+2) |  |
 | `blessing_in` | a blessing reaches a unit: an item may handle it itself | `u`, `t`, `blessing`, `power`, `handled`, `out` | faith.ts:1084 (+1) | classes/k.ts:203 (+6) |  |
 | `trap_sprung` | a trap was sprung on a unit | `u`, `obj` | combat.ts:2017 | classes/rev3.ts:341 |  |
 | `blast_landed` | a blast landed on a tile (who made it, the radius, who was in it) | `by`, `tile`, `item`, `radius`, `who` | tactics.ts:352 | physical/ranged/thrown.ts:163 |  |
@@ -1157,7 +1157,7 @@ Families: `body`, `brain`, `heart`.
 | `nodeCredits` | `nodeCredits(k: PayKind, depth: number, stage: number): number` | Credits each character takes at a node (section 3.1, 11.1): c(d) = base + per_depth x d, x the kind, x the stage's. |
 | `packCount` | `packCount(k: PayKind): number` | The ammunition pack's count at a node (rule 23): magazines' worth for each gun. |
 | `vaultGrade` | `vaultGrade(stage: number): Rarity` | Rules 1.48: the grade of the vault's weapon in a stage: `vault.grade_up` above the stage's pick ceiling, at most `vault.grade_max` (stage 1 Masterwork, from stage 2 Relic). |
-| `gunsOf` | `gunsOf(c: Character): string[]` | The guns a character carries, one entry each (in hand, off hand, pack). |
+| `gunsOf` | `gunsOf(c: Character): string[]` | The weapons firing ammunition a character carries (firesAmmo), one entry each (in hand, off hand, pack). |
 | `magazineWorth` | `magazineWorth(id: string): PackItem[]` | A magazine's worth for one gun (rule 23): a full magazine, or a magazine's capacity of loose rounds. |
 | `ammoPack` | `ammoPack(c: Character, n: number, guns: string[] = gunsOf(c), burnt?: number): PackItem[]` | The supply pack (rule 23; rules 1.51, spec rule 52): `n` magazines' worth for every gun carried (x the stat `run_ammo`: Bandolier), and for a character carrying an Evoker or a Visualizer (`ammo_pack.core_doors… |
 | `supplyMp` | `supplyMp(c: Character, n: number): number` | Rules 1.51 (spec rule 52 c): the MP a character takes back with the supply pack: `ammo_pack.mp_share` x n x the stat `run_supply` (Deep Satchel) of its max MP, rounded, for a character carrying an MP focus of… |
@@ -1493,7 +1493,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `outburst` | `unit`, `at`, `design`, `school`, `hold`, `stage`, `form`, `tone`, `element`, `watch` | classes/k.ts:1494 | 2 |
 | `overload` | `unit`, `at` | classes/i.ts:99 | 2 |
 | `overwatch` | `unit`, `target`, `from`, `at`, `mode`, `id` | combat.ts:1876 | 2 |
-| `perk` | `unit`, `target`, `from`, `to`, `id` | perks/c.ts:410 | 4 |
+| `perk` | `unit`, `target`, `from`, `to`, `id` | perks/c.ts:409 | 4 |
 | `pickup` | `unit`, `at`, `items` | combat.ts:2455 | 1 |
 | `pile` | `at`, `id`, `count`, `why` | combat.ts:2256 | 2 |
 | `practice` | `unit`, `gain`, `total` | magic.ts:1604 | 1 |

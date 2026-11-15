@@ -17,7 +17,7 @@ import {
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { factorOf } from '../effects/output';
-import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
+import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf, isGunId } from '../character';
 import { applyCond, condOn } from '../magic';
 import { throwItem, blast, radiusOf, canReact, react, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
@@ -40,7 +40,6 @@ const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?
 const free = freely;
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const isMachine = (x: { kind?: string; name?: string } | null | undefined) => !!x && (['robot', 'machine', 'turret', 'drone'].includes(x.kind || '') || /robot|drone|automaton|\bbot\b|turret/i.test(x.name || ''));
-const isGun = (w: any) => !!w && !isMelee(w) && w.category !== 'thrown' && w.category !== 'bow' && w.magazine != null;
 /** The weapon-skill points behind a skill on a unit (proficiency, dexterity…), with item modifiers. */
 const unitMod = (u: Unit, skill: 'proficiency' | 'dexterity' | 'analysis') => mod((u as any)[skill] || 0) + (u.sk?.[skill] || 0);
 
@@ -358,7 +357,7 @@ const maxDur = (c: Character) => { const w: any = WEAPON[c.weapon]; return Math.
 // weapon it overhauled).
 function extraSlots(c: Character): number {
   const w: any = WEAPON[c.weapon]; let n = 0;
-  if (has(c, 'gun_nut') && isGun(w)) n++;
+  if (has(c, 'gun_nut') && isGunId(c.weapon)) n++;
   if (has(c, 'blade_recluse') && cs(c).oneBlade?.weapon === c.weapon) n++;
   if (has(c, 'overhaul') && cs(c).overhauled?.[c.weapon]) n++;
   return n;
@@ -448,7 +447,7 @@ register({
 // until that magazine is swapped out (plan 6b: until emptied; PROVISIONAL). Area map: the same, out of combat; it
 // carries into the next fight. Blessing power (Faith) doesn't apply (PROVISIONAL).
 const BLESS = 'holy:bless';
-const blessable = (u: Unit) => { const w: any = WEAPON[u.weapon]; return !!w && isGun(w) && !!w.reload && w.category !== 'mana'; };
+const blessable = (u: Unit) => { const w: any = WEAPON[u.weapon]; return !!w && isGunId(u.weapon) && !!w.reload && w.category !== 'mana'; };
 const holyFoe = (t: Unit) => ['upper_realm', 'cursed', 'crawler', 'celestial'].includes(t.kind || '') || (t.tags || []).some((x) => x === 'cursed' || x === 'upper_realm');
 register({
   id: 'holy_ordnance', claims: 'all',
@@ -495,13 +494,13 @@ register({
 function knowIron(h: Holder, seen: Unit[]) {
   const cb = h.cb, u = h.u; if (!cb || !u || overworld(cb)) return;
   const st = stateOf(h), named: string[] = (st.named ||= []);
-  const fresh = seen.filter((v) => isGun(WEAPON[v.weapon]) && !named.includes(v.id)); if (!fresh.length) return;
+  const fresh = seen.filter((v) => isGunId(v.weapon) && !named.includes(v.id)); if (!fresh.length) return;
   named.push(...fresh.map((v) => v.id));
   say(cb, u.name + ' knows the iron (Gun Nut): ' + fresh.map((v) => v.name + ', ' + WEAPON[v.weapon].name + ' (' + (WEAPON[v.weapon] as any).ammo + ')').join('; ') + '.');
 }
 register({
   id: 'gun_nut', claims: [1, 3], narrator: [4, 5],
-  actions: [extraModAction('Fit a second mod', (h) => (isGun(WEAPON[h.c!.weapon]) ? (extraUsed(h.c!) < extraSlots(h.c!) ? true : 'No extra slot free.') : 'Only on a gun.'))],
+  actions: [extraModAction('Fit a second mod', (h) => (isGunId(h.c!.weapon) ? (extraUsed(h.c!) < extraSlots(h.c!) ? true : 'No extra slot free.') : 'Only on a gun.'))],
   on: {
     jam_clear: (ctx, h) => { if (ctx.u === h.u && ctx.ap === 0) ctx.keepHeat = true; },
     combat_start: (ctx, h) => knowIron(h, h.cb ? h.cb.units.filter((v) => h.u && v.side !== h.u.side && !v.hidden && sideSees(h.cb!, h.u.side, v)) : []),

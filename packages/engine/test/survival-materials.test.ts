@@ -1,7 +1,7 @@
 // Rules 1.54 (survival-spec section 14, rows R6 to R13): the sheet in a run, materials, making, loot and the shop's
 // stock, every case through the one reducer. Numbers are read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
+import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { Rec, type Pc } from './helpers/replay';
@@ -78,7 +78,7 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     expect(foes.length).toBeGreaterThan(0);
     for (const u of foes) {
       expect(u.drops!.gear).toBe(false);
-      const gun = (WEAPON as any)[u.weapon]?.ammo && (WEAPON as any)[u.weapon]?.magazine != null && (WEAPON as any)[u.weapon]?.category !== 'thrown';
+      const gun = isGunId(u.weapon); // the engine's one gun test
       expect((u.drops!.items || []).map((e) => e.item)).toEqual([...(gun ? SV.drops.gun : []), ...(SV.drops.by_table[u.drops!.table!] || [])].map((e: any) => e.item));
     }
     // the fight played through the reducer: what dies leaves no gear on its tile
