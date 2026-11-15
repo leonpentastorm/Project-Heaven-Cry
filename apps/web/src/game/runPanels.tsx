@@ -125,6 +125,7 @@ function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   if (r.state === 'tile') { const sv = stageView(g, me); return sv && sv.canGo ? { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) } : null; }
   if (r.state === 'map' && v.canGo) return { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) };
   if (r.state === 'fight' && g.combat) return { key: 'fight', label: 'To the fight', attr: { 'data-phc-phase': 'fight' }, go: () => go('combat') };
+  if (r.state === 'field' && g.combat) return { key: 'field', label: 'To the field', attr: { 'data-phc-phase': 'field' }, go: () => go('combat') }; // rules 1.55
   return null;
 }
 /** Each seat's mark: ready at the camp and the shop, the next stop marked on the map and at a place. */
