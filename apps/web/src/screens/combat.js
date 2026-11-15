@@ -1529,18 +1529,26 @@ export class CombatLogic extends DCLogic {
         headOf[first.key] = fu ? figmentHead(sb, { unit: fu.id, img: faceOf(fu), short: fu.short || fu.name.slice(0, 2).toUpperCase(), ink: ring(fu) }) : subHead(sb); });
     });
     const tabIds = groups.map((gr) => gr.id);
-    if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
+    // A new turn of yours opens its tab once, when it is really yours: the state hands the turn over while the hostiles' turns
+    // still play on screen (turnWait), so the turn's own key is kept, not only the moment the state's active unit changed.
+    const tabTurn = mineTurn ? cur.id + ':' + cb.round + ':' + cb.turn : null;
+    if (mineTurn && (newTurn || this._tabTurn !== tabTurn)) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
+      this._tabTurn = tabTurn;
       const seenHostile = foes.some((u) => !u.downed);
       // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
       // The fight's first turn opens on the character's door when its first action is usable (game/doorLine.ts: a
       // Sigilist with an Evoker in hand opens on Sigils); after that the tab this character used last wins.
       S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : firstTurnTab(cb, ch, groups, isPerkInfo) || tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
       this._tabAction = S.action; this._tabShown = S.tab; this._tabCls = '';
-    }
+    // The same turn of yours seen again after a moment that was not (an effect still playing hands the screen back and
+    // forth): its tab is the one it had, not the fallback a hostile's moment left behind.
+    } else if (mineTurn && !this._tabMine && this._tabHeld && S.tab !== this._tabHeld && S.action === this._tabAction) S.tab = this._tabHeld;
     // The tab follows the action: picked on the turn card, or implied by a tile click (a hostile → Attack).
     if (S.action !== this._tabAction) { this._tabAction = S.action; if (tabOf[S.action]) S.tab = tabOf[S.action]; if (mineTurn) this.revealAction(); }
     if (!tabIds.includes(S.tab)) S.tab = tabOf[S.action] || tabIds[0];
     if (mineTurn) tabMem(cur.charId, S.tab);
+    if (mineTurn) this._tabHeld = S.tab;
+    this._tabMine = mineTurn;
     // Your resource rows, once the tab is settled (one fact, one place; Leon, live 0.24.0): with the HEART panel up (the
     // Outbursts tab, an Outburst held) Strain and the held Outburst are the panel's; on the Attack tab a jammed gun's
     // JAMMED is on its own area header, so its ammo row there doesn't repeat it (every other tab: the row says it).
