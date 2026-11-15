@@ -461,8 +461,8 @@ const vanished = (h: Holder) => { const s = stateOf(h); return !!h.u?.hidden && 
 register({
   id: 'vanishing_act', claims: 'all',
   on: {
-    on_hit: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked'); },
-    on_miss: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked'); },
+    on_hit: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked', { how: 'attack' }); },
+    on_miss: (ctx, h) => { if (ctx.att === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'attacked', { how: 'attack' }); },
     forced_move: (ctx, h) => { if (ctx.by === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'shoved'); },
     outburst_release: (ctx, h) => { if (ctx.u === h.u && vanished(h)) reveal(ctx.cb, h.u!, 'released an Outburst'); },
     moved: (ctx, h) => { if (h.u && ctx.u.side !== h.u.side && vanished(h) && dist(ctx.to, h.u.pos) <= 1) reveal(ctx.cb, h.u, ctx.u.name + ' walks into them'); },

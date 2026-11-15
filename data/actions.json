@@ -200,7 +200,9 @@
         "hidden": "Already Hidden: strike from here, or move and stay out of every enemy's eyes.",
         "marked": "You are Marked: no hiding until it wears off.",
         "boss": "A Boss can't hide once the first round is over: it stands in the open.",
-        "seen": "An enemy can see you: break line of sight or get behind cover first."
+        "seen": "An enemy can see you: break line of sight or get behind cover first.",
+        "seen_to": "Seen by {who}. Move to a shaded tile (nearest: {tile}) and Hide.",
+        "seen_none": "Seen by {who}, and no tile this turn's Move reaches is out of their eyes: throw smoke, or get behind full cover and Hide next turn."
       },
       "adjudication": "engine"
     },

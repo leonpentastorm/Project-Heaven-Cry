@@ -1463,7 +1463,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked).",
+          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy.",
           "effects": [
             {
               "op": "resource",
@@ -1583,11 +1583,6 @@
                   "op": "mark",
                   "flag": "cover",
                   "clear": true
-                },
-                {
-                  "op": "mark",
-                  "flag": "ghost",
-                  "clear": true
                 }
               ]
             },
@@ -1653,51 +1648,6 @@
               },
               "value": 1,
               "label": "Tagged"
-            },
-            {
-              "op": "mark",
-              "flag": "ghost",
-              "when": "hit",
-              "if": {
-                "hostile": true,
-                "target_alive": false
-              }
-            },
-            {
-              "op": "condition",
-              "condition": "hidden",
-              "when": "acted",
-              "if": {
-                "flag": "ghost",
-                "self_sight": [
-                  "out_of_view"
-                ],
-                "self_lacks": [
-                  "marked",
-                  "hidden"
-                ]
-              },
-              "skip_save": true,
-              "same_entry": true,
-              "limit": {
-                "per": "per_turn",
-                "n": 1,
-                "key": "ghost"
-              },
-              "priority": 110,
-              "label": "Ghost Kill",
-              "fx": {
-                "k": "stance",
-                "what": "ghost"
-              },
-              "say": "{self} drops the body and sinks back into the dark (Ghost Kill)."
-            },
-            {
-              "op": "mark",
-              "flag": "ghost",
-              "clear": true,
-              "when": "acted",
-              "priority": 120
             }
           ],
           "toggles": [
@@ -1764,7 +1714,7 @@
           "name": "Mastery 1",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
+          "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked). The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
           "effects": [
             {
               "op": "perk_choice",
@@ -1776,6 +1726,57 @@
               "when": "spot",
               "value": 4,
               "label": "Close Quarters"
+            },
+            {
+              "op": "mark",
+              "flag": "ghost",
+              "when": "hit",
+              "if": {
+                "hostile": true,
+                "target_alive": false
+              }
+            },
+            {
+              "op": "condition",
+              "condition": "hidden",
+              "when": "acted",
+              "if": {
+                "flag": "ghost",
+                "self_sight": [
+                  "out_of_view"
+                ],
+                "self_lacks": [
+                  "marked",
+                  "hidden"
+                ]
+              },
+              "skip_save": true,
+              "same_entry": true,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "ghost"
+              },
+              "priority": 110,
+              "label": "Ghost Kill",
+              "fx": {
+                "k": "stance",
+                "what": "ghost"
+              },
+              "say": "{self} drops the body and sinks back into the dark (Ghost Kill)."
+            },
+            {
+              "op": "mark",
+              "flag": "ghost",
+              "clear": true,
+              "when": "acted",
+              "priority": 120
+            },
+            {
+              "op": "mark",
+              "flag": "ghost",
+              "clear": true,
+              "when": "turn_start"
             }
           ],
           "adjudication": "engine",

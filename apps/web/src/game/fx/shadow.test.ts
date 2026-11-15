@@ -10,7 +10,7 @@ import { fightWith } from '../../../../../packages/engine/test/helpers/perkfight
 import { refOf } from '@engine';
 import { setLayer, slow } from './dom';
 import { playFx, setContext, clearFx } from './play';
-import { shadowFxOf, shadowBeat, SHADOW_WORD, SHADOW_MS, resetShadow } from './shadow';
+import { shadowFxOf, shadowBeat, SHADOW_WORD, SHADOW_MS, FOUND_WORD, resetShadow } from './shadow';
 import { fadeStyle, shadowHeld, wispsUri, SHADOW_INK } from '../tokenFade';
 
 function grid(w = 16, h = 16) {
@@ -45,7 +45,7 @@ describe('Shadow on the fight map', () => {
   it('a real fight\'s events map to the moments, in the order the player made them: hide, a Shadow gained, tag, break', () => {
     const { fx } = realFight();
     const ms = fx.map((e) => shadowFxOf(e)).filter(Boolean);
-    expect(ms).toEqual(['hide', 'gain', 'tag', 'break']);
+    expect(ms).toEqual(['hide', 'gain', 'tag', 'found', 'break']); // the rifle is loud: the shot reveals (found, how attack), then the Break
     for (const e of fx) if (shadowFxOf(e)) expect(shadowBeat(e)).toBeGreaterThan(0);
     expect(shadowFxOf({ k: 'stance', what: 'prone' })).toBeNull(); expect(shadowFxOf({ k: 'shot' })).toBeNull();
   });
@@ -54,12 +54,29 @@ describe('Shadow on the fight map', () => {
     // the screen's context is the fight as it stood when the effects were made (the actor still on its tile)
     setContext({ code: 'X', characters: f.g.characters, story: { positions: {}, npcs: [] }, combat: { ...f.cb, fx: [] } } as any, 'combat');
     const seen: string[] = [];
-    for (const e of fx) { playFx(e); for (let k = 0; k < 9; k++) { vi.advanceTimersByTime(slow(100)); seen.push(...words(g.layer)); } }
-    expect(traces()).toEqual(['hide', 'gain', 'tag', 'break']);
+    for (const e of fx) playFx(e); // as the queue gets them: one action's events together
+    for (let k = 0; k < 60; k++) { vi.advanceTimersByTime(slow(100)); seen.push(...words(g.layer)); }
+    expect(traces()).toEqual(['hide', 'gain', 'tag', 'found', 'break']); // the loud shot tears the shadow off (REVEALED); the Break cuts
     const said = seen.join(' ');
-    for (const w of [SHADOW_WORD.hide, SHADOW_WORD.gain, SHADOW_WORD.tag, SHADOW_WORD.break, 'REVEALED']) expect(said).toContain(w);
+    for (const w of [SHADOW_WORD.hide, SHADOW_WORD.gain, SHADOW_WORD.tag, SHADOW_WORD.break, FOUND_WORD.attack]) expect(said).toContain(w);
     vi.advanceTimersByTime(slow(SHADOW_MS.cut + SHADOW_MS.tear) + 3000);
     expect(g.layer.childElementCount).toBe(0); // and leaves nothing behind
+  });
+  it('FOUND: an enemy that ends its turn next to you (a real end of turn) tears your outline off, says FOUND and draws a line from it', () => {
+    const f = fightWith([{ weapon: 'hellraiser_service_rifle', skills: { ingenuity: 1 }, attrs: { perception: 3 } }], [{}]); const t = f.foe; t.pos = '4,4'; t.vision = 1;
+    const u = f.turn(f.pc); f.unit(u.id).pos = '1,4';
+    f.act({ type: 'combat/hide', unitId: u.id } as any);
+    f.unit(t.id).pos = '2,4'; f.unit(t.id).ap = 0;
+    const n = f.cb.fxSeq || 0;
+    f.act({ type: 'combat/end-turn', unitId: u.id } as any);
+    const ev = ((f.cb.fx || []) as any[]).filter((e) => e.n > n && shadowFxOf(e) === 'found');
+    expect(ev.length).toBe(1); expect(ev[0].how).toBe('close'); expect(ev[0].by).toBe(t.id);
+    setContext({ code: 'X', characters: f.g.characters, story: { positions: {}, npcs: [] }, combat: { ...f.cb, fx: [] } } as any, 'combat');
+    playFx(ev[0]); const seen: string[] = [];
+    for (let k = 0; k < 9; k++) { vi.advanceTimersByTime(slow(100)); seen.push(...words(g.layer)); }
+    expect(traces()).toEqual(['found']);
+    expect(seen.join(' ')).toContain(FOUND_WORD.close);
+    vi.advanceTimersByTime(3000); expect(g.layer.childElementCount).toBe(0);
   });
   it('the Hidden token: an outline in Perception ink over the dark (an ally\'s dashed); the wisps read the engine\'s Shadow and cap', () => {
     const f = fightWith([{ skills: { ingenuity: 1 }, attrs: { perception: 3 } }], [{}]); const t = f.foe; t.pos = '14,5'; t.vision = 1;

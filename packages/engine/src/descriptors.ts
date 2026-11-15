@@ -20,7 +20,8 @@ import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange } from './combat';
 import { kindOf } from './objects';
-import { apFor } from './effects/cost';
+import { apFor, canPay } from './effects/cost';
+import { eyesOn, seenByFoes, HIDE_WHY } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
 import type { Action, GameState } from './game';
@@ -108,6 +109,12 @@ export interface ActionDescriptor {
    * prayer's kind ('Whispers', 'Hymns', 'Miracle'; the Chaplain's Ward among the Whispers), a door verb's data group
    * (Shadow: Slip, Mark, Work, Break; Tending: Bond, Heal, Help). Absent: no group. */
   sub?: string;
+  /** Hide (rules 1.56 Shadow 2.0 item 11), when it is refused because an enemy sees you: the tiles this turn's Move
+   * reaches from which Hide would work (out of the eyes of every enemy the viewer sees, with Hide's price still paid),
+   * the nearest first; empty: none in reach (the refusal then points to smoke or cover). Absent: not that refusal. */
+  spots?: string[];
+  /** Hide: the enemies, of those the viewer sees, whose eyes reach the unit's tile now (who sees you). */
+  eyes?: string[];
 }
 export type Picks = Record<string, any>;
 /** One line of a descriptor preview (odds, a note, a meter, a save, the cost, an ask). */
@@ -441,7 +448,7 @@ const PHYSICAL: ActionSystem = {
       ...(L ? [D('load', 'utility', L.label, li ? li.ap : L.ap, li ? li.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', li ? 'Load ' + li.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : L.text, L.why)] : []),
       ...(gunTab ? [] : clear('utility')),
       ...wRow('repair', 'utility', { label: 'Field Repair', text: 'Needs Improvisation 3 and one spare-parts charge (' + (u.parts || 0) + ' left). Your weapon regains 10% durability, plus 5% for each Improvisation point above 3. Weapon durability: ' + (u.maxDur ? (u.dur ?? u.maxDur) + '/' + u.maxDur : 'n/a') + '.' }),
-      ...B('pickup', 'door', 'stim', 'stim_throw', 'song', 'extinguish', 'escape', 'recover'), ...(dual ? [] : bothRows), ...B('hide', 'analyze'));
+      ...B('pickup', 'door', 'stim', 'stim_throw', 'song', 'extinguish', 'escape', 'recover'), ...(dual ? [] : bothRows), ...B('hide').map((d) => hideHelp(x, d)), ...B('analyze'));
     return out;
   },
   send(x, d, p) {
@@ -468,6 +475,21 @@ const PHYSICAL: ActionSystem = {
     void action; return null;
   },
 };
+/** Hide's row, with where to go (rules 1.56 Shadow 2.0 item 11): who sees you (`eyes`) and, when it is refused because
+ * you are seen, the tiles this turn's Move reaches (moveOptions, the engine's own Move) from which Hide would work: out of
+ * every enemy's eyes (seenByFoes, Hide's own test) with Hide's price still paid. Read on the viewer's fight (x.seen): an
+ * enemy the side does not see is never counted, named or drawn. The refusal names the nearest (actions.json hide.why). */
+function hideHelp(x: DescCtx, d: ActionDescriptor): ActionDescriptor {
+  if (x.u.side !== 'pc') return d;
+  const me = x.seen.units.find((v) => v.id === x.u.id) || x.u, eyes = safe(() => eyesOn(x.seen, me).map((v) => v.id), [] as string[]);
+  if (d.why !== HIDE_WHY.seen || !eyes.length) return { ...d, eyes };
+  const mo = safe(() => moveOptions(x.g, x.cb, x.u.id, 'move'), { tiles: {} } as any) as { tiles: Record<string, { ap: number; tiles: number }> };
+  const spots = Object.entries(mo.tiles).filter(([k, o]) => canPay(x.cb, x.u, o.ap + d.cost.ap) && !seenByFoes(x.seen, me, k))
+    .sort(([a, p], [b, q]) => p.ap - q.ap || dist(me.pos, a) - dist(me.pos, b) || (a < b ? -1 : 1)).map(([k]) => k);
+  const who = eyes.length + (eyes.length === 1 ? ' enemy' : ' enemies');
+  const why = (spots.length ? HIDE_WHY.seen_to : HIDE_WHY.seen_none).replace('{who}', who).replace('{tile}', spots.length ? refOf(spots[0]) : '');
+  return { ...d, why, eyes, spots };
+}
 /** What Confirm will do, in words, for a basic action with these picks (the panel's line under the name). */
 function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
   const u = x.u, w: any = WEAPON[u.weapon], unitW = (w && w.reload_unit) || 'magazine', rounds = u.ammo + (u.ammo === 1 ? ' round' : ' rounds');

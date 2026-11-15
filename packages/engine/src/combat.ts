@@ -1457,7 +1457,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // technique's strike gives none (opts.noMomentum, from physical/core.ts): Strikes and Openers spend it.
   if (hit && melee && !opts.noMomentum && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
-  if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
+  if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked', { how: 'attack' }); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
   const spotBack = att.hidden && !opts.quiet && tgt.side !== att.side && alive(tgt) && !tgt.hidden; // rules 1.32 (2.6): a silent attack from Hidden; rolled after the line
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
   if (condOn(att, 'sharpened')) endCond(att, 'sharpened', cb); // spent on this attack

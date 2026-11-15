@@ -101,9 +101,27 @@ export function tabNote(cur: any, tab: string): string {
 }
 /** The action list from the engine's descriptors (actionsFor): the rows each tab shows, in the engine's order, with
  *  its names, costs, texts and reasons. A child row (a technique inside its pad) and a hidden one are not listed. */
+/** The engine's action list for this unit (actionsFor), asked once per fight state the screen holds: the map (Hide's
+ *  spots) and the tabs read the same list. */
+let lastList: { cb: any; cur: any; ch: any; g: any; sig: string; list: ActionDescriptor[] } | null = null;
+function listFor(cb: any, cur: any, ch: any, g: any): ActionDescriptor[] {
+  // (a screen that changes the fight in place between asks gets a fresh list: the stamp of what moves)
+  const sig = [cb.fxSeq, cb.round, cb.turn, (cb.log || []).length, (cb.units || []).length, JSON.stringify(cur), ch ? JSON.stringify(ch) : ''].join('|');
+  if (lastList && lastList.cb === cb && lastList.cur === cur && lastList.ch === ch && lastList.g === g && lastList.sig === sig) return lastList.list;
+  const list: ActionDescriptor[] = (() => { try { return actionsFor(gameFor(g, cb, ch), cur.id, null); } catch { return []; } })();
+  lastList = { cb, cur, ch, g, sig, list };
+  return list;
+}
+/** Hide's help (rules 1.56 Shadow 2.0 items 11 and 12), as the engine's Hide row carries it: the tiles to go to (nearest
+ *  first; empty: none in reach), who sees you, and the refusal in words. Null: no Hide row for this unit. */
+export function hideHelp(cb: any, cur: any, ch: any, g: any): { spots: string[] | null; eyes: string[]; why: string | null } | null {
+  if (!cb || !cur) return null;
+  const d = listFor(cb, cur, ch, g).find((x) => x.id === 'hide');
+  return d ? { spots: d.spots || null, eyes: d.eyes || [], why: d.why } : null;
+}
 export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
   if (!cb || !cur) return [];
-  const list: ActionDescriptor[] = (() => { try { return actionsFor(gameFor(opts.g, cb, ch), cur.id, null); } catch { return []; } })();
+  const list = listFor(cb, cur, ch, opts.g);
   const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { ...(d.hand ? { hand: d.hand } : {}), ...(d.parts ? { parts: d.parts } : {}), ...(d.sub ? { sub: d.sub } : {}) }]);
   const w: any = (WEAPON as any)[cur.weapon];
   const out: ActionGroup[] = [['MOVEMENT', by('move'), null, 'move'], ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), by('attack'), HOSTILE_INK, 'attack'], ['UTILITY', by('utility'), null, 'utility']];

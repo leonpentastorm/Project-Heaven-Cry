@@ -10,6 +10,11 @@
 //                                                   same action's shot or blow named it), AMBUSH; then the shadow tears
 //                                                   off the actor in three strips: REVEALED
 //   stance what 'tag'           (Tag)               a hook line from the tagger to the foe the same action Marked: TAGGED
+//   stance what 'found'         (revealed; item 13) your own side only (the engine's `only`): the outline tears off in
+//                                                   three strips and a word says why: FOUND (a spot roll, a foe ending
+//                                                   next to you, anything else; a line from the finder when your side
+//                                                   sees it), HIT, REVEALED (your own loud attack; a Break in the
+//                                                   same action then cuts without tearing again)
 // The data rows carry these (`fx` on the effect rows of skills.json ingenuity.1 and shadow.json shadow.tag), emitted by
 // the engine's one runner (effects/triggers.ts) at the holder: {k: 'stance', target: <holder>, at, what}. The token's
 // standing look (outline, pool, wisps) is game/tokenFade.ts. Every duration goes through dom.ts (the combat speed and
@@ -26,17 +31,22 @@ const WHITE = '#FFFFFF', MUTED = '#A3AEC2', DARK = '#05070B';
 export const SHADOW_MS = { hide: 420, gain: 320, loss: 320, cut: 520, tear: 420, tag: 380 } as const;
 
 /** The moments this file draws, by the event (pure, for the tests). */
-export type ShadowMoment = 'hide' | 'ghost' | 'gain' | 'loss' | 'break' | 'tag';
+export type ShadowMoment = 'hide' | 'ghost' | 'gain' | 'loss' | 'break' | 'tag' | 'found';
 export function shadowFxOf(e: Partial<FxEvent> & { k: string }): ShadowMoment | null {
   if (e.k !== 'stance') return null;
   const w = (e as any).what;
-  return w === 'hide' ? 'hide' : w === 'ghost' ? 'ghost' : w === 'shadow_gain' ? 'gain' : w === 'shadow_loss' ? 'loss' : w === 'break' ? 'break' : w === 'tag' ? 'tag' : null;
+  return w === 'hide' ? 'hide' : w === 'ghost' ? 'ghost' : w === 'shadow_gain' ? 'gain' : w === 'shadow_loss' ? 'loss' : w === 'break' ? 'break' : w === 'tag' ? 'tag' : w === 'found' ? 'found' : null;
 }
 /** The word each moment says (colour is never the only sign). */
-export const SHADOW_WORD: Record<ShadowMoment, string> = { hide: 'HIDDEN', ghost: 'BACK IN THE DARK', gain: 'SHADOW', loss: 'SEEN', break: 'AMBUSH', tag: 'TAGGED' };
+export const SHADOW_WORD: Record<ShadowMoment, string> = { hide: 'HIDDEN', ghost: 'BACK IN THE DARK', gain: 'SHADOW', loss: 'SEEN', break: 'AMBUSH', tag: 'TAGGED', found: 'FOUND' };
+/** Found's word by how it happened (the engine's `how`: tactics.ts FoundHow). */
+export const FOUND_WORD: Record<string, string> = { spot: 'FOUND', close: 'FOUND', hit: 'HIT', attack: 'REVEALED', other: 'FOUND' };
+/** A Break within this many effects after its actor's own reveal is the same action (it cuts; the reveal tore). */
+const SAME_ACTION = 6;
 /** The beat a Shadow moment holds the stage (ms at Fast), or undefined: not one of these. */
 export function shadowBeat(e: Partial<FxEvent> & { k: string }): number | undefined {
   const m = shadowFxOf(e); if (!m) return undefined;
+  if (m === 'found') return (e as any).how === 'attack' ? SHADOW_MS.tear * 0.5 : SHADOW_MS.tear;
   return m === 'break' ? SHADOW_MS.cut + SHADOW_MS.tear * 0.5 : m === 'ghost' || m === 'hide' ? SHADOW_MS.hide : m === 'tag' ? SHADOW_MS.tag : m === 'gain' ? SHADOW_MS.gain : SHADOW_MS.loss;
 }
 
@@ -54,7 +64,9 @@ export interface ShadowKit {
 /** The tile each unit's last attack went at (a shot or blow: its `to`), and the unit the last Mark went on. */
 const lastAim = new Map<string, { to: string; target: string | null }>();
 let lastMarked: { target: string; at: string } | null = null;
-export function resetShadow() { lastAim.clear(); lastMarked = null; }
+/** A reveal by the unit's own attack (its effect number): the same action's Break then cuts without a second tear. */
+const tornAt = new Map<string, number>();
+export function resetShadow() { lastAim.clear(); lastMarked = null; tornAt.clear(); }
 /** Note an attack's aim (shot, melee, volley): the Break that follows it in the same action cuts across that tile. */
 export function noteAim(e: Partial<FxEvent>) { if (e.unit && (e as any).to) lastAim.set(String(e.unit), { to: String((e as any).to), target: (e as any).target ? String((e as any).target) : null }); }
 export const aimOf = (id: string | null | undefined) => (id ? lastAim.get(String(id)) || null : null);
@@ -115,7 +127,7 @@ export function wrapShadow(H: Record<string, (e: FxEvent) => void>, K: ShadowKit
   H.stance = (e) => {
     const m = shadowFxOf(e); if (!m) { base.stance?.(e); return; }
     const id = String((e as any).target || e.unit || ''), side = K.sideOf(id);
-    if ((m === 'hide' || m === 'ghost') && side !== 'pc') { base.stance?.(e); return; } // a foe's: its 'sight' hide says it
+    if ((m === 'hide' || m === 'ghost' || m === 'found') && side !== 'pc') { base.stance?.(e); return; } // a foe's: its 'sight' hide / reveal says it
     if (!K.sawThen({ ...e, unit: id } as FxEvent)) return;
     const p = K.at(e.at || K.posOf(id)); if (!p) return;
     const tok = K.tokOf(id, e.at);
@@ -133,6 +145,15 @@ export function wrapShadow(H: Record<string, (e: FxEvent) => void>, K: ShadowKit
       if (m === 'gain') K.play('swish', p, { gain: 0.25, rate: 0.7 });
       return;
     }
+    if (m === 'found') {
+      const how = String((e as any).how || 'other'), word = FOUND_WORD[how] || SHADOW_WORD.found;
+      tear(p, SHADOW_MS.tear);
+      floatText(word, { ...p, y: p.y + (how === 'attack' ? p.s * 0.9 : -p.s * 0.35) }, how === 'hit' ? '#F65157' : how === 'attack' ? MUTED : WHITE, { small: how === 'attack' });
+      const by = (e as any).by ? K.at(K.posOf(String((e as any).by))) : null; // the finder, when your side sees it (the engine's fog)
+      if (by) { hook(by, p, SHADOW_MS.tear); ring(by, WHITE, SHADOW_MS.tear, { from: 0.6, to: 1, width: 2 }); }
+      if (how === 'attack') tornAt.set(id, Number(e.n) || 0); else K.play('swish', p, { gain: 0.4, rate: 0.6 });
+      return;
+    }
     if (m === 'tag') {
       const t = lastMarked, q = t ? K.at(t.at || K.posOf(t.target)) : null; lastMarked = null;
       if (q) { hook(p, q, SHADOW_MS.tag); after(() => { ring(q, SHADOW_INK, SHADOW_MS.tag, { from: 0.6, to: 1.05, width: 2 }); floatText(SHADOW_WORD.tag, q, SHADOW_INK, { small: true }); }, SHADOW_MS.tag * 0.4); }
@@ -141,10 +162,12 @@ export function wrapShadow(H: Record<string, (e: FxEvent) => void>, K: ShadowKit
       return;
     }
     // the Break: the actor lunges at what the same action struck, the cut across it, AMBUSH; then the shadow tears off
+    const tn = tornAt.get(id); tornAt.delete(id);
+    const torn = tn != null && (Number(e.n) || 0) - tn <= SAME_ACTION; // its own loud shot already tore the shadow off
     const aim = aimOf(id), q = aim ? K.at(aim.to) : null;
     if (tok && q && !reducedMotion()) { const a = angle(p, q); lunge(tok, Math.cos(a) * p.s * 0.08, Math.sin(a) * p.s * 0.08, 200); }
     if (q) { cut(q, SHADOW_MS.cut); floatText(SHADOW_WORD.break, { ...q, y: q.y - q.s * 0.35 }, WHITE, { delay: 90 }); K.play('slice', q, { gain: 0.7, rate: 0.8 }); }
     else floatText(SHADOW_WORD.break, p, WHITE, {});
-    after(() => { tear(p, SHADOW_MS.tear); floatText('REVEALED', { ...p, y: p.y + p.s * 0.9 }, MUTED, { small: true }); }, SHADOW_MS.cut * 0.6);
+    if (!torn) after(() => { tear(p, SHADOW_MS.tear); floatText(FOUND_WORD.attack, { ...p, y: p.y + p.s * 0.9 }, MUTED, { small: true }); }, SHADOW_MS.cut * 0.6);
   };
 }

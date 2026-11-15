@@ -69,3 +69,21 @@ export function tieLayerVals(cb: any, o: { turnOf?: string | null; hotTo?: strin
   return { has: lines.length > 0, w, h, box: '0 0 ' + w + ' ' + h, lines, knots,
     style: 'position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; overflow: visible' };
 }
+
+/** Who sees you (rules 1.56 Shadow 2.0 item 12): a thin dashed line from each enemy whose eyes reach your tile (the
+ *  engine's Hide row `eyes`, already kept to what your side sees) to your token's rim, in the door's ink. Drawn on the
+ *  same layer as the ties, only while your token is hovered with the door's tab open (combat.js). */
+export const EYE_LINE = { width: 1.5, opacity: 0.8, dash: '4 3' };
+export function eyeLines(cb: any, meId: string, eyes: string[], ink: string): TieLineVals[] {
+  const me = cb?.units?.find((u: any) => u.id === meId); if (!me || !me.pos) return [];
+  const out: TieLineVals[] = [];
+  for (const id of eyes) {
+    const v = cb.units.find((u: any) => u.id === id); if (!v || !v.pos) continue;
+    const [ax, ay] = at(v.pos), [bx, by] = at(me.pos), x1 = centre(ax), y1 = centre(ay), x2 = centre(bx), y2 = centre(by), len = Math.hypot(x2 - x1, y2 - y1);
+    if (len < RIM * 2) continue;
+    const ux = (x2 - x1) / len, uy = (y2 - y1) / len;
+    out.push({ key: 'eyes:' + id + ':' + meId, kind: 'eyes', side: 'foe', from: id, to: meId, x1: Math.round(x1 + ux * RIM), y1: Math.round(y1 + uy * RIM), x2: Math.round(x2 - ux * RIM), y2: Math.round(y2 - uy * RIM),
+      ink, dash: EYE_LINE.dash, width: EYE_LINE.width, opacity: EYE_LINE.opacity, cls: '', mark: false });
+  }
+  return out;
+}

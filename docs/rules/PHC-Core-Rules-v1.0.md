@@ -6377,9 +6377,10 @@ Shadow Step perk are untouched).
    can't hide; a Break's Marked term).
 6. **Tagged** (item 4335). Holding the door, an attack from Hidden on a Marked foe gets +1 to hit (`roll_mod` on
    `to_hit`).
-7. **Ghost Kill** (item 4336). Holding the door: an attack that drops a foe, made while no enemy's eyes reach your tile
-   and you are not Marked, sinks you back into Hidden after the action (the same entry: no fresh ambush; once a turn).
-   It is checked after a Break's reveal, and its mark never outlives the action.
+7. **Ghost Kill** (item 4336; opens at **Ingenuity 3**, item 4342). With Ingenuity 3: an attack that drops a foe, made
+   while no enemy's eyes reach your tile and you are not Marked, sinks you back into Hidden after the action (the same
+   entry: no fresh ambush; once a turn). It is checked after a Break's reveal, and its mark never outlives the action.
+   The lead's ruling (16 Nov 2026): too much for a 1-point dip; everything else of the door stays at Ingenuity 1.
 8. **Seen on the map** (item 4337). Each of these moments carries an effect from its data row (`fx`): going Hidden,
    Shadow gained and lost, a Break, Tag, Ghost Kill; a Hidden token darkens to its outline over a pool of shadow, with
    its Shadow held as wisps (the client's one effect system; the word always with the colour).
@@ -6389,6 +6390,19 @@ Shadow Step perk are untouched).
 10. **The Break's dial** (item 4340; overrides rules 1.36's `shadow.per_point` 0.7, item 2330): 0.6 a Shadow
     (`rules.json shadow.per_point`, `ingenuity.unlocks.1` Break), the plan's softening because the door's first window
     measured above 125 with Go to Ground and First Shade.
+11. **Where to Hide** (item 4343; the lead's ruling, 16 Nov 2026: "a findable Hide that is always refused is still a dead
+    end"). When Hide is refused because an enemy sees you, the map shades the tiles this turn's Move reaches from which
+    Hide would work (out of the eyes of every enemy your side sees, with Hide's price still paid after the Move), and the
+    refusal says how many see you and names the nearest: "Seen by 2 enemies. Move to a shaded tile (nearest: C6) and
+    Hide." With no such tile, it says so and points to smoke or full cover (`actions.json hide.why` `seen_to`,
+    `seen_none`). The shading is Hide's own sight test (one copy, `tactics.ts seenByFoes`) asked at each tile the
+    engine's Move offers (`moveOptions`), on the fight as your side sees it: an enemy you don't see is never counted or
+    named (seen only by such an enemy, the plain refusal stands). It rides Hide's row in the action list (`spots`).
+12. **Who sees you** (item 4344). Hide's row also lists the enemies, of those your side sees, whose eyes reach you now
+    (`eyes`); with the door's tab open, hovering your own token draws a line from each.
+13. **Found** (item 4345). Being revealed tells your own side: the outline tears off and a word says why (FOUND, with the
+    finder when your side sees it; HIT; CLOSE; REVEALED after an attack), from the engine's reveal and from damage
+    (an effect `stance` `found` sent to the unit's own side).
 
 ## Maps (rules 1.16)
 
@@ -9999,9 +10013,13 @@ Items 4148 to 4150.
 4333. **First Shade (item 4):** +1 Shadow on the first Hide of a fight made with none held (effect 9), once a fight. PROVISIONAL.
 4334. **Tag (item 5):** 1 AP, once a turn, reach 8 tiles (`shadow.json shadow.tag`). PROVISIONAL.
 4335. **Tagged (item 6):** +1 to hit from Hidden on a Marked foe (effect 10; the lead's softening from the draft's +2). PROVISIONAL.
-4336. **Ghost Kill (item 7):** once a turn, priority 110 (after the Break's reveal at 100), its mark cleared at 120 (effects 11 to 13). PROVISIONAL.
+4336. **Ghost Kill (item 7):** once a turn, priority 110 (after the Break's reveal at 100), its mark cleared at 120 (`ingenuity.unlocks.3` effects 2 to 5 since item 4342). PROVISIONAL.
 4337. **The effects (item 8):** the `fx` rows `stance` `hide`, `shadow_gain`, `shadow_loss`, `break`, `tag`, `ghost`. No number.
 4338. **The Hide-spot measure (item 9):** at least 80% of stage-1 first fights. PROVISIONAL (measured 59 of 60: see the draft's "Slice 1, measured").
 4339. **No number:** the Tag verb's fx row and Ghost Kill's turn-start clear.
 4340. **The Break's `per` 0.6 (item 10; was 0.7, item 2330):** the door's first window measured 129 (four levels' mean) with it at 0.7 and 0.6 alike: the extra plain shots of the faster first turn carry it, not the Break; to be refitted in slice 5. PROVISIONAL.
-4341. **Items 4330 to 4341 are rules 1.56 Shadow 2.0's.**
+4341. **Items 4330 to 4349 are rules 1.56 Shadow 2.0's.**
+4342. **Ghost Kill at Ingenuity 3 (item 7; the lead's ruling, 16 Nov 2026):** its rows moved from `skills.json ingenuity.unlocks.1` to `unlocks.3` (Mastery 1), with its turn-start clear. The door's first window read again after the move: see the draft's "Slice 2". No new number.
+4343. **Where to Hide (item 11):** the shaded tiles are the Move's tiles with Hide's price still paid, out of the eyes of every enemy the side sees; the refusals `seen_to` and `seen_none`. No number. Measured: of 60 seeded stage-1 Survival first fights, 32 start seen; 31 of them have a spot in reach and the row shades 30 (the other is seen only by an enemy the side can't see).
+4344. **Who sees you (item 12):** Hide's row `eyes`. No number.
+4345. **Found (item 13):** the effect `stance` `found` (`how`: spot, close, hit, attack, other; `by` when the side sees the finder), `only` the unit's side. No number.

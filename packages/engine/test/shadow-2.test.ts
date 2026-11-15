@@ -8,7 +8,7 @@ import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { survivalRoom, startRun, chooseNode } from './helpers/survival';
 import { Rec } from './helpers/replay';
-import { previewAttack, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, type Unit } from '../src';
+import { previewAttack, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, actionsFor, refOf, type Unit } from '../src';
 import { resOf, seenByFoes, hideBlock, HIDE_WHY } from '../src/tactics';
 import { applyCond } from '../src/magic';
 import { price } from '../src/effects/cost';
@@ -17,7 +17,9 @@ import shadowJ from '../../../data/shadow.json';
 
 const DOOR: any = (SKILL.ingenuity as any).unlocks['1'];
 const eff = (label: string) => DOOR.effects.find((e: any) => e.label === label);
-const GROUND = eff('Go to Ground'), FIRST = eff('First Shade'), TAGGED = eff('Tagged'), GHOST = eff('Ghost Kill');
+const GROUND = eff('Go to Ground'), FIRST = eff('First Shade'), TAGGED = eff('Tagged');
+// Ghost Kill opens at Ingenuity 3 (the lead's ruling, 16 Nov 2026: too much for a 1-point dip; spec item 4342)
+const GHOST_STEP: any = (SKILL.ingenuity as any).unlocks['3'], GHOST = GHOST_STEP.effects.find((e: any) => e.label === 'Ghost Kill'), GHOST_AT = Number(Object.entries((SKILL.ingenuity as any).unlocks).find(([, v]) => v === GHOST_STEP)![0]);
 const HIDE: any = (actionsJ as any).items.find((a: any) => a.id === 'hide');
 const TAG: any = (shadowJ as any).items.find((x: any) => x.id === 'shadow.tag');
 const BREAK_MODS = ['skill:ingenuity.1#shadow.break'];
@@ -119,9 +121,9 @@ describe('Tag and Tagged', () => {
 });
 
 describe('Ghost Kill', () => {
-  const kill = (blindOther: boolean, o: { marked?: boolean } = {}) => {
+  const kill = (blindOther: boolean, o: { marked?: boolean; ing?: number } = {}) => {
     // the other foe stands where its eyes reach you (6,4 sees 1,4 on this yard), blind while you Hide, then looking or not
-    const f = fightWith([door(1)], [{ tier: 'minion' }, { tier: 'minion' }]); const t = foeAt(f, 0, '3,4', true), w = foeAt(f, 1, '6,4', true), sight = f.cb.units.find((x) => x.side === 'pc')!.vision;
+    const f = fightWith([door(o.ing ?? GHOST_AT)], [{ tier: 'minion' }, { tier: 'minion' }]); const t = foeAt(f, 0, '3,4', true), w = foeAt(f, 1, '6,4', true), sight = f.cb.units.find((x) => x.side === 'pc')!.vision;
     const u = f.turn(f.pc); at(f, u, '1,4');
     f.act({ type: 'combat/hide', unitId: u.id } as any);
     if (!f.unit(u.id).hidden) throw new Error('could not hide: ' + f.cb.log.slice(-2).join(' / '));
@@ -138,6 +140,11 @@ describe('Ghost Kill', () => {
     expect(f.cb.log.some((l: string) => /Ghost Kill/.test(l))).toBe(true);
     expect(GHOST.same_entry).toBe(true);
   });
+  it('it opens at its unlock step (Ingenuity 3): below it, the same kill out of view leaves you revealed', () => {
+    expect(GHOST_AT).toBe(3);
+    const low = kill(true, { ing: GHOST_AT - 1 }); expect(low.f.unit(low.u.id).hidden).toBeFalsy();
+    expect(low.f.cb.log.some((l: string) => /Ghost Kill/.test(l))).toBe(false);
+  });
   it('not when another enemy sees you, nor while Marked', () => {
     const seen = kill(false); expect(seen.f.unit(seen.u.id).hidden).toBeFalsy();
     const marked = kill(true, { marked: true }); expect(marked.f.unit(marked.u.id).hidden).toBeFalsy();
@@ -152,7 +159,7 @@ describe('Ghost Kill', () => {
 
 describe('the Hide-spot measure (rules 1.56 item 4336): a spot to Hide from is in reach in most stage-1 first fights', () => {
   it('at least 80% of seeded stage-1 Survival first fights have a tile in one Move\'s reach out of every foe\'s eyes with the door\'s Hide still paid', () => {
-    const N = Number((globalThis as any).process?.env?.HIDE_N) || 24; let ok = 0, seenAtStart = 0, n = 0;
+    const N = Number((globalThis as any).process?.env?.HIDE_N) || 24; let ok = 0, seenAtStart = 0, n = 0, shaded = 0, unseenEyes = 0, ms = 0;
     for (let i = 0; i < N; i++) {
       const seed = 'HIDE' + i, g0: any = survivalRoom(seed, [{ build: 'plain_gun', level: 1 }], { test: true });
       g0.characters.c1.skills.ingenuity = 1;
@@ -166,11 +173,106 @@ describe('the Hide-spot measure (rules 1.56 item 4336): a spot to Hide from is i
       if (withGame(g, () => seenByFoes(cb, me))) seenAtStart++; else { ok++; continue; }
       const opts = withGame(g, () => moveOptions(g, cb, me.id, 'move'));
       const spot = Object.entries(opts.tiles).some(([k, o]) => o.ap + hideAp <= apMax && !withGame(g, () => seenByFoes(cb, { ...me, pos: k } as Unit)));
+      // the Hide row's own spots (item 11), read through the descriptor the screen reads
+      const t0 = Date.now(), row = actionsFor(g, me.id, null).find((d) => d.id === 'hide')!; ms = Math.max(ms, Date.now() - t0);
+      if (row.spots?.length) shaded++; else if (spot && !row.eyes?.length) unseenEyes++; // seen by an enemy you can't see: the plain refusal (fog)
       if (spot) ok++;
     }
-    (globalThis as any).console?.log?.('hide spots: ' + ok + ' / ' + n + ' (seen at the start ' + seenAtStart + ')');
+    (globalThis as any).console?.log?.('hide spots: ' + ok + ' / ' + n + ' (seen at the start ' + seenAtStart + ', shaded by the Hide row ' + shaded + ', seen only by eyes the side cannot see ' + unseenEyes + ', slowest row ' + ms + ' ms)');
+    expect(shaded + unseenEyes).toBe(ok - (n - seenAtStart)); // the row shades a spot whenever one is in reach (and the side sees who sees it)
     expect(n).toBeGreaterThan(N / 2);
     expect(ok / n).toBeGreaterThanOrEqual(0.8);
     void apply;
+  });
+});
+
+describe('where to Hide (rules 1.56 item 11): the Hide row shades the tiles this turn\'s Move reaches out of every enemy\'s eyes', () => {
+  const setup = (vision?: number) => {
+    const f = fightWith([door(1)], [{}]); const t = foeAt(f, 0, '14,6'); if (vision) t.vision = vision;
+    const u = f.turn(f.pc); at(f, u, '7,3');
+    return { f, u: f.unit(u.id) };
+  };
+  const hideRow = (f: F, id: string) => actionsFor(f.g, id, null).find((d) => d.id === 'hide')!;
+  it('seen: the row lists the spots, nearest first, and its refusal names the nearest; Moving to any spot, Hide goes through', () => {
+    const { f, u } = setup();
+    const d = hideRow(f, u.id);
+    expect(d.available).toBe(false);
+    expect(d.eyes).toEqual([f.foe.id]);
+    expect(d.spots!.length).toBeGreaterThan(0);
+    expect(d.why).toBe(HIDE.why.seen_to.replace('{who}', '1 enemy').replace('{tile}', refOf(d.spots![0])));
+    for (const k of d.spots!) {
+      const { f: g, u: v } = setup();
+      g.act({ type: 'combat/move', unitId: v.id, to: k } as any);
+      expect(g.unit(v.id).pos).toBe(k);
+      g.act({ type: 'combat/hide', unitId: v.id } as any);
+      expect(g.unit(v.id).hidden, 'spot ' + k).toBe(true);
+    }
+  });
+  it('a tile this turn\'s Move reaches but no shaded spot: still in an enemy\'s eyes there (the shading is complete)', () => {
+    const { f, u } = setup();
+    const d = hideRow(f, u.id), shaded = new Set(d.spots), mo = withGame(f.g, () => moveOptions(f.g, f.cb, u.id, 'move'));
+    const hideAp = d.cost.ap, rest = Object.entries(mo.tiles).filter(([k, o]) => !shaded.has(k) && o.ap + hideAp <= u.ap);
+    expect(rest.length).toBeGreaterThan(0);
+    for (const [k] of rest) expect(withGame(f.g, () => seenByFoes(f.cb, f.unit(u.id), k)), 'tile ' + k).toBe(true);
+  });
+  it('no tile in reach is out of their eyes: no spots, and the refusal says so and points to smoke or cover', () => {
+    const f = fightWith([door(1)], [{}]); const t = foeAt(f, 0, '6,4'); t.vision = 99;
+    const u = f.turn(f.pc); at(f, u, '1,4'); f.unit(u.id).ap = 2; // one tile of Move left with Hide paid: all in its eyes
+    const d = hideRow(f, u.id);
+    expect(d.spots).toEqual([]);
+    expect(d.why).toBe(HIDE.why.seen_none.replace('{who}', '1 enemy'));
+    expect(d.why).toMatch(/smoke/);
+  });
+  it('who sees you: unseen, the row names no eyes and no spots; an enemy the side does not see is never named', () => {
+    const f = fightWith([door(1)], [{}]); foeAt(f, 0, '14,5', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    const d = hideRow(f, u.id);
+    expect(d.eyes).toEqual([]); expect(d.spots).toBeUndefined(); expect(d.available).toBe(true);
+  });
+});
+
+describe('the moments your side sees (rules 1.56 items 8 and 13): Shadow gained and lost, and being found', () => {
+  const found = (f: F, n: number, id: string) => fxSince(f, n).filter((e: any) => e.k === 'stance' && e.what === 'found' && e.unit === id);
+  it('a gain and a loss each send their effect: First Shade (shadow_gain), a turn begun seen holding Shadow (shadow_loss)', () => {
+    const f = fightWith([door(1)], [{}]); const t = foeAt(f, 0, '14,5', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    let n = f.cb.fxSeq || 0;
+    f.act({ type: 'combat/hide', unitId: u.id } as any);
+    expect(fxSince(f, n).some((e: any) => e.k === 'stance' && e.what === 'shadow_gain' && e.target === u.id)).toBe(true);
+    withGame(f.g, () => { f.unit(u.id).hidden = false; }); f.unit(t.id).vision = 99; t.pos = '6,4';
+    n = f.cb.fxSeq || 0; const had = shadow(f, u);
+    f.turn(u.id);
+    expect(shadow(f, u)).toBe(had - 1);
+    expect(fxSince(f, n).some((e: any) => e.k === 'stance' && e.what === 'shadow_loss' && e.target === u.id)).toBe(true);
+  });
+  it('an attack from Hidden: FOUND (how: attack) goes to your own side only', () => {
+    const f = fightWith([door(1)], [{}]); foeAt(f, 0, '6,4', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    f.act({ type: 'combat/hide', unitId: u.id } as any);
+    const n = f.cb.fxSeq || 0;
+    f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'shot' } as any);
+    const ev = found(f, n, u.id);
+    expect(ev.length).toBe(1); expect(ev[0].how).toBe('attack'); expect(ev[0].only).toBe('pc');
+  });
+  it('a hit on a Hidden unit: FOUND (how: hit), naming who hit it', () => {
+    const f = fightWith([door(1), {}], [{}]); foeAt(f, 0, '14,5', true);
+    const [a, b] = f.pcs; at(f, a, '1,4'); at(f, b, '3,4');
+    f.turn(a.id); f.act({ type: 'combat/hide', unitId: a.id } as any);
+    f.turn(b.id); f.unit(b.id).attack = 60; const n = f.cb.fxSeq || 0;
+    f.act({ type: 'combat/attack', unitId: b.id, targetId: a.id, mode: 'shot' } as any);
+    expect(f.unit(a.id).hidden).toBeFalsy();
+    const ev = found(f, n, a.id);
+    expect(ev.map((e: any) => e.how)).toContain('hit');
+    expect(ev.find((e: any) => e.how === 'hit')?.by).toBe(b.id);
+  });
+  it('an enemy that ends its turn next to you: FOUND (how: close), naming it', () => {
+    const f = fightWith([door(1)], [{}]); const t = foeAt(f, 0, '4,4', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    f.act({ type: 'combat/hide', unitId: u.id } as any);
+    f.unit(t.id).pos = '2,4'; f.unit(t.id).ap = 0; // it stands next to you with nothing left to do: its turn ends there
+    const n = f.cb.fxSeq || 0;
+    f.act({ type: 'combat/end-turn', unitId: u.id } as any);
+    const ev = found(f, n, u.id);
+    expect(ev.length).toBe(1); expect(ev[0].how).toBe('close'); expect(ev[0].by).toBe(t.id);
   });
 });
