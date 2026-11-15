@@ -66,8 +66,9 @@ the lane after the merge of feature/0.29 (Bonds 2.0 slice 1, Figments 2.0 slices
 
 | base | steady L1 / L5 / L10 / L20 (mean) | peak L1 / L5 / L10 / L20 (mean) |
 |---|---|---|
-| line | 135 (band 119 to 151; each level 101 to 169) | 165 (band 145 to 185; each level 124 to 206) |
+| line | 135 (band 119 to 151; each level 101 to 169) | 165 (band 145 to 185; each level 124 to 206, 212 since the ruling below) |
 | 31 (before) | 104 / 108 / 101 / 93 (102) | 122 / 177 / 144 / 151 (149) |
+| 36 (the lead's first try, 16 Nov) | 121 / 125 / 117 / 108 (118: under the band's 118.8) | 143 / 205 / 167 / 175 |
 | **37 (after)** | **124 / 128 / 120 / 111 (121)** | **147 / 210 / 172 / 180 (177)** |
 | 41 (steady on 135) | 138 / 142 / 133 / 123 (134) | 163 / 233 / 190 / 199 (196) |
 
@@ -86,7 +87,14 @@ tried as the second dial and does not separate them (the steady turn also swells
 The gap is what Heart Overload's free Begin was: a tempo lever inside the steady loop that the one-turn peak does not
 use. **For the lead:** either (a) Begin at 1 AP (the last row: every cell in band at the old base, a rule change: the
 Swift module then gives nothing), (b) the feelings' steps as the peak's own dial (the peak is the stage table plus four
-feelings' steps), or (c) the level-5 peak band. Until then the contract is red on that one cell.
+feelings' steps), or (c) the level-5 peak band.
+
+**The lead's ruling (16 Nov 2026, PROVISIONAL):** base 36 was tried first and fails the steady turn's mean (118 against
+the band's floor of 118.8), so the base stays at **37** and only the Outburst peak's per-level top is widened to
+**212** (`rules.json balance.ceilings.outburst_peak.level_hi` 1.285, with its note): the level-5 peak sits about 2
+percent over its band because one base dial cannot put both the steady turn and the peak on their lines; it is refitted
+with the feelings' steps in the Balance 2.0 number pass. Begin's AP and the stage table are unchanged. The contract is
+green.
 
 **The other systems, no perk steps, at base 37** (the line, then the measured levels and mean): none was fitted with an
 old alpha perk inside it that it now lacks, and each sits within the contract's tolerance, so none was moved.
