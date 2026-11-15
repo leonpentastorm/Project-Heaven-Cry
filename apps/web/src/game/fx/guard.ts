@@ -161,7 +161,7 @@ export function guardHandlers(K: GuardKit): Record<string, (e: FxEvent) => void>
           K.play('hit_heavy', p, { rate: 1.2, gain: 0.3, delay: 110 });
         } else if (m === 'soak') K.play('hit_metal', p, { rate: 1.1, gain: 0.5 });
       }
-      if (word) floatText(word, { x: p.x, y: p.y - p.s * 0.25, s: p.s }, m === 'gain' || m === 'soak' ? GUARD_INK : m === 'broken' ? WHITE : MUTED, { small: m !== 'broken', delay: m === 'gain' ? 0 : 60, ms: m === 'broken' ? 1100 : 900 });
+      if (word) floatText(word, { x: p.x, y: p.y - p.s * 0.45, s: p.s }, m === 'gain' || m === 'soak' ? GUARD_INK : m === 'broken' ? WHITE : MUTED, { small: m !== 'broken', delay: m === 'gain' ? 0 : 60, ms: m === 'broken' ? 1100 : 900 });
     },
   };
 }
