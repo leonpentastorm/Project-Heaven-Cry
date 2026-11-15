@@ -8,6 +8,7 @@ import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
 import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
+import actionsJ from '../../../data/actions.json';
 import { type Character, mod, prayerCooldown, gearNum } from './character';
 import { say, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
@@ -228,12 +229,15 @@ onHook('round_start', (_ctx: any, cb: Combat) => { for (const u of cb.units) if 
 /** The Hide action (2 AP, provisional): only out of every enemy's sight, never while Marked. */
 /** Why this unit can't Hide now, whatever its AP (or null): the Hide action and its row in the action list both ask. */
 export function hideBlock(cb: Combat, u: Unit): string | null {
-  if (u.hidden) return 'Already Hidden.';
-  if (condOn(u, 'marked')) return 'Marked: you can\'t hide.';
-  if (bossInTheOpen(cb, u)) return 'A Boss stands in the open after the first round.'; // rules 1.37
-  if (seenByFoes(cb, u)) return 'An enemy can see you: get out of sight first.';
+  // the refusals are data, each with what to do about it (actions.json hide.why; rules 1.56, Shadow 2.0 item 4330)
+  if (u.hidden) return HIDE_WHY.hidden;
+  if (condOn(u, 'marked')) return HIDE_WHY.marked;
+  if (bossInTheOpen(cb, u)) return HIDE_WHY.boss; // rules 1.37
+  if (seenByFoes(cb, u)) return HIDE_WHY.seen;
   return null;
 }
+/** Hide's refusals (data/actions.json hide.why): hidden, marked, boss, seen. */
+export const HIDE_WHY: Record<'hidden' | 'marked' | 'boss' | 'seen', string> = ((actionsJ as any).items.find((a: any) => a.id === 'hide')?.why) || {};
 export function hideAction(cb: Combat, u: Unit): string | null {
   { const no = hideBlock(cb, u); if (no) return no; }
   const ap = price({ cb, u }, 'hide').ap; { const no = whyNot(cb, u, ap); if (no) return no; }

@@ -3,6 +3,7 @@
 import React from 'react';
 import { getState, subscribe } from './store';
 import { usePresence, presenceCls } from './presence';
+import { DOOR_TABS, doorTabsOf } from '@engine';
 
 const LS = 'phc.tips';
 const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
@@ -12,6 +13,8 @@ export function resetTips() { seen.clear(); save(); }
 
 type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);
+/** Does a character of mine hold this door (its tab's verbs: the engine's doorTabsOf)? */
+const myDoor = (st: St, tab: string) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id && (() => { try { return doorTabsOf(c).some((d) => d.tab === tab); } catch { return false; } })());
 const lines = (st: St, k: string) => (st.game?.story.entries || []).filter((e: any) => e.kind === k && !e.rerolled).length;
 
 /** In order: the first one whose moment has come and that this browser hasn't seen is shown. */
@@ -26,6 +29,10 @@ export const TIPS: { id: string; title: string; text: string; when: (st: St) => 
     text: '⟲ and ✎ under a Narrator line suggest a reroll or a rewording. The host puts it to a vote; everyone must say yes, or nothing changes.' },
   { id: 'combat', title: 'COMBAT', when: (st) => st.screen === 'combat',
     text: '6 AP a turn. Pick an action, then a tile or a target: the cost and the odds show before you commit. One reaction per round. End your turn when you\'re done.' },
+  // Rules 1.56, Shadow 2.0: a door with a first-fight hint in its data (`hint`: Shadow's points at Hide) says it once, in
+  // the first fight of a character of yours who holds the door (the engine's doorTabsOf).
+  ...Object.values(DOOR_TABS).filter((d) => d.hint).map((d) => ({ id: 'door:' + d.tab, title: d.tab.toUpperCase() + ' · YOUR DOOR', text: d.hint,
+    when: (st: St) => st.screen === 'combat' && myDoor(st, d.tab) })),
   { id: 'report', title: 'SOMETHING BROKE?', when: (st) => st.screen === 'main' && seen.has('round'),
     text: '⚑ Report (top bar) downloads one file with what happened, for Leon. Nothing is sent from here, and your API key is never in it.' },
 ];

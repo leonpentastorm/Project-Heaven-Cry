@@ -5,7 +5,7 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
-  PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText } from '@engine';
+  PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, doorTabsOf } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
@@ -92,6 +92,13 @@ export const actionGroups = (cb: any, cur: any, ch: any, opts: ActionOpts = {}):
 
 /** The game the engine's actionsFor reads, for a fight this screen holds (cb may be the screen's drawn copy). */
 export const gameFor = (g: any, cb: any, ch: any): any => ({ ...(g || {}), combat: cb, characters: { ...((g && g.characters) || {}), ...(ch ? { [ch.id]: ch } : {}) } });
+/** The door tabs, in order: [tab id, title, family ink]. */
+const DOOR_HEADS: [string, string, string][] = [['shadow', 'SHADOW · UNSEEN', '#40BAA0'], ['tend', 'TEND · BONDS AND CARE', '#EB95B7'], ['figments', 'FIGMENTS · PICTURED', '#5394AC']];
+/** The one line atop a door's tab (its data's `tab_note`, rules 1.56): how the door works, or '' (none, or not held). */
+export function tabNote(cur: any, tab: string): string {
+  if (!cur) return '';
+  try { return doorTabsOf(cur).find((d) => d.tab === tab)?.note || ''; } catch { return ''; }
+}
 /** The action list from the engine's descriptors (actionsFor): the rows each tab shows, in the engine's order, with
  *  its names, costs, texts and reasons. A child row (a technique inside its pad) and a hidden one are not listed. */
 export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
@@ -106,12 +113,16 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   if (perks.length || info.length) out.push(['PERKS & TRAITS', [...perks, ...info], null, 'perks']);
   const moves = by('class');
   if (moves.length) { const pe = perkEntries(opts.g, cb, cur, ch, 'combat').find((e) => e.tab === 'class'); const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), pe?.cls); out.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves, k ? k.ink : null, 'class']); }
-  const shadowRows = by('shadow'); // rules 1.32: Perception's door verbs (Slip, Mark, Work, Break), in Perception ink
-  if (shadowRows.length) out.push(['SHADOW · UNSEEN', shadowRows, '#40BAA0', 'shadow']);
-  const tendRows = by('tend'); // rules 1.33: Insight's door verbs (Bond, Heal, Help), in Insight ink
-  if (tendRows.length) out.push(['TEND · BONDS AND CARE', tendRows, '#EB95B7', 'tend']);
-  const figRows = by('figments'); // rules 1.34: Expression's door (Picture, then each held Figment's verbs), in Expression ink
-  if (figRows.length) out.push(['FIGMENTS · PICTURED', figRows, '#5394AC', 'figments']);
+  // The door tabs: Shadow's verbs (rules 1.32: Slip, Mark, Work, Break, in Perception ink), Tend's (rules 1.33: Bond, Heal,
+  // Help, in Insight ink), Figments' (rules 1.34: Picture, then each held Figment's verbs, in Expression ink). Rules 1.56,
+  // Shadow 2.0: a door's tab also lists the core actions its data names (`tab_also`: Hide heads the SHADOW tab, with the
+  // engine's own price and refusal), for a unit that holds the door (the engine's doorTabsOf).
+  const doors = (() => { try { return doorTabsOf(cur); } catch { return []; } })();
+  for (const [tab, title, ink] of DOOR_HEADS) {
+    const dt = doors.find((d) => d.tab === tab), also = dt ? list.filter((d) => dt.also.includes(d.id) && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { sub: d.name }]) : [];
+    const rows = [...also, ...by(tab)];
+    if (rows.length) out.push([title, rows, ink, tab]);
+  }
   const sig = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
   if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
   if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);

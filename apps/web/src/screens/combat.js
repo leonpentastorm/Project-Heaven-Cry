@@ -62,7 +62,7 @@ import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, p
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, tabNote, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
@@ -1590,6 +1590,8 @@ export class CombatLogic extends DCLogic {
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
+      // Rules 1.56, Shadow 2.0: a door's tab opens on one line of how the door works (its data's tab_note)
+      ...(() => { const note = tabNote(cur, tabG.id); return { hasNote: !!note, note, noteStyle: 'padding: 6px 8px; border-left: 2px solid ' + (tabG.ink || '#A3AEC2') + '; border-radius: 4px; background: #10151F; font-size: 13px; line-height: 1.4; color: #C9D3E3' }; })(),
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
       // Rules 1.14, the perk card in a fight: three shelves. USE NOW is the buttons below; the other two are lists to read.

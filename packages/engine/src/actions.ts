@@ -72,7 +72,7 @@ export function moveAp(u: Unit, how: 'move' | 'sprint' | 'disengage'): number {
 const stimPrices = (u: Unit, medic: boolean, cb: Combat | null = CB) => ({ up: stimAp(u, { downed: false } as Unit, medic, cb), down: stimAp(u, { downed: true } as Unit, medic, cb) });
 
 /** Every basic action this unit has now, in list order, each with the engine's cost and reason. Rows that only show
- * when they apply (Put out the fire, Break free, Recover, Pull free, Play my song, Reload both, Hide) are left out
+ * when they apply (Put out the fire, Break free, Recover, Pull free, Play my song, Reload both) are left out
  * otherwise. cb may be null (a card outside a fight): the rows that need the fight to rule on them carry no reason. */
 export function basicActions(cb: Combat | null, u: Unit, x: ActionCtx = {}): BasicAction[] { const was = CB; CB = cb; try { return rowsOf(cb, u, x); } finally { CB = was; } }
 function rowsOf(cb: Combat | null, u: Unit, x: ActionCtx): BasicAction[] {
@@ -106,7 +106,8 @@ function rowsOf(cb: Combat | null, u: Unit, x: ActionCtx): BasicAction[] {
   if (condOn(u, 'grappled')) { const ap = priced(u, 'escape'); row('escape', ap, need(u, ap)); }
   if (condOn(u, 'disarmed') || condOn(u, 'lowered')) { const d = ACTION.recover, dis = condOn(u, 'disarmed'), ap = priced(u, 'recover', dis ? d.ap! : d.ap_lowered); row('recover', ap, need(u, ap), { label: dis ? d.name : d.name_alt }); }
   out.push(...reloadBothRows(cb, u, x));
-  if (!u.hidden && u.side === 'pc') { const ap = priced(u, 'hide'); row('hide', ap, (cb ? hideBlock(cb, u) : null) || need(u, ap)); }
+  // Hide stays listed while Hidden (rules 1.56, Shadow 2.0: always on the bar, greyed with what to do instead)
+  if (u.side === 'pc') { const ap = priced(u, 'hide'); row('hide', ap, (cb ? hideBlock(cb, u) : null) || need(u, ap)); }
   { const ap = analyzeCost(u, CB); row('analyze', ap, need(u, ap), { tokens: { analyze_range: analyzeRange(u) } }); }
   // A unit with a fixed action list (the drone: move and a plain shot) has only those.
   return u.allowedActions ? out.filter((a) => u.allowedActions!.includes(a.id)) : out;

@@ -196,6 +196,12 @@
       "ap": 2,
       "site": "hide",
       "text": "You can Hide only when no enemy can see you, and never while Marked. While Hidden, enemies can't target you, and your first attack is an ambush: a critical hit on 19–20, and damage × your Ambush multiplier. Enemies look for you at the end of their turns.",
+      "why": {
+        "hidden": "Already Hidden: strike from here, or move and stay out of every enemy's eyes.",
+        "marked": "You are Marked: no hiding until it wears off.",
+        "boss": "A Boss stands in the open: no hiding near it after the first round.",
+        "seen": "An enemy can see you: break line of sight or get behind cover first."
+      },
       "adjudication": "engine"
     },
     {
