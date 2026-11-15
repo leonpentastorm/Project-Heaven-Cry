@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Iron mitts: a blocky foundry mitt, three plate lines, the fingers welded shut -->
+  <g transform="translate(0 -2)">
+    <path d="M20 60 L20 48 L12 42 L12 14 L52 14 L52 40 L45 48 L45 60 Z"/>
+    <path d="M12 22 L52 22 M12 30 L52 30 M12 38 L52 38"/>
+    <path d="M20 53 L45 53"/>
+    <path d="M24 30 L24 38 M40 30 L40 38"/>
+  </g>
+</svg>

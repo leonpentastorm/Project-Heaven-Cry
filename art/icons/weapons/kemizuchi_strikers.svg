@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Kemizuchi strikers: the slim glove with a short folded-steel point at the knuckle -->
+  <g transform="translate(0 -2)">
+    <path d="M22 60 L22 47 Q16 43 16 34 L16 20 Q16 16 19.5 16 Q23 16 23 20 Q23 15 27 15 Q31 15 31 19
+             Q31 14 35 14 Q39 14 39 18 Q39 15 43 15 Q47 15 47 19 L47 37 Q47 44 42 47.5 L42 60 Z"/>
+    <path d="M26 15.5 L31.5 4 L37 14.5"/>
+    <path d="M29 9.5 L34 9.5"/>
+    <path d="M27 24 L27 44 M37 23 L37 44"/>
+    <path d="M22 51 L42 51"/>
+  </g>
+</svg>

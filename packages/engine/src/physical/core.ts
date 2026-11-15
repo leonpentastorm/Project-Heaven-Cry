@@ -15,7 +15,7 @@ import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlocked
 import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
-import { mod } from '../character';
+import { mod, holds as holdsGear } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
@@ -255,11 +255,16 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   const ready = new Set(plainOnly ? [] : c ? readyTechniques(c, sys) : ((u as any).techs as string[]) || []), lent = plainOnly ? null : weaponTeaches(weaponId);
   const OLD: Record<string, string> = { shot: 'shot', aimed_shot: 'aimed', cut: 'melee', overwatch: 'overwatch' };
   const out: { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] = [];
+  const comes = (d: TechDef) => d.comes_with.some((p) => props.includes(p)) && (!d.comes_while || (!!c && holdsGear(c, d.comes_while)));
   for (const d of TECHNIQUES) {
     // Rules 1.13. A technique a skill gives (Interpose at Durability 3) is everyone's who has the points, whatever is in
     // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
     // and that hand offers nothing else. Neither is ever learned, readied or lent.
-    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
+    // (rules 1.56, the unarmed fighter: a perk's technique also comes with a property its row names, `comes_with`, in
+    // the hand that has it: Grapple with bare hands and gloves)
+    // the hand that has it, and only while the holder holds what its row's `comes_while` names (P15, character.ts holds:
+    // only the family's gloves in the hands; a unit with no character holds nothing, so an enemy has it only on its list)
+    if (d.perk) { if (!wield && !plainOnly && (hand === 'main' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0 || comes(d))) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     // Rules 1.56 (Leon's ruling B): a technique that needs something stuck (Pull Out) is offered only while there is one
@@ -274,7 +279,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     if (d.free) { if (!u.allowedActions || u.allowedActions.includes(OLD[d.id])) out.push({ id: d.id, how: 'free' }); }
     else if (ready.has(d.id)) out.push({ id: d.id, how: 'ready' });
     else if (lent === d.id) out.push({ id: d.id, how: 'lent' });
-    else if (!plainOnly && d.comes_with.some((p) => props.includes(p))) out.push({ id: d.id, how: 'comes' });
+    else if (!plainOnly && comes(d)) out.push({ id: d.id, how: 'comes' });
     // an item gives the technique with any weapon of its system (stat 'technique:<id>': the Breaker's Riposte, rules 1.30;
     // its Cleave, Break and Coup, rules 1.56 the Momentum chain 2.0: any group, as the stat's own meaning says)
     else if (!plainOnly && hand === 'main' && !wield && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' });

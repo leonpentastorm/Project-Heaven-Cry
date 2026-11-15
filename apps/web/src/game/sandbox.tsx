@@ -30,7 +30,7 @@ import { glyphKeyNav } from './glyphKeys';
 import { askConfirm } from './dialog';
 import {
   magicOf, FEELINGS, practiceOf, nextPickAt, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, enemyStats, squadLevel, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
+  ENEMIES, enemyStats, squadLevel, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO, isCarriedModifier,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
 import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, devotionWords, GATE, moduleShelved } from '@engine';
@@ -42,7 +42,7 @@ import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
 import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys, isUnseenId } from '@engine';
-const ITEMS = Object.values(ITEM);
+const ITEMS = Object.values(ITEM).filter((it: any) => !isCarriedModifier(it.id)); // rules 1.56: a weapon's own rule (the Open Hand) is no item
 import { ART, zoneOf } from '../screens/shared';
 import { tipProps } from './actionTip';
 
@@ -723,7 +723,7 @@ function GivePicker({ c }: { c: Character }) {
   const s = (q || w.q).trim().toLowerCase();
   const list = React.useMemo(() => [
     ...WEAPONS.map((w) => ({ id: w.id, name: w.name, what: w.category.replace(/_/g, ' '), weapon: true })),
-    ...Object.values(ITEM).map((it: any) => ({ id: it.id, name: it.name, what: (it.category || 'item') + (it.slot ? ' · ' + it.slot.replace(/_/g, ' ') : ''), weapon: false })),
+    ...Object.values(ITEM).filter((it: any) => !isCarriedModifier(it.id)).map((it: any) => ({ id: it.id, name: it.name, what: (it.category || 'item') + (it.slot ? ' · ' + it.slot.replace(/_/g, ' ') : ''), weapon: false })),
   ], []);
   const hits = list.filter((x) => !s || matches(s, x.name + ' ' + x.what + ' ' + x.id.replace(/_/g, ' '))).slice(0, w.wide ? 120 : 60);
   if (w.wide && w.q && !hits.length && !matches(w.q, 'give any weapon or item gear')) return null;

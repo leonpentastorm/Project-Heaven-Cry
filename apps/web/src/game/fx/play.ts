@@ -20,6 +20,7 @@ import { leanIn, recoil } from './sigilBody';
 import { wrapBreaker, breakerBeat, noteBreaker } from './breaker';
 import { wrapPressure, pressureBeat, resetPressure } from './pressure';
 import { wrapShadow, shadowBeat, resetShadow } from './shadow';
+import { wrapOpenHand, openHandBeat } from './openhand';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
 import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '../combatSpeed';
@@ -1199,7 +1200,7 @@ Object.assign(H, faithHandlers({ ...SOUL_KIT, patronOfUnit: (id) => patronOfUnit
   nameOfChar: (charId) => (charId ? charNames.get(charId) : undefined), hurry: (ms) => hurryFx(ms) }));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
-const COND_WORD: Record<string, string> = { slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
+const COND_WORD: Record<string, string> = { off_balance: 'OFF BALANCE', slowed: 'SLOWED', pinned: 'PINNED', blinded: 'BLINDED', burning: 'BURNING', shaken: 'SHAKEN', fear: 'AFRAID', confused: 'CONFUSED', ldebuff: 'MUDDLED', rdebuff: 'UNSETTLED', silenced: 'SILENCED', guarded: 'GUARDED', inspired: 'INSPIRED', corroded: 'CORRODED', quickened: 'QUICKENED', sharpened: 'SHARPENED', commanded: 'COMMANDED', bound: 'BOUND', muddled: 'MUDDLED', dreaded: 'AFRAID', hidden: 'HIDDEN' };
 const condWord = (id: string) => COND_WORD[id] || String(condName(String(id || '')) || id || '').toUpperCase(); // a row's own name (the Canticle's verses), not its id
 const condBoon = (id: string) => id === 'guarded' || id === 'inspired' || id === 'quickened' || id === 'sharpened';
 
@@ -1406,6 +1407,9 @@ wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, pr
 // Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
 // its rolls drawn one by one; it wraps everything above.
 wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, drawsOwnLoose, explosion });
+// The Open Hand (fx/openhand.ts, rules 1.56): a fist's rings, a Flurry's afterimages, the forms named on the striker. Before
+// the Figments' wrapper, so a Figment's own claws play it after its command.
+wrapOpenHand(H, { at, tokOf, sawThen, play });
 // The Momentum chain 2.0 (fx/breaker.ts): the counter's moments, the impact ring, the finishers' lines, Launch, the smash.
 wrapBreaker(H, { at, tokOf, posOf: (id) => unit(id)?.pos, maxOf: (id) => (unit(id) as any)?.resMax?.momentum ?? null, play });
 // Figments (fx/figments.ts): the summon (the caster, a thread, the forming), their orders and attacks, their unmaking.
@@ -1430,6 +1434,7 @@ function baseBeat(e: FxEvent): number {
   const bb = breakerBeat(e); if (bb !== undefined) return bb;
   const gb = figmentBeat(e); if (gb !== undefined) return gb;
   const shb = shadowBeat(e); if (shb !== undefined) return shb;
+  const ob = openHandBeat(e); if (ob !== undefined) return ob;
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;

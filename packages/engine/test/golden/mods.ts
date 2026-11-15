@@ -166,7 +166,7 @@ const HOSTS = ['decrkm_smg', 'hellraiser_service_rifle', 'brigade_auto_shotgun',
 const ALSO: Record<string, string[]> = { mod_red_dot: ['frontier_hand_cannon', 'hellraiser_service_rifle'], mod_scope: ['hellraiser_service_rifle'], mod_bayonet: [], mod_weighted: ['combat_knife'], mod_serrated: ['war_axe'] };
 const PREFER: Record<string, string> = { mod_suppressor: 'hellraiser_service_rifle', mod_compensator: 'hellraiser_service_rifle', mod_extended_mag: 'hellraiser_service_rifle', mod_quick_release: 'hellraiser_service_rifle', mod_bayonet: 'hellraiser_service_rifle', mod_underslung: 'hellraiser_service_rifle', mod_foregrip: 'decrkm_smg', mod_serrated: 'combat_knife', mod_weighted: 'war_axe', mod_wrapped_grip: 'combat_knife' };
 /** The weapon mods of data (category mod, a weapon slot; the quiver's enchantments are pinned on a bow below). */
-export const WEAPON_MODS = (): any[] => (Object.values(A.ITEM) as any[]).filter((it) => it.category === 'mod' && it.mod_slot !== 'enchantment').sort((a, b) => (a.id < b.id ? -1 : 1));
+export const WEAPON_MODS = (): any[] => (Object.values(A.ITEM) as any[]).filter((it) => it.category === 'mod' && !!it.mod_slot && it.mod_slot !== 'enchantment').sort((a, b) => (a.id < b.id ? -1 : 1));
 const fits = (w: string, m: any) => ((A.WEAPON[w] as any)?.mod_slots || []).includes(m.mod_slot);
 export function hostsOf(m: any): string[] {
   const first = [PREFER[m.id], ...HOSTS].find((w) => w && fits(w, m)) || (Object.keys(A.WEAPON) as string[]).find((w) => fits(w, m));

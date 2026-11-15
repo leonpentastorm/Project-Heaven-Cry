@@ -15,8 +15,6 @@ export function resetTips() { seen.clear(); save(); }
 
 type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);
-/** Does a character of mine hold this door (its tab's verbs: the engine's doorTabsOf)? */
-const myDoor = (st: St, tab: string) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id && (() => { try { return doorTabsOf(c).some((d) => d.tab === tab); } catch { return false; } })());
 const lines = (st: St, k: string) => (st.game?.story.entries || []).filter((e: any) => e.kind === k && !e.rerolled).length;
 /** In a fight, it is my turn and my character's: that character (or null). */
 const myTurnChar = (st: St): any => {

@@ -966,13 +966,6 @@
       "mod_slots": [
         "grip"
       ],
-      "grants": {
-        "name": "Grapple",
-        "text": "For 2 AP, grab the target: it can't move until it breaks free.",
-        "effect": {
-          "op": "narrator"
-        }
-      },
       "lore": "Everyone's first weapon.",
       "type": "fists",
       "phys": {
@@ -2868,7 +2861,7 @@
       "id": "knuckledusters",
       "name": "Knuckledusters",
       "category": "unarmed",
-      "damage": 16,
+      "damage": 20,
       "damage_type": "physical",
       "range_tiles": 1,
       "magazine": null,
@@ -2881,20 +2874,13 @@
       "skill": "raw_power",
       "weight_kg": 0.3,
       "accuracy": 0,
-      "price_credits": 60,
+      "price_credits": 120,
       "properties": [],
-      "text": "For 1 AP, throw a jab that deals half damage.",
+      "text": "",
       "mastery_family": "unarmed",
       "hands": "1H",
       "durability": 200,
       "mod_slots": [],
-      "grants": {
-        "name": "Rabbit Punch",
-        "text": "For 1 AP, throw a jab that deals half damage.",
-        "effect": {
-          "op": "narrator"
-        }
-      },
       "lore": "A bar argument that brought friends.",
       "type": "knuckledusters",
       "provisional": true,
@@ -2904,7 +2890,8 @@
         "props": [
           "light",
           "bare",
-          "blunt"
+          "blunt",
+          "open_hand"
         ],
         "hits_with": "raw_power",
         "scales_with": [
@@ -2915,7 +2902,200 @@
           "dexterity"
         ],
         "teaches": "bash"
-      }
+      },
+      "variant_mods": [
+        "open_hand"
+      ]
+    },
+    {
+      "id": "hand_wraps",
+      "name": "Hand wraps",
+      "category": "unarmed",
+      "damage": 14,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 0.1,
+      "accuracy": 0,
+      "price_credits": 30,
+      "properties": [],
+      "text": "",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "durability": 200,
+      "mod_slots": [],
+      "lore": "Cloth, tape and a promise to yourself.",
+      "type": "hand_wraps",
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "profile": "melee",
+        "props": [
+          "light",
+          "bare",
+          "open_hand"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ],
+        "teaches": "bind"
+      },
+      "variant_mods": [
+        "open_hand"
+      ]
+    },
+    {
+      "id": "striking_gloves",
+      "name": "Striking gloves",
+      "category": "unarmed",
+      "damage": 17,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 0.3,
+      "accuracy": 0,
+      "price_credits": 120,
+      "properties": [],
+      "text": "",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "durability": 200,
+      "mod_slots": [],
+      "lore": "Thin enough to feel the pulse you are aiming at.",
+      "type": "striking_gloves",
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "profile": "melee",
+        "props": [
+          "light",
+          "bare",
+          "open_hand"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "sidestep"
+      },
+      "variant_mods": [
+        "open_hand"
+      ]
+    },
+    {
+      "id": "iron_mitts",
+      "name": "Iron mitts",
+      "category": "unarmed",
+      "damage": 25,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 1.2,
+      "accuracy": 0,
+      "price_credits": 500,
+      "properties": [],
+      "text": "",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "durability": 200,
+      "mod_slots": [],
+      "lore": "Foundry gloves with the fingers welded shut.",
+      "type": "iron_mitts",
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "profile": "melee",
+        "props": [
+          "light",
+          "bare",
+          "blunt",
+          "open_hand"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ],
+        "teaches": "throw_down"
+      },
+      "variant_mods": [
+        "open_hand"
+      ]
+    },
+    {
+      "id": "kemizuchi_strikers",
+      "name": "Kemizuchi strikers",
+      "category": "unarmed",
+      "damage": 21,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 0.4,
+      "accuracy": 0,
+      "price_credits": 500,
+      "properties": [],
+      "text": "",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "durability": 200,
+      "mod_slots": [],
+      "lore": "A knuckle of folded steel for a hand that never misses twice.",
+      "type": "kemizuchi_strikers",
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "profile": "melee",
+        "props": [
+          "light",
+          "bare",
+          "point",
+          "open_hand"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ],
+        "teaches": "feint"
+      },
+      "variant_mods": [
+        "open_hand"
+      ]
     },
     {
       "id": "hellraiser_servo_fist",
@@ -2965,7 +3145,8 @@
         "props": [
           "heavy",
           "bare",
-          "blunt"
+          "blunt",
+          "open_hand"
         ],
         "hits_with": "raw_power",
         "scales_with": [
@@ -2976,7 +3157,10 @@
           "dexterity"
         ],
         "teaches": "throw_down"
-      }
+      },
+      "variant_mods": [
+        "open_hand"
+      ]
     },
     {
       "id": "incendiary_grenade",

@@ -1312,8 +1312,8 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (fx.statuses.includes('stunned') && condOn(tgt, 'stunned')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
-  // tech (rules 1.56, the Momentum chain 2.0): the technique the blow is made with, as on attack_roll and on_hit (`mode` reads it)
-  const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, tech: strikeTech(att), cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0 };
+  // tech (rules 1.56, the Momentum chain 2.0): the technique the blow is made with, as on attack_roll and on_hit (`mode` and `free_tech` read it)
+  const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, tech: strikeTech(att), cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0, volley: VOLLEY }; // and the volley it is made in (rules 1.56, the unarmed fighter: the predicate mode)
   emit(cb, 'damage_out', ctx);
   if (ctx.critBonus) { critM = critOf(ctx.critBonus); critTerm.v = critM; }
   amt.add = ctx.add;

@@ -229,7 +229,7 @@
 "pad/fists/shoot-cover-off": "REFUSED Your off hand holds no weapon.",
 "pad/fists/shot": "REFUSED Out of melee reach.",
 "pad/fists/shove": "P1 ap9>7 | short: Needs 2 AP. | again: NO Shove someone next to you. | next: NO Shove someone next to you. | later: NO Shove someone next to you.",
-"pad/fists/skill": "REFUSED Grapple isn't an action the engine runs yet: say it with Say, and the Narrator rules it af",
+"pad/fists/skill": "REFUSED No weapon skill.",
 "pad/fists/song": "REFUSED Only a music trait plays its song on demand.",
 "pad/fists/sprint": "P1 ap9>7 res.momentum3>0 | short: Needs 2 AP. | again: NO Can't reach that tile. | next: NO Can't reach that tile. | later: NO Can't reach that tile.",
 "pad/fists/stand": "P1 ap9>8 | short: Needs 1 AP. | again: P1 ap9>8 | next: P1 ap9>8 | later: P1 ap9>8",

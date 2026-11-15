@@ -31,6 +31,8 @@ export interface CharSpec {
   level?: number; weapon?: string; owner?: string;
   /** Rules 1.43: the grade of what each hand holds (setGrade), e.g. {"main": "fine", "off": "masterwork"}. */
   grade?: { main?: string; off?: string };
+  /** What the off hand holds (an id; null empties it), and the torso armour's weight class (rules.json combat.armor). */
+  offHand?: string | null; armourClass?: number;
 }
 export function sheetOf(spec: CharSpec = {}): Sheet {
   const a = ARCHETYPES.find((x) => x.id === (spec.archetype || 'sharpshooter')) || ARCHETYPES[0];
@@ -51,6 +53,8 @@ export function equipSpec(c: Character, spec: CharSpec) {
   if (spec.advancedClass !== undefined) c.advancedClass = spec.advancedClass;
   if (spec.level) c.level = spec.level;
   if (spec.weapon) { c.weapon = spec.weapon; c.loaded = undefined; }
+  if (spec.offHand !== undefined) c.offHand = spec.offHand ? { id: spec.offHand } as any : null as any;
+  if (spec.armourClass != null) c.armourClass = spec.armourClass;
   for (const [hand, r] of Object.entries(spec.grade || {})) { const err = setGrade(c, hand as 'main' | 'off', r as any); if (err) throw new Error(err); }
 }
 

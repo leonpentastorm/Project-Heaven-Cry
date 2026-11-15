@@ -1,7 +1,7 @@
 // Physical 2.0 (rules 1.12): the types the melee and ranged technique systems share. The contract is
 // docs/design/handoffs/physical-2.0-PLAN.md, section 5; once this file exists, the code is the contract.
 import type { Combat, Unit, AttackPreview } from '../combat';
-import type { Character } from '../character';
+import type { Character, HoldSpec } from '../character';
 import type { WeaponDef } from '../data';
 import type { Rng } from '../rng';
 import type { HookName } from '../effects/types';
@@ -28,6 +28,9 @@ export interface TechDef {
   text: string; trigger?: string; suppressed?: string; lines: TechLine[];
   /** everyone knows it; no ready slot */ free: boolean;
   /** weapons with one of these properties always offer it */ comes_with: string[];
+  /** rules 1.56 (P15): it comes (comes_with) only while the holder holds this (character.ts holds: the Open Hand's
+   * techniques, only the family's gloves in the hands); a unit with no character never has it this way */
+  comes_while?: HoldSpec;
   /** its home properties; with `particular`, a weapon with none of them is off its home (−2 to hit, no property line) */
   home: string[]; particular: boolean;
   /** properties whose weapons can't use it at all */ not_with?: string[];

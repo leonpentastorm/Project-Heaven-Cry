@@ -881,14 +881,18 @@ Weapon skills and lore:
 | Type | Dmg | Kg | Price | Needs |
 |---|---|---|---|---|
 | ✓ Gloves or bare fists | 10 | 0 | 40 (gloves) | |
-| Knuckledusters | 16 | 0.3 | 60 | |
+| Hand wraps | 14 | 0.1 | 30 | *(rules 1.56, the unarmed fighter)* |
+| Knuckledusters | 20 | 0.3 | 120 | *(rules 1.56, the unarmed fighter: was 16 and 60)* |
+| Striking gloves | 17 | 0.3 | 120 | Dexterity *(rules 1.56, the unarmed fighter)* |
+| Iron mitts | 25 | 1.2 | 500 | *(rules 1.56, the unarmed fighter)* |
+| Kemizuchi strikers | 21 | 0.4 | 500 | Dexterity *(rules 1.56, the unarmed fighter)* |
 | Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
 | Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
 | Figment claws | 30 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
 | Figment edge | 25 | 0 | none | a Blade Figment's own weapon (rules 1.34): never carried, bought or dropped |
 
 - **Fists · Grapple:** 2 AP; the target can't move until it breaks free (its Athletics or Raw Power check against your Raw Power check). *"Everyone's first weapon."*
-- **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."*
+- **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."* *(Superseded by rules 1.56, the unarmed fighter: Rabbit Punch and the fists' Grapple are retired; the Open Hand's Jab and the Grapple technique replace them.)*
 - **Servo-fist · Haymaker:** a hit pushes the target 2 tiles; if it hits a wall or cover, +20 damage to it. *"A mining tool the Hellraisers misread."*
 
 ##### 7.10 Thrown: 5 types (1H, Dexterity; range 6 + Raw Power tiles *(Superseded by rules 1.3 (item 95): Throwing range is 6 + 0.5 × Dexterity)*; consumable)
@@ -1271,6 +1275,10 @@ Melee:
 | Glaive | Heavy, Edge, Hook, Reach | Raw Power | Strength | Keep Back |
 | Ork rip-saw | Heavy, Edge | Raw Power | Strength | Hamstring |
 | Knuckledusters | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | Bash |
+| Hand wraps | Light, Bare | Raw Power | Strength, Raw Power, Dexterity | Bind |
+| Striking gloves | Light, Bare | Dexterity | Agility | Sidestep |
+| Iron mitts | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | Throw Down |
+| Kemizuchi strikers | Light, Bare, Point | Dexterity | Agility | Feint |
 | Hellraiser servo-fist | Heavy, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | Throw Down |
 | Evoker blade | Light, Edge | Dexterity | Agility | — |
 | Emanator gauntlet | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | — |
@@ -6603,6 +6611,31 @@ Shadow Step perk are untouched).
     finder when your side sees it; HIT; CLOSE; REVEALED after an attack), from the engine's reveal and from damage
     (an effect `stance` `found` sent to the unit's own side).
 
+## Rules 1.56 (Balance 2.0), the unarmed fighter (slice 1)
+
+Leon (15 Nov 2026): *"currently playing monk is mega pain. You have no weapon, you want to play unarm so you need both alpha skill in stregth and agi, but now you have no point in durability and you die in 2 hit, your dmg is also supar at best"*; his rulings after: *"code the monk class into the gloves and unarmed, maybe unarmed and gloves gets it's own several exclusive technique that fits the monk achetype ... all 3 door system for agi str and dur have notthing to do with monk"*, and *"use the newly added modifier system to add a special condition in gloves and unarm that give you more dodge when using these with light armor only."* The design is `docs/design/proposals/2026-11-unarmed.md`; this block is its slice 1. A later revision overrides the body and the earlier ones; every number here is PROVISIONAL and a data field; every item is `adjudication: engine`.
+
+1. **The monk lives in the weapon type, not in a door** (Leon). Bare hands and the gloves (`weapons.json` rows of `category: unarmed`, `mastery_family: unarmed`, never a companion's) are one family, the **Open Hand**. No Body door, no class and no skill is needed for any of it: a Breaker, a Skirmisher or anyone else uses it the same. The family's rules are one modifier item (`items.json open_hand`, a `mod` with no price and no slot: never stocked, never fitted) named in every glove row's `variant_mods` (rules 1.56 L1, L4: held only while that glove is in a hand, acting only on what is made with it, `with_this`).
+2. **The gloves** (items 4360, 4361). Two lines a character chooses between by build, so nobody needs two alpha skills to throw a punch: the **force line** hits with Raw Power and grows with Strength (Hand wraps 14, 30 credits; Knuckledusters 20, 120 credits, was 16 and 60; Iron mitts 25, 500 credits, Blunt, lends Throw Down), the **finesse line** hits with Dexterity and grows with Agility (Striking gloves 17, 120 credits, lends Sidestep; Kemizuchi strikers 21, 500 credits, Point, lends Feint). Every glove is light, one-handed and Bare; the Hellraiser servo-fist stays heavy and carries the Open Hand too. Prices are through `priceOf` like any weapon.
+3. **The forms** (item 4362): with a glove in the hand that strikes, an attack may be made as one or more forms (chips on the attack: data toggles on `combat/attack`): **Jab** (1 AP less, never under 1; the blow at ×0.5; ×0.4 since slice 2), **Palm** (×0.6; a hit makes the target save, Body, or be Off Balance and pushed 1 tile), **Sweep** (1 AP more; ×0.4; a hit knocks the target Prone, no save, never a Boss), **Snatch** (×0.5; a hit makes the target save, Heart, or be Disarmed: its weapon to the pile; never a Boss). The forms' multipliers multiply each other and the technique's. **One hold a turn**: of Palm's, Sweep's and Snatch's conditions, only the first tried in a turn is tried (a shared limit, `per_turn`, key `form`), whatever the forms on the attack.
+4. **The family's techniques** (item 4363): Flurry, Trip and Grapple come with the Bare property (`techniques.json comes_with`), so bare hands and every glove offer them; Grapple, a perk's technique (Iron Grip), now also comes with the property its row names, in the hand that has it. Iron Grip still gives it with any weapon. *(Superseded by slice 2 item 2: they come with the Open Hand property, and only while the hands hold nothing else.)*
+5. **Bare fists are unchanged** (10 damage, Raw Power, Strength): everyone's fallback (a disarmed gunner) keeps its number; they carry no forms until the empty hands count as an instance (slice 4). The fists' narrator Grapple and the knuckledusters' narrator Rabbit Punch are retired (Grapple is the technique; Jab is the form).
+6. **The camp** (rules 1.52, 1.55): the unarmed archetype's free weapon is its cheapest row, now the Hand wraps; the rack's next one up is a 120-credit glove. Taking no weapon stays legal and gives nothing back; nothing else at the camp changes.
+7. **What is not in slice 1** (the draft's slices 2 to 5): the light-armour dodge carried by the gloves (Leon's modifier; it needs an item modifier that answers its holder's own defence, and a "light armour or none" test), Sway (the once-a-round halved blow, renamed from Slip: Shadow has a Slip), Counter, Breath, Flow and a Finisher, bare hands as an instance, and the higher of Strength or Agility on bare hands.
+
+## Rules 1.56 (Balance 2.0), the unarmed fighter (slice 2)
+
+Leon (15 Nov 2026), on the monk: *"maybe use the newly added modifier system to add a special condition in gloves and unarm that give you more dodge when using these with light armor only"*. The lead approved two general pieces for it, P14 and P15. Overrides slice 1 where they differ; PROVISIONAL numbers, `adjudication: engine`.
+
+1. **The family is what the hands hold** (P15, item 4365). The Open Hand is a property of its own, **Open Hand** (`phys.props: open_hand`), on every glove row and the servo-fist; Bare alone (bare fists, a beast's bite, a Figment's claws, the Emanator gauntlet) brings none of it. The family's rules work only while **every hand is empty or holds a thing with the Open Hand property**: a gun, a blade, a shield or a focus in either hand turns all of them off, and the attack shows no form chips at all (not greyed). A glove in each hand, or a glove and an empty hand, are the family. The predicate is `self_holds {hands: {props, only}, body: {armour_at_most}}` (character.ts `holds`, the one test); a technique's `comes_while` gates its `comes_with` the same way. A unit with no character (an enemy) holds nothing: no enemy gains the family by holding a glove, only by naming its techniques in its own list.
+2. **Flurry, Trip and Grapple come with the Open Hand property** (no longer with Bare), and **Counter**: Riposte (a melee attack misses you: strike back for 0 AP, your reaction) comes with it too (item 4366).
+3. **The modifier answers its holder's own defence** (P14). A carried modifier's `with_this` holds for an event aimed at its holder by someone else (a blow, damage it takes, a condition put on it) while the instance is in a hand; a carried modifier's `grant_action` is its holder's action (Breath).
+4. **Open guard** (item 4367): with only light gloves of the family in the hands (the servo-fist is heavy: its forms, never its guard) and Light armour or none, every roll to hit the holder is at **−2**. Medium armour or heavier turns it off. The attacker's preview lists it as "Open guard".
+5. **Sway** (item 4368): an Answer (on until switched off in the Answer list; it spends the one protective reaction a round): the first blow that lands on the holder in a round does ×0.5 damage. It shares the reaction with Parry, Share a Hit and the rest: a choice, not a stack.
+6. **Breath** (item 4369): 1 AP, once a turn, with the family in hand: end your newest Body harm and be Guarded (+2 Defense) for a round.
+7. **The forms ride a plain blow only** (item 4370): never a technique's strike (one form or one technique an attack: Jab on a Flurry does nothing). **Jab is ×0.4** (was ×0.5): two Jabs for the AP of one blow deal 0.8 of it, a trade for more rolls, never strictly better. **Palm's push** lands at most once a turn on a target and never moves a Boss; an immovable unit is never moved (the push's own rule).
+8. **Not yet** (each needs a piece not approved): bare fists in the family (the empty hands as an instance, P11), the higher of Strength or Agility on bare hands (`roll_with`, not on this branch's base), Flow and the Closing Strike (a per-turn count an amount can read, P9).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -10306,3 +10339,21 @@ Items 4240 to 4247.
 4343. **Where to Hide (item 11):** the shaded tiles are the Move's tiles with Hide's price still paid, out of the eyes of every enemy the side sees; the refusals `seen_to` and `seen_none`. No number. Measured: of 60 seeded stage-1 Survival first fights, 32 start seen; 31 of them have a spot in reach and the row shades 30 (the other is seen only by an enemy the side can't see).
 4344. **Who sees you (item 12):** Hide's row `eyes`. No number.
 4345. **Found (item 13):** the effect `stance` `found` (`how`: spot, close, hit, attack, other; `by` when the side sees the finder), `only` the unit's side. No number.
+
+### Rules 1.56 (Balance 2.0), the unarmed fighter (slice 1)
+
+4360. **The gloves' damage and prices (rules 1.56, the unarmed fighter, item 2; `weapons.json`):** Hand wraps 14 / 30, Knuckledusters 20 / 120 (were 16 / 60), Iron mitts 25 / 500 (the lead's 25, not the draft's 26), Striking gloves 17 / 120, Kemizuchi strikers 21 / 500 (the draft's 18 and 24, lowered after the melee measure: the finesse line read about 30% above the force line at the same damage). Fitted on the melee measure (all in, Masterwork, levels 1/5/10/20): Iron mitts 116/104/133/126%, Kemizuchi strikers 122/148/168/140%, Striking gloves 90/115/136/110%, Knuckledusters 95/91/110/102%, Hand wraps 63/71/71/65% of the plain rifle; under the maul's 203 to 235. PROVISIONAL.
+4361. **The gloves' lent techniques (item 2):** Hand wraps Bind (as the fists), Striking gloves Sidestep, Iron mitts Throw Down, Kemizuchi strikers Feint, Knuckledusters Bash (unchanged). PROVISIONAL.
+4362. **The forms (item 3; `items.json open_hand.toggles`):** Jab −1 AP (at least 1) ×0.5; Palm ×0.6, Off Balance (save), push 1; Sweep +1 AP ×0.4, Prone (no save, not a Boss); Snatch ×0.5, Disarmed (save, not a Boss); one hold a turn (`limit {per: per_turn, n: 1, key: form}`). PROVISIONAL.
+4363. **Flurry, Trip and Grapple come with Bare (item 4):** `comes_with: ["bare"]`; a perk's technique honours its row's `comes_with` (physical/core.ts usable). PROVISIONAL. *(Superseded by item 4366: they come with the Open Hand property, while only the family is in the hands.)*
+4364. **Items 4360 to 4364 are the unarmed fighter's slice 1.**
+
+### Rules 1.56 (Balance 2.0), the unarmed fighter (slice 2)
+
+4365. **P15, `self_holds` hands and body (item 1):** `{hands: {props: [..], only: true|false}, body: {armour_at_most: <class name or number>}}`, character.ts `holds`; the property `open_hand` on hand_wraps, knuckledusters, striking_gloves, iron_mitts, kemizuchi_strikers, hellraiser_servo_fist; the forms' toggles and effects carry `self_holds {hands: {props: [open_hand], only: true}}`. A failing `self_holds` hides a data toggle.
+4366. **The family's techniques (item 2):** Flurry, Trip, Grapple and Riposte `comes_with: ["open_hand"]`, `comes_while: {hands: {props: [open_hand], only: true}}` (replaces item 4363's Bare). PROVISIONAL.
+4367. **Open guard (item 4):** −2 to hit the holder, `self_holds {hands: {props: [open_hand, light], only: true}, body: {armour_at_most: light}}`. Measured (16 seeds, gear route, stage 1): solo_monk cleared stage 1 on 0 of 16 before, 5 of 16 after (−3 read 9 of 16), solo_melee 6 to 7 of 16; a Soldier's turns to drop a monk standing next to it (40 seeds): Light armour 3.3 before, 6.4 after; no armour 2.6 to 4.9; the gladius and buckler in Light 4.5. PROVISIONAL.
+4368. **Sway (item 5):** ×0.5 on the first blow a round, `limit {reaction: 1, kind: protect}`, Answer id `sway`. PROVISIONAL.
+4369. **Breath (item 6):** 1 AP, per turn, cleanse 1 Body harm (newest), Guarded 1 round. PROVISIONAL.
+4370. **The forms' limits (item 7):** `free_tech: true` on every form effect; Jab ×0.4 (was ×0.5, item 4362); Palm's push `limit {per: per_turn, n: 1, each: target}`, `target_not_tier: [boss]`. PROVISIONAL.
+4371. **Items 4365 to 4371 are the unarmed fighter's slice 2.**

@@ -111,6 +111,8 @@ export const MEMBER: Record<string, Pc> = {
   breaker: { build: 'opt_blade', level: 1, policy: 'optimised' },
   smg: { build: 'plain_gun', level: 1, policy: 'gunner', camp: 'decrkm_smg' } as any,
   smgTac: { build: 'plain_gun', level: 1, policy: 'gunnerTac', camp: 'decrkm_smg' } as any,
+  // rules 1.56, the unarmed fighter: the melee build with the camp's free fist weapon (the Hand wraps) instead of a blade
+  monk: { build: 'opt_blade', level: 1, policy: 'optimised', camp: 'hand_wraps' } as any,
 };
 /** The parties measured (section 10 row 9: sizes 1, 2 and 4; gunners, casters and a healer; rules 1.51: every caster
  * alone, and a mixed squad). */
@@ -126,6 +128,7 @@ export const PARTIES: Record<string, string[]> = {
   solo_smg: ['smg'], solo_smg_tac: ['smgTac'],
   // rules 1.56, the Momentum chain 2.0: the Breaker alone and beside a gunner
   solo_breaker: ['breaker'], breaker: ['breaker', 'gunner'],
+  solo_monk: ['monk'],
 };
 /** Rules 1.51: the caster boons (survival.json boons with a caster door), left out of the pick without the lever `caster`. */
 const CASTER_DOORS = new Set(['brain_power', 'will_power', 'empathy', 'visualization']);

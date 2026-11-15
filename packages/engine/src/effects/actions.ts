@@ -411,7 +411,9 @@ export function togglesFor(x: Who, actionType: string, actx: any = {}, mods: str
 /** A data toggle as the runtime's ToggleDef. */
 function dataToggle(h: Holder, t: any): ToggleDef {
   return { id: t.id, label: t.name || human(t.id), on: [...(t.on || [])], defaultOn: !!t.default_on,
-    ...(t.if ? { available: (hh: Holder) => { const k = ifFails({ ...hh, u: hh.u ?? h.u, cb: hh.cb ?? h.cb }, t.if); return k ? 'Not now (' + human(k) + ').' : true; } } : {}) };
+    // rules 1.56 (P15): a toggle its holder can't have with what it holds (`if.self_holds` fails: the Open Hand's forms
+    // with a gun in the other hand) is not shown at all; any other failing `if` greys it
+    ...(t.if ? { available: (hh: Holder) => { const x = { ...hh, u: hh.u ?? h.u, cb: hh.cb ?? h.cb }; if (t.if.self_holds && ifFails(x, { self_holds: t.if.self_holds })) return false; const k = ifFails(x, t.if); return k ? 'Not now (' + human(k) + ').' : true; } } : {}) };
 }
 /** Every toggle an item gives: its lane's, then its data's. */
 export function togglesOf(h: Holder): ToggleDef[] {
