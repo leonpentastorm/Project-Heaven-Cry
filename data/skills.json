@@ -1802,6 +1802,7 @@
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "door_line": "Hidden: enemies can't target you, and your first attack from it is an ambush. Get there: Hide where no enemy's eyes reach you (behind a wall, in smoke, out of their sight). Holding Shadow, switch Break on that attack. Hidden ends when you attack, take a hit, or a foe ends its turn next to you.",
       "door_tab": "shadow",
+      "door_title": "SHADOW · UNSEEN",
       "per_point": {
         "numbers": {
           "spot": 1
@@ -2621,7 +2622,12 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
-      "door_line": "Draw words on your own tile in a straight row of {line_min} to {line_max}, then Evoke from an end or the side.",
+      "door_line": "Draw words on your own tile in a straight row of {=door_numbers.line_min} to {=door_numbers.line_max}, then Evoke from an end or the side.",
+      "door_numbers": {
+        "line_min": 2,
+        "line_max": 4,
+        "about": "The Sigil grammar's Line lengths (sigils.json grammar.min_glyphs / max_glyphs), for the door line's placeholders; tools/validate.py holds them equal."
+      },
       "door_tab": "sigils",
       "per_point": {
         "numbers": {
@@ -3110,6 +3116,7 @@
       "summary": "Shapes thought into images; pictures the Figments the bots build.",
       "door_line": "In a fight, Picture offers your ready designs first, then every bare form you have opened (the Visualizer in hand).",
       "door_tab": "figments",
+      "door_title": "FIGMENTS · PICTURED",
       "per_point": {
         "source": "rules 1.34: the elemental line went with rules 1.26's slope; Visualization is Figments' door",
         "numbers": {
@@ -3578,6 +3585,7 @@
       "summary": "Feeling what the other side feels, enemies included.",
       "door_line": "A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you).",
       "door_tab": "tend",
+      "door_title": "TEND · BONDS AND CARE",
       "per_point": {
         "rows": [
           {

@@ -5,7 +5,7 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
-  FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView, doorTabsOf } from '@engine';
+  FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView, doorTabsOf, DOOR_TABS } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
@@ -13,6 +13,7 @@ import { heldClassId, currentClassId } from './classView';
 import { techAction, TWATCH, legacyAttack } from './techView';
 import { perkShelves } from './perkShelves';
 import { packDrawOf } from './backpack';
+import { tabDoorLine } from './doorView';
 
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
@@ -94,7 +95,6 @@ export const actionGroups = (cb: any, cur: any, ch: any, opts: ActionOpts = {}):
 /** The game the engine's actionsFor reads, for a fight this screen holds (cb may be the screen's drawn copy). */
 export const gameFor = (g: any, cb: any, ch: any): any => ({ ...(g || {}), combat: cb, characters: { ...((g && g.characters) || {}), ...(ch ? { [ch.id]: ch } : {}) } });
 /** The door tabs, in order: [tab id, title, family ink]. */
-const DOOR_HEADS: [string, string, string][] = [['shadow', 'SHADOW · UNSEEN', '#40BAA0'], ['tend', 'TEND · BONDS AND CARE', '#EB95B7'], ['figments', 'FIGMENTS · PICTURED', '#5394AC']];
 /** The action list from the engine's descriptors (actionsFor): the rows each tab shows, in the engine's order, with
  *  its names, costs, texts and reasons. A child row (a technique inside its pad) and a hidden one are not listed. */
 /** The engine's action list for this unit (actionsFor), asked once per fight state the screen holds: the map (Hide's
@@ -132,7 +132,9 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   // Shadow 2.0: a door's tab also lists the core actions its data names (`tab_also`: Hide heads the SHADOW tab, with the
   // engine's own price and refusal), for a unit that holds the door (the engine's doorTabsOf).
   const doors = (() => { try { return doorTabsOf(cur); } catch { return []; } })();
-  for (const [tab, title, ink] of DOOR_HEADS) {
+  // each door system's tab (the engine's DOOR_TABS, in its order), headed by its door's data (doorView: door_title, the attribute's ink)
+  for (const { tab } of Object.values(DOOR_TABS)) {
+    const head = tabDoorLine(tab), title = head?.title || tab.toUpperCase(), ink = head?.ink || null;
     const dt = doors.find((d) => d.tab === tab), also = dt ? list.filter((d) => dt.also.includes(d.id) && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { sub: d.name }]) : [];
     const rows = [...also, ...by(tab)];
     if (rows.length) out.push([title, rows, ink, tab]);

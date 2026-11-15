@@ -3,8 +3,10 @@
 // Every fight here is the engine's own (newCharacter, startCombat, beginOutburst); the rows are actionGroups'.
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('./store', () => ({ getState: () => ({}), subscribe: () => () => {} })); // tips.tsx reads the store; these tests hand it the state
-import { ARCHETYPES, type Sheet, SKILL, SIGIL_GRAMMAR, SOUL_RULES, newCharacter, startCombat, beginOutburst, pumpOutburst, SPELL_AP } from '@engine';
-import { DOORS, DOOR_TOKENS, topDoor, firstTurnTab, tabDoorLine } from './doorView';
+import { ARCHETYPES, type Sheet, SKILL, SIGIL_GRAMMAR, SOUL_RULES, newCharacter, startCombat, beginOutburst, pumpOutburst, SPELL_AP, DOOR_TABS } from '@engine';
+import { physFight } from '../../../../packages/engine/test/helpers/physfight';
+import { ATTR_INK } from './classView';
+import { DOORS, topDoor, firstTurnTab, tabDoorLine } from './doorView';
 import { designCards } from './heartView';
 import { smartCommands, actionGroups } from './commands';
 import { TIPS, DOOR_TIPS, myDoorTurn } from './tips';
@@ -96,9 +98,9 @@ describe('the Sigils door', () => {
   it("its line is skills.json's, its numbers the Sigil grammar's (never typed), on the sigils tab", () => {
     const d = tabDoorLine('sigils')!;
     expect(d).toMatchObject({ skill: 'brain_power', tab: (SKILL.brain_power as any).door_tab });
-    expect(DOOR_TOKENS).toEqual({ line_min: SIGIL_GRAMMAR.min_glyphs, line_max: SIGIL_GRAMMAR.max_glyphs });
+    expect((SKILL.brain_power as any).door_numbers).toMatchObject({ line_min: SIGIL_GRAMMAR.min_glyphs, line_max: SIGIL_GRAMMAR.max_glyphs }); // ordinary {=placeholders} of its row (tools/validate.py holds the copy equal)
     expect(d.line).toBe('Draw words on your own tile in a straight row of ' + SIGIL_GRAMMAR.min_glyphs + ' to ' + SIGIL_GRAMMAR.max_glyphs + ', then Evoke from an end or the side.');
-    expect(d.line).not.toMatch(/\{\w+\}/);
+    expect(d.line).not.toMatch(/\{/);
   });
   it("the first turn: the top door's tab when its first action is usable; else the usual rule (null)", () => {
     const cb = { round: 1 };
@@ -125,5 +127,21 @@ describe('the Sigils door', () => {
     // two doors: only the top door's tip shows (the doors never nag)
     const both = st({}, { brain_power: 3, will_power: 1 });
     expect(DOOR_TIPS.filter((x) => x.when(both)).map((x) => x.id)).toEqual(['door:brain_power']);
+  });
+});
+
+// The 0.29 consolidation (SF4): a door system's fight tab is headed from data, never typed in the client: the tab
+// (the engine's DOOR_TABS), its title (the door skill's door_title) and its ink (the skill's attribute ink).
+describe('the door tabs\' headers come from data', () => {
+  it('each tab of DOOR_TABS has a door with a title and its attribute ink; the fight screen draws them', () => {
+    for (const { tab } of Object.values(DOOR_TABS)) {
+      const d = tabDoorLine(tab)!; expect(d, tab).toBeTruthy();
+      expect(d.title).toBe((SKILL as any)[d.skill].door_title); expect(d.ink).toBe(ATTR_INK[d.attribute]);
+    }
+    const f = physFight([{ weapon: 'service_pistol', skills: { ingenuity: 3 } }], [{}]);
+    f.put(f.pc, '2,2'); f.put(f.foe, '9,2'); f.cb.order = [f.pc.id, f.foe.id]; f.turn(f.pc);
+    const G = f.bound(() => actionGroups(f.cb, f.unit(f.pc.id), f.char(f.pc), { g: f.g, noNarrator: true }));
+    const sh = G.find((gr: any) => gr[3] === 'shadow'), d = tabDoorLine('shadow')!;
+    expect(sh?.[0]).toBe(d.title); expect(sh?.[2]).toBe(d.ink);
   });
 });

@@ -2,20 +2,19 @@
 // door, and skills.json gives it a `door_line` (its one-line "how this works") and a `door_tab` (the fight tab that holds
 // its actions). This is the ONE reader of them, for the three places that show a door: the tab's header line, the
 // first-fight tip (tips.tsx), and the tab a character's first turn opens on (screens/combat.js). Nothing here is a rule:
-// the line is data, a number in it is a {token} filled from the engine's own constant, and whether an action can be used
+// the line is data, a number in it is an ordinary {=placeholder} of its row (the engine's data-text filler), and whether an action can be used
 // now is the engine's own refusal on the row (commands.ts actionGroups).
-import { SKILLS, CLASS, SIGIL_GRAMMAR } from '@engine';
+import { SKILLS, CLASS } from '@engine';
+import { ATTR_INK } from './classView';
 import type { ActionGroup } from './commands';
 
-/** The numbers a door line may name, as {token}s: the engine's own constants, never typed into the data text. */
-export const DOOR_TOKENS: Record<string, number> = { line_min: Number(SIGIL_GRAMMAR.min_glyphs), line_max: Number(SIGIL_GRAMMAR.max_glyphs) };
-const fill = (t: string) => t.replace(/\{(\w+)\}/g, (m, k) => (k in DOOR_TOKENS && Number.isFinite(DOOR_TOKENS[k]) ? String(DOOR_TOKENS[k]) : m));
-
-export interface Door { skill: string; name: string; attribute: string; line: string; tab: string | null }
+/** A door: its skill, its line, the fight tab it opens, and (a door system's own tab) the tab's header and ink: the
+ *  row's door_title, in its attribute's ink. */
+export interface Door { skill: string; name: string; attribute: string; line: string; tab: string | null; title: string | null; ink: string | null }
 
 /** Every door the data describes, in the data's order (an alpha skill with a `door_line`). */
 export const DOORS: Door[] = (SKILLS as any[]).filter((s) => s.slot === 'alpha' && typeof s.door_line === 'string' && s.door_line)
-  .map((s) => ({ skill: s.id, name: s.name, attribute: s.attribute, line: fill(s.door_line), tab: s.door_tab || null }));
+  .map((s) => ({ skill: s.id, name: s.name, attribute: s.attribute, line: s.door_line, tab: s.door_tab || null, title: s.door_title || null, ink: ATTR_INK[s.attribute] || null }));
 
 const pointsOf = (ch: any, skill: string): number => Number(ch?.skills?.[skill]) || 0;
 
@@ -23,7 +22,7 @@ const pointsOf = (ch: any, skill: string): number => Number(ch?.skills?.[skill])
 export interface ClassDoor { cls: string; id: string; name: string; line: string }
 /** Every class gain the data gives a door line, in the data's order. */
 export const CLASS_DOORS: ClassDoor[] = Object.values(CLASS as any).flatMap((c: any) => ((c?.gain || []) as any[])
-  .filter((g) => typeof g?.door_line === 'string' && g.door_line).map((g) => ({ cls: String(c.id), id: String(g.id), name: String(g.name || g.id), line: fill(String(g.door_line)) })));
+  .filter((g) => typeof g?.door_line === 'string' && g.door_line).map((g) => ({ cls: String(c.id), id: String(g.id), name: String(g.name || g.id), line: String(g.door_line) })));
 /** The class doors a character holds (its class is that class). */
 export const classDoorsOf = (ch: any): ClassDoor[] => CLASS_DOORS.filter((d) => !!ch && ch.classId === d.cls);
 

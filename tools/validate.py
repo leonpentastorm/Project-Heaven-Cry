@@ -1919,6 +1919,20 @@ COND_HIT = {"own_attacks", "next_attack", "not_vs_source", "vs_source", "marker_
 # row that loses one, gains one the engine would read, or writes one so the loader skips it (a `when`, a misspelt
 # context or stat) fails here. The review of 12 Nov 2026 (conditions-review.json, problem 6) made five such edits and
 # this check said 0 errors; it finds all five now. Change this table only together with a ruling on the row.
+# The 0.29 consolidation (SF4): a door line's numbers are {=placeholders} of its own row; the Sigil door's Line lengths
+# are copied to its row (door_numbers) and must equal the grammar's, and every door tab a door system file opens
+# (shadow.json, tending.json, figments.json `tab`) has a skill whose door_title names it on the fight screen.
+def check_doors(D, errors):
+    sk = {s["id"]: s for s in D["skills"]["items"]}
+    g = D["sigils"]["grammar"]
+    dn = (sk.get("brain_power") or {}).get("door_numbers") or {}
+    if dn.get("line_min") != g.get("min_glyphs") or dn.get("line_max") != g.get("max_glyphs"):
+        errors.append(f"skills:brain_power door_numbers {dn.get('line_min')}..{dn.get('line_max')} differ from sigils.json grammar {g.get('min_glyphs')}..{g.get('max_glyphs')}")
+    for f in ("shadow", "tending", "figments"):
+        tab = D[f].get("tab")
+        if tab and not any(s.get("door_tab") == tab and isinstance(s.get("door_title"), str) and s["door_title"] for s in sk.values()):
+            errors.append(f"{f}.json tab {tab}: no skill has door_tab {tab} with a door_title (the fight screen's tab header)")
+
 COND_READS = {
     "weakened": ["stat_mod:damage_dealt_pct"], "slowed": ["stat_mod:move_mult"], "nausea": ["stat_mod:ap"], "pinned": ["attack_mod:own_attacks"],
     "dazed": ["stat_mod:ap"], "blinded": ["attack_mod:own_attacks", "stat_mod:vision"], "prone": ["attack_mod:melee_vs_self", "attack_mod:ranged_vs_self"],
@@ -3307,6 +3321,7 @@ _pressure_steps_check()
 # The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import text_numbers
+check_doors(data, errors)
 TEXT_NUMBERS = text_numbers.check(data, errors, sys.argv[2:])
 
 print("files:", ", ".join(f"{k}({len(items(k)) if k not in ('classes','rules') else ''})" for k in data))
