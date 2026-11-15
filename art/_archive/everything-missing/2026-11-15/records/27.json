@@ -1,0 +1,47 @@
+{
+  "number": 27,
+  "id": "boon.devout",
+  "name": "Devout",
+  "path": "art/icons/boons/devout.png",
+  "mode": "ink",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (the Wick trait and perk icons: bold flat white shapes, a confident inked silhouette with a few\ninterior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no\ncolour and no grey. This icon is an object or a sign, not a figure: do not draw Wick or any person unless the line below\nsays so. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at\n24 px in a row and look right at 56 px on a dark disc: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or\ninsignia (a medical mark is a plain plus, never a red cross).\n\n\nPaint this ONE subject:\nA votive candle on a short stand with one tall flame and a thin standing stone behind it. (Devotion XP after each fight.)\nPure-white filled shapes with transparent interior cuts; confident substantial ink weight matching reference nonfigure shop sign. No mascot, no Wick. Keep all detail sturdy at 24 pixels. Transparent margin 10\u201315% all around. Not a thin wireframe.\nCRITICAL SILHOUETTE: The foreground is a clearly recognizable squat votive candle on a short dish stand, with one tall flame. Behind it an offset taller RECTANGULAR STANDING STONE, blunt square top. Keep the entire candle, flame and stand separated from the slab by a wide fully TRANSPARENT negative-space gap or transparent cutout. Use pure white ink shapes only; every interior line and separation is a TRUE TRANSPARENT cut. Never use offwhite or pale-gray interior marks on an opaque white shape: they disappear in a white UI mask. No textured stone or gray shading. Candle flame must remain visibly its own teardrop at 24px. Show candle plus standing stone, no people or mascot.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/survival/markers/shop.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/devout.png",
+  "source_sha256": "afeec84c4e1767b2f366448d263e606bda0b867be0277584a8674f312ac136a4",
+  "sha256": "7e82f92c4ecbcbb69198d74e4801aa1a33cce74d701b872e6a4cf58c450e47ed",
+  "exports": {
+    "64": "art/icons/boons/exports/64/devout.png",
+    "56": "art/icons/boons/exports/56/devout.png",
+    "48": "art/icons/boons/exports/48/devout.png",
+    "32": "art/icons/boons/exports/32/devout.png",
+    "24": "art/icons/boons/exports/24/devout.png"
+  },
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop and aspect-preserving fit inside central 820px of 1024px canvas; Lanczos UI exports; pure-white RGB enforced preserving generated alpha",
+  "export_crop": [
+    234,
+    89,
+    1121,
+    1228
+  ],
+  "native_minimum_met": true,
+  "implementation_ready": false,
+  "catalog_family": "boons",
+  "catalog_id": "icon-boon-devout"
+}

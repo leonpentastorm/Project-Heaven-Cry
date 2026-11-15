@@ -198,10 +198,11 @@ export function smartCommands(u: any): Command[] {
   }
   if (u.jammed) cmds.push({ action: 'clear', label: 'Clear jam', sub: 'The gun is jammed', key: '1' });
   else if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
-  else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
+  else cmds.push({ action: plainAction(u), label: 'Shoot', sub: u.ammo <= 0 ? 'Empty: reload first' : attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
   cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
   const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name
-  if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.quiver ? rl.ap + ' AP · the other quiver' : u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.quiver ? !!rl.why : u.ammo >= w.magazine }); // rules 1.53: a bow's reload is Switch quiver
+  // the engine's own refusal (weaponActions: no rounds left, no loaded spare, full) greys it and says why
+  if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.quiver ? rl.ap + ' AP · the other quiver' : rl.why && !/^Needs/.test(rl.why) ? rl.why.replace(/\.$/, '') : u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.quiver ? !!rl.why : u.ammo >= w.magazine || (!!rl.why && !/^Needs/.test(rl.why)) }); // rules 1.53: a bow's reload is Switch quiver
   else if (!u.jammed) cmds.push({ action: 'shove', label: 'Shove', sub: 'Push an enemy next to you', key: '3' });
   else cmds.push({ action: 'move', label: 'Take cover', sub: 'Move out of sight', key: '3' });
   if (mg?.held) cmds.push({ action: 'release', label: 'Release', sub: 'Held Outburst · stage ' + mg.held.stage, key: '4' });

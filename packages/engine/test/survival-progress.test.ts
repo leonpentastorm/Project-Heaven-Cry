@@ -257,7 +257,7 @@ describe('rules 1.43: the Crossroads (rule 42): every trade\'s gain and cost', (
     const g = all(at()), t = TRADES.items.find((x) => x.do === 'crate')!;
     const a = apply(g, { type: 'run/trade', charId: 'c1', trade: t.id }, 'host');
     expect(creditsOf(a.characters.c1)).toBe(10000 - t.price); expect(a.run!.state).toBe('reward'); expect(a.run!.offers!.c1.weapons).toHaveLength(SV.rewards.offer.crate); expect(a.run!.offers!.c1.materials).toBeUndefined(); // rules 1.54: three, no Materials card
-    for (const w of a.run!.offers!.c1.weapons) expect(['fine', 'masterwork']).toContain(w.rarity); // stage 1's ceiling caps the Elite's table
+    for (const w of a.run!.offers!.c1.weapons) expect(['fine', 'masterwork']).toContain(w.rarity); // its own row (rules 1.55: `rarity.crate`, the 0.28.0 Elite odds), capped by stage 1's ceiling
     const b = apply(a, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host'); expect(b.run!.state).toBe('map');
   });
   it('a wayside shrine: free, once a stage, Devotion or study or practice', () => {
@@ -319,6 +319,6 @@ describe('rules 1.43: picks of kit and reward weapons (rules 26, 41, 43)', () =>
     const items = pickedItem({ id: 'hellraiser_service_rifle', rarity: 'relic', price: 0, prop: 'prop.keen' });
     expect(items[0]).toMatchObject({ rarity: 'relic', prop: 'prop.keen' });
     const c = clone(started()).characters.c1; c.pack = [...packOf(c), ...items]; expect(gearProps(c)).toEqual(['prop.keen']);
-    expect(gearAt(c, packOf(c).length - 1)).toMatchObject({ rarity: 'relic', prop: 'prop.keen' });
+    expect(gearAt(c, packOf(c).length - items.length)).toMatchObject({ rarity: 'relic', prop: 'prop.keen' }); // the gun's own entry (rules 1.55: its spare magazine follows it)
   });
 });

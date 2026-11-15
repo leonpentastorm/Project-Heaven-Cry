@@ -8,7 +8,7 @@ import type { RunState } from './state';
 export interface PlaceTabV { id: string; label: string; groups: RunOption['group'][] }
 /** The tabs each place shows (the Give tab last on every one). */
 export const TABS: Record<string, PlaceTabV[]> = {
-  forge: [{ id: 'upgrade', label: 'Repair and upgrade', groups: ['grade', 'relic', 'repair'] }, { id: 'stock', label: 'Mods and armour', groups: ['forge'] }, { id: 'fit', label: 'Armour fitting', groups: ['fit'] }],
+  forge: [{ id: 'upgrade', label: 'Repair and upgrade', groups: ['grade', 'relic', 'repair'] }, { id: 'stock', label: 'Mods and armour', groups: ['forge', 'mod'] }, { id: 'fit', label: 'Armour fitting', groups: ['fit'] }],
   training: [{ id: 'train', label: 'Training', groups: ['train'] }],
   rest: [{ id: 'train', label: 'Small training', groups: ['train'] }],
   shrine: [{ id: 'shrine', label: 'Blessings', groups: ['shrine'] }],

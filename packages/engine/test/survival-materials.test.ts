@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, gearLockWhy, sheetPack, sellValue, NODE_TIP, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
 import { Rec, type Pc } from './helpers/replay';
 
 const SV: any = svJ;
@@ -66,10 +66,11 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
   it('after a fight: one weapon or the Materials card for the node\'s credits, whole into the pack; credits instead retired', () => {
     let g = at('fight');
     const n = g.run!.nodes.find((x) => x.id === g.run!.at)!;
-    g = apply(g, { type: 'run/skip' }, 'host');
+    const wc = SV.rewards.weapon_card.fight; SV.rewards.weapon_card.fight = 1; // rules 1.55 item 21: the weapon card forced on here
+    try { g = leaveField(apply(g, { type: 'run/skip' }, 'host')); } finally { SV.rewards.weapon_card.fight = wc; }
     const o = g.run!.offers!.c1, C = nodeCredits('fight', n.depth, g.run!.stage);
     expect(o.weapons).toHaveLength(SV.rewards.offer.fight); expect(o.instead).toBeUndefined();
-    expect(o.materials).toEqual(SV.rewards.materials.items.map((m: any) => ({ item: m.item, n: Math.ceil(C / m.per_credits) })));
+    expect(o.materials!.filter((m) => SV.rewards.materials.items.some((x: any) => x.item === m.item && x.per_credits))).toEqual(SV.rewards.materials.items.filter((m: any) => m.per_credits).map((m: any) => ({ item: m.item, n: Math.ceil(C / m.per_credits) }))); // rules 1.55: residue by `by`
     const had = (cid: string, id: string) => has(g, cid, (x) => (x.item || x.id) === id);
     const p = apply(g, { type: 'run/pick', charId: 'c1', choice: 'materials' }, 'host');
     for (const m of o.materials!) expect(has(p, 'c1', (x) => (x.item || x.id) === m.item)).toBe(had('c1', m.item) + m.n);
@@ -83,6 +84,8 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     const words = (id: string) => String((ITEM as any)[id].plural || ITEM[id].name).toLowerCase();
     for (const r of RECIPES) for (const l of r.needs) expect(v.tip.toLowerCase()).toContain(words(l.item));
     for (const m of SV.rewards.materials.items) expect(NODE_TIP.fight.toLowerCase()).toContain(words(m.item));
+    // the merge with 0.28.1: the words read as 0.28.1's typed tip did (the certain ones, then the chance one)
+    expect(NODE_TIP.fight).toBe('A fight. Win for XP and credits, then take the materials (gunpowder and casings, now and then mana residue) or, sometimes, one weapon.');
     expect(SV.tips.fight).not.toMatch(new RegExp(SV.rewards.materials.items.map((m: any) => words(m.item)).join('|'), 'i'));
     expect(v.sells).toBe(o.materials!.reduce((t, m) => t + Math.floor(priceOf(m.item)! * m.n * SV.sell_rate.rate), 0));
     expect(apply(g, v.action, 'host').story.entries.at(-1)!.text).toBe(p.story.entries.at(-1)!.text);
@@ -96,7 +99,9 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     for (const u of foes) {
       expect(u.drops!.gear).toBe(false);
       const gun = isGunId(u.weapon); // the engine's one gun test
-      expect((u.drops!.items || []).map((e) => e.item)).toEqual([...(gun ? SV.drops.gun : []), ...(SV.drops.by_table[u.drops!.table!] || [])].map((e: any) => e.item));
+      expect(u.drops!.table).toBeUndefined(); // rules 1.55 item 26: the kind's table is not rolled (drops.kind_table false)
+      const given = (u.drops!.items || []).map((e) => e.item), mine = [...(gun ? SV.drops.gun : [])].map((e: any) => e.item);
+      expect(given.slice(0, mine.length)).toEqual(mine); for (const e of u.drops!.items || []) expect(e.chance).toBeLessThan(1); // every drop rare
     }
     // the fight played through the reducer: what dies leaves no gear on its tile
     const r = new Rec(g, DUO); r.fight(40);
@@ -104,8 +109,7 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     for (const l of lines) for (const u of foes) expect(l.line).not.toContain((WEAPON as any)[u.weapon]?.name + ' (worn)');
     const piles = (r.g.combat?.objects || []).filter((o: any) => o.kind === 'pile');
     for (const p of piles) for (const e of p.items || []) { expect(e.pack?.kind).not.toBe('weapon'); expect(e.pack?.mags).toBeUndefined(); }
-    expect(lines.length).toBeGreaterThan(0);
-    expect(piles.flatMap((p: any) => p.items || []).some((e: any) => [...SV.drops.gun, ...Object.values(SV.drops.by_table).flat()].some((d: any) => d.item === e.item))).toBe(true);
+    // rules 1.55 item 26: what a foe leaves is rare now; survival-loot.test.ts measures the ground over 300 fights
   });
 });
 

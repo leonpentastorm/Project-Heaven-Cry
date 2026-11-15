@@ -84,7 +84,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
         return { i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
           // the one hover card: its name and grade, every number of the engine's gear preview, then its text
           tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + pv.map((l) => l.label + ': ' + l.value + '.').join(' ') + ' ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || ''),
-          lines: pv.filter((l) => ['hit', 'dmg', 'ap', 'door_mod'].includes(l.key)).map((l) => ({ key: l.key, label: PICK_WORD[l.key] || l.label, value: l.value })) }; }) };
+          lines: pv.filter((l) => ['hit', 'dmg', 'ap', 'door_mod', 'hits_with', 'scales_with'].includes(l.key)).map((l) => ({ key: l.key, label: PICK_WORD[l.key] || l.label, value: l.value })) }; }) };
   });
   const charV = (cid: string, options: RunOption[]): ChoiceCharV => {
     const c = g.characters[cid];

@@ -16,6 +16,15 @@ import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
+/** Rules 1.55: the field's header (the engine's field: fieldView): what lies on the ground, Take all, Leave and the vote. */
+const fieldVals = (fv, open) => {
+  if (!fv || !open) return { show: false };
+  const ground = fv.piles ? fv.piles + (fv.piles === 1 ? ' pile' : ' piles') + ', ' + fv.items + (fv.items === 1 ? ' item' : ' items') + ' on the ground' : 'Nothing left on the ground';
+  const word = 'Leave the field', tally = fv.solo ? '' : fv.ready + ' of ' + fv.of + ' ready';
+  return { show: true, ground, tally, hasTally: !fv.solo, canTake: !!fv.takeId && !!fv.charId, take: () => act({ type: 'world/act', charId: fv.charId, act: 'pickup', objId: fv.takeId }),
+    takeHint: fv.takeId ? 'Take all' : fv.piles ? 'Walk next to a pile to take it' : '', hasHint: !fv.takeId && fv.piles > 0,
+    leaveLabel: fv.mine ? '✓ ' + word : word, leave: fv.mine ? () => {} : () => act({ type: 'run/leave' }), waiting: fv.mine && fv.waiting.length ? 'Waiting for ' + fv.waiting.join(', ') + '.' : '' };
+};
 const act = (a) => {
   if (a && /^combat\//.test(a.type) && a.type !== 'combat/say' && typeof performance !== 'undefined' && performance.now() < turnsBusyUntil()) {
     toast('Wait: the other turns are still playing out.'); return null;
@@ -31,6 +40,7 @@ import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag
 import { forecastVals } from '../game/manaForecast';
 import { echoView } from '../game/echoView';
 import { castFight } from '../game/cast';
+import { fieldFight, fieldView } from '../game/fieldView'; // rules 1.55: a won run fight's field
 import { worldLayer, kindBadge, pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -744,7 +754,7 @@ export class CombatLogic extends DCLogic {
   renderVals() {
     const st = getState(), g = st.game, me = st.me.id;
     // HP follows the effects (fx/play.ts fxShownHp): a bar falls when its hit plays, not when the state arrives.
-    const cb = (() => { const c0 = castFight(g, g && g.combat, ART), shown = c0 ? fxShownHp(g) : null;
+    const cb = (() => { const c0 = castFight(g, fieldFight(g, g && g.combat), ART), shown = c0 ? fxShownHp(g) : null;
       return c0 && shown && shown.size ? { ...c0, units: c0.units.map((u) => (shown.has(u.id) && !u.dead ? { ...u, hp: Math.min(u.maxHp, shown.get(u.id)) } : u)) } : c0; })();
     // A new unit's turn starts clean: a spell (or its aim) picked for the last unit never carries over to this one.
     const curId = cb && active(cb) ? active(cb).id : null;
@@ -1395,7 +1405,7 @@ export class CombatLogic extends DCLogic {
     const heartV = heartVals(hp, (id) => { if (id === 'release') return this.pickAction('release'); this.heartAct(id); },
       { open: !!S.feelOpen, query: S.feelQ || '', toggle: () => this.setState({ feelOpen: !S.feelOpen }), search: (e) => this.setState({ feelQ: e && e.target ? e.target.value : String(e || '') }) });
     if (heartV.show) heartV.btns = heartV.btns.map((x) => ({ ...x, pressed: S.action === x.key ? 'true' : 'false' }));
-    const won = cb.over === 'win', extracted = cb.over === 'extracted';
+    const won = cb.over === 'win', extracted = cb.over === 'extracted', fv = fieldView(g, me); // rules 1.55: the field after a won run fight
     this._ids = new Set(ITEMS.flatMap((gr) => gr[1].map((x) => x[0])));
     const bM = blocks.find((b) => b.hand === 'main'), bO = blocks.find((b) => b.hand === 'off');
     this._attackKeys = blocks.length ? [bM && bM.plain ? techAction('main', bM.plain.id) : null, bM ? padAction('main') : null, bO && bO.plain ? techAction('off', bO.plain.id) : null, bO ? padAction('off') : null, this._ids.has(TWATCH) ? TWATCH : null] : null;
@@ -1631,7 +1641,8 @@ export class CombatLogic extends DCLogic {
         // everyone else's view).
         ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),
       cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
-      toStory: () => go(homeScreen(g)), toStoryLabel: g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over, overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
+      toStory: fv ? () => this.setState({ fieldIn: true }) : () => go(homeScreen(g)), toStoryLabel: fv ? 'Walk the field ›' : g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !(fv && S.fieldIn),
+      field: fieldVals(fv, !!S.fieldIn), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
       overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox || g.run ? '' : ' The Narrator picks up the story.') + (me === g.hostId && cb.lootLog && cb.lootLog.length ? ' ' + lootLogLine(cb.lootLog) : ''),
     };
   }
@@ -1639,7 +1650,8 @@ export class CombatLogic extends DCLogic {
   tileClick(k) {
     // In the overview a click on a tile goes back to the camera, centred there; it never acts.
     if (this._overview) { this.toggleOverview(k); return; }
-    const S = this.state, g = getState().game, cb = castFight(g, g.combat, ART), cur = active(cb);
+    const S = this.state, g = getState().game, cb = castFight(g, fieldFight(g, g.combat), ART), cur = active(cb);
+    { const fv = fieldView(g, getState().me.id); if (fv) { if (S.fieldIn && fv.charId) act({ type: 'world/act', charId: fv.charId, act: 'move', to: k }); return; } } // rules 1.55: on the field a click walks
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);
     const u = cb.units.find((x) => x.pos === k && !x.dead);
     // A perk action that wants a target or a tile takes the click (an ally, anyone, or the tile itself).

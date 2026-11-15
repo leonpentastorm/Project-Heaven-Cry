@@ -11,7 +11,7 @@ import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
-import { statOf, levelFactor, scaleOf } from './effects/output';
+import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
@@ -667,11 +667,15 @@ export function weaponMult(c: Character, weaponId: string | null | undefined): n
   return fx(c, 'mult_physical', statOf('weapon', c, { attrs: ph.scales_with as string[], skills }));
 }
 /** What that multiplier is made of, in words ("Agility and Dexterity"): the label on the damage line. */
-export function weaponMultLabel(weaponId: string | null | undefined): string {
-  const ph: any = (WEAPON[weaponId || ''] as any)?.phys; if (!ph) return 'Strength and Raw Power';
-  const nm = (id: string) => (ATTRS.find((a) => a.id === id)?.name || SKILL[id]?.name || id);
-  return [...(ph.scales_with as string[]), ...((ph.also_scales?.length ? ph.also_scales : [ph.hits_with]) as string[])].map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1');
+export function weaponMultLabel(weaponId: string | null | undefined, o: { /** rules 1.55: only the inputs whose slope in the profile weaponMult reads is not 0 ('' when none is) */ live?: boolean } = {}): string {
+  const ph: any = (WEAPON[weaponId || ''] as any)?.phys;
+  if (!ph && !o.live) return 'Strength and Raw Power';
+  const prof = ph ? 'weapon' : 'physical', p = profileOf(prof);
+  const attrs: string[] = ph ? ph.scales_with : pairOf(prof).attrs, skills: string[] = ph ? (ph.also_scales?.length ? ph.also_scales : [ph.hits_with]) : pairOf(prof).skills;
+  return namesOf([...(!o.live || p.attr ? attrs : []), ...(!o.live || p.skill ? skills : [])]);
 }
+/** Attribute and skill ids as words ("Agility and Dexterity"). */
+const namesOf =(ids: string[]): string => ids.map((id) => ATTRS.find((a) => a.id === id)?.name || SKILL[id]?.name || id).join(', ').replace(/, ([^,]*)$/, ' and $1');
 /** Rules 1.15 (provisional, item 1022): a critical is ×1.5, and nothing takes it past ×2.0, everything together. */
 export const CRIT_BASE = 1.5, CRIT_MAX = 2.0, CRIT_PER_PERCEPTION = 0.03, CRIT_PER_DEXTERITY = 0.02;
 /** The Critical multiplier: 1.5 + 3% × (Perception − 1) + 2% × Dexterity, then perks, traits and gear, to 2.0 at most. */

@@ -1,0 +1,47 @@
+{
+  "number": 41,
+  "id": "figments",
+  "name": "Figments (line)",
+  "path": "art/icons/boons/figments.png",
+  "mode": "ink",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (the Wick trait and perk icons: bold flat white shapes, a confident inked silhouette with a few\ninterior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no\ncolour and no grey. This icon is an object or a sign, not a figure: do not draw Wick or any person unless the line below\nsays so. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at\n24 px in a row and look right at 56 px on a dark disc: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or\ninsignia (a medical mark is a plain plus, never a red cross).\n\n\nPaint this ONE subject:\nA picture frame with a small shape forming inside it out of scattered dots. The line of Quick Sketch and Spare Charge.\nPure-white filled shapes with transparent interior cuts; confident substantial ink weight matching reference nonfigure shop sign. No mascot, no Wick. Keep all detail sturdy at 24 pixels. Transparent margin 10\u201315% all around. Not a thin wireframe.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/survival/markers/shop.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/figments.png",
+  "source_sha256": "19ed6fb063919561603ac5f57509f660896ebdabfd7efaf38012cb018f85e5c6",
+  "sha256": "584f8e9bd423670ed4a2e801f685213c7301929321b052fa5489da67c58b38f9",
+  "exports": {
+    "64": "art/icons/boons/exports/64/figments.png",
+    "56": "art/icons/boons/exports/56/figments.png",
+    "48": "art/icons/boons/exports/48/figments.png",
+    "32": "art/icons/boons/exports/32/figments.png",
+    "24": "art/icons/boons/exports/24/figments.png"
+  },
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop and aspect-preserving fit inside central 820px of 1024px canvas; Lanczos UI exports; pure-white RGB enforced preserving generated alpha",
+  "export_crop": [
+    0,
+    15,
+    1240,
+    1254
+  ],
+  "native_minimum_met": true,
+  "implementation_ready": false,
+  "catalog_family": "boons",
+  "catalog_id": "icon-boon-figments"
+}

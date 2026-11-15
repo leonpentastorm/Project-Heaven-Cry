@@ -46,7 +46,7 @@ export function placeView(g: GameState, me: string, charId?: string | null): Pla
     const before = it ? gearPreview(c, { id: it.id, rarity: it.rarity }) : null, after = it && to ? gearPreview(c, { id: it.id, rarity: to }) : null;
     const diff = before && after ? after.lines.filter((l) => l.num != null).map((l) => ({ label: l.label, before: before.lines.find((x) => x.key === l.key)?.value ?? '—', after: l.value })).filter((l) => l.before !== l.after) : [];
     const prop = o.group === 'relic' && a.prop ? a.prop as string : null;
-    const id = it ? it.id : o.group === 'repair' ? (wearAt(c, a.where)?.id || null) : o.group === 'forge' ? (v.stock?.[a.slot]?.id || null) : o.group === 'train' && a.weapon ? a.weapon : null;
+    const id = it ? it.id : o.group === 'repair' ? (wearAt(c, a.where)?.id || null) : o.group === 'forge' ? (v.stock?.[a.slot]?.id || null) : o.group === 'mod' ? (a.mod || (c.pack?.[a.idx]?.item ?? c.pack?.[a.idx]?.id) || null) : o.group === 'train' && a.weapon ? a.weapon : null;
     return { o, id, rarity: it ? it.rarity : null, lines: diff, worth: null, bar: o.bar ?? null };
   }) : [];
   const party = g.players.map((p) => ({ id: p.id, name: Object.values(g.characters).find((x) => x.owner === p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', online: p.online, mine: p.id === me, marked: !!r.leans[p.id] }));

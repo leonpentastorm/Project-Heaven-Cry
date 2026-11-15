@@ -8,6 +8,49 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.1 — the camp sorted out, the field after a fight, magazines
+
+The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). **Live since 15 Nov 2026**.
+
+- **The camp and the shops offer what you can use.** Nothing at the camp costs more than the camp budget (the foci and
+  Medium armour are gone from it); "another one" of a weapon only for a one-hander you can dual-wield, never a second
+  focus or a second two-hander; rounds, special rounds and cores are listed only for a gun or focus you carry, and the
+  shop's counter is your own; no line twice.
+- **Magazines.** A Magazines shelf at the camp and on every shop counter: a full or an empty magazine for each
+  magazine-fed gun you carry. An empty one is filled from loose rounds out of a fight, so speed reloads have spares.
+- **Casters start with 4 cores** (was 1) with an Evoker or a Visualizer, free, so the 300 budget is not spent on cores.
+- **The field after a fight.** A won Survival fight leaves the squad on the map: walk it, open doors and pick up what
+  lies there (dropped magazines, thrown weapons, materials), then everyone marks **Leave the field** (or the host closes
+  it) and the rewards come. A fallen character stands up at 1 HP. The pay is the same, given as the fight is won.
+- **Throw and Pull Out.** Every melee weapon with the Thrown property offers Throw; the hatchet gives Drag instead. A
+  weapon stuck in someone is drawn on its token, outlined in the thrower's colour, and named in its hover line.
+- **Weapon mods are fitted at the Forge**, for a fee (a fifth of the mod's price, at least 25 credits), in a run; a swap
+  puts the old mod in the pack. Mods the engine does not run yet (the foregrip, the wrapped grip, the underslung
+  launcher, the sigil-etched magazine, the pavise) are no longer sold anywhere.
+- **Weapon cards say what a weapon hits with.** Every card that shows a weapon's or a focus's numbers (the camp, the
+  shop, the Forge, the reward, the sheet, the hover cards) names the skill you aim it with and your modifier
+  ("Hits with: Dexterity · +3"); a magazine reads "30 · .32 Decrkm".
+- **The artist's new art is in.** 66 new images: gear and boon icons, the path map's markers, the keepers' portraits,
+  the places' backdrops, the signs on the fight cards and the Roguelike card in the lobby.
+- **Loot is scarce now.** No free magazines after a fight (casters still get their burnt cores and MP back); the camp's
+  free gun has two spare magazines; an ordinary fight offers a weapon card only about one time in five (Elites, Bosses,
+  the vault and caches always do), better grades are rarer, mana residue is scarce, and foes leave little on the
+  ground. A gun you pick or buy comes loaded, with a spare magazine.
+- **The camp and the places are laid out again.** The camp's budget bar stays at the top; each family is only as wide as its
+  cards, and they wrap to fill the width; the path map fits its box. Every place (the camp, the shop, each place, the rewards, the stage's end) keeps its
+  header in sight as you scroll, with the money and the button that moves on. On the GEAR tab every section folds, the
+  Backpack comes first and opens large over the middle (both side panels stay), and Make is one compact row a recipe.
+
+Left out, for 0.29:
+- **Pull Out** is still listed on every melee pad (using it with nothing stuck is refused in words), and its button does
+  not name the weapon: that needs a new technique-availability field, waiting on the lead's approval.
+- **Pull Out in a browser room**: in one e2e run the stuck mark stayed after Pull Out in the room, though the engine's
+  path clears it; not yet investigated.
+- The extra mod slot of Gun Nut, Blade Recluse and Overhaul is still fitted free; mods fit to the main-hand weapon only.
+- The mods that pass the guns' 145% ceiling (the red dot on the Frontier hand cannon, the Brigade auto-shotgun's red dot
+  and extended magazine) were measured, not changed: their numbers move into data in 0.29.
+- After the field is left, the victory card comes back once more ("Back to the map ›"), on purpose for co-op.
+
 ## 0.28.0 — materials, making, a slower climb and the side panels back
 
 Survival's second pass, on Leon's 14 Nov rulings (rules 1.54; `docs/design/survival-spec.md` section 14). **Live since 15 Nov 2026**. Every number is provisional but the core's 100 credits.

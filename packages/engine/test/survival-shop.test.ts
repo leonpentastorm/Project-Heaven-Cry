@@ -5,7 +5,7 @@
 // item's own rarity and mods; every refusal is in words; the party leaves when everyone is ready or the host closes.
 // The gear preview (spec item 14) gives the card's numbers from the fight's own unit build. Numbers read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, RuleError, reachable, creditsOf, priceOf, counterLines, linePrice, sellValue, rollStock, faceFor, FACES, SHOP_DATA, SELL_RATE, ROUND_PRICE, emptyMagPrice,
+import { type GameState, apply, shopView, RuleError, reachable, creditsOf, priceOf, counterLines, linePrice, sellValue, rollStock, faceFor, FACES, SHOP_DATA, SELL_RATE, ROUND_PRICE, emptyMagPrice,
   gearPreview, compareGear, registerShopService, shopServices, packOf, WEAPON, ITEM, RARITY, runMoveProblem, magazineWorth, type RunNode } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { type Pc } from './helpers/replay';
@@ -50,12 +50,16 @@ describe('Survival shop (rules 1.42)', () => {
   it('the counter: every calibre (twelve), the special rounds, thrown, cores, supplies, priced; the guns shelf for every gun carried', () => {
     const g = inShop(); g.characters.c1.weapon = 'hellraiser_service_rifle'; // a magazine-fed gun in hand (rules 1.52: the camp's free rifle loads round by round)
     const lines = counterLines(Object.values(g.characters));
+    // rules 1.55: ammunition follows the characters: the calibres of the guns carried, no other
     const cal = lines.filter((l) => l.shelf === 'calibres').map((l) => l.id.slice('rounds:'.length));
-    expect(cal.sort()).toEqual(RJ.weapons_rules.calibres.map((c: any) => c.id).sort());
+    const takes = new Set(Object.values(g.characters).flatMap((c) => [c.weapon, ...packOf(c).map((x) => x.weapon)]).map((id) => (WEAPON[id || ''] as any)?.ammo).filter(Boolean));
+    expect(cal.sort()).toEqual(RJ.weapons_rules.calibres.map((c: any) => c.id).filter((c: string) => takes.has(c)).sort());
     for (const id of ['ammo_armor_piercing', 'ammo_hollow_point', 'ammo_incendiary', 'ammo_enhanced', 'frag_grenade', 'smoke_grenade', 'flashbang', 'incendiary_grenade', 'standard_core', 'spare_parts', 'stim_injector', 'field_kit', 'ration_pack'])
       expect(lines.some((l) => l.id === id)).toBe(true);
     for (const l of lines) if (!l.res) expect(linePrice(l)).toBeGreaterThan(0);
-    const gun = g.characters.c1.weapon; expect(lines.some((l) => l.shelf === 'guns' && l.id === 'mag:' + gun)).toBe(true);
+    const gun = g.characters.c1.weapon; expect(lines.some((l) => l.shelf === 'magazines' && l.id === 'mag:' + gun)).toBe(true);
+    expect(lines.some((l) => l.shelf === 'magazines' && l.id === 'mag:' + gun + ':0')).toBe(true); // rules 1.55: and an empty one
+    expect(priceOf('mag:' + gun + ':0')).toBe(emptyMagPrice(gun)); // the same formula with no rounds
     // the prices are the Core Rules' table: a full magazine is the empty magazine and its rounds; a special round its price_mult x the reference calibre
     const w: any = WEAPON[gun]; expect(priceOf('mag:' + gun)).toBe(emptyMagPrice(gun)! + w.magazine * ROUND_PRICE[w.ammo]);
     expect(priceOf('ammo_armor_piercing')).toBe((ITEM as any).ammo_armor_piercing.price_mult * ROUND_PRICE[RJ.weapons_rules.special_round_price.calibre]);
@@ -69,11 +73,26 @@ describe('Survival shop (rules 1.42)', () => {
     g = apply(g, { type: 'run/buy', charId: 'c1', key: l.key, qty: 2 }, 'host');
     expect(purse(g)).toBe(2000 - linePrice(l) * 2); expect(purse(g, 'c2')).toBe(2000);
     expect(packOf(g.characters.c1).filter((p) => p.calibre === 'rifle' && !p.mags).reduce((t, p) => t + p.qty, 0)).toBe(before + l.per * 2);
-    g = apply(g, { type: 'run/buy', charId: 'c2', key: l.key }, 'p2');
+    // rules 1.55: the counter sells a character only what fits it: no rifle rounds for one without a rifle
+    if (!counterLines([g.characters.c2]).some((x) => x.key === l.key)) expect(refused(g, { type: 'run/buy', charId: 'c2', key: l.key }, 'p2')).toBe('This shop does not sell that.');
+    else g = apply(g, { type: 'run/buy', charId: 'c2', key: l.key }, 'p2');
     expect(g.run!.shop!.log[0]).toMatch(/bought/);
     const stim = counterLines(Object.values(g.characters)).find((x) => x.id === 'stim_injector')!, s0 = g.characters.c1.stims || 0;
     g = apply(g, { type: 'run/buy', charId: 'c1', key: stim.key, qty: 3 }, 'host');
     expect(g.characters.c1.stims).toBe(s0 + 3); // a stim joins the count the fight spends
+  });
+
+  it('rules 1.55: an empty magazine is bought at the empty price, joins the spares with 0 rounds, and gear/load fills it from loose rounds', () => {
+    let g = inShop(DUO, 'PHC-0001', 2000); const gun = 'hellraiser_service_rifle', w: any = WEAPON[gun]; g.characters.c1.weapon = gun;
+    const spares = () => packOf(g.characters.c1).find((x) => x.weapon === gun && x.mags)?.mags || [];
+    const n0 = spares().length;
+    g = apply(g, { type: 'run/buy', charId: 'c1', key: 'mag:' + gun + ':0' }, 'host');
+    expect(purse(g)).toBe(2000 - emptyMagPrice(gun)!); expect(spares()).toHaveLength(n0 + 1); expect(spares()[n0]).toBe(0);
+    const rl = counterLines([g.characters.c1]).find((x) => x.id === 'rounds:' + w.ammo)!;
+    g = apply(g, { type: 'run/buy', charId: 'c1', key: rl.key }, 'host');
+    const loose = packOf(g.characters.c1).filter((x) => x.calibre === w.ammo && !x.mags).reduce((t, x) => t + x.qty, 0), room = spares().slice(0, n0).reduce((t, m) => t + w.magazine - m, 0);
+    g = apply(g, { type: 'gear/load', charId: 'c1' }, 'host');
+    expect(spares()[n0]).toBe(Math.max(0, Math.min(w.magazine, loose - room))); expect(spares()[n0]).toBeGreaterThan(0);
   });
 
   it('buy a rolled piece: the first buyer takes it; the second hears "Sold to <name>."; it arrives at its rarity', () => {

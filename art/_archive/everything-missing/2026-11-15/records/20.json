@@ -1,0 +1,47 @@
+{
+  "number": 20,
+  "id": "boon.deep_well",
+  "name": "Deep Well",
+  "path": "art/icons/boons/deep_well.png",
+  "mode": "ink",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (the Wick trait and perk icons: bold flat white shapes, a confident inked silhouette with a few\ninterior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no\ncolour and no grey. This icon is an object or a sign, not a figure: do not draw Wick or any person unless the line below\nsays so. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at\n24 px in a row and look right at 56 px on a dark disc: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or\ninsignia (a medical mark is a plain plus, never a red cross).\n\n\nPaint this ONE subject:\nA round stone well seen from three-quarter above, a windlass post and a hanging bucket, two ripple rings in the water. (The heals and shields you give are stronger.)\nPure-white filled shapes with transparent interior cuts; confident substantial ink weight matching reference nonfigure shop sign. No mascot, no Wick. Keep all detail sturdy at 24 pixels. Transparent margin 10\u201315% all around. Not a thin wireframe.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/survival/markers/shop.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/deep_well.png",
+  "source_sha256": "7b7688d37e4842b227c80360e70f63712e729d21486cde3c9a84e2c99df8296f",
+  "sha256": "db2b27ce590b2b1dc11491a653c09d2d0308cb0054d440b789f42158ae6dfd89",
+  "exports": {
+    "64": "art/icons/boons/exports/64/deep_well.png",
+    "56": "art/icons/boons/exports/56/deep_well.png",
+    "48": "art/icons/boons/exports/48/deep_well.png",
+    "32": "art/icons/boons/exports/32/deep_well.png",
+    "24": "art/icons/boons/exports/24/deep_well.png"
+  },
+  "upscaled": false,
+  "export_processing": "Alpha-bounds crop and aspect-preserving fit inside central 820px of 1024px canvas; Lanczos UI exports; pure-white RGB enforced preserving generated alpha",
+  "export_crop": [
+    0,
+    17,
+    1220,
+    1254
+  ],
+  "native_minimum_met": true,
+  "implementation_ready": false,
+  "catalog_family": "boons",
+  "catalog_id": "icon-boon-deep_well"
+}

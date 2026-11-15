@@ -1145,8 +1145,8 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 11 | **Hamstring** | weapon | Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. | **Edge:** no save. **Hook:** Prone instead of Slowed. **Point:** it also can't Sprint or Disengage while Slowed. |
 | 12 | **Bind** | weapon | No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding. | **Hook:** Brain save or it is Disarmed. **Bare:** it is Grappled. **Heavy:** the −2 becomes −4. |
 | 13 | **Half-Sword** | weapon | A short, driven thrust: ×0.8 damage, ignores 10 armour. | **Point:** ignores all armour. **Heavy:** full damage. **Bare or Blunt:** not available (greyed, with the reason). |
-| 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or **Pull Out** from next to it brings it back. On a miss it lands on the target's tile. | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
-| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum. Everyone knows it. | |
+| 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or **Pull Out** from next to it brings it back. On a miss it lands on the target's tile. **Comes with a Thrown weapon** (rules 1.55: the combat knife, throwing knives, the hatchet; any other weapon only when readied). | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
+| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum. Everyone knows it. *(Rules 1.55: the stuck weapon is drawn on the target's token, and the thrower's sheet says where it is.)* | |
 
 **Links**
 
@@ -1263,7 +1263,7 @@ Melee:
 | Lance | Heavy, Point, Reach | Raw Power | Strength | Charge |
 | Gloves or bare fists | Light, Bare | Raw Power | Strength, Raw Power, Dexterity | Bind |
 | Throwing knives | Light, Point, Thrown | Dexterity | Agility | Flurry |
-| Hatchet | Light, Edge, Hook, Thrown | Dexterity | Agility | Throw |
+| Hatchet | Light, Edge, Hook, Thrown | Dexterity | Agility | Drag *(rules 1.55; it lent Throw, which now comes with Thrown)* |
 | Legion gladius | Light, Point, Edge | Dexterity | Agility | Parry |
 | Kemizuchi duelling blade | Light, Point | Dexterity | Agility | Lunge |
 | War axe | Heavy, Edge, Hook | Raw Power | Strength | Sunder |
@@ -6013,6 +6013,112 @@ standard core's 150 credits (Magic, "Mana cores").
    board and the squad, with no area map and no quest board. Every "full screen" of rules 1.42 to 1.52 is superseded by
    it.
 
+
+## Rules 1.55 (15 Nov 2026)
+
+Leon (15 Nov 2026, before the playtest): *"lot's of the things like extra emmanator in the beginning shop is out of price and have no reason to be in there"*; *"where is the magazines, we need to sell magazines, put them somewhere or speed reload is never getting used"*; *"300 is not enough for caster even now, they get like 3 core and notthing else for that"*.
+
+**The camp's and the shops' offers (Survival; release 0.28.1):**
+1. **Nothing over the budget at the camp.** The camp's menu lists no line whose price (unit price x `per`) is over the camp budget (300, `survival.json loadout.budget`). The fixed `stock` list holds only ids priced within it (the validator checks); Medium armour (400) and the four foci (1000) leave it.
+2. **Another one only when both can be used.** "Another one" of a weapon (the rack's same-again line) is offered only of a one-handed weapon (the weapon's own `hands`, rules `twoHands`), to dual-wield. Never a second focus (a focus is listed only to a character holding none), never a second two-handed weapon (a two-handed weapon is listed only to a character holding none); a two-handed weapon or a focus is taken one at a time. A one-handed weapon beside a two-hander (a knife in the pack) stays on offer. Thrown weapons are not counted.
+3. **Ammunition follows the character** (camp and every shop counter): a calibre is listed only when a gun the character holds or has taken takes it; a special round (an item with `ammo_type`) only with a gun that is not a bow; an item that fuels a focus (its `fuel`, matched against the focus's `focus.fuel`: the standard core, `fuel: core`) only with such a focus held. The shop's counter is the buying character's own (another character's gun does not open a line for it); the restock shelf is listed only for a character with that class resource.
+4. **No line twice in one menu** (the same id in the same quantity; throwing knives were on the thrown shelf and the rack).
+5. **Magazines.** A shelf of its own, **Magazines** (`shop.always`, at the camp and on every shop counter): for each magazine-fed gun the character carries, a **full** magazine (`mag:<weapon>`: the empty magazine price and its rounds) and an **empty** one (`mag:<weapon>:0`: the empty magazine price of `rules.json weapons_rules.magazine_prices`, 30 for a pistol or an SMG, 40 a rifle, 25 a speedloader, 60 a drum or belt). One price rule: `mag:<weapon>:<rounds>` is priced by the same formula (empty price + rounds x the calibre's round price). An empty magazine joins the gun's spares with 0 rounds; **gear/load** fills it from loose rounds out of a fight (1 AP per 5 rounds in one, rules 1.9). The guns shelf keeps the rounds of loose-loaded guns and the quiver.
+6. **The caster's start.** A focus that burns cores (the Evoker, the Visualizer: `loadout.focus_with`) comes with **4** standard cores at the camp, free (PROVISIONAL; was 1), so the budget is not eaten by cores. The Emanator and the Attuner (MP) are unchanged.
+
+### The field after a won fight (Survival; Leon: "let people roam in the combat map to pick up stuff before voting to go back")
+
+7. **The field.** A won Survival fight does not go straight to its rewards: the run's state is **`field`**, between
+   `fight` and `reward`. The fight's map stays, every character stands where its unit stood (a character dead in the
+   fight stands up at 1 HP where it fell), and the piles stay as the fight left them: dropped magazines, thrown
+   or stuck weapons (dropped where their target stood, rules 1.12), and whatever foes dropped (in Survival, materials:
+   rules 1.54 item 3). PROVISIONAL.
+8. **Roaming is the Proving Ground's gearing up.** On the field the squad uses the same world actions with free
+   movement: walk (`world/act` move, `story/move`), open a door, and pick up (`world/act` pickup, a whole pile in one
+   action by default, a selection if given). No rounds, no turn order, AP always full after each action (a walk is
+   still one action's reach). Nothing else is done on the field (an attack, a search, a carried body: refused in
+   words); gear changes out of a fight work as anywhere in a run. PROVISIONAL.
+9. **Leaving is the shop's vote.** Each player marks **Leave the field** (`run/leave`, the same mark as leaving a shop:
+   `r.ready`); when every online player has marked it, or the host closes the field (`run/leave` with close), the run
+   goes on to `reward`. A field with nothing on it still opens, and Leave is offered at once: solo it is one click.
+   PROVISIONAL.
+10. **The pay is unchanged and given as the fight is won**, as before: XP, credits, the supply pack and the rolled
+   pick are given on entering the field; the pick (`run/pick`, `run/take`) waits until the field is left. A lost
+   fight (the run is over), an Extraction and a Proving Ground fight are unchanged. What still lies on the field when
+   the squad leaves stays behind.
+
+### Throw, Pull Out and the stuck weapon (Leon, 15 Nov 2026, ruling B)
+
+Leon: a weapon stuck in someone after a Throw needs a mark, and any weapon with Pull Out needs Throw with it "or it's useless". Ruled B: Throw comes with throwable weapons only, and Pull Out is for a weapon that is actually stuck.
+
+11. **Throw (technique 14) comes with the Thrown property** (`comes_with: ["thrown"]`, data): every melee weapon with Thrown offers it with nothing readied (today the combat knife, the throwing knives and the hatchet); a new Thrown weapon offers it with no code change, and the validator refuses a Thrown melee weapon that no technique comes with. Any other weapon still throws only when Throw is readied, at −2 to hit and ×0.7 as before. PROVISIONAL.
+12. **The hatchet lends Drag** (its Hook line) in place of Throw, which it now has by its Thrown property. PROVISIONAL.
+13. **The stuck weapon is shown.** Each weapon stuck in a unit (up to three drawn) is drawn in its token at an angle, outlined in its thrower's side colour; it goes when Pull Out takes it or the unit falls. The thrower's sheet carries one line a weapon: "Your <weapon> is stuck in <name>", and the target's hover card says a weapon is stuck in it and whose. The words are the engine's (`physView`: `stuck`, `thrown`).
+14. **Pull Out (technique 28) is unchanged in rule:** next to the unit, a free hand, 1 AP, no roll; the reducer refuses it with nothing stuck ("No weapon is stuck in …") or from further off. *Open (needs a primitive):* it is still listed on every melee pad; listing it only when a weapon is stuck within reach needs a technique availability field the engine doesn't have (0.28.1 hand-off).
+
+### Weapon mods: the Forge fits them, for a fee (Survival)
+
+Leon (15 Nov 2026): "balance can be break if there is something broken in the mod slot"; "weapon mod can be a reward
+just like raw weapon. maybe at the forge you pay some dough to get them attached". Ruled: the Forge's fee only (a mod
+as a reward pick, and mods moved into data, are 0.29).
+
+15. **Weapon mods: a mod the engine does not run is not sold.** An item row marked `built: false` (today the foregrip,
+   the wrapped grip, the underslung launcher and the sigil-etched magazine, and the pavise shield) has no price
+   (`priceOf`), so no Forge stock, shop stock, reward pick, pick of kit or camp list holds it, and none sells. The
+   validator refuses a `built: false` item in any fixed stock list (the shop's counter, the lasting fill, a loot
+   table, a loadout). When its effect is built the flag goes and it is sold again.
+16. **In a Survival run a weapon mod is fitted only by the armourer at a Forge, for a fee.** Fitting, swapping and
+   taking off a mod are the Forge's service (`run/fit_mod`, `run/unfit_mod`, listed on the Forge's Mods and armour tab):
+   the fee is `forge.fit.rate` (0.2, PROVISIONAL) x the mod's price, at least `forge.fit.min` (25 credits, PROVISIONAL),
+   rounded up. A swap pays the new mod's fee once and the old mod goes into the pack; taking a mod off pays that mod's
+   fee and puts it in the pack. The fit is to the weapon in the main hand (as `fitMod` has always fitted; an off-hand
+   or a packed gun is drawn first). The free fit from the pack (`gear/mod`, and in a fight its 1 AP form) is refused in
+   a run, in words. A quiver's enchantment keeps its free fit (rules 1.53). Buying a mod at the Forge puts it in the
+   pack as before; fitting it is the second step. A campaign and the Proving Ground keep the free fit. Not yet covered:
+   the extra slot of Gun Nut, Blade Recluse and Overhaul (`extra_mod`) is still fitted free (0.29).
+17. **The mod ceiling (rules 1.18), measured, not changed.** The red dot on the Frontier hand cannon (151 / 156% of the
+   plain rifle at levels 6 / 12; with Gun Nut and both optics 161 / 160) and the red dot and extended magazine on the
+   Brigade auto-shotgun (150 at level 6) pass the 145% ceiling. The numbers that do it (the red dot's band, the extended
+   magazine's +50%) are typed in engine code, not data, so they are left for 0.29, when mods move into data.
+
+### Weapon cards: what a weapon hits with
+
+Leon (15 Nov 2026), verbatim: "on weapons ui, list out what skill it scale it's hit with too".
+
+18. **Every weapon's numbers say what it is aimed with.** The gear preview (rules 1.42) of a weapon, a thrown weapon or
+   a focus gains two lines: **Hits with**, the skill its roll to hit is made with, as the attack itself resolves it (a
+   weapon's `skill`, a focus's door), with the character's own check modifier ("Dexterity · +3"); and **Damage scales
+   with**, only the inputs of its damage multiplier whose slope is not 0 in the profile the damage reads (a weapon:
+   `phys.scales_with` for the profile's attribute slope, the skill it hits with or `also_scales` for its skill slope;
+   a focus: its damage profile's pair). **A card never names a scaling that changes nothing** (lead's ruling, 15 Nov
+   2026): when every slope is 0 the line is left out. Today, since rules 1.26 (level buys damage), the weapon, Sigil,
+   Soul and Figment profiles have no slope, so no weapon or focus shows the line; it comes back by itself when a slope
+   does. A weapon with more than one way of use shows its default (a melee weapon in melee, any other as a shot or a
+   throw). Every card that shows a weapon's numbers shows them (`docs/design/ui-screens.md`). The magazine line reads
+   rounds, a middle dot and the calibre ("30 · .32 Decrkm"). No number changes.
+
+### Survival's rewards and drops (spec items 4121 to 4128)
+
+Leon (15 Nov 2026): "no refill mag between fight"; "check the combat drop tables, no essesive weapon and mana residue,
+make what rare actually rare". The numbers and the arithmetic are in section 14, items 4121 to 4128. All PROVISIONAL.
+
+19. **No free magazines after a fight** (item 4121): the supply pack's magazines (`ammo_pack.mags`) are 0 after every
+   fight; its burnt cores and MP share (`ammo_pack.supply`) are kept; a cache and the vault's chest keep both.
+20. **The gunner's start** (item 4122): the camp's free gun comes with two spare magazines (`loadout.gun.spare` 2).
+21. **The weapon card is rare at ordinary fights** (item 4123): one roll for the node (`rewards.weapon_card.fight`
+   0.2), every player the same; otherwise the Materials card alone. Elites, the gate, a vault guard, a Boss, a cache and
+   the vault always offer one.
+22. **Rarity means rare** (item 4124): the grade odds of ordinary fights and Elites lowered; the sealed crate has its own
+   row.
+23. **Mana residue is scarce** (item 4125): residue on the Materials card by where it is won (`by`), a chance at an
+   ordinary fight.
+24. **Gunpowder and casings** (item 4126): from an ordinary fight's credits at the node's depth and stage, an Elite
+   x2, a Boss x4 (`materials.mult`).
+25. **A picked or bought gun comes loaded, with a spare** (item 4121): `rewards.gun_spare` (1) magazine's worth in the
+   pack, as part of the gun.
+26. **What a killed foe leaves** (item 4127): in Survival the kind's loot table is not rolled (`drops.kind_table`
+   false); a gun foe leaves gunpowder or casings and a caster residue only with a small chance.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9461,3 +9567,56 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     data; the "?" pop-up shows the ten steps, creation and level-up show the next point's line. Rules text never under
     13 px; a row at most about 60 characters. No rule changed. PROVISIONAL (the layout).
 4120. **Items 4100 to 4120 are rules 1.54's.**
+
+### Rules 1.55 (15 Nov 2026)
+
+Survival's rewards and drops for release 0.28.1 (Leon, 15 Nov 2026: "Naww wtf, no refill mag between fight alright";
+"check the combat drop tables, no essesive weapon and mana residue, make what rare actually rare"; and, with the walk
+after a fight where every pile is picked up, "make them drop credits and other things is rare"). A later revision
+overrides the body and the earlier ones; every number here is PROVISIONAL.
+
+4121. **No free magazines (rules 1.55 item 19; the lead's ruling, 15 Nov 2026):** the supply pack (`ammo_pack`) has two
+    counts by node, `mags` (magazines for every gun carried) and `supply` (the burnt cores back and the MP share).
+    `mags` is 0 after every fight (ordinary, Elite, gate, vault guard, Boss); the REWARDS line names the pack only when
+    it holds magazines. `supply` keeps its 0.28.0 counts (fight 1, Elite and gate 2, vault guard 2, Boss 3): Leon ruled
+    out the magazines only, so a caster still takes back its burnt cores and its MP share. A cache and the vault's chest
+    keep both (1). Ammunition comes from the camp, shops, making from materials, and picking magazines back up.
+    Supersedes rule 23's magazines after a fight. PROVISIONAL.
+    **A gun taken from a pick or bought** (rules 1.55 item 25; a reward card, the vault, the sealed crate, a shop's rolled piece) comes loaded
+    and with `rewards.gun_spare` (1) magazine's worth in the pack (a gun loaded round by round: that many magazines' worth
+    of loose rounds), as part of the gun (run/rewards.ts pickedItem, the one rule for both); the node's `mags` come on
+    top (the vault's 1). In 0.28.0 a bought gun came empty with nothing, a picked one empty with the pack's share.
+    PROVISIONAL.
+4122. **The gunner's start (rules 1.55 item 20):** `loadout.gun.spare` 1 → 2 (one loaded, two spare). The arithmetic:
+    a stage-1 ordinary fight lasts about 3.1 rounds through the reducer (survival-loot.test.ts, measured); a pistol
+    firing singles (2 AP) is 3 rounds a turn, about 9 a fight, so 12 + 2 x 12 = 36 rounds is about 3.9 fights; an
+    SMG on Bursts (3 rounds, 3 AP) 6 a turn, about 19 a fight, 30 + 60 = 90 about 4.7; the lever carbine 8 + 16 = 24
+    about 2.6. About three ordinary fights, not more, before the camp's budget is spent on rounds. PROVISIONAL.
+4123. **The weapon card is rare at ordinary fights (rules 1.55 item 21):** `rewards.weapon_card.fight` 0.2: the chance
+    an ordinary fight's pick holds the One-weapon card, rolled once for the node (`rngFor(seed, node + '#weapon-card')`,
+    every player the same); otherwise the Materials card alone (still a pick). Elites, the gate, a vault guard, a Boss,
+    a cache and the vault always offer one. PROVISIONAL.
+4124. **Rarity means rare (rules 1.55 item 22):** `rewards.rarity.fight` standard 75 / fine 25 → standard 90 / fine 10;
+    `rewards.rarity.elite` fine 60 / masterwork 35 / relic 5 → standard 75 / fine 20 / masterwork 5 (stage 1, capped
+    at Fine: Fine 25%); `rewards.rarity.crate` (the Crossroads' sealed crate, its own row) keeps the 0.28.0 Elite odds, fine 60 /
+    masterwork 35 / relic 5; `boss` and `ceiling` unchanged (stage 1 Fine, stage 2 Masterwork, stage 3 Relic), so a
+    Masterwork comes from a Boss, the vault or stage 2 on, a Relic from the vault (stage 2 on) and Bosses of stage 3 on.
+    PROVISIONAL.
+4125. **Mana residue is scarce (rules 1.55 item 23):** the Materials card's residue by `by`: an ordinary fight a chance
+    of 0.25, then 1 to 2; an Elite or the gate 2 to 4; a Boss or a vault guard 8 to 12 (10 residue press one core,
+    100 credits). Was ceil(C / 20) on every card (5 at the first fight, 38 at a stage-1 Boss). PROVISIONAL.
+4126. **Gunpowder and casings (rules 1.55 item 24):** each at ceil(C x mult / 16), C an ordinary fight's credits at the
+    node's depth and stage (`materials.mult`: Elite and gate 2, vault guard 2, Boss 4). Was ceil(C / 2) of the node's
+    own credits (50 + 50 at the first fight). The arithmetic: a pair makes 2 .32 rounds (recipes.json), so the first
+    fight's 7 + 7 is 14 rounds, a depth-5 fight's 12 + 12 is 24, about one fight of an SMG on Bursts (19) or two of a
+    pistol (9); an Elite twice, a Boss four times. The card's "sells for" stays the one sell rule's. PROVISIONAL.
+4127. **What a killed foe leaves (rules 1.55 item 26):** measured through the reducer before the change (20 stage-1
+    fights a kind, solo gunner): no foe weapon or magazine was on the ground (rules 1.54 item 3 already turned them
+    off); the ground sold for 6.3% of an ordinary fight's pay, 5.1% of an Elite's, 6.8% of a Boss's, from the kind
+    tables (cores, spare parts, stims, personal effects) and the given materials (gunpowder and casings 2 to 5 each from
+    every gun foe, residue 1 to 2 from every caster and machine). Now `drops.kind_table` false (the kind's table is
+    not rolled for a Survival foe), a gun foe gunpowder 1 to 3 and casings 1 to 3 each with a chance of 0.15, a caster
+    mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
+    a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
+    unchanged. PROVISIONAL.
+4128. **Items 4121 to 4128 are rules 1.55's.**

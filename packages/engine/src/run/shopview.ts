@@ -20,7 +20,9 @@ export interface ShopCardV { key: string; id: string; name: string; rarity: Rari
   /** For quantities 1 to qtyMax: what that many purchases cost, and the reason that many can't be bought (null: it can). */
   totals: number[]; whys: (string | null)[] }
 /** One line of the Sell tab: the pack entry, how many, what it sells for (all of it), and why not. */
-export interface SellRowV { idx: number; id: string; label: string; rarity: Rarity; qty: number; value: number | null; why: string | null; ask: string | null; kg: number }
+export interface SellRowV { idx: number; id: string; label: string; rarity: Rarity; qty: number; value: number | null; why: string | null; ask: string | null; kg: number;
+  /** For quantities 1 to qty: what selling that many brings (`sellValue`), and the reducer's refusal for that many (null: it can). */
+  totals: (number | null)[]; whys: (string | null)[] }
 /** The full-screen shop for one player and one character (spec 8.3). */
 export interface ShopViewV {
   kind: 'shop' | 'forge'; setting: string;
@@ -93,7 +95,7 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
       totals: Array.from({ length: o.qtyMax ?? 1 }, (_, i) => price * (i + 1)), whys: Array.from({ length: o.qtyMax ?? 1 }, (_, i) => (i ? ask(key, i + 1) : why)) };
   };
   const ask = (key: string, qty = 1) => (c ? buyProblem(g as any, c.owner, { charId: c.id, key, qty }) : 'You have no character here to buy for.');
-  const lines = counterLines(chars);
+  const lines = counterLines(c ? [c] : chars); // rules 1.55: the counter follows the character it sells to
   const shelves = SHOP_DATA.always.map((s) => ({ shelf: s.shelf, name: s.name, cards: lines.filter((l) => l.shelf === s.shelf && (!l.res || !c || classResources(c).some((x) => x.id === l.res && x.persist)))
     .map((l) => l.res ? card(l.key, 'restock:' + l.res, 'standard', linePrice(l), 1, ask(l.key), { name: 'Restock: ' + l.res.replace(/_/g, ' '), qtyMax: Math.max(1, Math.min(SHOP_DATA.max_qty, c ? restockRoom(c, l.res) : 1)) })
       : card(l.key, l.id, 'standard', linePrice(l), l.per, ask(l.key), { qtyMax: SHOP_DATA.max_qty })) })).filter((s) => s.cards.length);
@@ -104,7 +106,9 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
     const graded = (it.rarity && it.rarity !== 'standard') || (it.mods || []).length;
     return { idx, id, label: itemLabel(it), rarity: (it.rarity || 'standard') as Rarity, qty: it.mags ? it.mags.length : it.qty, value: v, why,
       ask: graded && v != null ? 'Sell the ' + itemLabel(it) + ((it.mods || []).length ? ' and its ' + (it.mods || []).length + ' mod' + ((it.mods || []).length === 1 ? '' : 's') : '') + ' for ' + v + '?' : null,
-      kg: Math.round((carriedKg({ ...c, pack: [it], stims: 0, essence: 0, carried: [] } as Character).pack) * 100) / 100 };
+      kg: Math.round((carriedKg({ ...c, pack: [it], stims: 0, essence: 0, carried: [] } as Character).pack) * 100) / 100,
+      totals: Array.from({ length: Math.max(1, it.mags ? it.mags.length : it.qty) }, (_, i) => sellValue(it, i + 1)),
+      whys: Array.from({ length: Math.max(1, it.mags ? it.mags.length : it.qty) }, (_, i) => sellProblem(g as any, c.owner, { charId: c.id, idx, qty: i + 1 })) };
   }) : [];
   const owner = (pid: string) => chars.find((x) => x.owner === pid) || null;
   const party = g.players.map((p) => ({ id: p.id, charId: owner(p.id)?.id || null, name: p.name, charName: owner(p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', ready: !!r.ready[p.id], online: p.online, mine: p.id === me }));

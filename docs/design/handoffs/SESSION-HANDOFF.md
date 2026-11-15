@@ -1,6 +1,14 @@
 > **Note (14 Nov 2026): `START-HERE.md` in this folder is the current entry point; where it disagrees with this file, it is newer.**
 
 
+> **15 Nov 2026 (later): 0.28.1 IS LIVE; this block is newest, where anything below says otherwise it is older.**
+>
+> **LIVE: 0.28.1** (15 Nov 2026) at https://project-heaven-cry.leonpentastorm.workers.dev. `main` = `develop` = 8e51df38; `backup/live-0.28.1` pushed. It carries rules 1.55 (the latest spec revision): the field after a fight (walk the map, pick up, then everyone marks Leave the field), no magazines after a fight, scarce drops, the camp's offers (only what you can use, within the camp budget), the Magazines shelf, and weapon mods fitted only at the Forge for a fee (`CHANGELOG.md` 0.28.1). Title shows v0.28.1.
+> **Live check:** creation-points 97 checks, survival 184, room 27 passed. `old-save` and `fight-cards` failed even alone: `page.reload` timed out (30 s) waiting for the load event, because the page's many images were still loading from the live site; the title itself loaded and shows v0.28.1. Not a game logic failure; to be looked at (raise the reload wait for live runs, or check how fast the live site serves its images).
+> **Backups kept:** `backup/live-0.28.0` and `backup/live-0.28.1`, plus `backup/live-0.22.0` and `backup/live-0.23.0` for good (`backup/live-0.27.3` deleted, now the third latest).
+> **Branches:** all merged 0.28.1 branches and their `wip/*` pushes are deleted, and their worktrees removed. Unmerged and kept: `feature/0.29` and `wip/feature-0.29` (the 0.29 work), `art/survival-foes-2026-11-14`, `feature/title-front-v6`, `review/fable-first-read`, `wip/worktree-agent-a4c26f7ceb4409c36`.
+> **Left out of 0.28.1, for 0.29** (CHANGELOG): Pull Out shown on every melee pad; Pull Out in a browser room (the stuck mark stayed once); the extra mod slot perks still fit free; the mods that pass the guns' 145% ceiling.
+>
 > **15 Nov 2026: 0.28.0 IS LIVE; this block is newest, where anything below says otherwise it is older.**
 >
 > **LIVE: 0.28.0** (15 Nov 2026, on Leon's word) at https://project-heaven-cry.leonpentastorm.workers.dev. `main` = `develop` = f1bc51f8. It carries Survival (live since 0.27.x), rules 1.54 (materials and making, the slower climb, the side panels in every mode), the skill road map, the fight cards and Survival's music (`CHANGELOG.md` 0.28.0).
