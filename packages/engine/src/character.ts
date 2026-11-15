@@ -811,6 +811,8 @@ export const kindOfDoor = (door: string): FocusKind | null => (FOCUS_KINDS.inclu
  * weapon in data, never a list in code). */
 export const FOCUS_IDS: Record<FocusKind, string[]> = Object.fromEntries(FOCUS_KINDS.map((k) =>
   [k, [...new Set([...Object.keys(ITEM), ...Object.keys(WEAPON)].filter((id) => { const f = focusOf(id); return !!f && kindOfDoor(String(f.door)) === k; }))]])) as Record<FocusKind, string[]>;
+/** Every focus of any kind (FOCUS_IDS flattened): what door `any` holds and what isFocusId tests. */
+const ALL_FOCUS_IDS: string[] = [...new Set(Object.values(FOCUS_IDS).flat())];
 /** The focus kinds whose fuel is MP (a focus block's fuel): an Emanator or an Attuner keeps a character's MP. */
 const MP_FOCUS_KINDS: FocusKind[] = FOCUS_KINDS.filter((k) => FOCUS_IDS[k].some((id) => focusOf(id)?.fuel === 'mp'));
 /** What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. */
@@ -835,8 +837,7 @@ export const FOCUS_DOORS: string[] = [...FOCUS_KINDS, ...FOCUS_KINDS.map((k) => 
 /** Does this character hold it (see HoldSpec)? */
 export function holds(c: Character, o: HoldSpec): boolean {
   // rules 1.54 (survival-spec 14.2 item 3): door `any`, any focus of the four kinds or a weapon that counts as one
-  if (o.door === 'any') return ((o.slot || 'hand') === 'person' ? [c.weapon, c.offHand?.id, ...packOf(c).filter((x) => x.qty > 0).map((x) => x.item || x.id)] : inHands(c)).some((id) => !!id && isFocusId(id));
-  const k = o.door ? kindOfDoor(o.door) : null, ids = o.door ? (k ? FOCUS_IDS[k] : []) : o.item ? [o.item] : [];
+  const k = o.door && o.door !== 'any' ? kindOfDoor(o.door) : null, ids = o.door === 'any' ? ALL_FOCUS_IDS : o.door ? (k ? FOCUS_IDS[k] : []) : o.item ? [o.item] : [];
   if (!ids.length) return false;
   if ((o.slot || 'hand') === 'person') return carries(c, ids);
   return inHands(c).some((x) => ids.includes(x));
@@ -868,7 +869,7 @@ export const gearProps = (c: Character): string[] => [
 export type GearWhere = 'main' | 'off' | number | `quiver:${number}`;
 const quiverAt = (where: GearWhere): number | null => (typeof where === 'string' && where.startsWith('quiver:') ? Number(where.slice(7)) : null);
 /** The one focus test: is this id a focus of any kind (an item or a weapon in FOCUS_IDS)? */
-export const isFocusId = (id: string) => Object.values(FOCUS_IDS).some((l) => l.includes(id));
+export const isFocusId = (id: string) => ALL_FOCUS_IDS.includes(id);
 /** The weapon or focus instance at `where`: its id, rarity and property, or null (an empty hand, fists, a line that is
  * not a weapon or a focus). */
 export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Rarity; prop?: string; focus: boolean } | null {
