@@ -125,6 +125,24 @@ await p.locator('[data-phc-camp-more="stock:' + KN + '"]').click(); await settle
 ok('a second weapon from the rack at its price (' + knife + '): it goes in the pack', (await me0()).pack.some((x) => x.weapon === KN) && knife === WPN[KN].price_credits);
 await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
 await sidePanels(p, 'the camp');
+// Leon, 15 Nov: the camp's top bar (the budget, Next) stays in sight however far the camp is scrolled; nothing on a card
+// spills (a name, a stat row: its scrollWidth inside its box); two cards a family ("another one" at the free one's foot);
+// the families use the width (no family grid leaves more than a card's width empty on the right)
+const campOverflow = () => p.evaluate(() => { const bad = []; for (const e of document.querySelectorAll('[data-phc-camp-name], [data-phc-camp-stats] dt, [data-phc-camp-stats] dd, [data-phc-camp-card], [data-phc-camp-free], [data-phc-startboon]')) if (e.scrollWidth > e.clientWidth + 1) bad.push((e.textContent || '').slice(0, 24)); return bad; });
+for (const [w, hh] of [[1280, 720], [1920, 1080]]) {
+  await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
+  const bad = await campOverflow();
+  ok('the camp at ' + w + ': no card\'s name or stat row overflows its box' + (bad.length ? ' (' + bad.join(' | ') + ')' : ''), !bad.length);
+  const fam = await p.evaluate(() => [...document.querySelectorAll('[data-phc-camp-rack]')].map((f) => f.querySelectorAll('.phc-camp-pair > *').length));
+  const gap = await p.evaluate(() => { const g = document.querySelector('.phc-camp-families'), r = g.getBoundingClientRect(); let right = 0, card = 0; for (const k of g.children) { const b = k.getBoundingClientRect(); if (b.top - r.top < 5) { right = Math.max(right, b.right); card = b.width; } } return { empty: r.right - right, card }; });
+  ok('the camp at ' + w + ': each weapon family two cards at most (' + fam.join('') + '), the first row of families fills the width (' + Math.round(gap.empty) + ' px empty)', fam.every((n) => n >= 1 && n <= 2) && gap.empty < gap.card);
+  const bar = await p.evaluate(async () => { const s = document.querySelector('[data-phc-camp]').parentElement; s.scrollTop = s.scrollHeight; await new Promise((r) => setTimeout(r, 300));
+    const b = document.querySelector('[data-phc-camp-bar]').getBoundingClientRect(), c = s.getBoundingClientRect(), hit = document.elementFromPoint(b.left + 20, b.top + b.height / 2);
+    const next = document.querySelector('[data-phc-camp-next]')?.getBoundingClientRect(); const out = { scrolled: s.scrollTop, top: b.top - c.top, hit: !!hit?.closest('[data-phc-camp-bar]'), next: !!next && next.top >= c.top && next.bottom <= c.bottom };
+    s.scrollTop = 0; return out; });
+  ok('the camp at ' + w + ': scrolled to its end (' + bar.scrolled + ' px), the top bar is still at the top, in front, with Next in sight', bar.scrolled > 0 && Math.abs(bar.top) < 2 && bar.hit && bar.next);
+}
+await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 const kept = (await me0()).credits;
 // the starting boon: the camp's second step, three large cards offered by what the loadout holds
 ok('Ready waits for the starting boon: the button reads Next', await p.locator('[data-phc-camp-next]').count() === 1 && !(await p.locator('[data-phc-camp-ready]').count()));
@@ -136,6 +154,14 @@ await act({ type: 'run/move', node: (await run()).nodes.find((n) => n.depth === 
 ok('the map waits at the camp (a stop asked for is refused)', (await run()).state === 'loadout' && (await run()).at === null);
 const pickId = offer0.includes('start.zeroed') ? 'start.zeroed' : offer0[0];
 await p.locator('[data-phc-startboon="' + pickId + '"]').click(); await settle(p, 300);
+for (const [w, hh] of [[1280, 720], [1920, 1080]]) { // the boon step: the cards centred, nothing spills; at 1080 Carrying in sight
+  await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
+  const bad = await campOverflow(), m = await p.evaluate(() => { const t = document.querySelector('[data-phc-camp-take]').getBoundingClientRect(), cs = [...document.querySelectorAll('[data-phc-startboon]')].map((e) => e.getBoundingClientRect());
+    const l = Math.min(...cs.map((c) => c.left)), r = Math.max(...cs.map((c) => c.right)); return { off: Math.abs((l - t.left) - (t.right - r)), w: Math.min(...cs.map((c) => c.width)), carry: document.querySelector('[data-phc-camp-carry]').getBoundingClientRect().bottom, vh: innerHeight }; });
+  ok('the starting boon at ' + w + ': the cards centred (' + Math.round(m.off) + ' px off), each ' + Math.round(m.w) + ' px wide, no text spills' + (bad.length ? ' (' + bad.join(' | ') + ')' : '') + (hh >= 1080 ? ', Carrying in sight' : ''),
+    !bad.length && m.off < 24 && m.w >= 280 && (hh < 1080 || m.carry <= m.vh));
+}
+await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 ok('a starting boon chosen (' + pickId + '): marked, given when the camp closes', (await pick0()).boon === pickId && !((await me0()).relics || []).includes(pickId) && await p.locator('[data-phc-camp-ready]').count() === 1);
 await p.locator('[data-phc-camp-ready]').click();
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
@@ -175,12 +201,18 @@ ok('a run offers no area map: no AREA MAP button (' + areaMap.button + '), and M
 await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
 // rules 1.49 (build step 10): the map always fits its frame: every marker, its word and the camp inside the map's frame
 // (the vault's guard and chest were clipped by the frame's bottom at 1280 x 720), at three screen sizes
-const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800], [1920, 1080]]) {
+const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800], [1920, 1080], [2560, 1080]]) {
   await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
   const out = await p.evaluate(() => { const f = document.querySelector('[data-phc-pathmap]')?.getBoundingClientRect(); if (!f) return ['no map'];
     const bad = []; for (const n of document.querySelectorAll('[data-phc-node], [data-phc-node-camp]')) for (const e of [n, ...n.querySelectorAll('span')]) { const b = e.getBoundingClientRect(); if (!b.width) continue;
       if (b.left < f.left - 0.5 || b.right > f.right + 0.5 || b.top < f.top - 0.5 || b.bottom > f.bottom + 0.5) { bad.push(n.getAttribute('data-phc-node') || 'camp'); break; } } return bad; });
-  ok('rules 1.49: ' + when + ' at ' + w + ' x ' + hh + ': every marker and its word inside the map\'s frame, the vault\'s spur too' + (out.length ? ' (outside: ' + out.join(', ') + ')' : ''), !out.length); }
+  ok('rules 1.49: ' + when + ' at ' + w + ' x ' + hh + ': every marker and its word inside the map\'s frame, the vault\'s spur too' + (out.length ? ' (outside: ' + out.join(', ') + ')' : ''), !out.length);
+  // Leon, 15 Nov: the map fills its box: the layer (markers, trails) is the backdrop's box exactly, and it fills 90% of the
+  // middle's width or reaches the height cap (the legend and the hint still on screen); a frame never wider than its map
+  const fill = await p.evaluate(() => { const r = (s) => document.querySelector(s)?.getBoundingClientRect(); const m = r('[data-phc-pathmap]'), a = r('[data-phc-pathmap-art]') || r('[data-phc-pathmap-box]'), sc = r('[data-phc-pathmap-scroll]'), sec = r('[aria-label="Path map"]'), hint = r('[data-phc-map-hint]');
+    return { same: Math.abs(m.left - a.left) < 1.5 && Math.abs(m.top - a.top) < 1.5 && Math.abs(m.width - a.width) < 1.5 && Math.abs(m.height - a.height) < 1.5, share: Math.min(m.width, sc.width) / sec.width, capped: hint.bottom <= innerHeight + 1 && hint.bottom >= innerHeight - 60, frameOver: sc.width - m.width, hintOn: hint.bottom <= innerHeight + 1 }; });
+  ok('the path map at ' + w + ' x ' + hh + ': the layer is the backdrop\'s box, ' + Math.round(fill.share * 100) + '% of the width' + (fill.capped ? ' (height cap)' : '') + ', no black remainder (' + Math.round(fill.frameOver) + ' px)',
+    fill.same && (fill.share >= 0.9 || fill.capped) && fill.frameOver <= 4); }
   await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); };
 await mapFits('stage 1\'s map');
 
@@ -289,12 +321,37 @@ const fitsCheck = () => p.evaluate(() => {
   for (let i = 0; i < cards.length; i++) for (let j = i + 1; j < cards.length; j++) { const a = cards[i], b = cards[j]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) bad.push('cards overlap'); }
   return bad.slice(0, 4);
 });
+/** The visibility standard (Leon, 15 Nov 2026; ui-screens.md "The place header stays"): a place's header (PlaceBar) stays
+ * at the top of the middle column's scroll: scrolled to its end, the header's money and its move-on button are still in
+ * the viewport, in front; the header compact (the portrait small, the line hidden) once scrolled. At 1280 x 720 and 1920 x 1080. */
+let headerPlaces = 0;
+async function headerStays(where, shot) {
+  const bad = [];
+  for (const [w, hh] of [[1280, 720], [1920, 1080]]) {
+    await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
+    if (shot && w === 1920) { await p.mouse.move(2, 2); await settle(p, 400); await p.screenshot({ path: OUT + shot + '-1920.png' }); }
+    const r = await p.evaluate(async () => { const bar = document.querySelector('[data-phc-place-bar]'); if (!bar) return { err: 'no header' };
+      let s = bar.parentElement; while (s && !(/(auto|scroll)/.test(getComputedStyle(s).overflowY) && s.scrollHeight > s.clientHeight + 1)) s = s.parentElement;
+      if (s) s.scrollTop = s.scrollHeight; else window.scrollTo(0, document.documentElement.scrollHeight);
+      await new Promise((ok) => setTimeout(ok, 600));
+      const inView = (e) => { const b = e?.getBoundingClientRect(); if (!b || !b.width) return false; const t = document.elementFromPoint(b.left + Math.min(b.width / 2, 20), b.top + b.height / 2); return b.top >= 0 && b.bottom <= innerHeight && !!t && bar.contains(t); };
+      const money = bar.querySelector('[data-phc-bar-money]'), move = bar.querySelector('[data-phc-bar-move] button'), b = bar.getBoundingClientRect(), top = s ? s.getBoundingClientRect().top : 0;
+      return { scrolled: s ? s.scrollTop : window.scrollY, money: inView(money), move: inView(move), atTop: s ? Math.abs(b.top - top) < 2 : b.top >= 0, compact: bar.getAttribute('data-phc-compact'), tall: Math.round(b.height) }; });
+    if (shot && w === 1920) { await p.mouse.move(2, 2); await settle(p, 300); await p.screenshot({ path: OUT + shot + '-1920-scrolled.png' }); }
+    if (r.err || !r.money || !r.move || !r.atTop || (r.scrolled > 330 && r.compact !== '1')) bad.push(w + ': ' + JSON.stringify(r));
+    await p.evaluate(() => { const bar = document.querySelector('[data-phc-place-bar]'); let s = bar?.parentElement; while (s && !/(auto|scroll)/.test(getComputedStyle(s).overflowY)) s = s.parentElement; if (s) s.scrollTop = 0; window.scrollTo(0, 0); });
+  }
+  await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
+  ok('the visibility standard: ' + where + ' scrolled to its end, its header (the credits, the button that moves on) still in sight at the top, compact' + (bad.length ? ' (' + bad.join('; ') + ')' : ''), !bad.length);
+  if (!bad.length) headerPlaces++;
+}
 async function shopChecks() {
   sawShop = true;
   await p.waitForSelector('[data-phc-place-frame]', { timeout: 30000 });
   ok('a shop node opens the shop in the middle: the keeper, the tabs, the purse; the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0
     && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent()) && await p.locator('[data-phc-place-frame] [role="tab"]').count() === 4 && /\d/.test(await p.locator('[data-phc-purse-n]').textContent()));
   await sidePanels(p, 'the shop');
+  await headerStays('the shop', 'shop');
   ok('solo: no Give tab (there is no one to hand anything to; docs/design/ui-screens.md, Writing for the player)', await p.locator('[data-phc-tab="give"]').count() === 0);
   {
     // the keeper speaks as a tab opens: one of its own lines for that tab (data survival.json faces), never a designer's note
@@ -353,7 +410,7 @@ async function shopChecks() {
       && await p.locator('[data-phc-recipe]').count() === RECIPES.filter((x) => x.tool.item === MAKER).length && await p.locator('[data-phc-recipe="' + CORE.id + '"]').count() === 0);
     const most = Number(await row.getAttribute('data-phc-recipe-most'));
     ok('… the ' + rec.name + ' row: what it takes with what you have, what it makes, the engine\'s most (' + most + ')', most === Math.min(...rec.needs.map((l) => Math.floor(held(m1, l.item) / l.n)))
-      && new RegExp('you have ' + held(m1, rec.needs[0].item) + '\\)').test(await row.locator('[data-phc-recipe-needs]').textContent()));
+      && new RegExp('\\(have ' + held(m1, rec.needs[0].item) + '\\)').test(await row.locator('[data-phc-recipe-needs]').textContent()));
     await row.locator('[data-phc-make-more]').click(); await settle(p, 150);
     ok('… the stepper reads 2 and the button Make × 2', (await row.locator('[data-phc-make-n]').textContent()).trim() === '2' && /Make × 2/.test(await row.locator('[data-phc-make-go]').textContent()));
     await p.locator('[data-phc-make]').scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await settle(p, 400);
@@ -364,6 +421,48 @@ async function shopChecks() {
     ok('Make × 2 clicked: ' + rec.gives[0].n * times + ' rounds arrive (' + loose(m1, rcal) + ' → ' + loose(m2, rcal) + '), the gunpowder and casings leave (' + rec.needs.map((l) => held(m1, l.item) + ' → ' + held(m2, l.item)).join(', ') + '), free',
       loose(m2, rcal) === loose(m1, rcal) + rec.gives[0].n * times && rec.needs.every((l) => held(m2, l.item) === held(m1, l.item) - l.n * times) && m2.credits === m1.credits);
     ok('… the visit\'s log says what was made', /makes /.test(await p.locator('[data-phc-visit-log]').textContent()));
+    { // Leon, 15 Nov 2026: Make folds (the sheet's one fold) and the fold survives a change of sheet tab; each recipe one row
+      await p.locator('[data-phc-make]').scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await settle(p, 300);
+      await p.screenshot({ path: OUT + 'make-expanded.png' });
+      const nOpen = await p.locator('[data-phc-recipe]').count(), tall = await p.locator('[data-phc-recipe]').first().evaluate((e) => e.getBoundingClientRect().height);
+      await p.locator('[data-phc-gear-head="make"]').click(); await settle(p, 300);
+      await p.screenshot({ path: OUT + 'make-collapsed.png' });
+      const nShut = await p.locator('[data-phc-recipe]').count();
+      await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200); await p.locator('#phc-sheet-tab-gear').click(); await settle(p, 300);
+      const nBack = await p.locator('[data-phc-recipe]').count(), exp = await p.locator('[data-phc-gear-head="make"]').getAttribute('aria-expanded');
+      await p.locator('[data-phc-gear-head="make"]').click(); await settle(p, 300);
+      ok('Make folds: ' + nOpen + ' rows, folded none (' + nShut + '), still folded after another sheet tab (' + nBack + ', ' + exp + '), open again (' + await p.locator('[data-phc-recipe]').count() + '); a recipe is one compact row (' + Math.round(tall) + ' px)',
+        nOpen > 0 && nShut === 0 && nBack === 0 && exp === 'false' && await p.locator('[data-phc-recipe]').count() === nOpen && tall <= 140);
+    }
+    { // Leon, 15 Nov 2026: the backpack first, folding, and Expand opens it large over the middle (both side panels stay):
+      // an action there goes through its real button; Escape closes it
+      await p.locator('[data-phc-pack]').scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await settle(p, 300);
+      await p.locator('[data-phc-pack]').screenshot({ path: OUT + 'pack-docked.png' });
+      const order = await p.evaluate(() => { const y = (s) => document.querySelector(s)?.getBoundingClientRect().top ?? null; return [y('[data-phc-gear-sec="worn"]'), y('[data-phc-pack]'), y('[data-phc-make]')]; });
+      ok('the GEAR tab: in hand and worn, then the Backpack, then Make (' + order.map(Math.round).join(' < ') + ')', !order.includes(null) && order[0] < order[1] && order[1] < order[2]);
+      await p.locator('[data-phc-gear-head="pack"]').click(); await settle(p, 200);
+      const packShut = await p.locator('[aria-label="Backpack contents"]').count();
+      await p.locator('[data-phc-gear-head="pack"]').click(); await settle(p, 200);
+      ok('the Backpack folds and opens (' + packShut + ' → ' + await p.locator('[aria-label="Backpack contents"]').count() + ')', packShut === 0 && await p.locator('[aria-label="Backpack contents"]').count() === 1);
+      for (const [w, hh] of [[1920, 1080], [1280, 720]]) {
+        await p.setViewportSize({ width: w, height: hh }); await settle(p, 400);
+        await p.locator('[data-phc-pack-expand]').click(); await p.waitForSelector('[data-phc-pack-big]', { timeout: 30000 }); await p.mouse.move(2, 2); await settle(p, 400);
+        await p.screenshot({ path: OUT + 'pack-expanded-' + w + '.png' });
+        const big = await p.evaluate(() => { const b = document.querySelector('[data-phc-pack-big]').getBoundingClientRect(), l = document.querySelector('aside[aria-label="Character sheet"]').getBoundingClientRect(), r = document.querySelector('[data-story-zone]').getBoundingClientRect();
+          return { left: b.left >= l.right - 2, right: b.right <= r.left + 2, wide: b.width > 300, groups: document.querySelectorAll('[data-phc-pack-group]').length, rows: document.querySelectorAll('[data-phc-pack-big-row]').length }; });
+        ok('Expand at ' + w + ': the backpack large over the middle only (' + big.groups + ' groups, ' + big.rows + ' rows), both side panels still there', big.left && big.right && big.wide && big.groups > 0 && big.rows > 0);
+        await sidePanels(p, 'the large backpack'); if (w !== 1280) { await p.keyboard.press('Escape'); await settle(p, 300); }
+      }
+      const w0 = (await me0()).weapon, other = (await me0()).pack.find((x) => x.kind === 'weapon' && x.weapon && x.weapon !== w0);
+      if (other) {
+        await p.locator('[data-phc-pack-big-row]', { hasText: WPN[other.weapon].name }).locator('[data-phc-pack-act="m"]').first().click(); await settle(p, 400);
+        const w1 = (await me0()).weapon;
+        await p.locator('[data-phc-pack-big-row]', { hasText: WPN[w0].name }).locator('[data-phc-pack-act="m"]').first().click(); await settle(p, 400);
+        ok('… its Main hand button equips ' + WPN[other.weapon].name + ' (' + w1 + '), and back (' + (await me0()).weapon + ')', w1 === other.weapon && (await me0()).weapon === w0);
+      } else ok('… a weapon in the pack to equip from the large backpack', false);
+      await p.keyboard.press('Escape'); await settle(p, 300);
+      ok('… Escape closes it', await p.locator('[data-phc-pack-big]').count() === 0);
+    }
     await p.locator('#phc-sheet-tab-skills').click(); await settle(p, 200);
   }
   // sell one (the weapon picked after node 1), then buy a rolled weapon
@@ -491,6 +590,7 @@ while (guard++ < 40) {
       if (!placeShots[k]) {
         placeShots[k] = true;
         await sidePanels(p, 'a place: the ' + k);
+        await headerStays('the ' + k, k === 'forge' ? 'forge' : null);
         ok('rules 1.46: the ' + k + ' opens in the middle: its face, its tabs, large cards (solo: no Give tab); the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0 && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent())
           && await p.locator('[data-phc-tab="give"]').count() === 0 && !!(await p.locator('[data-phc-keeper-portrait]').getAttribute('src').catch(() => '')));
         await p.mouse.move(2, 2); // no hover card over the shot
@@ -571,6 +671,7 @@ r = await run(); g = await G();
 ok('the level-up waits on the map at level 3 (the class is earned there), and Back to the map returns', sawLevelUp && Object.values(g.characters)[0].level >= 3);
 ok('rules 1.43: the route passed a training ground, a shrine, a Forge, a crossroads and a rest, each choice landed (' + JSON.stringify(done) + ')', ['training', 'shrine', 'forge', 'event', 'rest'].every((k) => done[k]));
 ok('a shop was on the way and opened full screen', sawShop);
+ok('the visibility standard held on the shop and at least two other places (' + headerPlaces + ')', headerPlaces >= 3);
 ok('rules 1.46: every safe node on the route opened full screen (' + Object.keys(placeShots).join(', ') + ')', ['forge', 'training', 'shrine', 'event', 'rest'].every((k) => placeShots[k]));
 ok('the whole stage walked to the Boss: 15 nodes, STAGE 1 CLEARED', r.state === 'boon' && r.path.length === 15 && /STAGE 1 CLEARED/.test(await p.locator('[data-phc-cleared]').textContent()));
 ok('rules 1.54 item 11: a weapon taken from a pick on the walk was equipped through the sheet', equipped);
@@ -589,7 +690,7 @@ await sidePanels(p, 'the stage cleared');
   ok('the focus held in the off hand through the sheet (' + F.name + '), ' + held(c1, RES) + ' mana residue carried', c1.offHand?.id === F.id && held(c1, RES) >= CORE.needs[0].n);
   await p.waitForSelector('[data-phc-recipe="' + CORE.id + '"]', { timeout: 15000 }).catch(() => {});
   const row = p.locator('[data-phc-recipe="' + CORE.id + '"]');
-  ok('Make shows the core: it takes ' + CORE.needs[0].n + ' mana residue with the focus in hand', await row.count() === 1 && new RegExp('Takes ' + CORE.needs[0].n + ' mana residue').test(await row.locator('[data-phc-recipe-needs]').textContent()));
+  ok('Make shows the core: it takes ' + CORE.needs[0].n + ' mana residue with the focus in hand', await row.count() === 1 && new RegExp('^' + CORE.needs[0].n + ' mana residue').test(await row.locator('[data-phc-recipe-needs]').textContent()));
   await row.locator('[data-phc-make-go]').click();
   await p.waitForFunction(([id, n]) => (Object.values(window.__phc.getState().game.characters)[0].pack || []).filter((x) => (x.item || x.id) === id).reduce((t, x) => t + x.qty, 0) !== n, [MADE, held(c1, MADE)], { timeout: 30000 }).catch(() => {});
   const c2 = Object.values((await G()).characters)[0];

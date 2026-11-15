@@ -10,6 +10,7 @@ import { act, getState } from './store';
 import { shopView, compareGear, type ShopCardV, type ShopViewV, type Rarity } from '@engine';
 import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
 import { tipProps } from './actionTip';
+import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import ASSETS from './assets.json';
 import { GiveTab } from './GiveTab';
@@ -145,7 +146,7 @@ export function ShopScreen() {
     </div>))}</div></section>;
   return (
     <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.setting} line={say.text} lineKey={say.key}
-      tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0}
+      tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0} actions={<MoveOn />}
       onClose={v.isHost && v.party.length > 1 ? () => act({ type: 'run/leave', close: true }) : undefined} closeTip="Takes everyone back to the map.">
       {body}
       {tab !== 'give' ? <section data-phc-compare-panel="" style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 14, background: 'rgba(16,21,31,0.9)', border: '1px solid ' + I.line }}>

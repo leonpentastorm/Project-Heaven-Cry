@@ -139,6 +139,7 @@
 
 <sc-if value="{{tabGear}}" hint-placeholder-val="{{false}}">
 <div class="{{tabCls}}" style="display: flex; flex-direction: column; gap: 10px">
+<section aria-label="In hand and worn" data-phc-gear-sec="worn" style="display: flex; flex-direction: column; gap: 8px"><button type="button" data-phc-gear-head="worn" onClick="{{gs.worn.toggle}}" aria-expanded="{{gs.worn.expanded}}" style="display: flex; align-items: center; gap: 8px; width: 100%; min-height: 32px; padding: 0 2px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-align: left; cursor: pointer"><span aria-hidden="true" style="width: 12px">{{gs.worn.chev}}</span>IN HAND AND WORN</button><sc-if value="{{gs.worn.open}}"><div style="display: flex; flex-direction: column; gap: 10px">
 <div aria-label="Hands" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <sc-for list="{{hands}}" as="h"><div style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
 <span style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2"><span>{{h.side}}</span><span>{{h.tag}}</span></span>
@@ -162,60 +163,65 @@
 <sc-if value="{{s.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{s.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{s.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{s.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div>
 </div>
+</div></sc-if></section>
 <sc-if value="{{hasCarried}}"><section aria-label="Carried" data-carried="1" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D">
-<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">CARRIED</span><span style="{{carryLoadStyle}}">{{carryLoad}}</span>
-<sc-for list="{{carried}}" as="cr"><div role="listitem" data-carried-id="{{cr.id}}" style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F">
+<button type="button" data-phc-gear-head="carried" onClick="{{gs.carried.toggle}}" aria-expanded="{{gs.carried.expanded}}" style="display: flex; align-items: center; gap: 8px; width: 100%; min-height: 32px; padding: 0 2px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-align: left; cursor: pointer"><span aria-hidden="true" style="width: 12px">{{gs.carried.chev}}</span>CARRIED</button><span style="{{carryLoadStyle}}">{{carryLoad}}</span>
+<sc-if value="{{gs.carried.open}}"><sc-for list="{{carried}}" as="cr"><div role="listitem" data-carried-id="{{cr.id}}" style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F">
 <span style="position: relative; flex: none; width: 40px; height: 40px"><sc-if value="{{cr.hasImg}}"><img src="{{cr.img}}" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid #3B475D"></sc-if><sc-if value="{{cr.noImg}}"><span style="display: grid; place-items: center; width: 40px; height: 40px; border-radius: 8px; background: #1C2536; font-size: 11px; font-weight: 700">{{cr.badge}}</span></sc-if></span>
 <span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 13px; font-weight: 700">{{cr.name}}</span><span style="font-size: 11px; letter-spacing: 0.06em; color: #A3AEC2">{{cr.line}}</span></span>
 <span style="font-size: 13px; font-weight: 700">{{cr.kg}}</span>
 <span style="display: flex; flex-direction: column; gap: 4px"><button type="button" data-putdown-btn="{{cr.id}}" onClick="{{cr.put}}" disabled="{{cr.cantPut}}" tip="{{cr.putWhy}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Put down · 1 AP</button><button type="button" onClick="{{cr.putNear}}" disabled="{{cr.cantPut}}" tip="On the nearest free tile" style="min-height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid #2E3A50; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 11px; cursor: pointer">Nearest tile</button></span>
-</div></sc-for></section></sc-if>
-<div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
-<div style="display: flex; align-items: center; gap: 10px">
-<svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" style="flex: none"><g fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"><path d="M14,12 v-3 a4,4 0 0 1 8,0 v3"></path><path d="M9,12 h18 a3,3 0 0 1 3,3 v15 a3,3 0 0 1 -3,3 h-18 a3,3 0 0 1 -3,-3 v-15 a3,3 0 0 1 3,-3 z"></path><path d="M6,19 h24"></path><path d="M12,24 h12 v5 h-12 z"></path></g></svg>
-<span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">BACKPACK</span><span style="{{loadStyle}}">{{load}}</span></span>
+</div></sc-for></sc-if></section></sc-if>
+<section aria-label="Backpack" data-phc-pack="" style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<button type="button" data-phc-gear-head="pack" onClick="{{gs.pack.toggle}}" aria-expanded="{{gs.pack.expanded}}" style="display: flex; align-items: center; gap: 8px; width: 100%; min-height: 32px; padding: 0 2px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-align: left; cursor: pointer; width: auto; flex: 1 1 auto"><span aria-hidden="true" style="width: 12px">{{gs.pack.chev}}</span><svg width="22" height="22" viewBox="0 0 36 36" aria-hidden="true" style="flex: none"><g fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"><path d="M14,12 v-3 a4,4 0 0 1 8,0 v3"></path><path d="M9,12 h18 a3,3 0 0 1 3,3 v15 a3,3 0 0 1 -3,3 h-18 a3,3 0 0 1 -3,-3 v-15 a3,3 0 0 1 3,-3 z"></path><path d="M6,19 h24"></path><path d="M12,24 h12 v5 h-12 z"></path></g></svg>BACKPACK<span data-phc-pack-count="" style="margin-left: auto; font-weight: 400; letter-spacing: 0.04em; color: #A3AEC2">{{packBig.count}}</span></button>
+<button type="button" data-phc-pack-expand="" onClick="{{packBig.openIt}}" aria-haspopup="dialog" tip="Open the backpack large, over the middle" style="flex: none; min-height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">Expand ⤢</button>
 </div>
-<div class="phc-rig" role="list" aria-label="Backpack contents" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px">
+<span style="{{loadStyle}}">{{load}}</span>
+<sc-if value="{{gs.pack.open}}"><div class="phc-rig" role="list" aria-label="Backpack contents" style="max-height: max(260px, calc(100vh - 330px)); overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px">
 <sc-if value="{{noRig}}"><span style="font-size: 12px; color: #A3AEC2">Empty.</span></sc-if>
 <sc-for list="{{rigView}}" as="r"><div role="listitem" style="display: flex; flex-direction: column"><button type="button" onClick="{{r.toggle}}" onMouseEnter="{{r.hover}}" onMouseLeave="{{r.leave}}" onFocus="{{r.hover}}" onBlur="{{r.leave}}" style="{{r.style}}; font-family: inherit; text-align: left; color: inherit">
-<span style="display: grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; color: #A3AEC2"><sc-if value="{{r.hasImg}}"><img src="{{r.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{r.noImg}}">{{r.glyph}}</sc-if></span>
-<span style="font-size: 13px; font-weight: 600; min-width: 0">{{r.name}} <span style="font-weight: 400; color: #A3AEC2">{{r.qty}}</span></span>
-<span style="color: #A3AEC2">{{r.kg}}</span></button>
-<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
+<span style="display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; color: #A3AEC2"><sc-if value="{{r.hasImg}}"><img src="{{r.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{r.noImg}}">{{r.glyph}}</sc-if></span>
+<span data-phc-pack-name="" style="font-size: 13px; font-weight: 600; min-width: 0; overflow-wrap: anywhere">{{r.name}}</span>
+<span data-phc-pack-qty="" style="font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums">{{r.qty}}</span>
+<span style="font-size: 13px; color: #A3AEC2; text-align: right; white-space: nowrap">{{r.kg}}</span></button>
+<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 13px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div>
 <sc-if value="{{hasPlot}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2; padding-top: 4px">PLOT ITEMS</span>
 <div role="list" aria-label="Plot items" style="display: flex; flex-direction: column; gap: 4px">
 <sc-for list="{{plotView}}" as="r"><div role="listitem" style="display: flex; flex-direction: column"><button type="button" onClick="{{r.toggle}}" onMouseEnter="{{r.hover}}" onMouseLeave="{{r.leave}}" onFocus="{{r.hover}}" onBlur="{{r.leave}}" style="{{r.style}}; font-family: inherit; text-align: left; color: inherit">
-<span style="display: grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; color: #A3AEC2"><sc-if value="{{r.hasImg}}"><img src="{{r.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{r.noImg}}">{{r.glyph}}</sc-if></span>
-<span style="font-size: 13px; font-weight: 600; min-width: 0">{{r.name}} <span style="font-weight: 400; color: #A3AEC2">{{r.qty}}</span></span>
-<span style="color: #A3AEC2">{{r.kg}}</span></button>
-<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 11px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
+<span style="display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; color: #A3AEC2"><sc-if value="{{r.hasImg}}"><img src="{{r.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{r.noImg}}">{{r.glyph}}</sc-if></span>
+<span data-phc-pack-name="" style="font-size: 13px; font-weight: 600; min-width: 0; overflow-wrap: anywhere">{{r.name}}</span>
+<span data-phc-pack-qty="" style="font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums">{{r.qty}}</span>
+<span style="font-size: 13px; color: #A3AEC2; text-align: right; white-space: nowrap">{{r.kg}}</span></button>
+<sc-if value="{{r.open}}"><div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px"><sc-for list="{{r.acts}}" as="x"><button type="button" onClick="{{x.go}}" style="min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid #E7EBF3; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for><sc-if value="{{r.noActs}}"><span style="font-size: 13px; color: #A3AEC2">{{r.noActText}}</span></sc-if></div></sc-if></div></sc-for>
 </div></sc-if>
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-<span style="font-size: 12px; line-height: 1.4; color: #7F8BA1; flex: 1 1 160px">{{eoe.why}}</span>
-<button type="button" disabled="{{eoe.locked}}" tip="{{eoe.why}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #232D3F; background: transparent; color: #7F8BA1; font-family: inherit; font-size: 12px; font-weight: 600">Crack the Essence</button>
+<span style="font-size: 13px; line-height: 1.4; color: #7F8BA1; flex: 1 1 160px">{{eoe.why}}</span>
+<button type="button" disabled="{{eoe.locked}}" tip="{{eoe.why}}" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #232D3F; background: transparent; color: #7F8BA1; font-family: inherit; font-size: 13px; font-weight: 600">Crack the Essence</button>
 </div>
-</div>
-<sc-if value="{{mk.has}}" hint-placeholder-val="{{false}}"><section aria-label="Make" data-phc-make="{{mk.charId}}" style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D">
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em">MAKE</span><span style="font-size: 11.5px; line-height: 1.4; color: #A3AEC2">{{mk.sub}}</span></span>
-<div role="list" aria-label="Recipes" style="display: flex; flex-direction: column; gap: 6px">
-<sc-for list="{{mk.rows}}" as="m"><div role="listitem" data-phc-recipe="{{m.key}}" data-phc-recipe-most="{{m.most}}" style="display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 8px; background: #0D1119; border: 1px solid #1C2536">
-<div style="display: flex; align-items: center; gap: 8px; min-width: 0">
-<span style="display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; font-size: 13px; font-weight: 700; color: #A3AEC2"><sc-if value="{{m.hasImg}}"><img src="{{m.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{m.noImg}}">{{m.badge}}</sc-if></span>
-<span style="display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0"><span style="font-size: 13px; font-weight: 700">{{m.name}}</span><span data-phc-recipe-gives="" style="font-size: 11.5px; color: #E7EBF3">{{m.gives}}</span></span>
-</div>
-<span data-phc-recipe-needs="" style="font-size: 11.5px; line-height: 1.4; color: #A3AEC2">{{m.needs}}</span>
-<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+</sc-if>
+</section>
+<sc-if value="{{mk.has}}" hint-placeholder-val="{{false}}"><section aria-label="Make" data-phc-make="{{mk.charId}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D">
+<button type="button" data-phc-gear-head="make" onClick="{{gs.make.toggle}}" aria-expanded="{{gs.make.expanded}}" style="display: flex; align-items: center; gap: 8px; width: 100%; min-height: 32px; padding: 0 2px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-align: left; cursor: pointer"><span aria-hidden="true" style="width: 12px">{{gs.make.chev}}</span>MAKE<span data-phc-make-ready="" style="margin-left: auto; font-weight: 400; letter-spacing: 0.04em; color: #A3AEC2">{{mk.ready}}</span></button>
+<sc-if value="{{gs.make.open}}"><span style="font-size: 13px; line-height: 1.4; color: #A3AEC2">{{mk.sub}}</span>
+<div role="list" aria-label="Recipes" style="display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{mk.rows}}" as="m"><div role="listitem" data-phc-recipe="{{m.key}}" data-phc-recipe-most="{{m.most}}" aria-disabled="{{m.off}}" style="{{m.rowStyle}}">
+<span style="display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 6px; background: #10151F; border: 1px solid #232D3F; overflow: hidden; font-size: 13px; font-weight: 700; color: #A3AEC2"><sc-if value="{{m.hasImg}}"><img src="{{m.img}}" alt="" style="width: 100%; height: 100%; object-fit: contain"></sc-if><sc-if value="{{m.noImg}}">{{m.badge}}</sc-if></span>
+<span style="display: flex; align-items: baseline; gap: 6px; flex: 1 1 140px; min-width: 0; flex-wrap: wrap"><span style="font-size: 13px; font-weight: 700; overflow-wrap: anywhere">{{m.name}}</span><span data-phc-recipe-gives="" tip="{{m.givesTip}}" style="font-size: 13px; color: #E7EBF3">{{m.gives}}</span></span>
+<span data-phc-recipe-needs="" aria-label="{{m.needsText}}" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 200px; min-width: 0"><sc-for list="{{m.needs}}" as="nd"><span data-phc-recipe-need="{{nd.key}}" style="padding: 1px 8px; border-radius: 99px; border: 1px solid #2E3A50; font-size: 13px; color: #C9D3E3; white-space: nowrap">{{nd.text}}</span></sc-for></span>
+<span style="display: flex; align-items: center; gap: 6px; margin-left: auto">
 <span role="group" aria-label="How many times" style="display: inline-flex; align-items: center; border-radius: 8px; border: 1px solid #2E3A50">
-<button type="button" data-phc-make-less="{{m.key}}" aria-label="One fewer" onClick="{{m.less}}" disabled="{{m.noLess}}" style="width: 30px; height: 30px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">‹</button>
-<span data-phc-make-n="{{m.key}}" style="min-width: 26px; text-align: center; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums">{{m.n}}</span>
-<button type="button" data-phc-make-more="{{m.key}}" aria-label="One more" onClick="{{m.more}}" disabled="{{m.noMore}}" style="width: 30px; height: 30px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">›</button>
+<button type="button" data-phc-make-less="{{m.key}}" aria-label="One fewer" onClick="{{m.less}}" disabled="{{m.noLess}}" style="width: 28px; height: 30px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">‹</button>
+<span data-phc-make-n="{{m.key}}" style="min-width: 24px; text-align: center; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums">{{m.n}}</span>
+<button type="button" data-phc-make-more="{{m.key}}" aria-label="One more" onClick="{{m.more}}" disabled="{{m.noMore}}" style="width: 28px; height: 30px; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 16px; cursor: pointer">›</button>
 </span>
 <button type="button" data-phc-make-go="{{m.key}}" onClick="{{m.make}}" aria-disabled="{{m.off}}" tip="{{m.why}}" style="{{m.goStyle}}">{{m.goLabel}}</button>
-<span data-phc-make-why="" style="flex: 1 1 120px; font-size: 11.5px; line-height: 1.35; color: #A3AEC2">{{m.status}}</span>
-</div>
+<span data-phc-make-count="" tip="{{m.status}}" style="min-width: 30px; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; color: #A3AEC2">{{m.count}}</span>
+</span>
+<sc-if value="{{m.hasWhy}}"><span data-phc-make-why="" style="flex-basis: 100%; font-size: 13px; line-height: 1.35; color: #A3AEC2">{{m.why}}</span></sc-if>
 </div></sc-for>
-</div>
+</div></sc-if>
 </section></sc-if>
 </div>
 </sc-if>
@@ -471,7 +477,28 @@
 
 </aside>
 
-<main aria-label="Story" style="flex: 999 1 560px; min-width: 0; min-height: 0; display: flex; flex-direction: column">
+<main aria-label="Story" style="position: relative; flex: 999 1 560px; min-width: 0; min-height: 0; display: flex; flex-direction: column">
+<sc-if value="{{packBig.open}}" hint-placeholder-val="{{false}}"><div role="dialog" aria-modal="false" aria-label="Backpack, large" data-phc-pack-big="" style="position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; background: #0A0D13; border-left: 1px solid #232D3F; border-right: 1px solid #232D3F; font-family: 'Chakra Petch', sans-serif; color: #E7EBF3">
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 20px; border-bottom: 1px solid #232D3F">
+<h2 style="margin: 0; font-family: 'Spectral', serif; font-size: 26px; font-weight: 600">Backpack</h2>
+<span style="font-size: 14px; color: #A3AEC2">{{packBig.count}} · {{load}}</span>
+<button type="button" data-phc-pack-close="" onClick="{{packBig.close}}" style="margin-left: auto; min-height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Close ✕</button>
+</div>
+<sc-if value="{{packBig.locked}}"><span style="padding: 8px 20px 0; font-size: 14px; color: #A3AEC2">{{packBig.lockedText}}</span></sc-if>
+<div class="phc-col-scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 24px; display: flex; flex-direction: column; gap: 18px">
+<sc-for list="{{packBig.groups}}" as="pg"><section aria-label="{{pg.label}}" data-phc-pack-group="{{pg.key}}" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2; border-bottom: 1px solid #232D3F; padding-bottom: 4px">{{pg.label}}</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 8px">
+<sc-for list="{{pg.rows}}" as="r"><div data-phc-pack-big-row="{{r.key}}" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F">
+<span style="grid-row: span 2; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; background: #0D1119; border: 1px solid #232D3F; overflow: hidden; font-size: 20px; color: #A3AEC2"><sc-if value="{{r.hasImg}}"><img src="{{r.img}}" alt="" style="width: 40px; height: 40px; object-fit: contain"></sc-if><sc-if value="{{r.noImg}}">{{r.glyph}}</sc-if></span>
+<span style="font-size: 15px; font-weight: 700; min-width: 0; overflow-wrap: anywhere">{{r.name}}</span>
+<span style="text-align: right; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums">{{r.qty}} <span style="font-weight: 400; font-size: 13px; color: #A3AEC2">{{r.kg}}</span></span>
+<span style="grid-column: 2 / -1; font-size: 13px; line-height: 1.4; color: #C9D3E3">{{r.note}}</span>
+<sc-if value="{{r.hasBigActs}}"><div style="grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px"><sc-for list="{{r.bigActs}}" as="x"><button type="button" data-phc-pack-act="{{x.key}}" onClick="{{x.go}}" style="min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{x.label}}</button></sc-for></div></sc-if>
+</div></sc-for>
+</div></section></sc-for>
+</div>
+</div></sc-if>
 <div class="phc-sb-centre phc-col-scroll" data-phc-sb-centre="1" data-phc-centre="1" style="display: none"></div>
 <div class="phc-story phc-col-scroll" style="flex: 1; min-height: 0; overflow-y: auto">
 <div style="display: flex; flex-direction: column; gap: 18px; padding: 24px 32px; max-width: 860px; width: 100%; box-sizing: border-box; margin: 0 auto">

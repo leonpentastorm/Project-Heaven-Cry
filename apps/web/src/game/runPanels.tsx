@@ -108,14 +108,17 @@ function RunBoard({ g, me }: { g: GameState; me: string }) {
 
 /** The one phase control: what the engine's views say the squad does next, here. */
 interface Phase { key: string; label: string; attr: Record<string, string>; go?: () => void; why?: string }
+/** The camp's phase (rules 1.52): Ready (or Start, solo) once a starting boon is chosen. The right panel's control and
+ * the camp's own top bar both draw this one (the bar with its own data mark). */
+export function campPhase(g: GameState, me: string): Phase | null {
+  const lv = loadoutView(g as any, me); if (!lv) return null;
+  const solo = lv.solo;
+  if (lv.readyWhy) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', attr: { 'data-phc-phase': 'ready' }, why: lv.readyWhy }; // the engine's refusal, in its words
+  return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any) };
+}
 function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   const r = g.run!;
-  if (r.state === 'loadout') { // rules 1.52: the camp: Ready (or Start, solo) once a starting boon is chosen
-    const lv = loadoutView(g as any, me); if (!lv) return null;
-    const solo = lv.solo;
-    if (lv.readyWhy) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', attr: { 'data-phc-phase': 'ready' }, why: lv.readyWhy }; // the engine's refusal, in its words
-    return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any) };
-  }
+  if (r.state === 'loadout') return campPhase(g, me);
   if (r.state === 'shop') { // rules 1.42: Ready to leave (Leave the shop, solo)
     const sv = shopView(g as any, me); if (!sv) return null;
     const solo = sv.party.length <= 1, word = solo ? 'Leave the shop' : 'Ready to leave';
@@ -126,6 +129,16 @@ function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   if (r.state === 'map' && v.canGo) return { key: 'go', label: 'Go now', attr: { 'data-phc-phase': 'go', 'data-phc-go': '' }, go: () => act({ type: 'run/go' }) };
   if (r.state === 'fight' && g.combat) return { key: 'fight', label: 'To the fight', attr: { 'data-phc-phase': 'fight' }, go: () => go('combat') };
   return null;
+}
+/** The same phase control, drawn again in a place's header (PlaceBar: the visibility standard), so the button that moves
+ * on is in sight however far the middle is scrolled. Its own data mark (`data-phc-bar-go`), the right panel's stays the one
+ * `data-phc-phase`. Nothing when there is nothing to move on to (or the fight is the next thing: the right panel says it). */
+export function MoveOn() {
+  const st = getState(), g = st.game, me = st.me.id; if (!g || !g.run) return null;
+  const v = runView(g, me); if (!v) return null;
+  const ph = phaseOf(g, me, v); if (!ph || ph.key === 'fight') return null;
+  return <button type="button" data-phc-bar-go={ph.key} aria-disabled={ph.go ? undefined : 'true'} {...tipProps(ph.why || null)} onClick={() => { if (ph.go) ph.go(); else if (ph.why) toast(ph.why); }}
+    style={{ ...btn(true, !ph.go), minHeight: 42, padding: '0 16px', fontSize: 15 }}>{ph.label}</button>;
 }
 /** Each seat's mark: ready at the camp and the shop, the next stop marked on the map and at a place. */
 function marksOf(g: GameState, me: string): Record<string, string> {

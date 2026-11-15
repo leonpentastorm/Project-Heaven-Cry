@@ -12,6 +12,7 @@ import { act, getState } from './store';
 import { placeView, type PlaceCardV, type PlaceViewV } from '@engine';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
+import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
 import { patronPortrait } from './faithArt';
 import { GiveTab } from './GiveTab';
@@ -117,7 +118,7 @@ export function PlaceScreen(_p: { onLeave: () => void }) {
   return (
     <div data-phc-place={v.kind}>
       <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.word + ' · ' + v.setting} line={say.text} lineKey={v.node + say.key}
-        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0}>
+        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0} actions={<MoveOn />}>
         {on === 'give' ? <GiveTab /> : <TabBody v={v} tab={on} />}
       </FullScreenFrame>
     </div>
