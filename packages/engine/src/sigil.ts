@@ -32,7 +32,7 @@ import { ENEMY_LEVELS } from './data';
 import {
   type Glyph, type Zone, type SpellAmount, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, saveAgainst, strengthFor, withVia,
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
-  saveTn,
+  saveTn, withDoor,
 } from './magic';
 import { makeObject, OBJ } from './objects';
 import { tilesAround, canStand, inBounds, inArea, work } from './kit';
@@ -1064,7 +1064,7 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
         // The line of fire runs from the missile's origin (SENSE appears at the target and a field is under it: no line).
         const from = a.via === 'field' || (sp.missile === 'appear' && a.via !== 'chain') ? t.pos : o.origin;
         // (a field, a turret and a trap are not the caster's action: the Elite and Boss guard does not hold them; combat.ts)
-        const strike = () => withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));
+        const strike = () => withDoor('sigil', null, () => withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])))); // rules 1.56 P1: a Sigil spell's damage names its door
         line += direct ? strike() : unguarded(strike);
       }
     } finally { LINE_GUARD = wasGuard; }

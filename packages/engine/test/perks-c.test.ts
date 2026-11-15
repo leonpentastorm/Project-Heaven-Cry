@@ -17,37 +17,7 @@ const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const charOf = (g: any, u: Unit): Character => g.characters[u.charId!];
 const pk = (id: string, t: string) => 'perk:' + id + '#' + t;
 
-describe('Running Reload', () => {
-  it('I: the Move toggle reloads for no extra AP, once a turn; without it a move is just a move', () => {
-    const f = fightWith([{ perks: { running_reload: 'I' } }], [{ at: 'O10' }]);
-    const pc = at(f.pc, '2,5'); pc.movement = 1; pc.ammo = 3; pc.mags = [24, 24]; f.turn(pc);
-    f.act({ type: 'combat/move', unitId: pc.id, to: '4,5', mods: [pk('running_reload', 'reload')] } as any);
-    expect(f.pc.ap).toBe(6 - 2); expect(f.pc.ammo).toBe(24); expect(f.pc.mags!.length).toBe(1);
-    expect(logHas(f.cb, /reloads on the move \(Running Reload/)).toBe(true);
-    f.pc.ammo = 2;
-    f.act({ type: 'combat/move', unitId: f.pc.id, to: '5,5', mods: [pk('running_reload', 'reload')] } as any);
-    expect(f.pc.ammo).toBe(2); // once a turn
-  });
-  it('II: clears a jam on the move too; Tier I can\'t', () => {
-    const f = fightWith([{ perks: { running_reload: 'II' } }], [{ at: 'O10' }]);
-    const pc = at(f.pc, '2,5'); pc.movement = 1; pc.jammed = true; pc.heat = 3; f.turn(pc);
-    f.act({ type: 'combat/move', unitId: pc.id, to: '3,5', mods: [pk('running_reload', 'clear')] } as any);
-    expect(f.pc.jammed).toBe(false); expect(f.pc.ap).toBe(5);
-    const g = fightWith([{ perks: { running_reload: 'I' } }], [{ at: 'O10' }]);
-    const u = at(g.pc, '2,5'); u.movement = 1; u.jammed = true; g.turn(u);
-    g.act({ type: 'combat/move', unitId: u.id, to: '3,5', mods: [pk('running_reload', 'clear')] } as any);
-    expect(g.pc.jammed).toBe(true);
-  });
-  it('area map: Move and reload walks and reloads for the walk\'s AP', () => {
-    const s = storyWith([{ perks: { running_reload: 'I' } }]); const c = s.chars[0];
-    c.loaded = 2;
-    const pos = positionsOf(s.g)[c.id];
-    const [x, y] = pos.split(',').map(Number), to = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (x + dx) + ',' + (y + dy)).find((k) => { try { apply(s.g, { type: 'world/act', charId: c.id, act: 'move', to: k } as any, 'host'); return true; } catch { return false; } })!;
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'running_reload', actionId: 'move_reload', tile: to } as any);
-    expect(s.g.characters[c.id].loaded).toBe(24);
-    expect(positionsOf(s.g)[c.id]).toBe(to);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Running Reload'
 
 describe('Rounding Up', () => {
   const evoker = (f: ReturnType<typeof fightWith>) => {
@@ -103,30 +73,7 @@ describe('Catch', () => {
   });
 });
 
-describe('Sleight of Hand', () => {
-  it('I: 2 AP, a grenade planted on an adjacent foe goes off at the start of its turn', () => {
-    const f = fightWith([{ perks: { sleight_of_hand: 'I' } }], [{ at: 'E6' }]);
-    const pc = at(f.pc, '3,5'), foe = at(f.foe, '4,5'); pc.throwables = { frag_grenade: 1 }; const u = f.turn(pc), hp = foe.hp;
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'sleight_of_hand', actionId: 'plant', targetId: foe.id, choice: 'frag_grenade' } as any);
-    expect(f.pc.ap).toBe(4); expect(f.pc.throwables!.frag_grenade).toBe(0);
-    f.turn(f.foe);
-    expect(logHas(f.cb, /planted on Foe 1 goes off/)).toBe(true); expect(f.foe.hp).toBeLessThan(hp);
-  });
-  it('II: 1 AP; a tracker Marks the target; story plants are Narrator facts, and Tier I can\'t plant mid-conversation', () => {
-    const f = fightWith([{ perks: { sleight_of_hand: 'II' } }], [{ at: 'E6' }]);
-    const pc = at(f.pc, '3,5'), foe = at(f.foe, '4,5'), c = charOf(f.g, pc);
-    c.pack = [...packOf(c), { id: 'plot_tracker', name: 'Tracker', qty: 1, kind: 'plot' } as any];
-    const u = f.turn(pc);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'sleight_of_hand', actionId: 'plant', targetId: foe.id, choice: 'Tracker' } as any);
-    expect(f.pc.ap).toBe(5); expect(condOn(f.foe, 'marked')).toBe(true);
-    expect(packOf(charOf(f.g, f.pc)).some((p) => p.name === 'Tracker')).toBe(false);
-    const s = storyWith([{ perks: { sleight_of_hand: 'I' } }]); const ch = s.chars[0];
-    s.act({ type: 'story/perk', charId: ch.id, id: 'sleight_of_hand', actionId: 'plant_story', text: 'a forged ration card on the quartermaster', npc: 'Quartermaster' } as any);
-    expect(s.g.story.rulings!.some((r) => /forged ration card/.test(r.text))).toBe(true);
-    (s.g.story as any).focus = { charId: ch.id, seq: 1 };
-    expect(() => s.act({ type: 'story/perk', charId: ch.id, id: 'sleight_of_hand', actionId: 'plant_story', text: 'a coin' } as any)).toThrow(/Sleight of Hand II/);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Sleight of Hand'
 
 describe('Jury-Rig', () => {
   it('I: a broken gun fires once more (the shot\'s AP); then it is broken again and the use is spent until repaired', () => {
@@ -249,32 +196,7 @@ describe('Dance of Iron', () => {
   });
 });
 
-describe('Holy Ordnance', () => {
-  it('I: 3 AP, a blessed magazine does +20% to cursed beings until it is swapped out', () => {
-    const f = fightWith([{ perks: { holy_ordnance: 'I' } }], [{ at: 'H6' }]);
-    const pc = at(f.pc, '3,5'), foe = f.foe; foe.kind = 'cursed'; const u = f.turn(pc);
-    const before = withGame(f.g, () => attackDamage(f.cb, u, foe, 'shot', null, { preview: true }).total);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'holy_ordnance', actionId: 'bless', targetId: u.id } as any);
-    expect(f.pc.ap).toBe(3);
-    const after = withGame(f.g, () => attackDamage(f.cb, f.pc, f.foe, 'shot', null, { preview: true }));
-    expect(after.total).toBeCloseTo(before * 1.2, 5); expect(after.mults.some((m) => /Holy Ordnance/.test(m.label))).toBe(true);
-    f.foe.kind = 'human';
-    expect(withGame(f.g, () => attackDamage(f.cb, f.pc, f.foe, 'shot', null, { preview: true }).total)).toBeCloseTo(before, 5);
-    f.pc.ammo = 3; f.act({ type: 'combat/reload', unitId: f.pc.id } as any);
-    expect(f.pc.ps?.['holy:bless']).toBeUndefined();
-  });
-  it('II: +40% and two magazines', () => {
-    const f = fightWith([{ perks: { holy_ordnance: 'II' } }], [{ at: 'H6' }]);
-    const u = f.turn(at(f.pc, '3,5')); f.foe.kind = 'crawler';
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'holy_ordnance', actionId: 'bless', targetId: u.id } as any);
-    f.pc.ammo = 3; f.pc.ap = 6; f.act({ type: 'combat/reload', unitId: f.pc.id } as any);
-    expect(f.pc.ps!['holy:bless'].loaded).toBe(true);
-    const d = withGame(f.g, () => attackDamage(f.cb, f.pc, f.foe, 'shot', null, { preview: true }));
-    expect(d.mults.find((m) => /Holy Ordnance/.test(m.label))!.v).toBeCloseTo(1.4, 5);
-    f.pc.ammo = 3; f.pc.ap = 6; f.act({ type: 'combat/reload', unitId: f.pc.id } as any);
-    expect(f.pc.ps?.['holy:bless']).toBeUndefined();
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Holy Ordnance'
 
 describe('Gun Nut', () => {
   it('a jam clears for 0 AP and keeps the Heat; the enemy\'s iron is named at the start', () => {

@@ -294,6 +294,7 @@
           ],
           "type": "soul",
           "armour": "none",
+          "door": "bond",
           "provisional": true
         }
       },

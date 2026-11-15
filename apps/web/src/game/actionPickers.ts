@@ -116,7 +116,7 @@ const PROSE: Record<string, [string, string]> = {
   backdoor_story: ['Which system you crack', 'The bank, the cameras, the city network…'],
   ask: ['Your one question', 'Ask the twin soul'], communion: ['Your one question', 'Ask above'],
   preach_story: ['What you preach', 'Your sermon'], miracle: ['Your prayer', 'What you pray for'],
-  mirage_story: ['What you project', 'A false wall, a figure, a sound…'], red_line: ['The line you won\'t cross', 'I never…'],
+  red_line: ['The line you won\'t cross', 'I never…'],
   lucky_foot_story: ['Which roll against you', 'The guard\'s shot, the dealer\'s hand…'], extraction_story: ['Where the flyer takes you', 'Somewhere out of this zone'],
   cite: ['The fact you cite', 'A fact'], demand: ['The accusation you answer (optional)', 'What they accuse you of'], hint: ['Your sentence', 'One sentence, two meanings'],
   read_org: ['The organisation', 'Its name'], fact: ['The fact you state', 'About the technology, biology or history here'],
@@ -147,8 +147,6 @@ const SPECIAL: Record<string, Maker> = {
   'trait:ghost_soldier#fit_arm': (e, x) => ({ head: 'The mod to fit', hint: e.text, fields: [chipsF('choice', 'A mod in your pack', modOpts(x.c), 1, false, 'No mod in your pack.')] }),
   'perk:overhaul#extra_slot': (e, x) => ({ head: 'The mod for the new slot', hint: e.text, fields: [chipsF('choice', 'A mod in your pack', modOpts(x.c), 1, false, 'No mod in your pack.')] }),
   extra_mod: (e, x) => ({ head: 'The second mod', hint: e.text, fields: [chipsF('choice', 'A mod in your pack', modOpts(x.c), 1, false, 'No mod in your pack.')] }),
-  'perk:sleight_of_hand#plant_story': (e, x) => ({ head: 'Plant an item', hint: e.text, fields: [npcF(x, 'On whom'), chipsF('item', 'What', packItems(x.c), 1, false, 'Your pack is empty.'), prose('How (optional)', 'Slipped into a coat pocket…', true)],
-    build: (v, xx) => { const it = itemName(xx, one(v, 'item')); return { ...npcArgs(v, xx), text: it + (txt(v) ? ': ' + txt(v) : '') }; } }),
   'trait:market_blood#appraise': (e, x) => ({ head: 'What you appraise', hint: 'Pick an item, or none for your whole pack.', fields: [chipsF('item', 'An item in your pack', packItems(x.c), 1, true, 'Your pack is empty.')],
     build: (v, xx) => ({ text: one(v, 'item') ? itemName(xx, one(v, 'item')) : '' }) }),
   // ---- Sigils ----
@@ -171,7 +169,6 @@ const SPECIAL: Record<string, Maker> = {
   'class:bard.inspire#inspire_story': (e, x) => ({ head: 'Who you inspire', hint: e.text.replace(/\s*\(named[^)]*\)/, ''), fields: [squadF(x)] }),
   // ---- people on the map ----
   'perk:grapple#grapple_npc': (e, x) => ({ head: 'Who you grab', hint: e.text, fields: [npcF(x)] }),
-  'perk:lay_down_arms#plea': (e, x) => ({ head: 'Who you plead with', hint: e.text, fields: [npcF(x), prose('Your plea (optional)', 'What you say', true)] }),
   'perk:true_name#true_name_story': (e, x) => ({ head: 'Whose true name', hint: e.text.replace(/\s*\(type who\)/, ''), oneOf: ['npc', 'text'], fields: [npcF(x, 'Someone here', true), prose('Or name the being, curse or creature', 'What it is', true)] }),
   'trait:moon_hunter#track': (e, x) => ({ head: 'Whose trail', hint: e.text.replace(/\s*\(type whose\)/, ''), oneOf: ['npc', 'text'], fields: [npcF(x, 'Someone you met here', true), prose('Or describe whose trail', 'The deserter, the beast…', true)] }),
   'trait:occultist#weakness': (e, x) => ({ head: 'Which creature', hint: e.text.replace(/\s*\(pick it[^)]*\)/, ''), oneOf: ['npc', 'text'], fields: [npcF(x, 'Someone here', true), prose('Or name the creature', 'What it is', true)] }),
@@ -193,7 +190,6 @@ const SPECIAL: Record<string, Maker> = {
   // ---- the room's Narrator turns ----
   'perk:foreseen#foresee': (e, x) => ({ head: 'Which decision went wrong', hint: 'The room votes to go back to before that Narrator turn.', fields: [chipsF('choice', 'The Narrator turn', turnOpts(x.g), 1, false, 'No Narrator turn to go back to.'), prose('What went wrong (optional)', 'In a few words', true)] }),
   // ---- optional words where the action used to take them silently ----
-  'perk:breaching_strike#breach_story': (e) => ({ head: 'Breaching Strike', hint: e.text, fields: [prose('What you smash through (optional)', 'The door, the barricade…', true)] }),
   'perk:earthbreaker#earthbreaker_story': (e) => ({ head: 'Earthbreaker', hint: e.text, fields: [prose('What you bring down (optional)', 'The floor, a wall…', true)] }),
   'trait:inner_ring_heir#favour': (e) => ({ head: 'The favour', hint: e.text.replace(/\s*Type the favour\./, ''), fields: [prose('What you ask the family for', 'The favour')] }),
   'trait:holo_drama_addict#drama': (e) => ({ head: 'The holo-drama scene', hint: e.text, fields: [prose('Your action, as a holo-drama scene', 'Cue the music…')] }),
@@ -218,7 +214,6 @@ const SHOT_OPTS: Opt[] = [{ id: 'shot', label: 'Shot' }, { id: 'aimed', label: '
 const all = (v: Values, k: string): string[] => (Array.isArray(v[k]) ? v[k] : v[k] ? [v[k]] : []);
 const COMBAT: Record<string, Maker> = {
   // ---- which of your own debuffs ----
-  'perk:shrug_it_off#shrug_it_off': (e, x) => ({ head: 'Shrug It Off', hint: e.text, fields: [chipsF('choice', 'Which Body debuff (none: the worst first)', condOpts(x.u ? debuffsOf(x.u, 'body') : []), 1, true, 'No Body debuff on you.')] }),
   'trait:daggerfall_veteran#shake_it_off': (e, x) => ({ head: 'Shake It Off', hint: e.text, fields: [chipsF('choice', 'Which Heart debuff (none: the first)', condOpts(x.u ? debuffsOf(x.u, 'heart') : []), 1, true, 'No Heart debuff on you.')] }),
   // ---- how you shoot ----
   'perk:jury_rig#one_more': (e, x) => ({ head: 'One more time', hint: e.text, fields: x.u && isMelee((WEAPON as any)[x.u.weapon]) ? [] : [chipsF('choice', 'Shot or aimed shot (none: a shot)', SHOT_OPTS, 1, true)] }),
@@ -251,7 +246,6 @@ const COMBAT: Record<string, Maker> = {
     build: (v) => ({ choice: one(v, 'choice'), ...(all(v, 'walls').length ? { text: all(v, 'walls').join(' ') } : {}) }) }),
   'class:rtc_contractor.supply_drop#take_from_crate': (e) => ({ head: 'Take from the crate', hint: 'Next to the crate.', fields: [chipsF('choice', 'A Supply or a magazine', e.options || []), unitF('targetId', 'Hand it to (optional: yourself)', 'ally', true)] }),
   // ---- what you plant, set or take over ----
-  'perk:sleight_of_hand#plant': (e, x) => ({ head: 'Plant an item', hint: e.text, fields: [chipsF('choice', 'What you plant', [...throwOpts(x.u).map((o) => ({ ...o, label: 'Primed ' + o.label })), ...packItems(x.c)], 1, false, 'Nothing to plant: no grenade, nothing small in your pack.')] }),
   'trait:demolitionist#set_explosive': (e, x) => ({ head: 'Set explosive', hint: 'Click your tile or one next to you, then shape the blast.',
     fields: [chipsF('shape', 'The blast', optsOf(['circle', 'line', 'cone'])), chipsF('item', 'The charge (none: the first you carry)', throwOpts(x.u, EXPLOSIVES), 1, true, 'No explosive in your kit.'), chipsF('when', 'When it goes off', [{ id: 'now', label: 'Now' }, { id: 'remote', label: 'On my trigger' }])],
     build: (v) => ({ choice: [one(v, 'shape'), one(v, 'item'), one(v, 'when') === 'remote' ? 'remote' : ''].filter(Boolean).join(' ') }) }),
@@ -266,7 +260,6 @@ const COMBAT: Record<string, Maker> = {
   'perk:the_voice#the_voice': (e) => ({ head: 'The Voice', hint: e.text,
     fields: [chipsF('order', 'The order', [['halt', 'Halt'], ['hold', 'Hold fire'], ['drop', 'Drop it'], ['kneel', 'Kneel'], ['flee', 'Fall back'], ['other', 'Something else']].map(([id, label]) => ({ id, label }))), prose('Your words (optional; needed for “Something else”)', 'What you shout', true)],
     build: (v) => (one(v, 'order') === 'other' ? (txt(v) ? { text: txt(v) } : 'Write the order you give.') : { choice: one(v, 'order'), ...(txt(v) ? { text: txt(v) } : {}) }) }),
-  'perk:lay_down_arms#lay_down_arms': (e) => ({ head: 'Lay Down Arms', hint: e.text, fields: [...(e.tier === 'II' ? [unitF('targetIds', 'Others who hear you (optional, up to 2 more)', 'foe', true, 2)] : []), prose('Your plea (optional)', 'What you say', true)] }),
   'perk:bone_talk#bone_talk': (e) => ({ head: 'Bone Talk', hint: e.text, fields: [prose('The physical detail', 'One specific detail')] }),
   'trait:trench_poet#verse': (e) => ({ head: 'Verse', hint: e.text, fields: [prose('Your metaphor', 'Answer in metaphor')] }),
   'perk:footnote#cite_fight': (e) => ({ head: 'Footnote', hint: e.text, fields: [prose('The fact you cite (optional)', 'A fact about it', true)] }),

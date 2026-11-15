@@ -128,23 +128,20 @@ const withMods = <T>(cb: any, mods: string[], fn: (cb: any) => T): T => fn(fight
 function switches(cb: any, u: any, on: string): { id: string; itemKey: string; why: string | null; on: boolean; preview: string | null }[] {
   try { return togglesFor({ u, cb } as any, on, {}, cb?.mods || []); } catch { return []; }
 }
-const HO_AGAIN = 'perk:heart_overload#again', OVERDRAW = 'skill:will_power.3#overdraw';
+const OVERDRAW = 'skill:will_power.3#overdraw';
 export function designCards(cb: any, u: any): DesignCard[] {
   const mg = u?.mg; if (!mg) return [];
   const mana = cb?.mana ?? MANA_START;
-  // Heart Overload's free Begin is on by default while it is offered: the card shows it, and the price without it tells
-  // which design it is for.
-  const offered = switches(cb, u, 'combat/outburst').some((t) => t.id === HO_AGAIN && !t.why);
   return (mg.designs || []).map((d: any) => {
     const info = designInfo(mg, d, mana), b = previewOutburst(cb, u, d.id, undefined, false), sn = previewOutburstPlan(cb, u, d.id, undefined);
     const snapWhy = sn.ok || /Pick a|direction/.test(sn.why || '') ? '' : sn.why || '';
     const plainAp = d.modules.includes('swift') ? SOUL_AP.swiftBegin : SOUL_AP.begin;
-    const free = offered && b.ap === 0 && withMods(cb, ['!' + HO_AGAIN], (c) => previewOutburst(c, u, d.id, undefined, false)).ap > 0;
-    const beginAp = free ? 0 : b.ap || plainAp, snapAp = sn.ap || plainAp + SOUL_AP.release, bloodHp = free ? b.hp || 0 : 0;
-    const fullMp = bloodHp ? 0 : (b.cost || 0) + pumpsMp(u, MAX_STAGE, 0, b.cost || 0);
-    const again = free ? 'Heart Overload: Begin ' + info.name + ' again for 0 AP' + (bloodHp ? '. You don\'t have the mana: it costs ' + bloodHp + ' HP, and it can\'t heal or shield' : '') + '.' : '';
-    return { ...info, mp: bloodHp ? 0 : b.cost || info.mp, beginAp, snapAp, beginWhy: b.ok ? '' : b.why || 'Not now.', snapWhy, canBegin: !!b.ok, again, bloodHp,
-      costText: (free ? 'Heart Overload: Begin again 0 AP' + (bloodHp ? ' · ' + bloodHp + ' HP for the mana' : '') : 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : ''))
+    // (rules 1.56: Heart Overload's free Begin again is gone; the card's again and bloodHp stay empty)
+    const beginAp = b.ap || plainAp, snapAp = sn.ap || plainAp + SOUL_AP.release, bloodHp = 0;
+    const fullMp = (b.cost || 0) + pumpsMp(u, MAX_STAGE, 0, b.cost || 0);
+    const again = '';
+    return { ...info, mp: b.cost || info.mp, beginAp, snapAp, beginWhy: b.ok ? '' : b.why || 'Not now.', snapWhy, canBegin: !!b.ok, again, bloodHp,
+      costText: 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : '')
         + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain'
         // rules 1.24: what a full heart of it comes to (the Begin and its four Pumps), when Pumps take MP
         + (fullMp > (b.cost || 0) ? ' · full heart ' + fullMp + ' MP' : ''), fullMp };

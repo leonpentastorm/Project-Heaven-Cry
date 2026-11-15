@@ -21,7 +21,7 @@
   "items": [
     {
       "id": "bulwark",
-      "name": "Stonewall",
+      "name": "Weight of the Wall",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -37,14 +37,30 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Allies standing directly behind you, in line with the attacker, take {=effects.0.value|pct}% less damage from ranged attacks. II: Allies up to 2 tiles directly behind you, in line with the attacker, take 50% less damage from ranged attacks.",
+      "text": "I: While you hold Guard, your weapon attacks deal {=tiers.I.effects.0.value.per.0.value|pct}% more damage for each Guard you hold (up to {=tiers.I.effects.0.value.max|more}%). II: While you hold Guard, your weapon attacks deal {=tiers.II.effects.0.value.per.0.value|pct}% more damage for each Guard you hold (up to {=tiers.II.effects.0.value.max|more}%).",
       "effects": [
         {
-          "op": "damage_reduction",
-          "type": "ranged",
-          "value": 0.25,
-          "target": "ally",
-          "context": "ally within 1 tile directly behind you, in line with the attacker"
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "weapon"
+            ],
+            "self_has_res": [
+              "guard"
+            ]
+          },
+          "value": {
+            "base": 1,
+            "per": [
+              {
+                "of": "res:guard",
+                "value": 0.02
+              }
+            ],
+            "max": 1.1
+          }
         }
       ],
       "tiers": {
@@ -56,14 +72,30 @@
             }
           ],
           "ap_cost": null,
-          "text": "Allies standing directly behind you, in line with the attacker, take {=tiers.I.effects.0.value|pct}% less damage from ranged attacks.",
+          "text": "While you hold Guard, your weapon attacks deal {=tiers.I.effects.0.value.per.0.value|pct}% more damage for each Guard you hold (up to {=tiers.I.effects.0.value.max|more}%).",
           "effects": [
             {
-              "op": "damage_reduction",
-              "type": "ranged",
-              "value": 0.25,
-              "target": "ally",
-              "context": "ally within 1 tile directly behind you, in line with the attacker"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "weapon"
+                ],
+                "self_has_res": [
+                  "guard"
+                ]
+              },
+              "value": {
+                "base": 1,
+                "per": [
+                  {
+                    "of": "res:guard",
+                    "value": 0.02
+                  }
+                ],
+                "max": 1.1
+              }
             }
           ]
         },
@@ -75,14 +107,30 @@
             }
           ],
           "ap_cost": null,
-          "text": "Allies up to 2 tiles directly behind you, in line with the attacker, take {=tiers.II.effects.0.value|pct}% less damage from ranged attacks.",
+          "text": "While you hold Guard, your weapon attacks deal {=tiers.II.effects.0.value.per.0.value|pct}% more damage for each Guard you hold (up to {=tiers.II.effects.0.value.max|more}%).",
           "effects": [
             {
-              "op": "damage_reduction",
-              "type": "ranged",
-              "value": 0.5,
-              "target": "ally",
-              "context": "ally within 2 tiles directly behind you, in line with the attacker"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "weapon"
+                ],
+                "self_has_res": [
+                  "guard"
+                ]
+              },
+              "value": {
+                "base": 1,
+                "per": [
+                  {
+                    "of": "res:guard",
+                    "value": 0.03
+                  }
+                ],
+                "max": 1.15
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -92,17 +140,16 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "defense",
-        "positioning"
+        "guard",
+        "damage"
       ],
       "provisional": true
     },
     {
       "id": "shrug_it_off",
-      "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "max_hp", "value": 0.1}], "text": "Tier II", "provisional": true}},
-      "name": "Shrug It Off",
+      "name": "Answer in Kind",
       "tier": "acquired",
-      "perk_type": "active_skill",
+      "perk_type": "combat_interaction",
       "skills": [
         "durability"
       ],
@@ -114,21 +161,40 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 2,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Spend 2 AP to remove one Body debuff from yourself. II: Spend 1 AP to remove one Body debuff from yourself and gain a shield worth 10% of your max HP.",
+      "text": "I: When an enemy's blow hurts you, your weapon attacks deal {=tiers.I.effects.1.value|more}% more damage until the end of your next turn. II: When an enemy's blow hurts you, your weapon attacks deal {=tiers.II.effects.1.value|more}% more damage until the end of your next turn, and the blow gives you {=tiers.II.effects.3.value} Guard (once a round).",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "shrug_it_off",
-          "ap": 2,
-          "uses": "at_will"
+          "op": "mark",
+          "when": "damaged",
+          "if": {
+            "by_hit": true,
+            "hostile": true,
+            "self_alive": true
+          },
+          "flag": "answer"
         },
         {
-          "op": "cleanse",
-          "family": "body",
-          "count": 1,
-          "target": "self"
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "flag": "answer",
+            "hostile": true,
+            "damage": [
+              "weapon"
+            ]
+          },
+          "value": 1.08
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "flag": "answer"
+          },
+          "flag": "answer",
+          "clear": true
         }
       ],
       "tiers": {
@@ -139,20 +205,39 @@
               "min": 3
             }
           ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to remove one Body debuff from yourself.",
+          "ap_cost": null,
+          "text": "When an enemy's blow hurts you, your weapon attacks deal {=tiers.I.effects.1.value|more}% more damage until the end of your next turn.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "shrug_it_off",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "mark",
+              "when": "damaged",
+              "if": {
+                "by_hit": true,
+                "hostile": true,
+                "self_alive": true
+              },
+              "flag": "answer"
             },
             {
-              "op": "cleanse",
-              "family": "body",
-              "count": 1,
-              "target": "self"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "flag": "answer",
+                "hostile": true,
+                "damage": [
+                  "weapon"
+                ]
+              },
+              "value": 1.08
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "flag": "answer"
+              },
+              "flag": "answer",
+              "clear": true
             }
           ]
         },
@@ -163,26 +248,54 @@
               "min": 5
             }
           ],
-          "ap_cost": 1,
-          "text": "Spend 1 AP to remove one Body debuff from yourself and gain a shield worth {=tiers.II.effects.2.value|pct}% of your max HP.",
+          "ap_cost": null,
+          "text": "When an enemy's blow hurts you, your weapon attacks deal {=tiers.II.effects.1.value|more}% more damage until the end of your next turn, and the blow gives you {=tiers.II.effects.3.value} Guard (once a round).",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "shrug_it_off",
-              "ap": 1,
-              "uses": "at_will"
+              "op": "mark",
+              "when": "damaged",
+              "if": {
+                "by_hit": true,
+                "hostile": true,
+                "self_alive": true
+              },
+              "flag": "answer"
             },
             {
-              "op": "cleanse",
-              "family": "body",
-              "count": 1,
-              "target": "self"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "flag": "answer",
+                "hostile": true,
+                "damage": [
+                  "weapon"
+                ]
+              },
+              "value": 1.12
             },
             {
-              "op": "shield",
-              "value": 0.1,
-              "basis": "hp_max",
-              "target": "self"
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "flag": "answer"
+              },
+              "flag": "answer",
+              "clear": true
+            },
+            {
+              "op": "resource",
+              "when": "damaged",
+              "if": {
+                "by_hit": true,
+                "hostile": true,
+                "self_alive": true
+              },
+              "resource": "guard",
+              "value": 1,
+              "limit": {
+                "per": "per_round",
+                "n": 1
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -192,8 +305,8 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "cleanse",
-        "self"
+        "guard",
+        "damage"
       ],
       "provisional": true
     },
@@ -499,8 +612,7 @@
     },
     {
       "id": "breaching_strike",
-      "amounts": {"slam": {"kind": "damage", "base": 0, "profile": "flat", "mults": {"share": 0.5}, "text": "a share of the hit", "provisional": true}},
-      "name": "Breaching Strike",
+      "name": "Keep Swinging",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -516,12 +628,45 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, the target takes the hit again at half damage. II: When one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, the target takes the hit again at half damage. An enemy it was pushed into takes that damage too.",
+      "text": "I: When one of your Finishers drops an enemy, you gain {=tiers.I.effects.1.value} Momentum once it is done. II: When one of your Finishers drops an enemy, you gain {=tiers.II.effects.1.value} Momentum once it is done, and a Finisher that hits an Elite or a Boss gives you {=tiers.II.effects.3.value} Momentum.",
       "effects": [
         {
-          "op": "damage_mod",
-          "value": 0.5,
-          "context": "the hit again, on a target your melee technique pushed into a wall, a solid object or another enemy"
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "mode": [
+              "coup",
+              "cleave",
+              "break",
+              "run_through",
+              "throw_down"
+            ]
+          },
+          "flag": "swing"
+        },
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "flag": "swing",
+            "action": [
+              "coup",
+              "cleave",
+              "break",
+              "run_through",
+              "throw_down"
+            ]
+          },
+          "resource": "momentum",
+          "value": 1,
+          "and": [
+            {
+              "op": "mark",
+              "flag": "swing",
+              "clear": true
+            }
+          ]
         }
       ],
       "tiers": {
@@ -533,12 +678,45 @@
             }
           ],
           "ap_cost": null,
-          "text": "When one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, the target takes the hit again at half damage.",
+          "text": "When one of your Finishers drops an enemy, you gain {=tiers.I.effects.1.value} Momentum once it is done.",
           "effects": [
             {
-              "op": "damage_mod",
-              "value": 0.5,
-              "context": "the hit again, on a target your melee technique pushed into a wall, a solid object or another enemy"
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "coup",
+                  "cleave",
+                  "break",
+                  "run_through",
+                  "throw_down"
+                ]
+              },
+              "flag": "swing"
+            },
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "flag": "swing",
+                "action": [
+                  "coup",
+                  "cleave",
+                  "break",
+                  "run_through",
+                  "throw_down"
+                ]
+              },
+              "resource": "momentum",
+              "value": 1,
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "swing",
+                  "clear": true
+                }
+              ]
             }
           ]
         },
@@ -550,17 +728,87 @@
             }
           ],
           "ap_cost": null,
-          "text": "When one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, the target takes the hit again at half damage. An enemy it was pushed into takes that damage too.",
+          "text": "When one of your Finishers drops an enemy, you gain {=tiers.II.effects.1.value} Momentum once it is done, and a Finisher that hits an Elite or a Boss gives you {=tiers.II.effects.3.value} Momentum.",
           "effects": [
             {
-              "op": "damage_mod",
-              "value": 0.5,
-              "context": "the hit again, on a target your melee technique pushed into a wall, a solid object or another enemy"
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "coup",
+                  "cleave",
+                  "break",
+                  "run_through",
+                  "throw_down"
+                ]
+              },
+              "flag": "swing"
             },
             {
-              "op": "damage_mod",
-              "value": 0.5,
-              "context": "the same damage to the enemy it was pushed into"
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "flag": "swing",
+                "action": [
+                  "coup",
+                  "cleave",
+                  "break",
+                  "run_through",
+                  "throw_down"
+                ]
+              },
+              "resource": "momentum",
+              "value": 2,
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "swing",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "hit",
+              "if": {
+                "actor": "self",
+                "mode": [
+                  "coup",
+                  "cleave",
+                  "break",
+                  "run_through",
+                  "throw_down"
+                ],
+                "target_tier": [
+                  "elite",
+                  "boss"
+                ]
+              },
+              "flag": "big"
+            },
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "flag": "big",
+                "action": [
+                  "coup",
+                  "cleave",
+                  "break",
+                  "run_through",
+                  "throw_down"
+                ]
+              },
+              "resource": "momentum",
+              "value": 1,
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "big",
+                  "clear": true
+                }
+              ]
             }
           ],
           "replaces_tier_I": true,
@@ -571,7 +819,7 @@
       "recovered": null,
       "tags": [
         "melee",
-        "forced_movement"
+        "momentum"
       ],
       "provisional": true
     },
@@ -593,7 +841,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You gain the technique Grapple: for 1 AP, an enemy next to you makes a Body save or is Grappled. A target you have Grappled or Bound can't use Answers or reactions, and attacks aimed at you have a {=effects.1.chance|pct}% chance to hit it instead. When you move, you drag it with you. II: You gain the technique Grapple: for 1 AP, an enemy next to you makes a Body save or is Grappled. A target you have Grappled or Bound can't use Answers or reactions, attacks aimed at you have a {=effects.1.chance|pct}% chance to hit it instead, and when you move you drag it with you. Each of your melee techniques that hits a target you hold gives you 1 Momentum, and Throw Down on it needs no Momentum.",
+      "text": "I: You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.I.effects.1.value_pct}% more damage to a Grappled or Prone enemy. II: You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.II.effects.1.value_pct}% more damage to a Grappled, Prone, Shaken or Afraid enemy.",
       "effects": [
         {
           "op": "forbid",
@@ -601,15 +849,18 @@
           "context": "a target you have Bound or Grappled (Answers included)"
         },
         {
-          "op": "redirect_attack",
-          "chance": 0.5,
-          "to": "held_target",
-          "context": "attacks aimed at you while you hold a target"
-        },
-        {
-          "op": "state",
-          "state": "dragged",
-          "context": "a target you hold moves with you, into the tile you leave"
+          "op": "damage_mod",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "melee": true,
+            "target_has": [
+              "grappled",
+              "prone"
+            ]
+          },
+          "value_pct": 6
         }
       ],
       "tiers": {
@@ -621,7 +872,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "You gain the technique Grapple: for 1 AP, an enemy next to you makes a Body save or is Grappled. A target you have Grappled or Bound can't use Answers or reactions, and attacks aimed at you have a {=tiers.I.effects.1.chance|pct}% chance to hit it instead. When you move, you drag it with you.",
+          "text": "You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.I.effects.1.value_pct}% more damage to a Grappled or Prone enemy.",
           "effects": [
             {
               "op": "forbid",
@@ -629,15 +880,18 @@
               "context": "a target you have Bound or Grappled (Answers included)"
             },
             {
-              "op": "redirect_attack",
-              "chance": 0.5,
-              "to": "held_target",
-              "context": "attacks aimed at you while you hold a target"
-            },
-            {
-              "op": "state",
-              "state": "dragged",
-              "context": "a target you hold moves with you, into the tile you leave"
+              "op": "damage_mod",
+              "when": "dealing",
+              "if": {
+                "actor": "self",
+                "hostile": true,
+                "melee": true,
+                "target_has": [
+                  "grappled",
+                  "prone"
+                ]
+              },
+              "value_pct": 6
             }
           ]
         },
@@ -649,7 +903,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "You gain the technique Grapple: for 1 AP, an enemy next to you makes a Body save or is Grappled. A target you have Grappled or Bound can't use Answers or reactions, attacks aimed at you have a {=tiers.II.effects.1.chance|pct}% chance to hit it instead, and when you move you drag it with you. Each of your melee techniques that hits a target you hold gives you {=tiers.II.effects.3.value} Momentum, and Throw Down on it needs no Momentum.",
+          "text": "You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.II.effects.1.value_pct}% more damage to a Grappled, Prone, Shaken or Afraid enemy.",
           "effects": [
             {
               "op": "forbid",
@@ -657,27 +911,20 @@
               "context": "a target you have Bound or Grappled (Answers included)"
             },
             {
-              "op": "redirect_attack",
-              "chance": 0.5,
-              "to": "held_target",
-              "context": "attacks aimed at you while you hold a target"
-            },
-            {
-              "op": "state",
-              "state": "dragged",
-              "context": "a target you hold moves with you, into the tile you leave"
-            },
-            {
-              "op": "resource",
-              "resource": "momentum",
-              "value": 1,
-              "when": "a melee technique of yours hits a target you hold (once a technique)"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "momentum_needed:throw_down",
-              "value": "zero",
-              "when": "on a target you hold"
+              "op": "damage_mod",
+              "when": "dealing",
+              "if": {
+                "actor": "self",
+                "hostile": true,
+                "melee": true,
+                "target_has": [
+                  "grappled",
+                  "prone",
+                  "shaken",
+                  "fear"
+                ]
+              },
+              "value_pct": 12
             }
           ],
           "replaces_tier_I": true,
@@ -688,7 +935,8 @@
       "recovered": null,
       "tags": [
         "melee",
-        "control"
+        "momentum",
+        "damage"
       ],
       "provisional": true
     },
@@ -1169,7 +1417,7 @@
     },
     {
       "id": "both_hands",
-      "name": "Both Hands",
+      "name": "Pressure Point",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -1185,12 +1433,27 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: After one of your melee techniques hits, your next shot that turn has no Recoil. II: After one of your melee techniques hits, your next shot that turn has no Recoil. Once per turn, when one of your shots hits, you gain 1 Momentum.",
+      "text": "I: Your ranged attacks deal {=tiers.I.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.I.effects.0.value.steps.0.at} or more). II: Your ranged attacks deal {=tiers.II.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.II.effects.0.value.steps.0.at} or more), and {=tiers.II.effects.0.value.steps.1.value|pct}% more again to one Suppressed or Broken (Pressure {=tiers.II.effects.0.value.steps.1.at} or more).",
       "effects": [
         {
-          "op": "recoil_mult",
-          "value": 0,
-          "context": "your next shot this turn, after a melee technique of yours hits"
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "ranged"
+            ]
+          },
+          "value": {
+            "base": 1,
+            "steps": [
+              {
+                "of": "target:pressure",
+                "at": 2,
+                "value": 0.1
+              }
+            ]
+          }
         }
       ],
       "tiers": {
@@ -1202,12 +1465,27 @@
             }
           ],
           "ap_cost": null,
-          "text": "After one of your melee techniques hits, your next shot that turn has no Recoil.",
+          "text": "Your ranged attacks deal {=tiers.I.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.I.effects.0.value.steps.0.at} or more).",
           "effects": [
             {
-              "op": "recoil_mult",
-              "value": 0,
-              "context": "your next shot this turn, after a melee technique of yours hits"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "ranged"
+                ]
+              },
+              "value": {
+                "base": 1,
+                "steps": [
+                  {
+                    "of": "target:pressure",
+                    "at": 2,
+                    "value": 0.1
+                  }
+                ]
+              }
             }
           ]
         },
@@ -1219,18 +1497,32 @@
             }
           ],
           "ap_cost": null,
-          "text": "After one of your melee techniques hits, your next shot that turn has no Recoil. Once per turn, when one of your shots hits, you gain {=tiers.II.effects.1.value} Momentum.",
+          "text": "Your ranged attacks deal {=tiers.II.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.II.effects.0.value.steps.0.at} or more), and {=tiers.II.effects.0.value.steps.1.value|pct}% more again to one Suppressed or Broken (Pressure {=tiers.II.effects.0.value.steps.1.at} or more).",
           "effects": [
             {
-              "op": "recoil_mult",
-              "value": 0,
-              "context": "your next shot this turn, after a melee technique of yours hits"
-            },
-            {
-              "op": "resource",
-              "resource": "momentum",
-              "value": 1,
-              "when": "a shot of yours hits (once a turn)"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "ranged"
+                ]
+              },
+              "value": {
+                "base": 1,
+                "steps": [
+                  {
+                    "of": "target:pressure",
+                    "at": 2,
+                    "value": 0.15
+                  },
+                  {
+                    "of": "target:pressure",
+                    "at": 3,
+                    "value": 0.1
+                  }
+                ]
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -1240,16 +1532,17 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "melee",
-        "ranged"
+        "guns",
+        "pressure",
+        "damage"
       ],
       "provisional": true
     },
     {
       "id": "running_reload",
-      "name": "Running Reload",
+      "name": "Keep Their Heads Down",
       "tier": "acquired",
-      "perk_type": "ap_mod",
+      "perk_type": "combat_interaction",
       "skills": [
         "dexterity"
       ],
@@ -1263,13 +1556,24 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once per turn, you can reload as part of a move, for no extra AP. II: Once per turn, you can reload as part of a move, for no extra AP. Once per turn, you can also clear a jam as part of a move.",
+      "text": "I: Once a turn, when your ranged attack hits an enemy, it gains {=tiers.I.effects.0.value} more Pressure. II: Once a turn for each enemy, when your ranged attack hits it, it gains {=tiers.II.effects.0.value} more Pressure.",
       "effects": [
         {
-          "op": "merge_action",
-          "action": "reload",
-          "into": "move",
-          "limit": "once_per_turn"
+          "op": "resource",
+          "when": "hit",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "melee": false,
+            "target_alive": true
+          },
+          "resource": "pressure",
+          "value": 1,
+          "target": "target",
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          }
         }
       ],
       "tiers": {
@@ -1281,13 +1585,24 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per turn, you can reload as part of a move, for no extra AP.",
+          "text": "Once a turn, when your ranged attack hits an enemy, it gains {=tiers.I.effects.0.value} more Pressure.",
           "effects": [
             {
-              "op": "merge_action",
-              "action": "reload",
-              "into": "move",
-              "limit": "once_per_turn"
+              "op": "resource",
+              "when": "hit",
+              "if": {
+                "actor": "self",
+                "hostile": true,
+                "melee": false,
+                "target_alive": true
+              },
+              "resource": "pressure",
+              "value": 1,
+              "target": "target",
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              }
             }
           ]
         },
@@ -1299,19 +1614,25 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per turn, you can reload as part of a move, for no extra AP. Once per turn, you can also clear a jam as part of a move.",
+          "text": "Once a turn for each enemy, when your ranged attack hits it, it gains {=tiers.II.effects.0.value} more Pressure.",
           "effects": [
             {
-              "op": "merge_action",
-              "action": "reload",
-              "into": "move",
-              "limit": "once_per_turn"
-            },
-            {
-              "op": "merge_action",
-              "action": "clear_jam",
-              "into": "move",
-              "limit": "once_per_turn"
+              "op": "resource",
+              "when": "hit",
+              "if": {
+                "actor": "self",
+                "hostile": true,
+                "melee": false,
+                "target_alive": true
+              },
+              "resource": "pressure",
+              "value": 1,
+              "target": "target",
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "each": "target"
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -1322,7 +1643,7 @@
       "recovered": null,
       "tags": [
         "guns",
-        "ap"
+        "pressure"
       ],
       "provisional": true
     },
@@ -1497,7 +1818,7 @@
     },
     {
       "id": "sleight_of_hand",
-      "name": "Sleight of Hand",
+      "name": "Long Dark",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -1511,15 +1832,20 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 2,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Spend 2 AP to plant an item from your pack on a target next to you without being seen; not in the middle of a conversation. A grenade goes off at the start of the target's next turn, and a tracker leaves it Marked for the rest of the fight. The Narrator decides what anything else (evidence, say) leads to. II: Spend 1 AP to plant an item from your pack on a target next to you without being seen, even in the middle of a conversation. A grenade goes off at the start of the target's next turn, and a tracker leaves it Marked for the rest of the fight. The Narrator decides what anything else (evidence, say) leads to.",
+      "text": "I: Your attacks made while Hidden deal {=tiers.I.effects.0.value|more}% more damage. II: Your attacks made while Hidden deal {=tiers.II.effects.0.value|more}% more damage.",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "plant_item",
-          "ap": 2,
-          "uses": "at_will"
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "self_has": [
+              "hidden"
+            ],
+            "hostile": true
+          },
+          "value": 1.08
         }
       ],
       "tiers": {
@@ -1530,14 +1856,19 @@
               "min": 3
             }
           ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to plant an item from your pack on a target next to you without being seen; not in the middle of a conversation. A grenade goes off at the start of the target's next turn, and a tracker leaves it Marked for the rest of the fight. The Narrator decides what anything else (evidence, say) leads to.",
+          "ap_cost": null,
+          "text": "Your attacks made while Hidden deal {=tiers.I.effects.0.value|more}% more damage.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "plant_item",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "self_has": [
+                  "hidden"
+                ],
+                "hostile": true
+              },
+              "value": 1.08
             }
           ]
         },
@@ -1548,29 +1879,30 @@
               "min": 5
             }
           ],
-          "ap_cost": 1,
-          "text": "Spend 1 AP to plant an item from your pack on a target next to you without being seen, even in the middle of a conversation. A grenade goes off at the start of the target's next turn, and a tracker leaves it Marked for the rest of the fight. The Narrator decides what anything else (evidence, say) leads to.",
+          "ap_cost": null,
+          "text": "Your attacks made while Hidden deal {=tiers.II.effects.0.value|more}% more damage.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "plant_item",
-              "ap": 1,
-              "uses": "at_will"
-            },
-            {
-              "op": "narrator",
-              "note": "Allow planting an item during a conversation scene."
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "self_has": [
+                  "hidden"
+                ],
+                "hostile": true
+              },
+              "value": 1.14
             }
           ],
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "stealth",
-        "utility"
+        "shadow",
+        "damage"
       ],
       "provisional": true
     },
@@ -1578,7 +1910,7 @@
       "id": "shadow_step",
       "name": "Shadow Step",
       "tier": "acquired",
-      "perk_type": "active_skill",
+      "perk_type": "ap_mod",
       "skills": [
         "ingenuity"
       ],
@@ -1592,13 +1924,46 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: While you are Hidden, a move from a tile next to cover to another tile next to cover counts as half as many tiles (rounded up), so it costs less AP. II: While you are Hidden, a move from a tile next to cover to another tile next to cover counts as half as many tiles (rounded up), so it costs less AP. When one of your attacks would reveal you, roll Ingenuity against the enemies who can see you: on a success you stay Hidden. Each success makes the next roll in that fight harder.",
+      "text": "I: Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (never under {=tiers.I.effects.0.min}). II: {=tiers.II.effects.0.limit.n} times a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}).",
       "effects": [
         {
           "op": "cost_mod",
-          "action": "move",
-          "value": 0.5,
-          "when": "in stealth, moving cover to cover"
+          "when": "attack",
+          "if": {
+            "own_turn": true,
+            "self_has": [
+              "hidden"
+            ],
+            "self_has_res": [
+              "shadow"
+            ]
+          },
+          "value": -1,
+          "min": 1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "step",
+            "peek": true
+          }
+        },
+        {
+          "op": "use",
+          "when": "attack_roll",
+          "if": {
+            "own_turn": true,
+            "self_has": [
+              "hidden"
+            ],
+            "self_has_res": [
+              "shadow"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "step"
+          }
         }
       ],
       "tiers": {
@@ -1610,13 +1975,46 @@
             }
           ],
           "ap_cost": null,
-          "text": "While you are Hidden, a move from a tile next to cover to another tile next to cover counts as half as many tiles (rounded up), so it costs less AP.",
+          "text": "Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (never under {=tiers.I.effects.0.min}).",
           "effects": [
             {
               "op": "cost_mod",
-              "action": "move",
-              "value": 0.5,
-              "when": "in stealth, moving cover to cover"
+              "when": "attack",
+              "if": {
+                "own_turn": true,
+                "self_has": [
+                  "hidden"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "value": -1,
+              "min": 1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "step",
+                "peek": true
+              }
+            },
+            {
+              "op": "use",
+              "when": "attack_roll",
+              "if": {
+                "own_turn": true,
+                "self_has": [
+                  "hidden"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "step"
+              }
             }
           ]
         },
@@ -1628,19 +2026,46 @@
             }
           ],
           "ap_cost": null,
-          "text": "While you are Hidden, a move from a tile next to cover to another tile next to cover counts as half as many tiles (rounded up), so it costs less AP. When one of your attacks would reveal you, roll Ingenuity against the enemies who can see you: on a success you stay Hidden. Each success makes the next roll in that fight harder.",
+          "text": "{=tiers.II.effects.0.limit.n} times a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}).",
           "effects": [
             {
               "op": "cost_mod",
-              "action": "move",
-              "value": 0.5,
-              "when": "in stealth, moving cover to cover"
+              "when": "attack",
+              "if": {
+                "own_turn": true,
+                "self_has": [
+                  "hidden"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "value": -1,
+              "min": 1,
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "step",
+                "peek": true
+              }
             },
             {
-              "op": "grant_check",
-              "skill": "ingenuity",
-              "when": "after attacking from stealth",
-              "result": "stay hidden"
+              "op": "use",
+              "when": "attack_roll",
+              "if": {
+                "own_turn": true,
+                "self_has": [
+                  "hidden"
+                ],
+                "self_has_res": [
+                  "shadow"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "key": "step"
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -1650,8 +2075,8 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "stealth",
-        "mobility"
+        "shadow",
+        "ap"
       ],
       "provisional": true
     },
@@ -1962,77 +2387,7 @@
     },
     {
       "id": "hold_the_stroke",
-      "name": "Hold the Stroke",
-      "tier": "acquired",
-      "perk_type": "passive",
-      "skills": [
-        "brain_power"
-      ],
-      "skill_greek": "alpha",
-      "requires": [
-        {
-          "skill": "brain_power",
-          "min": 3
-        }
-      ],
-      "excludes": [],
-      "ap_cost": null,
-      "uses": "at_will",
-      "text": "I: You can keep 1 more of your glyphs on the ground at once before the oldest fades. II: You can keep 2 more of your glyphs on the ground at once before the oldest fades.",
-      "effects": [
-        {
-          "op": "stat_mod",
-          "stat": "sigil_strokes_max",
-          "value": 1
-        }
-      ],
-      "tiers": {
-        "I": {
-          "requires": [
-            {
-              "skill": "brain_power",
-              "min": 3
-            }
-          ],
-          "ap_cost": null,
-          "text": "You can keep 1 more of your glyphs on the ground at once before the oldest fades.",
-          "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "sigil_strokes_max",
-              "value": 1
-            }
-          ]
-        },
-        "II": {
-          "requires": [
-            {
-              "skill": "brain_power",
-              "min": 5
-            }
-          ],
-          "ap_cost": null,
-          "text": "You can keep 2 more of your glyphs on the ground at once before the oldest fades.",
-          "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "sigil_strokes_max",
-              "value": 2
-            }
-          ],
-          "replaces_tier_I": true,
-          "after": "I"
-        }
-      },
-      "adjudication": "engine",
-      "recovered": null,
-      "tags": [
-        "sigil"
-      ]
-    },
-    {
-      "id": "parallel_thought",
-      "name": "Parallel Thought",
+      "name": "Second Clause",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -2048,14 +2403,27 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once per turn, while one of your placed spells still stands (a field, a trap or a turret), your next Sigil spell costs 1 AP less: off its glyphs first, then off its Evoke. II: Once per turn, while one of your placed spells still stands (a field, a trap or a turret), your next Sigil spell costs 2 AP less: off its glyphs first, then off its Evoke.",
+      "text": "I: Your Sigil spells deal {=tiers.I.effects.0.value|more}% more damage to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced. II: Your Sigil spells deal {=tiers.II.effects.0.value|more}% more damage to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced.",
       "effects": [
         {
-          "op": "cost_mod",
-          "action": "cast_sigil",
-          "value": -1,
-          "when": "another of your Sigils is still active",
-          "limit": "next_cast"
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "sigil_spell"
+            ],
+            "target_has": [
+              "burning",
+              "slowed",
+              "corroded",
+              "pinned",
+              "blinded",
+              "shaken",
+              "silenced"
+            ]
+          },
+          "value": 1.06
         }
       ],
       "tiers": {
@@ -2067,14 +2435,27 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per turn, while one of your placed spells still stands (a field, a trap or a turret), your next Sigil spell costs 1 AP less: off its glyphs first, then off its Evoke.",
+          "text": "Your Sigil spells deal {=tiers.I.effects.0.value|more}% more damage to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced.",
           "effects": [
             {
-              "op": "cost_mod",
-              "action": "cast_sigil",
-              "value": -1,
-              "when": "another of your Sigils is still active",
-              "limit": "next_cast"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "sigil_spell"
+                ],
+                "target_has": [
+                  "burning",
+                  "slowed",
+                  "corroded",
+                  "pinned",
+                  "blinded",
+                  "shaken",
+                  "silenced"
+                ]
+              },
+              "value": 1.06
             }
           ]
         },
@@ -2086,14 +2467,174 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per turn, while one of your placed spells still stands (a field, a trap or a turret), your next Sigil spell costs 2 AP less: off its glyphs first, then off its Evoke.",
+          "text": "Your Sigil spells deal {=tiers.II.effects.0.value|more}% more damage to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced.",
+          "effects": [
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "sigil_spell"
+                ],
+                "target_has": [
+                  "burning",
+                  "slowed",
+                  "corroded",
+                  "pinned",
+                  "blinded",
+                  "shaken",
+                  "silenced"
+                ]
+              },
+              "value": 1.12
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "sigil",
+        "damage"
+      ],
+      "provisional": true
+    },
+    {
+      "id": "parallel_thought",
+      "name": "Running Hand",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "brain_power"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "brain_power",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: The first glyph you draw each turn: {=tiers.I.effects.0.value|signed} AP to its cost. II: The first glyph you draw each turn: {=tiers.II.effects.0.value|signed} AP to its cost, and it adds no Flux.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "glyph_cost",
+          "value": -0.5,
+          "min": 0,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "hand",
+            "peek": true
+          }
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "draw"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "hand"
+          }
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "brain_power",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "The first glyph you draw each turn: {=tiers.I.effects.0.value|signed} AP to its cost.",
           "effects": [
             {
               "op": "cost_mod",
-              "action": "cast_sigil",
-              "value": -2,
-              "when": "another of your Sigils is still active",
-              "limit": "next_cast"
+              "when": "glyph_cost",
+              "value": -0.5,
+              "min": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "hand",
+                "peek": true
+              }
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "draw"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "hand"
+              }
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "brain_power",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "The first glyph you draw each turn: {=tiers.II.effects.0.value|signed} AP to its cost, and it adds no Flux.",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "glyph_cost",
+              "value": -0.5,
+              "min": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "hand",
+                "peek": true
+              }
+            },
+            {
+              "op": "cost_mod",
+              "when": "glyph_cost",
+              "res": "flux",
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "hand",
+                "peek": true
+              }
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "draw"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "hand"
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -2444,100 +2985,7 @@
     },
     {
       "id": "mirage",
-      "name": "Mirage",
-      "tier": "acquired",
-      "perk_type": "active_skill",
-      "skills": [
-        "visualization"
-      ],
-      "skill_greek": "alpha",
-      "requires": [
-        {
-          "skill": "visualization",
-          "min": 3
-        }
-      ],
-      "excludes": [],
-      "ap_cost": 2,
-      "uses": "at_will",
-      "text": "I: Spend 2 AP to project a false wall, figure or sound onto a tile in range; a new Mirage replaces the old one. Each enemy that sees or hears it rolls against your Visualization, and those that fail believe it until your next turn starts. A believer won't move or shoot through the wall, attacks the figure, or walks towards the sound. II: Spend 2 AP to project two false walls, figures or sounds onto tiles in range; a new Mirage replaces the old ones. Each enemy that sees or hears one rolls against your Visualization, and those that fail believe it until the start of your turn after next. A believer won't move or shoot through a wall, attacks a figure, or walks towards a sound.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "mirage",
-          "ap": 2,
-          "uses": "at_will"
-        },
-        {
-          "op": "spawn_illusion",
-          "count": 1,
-          "rounds": 1,
-          "disbelieve": "analysis"
-        }
-      ],
-      "tiers": {
-        "I": {
-          "requires": [
-            {
-              "skill": "visualization",
-              "min": 3
-            }
-          ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to project a false wall, figure or sound onto a tile in range; a new Mirage replaces the old one. Each enemy that sees or hears it rolls against your Visualization, and those that fail believe it until your next turn starts. A believer won't move or shoot through the wall, attacks the figure, or walks towards the sound.",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "mirage",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "spawn_illusion",
-              "count": 1,
-              "rounds": 1,
-              "disbelieve": "analysis"
-            }
-          ]
-        },
-        "II": {
-          "requires": [
-            {
-              "skill": "visualization",
-              "min": 5
-            }
-          ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to project two false walls, figures or sounds onto tiles in range; a new Mirage replaces the old ones. Each enemy that sees or hears one rolls against your Visualization, and those that fail believe it until the start of your turn after next. A believer won't move or shoot through a wall, attacks a figure, or walks towards a sound.",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "mirage",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "spawn_illusion",
-              "count": 2,
-              "rounds": 2,
-              "disbelieve": "analysis"
-            }
-          ],
-          "replaces_tier_I": true,
-          "after": "I"
-        }
-      },
-      "adjudication": "hybrid",
-      "recovered": null,
-      "tags": [
-        "illusion",
-        "control"
-      ],
-      "provisional": true
-    },
-    {
-      "id": "blueprint",
-      "name": "Blueprint",
+      "name": "Many-Eyed Dream",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -2552,15 +3000,33 @@
       ],
       "excludes": [],
       "ap_cost": null,
-      "uses": "per_scene",
-      "text": "I: Once per scene, outside a fight, sketch the ground ahead for your squad (on the area map it costs 1 action point). If a fight starts in that scene, you and every squadmate who saw the sketch have +1 Movement on your first turn. II: Once per scene, outside a fight, sketch the ground ahead for your squad (on the area map it costs 1 action point). If a fight starts in that scene, you and every squadmate who saw the sketch have +2 Movement on your first turn.",
+      "uses": "at_will",
+      "text": "I: Your Figments' blows deal {=tiers.I.effects.0.value.per.0.value|pct}% more damage for each Figment you keep (up to {=tiers.I.effects.0.value.max|more}%). II: Your Figments' blows deal {=tiers.II.effects.0.value.per.0.value|pct}% more damage for each Figment you keep (up to {=tiers.II.effects.0.value.max|more}%).",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "move",
-          "value": 1,
-          "target": "ally",
-          "when": "first round, ally saw the sketch"
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "hostile": true
+          },
+          "value": {
+            "base": 1,
+            "per": [
+              {
+                "of": "ties:owned",
+                "value": 0.04
+              }
+            ],
+            "max": 1.12
+          }
         }
       ],
       "tiers": {
@@ -2572,14 +3038,32 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per scene, outside a fight, sketch the ground ahead for your squad (on the area map it costs 1 action point). If a fight starts in that scene, you and every squadmate who saw the sketch have +1 Movement on your first turn.",
+          "text": "Your Figments' blows deal {=tiers.I.effects.0.value.per.0.value|pct}% more damage for each Figment you keep (up to {=tiers.I.effects.0.value.max|more}%).",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "move",
-              "value": 1,
-              "target": "ally",
-              "when": "first round, ally saw the sketch"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "actor": "ally",
+                "actor_kind": [
+                  "figment"
+                ],
+                "actor_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "hostile": true
+              },
+              "value": {
+                "base": 1,
+                "per": [
+                  {
+                    "of": "ties:owned",
+                    "value": 0.04
+                  }
+                ],
+                "max": 1.12
+              }
             }
           ]
         },
@@ -2591,14 +3075,32 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per scene, outside a fight, sketch the ground ahead for your squad (on the area map it costs 1 action point). If a fight starts in that scene, you and every squadmate who saw the sketch have +2 Movement on your first turn.",
+          "text": "Your Figments' blows deal {=tiers.II.effects.0.value.per.0.value|pct}% more damage for each Figment you keep (up to {=tiers.II.effects.0.value.max|more}%).",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "move",
-              "value": 2,
-              "target": "ally",
-              "when": "first round, ally saw the sketch"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "actor": "ally",
+                "actor_kind": [
+                  "figment"
+                ],
+                "actor_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "hostile": true
+              },
+              "value": {
+                "base": 1,
+                "per": [
+                  {
+                    "of": "ties:owned",
+                    "value": 0.06
+                  }
+                ],
+                "max": 1.18
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -2608,8 +3110,164 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "support",
-        "planning"
+        "figments",
+        "damage"
+      ],
+      "provisional": true
+    },
+    {
+      "id": "blueprint",
+      "name": "Wake of the Kill",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "visualization"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "visualization",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Once a turn, on your turn, when one of your Figments kills an enemy, you gain {=tiers.I.effects.0.value} AP. II: Once a turn, when one of your Figments puts an enemy down, you gain {=tiers.II.effects.0.value} AP (at the start of your next turn when it is not yours) and {=tiers.II.effects.0.and.0.value} Visualizer charge.",
+      "effects": [
+        {
+          "op": "grant_ap",
+          "when": "kill",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "own_turn": true
+          },
+          "value": 1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          }
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "visualization",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a turn, on your turn, when one of your Figments kills an enemy, you gain {=tiers.I.effects.0.value} AP.",
+          "effects": [
+            {
+              "op": "grant_ap",
+              "when": "kill",
+              "if": {
+                "actor": "ally",
+                "actor_kind": [
+                  "figment"
+                ],
+                "actor_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "own_turn": true
+              },
+              "value": 1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              }
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "visualization",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a turn, when one of your Figments puts an enemy down, you gain {=tiers.II.effects.0.value} AP (at the start of your next turn when it is not yours) and {=tiers.II.effects.0.and.0.value} Visualizer charge.",
+          "effects": [
+            {
+              "op": "grant_ap",
+              "when": "downed",
+              "if": {
+                "actor": "ally",
+                "actor_kind": [
+                  "figment"
+                ],
+                "actor_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "target": "foe",
+                "own_turn": true
+              },
+              "value": 1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "wake"
+              },
+              "and": [
+                {
+                  "op": "resource",
+                  "resource": "vcharge",
+                  "value": 1
+                }
+              ]
+            },
+            {
+              "op": "grant_ap",
+              "when": "downed",
+              "if": {
+                "actor": "ally",
+                "actor_kind": [
+                  "figment"
+                ],
+                "actor_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "target": "foe",
+                "own_turn": false
+              },
+              "value": 1,
+              "bank": true,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "wake"
+              },
+              "and": [
+                {
+                  "op": "resource",
+                  "resource": "vcharge",
+                  "value": 1
+                }
+              ]
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "figments",
+        "ap"
       ],
       "provisional": true
     },
@@ -2941,101 +3599,7 @@
     },
     {
       "id": "shared_breath",
-      "name": "Shared Breath",
-      "tier": "acquired",
-      "perk_type": "active_skill",
-      "skills": [
-        "empathy"
-      ],
-      "skill_greek": "alpha",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 3
-        }
-      ],
-      "excludes": [],
-      "ap_cost": 2,
-      "uses": "at_will",
-      "text": "I: Spend 2 AP to link with an ally within 3 tiles that you can see. The next Heart debuff that lands on either of you lands on both, each for half its duration; then the link ends. II: Spend 2 AP to link with an ally within 3 tiles that you can see, for the rest of the fight. Every Heart debuff that lands on either of you lands on both, each for half its duration.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "shared_breath",
-          "ap": 2,
-          "uses": "at_will"
-        },
-        {
-          "op": "debuff_split",
-          "family": "heart",
-          "count": 1,
-          "duration_mult": 0.5
-        }
-      ],
-      "tiers": {
-        "I": {
-          "requires": [
-            {
-              "skill": "empathy",
-              "min": 3
-            }
-          ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to link with an ally within 3 tiles that you can see. The next Heart debuff that lands on either of you lands on both, each for half its duration; then the link ends.",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "shared_breath",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "debuff_split",
-              "family": "heart",
-              "count": 1,
-              "duration_mult": 0.5
-            }
-          ]
-        },
-        "II": {
-          "requires": [
-            {
-              "skill": "empathy",
-              "min": 5
-            }
-          ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to link with an ally within 3 tiles that you can see, for the rest of the fight. Every Heart debuff that lands on either of you lands on both, each for half its duration.",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "shared_breath",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "debuff_split",
-              "family": "heart",
-              "count": "all",
-              "duration_mult": 0.5,
-              "duration": "combat"
-            }
-          ],
-          "replaces_tier_I": true,
-          "after": "I"
-        }
-      },
-      "adjudication": "engine",
-      "recovered": null,
-      "tags": [
-        "support",
-        "heart"
-      ],
-      "provisional": true
-    },
-    {
-      "id": "lay_down_arms",
-      "name": "Lay Down Arms",
+      "name": "Taut Thread",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -3049,24 +3613,23 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 2,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Spend 2 AP to plead with one humanoid enemy within 8 tiles who can hear you. It makes a Heart save or lowers its weapon: it can't attack on its next turn. II: Spend 2 AP to plead with up to three humanoid enemies within 8 tiles who can hear you. Each makes a Heart save or lowers its weapon: it can't attack on its next turn.",
+      "text": "I: With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.I.effects.0.value|more}% more damage. II: With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.II.effects.0.value|more}% more damage.",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "lay_down_arms",
-          "ap": 2,
-          "uses": "at_will"
-        },
-        {
-          "op": "condition",
-          "condition": "commanded",
-          "target": "target",
-          "save": "heart",
-          "rounds": 1,
-          "filter": "humanoid, can hear you",
-          "arg": "hold"
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "target": "foe",
+            "target_tied": "bond",
+            "by_hit": true,
+            "self_holds": {
+              "slot": "hand",
+              "door": "empathy"
+            }
+          },
+          "value": 1.06
         }
       ],
       "tiers": {
@@ -3077,23 +3640,22 @@
               "min": 3
             }
           ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to plead with one humanoid enemy within 8 tiles who can hear you. It makes a Heart save or lowers its weapon: it can't attack on its next turn.",
+          "ap_cost": null,
+          "text": "With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.I.effects.0.value|more}% more damage.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "lay_down_arms",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "condition",
-              "condition": "commanded",
-              "target": "target",
-              "save": "heart",
-              "rounds": 1,
-              "filter": "humanoid, can hear you",
-              "arg": "hold"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "target": "foe",
+                "target_tied": "bond",
+                "by_hit": true,
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "value": 1.06
             }
           ]
         },
@@ -3104,23 +3666,22 @@
               "min": 5
             }
           ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to plead with up to three humanoid enemies within 8 tiles who can hear you. Each makes a Heart save or lowers its weapon: it can't attack on its next turn.",
+          "ap_cost": null,
+          "text": "With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.II.effects.0.value|more}% more damage.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "lay_down_arms",
-              "ap": 2,
-              "uses": "at_will"
-            },
-            {
-              "op": "condition",
-              "condition": "commanded",
-              "target": "up_to_3",
-              "save": "heart",
-              "rounds": 1,
-              "filter": "humanoid, can hear you",
-              "arg": "hold"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "target": "foe",
+                "target_tied": "bond",
+                "by_hit": true,
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "value": 1.12
             }
           ],
           "replaces_tier_I": true,
@@ -3130,8 +3691,212 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "control",
-        "heart"
+        "bonds",
+        "damage"
+      ],
+      "provisional": true
+    },
+    {
+      "id": "lay_down_arms",
+      "amounts": {
+        "balm": {
+          "kind": "damage",
+          "base": 0,
+          "per": [
+            {
+              "of": "event:amount",
+              "value": 0.04
+            }
+          ],
+          "type": "soul",
+          "armour": "none",
+          "door": "bond",
+          "provisional": true
+        },
+        "balm_ii": {
+          "kind": "damage",
+          "base": 0,
+          "per": [
+            {
+              "of": "event:amount",
+              "value": 0.08
+            }
+          ],
+          "type": "soul",
+          "armour": "none",
+          "door": "bond",
+          "provisional": true
+        }
+      },
+      "name": "Bitter Balm",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "empathy"
+      ],
+      "skill_greek": "alpha",
+      "requires": [
+        {
+          "skill": "empathy",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: With an Attuner in hand, when you heal yourself or an ally Bonded to you, each enemy Bonded to you takes {=amounts.balm.per.0.value|pct}% of the HP restored as Soul damage at the start of its next turn. II: With an Attuner in hand, when you heal yourself or an ally Bonded to you, each enemy Bonded to you takes {=amounts.balm_ii.per.0.value|pct}% of the HP restored as Soul damage at the start of its next turn.",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "heal_given",
+          "if": {
+            "target": "self",
+            "self_holds": {
+              "slot": "hand",
+              "door": "empathy"
+            }
+          },
+          "amount": "balm",
+          "targets": {
+            "side": "foe",
+            "tied": "bond"
+          },
+          "delay": {
+            "until": "target_turn_start"
+          }
+        },
+        {
+          "op": "deal",
+          "when": "heal_given",
+          "if": {
+            "target": "ally",
+            "target_tied": "bond",
+            "self_holds": {
+              "slot": "hand",
+              "door": "empathy"
+            }
+          },
+          "amount": "balm",
+          "targets": {
+            "side": "foe",
+            "tied": "bond"
+          },
+          "delay": {
+            "until": "target_turn_start"
+          }
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "empathy",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "With an Attuner in hand, when you heal yourself or an ally Bonded to you, each enemy Bonded to you takes {=amounts.balm.per.0.value|pct}% of the HP restored as Soul damage at the start of its next turn.",
+          "effects": [
+            {
+              "op": "deal",
+              "when": "heal_given",
+              "if": {
+                "target": "self",
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "amount": "balm",
+              "targets": {
+                "side": "foe",
+                "tied": "bond"
+              },
+              "delay": {
+                "until": "target_turn_start"
+              }
+            },
+            {
+              "op": "deal",
+              "when": "heal_given",
+              "if": {
+                "target": "ally",
+                "target_tied": "bond",
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "amount": "balm",
+              "targets": {
+                "side": "foe",
+                "tied": "bond"
+              },
+              "delay": {
+                "until": "target_turn_start"
+              }
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "empathy",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "With an Attuner in hand, when you heal yourself or an ally Bonded to you, each enemy Bonded to you takes {=amounts.balm_ii.per.0.value|pct}% of the HP restored as Soul damage at the start of its next turn.",
+          "effects": [
+            {
+              "op": "deal",
+              "when": "heal_given",
+              "if": {
+                "target": "self",
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "amount": "balm_ii",
+              "targets": {
+                "side": "foe",
+                "tied": "bond"
+              },
+              "delay": {
+                "until": "target_turn_start"
+              }
+            },
+            {
+              "op": "deal",
+              "when": "heal_given",
+              "if": {
+                "target": "ally",
+                "target_tied": "bond",
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "amount": "balm_ii",
+              "targets": {
+                "side": "foe",
+                "tied": "bond"
+              },
+              "delay": {
+                "until": "target_turn_start"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "bonds",
+        "damage"
       ],
       "provisional": true
     },
@@ -3482,9 +4247,9 @@
     },
     {
       "id": "heart_overload",
-      "name": "Heart Overload",
+      "name": "Clenched Heart",
       "tier": "acquired",
-      "perk_type": "passive",
+      "perk_type": "combat_interaction",
       "skills": [
         "will_power"
       ],
@@ -3497,14 +4262,32 @@
       ],
       "excludes": [],
       "ap_cost": null,
-      "uses": "per_turn",
-      "text": "I: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 0. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand. II: Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1 if you have not taken your free Pump this turn (at stage 0 if you have). If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
+      "uses": "at_will",
+      "text": "I: With an Emanator in hand, your Outbursts Released at stage {=tiers.I.effects.0.value.steps.0.at} or higher deal {=tiers.I.effects.0.value.steps.0.value|pct}% more damage. II: With an Emanator in hand, your Outbursts Released at stage {=tiers.II.effects.0.value.steps.0.at} deal {=tiers.II.effects.0.value.steps.0.value|pct}% more damage, and at stage {=tiers.II.effects.0.value.steps.1.at} or higher {=tiers.II.effects.0.value.steps.1.value|pct}% more again.",
       "effects": [
         {
-          "op": "alt_cost",
-          "action": "soul_cast",
-          "pay": "hp",
-          "rate": 1
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "outburst"
+            ],
+            "self_holds": {
+              "slot": "hand",
+              "door": "emanator"
+            }
+          },
+          "value": {
+            "base": 1,
+            "steps": [
+              {
+                "of": "event:stage",
+                "at": 3,
+                "value": 0.05
+              }
+            ]
+          }
         }
       ],
       "tiers": {
@@ -3516,13 +4299,31 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 0. If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
+          "text": "With an Emanator in hand, your Outbursts Released at stage {=tiers.I.effects.0.value.steps.0.at} or higher deal {=tiers.I.effects.0.value.steps.0.value|pct}% more damage.",
           "effects": [
             {
-              "op": "alt_cost",
-              "action": "soul_cast",
-              "pay": "hp",
-              "rate": 1
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "outburst"
+                ],
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "emanator"
+                }
+              },
+              "value": {
+                "base": 1,
+                "steps": [
+                  {
+                    "of": "event:stage",
+                    "at": 3,
+                    "value": 0.05
+                  }
+                ]
+              }
             }
           ]
         },
@@ -3534,13 +4335,36 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once a turn, right after you Release an Outburst at stage 2 or higher, you can Begin the same design again at once for 0 AP. You pay its mana and Strain as usual, and it holds at stage 1 if you have not taken your free Pump this turn (at stage 0 if you have). If you don't have the mana for that Begin, you can pay it in HP instead, at 1 HP per point of mana, but an Outburst paid for in blood can't heal or shield. You need an Emanator in hand.",
+          "text": "With an Emanator in hand, your Outbursts Released at stage {=tiers.II.effects.0.value.steps.0.at} deal {=tiers.II.effects.0.value.steps.0.value|pct}% more damage, and at stage {=tiers.II.effects.0.value.steps.1.at} or higher {=tiers.II.effects.0.value.steps.1.value|pct}% more again.",
           "effects": [
             {
-              "op": "alt_cost",
-              "action": "soul_cast",
-              "pay": "hp",
-              "rate": 1
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "outburst"
+                ],
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "emanator"
+                }
+              },
+              "value": {
+                "base": 1,
+                "steps": [
+                  {
+                    "of": "event:stage",
+                    "at": 2,
+                    "value": 0.05
+                  },
+                  {
+                    "of": "event:stage",
+                    "at": 3,
+                    "value": 0.05
+                  }
+                ]
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -3551,7 +4375,7 @@
       "recovered": null,
       "tags": [
         "soul_magic",
-        "sacrifice"
+        "damage"
       ],
       "provisional": true
     },
@@ -3573,13 +4397,13 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Each Outburst you Release gives your next Release in this fight +{=effects.0.value}% to its effect, building up to +20%. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round. II: Each Outburst you Release gives your next Release in this fight +{=effects.0.value}% to its effect, building up to +30%. An ally's Release that you can see adds a step too. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
+      "text": "I: Each Outburst you Release gives your next Release in this fight +{=tiers.I.effects.0.value}% to its effect, building up to +{=tiers.I.effects.0.limit}%. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round. II: Each Outburst you Release gives your next Release in this fight +{=tiers.II.effects.0.value}% to its effect, building up to +{=tiers.II.effects.0.limit}%. An ally's Release that you can see adds a step too. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
       "effects": [
         {
           "op": "stat_mod",
           "stat": "release_mult_pct",
-          "value": 10,
-          "limit": 20,
+          "value": 4,
+          "limit": 8,
           "context": "your next Release, for each Outburst you Release this fight"
         }
       ],
@@ -3592,13 +4416,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "Each Outburst you Release gives your next Release in this fight +{=tiers.I.effects.0.value}% to its effect, building up to +20%. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
+          "text": "Each Outburst you Release gives your next Release in this fight +{=tiers.I.effects.0.value}% to its effect, building up to +{=tiers.I.effects.0.limit}%. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "release_mult_pct",
-              "value": 10,
-              "limit": 20,
+              "value": 4,
+              "limit": 8,
               "context": "your next Release, for each Outburst you Release this fight"
             }
           ]
@@ -3616,8 +4440,8 @@
             {
               "op": "stat_mod",
               "stat": "release_mult_pct",
-              "value": 10,
-              "limit": 30,
+              "value": 4,
+              "limit": 12,
               "context": "your next Release, for each Outburst you or an ally you can see Release this fight"
             }
           ],
@@ -3940,9 +4764,9 @@
     },
     {
       "id": "litany",
-      "name": "Litany",
+      "name": "Unbroken Litany",
       "tier": "acquired",
-      "perk_type": "active_skill",
+      "perk_type": "ap_mod",
       "skills": [
         "faith"
       ],
@@ -3954,22 +4778,40 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 2,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Spend 2 AP to speak a prayer: you and allies within 3 tiles get +{=effects.1.value} on all saves until your next turn starts. You can't speak it while Silenced, and two Litanies don't add up. II: Spend 2 AP to speak a prayer: you and allies within 3 tiles get +2 on all saves until your next turn starts. You can't speak it while Silenced, and two Litanies don't add up.",
+      "text": "I: Your first Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less. II: Your first Hymn or Miracle each fight costs {=tiers.II.effects.0.value|abs} AP less, and the wait between your Hymns is {=tiers.II.effects.2.value|abs} round shorter (never under its floor).",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "litany",
-          "ap": 2,
-          "uses": "at_will"
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "pray"
+            ]
+          },
+          "value": -1,
+          "min": 1,
+          "limit": {
+            "per": "per_combat",
+            "n": 1,
+            "key": "first",
+            "peek": true
+          }
         },
         {
-          "op": "save_mod",
-          "family": "all",
-          "value": 1,
-          "target": "allies_within_3",
-          "duration": "until_your_next_turn"
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "pray"
+            ]
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1,
+            "key": "first"
+          }
         }
       ],
       "tiers": {
@@ -3980,21 +4822,39 @@
               "min": 3
             }
           ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to speak a prayer: you and allies within 3 tiles get +{=tiers.I.effects.1.value} on all saves until your next turn starts. You can't speak it while Silenced, and two Litanies don't add up.",
+          "ap_cost": null,
+          "text": "Your first Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "litany",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "pray"
+                ]
+              },
+              "value": -1,
+              "min": 1,
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "first",
+                "peek": true
+              }
             },
             {
-              "op": "save_mod",
-              "family": "all",
-              "value": 1,
-              "target": "allies_within_3",
-              "duration": "until_your_next_turn"
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "pray"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "first"
+              }
             }
           ]
         },
@@ -4005,21 +4865,44 @@
               "min": 5
             }
           ],
-          "ap_cost": 2,
-          "text": "Spend 2 AP to speak a prayer: you and allies within 3 tiles get +{=tiers.II.effects.1.value} on all saves until your next turn starts. You can't speak it while Silenced, and two Litanies don't add up.",
+          "ap_cost": null,
+          "text": "Your first Hymn or Miracle each fight costs {=tiers.II.effects.0.value|abs} AP less, and the wait between your Hymns is {=tiers.II.effects.2.value|abs} round shorter (never under its floor).",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "litany",
-              "ap": 2,
-              "uses": "at_will"
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "pray"
+                ]
+              },
+              "value": -1,
+              "min": 1,
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "first",
+                "peek": true
+              }
             },
             {
-              "op": "save_mod",
-              "family": "all",
-              "value": 2,
-              "target": "allies_within_3",
-              "duration": "until_your_next_turn"
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "pray"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "first"
+              }
+            },
+            {
+              "op": "stat_mod",
+              "stat": "hymn_wait",
+              "value": -1
             }
           ],
           "replaces_tier_I": true,
@@ -4029,13 +4912,14 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "support",
-        "faith"
-      ]
+        "faith",
+        "ap"
+      ],
+      "provisional": true
     },
     {
       "id": "holy_ordnance",
-      "name": "Holy Ordnance",
+      "name": "Sinner's Due",
       "tier": "acquired",
       "perk_type": "combat_interaction",
       "skills": [
@@ -4049,22 +4933,21 @@
         }
       ],
       "excludes": [],
-      "ap_cost": 3,
+      "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Spend 3 AP to bless the magazine in your own gun or in the gun of an ally next to you. Its rounds deal +{=effects.1.value|more}% damage to upper-realm and cursed beings until that magazine is swapped out. II: Spend 3 AP to bless the magazine in your own gun or in the gun of an ally next to you, and the next one loaded after it. Their rounds deal +40% damage to upper-realm and cursed beings until each magazine is swapped out.",
+      "text": "I: Your prayers deal {=tiers.I.effects.0.value|more}% more damage to an enemy at half its HP or less. II: Your prayers deal {=tiers.II.effects.0.value|more}% more damage to an enemy at half its HP or less, or to a Marked or Judged enemy above half.",
       "effects": [
         {
-          "op": "grant_action",
-          "action": "holy_ordnance",
-          "ap": 3,
-          "uses": "at_will"
-        },
-        {
           "op": "damage_mult",
-          "value": 1.2,
-          "target": "ally_magazine",
-          "context": "vs upper-realm and cursed beings",
-          "count": 1
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "prayer"
+            ],
+            "target_hp_at_most": 0.5
+          },
+          "value": 1.08
         }
       ],
       "tiers": {
@@ -4075,21 +4958,20 @@
               "min": 3
             }
           ],
-          "ap_cost": 3,
-          "text": "Spend 3 AP to bless the magazine in your own gun or in the gun of an ally next to you. Its rounds deal +{=tiers.I.effects.1.value|more}% damage to upper-realm and cursed beings until that magazine is swapped out.",
+          "ap_cost": null,
+          "text": "Your prayers deal {=tiers.I.effects.0.value|more}% more damage to an enemy at half its HP or less.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "holy_ordnance",
-              "ap": 3,
-              "uses": "at_will"
-            },
-            {
               "op": "damage_mult",
-              "value": 1.2,
-              "target": "ally_magazine",
-              "context": "vs upper-realm and cursed beings",
-              "count": 1
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "prayer"
+                ],
+                "target_hp_at_most": 0.5
+              },
+              "value": 1.08
             }
           ]
         },
@@ -4100,21 +4982,36 @@
               "min": 5
             }
           ],
-          "ap_cost": 3,
-          "text": "Spend 3 AP to bless the magazine in your own gun or in the gun of an ally next to you, and the next one loaded after it. Their rounds deal +{=tiers.II.effects.1.value|more}% damage to upper-realm and cursed beings until each magazine is swapped out.",
+          "ap_cost": null,
+          "text": "Your prayers deal {=tiers.II.effects.0.value|more}% more damage to an enemy at half its HP or less, or to a Marked or Judged enemy above half.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "holy_ordnance",
-              "ap": 3,
-              "uses": "at_will"
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "prayer"
+                ],
+                "target_hp_at_most": 0.5
+              },
+              "value": 1.12
             },
             {
               "op": "damage_mult",
-              "value": 1.4,
-              "target": "ally_magazine",
-              "context": "vs upper-realm and cursed beings",
-              "count": 2
+              "when": "dealing",
+              "if": {
+                "hostile": true,
+                "damage": [
+                  "prayer"
+                ],
+                "target_hp_above": 0.5,
+                "target_has": [
+                  "marked",
+                  "judged"
+                ]
+              },
+              "value": 1.12
             }
           ],
           "replaces_tier_I": true,
@@ -4124,9 +5021,8 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "support",
         "faith",
-        "guns"
+        "damage"
       ],
       "provisional": true
     },

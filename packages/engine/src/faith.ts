@@ -20,7 +20,7 @@ import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, packKindOf, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, modsOn, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
-import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE, coreChargeOf } from './magic';
+import { condOn, applyCond, endCond, harm, withDoor, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE, coreChargeOf } from './magic';
 import { pushAway } from './effects/core';
 import { setPrayerDoor } from './effects/actions';
 import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot, setResSetter } from './effects/cost';
@@ -938,7 +938,7 @@ function likedAttack(cb: Combat, att: Unit, tgt: Unit): boolean {
   return (likes.includes('judge') && !!tgt.faith?.harmedHelpless) || (likes.includes('burn') && dt === 'fire') || (likes.includes('storm') && dt === 'lightning');
 }
 function harmLine(cb: Combat, by: Unit, t: Unit, n: number | SpellAmount, type: 'soul' | 'elemental', dmgType?: string): string {
-  return harm(cb, rngOf(), by, t, typeof n === 'number' ? Math.round(n) : n, type, dmgType);
+  return withDoor('prayer', null, () => harm(cb, rngOf(), by, t, typeof n === 'number' ? Math.round(n) : n, type, dmgType)); // rules 1.56 P1: a prayer's damage names its door
 }
 function healLine(cb: Combat, by: Unit | null, t: Unit, n: number, gate: 'whisper' | 'hymn' | 'intervention' | null = null): string {
   // the percent gate and the cap (heal-shield-percent-spec.md section 4): a Whisper's and a Hymn's own share (rules.json mending.gate)

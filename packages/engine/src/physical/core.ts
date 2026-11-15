@@ -583,18 +583,8 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
     return pv.moved;
   }
   const mv = displace(cb, t.rng, target, to, o);
-  if (mv.blockedAt && dir === 'away') pushBlocked(t, target, mv.blockedAt, opts.how); // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
   if (mv.moved) say(cb, target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ')' + mv.text + '.');
   return mv.moved;
-}
-/** Breaching Strike's rule for a push that is blocked, bound by perks/skeleton.ts (that file imports this one). */
-let SLAM: ((cb: Combat, by: Unit, target: Unit, into: 'wall' | Unit, how: string) => void) | null = null;
-export const setSlam = (f: typeof SLAM) => { SLAM = f; };
-/** A melee technique's push away that a wall or a body stops at `to` (forceMove's blocked tile; Shove against a blocked
- * tile, which knocks Prone instead of moving): Breaching Strike's rule is asked. Never in a preview. */
-export function pushBlocked(t: Tech, target: Unit, to: string | null, how?: string): void {
-  if (!SLAM || t.preview || t.def.system !== 'melee' || !alive(target)) return;
-  SLAM(t.cb, t.u, target, (to && t.cb.units.find((v) => v !== target && !v.dead && v.pos === to)) || 'wall', how || t.def.id);
 }
 /** Rounds a technique burns beyond its rolls. False (with a note) if the weapon can't pay. */
 export function spendRounds(t: Tech, n: number): boolean {

@@ -4523,11 +4523,11 @@
       },
       "self_kind": {
         "arg": "words",
-        "about": "self's kind is one of these (human, robot, crawler, ork…)"
+        "about": "self's kind is one of these (human, robot, crawler, ork…), or an owned unit's record kind (figment, machine: owned.ts ownedRecord)"
       },
       "self_not_kind": {
         "arg": "words",
-        "about": "self's kind is none of these"
+        "about": "self's kind is none of these (as self_kind)"
       },
       "self_sight": {
         "arg": "words",
@@ -4569,11 +4569,11 @@
       },
       "actor_kind": {
         "arg": "words",
-        "about": "actor's kind is one of these (human, robot, crawler, ork…)"
+        "about": "actor's kind is one of these (human, robot, crawler, ork…), or an owned unit's record kind (figment, machine: owned.ts ownedRecord)"
       },
       "actor_not_kind": {
         "arg": "words",
-        "about": "actor's kind is none of these"
+        "about": "actor's kind is none of these (as actor_kind)"
       },
       "actor_within": {
         "arg": "number",
@@ -4623,11 +4623,11 @@
       },
       "target_kind": {
         "arg": "words",
-        "about": "target's kind is one of these (human, robot, crawler, ork…)"
+        "about": "target's kind is one of these (human, robot, crawler, ork…), or an owned unit's record kind (figment, machine: owned.ts ownedRecord)"
       },
       "target_not_kind": {
         "arg": "words",
-        "about": "target's kind is none of these"
+        "about": "target's kind is none of these (as target_kind)"
       },
       "target_within": {
         "arg": "number",
@@ -4657,11 +4657,11 @@
       },
       "mode": {
         "arg": "words",
-        "about": "the attack's mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech)"
+        "about": "the attack's mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech; on damage, a kill or a downing, its source's: src.mode, src.tech)"
       },
       "damage": {
         "arg": "words",
-        "about": "the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true)"
+        "about": "the damage is of one of these kinds (melee, ranged, explosive, outburst, sigil_spell, prayer, bond, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true)"
       },
       "not_damage": {
         "arg": "words",

@@ -189,9 +189,12 @@ export function spendLevel(def: BuildDef, variant: Variant, C: () => any, act: (
   takePerks(def, C, act);
   return notWanted;
 }
+/** Rules 1.56 (Balance 2.0; Leon, 15 Nov 2026): perk steps sit ON TOP of a class's damage line. The balance contract
+ * measures the line, so it builds with no perk steps (`STEPS.perks = false`); every other measure takes them. */
+export const STEPS = { perks: true };
 /** The perk steps Mastery has earned: the build's preferred perk first, else the first one offered. */
 export function takePerks(def: BuildDef, C: () => any, act: (a: any) => void) {
-  if (def.perks === 'none') return;
+  if (def.perks === 'none' || !STEPS.perks) return;
   for (let guard = 0; guard < 40; guard++) {
     const steps = pendingPerkSteps(C()); if (!steps.length) break;
     const all = steps.flatMap((s) => s.choices), pref = (def.perks as string[]).map((p) => all.find((x) => x.id === p)).find(Boolean) || all[0];
@@ -204,7 +207,7 @@ const CACHE = new Map<string, string>();
 
 /** Build one reference character through the reducer. The result is a plain Character (a copy each call). */
 export function buildCharacter(id: string, variant: Variant, level: number): Built {
-  const def = BUILD[id], k = id + '|' + variant + '|' + level, hit = CACHE.get(k);
+  const def = BUILD[id], k = id + '|' + variant + '|' + level + (STEPS.perks ? '' : '|no-perks'), hit = CACHE.get(k);
   if (hit) return { ...JSON.parse(hit), def };
   const notes: string[] = [];
   let g = newGame('BUILD-' + k, { id: 'host', name: 'Host' });

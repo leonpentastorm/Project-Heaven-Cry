@@ -1866,6 +1866,7 @@
                   "profile": "blessing",
                   "type": "soul",
                   "armour": "none",
+                  "door": "prayer",
                   "provisional": true
                 },
                 "smite_storm": {
@@ -1875,6 +1876,7 @@
                   "type": "soul",
                   "element": "lightning",
                   "armour": "none",
+                  "door": "prayer",
                   "provisional": true
                 }
               },

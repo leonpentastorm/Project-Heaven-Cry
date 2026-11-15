@@ -128,21 +128,6 @@ describe('triggers from a reducer action or an enemy\'s turn (item 20)', () => {
     f.turn(ally); f.act({ type: 'combat/end-turn', unitId: ally.id });
     expect(f.unit(ally.id).downed).toBe(true); expect(logHas(f.cb, /First casualty \(Outclassed\)/)).toBe(true);
   });
-  it('Sweet Talker: charm in the story, then a plea through combat/perk that lands on the charmed NPC gives +2 AP (II +3)', () => {
-    for (const [tier, n] of [['I', 2], ['II', 3]] as const) {
-      const s = storyWith([{ perks: { sweet_talker: tier, lay_down_arms: 'I' } }]); const c = s.chars[0];
-      s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['implication'], tn: 12, stakes: 'Charm Vel', target: 'Vel', auto: 'success' }] } } as any);
-      const ck = s.g.checks.find((k: any) => !k.done); if (ck) s.act({ type: 'check/roll', checkId: ck.id } as any);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Vel turns.', combat: { name: 'Fight', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Vel', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
-      const box: any = s, cb: Combat = box.g.combat; open(cb);
-      const me = cb.units.find((u) => u.side === 'pc')!, vel = cb.units.find((u) => u.name === 'Vel')!;
-      me.pos = '2,5'; vel.pos = '4,5'; vel.sv = { body: -50, brain: -50, heart: -50 } as any;
-      cb.turn = cb.order.indexOf(me.id); me.ap = 6; delete (cb as any).window;
-      s.act({ type: 'combat/perk', unitId: me.id, id: 'lay_down_arms', targetId: vel.id } as any);
-      const after = box.g.combat.units.find((u: Unit) => u.id === me.id);
-      expect(after.ap).toBe(6 - 2 + n); expect(logHas(box.g.combat, /Sweet Talker/)).toBe(true);
-    }
-  });
 });
 
 describe('Sixth Sense through the reducer (item 21)', () => {

@@ -47,21 +47,7 @@ describe('Clean Hands out of a fight', () => {
   });
 });
 
-describe('Mirage out of a fight', () => {
-  it('on the area map it costs 2 AP and the engine rolls the NPCs\' Analysis; in the story panel it opens a ruling', () => {
-    const s = storyWith([{ perks: { mirage: 'I' } }]); const c = s.chars[0], at = positionsOf(s.g)[c.id];
-    s.act({ type: 'narrator/turn', turn: { narration: 'Guards.', npcs: [{ action: 'place', name: 'Guard', side: 'hostile', tier: 'soldier', weapon: 'service_pistol', at: refOf(freeNear(s.g, at, 4)) }] } } as any);
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'mirage', actionId: 'mirage_story', text: 'a patrol coming round the corner' } as any);
-    expect(apLeft(s.g, s.g.characters[c.id])).toBe(4);
-    expect(rulingHas(s.g, /Mirage: .* projects a patrol .*Guard \d+ (sees through it|believes)/)).toBe(true);
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'mirage', actionId: 'mirage_story', text: 'again' } as any);
-    s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'mirage', actionId: 'mirage_story', text: 'and again' } as any);
-    expect(() => s.act({ type: 'world/act', charId: c.id, act: 'perk', id: 'mirage', actionId: 'mirage_story', text: 'no AP left' } as any)).toThrow(/AP/);
-    const t = storyWith([{ perks: { mirage: 'I' } }]);
-    t.act({ type: 'story/perk', charId: t.chars[0].id, id: 'mirage', actionId: 'mirage_story', text: 'footsteps' } as any);
-    expect(rulingHas(t.g, /Mirage: .* projects footsteps/)).toBe(true);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Mirage out of a fight'
 
 describe('Lab Coat II out of a fight', () => {
   it('neutralising an agent ends it on the party and blocks it for the rest of the scene; the next scene it lands again', () => {
@@ -116,39 +102,9 @@ describe('Earthbreaker and Last Wall: the story and the brief', () => {
   });
 });
 
-describe('Iron Grip redirects an enemy\'s attack to the held target (through the reducer)', () => {
-  it('half the blows aimed at the holder land on the held target (tier I now)', () => {
-    let redirected = false;
-    for (let seed = 1; seed < 20 && !redirected; seed++) {
-      const f = fightWith([{ perks: { iron_grip: 'I' } }], [{ at: 'C6', weapon: 'fists' }, { at: 'C8', weapon: 'fists' }], { seed: 'GR' + seed });
-      const pc = f.pc, [cap, foe] = f.foes; pc.pos = '5,5'; cap.pos = '6,5'; foe.pos = '4,5'; foe.attack = 60; cap.attack = -60;
-      cap.conds = { ...(cap.conds || {}), grappled: 99 }; cap.condBy = { ...(cap.condBy || {}), grappled: pc.id };
-      enemyTurn(f, pc, foe);
-      redirected = logHas(f.cb, /finds .* instead \(Iron Grip/);
-    }
-    expect(redirected).toBe(true);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Iron Grip redirects an enemy
 
 describe('Into the Dark, Shadow Step and Charge! on the area map', () => {
-  it('Shadow Step: a sneak from cover to cover on the area map pays for half the tiles (move and the sneak surcharge)', () => {
-    const run = (perks: any) => {
-      const s = storyWith([{ perks }]); const c = s.chars[0], map = zoneMap(s.g);
-      const free = (k: string) => standable(map, k) && !npcsOf(s.g).some((n) => n.pos === k) && !storyObjects(s.g).some((o) => o.pos === k) && !Object.values(positionsOf(s.g)).some((p) => p === k);
-      for (let y = 1; y < map.h - 1; y++) for (let x = 1; x < map.w - 6; x++) {
-        const row = [0, 1, 2, 3, 4].map((i) => (x + i) + ',' + y), above = [x + ',' + (y - 1), (x + 4) + ',' + (y - 1)];
-        if (!row.every(free) || !above.every(free)) continue;
-        const g0 = JSON.parse(JSON.stringify(s.g)); g0.story.positions[c.id] = row[0]; g0.story.sneak = { [c.id]: true }; g0.story.hidden = { [c.id]: true };
-        g0.story.objects = [...g0.story.objects, makeObject('cvA', 'crate', above[0]), makeObject('cvB', 'crate', above[1])];
-        const g1 = apply(g0, { type: 'world/act', charId: c.id, act: 'move', to: row[4], how: 'sneak' } as any, 'host');
-        return { spent: 6 - apLeft(g1, g1.characters[c.id]), g: g1 };
-      }
-      throw new Error('no row');
-    };
-    const plain = run({}), step = run({ shadow_step: 'I' });
-    expect(step.g.story.entries.some((e: any) => /Shadow Step: half the tiles/.test(e.text || ''))).toBe(true);
-    expect(step.spent).toBeLessThan(plain.spent);
-  });
   it('Charge! on the area map: a straight move ending next to a hostile token is discounted like the fight\'s', () => {
     const s = storyWith([{ perks: ['charge'] }, {}]); const [c, d] = s.chars; const at = positionsOf(s.g)[c.id];
     const [x, y] = at.split(',').map(Number), end = (x + 3) + ',' + y, foeAt = (x + 4) + ',' + y;

@@ -46,79 +46,8 @@ const baseMove = (c: Character) => 1 + 0.5 * ((c.attrs.agility || 1) - 1) + (ARM
 
 // ======================================================================================================== PERKS
 
-// ---------- Stonewall (Durability α; `bulwark`, the perk named Bulwark until rules 1.30) ----------
-// I: an ally on the tile directly behind you (the ray from the attacker through you, 1 tile on) takes 25% less from
-// ranged attacks. II: 50%, 2 tiles. Ranged: weapon shots, and Sigil/Soul/Elemental damage from someone not adjacent;
-// area blasts (explosions) are not (plan 6, Bulwark 3; PROVISIONAL). Two Stonewalls don't stack: the best one counts.
-export function behindLine(att: string, guard: string, ally: string, depth: number): boolean {
-  const [ax, ay] = xy(att), [gx, gy] = xy(guard), n = Math.max(Math.abs(gx - ax), Math.abs(gy - ay)); if (!n) return false;
-  for (let k = 1; k <= depth; k++) if (key(Math.round(gx + ((gx - ax) * k) / n), Math.round(gy + ((gy - ay) * k) / n)) === ally) return true;
-  return false;
-}
-const rangedSrc = (src: any, t: Unit) => !!src?.by && !src.explosive && src.type !== 'explosion' && (src.type === 'weapon' ? !!src.ranged : magicSrc(src) && dist(src.by.pos, t.pos) > 1);
-/** Where the line of fire starts: a Sigil spell's missile origin (src.from: the Line's glyph a Touch spell or a SEEK bolt
- * leaves from, a chain's last target, a turret; item 488), else the attacker's tile. */
-const fireFrom = (src: any): string => src?.from || src?.by?.pos;
-register({
-  id: 'bulwark', claims: 'all',
-  on: {
-    damage_in: (ctx, h) => {
-      const g = h.u, t: Unit = ctx.t; if (ctx.phase !== 'reduce' || !g || t === g || t.side !== g.side || !alive(g) || !ctx.hostile || !rangedSrc(ctx.src, t)) return;
-      const frac = tierII(h) ? 0.5 : 0.25, depth = tierII(h) ? 2 : 1, prev = ctx._bulwark || 0;
-      if (frac <= prev || !behindLine(fireFrom(ctx.src), g.pos, t.pos, depth)) return;
-      ctx.dmg = (ctx.dmg / (1 - prev)) * (1 - frac); ctx._bulwark = frac;
-      say(h.cb, g.name + ' stands in the line of fire (Stonewall): ' + t.name + ' takes ' + Math.round(frac * 100) + '% less.');
-    },
-    // The attack preview names it for the covered ally (the tooltip's damage chain): a multiplier shown only in the
-    // preview, since the real reduction comes after armour (damage_in). The best Stonewall replaces a weaker one.
-    damage_out: (ctx, h) => {
-      const g = h.u, t: Unit = ctx.tgt; if (!ctx.preview || !g || t === g || t.side !== g.side || !alive(g) || ctx.att?.side === t.side || !rangedSrc(ctx.src, t)) return;
-      const frac = tierII(h) ? 0.5 : 0.25, depth = tierII(h) ? 2 : 1; if (!behindLine(ctx.att.pos, g.pos, t.pos, depth)) return;
-      const i = (ctx.mults as { v: number; label: string }[]).findIndex((m) => /^Stonewall/.test(m.label));
-      if (i >= 0 && ctx.mults[i].v <= 1 - frac) return;
-      const m = { v: 1 - frac, label: 'Stonewall (' + g.name + ')' }; if (i >= 0) ctx.mults[i] = m; else ctx.mults.push(m);
-    },
-  },
-  brief: () => null,
-});
-
-// ---------- Shrug It Off (Durability α) ----------
-// I: 2 AP, remove one Body debuff from yourself. II: 1 AP, and a shield of 10% of max HP (Healing and shields received
-// apply; it doesn't stack). PROVISIONAL (plan 6, Shrug It Off 2): the action needs a Body debuff to remove, so the
-// shield can't be farmed. Story and area map: it ends a story Body condition; a narrated one goes to the Narrator.
-const SHRUG_ORDER = ['stunned', 'pinned', 'burning', 'bleeding', 'slowed', 'blinded', 'nausea', 'weakened', 'suppressed', 'grappled', 'dazed', 'prone'];
-const NOT_SHRUGGED = new Set(['marked', 'augment_offline', 'emplaced', 'last_turn']);
-const rankOf = (id: string) => { const i = SHRUG_ORDER.indexOf(id); return i < 0 ? 99 : i; };
-const shrugList = (u: Unit) => bodyDebuffs(u).filter((id) => !NOT_SHRUGGED.has(id)).sort((a, b) => rankOf(a) - rankOf(b));
-const storyBody = (h: Holder) => (h.c && h.g ? storyConds(h.g, h.c).filter((id) => condFamily(id) === 'body' && !NOT_SHRUGGED.has(id)) : []);
-register({
-  id: 'shrug_it_off', claims: 'all',
-  actions: [{
-    id: 'shrug_it_off', label: 'Shrug It Off', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (tierII(h) ? 1 : 2),
-    text: 'Remove one Body debuff from yourself. II: this costs 1 AP instead of 2, and you gain a shield of 10% of your max HP.',
-    available: (h) => (inFight(h) ? (shrugList(h.u!).length ? true : 'No Body debuff to shrug off.') : true),
-    preview: (h, a) => {
-      if (inFight(h)) { const l = shrugList(h.u!); const pick = a.choice && l.includes(a.choice) ? a.choice : l[0]; return { lines: ['Removes ' + (pick || 'nothing') + (tierII(h) ? '; shield ' + Math.floor(itemAmount('perk:shrug_it_off', 'shield', [], { max_hp: h.u!.maxHp })) : '') + '.'] }; }
-      const l = storyBody(h); return { lines: [l.length ? 'Ends ' + l[0] + '.' : 'The Narrator decides whether you shake off what ails you.'] };
-    },
-    run: (h, a) => {
-      if (inFight(h)) {
-        const u = h.u!, l = shrugList(u), pick = a.choice && l.includes(a.choice) ? a.choice : l[0];
-        if (!pick) return 'No Body debuff to shrug off.';
-        endCond(u, pick, h.cb!);
-        let line = u.name + ' shrugs off ' + pick + ' (Shrug It Off)';
-        if (tierII(h)) { const v = grantShield(h.cb!, u, itemAmount('perk:shrug_it_off', 'shield', [], { max_hp: u.maxHp }), u); emitFx(h.cb!, 'shield', { target: u.id, at: u.pos, amount: v }); line += ' · a ' + v + ' shield'; }
-        emitFx(h.cb!, 'cond', { target: u.id, at: u.pos, id: pick, resisted: true });
-        say(h.cb, line + '.'); return null;
-      }
-      const l = storyBody(h);
-      if (l.length && h.c && h.g) { setStoryCond(h.g, h.c, l[0], 'scene', true); postStory(h, 'shrugs off ' + l[0] + '.'); return null; }
-      postStory(h, 'shrugs it off.'); if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'Shrug It Off: ends one Body condition you narrated on ' + h.c.name + ' (nausea, pinned, a cramp…), if any. Accept or refuse.');
-      return null;
-    },
-  }],
-  brief: () => 'out of combat: ends a narrated Body condition (Narrator judges)',
-});
+// ---------- Weight of the Wall and Answer in Kind (Durability α; `bulwark`, `shrug_it_off`): written in data only since
+// rules 1.56 (Balance 2.0; data/perks.json). Stonewall's cover and Shrug It Off's cleanse are in docs/design/move-pool.md.
 
 // ---------- Used to the Pain (Pain Threshold β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 

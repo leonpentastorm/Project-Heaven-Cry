@@ -723,10 +723,8 @@ const MAGIC: ActionSystem = {
     if (designs.length || mg.emanator) {
       const held = mg.held;
       if (designs.length && !held) {
-        const again = safe(() => togglesFor({ u, cb } as any, 'combat/outburst', {}, cb.mods || []).some((t) => t.id === 'perk:heart_overload#again' && !t.why), false);
-        const freeD = again ? designs.find((d) => safe(() => previewOutburst(cb, u, d.id, undefined, false).ap === 0, false)) : null;
         const ap0 = designAp(mg, designs[0]);
-        out.push(D('outburst', 'outbursts', 'Outburst', freeD ? 0 : ap0, freeD ? 'Heart Overload: ' + freeD.name + ' again, 0 AP' : designs.length === 1 ? 'Begin ' + ap0 + ' AP' : designs.length + ' designs',
+        out.push(D('outburst', 'outbursts', 'Outburst', ap0, designs.length === 1 ? 'Begin ' + ap0 + ' AP' : designs.length + ' designs',
           'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×' + stageMult(0) + '.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +2 Strain.'), null,
           { picks: [{ key: 'design', kind: 'option', renderer: 'design-cards', prompt: 'Pick a design.', optional: true, options: designs.map((d) => ({ id: d.id, label: d.name })) }, { key: 'mode', kind: 'option', prompt: 'Begin (hold it) or Snap (Begin and Release now).', optional: true, options: [{ id: 'begin', label: 'Begin' }, { id: 'snap', label: 'Snap' }] }, { key: 'aim', kind: 'tile', prompt: 'Snap: hover to preview, click a tile to aim.', when: { key: 'mode', is: 'snap' }, optional: true }], toggleOn: 'combat/outburst', preview: 'outburst' }));
       }

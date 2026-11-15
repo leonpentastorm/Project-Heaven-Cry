@@ -23,56 +23,7 @@ function readyEnemyTurn(f: F, pc: Unit, foe: Unit) {
 }
 const clearAround = (cb: Combat) => { cb.objects = []; (cb.map as any).solid = []; };
 
-describe('Stonewall: spells, blasts, two guards, the preview (batch 1)', () => {
-  it('an enemy\'s shot on its turn (through the reducer) at the ally behind the guard is cut', () => {
-    const f = fightWith([{ perks: { bulwark: 'II' } }, {}], [{ at: 'O10', weapon: 'hellraiser_service_rifle' }]);
-    const [guard, ally] = f.pcs, foe = f.foe; clearAround(f.cb);
-    foe.pos = '2,5'; guard.pos = '5,5'; ally.pos = '7,5'; ally.hp = 40; guard.hp = guard.maxHp; // the foe shoots the lowest HP
-    readyEnemyTurn(f, guard, foe);
-    let hitSeen = false;
-    for (let seed = 1; seed < 60 && !hitSeen; seed++) {
-      const g = clone(f.g); g.rng.state = seed; const after = apply(g, { type: 'combat/end-turn', unitId: guard.id } as any, 'host');
-      const cb = after.combat!; if (cb.log.some((l) => /fires at Tester 2.*hit/.test(l))) { hitSeen = true; expect(logHas(cb, /Stonewall\): Tester 2 takes 50% less/)).toBe(true); }
-    }
-    expect(hitSeen).toBe(true);
-  });
-  it('Sigil, Soul and Elemental damage from a caster at range is cut; from an adjacent caster it isn\'t', () => {
-    for (const type of ['sigil', 'soul', 'elemental'] as const) {
-      const f = fightWith([{ perks: { bulwark: 'I' } }, {}], [{ at: 'O10' }]);
-      const [guard, ally] = f.pcs, foe = f.foe; clearAround(f.cb);
-      foe.pos = '2,5'; guard.pos = '5,5'; ally.pos = '6,5'; ally.armour = 0;
-      const hit = () => withGame(f.g, () => { const hp = ally.hp; harm(f.cb, f.g.rng, foe, ally, 40, type); const d = hp - ally.hp; ally.hp = ally.maxHp; return d; });
-      expect(hit()).toBe(30); expect(logHas(f.cb, /Stonewall/)).toBe(true);
-      foe.pos = '7,5'; guard.pos = '5,5'; // adjacent caster (behind the ally): not ranged, and off the line
-      expect(hit()).toBe(40);
-    }
-  });
-  it('a blast is not cut, and two Stonewalls don\'t stack (the best counts)', () => {
-    const f = fightWith([{ perks: { bulwark: 'I' } }, {}], [{ at: 'O10' }]);
-    const [guard, ally] = f.pcs, foe = f.foe; clearAround(f.cb);
-    foe.pos = '2,5'; guard.pos = '5,5'; ally.pos = '6,5';
-    const blast = withGame(f.g, () => { const hp = ally.hp; applyDamage(f.cb, ally, 40, { by: foe, type: 'weapon', ranged: true, explosive: true }); return hp - ally.hp; });
-    expect(blast).toBe(40);
-    const e = withGame(f.g, () => { const hp = ally.hp; applyDamage(f.cb, ally, 40, { by: foe, type: 'explosion' }); return hp - ally.hp; });
-    expect(e).toBe(40);
-    // Two guards on the line: I (1 tile) and II (2 tiles). 50% only, not 25% then 50%.
-    const t = fightWith([{ perks: { bulwark: 'I' } }, { perks: { bulwark: 'II' } }, {}], [{ at: 'O10' }]);
-    const [g1, g2, a] = t.pcs; clearAround(t.cb); t.foe.pos = '2,5'; g2.pos = '4,5'; g1.pos = '5,5'; a.pos = '6,5';
-    const d = withGame(t.g, () => { const hp = a.hp; harm(t.cb, t.g.rng, t.foe, a, 40, 'soul'); return hp - a.hp; });
-    expect(d).toBe(20);
-  });
-  it('the attack preview names Stonewall in the damage chain for the covered ally (and only the best one)', () => {
-    const t = fightWith([{ perks: { bulwark: 'I' } }, { perks: { bulwark: 'II' } }, {}], [{ at: 'O10' }]);
-    const [g1, g2, a] = t.pcs, foe = t.foe; clearAround(t.cb); foe.pos = '2,5'; g2.pos = '4,5'; g1.pos = '5,5'; a.pos = '6,5'; foe.ap = 6;
-    const pv = withGame(t.g, () => previewAttack(t.cb, foe, a, 'shot'));
-    const b = pv.dmg!.mults.filter((m) => /^Stonewall/.test(m.label));
-    expect(b).toEqual([{ v: 0.5, label: 'Stonewall (' + g2.name + ')' }]);
-    // The guard itself, and a shot from the side: nothing.
-    expect(withGame(t.g, () => previewAttack(t.cb, foe, g2, 'shot')).dmg!.mults.some((m) => /^Stonewall/.test(m.label))).toBe(false);
-    foe.pos = '6,1';
-    expect(withGame(t.g, () => previewAttack(t.cb, foe, a, 'shot')).dmg!.mults.some((m) => /^Stonewall/.test(m.label))).toBe(false);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Stonewall: spells, blasts
 
 describe('Eyes in the Back: an enemy\'s shot missed by the cover\'s margin hits the cover tile (through the reducer)', () => {
   it('the crate behind you takes the shot', () => {

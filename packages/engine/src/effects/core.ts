@@ -20,6 +20,7 @@ import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
 import { deal, mend, type AmountSpec } from './output';
 import { amountBlock, type AmountBlock } from './amounts';
+import { dmgIs, DAMAGE_WORDS } from './dmgwords';
 import './triggers'; // item ops: the runner of triggered effects registers itself with the hooks (engine foundations 3)
 
 // ---------- the scope vocabulary ----------
@@ -35,7 +36,7 @@ export const TAG_VOCAB = new Set([
   'hinted', 'culture', 'ancient_script', 'lie',
 ]);
 /** Damage contexts the engine reads from the damage source. "a|b" means either. */
-const DMG_WORDS = new Set(['melee', 'ranged', 'explosive', 'any', 'outburst', 'soul', 'sigil', 'elemental', 'lightning', 'emp', 'physical', 'true', 'weapon', 'fire']);
+const DMG_WORDS = new Set(['any', ...DAMAGE_WORDS]);
 const isDmgCtx = (c: any) => typeof c === 'string' && c.split('|').every((w) => DMG_WORDS.has(w));
 const targetOk = (e: any) => !e.target || e.target === 'self';
 const isPlain = (e: any) => !!e && GATES.every((k) => e[k] == null) && targetOk(e) && e.context == null;
@@ -57,7 +58,7 @@ export function contextHolds(e: any, h: Holder, ctx: any): boolean {
 }
 function dmgCtxHolds(k: any, src: any): boolean {
   if (k == null || k === 'any') return true;
-  return String(k).split('|').some((w) => w === 'melee' ? !!src.melee : w === 'ranged' ? !!src.ranged : w === 'explosive' ? !!src.explosive : w === 'outburst' ? src.type === 'soul' : w === 'weapon' ? src.type === 'weapon' : w === 'physical' ? src.type === 'weapon' && src.dmgType !== 'elemental' : src.type === w || src.dmgType === w);
+  return String(k).split('|').some((w) => dmgIs(src, w)); // the one reading (effects/dmgwords.ts)
 }
 
 // ---------- stat ids the engine reads (data stat → the derived stat it adds to; see character.ts) ----------

@@ -1743,7 +1743,9 @@ if isinstance(tq, dict):
 #      that kind (a base, no per-point part), they are the same number.
 AMOUNT_KINDS = {"damage", "heal", "shield"}
 AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
-AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind", "min_pct", "gate_hp", "element"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind", "min_pct", "gate_hp", "element", "door"}
+# rules 1.56 P1 (spell damage names its door): the door a damage block's blow is made through (magic.ts SPELL_DOORS)
+AMOUNT_DOORS = {"sigil", "outburst", "prayer", "bond"}
 # Classes 3.0 step 5 (rules 1.31): an amount block's element tag (the damage's dmgType: Old Overcast's Smite is lightning)
 AMOUNT_ELEMENTS = {"fire", "lightning", "cold", "acid", "emp"}
 out_rules = (data.get("rules") or {}).get("output") or {}
@@ -1773,6 +1775,8 @@ def check_block(b, where):
         errors.append(f"{where}: min_pct (the percent gate) is a share 0 to 1, on a heal or shield block only")
     if "gate_hp" in b and (b.get("kind") not in ("heal", "shield") or not (b["gate_hp"] is None or (isinstance(b["gate_hp"], (int, float)) and b["gate_hp"] > 0))):
         errors.append(f"{where}: gate_hp (the max HP the gate counts up to) is a number or null, on a heal or shield block only")
+    if "door" in b and (b.get("kind") != "damage" or b["door"] not in AMOUNT_DOORS):
+        errors.append(f"{where}: door is one of {sorted(AMOUNT_DOORS)}, on a damage block only")
     if "heal_kind" in b and (b.get("kind") not in ("heal", "shield") or not isinstance(b["heal_kind"], str) or not b["heal_kind"]):
         errors.append(f"{where}: heal_kind (the heal's kind for heal_in) is a word, on a heal or shield block only")
     if "mults" in b and not (isinstance(b["mults"], dict) and all(num(v) for v in b["mults"].values())):

@@ -547,8 +547,8 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   // unless the caller says otherwise; then the sink.
   const ak = armour || (type === 'sigil' || type === 'physical' ? 'full' : type === 'elemental' ? 'half' : 'none');
   const r = deal(cb, att, t, { kind: 'damage', base: am.base, ...(am.plus ? { plus: am.plus } : {}), ...(am.round ? { round: am.round } : {}), armour: ak, hook: !!att && !hurtWhy }, {
-    mults: am.mults, hookCtx: { mode: 'spell', spell: true, src: { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) } },
-    src: { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}), ...(SPELL_FROM ? { from: SPELL_FROM } : {}), ...(NONLETHAL_BY && att === NONLETHAL_BY ? { nonlethal: true } : {}) } as any });
+    mults: am.mults, hookCtx: { mode: 'spell', spell: true, src: { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}), ...(hurtWhy ? {} : doorTag()) } },
+    src: { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(hurtWhy ? {} : doorTag()), ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}), ...(SPELL_FROM ? { from: SPELL_FROM } : {}), ...(NONLETHAL_BY && att === NONLETHAL_BY ? { nonlethal: true } : {}) } as any });
   if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
   if (r.downedHit) { emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + t.name + "'s shield takes it" + out;
@@ -623,6 +623,14 @@ let FX_ELEMENT: string | null = null;
 let SPELL_FROM: string | null = null;
 export function withSpellFrom<T>(from: string | null, f: () => T): T { const was = SPELL_FROM; SPELL_FROM = from; try { return f(); } finally { SPELL_FROM = was; } }
 export function withElement<T>(el: string | null, f: () => T): T { const was = FX_ELEMENT; FX_ELEMENT = el; try { return f(); } finally { FX_ELEMENT = was; } }
+/** Rules 1.56 (Balance 2.0, P1: spell damage names its door): the door whose damage harm() is dealing now (`sigil`, a
+ * Line's or a placed spell's; `outburst`, a Release, its chain, linger and leak; `prayer`; `bond`), carried on the damage
+ * source as src.door, and an Outburst's Release stage as src.stage (the item-op predicate `damage` reads the door words;
+ * a number block reads event:stage). THE one tag: every caller of harm() for a door's damage runs inside it. */
+export const SPELL_DOORS = ['sigil', 'outburst', 'prayer', 'bond'] as const;
+let DOOR: { door: string; stage?: number } | null = null;
+export function withDoor<T>(door: (typeof SPELL_DOORS)[number], stage: number | null, f: () => T): T { const was = DOOR; DOOR = { door, ...(stage != null ? { stage } : {}) }; try { return f(); } finally { DOOR = was; } }
+const doorTag = () => (DOOR ? { door: DOOR.door, ...(DOOR.stage != null ? { stage: DOOR.stage } : {}) } : {});
 /** Run f with the Sigil spell's glyph count known to the damage it deals (Drink It In: 10 per Sigil word). */
 export function magicSpellWords<T>(n: number, f: () => T): T { const was = SPELL; SPELL = { words: n }; try { return f(); } finally { SPELL = was; } }
 /** Add Flux; past the limit the Evoker overloads (exported for class moves: hooks gap I8/K1). */
@@ -1407,7 +1415,7 @@ function noteRelease(cb: Combat, u: Unit) {
   c.soulRel.by.push({ id: u.id, side: u.side });
 }
 function releaseAt(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string, wild: boolean, reaction = false) {
-  const was = SPELL; SPELL = { mp: u.mg?.held ? (u.mg.held.cost || 0) + (u.mg.held.pumpMp || 0) : u.mg ? designCost(u.mg, d, manaOf(cb)) : 0 }; try { withVia(u, 'will_power', () => releaseAtInner(cb, rng, u, d, aim, wild, reaction)); } finally { SPELL = was; }
+  const was = SPELL; SPELL = { mp: u.mg?.held ? (u.mg.held.cost || 0) + (u.mg.held.pumpMp || 0) : u.mg ? designCost(u.mg, d, manaOf(cb)) : 0 }; try { withDoor('outburst', heart(u)?.held?.stage ?? 0, () => withVia(u, 'will_power', () => releaseAtInner(cb, rng, u, d, aim, wild, reaction))); } finally { SPELL = was; } // rules 1.56 P1: the Release's damage names its door and stage
 }
 function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: string, wild: boolean, reaction: boolean) {
   const m = heart(u)!, stage = m.held?.stage ?? 0, tone = toneOf(d), form = formOf(d), has = (x: string) => d.modules.includes(x);
@@ -1687,7 +1695,7 @@ function heartTurnStart(cb: Combat, rng: Rng, u: Unit) {
   if (tone !== 'raw') {
     const rs = riderStage(cb, 1), near = cb.units.filter((v) => !v.dead && v.side !== u.side && !v.surrendered && dist(v.pos, u.pos) <= (SR.aura?.radius ?? 1));
     if (near.length) emitFx(cb, 'aura_tick', { unit: u.id, at: u.pos, tone, element: toneElement(tone), targets: near.map((v) => v.id), riderStage: rs });
-    for (const v of near) { const s = withElement(toneElement(tone), () => harm(cb, rng, u, v, AURA_TICK * scaleOf(u.level) + bonusDmg(tone, rs), 'elemental', TONE[tone]?.damage_type, armourKind(tone, rs))) + applyToneRiders(cb, rng, u, v, tone, rs, u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); say(cb, u.name + "'s held " + TONE[tone].name + ' leaks' + s + '.'); }
+    for (const v of near) { const s = withDoor('outburst', h.stage, () => withElement(toneElement(tone), () => harm(cb, rng, u, v, AURA_TICK * scaleOf(u.level) + bonusDmg(tone, rs), 'elemental', TONE[tone]?.damage_type, armourKind(tone, rs)))) + applyToneRiders(cb, rng, u, v, tone, rs, u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); say(cb, u.name + "'s held " + TONE[tone].name + ' leaks' + s + '.'); }
   }
   emitFx(cb, 'hold', { unit: u.id, at: u.pos, stage: m.held?.stage ?? 0, tone, form: m.held?.form || 'bolt', watch: !!m.held?.watch });
   emit(cb, 'held_turn_start', { u, held: m.held, cb, rng });

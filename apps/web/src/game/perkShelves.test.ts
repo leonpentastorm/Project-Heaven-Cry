@@ -258,7 +258,7 @@ describe('the live line of Always on', () => {
     expect(r).toMatchObject({ state: 'active', line: 'Works when a fight starts' });
   });
   it('a trigger with a list in it is whole (it is data, not a pattern match)', () => {
-    expect(cardTrigger('perk:breaching_strike', 'I').trigger).toBe('when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it');
+    expect(cardTrigger('perk:breaching_strike', 'I').trigger).toBe('when one of your finishers drops an enemy'); // rules 1.56: Keep Swinging
   });
   it('a plain standing bonus with no moment says "Active all fight"', () => {
     expect(row(shelves(charWith({ traits: ['born_performer'] })).sh, 'trait:born_performer')).toMatchObject({ state: 'active', line: 'Active all fight' });

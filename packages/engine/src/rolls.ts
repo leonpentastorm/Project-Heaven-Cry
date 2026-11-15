@@ -175,11 +175,13 @@ export type HitKind = 'weapon' | 'sigil' | 'soul';
 export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | undefined, tgt: Unit, type: HitKind, o: { mode?: string; preview?: boolean } = {}): { v: number; label: string }[] {
   const fa = type === 'weapon' ? null : focusAccTerm(att, HIT_DOOR[type]); // rules 1.43: a graded focus on its door's roll to hit
   if (!cb || !att || !hookUsed('to_hit')) return fa ? [fa] : [];
-  const ctx: any = emit(cb, 'to_hit', { att, tgt, type, mode: o.mode ?? null, terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
+  const ctx: any = emit(cb, 'to_hit', { att, tgt, type, ...(HIT_DOOR_WORD[type] ? { door: HIT_DOOR_WORD[type] } : {}), mode: o.mode ?? null, terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
   return [...(fa ? [fa] : []), ...(ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v)];
 }
 /** The door each kind of roll to hit is made through (a weapon's own rarity is in its attack already). */
 const HIT_DOOR: Record<HitKind, string> = { weapon: '', sigil: 'brain_power', soul: 'will_power' };
+/** Rules 1.56 P1: the door word a roll to hit carries (ctx.door: the item-op damage words outburst and sigil_spell read it). */
+const HIT_DOOR_WORD: Record<HitKind, string> = { weapon: '', sigil: 'sigil', soul: 'outburst' };
 /** Rules 1.43 (survival-spec rule 25a, 4.2 item 9; Leon, 13 Nov, "for now"): THE reading of a focus's rarity on its
  * door. A character's focus of this door (a skill id or a focus kind) in a hand adds its rarity's `acc` (rules.json
  * rarity: the number a weapon adds to its own attack) as a term: to its door's roll to hit (toHitTerms: a Sigil's, an

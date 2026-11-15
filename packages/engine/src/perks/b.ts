@@ -219,45 +219,8 @@ register({
   brief: () => null,
 });
 
-// =====================================================================================================================
-// Shadow Step (Ingenuity). I: while Hidden, a move from a tile next to cover to a tile next to cover counts half its
-// tiles (AP rounded up). Area map: sneaking cover to cover halves the tiles for both the move and the sneak surcharge.
-// II: when an attack reveals you, roll Ingenuity (d20 + mod) against 10 + the best notice among enemies who can see
-// you, +2 for each earlier success this fight (plan 6a-8); on a success you stay Hidden (no new ambush).
-// =====================================================================================================================
-const nextToCover = (cb: Combat, k: string) => { const cov = coverOf(cb); return Object.keys(cov).some((c) => dist(c, k) === 1); };
-register({
-  id: 'shadow_step', claims: 'all',
-  on: {
-    world_move_cost: (ctx, h) => { if (ctx.c === h.c) stateOf(h).owHow = ctx.how; },
-    move_cost: (ctx, h) => {
-      if (ctx.u !== h.u || ctx.how !== 'move') return;
-      const cb: Combat = ctx.cb, g = gameOf(h), s = stateOf(h);
-      const hidden = ow(cb) ? storySneaking(g, h.c) && s.owHow === 'sneak' : !!h.u!.hidden;
-      if (!hidden || !nextToCover(cb, ctx.from) || !nextToCover(cb, ctx.to)) return;
-      const half = Math.ceil(ctx.tiles / 2), ap = ow(cb) ? apForTiles(half, 0, h.u!.movement) : apForTiles(half, h.u!.bank || 0, h.u!.movement);
-      if (ap < ctx.ap) { s.bankFix = (s.bankFix || 0) + (ctx.ap - ap) * h.u!.movement; ctx.ap = ap; }
-      if (ow(cb)) s.refund = ctx.tiles - half; // the sneak surcharge is 1 AP a tile: half the tiles, half the surcharge
-      log(cb, h.u!.name + ' slips from cover to cover (Shadow Step: half the tiles).');
-    },
-    moved: (ctx, h) => { fixBank(h, ctx); const s = stateOf(h); if (ctx.u === h.u && s.refund) { refund(h.cb, h.u!, s.refund); s.refund = 0; } if (ctx.u === h.u) s.owHow = null; },
-    spotted: (ctx, h) => {
-      if (h.tier !== 'II' || ctx.u !== h.u || ctx.why !== 'attacked' || !h.u || h.u.dead) return;
-      const cb: Combat = ctx.cb, rng = rngOf(h); if (!rng) return;
-      const eyes = foesOf(cb, h.u, { companions: false }).filter((v) => unitSees(cb, v, h.u!.pos)), s = stateOf(h);
-      const best = eyes.reduce((m, v) => Math.max(m, TIER_NOTICE[v.tier || 'minion'] ?? 0), 0), tn = 10 + best + 2 * (s.stayed || 0);
-      const m = (h.u.ingMod ?? (h.c ? mod(h.c.skills.ingenuity || 0) : -2)) + (h.u.sk?.ingenuity || 0);
-      let ok = true, line = '';
-      if (eyes.length) { const rv = rollVs(cb, rng, { by: h.u, mod: m, tn, why: 'hide' }); ok = rv.ok; line = ': ' + rv.text; }
-      if (!ok) { log(cb, h.u.name + ' tries to melt back into cover (Shadow Step' + line + ' · seen).'); return; }
-      s.stayed = (s.stayed || 0) + 1;
-      if (!hideAgain(cb, rng, h.u)) return; // the same Hidden entry: no new ambush
-      log(cb, h.u.name + ' melts back into cover (Shadow Step' + line + ' · stays Hidden).');
-    },
-  },
-  actions: [{ id: 'use', label: 'Shadow Step', scope: ['combat'], ap: 0, target: 'none', available: () => false, run: () => null }],
-  brief: () => null,
-});
+// Shadow Step (Ingenuity α): data only since rules 1.56 (Balance 2.0; data/perks.json). The cover-to-cover move and the
+// stay-Hidden roll are in docs/design/move-pool.md.
 
 // =====================================================================================================================
 // Got You in My Sight (Vigilant). I: an enemy you see hide, or one that leaves your sight: +2 AP now on your turn,

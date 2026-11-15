@@ -14,7 +14,11 @@ import { RULES, SIGIL, MODULE, WEAPON, ENEMY, profileOf, statTerm } from '../src
 import { measure, yardOf, soldierTurnAt, refHpAt } from './balance/refit-measure';
 import { inventory } from './balance/heal-measure';
 import { healTurn, shotTurn } from './balance/tending-measure';
+import { STEPS } from './balance/builds';
 
+// Rules 1.56 (Leon, 15 Nov 2026): perk steps sit on top of a class's damage line; the contract holds the line, so its
+// builds take no perk steps (test/balance/builds.ts STEPS).
+STEPS.perks = false;
 const B: any = (RULES as any).balance, C = B.ceilings, TOL = B.tolerance, LEVELS: number[] = B.levels;
 const N = 6; // fights a cell: deterministic (seeded), so the band only has to hold the noise of a small sample once
 const GUARD_GUNS = ['adamantile_battle_rifle', 'long_rifle', 'hellraiser_service_rifle'];

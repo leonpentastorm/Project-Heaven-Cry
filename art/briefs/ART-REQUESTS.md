@@ -45,6 +45,33 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 | W2 | **Both Hands** (perk: a blade in one hand, a gun in the other; a melee hit steadies the next shot) | Done: fresh sword-and-pistol pose delivered; previous stand-in archived | Wick fighting with a sword and a pistol at once | A fresh pose, not the Hot Swap spin: mid-strike with the blade, the pistol already levelled. The old Origami Hands icon it replaced is in `art/_archive/perks/wick/replaced/` | `art/icons/perks/both-hands.png` |
 | W3 | **Rebuke**, the seventh Whisper (rules 1.21, 12 Nov 2026: a short prayer that hurts one enemy; `data/patrons.json` `whispers`) | Done: image_gen Wick Whisper delivered and cataloged | Wick rebuking: one hand raised flat toward someone out of frame, a single hard ray of light leaving it. It must read as a scolding word that lands, not as a spell | The six Whisper icons are the set to match (`art/icons/prayers/whisper-*.png`): same Wick, same line weight, one small light source. No colour; every patron uses it | `art/icons/prayers/whisper-rebuke.png` (then `npm run assets`) |
 
+### 1b. The alpha perks revamped (rules 1.56, Balance 2.0; requested 15 Nov 2026)
+
+The 18 alpha perks keep their ids, so each icon in `art/icons/perks/` (Wick, white flat ink, the STYLE-LOCK) still
+shows the old perk. Status for every row: **icon shows the old perk; new icon wanted.** One line each on what Wick
+should hold or do.
+
+| Perk id | New name | What Wick does |
+| --- | --- | --- |
+| `bulwark` | Weight of the Wall | braced behind a raised shield, swinging a hammer over its rim |
+| `shrug_it_off` | Answer in Kind | rocked back by a blow, already throwing one of his own |
+| `breaching_strike` | Keep Swinging | one enemy falling at his feet, the blade already wound back for the next |
+| `iron_grip` | Iron Grip (meaning changed) | pinning a foe to the floor with one hand, the other fist raised |
+| `both_hands` | Pressure Point | aiming down a rifle at a figure cowering behind cover |
+| `running_reload` | Keep Their Heads Down | firing a spray over cover, bullets kicking dust at its edge |
+| `sleight_of_hand` | Long Dark | half-hidden in shadow, a knife held low |
+| `shadow_step` | Shadow Step (meaning changed) | stepping out of a shadow mid-strike, one foot still in the dark |
+| `hold_the_stroke` | Second Clause | drawing a second glyph over a burning figure |
+| `parallel_thought` | Running Hand | a glyph trailing from a fast-moving hand |
+| `mirage` | Many-Eyed Dream | eyes open on several floating figments around him |
+| `blueprint` | Wake of the Kill | a figment beast at his side over a fallen foe, Wick leaning forward |
+| `shared_breath` | Taut Thread | a taut thread from his chest to an enemy, a blow landing on it |
+| `lay_down_arms` | Bitter Balm | healing his own hand while a thread carries a wound to an enemy |
+| `heart_overload` | Clenched Heart | a fist clenched over a blazing heart at full height |
+| `resonance` | Resonance (numbers changed only) | the old icon stands |
+| `litany` | Unbroken Litany | lips moving in prayer, a hymn already rising from his open hand |
+| `holy_ordnance` | Sinner's Due | a beam from above striking a kneeling, broken foe |
+
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |

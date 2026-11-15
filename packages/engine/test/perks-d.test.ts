@@ -7,7 +7,7 @@ import {
   d20, die, PATRONS, memoryOf, musicOf, unitSave, condOn, togglesFor, perkActionsFor, perkInfoFor, type Unit, type Combat, type GameState,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
-import { strokePool } from '../src/perks/d';
+
 import { hymnWait, prayerCooldown } from '../src';
 
 /** A seed whose next d20 is n. */
@@ -35,59 +35,13 @@ const mine = (cb: Combat, u: Unit) => (cb.glyphs || []).filter((g) => g.by.split
 const stay = (u: Unit) => ({ id: 'zt', kind: 'field' as const, tiles: ['9,9'], words: ['fire', 'stay'], by: u.id, side: 'pc' as const, left: 4, mult: 0.5, who: u.name });
 const charOf = (g: GameState, u: Unit) => g.characters[u.charId!];
 
-describe('Hold the Stroke', () => {
-  it('I: one more glyph of yours stands before the oldest fades (II: two); words per spell are unchanged', () => {
-    for (const [tier, want] of [[null, 2], ['I', 3], ['II', 4]] as const) {
-      const f = sigilFight(tier ? { hold_the_stroke: tier } : {}); f.pc.mg!.maxWords = 2;
-      draw(f, 'spark', '3,5'); draw(f, 'condense', '5,8'); draw(f, 'spark', '1,1'); draw(f, 'condense', '8,1'); draw(f, 'spark', '1,8');
-      expect(mine(f.cb, f.pc)).toBe(want);
-      if (tier) expect(strokePool(f.cb, f.pc)).toEqual({ n: want, pool: want });
-    }
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Hold the Stroke'
 
-describe('Parallel Thought', () => {
-  it('I: with a STAY zone of yours standing, the next glyph is 1 AP cheaper; once a turn', () => {
-    const f = sigilFight({ parallel_thought: 'I' }); f.cb.zones = [stay(f.pc)];
-    const ap0 = f.pc.ap; draw(f, 'spark', '3,5'); expect(f.pc.ap).toBe(ap0);
-    expect(logHas(f.cb, /Parallel Thought/)).toBe(true);
-    const ap1 = f.pc.ap; draw(f, 'condense', '4,5'); expect(f.pc.ap).toBeLessThan(ap1);
-  });
-  it('II: 2 AP across the glyphs and the Evoke; no STAY zone (the LIGHT impact zone), no discount', () => {
-    const f = sigilFight({ parallel_thought: 'II' }); f.cb.zones = [stay(f.pc)];
-    const ap0 = f.pc.ap; draw(f, 'spark', '3,5'); draw(f, 'condense', '4,5');
-    const spent = Math.round((ap0 - f.pc.ap) * 10) / 10, glyph = f.pc.mg!.glyphAp;
-    expect(spent).toBe(Math.max(0, Math.round((2 * glyph - 2) * 10) / 10));
-    const g = sigilFight({ parallel_thought: 'II' }); g.cb.zones = [{ ...stay(g.pc), kind: 'light', mult: 1, left: 99 }];
-    const a = g.pc.ap; draw(g, 'spark', '3,5'); expect(g.pc.ap).toBeLessThan(a);
-  });
-  it('the Evoke takes what is left of the discount, and the discount ends with it', () => {
-    const f = sigilFight({ parallel_thought: 'I' });
-    draw(f, 'spark', '4,5'); draw(f, 'condense', '3,5'); f.cb.zones = [stay(f.pc)]; f.foe.pos = '5,5'; f.foe.hp = f.foe.maxHp = 999;
-    const ap = f.pc.ap; f.act({ type: 'combat/evoke', unitId: f.pc.id, tile: '3,5', aim: '5,5' }); // on the end glyph: it fires along, past 4,5
-    expect(f.pc.ap).toBe(ap); // the Evoke's 1 AP was free
-    const a2 = f.pc.ap; draw(f, 'spark', '2,4'); expect(f.pc.ap).toBeLessThan(a2);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Parallel Thought'
 
 // Heart Overload and Resonance were rewritten in rules 1.14 (a free Begin after a Release; your own Releases build on
 // each other): their tests are in test/rules114-will-power.test.ts. What stays here is what 1.14 kept from before.
-describe('Heart Overload (rules 1.14): what the rewrite kept', () => {
-  it('no Emanator: nothing is offered, and a sent pay_hp costs no HP (item 371, Leon 7 Nov 2026)', () => {
-    const f = soulFight({ heart_overload: 'I' }); f.pc.mg!.emanator = false;
-    const on = () => withGame(f.g, () => togglesFor({ u: f.pc, c: f.g.characters[f.pc.charId!], cb: f.cb, g: f.g } as any, 'combat/outburst')).map((t) => t.id);
-    expect(on().some((id) => id.startsWith('perk:heart_overload#'))).toBe(false);
-    const hp = f.pc.hp;
-    try { f.act({ type: 'combat/outburst', unitId: f.pc.id, design: f.pc.mg!.designs[0].id, aim: f.foe.pos, mods: ['pay_hp'] } as any); } catch { /* the cast itself may need an Emanator: either way no HP is paid */ }
-    expect(f.pc.hp).toBe(hp);
-  });
-  it('paying in HP is no longer a choice on a plain Begin: the mana is paid', () => {
-    const f = soulFight({ heart_overload: 'II' }); f.pc.maxHp = f.pc.hp = 999;
-    const d = f.pc.mg!.designs[0], cost = designCost(f.pc.mg!, d, manaOf(f.cb)), mp = f.pc.mg!.mp;
-    f.act({ type: 'combat/outburst', unitId: f.pc.id, design: d.id, hold: true, mods: ['pay_hp'] } as any);
-    expect(f.pc.hp).toBe(999); expect(mp - f.pc.mg!.mp).toBe(cost);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Heart Overload (rules 1.14)
 
 describe('Resonance, the perk (rules 1.14): what the rewrite kept', () => {
   /** Two Soul PCs side by side; a releases on round r, b on round r + 1; returns b's release multiplier. */
@@ -220,25 +174,7 @@ describe('Fire Sermon', () => {
   });
 });
 
-describe('Litany', () => {
-  for (const [tier, v] of [['I', 1], ['II', 2]] as const) {
-    it(tier + ': allies within 3 tiles get +' + v + ' on saves until your next turn', () => {
-      const f = fightWith([{ perks: { litany: tier } }, { name: 'Ally' }], [{ at: 'P11' }]); open(f.cb);
-      const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '4,5'; f.turn(a);
-      f.act({ type: 'combat/perk', unitId: a.id, id: 'litany', actionId: 'litany' } as any);
-      const probe = (t: Unit) => withGame(f.g, () => emit(f.cb, 'cond_apply', { by: null, t, id: 'shaken', fam: 'heart', rounds: 3, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb: f.cb, rng: f.g.rng }).saveAdd);
-      expect(probe(f.unit(b.id))).toBe(v); expect(probe(f.unit(a.id))).toBe(v);
-      f.turn(a); expect(probe(f.unit(b.id))).toBe(0);
-    });
-  }
-  it('story: +1 on the next save check for the party', () => {
-    const s = storyWith([{ perks: { litany: 'I' } }, { name: 'Ally' }]); const [a, b] = s.chars;
-    s.act({ type: 'story/perk', charId: a.id, id: 'litany', actionId: 'litany_story' } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Gas!', checks: [{ charId: b.id, skills: ['guts'], tn: 12, stakes: 'Hold your breath', kind: 'save', family: 'body' }] } } as any);
-    const ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id }, s.g.characters[b.id].owner);
-    expect(s.g.story.entries.some((e: any) => /Litany/.test(e.head || ''))).toBe(true);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Litany'
 
 describe('Upper-Touched', () => {
   it('Outbursts cost 20% less; Seen From Above: no hiding while an upper-realm foe stands; Blessings on you roll a d6', () => {
@@ -401,52 +337,11 @@ describe('You Get Used to It', () => {
   });
 });
 
-describe('Shared Breath', () => {
-  for (const tier of ['I', 'II'] as const) {
-    it(tier + ': link with an ally; a Heart debuff on either lands on both at half duration' + (tier === 'I' ? ', once' : ', all fight'), () => {
-      const f = fightWith([{ perks: { shared_breath: tier } }, { name: 'Ally' }], [{ at: 'P11' }]); open(f.cb);
-      const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '3,5'; f.turn(a);
-      f.act({ type: 'combat/perk', unitId: a.id, id: 'shared_breath', actionId: 'link', targetId: b.id } as any);
-      withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'shaken', 3, undefined, { skipSave: true }));
-      expect(f.unit(b.id).conds!.shaken).toBe(2); expect(f.unit(a.id).conds!.shaken).toBe(2);
-      withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'fear', 2, undefined, { skipSave: true }));
-      expect(condOn(f.unit(a.id), 'fear')).toBe(tier === 'II');
-    });
-  }
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Shared Breath'
 
-describe('Mirage', () => {
-  it('a figure: a believer\'s attack goes at it and finds only light, and it stops believing', () => {
-    const f = fightWith([{ perks: { mirage: 'I' } }], [{ at: 'F6', tier: 'minion' }]); open(f.cb); f.pc.pos = '2,5'; f.foe.pos = '6,5'; f.turn(f.pc);
-    f.g.rng.state = rngFor(2).state;
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'mirage', actionId: 'mirage', tile: '4,5', choice: 'figure' } as any);
-    expect(logHas(f.cb, /believes/)).toBe(true);
-    const hp = f.pc.hp; f.foe.attack = 40;
-    withGame(f.g, () => resolveAttack(f.cb, rngFor(15), f.foe, f.pc, 'shot', null, { noAp: true }));
-    expect(f.pc.hp).toBe(hp); expect(logHas(f.cb, /only light/)).toBe(true);
-    withGame(f.g, () => resolveAttack(f.cb, rngFor(15), f.foe, f.pc, 'shot', null, { noAp: true }));
-    expect(f.pc.hp).toBeLessThan(hp);
-  });
-  it('II: a wall blocks a believer\'s shots through it, lasting to your next turn but one', () => {
-    const f = fightWith([{ perks: { mirage: 'II' } }], [{ at: 'F6', tier: 'minion' }]); open(f.cb); f.pc.pos = '2,5'; f.foe.pos = '6,5'; f.turn(f.pc);
-    f.g.rng.state = rngFor(2).state;
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'mirage', actionId: 'mirage', tile: '4,5', choice: 'wall', text: 'figure@3,3' } as any);
-    const r = withGame(f.g, () => resolveAttack(f.cb, rngFor(15), f.foe, f.pc, 'shot', null, { noAp: true }));
-    expect(r.refused).toMatch(/wall/);
-    f.turn(f.pc); expect((f.pc.ps!['perk:mirage'].proj || []).length).toBe(2);
-    f.turn(f.pc); expect((f.pc.ps!['perk:mirage'].proj || []).length).toBe(0);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Mirage', ()
 
 describe('Mirage (sound) and Verse of War (release)', () => {
-  it('a sound draws a believer one move toward it instead of its action', () => {
-    const f = fightWith([{ perks: { mirage: 'I' } }], [{ at: 'F6', tier: 'minion' }]); open(f.cb); f.pc.pos = '2,5'; f.foe.pos = '6,5'; f.turn(f.pc);
-    f.g.rng.state = rngFor(2).state;
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'mirage', actionId: 'mirage', tile: '6,1', choice: 'sound' } as any);
-    const e = f.foe, d0 = Math.abs(+e.pos.split(',')[1] - 1); e.ap = 6;
-    const ctx = withGame(f.g, () => emit(f.cb, 'enemy_action_start', { u: e, step: 0, skip: false, cb: f.cb, rng: f.g.rng }));
-    expect(ctx.skip).toBe(true); expect(Math.abs(+e.pos.split(',')[1] - 1)).toBeLessThan(d0);
-  });
   it('Release in verse: in a fight the In verse chip on Release is its one button (no Perks-tab Confirm); +1 tile of range, the line to the Narrator', () => {
     const f = soulFight({ verse_of_war: 'achieved' }); f.foe.maxHp = f.foe.hp = 5000; const d = f.pc.mg!.designs[0];
     const r = withGame(f.g, () => previewOutburst(f.cb, f.pc, d.id, f.pc.pos).range);
@@ -463,17 +358,4 @@ describe('Mirage (sound) and Verse of War (release)', () => {
   });
 });
 
-describe('Solid Image', () => {
-  it('a projected wall becomes a real barricade until your next turn; a solid figure takes a hit meant for an ally', () => {
-    const f = fightWith([{ perks: { mirage: 'II', solid_image: 'mastered' } }], [{ at: 'P11' }]); open(f.cb); f.pc.pos = '2,5'; f.turn(f.pc);
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'mirage', actionId: 'mirage', tile: '4,5', choice: 'wall' } as any);
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'solid_image', actionId: 'solidify', tile: '4,5' } as any);
-    expect(f.cb.objects!.some((o) => o.pos === '4,5' && o.kind === 'barricade')).toBe(true);
-    f.turn(f.pc); expect(f.cb.objects!.some((o) => o.pos === '4,5')).toBe(false);
-    const g = fightWith([{ perks: { mirage: 'I', solid_image: 'mastered' } }], [{ at: 'P11' }]); open(g.cb); g.pc.pos = '2,5'; g.turn(g.pc);
-    g.act({ type: 'combat/perk', unitId: g.pc.id, id: 'mirage', actionId: 'mirage', tile: '3,5', choice: 'figure' } as any);
-    g.act({ type: 'combat/perk', unitId: g.pc.id, id: 'solid_image', actionId: 'solidify', tile: '3,5' } as any);
-    const hp = g.pc.hp; withGame(g.g, () => applyDamage(g.cb, g.pc, 30, { by: g.foe, type: 'weapon' }));
-    expect(g.pc.hp).toBe(hp); expect(logHas(g.cb, /takes the blow/)).toBe(true);
-  });
-});
+// (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Solid Image'
