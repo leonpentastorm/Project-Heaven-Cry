@@ -176,7 +176,9 @@ export function heldOfChar(c: Character | null | undefined): Held {
   // rules 1.43 (item 11): the named property of each weapon or focus instance carried is held as a relic item (once a
   // property id); it acts only through the predicate `with_this` (the instance in a hand, the event made with it). The
   // same reading as character.ts gearProps (this file takes no runtime import of character.ts).
-  const props = [c.weaponState?.prop, c.offHand?.prop, ...(c.pack || []).map((x) => x.prop)].filter((x): x is string => !!x);
+  // Rules 1.56 (plan 0.29 primitive 1): the mods fitted to the instances in the hands are held the same way (each acts only
+  // through `with_this`: the event made with the instance that carries it).
+  const props = [c.weaponState?.prop, c.offHand?.prop, ...(c.pack || []).map((x) => x.prop), ...(c.weaponState?.mods || []), ...(c.offHand?.mods || [])].filter((x): x is string => !!x);
   const rel = props.length ? [...new Set([...(c.relics || []), ...props])] : c.relics || [];
   return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(rel.length ? { relics: [...rel] } : {}), ...(vb.length ? { verbs: vb } : {}) };
 }

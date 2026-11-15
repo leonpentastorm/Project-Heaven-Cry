@@ -7,7 +7,7 @@
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, maxDurOf, quiverHolds, quiversOf } from './character';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf } from './effects/output';
@@ -114,7 +114,12 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       const mag = magazineSize(id, inst.mods);
       if (mag != null) lines.push({ key: 'mag', label: 'Magazine', value: mag + (CALIBRE_NAME[w.ammo] || w.ammo ? ' · ' + (CALIBRE_NAME[w.ammo] || w.ammo) : ''), num: mag, better: 'higher' });
       lines.push({ key: 'range', label: 'Range', value: effectiveRange(w) + ' tiles', num: effectiveRange(w), better: 'higher' });
+      // Recoil 2.0 (rules 1.56): what each earlier shot this turn costs to hit, with its mods (the one reading: gearNum)
+      const kick = Math.max(0, gearNum(id, inst.mods, 'recoil'));
+      lines.push({ key: 'recoil', label: 'Recoil a shot', value: kick ? '−' + kick : 'none', num: kick, better: 'lower' });
     }
+    // rules 1.56: each fitted mod, by its own data text
+    for (const m of inst.mods || []) { const mi: any = ITEM[m]; if (mi) lines.push({ key: 'mod:' + m, label: mi.name, value: String(mi.text || ''), num: null }); }
     { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
     lines.push(...skillLines(c, u, w));
     const traits = [...(w.properties || []), ...((w.phys?.props as string[]) || [])].map((t) => cap(String(t).replace(/_/g, ' ')));

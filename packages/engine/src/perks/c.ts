@@ -17,7 +17,7 @@ import {
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { factorOf } from '../effects/output';
-import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf, isGunId } from '../character';
+import { mod, packOf, physicalMult, carryLimit, collectionOf, isGunId } from '../character';
 import { applyCond, condOn } from '../magic';
 import { throwItem, blast, radiusOf, canReact, react, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
@@ -515,11 +515,13 @@ register({
 // Recoil (spec), once per turn (PROVISIONAL). With the drifter revolver this is the bigger version of its own Fan the
 // Hammer. Analog: no Evoker-linked or electronic guns and no electronic sight (the red dot): Old School won't fire them,
 // equip them or fit the red dot (stat 'equip_ban', read by equip and fit in character.ts).
+/** Rules 1.56: a fitted or offered mod tagged electronic (data: the red dot's `tags`), or null. */
+const electronicMod = (ids: (string | null | undefined)[] | undefined): any => (ids || []).map((id) => (id ? (ITEM as any)[id] : null)).find((m: any) => (m?.tags || []).includes('electronic')) || null;
 const fanGun = (u: Unit) => { const w: any = WEAPON[u.weapon]; return !!w && (w.category === 'revolver' || (w.tags || []).includes('lever')); };
 const analogBan = (u: Unit): string | null => { const w: any = WEAPON[u.weapon]; if (!w) return null; const t: string[] = w.tags || [];
   if (t.includes('evoker_linked')) return 'Old School: you won\'t fire an Evoker-linked gun.';
   if (t.includes('electronic') && !isMelee(w)) return 'Old School: you won\'t fire an electronic gun.';
-  if (hasMod(u.mods, 'mod_red_dot')) return 'Old School: take the red dot off first.';
+  { const m = electronicMod(u.mods); if (m) return 'Old School: take the ' + String(m.name).toLowerCase() + ' off first.'; }
   return null; };
 register({
   id: 'old_school', claims: [2],
@@ -527,7 +529,7 @@ register({
     if (stat === 'hide_weapon_skill') return /fan the hammer/i.test(ctx?.skill || '') ? 1 : 0; // the trait's Fan the Hammer replaces the gun's
     // Analog in the story too: no electronic or Evoker-linked gun in hand, no red dot fitted (equip and fit refuse it).
     if (stat === 'equip_ban') { const w: any = ctx?.weapon ? WEAPON[ctx.weapon] : null, t: string[] = w?.tags || [];
-      return (w && (t.includes('evoker_linked') || (t.includes('electronic') && !isMelee(w)))) || ctx?.mod === 'mod_red_dot' || (ctx?.mods || []).includes('mod_red_dot') ? 1 : 0; }
+      return (w && (t.includes('evoker_linked') || (t.includes('electronic') && !isMelee(w)))) || !!electronicMod([ctx?.mod, ...(ctx?.mods || [])]) ? 1 : 0; }
     return 0;
   },
   actions: [{

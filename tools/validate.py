@@ -2073,6 +2073,9 @@ if TRIG:
     for _x in base + adv: walk_triggers(_x, f"classes:{_x.get('id')}")
     for _m in pool: walk_triggers(_m, f"classes:pool.{_m.get('origin')}.{_m.get('id')}")
     for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
+    # Rules 1.56 (plan 0.29 primitive 1): a weapon mod's triggered effects are item ops, run with the gun it is fitted to
+    for _x in items("items"):
+        if _x.get("category") == "mod": walk_triggers(_x, f"items:{_x.get('id')}")
     # Classes 3.0 (P7, ahead of P6's door verbs): a grant_action's `if` is the holder's predicates (Vanish: out of view)
     def _walk_grant_if(o, w):
         if isinstance(o, dict):
@@ -2666,6 +2669,29 @@ if _sv is not None:
         for _id in _ls.get("fill") or []:
             if _id not in _all_ids: errors.append(f"survival:lasting.fill: {_id!r} is not an item or weapon")
         if not (_num(_ls.get("offer")) and _num(_ls.get("min")) and _ls["min"] <= _ls["offer"]): errors.append("survival:lasting: offer and min (min at most offer)")
+    # Rules 1.56 (plan 0.29 primitives 2 and 3): a weapon instance's number fields are a closed list in rules.json
+    # (weapons_rules.gear_fields, read by character.ts gearNum); every gun names its Recoil; `no_recoil` is retired into it;
+    # a weapon mod's flat damage is its item op (no `damage_add`); a mod with a triggered effect gates it on `with_this`.
+    _gf = ((data.get("rules") or {}).get("weapons_rules") or {}).get("gear_fields") or {}
+    _GF = {k for k in _gf if k != "about"}
+    for _k in _GF:
+        if (_gf[_k] or {}).get("combine") not in ("sum", "max"): errors.append(f"rules:weapons_rules.gear_fields.{_k}: combine is sum or max")
+    _rc = ((data.get("rules") or {}).get("weapons_rules") or {}).get("recoil") or {}
+    if not (isinstance(_rc, dict) and _num(_rc.get("dex_relief_per")) and _rc["dex_relief_per"] > 0 and _num(_rc.get("braced_mult"))): errors.append("rules:weapons_rules.recoil: dex_relief_per (above 0) and braced_mult")
+    _GUNCAT = {"pistol", "revolver", "smg", "rifle", "shotgun", "heavy", "bow"}
+    for _w in items("weapons"):
+        if "no_recoil" in (_w.get("properties") or []): errors.append(f"weapons:{_w.get('id')}: no_recoil is retired (rules 1.56): write recoil 0")
+        if (_w.get("category") in _GUNCAT or (_w.get("category") == "mana" and _w.get("magazine") is not None)) and not (_num(_w.get("recoil")) and _w["recoil"] >= 0): errors.append(f"weapons:{_w.get('id')}: a gun names its recoil (a number, 0 or more; rules 1.56)")
+    for _m in items("items"):
+        if _m.get("category") != "mod": continue
+        _w = f"items:{_m.get('id')}"
+        if "damage_add" in _m or "damage" in _m: errors.append(f"{_w}: a mod's damage is its item op (damage_mod on dealing) or melee_damage, not damage / damage_add (rules 1.56)")
+        for _k, _v in _m.items():
+            if _k.endswith("_modes"):
+                if _k[:-6] not in _GF or not (isinstance(_v, list) and _v): errors.append(f"{_w}: {_k} is a list of attack modes for the gear field {_k[:-6]!r} (one of {sorted(_GF)})")
+            elif _k in _GF and not _num(_v): errors.append(f"{_w}: {_k} is a gear field: a number")
+        for _e in _m.get("effects") or []:
+            if isinstance(_e, dict) and _e.get("when") and (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_w}: a mod's triggered effect acts only with the gun it is fitted to (if.with_this: true)")
     # Rules 1.55: an item the engine does not run yet (`built: false`) has no price (credits.ts priceOf), so no rolled
     # pool holds it; a fixed stock list must not name it either (the shop's counter, the lasting fill, the loadout, a loot table).
     _unbuilt = {i["id"] for i in items("items") if i.get("built") is False} | {i["id"] for i in items("weapons") if i.get("built") is False}

@@ -342,7 +342,8 @@ function inHand<T>(t: Tech, fn: () => T): T {
   }
   const ow = WEAPON[u.offWeapon], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, heat: u.heat };
   const pts = (t.c?.skills as any)?.[weaponPhys(ow.id).hits_with];
-  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = (u as any).offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
+  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = u.offMods || []; // rules 1.56: its own mods
+  u.ammoType = (u as any).offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
   if (typeof pts === 'number') u.attack = mod(pts);
   try { return fn(); } finally { if (!t.preview) { u.offAmmo = u.ammo; setOffJam(u, u.jammed); } const heat = u.heat; Object.assign(u, keep); delete u.swapMain; if (!t.preview) u.heat = heat; }
 }
