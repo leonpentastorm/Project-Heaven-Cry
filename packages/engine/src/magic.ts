@@ -15,7 +15,7 @@ import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
 import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult, toHitAdd } from './rolls';
-import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
+import { emit, boundGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
@@ -330,6 +330,7 @@ function askImmune(ca: any, t: Unit, id: string, fam?: Fam) {
 export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: string, rounds?: number, fam?: Fam, opts: CondOpts = {}): string {
   const id = condId(id0), def = CONDS[id];
   if (!def || def.engine === 'state' || t.dead) return ''; // a unit state (Braced, Downed) has its own setter: unitstate.ts
+  if (!def.boon && harmHeld(cb, by, t)) return ' · ' + t.name + ' is untouched (a friend, on the field)'; // rules 1.55 item 38
   if (def.engine === 'flag') return flagCond(cb, rng, by, t, def, rounds, opts);
   // Items first: 'cond_apply' {by, t, id, fam, rounds, skipSave, cancel, why, tnAdd, saveAdd} (an immunity cancels it,
   // a perk may skip the save, change the rounds or the save's TN).
@@ -1595,7 +1596,7 @@ export function practiceOnce<T>(cb: Combat, u: Unit, fn: () => T, after: () => n
   gainPractice(cb, u, after()); return r;
 }
 function gainPractice(cb: Combat, u: Unit, n: number) {
-  if ((cb as any).dry || PRACTICE_HELD) return; // the area map's dry run (game.ts): only the real release practises
+  if (growthHeld(cb) || PRACTICE_HELD) return; // the area map's dry run (game.ts), the field (rules 1.55 item 37): only a real release practises
   const c = charOfUnit(u); if (!c || n <= 0 || u.companion) return;
   addPractice(c, n);
   emitFx(cb, 'practice', { unit: u.id, gain: n, total: c.soulPractice });

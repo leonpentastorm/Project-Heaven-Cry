@@ -19,7 +19,7 @@ import { say, objectAtLevel,
 } from './combat';
 import { type Rng } from './rng';
 import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE, toHitAdd } from './rolls';
-import { emit, boundGame, onHook } from './effects/hooks';
+import { emit, boundGame, onHook, growthHeld } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
@@ -407,7 +407,7 @@ function charOfUnit(cb: Combat, u: Unit): Character | null {
 /** What an Evoke teaches (spec 1.5 section 2.1): study and word uses, a newly Mastered word's inflection switched on,
  * and the growth fx. The lines it returns ride on the Evoke's log line. Also used by a fused Evoke (perks/d.ts). */
 export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number, hitEnemy: boolean): string[] {
-  const c = charOfUnit(cb, u); if (!c) return [];
+  const c = growthHeld(cb) ? null : charOfUnit(cb, u); if (!c) return []; // rules 1.55 item 37: no study or word uses on the field
   const was = new Set(masteredOf(c)), grew = noteEvoke(c, words, glyphs, hitEnemy);
   const now = masteredOf(c).filter((w) => !was.has(w)); if (u.mg && now.length) u.mg.inflect = [...new Set([...(u.mg.inflect || []), ...now])];
   if (grew.length) emitFx(cb, 'sigil_growth', { unit: u.id, at: u.pos, study: (c as any).sigilGrowth?.study || 0, mastered: now });
@@ -961,6 +961,7 @@ function copyFrom(cb: Combat, u: Unit, list: (Glyph | Trace)[]): string[] {
 /** Read (the Analyze action aimed at a glyph or a trace; rules 1.10): the Analyze AP and range, line of sight, no roll. */
 export function readGlyph(cb: Combat, u: Unit, tile: string): string | null {
   const c = charOfUnit(cb, u); if (!c) return 'Only a character can read a glyph.';
+  if (growthHeld(cb)) return 'The fight is over: copying words teaches in a fight, not on the field.'; // rules 1.55 item 37
   const any = [...(cb.glyphs || []).filter((g) => g.pos === tile), ...(cb.traces || []).filter((t) => t.pos === tile)];
   if (!any.length) return 'No glyph or trace there to read.';
   const list = readable(cb, u, tile);

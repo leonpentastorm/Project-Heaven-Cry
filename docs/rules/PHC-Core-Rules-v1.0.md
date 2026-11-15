@@ -6144,6 +6144,81 @@ the shared `xp_total` is untouched. PROVISIONAL.
    Analyze gives what it gave; the squad reads as before; the damage shown for a hit is unchanged (it was always the
    HP lost).
 
+### Hand-overs and the field's actions (Survival; release 0.28.2)
+
+Leon (15 Nov 2026, the playtest), verbatim: *"players cannot trade items in the map, i bought fuck load of stim and
+can't stim my friend after he's down to 1 hp"* and *"The walk around the field mode need every action unlock still like
+in combat so you can reload, stim your friend, syphon, shit like that"*. The lead's rulings R1 to R4, all PROVISIONAL.
+
+30. **Give an item anywhere out of a fight (R1).** In a Survival run a player can give any item in their character's
+   pack, a chosen quantity of a stack, to another character of the party wherever no fight is on: on the path map, at
+   every place, at the camp before the first step, on the field and at the rewards. It is the one give (`gear/give`,
+   rules 1.46): at once, free, the receiver is not asked; the reducer checks it (the giver holds it, the receiver is in
+   the run); the pack's own rules apply on arrival. Credits are unchanged: they are given only where rules 1.46 gives
+   them (the node kinds of `survival.json give.where`, and the start), until Leon rules on them. What is in a hand or
+   worn is put in the pack first, as before.
+31. **Counted items are items.** What a character keeps as a count, not a pack entry (a stim, an Essence of Experience:
+   containers `intoCounts`), is given the same way, a quantity of it: it leaves the giver's count and joins the
+   receiver's. The Give view lists it as a line with its count.
+32. **Use on a friend out of a fight (R2).** A stim can be used on an ally, or on yourself, wherever no fight is on and
+   the squad is not on a map (the path map, a place, the camp, the rewards): the same stim the fight uses (`useStim`,
+   its heal and its stabilise, one copy), from the user's count, as if the two stood side by side; a Downed character
+   is stabilised at 1 HP, anyone else healed as by a stim in a fight. On the field it is used as in a fight: walk next
+   to the friend.
+33. **The field is a free fight without enemies (R3).** While the squad walks the field (item 7), every action a
+   character has on an area map is offered and works as there: reload (speed or tactical, one hand or both), load a
+   magazine, clear a jam, Field Repair, prone, stim a friend, Analyze and read a glyph, every Sigil and Soul action
+   (draw, Evoke, scuff, vent, swap a core, Begin, Pump, Release, Let go, Steady, Feed, Heart Overwatch, Syphon,
+   Crystallise), prayers, and the perks', traits' and class moves' actions (`world/act` perk), paying what they cost
+   (rounds, items, cores, MP, Flux, Strain, Echo, the mana meter). AP never limits: it is full after every action. An
+   attack has no target (nothing hostile is left): it is refused in words. Gear changes work as anywhere in a run.
+34. **What stays spent.** A once-a-fight use spent in the fight stays spent on its field; a once-a-scene, once-a-session
+   or once-a-rest use stays as it was (they live on the character). A wait counted in rounds (a Hymn's wait, a
+   cooldown) does not count down on the field: the rounds a fight's wait had left are what it has left on the field.
+   A once-a-round or once-a-turn use can be made once on the field (its round never ends there).
+35. **What is refused on the field.** An action that would be free without limit on the field is refused, in words:
+   one whose use is at will (no once-a-fight, once-a-round or longer limit), whose every cost besides AP is one the
+   area map does not carry back to the character (a resource not in `survival.json field.carried_res`), and which
+   either gives something lasting (an op of `field.lasting_ops`: healing, a resource, a taken item) or states no
+   effects in the data (an item's own handler, which the data can't read: refused as doubtful). The list is the lead's
+   to rule (0.28.2 hand-off). Prayers are not refused by this item (their own slots and waits limit them). The lead
+   (0.28.2 review): the actions this rule refuses as doubtful (37 in 0.28.2) stay refused for now; an explicit field
+   flag on each action in the data, read in place of this guess, is planned for 0.29.
+36. **What the fight's end clears is cleared when the field closes.** When the squad leaves the field, what a fight's end
+   clears is cleared for what was done on the field (Strain, a held Outburst, conditions, shields: `magicOut` after a
+   fight; Flux, rules 1.51), and the field's use counters go; the field's piles stay behind as before. *(What the fight
+   itself left is still cleared as the field opens, as in 0.28.1: deferring the fight's own end to the field's close is
+   0.29.)*
+
+The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
+
+37. **Nothing grows on the field.** Crystallise and Syphon stay allowed (the fight's leftover mana meter is finite, and
+   gathering it is a reason to walk the field), but what is learned by doing advances only in a real fight, never from
+   an action on the field: Outburst practice, Sigil study and word uses (a glyph read and copied on the field is
+   refused in words), feelings felt for the first time, Devotion XP and a liked tag's count (a taboo still costs), drill,
+   and the deeds the engine watches. One gate says so (`growthHeld`, effects/hooks.ts: the area map's throwaway fight
+   while the run is on its field, and the area map's dry run), read where each counter is written: practice
+   (magic.ts gainPractice), study and word uses (sigil.ts evokeGrowth, readGlyph), feelings (feelings.ts feelChar,
+   feelUnit), Devotion (faith.ts shiftDevotion, tagDevotion), drill (physical/rules.ts on_kill) and deeds (deeds.ts
+   grant).
+38. **Nothing harms a friend on the field.** A blow or a harmful condition one character's action would put on another
+   character on the field (an Evoke, a Release, a thrown thing, an area) is refused in words, the whole action, as an
+   attack is; nobody is hurt. One check, where harm is applied to a unit (`harmHeld`, effects/hooks.ts, read by
+   applyDamage and applyCond); your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. A
+   spell that misses hurts nobody and is not refused.
+39. **The field has the fight screen's actions.** Walking the field, the fight screen's own action bar and cards are
+   the field's: the same descriptors (descriptors.ts) read the field as a fight state (`fieldCombat`: the squad where
+   it stands on the fight's map, AP full, no turns), with their targets and tile picks; the action a card sends is
+   done as the area map's action (item 33), and the reducer's field verdict (items 33 to 38) is the refusal the card
+   shows. A fight's action the area map has no form of (a technique, a Call, a shove, ending the turn) is refused in
+   words. There are no turns: End turn is not offered.
+40. **The Give control.** On the path map the right panel has a Give module (data/modes.json `panels`: `give`), the
+   places' Give tab; the backpack line's Give has the same stepper (how many, one at a time) before the button.
+41. **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 34): there
+   every once-a-fight use counts as spent (the safe side). Read in the one counter door (effects/uses.ts).
+42. **Counted items are data.** Which items a character keeps as a count (item 31) is `counted` on the item's row of
+   items.json (the count's field: `stims`, `essence`), read once (`COUNTED`, data.ts; the validator checks it).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.

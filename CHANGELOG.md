@@ -8,34 +8,60 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
-## 0.28.2 — the Sigil word cap says why, and Survival XP pace
+## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 
-A hotfix (15 Nov 2026): the Sigil words, and one number change, Survival's XP (rules 1.55 item 27, PROVISIONAL).
+A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 42, every number PROVISIONAL): Survival XP
+(items 27 and 28), the health word (item 29), hand-overs and the field's actions (items 30 to 36, and the lead's rulings
+on the review, items 37 to 42), Figments shown, and the Sigil words.
+
+### Survival
 
 - **Survival XP pace.** Every stage-1 fight now pays 35 XP (an Elite or the gate about 52, the Boss 175), the same
   at every stop (was 10 plus 2 a stop). A character is usually level 2 around stops 5 to 7 and level 3 by the first
   Boss. The measure is in `docs/design/proposals/2026-11-xp-fit-0.29.md`.
-- **A held hit says 0 damage.** A roll that a protection holds at its floor (a Burst's later rolls at an Elite or Boss the
-  guard already left on 1 HP, Hold the Gate, the Toll Keeper) reported the roll's own number ("63834 damage · no damage")
-  in the log and on the shot's floating number while the target lost nothing; it now reports 0 (`effects/damage.ts`).
-  Test: `packages/engine/test/last-shot-0283.test.ts` (a real Burst through the reducer).
+- **Hand things over anywhere out of a fight.** On the path map, at every place, on the field and at the rewards you
+  can give any item in your pack to a friend, one or the whole stack, from the backpack ("Give to …"). Stims count:
+  you can give them like any item. Credits are still given only at the stops with no fight, as before.
+- **Stim a friend on the map.** A stim can be used on a friend (or yourself) without a fight: from the backpack ("Stim
+  …") or a place's Give tab. It is the fight's own stim: a Downed friend gets up at 1 HP, anyone else is healed.
+- **Give from the path map's right panel**, with the stepper for how many; the backpack's Give has the stepper too.
+- **Counted items (stims, the Essence) are named in the data** (`counted` in items.json), not in the code.
+- **The field after a fight has your actions.** Walking the field you can reload (speed or tactical), load magazines,
+  clear a jam, repair, stim a friend next to you, vent, swap a core, Syphon, Crystallise, pray, and use your perks' and
+  class moves' actions, paying what they cost; AP never runs out there. What you spent once a fight stays spent, a
+  Hymn's wait does not count down, and an action that would heal or give something for AP alone again and again waits
+  for a fight (the field says so). What a fight's end clears (Strain, a held Outburst, conditions, Flux) is cleared
+  again when you leave the field.
+- **The field has the fight's action bar.** Walking the field you get the fight screen's own action bar and cards,
+  with their targets and tile picks: draw and Evoke, Begin, Pump and Release with a design, prayers, moves aimed at a
+  friend, reload, items. The field's refusals show on the card. The short strip in the header is gone.
+- **Nothing grows on the field.** Syphon and Crystallise still work, but practice, study, word uses, new feelings,
+  Devotion XP, drill and deeds come only from a real fight.
+- **Nothing harms a friend on the field.** A spell or a thrown thing that would hurt a friend is refused, as an attack
+  is.
+- **An old save on the field** counts every once-a-fight action as spent there.
+
+### Fights
+
 - **An un-Analyzed foe shows a health word, not a bar** (rules 1.55 item 29; Leon's playtest: "the hp bar does not
   goes down", and his ruling "put the word HURT there instead of % HP"). The bar drew unhurt / wounded / badly hurt as
   100 / 66 / 33%, so it stood still from half HP to 1 and the shot before the kill looked eaten. Now one word of a
   five-rung ladder in data (`rules.json combat.health_look`, provisional): UNHURT, SCRATCHED, HURT, BADLY HURT,
   NEAR DEATH, as a chip on the token, the turn strip and the target card, no bar, no number. The engine's `healthView`
   works it out. Analyzed foes and the squad unchanged.
-
-- **A Line past your Max Sigil words now says why.** Drawing a glyph that would make a Line longer than your Max Sigil
-  words says how long the Line would be, your Max Sigil words at your Intelligence, and which Intelligence raises it
-  (nothing about raising it at the top). The key's short hint says the same: "2 words max; Intelligence 3 gives 3".
-- **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
-  ground), the button says so before the click: "new Line · fades FIRE".
 - **Speaking in a Survival fight never locks the turn.** A run has no Narrator, but Attempt (1 AP) let the words through
   and the fight waited for an answer that could never come, End turn included. Now Say is said for everyone as before,
   and Attempt (and every perk that asks for words) is off with the reason "No Narrator in this mode: say it, but nobody
   rules on an attempt." A ruling left waiting with no Narrator to answer it (a run, the Narrator gone or away) is given
   back at the next action, so End turn always works; a save already stuck frees itself the same way.
+- **A Line past your Max Sigil words now says why.** Drawing a glyph that would make a Line longer than your Max Sigil
+  words says how long the Line would be, your Max Sigil words at your Intelligence, and which Intelligence raises it
+  (nothing about raising it at the top). The key's short hint says the same: "2 words max; Intelligence 3 gives 3".
+- **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
+  ground), the button says so before the click: "new Line · fades FIRE".
+
+### Figments
+
 - **Figments move and show** (Leon's playtest: "feels like it's just standing there doing nothing"). Picturing one plays
   on the caster first (a wind-up ring and a gesture), a thread of light runs to the tile, then the Figment forms (lines
   drawing in, a ring closing, its glyph, its token flickering up); an order is the caster's pulse and a thread, then the
@@ -59,6 +85,13 @@ A hotfix (15 Nov 2026): the Sigil words, and one number change, Survival's XP (r
   Keep. Every option and refusal is the engine's `figmentDesignView` (its `draftWhy` is the reducer's own check; the room
   check is one function, `designRoomWhy`, for both). In a fight, Picture offers the ready designs first, each with its
   form's icon.
+
+### Fixes
+
+- **A held hit says 0 damage.** A roll that a protection holds at its floor (a Burst's later rolls at an Elite or Boss the
+  guard already left on 1 HP, Hold the Gate, the Toll Keeper) reported the roll's own number ("63834 damage · no damage")
+  in the log and on the shot's floating number while the target lost nothing; it now reports 0 (`effects/damage.ts`).
+  Test: `packages/engine/test/last-shot-0283.test.ts` (a real Burst through the reducer).
 
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 

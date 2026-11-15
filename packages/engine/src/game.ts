@@ -12,7 +12,7 @@ import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT } from './figm
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -27,7 +27,7 @@ import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
-import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
+import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, PILE, COUNTED } from './containers';
 import { type Drops, type LootTable, cleanDrops, cleanTables, dropsLoot } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
@@ -36,6 +36,7 @@ import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyN
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { scaleOf } from './effects/output';
+import { fieldDoor } from './effects/hooks';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
@@ -68,7 +69,8 @@ import { type ProgressAction, progressAction, openVisit, lastingOffer } from './
 import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays, lineGoods } from './run/shop';
 import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutAction, type CampBoons } from './run/loadout';
 import { gearIfBare, campaignLoadout } from './loadout';
-import { type GiveAction, giveNow } from './give';
+import { type GiveAction, giveNow, setUseDoor } from './give';
+import survivalFieldJ from '../../../data/survival.json';
 import { type MakeAction, makeNow } from './recipes';
 import { earnCredits, creditsOf } from './credits';
 
@@ -619,6 +621,8 @@ function reduce(g: GameState, a: Action, by: string) {
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
   if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
   if (g.run?.state === 'field' && FREE_WORLD.test(a.type)) { fieldWorld(g, a, by); return; } // rules 1.55: the won fight's field, roamed as the Proving Ground's gearing up
+  if (g.run?.state === 'field' && a.type.startsWith('combat/') && (a as any).unitId) { fieldWorld(g, fieldActOf(g, a), by); return; } // rules 1.55 item 39: the fight screen's actions on the field
+  if (g.run && g.run.state !== 'over' && g.run.state !== 'field' && a.type === 'world/act' && a.act === 'stim') { const no = stimOffGrid(g, a, by); if (no) fail(no); return; } // rules 1.55 item 32: a stim on a friend off the map
   if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
   { const no = campGearProblem(g, a); if (no) fail(no); }
   if (g.sandbox && FREE_WORLD.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
@@ -1113,7 +1117,7 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   let given = '';
   let guns: string[] = [];
   if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) { pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); guns.push(id); } if (rarity !== 'standard') given += ' (' + rarity + ')'; }
-  else if (id === 'stim_injector' || id === 'essence_of_experience') { if (id === 'stim_injector') c.stims += n; else c.essence += n; given = ITEM[id].name; }
+  else if (COUNTED[id]) { c[COUNTED[id]] = (c[COUNTED[id]] || 0) + n; given = ITEM[id].name; } // items.json `counted` (rules 1.55 item 31)
   else if (ITEM[id]) { const note = String(l.note || '').trim().slice(0, 40); given = (label || ITEM[id].name).slice(0, 60) + (note ? ' (' + note.toUpperCase() + ')' : ''); const ex = pack.find((x) => (x.item || x.id) === id && !x.rarity && x.name === given && (x.note || '') === note); if (ex) ex.qty += n; else pack.push({ id, item: id, name: given, qty: n, kind: (ITEM[id] as any).category === 'consumable' ? 'med' : 'tool', ...(note ? { note } : {}) }); }
   else {
     const name = label || pack.find((x) => x.kind === 'plot' && x.id === id)?.name || id.replace(/^plot:/, '').replace(/_/g, ' ').trim(); if (!name) return;
@@ -2776,6 +2780,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   }
   else fail('Unknown action.');
   if (err) fail(err);
+  { const fh = (cb as any).fieldHarm; if (fh && fh.by === u.id) fail(fh.text); } // rules 1.55 item 38: this character's harm to a friend on the field refuses the action (effects/hooks.ts harmHeld)
   // 'action_done' {u, a, cb, world: true}: after an area-map action, before it is written back (The Brightest Light's
   // double wear on the area map).
   { const was = bindGame(g); try { emitHook(cb, 'action_done', { u, a, cb, world: true }); } finally { bindGame(was); } }
@@ -3603,7 +3608,7 @@ function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number
     c.pack = pack; collectGuns(c, Array(Math.min(n, 3)).fill(item)); // Gun Nut's collection (item 369)
     return at;
   }
-  if (item === 'stim_injector') { c.stims += n; c.pack = pack; return -1; }
+  if (COUNTED[item]) { c[COUNTED[item]] = (c[COUNTED[item]] || 0) + n; c.pack = pack; return -1; } // items.json `counted`
   const def = ITEM[item] as any; if (!def) fail('No such item.');
   const kind: PackItem['kind'] = packKindOf(item); // rules 1.54: pack_kind, the one rule
   const ex = pack.findIndex((x) => (x.item || x.id) === item && !x.rarity);
@@ -3795,18 +3800,140 @@ function freeAgain(g: GameState) { g.story.ap = {}; g.story.ended = {}; g.story.
  * up (the same world actions, AP always full, no rounds); nothing else is done on it. */
 function fieldWorld(g: GameState, a: Action, by: string) {
   const w = asWorldAct(a);
-  if (w.act !== 'move' && w.act !== 'pickup' && w.act !== 'door') fail('The fight is over: on the field you walk and pick things up. Leave the field for the rewards.');
+  // rules 1.55 item 33: every area-map action but the story's own (carry, search, an attempt, an ask) and an attack,
+  // which has nothing hostile to go at
+  if (w.act === 'attack') fail('Nothing hostile is left on the field: the fight is over. Leave the field for the rewards.');
+  if (FIELD_NOT.includes(w.act)) fail('The fight is over: on the field you walk, pick things up and use what you carry. Leave the field for the rewards.');
   if (w.unit) fail('On the field only the squad walks.');
+  if (w.act === 'perk') { const c = g.characters[w.charId]; const no = c && w.id ? fieldRefusal(g, c, w.id, w.actionId) : null; if (no) fail(no); }
   freshRound(g, w.charId); worldAct(g, w, by); freeAgain(g);
 }
+/** Rules 1.55 item 39: the fight screen's own action (its descriptors' combat/* action, descriptors.ts, which reads
+ * the field through fieldCombat) as the area map's world/act on the field: the same fields, the unit as its character.
+ * A fight's action the area map has no form of (a technique, a Call, a shove, ending the turn) is refused in words. */
+function fieldActOf(g: GameState, a: Action): Action {
+  const { type, unitId, ...rest } = a as any, charId = String(unitId).replace(/^pc-/, ''), act = String(type).slice('combat/'.length);
+  if (!g.characters[charId] || 'pc-' + charId !== unitId) fail('On the field only the squad acts.');
+  if (!FIELD_WORLD_ACTS.includes(act)) fail('That is a fight action, and the fight is over: on the field you walk, pick things up, use what you carry, cast and pray. Leave the field for the rewards.');
+  if (act === 'move') rest.how = rest.how === 'sprint' ? 'sprint' : 'move';
+  if (act === 'door') { const o = storyObjects(g).find((x) => x.pos === rest.tile && kindOf(x).door); rest.objId = o?.id; delete rest.tile; }
+  return { type: 'world/act', charId, act, ...rest } as Action;
+}
+/** The area map's own world/act verbs (worldAct), the ones a fight-screen action may become on the field. */
+const FIELD_WORLD_ACTS: string[] = ['move', 'door', 'perk', 'reload', 'load', 'clear', 'repair', 'prone', 'stim', 'analyze', 'read', 'attack', 'pickup', ...MAGIC_ACTS];
+const FIELD_CB = new WeakMap<GameState, Combat>();
+/** Rules 1.55 item 39: the field as the fight screen and its descriptors read it (storyCb: the squad where it stands on
+ * the fight's map, AP full, no rounds), one per state; null off the field. Read only: what is done is a reducer action. */
+export function fieldCombat(g: GameState): Combat | null {
+  if (g?.run?.state !== 'field' || !g.combat) return null;
+  let cb = FIELD_CB.get(g); if (cb) return cb;
+  const was = bindGame(g); try { cb = storyCb(g); } finally { bindGame(was); }
+  cb.name = g.combat.name; FIELD_CB.set(g, cb); return cb;
+}
+fieldDoor.f = fieldCombat;
+/** The area-map actions the field has no use for (rules 1.55 item 33): the story's, and ending a round (there is none). */
+const FIELD_NOT: string[] = ['carry', 'put_down', 'search', 'attempt', 'ask', 'end'];
+/** Rules 1.55 item 35 (`survival.json field`): what the area map carries back to the character, and the ops that give
+ * something lasting. */
+const FIELD: { carried_res: string[]; lasting_ops: string[] } = (survivalFieldJ as any).field;
+/** Why an item's action is refused on the field (rules 1.55 item 35), or null: at will (no limit that holds on the
+ * field), every cost besides AP a resource the area map rebuilds, and something lasting (or nothing the data states:
+ * an item's own handler, doubtful). Prayers are left to their own slots and waits. */
+export function fieldRefusal(g: GameState, c: Character, id: string, actionId?: string): string | null {
+  const h = holdersOf({ c }).find((y) => y.key === itemKey(id)); if (!h) return null; // the action itself refuses
+  const defs = actionDefs(h.info), d = actionId ? defs.find((x) => x.id === actionId) : defs[0]; if (!d) return null;
+  const grants = (h.info.effects || []).filter((e: any) => e?.op === 'grant_action'), row: any = grants.find((e: any) => e.action === d.id) || (grants.length === 1 ? grants[0] : null);
+  if (row?.prayer || row?.limit) return null;
+  const per = d.uses?.per || 'at_will'; if (per !== 'at_will' && per !== 'out_of_combat') return null;
+  let res: Record<string, number> = {}; try { res = (typeof d.res === 'function' ? d.res({ ...h, c, g }, {}) : d.res) || {}; } catch { res = {}; }
+  if (Object.entries(res).some(([k, n]) => Number(n) > 0 && FIELD.carried_res.includes(k))) return null;
+  const ops: string[] = (row?.effects || []).map((e: any) => e?.op).filter(Boolean);
+  if (ops.length && !ops.some((o) => FIELD.lasting_ops.includes(o))) return null;
+  return (d.label || h.info.name) + ' waits for a fight: on the field it would ' + (ops.length ? 'give something lasting for AP alone, again and again.' : 'cost nothing the field counts (the lead rules on it).');
+}
+/** Rules 1.55 item 34: the field keeps what the fight spent: a once-a-fight use stays spent and a cooldown keeps the
+ * rounds it had left (the field's round never ends); they become the area map's counters (effects/uses.ts cellsOf). */
+function carryFightLimits(g: GameState, cb: Combat) {
+  const now = g.story.round ?? 0;
+  for (const u of cb.units) {
+    if (!u.charId || u.companion) continue;
+    const bag: Record<string, { s: string; n: number }> = {};
+    for (const [k, cell] of Object.entries((u as any).uses || {}) as [string, { s: string; n: number }][]) {
+      if (k.endsWith('|per_combat') && cell.s === 'c') bag[k] = { s: 'none', n: cell.n };
+      else if (k.endsWith('|cooldown') && cell.s === 'cd') bag[k] = { s: 'cd', n: now - ((cb.round || 0) - cell.n) };
+    }
+    const ps = (((g.story as any).ps ||= {})[u.charId] ||= {}); ps.uses = bag;
+  }
+  (g.story as any).fieldLimits = true; // the fight's limits came with it (effects/uses.ts: an old save's field has none)
+}
+/** Rules 1.55 item 32: a stim used out of a fight with no map under the squad (the path map, a place, the camp, the
+ * rewards): the fight's own stim (combat.ts useStim: its stabilise, its heal, its AP and its count) on a strip of two
+ * tiles, the two side by side, written back as an area-map action is. `dry`: only say why not (nothing changes). */
+function stimOffGrid(g: GameState, a: { charId: string; targetId?: string }, by: string, dry = false): string | null {
+  if (g.phase === 'combat' && g.combat && !g.combat.over) return 'The fight is on: stim on the combat grid.';
+  const c0 = g.characters[a.charId]; if (!c0 || c0.owner !== by) return 'Not your character.';
+  const t0 = g.characters[String(a.targetId || '')]; if (!t0) return 'Pick an ally.';
+  if (c0.dead) return 'The dead stay where they fell.'; if (c0.hp <= 0) return c0.name + ' is Downed: an ally\'s stim gets them up.';
+  if (t0.dead) return 'Too late.';
+  const c = dry ? (JSON.parse(JSON.stringify(c0)) as Character) : c0, t = t0 === c0 ? c : dry ? (JSON.parse(JSON.stringify(t0)) as Character) : t0;
+  const scratch = { state: g.rng.state }, u = unitFromCharacter(c, '0,0', scratch), tu = t === c ? u : unitFromCharacter(t, '1,0', scratch);
+  setAp(u, apLeft(g, c0)); if (tu.downed) tu.saves = { ok: 0, fail: t.downedFails || 0 };
+  const units = t === c ? [u] : [u, tu];
+  const cb = { name: 'off the map', overworld: true, map: OFF_GRID, units, order: units.map((x) => x.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: [] } as unknown as Combat;
+  const err = useStim(cb, u, tu, c, isMedicChar(c)); if (err || dry) return err;
+  for (const x of units) unitToCharacter(g, x, false, true);
+  for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c.id });
+  return null;
+}
+/** One action the field offers (rules 1.55 item 33): its group, its words, the action to send, and the reducer's own
+ * reason it can't be done now (null: it can). */
+export interface FieldActV { key: string; group: 'gear' | 'magic' | 'stim' | 'perk'; label: string; action: Action; why: string | null }
+/** The field's actions for player `me`'s character (rules 1.55 item 33): the area map's own actions, a stim for each
+ * friend next to you (and yourself), and the item actions that need no pick, each judged by the reducer itself (the
+ * action applied to a copy: the same truth, never a second check). Shown: what can be done now, and what the field
+ * refuses (item 35), greyed with its reason. Empty off the field. */
+export function fieldActs(g: GameState, me: string): FieldActV[] {
+  const r = g.run; if (!r || r.state !== 'field') return [];
+  const c = Object.values(g.characters).find((x) => x.owner === me && !x.dead), pos = g.story.positions || {}; if (!c || !pos[c.id]) return [];
+  const w = (o: Record<string, unknown>) => ({ type: 'world/act', charId: c.id, ...o }) as unknown as Action;
+  const rows: Omit<FieldActV, 'why'>[] = [];
+  for (const [key, label, o] of FIELD_BASIC) rows.push({ key, group: key.startsWith('m:') ? 'magic' : 'gear', label, action: w(o) });
+  for (const t of Object.values(g.characters)) if (!t.dead && pos[t.id] && dist(pos[c.id], pos[t.id]) <= 1) rows.push({ key: 'stim:' + t.id, group: 'stim', label: 'Stim ' + (t.id === c.id ? 'yourself' : t.name), action: w({ act: 'stim', targetId: t.id }) });
+  { const cb = storyCb(g), u = cb.units.find((x) => x.charId === c.id);
+    if (u) { const was = bindGame(g); try { for (const e of perkActionsFor({ u, c, cb, g }, 'world')) if (e.target === 'none' && !e.arm) rows.push({ key: 'perk:' + e.id + '#' + e.actionId, group: 'perk', label: e.label, action: w({ act: 'perk', id: e.id, actionId: e.actionId }) }); } finally { bindGame(was); } } }
+  const judge = (a: Action): string | null => { try { apply(g, a, me); return null; } catch (e) { if (e instanceof RuleError) return e.message; return String((e as Error)?.message || e); } };
+  return rows.map((x) => ({ ...x, why: judge(x.action) })).filter((x) => !x.why || (x.group === 'perk' && /waits for a fight/.test(x.why)));
+}
+/** The area map's own actions on the field, as the area map's world/act takes them (rules 1.55 item 33). */
+const FIELD_BASIC: [string, string, Record<string, unknown>][] = [
+  ['g:reload', 'Reload', { act: 'reload' }], ['g:reload_t', 'Reload (tactical)', { act: 'reload', tactical: true }], ['g:reload_b', 'Reload both', { act: 'reload', hand: 'both' }],
+  ['g:load', 'Load magazines', { act: 'load' }], ['g:clear', 'Clear the jam', { act: 'clear' }], ['g:repair', 'Field Repair', { act: 'repair' }], ['g:prone', 'Prone or stand', { act: 'prone' }],
+  ['m:vent', 'Vent Flux', { act: 'vent' }], ['m:core', 'Swap a core', { act: 'core' }], ['m:pump', 'Pump', { act: 'pump' }], ['m:steady', 'Steady the heart', { act: 'steady' }],
+  ['m:letgo', 'Let it go', { act: 'letgo' }], ['m:release', 'Release', { act: 'release' }], ['m:syphon', 'Syphon', { act: 'syphon' }], ['m:crystallise', 'Crystallise', { act: 'crystallise' }],
+];
+/** The strip a stim off the map is used on (rules 1.55 item 32). */
+const OFF_GRID: MapDef = layoutMap('off-grid', { name: 'Off the map', w: 2, h: 1, rows: ['..'] });
+// rules 1.55 item 32: the Give view's "Use on..." for the counted item a stim is (the count combat/stim spends)
+setUseDoor((g, me, from, item) => {
+  if (COUNTED[item] !== 'stims') return null;
+  const field = g.run?.state === 'field', at = g.story.positions || {};
+  const why = Object.fromEntries(Object.values(g.characters).map((t) => [t.id, field ? (at[from] && at[t.id] && dist(at[from], at[t.id]) <= 1 ? null : 'Walk next to ' + t.name + ' first.') : stimOffGrid(g, { charId: from, targetId: t.id }, me, true)]));
+  return { label: 'Stim', action: { type: 'world/act', charId: from, act: 'stim' }, why };
+});
 /** Rules 1.55: a won run fight becomes its field: the map, the squad where it stood, the piles as the fight left them. */
 function openField(g: GameState, cb: Combat) {
+  carryFightLimits(g, cb); // rules 1.55 item 34
   const pos: Record<string, string> = {}; for (const u of cb.units) if (u.charId && !u.companion) pos[u.charId] = u.pos;
   g.story.positions = pos; g.story.objects = JSON.parse(JSON.stringify((cb.objects || []).filter((o: any) => !o.grandWall))); g.story.npcs = [];
   positionsOf(g); g.story.trail = {}; g.story.focus = null; freeAgain(g);
 }
 /** Rules 1.55: the field is left: the area map is the run's own again (what still lies there stays behind). */
 function closeField(g: GameState) {
+  // rules 1.55 item 36: what a fight's end clears is cleared for what was done on the field (Strain, a held Outburst,
+  // conditions, shields; Flux, rules 1.51), and the field's own counters go
+  if (Object.keys(g.story.positions || {}).length) magicOut(g, storyCb(g), true);
+  for (const id of Object.keys(g.characters)) { const m = g.story.magic?.[id]; if (m) m.flux = 0; const ps = (g.story as any).ps?.[id]; if (ps) delete ps.uses; }
+  delete (g.story as any).fieldLimits;
   g.story.positions = {}; delete g.story.objects; g.story.npcs = []; g.story.trail = {}; freeAgain(g); g.story.await = 'none';
 }
 function sandboxWorld(g: GameState, a: Action, by: string) {

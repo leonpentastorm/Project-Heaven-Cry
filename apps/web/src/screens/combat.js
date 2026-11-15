@@ -18,6 +18,13 @@ import { seenFigments } from '../game/fx/figments';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
 /** Rules 1.55: the field's header (the engine's field: fieldView): what lies on the ground, Take all, Leave and the vote. */
+/** Rules 1.55 item 39 (0.28.2): on the field the fight screen's own action bar is the field's (the engine's field as a
+ *  fight state, fieldCombat; its descriptors; every action the reducer's field verdict). The fight as the screen shows it
+ *  now, and the unit it acts for: on the field (walked into) my character's unit, else the unit whose turn it is. */
+const fightNow = (g, me, open) => { const cb = g && g.combat ? castFight(g, fieldFight(g, g.combat, !!open), ART) : null;
+  const on = !!(open && cb && g.run && g.run.state === 'field');
+  const cur = !cb ? null : on ? cb.units.find((u) => u.charId && !u.companion && !u.dead && g.characters[u.charId]?.owner === me) || null : active(cb);
+  return { cb, cur, open: on }; };
 const fieldVals = (fv, open) => {
   if (!fv || !open) return { show: false };
   const ground = fv.piles ? fv.piles + (fv.piles === 1 ? ' pile' : ' piles') + ', ' + fv.items + (fv.items === 1 ? ' item' : ' items') + ' on the ground' : 'Nothing left on the ground';
@@ -381,7 +388,7 @@ function presenceVals(u, g, cb) {
 export const witnessedWords = (u, g) => 'UNTIL THE FIGHT ENDS OR ' + (patronNameOf(u, g).toUpperCase() || 'THE PATRON') + ' ACTS';
 /** The chip's title: "Witnessed: until the fight ends or Old Overcast acts." */
 const witnessedTitle = (u, g) => 'Witnessed: until the fight ends or ' + (patronNameOf(u, g) || 'the patron') + ' acts.';
-/** Rules 1.55 item 27: an un-Analyzed creature's health is the engine's word (healthView), drawn as a chip in its tone's
+/** Rules 1.55 item 29: an un-Analyzed creature's health is the engine's word (healthView), drawn as a chip in its tone's
  *  colour (calm: muted; hurt: the HP red; dire: the HP red filled), never a bar. `pos` places it (a token's foot). */
 export const lookChip = (hv, pos = '') => 'display: inline-block; padding: 1px 6px; border-radius: 999px; font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; '
   + (hv.tone === 'dire' ? 'border: 1px solid #F65157; background: #F65157; color: #0A0D13' : hv.tone === 'hurt' ? 'border: 1px solid #F65157; background: rgba(10, 13, 19, 0.92); color: #F65157' : 'border: 1px solid #2E3A50; background: rgba(10, 13, 19, 0.92); color: #A3AEC2') + (pos ? '; ' + pos : '');
@@ -480,8 +487,8 @@ export class CombatLogic extends DCLogic {
 
   /** An action picked outside the panel (the your-turn card's command tiles): select it, if it is this unit's to use. */
   pickAction(id, unit) {
-    const g = getState().game, cb = g && g.combat, cur = cb && active(cb), me = getState().me.id;
-    if (!cb || cb.over || !cur || cur.side !== 'pc' || cur.downed || (unit && unit !== cur.id) || g.characters[cur.charId]?.owner !== me) return;
+    const g = getState().game, me = getState().me.id, F = fightNow(g, me, this.state.fieldIn), cb = F.cb, cur = F.cur;
+    if (!cb || (cb.over && !F.open) || !cur || cur.side !== 'pc' || cur.downed || (unit && unit !== cur.id) || g.characters[cur.charId]?.owner !== me) return;
     const w = WEAPON[cur.weapon], act1 = id === 'shot' && w && isMelee(w) ? 'melee' : id, act2 = mapLegacy(cur, act1) || act1;
     if (this._ids && !this._ids.has(act2)) return;
     const t = cb.units.find((x) => x.id === this.state.target);
@@ -776,20 +783,21 @@ export class CombatLogic extends DCLogic {
   renderVals() {
     const st = getState(), g = st.game, me = st.me.id;
     // HP follows the effects (fx/play.ts fxShownHp): a bar falls when its hit plays, not when the state arrives.
-    const cb = (() => { const c0 = castFight(g, fieldFight(g, g && g.combat), ART), shown = c0 ? fxShownHp(g) : null;
+    const F0 = fightNow(g, me, this.state.fieldIn), onField = F0.open; // rules 1.55 item 39: walking the field, the fight screen acts on it
+    const cb = (() => { const c0 = F0.cb, shown = c0 ? fxShownHp(g) : null;
       return c0 && shown && shown.size ? { ...c0, units: c0.units.map((u) => (shown.has(u.id) && !u.dead ? { ...u, hp: Math.min(u.maxHp, shown.get(u.id)) } : u)) } : c0; })();
     // A new unit's turn starts clean: a spell (or its aim) picked for the last unit never carries over to this one.
-    const curId = cb && active(cb) ? active(cb).id : null;
+    const curId = onField ? (F0.cur ? F0.cur.id : null) : cb && active(cb) ? active(cb).id : null;
     const newTurn = curId !== this._curId;
     if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, evc: null, sgToast: '', obMode: 'begin', word: null, stroke: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
     const S = this.state;
     if (!cb) return { ...lightboxVals(this), ...shellVals(this, 'combat'), lay: this.layoutVals(PANEL_HIDDEN), mz: this.zoomVals(), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', gridLeave: () => {}, confirmText: 'Confirm', pad: {}, magicLegend: [] };
     // Whose turn is on screen: while earlier turns are still playing out, the unit whose banner played last, not the
     // one the state has already moved on to (Leon, 11 Nov 2026: the hostiles seemed to attack on your turn).
-    const turnWait = fxShownTurn(g);
-    const cur = (turnWait && turnWait.unit && cb.units.find((u) => u.id === turnWait.unit)) || active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
+    const turnWait = onField ? null : fxShownTurn(g);
+    const cur = onField ? (F0.cur && cb.units.find((u) => u.id === F0.cur.id)) || null : (turnWait && turnWait.unit && cb.units.find((u) => u.id === turnWait.unit)) || active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
     const ring = (u) => (u.side === 'pc' ? playerOf(owner(u))?.color || '#7FD4FF' : '#F65157');
-    const mineTurn = !turnWait && !cb.over && cur && cur.side === 'pc' && owner(cur) === me && !cur.downed;
+    const mineTurn = !turnWait && (!cb.over || onField) && cur && cur.side === 'pc' && owner(cur) === me && !cur.downed;
     // …and the screen looks again when the effects have run out (the hold event does it too; this is the safety net)
     if (turnWait && !this._turnTimer && typeof performance !== 'undefined') this._turnTimer = setTimeout(() => { this._turnTimer = null; if (LIVE === this) this.setState({}); }, Math.max(120, Math.min(4000, fxBusyUntil() - performance.now() + 60)));
     this._mine = mineTurn;
@@ -1591,7 +1599,7 @@ export class CombatLogic extends DCLogic {
       padTCls: 'phc-a-rise' + pt.cls, padT: pt.val || { groups: [] }, padWShow: pw.show, padWCls: 'phc-a-rise' + pw.cls, padW: pw.val || {}, padDShow: pd.show, padDCls: 'phc-a-rise' + pd.cls, padD: pd.val || {},
       tgtList: tp.show ? [{ ...tp.val, key: 'tgt-' + tp.val.id, cls: 'phc-a-right' + tp.cls }] : [],
       cantConfirm, noConfirm: isPerkInfo(S.action), confirmText: S.action === 'draw' && isMagic ? 'Click a tile to draw' : S.action === 'pickup' && pickPile && pickSel ? pickupLabel(pickPile, pickUntick) : 'Confirm', confirmSfx: isMagic ? 'none' : undefined,
-      confirm: () => this.confirm(), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
+      confirm: () => this.confirm(), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField,
     };
     // The grid fits the room beside the pinned column (fitGrid measures; it runs again on resize and when the map changes).
     const zoom = this._zoom || 1, fitKey = cb.map.w + 'x' + cb.map.h;
@@ -1668,7 +1676,7 @@ export class CombatLogic extends DCLogic {
         // Rules 1.9 (item 695): what the loot cap held back, for the host's eyes only (the engine strips lootLog from
         // everyone else's view).
         ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),
-      cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
+      cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField, // the field has no turns
       toStory: fv ? () => this.setState({ fieldIn: true }) : () => go(homeScreen(g)), toStoryLabel: fv ? 'Walk the field ›' : g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !(fv && S.fieldIn),
       field: fieldVals(fv, !!S.fieldIn), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
       overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox || g.run ? '' : ' The Narrator picks up the story.') + (me === g.hostId && cb.lootLog && cb.lootLog.length ? ' ' + lootLogLine(cb.lootLog) : ''),
@@ -1678,8 +1686,8 @@ export class CombatLogic extends DCLogic {
   tileClick(k) {
     // In the overview a click on a tile goes back to the camera, centred there; it never acts.
     if (this._overview) { this.toggleOverview(k); return; }
-    const S = this.state, g = getState().game, cb = castFight(g, fieldFight(g, g.combat), ART), cur = active(cb);
-    { const fv = fieldView(g, getState().me.id); if (fv) { if (S.fieldIn && fv.charId) act({ type: 'world/act', charId: fv.charId, act: 'move', to: k }); return; } } // rules 1.55: on the field a click walks
+    const S = this.state, g = getState().game, F = fightNow(g, getState().me.id, S.fieldIn), cb = F.cb, cur = F.cur;
+    if (fieldView(g, getState().me.id) && !F.open) return; // rules 1.55: the won fight's screen, the field not walked into yet
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);
     const u = cb.units.find((x) => x.pos === k && !x.dead);
     // A perk action that wants a target or a tile takes the click (an ally, anyone, or the tile itself).
@@ -1708,7 +1716,7 @@ export class CombatLogic extends DCLogic {
 
   /** A held heart's move (rules 1.5): Pump, Steady, Let go, Feed, Heart Overwatch on or off. */
   heartAct(id) {
-    const g = getState().game, cb = g?.combat, cur = cb && active(cb); if (!cur || !cur.mg) return;
+    const g = getState().game, cur = fightNow(g, getState().me.id, this.state.fieldIn).cur; if (!cur || !cur.mg) return;
     // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump. What each sends is the engine's descriptor.
     const [aid, feeling] = id.startsWith('pump:') ? ['pump', id.slice(5)] : [id, null];
     if (aid !== 'heartwatch' && aid !== 'letgo') this.revealHeart(); // what changed, in view
@@ -1718,7 +1726,7 @@ export class CombatLogic extends DCLogic {
   }
   /** A tile click while a spell is chosen: draw there, pick a pattern, or aim. */
   magicClick(k, cur) {
-    const S = this.state, m = this._mg || {}, g = getState().game, cb = g.combat;
+    const S = this.state, m = this._mg || {}, g = getState().game, cb = fightNow(g, getState().me.id, S.fieldIn).cb;
     if (S.action === 'draw') { if (m.word) { const a = sendDescriptor(g, cur.id, 'draw', { word: m.word, tile: k, ...(m.stroke ? { stroke: m.stroke } : {}) }, getState().me.id); if (a) act(a); if (S.stroke) this.setState({ stroke: null }); } return; }
     if (S.action === 'evoke') {
       const r = evokeClick(m.evTile ? m.evV || null : null, cb, cur, k, S.evc || {});
@@ -1731,7 +1739,7 @@ export class CombatLogic extends DCLogic {
   }
 
   confirm() {
-    const cur = active(getState().game.combat), a = this.state.action, S = this.state, m = this._mg || {};
+    const cur = fightNow(getState().game, getState().me.id, this.state.fieldIn).cur, a = this.state.action, S = this.state, m = this._mg || {};
     if (isPerkInfo(a)) return; // a row to read: nothing to run (and never an attack on the picked target)
     // The flow: Confirm sends the engine's action for the picks (null: not ready; the panel says why).
     if (this._flow) {

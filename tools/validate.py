@@ -2846,6 +2846,17 @@ if _sv is not None:
         if not _gv.get("where") or not set(_gv["where"]) <= _kinds - {"fight", "elite", "boss"}: errors.append("survival:give.where: node kinds with no fight")
         if not isinstance(_gv.get("at_start"), bool): errors.append("survival:give.at_start: true or false")
         if _gv.get("provisional") is not True: errors.append("survival:give: provisional: true")
+    # Rules 1.55 items 33 to 35 (0.28.2): what the field refuses (resource ids of actions.json, item ops of effect_ops.json)
+    _fd = _sv.get("field")
+    if _fd is not None:
+        _resids = set(((data.get("actions") or {}).get("resources") or {}).keys())
+        _opids = set((((data.get("effect_ops") or {}).get("item_ops") or {}).get("ops") or {}).keys())
+        if not _fd.get("carried_res") or not _fd.get("lasting_ops"): errors.append("survival:field: carried_res and lasting_ops, each a list")
+        for _x in _fd.get("carried_res") or []:
+            if _x not in _resids: errors.append(f"survival:field.carried_res: {_x!r} is not a resource of actions.json")
+        for _x in _fd.get("lasting_ops") or []:
+            if _x not in _opids: errors.append(f"survival:field.lasting_ops: {_x!r} is not an item op")
+        if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")
 
 # Rules 1.54 (survival-spec 14.2, 14.3): items' pack_kind and plural, the recipes (one converter, recipes.ts) and the
 # parity of every row with priceOf (credits.ts: a calibre's round price, an item's price_credits, a special round's
@@ -2860,6 +2871,11 @@ _PACK_KINDS = {"weapon", "ammo", "tool", "focus", "food", "med", "loot", "plot"}
 for _i in _rimap.values():
     if "pack_kind" in _i and _i["pack_kind"] not in _PACK_KINDS: errors.append(f"items:{_i.get('id')}: pack_kind {_i['pack_kind']!r} is not a pack line's kind ({', '.join(sorted(_PACK_KINDS))})")
     if "plural" in _i and not (isinstance(_i["plural"], str) and _i["plural"].strip()): errors.append(f"items:{_i.get('id')}: plural must be a name")
+    # Rules 1.55 item 31: `counted` names the character's count field the item is kept in (data.ts COUNTED)
+    if "counted" in _i and _i["counted"] not in {"stims", "essence"}: errors.append(f"items:{_i.get('id')}: counted {_i['counted']!r} is not a character's count field (stims, essence)")
+    if "counted" in _i and _i.get("category") != "consumable": errors.append(f"items:{_i.get('id')}: counted is for a consumable")
+_cnt = [i.get("counted") for i in _rimap.values() if "counted" in i]
+if len(_cnt) != len(set(_cnt)): errors.append("items: two items name the same counted field")
 def _rprice(_id):
     """credits.ts priceOf at the standard grade, or None (unpriced or stock: false)."""
     if _id.startswith("rounds:"): _p = _rcal.get(_id[7:]); return _p if _num(_p) and _p > 0 else None

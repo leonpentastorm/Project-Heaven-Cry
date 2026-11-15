@@ -19,6 +19,7 @@ import { boonIconSvg } from './boonIcons';
 import { downloadRunReport } from './runReport';
 import { scrub } from './debug';
 import { tipProps } from './actionTip';
+import { GiveTab } from './GiveTab';
 import { Portal } from './modeCentre';
 import { placeClosed, closePlace } from './placeMark';
 import { ICON } from './runIconSizes';
@@ -183,5 +184,6 @@ export function PanelSlots({ game }: { game: GameState }) {
     <Portal at='[data-phc-panel-slot="run"]'><RunPanel g={game} me={me} /></Portal>
     <Portal at='[data-phc-panel-slot="run_board"]'><RunBoard g={game} me={me} /></Portal>
     <Portal at='[data-phc-panel-slot="squad"]'><RunSquad g={game} me={me} /></Portal>
+    <Portal at='[data-phc-panel-slot="give"]'><GiveTab compact /></Portal>
   </>;
 }
