@@ -35,6 +35,11 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
   // the shelves flow and wrap; a group is only as wide as its own cards, and every card is one fixed width
   + '.phc-camp-families{display:flex;flex-wrap:wrap;gap:18px 22px;align-items:flex-start}'
   + '.phc-camp-families>*{flex:0 1 auto;max-width:100%}'
+  // a two-card family breaks the row at its two cards' narrowest (2 × 250 + the 10 gap), then grows to their usual width
+  // (2 × 270 + 10): a row that has room for it at the narrow width takes it, instead of leaving it to the next row and
+  // up to a two-card width empty on the right (0.29's fist weapons: 1920 px left 535 px empty)
+  + '.phc-camp-families>[data-phc-camp-cards="2"]{flex:1 1 510px;max-width:min(550px,100%)}'
+  + '.phc-camp-families>[data-phc-camp-cards="2"] .phc-camp-pair>*{flex:1 1 250px;max-width:270px}' // (its two cards share the line the same way)
   + '.phc-camp-pair,.phc-camp-pick,.phc-camp-shelf{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}'
   + '.phc-camp .phc-camp-pair>*,.phc-camp .phc-camp-pick>*,.phc-camp .phc-camp-shelf>*{flex:0 1 270px;width:270px;min-width:min(250px,100%);max-width:100%}'
   + '.phc-camp-shelves{display:flex;flex-wrap:wrap;gap:4px 22px;align-items:flex-start}'
@@ -298,7 +303,7 @@ export function LoadoutScreen() {
               {head('Weapons', 'another one, or the better one')}
               <div className="phc-camp-families">
                 {bought.map((a) => (
-                  <div key={a.id} data-phc-camp-family={a.id} style={{ minWidth: 0 }}>
+                  <div key={a.id} data-phc-camp-family={a.id} data-phc-camp-cards={(a.again ? 1 : 0) + (a.better ? 1 : 0)} style={{ minWidth: 0 }}>
                     <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
                     <div className="phc-camp-pair" role="group" aria-label={a.name}>
                       {a.again ? <ShelfCard c={a.again} charId={charId} tag="ANOTHER ONE" /> : null}

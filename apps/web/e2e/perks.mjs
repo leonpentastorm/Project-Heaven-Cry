@@ -71,13 +71,13 @@ await settle(p, 250);
 g = await G();
 ok('the tools give Breaching Strike I: ' + JSON.stringify(g.characters[cid].perks), g.characters[cid].perks.some((x) => x.id === 'breaching_strike' && x.tier === 'I'));
 ok('the tools give a trait: ' + g.characters[cid].traits.join(', '), g.characters[cid].traits.includes('pain_eater'));
-ok('the held perk shows in the tools with a take-away button', (await drawer.getByRole('button', { name: /^Breaching Strike I ✕/ }).count()) > 0);
+ok('the held perk shows in the tools with a take-away button', (await drawer.getByRole('button', { name: /^Keep Swinging I ✕/ }).count()) > 0);
 await snap(p, '01-tools');
 await act({ type: 'sandbox/perk', charId: cid, perk: 'no_such_perk' });
 const toast = await p.evaluate(() => { const t = window.__phc.getState().toast; return t ? (t.text || String(t)) : ''; });
 ok('a perk that does not exist is refused: ' + toast, /No such perk/.test(toast));
 await act({ type: 'sandbox/perk', charId: cid, perk: 'used_to_the_pain', tier: 'I' });
-await act({ type: 'sandbox/perk', charId: cid, perk: 'litany', tier: 'I' });
+await act({ type: 'sandbox/perk', charId: cid, perk: 'fire_sermon' }); // (0.29: Litany is a passive Hymn discount now; Fire Sermon's Preach is the 2 AP perk action)
 await act({ type: 'sandbox/class', charId: cid, classId: 'fighter', rank: 1 });
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/auto', on: false });
@@ -102,7 +102,7 @@ const gun = (await me()).weapon;
 ok('the gun (' + gun + ') grants its reload: ' + names.filter((n) => RELOAD.test(n)).join(', '), names.some((n) => RELOAD.test(n)));
 await p.locator('#phc-tab-perks').click().catch(() => {});
 await settle(p, 150);
-ok('the PERKS tab lists Litany to use, and the passive Breaching Strike on the Always on shelf', (await p.locator('[role="tabpanel"]').getByRole('button', { name: /Litany/ }).count()) > 0 && /Breaching Strike/.test(await p.locator('[data-shelf="always"]').innerText().catch(() => '')));
+ok('the PERKS tab lists Preach (Fire Sermon) to use, and the passive Keep Swinging (breaching_strike) on the Always on shelf', (await p.locator('[role="tabpanel"]').getByRole('button', { name: /^Preach/ }).count()) > 0 && /Keep Swinging/.test(await p.locator('[data-shelf="always"]').innerText().catch(() => '')));
 await snap(p, '02-perks-tab');
 // a sabre in hand: no reload any more
 await act({ type: 'sandbox/give', charId: cid, item: 'sabre', equip: true });
@@ -111,16 +111,16 @@ await settle(p, 300);
 names = await allActions();
 ok('with the sabre (' + (await me()).weapon + ') no reload action shows: ' + (names.filter((n) => RELOAD.test(n)).join(', ') || 'none'), (await me()).weapon === 'sabre' && !names.some((n) => RELOAD.test(n)));
 
-// ---------- 3. A perk action from the PERKS tab (Litany); Breaching Strike is passive since rules 1.13 ----------
+// ---------- 3. A perk action from the PERKS tab (Fire Sermon's Preach); Keep Swinging (breaching_strike) is passive since rules 1.13 ----------
 {
   await dismissCut();
   const u0 = await me();
-  await pickAction(p, /Litany/);
+  await pickAction(p, /^Preach/);
   await settle(p, 150);
-  if (!(await confirm())) { await act({ type: 'combat/perk', unitId: u0.id, id: 'litany' }); }
+  if (!(await confirm())) { await act({ type: 'combat/perk', unitId: u0.id, id: 'preach' }); }
   await settle(p, 500);
-  ok('Litany costs its 2 AP (' + u0.ap + ' → ' + (await me()).ap + ')', (await me()).ap === u0.ap - 2);
-  ok('the fight log names the Litany', /Litany/.test(await log()));
+  ok('Preach costs its 2 AP (' + u0.ap + ' → ' + (await me()).ap + ')', (await me()).ap === u0.ap - 2);
+  ok('the fight log names the Fire Sermon', /Fire Sermon/.test(await log()));
   // a plain attack with the sabre: the only thing that builds Momentum
   const gg = await G(), t = gg.combat.units.find((u) => u.side === 'foe' && !u.dead && u.pos === field.at);
   if (t) await act({ type: 'combat/attack', unitId: u0.id, targetId: t.id });

@@ -1,7 +1,11 @@
-// Rules 1.14 in a real browser: the perk card's three shelves, Heart Overload's offer and Resonance on the HEART panel
+// Rules 1.14 in a real browser: the perk card's three shelves, no free Begin (Heart Overload is a damage step since 0.29) and Resonance on the HEART panel
 // (the Proving Ground), then speaking and attempting in a fight with the scripted Narrator (a solo room).
 import { chromium, player, click, BASE, hostAs, settle, lockIn } from './lib.mjs';
 const SHOTS = process.env.SHOTS || 'apps/web/e2e/shots/';
+import { readFileSync } from 'node:fs';
+// the perks' names and numbers from the data (0.29 renamed and re-stepped them: rules 1.56), never typed here
+const PERK = Object.fromEntries(JSON.parse(readFileSync(new URL('../../../data/perks.json', import.meta.url), 'utf8')).items.map((x) => [x.id, x]));
+const RES_STEP = PERK.resonance.tiers.I.effects[0].value;
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const mk = async () => { const p = await player(browser, 'host', { campaigns: ['m813'] }); const errors = []; p.on('pageerror', (e) => errors.push(String(e.message || e))); p.errs = errors; return p; };
@@ -19,7 +23,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   const cid = Object.keys((await G(p)).characters)[0];
-  for (const [perk, tier] of [['shrug_it_off', 'I'], ['trick_shot', 'mastered'], ['last_wall', 'mastered'], ['used_to_the_pain', 'I'], ['real_power', 'I']]) await act(p, { type: 'sandbox/perk', charId: cid, perk, tier });
+  for (const [perk, tier] of [['fire_sermon', 'I'], ['shrug_it_off', 'I'], ['trick_shot', 'mastered'], ['last_wall', 'mastered'], ['used_to_the_pain', 'I'], ['real_power', 'I']]) await act(p, { type: 'sandbox/perk', charId: cid, perk, tier });
   await act(p, { type: 'sandbox/ai', on: false }); await act(p, { type: 'sandbox/fight' });
   await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
   await myTurnPanel(p); await settle(p, 800); await dismiss(p);
@@ -28,12 +32,16 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   const text = (await panel.innerText()).replace(/\s+/g, ' ');
   const shelves = await p.locator('[data-shelf]').evaluateAll((els) => els.map((e) => e.getAttribute('data-shelf')));
   ok('the Perks tab shows its three shelves in order (' + shelves.join(', ') + ')', shelves.join(',') === 'use,rides,always');
-  ok('Use now holds the action (Shrug It Off) as a button', (await panel.getByRole('button', { name: /Shrug It Off/ }).count()) > 0);
+  // (0.29: Shrug It Off is a passive now, on Always on; Fire Sermon's Preach is the action on Use now)
+  ok('Use now holds the action (Preach, ' + PERK.fire_sermon.name + ') as a button', (await panel.getByRole('button', { name: /^Preach/ }).count()) > 0);
+  ok('Always on lists the passive ' + PERK.shrug_it_off.name + ' (shrug_it_off)', (await p.locator('[data-shelf="always"]').innerText().catch(() => '')).includes(PERK.shrug_it_off.name));
   ok('Rides an action lists Trick Shot with where its switch is: ' + ((text.match(/Trick Shot[^.]{0,60}/) || [''])[0]), /Trick Shot/.test(text) && /on your attacks/i.test(text));
   ok('Always on lists Last Wall with a live line: ' + ((text.match(/Last Wall.{0,40}/) || [''])[0]), /Last Wall/.test(text) && /Ready/.test(text));
   ok('a story-only perk (Real Power) is not on the fight\'s card', !/Real Power/.test(text));
   const badge = (await p.locator('#phc-tab-perks').innerText()).replace(/\s+/g, ' ');
-  ok('the tab badge counts only what can be used now: ' + badge, /1\b/.test(badge.replace(/^\d\s*/, '')));
+  // (the Use now rows: the panel's enabled action buttons that are not on the Rides or Always on shelves)
+  const usable = await panel.evaluate((el) => [...el.querySelectorAll('button.phc-cb-act:not([disabled])')].filter((b) => !b.closest('div[data-shelf]')).length);
+  ok('the tab badge counts only what can be used now: ' + badge + ' (usable on Use now: ' + usable + ')', usable > 0 && new RegExp('\\b' + usable + '\\b').test(badge.replace(/^\d\s*/, '')));
   await p.screenshot({ path: SHOTS + 'rules114-perk-card.png' });
   // a read-only row opens its card and hides Confirm
   const row = p.locator('[data-shelf="always"] [role="listitem"], [data-shelf="always"] li, [data-shelf="always"] button').first();
@@ -60,16 +68,17 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
     u = await meU(); ok('Released at stage 2 (' + (e || await toast(p) || 'ok') + '; AP ' + ap0 + ' → ' + u.ap + ')', !u.mg.held);
     await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]', { hasText: /OUTBURST|HEART/i }).first().click().catch(() => {}); await settle(p, 400);
     const rowT = (await p.locator('.phc-cb-dock').innerText()).replace(/\s+/g, ' ');
-    ok('the Outburst row itself says the free Begin is waiting: ' + ((rowT.match(/Heart Overload[^.]{0,40}/) || ['(not found)'])[0]), /Heart Overload: .* again, 0 AP/.test(rowT));
+    // (0.29, rules 1.56: Heart Overload is now a damage step at a high stage, no free Begin: nothing offers one)
+    ok('no Outburst row offers a free Begin after the Release (' + PERK.heart_overload.name + ' is a damage step now)', !/again, 0 AP/.test(rowT) && !rowT.includes(PERK.heart_overload.name + ':'));
     await p.locator('[role="tabpanel"]').getByRole('button', { name: /^Outburst/ }).first().click().catch(() => {}); await settle(p, 400);
     const t2 = (await p.locator('.phc-cb-dock').innerText()).replace(/\s+/g, ' ');
-    ok('the design\'s card offers Heart Overload: ' + ((t2.match(/Heart Overload[^.]{0,50}/) || ['(not found)'])[0]), /Heart Overload/.test(t2) && /0 AP/.test(t2));
+    ok('the design card offers no free Begin either', !/again, 0 AP/.test(t2));
     await p.screenshot({ path: SHOTS + 'rules114-heart-overload.png' });
     const ap1 = (await meU()).ap; e = await act(p, { type: 'combat/outburst', unitId: u.id, design: d.id, hold: true }); await settle(p, 300);
-    u = await meU(); ok('the free Begin costs 0 AP (' + ap1 + ' → ' + u.ap + '; ' + (e || 'ok') + ')', !!u.mg.held && u.ap === ap1);
+    u = await meU(); ok('the next Begin costs its AP, none free (' + ap1 + ' → ' + u.ap + '; ' + (e || 'ok') + ')', !!u.mg.held && u.ap < ap1);
     await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]', { hasText: /OUTBURST|HEART/i }).first().click().catch(() => {}); await settle(p, 400);
     const t3 = (await p.locator('.phc-cb-dock').innerText()).replace(/\s+/g, ' ');
-    ok('the HEART panel shows the Resonance built by the first Release: ' + ((t3.match(/Resonance[^.]{0,30}/) || ['(not found)'])[0]), /Resonance \+10%/.test(t3));
+    ok('the HEART panel shows the Resonance built by the first Release: ' + ((t3.match(/Resonance[^.]{0,30}/) || ['(not found)'])[0]), t3.includes('Resonance +' + RES_STEP + '%'));
     await p.screenshot({ path: SHOTS + 'rules114-resonance.png' });
   }
   // no Narrator in the Proving Ground: an attempt is refused with its reason, plain speech still goes in the log

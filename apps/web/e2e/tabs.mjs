@@ -69,12 +69,20 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     // Pick the tab's first action, so the footer shows its details.
     const first = p.locator('[role="tabpanel"] button.phc-cb-act').first();
     if (await first.count()) { await first.click(); await settle(p, 250); }
+    // (0.29, the door's tab: with the Evoker in the pack the Sigils tab is one row, "Needs an Evoker in hand: draw it from
+    // the pack", and picking it opens the backpack over the fight: it must open, and it is closed again for the layout check)
+    const bp = p.locator('[data-bp-panel]');
+    if (await bp.count()) {
+      ok(tag + ' ' + name + ': the pack row opens the backpack', name === 'sigils');
+      await p.keyboard.press('Escape'); await settle(p, 250);
+      if (await bp.count()) { await bp.getByRole('button', { name: /close/i }).first().click().catch(() => {}); await settle(p, 250); }
+    }
     if (name === 'outbursts') {
       await pickAction(p, /^Outburst/); await settle(p, 350);
       const s2 = await st(p); const foe = s2.cb.units.find((u) => u.side === 'foe' && !u.dead);
       if (foe) { await p.locator('button.phc-tok[aria-label^="' + ref(foe.pos) + ' ·"]').first().hover(); await settle(p, 200); }
     }
-    if (name === 'sigils') { await pickAction(p, /^Draw a glyph/); await settle(p, 350); }
+    if (name === 'sigils' && await p.locator('[role="tabpanel"]').getByRole('button', { name: /^Draw a glyph/ }).count()) { await pickAction(p, /^Draw a glyph/); await settle(p, 350); }
     const v = await inView(p);
     await p.screenshot({ path: OUT + 'tabs-' + tag + '-' + name + '.png' });
     ok(tag + ' ' + name + ': grid ' + (v.grid ? 'in view' : 'CUT ' + v.gridBox) + ', Confirm ' + (v.confirm ? 'in view' : 'NOT in view') + ', page scroll ' + v.pageScroll + ' px', v.grid && v.confirm && v.pageScroll <= 1);
@@ -85,12 +93,17 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     await p.mouse.click(1100, 30); // somewhere neutral (the header), so no input has focus
     await p.keyboard.press('1'); await settle(p, 150);
     ok('key 1 opens the first tab: ' + await selTab(), (await selTab()) === 'move');
+    // (0.29: Slide, Dexterity's door verb, is on the Perks tab for every character with Dexterity, so the tabs' places
+    // are read from the bar, not typed: key 5 opens whatever is fifth, ArrowLeft from it lands on the tab before it)
+    const order = await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').evaluateAll((ts) => ts.map((t) => t.getAttribute('data-tab')));
     await p.keyboard.press('5'); await settle(p, 150);
-    ok('key 5 opens the fifth tab: ' + await selTab(), (await selTab()) === 'outbursts');
-    await p.locator('[role="tab"][data-tab="outbursts"]').focus();
+    ok('key 5 opens the fifth tab: ' + await selTab() + ' (' + order.join(', ') + ')', (await selTab()) === order[4]);
+    // (the roving focus sits on the selected tab, the fifth: ArrowLeft from it lands on the fourth)
+    const before = order[3];
+    await p.locator('[role="tab"][data-tab="' + order[4] + '"]').focus();
     await p.keyboard.press('ArrowLeft'); await settle(p, 150);
     const focused = await p.evaluate(() => document.activeElement && document.activeElement.getAttribute('data-tab'));
-    ok('ArrowLeft moves to ' + await selTab() + ' and focus follows (' + focused + ')', (await selTab()) === 'sigils' && focused === 'sigils');
+    ok('ArrowLeft moves to ' + await selTab() + ' and focus follows (' + focused + ')', !!before && (await selTab()) === before && focused === before);
     await p.keyboard.press('End'); await settle(p, 120); const e1 = await selTab();
     await p.keyboard.press('Home'); await settle(p, 120); const h1 = await selTab();
     await p.keyboard.press('ArrowLeft'); await settle(p, 120); const w1 = await selTab();
@@ -151,8 +164,9 @@ for (const [vw, vh] of [[1440, 900], [1280, 720], [1024, 768]]) {
       // a name cut short (its text wider than its box) would be an abbreviation the player never asked for
       cut: ts.filter((t) => { const n = [...t.querySelectorAll('span')].find((x) => x.style.textOverflow === 'ellipsis'); return n && n.scrollWidth > n.clientWidth + 1; }).map((t) => t.getAttribute('data-tab')) }; });
   await p.locator('[role="tablist"][aria-label="Actions"]').screenshot({ path: OUT + 'tabs-six-' + vw + '.png' }).catch(() => {});
-  ok(vw + 'x' + vh + ' a Rigger\'s six tabs (' + bar.tabs.join(', ') + ') sit on ONE row, no name cut short' + (bar.cut.length ? ' (cut: ' + bar.cut.join(', ') + ')' : '') + ', nothing scrolls sideways',
-    bar.tabs.length === 6 && bar.tabs.includes('figments') && bar.rows === 1 && !bar.cut.length && bar.over <= 1);
+  // (0.29: and Perks, where Slide, Dexterity's door verb, is listed: seven tabs)
+  ok(vw + 'x' + vh + ' a Rigger\'s seven tabs (' + bar.tabs.join(', ') + ') sit on ONE row, no name cut short' + (bar.cut.length ? ' (cut: ' + bar.cut.join(', ') + ')' : '') + ', nothing scrolls sideways (' + bar.rows + ' rows, ' + bar.over + ' px over)',
+    bar.tabs.join() === 'move,attack,utility,perks,class,figments,calls' && bar.rows === 1 && !bar.cut.length && bar.over <= 1);
   await p.context().close();
 }
 

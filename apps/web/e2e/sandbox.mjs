@@ -156,9 +156,15 @@ g = await G();
 await act({ type: 'sandbox/unequip', charId: me.id, slot: 'off' });
 await settle(p, 300); await dismissCut();
 if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {}); await settle(p, 200); }
-await pickAction(p, /^Draw a glyph/).catch(() => {});
-const drawTxt = (await tipOf(p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }))) + ' ' + ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().textContent().catch(() => '')) || '');
-ok('the Evoker stowed: Draw a glyph says "Needs an Evoker in hand."', /Needs an Evoker in hand\./.test(drawTxt));
+// (0.29, the door's tab: with the Evoker in the pack the SIGILS tab is one row, "Needs an Evoker in hand: draw it from
+// the pack", in place of a greyed Draw a glyph; picking it opens the backpack, so it is found here, not clicked)
+const sigTab = p.locator('[role="tablist"][aria-label="Actions"] [role="tab"][data-tab="sigils"]');
+await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 }).catch(() => {});
+if (await sigTab.count()) { await sigTab.click(); await settle(p, 300); }
+const packRow = p.locator('[role="tabpanel"] button', { hasText: 'Needs an Evoker in hand' });
+const drawTxt = (await tipOf(packRow)) + ' ' + ((await packRow.first().textContent().catch(() => '')) || '');
+const drawLeft = await p.locator('[role="tabpanel"] button', { hasText: /^Draw a glyph/ }).count();
+ok('the Evoker stowed: the Sigils tab says "Needs an Evoker in hand." and offers the pack, no Draw a glyph (' + drawLeft + ')', /Needs an Evoker in hand\./.test(drawTxt) && /draw it from the pack/.test(drawTxt) && drawLeft === 0);
 const ap0 = (await G()).combat.units.find((u) => u.charId === me.id).ap;
 await p.locator('[data-backpack]:visible').first().click();
 const bpPanel = p.locator('[data-bp-panel]');

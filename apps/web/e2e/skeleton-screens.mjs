@@ -291,7 +291,11 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   // and the engine's fuller hint must say the same whole number, at least data's level-1 soak (rules.guard.soak in
   // data/techniques.json; the scale never shrinks it). It said a typed 10 before rules 1.36.
   const soak1 = JSON.parse(readFileSync(new URL('../../../data/techniques.json', import.meta.url), 'utf8')).rules.guard.soak;
-  const gr = await p.evaluate(() => { const el = [...document.querySelectorAll('[aria-label]')].find((x) => /^Guard: \d+ \/ \d+ \(Guard: each point soaks/.test(x.getAttribute('aria-label') || '')); return el ? el.getAttribute('aria-label') : ''; });
+  // (0.29, Guard 2.0: the row's sub line is Durability's door line, skills.json durability.door_line; the one-sentence rule
+  // and the engine's hint follow it in the label)
+  const doorLine = JSON.parse(readFileSync(new URL('../../../data/skills.json', import.meta.url), 'utf8')).items.find((x) => x.id === 'durability')?.door_line || '';
+  const gr = await p.evaluate(() => { const el = [...document.querySelectorAll('[aria-label]')].find((x) => /^Guard: \d+ \/ \d+ \(/.test(x.getAttribute('aria-label') || '') && /Guard: each point soaks/.test(x.getAttribute('aria-label') || '')); return el ? el.getAttribute('aria-label') : ''; });
+  ok('the Guard row: the line under it is the door line of Durability, from data', !!doorLine && gr.includes('(' + doorLine + ')'));
   const gs = [...gr.matchAll(/each point soaks (\S+) damage; Brace and the Guard technique refill it\./g)].map((m) => m[1]), gh = gr.match(/Each point takes (\S+) damage off a hit/)?.[1];
   ok('the resources strip says Guard\'s rule in a sentence, its soak the engine\'s at this level (' + gs.join('/') + ', hint ' + gh + ', level 1: ' + soak1 + ')', gs.length >= 1 && gs.every((x) => x === gh) && /^\d+$/.test(gh || '') && Number(gh) >= soak1);
 
