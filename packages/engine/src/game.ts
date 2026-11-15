@@ -27,7 +27,7 @@ import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
-import { isCache, isPile, packAdd, grantGoods, lootToPack, itemLabel, magItem, dropOnTile, PILE } from './containers';
+import { isCache, isPile, packAdd, grantGoods, lootToPack, LOOT_QTY_MAX, itemLabel, magItem, dropOnTile, PILE } from './containers';
 import { type Drops, type LootTable, cleanDrops, cleanTables, dropsLoot } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
@@ -1096,7 +1096,7 @@ function reduce(g: GameState, a: Action, by: string) {
  */
 function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   const c = g.characters[l?.charId]; if (!c || c.dead) return;
-  const raw = Math.round(Number(l.qty) || 1), n = Math.max(1, Math.min(20, Math.abs(raw))), pack = packOf(c).map((x) => ({ ...x }));
+  const raw = Math.round(Number(l.qty) || 1), n = Math.max(1, Math.min(LOOT_QTY_MAX, Math.abs(raw))), pack = packOf(c).map((x) => ({ ...x }));
   const id = String(l.item || '').trim(), label = String(l.name || '').trim();
   if (raw < 0) {
     const want = label ? plotId(label) : id.startsWith('plot:') ? id : plotId(id.replace(/_/g, ' '));
@@ -3579,7 +3579,7 @@ function sbRaiseAttr(c: Character, classId: string, v: number) {
 }
 /** Put an item or weapon in the pack (weapons come with three magazines and loose rounds). Returns its pack index. */
 function sbGive(c: Character, item: string, qty: number, rarity: Rarity): number {
-  const pack = packOf(c).map((x) => ({ ...x })), n = Math.max(1, Math.min(20, Math.round(qty || 1)));
+  const pack = packOf(c).map((x) => ({ ...x })), n = Math.max(1, Math.min(LOOT_QTY_MAX, Math.round(qty || 1)));
   if (WEAPON[item]) {
     const w = WEAPON[item];
     for (let i = 0; i < Math.min(n, 3); i++) pack.push({ id: item, name: w.name, qty: 1, kind: 'weapon', weapon: item, rarity, ...(rarity !== 'standard' ? { dur: maxDurOf(item, rarity) } : {}) });

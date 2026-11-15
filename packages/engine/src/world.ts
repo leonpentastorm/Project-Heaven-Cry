@@ -7,7 +7,7 @@ import { SKILL, TN_LADDER, WEAPON, SIGIL } from './data';
 import { type Character, mod, checkMod, packOf, carriedKg, carryLimit, overweightKg, wordsKnownCap } from './character';
 import { copyWord, growthOf, knowsWord, learnedElsewhere } from './sigilgrowth';
 import { say, type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
-import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './containers';
+import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE, LOOT_QTY_MAX } from './containers';
 import { gearBonus, gearHas } from './character';
 import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy, MARK } from './objects';
 import { type Hazard, type HazardKind, WORLD_PLAY, HAZARD, HAZARD_KINDS, HAZARD_LIMITS, hazardApproaches, hazardHit, hazardTn, hazardLiveAt } from './hazards';
@@ -330,7 +330,7 @@ export function landDropped(g: GameState, cb: Combat) {
 /** Clean a cache's items (the loot shape). */
 export function cleanItems(list: any): CacheItem[] {
   return (Array.isArray(list) ? list : []).filter((x) => x && typeof x === 'object' && (x.item || x.name)).slice(0, HAZARD_LIMITS.cache_items).map((x) => ({
-    item: String(x.item || '').slice(0, 60), qty: Math.max(1, Math.min(20, Math.round(Number(x.qty) || 1))),
+    item: String(x.item || '').slice(0, 60), qty: Math.max(1, Math.min(LOOT_QTY_MAX, Math.round(Number(x.qty) || 1))),
     ...(x.rarity ? { rarity: String(x.rarity) } : {}), ...(x.name ? { name: String(x.name).slice(0, 60) } : {}), ...(x.text ? { text: String(x.text).slice(0, 200) } : {}), ...(x.note ? { note: String(x.note).slice(0, 40) } : {}) }));
 }
 const jammed = (g: GameState, o: MapObject) => o.jam != null && o.jam === g.story.scene.n;
