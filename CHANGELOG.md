@@ -8,6 +8,106 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
+
+A release of fixes from Leon's playtest of 15 Nov 2026 (rules 1.55 items 27 to 44, every number PROVISIONAL): Survival XP
+(items 27 and 28), the health word (item 29), hand-overs and the field's actions (items 30 to 36, and the lead's rulings
+on the review, items 37 to 42; the token chip and the field token, items 43 and 44), Figments shown, and the Sigil words.
+
+### Survival
+
+- **Survival XP pace.** Every stage-1 fight now pays 35 XP (an Elite or the gate about 52, the Boss 175), the same
+  at every stop (was 10 plus 2 a stop). A character is usually level 2 around stops 5 to 7 and level 3 by the first
+  Boss. The measure is in `docs/design/proposals/2026-11-xp-fit-0.29.md`.
+- **Hand things over anywhere out of a fight.** On the path map, at every place, on the field and at the rewards you
+  can give any item in your pack to a friend, one or the whole stack, from the backpack ("Give to …"). Stims count:
+  you can give them like any item. Credits are still given only at the stops with no fight, as before.
+- **Stim a friend on the map.** A stim can be used on a friend (or yourself) without a fight: from the backpack ("Stim
+  …") or a place's Give tab. It is the fight's own stim: a Downed friend gets up at 1 HP, anyone else is healed.
+- **Give from the path map's right panel**, with the stepper for how many; the backpack's Give has the stepper too.
+- **Counted items (stims, the Essence) are named in the data** (`counted` in items.json), not in the code.
+- **The field after a fight has your actions.** Walking the field you can reload (speed or tactical), load magazines,
+  clear a jam, repair, stim a friend next to you, vent, swap a core, Syphon, Crystallise, pray, and use your perks' and
+  class moves' actions, paying what they cost; AP never runs out there. What you spent once a fight stays spent, a
+  Hymn's wait does not count down, and an action that would heal or give something for AP alone again and again waits
+  for a fight (the field says so). What a fight's end clears (Strain, a held Outburst, conditions, Flux) is cleared
+  again when you leave the field.
+- **The field has the fight's action bar.** Walking the field you get the fight screen's own action bar and cards,
+  with their targets and tile picks: draw and Evoke, Begin, Pump and Release with a design, prayers, moves aimed at a
+  friend, reload, items. The field's refusals show on the card. The short strip in the header is gone.
+- **Nothing grows on the field.** Syphon and Crystallise still work, but practice, study, word uses, new feelings,
+  Devotion XP, drill and deeds come only from a real fight.
+- **Nothing harms a friend on the field.** A spell or a thrown thing that would hurt a friend is refused, as an attack
+  is.
+- **An old save on the field** counts every once-a-fight action as spent there.
+
+### Fights
+
+- **An un-Analyzed foe shows a health word, not a bar** (rules 1.55 item 29; Leon's playtest: "the hp bar does not
+  goes down", and his ruling "put the word HURT there instead of % HP"). The bar drew unhurt / wounded / badly hurt as
+  100 / 66 / 33%, so it stood still from half HP to 1 and the shot before the kill looked eaten. Now one word of a
+  five-rung ladder in data (`rules.json combat.health_look`, provisional): UNHURT, SCRATCHED, HURT, BADLY HURT,
+  NEAR DEATH, as a chip on the token, the turn strip and the target card, no bar, no number. The engine's `healthView`
+  works it out. Analyzed foes and the squad unchanged.
+- **Speaking in a Survival fight never locks the turn.** A run has no Narrator, but Attempt (1 AP) let the words through
+  and the fight waited for an answer that could never come, End turn included. Now Say is said for everyone as before,
+  and Attempt (and every perk that asks for words) is off with the reason "No Narrator in this mode: say it, but nobody
+  rules on an attempt." A ruling left waiting with no Narrator to answer it (a run, the Narrator gone or away) is given
+  back at the next action, so End turn always works; a save already stuck frees itself the same way.
+- **A Line past your Max Sigil words now says why.** Drawing a glyph that would make a Line longer than your Max Sigil
+  words says how long the Line would be, your Max Sigil words at your Intelligence, and which Intelligence raises it
+  (nothing about raising it at the top). The key's short hint says the same: "2 words max; Intelligence 3 gives 3".
+- **new Line warns what fades.** When starting a new Line would fade your oldest glyph (your cap of glyphs on the
+  ground), the button says so before the click: "new Line · fades FIRE".
+- **Tending shows its healing.** A Bond does not heal by itself (rules 1.33: Tending heals, ×1.2 through a Bond); the
+  engine healed, but nothing showed it. Every heal and shield from data (Mend, Mend Yourself, Touch, Shield, Raise, and
+  every other item's `mend`) now plays the heal number over the token and says it in the log ("Medic mends Gun · Gun
+  heals 34"); the Bond card says what a Bond does and what heals, solo through an enemy Bond too, and no longer says
+  "The Narrator decides the rest" (Bond, Let Go, Guide are the engine's); the echo's line names the Bonded enemies
+  instead of the healer.
+- **The health word on a map token** (rules 1.55 item 43): the chip sits on the token's bottom edge, centred, one line,
+  and never runs under a kind badge (the badge sits above it, lifted off the edge; "UNH BOT T" is gone). An unhurt foe
+  shows no chip on the map (the target card and the turn strip still say UNHURT), so a chip means "hurt". Two hurt foes
+  side by side whose words would run together show the short words (SCR, HURT, BAD, DYING: `short` in
+  `rules.json combat.health_look`, provisional).
+- **A stim on the field shows on the token** (rules 1.55 item 44): the friend's token on the field kept the old HP after
+  a stim; every field action now refreshes the squad's tokens from the characters (HP, conditions, shields, MP).
+- **Small words:** "1 AP per 1 tile", "Out of reach (1 tile from Hound)"; the sheet's level-up button says "pick a perk"
+  when a perk step is all that is due (a level 1 character with a skill at Mastery 1 from creation), not "spend points".
+
+### Figments
+
+- **Figments move and show** (Leon's playtest: "feels like it's just standing there doing nothing"). Picturing one plays
+  on the caster first (a wind-up ring and a gesture), a thread of light runs to the tile, then the Figment forms (lines
+  drawing in, a ring closing, its glyph, its token flickering up); an order is the caster's pulse and a thread, then the
+  usual lunge, hit or MISS with the Figment's afterimages and its glyph on the target; Let go, unravelling or a destroyed
+  one comes apart and streams back to its maker; a held Figment's token shimmers (off under Reduce motion). Effects only
+  (`apps/web/src/game/fx/figments.ts`), from the engine's existing spawn, attack and unmake events.
+- **Every Figment has its own icon** (Leon's playtest: "there isn't even a special icon for each summon"). Seven
+  monoline line icons (`art/icons/figments/`, catalogue `figment_icons`): the Double, the Eye, the Wall, the Beast, the
+  Blade, the Scrap Turret and Picture, each named by its row's `icon` in `data/figments.json`. A Figment's map token, its
+  group header and the target and turn cards draw it (on a dark plate) where a portrait would be; Picture's chips, the
+  summon and strike effects (in place of the text glyph) and a fight log line naming a Figment show it too. The painted
+  portraits are still wanted (ART-REQUESTS C6). `tools/validate_art.py` checks every row has one and every icon keeps the
+  line rule.
+- **What Visualization opens is shown** ("no unlocks, no nothing"). The MAGIC tab has a FIGMENTS section: every step of
+  the ladder, open or locked with the Visualization it needs, the latest step as NEW with its forms' icons, and the next
+  one locked; the level-up card of Visualization says "NEW · FIGMENTS AT VISUALIZATION 3: Eye, Wall" with the icons when
+  a point reaches a step, else the next step, locked. From the engine's new `figmentLadderView`.
+- **Figment designs can be made** (the engine had `figments/design`; the screen never sent it). The FIGMENTS section keeps
+  your designs (form icon, traits, charge) with Edit and Drop, and a small editor: a name, a form (locked ones greyed with
+  the engine's reason), its traits (refused past what a design may carry, with the reason), the charge it will take, and
+  Keep. Every option and refusal is the engine's `figmentDesignView` (its `draftWhy` is the reducer's own check; the room
+  check is one function, `designRoomWhy`, for both). In a fight, Picture offers the ready designs first, each with its
+  form's icon.
+
+### Fixes
+
+- **A held hit says 0 damage.** A roll that a protection holds at its floor (a Burst's later rolls at an Elite or Boss the
+  guard already left on 1 HP, Hold the Gate, the Toll Keeper) reported the roll's own number ("63834 damage · no damage")
+  in the log and on the shot's floating number while the target lost nothing; it now reports 0 (`effects/damage.ts`).
+  Test: `packages/engine/test/last-shot-0283.test.ts` (a real Burst through the reducer).
+
 ## 0.28.1 — the camp sorted out, the field after a fight, magazines
 
 The playtest fixes of 15 Nov 2026 (rules 1.55, every number PROVISIONAL). **Live since 15 Nov 2026**.

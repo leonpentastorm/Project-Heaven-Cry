@@ -100,6 +100,10 @@ for (const it of VARIANTS_MADE.items) (ITEM as any)[it.id] = it;
 /** The modifier items the variants' effect kinds make (a `relic` row each, by id): effects/collect.ts holds them like a
  * fitted mod. WEAPONS (the list) stays the base weapons: a variant is in the WEAPON and ITEM tables by its id. */
 export const VARIANT_MOD: Record<string, any> = Object.fromEntries(VARIANTS_MADE.mods.map((m) => [m.id, m]));
+/** The items a character keeps as counts, not pack entries (rules 1.55 item 31; consolidation 0.29 should-fix 4):
+ * items.json `counts_into` {count: the count's field on the character, at: where the sheet lists it}, by item id. The
+ * one reader of that field. No prototype: a sent `count` of "__proto__" or "constructor" names nothing. */
+export const COUNTED: Record<string, 'stims' | 'essence'> = Object.assign(Object.create(null), Object.fromEntries((itemsJ as any).items.filter((x: any) => x.counts_into).map((x: any) => [x.id, x.counts_into.count])));
 const findKey = (o: any, k: string): any => { if (!o || typeof o !== 'object') return null; if (k in o) return o; for (const v of Object.values(o)) { const r = findKey(v, k); if (r) return r; } return null; };
 export const CALIBRE_NAME: Record<string, string> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.name]));
 export const ROUND_KG: Record<string, number> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.round_kg]));

@@ -3,7 +3,8 @@
 // words, and a junction's two Lines offered on Evoke. Every choice comes from the engine's previewDraw / patternAt.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, type Sheet, type Combat, type Unit, type MapDef } from '@engine';
-import { drawStrip, strokeButtons, strokeLayer, evokeView } from './sigilView';
+import { drawStrip, strokeButtons, strokeLayer, evokeView, shortWhy } from './sigilView';
+import { fightWith, withGame } from '../../../../packages/engine/test/helpers/perkfight';
 import { joinUri } from './glyphs';
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
@@ -120,5 +121,37 @@ describe('join marks (game/glyphs.ts)', () => {
     expect(svg.match(/<line /g)!.length).toBe(2);
     expect(svg).toContain('x1="9" y1="9" x2="34" y2="9"'); expect(svg).toContain('stroke-dasharray');
     expect(svg).toContain('viewBox="-26 -26 96 96"');
+  });
+});
+
+describe('the word cap on the draw step: the hint says why, new Line says what fades', () => {
+  it('a third glyph past Max Sigil words 2: the key\'s hint gives the cap and the Intelligence that raises it, from the engine\'s refusal', () => {
+    const f = fightWith([{ archetype: 'sigilist', kit: 'sigil', attrs: { intelligence: 2 } }], [{ at: 'P11' }]);
+    const u = f.turn(f.pc); Object.assign(u, { ap: 99 }); Object.assign(u.mg!, { words: ['fire', 'seek', 'condense'], charge: 999, flux: -99, glyphAp: 1 });
+    const a = u.pos, [x, y] = a.split(',').map(Number), b = (x + 1) + ',' + y, c = (x + 2) + ',' + y;
+    for (const [w, at] of [['fire', a], ['seek', b]]) { f.unit(u.id).pos = at; f.act({ type: 'combat/draw', unitId: u.id, word: w, tile: at } as any); }
+    const me = f.unit(u.id); me.pos = c;
+    const dw = withGame(f.g, () => drawStrip(f.cb, me)).words.find((w) => w.id === 'condense')!;
+    expect(dw.ok).toBe(false);
+    const m = /Max Sigil words is (\d+) at Intelligence 2\. Intelligence (\d+) raises it to (\d+)\./.exec(dw.why!)!;
+    expect(m).not.toBeNull();
+    expect(dw.hint).toBe(m[1] + ' words max; Intelligence ' + m[2] + ' gives ' + m[3]);
+    expect(dw.sub).toContain(dw.hint);
+  });
+  it('the hint at the top of the table names only the cap; an old refusal without numbers still reads "over your cap"', () => {
+    expect(shortWhy('Past your cap: this Line would be 3 glyphs, and your Max Sigil words is 2 at Intelligence 10. Or pick new Line.')).toBe('2 words max');
+    expect(shortWhy('Past your cap: this Line would be 3 glyphs, and your Max Sigil words is 2. Or pick new Line.')).toBe('2 words max');
+    expect(shortWhy('Past your cap.')).toBe('over your cap');
+  });
+  it('when new Line would fade your oldest glyph, the button says so before the click (the engine\'s preview), and drawing it does fade that glyph', () => {
+    const { cb, u, rng } = setup(['fire', 'seek', 'condense']); u.mg!.maxWords = 2;
+    draw(cb, rng, u, 'fire', '2,5'); draw(cb, rng, u, 'seek', '3,5'); u.pos = '4,5';
+    const dw = drawStrip(cb, u).words.find((w) => w.id === 'condense')!;
+    expect(dw.ok).toBe(false); // extending is refused: past the cap
+    const nl = strokeButtons(dw).find((b) => b.key === 'new')!;
+    expect(nl.ok).toBe(true); expect(nl.label).toBe('new Line · fades FIRE'); expect(nl.fades).toBe('FIRE at ' + refOf('2,5'));
+    expect(nl.title).toContain('Your oldest glyph, FIRE at ' + refOf('2,5') + ', fades');
+    draw(cb, rng, u, 'condense', '4,5', 'new');
+    expect(cb.glyphs!.map((g) => g.word).sort()).toEqual(['condense', 'seek']); // no behaviour change: FIRE faded, as warned
   });
 });

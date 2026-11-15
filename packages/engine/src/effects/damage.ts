@@ -13,7 +13,7 @@ import { say } from '../log';
 // then 'on_damaged' {t, src, dmg, prevHp} when HP was lost, 'on_downed' {victim, by, src, ownTurn} on a Down or a death,
 // and 'on_kill' {victim, by, src} when kill credit is given.
 import type { Combat, Unit } from '../combat';
-import { emit } from './hooks';
+import { emit, harmHeld } from './hooks';
 import { noteTended } from './mending';
 import { rawHidden, setDowned } from '../unitstate';
 
@@ -64,6 +64,7 @@ export const pastShields = (src: { type?: string; dmgType?: string }): boolean =
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
   if (t.dead) return res;
+  if (dmg > 0 && harmHeld(cb, src.by, t)) { res.prevented = true; return res; } // rules 1.55 item 38: no harm to a friend on the field
   if (src.shield !== false && pastShields(src)) src = { ...src, shield: false };
   const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb,
     /** the Guard points the unit had as the hit arrived, before any soak spends them (physical/rules.ts: a guard keeps Momentum) */ guard0: t.res?.guard || 0 };
@@ -94,7 +95,8 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
     ctx.phase = 'would_drop_to_0'; ctx.floor = null; emit(cb, 'damage_in', ctx);
     if (ctx.floor != null) ctx.dmg = Math.max(0, t.hp - ctx.floor);
     ctx.dmg = Math.max(0, Math.floor(ctx.dmg));
-    if (ctx.dmg <= 0) { res.prevented = true; return res; }
+    // held at its floor already: nothing lands, so nothing is reported (a held hit once said "63834 damage · no damage")
+    if (ctx.dmg <= 0) { res.prevented = true; res.amount = 0; return res; }
   }
   // The Effect testing room (Proving Ground): nobody there can be brought to 0; a unit that would be is topped up first.
   if (t.undying && t.hp - ctx.dmg < 1) t.hp = Math.max(t.maxHp, ctx.dmg + 1);

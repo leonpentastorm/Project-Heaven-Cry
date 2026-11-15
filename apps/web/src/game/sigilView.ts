@@ -42,7 +42,12 @@ export function wordRows<T>(items: T[], idOf: (t: T) => string): { key: string; 
 export function shortWhy(why: string | null | undefined): string {
   const w = String(why || '');
   const ap = /Needs ([\d.]+) AP/.exec(w); if (ap) return 'needs ' + ap[1] + ' AP';
-  const rules: [RegExp, string][] = [[/one glyph per tile|holds \d+ glyphs at most/i, 'tile taken'], [/past your cap/i, 'over your cap'], [/past the cap/i, 'over 4 glyphs'],
+  // The word cap (engine strokeRefusal): its numbers as the engine wrote them, and the attribute that raises it, if any.
+  if (/past your cap/i.test(w)) {
+    const m = /Max Sigil words is (\d+)/.exec(w), r = /(\w+) (\d+) raises it to (\d+)/.exec(w);
+    return m ? m[1] + ' words max' + (r ? '; ' + r[1] + ' ' + r[2] + ' gives ' + r[3] : '') : 'over your cap';
+  }
+  const rules: [RegExp, string][] = [[/one glyph per tile|holds \d+ glyphs at most/i, 'tile taken'], [/past the cap/i, 'over 4 glyphs'],
     [/second reach/i, 'one Reach only'], [/KIN takes one/i, 'one KIN only'], [/WATCH and STAY/i, 'no WATCH + STAY'], [/locked after an overload/i, 'Evoker locked'],
     [/need an Evoker/i, 'no Evoker'], [/silenced/i, 'silenced'], [/downed/i, 'downed'], [/not your turn/i, 'not your turn'], [/own tile/i, 'step on it'], [/charge/i, 'not enough charge'], [/don't know/i, 'unknown word']];
   for (const [re, t] of rules) if (re.test(w)) return t;
@@ -84,7 +89,8 @@ export function drawStrip(cb: any, u: any, stroke?: string | null): { tile: stri
 }
 
 // ---------- rules 1.10: the stroke picker on the draw step ----------
-export interface StrokeButton { key: string; label: string; title: string; ok: boolean; on: boolean; isDefault: boolean; junction: boolean; mine: boolean }
+export interface StrokeButton { key: string; label: string; title: string; ok: boolean; on: boolean; isDefault: boolean; junction: boolean; mine: boolean;
+  /** The glyph of yours this choice would fade (engine previewDraw: past your cap on the ground), "FIRE at C6"; null: none. */ fades: string | null }
 /** The draw step's stroke picker for the word picked (spec 1.3): one button per stroke it could extend ("extends
  * FIRE·SEEK", an ally's named), the junctions when allowed, and "new Line"; the one in force is on (the engine's default
  * until you pick). Empty when there's no choice (nothing near, or it stacks). */
@@ -96,7 +102,10 @@ export function strokeButtons(dw: DrawWord | null | undefined): StrokeButton[] {
     const ally = !s.mine && s.id !== 'new' ? ' (' + s.ownerName + '\'s)' : '';
     const label = s.id === 'new' ? 'new Line' : s.junction ? String(s.label).replace('junction: extends ', 'junction: ').replace(' and ', ' + ').replace(' + a new Line', ' + new Line') : s.label + ally;
     const what = s.id === 'new' ? 'Start a new Line here: it joins nothing.' : s.junction ? 'A junction: one glyph in two Lines. ' + up(s.label.replace(/^junction: /, '')) + '. It reads ' + (s.words || []).map(up).join(' · ') + ' and ' + ((s.words2 || []).length > 1 ? (s.words2 || []).map(up).join(' · ') : 'starts a new Line') + '.' : 'Extend this Line: it reads ' + (s.words || []).map(up).join(' · ') + '.';
-    return { key: s.id, label, title: what + (s.isDefault ? ' (default)' : '') + (s.ok ? '' : ' CAN\'T: ' + (s.why || 'not now.')), ok: !!s.ok, on: s.id === dw.stroke, isDefault: !!s.isDefault, junction: !!s.junction, mine: !!s.mine };
+    // The engine's preview names the glyph of yours this choice would fade (your cap of glyphs on the ground): say it on
+    // the button, before the click.
+    const fades = s.ok && s.fades ? up(s.fades.word) + ' at ' + refOf(s.fades.pos) : null;
+    return { key: s.id, label: label + (fades ? ' · fades ' + up(s.fades.word) : ''), title: what + (fades ? ' Your oldest glyph, ' + fades + ', fades (your cap of glyphs on the ground).' : '') + (s.isDefault ? ' (default)' : '') + (s.ok ? '' : ' CAN\'T: ' + (s.why || 'not now.')), ok: !!s.ok, on: s.id === dw.stroke, isDefault: !!s.isDefault, junction: !!s.junction, mine: !!s.mine, fades };
   });
 }
 

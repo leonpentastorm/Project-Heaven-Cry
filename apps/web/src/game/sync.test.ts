@@ -22,7 +22,8 @@ async function freshStore() {
 }
 beforeEach(() => { vi.useRealTimers(); });
 
-describe('a guest checks in with its version', () => {
+// The first fresh import of the store transforms the whole client: on a slow machine that alone passes vitest's 5 s.
+describe('a guest checks in with its version', { timeout: 30_000 }, () => {
   it('every 30 s outside a fight, every 5 s in one; never while the link is down', async () => {
     const store = await freshStore();
     store.setName('Mai'); store.joinRoom('ABCDEF');

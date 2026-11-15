@@ -295,7 +295,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
 }
 /** Why a feeling can't be given yet (rules 1.33: only a felt feeling is given). */
 export const UNFELT = 'Not felt yet: a feeling is yours to give once it has happened to you.';
-type PickOption = { id: string; label: string; off?: string };
+type PickOption = { id: string; label: string; off?: string; /** a catalog icon id the screen draws on the chip (a Figment form: figments.json `icon`) */ icon?: string };
 /** A system's own pick lists (Classes 3.0: `forms`, Figments' ready designs and bare forms, rules 1.34; Bonds' `felt`):
  * a name an action's `pick` may give, and the choices it offers a holder (`off`: shown greyed, with why; a greyed pick is
  * refused). The system registers it as it loads. */
@@ -319,7 +319,8 @@ function defaultEngine(info: ItemInfo, d: ActionDef): boolean {
   void d; const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
   const nested = info.effects.filter((e) => e?.op === 'grant_action').flatMap((e) => (e.effects || []).filter((x: any) => x?.when !== 'acted'));
   const all = [...own, ...nested]; if (!all.length) return info.effects.some((e) => e?.op === 'grant_action' && (e.effects || []).some((x: any) => x?.when === 'acted')); // rules 1.33: all lifted to acted: the engine's
-  return all.every((e) => { const g = genericOf(e?.op); return !!(g?.runs && g.runs(e, info)); });
+  // a door verb's item ops run by the item-ops runner (defaultActions: runOwnEffects), the engine's as much as a generic op
+  return all.every((e) => { if (info.kind === 'verb' && isItemOp(e)) return true; const g = genericOf(e?.op); return !!(g?.runs && g.runs(e, info)); });
 }
 
 function resolve(x: Who, id: string, actionId?: string): { h: Holder; d: ActionDef } | string {

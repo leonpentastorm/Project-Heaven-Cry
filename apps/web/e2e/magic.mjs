@@ -353,7 +353,7 @@ const n0 = await host.evaluate((id) => window.__phc.getState().game.characters[i
 ok('a new Soul caster remembers 3 designs (rules 1.8): ' + n0, n0 === 3);
 const lastD = await host.evaluate((id) => window.__phc.getState().game.characters[id].outbursts.at(-1).id, me);
 await host.evaluate(([id, d]) => window.__phc.act({ type: 'magic/forget', charId: id, designId: d }), [me, lastD]); await pause(host, 300);
-await host.getByRole('button', { name: '+ NEW DESIGN' }).click();
+await host.getByRole('region', { name: 'Outbursts' }).getByRole('button', { name: '+ NEW DESIGN' }).click(); // (the Figments section has its own since 0.28.2)
 const ws = host.locator('div[aria-label="Outburst workshop"]');
 await ws.waitFor();
 await ws.getByPlaceholder('What you call it').fill('Quiet Hand');

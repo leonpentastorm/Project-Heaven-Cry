@@ -88,7 +88,7 @@ export function strainUp(cb: Combat, rng: Rng, u: Unit, n: number, why: string):
 /** Range and sight for an Outburst aimed from a tile (a link's or the twin's). */
 function aimFrom(cb: Combat, u: Unit, d: OutburstDesign, from: string, aim: string | null): string | null {
   if (!aim) return 'Pick a target tile.';
-  const r = designRange(u.mg!, d); if (dist(from, aim) > r) return 'Out of reach (' + r + ' tiles from ' + refOf(from) + ').';
+  const r = designRange(u.mg!, d); if (dist(from, aim) > r) return 'Out of reach (' + r + (r === 1 ? ' tile' : ' tiles') + ' from ' + refOf(from) + ').';
   if (!d.modules.includes('ether') && !d.modules.includes('teleport') && aim !== from && !lineOfSight(cb, from, aim)) return 'No line of sight from ' + refOf(from) + '.';
   return null;
 }

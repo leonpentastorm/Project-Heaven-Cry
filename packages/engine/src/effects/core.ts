@@ -15,7 +15,7 @@ import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks'
 import { COST_SITES, isStatId, type CostSite } from './stats';
 import type { Rng } from '../rng';
 import { applyCond, endCond, isCondition, condFamily, debuffsOf, condId } from '../magic';
-import { moveBlockers, key, xy, dist, displace } from '../combat';
+import { moveBlockers, key, xy, dist, displace, emitFx } from '../combat';
 import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
 import { deal, mend, type AmountSpec } from './output';
@@ -254,12 +254,19 @@ registerGeneric({
     return r.amount > 0 ? ' · ' + r.amount + ' damage to ' + t.name + (t.hp === 0 ? (t.side === 'foe' ? ', down for good' : ', Downed') : '') : ' · ' + t.name + ' takes no damage';
   },
 });
+/** What a data heal or shield shows (0.28.2): the heal effect over the token (its number) or the ward's, and the log's
+ * words ({then} in the op's say). The one place both runners of the `mend` op (this file's and effects/triggers.ts's) say it. */
+export function mendShown(cb: Combat | null, t: Unit, kind: string, r: { restored: number; revived: boolean; shield: number }): string {
+  if (kind === 'shield') { if (cb && r.shield > 0) emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'ward', amount: r.shield }); return ' · ' + t.name + ' gains a ' + r.shield + ' shield'; }
+  if (cb && (r.restored > 0 || r.revived)) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.revived ? t.hp : r.restored, ...(r.revived ? { revive: true } : {}) });
+  return ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored);
+}
 registerGeneric({
   op: 'mend', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && !!e.amount,
   run: (h, e, args) => {
     const t = targetUnit(h, e, args), b = blockOf(h, e); if (!t || !b || b.kind === 'damage') return null;
     const r = mend(h.cb || null, h.u || null, t, { ...specOf(b), kind: b.kind }, { who: h.c || null, counts: (args as any)?.counts, healKind: 'perk' });
-    return b.kind === 'shield' ? ' · ' + t.name + ' gains a ' + r.shield + ' shield' : ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored);
+    return mendShown(h.cb || null, t, b.kind, r);
   },
 });
 registerGeneric({

@@ -5,10 +5,10 @@
 // per-browser preference for each list).
 import { modeOf, playOf, OLD_SAVE_PLAY, PANEL_NAMES, PROVING_GROUND_PANELS as PG_PANELS, type GameState } from '@engine';
 
-export type PanelId = 'mana' | 'map' | 'quests' | 'squad' | 'run' | 'run_board';
+export type PanelId = 'mana' | 'map' | 'quests' | 'squad' | 'run' | 'run_board' | 'give';
 /** Each panel id to what draws it: `template`, the play screen's own markup (main.template.html, its values from
  * screens/main.js); `slot`, a React view (runPanels.tsx) portalled into the template's [data-phc-panel-slot="<id>"]. */
-export const PANEL_DRAW: Record<PanelId, 'template' | 'slot'> = { mana: 'template', map: 'template', quests: 'template', squad: 'template', run: 'slot', run_board: 'slot' };
+export const PANEL_DRAW: Record<PanelId, 'template' | 'slot'> = { mana: 'template', map: 'template', quests: 'template', squad: 'template', run: 'slot', run_board: 'slot', give: 'slot' };
 export const PANEL_IDS = Object.keys(PANEL_DRAW) as PanelId[];
 export const isPanelId = (x: unknown): x is PanelId => typeof x === 'string' && x in PANEL_DRAW;
 /** Each panel's name (the grip's words), from data (the engine's PANEL_NAMES). */

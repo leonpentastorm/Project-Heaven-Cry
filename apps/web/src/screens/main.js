@@ -41,6 +41,7 @@ import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVa
 import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
+import { figmentSectionVals } from './figmentsTab';
 import { STORY_PANEL_NAME, STORY_PANELS_CSS, readStoryPanels, saveStoryPanels, isDefaultOrder, startStoryDrag, keyMoveStoryPanel, squadMinHeight, SQUAD_SEATS, SQUAD_ROW_PX, SQUAD_GAP_PX } from '../game/storyPanels';
 import { panelsOf, PANEL_DRAW, offersAreaMap } from '../game/panels';
 /** A weapon's line on the GEAR tab (Physical 2.0): its properties and the technique it teaches (drill replaced the
@@ -51,7 +52,7 @@ const skillLine = (c, inst) => (c && inst && inst.id && (WEAPON[inst.id] || ITEM
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
-import { approachOptions, sigilGrowthView, canLayGrandForms, makeView } from '@engine';
+import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView } from '@engine';
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
@@ -146,7 +147,7 @@ const handWord = (at) => (at === 'main' ? 'in your main hand' : at === 'off' ? '
 const focusKindOf = (id) => (FOCUS_IDS.evoker.includes(id) ? 'evoker' : FOCUS_IDS.emanator.includes(id) ? 'emanator' : null);
 function magicVals(self, g, c) {
   const S = self.state, set = (p) => self.setState({ mgDraft: { ...self.state.mgDraft, ...p } });
-  const none = { has: false, empty: true, emptyText: '', showSigil: false, showSoul: false, st: { pick: { groups: [] }, toStudy: [] }, sig: { ws: { groups: [] }, words: [], stats: [] }, soul: { ws: { groups: [] }, designs: [], stats: [] }, b: { open: false, schools: [], schools2: [], options: [], modules: [] }, learn: { ally: [], plates: [] } };
+  const none = { has: false, empty: true, emptyText: '', showSigil: false, showSoul: false, fig: { show: false, ws: { groups: [] }, steps: [], newForms: [], nextForms: [], designs: [], ed: { open: false, forms: [], traits: [] } }, st: { pick: { groups: [] }, toStudy: [] }, sig: { ws: { groups: [] }, words: [], stats: [] }, soul: { ws: { groups: [] }, designs: [], stats: [] }, b: { open: false, schools: [], schools2: [], options: [], modules: [] }, learn: { ally: [], plates: [] } };
   if (!c) return { ...none, emptyText: 'You have no character in this session.' };
   const words = c.sigils || [], designs = c.outbursts || [], known = c.soulKnown || { schools: [], modules: [] }, evo = hasEvoker(c), ema = hasEmanator(c);
   // A focus counts only in a hand (spec: Hands 2, item 630); carried, it keeps its store (charge, MP), so the sheet shows it.
@@ -301,9 +302,10 @@ function magicVals(self, g, c) {
     { key: 'feelings', label: 'Feelings', count: codex.feltCount, dflt: false, items: [{ key: 'feelings', isFeelings: true }] },
     { key: 'modules', label: 'Modules · by gate skill', count: codex.groups.reduce((n, gr) => n + gr.modules.filter((x) => x.known).length, 0) + ' / ' + codex.groups.reduce((n, gr) => n + gr.modules.length, 0), dflt: false, items: [{ key: 'gates', isGates: true, gates }] },
   ], { ink: SOUL_VIOLET, rerender });
-  const anyMagic = showSigil || showSoul;
+  const fig = figmentSectionVals(self, g, c, rerender); // rules 1.34: the FIGMENTS section (screens/figmentsTab.js)
+  const anyMagic = showSigil || showSoul || fig.show;
   return {
-    has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
+    fig, has: anyMagic, empty: !anyMagic, emptyText: 'No magic yet: Sigil words come from Brain Power, Outbursts from Will Power, or a teacher.',
     showSigil, showSoul, noEvoker: words.length > 0 && !evo, noEvokerText: evoC ? '⚠ ' + NEEDS_EVOKER + ' Yours is in the pack: it keeps its charge, but you can\'t draw until you hold it (GEAR: the off hand).' : '⚠ No Evoker carried: you know the words but can\'t draw them until you hold one.',
     st, sig: { ws: sigWs, words: wordCards, stats: sigStats, noWords: !wordCards.length, head: 'SIGILS · MIND · ' + words.length + (words.length === 1 ? ' WORD' : ' WORDS') },
     soul: { ws: soulWs, designs: designCards, noDesigns: !designs.length, stats: soulStats, ema: emaC, noEma: !ema, noEmaText: emaC ? NEEDS_EMANATOR + ' Yours is in the pack: it keeps its MP, but an Outburst pulls from the air instead, at +2 Strain a cast, and Syphon waits (GEAR: the off hand).' : 'No Emanator carried: an Outburst pulls from the air instead of your MP, at +2 Strain a cast.',
@@ -517,6 +519,19 @@ export class MainLogic extends DCLogic {
         nameStyle: 'font-weight: ' + (x ? '600; color: #E7EBF3' : '400; color: #5B6577') }; });
     const kg = (x) => (Math.round(x * 1000) / 1000) + ' kg';
     // Magazines show as separate lines: full, part-loaded (each count) and empty (spec: Magazines and rounds are inventory).
+    // Rules 1.55 items 30 to 32 (0.28.2): a backpack line's Give (to each friend: one, or the whole stack) and a stim's Use
+    // on a friend or yourself, from the engine's Give view (give.ts giveView: its rows, each receiver's reason, the
+    // row's action and its use's action); a line the engine refuses for everyone shows nothing; solo lists no friend.
+    const GV = c && !gearLocked ? giveView(g, me, c.id) : null;
+    // Rules 1.55 item 40: how many, with the Give tab's stepper (‹ ›, one at a time), kept per line while the sheet is open.
+    const giveQ = this.state.giveQ || {};
+    const giveActs = (gkey) => { const row = GV && GV.rows.find((x) => x.key === gkey); if (!row) return [];
+      const out = [], open = GV.to.filter((t) => !row.why[t.id]), n = Math.max(1, Math.min(row.qty, giveQ[gkey] || 1)), setQ = (q) => this.setState({ giveQ: { ...giveQ, [gkey]: Math.max(1, Math.min(row.qty, q)) } });
+      if (open.length && row.qty > 1) { out.push({ key: 'q-' + gkey, label: '‹ fewer', go: () => setQ(n - 1) }); out.push({ key: 'q+' + gkey, label: 'more ›', go: () => setQ(n + 1) }); }
+      for (const t of open) out.push({ key: 'g1' + t.id, label: 'Give ' + (row.qty > 1 ? n + ' ' : '') + 'to ' + t.name, go: () => { act({ ...row.action, to: t.id, qty: n }); setQ(1); } });
+      if (row.use) for (const x of Object.values(g.characters)) { if (x.dead || row.use.why[x.id]) continue;
+        out.push({ key: 'u' + x.id, label: row.use.label + ' ' + (x.id === c.id ? 'yourself' : x.name), go: () => act({ ...row.use.action, targetId: x.id }) }); }
+      return out; };
     const rig = pack.flatMap((it, ri) => {
       if (!it.mags) { const pi = c && !it.counted ? ri - pack.slice(0, ri).filter((x) => x.counted).length : -1, def = ITEM[it.item || it.id] || {}, wdef = it.weapon ? WEAPON[it.weapon] : null, acts = [];
         if (pi >= 0 && !gearLocked) {
@@ -528,13 +543,15 @@ export class MainLogic extends DCLogic {
             Object.values(g.characters).filter((x) => x.id !== c.id && !x.dead).forEach((x) => acts.push({ key: 'g' + x.id, label: 'Give to ' + x.name, go: () => act({ type: 'gear/give', charId: c.id, idx: pi, to: x.id }) }));
             acts.push({ key: 'd', label: 'Drop', go: () => act({ type: 'gear/drop', charId: c.id, idx: pi }) }); }
         }
+        if (it.kind !== 'plot') acts.push(...giveActs(pi >= 0 ? 'pack:' + pi : 'count:' + (it.item || it.id)));
         const tag = wdef ? 'WEAPON' : def.category === 'armour' ? 'ARMOUR' : def.category === 'mod' ? 'MOD' : def.slot === 'off_hand' ? 'OFF HAND' : KIND[it.kind] || 'ITEM';
         return [{ key: it.id + ':' + pi, tag, name: it.name + (it.rarity && it.rarity !== 'standard' ? ' · ' + it.rarity.toUpperCase() : ''), qty: '×' + it.qty, kg: kg(itemKg(it)),
           note: (focusKindOf(it.weapon || it.item || it.id) ? 'In the pack: it counts only in a hand (Off hand). ' : '') + (wdef ? [(typeof wdef.damage === 'number' ? wdef.damage + ' dmg' : ''), wdef.hands, armsLine(wdef.id)].filter(Boolean).join(' · ') : it.kind === 'plot' ? it.text || 'From the story.' : it.note || def.text || ''), acts, hasActs: acts.length > 0, src: it }]; }
       const cap = WEAPON[it.weapon]?.magazine || 0, by = {};
       it.mags.forEach((n) => { by[n] = (by[n] || 0) + 1; });
       return Object.keys(by).map(Number).sort((a, b) => b - a).map((n) => ({ key: it.id + ':' + n, tag: n ? 'AMMO' : 'EMPTY', name: it.name + (n === cap ? ' (full)' : n ? ' (' + n + '/' + cap + ')' : ' (empty)'),
-        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: [], hasActs: false, src: it }));
+        qty: '×' + by[n], kg: kg(itemKg({ ...it, mags: Array(by[n]).fill(n) })), note: n ? by[n] * n + ' rounds' : 'Load it from loose rounds', acts: n === it.mags[0] ? giveActs('pack:' + packOf(c).indexOf(it)).map((x) => ({ ...x, label: x.label.replace(/^Give (\d+) /, (_m, k) => (k === '1' ? 'Give a magazine ' : 'Give ' + k + ' magazines ')) })) : [], hasActs: false, src: it }))
+        .map((x) => ({ ...x, hasActs: x.acts.length > 0 }));
     });
     const canLoad = !!c && packOf(c).some((m) => m.mags && m.mags.some((n) => n < (WEAPON[m.weapon]?.magazine || 0)) && packOf(c).some((r) => r.calibre && r.calibre === WEAPON[m.weapon]?.ammo && r.qty > 0));
     const KG = c ? carriedKg(c) : { total: 0, weapon: 0, armour: 0, pack: 0 }, lim = c ? carryLimit(c) : 0, over = KG.total > lim;
@@ -1447,7 +1464,7 @@ export class MainLogic extends DCLogic {
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
-      fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : 'Level up · spend points',
+      fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up · pick a perk' : 'Level up · spend points', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 13px; color: ' + (over ? '#F65157' : '#A3AEC2'), eoe: { locked: true, why: 'Cracking needs Mastery 2 in Brain Power with an Evoker, or Will Power with an Emanator.' },  bio,

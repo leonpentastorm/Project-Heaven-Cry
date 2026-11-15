@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Eye: an almond eye with a hex iris and a slit pupil, a wing blade swept back from each corner -->
+  <path d="M11 35 L3 13 L21 25 Q32 19 43 25 L61 13 L53 35 Q32 54 11 35 Z"/>
+  <path d="M32 27 L38.5 30.75 L38.5 38.25 L32 42 L25.5 38.25 L25.5 30.75 Z"/>
+  <path d="M32 31 L32 38"/>
+  <path d="M8 19 L15 31 M56 19 L49 31"/>
+</svg>

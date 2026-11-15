@@ -188,7 +188,7 @@ export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any
     t = o.targetId ? cb.units.find((x) => x.id === o.targetId) || null : null;
     if (!t || t.dead || t === me) return 'Pick a target.';
     if (dv.reach.side === 'foe' && t.side === owner.side) return 'Pick an enemy.';
-    if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) return 'Out of reach (' + (dv.reach.tiles ?? 1) + ' tiles from ' + me.name + ').';
+    if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) { const n = dv.reach.tiles ?? 1; return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').'; }
     if (dv.reach.eyes ? !unitSees(cb, me, t.pos) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
   }
   const holder: any = { key: 'verb:' + dv.id, itemId: dv.id, kind: 'verb', tier: 'I', info: { key: 'verb:' + dv.id, kind: 'verb', id: dv.id, name: dv.name, tier: 'I', effects: [], effTier: [], text: dv.text || '', adjudication: 'engine', active: false, bound: false, ap: null, uses: 'at_will' }, c, u: me, cb };

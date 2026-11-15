@@ -100,6 +100,9 @@ export function uses(h: Pick<Holder, 'key' | 'u' | 'c' | 'cb' | 'g'>): Uses {
   const at = (scope: UseScope, key: string | undefined, create: boolean) => {
     const cells = cellsOf(scope, h.u, h.c, h.cb, g, create), k = (key || h.key) + '|' + scope, s = stampOf(scope, { cb: h.cb, g });
     const hit = !!(cells && cells[k] && cells[k].s === s);
+    // Rules 1.55 item 34: a field opened by a save from before 0.28.2 carried no fight limits (game.ts carryFightLimits
+    // marks g.story.fieldLimits): every once-a-fight use counts as spent there (the safe side)
+    if (scope === 'per_combat' && overworld(h.cb) && g?.run?.state === 'field' && !g.story?.fieldLimits) return { cells, k, s, n: Number.MAX_SAFE_INTEGER, has: true };
     return { cells, k, s, n: hit ? cells![k].n : 0, has: hit };
   };
   const api: Uses = {

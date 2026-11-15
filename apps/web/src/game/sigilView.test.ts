@@ -268,7 +268,7 @@ describe('class moves that cast paint the grid (item 489 c)', () => {
   it('a refused key\'s short hint', () => {
     expect(shortWhy('One glyph per tile: this tile already holds FIRE.')).toBe('tile taken');
     expect(shortWhy('Needs 1.8 AP.')).toBe('needs 1.8 AP');
-    expect(shortWhy('Past your cap: 3 glyphs, and your Max Sigil words is 2.')).toBe('over your cap');
+    expect(shortWhy('Past your cap: this Line would be 3 glyphs, and your Max Sigil words is 2 at Intelligence 2. Intelligence 3 raises it to 3.')).toBe('2 words max; Intelligence 3 gives 3');
     expect(shortWhy('A second Reach word is refused: one Reach word per spell (SEEK, ARC).')).toBe('one Reach only');
     expect(shortWhy('Silenced: no magic this round.')).toBe('silenced');
     expect(shortWhy('Not your turn.')).toBe('not your turn');

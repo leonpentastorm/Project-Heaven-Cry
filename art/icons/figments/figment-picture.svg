@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Picture: a frame on its hanger, a figure in it torn by a flicker, the bots catching the image -->
+  <path d="M9 11 L27 11 L32 4 L37 11 L55 11 L55 53 L9 53 Z"/>
+  <path d="M16 18 L48 18 L48 46 L16 46 Z"/>
+  <path d="M22 46 C22 39 26 36 32 36 C38 36 42 39 42 46 M27 28 A5 5 0 1 1 37 28 A5 5 0 1 1 27 28"/>
+  <path d="M16 31 L23 31 L26 27 L29 31 M35 31 L38 27 L41 31 L48 31"/>
+</svg>

@@ -10,7 +10,7 @@
 //   a turn's end: Pressure falls by 1 (2 in cover and unseen, or closer to the nearest enemy than the turn began)
 //   reactions: Pressed holds no Watch; Suppressed takes no opportunity attack either
 import { say, type Combat, type Unit, alive, dist, unitSees, emitFx, strikeWeapon } from '../combat';
-import { onHook, charOfUnit } from '../effects/hooks';
+import { onHook, charOfUnit, growthHeld } from '../effects/hooks';
 import { condOn } from '../magic';
 import { WEAPON } from '../data';
 import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
@@ -73,7 +73,7 @@ onHook('on_kill', (ctx: any, cb) => {
     addPressureTo(cb, v, P().kill_spill, by, 'saw ' + victim.name + ' fall');
   }
   // Drill (Leon): a kill gives it to everyone who hit the victim, for the weapon they hit with; a hit alone gives none.
-  if (victim.side !== 'foe' || victim.companion) return;
+  if (victim.side !== 'foe' || victim.companion || growthHeld(cb)) return; // rules 1.55 item 37: no drill on the field
   const base = PHYS_RULES.drill.per_kill[victim.tier || 'minion'] ?? PHYS_RULES.drill.per_kill.minion;
   for (const [id, list] of Object.entries(victim.hitWith || {})) for (const weaponId of list) {
     const u = cb.units.find((x) => x.id === id), c = u && !u.companion && u.side === 'pc' ? charOfUnit(u) : null; if (!u || !c || !WEAPON[weaponId]) continue;

@@ -7,7 +7,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import ltJ from '../../../data/loot_tables.json';
-import { WEAPON, ITEM, CALIBRE_NAME, RULES } from './data';
+import { WEAPON, ITEM, CALIBRE_NAME, RULES, COUNTED } from './data';
 import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf, packKindOf, legacySpecialId } from './character';
 import { type MapObject, type CacheItem, makeObject } from './objects';
 
@@ -159,25 +159,26 @@ const calibreId = (s: string) => Object.keys(CALIBRE_NAME).find((k) => k.toLower
  * combat/stim spends) and an Essence of Experience joins c.essence. True when it was counted. */
 export function intoCounts(c: Character, it: PackItem): boolean {
   if (it.kind === 'plot' || it.mags) return false;
-  const row = COUNTED.find((r) => r.item === (it.item || it.id)); if (!row) return false;
-  c[row.count] = (c[row.count] || 0) + it.qty; return true;
+  const f = COUNTED[it.item || it.id]; if (!f) return false;
+  c[f] = (c[f] || 0) + it.qty; return true;
 }
-/** The counted things (intoCounts): each item whose row has `counts_into` (items.json: the character's count it joins,
- * and where the sheet lists it, before or after the pack lines), the `first` ones first. The one list intoCounts and
- * countedLines read (consolidation 0.29 should-fix 4: no item id named here). */
-const COUNTED: { item: string; count: 'stims' | 'essence'; at: 'first' | 'last' }[] = (Object.values(ITEM) as any[])
-  .filter((it) => it?.counts_into).map((it) => ({ item: it.id as string, count: it.counts_into.count, at: it.counts_into.at }))
+/** The counted things in the order the sheet lists them (items.json `counts_into.at`: before or after the pack lines),
+ * the `first` ones first; the ids are data.ts COUNTED's (no item id named here). */
+const COUNTED_ORDER: { item: string; count: 'stims' | 'essence'; at: 'first' | 'last' }[] = Object.entries(COUNTED)
+  .map(([item, count]) => ({ item, count, at: ((ITEM[item] as any)?.counts_into?.at === 'first' ? 'first' : 'last') as 'first' | 'last' }))
   .sort((a, b) => (a.at === b.at ? 0 : a.at === 'first' ? -1 : 1));
 /** A character's counted things as pack-shaped lines for a list (consolidation 0.28 S8): each held count (COUNTED) as
  * {id and item: its item id, name, qty, kind: packKindOf, counted: true}, with where it is listed. */
 export const countedLines = (c: Character): { line: PackItem & { item: string; counted: true }; at: 'first' | 'last' }[] =>
-  COUNTED.filter((r) => (c[r.count] || 0) > 0).map((r) => ({ line: { id: r.item, item: r.item, name: ITEM[r.item]?.name || r.item, qty: c[r.count] || 0, kind: packKindOf(r.item), counted: true as const }, at: r.at }));
+  COUNTED_ORDER.filter((r) => (c[r.count] || 0) > 0).map((r) => ({ line: { id: r.item, item: r.item, name: ITEM[r.item]?.name || r.item, qty: c[r.count] || 0, kind: packKindOf(r.item), counted: true as const }, at: r.at }));
 /** Grant goods to a character (consolidation 0.28 M2): each into its count (intoCounts: a stim, an Essence) or else
  * into `pack` (packAdd, which merges). The one way the camp, the shop, making and a reward pick put goods in. */
 export function grantGoods(c: Character, pack: PackItem[], its: PackItem[]): PackItem[] {
   for (const it of its) if (!intoCounts(c, it)) packAdd(pack, it);
   return pack;
 }
+/** The items a character keeps as counts (data.ts COUNTED, from items.json `counts_into`: the one list intoCounts reads). */
+export { COUNTED };
 /** One loot-shaped entry ({item, qty, rarity, name, text, note}) as pack items (items 681, 682): a weapon (at most 3),
  * an item, `mag:<weapon>` (one magazine; qty is its rounds, 1 or none for a full one, 0 for an empty one; a weapon
  * loaded round by round gives its rounds loose), `rounds:<calibre>` (at most 120), `rounds:<calibre>:<type>` (special

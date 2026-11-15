@@ -85,6 +85,11 @@ Every rule-bearing item carries both:
   give). Without it each place keeps its default by category. Never pick a kind by an item's id in code.
 - `plural` (items.json, optional): the name for more than one, where it is not the name ("Casings"); the words of a
   refusal read it.
+- `counts_into` (items.json, optional; rules 1.55 item 31, consolidation 0.29): the item is kept as a count on the
+  character, not a pack line: `{count: the count's field (stims, essence), at: first | last (where the sheet lists it,
+  before or after the pack lines)}`, a consumable, one item to a count. Read once, as `COUNTED` (engine data.ts):
+  giving, picking up, granting, the sheet's lines, the Proving Ground's give and the carried weight all go through it.
+  Never name a counted item's id in code. (0.28.2's `counted` field is retired into it; the validator refuses it.)
 - `stock: false` (items.json): the item has no price (`priceOf`), so no counter, rolled stock or sale holds it (the
   armourer's chit). Leon, 14 Nov 2026: every item a trait grants (`start_item`, the Musek Blestor) is `stock: false`
   unless it is `food`; the validator checks the `start_item` ones.

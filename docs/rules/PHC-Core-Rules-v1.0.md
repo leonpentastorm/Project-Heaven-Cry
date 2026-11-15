@@ -487,7 +487,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 - Enemies see by the same rule (Vision 12, halved in darkness).
 - **What a player is sent** (engine review 4, finding 4; 12 Nov 2026): fog of war is kept by the engine, not the screen. Each player's view holds only what their side sees: an unseen hostile is not in it at all (a sensed one is a presence on a tile, nothing more), nor are the other side's glyphs, zones and False Images out of sight, nor the tiles or names of the unseen in the fight's effects or its log (a log line about only what their side did not see when it happened is not sent). The human Narrator is sent everything. See item 1600.
 
-**Analyze.** 2 AP (1 with Acuity's Quick Read), at an enemy you can see within 4 + Acuity tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks (unhurt, wounded, badly hurt, down). If the analyst has **Read Them** (Acuity 5; it was Weak Point), that enemy deals 15% less damage to the whole squad (rules 1.13: a beta is defence; the +15% squad damage is gone). Details are provisional (item 56).
+**Analyze.** 2 AP (1 with Acuity's Quick Read), at an enemy you can see within 4 + Acuity tiles. No roll. From then until the fight ends, the whole squad sees that enemy's HP, Defense, armour and status effects. Before that, the squad sees only its name, its tier and how hurt it looks, as one word and nothing else (no bar, no number): **unhurt** (full HP), **scratched** (above 75%), **hurt** (75% to above 50%), **badly hurt** (50% to above 25%), **near death** (25% and below), or **down** (`rules.json combat.health_look`; PROVISIONAL) *(rules 1.55 item 29; it was three looks, unhurt, wounded, badly hurt, drawn as a banded bar)*. If the analyst has **Read Them** (Acuity 5; it was Weak Point), that enemy deals 15% less damage to the whole squad (rules 1.13: a beta is defence; the +15% squad damage is gone). Details are provisional (item 56).
 
 **Attack roll.** d20 + attack skill modifier + weapon accuracy + situational modifiers, against the target's **Defense** (10 + Dodge).
 
@@ -5985,7 +5985,7 @@ standard core's 150 credits (Magic, "Mana cores").
    pack line's kind by an item's id (the core, the two focus gloves, the ration pack; the same kinds as today); the pack's
    quantity cap (20, a literal in `lootToPack`) moved into data (item 4111: its value, and why the Materials card's grant
    does not pass through it). **No new trigger, predicate, op, hook, stat or cost site.**
-9. *(Superseded by rules 1.56 (Balance 2.0), XP: `xp.base` 35, `xp.per_depth` 0; level 3 after the gate and before the Boss.)* **The slower climb** (`survival.json` only; the shared `xp_total` is untouched): f(d) = `xp.base` **10** +
+9. *(Superseded by rules 1.55 item 27 (0.28.2), Survival XP pace: `xp.base` 35, `xp.per_depth` 0; level 3 after the gate and before the Boss.)* **The slower climb** (`survival.json` only; the shared `xp_total` is untouched): f(d) = `xp.base` **10** +
    `xp.per_depth` **2** × (d − 1) (was 100 and 22); the Boss × `xp.boss` **5** (was 2); `stage.xp` **[1, 2.6, 4, 4,
    4.5]** (was [1, 1, 1.1, 1.25, 1.25]; the last repeats). **Stage 1 is played before the class is earned:** on the
    reference path (survival-spec 5.4) a character reaches level 2 at the gate, has 210 XP at the Boss's door and 400
@@ -6119,6 +6119,121 @@ make what rare actually rare". The numbers and the arithmetic are in section 14,
 26. **What a killed foe leaves** (item 4127): in Survival the kind's loot table is not rolled (`drops.kind_table`
    false); a gun foe leaves gunpowder or casings and a caster residue only with a small chance.
 
+**Survival XP pace (release 0.28.2):** the lead's finding 10.C.1 of the 0.29 plan (no level-up in stage 1); Leon's
+target from rules 1.54 item 9 stands: "only get to level 3 as you are about to take on the first boss, if your whole
+first run you focus on taking as many fight as possible". Measured with the simulator, 24 seeds a cell, and the static
+route walk (`docs/design/proposals/2026-11-xp-fit-0.29.md`). Overrides rules 1.54 item 9's numbers and keeps its words;
+the shared `xp_total` is untouched. PROVISIONAL.
+
+27. **Survival XP pace: every stage-1 fight pays the same** (item 4129): f(d) = `xp.base` **35** + `xp.per_depth` **0**
+   x (d - 1) (was 10 and 2); `xp.elite` 1.5, `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5 and `stage.xp`
+   [1, 2.6, 4, 4, 4.5] unchanged. Level 2 comes after about three fights (stop 5 on the most-fights route, stop 6 to 7
+   on the gear route); level 3 after the gate and before the Boss (at stops 9 to 12; at the Boss's door on 100% of
+   most-fights routes and 71% to 86% of characters on the gear route); no character above level 3 after stage 1's Boss
+   in the simulator, and none above 4 on any route of the static walk.
+28. **The guard** (item 4130; `survival-run-levels.test.ts`, in `npm run check`) reads the pay from data and asserts the
+   lead's targets: level 3 at the Boss's door on at least 80% of most-fights routes and 50% of typical ones, no route
+   above level 4 after the Boss, level 3 before the gate (`map.gate_row`) on at most 1% of routes and never before the
+   row above it, level 3 from the Boss on 99% of routes.
+29. **An un-Analyzed creature's health is a word, not a bar** (item 4131; Leon's playtest, 15 Nov 2026: "the health
+   bar of the enemy shows at most 20 left, then we shot another shot for 43 dmg, but the hp bar does not goes down";
+   his ruling: "just display the status like put the word HURT their instead of % HP"). The bar drew the three looks
+   as 100 / 66 / 33%, so it stood still from half HP down to 1 and the shot before the kill looked eaten. Now no bar
+   and no number: one word of a five-rung ladder in data (`combat.health_look.ladder`, words and thresholds both,
+   PROVISIONAL): unhurt, scratched, hurt, badly hurt, near death, so the last word means the next solid hit can kill.
+   Analyze gives what it gave; the squad reads as before; the damage shown for a hit is unchanged (it was always the
+   HP lost).
+
+### Hand-overs and the field's actions (Survival; release 0.28.2)
+
+Leon (15 Nov 2026, the playtest), verbatim: *"players cannot trade items in the map, i bought fuck load of stim and
+can't stim my friend after he's down to 1 hp"* and *"The walk around the field mode need every action unlock still like
+in combat so you can reload, stim your friend, syphon, shit like that"*. The lead's rulings R1 to R4, all PROVISIONAL.
+
+30. **Give an item anywhere out of a fight (R1).** In a Survival run a player can give any item in their character's
+   pack, a chosen quantity of a stack, to another character of the party wherever no fight is on: on the path map, at
+   every place, at the camp before the first step, on the field and at the rewards. It is the one give (`gear/give`,
+   rules 1.46): at once, free, the receiver is not asked; the reducer checks it (the giver holds it, the receiver is in
+   the run); the pack's own rules apply on arrival. Credits are unchanged: they are given only where rules 1.46 gives
+   them (the node kinds of `survival.json give.where`, and the start), until Leon rules on them. What is in a hand or
+   worn is put in the pack first, as before.
+31. **Counted items are items.** What a character keeps as a count, not a pack entry (a stim, an Essence of Experience:
+   containers `intoCounts`), is given the same way, a quantity of it: it leaves the giver's count and joins the
+   receiver's. The Give view lists it as a line with its count.
+32. **Use on a friend out of a fight (R2).** A stim can be used on an ally, or on yourself, wherever no fight is on and
+   the squad is not on a map (the path map, a place, the camp, the rewards): the same stim the fight uses (`useStim`,
+   its heal and its stabilise, one copy), from the user's count, as if the two stood side by side; a Downed character
+   is stabilised at 1 HP, anyone else healed as by a stim in a fight. On the field it is used as in a fight: walk next
+   to the friend.
+33. **The field is a free fight without enemies (R3).** While the squad walks the field (item 7), every action a
+   character has on an area map is offered and works as there: reload (speed or tactical, one hand or both), load a
+   magazine, clear a jam, Field Repair, prone, stim a friend, Analyze and read a glyph, every Sigil and Soul action
+   (draw, Evoke, scuff, vent, swap a core, Begin, Pump, Release, Let go, Steady, Feed, Heart Overwatch, Syphon,
+   Crystallise), prayers, and the perks', traits' and class moves' actions (`world/act` perk), paying what they cost
+   (rounds, items, cores, MP, Flux, Strain, Echo, the mana meter). AP never limits: it is full after every action. An
+   attack has no target (nothing hostile is left): it is refused in words. Gear changes work as anywhere in a run.
+34. **What stays spent.** A once-a-fight use spent in the fight stays spent on its field; a once-a-scene, once-a-session
+   or once-a-rest use stays as it was (they live on the character). A wait counted in rounds (a Hymn's wait, a
+   cooldown) does not count down on the field: the rounds a fight's wait had left are what it has left on the field.
+   A once-a-round or once-a-turn use can be made once on the field (its round never ends there).
+35. **What is refused on the field.** An action that would be free without limit on the field is refused, in words:
+   one whose use is at will (no once-a-fight, once-a-round or longer limit), whose every cost besides AP is one the
+   area map does not carry back to the character (a resource not in `survival.json field.carried_res`), and which
+   either gives something lasting (an op of `field.lasting_ops`: healing, a resource, a taken item) or states no
+   effects in the data (an item's own handler, which the data can't read: refused as doubtful). The list is the lead's
+   to rule (0.28.2 hand-off). Prayers are not refused by this item (their own slots and waits limit them). The lead
+   (0.28.2 review): the actions this rule refuses as doubtful (37 in 0.28.2) stay refused for now; an explicit field
+   flag on each action in the data, read in place of this guess, is planned for 0.29.
+36. **What the fight's end clears is cleared when the field closes.** When the squad leaves the field, what a fight's end
+   clears is cleared for what was done on the field (Strain, a held Outburst, conditions, shields: `magicOut` after a
+   fight; Flux, rules 1.51), and the field's use counters go; the field's piles stay behind as before. *(What the fight
+   itself left is still cleared as the field opens, as in 0.28.1: deferring the fight's own end to the field's close is
+   0.29.)*
+
+The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
+
+37. **Nothing grows on the field.** Crystallise and Syphon stay allowed (the fight's leftover mana meter is finite, and
+   gathering it is a reason to walk the field), but what is learned by doing advances only in a real fight, never from
+   an action on the field: Outburst practice, Sigil study and word uses (a glyph read and copied on the field is
+   refused in words), feelings felt for the first time, Devotion XP and a liked tag's count (a taboo still costs), drill,
+   and the deeds the engine watches. One gate says so (`growthHeld`, effects/hooks.ts: the area map's throwaway fight
+   while the run is on its field, and the area map's dry run), read where each counter is written: practice
+   (magic.ts gainPractice), study and word uses (sigil.ts evokeGrowth, readGlyph), feelings (feelings.ts feelChar,
+   feelUnit), Devotion (faith.ts shiftDevotion, tagDevotion), drill (physical/rules.ts on_kill) and deeds (deeds.ts
+   grant).
+38. **Nothing harms a friend on the field.** A blow or a harmful condition one character's action would put on another
+   character on the field (an Evoke, a Release, a thrown thing, an area) is refused in words, the whole action, as an
+   attack is; nobody is hurt. One check, where harm is applied to a unit (`harmHeld`, effects/hooks.ts, read by
+   applyDamage and applyCond); your own blow on yourself (your heart's burn, your own Burst) is yours, as in a fight. A
+   spell that misses hurts nobody and is not refused.
+39. **The field has the fight screen's actions.** Walking the field, the fight screen's own action bar and cards are
+   the field's: the same descriptors (descriptors.ts) read the field as a fight state (`fieldCombat`: the squad where
+   it stands on the fight's map, AP full, no turns), with their targets and tile picks; the action a card sends is
+   done as the area map's action (item 33), and the reducer's field verdict (items 33 to 38) is the refusal the card
+   shows. A fight's action the area map has no form of (a technique, a Call, a shove, ending the turn) is refused in
+   words. There are no turns: End turn is not offered.
+40. **The Give control.** On the path map the right panel has a Give module (data/modes.json `panels`: `give`), the
+   places' Give tab; the backpack line's Give has the same stepper (how many, one at a time) before the button.
+41. **A field from a 0.28.1 save.** A field opened before 0.28.2 carried none of the fight's limits (item 34): there
+   every once-a-fight use counts as spent (the safe side). Read in the one counter door (effects/uses.ts).
+42. **Counted items are data.** Which items a character keeps as a count (item 31) is `counted` on the item's row of
+   items.json (the count's field: `stims`, `essence`), read once (`COUNTED`, data.ts; the validator checks it).
+43. **The health word on the map token** (item 4132; the lead's ruling on the two-player playtest, 15 Nov 2026: the
+   word sat under a foe's kind badge and read "UNH BOT T"). On the fight map the word is a chip at the token's bottom
+   edge, centred where the bar was, on one line, dark backed, in the word's tone, 13 px; it may be wider than the tile
+   (it overhangs evenly) and is drawn above neighbouring tiles' art, never over a kind badge (the badge keeps its
+   bottom-right corner, drawn above the chip). A creature at full HP shows no chip on the map (a chip there always
+   means "this one is hurt"); the target card and the turn strip still say unhurt. Where two hurt creatures side by
+   side would have their chips' words run into each other, the chip shows the rung's short form (`short` on each rung
+   of `combat.health_look.ladder`, PROVISIONAL: ok, scr, hurt, bad, dying; down and dead are short already); the
+   engine's `healthView` gives both, and the screen picks by measured width only. The full word everywhere else.
+44. **The field's token is the character** (item 4133; the two-player playtest, 15 Nov 2026: a stim used on a friend
+   on the field healed the character, but the friend's token kept the old HP: the field wrote to the character, and a
+   token not walked onto the field read the finished fight's unit). The field's one door for its actions
+   (`fieldWorld`, game.ts) now writes back to that unit after every action what a token draws (HP, Max HP, Downed,
+   conditions, shields, MP), read from the character as the field builds it (`storyCb`), so the token, its bar and the
+   sheet agree; the fight's record (initiative, kills) stays.
+
 ## Rules 1.56 (Balance 2.0), L1: the modifier carrier, Recoil 2.0 and weapon mods as data
 
 Leon (15 Nov 2026), on the Balance 2.0 draft: Recoil 2.0 *"ok display them rightly"*; the compensator *"ok"* (Recoil
@@ -6126,14 +6241,14 @@ Leon (15 Nov 2026), on the Balance 2.0 draft: Recoil 2.0 *"ok display them right
 hard a bullet hits"* (nothing here adds gun damage from the user). The lead's rulings of 15 Nov (build plan 0.29
 sections 9 and 10): fitted mods are held like a Relic's property; one helper reads a weapon instance's numbers; mods
 act on the gun they are fitted to in either hand; the foregrip is redesigned. A later revision overrides the body and
-the earlier ones; every new number here is PROVISIONAL (items 4130 to 4136).
+the earlier ones; every new number here is PROVISIONAL (items 4134 to 4140).
 
 1. **Recoil 2.0.** Every gun names its **Recoil** (`weapons.json` `recoil`): each shot after the first in a turn is at
    minus the gun's Recoil (with its mods') for each earlier shot, cumulative, reduced by floor(Dexterity ÷ 2)
    (`rules.json weapons_rules.recoil.dex_relief_per`), halved toward 0 while braced or Emplaced (`braced_mult` 0.5);
    none in a volley (a Burst's or full auto's own penalty stands instead), a reaction or full auto. Every gun 1 (as
    the old rule's −1), bows, crossbows and the core rifle 0; the draft's 2 for the long rifle, the battle rifle, the
-   hand cannon, the shotguns and the heavy weapons is a number for the P3 refit (item 4130), not set here. The old
+   hand cannon, the shotguns and the heavy weapons is a number for the P3 refit (item 4134), not set here. The old
    `no_recoil` property is retired into it (a bow is Recoil 0). The weapon card shows **Recoil a shot** (the gun's with
    its mods'). Overrides item 88, the Modifiers line (−1 a shot), and the Recoil paragraph of the attack rules. The
    Emplaced row's own recoil number is removed: the one formula halves it.
@@ -6215,25 +6330,6 @@ What the screens show of rules 1.56, all of it the engine's own lines (nothing i
    `survival-camp`), and each right-panel header takes `icon-panel-<panel id>` when the catalogue has one (built as
    `panel-<id>`), drawn in the header's ink. PROVISIONAL (review-candidate art).
 
-## Rules 1.56 (Balance 2.0), XP
-
-Survival's XP refitted for release 0.29 (the lead's finding 10.C.1 of the 0.29 plan: no level-up in stage 1; Leon's
-target from rules 1.54 item 9 stands: "only get to level 3 as you are about to take on the first boss, if your whole
-first run you focus on taking as many fight as possible"). Measured with the simulator, 24 seeds a cell, and the static
-route walk (`docs/design/proposals/2026-11-xp-fit-0.29.md`). Overrides rules 1.54 item 9's numbers and keeps its words;
-the shared `xp_total` is untouched. PROVISIONAL.
-
-1. **Every stage-1 fight pays the same** (item 4151): f(d) = `xp.base` **35** + `xp.per_depth` **0** x (d - 1) (was 10
-   and 2); `xp.elite` 1.5, `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5 and `stage.xp` [1, 2.6, 4, 4, 4.5]
-   unchanged. Level 2 comes after about three fights (stop 5 on the most-fights route, stop 6 to 7 on the gear route);
-   level 3 after the gate and before the Boss (at stops 9 to 12; at the Boss's door on 100% of most-fights routes and
-   71% to 86% of characters on the gear route); no character above level 3 after stage 1's Boss in the simulator, and
-   none above 4 on any route of the static walk.
-2. **The guard** (item 4152; `survival-run-levels.test.ts`, in `npm run check`) reads the pay from data and asserts the
-   lead's targets: level 3 at the Boss's door on at least 80% of most-fights routes and 50% of typical ones, no route
-   above level 4 after the Boss, level 3 before the gate (`map.gate_row`) on at most 1% of routes and never before the
-   row above it, level 3 from the Boss on 99% of routes.
-
 ## Rules 1.56 (Balance 2.0), L4 variants
 
 Leon (15 Nov 2026): *"weapon can be under or over the line, depends on their price and niche, every weapon should have a place or a niche they fit but dirrect upgrade also exits at rarer rarity and cost more"*; Leon Q3 "yes", Q4 "morecharge", Q5 "ok" (the variants draft, `docs/design/proposals/2026-11-balance-2.0.md` section 4). A later revision overrides the body and the earlier ones; every number here is PROVISIONAL.
@@ -6244,6 +6340,17 @@ Leon (15 Nov 2026): *"weapon can be under or over the line, depends on their pri
 4. **What it shows and does.** The card shows the base's lines with the field kinds' numbers already changed, then one line per modifier, its sentence. In the fight its numbers and its modifiers' terms are the base's rules reading the variant's row.
 5. **One copy of the Flux limit and of a core's charge** (C11): the Flux an Evoker holds is `rules.json mana.sigil.flux.safe_max` (6) and a standard core's charge `mana.cores.standard.charge` (10), read once; an item adds to them through the stats `flux_max` and `core_charge` (a variant's Holds more Flux and Deep cell).
 6. **The twenty lines** (ten guns, ten foci; all Fine but the rotary's Masterwork 'Lazy Susan' and the Visualizer's Masterwork 'Steady Eye'): the service rifle's 'Long Belly' (Deep magazine 8, Kicks less 1), the Decrkm 'Steady Hand' (Kicks less 1, True 1), the Legion 'Quickdraw' PDW (Quick hands: reload 1), the coach gun's 'Ranch Pair' (Long reach 2), the Drifter 'Hot Six' (Harder 10%), the Brigade 'Cold Drum' (Runs cool 3, Deep magazine 4), the CCEC 'Pin' (True 1), the rotary's 'Lazy Susan' (Runs cool 6, Kicks less 1), the lever carbine's 'Brush Gun' (Quick hands: reload 1, Long reach 2), the crossbow's 'Barbed' (Rider: Bleed); the Evoker's 'Deep Well' (Holds more Flux 2), 'Long Fuse' (Deep cell 2, Quick hands: core 1), 'Vent Valve' (Quick hands: the first Vent free), 'Marksman's Glove' (True 1); the Emanator's 'Calm Wrist' (Steady heart 1) and 'Red Knuckle' (Harder 10%); the Attuner's 'Warm Palm' (Kind 15%) and 'Tight Thread' (True 1); the Visualizer's 'Long Lens' (True 1) and 'Steady Eye' (True 2). The draft's push rider, the Visualizer's Deep cell and its 'Hard Light' wait (a push on hit and a figment's blow made with the focus are not checked yet; the Visualizer's charge is its own number, `figments.json visualizer.charge`).
+
+## Rules 1.56 (Balance 2.0), the 0.28.2 merge
+
+Release 0.28.2 (live) merged into 0.29. Its rules 1.55 items 27 to 44 stand as written; the XP of rules 1.55 items 27
+and 28 is the one Survival XP rule (0.29's own copy of the same fit is folded into it). One change of form:
+
+1. **The counted items' field** (overrides rules 1.55 item 42's field name; item 4159). Which items a character keeps
+   as a count is `counts_into` on the item's row of items.json: `{count: stims | essence, at: first | last}` (the
+   count's field on the character, and where the sheet lists it, before or after the pack lines), read once
+   (`COUNTED`, data.ts). It carries what 0.28.2's `counted` said and the sheet's order besides; `counted` is retired
+   and the validator refuses it. Giving, picking up, granting, the carried weight and the sheet's lines read it.
 
 ## Maps (rules 1.16)
 
@@ -9663,10 +9770,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     data cap": a question for the lead. PROVISIONAL.
 4112. **XP (rules 1.54 item 9; `survival.json`):** `xp.base` 10, `xp.per_depth` 2, `xp.boss` 5, `stage.xp` [1, 2.6, 4,
     4, 4.5]; `xp.elite` 1.5, `xp.vault_guard` 1.5 and `xp.cache` 0.25 unchanged; the shared `xp_total` untouched.
-    Supersedes items 2821 and 3606. PROVISIONAL. *(Superseded by rules 1.56: item 4151, base 35, per_depth 0.)*
+    Supersedes items 2821 and 3606. PROVISIONAL. *(Superseded by rules 1.55 item 27: item 4129, base 35, per_depth 0.)*
 4113. **Levels by stage (rules 1.54 item 9):** on the reference path (survival-spec 5.4) 400 XP after stage 1's Boss
     (level 3), 1,440 after stage 2 (5), 3,040 (7), 4,640 (9), 6,440 (11), 8,240 after stage 6 (13); the scout's
-    count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13). *(Superseded by rules 1.56, item 4151: level 3 before the Boss on 88% of typical routes, at depths 9 to 13.)*
+    count over the routes it simulated for 0.28 (not re-run here): 3, 5, 7, 9, 11, 12. Level 3 before the Boss only on the most-fights lane route (depth 12 or 13). *(Superseded by rules 1.55 item 27, item 4129: level 3 before the Boss on 88% of typical routes, at depths 9 to 13.)*
     Supersedes item 3611. PROVISIONAL.
 4114. **The curve measured again (rules 1.54 item 9; `docs/design/handoffs/survival-0.28-fit.md`):** 6 seeds a cell,
     stages capped at 5, routes gear and training. On the new XP a squad of four ended at means 1.6 (gear) and 3.1
@@ -9745,95 +9852,103 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     mana residue 1 with a chance of 0.25, a machine nothing, nothing else. Credits as a foe's common drop are not built:
     a pile holds pack items and the engine has no credits item (a new primitive, for the lead). Campaign drops are
     unchanged. PROVISIONAL.
-4128. **Items 4121 to 4128 are rules 1.55's.**
+4128. **Items 4121 to 4133 are rules 1.55's** (4129 to 4133: release 0.28.2; 4129 and 4130 Survival XP pace, 4131 the health word, 4132 the token's short word, 4133 the field's token).
+4129. **XP a node pays (rules 1.55 item 27, 0.28.2; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
+    `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
+    simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
+    5 for 80% on a typical route" is not met (25% to 46% of characters on the gear route: level 2 at stop 6 to 7): meeting it needs
+    base 50, which brings level 3 to stop 8, before the gate, against Leon's words. Supersedes item 4112's base and
+    per_depth. PROVISIONAL.
+4130. **The levels guard (rules 1.55 item 28, 0.28.2):** the static route walk, 60 maps: level 3 at the door on 80% of
+    most-fights and 50% of typical routes; at most level 4 after the Boss; at most 1% of routes at level 3 before the
+    gate row, none before the row above it; 99% at level 3 after the Boss. Replaces the 1.54 guard (level 3 never
+    before depth 12). PROVISIONAL.
+4131. **The health word (rules 1.55 item 29):** a 140 HP foe nobody has Analyzed, hit for 43 three times, reads hurt
+   (97, 69%), badly hurt (54, 39%), near death (11, 8%); the ladder is `rules.json combat.health_look.ladder`
+   (PROVISIONAL). The engine's view (`healthView`) is the one place it is worked out; the screen draws its word.
+4132. **The token's short health word (rules 1.55 item 43):** `short` on each rung of `combat.health_look.ladder`: ok,
+   scr, hurt, bad, dying (PROVISIONAL); a token at full HP shows no chip on the map.
+4133. **The field's token (rules 1.55 item 44):** the finished fight's squad unit is refreshed from the character after every field action (no number).
 
 ### Rules 1.56 (Balance 2.0), L1
 
 The modifier carrier, Recoil 2.0 and the weapon mods as data (rules 1.56 body, items 1 to 5). Every number is
 PROVISIONAL.
 
-4130. **Recoil by gun** (rules 1.56 item 1): every gun 1 (the old −1 a shot), the four bows and the core rifle 0
+4134. **Recoil by gun** (rules 1.56 item 1): every gun 1 (the old −1 a shot), the four bows and the core rifle 0
     (`weapons.json recoil`, `rules.json weapons_rules.gear_fields.recoil` provisional). The draft's 2 for the long
     rifle, the battle rifle, the hand cannon, the four shotguns and the six heavy weapons is left to the P3 refit: set
     on L1 it turned the Survival replay guard red (seed PHC-0003, the stage-1 Boss: a braced Boss with no target in
     sight stands still and an Outburst caster Mana-Shorts itself every turn, 40 rounds), an enemy-AI and policy dead
     end the new dice reached, not a recoil rule. PROVISIONAL.
-4131. **The Dexterity relief and the braced share** (rules 1.56 item 1): floor(Dexterity ÷ 2) and ×0.5 toward 0, as
+4135. **The Dexterity relief and the braced share** (rules 1.56 item 1): floor(Dexterity ÷ 2) and ×0.5 toward 0, as
     before, now `weapons_rules.recoil.dex_relief_per` 2 and `braced_mult` 0.5. PROVISIONAL.
-4132. **The compensator** (rules 1.56 item 3; Leon "ok"): `recoil` −1 (was: all Recoil). PROVISIONAL.
-4133. **The foregrip** (rules 1.56 item 3): +1 to hit on Bursts and full auto with its gun (an item op), built and sold
+4136. **The compensator** (rules 1.56 item 3; Leon "ok"): `recoil` −1 (was: all Recoil). PROVISIONAL.
+4137. **The foregrip** (rules 1.56 item 3): +1 to hit on Bursts and full auto with its gun (an item op), built and sold
     at 150 (was not run, `built: false`). PROVISIONAL.
-4134. **The extended magazine** (rules 1.56 item 3): `magazine_pct` 50, every magazine of its gun (was the first one
+4138. **The extended magazine** (rules 1.56 item 3): `magazine_pct` 50, every magazine of its gun (was the first one
     only). PROVISIONAL.
-4135. **The scope's +1** is its own to-hit term, "Scope", on aimed shots with its gun; **the suppressor's −2** is on its
+4139. **The scope's +1** is its own to-hit term, "Scope", on aimed shots with its gun; **the suppressor's −2** is on its
     gun's shots only; **mods act in either hand** (rules 1.56 items 3 and 4). PROVISIONAL.
-4136. **Items 4130 to 4136 are rules 1.56 L1's.**
+4140. **Items 4134 to 4140 are rules 1.56 L1's.**
 
 ### Rules 1.56 (Balance 2.0), L2 special rounds by calibre
 
 Release 0.29 item D3 (the 0.28 review's leftover: "special rounds made at 2 gunpowder + 2 casings fit heavy guns").
-Lane L2 of the 0.29 build plan; items 4137 to 4143. Every number here is PROVISIONAL.
+Lane L2 of the 0.29 build plan; items 4141 to 4147. Every number here is PROVISIONAL.
 
-4137. **Special rounds belong to a calibre.** Armour-piercing, hollow-point and incendiary rounds (the items with an
+4141. **Special rounds belong to a calibre.** Armour-piercing, hollow-point and incendiary rounds (the items with an
     `ammo_type` and a `price_mult`) are carried, bought, made and loaded as rounds of one calibre: a pack line of that
     calibre with the round's type (`rounds:<calibre>:<type>`, the shape a typed arrow line already has). A gun loads
     and chambers (Load Special, `gear/ammo`) only special rounds of its own calibre. Enhanced rounds (no `price_mult`)
     are unchanged: their own item, their own price, any gun. Supersedes the body's "Special rounds are carried as items"
     and rules 1.42's "they fit any gun". PROVISIONAL.
-4138. **The calibres** special rounds come in: `rules.json weapons_rules.special_round_price.calibres` (.32 Decrkm,
+4142. **The calibres** special rounds come in: `rules.json weapons_rules.special_round_price.calibres` (.32 Decrkm,
     revolver, rifle, shell, .700 Blackpoint, .50 Frontier: every gun's calibre but bows' and crossbows' (their arrows
     have their own types), the 40 mm grenade, the rocket, the fuel canister and the core charge). PROVISIONAL.
-4139. **The price** of a special round is its type's `price_mult` x that calibre's round, through the one `priceOf`:
+4143. **The price** of a special round is its type's `price_mult` x that calibre's round, through the one `priceOf`:
     an armour-piercing .700 round is 3 x 40 = 120 credits (was 3 x a rifle round, 6, for every gun). A sale is the sell
     rate of that price. PROVISIONAL.
-4140. **The shop** lists each special round, for each character, as rounds of every calibre in item 4138 that a gun it
+4144. **The shop** lists each special round, for each character, as rounds of every calibre in item 4142 that a gun it
     holds or carries (not a bow) takes, `per` a purchase as the special shelf's row (10). PROVISIONAL.
-4141. **Making** (rules 1.54 items 5 to 7): a recipe row with `each_calibre: true` (`data/recipes.json`) is read as one
-    row for each calibre of item 4138 (id `<row>:<calibre>`): it makes rounds of that calibre and type, in the fewest rounds
+4145. **Making** (rules 1.54 items 5 to 7): a recipe row with `each_calibre: true` (`data/recipes.json`) is read as one
+    row for each calibre of item 4142 (id `<row>:<calibre>`): it makes rounds of that calibre and type, in the fewest rounds
     whose worth at `priceOf` splits into whole needs, each need its `share` of the worth (half gunpowder, half casings:
     V/2 + V/2). An armour-piercing .700 round needs 60 gunpowder and 60 casings; the rifle's rows make what the old rows
     made (armour-piercing and incendiary 3 + 3 a round, hollow-point 2 + 2). The validator holds every expanded row to
     the parity. PROVISIONAL.
-4142. **Old saves.** A 0.28 pack line of a bare special-round item (`ammo_armor_piercing`, `ammo_hollow_point`,
+4146. **Old saves.** A 0.28 pack line of a bare special-round item (`ammo_armor_piercing`, `ammo_hollow_point`,
     `ammo_incendiary`) reads as the same count of rounds of the reference calibre (`special_round_price.calibre`,
     rifle), at the price it had; so does a loot or shop row that names the bare item.
-4143. **Items 4137 to 4143 are rules 1.56 L2's.**
+4147. **Items 4141 to 4147 are rules 1.56 L2's.**
 
 ### Rules 1.56 (Balance 2.0), L3 mods in Survival
 
-Items 4144 to 4146.
+Items 4148 to 4150.
 
-4144. **A mod as a reward (rules 1.56 L3 item 1):** `survival.json rewards.mods.chance` fight 0.05, elite 0.1, vault_guard
+4148. **A mod as a reward (rules 1.56 L3 item 1):** `survival.json rewards.mods.chance` fight 0.05, elite 0.1, vault_guard
     0.35, boss 0.35, vault 0, crate 0 (the gate reads the Elite's, a cache the fight's); `rewards.mods.band` 0.5 of the
     node's price band. PROVISIONAL (to fit in P3: mods held per character by the end of stage 2, target 1 to 2).
-4145. **Fit to any gun, the extra slot for the fee (rules 1.56 L3 items 2 and 3):** `forge.fit` rate 0.2, min 25,
+4149. **Fit to any gun, the extra slot for the fee (rules 1.56 L3 items 2 and 3):** `forge.fit` rate 0.2, min 25,
     unchanged. PROVISIONAL.
-4146. **Items 4144 to 4146 are rules 1.56 L3's.**
+4150. **Items 4148 to 4150 are rules 1.56 L3's.**
 
 ### Rules 1.56 (Balance 2.0), L6
 
-4147. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
-4148. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, hatchet, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. Ruled by the lead (15 Nov 2026): the list stands except the hatchet, which scales with Strength (Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not).
-4149. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
-4150. **Items 4147 to 4150 are rules 1.56 L6's.**
-
-### Rules 1.56 (Balance 2.0), XP
-
-4151. **XP a node pays (rules 1.56 XP item 1; `survival.json xp`):** `xp.base` 35, `xp.per_depth` 0; `xp.elite` 1.5,
-    `xp.boss` 5, `xp.cache` 0.25, `xp.vault_guard` 1.5, `stage.xp` [1, 2.6, 4, 4, 4.5] unchanged. Fitted by the
-    simulator against the targets of `docs/design/proposals/2026-11-xp-fit-0.29.md`; the target "level 2 by stop 4 to
-    5 for 80% on a typical route" is not met (25% to 46% of characters on the gear route: level 2 at stop 6 to 7): meeting it needs
-    base 50, which brings level 3 to stop 8, before the gate, against Leon's words. Supersedes item 4112's base and
-    per_depth. PROVISIONAL.
-4152. **The levels guard (rules 1.56 XP item 2):** the static route walk, 60 maps: level 3 at the door on 80% of
-    most-fights and 50% of typical routes; at most level 4 after the Boss; at most 1% of routes at level 3 before the
-    gate row, none before the row above it; 99% at level 3 after the Boss. Replaces the 1.54 guard (level 3 never
-    before depth 12). PROVISIONAL.
-4153. **Items 4151 to 4153 are rules 1.56 XP's.**
+4151. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
+4152. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, hatchet, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. Ruled by the lead (15 Nov 2026): the list stands except the hatchet, which scales with Strength (Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not).
+4153. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
+4154. **Items 4151 to 4154 are rules 1.56 L6's.**
 
 ### Rules 1.56 (Balance 2.0), L4 variants
 
-4154. **The kinds' worth (rules 1.56 L4 item 3; `variants.json kinds[].forms[].worth_per`):** Harder 100 a unit of multiplier (10% = 10), True 5 a point, Quick hands 6 an AP of reload, 3 an AP of core swap, 3 for the free Vent, Rider (Bleed) 8, Kind 40 a unit of multiplier (15% = 6), Deep magazine 0.5 a round, Long reach 2 a tile, Runs cool 1 a Heat, Kicks less 5 a point, Holds more Flux 3 a point, Deep cell 3 a charge, Steady heart 5 a point. Estimates from the Relic properties' worth; to be fitted with the gun and melee loops (each variant's id in the loop). PROVISIONAL.
-4155. **The worth cap (rules 1.56 L4 item 3; `variants.json worth_cap`):** 20% of a rifle-turn (Leon). PROVISIONAL.
-4156. **The twenty variant lines (rules 1.56 L4 item 6; `variants.json items`):** their grades (Fine; the rotary's and the Visualizer's 'Steady Eye' Masterwork) and values. PROVISIONAL.
-4157. **Items 4154 to 4157 are rules 1.56 L4's.**
+4155. **The kinds' worth (rules 1.56 L4 item 3; `variants.json kinds[].forms[].worth_per`):** Harder 100 a unit of multiplier (10% = 10), True 5 a point, Quick hands 6 an AP of reload, 3 an AP of core swap, 3 for the free Vent, Rider (Bleed) 8, Kind 40 a unit of multiplier (15% = 6), Deep magazine 0.5 a round, Long reach 2 a tile, Runs cool 1 a Heat, Kicks less 5 a point, Holds more Flux 3 a point, Deep cell 3 a charge, Steady heart 5 a point. Estimates from the Relic properties' worth; to be fitted with the gun and melee loops (each variant's id in the loop). PROVISIONAL.
+4156. **The worth cap (rules 1.56 L4 item 3; `variants.json worth_cap`):** 20% of a rifle-turn (Leon). PROVISIONAL.
+4157. **The twenty variant lines (rules 1.56 L4 item 6; `variants.json items`):** their grades (Fine; the rotary's and the Visualizer's 'Steady Eye' Masterwork) and values. PROVISIONAL.
+4158. **Items 4155 to 4158 are rules 1.56 L4's.**
+
+### Rules 1.56 (Balance 2.0), the 0.28.2 merge
+
+4159. **The counted items' field (rules 1.56, the 0.28.2 merge, item 1):** `counts_into` (0.29) kept, `counted`
+    (0.28.2, rules 1.55 item 42) retired into it: the stim injector `{stims, first}`, the Essence of Experience
+    `{essence, last}`. No number.

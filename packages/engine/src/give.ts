@@ -12,7 +12,7 @@ import './datatext';
 import svJ from '../../../data/survival.json';
 import { WEAPON, ITEM } from './data';
 import { type Character, type PackItem, packOf } from './character';
-import { packAdd, itemLabel } from './containers';
+import { packAdd, itemLabel, COUNTED, intoCounts } from './containers';
 import { creditsOf, payCredits, earnCredits } from './credits';
 import { relicRow, worthOf, runWorth, BOON_CAP } from './run/power';
 import type { GameState } from './game';
@@ -21,14 +21,18 @@ import type { GameState } from './game';
 export const GIVE: { where: string[]; at_start: boolean } = (svJ as any).give;
 /** A give (rules 1.46): from `charId` to `to`, one of: `idx` (a pack entry, `qty` of a stack or of its magazines),
  * `credits` (an amount), or a thing that is never given, named so the refusal is in words (`relic`, `train`, `armour`). */
-export interface GiveAction { type: 'gear/give'; charId: string; to: string; idx?: number; qty?: number; credits?: number; relic?: string; train?: string; armour?: boolean }
+export interface GiveAction { type: 'gear/give'; charId: string; to: string; idx?: number; qty?: number; credits?: number; relic?: string; train?: string; armour?: boolean;
+  /** Rules 1.55 item 31: a counted item (containers COUNTED: a stim, an Essence), `qty` of it. */ count?: string }
 
-/** Why no give can be made in this room now (the mode's where), in words, or null. */
-export function giveWhereProblem(g: GameState): string | null {
+/** Why no give can be made in this room now (the mode's where), in words, or null. `credits`: a give of credits, which
+ * keeps rules 1.46's where (the node kinds of `give.where`, the start); an item is given anywhere in a run that no fight
+ * is on (rules 1.55 item 30). */
+export function giveWhereProblem(g: GameState, credits = true): string | null {
   if (g.phase === 'combat' && g.combat && !g.combat.over) return 'Hand things over after the fight.';
   const r = g.run;
   if (r && r.state !== 'over') {
     if (r.state === 'fight') return 'Hand things over after the fight.';
+    if (!credits) return null;
     if (!r.at) return GIVE.at_start ? null : 'Hand things over at a stop with no fight.';
     const n = r.nodes.find((x) => x.id === r.at), k = n?.kind || '';
     if (!GIVE.where.includes(k)) return 'Hand things over at a stop with no fight: a shop, a Forge, a drill yard, a shrine, a rest, a cache or a crossroads.';
@@ -47,7 +51,7 @@ export function giveProblem(g: GameState, by: string, a: GiveAction): string | n
   if (c.owner !== by) return 'Only ' + c.name + '\'s player gives what ' + c.name + ' carries.';
   const others = Object.values(g.characters).filter((x) => x.id !== c.id);
   if (!others.length) return 'No one to hand anything to.';
-  const where = giveWhereProblem(g); if (where) return where;
+  const where = giveWhereProblem(g, a.credits != null); if (where) return where;
   const to = g.characters[a.to]; if (!to || to.id === c.id) return 'Give it to whom?';
   if (to.dead) return to.name + ' is dead.';
   if (c.dead) return 'The dead give nothing.';
@@ -58,6 +62,12 @@ export function giveProblem(g: GameState, by: string, a: GiveAction): string | n
     const n = Math.round(Number(a.credits));
     if (!(n >= 1)) return 'Give 1 credit or more.';
     if (n > creditsOf(c)) return c.name + ' has ' + creditsOf(c) + ' credits.';
+    return null;
+  }
+  if (a.count != null) { // rules 1.55 item 31: a counted item
+    const f = COUNTED[a.count], have = f ? c[f] || 0 : 0; if (!f) return 'That isn\'t something ' + c.name + ' carries.';
+    if (have < 1) return c.name + ' has no ' + nameOfId(a.count) + '.';
+    if (a.qty != null && !(Math.round(a.qty) >= 1 && Math.round(a.qty) <= have)) return 'Give 1 to ' + have + ' of those.';
     return null;
   }
   const it = a.idx == null ? undefined : packOf(c)[a.idx]; if (!it) return 'Nothing there in ' + c.name + '\'s pack.';
@@ -77,6 +87,11 @@ export function giveNow(g: GameState, by: string, a: GiveAction): { ok: string; 
     earnCredits(to, n);
     return { ok: c.name + ' gives ' + to.name + ' ' + n + ' credits.', to, from: c };
   }
+  if (a.count != null) { // rules 1.55 item 31: out of the giver's count, into the receiver's by intoCounts (the one door)
+    const f = COUNTED[a.count], n = Math.max(1, Math.min(c[f] || 0, Math.round(a.qty ?? 1)));
+    c[f] = (c[f] || 0) - n; intoCounts(to, { id: a.count, item: a.count, name: nameOfId(a.count), qty: n, kind: 'med' } as PackItem);
+    return { ok: c.name + ' gives ' + to.name + ' ' + (n > 1 ? n + ' × ' : '') + nameOfId(a.count) + '.', to, from: c };
+  }
   const pack = packOf(c).map((x) => ({ ...x })), it = pack[a.idx!], k = qtyOf(it, a.qty), part = partOf(it, k);
   if (it.mags) { const left = it.mags.slice(k); if (left.length) pack[a.idx!] = { ...it, mags: left, qty: left.length, ...(it.magTypes ? { magTypes: it.magTypes.slice(k) } : {}) }; else pack.splice(a.idx!, 1); }
   else if (it.qty > k) pack[a.idx!] = { ...it, qty: it.qty - k }; else pack.splice(a.idx!, 1);
@@ -93,8 +108,18 @@ export function giveNow(g: GameState, by: string, a: GiveAction): { ok: string; 
 /** One line of the Give tab (rules 1.46): the purse, a pack entry (`idx`), something in a hand or worn (`unequip`: put
  * it in the pack first), or a thing never given; for each possible receiver the engine's reason it can't go (null: it
  * can). The client only draws these and sends `action` with `to` (and an amount or a quantity). */
-export interface GiveRowV { key: string; kind: 'credits' | 'pack' | 'held' | 'never'; label: string; id: string; rarity: string; qty: number;
-  idx?: number; unequip?: string; why: Record<string, string | null>; action: Omit<GiveAction, 'to'> }
+export interface GiveRowV { key: string; kind: 'credits' | 'pack' | 'count' | 'held' | 'never'; label: string; id: string; rarity: string; qty: number;
+  idx?: number; unequip?: string; why: Record<string, string | null>; action: Omit<GiveAction, 'to'>;
+  /** Rules 1.55 item 32: the line can be used on a friend or on yourself: `action` with `targetId` set to that
+   * character's id; `why` per character of the party (yourself included), the engine's reason it can't now, or null. */
+  use?: UseRowV }
+/** A Give line's "Use on…" (rules 1.55 item 32). */
+export interface UseRowV { label: string; action: Record<string, unknown>; why: Record<string, string | null> }
+/** The reducer's door for using a counted item on a character out of a fight (game.ts registers it as it loads: this
+ * file can't import game.ts): the action for it, or null when the item has no use on a friend. */
+let USE_DOOR: ((g: GameState, me: string, from: string, item: string) => UseRowV | null) | null = null;
+/** game.ts's door for a Give line's "Use on…" (rules 1.55 item 32). */
+export const setUseDoor = (f: typeof USE_DOOR) => { USE_DOOR = f; };
 /** The Give tab for one player's character: who can receive, and every line with its reasons (rules 1.46). */
 export interface GiveViewV { from: { id: string; name: string; credits: number } | null; to: { id: string; name: string; owner: string; portrait: string }[]; rows: GiveRowV[]; none: string | null }
 const RARE = (r?: string) => (r && r !== 'standard' ? r.charAt(0).toUpperCase() + r.slice(1) + ' ' : '');
@@ -111,10 +136,13 @@ export function giveView(g: GameState, me: string, charId?: string | null): Give
   rows.push({ key: 'credits', kind: 'credits', label: 'Credits', id: 'credits', rarity: 'standard', qty: creditsOf(c), why: whys(cr), action: cr });
   packOf(c).forEach((it, idx) => { const a = { type: 'gear/give' as const, charId: c.id, idx };
     rows.push({ key: 'pack:' + idx, kind: 'pack', label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), id: it.weapon || it.item || it.id, rarity: it.rarity || 'standard', qty: it.mags ? it.mags.length : it.qty, idx, why: whys(a), action: a }); });
+  // rules 1.55 item 31: the counted items (a stim, an Essence) as lines of their own, with their use on a friend (item 32)
+  for (const [id, f] of Object.entries(COUNTED)) { const n = c[f] || 0; if (n < 1) continue; const a = { type: 'gear/give' as const, charId: c.id, count: id }, use = USE_DOOR ? USE_DOOR(g, me, c.id, id) : null;
+    rows.push({ key: 'count:' + id, kind: 'count', label: nameOfId(id), id, rarity: 'standard', qty: n, why: whys(a), action: a, ...(use ? { use } : {}) }); }
   const held: [string, string | undefined, string | undefined][] = [['main', c.weapon && c.weapon !== 'fists' ? c.weapon : undefined, c.weaponState?.rarity], ['off', c.offHand?.id, c.offHand?.rarity],
     ...Object.entries(c.worn || {}).map(([slot, id]) => [slot, id, 'standard'] as [string, string, string])];
   for (const [slot, id, rarity] of held) if (id) rows.push({ key: 'held:' + slot, kind: 'held', label: RARE(rarity) + nameOfId(id), id, rarity: rarity || 'standard', qty: 1, unequip: slot,
-    why: Object.fromEntries(to.map((t) => [t.id, giveWhereProblem(g) || none])), action: { type: 'gear/give', charId: c.id } });
+    why: Object.fromEntries(to.map((t) => [t.id, giveWhereProblem(g, false) || none])), action: { type: 'gear/give', charId: c.id } });
   for (const id of c.relics || []) { const a = { type: 'gear/give' as const, charId: c.id, relic: id }; rows.push({ key: 'relic:' + id, kind: 'never', label: relicRow(id)?.name || id, id, rarity: 'relic', qty: 1, why: whys(a), action: a }); }
   const tr = { type: 'gear/give' as const, charId: c.id, train: 'drill' };
   rows.push({ key: 'train', kind: 'never', label: 'What you have learned (drill, study, practice, Devotion)', id: 'train', rarity: 'standard', qty: 1, why: whys(tr), action: tr });

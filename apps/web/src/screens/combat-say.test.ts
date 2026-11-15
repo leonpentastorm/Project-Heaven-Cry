@@ -108,6 +108,17 @@ describe('the Say row in a fight (rules 1.14)', () => {
     await type(el, 'Hello?'); await click(sayBtn(el)); expect(G.combat!.log.at(-1)).toBe('MPAT: "Hello?"');
     await done();
   });
+  it('a waiting attempt nobody can answer (the Narrator gone) never locks the panel: End turn gives it back and ends the turn', async () => {
+    fight(); doAct({ type: 'combat/attempt', unitId: pc().id, text: 'Drop it, Keel.' }); doAct({ type: 'narrator/ready', ready: false });
+    expect(fightRulingOf(G.combat)).toBeTruthy();
+    const { el, done } = await mount(); const round = G.combat!.round;
+    expect(q(el, '[data-fight-ruling]').length).toBe(0); expect(q(el, '.phc-cb-dock')[0].getAttribute('data-lock')).toBe('');
+    const end = q<HTMLButtonElement>(el, 'button.phc-cb-act').find((b) => b.textContent === 'End turn')!; expect(end.disabled).toBe(false);
+    await click(end); await settle();
+    expect(fightRulingOf(G.combat)).toBeNull(); expect(G.combat!.log.join('\n')).toContain('MPAT gets 1 AP back');
+    expect(G.combat!.round).toBeGreaterThan(round); // the turn ended (the foes' turns ran after it)
+    await done();
+  });
   it('Attempt is off with its reason: it isn\'t your turn', async () => {
     fight(); const foe = G.combat!.units.find((u) => u.side === 'foe')!; G.combat!.turn = G.combat!.order.indexOf(foe.id); refresh();
     const { el, done } = await mount();
