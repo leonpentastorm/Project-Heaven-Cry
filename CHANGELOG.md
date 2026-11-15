@@ -16,6 +16,22 @@ A patch release from Leon's playtest of 0.28.2: Guide and the healing price. The
 - **Healing costs three times the MP** (rules 1.55 item 46; Leon: "by mp is tiny i meant bond healer have way too many fucking heal, they carry the weak as shit tank in my run"): every Tending verb and every Mender move that spends MP is 3× its 0.28.2 price: Mend, Mend Yourself, Touch 24 MP (were 8; 18 from Empathy 9), Shield 30 (10), Settle 15 (5), Soothe 18 (6), Raise 36 (12), Guide 15 (5), Field Surgery 45 (15), Triage 18 (6), Inspire 30 (10), Rally 60 (20). AP, heal sizes and Max MP unchanged. The cards and bar buttons show the MP beside the AP. PROVISIONAL.
 - **Syphon through the Attuner** (rules 1.55 item 48): any MP focus in hand can Syphon, so a Mender refills MP from the air with its Attuner, in a fight and on the area map. With the Attuner in the pack the button is greyed and says why. Stowing the Attuner in a fight now stops what it gives at once.
 - **Syphon has a floor** (rules 1.55 item 47): it takes 2 from the mana meter and is refused when the meter can't pay ("The air here is spent: nothing to Syphon."). From a fight's start of 15 that is at most 7 Syphons, shared by the party; deaths raise the meter. PROVISIONAL.
+- **Bond can pick enemies again** (Leon on 0.28.2: "bond cannot select enemies"). With Bond picked, a click on an enemy
+  outside its reach turned the action into a plain Shot with no word (`apps/web/src/game/actionFlow.ts` click: a unit
+  not in the step's choices fell through to `screens/combat.js` tileClick's "a foe clicked is an attack"). Now, while a
+  unit pick is open, a click on a unit is always that pick: in its choices it is picked; otherwise the screen says the
+  engine's reason for that unit ("✕ Soldier B: Out of range (6 tiles).") and the action stays picked. The same held for
+  every unit pick whose choices are narrowed by reach: the Tending and Shadow verbs, class moves with a reach, Stim and
+  Stim throw, ally prayers and Calls, Pull free. Tests: `screens/combat-unit-pick.test.ts` (the real tileClick, a
+  Survival fight at level 1 with the Empath's Attuner), `packages/engine/test/bond-reach.test.ts` (the reducer).
+- **Bonds and Tending have effects** (Leon: "no effect, no animation, no nothing, feels like standing still";
+  `apps/web/src/game/fx/bonds.ts`, in the tie kind's ink from `rules.json`, paced by the combat speed, off under Reduce
+  motion; no new engine event): a Bond tied (the Bonder's wind-up, the Figment cast's in Insight ink; a thread to the
+  target; the standing tie line draws itself in; BONDED), a Bond resisted (the thread frays short; RESISTED), a heal
+  down a Bond (a pulse runs the line from the Mender, then the one +N), a Guide (the guide's gesture and thread;
+  GUIDED), a Bond ending, read from the view (the line parts from its middle and both ends recoil; BOND BROKEN). Not
+  drawn, for want of an engine event: the echo into a Bonded enemy and the damage share (the `deal` and `redirect` ops
+  emit no fx), and an un-Bonded Tending heal (the heal event names no giver: it keeps the plain heal).
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 

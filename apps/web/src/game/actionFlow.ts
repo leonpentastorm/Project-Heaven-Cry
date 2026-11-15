@@ -49,7 +49,8 @@ export interface FlowView {
   /** The engine's preview with some picks changed (a perk form's single choice, each option's verdict). */
   peekWith: (more: Picks) => DescriptorPreview | null;
   ready: boolean; action: any | null;
-  /** What a grid click does: a state patch for the screen, or null (the screen's own default runs). */
+  /** What a grid click does: a state patch for the screen, or null (the screen's own default runs). A patch
+   *  { refused: words } is a unit the open pick can't take: the screen says the words and changes nothing. */
   click: (u: { id: string; side: string } | null, k: string) => Record<string, any> | null;
   /** The state to clear after Confirm. */
   after: Record<string, any>;
@@ -118,7 +119,16 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     const steps = d.picks.filter((st) => stepOn(st, picks));
     if (u && u.id) {
       const fits = steps.filter((st) => UNIT_KINDS.includes(st.kind) && (!st.choices || st.choices.includes(u.id)));
-      if (!fits.length) { const t = steps.find((st) => st.kind === 'tile' && (!st.choices || st.choices.includes(k))); return t ? { tile: S.tile === k && t.optional ? null : k } : null; }
+      if (!fits.length) {
+        const t = steps.find((st) => st.kind === 'tile' && (!st.choices || st.choices.includes(k))); if (t) return { tile: S.tile === k && t.optional ? null : k };
+        // 0.28.3 (Leon: "bond cannot select enemies"): while a unit pick is open, a click on a unit is ALWAYS that pick. One
+        // that is not among its choices is refused in the engine's words for that unit (reachWhy: out of range, not in
+        // sight, cannot be Bonded), and the action stays picked: it never falls through to the screen's plain attack.
+        const us = steps.find((st) => UNIT_KINDS.includes(st.kind));
+        if (!us) return null;
+        const pv2 = peekWith({ [us.key]: u.id }), name = (cb.units.find((x: any) => x.id === u.id) || {}).name || '';
+        return { refused: (name ? name + ': ' : '') + ((pv2 && !pv2.ok && pv2.why) || us.prompt) };
+      }
       // two at once (a prayer for two): a click adds or takes one away
       const two = fits.find((st) => st.key === 'targetId2');
       if (two) { const now = [S.target, S.target2].filter((x) => x && x !== u.id && (!two.choices || two.choices.includes(x))); const sel = [S.target, S.target2].includes(u.id) ? now : [...now, u.id].slice(-2); return { target: sel[0] || null, target2: sel[1] || null }; }
