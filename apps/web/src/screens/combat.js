@@ -1526,7 +1526,12 @@ export class CombatLogic extends DCLogic {
         headOf[first.key] = fu ? figmentHead(sb, { unit: fu.id, img: faceOf(fu), short: fu.short || fu.name.slice(0, 2).toUpperCase(), ink: ring(fu) }) : subHead(sb); });
     });
     const tabIds = groups.map((gr) => gr.id);
-    if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
+    // A new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move. Keyed by the
+    // turn itself, not by the render that saw the unit change: that render may still be waiting on the last turn's
+    // effects (turnWait), and the turn must still open on its tab once they have played (0.29: a Survival fight's first turn).
+    const tabTurn = mineTurn ? cur.id + ':' + cb.round + ':' + cb.turn : null;
+    if (mineTurn && (newTurn || tabTurn !== this._tabTurn)) {
+      this._tabTurn = tabTurn;
       const seenHostile = foes.some((u) => !u.downed);
       // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
       // A character's first turn of a fight (0.29, the doors): its top door's tab, when that tab has an action it can use now.
@@ -1535,7 +1540,9 @@ export class CombatLogic extends DCLogic {
     }
     // The tab follows the action: picked on the turn card, or implied by a tile click (a hostile → Attack).
     if (S.action !== this._tabAction) { this._tabAction = S.action; if (tabOf[S.action]) S.tab = tabOf[S.action]; if (mineTurn) this.revealAction(); }
-    if (!tabIds.includes(S.tab)) S.tab = tabOf[S.action] || tabIds[0];
+    // (only on your turn: a render while the last turn's effects still play draws someone else's short list, and must not
+    // throw away the tab your turn opened on; the panel shows the first tab meanwhile)
+    if (!tabIds.includes(S.tab) && mineTurn) S.tab = tabOf[S.action] || tabIds[0];
     if (mineTurn) tabMem(cur.charId, S.tab);
     // Your resource rows, once the tab is settled (one fact, one place; Leon, live 0.24.0): with the HEART panel up (the
     // Outbursts tab, an Outburst held) Strain and the held Outburst are the panel's; on the Attack tab a jammed gun's
