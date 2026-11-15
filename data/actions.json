@@ -199,7 +199,7 @@
       "why": {
         "hidden": "Already Hidden: strike from here, or move and stay out of every enemy's eyes.",
         "marked": "You are Marked: no hiding until it wears off.",
-        "boss": "A Boss stands in the open: no hiding near it after the first round.",
+        "boss": "A Boss can't hide once the first round is over: it stands in the open.",
         "seen": "An enemy can see you: break line of sight or get behind cover first."
       },
       "adjudication": "engine"
