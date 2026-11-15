@@ -4770,6 +4770,7 @@
         "arg": "tie",
         "about": "actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
         "values": [
+          "verse",
           "owned",
           "bond"
         ]
@@ -4778,6 +4779,7 @@
         "arg": "tie",
         "about": "target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
         "values": [
+          "verse",
           "owned",
           "bond"
         ]
@@ -4826,6 +4828,7 @@
         "arg": "tie",
         "about": "the holder holds a tie of this kind (a kind, or {kind, side: foe, ally or any}: its far end of that side to the holder)",
         "values": [
+          "verse",
           "owned",
           "bond"
         ]
@@ -4838,6 +4841,7 @@
         "arg": "tie",
         "about": "the holder may hold one more tie of this kind (under its cap: kit.ts tieCap)",
         "values": [
+          "verse",
           "owned",
           "bond"
         ]
@@ -4846,6 +4850,7 @@
         "arg": "tie",
         "about": "actor is not tied to the holder by this kind (as actor_tied)",
         "values": [
+          "verse",
           "owned",
           "bond"
         ]
@@ -4854,6 +4859,7 @@
         "arg": "tie",
         "about": "target is not tied to the holder by this kind (as target_tied)",
         "values": [
+          "verse",
           "owned",
           "bond"
         ]

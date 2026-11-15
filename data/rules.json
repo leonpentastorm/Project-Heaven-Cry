@@ -2514,6 +2514,15 @@
     "about": "Classes 3.0 P8 (engine: kit.ts tie, untie, tiesOf): the kinds of tie between two units. A row: id, max (a holder's base cap; the stat ties_max:<kind> adds to it; no max: no cap), ends_on (from_down, to_down, to_dead, unseen_round, combat_end), on_end (none, or unmake: the far end is unmade, P9), line (the map draws the tie: ink, and foe_dash, the dash pattern to a unit of another side; screenViews.ts tieLines). Each system adds its own kind.",
     "kinds": [
       {
+        "id": "verse",
+        "about": "Prayer 2.0 review fix (16 Nov 2026): a Chaplain's Canticle ties the singer to each ally its verses reached (from: the singer). When the singer is hurt, the break ends the verses only on the units tied to it, and every verse tie it holds; the song lapsing (a turn without singing) ends them too. No cap, no line.",
+        "ends_on": [
+          "from_down",
+          "combat_end"
+        ],
+        "on_end": "none"
+      },
+      {
         "id": "owned",
         "about": "Classes 3.0 P9: an owned unit (owned.ts): its owner is the from end. The drone, the beast and the twin are tied so, for the whole fight; a system that needs more ends (an owner going Down, an unmake) adds its own kind.",
         "ends_on": [

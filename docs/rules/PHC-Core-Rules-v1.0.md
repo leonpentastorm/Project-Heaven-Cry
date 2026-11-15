@@ -6364,9 +6364,11 @@ every number is PROVISIONAL (items 4480 to 4489). Rules 1.6, 1.22 and 1.31 stand
    It is not a prayer: it uses neither the turn's Whisper nor the Hymn's wait. The singer and every ally within 2 tiles
    carry the singer's patron's **verse** for 2 rounds (each cast puts it on again). An Atheist rolls the Whisper's TN
    for it, as for any prayer; a miss gives no verse but the song goes on.
-2. **The verses grow** (item 4481). Each turn in a row the Chaplain sings, the song climbs a verse: I, II, III. From
-   Faith 5 the third verse adds **Crescendo** (+1 to hit) to everyone within 3 tiles (not for the Counting Weaver,
-   whose own verse is to hit). A turn without singing starts the song again from verse I.
+2. **The verses grow** (item 4481). Each turn in a row the Chaplain sings, the song climbs a verse: I, II, III. The
+   second verse adds **Rising** (+1 to hit, `conditions.json canticle_rising`) to the singer and every ally within 1
+   tile; from Faith 5 the third verse replaces it with **Crescendo** (+1 to hit) for everyone within 3 tiles
+   (a singer under Faith 5 keeps singing Rising; neither for the Counting Weaver, whose own verse is to hit). A turn
+   without singing starts the song again from verse I. (Review fix, 16 Nov 2026: verse II changed nothing before.)
 3. **The patron's verses** (item 4482): Nerukhan, *Shelter of the Saints*: damage taken ×0.9 (rounded up). The
    Quartermaster, *Short Supply*: the first reload each turn 1 AP less. The Laughing Mask, *Missed Me*: an enemy that
    misses you banks 1 AP for your next turn, at most twice a fight. The Toll-Keeper, *Not Yet*: the first blow that would
@@ -6374,7 +6376,8 @@ every number is PROVISIONAL (items 4480 to 4489). Rules 1.6, 1.22 and 1.31 stand
    *Gathering*: your damage +6%. The Matchmaker, *Hold My Hand*: +2 on saves against Heart conditions. The Counting
    Weaver, *Foreknown*: +1 to hit. An Atheist, *Stubborn*: +1 on every save.
 4. **The song breaks** (item 4483): a blow that takes the singer's HP (a hit, not a hazard, Bleeding or its own
-   Strain) ends every verse on the singer and on its allies within 3 tiles, and the song starts again from verse I.
+   Strain) ends every verse on the singer and on the allies its song reached (each sing ties the singer to them: the tie
+   kind `verse`), never another Chaplain's song on allies only that one reached, and the song starts again from verse I.
    A shield that holds does not break it.
 5. **Amen** (a gain; item 4484): after the Chaplain prays (a Whisper, a Hymn, a Miracle, Ward or Sanctuary), the
    first hit an ally lands on an enemy still standing before the Chaplain's next turn adds 10 × Blessing power Soul
@@ -9995,13 +9998,16 @@ Items 4148 to 4150.
 
 4480. **The Canticle (rules 1.56 prayer 2.0 item 1; `classes.json guardian.gain canticle`):** 1 AP, once a turn,
     from Faith 1; verses within 2 tiles for 2 rounds. PROVISIONAL.
-4481. **The verses grow (item 2):** verse III at Faith 5; Crescendo +1 to hit within 3 tiles
+4481. **The verses grow (item 2):** verse II, Rising, +1 to hit within 1 tile (Crescendo's step at a third of its reach)
+    (`conditions.json canticle_rising`, review fix 16 Nov 2026); verse III at Faith 5; Crescendo +1 to hit within 3 tiles
     (`conditions.json canticle_crescendo`). PROVISIONAL.
 4482. **The patron's verses (item 3; `conditions.json canticle_*`):** ×0.9 taken; −1 AP on the first reload a turn;
     1 AP banked on a miss, twice a fight; a floor of 1 HP once a fight; heals ×1.25; damage +6% (softened from +10% so the
     squad's gain stays under the `canticle_squad` ceiling of +8%); +2 on Heart saves; +1 to hit; +1 on saves (Atheist).
     PROVISIONAL.
-4483. **The song breaks (item 4):** a blow that takes the singer's HP; reach 3 tiles. PROVISIONAL.
+4483. **The song breaks (item 4):** a blow that takes the singer's HP; it ends the verses on the singer and on the
+    allies its song reached (the tie kind `verse`, rules.json ties.kinds), never another Chaplain's song on the others
+    (review fix, 16 Nov 2026: it was every verse within 3 tiles). PROVISIONAL.
 4484. **Amen (item 5):** base 10, profile blessing, Soul, through armour; set by any prayer of the Chaplain's (the
     acted name of a Whisper and a Hymn is the same cost site, `pray`, so the draft's "after your Hymn" reads "after
     your prayer"). PROVISIONAL.

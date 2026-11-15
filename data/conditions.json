@@ -3423,6 +3423,37 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+    },
+    {
+      "id": "canticle_rising",
+      "name": "Rising",
+      "label": "Rising (to hit, shoulder to shoulder)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "The second verse: you have {=effects.0.value|signed} to hit, at the singer's shoulder (the singer and the allies next to it; the third verse, Crescendo, reaches further). A verse of a Chaplain's Canticle: it lasts {=duration.rounds} rounds, is sung again each turn, and ends when the song breaks.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": 1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "the song breaks",
+        "end of fight"
+      ],
+      "stacks": false,
+      "set_by": "class:guardian.canticle",
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "Prayer 2.0 review fix (16 Nov 2026): the second verse is felt (a part of Crescendo: its +1 to hit, within 1 tile of the singer instead of 3)"
     }
   ],
   "families": {

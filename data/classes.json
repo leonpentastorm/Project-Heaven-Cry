@@ -2062,7 +2062,7 @@
           "ap_cost": 1,
           "uses": "per_turn",
           "door_line": "Sing the Canticle each turn: you and everyone near you carry your patron's verse, and it grows while you keep singing, until a wound breaks the song.",
-          "text": "Sing ({=effects.0.ap} AP, once a turn; not a prayer, so your Whisper and your Hymn stay free). You and every ally within {=effects.0.effects.4.targets.within} tiles carry your patron's verse for {=effects.0.effects.4.rounds} rounds (each patron sings its own: the verse's card says what it gives; an Atheist rolls the Whisper's TN for it). Sing again on your next turn and the song grows: the second verse, then, from Faith {=effects.0.effects.13.if.self_skill.faith}, the third, Crescendo, which steadies every aim within {=effects.0.effects.13.targets.within} tiles (not for the Counting Weaver, whose verse already does). Skip a turn and it starts again from the first verse. A blow that takes your HP breaks the song: every verse on you and your allies ends.",
+          "text": "Sing ({=effects.0.ap} AP, once a turn; not a prayer, so your Whisper and your Hymn stay free). You and every ally within {=effects.0.effects.4.targets.within} tiles carry your patron's verse for {=effects.0.effects.4.rounds} rounds (each patron sings its own: the verse's card says what it gives; an Atheist rolls the Whisper's TN for it). Sing again on your next turn and the song grows: the second verse, Rising, which steadies the aim of everyone within {=effects.0.effects.14.targets.within} tile, then, from Faith {=effects.0.effects.13.if.self_skill.faith}, the third, Crescendo, which steadies every aim within {=effects.0.effects.13.targets.within} tiles in its place (neither for the Counting Weaver, whose verse already does). Skip a turn and it starts again from the first verse. A blow that takes your HP breaks the song: the verses on you and on every ally your song reached end (another Chaplain's song on the others holds).",
           "effects": [
             {
               "op": "grant_action",
@@ -2311,6 +2311,94 @@
                       "counting_weaver"
                     ]
                   }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_rising",
+                  "targets": {
+                    "of": "self",
+                    "within": 1,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "flag": "verse_2",
+                    "no_flag": "verse_3",
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "canticle_rising",
+                  "targets": {
+                    "of": "self",
+                    "within": 1,
+                    "side": "side"
+                  },
+                  "rounds": 2,
+                  "skip_save": true,
+                  "if": {
+                    "flag": "verse_3",
+                    "self_skill_below": {
+                      "faith": 5
+                    },
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                },
+                {
+                  "op": "cleanse",
+                  "when": "acted",
+                  "condition": "canticle_rising",
+                  "targets": {
+                    "of": "self",
+                    "within": 3,
+                    "side": "side"
+                  },
+                  "if": {
+                    "flag": "verse_3",
+                    "self_skill": {
+                      "faith": 5
+                    },
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
+                },
+                {
+                  "op": "tie",
+                  "when": "acted",
+                  "kind": "verse",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "ally"
+                  }
+                },
+                {
+                  "op": "tie",
+                  "when": "acted",
+                  "kind": "verse",
+                  "targets": {
+                    "of": "self",
+                    "within": 3,
+                    "side": "ally"
+                  },
+                  "if": {
+                    "flag": "verse_3",
+                    "self_skill": {
+                      "faith": 5
+                    },
+                    "not_patron": [
+                      "counting_weaver"
+                    ]
+                  }
                 }
               ]
             },
@@ -2340,6 +2428,11 @@
                   "op": "mark",
                   "flag": "verse_3",
                   "clear": true
+                },
+                {
+                  "op": "tie",
+                  "kind": "verse",
+                  "clear": "all"
                 }
               ]
             },
@@ -2362,18 +2455,40 @@
                 "canticle_the_matchmaker",
                 "canticle_counting_weaver",
                 "canticle_plain",
-                "canticle_crescendo"
+                "canticle_crescendo",
+                "canticle_rising"
               ],
               "if": {
                 "by_hit": true,
                 "flag": "held"
               },
-              "targets": {
-                "of": "self",
-                "within": 3,
-                "side": "side"
-              },
               "and": [
+                {
+                  "op": "cleanse",
+                  "condition": [
+                    "canticle_nerukhan",
+                    "canticle_the_quartermaster",
+                    "canticle_the_laughing_mask",
+                    "canticle_toll_keeper",
+                    "canticle_mother_ember",
+                    "canticle_old_overcast",
+                    "canticle_the_matchmaker",
+                    "canticle_counting_weaver",
+                    "canticle_plain",
+                    "canticle_crescendo",
+                    "canticle_rising"
+                  ],
+                  "targets": {
+                    "of": "self",
+                    "side": "ally",
+                    "tied": "verse"
+                  }
+                },
+                {
+                  "op": "tie",
+                  "kind": "verse",
+                  "clear": "all"
+                },
                 {
                   "op": "mark",
                   "flag": "sung",

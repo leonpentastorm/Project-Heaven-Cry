@@ -3,14 +3,16 @@
 // the numbers read from the data.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { CLASS, condOn, applyDamage, d20, setDevotionXp, devotionThreshold, actionsFor, CONDITION_ROWS, type Unit, type Character, type Action } from '../src';
+import { CLASS, enemyTurn, condOn, applyDamage, d20, setDevotionXp, devotionThreshold, actionsFor, CONDITION_ROWS, type Unit, type Character, type Action } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
+import { onHook } from '../src/effects/hooks';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const GAIN = Object.fromEntries(((CLASS.guardian as any).gain as any[]).map((m) => [m.id, m]));
 const CANT = GAIN.canticle, SUNG: any[] = CANT.effects[0].effects;
 const VERSE_IN = SUNG.find((e) => e.op === 'condition' && e.condition === 'canticle_old_overcast').targets.within as number;
 const CRESC = SUNG.find((e) => e.condition === 'canticle_crescendo');
+const RISING = (CONDITION_ROWS as any[]).find((r) => r.id === 'canticle_rising');
 const verseOf = (p: string) => (p ? 'canticle_' + p : 'canticle_plain');
 
 type Opt = { patron?: string | null; faith?: number; cls?: boolean };
@@ -49,10 +51,10 @@ function chap(o: Opt = {}) {
 }
 
 describe('the data', () => {
-  it('the Chaplain\'s gains: the presence, the Canticle, Amen, Holy Dread, Last Rites; ten verse rows, every one a boon', () => {
+  it('the Chaplain\'s gains: the presence, the Canticle, Amen, Holy Dread, Last Rites; eleven verse rows (Rising, the second verse), every one a boon', () => {
     expect(Object.keys(GAIN)).toEqual(['at_your_side', 'canticle', 'amen', 'holy_dread', 'last_rites']);
     const rows = (CONDITION_ROWS as any[]).filter((r) => r.id.startsWith('canticle_'));
-    expect(rows.length).toBe(10); for (const r of rows) { expect(r.boon).toBe(true); expect(r.adjudication).toBe('engine'); }
+    expect(rows.length).toBe(11); for (const r of rows) { expect(r.boon).toBe(true); expect(r.adjudication).toBe('engine'); }
     for (const g of Object.values(GAIN)) expect((g as any).adjudication).toBe('engine');
     expect(typeof CANT.door_line).toBe('string');
   });
@@ -84,6 +86,31 @@ describe('the Canticle', () => {
     expect(h.fx('canticle').at(-1).verse).toBe(3); expect(condOn(h.a1, 'canticle_crescendo')).toBe(true); expect(CRESC.targets.within).toBeGreaterThan(VERSE_IN);
     h.nextTurn(); h.nextTurn(); h.sing(); expect(h.fx('canticle').at(-1).verse).toBe(1);
   });
+  it("verse II is felt: Rising, Crescendo's +1 to hit at the singer's shoulder (1 tile); Crescendo takes its place at verse III", () => {
+    const h = chap(); h.sing();
+    expect(condOn(h.a1, 'canticle_rising')).toBe(false);
+    h.a2.pos = '2,7'; // 2 tiles: the verse reaches it, Rising does not
+    h.nextTurn(); h.sing();
+    expect(h.fx('canticle').at(-1).verse).toBe(2);
+    expect(condOn(h.a1, 'canticle_rising')).toBe(true); expect(condOn(h.me, 'canticle_rising')).toBe(true);
+    expect(condOn(h.a2, 'canticle_old_overcast')).toBe(true); expect(condOn(h.a2, 'canticle_rising')).toBe(false);
+    const cres = (CONDITION_ROWS as any[]).find((r) => r.id === 'canticle_crescendo').effects[0];
+    expect(RISING.effects[0]).toMatchObject({ op: 'roll_mod', when: 'to_hit', value: cres.value });
+    const rise = SUNG.find((e) => e.condition === 'canticle_rising'); expect(rise.targets.within).toBeLessThan(CRESC.targets.within);
+    h.nextTurn(); h.sing();
+    expect(h.fx('canticle').at(-1).verse).toBe(3); expect(condOn(h.me, 'canticle_crescendo')).toBe(true); expect(condOn(h.me, 'canticle_rising')).toBe(false);
+  });
+  it('Rising is felt: the same shot with it and without it differs by its value', () => {
+    const h = chap(); h.sing(); h.nextTurn(); h.sing(); expect(condOn(h.a1, 'canticle_rising')).toBe(true);
+    const terms: number[] = []; onHook('attack_roll', (ctx: any) => { if (ctx.att?.id === h.a1.id) terms.push(ctx.toHit); });
+    h.f.turn(h.a1); h.a1.ap = 9; (h.a1 as any).heat = 0; h.shoot(h.a1, h.foe);
+    delete h.a1.conds!.canticle_rising; (h.a1 as any).heat = 0; h.a1.ap = 9; h.shoot(h.a1, h.foe);
+    expect(terms.length).toBe(2); expect(terms[0] - terms[1]).toBe(RISING.effects[0].value);
+  });
+  it('a singer under Faith 5 keeps singing Rising at verse III', () => {
+    const h = chap({ faith: CRESC.if.self_skill.faith - 1 }); h.sing(); h.nextTurn(); h.sing(); h.nextTurn(); h.sing();
+    expect(h.fx('canticle').at(-1).verse).toBe(3); expect(condOn(h.a1, 'canticle_rising')).toBe(true); expect(condOn(h.a1, 'canticle_crescendo')).toBe(false);
+  });
   it('verse III needs Faith 5', () => {
     const h = chap({ faith: CRESC.if.self_skill.faith - 1 }); h.sing(); h.nextTurn(); h.sing(); h.nextTurn(); h.sing();
     expect(h.fx('canticle').at(-1).verse).toBe(3); expect(condOn(h.a1, 'canticle_crescendo')).toBe(false);
@@ -102,6 +129,26 @@ describe('the Canticle', () => {
     withGame(h.g, () => applyDamage(h.cb, h.a1, 20, { by: h.foe, type: 'weapon', shield: true, credit: 'hp' } as any));
     const v = (CONDITION_ROWS as any[]).find((r) => r.id === 'canticle_nerukhan').effects[0].value;
     expect(hp - h.a1.hp).toBe(Math.ceil(20 * v));
+  });
+  it('two Chaplains: a blow on one breaks only its own song; the verses the other gave to allies near it hold', () => {
+    const specs: CharSpec[] = [1, 2].map((i) => ({ name: 'Chaplain ' + i, skills: { faith: 6 }, attrs: { virtue: 8 }, level: 12, classId: 'guardian' }));
+    const f = fightWith([...specs, { name: 'Medic' }, { name: 'Gunner' }], [{ at: 'F6' }], { level: 12 });
+    const [A, B, nearA, nearB] = f.pcs; const foe = f.foes[0];
+    ['old_overcast', 'mother_ember'].forEach((p, i) => { const c = f.g.characters[f.pcs[i].charId!]; c.belief = { kind: 'faithful', patron: p }; c.patron = p; setDevotionXp(c, devotionThreshold(6)); c.devotion = 6; });
+    A.pos = '2,2'; nearA.pos = '2,3'; nearB.pos = '5,2'; B.pos = '7,2'; foe.pos = '12,12'; // nearB: 3 tiles from A (outside its song, inside the old break's reach)
+    for (const u of f.cb.units) { u.hp = u.maxHp; u.conds = {}; u.shield = 0; delete u.shields; }
+    const sing = (u: Unit) => { f.turn(u); const who = f.g.characters[u.charId!]?.owner || 'host'; f.act({ type: 'combat/perk', unitId: u.id, id: 'class:guardian.canticle', actionId: 'canticle' } as Action, who); f.act({ type: 'combat/end-turn', unitId: u.id } as Action, who); };
+    sing(f.unit(A.id)); sing(f.unit(B.id));
+    expect(condOn(f.unit(nearA.id), 'canticle_old_overcast')).toBe(true); expect(condOn(f.unit(nearB.id), 'canticle_mother_ember')).toBe(true);
+    expect(condOn(f.unit(nearB.id), 'canticle_old_overcast')).toBe(false);
+    // the foe, next to A and far from everyone else, takes its own turn (the enemy AI) and hits A
+    f.unit(foe.id).pos = '1,2'; f.turn(foe); const x = f.unit(foe.id); x.attack = 99; const hp = f.unit(A.id).hp;
+    withGame(f.g, () => enemyTurn(f.cb, f.g.rng));
+    expect(f.unit(A.id).hp).toBeLessThan(hp);
+    expect(condOn(f.unit(A.id), 'canticle_old_overcast')).toBe(false); expect(condOn(f.unit(nearA.id), 'canticle_old_overcast')).toBe(false);
+    expect(condOn(f.unit(B.id), 'canticle_mother_ember')).toBe(true); expect(condOn(f.unit(nearB.id), 'canticle_mother_ember')).toBe(true);
+    expect((f.cb.ties || []).filter((t: any) => t.kind === 'verse' && t.from === A.id).length).toBe(0);
+    expect((f.cb.ties || []).some((t: any) => t.kind === 'verse' && t.from === B.id && t.to === nearB.id)).toBe(true);
   });
   it('only the Chaplain sings', () => {
     const h = chap({ cls: false }); expect(() => h.sing()).toThrow();
