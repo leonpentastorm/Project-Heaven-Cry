@@ -1,0 +1,2 @@
+PASS: 66 unique rows; catalog/master/native hashes; PNG dimensions/modes; 50 alpha-safe subjects; 37 white-ink masks; all UI exports; 3 estimated eye-line crops.
+LIMITATION: 13 scene exports are upscaled. Runtime wiring and production approval remain pending.

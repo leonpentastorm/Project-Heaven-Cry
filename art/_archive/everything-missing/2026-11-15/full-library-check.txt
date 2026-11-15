@@ -1,0 +1,1 @@
+FULL LIBRARY CHECK NOT ESTABLISHED: ValueError Missing file: art/icons/skills/durability.png

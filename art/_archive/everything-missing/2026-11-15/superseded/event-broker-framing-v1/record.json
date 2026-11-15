@@ -1,0 +1,47 @@
+{
+  "number": 48,
+  "id": "event-broker",
+  "name": "Teo Vant, the Crossroads broker",
+  "path": "art/portraits/survival/event-broker.png",
+  "mode": "portrait",
+  "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New\nFaces images as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective\ndry-brush scumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy\nand restrained stylization (not enormous eyes, not interchangeable pointed chins, not flat cel shading) and specific\nemotional acting. Paint forms directly; avoid photographed skin with a texture overlay. Preserve local material\ncolours and quiet dark areas. Match the references' finish without copying their characters, clothes, composition or\nincidental accessories. Follow the lore for tools and magic. Format: 4:5, 800 x 1000 PNG, one character, shown from\nthe chest or waist up, one visible action, one specific emotion, one useful setting hint behind them. No\nunrequested text, frame, UI or watermark; no real-world person, brand or recognisable character.\n\n\nPaint this ONE subject:\nA road-worn dealer at a crossroads stall: a wiry man in his late thirties in a dusty travelling coat with many pockets, a canvas awning above, three small wrapped bundles on the board in front of him. Action: tapping the board once, as if to say \"one deal each\". Emotion: friendly and calculating, a man who has seen every kind of customer. His line: \"Everyone who walks this road wants something. So do I.\" (Stand-in: `veyra-salt`.)\n\nCOMPOSITION: eyes horizontally centered around 22% down from the TOP, clear headroom, chest/waist below; never crop the crown. Medium waist-up portrait. Hands below face, anatomically clear.\nFRAMING REVISION: Preserve the SAME person, face, hair, costume, gesture and props from the attached previous portrait. Pull back slightly and lower this person in the frame. Leave more background above the head: eyes precisely 22 percent down from canvas top, not 12\u201315 percent. Whole head fully visible, useful background headroom, waist and active hands below. Medium waist-up 4:5 portrait. Keep angular ink and opaque gouache. This is an illustration, not photo skin with texture.",
+  "refs": [
+    "art/portraits/world/new-faces/orren-vask.png",
+    "art/portraits/world/new-faces/ivara-drenn.png",
+    "art/portraits/survival/keeper-ahoc.png",
+    "art/portraits/survival/keeper-city.png",
+    "art/_archive/everything-missing/2026-11-15/superseded/event-broker-framing-v1/master.png"
+  ],
+  "transparent": false,
+  "status": "review-candidate",
+  "production_approved": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "source_path": "art/_archive/everything-missing/2026-11-15/native-renders/event-broker.png",
+  "source_sha256": "25ce8eb03b32d3fad069c9923edfa4a59f028355cd262b0579da37c49eb50e5d",
+  "sha256": "cc92d06d4642bbee84e066d812df08c88b7dc1b13419012531d30f6fb4cb775a",
+  "exports": {},
+  "upscaled": false,
+  "export_processing": "Aspect-preserving portrait crop using painted headroom to align estimated eye midpoint to 22%; Lanczos downsample",
+  "export_crop": [
+    48,
+    120,
+    1074,
+    1402
+  ],
+  "eye_line": {
+    "x": 0.456,
+    "y": 0.22
+  },
+  "eye_line_method": "Manual estimate on native render, transformed through recorded export crop",
+  "native_minimum_met": true,
+  "implementation_ready": false,
+  "catalog_family": "survival_art",
+  "catalog_id": "event-broker"
+}
