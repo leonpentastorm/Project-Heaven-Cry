@@ -11,7 +11,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
-import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem,
+import { type Character, type Rarity, type GearWhere, gearAt, setGrade, packOf, fitMod, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem,
   practiceOf, picksAt, nextPickAt, devotionXpOf, devotionLevelOf, devotionThreshold, DEVOTION_MAX_LEVEL } from '../character';
 import { payCredits, earnCredits, cantPay, priceOf } from '../credits';
 import { addDrill, drillOf, drillMarks, TECHNIQUE } from '../physical/data';
@@ -51,6 +51,8 @@ export interface TradeRow { id: string; name: string; do: 'grade' | 'drill' | 'c
 const TRADE: Record<string, TradeRow> = Object.fromEntries(TRADES.items.map((t) => [t.id, t]));
 /** The Forge's stock size and the armour fitting's prices (survival.json forge, armour_fit). */
 const FORGE_SLOTS: number = SV.forge.slots, FIT: Record<string, number> = SV.armour_fit.price;
+/** Rules 1.55: the Forge's fee to fit, swap or take off a weapon mod (survival.json forge.fit): `rate` x the mod's price, at least `min`. */
+export const MOD_FIT: { rate: number; min: number } = SV.forge.fit;
 const LADDER: Rarity[] = ['standard', 'fine', 'masterwork', 'relic'];
 const GRADE_WORD: Record<string, string> = { standard: 'Standard', fine: 'Fine', masterwork: 'Masterwork', relic: 'Relic', celestial: 'Celestial' };
 const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
@@ -60,6 +62,8 @@ export type ProgressAction =
   | { type: 'run/upgrade'; charId: string; where: GearWhere; place: GradePlace; chit?: boolean; prop?: string }
   | { type: 'run/repair'; charId: string; where: GearWhere; place: GradePlace }
   | { type: 'run/forge'; charId: string; slot: number } | { type: 'run/fit'; charId: string }
+  /** rules 1.55: the armourer fits the mod at pack line `idx` to the main-hand weapon (a mod in that slot comes off into the pack), or takes `mod` off it, for a fee */
+  | { type: 'run/fit_mod'; charId: string; idx: number } | { type: 'run/unfit_mod'; charId: string; mod: string }
   | { type: 'run/train'; charId: string; train: 'drill' | 'study' | 'practice' | 'devotion'; weapon?: string }
   | { type: 'run/shrine'; charId: string; choice: 'rite' | 'piece' | 'token' }
   | { type: 'run/trade'; charId: string; trade: string; where?: GearWhere; weapon?: string; train?: 'devotion' | 'study' | 'practice'; pick?: number }
@@ -213,6 +217,25 @@ export function fitOf(g: GameState, c: Character): { cls: number; price: number;
   const h = here(g), cap = armourCap(c);
   const why = !h || h.n.kind !== 'forge' ? notHere('a Forge') : cap != null && next > cap ? c.name + ' can\'t wear armour heavier than class ' + cap + '.' : armourGateWhy(c, next) || cantPay(c, price);
   return { cls: next, price, why };
+}
+
+// ---------------------------------------------------------------------------------------------- the Forge's mod fitting
+/** Rules 1.55: what the armourer charges to fit, swap in or take off this mod: forge.fit.rate x its price, at least forge.fit.min, rounded up. */
+export const modFee = (mod: string): number => Math.ceil(Math.max(MOD_FIT.min, MOD_FIT.rate * (priceOf(mod) || 0)));
+/** A weapon mod (not a quiver's enchantment, which is fitted to a quiver), by pack line. */
+const weaponModAt = (c: Character, idx: number): string | null => { const it = packOf(c)[idx], m: any = it && ITEM[it.item || it.id]; return m && m.category === 'mod' && m.mod_slot !== 'enchantment' ? m.id : null; };
+/** Why the armourer can't fit the mod at pack line `idx` now, in words, or null (rules 1.55: at a Forge; the fit's own
+ * rules are fitMod's: the main hand's slot, an equip ban; then the fee). */
+export function fitModProblem(g: GameState, c: Character, idx: number): string | null {
+  const h = here(g); if (!h || h.n.kind !== 'forge') return notHere('a Forge');
+  if (!weaponModAt(c, idx)) return 'Pick a weapon mod from your pack.';
+  return fitMod({ ...c }, idx) || cantPay(c, modFee(weaponModAt(c, idx)!)); // fitMod on a copy: it writes fresh pack and mod lists, so the character is untouched
+}
+/** Why the armourer can't take `mod` off the main-hand weapon now, or null (rules 1.55). */
+export function unfitModProblem(g: GameState, c: Character, mod: string): string | null {
+  const h = here(g); if (!h || h.n.kind !== 'forge') return notHere('a Forge');
+  if (!(c.weaponState?.mods || []).includes(mod)) return 'That mod is not on ' + c.name + '\'s weapon.';
+  return cantPay(c, modFee(mod));
 }
 
 // ---------------------------------------------------------------------------------------------- trainings
@@ -383,6 +406,21 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       payCredits(c, f.price); c.armourClass = f.cls;
       say(c.name + ' is fitted for armour class ' + f.cls + ': ' + f.price + ' credits.', c.id); return null;
     }
+    case 'run/fit_mod': {
+      const no = fitModProblem(g, c, a.idx); if (no) return no;
+      const mod = weaponModAt(c, a.idx)!, fee = modFee(mod), before = new Set(c.weaponState?.mods || []);
+      const err = fitMod(c, a.idx); if (err) return err;
+      payCredits(c, fee);
+      const off = [...before].find((x) => !(c.weaponState?.mods || []).includes(x));
+      say('The armourer fits the ' + nameOf(mod) + ' to ' + c.name + '\'s ' + nameOf(c.weapon) + (off ? ', and the ' + nameOf(off) + ' goes in the pack' : '') + ': ' + fee + ' credits.', c.id); return null;
+    }
+    case 'run/unfit_mod': {
+      const no = unfitModProblem(g, c, a.mod); if (no) return no;
+      const fee = modFee(a.mod), mods = [...(c.weaponState?.mods || [])]; mods.splice(mods.indexOf(a.mod), 1);
+      payCredits(c, fee); c.weaponState = { ...(c.weaponState || {}), mods };
+      const pack = packOf(c).map((x) => ({ ...x })); for (const it of lootToPack({ item: a.mod })) packAdd(pack, it); c.pack = pack;
+      say('The armourer takes the ' + nameOf(a.mod) + ' off ' + c.name + '\'s ' + nameOf(c.weapon) + ' and puts it in the pack: ' + fee + ' credits.', c.id); return null;
+    }
     case 'run/train': {
       const no = trainProblem(g, c, a); if (no) return no;
       const h = here(g)!, price = trainPrice(g, c), big = h.n.kind === 'training', amounts: any = big ? TRAINING : TRAIN;
@@ -431,7 +469,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
 // ---------------------------------------------------------------------------------------------- the screen's options
 /** One choice a safe node offers a character (rules 1.43): its words, its price (credits; 0 for none), the engine's
  * reason it can't be taken (null when it can), and the action to send. The client only draws these. */
-export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'fit' | 'train' | 'shrine' | 'trade' | 'lasting'; key: string; label: string; detail: string; price: number; why: string | null; action: ProgressAction;
+export interface RunOption { group: 'grade' | 'relic' | 'repair' | 'forge' | 'mod' | 'fit' | 'train' | 'shrine' | 'trade' | 'lasting'; key: string; label: string; detail: string; price: number; why: string | null; action: ProgressAction;
   /** credits the option PAYS the character (a salvage), shown in place of a price */ pays?: number;
   /** what the option costs when it is not credits ("40 HP": a hard sparring), shown in place of a price */ costs?: string;
   /** rules 1.50: a repair's wear, now and full, and its state (character.ts wearAt) */ wear?: { now: number; max: number; state: Wear['state'] };
@@ -461,6 +499,11 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   }
   if (k === 'forge') {
     (h.v.stock || []).forEach((s, i) => out.push({ group: 'forge', key: 'forge:' + i, label: nameOf(s.id), detail: String((ITEM[s.id] as any)?.text || ''), price: s.price, why: forgeProblem(g, c, i), action: { type: 'run/forge', charId, slot: i } }));
+    // rules 1.55: the armourer fits each weapon mod in the pack to the main-hand weapon, or takes one off it, for a fee
+    const wn = nameOf(c.weapon), on = c.weaponState?.mods || [];
+    packOf(c).forEach((_, i) => { const m = weaponModAt(c, i); if (!m) return; const old = on.find((x) => x !== m && (ITEM[x] as any)?.mod_slot === (ITEM[m] as any).mod_slot);
+      out.push({ group: 'mod', key: 'mod:fit:' + i, label: 'Fit the ' + nameOf(m) + ' to your ' + wn, detail: String((ITEM[m] as any).text || '') + (old ? ' Swaps out the ' + nameOf(old) + ' (it goes in your pack).' : ''), price: modFee(m), why: fitModProblem(g, c, i), action: { type: 'run/fit_mod', charId, idx: i } }); });
+    for (const m of on) out.push({ group: 'mod', key: 'mod:off:' + m, label: 'Take the ' + nameOf(m) + ' off your ' + wn, detail: 'It goes in your pack.', price: modFee(m), why: unfitModProblem(g, c, m), action: { type: 'run/unfit_mod', charId, mod: m } });
     const f = fitOf(g, c); if (f) out.push({ group: 'fit', key: 'fit', label: 'Armour class ' + c.armourClass + ' to ' + f.cls, detail: 'The armourer fits you for heavier armour.', price: f.price, why: f.why, action: { type: 'run/fit', charId } });
   }
   if (k === 'rest' || k === 'training') {
@@ -518,3 +561,13 @@ export function repairCards(g: GameState, c: Character): ServiceCard[] {
   });
 }
 registerShopService({ id: 'repair', tab: 'upgrade', kinds: ['shop'], cards: (g, c) => repairCards(g as GameState, c) });
+/** Rules 1.55: the Forge's mod fitting as cards of the services shelf: each weapon mod in the pack to fit (or swap in) and
+ * each fitted one to take off, the fee here, and the engine's reason when it can't be done; the actions are `run/fit_mod`
+ * and `run/unfit_mod`. */
+export function modCards(g: GameState, c: Character): ServiceCard[] {
+  return runOptions(g, c.id).filter((o) => o.group === 'mod').map((o) => {
+    const a: any = o.action, id = a.type === 'run/fit_mod' ? weaponModAt(c, a.idx) : a.mod;
+    return { key: o.key, title: o.label, ...(id ? { id } : {}), price: o.price, why: o.why, note: o.detail, lines: [], action: o.action as any };
+  });
+}
+registerShopService({ id: 'mod_fit', tab: 'services', kinds: ['forge'], cards: (g, c) => modCards(g as GameState, c) });

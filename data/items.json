@@ -498,7 +498,8 @@
           "slot": "underbarrel"
         }
       ],
-      "mod_slot": "underbarrel"
+      "mod_slot": "underbarrel",
+      "built": false
     },
     {
       "id": "mod_serrated",
@@ -568,7 +569,8 @@
           "slot": "inscription"
         }
       ],
-      "mod_slot": "inscription"
+      "mod_slot": "inscription",
+      "built": false
     },
     {
       "id": "ench_fire",

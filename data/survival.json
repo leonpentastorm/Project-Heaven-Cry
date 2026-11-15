@@ -176,6 +176,7 @@
   "forge": {
     "about": "Rules 1.43 (spec rule 44): the Forge's rolled stock, `slots` mods and worn pieces made for what its visitors carry (a mod for a slot one of them has free, a worn piece better than one of them wears), each at its price; the grade step's factor is grade_up.places.forge.",
     "slots": 4,
+    "fit": { "about": "Rules 1.55: in a run a weapon mod is fitted, swapped or taken off only at a Forge, for a fee of `rate` x the mod's price (priceOf; a swap pays the new mod's fee once and returns the old one to the pack; a removal pays the removed mod's fee), at least `min` credits, rounded up. The free fit (gear/mod) is refused in a run; a campaign and the Proving Ground keep it.", "rate": 0.2, "min": 25, "provisional": true },
     "provisional": true
   },
   "armour_fit": {
