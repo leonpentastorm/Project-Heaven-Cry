@@ -21,8 +21,14 @@ const SV: any = svJ;
 /** What each kind of node without a fight says on its panel (`survival.json nodes`; the shop, Forge, training ground,
  * shrine and Crossroads until build steps 4 and 4a). */
 export const NODE_TEXT: Record<string, string> = SV.nodes;
-/** The path map's hover card for each kind of node (`survival.json tips`; the gate has its own). */
-export const NODE_TIP: Record<string, string> = SV.tips;
+/** Does a pick made here hold the Materials card (`rewards.materials.at`, through rowKind)? */
+const materialsAt = (w: string): boolean => { const at = SV.rewards.materials?.at || {}, row = rowKind(w, at); return row != null && at[row] === true; };
+/** The materials of the card in words ("gunpowder, casings, mana residue": each item's `plural` or name, lower case). */
+const MATERIAL_WORDS: string = ((SV.rewards.materials?.items || []) as { item: string }[]).map((x) => { const it: any = ITEM[x.item], n = String(it?.plural || it?.name || x.item); return n.charAt(0).toLowerCase() + n.slice(1); }).join(', ');
+/** The path map's hover card for each kind of node (`survival.json tips`; the gate has its own): where the pick holds
+ * the Materials card, "the materials" in the tip is followed by their names from data (consolidation 0.28 S9). */
+export const NODE_TIP: Record<string, string> = Object.fromEntries(Object.entries(SV.tips as Record<string, unknown>)
+  .map(([k, t]) => [k, typeof t === 'string' && materialsAt(k) ? t.replace('the materials', 'the materials (' + MATERIAL_WORDS + ')') : t])) as Record<string, string>;
 /** The node kinds that pay: the fights, a cache, and (rules 1.48) the vault's chest. */
 export type PayKind = FightKind | 'cache' | 'vault';
 /** The row a node kind (or where a pick is made) reads in a table keyed by kind (consolidation 0.28 M3): its own row
@@ -139,7 +145,7 @@ const offerSize = (w: OfferWhere): number => { const t = SV.rewards.offer; retur
  * `rewards.materials.items` at ceil(C / per_credits); none where `rewards.materials.at` (through rowKind) is not true
  * (the vault's chest, a sealed crate). */
 function materialsCard(w: OfferWhere, credits: number): { item: string; n: number }[] | null {
-  const m = SV.rewards.materials, row = m ? rowKind(w, m.at) : null; if (!m || row == null || m.at[row] !== true) return null;
+  const m = SV.rewards.materials; if (!m || !materialsAt(w)) return null;
   return (m.items as { item: string; per_credits: number }[]).map((x) => ({ item: x.item, n: Math.ceil(credits / x.per_credits) })).filter((x) => x.n > 0);
 }
 /** Rules 1.54 item 3 (spec R8): what a foe of a Survival fight drops: the loot door's flag off (no weapon, magazines,

@@ -41,9 +41,21 @@ const timesOf = (t: unknown) => Math.round(Number(t ?? 1));
 /** Does the character have the recipe's tool (an item carried, or any focus in a hand)? */
 const hasTool = (c: Character, r: Recipe) => (r.tool.focus ? holds(c, { slot: 'hand', door: r.tool.focus }) : !!r.tool.item && holds(c, { slot: 'person', item: r.tool.item }));
 /** The words of a missing tool: "Kade needs an ammo maker to make rounds.", "Ha needs a focus in hand to press a core." */
+const toolThing = (r: Recipe): string => (r.tool.focus ? 'a focus in hand' : (() => { const n = nameOfId(r.tool.item || '').toLowerCase(); return (/^[aeiou]/.test(n) ? 'an ' : 'a ') + n; })());
 function toolWords(c: Character, r: Recipe): string {
-  const thing = r.tool.focus ? 'a focus in hand' : (() => { const n = nameOfId(r.tool.item || '').toLowerCase(); return (/^[aeiou]/.test(n) ? 'an ' : 'a ') + n; })();
-  return c.name + ' needs ' + thing + ' ' + r.does + '.';
+  return c.name + ' needs ' + toolThing(r) + ' ' + r.does + '.';
+}
+/** A thing's name in a list of kinds ("gunpowder", "casings": an item's `plural` when it has one), lower case. */
+const kindWords = (id: string): string => { const it: any = ITEM[id] || WEAPON[id], n = String(it?.plural || it?.name || id); return n.charAt(0).toLowerCase() + n.slice(1); };
+/** What the recipes make, in words, from data (consolidation 0.28 S9): one sentence for each tool and deed ("With an
+ * ammo maker you make rounds from gunpowder and casings."), the recipes' order. What the Materials card's hover says. */
+export function recipesWords(): string {
+  const seen = new Set<string>(), out: string[] = [];
+  for (const r of RECIPES) {
+    const s = 'With ' + toolThing(r) + ' you ' + r.does.replace(/^to /, '') + ' from ' + r.needs.map((l) => kindWords(l.item)).join(' and ') + '.';
+    if (!seen.has(s)) { seen.add(s); out.push(s); }
+  }
+  return out.join(' ');
 }
 /** A fight is on (making is between fights only; the sheet hides the Make group then). */
 const inFight = (g: GameState) => g.phase === 'combat' && !!g.combat && !g.combat.over;

@@ -1,7 +1,7 @@
 // Rules 1.54 (survival-spec section 14, rows R6 to R13): the sheet in a run, materials, making, loot and the shop's
 // stock, every case through the one reducer. Numbers are read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, gearLockWhy, sheetPack, sellValue, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
+import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, gearLockWhy, sheetPack, sellValue, NODE_TIP, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { Rec, type Pc } from './helpers/replay';
@@ -79,6 +79,11 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     const v = materialsView(g, 'c1')!;
     expect(v.lines.map((l) => [l.item, l.n])).toEqual(o.materials!.map((m) => [m.item, m.n]));
     expect(v.lines.map((l) => l.name)).toEqual(o.materials!.map((m) => ITEM[m.item].name));
+    // S9: the card's hover and the fight's node tip name what data names (the recipes' needs, the card's materials), no copy
+    const words = (id: string) => String((ITEM as any)[id].plural || ITEM[id].name).toLowerCase();
+    for (const r of RECIPES) for (const l of r.needs) expect(v.tip.toLowerCase()).toContain(words(l.item));
+    for (const m of SV.rewards.materials.items) expect(NODE_TIP.fight.toLowerCase()).toContain(words(m.item));
+    expect(SV.tips.fight).not.toMatch(new RegExp(SV.rewards.materials.items.map((m: any) => words(m.item)).join('|'), 'i'));
     expect(v.sells).toBe(o.materials!.reduce((t, m) => t + Math.floor(priceOf(m.item)! * m.n * SV.sell_rate.rate), 0));
     expect(apply(g, v.action, 'host').story.entries.at(-1)!.text).toBe(p.story.entries.at(-1)!.text);
     expect(packOf(p.characters.c1).filter((x) => x.weapon === o.weapons[0].id && !x.mags).length).toBe(packOf(g.characters.c1).filter((x) => x.weapon === o.weapons[0].id && !x.mags).length);

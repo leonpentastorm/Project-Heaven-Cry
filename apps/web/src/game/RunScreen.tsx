@@ -49,7 +49,7 @@ function Offer({ o }: { o: OfferV }) {
       {o.canPick ? <>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', minmax(0, 1fr))', gap: 10 }}>
           {m ? (
-            <button type="button" data-phc-pick-materials="" {...tipProps('The materials go into your pack whole. With an ammo maker you make rounds from gunpowder and casings; with a focus in hand you press mana residue into a core.')}
+            <button type="button" data-phc-pick-materials="" {...tipProps(m.tip)}
               onClick={() => act(m.action as any)} style={bigCard(false)}>
               <span style={kick}>MATERIALS</span>
               <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>For making</span>

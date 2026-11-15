@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 656 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
+Counts: 35 triggers, 86 predicates, 28 ops, 100 effect ops, 125 hooks, 3 never emitted, 16 profiles, 41 cost sites, 15 resources, 59 stats, 24 condition fields, 657 primitive exports, 130 fx kinds, 173 Unit fields, 59 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1153,7 +1153,7 @@ Families: `body`, `brain`, `heart`.
 | name | signature or shape | what for |
 | --- | --- | --- |
 | `NODE_TEXT` | `NODE_TEXT: Record<string, string>` | What each kind of node without a fight says on its panel (`survival.json nodes`; the shop, Forge, training ground, shrine and Crossroads until build steps 4 and 4a). |
-| `NODE_TIP` | `NODE_TIP: Record<string, string>` | The path map's hover card for each kind of node (`survival.json tips`; the gate has its own). |
+| `NODE_TIP` | `NODE_TIP: Record<string, string>` | The path map's hover card for each kind of node (`survival.json tips`; the gate has its own): where the pick holds the Materials card, "the materials" in the tip is followed by their names from data (consolida… |
 | `PayKind` | `type PayKind = FightKind \| 'cache' \| 'vault'` | The node kinds that pay: the fights, a cache, and (rules 1.48) the vault's chest. |
 | `rowKind` | `rowKind(k: string, table: Record<string, unknown>): string \| null` | The row a node kind (or where a pick is made) reads in a table keyed by kind (consolidation 0.28 M3): its own row when the table names it, else the row `rewards.reads` points it to when the table names that (t… |
 | `nodeXp` | `nodeXp(k: PayKind, depth: number, stage: number): number` | XP each character takes at a node (section 3.1): f(d) = base + per_depth x (d - 1), x the kind, x the stage's. |
@@ -1224,6 +1224,7 @@ Families: `body`, `brain`, `heart`.
 | `Recipe` | `interface Recipe { id, name, needs, tool, does, gives, where, text }` | A recipe (`data/recipes.json` items): what it needs, the tool, what it gives, where it is made, the words after the tool in its refusal (`does`). |
 | `RECIPES` | `RECIPES: Recipe[]` | Every recipe, in the data's order. |
 | `MakeAction` | `interface MakeAction { type, charId, recipe, times }` | gear/make (rules 1.54 item 5): make `times` of a recipe for a character. |
+| `recipesWords` | `recipesWords(): string` | What the recipes make, in words, from data (consolidation 0.28 S9): one sentence for each tool and deed ("With an ammo maker you make rounds from gunpowder and casings."), the recipes' order. |
 | `makeProblem` | `makeProblem(g: GameState, by: string, a: MakeAction): string \| null` | Why `by` can't make this (rules 1.54 item 5), in words naming the character, or null. |
 | `makeNow` | `makeNow(g: GameState, by: string, a: MakeAction): { ok: string } \| { no: string }` | Make it (rules 1.54 item 5): the needs x times out of the pack, the gives x times into it. |
 | `MakeRowV` | `interface MakeRowV { recipe, name, needs, gives, tool, most, why, action }` | One recipe as the sheet's Make group draws it (rules 1.54, survival-spec 14.7): what it needs (with what the character has), what it gives, how many times it can be made now (`most`), and the engine's reason w… |

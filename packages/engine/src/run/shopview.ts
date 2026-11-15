@@ -5,6 +5,7 @@
 import { WEAPON, ITEM, SKILL } from '../data';
 import { type Character, type PackItem, type Rarity, type GearWhere, packOf, carriedKg, carryLimit, kindOfDoor, classResources, wearAt } from '../character';
 import { itemLabel, countedLines } from '../containers';
+import { recipesWords } from '../recipes';
 import { creditsOf } from '../credits';
 import { type GearPreview, gearPreview, rarityWord, rarityMarks } from '../gearpreview';
 import { SETTING } from './encounter';
@@ -71,12 +72,14 @@ export function sheetPack(c: Character): (PackItem & { counted?: true })[] {
 /** Rules 1.54 item 4: the Materials card of a character's open pick, as the reward screen draws it: each material (its
  * id for the icon, its name, how many, the pack line's words), what the whole card sells for at the shop's rate, and the
  * action that takes it. Null when the pick holds no Materials card (the vault's chest, a sealed crate, an old offer). */
-export interface MaterialsCardV { charId: string; lines: { item: string; name: string; n: number; label: string }[]; sells: number; action: { type: 'run/pick'; charId: string; choice: 'materials' } }
+export interface MaterialsCardV { charId: string; lines: { item: string; name: string; n: number; label: string }[]; sells: number; action: { type: 'run/pick'; charId: string; choice: 'materials' };
+  /** the card's hover: the materials go in whole, and what the recipes make from them (recipesWords) */ tip: string }
 export function materialsView(g: { run?: RunState | null }, charId: string): MaterialsCardV | null {
   const o = g.run?.offers?.[charId]; if (!o?.materials?.length) return null;
   const goods = o.materials.map((m) => ({ m, it: lineGoods(m.item, m.n) }));
   return { charId, lines: goods.map(({ m, it }) => ({ item: m.item, name: (ITEM[m.item] as any)?.name || m.item, n: m.n, label: it.map((x) => itemLabel(x)).join(', ') })),
-    sells: goods.reduce((t, { it }) => t + it.reduce((u, x) => u + (sellValue(x) || 0), 0), 0), action: { type: 'run/pick', charId, choice: 'materials' } };
+    sells: goods.reduce((t, { it }) => t + it.reduce((u, x) => u + (sellValue(x) || 0), 0), 0), action: { type: 'run/pick', charId, choice: 'materials' },
+    tip: 'The materials go into your pack whole. ' + recipesWords() };
 }
 /** The shop's view for player `me` (their own character, or `charId` when they have several); null when no shop is open. */
 export function shopView(g: G, me: string, charId?: string | null): ShopViewV | null {

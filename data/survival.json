@@ -139,8 +139,8 @@
     "provisional": true
   },
   "tips": {
-    "about": "Rules 1.41 (spec 8.2): the path map's hover card for each kind of node, to the player: what you do there and what you get; the engine adds the XP and credits it pays.",
-    "fight": "A fight. Win for XP, credits and ammunition, then take the materials (gunpowder, casings, mana residue) or one weapon.",
+    "about": "Rules 1.41 (spec 8.2): the path map's hover card for each kind of node, to the player: what you do there and what you get; the engine adds the XP and credits it pays, and where the pick holds the Materials card, the names of the materials after the words 'the materials' (rewards.ts NODE_TIP, from rewards.materials.items).",
+    "fight": "A fight. Win for XP, credits and ammunition, then take the materials or one weapon.",
     "elite": "A hard fight: an Elite and its line. Better pay and a better pick.",
     "gate": "The Gate. Every trail passes it: an Elite and its line. Better pay and a better pick.",
     "boss": "The stage's Boss. The best pay and pick of the stage. Win to clear the stage.",
