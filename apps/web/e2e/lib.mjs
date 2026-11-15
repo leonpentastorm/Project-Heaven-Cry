@@ -294,7 +294,7 @@ export async function titleHoverDuringHello(page) {
 }
 /** Rules 1.51, 1.52: the Survival camp before node 1, one flow. Waits for it, presses Recommended, takes `o.weapon` as the
  *  free weapon when given (a rack's free one), goes to the starting boon, chooses card `o.boon` (default the first), and
- *  marks Ready (solo: "Start the run"). */
+ *  marks Ready (solo: "Start the run"); a confirm about a free pick left open (rules 1.55 item 49) is passed. */
 export async function campStart(page, o = {}) {
   await page.waitForSelector('[data-phc-camp]', { timeout: 60000 });
   await page.locator('[data-phc-camp-step="1"]').click(); await settle(page, 150);
@@ -302,9 +302,13 @@ export async function campStart(page, o = {}) {
   if (o.weapon) { const b = page.locator('[data-phc-camp-pick="weapon:' + o.weapon + '"]'); if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click(); await settle(page, 250); }
   if (await page.locator('[data-phc-camp-next]').count()) await page.locator('[data-phc-camp-next]').click();
   else await page.locator('[data-phc-camp-step="2"]').click();
+  await campConfirmGo(page); // rules 1.55 item 49: a free pick left open asks first (Recommended takes every free pick it can)
   await page.waitForSelector('[data-phc-startboon]', { timeout: 30000 });
   const card = page.locator('[data-phc-startboon]').nth(o.boon || 0);
   if ((await card.getAttribute('aria-checked')) !== 'true') await card.click();
   await page.waitForSelector('[data-phc-camp-ready]', { timeout: 30000 });
   await page.locator('[data-phc-camp-ready]').click();
+  await campConfirmGo(page);
 }
+/** Rules rules 1.55 item 49: when the camp asks before moving on (a free pick not taken), go on without it. */
+export async function campConfirmGo(page) { await settle(page, 150); const b = page.locator('[data-phc-dialog] button', { hasText: /without/ }); if (await b.count()) { await b.click(); await settle(page, 150); } }

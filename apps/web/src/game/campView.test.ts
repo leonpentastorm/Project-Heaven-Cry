@@ -5,7 +5,8 @@
 import { describe, expect, it } from 'vitest';
 import { apply, relicRow, worthOf, BOON_CAP, START_BOON, loadoutView, RACK, type GameState } from '@engine';
 import { survivalRoom, ownerOf } from '../../../../packages/engine/test/helpers/survival';
-import { boonCards, lineWord } from './campView';
+import { boonCards, lineWord, campChecklist, campHelp, campConfirm, freeAction, campGuard } from './campView';
+import { currentDialog, answerDialog } from './dialog';
 import { runView } from './runView';
 import { ATTR_INK } from './classView';
 
@@ -42,4 +43,46 @@ describe('the camp\'s view', () => {
     expect(p.boons).toEqual([{ id: g.characters.c1.relics![0], name: relicRow(g.characters.c1.relics![0])!.name, text: relicRow(g.characters.c1.relics![0])!.text, worth: worthOf(g.characters.c1.relics![0]), camp: true }]);
     expect(p.worth).toBe(worthOf(g.characters.c1.relics![0]) + ' of ' + BOON_CAP);
   });
+});
+
+describe('the camp as a checklist (rules 1.55 item 49)', () => {
+  const fresh = (): GameState => apply(survivalRoom('PHC-0001', DUO as any, { test: true }), { type: 'run/start', seed: 'PHC-0001' }, 'host');
+  it('a gunner: weapon NOT PICKED, no focus step, the budget whole; a free card says Take (free), then Swap; the confirm in plain words', () => {
+    let g = fresh(), v = loadoutView(g as any, 'host')!;
+    let ch = campChecklist(v);
+    expect(ch.map((k) => k.key)).toEqual(['weapon', 'budget', 'boon']);
+    expect(ch[0]).toMatchObject({ n: 1, title: 'FREE WEAPON', state: 'NOT PICKED', done: false, glyph: '○' });
+    expect(ch[1]).toMatchObject({ n: 2, state: v.budget + ' of ' + v.budget + ' cr left', meter: { left: v.budget, total: v.budget } });
+    expect(campHelp(v)).toBe('Before the run: take one free weapon and spend your budget on anything else.');
+    const [a, b] = v.rack;
+    expect(freeAction(a.free, v, 'weapon')).toBe('Take (free)');
+    expect(campConfirm(v)).toEqual({ open: ['weapon'], text: 'You have not taken your free weapon. It costs nothing.', back: 'Go back and pick', go: 'Start without it' });
+    expect(campConfirm(v, true)!.go).toBe('Go on without it');
+    g = apply(g, { type: 'run/loadout', charId: 'c1', op: 'pick', slot: 'weapon', id: a.free.id } as any, 'host'); v = loadoutView(g as any, 'host')!;
+    ch = campChecklist(v);
+    expect(ch[0]).toMatchObject({ state: v.freePicks.weapon.name, done: true, glyph: '✓' });
+    expect(freeAction(v.rack[0].free, v, 'weapon')).toBe('✓ YOURS'); expect(freeAction(v.rack.find((x) => x.id === b.id)!.free, v, 'weapon')).toBe('Swap to this (free)');
+    expect(campConfirm(v)).toBeNull();
+  });
+  it('a caster: the focus step, both open asks for both; Recommended ticks every free pick', () => {
+    let g = fresh(), v = loadoutView(g as any, 'p2')!;
+    expect(campChecklist(v).map((k) => k.key)).toEqual(['weapon', 'focus', 'budget', 'boon']);
+    expect(campHelp(v)).toBe('Before the run: take one free weapon, one free focus and spend your budget on anything else.');
+    expect(campConfirm(v)!.text).toBe('You have not taken your free weapon or your free focus. They cost nothing.');
+    expect(campConfirm(v)!.go).toBe('Start without them');
+    expect(v.recommended.lines.some((l) => l.endsWith('(free)'))).toBe(true);
+    g = apply(g, { type: 'run/loadout', charId: 'c2', op: 'recommended' } as any, 'p2'); v = loadoutView(g as any, 'p2')!;
+    expect(campChecklist(v).filter((k) => k.key === 'weapon' || k.key === 'focus').every((k) => k.done)).toBe(true);
+    expect(campConfirm(v)).toBeNull();
+  });
+  it('the guard: a free pick open asks in the house dialog (Go back and pick is the safe answer); going on runs it and is not asked again', async () => {
+    const v = loadoutView(fresh() as any, 'host')!; let ran = 0, back = '';
+    campGuard(v, false, () => ran++, (k) => { back = k; });
+    expect(currentDialog()?.title).toBe('Before you go on'); answerDialog(false); await Promise.resolve(); await Promise.resolve();
+    expect([ran, back]).toEqual([0, 'weapon']);
+    campGuard(v, false, () => ran++); answerDialog(true); await Promise.resolve(); await Promise.resolve(); expect(ran).toBe(1);
+    campGuard(v, false, () => ran++); expect(currentDialog()).toBeNull(); expect(ran).toBe(2);
+    const done = loadoutView(apply(fresh(), { type: 'run/loadout', charId: 'c1', op: 'recommended' } as any, 'host') as any, 'host')!;
+    campGuard(done, false, () => ran++); expect(currentDialog()).toBeNull(); expect(ran).toBe(3);
+});
 });

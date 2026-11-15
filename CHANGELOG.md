@@ -32,6 +32,20 @@ A patch release from Leon's playtest of 0.28.2: Guide and the healing price. The
   GUIDED), a Bond ending, read from the view (the line parts from its middle and both ends recoil; BOND BROKEN). Not
   drawn, for want of an engine event: the echo into a Bonded enemy and the damage share (the `deal` and `redirect` ops
   emit no fx), and an un-Bonded Tending heal (the heal event names no giver: it keeps the plain heal).
+### Survival
+
+- **The camp reads as a checklist** (rules 1.55 item 49; Leon, 15 Nov 2026: players found the free weapon three runs in).
+  The camp's header lists what to do, each with its state in words: 1 FREE WEAPON (NOT PICKED, or ✓ and its name),
+  2 FREE FOCUS (only for a character with a focus door skill), the BUDGET left of the total with a meter, and the
+  STARTING BOON; a click opens its section. One sentence of help under the title. The body is in steps: "Step 1 · Your
+  free weapon" (one FREE card an archetype, "Take (free)", "Swap to this (free)", "✓ YOURS"), "Step 2 · Your free focus",
+  then "Spend your budget" (another one and the better one of each weapon family, then the shop's shelves, all priced).
+  "Not sure? Take the recommended kit" is first, naming what it gives. Moving on with a free pick not taken asks first
+  ("You have not taken your free weapon. It costs nothing."). The engine's camp view now says which cards are free, the
+  free picks' state and what Recommended gives.
+- **A shield at the camp** (rules 1.55 item 50; Leon: "first weapon shop have no shield for tanks"): the Buckler (200
+  credits) is on the camp's Gear shelf; bought, it goes in the off hand beside a one-handed weapon, and is refused in
+  words beside a two-hander or the free focus.
 
 ## 0.28.2 — the field's actions, hand-overs, health words, Figments, the Sigil word cap, and Survival XP pace
 

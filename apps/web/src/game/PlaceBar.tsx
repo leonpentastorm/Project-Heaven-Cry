@@ -37,6 +37,8 @@ export interface PlaceBarProps {
   name: React.ReactNode;
   /** a line under the name in caps (a keeper's role, a kicker) */
   role?: React.ReactNode;
+  /** a plain sentence under the name (the camp's one line of help), kept when compact */
+  sub?: React.ReactNode;
   /** the keeper's portrait: a URL, '' for the AHOC panel, undefined for none */
   portrait?: string; portraitAlt?: string;
   /** the place's backdrop behind the header (full size only) */
@@ -76,6 +78,7 @@ export function PlaceBar(p: PlaceBarProps) {
           </div>) : null}
         <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 2 : 6, minWidth: 0, flex: '1 1 260px' }}>
           <h1 data-phc-keeper-name="" style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: compact ? 22 : 28, lineHeight: 1.1, overflowWrap: 'anywhere' }}>{p.name}</h1>
+          {p.sub ? <span data-phc-bar-sub="" style={{ fontSize: 14, lineHeight: 1.4, color: I.text }}>{p.sub}</span> : null}
           {p.role ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: I.muted, textTransform: 'uppercase' }}>{p.role}</span> : null}
           {p.line ? <div data-phc-speech="" aria-live="polite" style={compact ? { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' } : { marginTop: 4, padding: '10px 14px', borderRadius: 12, background: 'rgba(16,21,31,0.92)', border: '1px solid #3B475D' }}>
             <p key={p.line.key} className="phc-line" style={{ margin: 0, fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 17, lineHeight: 1.45, color: I.text }}>“{p.line.text}”</p>

@@ -2494,8 +2494,19 @@ if _sv is not None:
         _covered = {(a.get("family"), a.get("category")) for a in _ar.get("list") or []}
         for _f in sorted(_fams, key=str):
             if _f not in _covered and _f[0] not in (_ar.get("left_out") or {}): errors.append(f"{_w}.archetypes: the family {_f[0]!r} ({_f[1]!r}) is neither an archetype nor left_out with its reason")
-        for _rw in (_lo.get("recommended") or {}).get("weapon") or []:
-            if _rw.get("archetype") not in _seen_ar: errors.append(f"{_w}.recommended.weapon: {_rw.get('archetype')!r} is not an archetype")
+        _rec = _lo.get("recommended") or {}
+        _ralpha = {s.get("id") for s in (data.get("skills") or {}).get("items", []) if s.get("slot") == "alpha"}
+        for _rw in _rec.get("weapon") or []:
+            # rules 1.55 item 51: a row names its archetype, or the hands its free weapon takes (scored by the engine)
+            if "hands" in _rw:
+                if _rw.get("hands") not in ("1H", "2H"): errors.append(f"{_w}.recommended.weapon: hands {_rw.get('hands')!r} is not 1H or 2H")
+                if "archetype" in _rw: errors.append(f"{_w}.recommended.weapon: a row names an archetype or hands, not both")
+            elif _rw.get("archetype") not in _seen_ar: errors.append(f"{_w}.recommended.weapon: {_rw.get('archetype')!r} is not an archetype")
+            if "top" in _rw and _rw["top"] not in _ralpha: errors.append(f"{_w}.recommended.weapon: top {_rw['top']!r} is not an alpha skill")
+            if "profile" in _rw and _rw["profile"] not in (_rec.get("buys") or {}): errors.append(f"{_w}.recommended.weapon: profile {_rw['profile']!r} has no buys")
+        for _k, _ids in (_rec.get("buys") or {}).items():
+            for _x in _ids:
+                if _x not in (_lo.get("stock") or {}).get("ids", []) and _x not in _iid and not _x.startswith(("armour:", "rounds:")): errors.append(f"{_w}.recommended.buys.{_k}: {_x!r} is neither stock nor an item")
         for _x in _lo.get("focuses") or []:
             if not (_iid.get(_x) or {}).get("focus"): errors.append(f"{_w}.focuses: {_x!r} is not a focus (items.json focus)")
         def _armour_classes(o):

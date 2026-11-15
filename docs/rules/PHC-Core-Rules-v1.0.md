@@ -6257,6 +6257,37 @@ The lead's rulings on the 0.28.2 review (15 Nov 2026), PROVISIONAL:
 48. **Any MP focus can Syphon** (item 4137): Syphon reads the mp resource row's `needs` (an Emanator or an Attuner in
    hand), so a Mender with an Attuner Syphons; with the focus only in the pack the button is greyed and says why.
    Crystallise still needs an Emanator.
+49. **The camp reads as a checklist** (Leon, 15 Nov 2026: "nobody understand shit, i have players only realizing
+   you can take a free weapon 3 runs in"). The camp's screen is three steps in order: STEP 1 the free weapon, STEP 2 the
+   free focus (only for a character with a point in a focus's door skill: the same test the Recommended loadout uses),
+   STEP 3 the budget. The free picks are no longer drawn among priced shelves: their cards carry FREE where a price
+   would be. The place header is the checklist (each step's state in words: NOT PICKED or the name taken; the budget
+   left of the total) and the button that moves on. "Not sure? Take the recommended kit" is the first thing in the body,
+   with one line naming what it gives. Moving on (to the starting boon, or Ready) with a free pick not taken asks first
+   in plain words ("You have not taken your free weapon. It costs nothing."); starting without one stays allowed. The
+   engine's camp view says which cards are free (`free` on a card), what each free pick holds and whether it is still
+   open (`freePicks`), and what the Recommended loadout gives (`recommended`). No rule changed. PROVISIONAL (the layout).
+50. **A shield at the camp** (Leon, 15 Nov 2026: "first weapon shop have no shield for tanks"). The camp's gear
+   shelf (`survival.json loadout.stock`) lists the Buckler at its shop price (priceOf, within the budget; the Legion
+   riot shield and the Pavise cost more than the budget and are not listed, rule 1.55). A bought off-hand item goes in
+   the off hand through the one equip rule (character.ts `equip`, 'off'): one at a time; refused in words beside a
+   two-handed weapon ("Buckler: your main-hand weapon needs both hands.") or when the free focus already holds the off
+   hand. The Recommended loadout is data by profile (focus fuel, gun or melee), not by archetype, so it does not add a
+   shield (superseded by item 51). PROVISIONAL.
+51. **The tank's Recommended kit** (Leon, 15 Nov 2026: "durability tank is crazy weak ... survival do not give
+   you one"). The Recommended table (`survival.json loadout.recommended.weapon`) is read top down and its first fitting
+   row gives the kit. A row may be keyed by `top`: an alpha skill (a door) with points and no fewer than any other
+   alpha skill. A row may give `hands` (1H or 2H) instead of an archetype: its weapon is the free weapon of that many
+   hands the character may carry whose skill it has the most points in, a tie to the dearer by priceOf. `focus: false`
+   takes no free focus; `profile` names the row's buys. The first row: Durability on top, a one-hander, no focus, the
+   `tank` buys (the Buckler, then Class 1 armour, then a stim, each while the budget pays; at a budget of 300 the
+   Buckler at 200 leaves no room for the armour at 150). Every other character's kit is unchanged. PROVISIONAL (the row,
+   the buys).
+52. **A focus behind a shield, in words that help.** With an off-hand item held, taking the free focus is refused
+   with "Your off hand holds the Buckler. Put it back to take a focus." (run/loadout.ts rebuild, the one place the
+   camp's refusals are worded); the other way round keeps "Buckler: the off hand already holds the Evoker."
+53. **The Recommended button tells the truth.** The camp view's `recommended.why` is the reducer's own refusal
+   for that kit (the same trial the cards use), or null; with one, the button is greyed and shows the reason.
 
 ## Maps (rules 1.16)
 
