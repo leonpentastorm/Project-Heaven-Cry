@@ -273,13 +273,29 @@ ok('glyphs spent', !(cb.glyphs || []).some((x) => x.pos === first || x.pos === s
 // A critical evoke can end the fight here (both raiders down): then the held-Outburst steps have nothing to do.
 if (cb.over) console.log('  (the evoke ended the fight: the Outburst steps are skipped this run)');
 else {
-// Outburst: hold it. A turn that began short of AP (round 1 can) may not afford it after drawing and evoking: wait a turn.
+// Outburst: hold it. A turn that began short of AP (round 1 can) may not afford it after drawing and evoking: wait a turn
+// (3 AP: 1 to draw the Emanator into a hand, 2 to Begin).
 if (u.ap < 3 && !cb.over) {
   await host.getByRole('button', { name: 'End turn', exact: true }).click();
   await pause(host, 300); await waitMine(); ({ cb, u } = await CB());
 }
+// Rules 1.56 (0.30, the bare heart): the Emanator is still in the pack, so the Outbursts tab warns, and a Begin now would
+// add +4 Strain over a Will Power 1 limit of 3 (a Mana Short: Stunned, the Outburst thrown wild, then the Mana Shock).
+// Draw the Emanator into the off hand first (rules 1.9: 1 AP a hand; the Evoker goes back to the pack, its Line is spent).
 await pickAction(host, /^Outburst/);
 await host.waitForSelector('div[aria-label="Your Outbursts"]');
+const bareWarn = async () => (await host.locator('[role="tabpanel"] [data-bare-warning]').allTextContents()).join(' ');
+const bare0 = await bareWarn();
+ok('the Outbursts tab warns a bare-handed caster: ' + bare0.replace(/\s+/g, ' ').slice(0, 80), /Using magic without a focus causes great harm/.test(bare0));
+const apEq = u.ap;
+await act({ type: 'combat/equip', unitId: u.id, item: 'emanator', to: 'off' });
+await pause(host, 400);
+({ cb, u } = await CB());
+const offNow = (await meNow()).offHand?.id;
+ok('the Emanator goes in the off hand (' + offNow + ', AP ' + apEq + ' → ' + u.ap + ')', offNow === 'emanator' && !!u.mg?.emanator && u.ap < apEq);
+if (!(await host.locator('div[aria-label="Your Outbursts"]').count())) await pickAction(host, /^Outburst/);
+await host.waitForSelector('div[aria-label="Your Outbursts"]');
+ok('no bare-handed warning with the Emanator in hand', !(await bareWarn()));
 await snap('11-combat-outburst-hold');
 // Rules 1.5: Begin from the design pad (hold at stage 0); the HEART panel takes over.
 const begin3 = host.locator('div[aria-label="Begin or snap"] button', { hasText: 'Begin' });

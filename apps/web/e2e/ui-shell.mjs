@@ -93,7 +93,7 @@ await host.getByLabel('What do you do?').fill('');
 await head.getByRole('button', { name: 'Settings', exact: true }).click();
 const set = host.locator('div[role="dialog"][aria-label="Settings"]');
 await set.waitFor({ timeout: 30000 });
-ok('the cog opens Settings with Audio, Voice, Combat and Display', (await set.getByRole('tab').allTextContents()).join(',') === 'Audio,Voice,Combat,Display');
+ok('the cog opens Settings with Audio, Voice, Combat, Fight tabs and Display', (await set.getByRole('tab').allTextContents()).join(',') === 'Audio,Voice,Combat,Fight tabs,Display');
 ok('the default mix: combat 100%, interface 35%', (await set.locator('input[data-phc-vol="combat"]').inputValue()) === '100' && (await set.locator('input[data-phc-vol="ui"]').inputValue()) === '35');
 await set.locator('input[data-phc-vol="combat"]').fill('130');
 await set.locator('input[data-phc-vol="ui"]').fill('20');

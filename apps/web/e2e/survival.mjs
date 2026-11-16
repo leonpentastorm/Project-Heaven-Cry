@@ -119,8 +119,10 @@ const rec = await pick0();
 ok('Recommended fills a weapon and spends from the budget (' + rec.weapon + ', ' + JSON.stringify(rec.take) + '); the weapon chip is ticked', !!rec.weapon && Object.keys(rec.take).length > 0 && await numIn('[data-phc-camp-left]') < LO.budget
   && (await p.locator('[data-phc-camp-check="weapon"]').getAttribute('data-phc-done')) === '1');
 // rules 1.55 item 51: a tank's Recommended kit holds an off-hand item (the shield); put back every off-hand line it bought
-// so the two-handed bow below can be taken (a two-hander beside a shield is refused in words, item 50)
-for (const k of Object.keys(rec.take)) if (k.startsWith('stock:') && ITM.some((it) => it.id === k.slice(6) && it.slot === 'off_hand' && !it.focus)) { await p.locator('[data-phc-camp-less="' + k + '"]').click(); await settle(p, 300); }
+// so the two-handed bow below can be taken (a two-hander beside a shield is refused in words, item 50); rules 1.57: a shield
+// is a weapons.json row (phys.props holds "shield", character.ts isShieldId), no longer an items.json off-hand item
+const offHandBuy = (id) => (WPN[id]?.phys?.props || []).includes('shield') || ITM.some((it) => it.id === id && it.slot === 'off_hand' && !it.focus);
+for (const k of Object.keys(rec.take)) if (k.startsWith('stock:') && offHandBuy(k.slice(6))) { await p.locator('[data-phc-camp-less="' + k + '"]').click(); await settle(p, 300); }
 await p.locator('[data-phc-camp-pick="weapon:' + FREE('bows') + '"]').click(); await settle(p, 300);
 ok('ONE weapon: the bow taken replaces the last pick, with one quiver loaded', (await pick0()).weapon === FREE('bows') && (await me0()).weapon === FREE('bows') && (await me0()).quivers?.length === 1 && (await me0()).loaded > 0); // rules 1.53: one quiver, full
 await p.locator('[data-phc-camp-pick="weapon:' + GUN + '"]').click(); await settle(p, 300);

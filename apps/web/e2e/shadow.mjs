@@ -1,6 +1,7 @@
 // Shadow and the Operative (rules 1.32; docs/design/shadow-spec.md section 1's worked example, in the Proving Ground):
 //  · an Operative (Ingenuity 7) starts the fight with 1 Shadow: the meter row reads "Shadow 1 / 4" with its eye word;
-//  · Vanish (CLASS tab) out of every enemy's view: Hidden; the turn ends Hidden with no attack: +1 Shadow;
+//  · Fade (SHADOW tab; rules 1.60 item 4628: the Operative's Vanish makes it cost no Shadow): Hidden, the meter kept;
+//    the turn ends Hidden with no attack: +1 Shadow;
 //  · the SHADOW tab lists the door verbs; Read Intent on a Soldier that can't see you: the Soldier is Read;
 //  · a shot with the Break toggle from Hidden: one `shadow` term on the preview, the meter spent, the shooter revealed.
 // Every action through its real button, except the Break shot, sent as the attack card sends it (its toggle id in mods).
@@ -77,10 +78,11 @@ await snap('01-meter');
   ok('Read Intent while seen, refused in the spec\'s words (' + tip.slice(0, 70) + ')', /An enemy sees you/.test(tip));
 }
 
-// ---------- 1. Vanish, then a turn ended Hidden with no attack ----------
-let r = await tabMove('class', /^Vanish/);
+// ---------- 1. Fade for no Shadow (Vanish, rules 1.60 item 4628), then a turn ended Hidden with no attack ----------
+const sh0 = u.res?.shadow ?? 0;
+let r = await tabMove('shadow', /^Fade/);
 u = await me();
-ok('Vanish: Hidden (' + (r || 'confirmed') + ')', !r && !!u.hidden);
+ok('Fade with Vanish: Hidden, no Shadow spent (' + (r || 'confirmed') + ', Shadow ' + sh0 + ' -> ' + (u.res?.shadow ?? 0) + ')', !r && !!u.hidden && (u.res?.shadow ?? 0) === sh0);
 await settle(host, 300);
 let op = await tokOpacity(u.pos);
 ok('Hidden: my token drawn at 60% (' + op + '), the Hidden word kept', op === 0.6 && /HIDDEN/.test((await tok(u.pos).getAttribute('aria-label')) || ''));

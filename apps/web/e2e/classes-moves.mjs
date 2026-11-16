@@ -1,7 +1,8 @@
 // Class Roster Revision 3's new moves in play (Proving Ground with a friend: the host acts, the guest is the squadmate):
-//  · Fighter: Shove (the "Knock Prone" chip) and Unstoppable (+2 Momentum);
+//  · Fighter (the Breaker): Wind-up (rules 1.60 item 4621: the fight starts on more Momentum; the class Shove is gone,
+//    everyone's Shove stays on the attack tab) and Unstoppable (+2 Momentum);
 //  · Chaplain (was Guardian; rules 1.31): Ward (click the squadmate: a shield on its own layer, the turn's Whisper);
-//  · Infiltrator (the Operative): Vanish (out of every enemy's sight),
+//  · Infiltrator (the Operative): Vanish (rules 1.60 item 4628: its Fade, the SHADOW tab, costs no Shadow),
 //    Sabotage on a drone, and Rig (the rigged tile marked on the grid);
 //  · Trickster: Read (Analyze names the enemy's next move: a marker on the enemy and its target), False Image (a
 //    translucent copy of the caster on the grid), Silver Tongue, Sleight (swap with the squadmate);
@@ -12,7 +13,18 @@
 import { chromium, player, click, BASE, OUT, pickAction, settle, tipOf } from './lib.mjs';
 import { readFileSync } from 'fs';
 // the Guard pool's cap (techniques.json rules.guard.max: 4 since rules 1.55 item 74), read from the data
-const GUARD_MAX = JSON.parse(readFileSync(new URL('../../../data/techniques.json', import.meta.url), 'utf8')).rules.guard.max;
+const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
+const TECH = DATA('techniques.json'), GUARD_MAX = TECH.rules.guard.max;
+// the Breaker's Wind-up (classes.json fighter rank I wind_up: stat momentum_start) on top of the door's start, within the
+// Breaker's pool (techniques.json rules.momentum); everyone's Shove (actions.json shove: its AP); the Operative's Vanish
+// (its cost_mod on Fade's Shadow) and Fade itself (shadow.json shadow.fade: its AP, its Shadow, the Ingenuity it needs)
+const CLS = DATA('classes.json').base, moveOf = (c, id) => Object.values(CLS.find((k) => k.id === c).ranks).flatMap((r) => r.moves).find((m) => m.id === id);
+const WIND_UP = moveOf('fighter', 'wind_up').effects.find((e) => e.stat === 'momentum_start').value;
+const MOMENTUM_AT_START = Math.min(TECH.rules.momentum.fighter_max, TECH.rules.momentum.start + WIND_UP);
+const SHOVE_AP = DATA('actions.json').items.find((a) => a.id === 'shove').ap;
+const FADE = DATA('shadow.json').items.find((x) => x.id === 'shadow.fade'), FADE_GRANT = FADE.effects[0];
+const FADE_INGENUITY = FADE.requires.find((q) => q.skill === 'ingenuity').min;
+const VANISH_OFF = moveOf('infiltrator', 'vanish').effects.find((e) => e.res === 'shadow').value;
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -135,21 +147,27 @@ ok('host and guest each have a fighter', !!hostChar && !!maiChar);
 await host.evaluate(() => { window.__fxSeen = []; addEventListener('phc-fx', (e) => window.__fxSeen.push(e.detail.k)); });
 await act(host, { type: 'sandbox/ai', on: false });
 await act(host, { type: 'sandbox/auto', on: false });
+await setClass('fighter', 3); // before the fight: Wind-up is read at the fight's start
 await act(host, { type: 'sandbox/fight' });
 await until(host, () => window.__phc.getState().screen === 'combat');
 await until(mai, () => window.__phc.getState().screen === 'combat');
 await act(host, { type: 'sandbox/clear' });
 ok('the fight is on, host to act', await toHost());
 
-// ---------- 1. Fighter: Shove and Unstoppable ----------
-await setClass('fighter', 3);
+// ---------- 1. Fighter (the Breaker): Wind-up, everyone's Shove, and Unstoppable ----------
+let u = await me();
+ok('Wind-up: the Breaker started the fight on ' + (u.res?.momentum ?? 0) + ' Momentum (door ' + TECH.rules.momentum.start + ' + Wind-up ' + WIND_UP + ' = ' + MOMENTUM_AT_START + ')', (u.res?.momentum ?? 0) === MOMENTUM_AT_START);
 let foe = await spawnNear('soldier', 'fists', 'Brute');
 ok('a drill unit stands next to the Fighter', !!foe);
+await dismissCut(); await host.locator('#phc-tab-class').click(); await settle(host, 120);
+ok('the CLASS tab has no Shove of its own any more (Wind-up took its place)', (await host.locator('[role="tabpanel"]').getByRole('button', { name: /^Shove/ }).count()) === 0);
 let n0 = await fxN(), m0 = await fxMark(), ap0 = (await me()).ap;
-let r = await useMove(/^Shove/, { target: foe.pos, chip: /^Knock Prone/, shot: '01-shove-picker' });
-ok('Shove (Knock Prone) through its button: ' + (r || 'confirmed'), !r);
-let u = await me(); let fx = await fxSince(n0);
-ok('Shove cost 1 AP (' + ap0 + ' → ' + u.ap + ') and sent a shove event', u.ap === ap0 - 1 && fx.some((e) => e.k === 'shove'));
+await pickAction(host, /^Shove/); await tok(foe.pos).click(); await settle(host, 150);
+await snap('01-shove-picker');
+let r = null; { const b = host.getByRole('button', { name: /^Confirm/ }).first(); await b.waitFor({ timeout: 20000 }).catch(() => {}); if (await b.isEnabled().catch(() => false)) { await b.click(); await settle(host, 500); } else r = 'Confirm disabled'; }
+ok("everyone's Shove (the attack tab) through its button: " + (r || 'confirmed'), !r);
+u = await me(); let fx = await fxSince(n0);
+ok('Shove cost ' + SHOVE_AP + ' AP (' + ap0 + ' → ' + u.ap + ') and sent a shove event on the Brute', u.ap === ap0 - SHOVE_AP && fx.some((e) => e.k === 'shove' && e.target === foe.id));
 n0 = await fxN();
 r = await useMove(/^Unstoppable/);
 u = await me(); fx = await fxSince(n0);
@@ -175,14 +193,17 @@ m = await mate(); u = await me();
 ok('Ward at Faith 1: ' + (r || 'confirmed') + '; the squadmate carries a Ward (' + JSON.stringify(m.shields || []) + ')', !r && (m.shields || []).some((l) => l.layer === 'ward' && l.by === u.id && l.n > 0));
 ok('Ward was the turn\'s Whisper (its slot is spent: ' + JSON.stringify(Object.keys(u.uses || {}).filter((k) => k.startsWith('faith#'))) + ')', Object.keys(u.uses || {}).some((k) => k.startsWith('faith#whisper')));
 
-// ---------- 3. Infiltrator: Vanish, Rig, Sabotage (and the Rigger's Field Fix between them) ----------
-await setClass('infiltrator', 3);
+// ---------- 3. Infiltrator: Vanish (a free Fade), Rig, Sabotage (and the Rigger's Field Fix between them) ----------
+await setClass('infiltrator', 3, () => act(host, { type: 'sandbox/skill', charId: hostChar, skill: 'ingenuity', points: FADE_INGENUITY }));
 ok('host turn', await newTurn());
-// Vanish: no enemy on the field (a cleared field) sees anyone.
-n0 = await fxN();
-r = await useMove(/^Vanish/);
+// Vanish (rules 1.60 item 4628) is no action of its own now: it takes the Shadow off the Operative's Fade.
+await host.locator('#phc-tab-class').click(); await settle(host, 120);
+ok('Vanish is no button on the CLASS tab', (await host.locator('[role="tabpanel"]').getByRole('button', { name: /^Vanish/ }).count()) === 0);
+u = await me(); ap0 = u.ap; const sh0 = u.res?.shadow ?? 0;
+r = await useMove(/^Fade/, { tab: 'shadow' });
 u = await me();
-ok('Vanish: Hidden (' + (r || 'confirmed') + ')', !r && !!u.hidden);
+ok('Fade with Vanish: Hidden for ' + FADE_GRANT.ap + ' AP (' + ap0 + ' → ' + u.ap + ') and no Shadow (' + sh0 + ' → ' + (u.res?.shadow ?? 0) + "; Fade's " + FADE_GRANT.res.shadow + ' less ' + Math.abs(VANISH_OFF) + '): ' + (r || 'confirmed'),
+  !r && !!u.hidden && u.ap === ap0 - FADE_GRANT.ap && (u.res?.shadow ?? 0) === Math.max(0, sh0 - Math.max(0, FADE_GRANT.res.shadow + VANISH_OFF)));
 ok('next to the squadmate', await mateNear(1));
 // Field Fix (rules 1.34: the Rigger's now, rank I): the squadmate's gun jams (set up by hand), the chip clears it.
 await setClass('trickster', 1);

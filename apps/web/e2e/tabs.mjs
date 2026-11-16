@@ -151,7 +151,9 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
 // second row with one tab alone on it). The tight bar keeps every full name; checked at the side-by-side widths down to
 // 1024 px, where the panel is narrowest (about 400 px).
 for (const [vw, vh] of [[1440, 900], [1280, 720], [1024, 768]]) {
-  const p = await open(vw, vh, [{ type: 'sandbox/class', classId: 'trickster', rank: 1 }, { type: 'sandbox/give', item: 'visualizer', equip: true },
+  // 0.30 (the focus rule): a focus door's tab with no focus anywhere and every action refused is not shown, so the
+  // Visualizer must really be in a hand: a one-handed gun first (the Proving Ground's two-handed rifle refuses the off hand).
+  const p = await open(vw, vh, [{ type: 'sandbox/class', classId: 'trickster', rank: 1 }, { type: 'sandbox/give', item: 'service_pistol', equip: true }, { type: 'sandbox/give', item: 'visualizer', equip: true },
     { type: 'sandbox/skill', skill: 'visualization', points: 5 }, { type: 'sandbox/skill', skill: 'rhetoric', points: 3 }]);
   await act(p, { type: 'sandbox/ai', on: false });
   // the tabs show in the first moments of a fight and are replaced by the "WAITING FOR ..." hold: wait until the turn is yours ON SCREEN
@@ -164,6 +166,7 @@ for (const [vw, vh] of [[1440, 900], [1280, 720], [1024, 768]]) {
       // a name cut short (its text wider than its box) would be an abbreviation the player never asked for
       cut: ts.filter((t) => { const n = [...t.querySelectorAll('span')].find((x) => x.style.textOverflow === 'ellipsis'); return n && n.scrollWidth > n.clientWidth + 1; }).map((t) => t.getAttribute('data-tab')) }; });
   await p.locator('[role="tablist"][aria-label="Actions"]').screenshot({ path: OUT + 'tabs-six-' + vw + '.png' }).catch(() => {});
+  ok(vw + 'x' + vh + ' the Rigger holds the Visualizer in a hand', await p.evaluate(() => { const g = window.__phc.getState().game, c = g.characters[Object.keys(g.characters)[0]]; return c.offHand?.id === 'visualizer' || c.weapon === 'visualizer'; }));
   // (0.29: and Perks, where Slide, Dexterity's door verb, is listed: seven tabs)
   ok(vw + 'x' + vh + ' a Rigger\'s seven tabs (' + bar.tabs.join(', ') + ') sit on ONE row, no name cut short' + (bar.cut.length ? ' (cut: ' + bar.cut.join(', ') + ')' : '') + ', nothing scrolls sideways (' + bar.rows + ' rows, ' + bar.over + ' px over)',
     bar.tabs.join() === 'move,attack,utility,perks,class,figments,calls' && bar.rows === 1 && !bar.cut.length && bar.over <= 1);

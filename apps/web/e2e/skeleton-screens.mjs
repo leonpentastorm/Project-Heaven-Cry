@@ -187,7 +187,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   await act({ type: 'sandbox/learn', charId: cid, school: 'damage' });
   await act({ type: 'sandbox/design', charId: cid, design: { id: '', name: 'Red Hand', school: 'damage', modules: [] } });
   await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'old_overcast', faith: 3, devotion: 5, reset: true });
-  await act({ type: 'sandbox/skill', charId: cid, skill: 'will_power', points: 10 }); // its Mastered perk: a row on the Perks tab, so all nine tabs are up
+  await act({ type: 'sandbox/skill', charId: cid, skill: 'will_power', points: 10 }); // its Mastered perk: a row on the Perks tab, so eight tabs are up (0.30's focus rule: no Evoker anywhere and every Sigil row refused, so no Sigils tab)
   await act({ type: 'sandbox/fight' });
   await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
   await p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 4; }, cid, { timeout: 45000 });
@@ -221,7 +221,8 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     await p.locator('#phc-tab-move').click(); await settle(p, 250);
     let T = await tabsOf();
     console.log('note ' + at + 'action tabs: ' + T.ids.join(' | ') + ' on ' + T.rows + ' line(s)');
-    ok(at + 'the Calls tab is there, last (' + T.ids.length + ' tabs)', T.ids[T.ids.length - 1] === 'calls' && T.ids.length === 9);
+    ok(at + 'the Calls tab is there, last (' + T.ids.length + ' tabs)', T.ids[T.ids.length - 1] === 'calls' && T.ids.length === 8);
+    ok(at + 'the eight tabs, in order, and no Sigils tab without an Evoker (' + T.ids.join() + ')', T.ids.join() === 'move,attack,utility,perks,class,outbursts,faith,calls');
     ok(at + 'the action tabs wrap: flex-wrap, no sideways scroll, none cut, all inside the panel', T.wrap === 'wrap' && T.ox !== 'auto' && T.ox !== 'scroll' && T.over <= 1 && !T.cut.length && T.inside);
     ok(at + 'the row is on ' + T.rows + ' lines (two at most)', T.rows >= 1 && T.rows <= 2);
     ok(at + 'the open tab\'s underline and fill are on that tab only (' + T.under.join() + ')', T.under.join() === T.sel.join() && T.sel.join() === 'move');

@@ -34,10 +34,11 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
   const steps = v.steps.filter((s) => !o.only || o.only.includes(s.at)).map((s) => {
     const state = s.pending ? 'pending' : s.picked ? 'picked' : !s.offered ? 'off' : 'locked';
     const head = skillName.toUpperCase() + ' ' + s.at + ' · ' + (state === 'pending' ? 'CHOOSE ONE · STILL TO DO' : state === 'picked' ? 'CHOSEN · KEPT FOR GOOD' : state === 'off' ? 'NOT OFFERED YET' : 'OPENS AT ' + s.at);
+    // an option not built yet shows its rule in words like any other (its data `why` is a designer's note, never a player's line)
     const opts = s.options.map((op) => {
       const can = s.pending && op.built, armKey = c.id + '|' + op.id, armed = ARMED === armKey;
-      return { key: op.id, name: op.name + (op.picked ? ' ✓' : ''), text: op.built ? op.text : op.why, icon: forkIconOf(op.id, v.skill), picked: op.picked, canPick: can,
-        label: o.inFight ? 'After the fight' : armed ? 'Confirm: keep ' + op.name + ' for good' : 'Choose ' + op.name, title: op.name + ': ' + (op.built ? op.text : op.why) + (can ? ' · Runs on ' + v.runsOn + '. Kept for good.' : ''),
+      return { key: op.id, name: op.name + (op.picked ? ' ✓' : ''), text: op.text, icon: forkIconOf(op.id, v.skill), picked: op.picked, canPick: can,
+        label: o.inFight ? 'After the fight' : armed ? 'Confirm: keep ' + op.name + ' for good' : 'Choose ' + op.name, title: op.name + ': ' + op.text + (can ? ' · Runs on ' + v.runsOn + '. Kept for good.' : ''),
         pick: () => {
           if (!can) return; if (o.inFight) { toast('Choose after the fight.'); return; }
           if (!armed) { ARMED = armKey; o.rerender?.(); return; }

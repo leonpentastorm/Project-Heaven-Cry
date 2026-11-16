@@ -36,6 +36,12 @@ describe('the fork card (game/forkView.ts)', () => {
     expect(card.steps.every((s) => /NOT OFFERED YET/.test(s.head) && s.opts.every((o) => !o.canPick))).toBe(true);
     expect(card.steps[0].why).toBe('Not offered yet: this choice comes in a later version.');
   });
+  it('an option not built yet shows its rule in words, never the data\'s designer note (no id, no rules number, no N-item)', () => {
+    const offs = ['ingenuity', 'raw_power', 'hand_eye_coordination', 'volition', 'lore_master', 'empathy', 'faith'].flatMap((d) => forkCard(ch({ [d]: 10 }), d)?.steps.flatMap((s) => s.opts) || []);
+    const unbuilt = offs.filter((o) => o.style.includes('opacity: 0.6'));
+    expect(unbuilt.length).toBeGreaterThan(0);
+    for (const o of unbuilt) { expect(o.text.length).toBeGreaterThan(20); expect(o.text + ' ' + o.title).not.toMatch(/[a-z]_[a-z]|rules \d|\bN\d+\b|\{=|`/); }
+  });
   it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon falls back to its door\'s skill', () => {
     const cards = forkCards(ch({ durability: 6, dexterity: 4, visualization: 4 }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));
     expect(cards.map((x) => x.door)).toEqual(['dexterity', 'visualization', 'durability']);
