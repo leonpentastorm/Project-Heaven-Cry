@@ -39,7 +39,7 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
     setN(1); if (row.kind === 'pack') setSel('credits');
   };
   const word = row.kind === 'credits' ? 'Give ' + amount.toLocaleString('en') + (amount === 1 ? ' credit' : ' credits') + ' to ' + target.name
-    : row.kind === 'held' ? 'Put it in the pack' : row.kind === 'never' ? 'Yours to keep' : 'Give ' + (most > 1 ? amount + ' × ' : '') + row.label + ' to ' + target.name;
+    : row.kind === 'held' ? 'Put it in the pack' : row.kind === 'never' ? 'Yours to keep' : 'Give ' + (most > 1 ? amount + ' × ' + row.label.replace(/^\d+ × /, '') : row.label) + ' to ' + target.name; // one count: the amount (a stack's line says its own, "2 × …")
   const line = (r: GiveRowV) => {
     const w = r.why[who], on = r.key === row.key, icon = r.kind === 'pack' || r.kind === 'count' || r.kind === 'held' ? gearIconUri(r.id, undefined, { large: true }) : '';
     return (

@@ -92,6 +92,11 @@ describe('T.3 while Guard is held, the tank rolls with Durability (op roll_with,
     const g = fight(7, { dex: 7 }), q = g.bound(() => gearPreview(g.char(g.pc), { id: 'hellraiser_service_rifle' }));
     expect(q.lines.some((l) => l.key === 'hits_with_alt')).toBe(false); // not higher: no line
   });
+  it('a thrown item: Durability is for a weapon attack, never a throw (the row mode): no "Hits with" line on its card', () => {
+    const f = fight(7), c = f.char(f.pc);
+    for (const id of ['frag_grenade', 'smoke_grenade']) expect(f.bound(() => gearPreview(c, { id })).lines.some((l) => l.key === 'hits_with_alt'), id).toBe(false);
+    expect(f.bound(() => gearPreview(c, { id: 'hellraiser_service_rifle' })).lines.some((l) => l.key === 'hits_with_alt')).toBe(true);
+  });
 });
 void ({} as Unit);
 

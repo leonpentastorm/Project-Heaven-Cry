@@ -430,7 +430,11 @@ O('displace', ANY, true, ['tiles', 'how', 'to', 'willing'], 'push the target awa
   if (e.to === 'tile') { const at: string | null = ev.ctx.tile ?? null; if (!at || at === t.pos || dist(t.pos, at) > (e.tiles ?? 1)) return false; return displace(ev.cb, rngOf(ev.h, ev.ctx), t, { tile: at }, { by: ev.self, how: 'guide', source: ev.h.key, willing: true }).text || ''; }
   if (t === ev.self) return;
   const how = e.how === 'pull' ? 'pull' : 'push', to = how === 'pull' ? { toward: ev.self.pos, tiles: e.tiles } : { away: ev.self.pos, tiles: e.tiles };
-  return displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key, ...(e.willing === true ? { willing: true } : {}) }).text || '';
+  const mv = displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key, ...(e.willing === true ? { willing: true } : {}) });
+  // the row's say follows what happened (0.29.0 playtest: "Boss flies." over a Boss that never moved): a refused move says
+  // the refusal in the forced move's own words (as magic.ts magicShove), a move that went nowhere says nothing
+  if (!mv.moved && !ev.preview) { if (mv.stoppedBy === 'immune' || mv.stoppedBy === 'held' || mv.stoppedBy === 'nailed') say(ev.cb, t.name + ' holds its ground' + (mv.why ? ' (' + mv.why + ')' : '') + '.'); return false; }
+  return mv.text || '';
 });
 O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event\'s), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder\'s zones of that kind (nothing said when it had none)', (ev, e) => {
   if (e.clear) return endZones(ev.cb, (z) => z.kind === e.kind && z.by === ev.self.id) > 0 ? undefined : false;

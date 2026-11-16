@@ -109,10 +109,12 @@ describe('Launch', () => {
   // The 0.29 consolidation (SF1): a Boss holds against every forced move of a player's item (rules.json
   // forced_movement.boss_holds), Launch's flight included: it takes the blow and the save, and stays on its tile.
   for (const tier of ['boss', 'soldier']) it('on a ' + tier + ': the blow lands; ' + (tier === 'boss' ? 'it is never moved' : 'it flies'), () => {
-    const b = fight({ m: 3, foes: [{ at: 'D5', tier }] }); weak(b.foe); const was = b.foe.pos, hp = b.foe.hp;
+    const b = fight({ m: 3, foes: [{ at: 'D5', tier }] }); weak(b.foe); const was = b.foe.pos, hp = b.foe.hp, n = b.cb.log.length;
     expect(refusal(() => launch(b, b.foe))).toBe('');
-    const t = b.unit(b.foe.id); expect(t.hp).toBeLessThan(hp);
-    if (tier === 'boss') expect(t.pos).toBe(was); else expect(t.pos).not.toBe(was);
+    const t = b.unit(b.foe.id), said = b.cb.log.slice(n).join(' | '); expect(t.hp).toBeLessThan(hp);
+    // the say follows what happened (0.29.0 playtest: "Boss flies." over a Boss that stayed): the forced move's own refusal
+    if (tier === 'boss') { expect(t.pos).toBe(was); expect(said).not.toMatch(/ flies/); expect(said).toMatch(/holds its ground \(too big to be moved\)/); }
+    else { expect(t.pos).not.toBe(was); expect(said).toMatch(/ flies/); }
   });
   it('a failed save: Off Balance, 3 tiles, Prone, a blow; all Momentum spent', () => {
     const f = fight({ m: 4 }); weak(f.foe); const hp = f.foe.hp;

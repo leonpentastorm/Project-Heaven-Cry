@@ -124,7 +124,7 @@ export const SOUL_REACH = 4;
 /** The story conditions that come into a fight (and that a failed approach on the area map puts on the scene) in
  * their combat form. ONE list (review bug 11: game.ts and world.ts each kept one, and they differed). */
 export const STORY_CARRY = new Set(['shaken', 'fear', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff', 'weakened', 'nausea', 'injured', 'augment_offline', 'bleeding']);
-export { condId, condMods, condDef, CONDITION_NAMES, CONDITION_ROWS, type CondDef, type CondMods } from './condtable';
+export { condId, condMods, condDef, CONDITION_NAMES, CONDITION_ROWS, UNTIL, type CondDef, type CondMods } from './condtable';
 /** A condition's own rounds (conditions data), for durations an item lengthens. */
 export const condRoundsOf = (id: string): number | undefined => CONDS[condId(id)]?.rounds;
 export const condName = (id: string) => CONDS[condId(id)]?.name || id;

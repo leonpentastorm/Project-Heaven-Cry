@@ -128,6 +128,10 @@ describe('the forms\' limits (the reviewer\'s abuse list)', () => {
 });
 
 describe('the small fixes', () => {
+  it('a glove plain blow is named by the family (techniques.json cut.names): Strike with gloves, Cut with a blade', () => {
+    const name = (weapon: string) => { const { f, u } = monk({ weapon }); return actionsFor(f.g, u.id, 'host').find((d) => d.id === 'tq:main:cut')?.name; };
+    expect(name('hand_wraps')).toBe('Strike'); expect(name('iron_mitts')).toBe('Strike'); expect(name('combat_knife')).toBe('Cut');
+  });
   it('the attack preview reads the chosen form, in whole points', () => {
     const { f, u } = monk(); const dmg = (mods: string[]) => { const l = previewDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: mods.map((m) => 'relic:open_hand#' + m) }, 'host')!.lines.find((x) => x.k === 'odds')!.text; return Number(/(\d+(?:\.\d+)?) damage/.exec(l)![1]); };
     const plain = dmg([]), jab = dmg(['jab']);

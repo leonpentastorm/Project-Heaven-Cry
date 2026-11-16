@@ -970,12 +970,15 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);
       // an Answer has no button; one that costs Guard says so when there is none to spend
       const why = def.group === 'answer' ? ((def.numbers as any)?.guard_cost && guardOf(u) < (def.numbers as any).guard_cost ? 'Needs ' + (def.numbers as any).guard_cost + ' Guard: Brace or take Guard first.' : null) : gate(cb, u, def, { hand }) || (handlerOf(def.id) ? null : NOT_BUILT);
-      return { id: def.id, name: def.name, group, ap: apFor(cb, u, def, hand), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim,
+      return { id: def.id, name: nameWith(def, weaponId), group, ap: apFor(cb, u, def, hand), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim,
         line: lf.main ? lf.main.text : null, ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: x.how === 'ready' && taught.has(def.id) && knownSig.has(def.id), plain: def.id === 'cut' || def.id === 'shot', built: !!handlerOf(def.id) };
     }),
   })).filter((g) => g.entries.length);
 }
+/** A technique's name with this weapon: its row's `names` by a property of the weapon (techniques.json: a glove's or a bare
+ *  hand's Cut is a Strike, the 0.29.0 playtest), else its own name. */
+const nameWith = (def: TechDef, weaponId: string | null | undefined): string => { const n = (def as any).names as Record<string, string> | undefined, p = n ? weaponProps(weaponId).find((x) => n[x]) : undefined; return p ? n![p] : def.name; };
 /** The pad for what the unit doesn't hold: one block per stowed weapon that a ready technique can draw, and one per kind
  * of throwable carried that a technique can be used with. The screen sends the entry's technique with the block's
  * `item` (combat/technique { id, item }). */
@@ -986,7 +989,7 @@ export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
   const block = (wi: Wield, name: string, count?: number, refused?: string) => holding(u, wi, () => {
     const entries = usable(cb, u, 'main', wi.kind).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, wi.weaponId, undefined, u), why = refused || gate(cb, u, def, { hand: 'main', _w: wi.kind } as TechArgs) || (handlerOf(def.id) ? null : NOT_BUILT);
-      return { id: def.id, name: def.name, group: def.group, ap: apFor(cb, u, def, 'main'), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
+      return { id: def.id, name: nameWith(def, wi.weaponId), group: def.group, ap: apFor(cb, u, def, 'main'), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
         ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(wi.weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: false, plain: false, built: !!handlerOf(def.id) };
     });

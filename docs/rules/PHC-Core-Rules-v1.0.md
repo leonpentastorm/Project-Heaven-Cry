@@ -6418,7 +6418,8 @@ shit due to all skill point being in durability and his shield points block NOTT
    54% and 28%). Amends Guard rule 4 and item 993.
 73. **The tank hits through its door.** While you hold Guard (1 point or more), your weapon attacks roll with
    Durability's modifier in place of the weapon's own skill modifier when Durability's is higher (skills.json
-   `durability.1`: op `roll_with` {skill durability, if_higher} on the attack, `if self_has_res guard`). It replaces,
+   `durability.1`: op `roll_with` {skill durability, if_higher} on the attack, `if self_has_res guard`, and `mode`: a
+   weapon's attack, never a throw: 16 Nov 2026, the 0.29.0 playtest; a thrown item's card no longer shows the line). It replaces,
    never stacks: an all-in Durability 7 with 0 in the weapon's skill rolls +6 where it rolled −2; a character with 7 in
    both rolls as before; Durability 1 with 0 in the weapon's skill rolls +0 (the better of the two). Damage is
    unchanged. The attack's preview names it ("Hits with: Durability (holding Guard)") and the gear card adds the line

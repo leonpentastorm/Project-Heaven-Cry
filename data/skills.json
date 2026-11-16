@@ -91,6 +91,14 @@
               "if": {
                 "self_has_res": [
                   "guard"
+                ],
+                "mode": [
+                  "shot",
+                  "aimed",
+                  "burst",
+                  "auto",
+                  "melee",
+                  "paired"
                 ]
               },
               "label": "holding Guard",

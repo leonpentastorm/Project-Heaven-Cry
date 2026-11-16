@@ -14,6 +14,7 @@ import { PROFILES, pairOf } from './effects/output';
 import { rngFor } from './rng';
 import { focusAccTerm } from './rolls';
 import { bindGame, holdersOf } from './effects/hooks';
+import { PREDICATES } from './effects/triggers';
 import { CALIBRE_NAME } from './data';
 
 /** One gear instance: an item id with its grade and fitted mods (a pack entry's or a shop card's). */
@@ -56,11 +57,11 @@ const signed = (n: number) => (n >= 0 ? '+' : '') + n;
  * check modifier (checkMod), and what its damage multiplier reads, in the words the damage breakdown labels it with
  * (character.ts weaponMultLabel). A melee weapon is read in melee, anything else as a shot or a throw. */
 function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
-  const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot'), sc = weaponMultLabel(w.id, { live: true });
+  const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot'), sc = weaponMultLabel(w.id, { live: true }), mode: AttackMode = w.category === 'thrown' ? 'thrown' : isMelee(w) ? 'melee' : 'shot';
   return [
     { key: 'hits_with', label: 'Hits with', value: (SKILL[sk]?.name || sk) + ' · ' + signed(checkMod(c, sk)), num: null },
     // op roll_with (rules 1.55): the skill an item lets the attack roll with instead, when it would (the fight's own choice, combat.ts rollWithPick)
-    ...rollWithLines(c, sk),
+    ...rollWithLines(c, sk, mode),
     // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
     // consolidation 0.29 (ruling i): with the percent the hit's own multiplier adds for this character (weaponMult, the
     // Stat term of the damage line the attack deals): "Damage: Strength · +30%"
@@ -69,9 +70,10 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
 }
 /** The character's roll_with offers (items whose effect is op roll_with on `attack`), read without a fight: the card
  * names the skill each would roll with and when (its label), through the same choice the attack makes. */
-function rollWithLines(c: Character, sk: string): PreviewLine[] {
+function rollWithLines(c: Character, sk: string, mode: AttackMode): PreviewLine[] {
   const offers: RollWithOffer[] = [];
-  for (const h of holdersOf({ c })) for (const e of h.info.effects) if (e?.op === 'roll_with' && e.when === 'attack') offers.push({ skill: e.skill, ifHigher: !!e.if_higher, label: e.label || h.info.name });
+  // an offer for some modes only (its `if.mode`, the predicate's own test: Durability's is a weapon's attack, never a throw)
+  for (const h of holdersOf({ c })) for (const e of h.info.effects) if (e?.op === 'roll_with' && e.when === 'attack' && (!e.if?.mode || PREDICATES.mode.test({ ctx: { mode } } as any, e.if.mode))) offers.push({ skill: e.skill, ifHigher: !!e.if_higher, label: e.label || h.info.name });
   const p = rollWithPick(c, sk, offers);
   return p ? [{ key: 'hits_with_alt', label: 'Hits with', value: rollWithWords(p) + ' · ' + signed(p.mod), num: null }] : [];
 }
