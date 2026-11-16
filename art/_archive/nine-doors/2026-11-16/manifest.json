@@ -7384,6 +7384,309 @@
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
   },
   {
+    "number": 147,
+    "family": "figment_trait_icons",
+    "id": "trait-armoured",
+    "path": "art/icons/figments/trait-armoured.png",
+    "name": "Armoured",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait (in data; asked 13 Nov, C4)",
+    "paint": "A figment shape with three overlapping plate arcs on its front.",
+    "avoid": "a knight helmet \u00b7 a real armour model",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Correct this ONE white Armoured Figment modifier icon. Keep its angular kite-like construct silhouette, two small loose diamond flecks and THREE overlapping curved plate shapes. CRITICAL ALPHA CORRECTION: the THREE dark curved dividers must be FULLY TRANSPARENT GAPS, NOT BLACK PAINT OR SHADING. Make the plates THREE SEPARATE WHITE ARCHED BANDS with broad empty transparent channels between them, so they remain separate even if all visible pixels are enforced to pure white. There must be NO opaque black, gray or other color anywhere in the PNG. The base construct behind the plates also needs holes matching those divider channels: do not leave a solid backing filling them. White ink and alpha transparency ONLY. Keep only the construct, three white plate bands and two diamond flecks. No eyes, face, helmet, real armor, robot, shading, gradient, glow, texture or text. One square graphic, centered with 15% clear margins and circular chip safety.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/native.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "ffa10ebdb44df22140754d6b6389368934a4d7c5045ad9af6d41fc1b15448f7f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/147-trait-armoured.png",
+    "source_sha256": "bd31085b47a78ebaa611291cbd5013302fa41120997d572b8231fd669b1b2423",
+    "export_crop": [
+      0,
+      87,
+      1200,
+      1180
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-armoured.png",
+      "64": "art/icons/figments/exports/64/trait-armoured.png",
+      "48": "art/icons/figments/exports/48/trait-armoured.png",
+      "44": "art/icons/figments/exports/44/trait-armoured.png",
+      "32": "art/icons/figments/exports/32/trait-armoured.png",
+      "24": "art/icons/figments/exports/24/trait-armoured.png"
+    },
+    "framing": {
+      "scale": 0.5679021052826225,
+      "offset": [
+        171,
+        201
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "9abdac08d524c1e454638e9162ce84279316b09b46c8f7eaa5ea72bf1d78ecc4",
+      "64": "873de1820ad984dc89f161bfc354e51a835521a3dcc9c2c311db6b6c0c2fe79e",
+      "48": "e2d7314feff2492b143a500e774bde8d8a5d5291a2ffaee9d64116c612afa2a8",
+      "44": "f21dfba52e12c6ac6acac321c271b1c00660611ee8c09ea9644dec4250d98801",
+      "32": "53f483b2c215624d3f17875b68adf21defc230589df2910fff46f5aff94e423d",
+      "24": "5d031a4209a55cb6e900756a396a5664f7a92c906d6e6444cc35ea6ff479700a"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 148,
+    "family": "figment_trait_icons",
+    "id": "trait-swift",
+    "path": "art/icons/figments/trait-swift.png",
+    "name": "Swift",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape trailing three long speed lines.",
+    "avoid": "a running shoe \u00b7 wings",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape trailing three long speed lines.\nAvoid: a running shoe \u00b7 wings\nEXACT STAGING: One SMALL FLOATING ABSTRACT FIGMENT made of three joined angular white fragments, an asymmetrical kite-like pointed body with TWO tiny loose diamond flecks near it. NO face, eyes, animal ears, humanoid body or Wick. It streaks toward viewer-right trailing exactly THREE LONG PARALLEL WHITE SPEED LINES to viewer-left. Keep speed lines crisp, separated and longer than the body, with no blur. No running shoe, wings, rockets, flames or full figure.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "d2a27c02f5b2c927444e57ddde9310da30de6f21df7b9677f29ad9d38d23bf71",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/148-trait-swift.png",
+    "source_sha256": "b81ac621cd3698e1ad62d3fc01ae91071435ed566c4e31738b2e691c40c55515",
+    "export_crop": [
+      33,
+      218,
+      1234,
+      1051
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-swift.png",
+      "64": "art/icons/figments/exports/64/trait-swift.png",
+      "48": "art/icons/figments/exports/48/trait-swift.png",
+      "44": "art/icons/figments/exports/44/trait-swift.png",
+      "32": "art/icons/figments/exports/32/trait-swift.png",
+      "24": "art/icons/figments/exports/24/trait-swift.png"
+    },
+    "framing": {
+      "scale": 0.6249596500854997,
+      "offset": [
+        136,
+        251
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "2a4343b10163d638b33e00857b78387b8d98d7031a34e114b53c43634e38265d",
+      "64": "ea943624c8b1fc545847dd9282b38ba66665c0023e38b6c13a5a10a06c33fd41",
+      "48": "eb92bdc3bf28349ed4c24c2731b743f65ddb8bdd864b9220f8714e3e4ff42487",
+      "44": "3f8183d358e25fdf1162673e398257c486189823250a507a53edc88cfe7b293d",
+      "32": "12461eaba3132b74f0dc2b5860543be5cc389a631ab4c73004dde7f3a5a5fdd5",
+      "24": "fe25f413c1479b06e77a02011f46236095dea392b111958f517f53d38a92a950"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 149,
+    "family": "figment_trait_icons",
+    "id": "trait-loud",
+    "path": "art/icons/figments/trait-loud.png",
+    "name": "Loud",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape with three sound arcs leaving it.",
+    "avoid": "a loudspeaker \u00b7 music notes",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with three sound arcs leaving it.\nAvoid: a loudspeaker \u00b7 music notes\nEXACT STAGING: One SMALL FLOATING ABSTRACT FIGMENT made of three angular fragments, an asymmetrical pointed kite-like mass with TWO small diamond flecks. NO face or anatomy. Exactly THREE bold separate concentric SOUND ARCS leave its front toward viewer-right, growing larger with distance. The construct is the emitter; no loudspeaker cone, speaker box, grille, music notes, ear, person or Wick. Wide transparent gaps between the arcs; flat ink only.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-143.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-143.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "f955e7fdd616a7d9686611d0493ad64e11f8a8118fca671d9685b22421c1c5f7",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/149-trait-loud.png",
+    "source_sha256": "97cf413fabf2b7a680ef2633ce06b6344a0514f913f0e991491d0d3826058dfe",
+    "export_crop": [
+      47,
+      232,
+      1222,
+      1149
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-loud.png",
+      "64": "art/icons/figments/exports/64/trait-loud.png",
+      "48": "art/icons/figments/exports/48/trait-loud.png",
+      "44": "art/icons/figments/exports/44/trait-loud.png",
+      "32": "art/icons/figments/exports/32/trait-loud.png",
+      "24": "art/icons/figments/exports/24/trait-loud.png"
+    },
+    "framing": {
+      "scale": 0.6049637552495103,
+      "offset": [
+        156,
+        234
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "d3eb23db6112f77412245b03f29bd84a7b12a97f3b29f2de9db6121f67ef49a0",
+      "64": "75674d1cd237c29b4f393e58e66314551d5295f397408098ee25c2edd4ad435b",
+      "48": "9d8d7dee6ff105d6fa9fe0f2cd34a70f4217c7c8cbcc34ddfdbbb894d9b1d6f7",
+      "44": "13a4da73d944208bbf911f053fdcb0495a7ce56c13c61a18a69c59eeceeb9951",
+      "32": "de3a55025f26ba2fb4ac423f2c9a85733fc35f0e34c0472482d5c4ce8ef62b01",
+      "24": "0b56fdceae10b2040c8a358de3514f7b1c67c48017a13fd61fc790a95af02a1a"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 150,
+    "family": "figment_trait_icons",
+    "id": "trait-volatile",
+    "path": "art/icons/figments/trait-volatile.png",
+    "name": "Volatile",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape with cracks of light breaking out of it.",
+    "avoid": "a bomb with a fuse \u00b7 fire",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with cracks of light breaking out of it.\nAvoid: a bomb with a fuse \u00b7 fire\nEXACT STAGING: One SMALL FLOATING ABSTRACT FIGMENT CONSTRUCT, three joined angular white fragments making an asymmetrical pointed kite-like mass, with TWO tiny loose diamond flecks. Its body is split by TWO LARGE TRANSPARENT ZIGZAG CRACKS, with just THREE SHORT SOLID WHITE TICKS escaping at the crack endpoints. Cracks of light are rendered as hard cutouts and hard ticks ONLY. No glow, halo, smoky aura, gradient, gray, flame, bomb, fuse, eyes, face, animal anatomy, human, robot or extra figure.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "598fa0e3300556c31dc08ab87e8bed5b9dcda8ea0ab2d57809707413328b23b8",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/150-trait-volatile.png",
+    "source_sha256": "aa574ae7e09f8143c72c28c3452ead0cd0df73f6f807b7c3a82d9092e2a703e0",
+    "export_crop": [
+      47,
+      103,
+      1190,
+      1158
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-volatile.png",
+      "64": "art/icons/figments/exports/64/trait-volatile.png",
+      "48": "art/icons/figments/exports/48/trait-volatile.png",
+      "44": "art/icons/figments/exports/44/trait-volatile.png",
+      "32": "art/icons/figments/exports/32/trait-volatile.png",
+      "24": "art/icons/figments/exports/24/trait-volatile.png"
+    },
+    "framing": {
+      "scale": 0.6778092199404948,
+      "offset": [
+        124,
+        154
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "833e9a560c435ce1e1cb5c45b61a088cf3bd84de28986bb596e70bed02d8949b",
+      "64": "eadfb1abb2e20c7a5db6cc5b550b8ec374b6e831b3c54c64ad5d910583d6a8cf",
+      "48": "474a97b33aa8565f8eec48551fbccc276d81d2d60d117bec1be79f4b0391bbe4",
+      "44": "e7faffc76548ad3d584dc910b9e64fe623236a95161b2634b7801573e919ba83",
+      "32": "0c28a9556555f2c0757cd8b1070b9592ca0aae00b72919ae7a60b25123a122b5",
+      "24": "7ef1cdceec4ffcdb13ca93421568d2ef2b1014815b4bfd3afe3c1ca225234a45"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 157,
     "family": "move_icons",
     "id": "move-riggers-hands",

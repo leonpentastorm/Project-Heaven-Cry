@@ -5070,6 +5070,148 @@
       "previous_path": "art/icons/figments/placeholders/order-let-go.svg"
     }
   },
+  "figment_trait_icons": {
+    "trait-armoured": {
+      "label": "Armoured",
+      "path": "art/icons/figments/trait-armoured.png",
+      "sha256": "ffa10ebdb44df22140754d6b6389368934a4d7c5045ad9af6d41fc1b15448f7f",
+      "format": "png",
+      "mode": "wick",
+      "tint": "expression",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #147",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/trait-armoured/trait-armoured.svg",
+      "previous_sha256": "eba7f5aef6530e7b4e113ea7e849928ece4ffb5b8b5fffebf4bf5ef2abf15fed",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/147-trait-armoured.png",
+      "upscaled": false,
+      "brief_number": 147,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-armoured.png",
+        "64": "art/icons/figments/exports/64/trait-armoured.png",
+        "48": "art/icons/figments/exports/48/trait-armoured.png",
+        "44": "art/icons/figments/exports/44/trait-armoured.png",
+        "32": "art/icons/figments/exports/32/trait-armoured.png",
+        "24": "art/icons/figments/exports/24/trait-armoured.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "trait-swift": {
+      "label": "Swift",
+      "path": "art/icons/figments/trait-swift.png",
+      "sha256": "d2a27c02f5b2c927444e57ddde9310da30de6f21df7b9677f29ad9d38d23bf71",
+      "format": "png",
+      "mode": "wick",
+      "tint": "expression",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #148",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/trait-swift/trait-swift.svg",
+      "previous_sha256": "00ea44231da55fb8872f9ecbd5ecf3fd86e05aacf67682cae9f94d4b3259131e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/148-trait-swift.png",
+      "upscaled": false,
+      "brief_number": 148,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-swift.png",
+        "64": "art/icons/figments/exports/64/trait-swift.png",
+        "48": "art/icons/figments/exports/48/trait-swift.png",
+        "44": "art/icons/figments/exports/44/trait-swift.png",
+        "32": "art/icons/figments/exports/32/trait-swift.png",
+        "24": "art/icons/figments/exports/24/trait-swift.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "trait-loud": {
+      "label": "Loud",
+      "path": "art/icons/figments/trait-loud.png",
+      "sha256": "f955e7fdd616a7d9686611d0493ad64e11f8a8118fca671d9685b22421c1c5f7",
+      "format": "png",
+      "mode": "wick",
+      "tint": "expression",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #149",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/trait-loud/trait-loud.svg",
+      "previous_sha256": "90bcc1056092b774d5071f1ad286f488e24cfeba52f7c0683d470a27091eb6b8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/149-trait-loud.png",
+      "upscaled": false,
+      "brief_number": 149,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-loud.png",
+        "64": "art/icons/figments/exports/64/trait-loud.png",
+        "48": "art/icons/figments/exports/48/trait-loud.png",
+        "44": "art/icons/figments/exports/44/trait-loud.png",
+        "32": "art/icons/figments/exports/32/trait-loud.png",
+        "24": "art/icons/figments/exports/24/trait-loud.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "trait-volatile": {
+      "label": "Volatile",
+      "path": "art/icons/figments/trait-volatile.png",
+      "sha256": "598fa0e3300556c31dc08ab87e8bed5b9dcda8ea0ab2d57809707413328b23b8",
+      "format": "png",
+      "mode": "wick",
+      "tint": "expression",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #150",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/trait-volatile/trait-volatile.svg",
+      "previous_sha256": "ee287d273e6e1e6c57963f1047fb588244a2c7da2b8636185f36a4ed79d16529",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/150-trait-volatile.png",
+      "upscaled": false,
+      "brief_number": 150,
+      "exports": {
+        "128": "art/icons/figments/exports/128/trait-volatile.png",
+        "64": "art/icons/figments/exports/64/trait-volatile.png",
+        "48": "art/icons/figments/exports/48/trait-volatile.png",
+        "44": "art/icons/figments/exports/44/trait-volatile.png",
+        "32": "art/icons/figments/exports/32/trait-volatile.png",
+        "24": "art/icons/figments/exports/24/trait-volatile.png"
+      },
+      "ink": "#FFFFFF"
+    }
+  },
   "tending_icons": {
     "tend-bond": {
       "label": "Wick \u2014 Bond",

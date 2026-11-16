@@ -548,6 +548,26 @@
       "faint_alpha_to_solid_area_ratio": 0.01747
     },
     {
+      "number": 147,
+      "name": "Armoured",
+      "faint_alpha_to_solid_area_ratio": 0.04268
+    },
+    {
+      "number": 148,
+      "name": "Swift",
+      "faint_alpha_to_solid_area_ratio": 0.0922
+    },
+    {
+      "number": 149,
+      "name": "Loud",
+      "faint_alpha_to_solid_area_ratio": 0.04019
+    },
+    {
+      "number": 150,
+      "name": "Volatile",
+      "faint_alpha_to_solid_area_ratio": 0.03238
+    },
+    {
       "number": 157,
       "name": "The Rigger's Hands",
       "faint_alpha_to_solid_area_ratio": 0.03047

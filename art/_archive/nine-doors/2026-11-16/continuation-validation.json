@@ -1,9 +1,10 @@
 {
-  "delivered": 217,
+  "delivered": 221,
   "latest_candidate_ids": [
-    132,
-    138,
-    139
+    147,
+    148,
+    149,
+    150
   ],
   "scoped_delivery_checks_pass": true,
   "all_ink_alpha_audit_pass": true,

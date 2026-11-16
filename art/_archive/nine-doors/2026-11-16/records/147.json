@@ -1,0 +1,75 @@
+{
+  "number": 147,
+  "family": "figment_trait_icons",
+  "id": "trait-armoured",
+  "path": "art/icons/figments/trait-armoured.png",
+  "name": "Armoured",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait (in data; asked 13 Nov, C4)",
+  "paint": "A figment shape with three overlapping plate arcs on its front.",
+  "avoid": "a knight helmet \u00b7 a real armour model",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Correct this ONE white Armoured Figment modifier icon. Keep its angular kite-like construct silhouette, two small loose diamond flecks and THREE overlapping curved plate shapes. CRITICAL ALPHA CORRECTION: the THREE dark curved dividers must be FULLY TRANSPARENT GAPS, NOT BLACK PAINT OR SHADING. Make the plates THREE SEPARATE WHITE ARCHED BANDS with broad empty transparent channels between them, so they remain separate even if all visible pixels are enforced to pure white. There must be NO opaque black, gray or other color anywhere in the PNG. The base construct behind the plates also needs holes matching those divider channels: do not leave a solid backing filling them. White ink and alpha transparency ONLY. Keep only the construct, three white plate bands and two diamond flecks. No eyes, face, helmet, real armor, robot, shading, gradient, glow, texture or text. One square graphic, centered with 15% clear margins and circular chip safety.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/native.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "ffa10ebdb44df22140754d6b6389368934a4d7c5045ad9af6d41fc1b15448f7f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/147-trait-armoured.png",
+  "source_sha256": "bd31085b47a78ebaa611291cbd5013302fa41120997d572b8231fd669b1b2423",
+  "export_crop": [
+    0,
+    87,
+    1200,
+    1180
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-armoured.png",
+    "64": "art/icons/figments/exports/64/trait-armoured.png",
+    "48": "art/icons/figments/exports/48/trait-armoured.png",
+    "44": "art/icons/figments/exports/44/trait-armoured.png",
+    "32": "art/icons/figments/exports/32/trait-armoured.png",
+    "24": "art/icons/figments/exports/24/trait-armoured.png"
+  },
+  "framing": {
+    "scale": 0.5679021052826225,
+    "offset": [
+      171,
+      201
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "9abdac08d524c1e454638e9162ce84279316b09b46c8f7eaa5ea72bf1d78ecc4",
+    "64": "873de1820ad984dc89f161bfc354e51a835521a3dcc9c2c311db6b6c0c2fe79e",
+    "48": "e2d7314feff2492b143a500e774bde8d8a5d5291a2ffaee9d64116c612afa2a8",
+    "44": "f21dfba52e12c6ac6acac321c271b1c00660611ee8c09ea9644dec4250d98801",
+    "32": "53f483b2c215624d3f17875b68adf21defc230589df2910fff46f5aff94e423d",
+    "24": "5d031a4209a55cb6e900756a396a5664f7a92c906d6e6444cc35ea6ff479700a"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
