@@ -3353,6 +3353,310 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 70,
+    "family": "technique_icons",
+    "id": "tech-warning-shot",
+    "path": "art/icons/techniques/warning-shot.png",
+    "name": "Warning Shot",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, press",
+    "paint": "A single bullet line striking the ground just in front of a partial foot, a small dust kick.",
+    "avoid": "a firework \u00b7 a flare",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A single bullet line striking the ground just in front of a partial foot, a small dust kick.\nAvoid: a firework \u00b7 a flare\nEXACT STAGING: A single straight white training-projectile line travels low from viewer-left and ends at a TINY hard-edged dust tick on a short ground baseline, just IN FRONT OF a cropped boot toe entering from viewer-right. The boot remains intact, untouched and clearly separated from the endpoint. Show only the partial boot and a short cuff, no whole person or robot. No injury, spark shower, firework, flare, smoke, flash or scene.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "9bd26f9ca23a826b05d09348fde11ad76d81353f080503d586e1a88ad98e8bea",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/070-warning-shot.png",
+    "source_sha256": "e8f9f8f16e5c34510cfd8333c9ce37e678a69779bec423ddede204beca52c626",
+    "export_crop": [
+      65,
+      103,
+      1224,
+      977
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/warning-shot.png",
+      "64": "art/icons/techniques/exports/64/warning-shot.png",
+      "48": "art/icons/techniques/exports/48/warning-shot.png",
+      "44": "art/icons/techniques/exports/44/warning-shot.png",
+      "32": "art/icons/techniques/exports/32/warning-shot.png",
+      "24": "art/icons/techniques/exports/24/warning-shot.png"
+    },
+    "framing": {
+      "scale": 0.688258872585796,
+      "offset": [
+        113,
+        211
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "e165501e627bdda9cff1872a56589884b590692093134094d3f93da8995cc1e5",
+      "64": "2f1c3996190e90e77947bb38f3f250ab84746e375ae64bf2e2616d5dbdce90f1",
+      "48": "646accfddf5ced8123c3357586e6fcacf0888f916c6388c4a87d8b9df1b271dc",
+      "44": "7ec1bc480501b7fe23b39a9cb91951fdbab1657673ae36610a34debb803e58c2",
+      "32": "f5cb3df2682ef1fe78ff93d7651bdc8779c0ec5ff285af07e81d89545d1569c8",
+      "24": "4b48f58c89eefb28f622ca7a339611f1e01f2b50e16e67449eac6c2ef1bd0809"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 71,
+    "family": "technique_icons",
+    "id": "tech-flush",
+    "path": "art/icons/techniques/flush.png",
+    "name": "Flush",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, press: drives a foe from cover",
+    "paint": "A burst striking the side of a crate, a small figure scrambling out of the far side.",
+    "avoid": "a bird \u00b7 water",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A burst striking the side of a crate, a small figure scrambling out of the far side.\nAvoid: a bird \u00b7 water\nEXACT STAGING: One broad plain supply crate on the left, a few short solid shot-ticks striking its NEAR SIDE, and a small generic cropped training silhouette scrambling out from BEHIND the far-right edge. Show only a bent leg, foot and part of the torso/arm emerging around the crate; the crate occludes the rest, NO head or complete second figure. The foot is stepping clear, no injury. No Wick screen head or chest, bird, water, flame, explosion, rubble or text.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0e64e9e5c64ee295f9e80661c9c5f85d7675434409b30c6c6aaa9a2042425a07",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/071-flush.png",
+    "source_sha256": "7ebae63bb1d325c3a1338f061aa5480fe6d25c76df1e91c6732849307c60771a",
+    "export_crop": [
+      73,
+      296,
+      1234,
+      1123
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/flush.png",
+      "64": "art/icons/techniques/exports/64/flush.png",
+      "48": "art/icons/techniques/exports/48/flush.png",
+      "44": "art/icons/techniques/exports/44/flush.png",
+      "32": "art/icons/techniques/exports/32/flush.png",
+      "24": "art/icons/techniques/exports/24/flush.png"
+    },
+    "framing": {
+      "scale": 0.6595315691710808,
+      "offset": [
+        129,
+        239
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "953f1647e4e3efb91990d6086c1696c920cc0dcc604bc7c08169f99ec2d5e0ec",
+      "64": "e68ebba05adf156fcd766590311bc15c8d29153e09b6edb5afe6aff0c44d847f",
+      "48": "14d1e3d38bc7d63af2bd01ee6acc22279bbe0212df86d21478ca46363561f1b0",
+      "44": "3c807b2d26dbc5ffdd7ed299197266523e60ce75f4e8f43b05f29f0fb692ad7b",
+      "32": "5899cfd9cd31658cf615d4ec6870799bf2058b8942058c76db6ffaef6ce394d3",
+      "24": "edd23aa67de66e4a623146eef3b56dd91b7e45cea3739d819d0e71bd2446e921"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 72,
+    "family": "technique_icons",
+    "id": "tech-mag-dump",
+    "path": "art/icons/techniques/mag-dump.png",
+    "name": "Mag Dump",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, press: empties the magazine",
+    "paint": "A gun with a long straight line of spent cases pouring out of its side.",
+    "avoid": "a machine gun nest \u00b7 a real make",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Create ONE small flat white inventory-style icon of an UNLOADED CARTOON TRAINING PROP, a clearly invented chunky ceramic toy ray-projector in side profile. No operator, hands, human, robot character, target or firing scene. The static prop has a plain short rounded muzzle at the left, a rectangular body, a simple handle beneath it, and one obvious EMPTY side port. From that side port, SIX EMPTY open-ended cylinder casings form ONE long straight diagonal row downward to the right. Make the casings visibly hollow with a tiny open-end cut, not pointed ammunition. The purpose is to show an EMPTY magazine after practice, not firing. Keep construction simple and playful, no real product make or brand, text, numbers, insignia or scene. Bold pure-white #FFFFFF flat screen-print ink with sparse broad transparent cutouts, no grey shades, gradient, texture, glow, smoke, light effects or burst. Transparent background. One centered square graphic with 15 percent safe margins, readable at 32px. Match the attached object-only white icon style.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "service_rejection_resolution": "Unloaded cartoon practice prop with empty casings, no firing scene.",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "fe0c6785b817175739055bcef4ae49345db16953d80184f910d6cc3151de7b0b",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/072-mag-dump.png",
+    "source_sha256": "a4e3cc2e53b1a392f0a38efc3fa0ecedde0fcd70367d22a23f318cfe06964d8b",
+    "export_crop": [
+      27,
+      143,
+      1240,
+      1105
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/mag-dump.png",
+      "64": "art/icons/techniques/exports/64/mag-dump.png",
+      "48": "art/icons/techniques/exports/48/mag-dump.png",
+      "44": "art/icons/techniques/exports/44/mag-dump.png",
+      "32": "art/icons/techniques/exports/32/mag-dump.png",
+      "24": "art/icons/techniques/exports/24/mag-dump.png"
+    },
+    "framing": {
+      "scale": 0.6457882935874004,
+      "offset": [
+        120,
+        201
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "6bac23a3bccd58224829265371e578cce0169e399a13378dc4c98312a17f5ae3",
+      "64": "3bd745ec8d0c11c5ef3a17da274c4e94a6ba97c7ad37a23597117e47cc56aeee",
+      "48": "4fdef72237803852c347011de279f6d707436b64645edc8839bfc8dbdd15db3b",
+      "44": "9842eb6d4b9b5e39d9ab3a55e89588a3a65644a499bf28fd90e1019edea3b290",
+      "32": "4f5626097137a148539b3aebf79df8f46f5d92fd82acc17a56189de43a35f17e",
+      "24": "c636f0852b088ca2a224cb1eb5edb930e75bfa64a797b34a056a63ca6cae59d4"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 73,
+    "family": "technique_icons",
+    "id": "tech-crossfire",
+    "path": "art/icons/techniques/crossfire.png",
+    "name": "Crossfire",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, press: two lines of fire cross",
+    "paint": "Two bullet lines crossing at one point from opposite sides.",
+    "avoid": "crossed swords \u00b7 an X on a map",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Correct this simple white-ink Crossfire pictogram. Keep just TWO crossing projectile paths and the clean flat style. CRITICAL: they travel in OPPOSITE horizontal directions. Put ONE pointed projectile head at the UPPER-LEFT end facing LEFT, and its two trailing dashes at the LOWER-RIGHT end. Put the OTHER pointed head at the UPPER-RIGHT end facing RIGHT, and its two trailing dashes at the LOWER-LEFT end. The two shallow diagonal paths cross exactly once in the middle. Arrowheads at the two TOP corners, tails at the two BOTTOM corners. Do not leave both arrowheads on the right. No swords, map, frame, figure, target circle, decoration or effects. Pure white flat shapes on true transparency, no gray, shading, glow or texture. Center inside 15% clear margins and keep the whole X-shaped action safe inside a 90% circular chip. One square icon, no text.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/073-crossfire-direction-fix/native.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/073-crossfire-direction-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "896283a73c87502a3b527891e381c8051479a84cc4ef3e07dbc67534949856df",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/073-crossfire.png",
+    "source_sha256": "09c119b225179893f65d7db0e4b94e173ae4d792d213fb1bab054ed36581fa03",
+    "export_crop": [
+      113,
+      306,
+      1196,
+      1044
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/crossfire.png",
+      "64": "art/icons/techniques/exports/64/crossfire.png",
+      "48": "art/icons/techniques/exports/48/crossfire.png",
+      "44": "art/icons/techniques/exports/44/crossfire.png",
+      "32": "art/icons/techniques/exports/32/crossfire.png",
+      "24": "art/icons/techniques/exports/24/crossfire.png"
+    },
+    "framing": {
+      "scale": 0.6861217285430479,
+      "offset": [
+        140,
+        259
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "9ee7844f88b2ee4a636bea379ced446fb054694a6d0bba152cf51c37d7382d10",
+      "64": "48ae03055a635bc2c0153d4d1dc1776578778987328cbccad51394f1243d670f",
+      "48": "db31c9a55d59bc50486f96e52e341232f9aee05bdbc77778e1f5c4bf0f7fad84",
+      "44": "c228ace016a399ae237ebc82de54ffb1a741925af0aa91ff459b09edb2d85f68",
+      "32": "b17f8aebc4b89faf1e5dad82c28c22206826d54e2efea62ebc22883ad881f995",
+      "24": "8ef637472efbf41bdb891ebac2667519ce30d0788465243315c05b00cd8081ae"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 80,
     "family": "perks",
     "id": "sleight-of-hand",

@@ -248,6 +248,26 @@
       "faint_alpha_to_solid_area_ratio": 0.07617
     },
     {
+      "number": 70,
+      "name": "Warning Shot",
+      "faint_alpha_to_solid_area_ratio": 0.06539
+    },
+    {
+      "number": 71,
+      "name": "Flush",
+      "faint_alpha_to_solid_area_ratio": 0.04173
+    },
+    {
+      "number": 72,
+      "name": "Mag Dump",
+      "faint_alpha_to_solid_area_ratio": 0.14168
+    },
+    {
+      "number": 73,
+      "name": "Crossfire",
+      "faint_alpha_to_solid_area_ratio": 0.08003
+    },
+    {
       "number": 80,
       "name": "Long Dark",
       "faint_alpha_to_solid_area_ratio": 0.04579

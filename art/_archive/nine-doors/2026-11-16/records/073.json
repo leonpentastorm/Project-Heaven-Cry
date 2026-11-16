@@ -1,0 +1,75 @@
+{
+  "number": 73,
+  "family": "technique_icons",
+  "id": "tech-crossfire",
+  "path": "art/icons/techniques/crossfire.png",
+  "name": "Crossfire",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, press: two lines of fire cross",
+  "paint": "Two bullet lines crossing at one point from opposite sides.",
+  "avoid": "crossed swords \u00b7 an X on a map",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Correct this simple white-ink Crossfire pictogram. Keep just TWO crossing projectile paths and the clean flat style. CRITICAL: they travel in OPPOSITE horizontal directions. Put ONE pointed projectile head at the UPPER-LEFT end facing LEFT, and its two trailing dashes at the LOWER-RIGHT end. Put the OTHER pointed head at the UPPER-RIGHT end facing RIGHT, and its two trailing dashes at the LOWER-LEFT end. The two shallow diagonal paths cross exactly once in the middle. Arrowheads at the two TOP corners, tails at the two BOTTOM corners. Do not leave both arrowheads on the right. No swords, map, frame, figure, target circle, decoration or effects. Pure white flat shapes on true transparency, no gray, shading, glow or texture. Center inside 15% clear margins and keep the whole X-shaped action safe inside a 90% circular chip. One square icon, no text.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/073-crossfire-direction-fix/native.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/073-crossfire-direction-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "896283a73c87502a3b527891e381c8051479a84cc4ef3e07dbc67534949856df",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/073-crossfire.png",
+  "source_sha256": "09c119b225179893f65d7db0e4b94e173ae4d792d213fb1bab054ed36581fa03",
+  "export_crop": [
+    113,
+    306,
+    1196,
+    1044
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/crossfire.png",
+    "64": "art/icons/techniques/exports/64/crossfire.png",
+    "48": "art/icons/techniques/exports/48/crossfire.png",
+    "44": "art/icons/techniques/exports/44/crossfire.png",
+    "32": "art/icons/techniques/exports/32/crossfire.png",
+    "24": "art/icons/techniques/exports/24/crossfire.png"
+  },
+  "framing": {
+    "scale": 0.6861217285430479,
+    "offset": [
+      140,
+      259
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "9ee7844f88b2ee4a636bea379ced446fb054694a6d0bba152cf51c37d7382d10",
+    "64": "48ae03055a635bc2c0153d4d1dc1776578778987328cbccad51394f1243d670f",
+    "48": "db31c9a55d59bc50486f96e52e341232f9aee05bdbc77778e1f5c4bf0f7fad84",
+    "44": "c228ace016a399ae237ebc82de54ffb1a741925af0aa91ff459b09edb2d85f68",
+    "32": "b17f8aebc4b89faf1e5dad82c28c22206826d54e2efea62ebc22883ad881f995",
+    "24": "8ef637472efbf41bdb891ebac2667519ce30d0788465243315c05b00cd8081ae"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
