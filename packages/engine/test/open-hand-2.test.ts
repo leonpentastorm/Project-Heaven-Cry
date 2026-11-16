@@ -69,6 +69,14 @@ describe('P14: the Open Hand answers its holder\'s own defence', () => {
     expect(guardTerm(monk({ weapon: 'service_pistol', offHand: 'hand_wraps' }).f)).toBe(0);
     expect(guardTerm(monk({ weapon: 'hellraiser_servo_fist' }).f)).toBe(0); // heavy: its forms, never its guard
   });
+  it('Open guard through the reducer: the enemy turn rolls to hit the monk at −2 in Light armour; not in Medium, not with a pistol in the other hand', () => {
+    // the modifier the enemy's attack adds to its d20 (its log line "d20 N +M"), made the way its turn makes it (resolveAttack)
+    const firstMod = (s: Spec) => { const { f } = monk(s); const e = f.turn(f.foe), n = f.cb.log.length; f.unit(e.id).ap = 6;
+      dice({ die: 10, hit: true }, () => withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(e.id), f.pc, 'shot', null)));
+      const l = f.cb.log.slice(n).find((x: any) => /d20 10 /.test(String(x))); return Number(/d20 10 ([+−-]\d+)/.exec(String(l))![1].replace('−', '-')); };
+    const light = firstMod({ armourClass: 1 }), medium = firstMod({ armourClass: 2 }), pistol = firstMod({ armourClass: 1, weapon: 'service_pistol', offHand: 'hand_wraps' });
+    expect(light).toBe(medium - 2); expect(pistol).toBe(medium);
+  });
   it('Sway: the first blow that lands on the monk in a round is halved (its reaction); the second is not', () => {
     const took = (answers: string[] | null) => {
       const { f } = monk({ armourClass: 0 }); const pc = f.pc;
