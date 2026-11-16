@@ -2,7 +2,7 @@
 // and its tier's list (enemies.json `techniques`, on the unit as u.techs). Where it would make a plain attack it asks
 // each technique's handler how much it wants it (`ai`: a plain attack is 5) and uses the best one that beats that.
 // Planning is pure: it reads previews only, so the intent a player Analyzes is what the enemy then does.
-import { type Combat, type Unit, type AimWhy, alive, enemyStep, sideSees, enemyPreference, noteEnemyAim } from '../combat';
+import { type Combat, type Unit, type AimWhy, alive, enemyStep, sideSees, enemyPreference, noteEnemyAim, doctrineOf, alliesOn, tauntedBy } from '../combat';
 import { isGhost, perceivedFoes } from '../illusion';
 import { condOn } from '../magic';
 import type { TechArgs } from './types';
@@ -22,14 +22,20 @@ export function aiTechnique(cb: Combat, u: Unit): Pick | null {
   // 12 Nov 2026).
   const pref = enemyPreference(cb, u, perceivedFoes(cb, u).filter((v) => !isGhost(v) && alive(v) && sideSees(cb, u.side, v)));
   const foes = pref.order;
+  // Rules 1.57 (the opening volley): a tier's `technique_spread` lowers its want for a target its side has already
+  // attacked this round, by that share for each other attacker, so a line of Soldiers lays its techniques across the
+  // squad as its plain fire does (rules 1.25). Never against a Taunt or a Challenge: a taunted enemy keeps its want.
+  const spread = tauntedBy(u) ? 0 : doctrineOf(u).techSpread;
+  const want = (score: number, t: Unit | null | undefined) => (spread && t ? score * Math.pow(1 - spread, alliesOn(cb, u, t)) : score);
   let best: Pick | null = null;
   for (const hand of ['main', 'off'] as const) for (const { id } of usable(cb, u, hand)) {
     const def = TECHNIQUE[id], h = handlerOf(id); if (!h?.ai || def.group === 'answer') continue;
     const tries: TechArgs[] = def.aim.startsWith('enemy') ? foes.map((v) => ({ hand, targetId: v.id })) : [{ hand }];
     for (const a0 of tries) {
-      const s = aiScore(cb, u, id, a0); if (s.score <= PLAIN_ATTACK_SCORE || (best && s.score <= best.score)) continue;
+      const s0 = aiScore(cb, u, id, a0), tgt = s0.args.targetId ? cb.units.find((x) => x.id === s0.args.targetId) || null : null, s = { ...s0, score: want(s0.score, tgt) };
+      if (s.score <= PLAIN_ATTACK_SCORE || (best && s.score <= best.score)) continue;
       const pv = previewTechnique(cb, u, id, s.args); if (!pv.ok || !canPay(cb, u, pv.ap)) continue;
-      best = { id, args: s.args, score: s.score, target: s.args.targetId ? cb.units.find((x) => x.id === s.args.targetId) || null : null }; if (pref.why && best.target && best.target === foes[0]) best.why = pref.why;
+      best = { id, args: s.args, score: s.score, target: tgt }; if (pref.why && best.target && best.target === foes[0]) best.why = pref.why;
     }
   }
   return best;

@@ -711,6 +711,10 @@ if isinstance(data.get("enemies"), dict):
             v = t.get(f)
             if not isinstance(v, (int, float)) or isinstance(v, bool) or v < 0 or v > 1:
                 errors.append(f"enemies:{t.get('id')}: {f} must be a number from 0 to 1 (rules 1.25)")
+        # Rules 1.57 (the opening volley): a technique's want for a target its side already attacked this round
+        v = t.get("technique_spread", 0)
+        if not isinstance(v, (int, float)) or isinstance(v, bool) or v < 0 or v > 1:
+            errors.append(f"enemies:{t.get('id')}: technique_spread must be a number from 0 to 1 (rules 1.57)")
         if t.get("doctrine") == "spread" and not t.get("fire_spread"):
             errors.append(f"enemies:{t.get('id')}: a spread doctrine needs fire_spread above 0")
         if t.get("doctrine") == "nearest" and not t.get("fire_near"):

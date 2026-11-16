@@ -50,13 +50,7 @@ export function straightCharge(cb: Combat, u: Unit, from: string, route: string[
   return target ? { tiles: route.length, target } : null;
 }
 /** Line of sight that sees through smoke (veil zones) and darkness: walls and sight-blocking objects only. */
-function losNoVeil(cb: Combat, a: string, b: string): boolean {
-  const solid = new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos)]);
-  let [x0, y0] = xy(a); const [x1, y1] = xy(b);
-  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let err = dx + dy;
-  while (!(x0 === x1 && y0 === y1)) { const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } const k = key(x0, y0); if (k !== b && solid.has(k)) return false; }
-  return true;
-}
+const losNoVeil = (cb: Combat, a: string, b: string): boolean => lineOfSight(cb, a, b, true);
 /** Line of sight on the area map's throwaway fight (walls, closed doors, smoke). */
 const lineOfSightOw = (cb: Combat, a: string, b: string) => a === b || lineOfSight(cb, a, b);
 /** Hidden enemies within r tiles of a holder are revealed (Skin Map through smoke and dark; Sixth Sense through anything). */

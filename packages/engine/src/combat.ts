@@ -958,6 +958,13 @@ export function lineOfSight(cb: Combat, a: string, b: string, ignoreVeil = false
   // half cover doesn't block sight; ignoreVeil: smoke (VEIL zones) doesn't either (Skin Map)
   // blockers: sightBlockers(cb), from a caller that asks about many tiles at once (the enemy's choice of where to stand)
   const solid = blockers ? blockers : ignoreVeil ? new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos)]) : sightBlockers(cb);
+  // Rules 1.57 (the opening volley, 16 Nov 2026): sight is the same both ways. The straight walk from a to b is not
+  // the same tiles as from b to a, so with one blocker beside the line one side saw the other and was not seen: the
+  // fog (the squad's lines out) hid a foe whose shot (its line in) was clear. A line is clear only when both walks are.
+  return walkClear(solid, a, b) && walkClear(solid, b, a);
+}
+/** One straight (Bresenham) walk from a to b: no blocker on its tiles, b itself not counted. */
+function walkClear(solid: Set<string>, a: string, b: string): boolean {
   let [x0, y0] = xy(a); const [x1, y1] = xy(b);
   const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx + dy;
@@ -2792,16 +2799,20 @@ export type Doctrine = 'nearest' | 'spread' | 'focus';
  * Vermin and Minions, who take what is in front of them; more for the tiers that look for the real threat), plus the
  * Figment's own `figWeight` (the Loud trait: −1, the most hurt in reach for every tier). 0 for anything else. */
 const ownedWeight = (u: Unit, t: Unit): number => ((t as any).owned?.kind === 'figment' && !(t as any).ghostOf ? (Number((!u.charId && u.tier ? (ENEMY as any)[u.tier]?.owned_weight : 0) || 0) + Number((t as any).figWeight || 0)) : 0);
-export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number } => {
+/** techSpread (rules 1.57, the opening volley): enemies.json tier `technique_spread`, 0 to 1: a technique's want for a
+ * target (physical/ai.ts aiTechnique) is multiplied by 1 − techSpread for each OTHER unit of its side that has attacked
+ * that target this round. fire_spread bends the plain attack's choice only; a technique's own score outranked it, so
+ * a line of Soldiers' Bursts all went on one character. 0: the tier gangs up (focus). */
+export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number; techSpread: number } => {
   const e: any = u.charId || u.companion || !u.tier ? null : ENEMY[u.tier], id: Doctrine = e?.doctrine === 'nearest' || e?.doctrine === 'spread' ? e.doctrine : 'focus';
-  return { id, spread: Math.max(0, Number(e?.fire_spread) || 0), near: Math.max(0, Number(e?.fire_near) || 0) };
+  return { id, spread: Math.max(0, Number(e?.fire_spread) || 0), near: Math.max(0, Number(e?.fire_near) || 0), techSpread: Math.min(1, Math.max(0, Number(e?.technique_spread) || 0)) };
 };
 /** Why an enemy takes the target it takes, when its doctrine (or the healer weight) decided between two it could have
  * had: shown on its intent and said once in the fight log. */
 export type AimWhy = 'healer' | 'spread' | 'wounded' | 'nearest';
 const aimOwner = (t: Unit): string => (t as any).ghostOf || t.id;
 /** How many other units of u's side have attacked this target this round (rules 1.25). */
-function alliesOn(cb: Combat, u: Unit, t: Unit): number {
+export function alliesOn(cb: Combat, u: Unit, t: Unit): number {
   const f = cb.fire; if (!f || f.round !== cb.round) return 0;
   return (f.on[aimOwner(t)] || []).filter((id) => id !== u.id && cb.units.find((x) => x.id === id)?.side === u.side).length;
 }

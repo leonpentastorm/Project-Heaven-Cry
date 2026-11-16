@@ -1618,12 +1618,16 @@
         "dial": "soul_modules.json damage.base, then cycle.stage_mult"
       },
       "chaplain_turn": {
+        "at_pin": true,
+        "at_pin_note": "rules 1.57 (the opening volley pass, 16 Nov 2026; spec item 4555, the lead's call on item 4545, for Leon to reverse): held as the gun row is (item 4542): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read Chaplain level 20 158% against its 156% top, from the gun in the turn: G1's own change)",
         "allin": 125,
         "provisional": true,
         "what": "the Chaplain's weapon turn (rules 1.31): Faith all in + Dexterity, a turn with only a Whisper and the weapon with the AP left, Smite riding the weapon's hit (Leon, 13 Nov 2026: the god in the gun never out-hits a gunner who put everything in the gun)",
         "dial": "classes.json guardian.smite amounts.smite.base (Rebuke's 20; 15 only if the measured all-in mean passes 140)"
       },
       "whisper_turn": {
+        "at_pin": true,
+        "at_pin_note": "rules 1.57 (the opening volley pass, 16 Nov 2026; spec item 4555, the lead's call on item 4545, for Leon to reverse): held as the gun row is (item 4542): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read Whisper level 20 120% against its 114% top, from the gun in the turn: G1's own change)",
         "allin": 80,
         "level_hi": 1.42,
         "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.57 the rifle's damage follows the shooter's Agility, and the Faith build's Dexterity and Agility set the shape over the levels, hence the high end)",
@@ -1671,6 +1675,8 @@
         "dial": "rules.json output.profiles.tend.k"
       },
       "mender_offence": {
+        "at_pin": true,
+        "at_pin_note": "rules 1.57 (the opening volley pass, 16 Nov 2026; spec item 4555, the lead's call on item 4545, for Leon to reverse): held as the gun row is (item 4542): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read a mean of 59% against 70% +- 12%, from the gun in the turn: G1's own change)",
         "allin": 70,
         "what": "the Mender spending a whole turn on attacks against a Bonded enemy, steady, in percent of a rifle-turn (rules 1.33); the door 61",
         "dial": "tending.json bond.per_bond"

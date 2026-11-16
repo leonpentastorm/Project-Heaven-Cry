@@ -184,10 +184,12 @@ describe('rules 1.23: the Boss, and the enemy\'s Burst', () => {
     expect([ENEMY.elite.hp, ENEMY.soldier.hp, ENEMY.minion.hp]).toEqual([240, 140, 70]);
     expect([ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage]).toEqual([0.78, 1.05, 1.2]);
   });
-  it('an enemy keeps its own Burst (three rolls with an Auto weapon): the characters\' two-roll Burst did not fit the table at every level', () => {
+  // Rules 1.57 (the opening volley): the switch is on (item 1079's refit). OLD expectation (rules 1.23 to 1.56): an
+  // enemy kept its own three-roll Burst and `enemy_same` was unset.
+  it('an enemy\'s Burst is the characters\' two-roll Burst (rules 1.57: the switch is on)', () => {
     const f = rig();
-    expect(burstRolls(f.foe, WEAPON.hellraiser_service_rifle)).toEqual([0, -1, -2]);
+    expect(burstRolls(f.foe, WEAPON.hellraiser_service_rifle)).toEqual([0, -4]);
     expect(burstRolls(ada(f), WEAPON.hellraiser_service_rifle)).toEqual([0, -4]);
-    expect((TECHNIQUE.burst as any).numbers.enemy_same).toBeUndefined(); // the switch the measurement uses (defence-measure.test.ts, DEFENCE_PARTS=burst) is off
+    expect((TECHNIQUE.burst as any).numbers.enemy_same).toBe(1); // the switch (defence-measure.test.ts, DEFENCE_PARTS=burst, measures with it)
   });
 });

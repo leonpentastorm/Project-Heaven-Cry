@@ -107,13 +107,19 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
   it('played (rules 1.38): the Mender all in: its healing turn on tending_turn, a door user under it; its steady offence (solo and squad) on mender_offence', () => {
     const T = C.tending_turn, O = C.mender_offence, bad: string[] = [], rows: string[] = [];
     const heal = LEVELS.map((lv) => healTurn(lv, true, true)), door = LEVELS.map((lv) => healTurn(lv, true, false));
-    const off = LEVELS.map((lv) => { const y = yardOf(lv, N); return (shotTurn(lv, true, true, 'solo') / y * 100 + shotTurn(lv, true, true, 'squad') / y * 100) / 2; });
+    // Rules 1.57 (spec item 4555): with `at_pin` the offence is held with the Mender's gun read at the yardstick's pin, as
+    // the gun row is (item 4542); as played it is held only under the band times the gun profile's rise (never a floor).
+    const offAt = () => LEVELS.map((lv) => { const y = yardOf(lv, N); return (shotTurn(lv, true, true, 'solo') / y * 100 + shotTurn(lv, true, true, 'squad') / y * 100) / 2; });
+    const off = O.at_pin ? atYardPin(offAt) : offAt(), played = O.at_pin ? offAt() : null;
     const chk = (what: string, xs: number[], line: number, dial: string) => {
       const mean = xs.reduce((a, b) => a + b, 0) / xs.length; rows.push(what + ' ' + xs.map((x) => Math.round(x)).join(' / '));
       if (mean < line * (1 - TOL.mean) || mean > line * (1 + TOL.mean)) bad.push(what + ': mean ' + Math.round(mean) + ' against ' + line + ' ± ' + TOL.mean * 100 + '% (dial: ' + dial + ')');
       xs.forEach((x, i) => { if (x < line * (1 - TOL.level) || x > line * (1 + TOL.level)) bad.push(what + ' at level ' + LEVELS[i] + ': ' + Math.round(x) + ' (dial: ' + dial + ')'); });
     };
-    chk('Mender healing turn (% of R)', heal, T.allin, T.dial); chk('door Tending all in', door, T.door_allin, T.dial); chk('Mender offence', off, O.allin, O.dial);
+    chk('Mender healing turn (% of R)', heal, T.allin, T.dial); chk('door Tending all in', door, T.door_allin, T.dial); chk('Mender offence' + (played ? ' (at the pin)' : ''), off, O.allin, O.dial);
+    if (played) { const rise = (lv: number) => statTerm(YARD.profile, [attrCapAt(lv)], []) / statTerm(YARD.profile, [YARD.pin], []);
+      rows.push('Mender offence as played ' + played.map((x) => Math.round(x)).join(' / '));
+      played.forEach((x, i) => { if (x > O.allin * (1 + TOL.level) * rise(LEVELS[i])) bad.push('Mender offence as played at level ' + LEVELS[i] + ': ' + Math.round(x) + ' is over the band times the gun profile rise'); }); }
     expect(bad, rows.join('\n')).toEqual([]);
   }, 600000);
 

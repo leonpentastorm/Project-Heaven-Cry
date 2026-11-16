@@ -92,7 +92,9 @@ describe('the defence step: the enemy table (rules 1.23)', () => {
   it('under fire (level 6, 4 fights): the idle pair is not back at 4.8 rounds; one Soldier is enough for an idle caster', () => {
     const idle = pairFire('idle', PAIRS.idle.seconds, 6, 2, 4);
     expect(idle.errors).toBe(0);
-    expect(idle.firstDown, pairLine(idle)).toBeGreaterThanOrEqual(1.5); expect(idle.firstDown).toBeLessThanOrEqual(3.2); // 2.1 at 10 fights a cell
+    // Rules 1.57 (the opening volley: the enemy's Burst is the characters' two rolls, item 1079's refit, with the damage
+    // factors left as they were on purpose): 3.5 rounds. OLD bound (rules 1.25 to 1.56): at most 3.2 (2.1 at 10 fights a cell).
+    expect(idle.firstDown, pairLine(idle)).toBeGreaterThanOrEqual(1.5); expect(idle.firstDown, pairLine(idle)).toBeLessThanOrEqual(4.2);
     expect(idle.healerFirst).toBeGreaterThanOrEqual(75);
   }, 240000);
 });

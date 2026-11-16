@@ -26,11 +26,31 @@ The game shows its version in the corner of the title screen and in every "Repor
   is now against the pin (Agility or Strength 7 = +0%; a gun at Agility 1 reads -15%). The simulator's policies no
   longer stall on a dry gun (reload, a weapon from the pack, a pile, the fists). Golden gun rows and 22 replays
   re-recorded on purpose. **Not green (for the lead):** the Whisper row and the Chaplain row at level 20 and the
-  Mender's offence, each inside its band with every gun at the pin (item 4545).
+  Mender's offence, each inside its band with every gun at the pin (item 4545). *(Settled in the opening-volley pass
+  below: the three rows are held at the pin, as the gun row is; item 4556.)*
 - **Survival's party fit (rules 1.57):** a party of two, three or four now faces 0.9 pressure a head (`pressure_per_char`
   [1.3, 1.7, 1.3, 0.9] → [1.3, 0.9, 0.9, 0.9]), so playing together is no longer the harder way to play; a character
   who died in a won fight, or was only Downed when the party leaves the field, stands up at 50 HP, not 1
   (`run.dead_return_hp`, one copy for both). Measured in `docs/design/proposals/2026-11-party-fit.md`.
+- **The opening volley (rules 1.57, Core Rules items 4550 to 4559; Leon's playtest: "99% of the deaths was gun firing
+  enemies"):** a fix and four numbers, measured in `docs/design/proposals/2026-11-party-fit.md` sections 12 and 13.
+  - **Bug fixed: sight is the same both ways.** A foe the fog hid could shoot a character who could not see it back (a
+    straight line walked from one end is not the same tiles as from the other). A line of sight is now clear only when
+    it is clear from both ends; the Skin Map's own copy of the line is gone.
+  - **Enemies fire the characters' Burst** (two rolls, the second at −4; was three rolls with an Auto weapon:
+    `techniques.json burst.numbers.enemy_same` 1). A Gun drone deals 21 then 29 a turn on a level-1 character (was 30
+    then 46), what a Soldier's sabre deals once it is in reach. The tier damage factors were not raised.
+  - **At most two optional gun Soldiers a template** (eight templates' slot `max` 3 or 4 → 2), and **cover within one
+    tile of every start** (`layout.start_cover_reach` 3 → 1).
+  - **Soldiers spread their techniques** as they spread their plain fire: a new tier field `technique_spread` (Soldier
+    0.5, the rest 0) halves a technique's want for a target another Soldier already attacked this round; never against
+    a Taunt.
+  - Two gun Soldiers on one character in the open no longer take it from full HP to Downed in one round (26% → 0% on an
+    Agility-1 Mender, 3% → 0% on the yardstick); stage-1 clears hold or rise (the Chaplain alone 43 → 65%, quads up);
+    fights are as long as before (median 4.1 → 4.3 rounds). Not met, for the lead: one duo member still takes most of
+    the shots (66 to 88%), and a pillar beside you still gives no cover (each needs a new engine piece).
+  - The balance contract's Whisper, Chaplain and Mender offence rows are held at the gun profile's pin like the gun row
+    (the lead's call on item 4545). 22 of the 29 replays re-recorded on purpose; the golden tables did not move.
 
 ## 0.29.0 — Balance 2.0: the nine doors
 

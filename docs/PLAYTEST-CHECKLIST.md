@@ -886,7 +886,7 @@ Each is built. Tell me the number to reverse. Reasons are one line each.
 9. **A grenade is not "your attack"** for Judgement Day, Moon Hunter and Ghost Soldier: unclear in the text.
 10. **Fire doctrine by tier; the idle-pair target retired; a Boss's escorts spread off its target:** fixed aim made
     enemies pile on one character.
-11. **Enemies keep the three-roll Burst** until their table is refitted: not touched on purpose.
+11. **Enemies keep the three-roll Burst** until their table is refitted: not touched on purpose. *(Rules 1.57: enemies now take the characters' two-roll Burst, with the damage factors left as they were; try two gun Soldiers on one character in the open: hurt badly, not Downed from full in one round.)*
 12. **One constant per system, no ladder** (all-in sits a little over its ceiling early, under late): a ladder needs
     class ranks and Mastered perks first.
 13. **The gun's dial is Masterwork's damage** (x1.1 became x1.0; Relic and Celestial too): most of the gun premium came

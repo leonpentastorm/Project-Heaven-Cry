@@ -1106,3 +1106,171 @@ rotated, so the nearest is not the most hurt.
 fit moved the duo's clear rate; the opening volley is a spike on one character (two or three gun foes, Suppress, a
 three-roll Burst, cover that breaks or does not count, a shooter the fog hides) that the run tables average away and
 the rows show. Focus fire is the bridge: it is what puts the spike on one character.
+
+## 13. The fit of the opening volley (16 Nov 2026, lane 0.30-fit; rules 1.57 opening volley, Core Rules items 4550 to 4559)
+
+The lead's task 3: fit the opening volley and focus fire with the approved levers only. Every "before" below is head
+d1a0e451 (no game number changed since cc024929) run again on the same seeds; every "after" is this pass. Everything
+went through the reducer (`simRun`, `combat/end-turn`); the instruments are section 12's and `party-fit.ts`.
+
+### 13.1 What changed
+
+| Where | Field | Old → new | Why |
+|---|---|---|---|
+| engine, a bug (approved item 4) | `combat.ts lineOfSight` | the walk a to b → clear only when the walks a to b and b to a are both clear | 12.2 case 2: the fog hid a foe whose shot was clear. `perks/b.ts losNoVeil` (a second copy of the walk) now calls it |
+| data (approved item 1) | `techniques.json burst.numbers.enemy_same` | unset → **1** | item 1079's owed refit: an enemy's Burst is two rolls, the second at −4 (was three at 0 / −1 / −2 with an Auto weapon) |
+| data (approved item 1) | `survival.json templates[].slots[]` Soldier ranged `max` | firing_line 3, caster_guards 4, healer_line 4, machines 3, elite_pack 4, warden 4, champion 3, vault_watch 4 → **2** each | fewer gun Soldiers on one party (fix 3 of 12.6) |
+| data (approved item 2) | `survival.json layout.start_cover_reach` | 3 → **1** | cover beside every start (fix 2 of 12.6) |
+| engine + data (approved item 3) | `enemies.json technique_spread` (new), read in `physical/ai.ts aiTechnique` through `combat.ts doctrineOf` / `alliesOn` | (none) → vermin 0, minion 0, **soldier 0.5**, elite 0, boss 0 | a technique's want for a target is x(1 − 0.5) for each other foe of its side that attacked that target this round; a taunted foe ignores it. Elites and Bosses keep the focus doctrine (0) |
+| data (the lead's call on item 4545) | `rules.json balance.ceilings` `whisper_turn`, `chaplain_turn`, `mender_offence` | `at_pin` added | the three rows check.py held red since G1 are held at the pin as the gun row is (item 4542); at the pin 113%, 150%, 70%, inside their bands |
+
+Not changed: the tier attack bonuses and damage factors (shared with the tier's blades: item 1079's proposal to raise
+Soldier to 0.88 and Elite to 1.08 was **not** taken, on purpose: the target is a gun foe that threatens what a blade of
+its tier does), the guns' rows, the cover rule, who acts first. The Hunter drone (Elite) and the Combat drone (Minion)
+rows do not move: neither rolls the three-roll Burst.
+
+### 13.2 The rows (one enemy round on one character, 200 seeds a row; 12.1's staging)
+
+One foe, turn 1 / turn 2, on the yardstick (145 HP, Defense 11, armour 5), in the open: a Gun drone 30 / 46 damage
+(21% / 32%) → **21 / 29 (14% / 20%)**; the bullpup Soldier → 19 / 29; a Soldier sabre 10 / 30 (it walks in); the
+Hunter drone 47 / 47 (unchanged); the Boss's LMG 30 / 72 → 30 / 61. Preview hit chance (unchanged): Soldier 65% open,
+40% behind half cover, 65% beside a pillar the line misses, none through a pillar on the line.
+
+| Foes on one character | Yardstick 145 HP: HP lost in the round, open / half, before → after | Downed from full, open / half | Agility-1 Mender sheet 115 HP: HP lost, open / half | Downed from full, open / half |
+|---|---|---|---|---|
+| 2 Gun drones (Soldier, rifle) | 59% / 50% → **38% / 30%** | 3% / 1% → **0% / 0%** | 80% / 70% → **52% / 43%** | 26% / 18% → **0% / 0%** |
+| 2 Soldiers, bullpups | 54% / 39% → **35% / 23%** | 1% / 0% → **0% / 0%** | 74% / 57% → **48% / 34%** | 19% / 3% → **0% / 0%** |
+| 2 Hunter drones (Elite, battle rifle) | 48% / 55% → **48% / 55%** | 0% / 0% → **0% / 0%** | 61% / 70% → **61% / 70%** | 0% / 9% → **0% / 9%** |
+| 2 Combat drones (Minion, PDW) | 31% / 18% → **31% / 18%** | 0% / 0% → **0% / 0%** | 43% / 27% → **43% / 27%** | 0% / 0% → **0% / 0%** |
+| 3 Gun drones (Soldier, rifle) | 85% / 79% → **58% / 49%** | 46% / 30% → **2% / 0%** | 94% / 90% → **77% / 68%** | 76% / 64% → **22% / 13%** |
+| 3 Hunter drones (Elite, battle rifle) | 85% / 85% → **85% / 85%** | 20% / 46% → **20% / 46%** | 94% / 93% → **94% / 93%** | 79% / 76% → **79% / 76%** |
+| 3 Combat drones (Minion, PDW) | 45% / 29% → **45% / 29%** | 0% / 0% → **0% / 0%** | 66% / 46% → **66% / 46%** | 12% / 1% → **12% / 1%** |
+
+### 13.3 The opening, stage 1 (40 seeds a cell)
+
+| Cell | Clear | Characters starting safe | Gun rolls on a character before its first turn | Damage in rounds 1 / 2 / 3+ | Gun hit %: open / half cover / pillar beside | Gun rolls from a tile no character sees · line back blocked | Downs a fight (from full between own turns) | Most-attacked member |
+|---|---|---|---|---|---|---|---|---|
+| solo_skirmisher | 85% → **95%** | 74% → 70% | 0.07 → 0.03 | 14% / 53% / 33% → 16% / 54% / 30% | 54% / 28% / 0% → 52% / 32% / 48% | 0% · 0% → 0% · 0% | 0.02 (0 of 6) → 0.01 (0 of 2) | - → - |
+| solo_mender | 25% → **30%** | 77% → 71% | 0.01 → 0.05 | 1% / 11% / 88% → 1% / 9% / 89% | 62% / 27% / 46% → 58% / 26% / 83% | 0% · 0% → 1% · 0% | 0.09 (0 of 17) → 0.03 (0 of 8) | - → - |
+| duo_skirmisher | 93% → **98%** | 67% → 62% | 0.09 → 0.12 | 24% / 49% / 27% → 26% / 46% / 29% | 52% / 32% / 56% → 58% / 27% / 55% | 3% · 2% → 0% · 0% | 0.06 (0 of 22) → 0.04 (0 of 15) | 86% → 86% |
+| duo_breaker | 65% → **70%** | 68% → 64% | 0.17 → 0.17 | 21% / 44% / 35% → 20% / 47% / 33% | 62% / 34% / 67% → 55% / 35% / 55% | 3% · 3% → 1% · 0% | 0.28 (0 of 85) → 0.24 (0 of 73) | 82% → 83% |
+| duo_mender | 57% → **63%** | 67% → 64% | 0.18 → 0.17 | 4% / 14% / 82% → 4% / 13% / 83% | 61% / 34% / 64% → 53% / 31% / 55% | 5% · 3% → 3% · 0% | 0.07 (0 of 20) → 0.03 (0 of 9) | 71% → 72% |
+| quad_skirmisher | 100% → **100%** | 55% → 69% | 0.28 → 0.2 | 41% / 39% / 21% → 40% / 41% / 18% | 43% / 19% / 41% → 43% / 21% / 44% | 15% · 8% → 10% · 0% | 0.12 (0 of 43) → 0.12 (0 of 43) | 64% → 65% |
+| quad_breaker | 15% → **30%** | 60% → 69% | 0.39 → 0.43 | 21% / 36% / 43% → 21% / 37% / 42% | 59% / 33% / 58% → 56% / 32% / 55% | 7% · 4% → 5% · 0% | 1.46 (1 of 274) → 1.36 (0 of 296) | 49% → 48% |
+| mix_four_b | 88% → **95%** | 55% → 69% | 0.46 → 0.42 | 30% / 38% / 31% → 31% / 39% / 30% | 50% / 26% / 49% → 51% / 29% / 59% | 15% · 7% → 9% · 0% | 0.53 (0 of 176) → 0.39 (0 of 138) | 63% → 62% |
+| mix_gun_heal | 98% → **98%** | 67% → 62% | 0.18 → 0.18 | 12% / 33% / 55% → 13% / 31% / 55% | 55% / 26% / 30% → 59% / 29% / 49% | 4% · 3% → 1% · 0% | 0.03 (0 of 9) → 0.02 (0 of 7) | 82% → 82% |
+
+The line back is never blocked now (it was 2 to 8% of a cell's gun rolls). The rolls from a tile no character sees that
+remain (9 to 10% in the fours) are beyond the characters' Vision of 12 at a gun's range (by the rules; N4 below). The
+damage of rounds 1 and 2 is still 67 to 80% of a gun-led party's: the parties still walk into the open (the policies
+do not value cover, 12.3), but what lands there is smaller.
+
+### 13.4 The party-fit tables (stage 1; solos, duos and mixed 40 seeds, quads 24; before → after)
+
+| Cell | Clear before → after | Rounds a plain fight | Damage taken a head a fight | Rounds 1-2 share of damage | Downs a fight | Most-attacked member |
+|---|---|---|---|---|---|---|
+| solo_bulwark | 8% → **10%** | 6.2 → 6.2 | 69.5 → 63.5 | 35% → 32% | 0.24 → 0.19 | - → - |
+| solo_breaker | 73% → **73%** | 2.8 → 2.9 | 21.8 → 22.5 | 89% → 87% | 0.04 → 0.03 | - → - |
+| solo_skirmisher | 85% → **95%** | 2.6 → 2.5 | 16.9 → 13.7 | 88% → 84% | 0.02 → 0.01 | - → - |
+| solo_operative | 0% → **0%** | 6.3 → 7 | 54.6 → 53.7 | 41% → 44% | 0.42 → 0.38 | - → - |
+| solo_sigilist | 3% → **0%** | 4 → 4.4 | 55.3 → 57.7 | 52% → 46% | 0.4 → 0.44 | - → - |
+| solo_rigger | 35% → **30%** | 4.9 → 5.2 | 24.8 → 28.5 | 52% → 54% | 0.1 → 0.12 | - → - |
+| solo_mender | 25% → **30%** | 7.9 → 8.1 | 143.1 → 152.9 | 22% → 19% | 0.09 → 0.03 | - → - |
+| solo_channeler | 80% → **75%** | 2.5 → 2.5 | 19.6 → 17.5 | 91% → 94% | 0.02 → 0.03 | - → - |
+| solo_chaplain | 43% → **65%** | 2.4 → 2.5 | 25.6 → 21.7 | 83% → 82% | 0.09 → 0.05 | - → - |
+| solo_monk | 65% → **55%** | 3.8 → 3.7 | 23.7 → 22.8 | 69% → 65% | 0.04 → 0.06 | - → - |
+| duo_bulwark | 15% → **18%** | 6.7 → 6.8 | 60.1 → 57.9 | 35% → 32% | 0.56 → 0.57 | 73% → 75% |
+| duo_breaker | 65% → **70%** | 3.4 → 3.3 | 25.3 → 23 | 73% → 78% | 0.28 → 0.24 | 83% → 83% |
+| duo_skirmisher | 93% → **98%** | 2.5 → 2.4 | 12.9 → 10.9 | 85% → 84% | 0.06 → 0.04 | 86% → 87% |
+| duo_operative | 0% → **0%** | 7.3 → 7.1 | 56.7 → 57.6 | 37% → 35% | 1.26 → 1.19 | 68% → 66% |
+| duo_sigilist | 5% → **5%** | 6 → 6.2 | 50.2 → 48.1 | 50% → 49% | 1.02 → 1.01 | 72% → 73% |
+| duo_rigger | 53% → **60%** | 5.7 → 5.8 | 24.9 → 21.5 | 45% → 40% | 0.28 → 0.22 | 84% → 88% |
+| duo_mender | 57% → **63%** | 7.1 → 7.3 | 91.7 → 91.1 | 25% → 24% | 0.07 → 0.03 | 71% → 72% |
+| duo_channeler | 93% → **88%** | 2.7 → 2.7 | 16.3 → 17.9 | 86% → 87% | 0.12 → 0.14 | 88% → 86% |
+| duo_chaplain | 60% → **68%** | 2.4 → 2.3 | 20.8 → 17.6 | 77% → 78% | 0.24 → 0.17 | 85% → 83% |
+| duo_monk | 53% → **70%** | 4 → 4.2 | 25.4 → 24.3 | 62% → 61% | 0.31 → 0.28 | 81% → 82% |
+| quad_bulwark | 0% → **8%** | 8.5 → 8.4 | 63.6 → 61.2 | 33% → 31% | 1.81 → 1.6 | 49% → 50% |
+| quad_breaker | 17% → **25%** | 4.2 → 4.3 | 41.9 → 39.4 | 66% → 63% | 1.42 → 1.31 | 49% → 48% |
+| quad_skirmisher | 100% → **100%** | 2.7 → 2.7 | 12.4 → 11.4 | 81% → 85% | 0.1 → 0.12 | 66% → 66% |
+| quad_operative | 0% → **0%** | 8.1 → 8.5 | 63.4 → 64 | 38% → 33% | 3.76 → 3.58 | 45% → 44% |
+| quad_sigilist | 0% → **0%** | 6.9 → 7.5 | 62.5 → 61.6 | 51% → 46% | 3.18 → 3.3 | 42% → 44% |
+| quad_rigger | 63% → **58%** | 8 → 8 | 20.4 → 20.9 | 25% → 24% | 0.53 → 0.61 | 62% → 64% |
+| quad_mender | 63% → **67%** | 8.7 → 8.8 | 103.5 → 96 | 28% → 26% | 0.17 → 0.07 | 46% → 46% |
+| quad_channeler | 75% → **96%** | 3.2 → 3.2 | 21 → 19.6 | 79% → 80% | 0.7 → 0.5 | 62% → 64% |
+| quad_chaplain | 79% → **88%** | 2.8 → 2.8 | 20.2 → 18.3 | 79% → 78% | 0.5 → 0.34 | 60% → 60% |
+| quad_monk | 33% → **71%** | 5.3 → 5.7 | 32.3 → 31.3 | 52% → 51% | 1.17 → 0.98 | 48% → 49% |
+| mix_tank_gun | 80% → **75%** | 3.4 → 3.4 | 21.1 → 21 | 63% → 63% | 0.11 → 0.13 | 86% → 84% |
+| mix_tank_heal | 53% → **60%** | 7.2 → 7.4 | 82.4 → 75.2 | 24% → 26% | 0.13 → 0.12 | 74% → 73% |
+| mix_gun_heal | 98% → **98%** | 3.4 → 3.3 | 24.2 → 22 | 57% → 55% | 0.03 → 0.02 | 83% → 82% |
+| mix_tgh_caster | 80% → **93%** | 5.5 → 5.5 | 44.8 → 43.5 | 48% → 48% | 0.39 → 0.28 | 53% → 54% |
+| mix_breaker_channeler | 88% → **85%** | 3.1 → 3.2 | 19.1 → 20.4 | 82% → 82% | 0.18 → 0.24 | 87% → 86% |
+| mix_operative_rigger | 10% → **20%** | 6.6 → 6.5 | 33.2 → 33.3 | 35% → 35% | 0.61 → 0.48 | 81% → 80% |
+| mix_chaplain_monk | 75% → **73%** | 3.1 → 2.9 | 22.4 → 20.5 | 72% → 70% | 0.29 → 0.19 | 86% → 86% |
+| mix_four_rest | 53% → **60%** | 4.2 → 4.3 | 30.4 → 28.7 | 63% → 62% | 1.27 → 1.15 | 59% → 61% |
+| mix_trio | 93% → **100%** | 3.7 → 3.7 | 29.1 → 27.4 | 64% → 68% | 0.13 → 0.07 | 71% → 70% |
+| mix_four_b | 88% → **95%** | 3.4 → 3.5 | 19.6 → 18.6 | 71% → 73% | 0.53 → 0.38 | 65% → 64% |
+
+Median rounds of a plain fight over the 40 cells: **4.1 → 4.3** (x1.05; the bound was x1.25). The party fit's winning
+solos: Breaker 73 → 73%, Skirmisher 85 → 95%, Channeler 80 → 75%, Monk 65 → 55% (each within about 1.3 SE); the
+Chaplain alone 43 → 65% (its faith rifle at Agility 1 was the character most shot in the open). The mixed parties
+within noise, or up (the Bulwark, Skirmisher, Mender and Sigilist four 80 → 93%; Operative + Rigger 10 → 20%).
+Quads rise most (four Monks 33 → 71%, four Channelers 75 → 96%; 24 seeds): they faced the most gun Soldiers.
+
+**Stages 2 and 3 (a direction, 24 seeds; runs reaching stage 1 / 2 / 3 cleared, before → after):** the mixed four
+(Monk, Skirmisher, Chaplain, Channeler) 22 / 14 / 5 → 22 / 19 / 14; the Skirmisher alone 22 / 15 / 10 → 22 / 21 / 10;
+the Channeler alone 18 / 8 / 5 → 17 / 14 / 10; the Breaker alone 17 / 9 / 6 → 14 / 6 / 3. Later stages got easier for
+gun and caster builds (the Soldiers' fire grew with the stages); the Breaker's drop is within noise at 24 seeds.
+
+### 13.5 The lead's targets
+
+1. **A character behind cover is rarely hit by a gun foe: partly met.** Behind half cover the gun foes' rolls hit 21 to
+   35% in the runs (unchanged: the −5 is the rule); full cover on the line blocks. More of the rolls now land on a
+   character in cover (start cover at 1 tile: duo Skirmisher 533 open rolls → 136), and none comes along a line the
+   character cannot see back. Still missed: a pillar beside the target that the line misses counts nothing (48 to 83%
+   in the runs, the open rate), and a Soldier behind half cover still has 40% by its preview. Both need a primitive
+   (N2, N5).
+2. **Two gun foes in the open at stage 1 hurt badly but do not take a character from full to Downed in one round: met.**
+   Two Gun drones on the Agility-1 Mender sheet: 26% → **0%** (half cover 18% → 0%); on the yardstick 3% → 0%. Three
+   Gun drones still Down the Mender sheet 22% of the time (was 76%); two Hunter drones (Elites, unchanged) 0% in the
+   open and 9% behind half cover (a stage-1 fight fields one Elite). In the runs: 1 from-full Down in about 4,000
+   fights → 0.
+3. **A gun foe threatens about what a melee or caster foe of its tier does: met.** A Gun drone 21 then 29 a turn
+   against a sabre's 10 then 30 (it fires from the first turn, the blade walks); a Hunter drone 47 against a katana's
+   18 then 55 and a greatsword's 35 then 61.
+4. **No member takes more than about half of the foes' attacks unless a tank draws them: missed.** The duos' most
+   attacked member 66 to 88% (before 68 to 88%), the fours 44 to 66%. The spread term works where it applies (a
+   second Soldier's technique goes to the one nobody attacked: `test/rules157-volley.test.ts`), but in a duo a third of
+   the rolls have only one target in reach, Minions take the nearest (their doctrine), and the first character hit
+   stays the most hurt from round to round. That last is N3 (focus that lasts past a round), not approved.
+5. **Fights no longer than x1.25 today's median: met** (x1.05).
+6. **Stage-1 clears for the winning solos and the mixed parties stay where the party fit put them: met within noise**,
+   with the Chaplain alone and the quads above (easier, not harder).
+
+### 13.6 Needs a new primitive (not built; for the lead)
+
+* **N2, a pillar beside the target counts.** A full-cover object on one of the 8 tiles round the target, nearer the
+  shooter, that the line misses, counts as half cover (−5) at least, and the −5 typed in `combat.ts` (`coverBonus`,
+  the preview's cover term) moves to `rules.json`. The screen draws such a tile as "Full cover"; a player standing
+  beside it reads "behind full cover" and is shot at the open odds.
+* **N3, focus that lasts past a round.** A term in `enemyRank` (and the technique's want) for the share of its side's
+  rolls the target took last round, from an `enemies.json` field: the one cause of the duos' focus left that data
+  cannot reach.
+* **N4, a shooter in the fog is shown** until its next turn (rolls from beyond Vision, 9 to 10% of a four's).
+* **N5, a gun-only enemy number** (`ranged_hit` or `ranged_damage` on the tier) if the half-cover rows are to come
+  down without touching the tier's blades.
+* Not approved and not needed by the numbers: the party acting first in round 1, foes unaware until they see someone
+  (before a character's first turn 0.03 to 0.43 gun rolls land on it, about as before), an ally filter on melee arcs.
+
+### 13.7 Re-recorded on purpose
+
+22 of the 29 replays (`test/golden/replays.json`, REPLAY_FULL): cover-4v6-guns-blades, cover-4v6-level3,
+cover-4v7-blades-walk-away, cover-4v7-casters, cover-4v7-level20-allin, cover-4v7-line, cover-4v7-magic-boss,
+open-4v6-blades-walk-away, open-4v6-guns-blades, open-4v7-casters, open-4v7-level20-allin, open-4v7-magic-boss,
+proving-4v10-boss, proving-4v12-guns, proving-4v12-magic, proving-doors-hiding-watches,
+proving-doors-hiding-watches-wave6, proving-waves-long, proving-waves-low, story-fight-story, story-fight-story-high,
+story-fight-story-magic (sight both ways, the enemy's Burst and the technique spread move the AI in every fight with a
+gun foe). The golden damage tables did not move. Guards re-set with their OLD expectation in the test: the enemy's
+Burst (`rules118-guns`, `rules123-defence`), the doctrine's shape (`rules125-doctrine`), the idle pair's rounds
+(`defence-measure`: bound 3.2 → 4.2, measured 3.5), the healer and shielder under four Soldiers (`heal-measure`), the
+balance contract's three rows at the pin (item 4556), and the Survival replay guard's seed (PHC-0007 → PHC-0011: its
+gate fight now runs past the helper's 40 rounds).

@@ -198,7 +198,11 @@ describe('Survival, one stage (rules 1.41)', () => {
     // PHC-0003's squad now kills the Boss and stalls on its last Trooper with every gun of both sides empty, a stall of
     // the simulator's policies (no gun-butt strike when out of ammunition), not of the game; PHC-0007 plays the stage
     // through to the boon on the release, on the field branch and on the tank branch alike.
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0007', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0007', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0011 since rules 1.57 (the opening volley: the enemy's two-roll Burst, sight both ways, start cover 1): PHC-0007's
+    // gate fight became a slow fist-and-revolver duel with the Sergeant past the helper's 40 rounds (Sergeant at 72 of
+    // 417 HP on round 41, still trading blows), the length of a fight and not a stall of the game; PHC-0011 plays seven
+    // fights to the end of the run.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0011', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0011', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());
