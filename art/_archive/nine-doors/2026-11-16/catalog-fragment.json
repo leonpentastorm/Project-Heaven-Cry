@@ -4377,6 +4377,194 @@
       "previous_path": "art/icons/moves/counter.svg"
     }
   },
+  "door_emblems": {
+    "door-guard": {
+      "label": "Guard plate (door emblem)",
+      "path": "art/emblems/doors/guard.png",
+      "sha256": "b3332aa42c6d709c3202a93ea473ebefab0c685486d9cf9b27bb0fd8de634ab0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/015-guard.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 15,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/guard.png",
+        "64": "art/emblems/doors/exports/64/guard.png",
+        "48": "art/emblems/doors/exports/48/guard.png",
+        "44": "art/emblems/doors/exports/44/guard.png",
+        "32": "art/emblems/doors/exports/32/guard.png",
+        "24": "art/emblems/doors/exports/24/guard.png",
+        "20": "art/emblems/doors/exports/20/guard.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "door-momentum": {
+      "label": "Momentum counter (door emblem)",
+      "path": "art/emblems/doors/momentum.png",
+      "sha256": "c1d504daea1586ec0495f8d6cbab826cc08ffa53ff45c784ee57b5e791a90dbe",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/043-momentum.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 43,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/momentum.png",
+        "64": "art/emblems/doors/exports/64/momentum.png",
+        "48": "art/emblems/doors/exports/48/momentum.png",
+        "44": "art/emblems/doors/exports/44/momentum.png",
+        "32": "art/emblems/doors/exports/32/momentum.png",
+        "24": "art/emblems/doors/exports/24/momentum.png",
+        "20": "art/emblems/doors/exports/20/momentum.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "door-pressure": {
+      "label": "Pressure pips (door emblem)",
+      "path": "art/emblems/doors/pressure.png",
+      "sha256": "045fa4cd2d306966af43c174567c9cccca5c2fe7384f9640fddbd171b64ce189",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/074-pressure.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 74,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/pressure.png",
+        "64": "art/emblems/doors/exports/64/pressure.png",
+        "48": "art/emblems/doors/exports/48/pressure.png",
+        "44": "art/emblems/doors/exports/44/pressure.png",
+        "32": "art/emblems/doors/exports/32/pressure.png",
+        "24": "art/emblems/doors/exports/24/pressure.png",
+        "20": "art/emblems/doors/exports/20/pressure.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "door-shadow": {
+      "label": "Shadow wisp (door emblem)",
+      "path": "art/emblems/doors/shadow.png",
+      "sha256": "838fd41460b8e0ca888df99194b5fba604a1dfe222c88fe5ba10147e58147bc1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/115-shadow.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 115,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/shadow.png",
+        "64": "art/emblems/doors/exports/64/shadow.png",
+        "48": "art/emblems/doors/exports/48/shadow.png",
+        "44": "art/emblems/doors/exports/44/shadow.png",
+        "32": "art/emblems/doors/exports/32/shadow.png",
+        "24": "art/emblems/doors/exports/24/shadow.png",
+        "20": "art/emblems/doors/exports/20/shadow.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "door-sigil": {
+      "label": "Sigil chip (door emblem)",
+      "path": "art/emblems/doors/sigil.png",
+      "sha256": "c9eaea4b79e3501bafc67f5f76f4d382542a3cca35b76753f2f9c52434cedd81",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/133-sigil.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 133,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/sigil.png",
+        "64": "art/emblems/doors/exports/64/sigil.png",
+        "48": "art/emblems/doors/exports/48/sigil.png",
+        "44": "art/emblems/doors/exports/44/sigil.png",
+        "32": "art/emblems/doors/exports/32/sigil.png",
+        "24": "art/emblems/doors/exports/24/sigil.png",
+        "20": "art/emblems/doors/exports/20/sigil.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "door-figment": {
+      "label": "Figment (door emblem)",
+      "path": "art/emblems/doors/figment.png",
+      "sha256": "a1adc730761ae686948f80877d454582dfffeddbb9723325109b7374686bb50e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/165-figment.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 165,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/figment.png",
+        "64": "art/emblems/doors/exports/64/figment.png",
+        "48": "art/emblems/doors/exports/48/figment.png",
+        "44": "art/emblems/doors/exports/44/figment.png",
+        "32": "art/emblems/doors/exports/32/figment.png",
+        "24": "art/emblems/doors/exports/24/figment.png",
+        "20": "art/emblems/doors/exports/20/figment.png"
+      },
+      "ink": "#FFFFFF"
+    }
+  },
   "technique_icons": {
     "tech-coup": {
       "label": "Wick \u2014 Coup",

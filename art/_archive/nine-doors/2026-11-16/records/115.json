@@ -1,0 +1,76 @@
+{
+  "number": 115,
+  "family": "door_emblems",
+  "id": "door-shadow",
+  "path": "art/emblems/doors/shadow.png",
+  "name": "Shadow wisp (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark: today the wisps are SVG",
+  "paint": "Three thin curved wisps fanned like smoke, the middle one longest.",
+  "avoid": "a ghost \u00b7 a flame (that is Wick)",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three thin curved wisps fanned like smoke, the middle one longest.\nAvoid: a ghost \u00b7 a flame (that is Wick)\nEXACT STAGING: DOOR EMBLEM at20px: exactly THREE THIN CURVED WHITE WISPS fan upward from one common low origin, MIDDLE WISP LONGEST, left shorter curling left and right shorter curling right. Crisp solid white tapering strokes, broad transparent gaps. Not flames: no pointed enclosed flame tongues, no glowing core. No ghost, face, smoke shading, mascot, cloud or border. Minimal curved fan silhouette.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "838fd41460b8e0ca888df99194b5fba604a1dfe222c88fe5ba10147e58147bc1",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/115-shadow.png",
+  "source_sha256": "f54e8580cf257b447384a240ec1f8969d86b5e3c3e6fdb7bc119a6e799f3fe2b",
+  "export_crop": [
+    144,
+    21,
+    1216,
+    1206
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/shadow.png",
+    "64": "art/emblems/doors/exports/64/shadow.png",
+    "48": "art/emblems/doors/exports/48/shadow.png",
+    "44": "art/emblems/doors/exports/44/shadow.png",
+    "32": "art/emblems/doors/exports/32/shadow.png",
+    "24": "art/emblems/doors/exports/24/shadow.png",
+    "20": "art/emblems/doors/exports/20/shadow.png"
+  },
+  "framing": {
+    "scale": 0.6919831223628692,
+    "offset": [
+      141,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "a3d6849666a5eaa24c96ec894fcfa2776630bf21d22f0aa4a1745d598987064a",
+    "64": "004369f1a110c4eba0e5cc86741712715bb235bfe27ac9d146b9662a97b00169",
+    "48": "7a2aec2bfb6528e9559d67897879c487a2cace78cc7357e1be2beda2d03a2a47",
+    "44": "176d8a1eb511bb9488ec84e5a171f65ef20aa4954c7fbbe33122595c17095051",
+    "32": "7c7f30bb4727ed178d7a10e0dd8e1b746a89a79d27d5643f6a371b16e7692700",
+    "24": "442f538c5f3fa26f35090dfc8dd57a60552857bba8598d818bb568deefe28a6c",
+    "20": "393c522c479e0097b27d34331c2dc576ada7d3b796b75b195db39bb0f935e3ba"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

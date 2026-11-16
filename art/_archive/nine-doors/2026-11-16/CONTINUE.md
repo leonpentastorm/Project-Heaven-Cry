@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **304/375 delivered**. Original unfinished: **71 = 44 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **85 request records**, including replacement/reuse checks.
+Original ledger: **310/375 delivered**. Original unfinished: **65 = 38 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **79 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -8,17 +8,11 @@ The latest delivered images are review candidates, never automatically approved.
 
 ## Eligible old recipes, in priority order
 
-- P6 · #15 · Guard plate (door emblem) · `art/emblems/doors/guard.png` · door emblem
 - P6 · #16 · The Bulwark (class portrait) · `art/portraits/classes/defender.png` · class portrait
-- P6 · #43 · Momentum counter (door emblem) · `art/emblems/doors/momentum.png` · door emblem
 - P6 · #44 · The Breaker (class portrait) · `art/portraits/classes/fighter.png` · class portrait
-- P6 · #74 · Pressure pips (door emblem) · `art/emblems/doors/pressure.png` · door emblem
 - P6 · #75 · The Skirmisher (class portrait) · `art/portraits/classes/marksman.png` · class portrait
-- P6 · #115 · Shadow wisp (door emblem) · `art/emblems/doors/shadow.png` · door emblem
 - P6 · #116 · The Operative (class portrait) · `art/portraits/classes/infiltrator.png` · class portrait
-- P6 · #133 · Sigil chip (door emblem) · `art/emblems/doors/sigil.png` · door emblem
 - P6 · #134 · The Sigilist (class portrait) · `art/portraits/classes/mage.png` · class portrait
-- P6 · #165 · Figment (door emblem) · `art/emblems/doors/figment.png` · door emblem
 - P6 · #166 · The Rigger (class portrait) · `art/portraits/classes/trickster.png` · class portrait
 - P6 · #196 · Bond thread (door emblem) · `art/emblems/doors/bond.png` · door emblem
 - P6 · #197 · The Mender (class portrait) · `art/portraits/classes/bard.png` · class portrait

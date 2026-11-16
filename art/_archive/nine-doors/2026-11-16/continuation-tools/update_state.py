@@ -12,7 +12,7 @@ jobs=read(arc/'planned-jobs.json');byid={j['number']:j for j in jobs};policy=rea
 cat=read(root/'art/catalog.json')
 for n in args.ids:
     assert n not in held, f'Held legacy recipe #{n}'
-    r=read(arc/'records'/f'{n:03d}.json');old=cat[r['family']][r['id']].copy()
+    r=read(arc/'records'/f'{n:03d}.json');old=cat.setdefault(r['family'],{}).get(r['id'],{}).copy()
     assert sha(root/r['path'])==r['sha256'] and sha(root/r['source_path'])==r['source_sha256']
     if old.get('placeholder'):
         previous=root/old['path'];dest=arc/'superseded/placeholders'/r['id']/previous.name
@@ -20,7 +20,7 @@ for n in args.ids:
         if dest.exists():assert sha(dest)==sha(previous)
         else:shutil.copy2(previous,dest)
         old.update(previous_path=dest.relative_to(root).as_posix(),previous_sha256=sha(dest))
-    elif old.get('sha256')!=r['sha256']:
+    elif old and old.get('sha256')!=r['sha256']:
         raise AssertionError('Archive an existing non-placeholder candidate before replacement')
     old.update(label=('Wick — ' if r['kind']=='wick' and 'Wick' in r['paint'] else '')+r['name'],path=r['path'],sha256=r['sha256'],width=r['export_dimensions'][0],height=r['export_dimensions'][1],background='transparent' if r['transparent'] else 'opaque',status='review-candidate',production_approved=False,implementation_ready=False,collection='nine-doors-2026-11-16',native_dimensions=r['native_dimensions'],source_path=r['source_path'],upscaled=False,format='png',mode=r['kind'],brief_number=n,exports=r.get('exports',{}))
     if r['kind'] in ['wick','sign']:old['ink']='#FFFFFF'

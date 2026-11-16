@@ -68,6 +68,11 @@
       "faint_alpha_to_solid_area_ratio": 0.0644
     },
     {
+      "number": 15,
+      "name": "Guard plate (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.00854
+    },
+    {
       "number": 23,
       "name": "Keep Swinging",
       "faint_alpha_to_solid_area_ratio": 0.04827
@@ -156,6 +161,11 @@
       "number": 42,
       "name": "Run Through",
       "faint_alpha_to_solid_area_ratio": 0.0445
+    },
+    {
+      "number": 43,
+      "name": "Momentum counter (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.01104
     },
     {
       "number": 51,
@@ -266,6 +276,11 @@
       "number": 73,
       "name": "Crossfire",
       "faint_alpha_to_solid_area_ratio": 0.08003
+    },
+    {
+      "number": 74,
+      "name": "Pressure pips (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.02217
     },
     {
       "number": 80,
@@ -443,6 +458,11 @@
       "faint_alpha_to_solid_area_ratio": 0.0565
     },
     {
+      "number": 115,
+      "name": "Shadow wisp (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.05224
+    },
+    {
       "number": 123,
       "name": "Second Clause",
       "faint_alpha_to_solid_area_ratio": 0.06059
@@ -491,6 +511,11 @@
       "number": 132,
       "name": "Stored Spell",
       "faint_alpha_to_solid_area_ratio": 0.02765
+    },
+    {
+      "number": 133,
+      "name": "Sigil chip (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.0867
     },
     {
       "number": 135,
@@ -626,6 +651,11 @@
       "number": 162,
       "name": "Sleight",
       "faint_alpha_to_solid_area_ratio": 0.07607
+    },
+    {
+      "number": 165,
+      "name": "Figment (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.05311
     },
     {
       "number": 171,

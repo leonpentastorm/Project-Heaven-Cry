@@ -878,6 +878,82 @@
     ]
   },
   {
+    "number": 15,
+    "family": "door_emblems",
+    "id": "door-guard",
+    "path": "art/emblems/doors/guard.png",
+    "name": "Guard plate (door emblem)",
+    "mode": "door emblem",
+    "state": "designed, not built",
+    "use": "The door's one mark for the door tab, the tip and the token chip: today the plates are SVG pips",
+    "paint": "A single curved armour plate seen front-on, two rivets, one notch on its edge.",
+    "avoid": "a heater shield (the Guard boon line already uses a buckler) \u00b7 any letter",
+    "section": "Durability: Guard, and the Bulwark",
+    "kind": "sign",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A single curved armour plate seen front-on, two rivets, one notch on its edge.\nAvoid: a heater shield (the Guard boon line already uses a buckler) \u00b7 any letter\nEXACT STAGING: DOOR EMBLEM, check at 20px: ONE curved ARMOUR PLATE front-on, broad shallow rounded rectangle with a curved upper lip, exactly TWO SMALL TRANSPARENT RIVET HOLES near upper corners and ONE obvious NOTCH cut into lower-right edge. Not a shield: NO pointed base, heater outline, handle, central boss or person. Broad solid flat white shape, only these three transparent cuts. No letters, border or gray shading.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "b3332aa42c6d709c3202a93ea473ebefab0c685486d9cf9b27bb0fd8de634ab0",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/015-guard.png",
+    "source_sha256": "2a250bde57eaaef0d57f63f5c508cad96f4133b1e7dfb8cec44a266c3e0ea6c6",
+    "export_crop": [
+      0,
+      70,
+      1253,
+      1204
+    ],
+    "exports": {
+      "128": "art/emblems/doors/exports/128/guard.png",
+      "64": "art/emblems/doors/exports/64/guard.png",
+      "48": "art/emblems/doors/exports/48/guard.png",
+      "44": "art/emblems/doors/exports/44/guard.png",
+      "32": "art/emblems/doors/exports/32/guard.png",
+      "24": "art/emblems/doors/exports/24/guard.png",
+      "20": "art/emblems/doors/exports/20/guard.png"
+    },
+    "framing": {
+      "scale": 0.6544293695131684,
+      "offset": [
+        102,
+        141
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "50460140381b2358996095ec8ff791b440ecced5d65900ab6f8a2641671eb067",
+      "64": "a2fd60c6490341050683c6cd82f9e30f67880234257d7fc175e03b6490221fd4",
+      "48": "523d56d3fd20f34cc9afcfcfa6b67f5196a80fc37378dc8f922e3408de971dc1",
+      "44": "5593f3550236bc01409ff7f25750aa2be0ac235a618db0696f1867695f5356f7",
+      "32": "9c9eb12ef31ab96a52d71d76aead3fe49cdf9ae901fa0b95734f3a9a5669df28",
+      "24": "686dedfd1db256638af7f1c0f545d336f908e24447e255711efa8502cf0a2e2b",
+      "20": "931d18513cca163aeb1f16d29bc1429e99a672f13bed59cbe02381174903cfd6"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 23,
     "family": "perks",
     "id": "breaching-strike",
@@ -2128,6 +2204,82 @@
       "44": "7b5dd5be51ccd18534dca4a235c71a1d535e6788c7064fecba735a0f1336d3b3",
       "32": "cfe7d76c2bfa156aaae34df3ba494e77f6fa490b612848aa165c6556ada70756",
       "24": "e35f7676544a26a1914a436fab1982022a6f3e9113a6d7718cbd3a71c843e55a"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 43,
+    "family": "door_emblems",
+    "id": "door-momentum",
+    "path": "art/emblems/doors/momentum.png",
+    "name": "Momentum counter (door emblem)",
+    "mode": "door emblem",
+    "state": "designed, not built",
+    "use": "The door's mark: today the counter chip and arcs are SVG",
+    "paint": "A heavy round weight with three curved motion lines rolling off its back edge.",
+    "avoid": "a bowling ball \u00b7 a clock",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "sign",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heavy round weight with three curved motion lines rolling off its back edge.\nAvoid: a bowling ball \u00b7 a clock\nEXACT STAGING: DOOR EMBLEM at20px: ONE HEAVY ROUND WEIGHT, almost solid white circle with one short flat bottom bevel and a tiny offset center notch. Exactly THREE SHORT CURVED MOTION TRAILS peel LEFT from its back edge as if rolling RIGHT. No bowling finger holes, clock face/hands/numerals, character or extra decoration. Strong big weight silhouette; motion trails broad and separated.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c1d504daea1586ec0495f8d6cbab826cc08ffa53ff45c784ee57b5e791a90dbe",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/043-momentum.png",
+    "source_sha256": "490403ae62c537934035fb9db16eff9979dffa8e6b599ac70c9eed7ab5615af5",
+    "export_crop": [
+      0,
+      57,
+      1206,
+      1224
+    ],
+    "exports": {
+      "128": "art/emblems/doors/exports/128/momentum.png",
+      "64": "art/emblems/doors/exports/64/momentum.png",
+      "48": "art/emblems/doors/exports/48/momentum.png",
+      "44": "art/emblems/doors/exports/44/momentum.png",
+      "32": "art/emblems/doors/exports/32/momentum.png",
+      "24": "art/emblems/doors/exports/24/momentum.png",
+      "20": "art/emblems/doors/exports/20/momentum.png"
+    },
+    "framing": {
+      "scale": 0.6799336650082919,
+      "offset": [
+        102,
+        115
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "388f969a5836b21483c822bcfb5ba8de490e6619c5b4b63b9d25dd09df230b42",
+      "64": "c4a101c36e75a90e15e093de5c44d2aed63d86798c24ffec193f9cfb5af5efab",
+      "48": "866becc7246379122e960bd26a954818fff8e3c9c4b71ce8913622f0d384df5b",
+      "44": "46371fa21348d33a590f3597eba2ca1ab746c32ee163b5836541b6bae9e9fc18",
+      "32": "96b5b019619aa2edf6fbd706385dd360dc9fa6dd058497190f4cea1fa837123a",
+      "24": "6b4d1fd1e013ad2c9ec31a916ddee32577121645fe020dcfd602b96635740f17",
+      "20": "65cb70f788ab14b120c2cce370427e8a4b640da39084d247ea953bf2a2f27945"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
@@ -3653,6 +3805,82 @@
       "44": "c228ace016a399ae237ebc82de54ffb1a741925af0aa91ff459b09edb2d85f68",
       "32": "b17f8aebc4b89faf1e5dad82c28c22206826d54e2efea62ebc22883ad881f995",
       "24": "8ef637472efbf41bdb891ebac2667519ce30d0788465243315c05b00cd8081ae"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 74,
+    "family": "door_emblems",
+    "id": "door-pressure",
+    "path": "art/emblems/doors/pressure.png",
+    "name": "Pressure pips (door emblem)",
+    "mode": "door emblem",
+    "state": "designed, not built",
+    "use": "The door's mark: today the pips are SVG",
+    "paint": "Three short rising chevrons stacked one above the other, like a meter climbing.",
+    "avoid": "a military rank insignia \u00b7 a wifi signal",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "sign",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three short rising chevrons stacked one above the other, like a meter climbing.\nAvoid: a military rank insignia \u00b7 a wifi signal\nEXACT STAGING: DOOR EMBLEM at20px: exactly THREE SHORT RISING CHEVRONS stacked vertically, all point UP, each a BOLD angular open V inverted like a climbing meter. Bottom chevron shortest, middle medium, top widest, with broad transparent gaps. Use subtly clipped squared tips and an offset asymmetric break in one arm so it is an invented meter, not a real military rank badge. No wifi curved arcs, rectangle/badge, stars, letters or frame.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "045fa4cd2d306966af43c174567c9cccca5c2fe7384f9640fddbd171b64ce189",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/074-pressure.png",
+    "source_sha256": "e54b2d7be3e9da23f3379c7afd42a87ebeed741736047bc05195cb14073fcbad",
+    "export_crop": [
+      63,
+      87,
+      1240,
+      1228
+    ],
+    "exports": {
+      "128": "art/emblems/doors/exports/128/pressure.png",
+      "64": "art/emblems/doors/exports/64/pressure.png",
+      "48": "art/emblems/doors/exports/48/pressure.png",
+      "44": "art/emblems/doors/exports/44/pressure.png",
+      "32": "art/emblems/doors/exports/32/pressure.png",
+      "24": "art/emblems/doors/exports/24/pressure.png",
+      "20": "art/emblems/doors/exports/20/pressure.png"
+    },
+    "framing": {
+      "scale": 0.6966864910790145,
+      "offset": [
+        102,
+        114
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "cb4f4e01d527ca5a615ba5e08c6777fd3bc253cee68b6e6d63f1a0d91f50caee",
+      "64": "db6c5e2fb3b84d9343a2b989dd7fe05977e52e2746002dc5eefb8d9b301ba11e",
+      "48": "026923992ce979a1e2352fe1eccb93364e8491cbdff3317cc2b8b971708b9694",
+      "44": "a5a576be11f50a5f425b436ee9ab0faec437515c77c05643ccd9457d5ae4e09c",
+      "32": "cb25e9fb058ada6204c9baff0622c043af65f3932826f588eb238990a98f483e",
+      "24": "2181f0a1f39e5d069d5c20c1c08cf4a0d12fc1e755005b9e1eddc64864614b5c",
+      "20": "6fe429d46f9ef56d9af3137fbfc8693c4f70f89c4b71d0e50c030ca48b6b44cd"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
@@ -5933,6 +6161,82 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 115,
+    "family": "door_emblems",
+    "id": "door-shadow",
+    "path": "art/emblems/doors/shadow.png",
+    "name": "Shadow wisp (door emblem)",
+    "mode": "door emblem",
+    "state": "designed, not built",
+    "use": "The door's mark: today the wisps are SVG",
+    "paint": "Three thin curved wisps fanned like smoke, the middle one longest.",
+    "avoid": "a ghost \u00b7 a flame (that is Wick)",
+    "section": "Ingenuity: Shadow, and the Operative",
+    "kind": "sign",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three thin curved wisps fanned like smoke, the middle one longest.\nAvoid: a ghost \u00b7 a flame (that is Wick)\nEXACT STAGING: DOOR EMBLEM at20px: exactly THREE THIN CURVED WHITE WISPS fan upward from one common low origin, MIDDLE WISP LONGEST, left shorter curling left and right shorter curling right. Crisp solid white tapering strokes, broad transparent gaps. Not flames: no pointed enclosed flame tongues, no glowing core. No ghost, face, smoke shading, mascot, cloud or border. Minimal curved fan silhouette.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "838fd41460b8e0ca888df99194b5fba604a1dfe222c88fe5ba10147e58147bc1",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/115-shadow.png",
+    "source_sha256": "f54e8580cf257b447384a240ec1f8969d86b5e3c3e6fdb7bc119a6e799f3fe2b",
+    "export_crop": [
+      144,
+      21,
+      1216,
+      1206
+    ],
+    "exports": {
+      "128": "art/emblems/doors/exports/128/shadow.png",
+      "64": "art/emblems/doors/exports/64/shadow.png",
+      "48": "art/emblems/doors/exports/48/shadow.png",
+      "44": "art/emblems/doors/exports/44/shadow.png",
+      "32": "art/emblems/doors/exports/32/shadow.png",
+      "24": "art/emblems/doors/exports/24/shadow.png",
+      "20": "art/emblems/doors/exports/20/shadow.png"
+    },
+    "framing": {
+      "scale": 0.6919831223628692,
+      "offset": [
+        141,
+        102
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "a3d6849666a5eaa24c96ec894fcfa2776630bf21d22f0aa4a1745d598987064a",
+      "64": "004369f1a110c4eba0e5cc86741712715bb235bfe27ac9d146b9662a97b00169",
+      "48": "7a2aec2bfb6528e9559d67897879c487a2cace78cc7357e1be2beda2d03a2a47",
+      "44": "176d8a1eb511bb9488ec84e5a171f65ef20aa4954c7fbbe33122595c17095051",
+      "32": "7c7f30bb4727ed178d7a10e0dd8e1b746a89a79d27d5643f6a371b16e7692700",
+      "24": "442f538c5f3fa26f35090dfc8dd57a60552857bba8598d818bb568deefe28a6c",
+      "20": "393c522c479e0097b27d34331c2dc576ada7d3b796b75b195db39bb0f935e3ba"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 123,
     "family": "perks",
     "id": "hold-the-stroke",
@@ -6636,6 +6940,82 @@
       "44": "7cf13824b4608ca2d0d029348914a0d87c726040927404908f71c1adf63b761b",
       "32": "649ae6c382a78d5f393cfdf0d9f21df48aed88f0cdc13664072cfd1db7357da7",
       "24": "0cd7384b0a6c881b5d7d3d6c363256c4f04cb8d4d9f93610b2a607c434ba0a57"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 133,
+    "family": "door_emblems",
+    "id": "door-sigil",
+    "path": "art/emblems/doors/sigil.png",
+    "name": "Sigil chip (door emblem)",
+    "mode": "door emblem",
+    "state": "designed, not built",
+    "use": "The door's mark: today a chip of text",
+    "paint": "A short straight Line of three abstract glyph marks joined by one stroke, inside a thin square.",
+    "avoid": "letters of any real script \u00b7 the Sigil boon line icon (three marks, no square)",
+    "section": "Brain Power: Sigils, and the Sigilist",
+    "kind": "sign",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A short straight Line of three abstract glyph marks joined by one stroke, inside a thin square.\nAvoid: letters of any real script \u00b7 the Sigil boon line icon (three marks, no square)\nEXACT STAGING: DOOR EMBLEM at20px: ONE THIN WHITE SQUARE OUTLINE encloses a SHORT STRAIGHT HORIZONTAL WHITE LINE joining exactly THREE ABSTRACT GEOMETRIC GLYPH MARKS: a solid small diamond, a hollow hexagon, a small right-pointing triangular wedge. All connected along their centers by the straight line, with large clear transparent gaps around forms. The square is EXPLICITLY REQUESTED here and distinguishes this from boon-line sigils without square. No letters, real script, runes, text or extra border.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c9eaea4b79e3501bafc67f5f76f4d382542a3cca35b76753f2f9c52434cedd81",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/133-sigil.png",
+    "source_sha256": "deb1378005d39557749b7f8e639dfde9f2abaf4aa02497eb6e996bc81a9a48d9",
+    "export_crop": [
+      47,
+      17,
+      1202,
+      1222
+    ],
+    "exports": {
+      "128": "art/emblems/doors/exports/128/sigil.png",
+      "64": "art/emblems/doors/exports/64/sigil.png",
+      "48": "art/emblems/doors/exports/48/sigil.png",
+      "44": "art/emblems/doors/exports/44/sigil.png",
+      "32": "art/emblems/doors/exports/32/sigil.png",
+      "24": "art/emblems/doors/exports/24/sigil.png",
+      "20": "art/emblems/doors/exports/20/sigil.png"
+    },
+    "framing": {
+      "scale": 0.6804979253112033,
+      "offset": [
+        119,
+        102
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "fef213713cd0356b533d7fcae0789584084a32e853c363bdc54e14a30e7c65c8",
+      "64": "2faedb2743e6ced0fb77b9b31549386ee83bddaf678d3d6f067132c30e1deb95",
+      "48": "bf1c5b6d2feb229961c1bff7ca968c0c2a4869d0c53314dbaa01dba8fa1d435f",
+      "44": "b2085490ba3825037b3463cf47a48990edddcf3b2b688bc62dd62145a9977496",
+      "32": "46c801828a656d50a97f800f58b084246432f675b2bb9de9c37b41cdd4bd9696",
+      "24": "113a44ef9ce631c3a3a177c7997b3749ecec7590a5d3aa3d21b38fa18e9276c2",
+      "20": "e478652019037c6542babfce1a51cc16fca818dc562dd114aeba535586d5fce8"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
@@ -8580,6 +8960,82 @@
       "44": "e120e49d18f0f88cdbbec1fcd382302dbe31145a47acc6107d1e8bd57f959cec",
       "32": "ba27f224249fa615b279dbcdbe5e1df6d0ac3e573fc17d16a30f707aaf149ea3",
       "24": "f242715057f959a8c7e29cd1aaa37f4774d469446e81fb5f91fc57c97a9191ec"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 165,
+    "family": "door_emblems",
+    "id": "door-figment",
+    "path": "art/emblems/doors/figment.png",
+    "name": "Figment (door emblem)",
+    "mode": "door emblem",
+    "state": "designed, not built",
+    "use": "The door's mark",
+    "paint": "A small frame with a shape forming inside it out of scattered dots.",
+    "avoid": "a picture frame with a photo \u00b7 the Figments boon line icon (keep the frame square, not a portrait frame)",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "sign",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small frame with a shape forming inside it out of scattered dots.\nAvoid: a picture frame with a photo \u00b7 the Figments boon line icon (keep the frame square, not a portrait frame)\nEXACT STAGING: DOOR EMBLEM at20px: ONE SIMPLE SQUARE WHITE FRAME with broad transparent center. Inside, ONE SMALL ANGULAR FIGMENT SHAPE forms from exactly FIVE SEPARATE WHITE DOTS/DIAMOND FLECKS clustered toward center, lower two joined into a pointed fragment while upper three remain separated. Clearly a shape forming, no photo/portrait, face, canvas scene, person or lettering. Use few big flecks that remain readable at20px; square frame explicitly requested.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "a1adc730761ae686948f80877d454582dfffeddbb9723325109b7374686bb50e",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/165-figment.png",
+    "source_sha256": "4040d1155d5149a58f4aa0e22ba866afc4ef4f59e7a55e5384f2e73ecd602fd0",
+    "export_crop": [
+      0,
+      103,
+      1232,
+      1206
+    ],
+    "exports": {
+      "128": "art/emblems/doors/exports/128/figment.png",
+      "64": "art/emblems/doors/exports/64/figment.png",
+      "48": "art/emblems/doors/exports/48/figment.png",
+      "44": "art/emblems/doors/exports/44/figment.png",
+      "32": "art/emblems/doors/exports/32/figment.png",
+      "24": "art/emblems/doors/exports/24/figment.png",
+      "20": "art/emblems/doors/exports/20/figment.png"
+    },
+    "framing": {
+      "scale": 0.6655844155844156,
+      "offset": [
+        102,
+        145
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "5cf7e50d5a8b78ef496edffb1c3c7a5986a634d462545c70967124f9cfbf5481",
+      "64": "a82681c030fbf633a2d1760406a529bc700996b67d03f28acb83cc161e047f2c",
+      "48": "8c1f5209dce03ddb63b4c5eb658ab2bb5f2888a6bcb32b3520ba18bd6add557c",
+      "44": "a49c2ae6df7d3951da16dd3a6effffa4dc1b4c7508615bb131ffa46df02a33ae",
+      "32": "1a25c2afd4e13796a90cbfa6ae5baea4ff4d9d89304f69bd744801883139a835",
+      "24": "776da3ed45f5b47cf3f3d0344e15b2f89a04f153196e557a553af3d9d3a8303f",
+      "20": "a7289fa3e37afc1ac8f8cb447309614046258076d967da660c357cdd5d443688"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
