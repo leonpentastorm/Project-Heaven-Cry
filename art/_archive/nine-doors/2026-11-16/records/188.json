@@ -1,0 +1,61 @@
+{
+  "number": 188,
+  "family": "tending_icons",
+  "id": "tend-last-thread",
+  "path": "art/icons/tending/last-thread.png",
+  "name": "Last Thread",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Tend verb (asked 15 Nov, C3b)",
+  "paint": "A single thread still held by a hand reaching down to a fallen partial figure.",
+  "avoid": "a grave \u00b7 a halo",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A single thread still held by a hand reaching down to a fallen partial figure.\nAvoid: a grave \u00b7 a halo\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "21c1492f9955c9c484c29248394b22c12979cf043b2fc34efa1e3cc3cedb58c0",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/188-last-thread.png",
+  "source_sha256": "f161fd7cff6b09eb28bb2a706fe3a4999f02a148facd79d5163281e95ee759e0",
+  "export_crop": [
+    162,
+    106,
+    1234,
+    1198
+  ],
+  "exports": {
+    "128": "art/icons/tending/exports/128/last-thread.png",
+    "64": "art/icons/tending/exports/64/last-thread.png",
+    "48": "art/icons/tending/exports/48/last-thread.png",
+    "44": "art/icons/tending/exports/44/last-thread.png",
+    "32": "art/icons/tending/exports/32/last-thread.png",
+    "24": "art/icons/tending/exports/24/last-thread.png"
+  },
+  "framing": {
+    "scale": 0.6414004391255189,
+    "offset": [
+      168,
+      162
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

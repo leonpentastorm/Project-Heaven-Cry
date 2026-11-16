@@ -1,0 +1,61 @@
+{
+  "number": 140,
+  "family": "figment_order_icons",
+  "id": "order-strike",
+  "path": "art/icons/figments/order-strike.png",
+  "name": "Strike",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment order (`figment_strike`)",
+  "paint": "A figment shape of flecks lunging forward, one edge sharpened.",
+  "avoid": "a solid creature \u00b7 a person",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A figment shape of flecks lunging forward, one edge sharpened.\nAvoid: a solid creature \u00b7 a person\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "08ded2bd87f9b56c56e927376d52ff3ed149f56ec37a95c301fb2dcf9586fae4",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/140-order-strike.png",
+  "source_sha256": "92c165b088be8571084cef9c54c789ae417aaf6764d3aa263b77e95ce5437770",
+  "export_crop": [
+    0,
+    262,
+    1240,
+    949
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-strike.png",
+    "64": "art/icons/figments/exports/64/order-strike.png",
+    "48": "art/icons/figments/exports/48/order-strike.png",
+    "44": "art/icons/figments/exports/44/order-strike.png",
+    "32": "art/icons/figments/exports/32/order-strike.png",
+    "24": "art/icons/figments/exports/24/order-strike.png"
+  },
+  "framing": {
+    "scale": 0.6612903225806451,
+    "offset": [
+      102,
+      285
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

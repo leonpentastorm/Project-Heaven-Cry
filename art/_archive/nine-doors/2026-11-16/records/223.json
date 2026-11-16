@@ -1,0 +1,61 @@
+{
+  "number": 223,
+  "family": "move_icons",
+  "id": "move-deliver-the-sinner",
+  "path": "art/icons/moves/deliver-the-sinner.png",
+  "name": "Deliver the Sinner",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Faith door step",
+  "paint": "A hand pointing down at a kneeling partial figure, a ray from above on it.",
+  "avoid": "chains \u00b7 fire and brimstone",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A hand pointing down at a kneeling partial figure, a ray from above on it.\nAvoid: chains \u00b7 fire and brimstone\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "b0cc3156a8c6b283c0f38b158a0d2a8ab9f907e4b1ec13ad6125bff6e72f223a",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/223-deliver-the-sinner.png",
+  "source_sha256": "117549a100f673bb7c5012cd6f5745b2cdcb91573dd6da070a445964f4a2f8a9",
+  "export_crop": [
+    0,
+    25,
+    1198,
+    1231
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/deliver-the-sinner.png",
+    "64": "art/icons/moves/exports/64/deliver-the-sinner.png",
+    "48": "art/icons/moves/exports/48/deliver-the-sinner.png",
+    "44": "art/icons/moves/exports/44/deliver-the-sinner.png",
+    "32": "art/icons/moves/exports/32/deliver-the-sinner.png",
+    "24": "art/icons/moves/exports/24/deliver-the-sinner.png"
+  },
+  "framing": {
+    "scale": 0.6124069359606957,
+    "offset": [
+      145,
+      142
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

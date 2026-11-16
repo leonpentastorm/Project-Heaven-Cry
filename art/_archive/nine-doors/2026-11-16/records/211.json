@@ -1,0 +1,61 @@
+{
+  "number": 211,
+  "family": "move_icons",
+  "id": "move-pure-heart",
+  "path": "art/icons/moves/pure-heart.png",
+  "name": "Pure Heart",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Will Power door step",
+  "paint": "A heart with a perfectly clean outline and one small star at its centre.",
+  "avoid": "a red heart emoji \u00b7 a halo",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A heart with a perfectly clean outline and one small star at its centre.\nAvoid: a red heart emoji \u00b7 a halo\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "496d98433e0a653633d1dcdeee3958ca7f4f25bac47dd6e2a02f549a58c3261b",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/211-pure-heart.png",
+  "source_sha256": "52f3735dc5eabd0720378af95702ec5912204647a6e589e86b450af3ee468cd1",
+  "export_crop": [
+    0,
+    119,
+    1206,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/pure-heart.png",
+    "64": "art/icons/moves/exports/64/pure-heart.png",
+    "48": "art/icons/moves/exports/48/pure-heart.png",
+    "44": "art/icons/moves/exports/44/pure-heart.png",
+    "32": "art/icons/moves/exports/32/pure-heart.png",
+    "24": "art/icons/moves/exports/24/pure-heart.png"
+  },
+  "framing": {
+    "scale": 0.6298870489867251,
+    "offset": [
+      132,
+      154
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

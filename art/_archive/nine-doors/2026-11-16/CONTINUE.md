@@ -1,61 +1,9 @@
 # Continue the Nine Doors artwork
 
-62/375 candidates delivered; 313 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
+114/375 candidates delivered; 261 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
 
 Continue in the priority order below, one image per prompt. Source scripts and prompts are in this collection; current records must be preserved. The proposed paths/catalog IDs are exact. Every image remains review-candidate until Leon approves it. No new action-row UI is authorised by this art task.
 
-- P3 · #104 · Rig · `art/icons/shadow/rig.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #105 · Slip (group mark) · `art/icons/shadow/slip.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #106 · Mark (group mark and Operative rank I move) · `art/icons/shadow/mark.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #107 · Work (group mark) · `art/icons/shadow/work.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #108 · Break (group mark) · `art/icons/shadow/break.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #109 · Tradecraft · `art/icons/moves/tradecraft.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #125 · Overclock (Brain Power step) · `art/icons/moves/overclock-sigil.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #126 · Twin Draw · `art/icons/moves/twin-draw.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #140 · Strike · `art/icons/figments/order-strike.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #141 · Pounce · `art/icons/figments/order-pounce.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #142 · Cut · `art/icons/figments/order-cut.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #143 · Stare · `art/icons/figments/order-stare.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #144 · Filch · `art/icons/figments/order-filch.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #145 · Cash in · `art/icons/figments/order-cash-in.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #146 · Let go · `art/icons/figments/order-let-go.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #157 · The Rigger's Hands · `art/icons/moves/riggers-hands.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #173 · Feel Their Pain · `art/icons/moves/feel-their-pain.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #174 · Mercy (thread kind) · `art/icons/moves/mercy.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #175 · Bond · `art/icons/tending/bond.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #176 · Let Go · `art/icons/tending/let-go.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #177 · Snap · `art/icons/tending/snap.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #178 · Tug · `art/icons/tending/tug.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #179 · Mend · `art/icons/tending/mend.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #180 · Mend Yourself · `art/icons/tending/mend-self.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #181 · Touch · `art/icons/tending/touch.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #182 · Settle · `art/icons/tending/settle.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #183 · Soothe · `art/icons/tending/soothe.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #184 · Shield (Tend) · `art/icons/tending/shield.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #185 · Raise · `art/icons/tending/raise.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #186 · Guide · `art/icons/tending/guide.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #187 · Field Surgery · `art/icons/tending/field-surgery.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #188 · Last Thread · `art/icons/tending/last-thread.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #189 · Syphon · `art/icons/tending/syphon.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #210 · Overdraw · `art/icons/moves/overdraw.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #211 · Pure Heart · `art/icons/moves/pure-heart.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #222 · Answered Prayer · `art/icons/moves/answered-prayer.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #223 · Deliver the Sinner · `art/icons/moves/deliver-the-sinner.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #224 · The Patron at Your Side · `art/icons/moves/at-your-side.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #225 · Canticle · `art/icons/moves/canticle.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #226 · Amen · `art/icons/moves/amen.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #227 · Holy Dread · `art/icons/moves/holy-dread.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #228 · Last Rites · `art/icons/moves/last-rites.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #256 · Open guard · `art/icons/moves/open-guard.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #257 · Jab · `art/icons/moves/jab.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #258 · Palm · `art/icons/moves/palm.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #259 · Sweep (form) · `art/icons/moves/sweep-form.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #260 · Snatch · `art/icons/moves/snatch.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #261 · Breath · `art/icons/moves/breath.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #262 · Sway · `art/icons/moves/sway.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #263 · Counter · `art/icons/moves/counter.png` · Wick icon · in game now · placeholder · no slot yet
-- P4 · #235 · Shelter of the Saints (verse) · `art/icons/conditions/canticle-nerukhan.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #236 · Short Supply (verse) · `art/icons/conditions/canticle-the-quartermaster.png` · white-ink sign · in game now · placeholder · no slot yet
 - P4 · #237 · Missed Me (verse) · `art/icons/conditions/canticle-the-laughing-mask.png` · white-ink sign · in game now · placeholder · no slot yet
 - P4 · #238 · Not Yet (verse) · `art/icons/conditions/canticle-toll-keeper.png` · white-ink sign · in game now · placeholder · no slot yet
 - P4 · #239 · Warm Hands (verse) · `art/icons/conditions/canticle-mother-ember.png` · white-ink sign · in game now · placeholder · no slot yet

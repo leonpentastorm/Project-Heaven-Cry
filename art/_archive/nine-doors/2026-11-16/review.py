@@ -7,7 +7,7 @@ def sheet(records,name,cols=4):
  cols=min(cols,len(records));w,h=280,310;out=Image.new('RGB',(cols*w,math.ceil(len(records)/cols)*h),'#10151f');d=ImageDraw.Draw(out)
  for i,r in enumerate(records):
   x=i%cols*w;y=i//cols*h;im=Image.open(O/r.get('review_path',r['path'])).convert('RGBA');sm=im.copy();sm.thumbnail((250,205));out.paste(sm,(x+(w-sm.width)//2,y+5),sm);d.text((x+8,y+215),f"{r['number']:03d} {r['name']}"[:35],font=font,fill='white')
-  for dx,size in [(10,32),(70,44)]:
+  for dx,size in ([(10,24),(70,48)] if r['kind']=='sign' else [(10,32),(70,44)]):
    sm=im.resize((size,size),Image.Resampling.LANCZOS);out.paste(sm,(x+dx,y+250),sm);d.text((x+dx,y+295),str(size),font=font,fill='#a3aec2')
  out.save(A/'review'/name,quality=94)
 sections=list(dict.fromkeys(r['section'] for r in json.loads((R/'rows.json').read_text())))

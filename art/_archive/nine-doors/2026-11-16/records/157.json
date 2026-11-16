@@ -1,0 +1,61 @@
+{
+  "number": 157,
+  "family": "move_icons",
+  "id": "move-riggers-hands",
+  "path": "art/icons/moves/riggers-hands.png",
+  "name": "The Rigger's Hands",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Rigger gain",
+  "paint": "Two hands holding a wrench and a Visualizer glove crossed.",
+  "avoid": "a real tool brand \u00b7 a spark of lightning",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: Two hands holding a wrench and a Visualizer glove crossed.\nAvoid: a real tool brand \u00b7 a spark of lightning\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "134d04a1c4ad5b00b0e635e9b1169a978af8c0ecf4fd625ebdcbe4086fc116a6",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/157-riggers-hands.png",
+  "source_sha256": "3a2bbad36495231c4924700f7311f50fa23494cdc5e5f49a7ce0f633da0eb5ba",
+  "export_crop": [
+    0,
+    36,
+    1238,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/riggers-hands.png",
+    "64": "art/icons/moves/exports/64/riggers-hands.png",
+    "48": "art/icons/moves/exports/48/riggers-hands.png",
+    "44": "art/icons/moves/exports/44/riggers-hands.png",
+    "32": "art/icons/moves/exports/32/riggers-hands.png",
+    "24": "art/icons/moves/exports/24/riggers-hands.png"
+  },
+  "framing": {
+    "scale": 0.5636171119714195,
+    "offset": [
+      163,
+      175
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}
