@@ -1,0 +1,76 @@
+{
+  "number": 354,
+  "family": "technique_icons",
+  "id": "tech-punch-through",
+  "path": "art/icons/techniques/punch-through.png",
+  "name": "Punch Through",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A bullet line passing through a plate and out the other side.",
+  "avoid": "glass shards \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A bullet line passing through a plate and out the other side.\nAvoid: glass shards \u00b7 blood\nEXACT STAGING: Punch Through: ONE white projectile line moves LEFT TO RIGHT THROUGH ONE UPRIGHT RECTANGULAR PLATE in center and CONTINUES OUT THE OTHER SIDE. Plate has a clear small circular TRANSPARENT ENTRY/EXIT HOLE aligned with the straight trajectory, rendered slightly oblique so passing-through reads. Two line segments in perfect alignment, left entrance and longer right exit ending in tapered point. No shards, glass, explosion, person, blood, extra plates or text.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "5cafade0f92a0367e2233d4d707b69581d832da0919fa8cbe065ddcffe11612d",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/354-punch-through.png",
+  "source_sha256": "23c419aa975a87ba5754c93a87bd57bd773bdbe3a6ff438ce7acd091872f8ae2",
+  "export_crop": [
+    47,
+    54,
+    1226,
+    1142
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/punch-through.png",
+    "64": "art/icons/techniques/exports/64/punch-through.png",
+    "48": "art/icons/techniques/exports/48/punch-through.png",
+    "44": "art/icons/techniques/exports/44/punch-through.png",
+    "32": "art/icons/techniques/exports/32/punch-through.png",
+    "24": "art/icons/techniques/exports/24/punch-through.png"
+  },
+  "framing": {
+    "scale": 0.6955046649703138,
+    "offset": [
+      102,
+      133
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "4372966d9b9f58f5fdc4dbd36a8ee6ac4e4b14959569bac05528a40c31c35ee1",
+    "64": "b7c46d8927d425ecf45a5013e7567431c08bb5cd42d8fd999202b65bc970d657",
+    "48": "3ea019f351c2130c6a7e0ff8684e4fe7403dfc47205a3621ebdccee6488e4ceb",
+    "44": "68c9b1e864e72a055c8a34f1632ad06ae9fb70b8b4299652fe3e777253bb3358",
+    "32": "a8fb094517e38d3f17a13ce0bf909a9ec959ea24267910ee708ff6c137bc7d2b",
+    "24": "6594cd22f6cb2c8c2c9e72861bee1b8e2b84ab94d1996e496c7421cf88ecdb5f"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

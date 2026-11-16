@@ -1,0 +1,76 @@
+{
+  "number": 353,
+  "family": "technique_icons",
+  "id": "tech-walking-fire",
+  "path": "art/icons/techniques/walking-fire.png",
+  "name": "Walking Fire",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A row of bullet lines stepping forward across the ground.",
+  "avoid": "footprints \u00b7 a machine gun nest",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A row of bullet lines stepping forward across the ground.\nAvoid: footprints \u00b7 a machine gun nest\nEXACT STAGING: Walking Fire: exactly FOUR SHORT WHITE BULLET-STROKES arranged in a shallow DIAGONAL ROW ADVANCING LEFT TO RIGHT just above ONE SHORT GROUND LINE. Each projectile points right; each successive line is slightly farther right and lower toward ground. Clear stepped forward sequence without feet. No footprints, machine-gun nest, gun body, character, flames, debris, blood or target.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "4509991a7a7bf02c11aca28752406b241167c99403d01cb56a6cc440be2f87b0",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/353-walking-fire.png",
+  "source_sha256": "ec32095292deee15a909f3046ad5f4035eae25dd4013ea2aa908b753a3c0cb45",
+  "export_crop": [
+    25,
+    369,
+    1172,
+    1037
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/walking-fire.png",
+    "64": "art/icons/techniques/exports/64/walking-fire.png",
+    "48": "art/icons/techniques/exports/48/walking-fire.png",
+    "44": "art/icons/techniques/exports/44/walking-fire.png",
+    "32": "art/icons/techniques/exports/32/walking-fire.png",
+    "24": "art/icons/techniques/exports/24/walking-fire.png"
+  },
+  "framing": {
+    "scale": 0.7149084568439407,
+    "offset": [
+      102,
+      273
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "57df965a3bdf9eb1f5bdfbb37d6c05f75b307db972540ee6633dd0eb6892cc7e",
+    "64": "9ed27dd22db71a01a995a9a7b3e7e80f250220c0574d2424eab07f1c4c8aa1a1",
+    "48": "9a945e46b89211ab5f88006831d88c287c5882ec6430c977f2190949c48b73dc",
+    "44": "4640abde0a8c0feee87a06d7f738cceeaf7ab9819710d0948d14e99da5f5c936",
+    "32": "06f8ea2bf44636dcf0947af0a707f550de0abe9fd049f5b0d732e098d5a8236a",
+    "24": "73c5fa5350ed11ffc0402bacd3a05545b4e9942376a1c4d0c452763d3fe3df47"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

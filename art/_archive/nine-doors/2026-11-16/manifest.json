@@ -18093,5 +18093,385 @@
       "24": "882e38b232d786d8d9d90461b543314a2859af8e3b42cd53a5a5181ed6bab843"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 350,
+    "family": "technique_icons",
+    "id": "tech-burst",
+    "path": "art/icons/techniques/burst.png",
+    "name": "Burst",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "Three short bullet lines in a tight group.",
+    "avoid": "a firework burst \u00b7 blood",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three short bullet lines in a tight group.\nAvoid: a firework burst \u00b7 blood\nEXACT STAGING: Burst: exactly THREE SHORT WHITE BULLET-STROKES in one TIGHT PARALLEL HORIZONTAL GROUP, each with squared left tail and tapered right tip. Broad transparent spaces separate all three; central line slightly longer. No muzzle, character, gun, fireworks, radiating starburst, blood, target or extra lines. Compact clear grouped graphic, each short stroke individually readable.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "7620a587a1a564ebb85cdca66a7a0dcf29925d4e758eb527f21370f15fa6db54",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/350-burst.png",
+    "source_sha256": "2999205a1117d7e5588d4f1ce8078ba375db07d1c130a205c973f148b3b034fe",
+    "export_crop": [
+      81,
+      39,
+      1230,
+      1134
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/burst.png",
+      "64": "art/icons/techniques/exports/64/burst.png",
+      "48": "art/icons/techniques/exports/48/burst.png",
+      "44": "art/icons/techniques/exports/44/burst.png",
+      "32": "art/icons/techniques/exports/32/burst.png",
+      "24": "art/icons/techniques/exports/24/burst.png"
+    },
+    "framing": {
+      "scale": 0.5671120296933155,
+      "offset": [
+        186,
+        201
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "5919592be705ac5a1b1cf4f4a9c0ed1c5c1b87c904573af57f64e22ea3e53dbe",
+      "64": "1f9e830a11fb39c8f1a29f96d35d31c09c1be7ac7ead122abe928e69e2442f70",
+      "48": "a82fb46c0f1d12f9d1e52ec32220a2b34fa97e781787ef1e0aed9e0c5853d710",
+      "44": "fb40b1a158bd3c19d92c94919c65a574477bbaa024a9a0b3b62188387560b231",
+      "32": "5c17efeb497424f69a1db6a6f7299c77f02439e6bcec0aeea45dba5a016516a9",
+      "24": "1913ccc948b95b68dc11b6f2a0ffedecf4ec9f4f57a0fe710923a202615a0e11"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 351,
+    "family": "technique_icons",
+    "id": "tech-aimed-shot",
+    "path": "art/icons/techniques/aimed-shot.png",
+    "name": "Aimed Shot",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A rifle with a long straight sight-line to a small ring.",
+    "avoid": "a crosshair over a head \u00b7 a scope glint",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A rifle with a long straight sight-line to a small ring.\nAvoid: a crosshair over a head \u00b7 a scope glint\nEXACT STAGING: Aimed Shot: ONE generic angular RIFLE at lower-left rests level, pointing right. From its top FRONT SIGHT a LONG THIN STRAIGHT WHITE SIGHT-LINE runs right to ONE SMALL EMPTY WHITE TARGET RING. Ring has truly transparent center. No person/head, scope glint, muzzle flash, firing projectile, crosshair, letters, brand or real gun make. Keep rifle, line and target complete inside safe circle.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "521cea50db20dc6ed628d7b65d4a609c6b920f454929fa7432086df60fc60ebd",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/351-aimed-shot.png",
+    "source_sha256": "447fd251e67b5fcbb87941cf561ac06950ac58296aac108d53fb4a5b5f92db8d",
+    "export_crop": [
+      31,
+      326,
+      1240,
+      1117
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/aimed-shot.png",
+      "64": "art/icons/techniques/exports/64/aimed-shot.png",
+      "48": "art/icons/techniques/exports/48/aimed-shot.png",
+      "44": "art/icons/techniques/exports/44/aimed-shot.png",
+      "32": "art/icons/techniques/exports/32/aimed-shot.png",
+      "24": "art/icons/techniques/exports/24/aimed-shot.png"
+    },
+    "framing": {
+      "scale": 0.6782464846980976,
+      "offset": [
+        102,
+        244
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "8e925224144b50c2d404c7029bdb987624efa84ecd42f487a36e4345f01e2beb",
+      "64": "6b1ea39a0d7f359912decb75366ed5c12733efe2d620b67928ebec8aa57c073d",
+      "48": "0ea77c852af2d020de50e7d3c764ad3d89d224254d1e0c20fb9a35bd9b0d1e77",
+      "44": "779f666edaeeaf2b3e8c22844bc7babfedb4e3a735288d57f5d424de2fd659a5",
+      "32": "88daa90c4892ad750d25467775091da36f8ebcd8883e31d2b2bf85115c630466",
+      "24": "03ca0edb1b609159f6249e89f12d8560ffd8d9bda1a8bcb5eeb304854d30041c"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 352,
+    "family": "technique_icons",
+    "id": "tech-called-shot-tech",
+    "path": "art/icons/techniques/called-shot-tech.png",
+    "name": "Called Shot (technique)",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A ring drawn round one limb of a silhouette.",
+    "avoid": "a crosshair over a head \u00b7 text",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A ring drawn round one limb of a silhouette.\nAvoid: a crosshair over a head \u00b7 text\nEXACT STAGING: Called Shot technique: ONLY ONE CROPPED FEATURELESS ARM AND SHOULDER PARTIAL bent slightly at elbow, with ONE LARGE WHITE EMPTY RING drawn AROUND THE FOREARM. Ring clearly surrounds a limb, not a head, and has broad transparent spacing from arm. No head, face, full person, crosshair bars, wounds, blood, text, arrows or gun. Pure white shapes; avoid opaque black separator.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "8d6c9e8d034d9f35259e72df62574a526ca82071b5fa5b00d3902648cbf0fe7a",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/352-called-shot-tech.png",
+    "source_sha256": "42b78a7b586386feb7bee3b9ae7b0e7fbc7c85050525fdc3c8e2f66b193ce40f",
+    "export_crop": [
+      0,
+      25,
+      1253,
+      1166
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/called-shot-tech.png",
+      "64": "art/icons/techniques/exports/64/called-shot-tech.png",
+      "48": "art/icons/techniques/exports/48/called-shot-tech.png",
+      "44": "art/icons/techniques/exports/44/called-shot-tech.png",
+      "32": "art/icons/techniques/exports/32/called-shot-tech.png",
+      "24": "art/icons/techniques/exports/24/called-shot-tech.png"
+    },
+    "framing": {
+      "scale": 0.5530654785370297,
+      "offset": [
+        165,
+        196
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4393a2f9011f2f6dcacaca385683fe3f64501c14e83c63eb1192247970a16e6d",
+      "64": "5aa6383866efcde689975229b16fda2d00128c25e4659aafe26b8ec28e8a0c03",
+      "48": "ea4762142deb568bb908203b528925b38632f5b8ed0484048d1f874b9b57a24d",
+      "44": "be1a9d529ad0ec6a40b3f6a019437e948ca3f8eafda9b5ddcbf13e290d6e1a52",
+      "32": "2554af4ec84a29e49473e1f04d4099284f12abe03b51ea3b73d9091b44fe391f",
+      "24": "e21f8ee0f2c43ccfff276afffdc621b07f5ab9bfe9953e60daa204ec72ed3cfb"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 353,
+    "family": "technique_icons",
+    "id": "tech-walking-fire",
+    "path": "art/icons/techniques/walking-fire.png",
+    "name": "Walking Fire",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A row of bullet lines stepping forward across the ground.",
+    "avoid": "footprints \u00b7 a machine gun nest",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A row of bullet lines stepping forward across the ground.\nAvoid: footprints \u00b7 a machine gun nest\nEXACT STAGING: Walking Fire: exactly FOUR SHORT WHITE BULLET-STROKES arranged in a shallow DIAGONAL ROW ADVANCING LEFT TO RIGHT just above ONE SHORT GROUND LINE. Each projectile points right; each successive line is slightly farther right and lower toward ground. Clear stepped forward sequence without feet. No footprints, machine-gun nest, gun body, character, flames, debris, blood or target.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "4509991a7a7bf02c11aca28752406b241167c99403d01cb56a6cc440be2f87b0",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/353-walking-fire.png",
+    "source_sha256": "ec32095292deee15a909f3046ad5f4035eae25dd4013ea2aa908b753a3c0cb45",
+    "export_crop": [
+      25,
+      369,
+      1172,
+      1037
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/walking-fire.png",
+      "64": "art/icons/techniques/exports/64/walking-fire.png",
+      "48": "art/icons/techniques/exports/48/walking-fire.png",
+      "44": "art/icons/techniques/exports/44/walking-fire.png",
+      "32": "art/icons/techniques/exports/32/walking-fire.png",
+      "24": "art/icons/techniques/exports/24/walking-fire.png"
+    },
+    "framing": {
+      "scale": 0.7149084568439407,
+      "offset": [
+        102,
+        273
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "57df965a3bdf9eb1f5bdfbb37d6c05f75b307db972540ee6633dd0eb6892cc7e",
+      "64": "9ed27dd22db71a01a995a9a7b3e7e80f250220c0574d2424eab07f1c4c8aa1a1",
+      "48": "9a945e46b89211ab5f88006831d88c287c5882ec6430c977f2190949c48b73dc",
+      "44": "4640abde0a8c0feee87a06d7f738cceeaf7ab9819710d0948d14e99da5f5c936",
+      "32": "06f8ea2bf44636dcf0947af0a707f550de0abe9fd049f5b0d732e098d5a8236a",
+      "24": "73c5fa5350ed11ffc0402bacd3a05545b4e9942376a1c4d0c452763d3fe3df47"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 354,
+    "family": "technique_icons",
+    "id": "tech-punch-through",
+    "path": "art/icons/techniques/punch-through.png",
+    "name": "Punch Through",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A bullet line passing through a plate and out the other side.",
+    "avoid": "glass shards \u00b7 blood",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A bullet line passing through a plate and out the other side.\nAvoid: glass shards \u00b7 blood\nEXACT STAGING: Punch Through: ONE white projectile line moves LEFT TO RIGHT THROUGH ONE UPRIGHT RECTANGULAR PLATE in center and CONTINUES OUT THE OTHER SIDE. Plate has a clear small circular TRANSPARENT ENTRY/EXIT HOLE aligned with the straight trajectory, rendered slightly oblique so passing-through reads. Two line segments in perfect alignment, left entrance and longer right exit ending in tapered point. No shards, glass, explosion, person, blood, extra plates or text.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "5cafade0f92a0367e2233d4d707b69581d832da0919fa8cbe065ddcffe11612d",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/354-punch-through.png",
+    "source_sha256": "23c419aa975a87ba5754c93a87bd57bd773bdbe3a6ff438ce7acd091872f8ae2",
+    "export_crop": [
+      47,
+      54,
+      1226,
+      1142
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/punch-through.png",
+      "64": "art/icons/techniques/exports/64/punch-through.png",
+      "48": "art/icons/techniques/exports/48/punch-through.png",
+      "44": "art/icons/techniques/exports/44/punch-through.png",
+      "32": "art/icons/techniques/exports/32/punch-through.png",
+      "24": "art/icons/techniques/exports/24/punch-through.png"
+    },
+    "framing": {
+      "scale": 0.6955046649703138,
+      "offset": [
+        102,
+        133
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4372966d9b9f58f5fdc4dbd36a8ee6ac4e4b14959569bac05528a40c31c35ee1",
+      "64": "b7c46d8927d425ecf45a5013e7567431c08bb5cd42d8fd999202b65bc970d657",
+      "48": "3ea019f351c2130c6a7e0ff8684e4fe7403dfc47205a3621ebdccee6488e4ceb",
+      "44": "68c9b1e864e72a055c8a34f1632ad06ae9fb70b8b4299652fe3e777253bb3358",
+      "32": "a8fb094517e38d3f17a13ce0bf909a9ec959ea24267910ee708ff6c137bc7d2b",
+      "24": "6594cd22f6cb2c8c2c9e72861bee1b8e2b84ab94d1996e496c7421cf88ecdb5f"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   }
 ]

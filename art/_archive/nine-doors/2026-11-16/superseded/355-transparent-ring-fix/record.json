@@ -1,0 +1,67 @@
+{
+  "number": 355,
+  "family": "technique_icons",
+  "id": "tech-lob",
+  "path": "art/icons/techniques/lob.png",
+  "name": "Lob",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A high dotted arc from a launcher to a small ring.",
+  "avoid": "a basketball \u00b7 a firework",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A high dotted arc from a launcher to a small ring.\nAvoid: a basketball \u00b7 a firework\nEXACT STAGING: Lob: ONE short cropped invented LAUNCHER TUBE at lower-left, pointing diagonally UP, sends ONE HIGH DOTTED PARABOLIC ARC over the top and down to ONE SMALL EMPTY RING at lower-right. Bold separated white dots curve clearly; no solid straight trajectory, firework, explosion, basketball, person, blood, lettering or brand. Tube, arc apex and target all safely within circle.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c5764a47013ee0ae40883e96802957a1e216dab756ab8f734d70da7cb30f3fc1",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/355-lob.png",
+  "source_sha256": "854cbe95a0edb0083a826421c09a2b10767449aca31c3a0631b7e4e5a8ddce7f",
+  "export_crop": [
+    0,
+    67,
+    1240,
+    1150
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/lob.png",
+    "64": "art/icons/techniques/exports/64/lob.png",
+    "48": "art/icons/techniques/exports/48/lob.png",
+    "44": "art/icons/techniques/exports/44/lob.png",
+    "32": "art/icons/techniques/exports/32/lob.png",
+    "24": "art/icons/techniques/exports/24/lob.png"
+  },
+  "framing": {
+    "scale": 0.5731318170758342,
+    "offset": [
+      156,
+      201
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

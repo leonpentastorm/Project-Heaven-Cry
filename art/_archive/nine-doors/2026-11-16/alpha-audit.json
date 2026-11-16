@@ -1336,6 +1336,31 @@
       "number": 347,
       "name": "Keep Back",
       "faint_alpha_to_solid_area_ratio": 0.04313
+    },
+    {
+      "number": 350,
+      "name": "Burst",
+      "faint_alpha_to_solid_area_ratio": 0.0596
+    },
+    {
+      "number": 351,
+      "name": "Aimed Shot",
+      "faint_alpha_to_solid_area_ratio": 0.07343
+    },
+    {
+      "number": 352,
+      "name": "Called Shot (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.0321
+    },
+    {
+      "number": 353,
+      "name": "Walking Fire",
+      "faint_alpha_to_solid_area_ratio": 0.10065
+    },
+    {
+      "number": 354,
+      "name": "Punch Through",
+      "faint_alpha_to_solid_area_ratio": 0.02435
     }
   ],
   "excluded": [],
