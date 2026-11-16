@@ -479,13 +479,12 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
 function BigBanner({ b, rm }: { b: Banner; rm: boolean }) {
   ensureCss();
   const k = b.k || 1, inMs = Math.round((rm ? 150 : BIG_IN) * k), outMs = Math.round((rm ? 150 : BIG_OUT) * k), total = inMs + b.hold + outMs;
-  const p1 = ((inMs / total) * 100).toFixed(2), p2 = (((inMs + b.hold) / total) * 100).toFixed(2), name = 'phcBig' + b.id.replace(/[^a-z0-9]/gi, '');
+  const p1 = ((inMs / total) * 100).toFixed(2), p2 = (((inMs + b.hold) / total) * 100).toFixed(2), name = (rm ? 'phcBigFade' : 'phcBig') + b.id.replace(/[^a-z0-9]/gi, ''); // (the browser checks read Fade under reduced motion)
   const kf = rm ? '@keyframes ' + name + '{0%{opacity:0}' + p1 + '%{opacity:1}' + p2 + '%{opacity:1}100%{opacity:0}}'
     : '@keyframes ' + name + '{0%{opacity:0;transform:translateX(-18%) skewX(-12deg) scale(1.08)}' + p1 + '%{opacity:1;transform:none}' + p2 + '%{opacity:1;transform:none}100%{opacity:0;transform:translateX(14%) skewX(-12deg) scale(.96)}}';
   return (
     <div aria-live="polite" role="status" data-phc-card={b.kind} data-phc-big="" data-phc-card-id={b.id} data-phc-card-hold={b.hold} data-phc-card-after={b.after || undefined}
       style={{ position: 'fixed', left: 0, right: 0, top: '22vh', zIndex: 56, display: 'flex', justifyContent: 'center', pointerEvents: 'none', overflow: 'visible' }}>
-      <style>{kf}</style>
       <div style={{ position: 'relative', maxWidth: '94vw', animation: name + ' ' + total + 'ms cubic-bezier(.2,.8,.2,1) both' }}>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, transform: 'translate(14px, 12px) skewX(-14deg)', background: b.slab || '#FFFFFF' }} />
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 22, padding: '18px 56px 18px 0', transform: 'skewX(-14deg)', background: '#0A0D13', borderBottom: '5px solid ' + b.stripe, boxShadow: '0 24px 70px rgba(0,0,0,.7)', overflow: 'hidden' }}>
@@ -503,6 +502,7 @@ function BigBanner({ b, rm }: { b: Banner; rm: boolean }) {
           {!rm && <span aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent)', animation: 'phcBannerShine ' + Math.round(800 * k) + 'ms ease-out ' + inMs + 'ms both' }} />}
         </div>
       </div>
+      <style>{kf}</style>
     </div>
   );
 }

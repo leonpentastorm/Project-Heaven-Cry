@@ -272,11 +272,14 @@ for (let i = 0; i < 400; i++) {
 }
 let g = await G();
 ok('node 1 fought by hand to its last foe: the fight goes on as its field (' + (g.combat?.summary || '?') + ')', !!g.combat?.field && !g.combat?.over && g.phase === 'combat' && g.run.state === 'field');
-// rules 1.55 items 61 to 67: the field is the fight screen: no End turn (the words instead), no NOW; the header, what
-// lies on the ground, a pickup (the fight's own), then Leave (solo: one click) and the rewards
+// rules 1.55 item 61 and rules 1.62 item 4746: the field is the fight screen, with turns: End turn, NOW, the AP pips;
+// the header (FREE ROAM, its round of its rounds), what lies on the ground, a pickup (the fight's own), then Leave (solo:
+// one click) and the rewards
 await p.waitForSelector('[data-phc-field-head]', { timeout: 30000 });
-ok('the field: "The field is yours" with what lies on the ground (' + (await p.locator('[data-phc-field-ground]').innerText()) + ')', (await p.locator('[data-phc-field-head]').innerText()).includes('THE FIELD IS YOURS'));
-ok('the field has no turns: End turn is not offered, the words say so, the strip has no NOW', !(await p.getByRole('button', { name: 'End turn', exact: true }).isVisible().catch(() => false)) && (await p.locator('[data-phc-no-turns]:visible').count()) > 0 && !/NOW/.test(await p.locator('.phc-init').first().innerText().catch(() => '')));
+{ const head = await p.locator('[data-phc-field-head]').innerText();
+  ok('the field: "' + head + '" with what lies on the ground (' + (await p.locator('[data-phc-field-ground]').innerText()) + ')', head.includes(SVD.field.banner.name) && head.includes('ROUND 1 OF ' + SVD.field.rounds)); }
+await p.waitForFunction(() => { const g = window.__phc.getState().game, cb = g.combat, u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && !!u.charId; }, null, { timeout: 60000 }).catch(() => {});
+ok('the field has turns: End turn is offered, no "no turns" words, no "free" for the AP, the strip has its NOW', (await p.getByRole('button', { name: 'End turn', exact: true }).first().isVisible().catch(() => false)) && (await p.locator('[data-phc-no-turns]').count()) === 0 && (await p.locator('[data-phc-ap-free]').count()) === 0 && /NOW/.test(await p.locator('.phc-init').first().innerText().catch(() => '')));
 if (await p.locator('[data-phc-field-take]').count()) { const piles = async () => (await G()).combat.objects.filter((o) => o.kind === 'pile' && o.items?.length && !o.hidden).length, before = await piles(); await p.locator('[data-phc-field-take]').click(); await settle(p, 300); ok('Take all picks up the pile in reach', (await piles()) === before - 1); }
 await shot('field');
 if (process.env.FIELD_SHOT) copyFileSync(OUT + 'field.png', process.env.FIELD_SHOT);
@@ -284,8 +287,8 @@ await p.locator('[data-phc-field-leave]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'reward', null, { timeout: 30000 });
 ok('Leave the field: the rewards', (await G()).run.state === 'reward');
 g = await G(); // what the field's pickup brought is the pack the pick adds to
-await click(p, 'Back to the map ›', { timeout: 60000 });
-await p.waitForSelector('[data-phc-offer]', { timeout: 30000 });
+await p.waitForSelector('[data-phc-offer]', { timeout: 30000 }); // rules 1.62 item 4743: straight to the rewards, no click
+ok('leaving the field goes straight to the rewards: no end card to click', (await p.locator('[role="dialog"][aria-label="The fight is over"]').count()) === 0);
 { // the music's Now playing card leaves within its 5 s after a fight (it stayed over the sheet for 30 s and more)
   const gone = await p.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some((e) => /NOW PLAYING/.test(e.textContent || '')), null, { timeout: 8000 }).catch(() => 'stayed') !== 'stayed';
   ok('after the fight the Now playing card is gone within 8 s (it does not sit over the sheet)', gone);
@@ -698,7 +701,7 @@ while (guard++ < 40) {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
     await p.locator('[data-phc-field-leave]').click({ timeout: 60000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
-    await click(p, 'Back to the map ›', { timeout: 60000 });
+    await p.waitForFunction(() => window.__phc.getState().screen !== 'combat', null, { timeout: 30000 }); // rules 1.62 item 4743: no end card, straight on
   } else if (r.state === 'reward') {
     await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
     if (await p.locator('[data-phc-kit] [data-phc-choice]').count()) { // rules 1.43: the pick of kit (an Elite's, a cache's)
