@@ -25,7 +25,7 @@ write(a/'alpha-audit.json',{'method':'Faint alpha 9..119 / solid alpha >=250 mus
 scoped=subprocess.run([sys.executable,str(a/'validate-delivery.py'),'--root',str(r)],capture_output=True,text=True);assert scoped.returncode==0,scoped.stdout+scoped.stderr;(a/'continuation-scoped-check.txt').write_text(scoped.stdout+scoped.stderr)
 build=subprocess.run(['npm','run','assets'],cwd=r,capture_output=True,text=True);(a/'continuation-asset-build-check.txt').write_text(build.stdout+build.stderr)
 validation={'delivered':len(rows),'latest_candidate_ids':ids,'scoped_delivery_checks_pass':True,'all_ink_alpha_audit_pass':True,'changed_44px_repository_checks_pass':True,'full_library_exit':1,'full_library_limitation':'Pre-existing historical production manifest expects seven bulwark exports; the prior Nine Doors replacement uses eight. No bulwark changes in this continuation. See continuation-full-library-check.txt.','asset_build_exit':build.returncode,'asset_build_result':build.stdout.strip().splitlines()[-1] if build.stdout.strip() else build.stderr[-500:],'approval':'review-candidate only; production_approved false; implementation_ready false','upscaled':False};write(a/'continuation-validation.json',validation)
-for name in ['update_state.py','export-one.py','review_ids.py','seal_batch.py']:shutil.copy2(w/name,a/'continuation-tools'/name)
+for name in ['update_state.py','export-one.py','review_ids.py','archive_draft.py','seal_batch.py']:shutil.copy2(w/name,a/'continuation-tools'/name)
 baseline_path=a/'continuation-start.json'
 if not baseline_path.exists():
  base=json.loads(subprocess.check_output(['git','show','27bb94309f1c5f8343d8c2844b637819503eb503:art/_archive/nine-doors/2026-11-16/progress.json'],cwd=r));write(baseline_path,{'base_commit':'27bb94309f1c5f8343d8c2844b637819503eb503','completed_ids':base['completed_ids'],'completed_count':base['completed_count']})
@@ -33,7 +33,7 @@ if make_zip:
  base=read(baseline_path);new=[rec for rec in rows if rec['number'] not in base['completed_ids']];paths={'art/catalog.json'}
  for rec in new:paths.update([rec['path'],rec['source_path'],f'art/_archive/nine-doors/2026-11-16/records/{rec["number"]:03}.json']);paths.update(rec['exports'].values())
  paths.update(str(p.relative_to(r)) for p in (a/'review').glob('continuation-*.jpg'))
- paths.update('art/_archive/nine-doors/2026-11-16/'+s for s in ['progress.json','progress-0.30.json','holds-0.30.json','CONTINUE.md','CURRENT-CHECKPOINT.md','continuation-validation.json'])
+ paths.update('art/_archive/nine-doors/2026-11-16/'+s for s in ['progress.json','progress-0.30.json','holds-0.30.json','art-hold-list-0.30.md','planned-jobs-0.30.json','CONTINUE-0.30.md','CONTINUE.md','CURRENT-CHECKPOINT.md','continuation-validation.json','continuation-preservation-check.json','CONTINUATION-DELIVERY-250.md'])
  dst=a/'deliveries'/f'continuation-{len(rows)}-candidates-increment.zip'
  assert not dst.exists(),'Keep immutable ZIPs; choose a new delivery checkpoint'
  with zipfile.ZipFile(dst,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:

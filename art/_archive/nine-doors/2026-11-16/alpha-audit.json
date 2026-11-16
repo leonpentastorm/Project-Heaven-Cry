@@ -853,6 +853,31 @@
       "faint_alpha_to_solid_area_ratio": 0.07117
     },
     {
+      "number": 230,
+      "name": "Smite",
+      "faint_alpha_to_solid_area_ratio": 0.04786
+    },
+    {
+      "number": 231,
+      "name": "Under the Eye",
+      "faint_alpha_to_solid_area_ratio": 0.03624
+    },
+    {
+      "number": 232,
+      "name": "Blessed Arms",
+      "faint_alpha_to_solid_area_ratio": 0.03595
+    },
+    {
+      "number": 233,
+      "name": "Sanctuary",
+      "faint_alpha_to_solid_area_ratio": 0.06154
+    },
+    {
+      "number": 234,
+      "name": "Verdict",
+      "faint_alpha_to_solid_area_ratio": 0.04136
+    },
+    {
       "number": 235,
       "name": "Shelter of the Saints (verse)",
       "faint_alpha_to_solid_area_ratio": 0.02955

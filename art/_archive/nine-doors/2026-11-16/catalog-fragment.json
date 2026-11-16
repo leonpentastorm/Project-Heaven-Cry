@@ -3964,6 +3964,146 @@
       },
       "previous_path": "art/icons/moves/last-rites.svg"
     },
+    "move-smite": {
+      "label": "Smite",
+      "path": "art/icons/moves/smite.png",
+      "sha256": "c2b77e94c6043307309acc693228965b55cdf8fd85208750294b02f7ec5f73e7",
+      "format": "png",
+      "mode": "wick",
+      "tint": "virtue",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #230",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-smite/smite.svg",
+      "previous_sha256": "5500d150c01087ad7451aa10a48d1ec0241abfa8cb189df52d096d3a5879c2fd",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/230-smite.png",
+      "upscaled": false,
+      "brief_number": 230,
+      "exports": {
+        "128": "art/icons/moves/exports/128/smite.png",
+        "64": "art/icons/moves/exports/64/smite.png",
+        "48": "art/icons/moves/exports/48/smite.png",
+        "44": "art/icons/moves/exports/44/smite.png",
+        "32": "art/icons/moves/exports/32/smite.png",
+        "24": "art/icons/moves/exports/24/smite.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-under-the-eye": {
+      "label": "Under the Eye",
+      "path": "art/icons/moves/under-the-eye.png",
+      "sha256": "30483f7e21e1c0cb68865a1c982fea2ba181fad975762e20fa2a4f74ac14c7d3",
+      "format": "png",
+      "mode": "wick",
+      "tint": "virtue",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #231",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-under-the-eye/under-the-eye.svg",
+      "previous_sha256": "549e7546976a410e128f09abaf24d5024666181b4a51ab587938e1ec9a742e1a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/231-under-the-eye.png",
+      "upscaled": false,
+      "brief_number": 231,
+      "exports": {
+        "128": "art/icons/moves/exports/128/under-the-eye.png",
+        "64": "art/icons/moves/exports/64/under-the-eye.png",
+        "48": "art/icons/moves/exports/48/under-the-eye.png",
+        "44": "art/icons/moves/exports/44/under-the-eye.png",
+        "32": "art/icons/moves/exports/32/under-the-eye.png",
+        "24": "art/icons/moves/exports/24/under-the-eye.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-blessed-arms": {
+      "label": "Blessed Arms",
+      "path": "art/icons/moves/blessed-arms.png",
+      "sha256": "ed6513a87eec23ae58d54af141796e7cf75de5e594ed4eeec4c04ec6b923a789",
+      "format": "png",
+      "mode": "wick",
+      "tint": "virtue",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #232",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-blessed-arms/blessed-arms.svg",
+      "previous_sha256": "2bc8552b3460a0fe94b4e4eedc43bbf86e0bf5f13b15a728b3aacd8010317409",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/232-blessed-arms.png",
+      "upscaled": false,
+      "brief_number": 232,
+      "exports": {
+        "128": "art/icons/moves/exports/128/blessed-arms.png",
+        "64": "art/icons/moves/exports/64/blessed-arms.png",
+        "48": "art/icons/moves/exports/48/blessed-arms.png",
+        "44": "art/icons/moves/exports/44/blessed-arms.png",
+        "32": "art/icons/moves/exports/32/blessed-arms.png",
+        "24": "art/icons/moves/exports/24/blessed-arms.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-verdict": {
+      "label": "Verdict",
+      "path": "art/icons/moves/verdict.png",
+      "sha256": "0839b6f43054e0474092b112eb850924df7ca2d7f193a8b9528201e00f0dbf9d",
+      "format": "png",
+      "mode": "wick",
+      "tint": "virtue",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #234",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-verdict/verdict.svg",
+      "previous_sha256": "8ab8d5c696e282fc0c2401dee681daea35f5813d54af4c35e3f95c263d66191e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/234-verdict.png",
+      "upscaled": false,
+      "brief_number": 234,
+      "exports": {
+        "128": "art/icons/moves/exports/128/verdict.png",
+        "64": "art/icons/moves/exports/64/verdict.png",
+        "48": "art/icons/moves/exports/48/verdict.png",
+        "44": "art/icons/moves/exports/44/verdict.png",
+        "32": "art/icons/moves/exports/32/verdict.png",
+        "24": "art/icons/moves/exports/24/verdict.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "move-open-guard": {
       "label": "Wick \u2014 Open guard",
       "path": "art/icons/moves/open-guard.png",
@@ -6562,6 +6702,41 @@
         "44": "art/icons/prayers/exports/44/whisper-ward.png",
         "32": "art/icons/prayers/exports/32/whisper-ward.png",
         "24": "art/icons/prayers/exports/24/whisper-ward.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "hymn-sanctuary": {
+      "label": "Wick \u2014 Sanctuary",
+      "path": "art/icons/prayers/hymn-sanctuary.png",
+      "sha256": "d73f39d9a6c3cea490510e6ef5e15db81f5d3d848ba271d90cf7b409d1a1f7d5",
+      "format": "png",
+      "mode": "wick",
+      "tint": "virtue",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #233",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/hymn-sanctuary/hymn-sanctuary.svg",
+      "previous_sha256": "cc081abfb28823510fadc99d4f56aa777b9186eab532a9722e5f84d66e064c1f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/233-hymn-sanctuary.png",
+      "upscaled": false,
+      "brief_number": 233,
+      "exports": {
+        "128": "art/icons/prayers/exports/128/hymn-sanctuary.png",
+        "64": "art/icons/prayers/exports/64/hymn-sanctuary.png",
+        "48": "art/icons/prayers/exports/48/hymn-sanctuary.png",
+        "44": "art/icons/prayers/exports/44/hymn-sanctuary.png",
+        "32": "art/icons/prayers/exports/32/hymn-sanctuary.png",
+        "24": "art/icons/prayers/exports/24/hymn-sanctuary.png"
       },
       "ink": "#FFFFFF"
     }

@@ -11717,6 +11717,388 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 230,
+    "family": "move_icons",
+    "id": "move-smite",
+    "path": "art/icons/moves/smite.png",
+    "name": "Smite",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Chaplain rank I move (asked 13 Nov, C1)",
+    "paint": "A weapon hit that carries a single ray coming down from above into the struck point.",
+    "avoid": "a real religious symbol \u00b7 lightning bolt",
+    "section": "Faith: prayer, and the Chaplain",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A weapon hit that carries a single ray coming down from above into the struck point.\nAvoid: a real religious symbol \u00b7 lightning bolt\nEXACT STAGING: Smite: one plain invented short BLADE angled downward from upper left strikes ONE small abstract TARGET SLAB at lower right. A SINGLE STRAIGHT TAPERED WHITE RAY descends vertically from above to meet that exact contact point, with two tiny hard impact ticks. Cropped ceramic mitten on hilt allowed, no full person, body or face. No lightning zigzag, religious emblem, blood, flames, gore, text or ground scenery. It is an abstract fantasy training-symbol with simple broad white silhouettes.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c2b77e94c6043307309acc693228965b55cdf8fd85208750294b02f7ec5f73e7",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/230-smite.png",
+    "source_sha256": "d7461ee04a77d73692343f5807d5a489e855ece7d350a87cbb9c80cdec1948b2",
+    "export_crop": [
+      0,
+      71,
+      1218,
+      1230
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/smite.png",
+      "64": "art/icons/moves/exports/64/smite.png",
+      "48": "art/icons/moves/exports/48/smite.png",
+      "44": "art/icons/moves/exports/44/smite.png",
+      "32": "art/icons/moves/exports/32/smite.png",
+      "24": "art/icons/moves/exports/24/smite.png"
+    },
+    "framing": {
+      "scale": 0.5768180653549454,
+      "offset": [
+        160,
+        177
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "d31004f5e4a217e7950aaf43c798c5ad54fd8277d1f06bc9ff879eba40cb1bff",
+      "64": "cd8c59efa11584d86d741b1bc2f1f33d005a7ec1a7b74a2e59696638eb253fe1",
+      "48": "6a26baf6edc3482a2c826187ad9542f5cf50524764cbd688e050473182b06bfc",
+      "44": "219b0f58eb37a768f2d2f038b275f2c2333d8a9c03277c50ac175d3886f6d809",
+      "32": "f58498dee5edd35aa98d95824d0bf9cd5ce8e6e22b30eb693aae14f80240475c",
+      "24": "8fc7ff98c5ae97197135e1016773948e3bbe2dc50a51b97b452e05501be1d869"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 231,
+    "family": "move_icons",
+    "id": "move-under-the-eye",
+    "path": "art/icons/moves/under-the-eye.png",
+    "name": "Under the Eye",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Chaplain rank II move (from the Lumeri Templar)",
+    "paint": "A partial ally under a large open eye drawn as an arc above.",
+    "avoid": "a real religious all-seeing-eye symbol \u00b7 a pyramid",
+    "section": "Faith: prayer, and the Chaplain",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A partial ally under a large open eye drawn as an arc above.\nAvoid: a real religious all-seeing-eye symbol \u00b7 a pyramid\nEXACT STAGING: Under the Eye: only an ALLY PARTIAL, a rounded featureless head and ONE cropped shoulder at lower center. Above it ONE large OPEN EYE drawn as TWO shallow asymmetrical arcs, with a small empty circular pupil centered between them. Eye is a quiet protective canopy, not inside a triangle or pyramid and no rays, mandala, real religious or occult symbol, wings, whole figure or Wick. Broad simple flat white forms, all spaces transparent.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "30483f7e21e1c0cb68865a1c982fea2ba181fad975762e20fa2a4f74ac14c7d3",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/231-under-the-eye.png",
+    "source_sha256": "ed7198a22f16ae048c28b0d239ff052ffa23436cc5be3f809c6d03f8095e8dce",
+    "export_crop": [
+      57,
+      111,
+      1182,
+      1215
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/under-the-eye.png",
+      "64": "art/icons/moves/exports/64/under-the-eye.png",
+      "48": "art/icons/moves/exports/48/under-the-eye.png",
+      "44": "art/icons/moves/exports/44/under-the-eye.png",
+      "32": "art/icons/moves/exports/32/under-the-eye.png",
+      "24": "art/icons/moves/exports/24/under-the-eye.png"
+    },
+    "framing": {
+      "scale": 0.694992337255879,
+      "offset": [
+        121,
+        128
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "1b00d69cc8a8dff3a48020dfceda9b83026a707bfe584465350c48852171a100",
+      "64": "6a82cfbf0dd2b7030d6943760c06ccc5e25698b514d0c578573cebb65e3608b2",
+      "48": "6de153190a029351883ab1507bcffb2d28385b25e55e6ca3d7c926cc629bf053",
+      "44": "a456e983fc02079a623cdec319eea7141d9fe0f9692c0c66fa25164a044ebefe",
+      "32": "95499a778dae07635d729dd928a88bc52c59f18461b4c154906c1be7f49037cd",
+      "24": "47a8fe5df67409974a0dee8fba8013819be9f12a9ca9a8f9e4c086dc2ccd766b"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 232,
+    "family": "move_icons",
+    "id": "move-blessed-arms",
+    "path": "art/icons/moves/blessed-arms.png",
+    "name": "Blessed Arms",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Chaplain rank II move (from the Lumeri Templar)",
+    "paint": "A blade and a shell crossed under a single short ray.",
+    "avoid": "a real religion's cross \u00b7 fire",
+    "section": "Faith: prayer, and the Chaplain",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A blade and a shell crossed under a single short ray.\nAvoid: a real religion's cross \u00b7 fire\nEXACT STAGING: Blessed Arms: ONE short plain invented BLADE and ONE oversized stubby blank AMMUNITION SHELL cross diagonally in a compact X, with ONE short vertical white RAY pointing down just above their intersection. Distinct blade point and shell blunt rim, no gun or person. Ray is a single tapered bar with no star/halo. No flame, real religious emblem, text, numerals, insignia, labels or brands. Pure white flat silhouettes, transparent separating cuts.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "ed6513a87eec23ae58d54af141796e7cf75de5e594ed4eeec4c04ec6b923a789",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/232-blessed-arms.png",
+    "source_sha256": "b1bda795ae35c9b954ced0816d15a5fe13630380f0293adcbbde9738ae2c95dd",
+    "export_crop": [
+      33,
+      21,
+      1144,
+      1228
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/blessed-arms.png",
+      "64": "art/icons/moves/exports/64/blessed-arms.png",
+      "48": "art/icons/moves/exports/48/blessed-arms.png",
+      "44": "art/icons/moves/exports/44/blessed-arms.png",
+      "32": "art/icons/moves/exports/32/blessed-arms.png",
+      "24": "art/icons/moves/exports/24/blessed-arms.png"
+    },
+    "framing": {
+      "scale": 0.5435790988580297,
+      "offset": [
+        210,
+        184
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "a8e462bbd5c4c0a93719a0d72b4457fee98473c705b411028fdea7e8799b66d0",
+      "64": "59ca82cc3fffe90f2d98afc485306a7e5baf745ce4547af09062a51636f75eed",
+      "48": "01fa85548243469093acf5d120f6f546880d2e2aa50ab06518e4a576872fb1c3",
+      "44": "257228aae7bde0617f75ec8b1d918f2231ee2f41f92e529b13b6c112f0e7851e",
+      "32": "ddedac6919581a88c06c22e05805d1fe1eb34b251f49ef6d47904bb4da5f3de2",
+      "24": "c1ccf3d909ba9d56364ac539468b5af1a88f02167355bf901da91b9f09c4c867"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 233,
+    "family": "prayers",
+    "id": "hymn-sanctuary",
+    "path": "art/icons/prayers/hymn-sanctuary.png",
+    "name": "Sanctuary",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Chaplain rank III move, a Hymn (asked 13 Nov, C1)",
+    "paint": "Wick singing, a square patch of ground under him lit by a soft outline.",
+    "avoid": "a church building \u00b7 a dome",
+    "section": "Faith: prayer, and the Chaplain",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick singing, a square patch of ground under him lit by a soft outline.\nAvoid: a church building \u00b7 a dome\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Sanctuary: ONE Wick stands singing gently, pixel mouth OPEN as a small squared O, eyes tilted upward, one mitten over his chest and other palm open. Under BOTH BOOTS is ONE SQUARE PATCH OF GROUND drawn in shallow perspective as a broad WHITE OUTLINE with completely transparent center. Outline softly rounded corners but HARD FLAT WHITE, no glow or gray. Square extends around Wick's feet as a visible safe zone, not a dome, church, building, circle or shield. No music notes, halo, floating cup or scenery.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "d73f39d9a6c3cea490510e6ef5e15db81f5d3d848ba271d90cf7b409d1a1f7d5",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/233-hymn-sanctuary.png",
+    "source_sha256": "4ed5b85a071e72a783f9d97c3ccf8172d22d344fb835696e689ac92fa44536f2",
+    "export_crop": [
+      27,
+      23,
+      1184,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/prayers/exports/128/hymn-sanctuary.png",
+      "64": "art/icons/prayers/exports/64/hymn-sanctuary.png",
+      "48": "art/icons/prayers/exports/48/hymn-sanctuary.png",
+      "44": "art/icons/prayers/exports/44/hymn-sanctuary.png",
+      "32": "art/icons/prayers/exports/32/hymn-sanctuary.png",
+      "24": "art/icons/prayers/exports/24/hymn-sanctuary.png"
+    },
+    "framing": {
+      "scale": 0.6194639898250894,
+      "offset": [
+        153,
+        130
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "b401270c3843d9f56e0ad5e0c2bdedf299a412221c65e9a8cef401eb0e9b234c",
+      "64": "37ee8ecde7dca80a27e4f0d00de74db0624ea8da37da421743755bcffedf3c61",
+      "48": "5958c928cdac15f3a1c133943c23654afb884a3b5cc746df707fa18754d1d430",
+      "44": "edaa777c7233dd10a5368978fbd1198d1ae3ef2e559fbd0ae3d4e2e1619177da",
+      "32": "0fbc4ffdd1e1094f639bed50986b473623817dccf238b83fb42288b350081c50",
+      "24": "ed0b02b90aee70059a8c803c2ca20f3b367773c0f6e8977c0b3bca29ad9b6994"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 234,
+    "family": "move_icons",
+    "id": "move-verdict",
+    "path": "art/icons/moves/verdict.png",
+    "name": "Verdict",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Chaplain rank III move, was Judgement (asked 13 Nov, C1)",
+    "paint": "One decided downward blow after a pointed finger.",
+    "avoid": "a gavel \u00b7 scales of justice",
+    "section": "Faith: prayer, and the Chaplain",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: One decided downward blow after a pointed finger.\nAvoid: a gavel \u00b7 scales of justice\nEXACT STAGING: Verdict: a compact TWO-PHASE SINGLE ACTION using only cropped ceramic mittens. At upper left one cropped hand POINTS A FINGER directly down toward one little abstract tile; at center-right a clenched cropped fist follows through ONE DECISIVE DOWNWARD BLOW onto the SAME tile, shown with ONE broad downward motion stroke and two small impact ticks. Keep the pointing finger distinct from striking fist, no full arms/bodies/heads. No gavel, scales, judge, gore, blood, text or extra symbols. Generic flat fantasy game abstraction.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0839b6f43054e0474092b112eb850924df7ca2d7f193a8b9528201e00f0dbf9d",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/234-verdict.png",
+    "source_sha256": "187b158400ae364a36fc9aae0c26e05f324ff24b217b67a226d9965f8a353e06",
+    "export_crop": [
+      0,
+      9,
+      1127,
+      1222
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/verdict.png",
+      "64": "art/icons/moves/exports/64/verdict.png",
+      "48": "art/icons/moves/exports/48/verdict.png",
+      "44": "art/icons/moves/exports/44/verdict.png",
+      "32": "art/icons/moves/exports/32/verdict.png",
+      "24": "art/icons/moves/exports/24/verdict.png"
+    },
+    "framing": {
+      "scale": 0.6051491072534027,
+      "offset": [
+        171,
+        145
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "7342079c7c03258841f8e3b8e9435230d1a4c557ffbea65f67b226e171756197",
+      "64": "37a370bc991b6e6d6eb3190af6f0884572b2d63e621de97a011bd809308a947c",
+      "48": "731e02d3ea86281c1b9915a0ec49445be4d4fbe20432b54cc68af7cebb7c9e90",
+      "44": "641a4f1344a902b926f6c8944ebb2af238961821034a3b20b5c8008a24d330ea",
+      "32": "80ecfa69ce59ed3376c43932ae8c69b09fbe2caea92408203439e857b1e987b3",
+      "24": "48e38e8485b6df33e520b2812b8a4f1061ad536e36e4dff48a0628a4f6107060"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 235,
     "family": "condition_icons",
     "id": "cond-canticle-nerukhan",
