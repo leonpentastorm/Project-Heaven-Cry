@@ -6930,15 +6930,17 @@ mage too". In force:
    1. **The Mana Short** keeps its name and its trigger (3 over the limit, `soul_modules.json strain.short_at_over`):
       Stunned 1 round, a held Outburst goes off wild, its element's stage-1 rider on the caster's own tile, as before.
       **Strain is no longer set back to the limit** (`strain.after_short`: `keep`), and the caster enters **Mana Shock**
-      (`conditions.json mana_shock`).
+      (a state of the caster's heart, `MagicUnit.shock` in a fight and the story's magic `shock`; its name, text and
+      cost are `soul_modules.json strain.shock`: `name`, `text`, `hp_share`; it is not a conditions row).
    2. **Mana Shock lasts until Strain is at or under the limit**, by the ways that already lower it: the turn start's
       −1, a still turn, fighting it out, tending, Let go, Steady, Relief, Revert. While it lasts, more Strain brings
       **no second Short** (no Stun, no wild release). Leaving it and reaching 3 over again is a new Short.
    3. **The cost:** at the end of each of the caster's own turns that ends in Mana Shock, **25% of Max HP** (the row's
-      `amounts.tick`: max_hp × 0.25, rounded down), after the burn of 8 a point over (which stays as it was) and after a
+      `strain.shock.hp_share`: max_hp × 0.25, rounded down), after the burn of 8 a point over (which stays as it was) and after a
       still turn's −1. A turn that brings Strain back to the limit pays nothing. The turn lost to the Short's own Stun
       pays (it can't calm). It is true damage of the self-harm kind (`strain`): no armour, no shield, no Guard plate,
-      no Close Guard or Interpose, no redirect, no drop-to-0 saver (Last Plate included), no multiplier.
+      no Close Guard or Interpose, no redirect or share, no drop-to-0 saver (Last Plate, Lifeline, a prayer's floor
+      included), no multiplier (item 4505: the damage chokepoint lets no listener touch it).
    4. **It Downs, never kills** (a foe is subdued), as every burn of the heart. **A Downed caster leaves Mana Shock and
       its Strain is set to the limit**, so a raised caster is not shocked.
    5. **Pure Heart** still turns away the first Short of a fight (no Mana Shock from it); **Hollow Heart** still refuses
@@ -10774,16 +10776,24 @@ Items 4240 to 4247.
     Strain (was +2, item 631). Leon's number, 16 Nov 2026. PROVISIONAL.
 4501. **The Mana Shock (rules 1.56, the Mana Shock):** the Mana Short leaves Strain where it is (`soul_modules.json
     strain.after_short` `keep`; item 500's fall to the limit is retired) and puts the caster in Mana Shock
-    (`conditions.json mana_shock`, `duration.until` `strain_at_limit`). Leon, 16 Nov 2026 ("use 1").
-4502. **Mana Shock's cost:** 25% of Max HP (`mana_shock.amounts.tick`, max_hp × 0.25, rounded down) at the end of each
+    (`MagicUnit.shock`, the story's magic `shock`: set by the Short, cleared wherever Strain falls to the limit and on
+    a Down; its name and text are `soul_modules.json strain.shock.name` and `.text`). Leon, 16 Nov 2026 ("use 1").
+4502. **Mana Shock's cost:** 25% of Max HP (`soul_modules.json strain.shock.hp_share`, max_hp × 0.25, rounded down, an
+    amount block's `per max_hp` part on the heart's one harm path, `magic.ts` `magicTurnEnd`) at the end of each
     of the caster's own turns that ends in it. Leon's number. PROVISIONAL.
 4503. **When it is paid** (the lead's call for Leon, reversible): at the end of the caster's own turn, after the burn and
     after a still turn's −1, so a turn that brings Strain to the limit pays nothing; the Stunned turn pays. PROVISIONAL.
 4504. **No second Short while in Mana Shock** (the lead's call): further Strain burns as before but does not Stun again
     or throw a held Outburst wild.
-4505. **Nothing softens it** (Leon: "no negociation"): the self-harm type `strain`, outside every hit, shield, armour,
-    redirect and drop-to-0 rule (NOT_A_HIT, `self_harm`). Hollow Heart's stable Down still applies (it acts after the
-    Down).
+4505. **Nothing softens it** (Leon: "no negociation"): the heart's own harm (the burn a point over and the Mana Shock's
+    share) is the self-harm type `strain`, true damage past shields and armour, and the damage chokepoint
+    (`effects/damage.ts` `applyDamage`) sends it to no `reduce` or `would_drop_to_0` listener: no item, perk, trait,
+    condition, boon, prayer, intervention, ward or Guard reduces it (Hardened, Thick Hide, Held Close, Walking Wounded,
+    Rally Cry, the Sanctuary, Nerukhan's Canticle, Reactive Plate), moves or shares it (Soulmate, Red Thread, the
+    Matchmaker, Tending's threads) or holds a Down at 1 HP (Lifeline, Last Plate, Not Yet, Unbroken, Take the Weight,
+    Hold the Gate, the Toll-Keeper). Its `after` phase and the Down still speak: Hollow Heart's stable Down applies
+    (it acts after the Down). Fixed 16 Nov 2026 (the review found the share cut by Walking Wounded and moved by
+    Soulmate).
 4506. **It Downs, never kills; a Down ends it** (the lead's call): the caster's Strain is set to the limit and Mana Shock
     ends when it is Downed, so being raised is not a death loop. A Down while not in Mana Shock leaves Strain as before.
 4507. **Enemies** (the lead's call): an enemy caster in Mana Shock with nothing held Begins nothing (it walks and shoots

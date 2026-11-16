@@ -945,7 +945,8 @@ function shockEnds(cb: Combat, u: Unit): boolean {
   return true;
 }
 /** The heart's own harm (the burn a point over the limit, the Mana Shock's share): true damage, no shield, no credit,
- * the self-harm type 'strain' (NOT_A_HIT, self_harm: nothing soaks, redirects or holds it), it Downs, never kills. */
+ * the self-harm type 'strain' (NOT_A_HIT, self_harm; effects/damage.ts sends it to no 'reduce' or 'would_drop_to_0'
+ * listener, so nothing reduces, redirects, shares or floors it: spec item 4505), it Downs, never kills. */
 function heartHarm(cb: Combat, u: Unit, n: number, line: string, fx: Record<string, unknown>) {
   const r = applyDamage(cb, u, n, { type: 'strain', dmgType: 'true', shield: false, credit: 'none', nonlethal: true } as any);
   emitFx(cb, 'burn', { unit: u.id, at: u.pos, ...fx, dmg: r.dealt });

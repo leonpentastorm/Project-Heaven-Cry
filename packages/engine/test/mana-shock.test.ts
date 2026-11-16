@@ -12,14 +12,17 @@ const share = (u: Unit) => Math.floor(MANA_SHOCK.hp_share * u.maxHp);
 
 /** A fight with one Soul caster (Will Power `wp`: no Pure Heart below 5) and a friend, against one soldier far away (or
  * a foe Soul caster). */
-function fight(o: { wp?: number; traits?: string[]; skills?: Record<string, number>; armourClass?: number; foes?: any[] } = {}) {
-  const s = storyWith([{ name: 'Heart', kit: 'soul', skills: { will_power: o.wp ?? 3, ...(o.skills || {}) }, traits: o.traits, armourClass: o.armourClass }, { name: 'Friend', kit: 'soldier' }]);
-  const [a] = s.chars.map((c) => s.g.characters[c.id]);
+function fight(o: { wp?: number; traits?: string[]; skills?: Record<string, number>; armourClass?: number; foes?: any[]; /** the caster's Survival boons (Character.relics) */ relics?: string[]; /** the friend holds Soulmate and bonds the caster before the fight */ soulmate?: boolean } = {}) {
+  const s = storyWith([{ name: 'Heart', kit: 'soul', skills: { will_power: o.wp ?? 3, ...(o.skills || {}) }, traits: o.traits, armourClass: o.armourClass }, { name: 'Friend', kit: 'soldier', ...(o.soulmate ? { perks: { soulmate: 'I' }, skills: { camaraderie: 9 } } : {}) }]);
+  const [a, b] = s.chars.map((c) => s.g.characters[c.id]);
+  if (o.relics) s.g.characters[a.id].relics = [...o.relics];
+  if (o.soulmate) s.act({ type: 'story/perk', charId: b.id, id: 'soulmate', actionId: 'bond', choice: a.id } as any);
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Shock test', map: 'yard16', difficulty: 'standard', enemies: o.foes || [{ name: 'Target', tier: 'soldier', weapon: 'service_pistol', at: 'P10' }] } } } as any);
   const api = {
     get g(): GameState { return s.g; },
     get u(): Unit { return s.g.combat!.units.find((x) => x.charId === a.id)!; },
     get foe(): Unit { return s.g.combat!.units.find((x) => x.side === 'foe')!; },
+    get friend(): Unit { return s.g.combat!.units.find((x) => x.charId === b.id)!; },
     act: (x: any) => s.act(x as Action, 'host'),
     /** Pass turns (end-turn) until it is the caster's turn. */
     toMine() { for (let i = 0; i < 12 && s.g.combat!.order[s.g.combat!.turn] !== api.u.id && !s.g.combat!.over; i++) s.act({ type: 'combat/end-turn', unitId: s.g.combat!.order[s.g.combat!.turn] } as any); return api.u; },
@@ -103,6 +106,21 @@ describe('nothing softens it, it Downs and never kills, and a Down ends it', () 
     expect(u.downed).toBe(true); expect(u.dead).toBe(false);
     // Downed: out of the Shock, Strain at the limit, so a raised caster is not shocked.
     expect(u.mg!.shock).toBeFalsy(); expect(u.mg!.strain).toBeLessThanOrEqual(L);
+  });
+});
+
+describe('no item softens it either: a boon, a floor and a redirect stand aside (the damage gate, effects/damage.ts)', () => {
+  it('Hardened (taking x0.9) and Lifeline (a floor at 1 HP) on the caster, a Soulmate bondmate beside it: the share and the burn land whole, the friend takes none, and it Downs', () => {
+    const f = fight({ relics: ['boon.hardened', 'boon.lifeline'], soulmate: true }); let u = shortNow(f);
+    expect(u.held?.relics).toEqual(expect.arrayContaining(['boon.hardened', 'boon.lifeline']));
+    const fhp = f.friend.hp; let from = at(f); f.end(); u = f.u;
+    expect(heartHarm(f, from)).toEqual({ burn: [OVER * strainBurn(u)], shock: [share(u)] }); // not x0.9
+    expect(f.friend.hp).toBe(fhp); expect(f.g.combat!.log.slice(from).join(' ')).not.toMatch(/Soulmate/); // nothing redirected
+    // The Stunned turn on 3 HP: the burn Downs it; Lifeline does not hold it on 1 HP.
+    u.hp = 3; from = at(f);
+    f.act({ type: 'combat/end-turn', unitId: f.g.combat!.order[f.g.combat!.turn] });
+    u = f.u; expect(u.downed).toBe(true); expect(u.dead).toBe(false);
+    const log = f.g.combat!.log.slice(from).join(' '); expect(log).toMatch(/Heart's heart burns: \d+ damage .*Downed/); expect(log).not.toMatch(/Soulmate|Lifeline/);
   });
 });
 
