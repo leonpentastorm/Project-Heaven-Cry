@@ -1338,6 +1338,16 @@
       "faint_alpha_to_solid_area_ratio": 0.04313
     },
     {
+      "number": 348,
+      "name": "Shot",
+      "faint_alpha_to_solid_area_ratio": 0.04563
+    },
+    {
+      "number": 349,
+      "name": "Snap Shot",
+      "faint_alpha_to_solid_area_ratio": 0.03982
+    },
+    {
       "number": 350,
       "name": "Burst",
       "faint_alpha_to_solid_area_ratio": 0.0596
@@ -1361,6 +1371,11 @@
       "number": 354,
       "name": "Punch Through",
       "faint_alpha_to_solid_area_ratio": 0.02435
+    },
+    {
+      "number": 355,
+      "name": "Lob",
+      "faint_alpha_to_solid_area_ratio": 0.05855
     }
   ],
   "excluded": [],

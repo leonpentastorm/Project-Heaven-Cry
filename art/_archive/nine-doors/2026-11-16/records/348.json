@@ -1,0 +1,78 @@
+{
+  "number": 348,
+  "family": "technique_icons",
+  "id": "tech-shot",
+  "path": "art/icons/techniques/shot.png",
+  "name": "Shot",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A single bullet line from a muzzle.",
+  "avoid": "muzzle flash fire \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create one minimalist flat-white RPG motion-mark icon. On the LEFT is a short plain HOLLOW CYLINDRICAL NOZZLE viewed from side, with a small fully transparent opening. To its RIGHT is ONE LONG STRAIGHT HORIZONTAL TAPERED WHITE STROKE, separated from nozzle by a clear tiny gap. Stroke has squared tail and one sharp leading point. This is an abstract flow/pulse symbol with no people, targets, damage, blast, gun body or scenery. Pure #FFFFFF flat silhouettes on true transparency; no black or gray interior paint, no shading, glow, gradients, texture, text or border. Square composition centered inside 15% transparent margins and circular safe chip. Bold line reads at 32px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "object-only",
+  "service_revision": "Nonviolent abstract nozzle-and-line variant after rejected input.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c2aaae3c9df3e352859205e15eb8b767670c2671b144ca9c17c8afa591fac8d8",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/348-shot.png",
+  "source_sha256": "85016b1ef2608fd31e4c744c40e2a0e4be55b1b18294af1202c0f81cdda85e2b",
+  "export_crop": [
+    111,
+    406,
+    1240,
+    1053
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/shot.png",
+    "64": "art/icons/techniques/exports/64/shot.png",
+    "48": "art/icons/techniques/exports/48/shot.png",
+    "44": "art/icons/techniques/exports/44/shot.png",
+    "32": "art/icons/techniques/exports/32/shot.png",
+    "24": "art/icons/techniques/exports/24/shot.png"
+  },
+  "framing": {
+    "scale": 0.7263064658990257,
+    "offset": [
+      102,
+      277
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "3cdc24b828e2f7f61c0957735fd1f6cba9fb2cfc93584773553dcc12d561a122",
+    "64": "56851d3f177657bc58e1a608aaa71cb781e55e424b0283e8d71f30af1a53fe6e",
+    "48": "6047e14a1672531de2332c4761e5b3244c663838a8cc18d7f3332d132bd081e8",
+    "44": "bd13a44be3606d9bf44983a99ad02c5603cf67e2e28e16b84ee9a713766b0852",
+    "32": "243b152e53efb29a28744d1d18c0de9fb922450c887f1e4613cb41046ff24a93",
+    "24": "d6d1e3992d08a78e0919aaa6c0576de381279801b65386d082aa1542615aeb85"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -5568,6 +5568,76 @@
       },
       "ink": "#FFFFFF"
     },
+    "tech-shot": {
+      "label": "Shot",
+      "path": "art/icons/techniques/shot.png",
+      "sha256": "c2aaae3c9df3e352859205e15eb8b767670c2671b144ca9c17c8afa591fac8d8",
+      "format": "png",
+      "mode": "wick",
+      "tint": "white",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #348",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-shot/shot.svg",
+      "previous_sha256": "8ca3738df3a56c1dad1e727771120ebf7846cfe061d76796969555ffe78e21ea",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/348-shot.png",
+      "upscaled": false,
+      "brief_number": 348,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/shot.png",
+        "64": "art/icons/techniques/exports/64/shot.png",
+        "48": "art/icons/techniques/exports/48/shot.png",
+        "44": "art/icons/techniques/exports/44/shot.png",
+        "32": "art/icons/techniques/exports/32/shot.png",
+        "24": "art/icons/techniques/exports/24/shot.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "tech-snap-shot": {
+      "label": "Snap Shot",
+      "path": "art/icons/techniques/snap-shot.png",
+      "sha256": "cc00d3e58628208d340ca4e4cd65a1eeff09cc0ccdea3f696def85728a296ef6",
+      "format": "png",
+      "mode": "wick",
+      "tint": "white",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #349",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-snap-shot/snap-shot.svg",
+      "previous_sha256": "dbdb2b615bdbc745e49ec93bef48c89f35ca3e5e271520c52d5ffca73a220537",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/349-snap-shot.png",
+      "upscaled": false,
+      "brief_number": 349,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/snap-shot.png",
+        "64": "art/icons/techniques/exports/64/snap-shot.png",
+        "48": "art/icons/techniques/exports/48/snap-shot.png",
+        "44": "art/icons/techniques/exports/44/snap-shot.png",
+        "32": "art/icons/techniques/exports/32/snap-shot.png",
+        "24": "art/icons/techniques/exports/24/snap-shot.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "tech-burst": {
       "label": "Burst",
       "path": "art/icons/techniques/burst.png",
@@ -5740,6 +5810,41 @@
         "44": "art/icons/techniques/exports/44/punch-through.png",
         "32": "art/icons/techniques/exports/32/punch-through.png",
         "24": "art/icons/techniques/exports/24/punch-through.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "tech-lob": {
+      "label": "Lob",
+      "path": "art/icons/techniques/lob.png",
+      "sha256": "bf817e0f77686f04fe695dec96bdbd10984523ae555058002e9069d02df0203c",
+      "format": "png",
+      "mode": "wick",
+      "tint": "white",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #355",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-lob/lob.svg",
+      "previous_sha256": "d80d289e91fb0b4aafbb819b216234a92327d3b600edc78bde39381029e226a1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/355-lob.png",
+      "upscaled": false,
+      "brief_number": 355,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/lob.png",
+        "64": "art/icons/techniques/exports/64/lob.png",
+        "48": "art/icons/techniques/exports/48/lob.png",
+        "44": "art/icons/techniques/exports/44/lob.png",
+        "32": "art/icons/techniques/exports/32/lob.png",
+        "24": "art/icons/techniques/exports/24/lob.png"
       },
       "ink": "#FFFFFF"
     }

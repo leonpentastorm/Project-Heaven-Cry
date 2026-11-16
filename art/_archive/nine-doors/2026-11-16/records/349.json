@@ -1,0 +1,75 @@
+{
+  "number": 349,
+  "family": "technique_icons",
+  "id": "tech-snap-shot",
+  "path": "art/icons/techniques/snap-shot.png",
+  "name": "Snap Shot",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A pistol fired from the hip, a short quick line.",
+  "avoid": "a cowboy \u00b7 a camera",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Correct this exact rejected Project Heaven Cry icon. Keep the cropped mitten at hip holding the little angular training prop and one short rightward mark. REMOVE THE ENTIRE FAINT RECTANGULAR STRIP AT TOP OF CANVAS. The backdrop must be fully empty alpha, including top edge. Preserve broad transparent gaps between hand, hip and prop. Only the requested compact lower-center action, no haze, glow or faint painted rectangle anywhere. Pure opaque white flat ink #FFFFFF only, all gaps and background GENUINELY TRANSPARENT. No black or gray pigment, no aura, glow, shadow, texture, gradient, text or border. Square icon centered inside 15% transparent margins and circular chip.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/349-background-strip-fix/native.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/349-background-strip-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "cc00d3e58628208d340ca4e4cd65a1eeff09cc0ccdea3f696def85728a296ef6",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/349-snap-shot.png",
+  "source_sha256": "6a19f02f9d7b143a2eb49aace5099f9cea99f44e3269ee6e0de5efdc1f551de3",
+  "export_crop": [
+    73,
+    214,
+    1184,
+    1237
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/snap-shot.png",
+    "64": "art/icons/techniques/exports/64/snap-shot.png",
+    "48": "art/icons/techniques/exports/48/snap-shot.png",
+    "44": "art/icons/techniques/exports/44/snap-shot.png",
+    "32": "art/icons/techniques/exports/32/snap-shot.png",
+    "24": "art/icons/techniques/exports/24/snap-shot.png"
+  },
+  "framing": {
+    "scale": 0.6064807393445195,
+    "offset": [
+      175,
+      202
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "3a3f9644bdd2f9bfadf5590907edf9ac3481ebd070453f7bce2bb91d698e0030",
+    "64": "5f9beafc7dcd33a0bc1dd73833cf12211c7808c004816e6c23d173996a0b5a36",
+    "48": "3a6e85761b2133921737e7901d387fb55dfcae3654dddc05519180e6ef6434f8",
+    "44": "29c1f87b0c31f4f3bba9a58028b3e62c99bfb6b7ac843cc8e9604c412af48534",
+    "32": "650d89e6c734d0cd831db4bb7fbfcb9b77f7445a2abf164f1623a4a85e83a3a0",
+    "24": "a6839a74d47798a42fcef4a78e8b4c9493ef432ecc654698de0e2ea3dbad77ee"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

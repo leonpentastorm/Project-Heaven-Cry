@@ -18095,6 +18095,159 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 348,
+    "family": "technique_icons",
+    "id": "tech-shot",
+    "path": "art/icons/techniques/shot.png",
+    "name": "Shot",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A single bullet line from a muzzle.",
+    "avoid": "muzzle flash fire \u00b7 blood",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create one minimalist flat-white RPG motion-mark icon. On the LEFT is a short plain HOLLOW CYLINDRICAL NOZZLE viewed from side, with a small fully transparent opening. To its RIGHT is ONE LONG STRAIGHT HORIZONTAL TAPERED WHITE STROKE, separated from nozzle by a clear tiny gap. Stroke has squared tail and one sharp leading point. This is an abstract flow/pulse symbol with no people, targets, damage, blast, gun body or scenery. Pure #FFFFFF flat silhouettes on true transparency; no black or gray interior paint, no shading, glow, gradients, texture, text or border. Square composition centered inside 15% transparent margins and circular safe chip. Bold line reads at 32px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "object-only",
+    "service_revision": "Nonviolent abstract nozzle-and-line variant after rejected input.",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c2aaae3c9df3e352859205e15eb8b767670c2671b144ca9c17c8afa591fac8d8",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/348-shot.png",
+    "source_sha256": "85016b1ef2608fd31e4c744c40e2a0e4be55b1b18294af1202c0f81cdda85e2b",
+    "export_crop": [
+      111,
+      406,
+      1240,
+      1053
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/shot.png",
+      "64": "art/icons/techniques/exports/64/shot.png",
+      "48": "art/icons/techniques/exports/48/shot.png",
+      "44": "art/icons/techniques/exports/44/shot.png",
+      "32": "art/icons/techniques/exports/32/shot.png",
+      "24": "art/icons/techniques/exports/24/shot.png"
+    },
+    "framing": {
+      "scale": 0.7263064658990257,
+      "offset": [
+        102,
+        277
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "3cdc24b828e2f7f61c0957735fd1f6cba9fb2cfc93584773553dcc12d561a122",
+      "64": "56851d3f177657bc58e1a608aaa71cb781e55e424b0283e8d71f30af1a53fe6e",
+      "48": "6047e14a1672531de2332c4761e5b3244c663838a8cc18d7f3332d132bd081e8",
+      "44": "bd13a44be3606d9bf44983a99ad02c5603cf67e2e28e16b84ee9a713766b0852",
+      "32": "243b152e53efb29a28744d1d18c0de9fb922450c887f1e4613cb41046ff24a93",
+      "24": "d6d1e3992d08a78e0919aaa6c0576de381279801b65386d082aa1542615aeb85"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 349,
+    "family": "technique_icons",
+    "id": "tech-snap-shot",
+    "path": "art/icons/techniques/snap-shot.png",
+    "name": "Snap Shot",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A pistol fired from the hip, a short quick line.",
+    "avoid": "a cowboy \u00b7 a camera",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Correct this exact rejected Project Heaven Cry icon. Keep the cropped mitten at hip holding the little angular training prop and one short rightward mark. REMOVE THE ENTIRE FAINT RECTANGULAR STRIP AT TOP OF CANVAS. The backdrop must be fully empty alpha, including top edge. Preserve broad transparent gaps between hand, hip and prop. Only the requested compact lower-center action, no haze, glow or faint painted rectangle anywhere. Pure opaque white flat ink #FFFFFF only, all gaps and background GENUINELY TRANSPARENT. No black or gray pigment, no aura, glow, shadow, texture, gradient, text or border. Square icon centered inside 15% transparent margins and circular chip.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/349-background-strip-fix/native.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/349-background-strip-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "cc00d3e58628208d340ca4e4cd65a1eeff09cc0ccdea3f696def85728a296ef6",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/349-snap-shot.png",
+    "source_sha256": "6a19f02f9d7b143a2eb49aace5099f9cea99f44e3269ee6e0de5efdc1f551de3",
+    "export_crop": [
+      73,
+      214,
+      1184,
+      1237
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/snap-shot.png",
+      "64": "art/icons/techniques/exports/64/snap-shot.png",
+      "48": "art/icons/techniques/exports/48/snap-shot.png",
+      "44": "art/icons/techniques/exports/44/snap-shot.png",
+      "32": "art/icons/techniques/exports/32/snap-shot.png",
+      "24": "art/icons/techniques/exports/24/snap-shot.png"
+    },
+    "framing": {
+      "scale": 0.6064807393445195,
+      "offset": [
+        175,
+        202
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "3a3f9644bdd2f9bfadf5590907edf9ac3481ebd070453f7bce2bb91d698e0030",
+      "64": "5f9beafc7dcd33a0bc1dd73833cf12211c7808c004816e6c23d173996a0b5a36",
+      "48": "3a6e85761b2133921737e7901d387fb55dfcae3654dddc05519180e6ef6434f8",
+      "44": "29c1f87b0c31f4f3bba9a58028b3e62c99bfb6b7ac843cc8e9604c412af48534",
+      "32": "650d89e6c734d0cd831db4bb7fbfcb9b77f7445a2abf164f1623a4a85e83a3a0",
+      "24": "a6839a74d47798a42fcef4a78e8b4c9493ef432ecc654698de0e2ea3dbad77ee"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 350,
     "family": "technique_icons",
     "id": "tech-burst",
@@ -18471,6 +18624,81 @@
       "44": "68c9b1e864e72a055c8a34f1632ad06ae9fb70b8b4299652fe3e777253bb3358",
       "32": "a8fb094517e38d3f17a13ce0bf909a9ec959ea24267910ee708ff6c137bc7d2b",
       "24": "6594cd22f6cb2c8c2c9e72861bee1b8e2b84ab94d1996e496c7421cf88ecdb5f"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 355,
+    "family": "technique_icons",
+    "id": "tech-lob",
+    "path": "art/icons/techniques/lob.png",
+    "name": "Lob",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A high dotted arc from a launcher to a small ring.",
+    "avoid": "a basketball \u00b7 a firework",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Correct this exact rejected Project Heaven Cry icon. Keep the high dotted arc and short tube at lower-left. Replace the SOLID WHITE DOT at lower-right endpoint with a WHITE OUTLINE RING whose LARGE CENTER IS GENUINELY TRANSPARENT. Also make tube opening a GENUINELY TRANSPARENT ELLIPSE, not gray/black paint. Remove gray side shading on tube. Strong separate white dots tracing high parabola, one outlined empty target ring. No solid endpoint dot. Pure opaque white flat ink #FFFFFF only, all gaps and background GENUINELY TRANSPARENT. No black or gray pigment, no aura, glow, shadow, texture, gradient, text or border. Square icon centered inside 15% transparent margins and circular chip.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/355-transparent-ring-fix/native.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/355-transparent-ring-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "bf817e0f77686f04fe695dec96bdbd10984523ae555058002e9069d02df0203c",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/355-lob.png",
+    "source_sha256": "0f4a2f0a5de29c7c4abf642927545856737052d7e3bbaebf37226e317964216c",
+    "export_crop": [
+      83,
+      168,
+      1244,
+      1117
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/lob.png",
+      "64": "art/icons/techniques/exports/64/lob.png",
+      "48": "art/icons/techniques/exports/48/lob.png",
+      "44": "art/icons/techniques/exports/44/lob.png",
+      "32": "art/icons/techniques/exports/32/lob.png",
+      "24": "art/icons/techniques/exports/24/lob.png"
+    },
+    "framing": {
+      "scale": 0.6728709780364244,
+      "offset": [
+        121,
+        192
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "682215ddf62428dcb176d02cc184c74c6481b93847de7cbecc5002e9a1a79b9d",
+      "64": "48b7e1ab0a97fe1664155ac951c647bcf65fee668907fbe23a470ba7f47ab8ce",
+      "48": "8ee83f927f77947eb6d0670b177444060619249213c08b4d352c51cac0e3e4dc",
+      "44": "21e84366849a4de61a81ebd98b730b60bad33cac93f863b466068efe3d875e63",
+      "32": "418561906d14140ccb417dfa23907b75f7ec1a8b76898ca82ed23c1ecc12794b",
+      "24": "1a3219c8e2b102937973fdb830901a19cee51d79e491debe5e5db7d903fca7c0"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   }
