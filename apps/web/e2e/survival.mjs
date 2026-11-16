@@ -990,7 +990,11 @@ await d.setViewportSize({ width: 1280, height: 720 });
 const DG = () => d.evaluate(() => window.__phc.getState().game), dAct = (a) => actOn(d, a);
 await hostAs(d, 'Leon'); await create(d, 'Ash');
 await d.locator('button[data-phc-start]').click();
-await campStart(d, { weapon: GUN }); // rules 1.51, 1.52: the camp's one flow
+// rules 1.51, 1.52: the camp's one flow. Ash is a tank (Durability on top): Recommended gives the Hand wraps and a Buckler
+// (rules 1.55 item 51, 1.59), and a two-handed gun beside the shield is refused (item 50), so the free gun here is the
+// revolver (one-handed, a magazine gun): the Hand wraps take no Relic property (power.ts FITS: unarmed is not melee),
+// the revolver takes three (Keen, True, Quick), so the Relic step below still tests a real weapon's three properties
+await campStart(d, { weapon: FREE('revolvers') });
 await d.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 const dcid = Object.keys((await DG()).characters)[0];
 /** Walk by the engine's actions until `stop` says so (fights skipped, picks the materials, shops left, the first trail). */
