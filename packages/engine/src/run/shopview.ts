@@ -102,7 +102,7 @@ export function shopView(g: G, me: string, charId?: string | null): ShopViewV | 
   const gear = sh.stock.map((p) => card(p.key, p.id, p.rarity, p.price, 1, p.sold ? 'Sold to ' + (g.characters[p.sold]?.name || 'another') + '.' : ask(p.key), { sold: p.sold ? (g.characters[p.sold]?.name || null) : null, rare: !!p.rare }));
   const services = c ? shopServices(sh.kind).flatMap((s) => s.cards(g, c, sh).map((x) => ({ ...x, service: s.id }))) : [];
   const sell: SellRowV[] = c ? packOf(c).map((it, idx) => {
-    const v = sellValue(it), why = sellProblem(g as any, c.owner, { charId: c.id, idx }), id = it.weapon || it.item || it.id;
+    const v = sellValue(it), why = sellProblem(g as any, c.owner, { charId: c.id, idx }), id = it.mags ? it.id : it.weapon || it.item || it.id;
     const graded = (it.rarity && it.rarity !== 'standard') || (it.mods || []).length;
     return { idx, id, label: itemLabel(it), rarity: (it.rarity || 'standard') as Rarity, qty: it.mags ? it.mags.length : it.qty, value: v, why,
       ask: graded && v != null ? 'Sell the ' + itemLabel(it) + ((it.mods || []).length ? ' and its ' + (it.mods || []).length + ' mod' + ((it.mods || []).length === 1 ? '' : 's') : '') + ' for ' + v + '?' : null,

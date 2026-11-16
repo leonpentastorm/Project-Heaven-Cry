@@ -243,7 +243,7 @@ await act(host, { type: 'sandbox/clear' });
 await setClass('infiltrator', 5);
 await act(host, { type: 'sandbox/refill', charId: hostChar });
 u = await me();
-const far = await (async () => { const cb = (await G()).combat, [x, y] = xy(u.pos); for (const d of [4, 5, 3, 6]) for (const [dx, dy] of [[d, 0], [-d, 0], [0, d], [0, -d], [d, 1], [-d, 1]]) { const k = (x + dx) + ',' + (y + dy), [a, b] = xy(k); if (a < 0 || b < 0 || a >= cb.map.w || b >= cb.map.h || cb.map.solid.includes(k) || cb.units.some((v) => !v.dead && v.pos === k)) continue; if (!(await act(host, { type: 'sandbox/spawn', tier: 'soldier', weapon: 'service_pistol', at: ref(k), name: 'Gunner' }))) return k; } return null; })();
+const far = await (async () => { const cb = (await G()).combat, [x, y] = xy(u.pos); for (const d of [4, 5, 3, 6]) for (const [dx, dy] of [[d, 0], [-d, 0], [0, d], [0, -d], [d, 1], [-d, 1]]) { const k = (x + dx) + ',' + (y + dy), [a, b] = xy(k); if (a < 0 || b < 0 || a >= cb.map.w || b >= cb.map.h || cb.map.solid.includes(k) || cb.units.some((v) => !v.dead && v.pos === k)) continue; await act(host, { type: 'sandbox/spawn', tier: 'soldier', weapon: 'service_pistol', at: ref(k), name: 'Gunner' }); if ((await G()).combat.units.some((v) => !v.dead && v.side === 'foe' && v.pos === k)) return k; } return null; })(); // the store turns a refused spawn (a barricade on the tile: "Nobody can stand there.") into a toast, never a throw, so the spawn is checked in the state
 ok('an armed enemy a few tiles off', !!far);
 ok('host turn', await newTurn());
 foe = (await G()).combat.units.find((x) => x.side === 'foe' && !x.dead);
@@ -321,7 +321,9 @@ ok('the Channeler\'s panel reads Strain and MP', /STRAIN\s*\d+ \/ \d+/i.test(awa
 // ---------- 9. Defender: the resource panel reads Guard; Shrug It Off's toggle names the one in force ----------
 await setClass('defender', 2);
 ok('host turn', await newTurn());
-ok('the Defender\'s panel reads Guard: ' + ((await bodyTxt()).match(/GUARD\s*\d+ \/ \d+/i) || [''])[0], new RegExp('GUARD\\s*\\d+ / ' + GUARD_MAX, 'i').test(await bodyTxt()));
+// rules 1.59 item 4541: the Bulwark holds its own pool by rank (classes.json defender resource.max_by_rank), not rules.guard.max
+const BULWARK_II = CLS.find((k) => k.id === 'defender').resource.max_by_rank['2'];
+ok('the Defender\'s panel reads Guard (the Bulwark\'s rank II pool, ' + BULWARK_II + '): ' + ((await bodyTxt()).match(/GUARD\s*\d+ \/ \d+/i) || [''])[0], new RegExp('GUARD\\s*\\d+ / ' + BULWARK_II, 'i').test(await bodyTxt()));
 r = await useMove(/^Shrug It Off: off/);
 await settle(host, 250);
 ok('Shrug It Off: off is in force (' + (r || 'confirmed') + ')', !r && (await host.locator('[role="tabpanel"] button', { hasText: 'Shrug It Off: off ✓' }).count()) > 0);

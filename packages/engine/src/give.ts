@@ -207,7 +207,7 @@ export function giveView(g: GameState, me: string, charId?: string | null): Give
   packOf(c).forEach((it, idx) => { const a = { type: 'gear/give' as const, charId: c.id, idx };
     // rules 1.61 addendum item 4748: a pack line with a use of its own (the field kit) has its "Use on..." too
     const as = !it.mags && !it.weapon && useOf(it.item || it.id) ? it.item || it.id : null, use = as && USE_DOOR ? USE_DOOR(g, me, c.id, as) : null;
-    rows.push({ key: 'pack:' + idx, kind: 'pack', label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), id: it.weapon || it.item || it.id, rarity: it.rarity || 'standard', qty: it.mags ? it.mags.length : it.qty, idx, why: whys(a), action: a, ...(use ? { use } : {}) }); });
+    rows.push({ key: 'pack:' + idx, kind: 'pack', label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), id: it.mags ? it.id : it.weapon || it.item || it.id, rarity: it.rarity || 'standard', qty: it.mags ? it.mags.length : it.qty, idx, why: whys(a), action: a, ...(use ? { use } : {}) }); });
   // rules 1.55 item 31: the counted items (a stim, an Essence) as lines of their own, with their use on a friend (item 32)
   for (const [id, f] of Object.entries(COUNTED)) { const n = c[f] || 0; if (n < 1) continue; const a = { type: 'gear/give' as const, charId: c.id, count: id }, use = USE_DOOR ? USE_DOOR(g, me, c.id, id) : null;
     rows.push({ key: 'count:' + id, kind: 'count', label: nameOfId(id), id, rarity: 'standard', qty: n, why: whys(a), action: a, ...(use ? { use } : {}) }); }

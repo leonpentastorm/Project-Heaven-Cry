@@ -51,7 +51,9 @@ describe('icons in the backpack', () => {
     expect(rowsOf('hands')[1].item).toBeUndefined(); // an empty off hand
     expect(rowsOf('armour').find((r) => /goggles/i.test(r.name))!.item).toBe('night_goggles');
     expect(rowsOf('pack').map((r) => r.item)).toEqual(expect.arrayContaining(['drifter_revolver', 'field_helmet']));
-    // ammo rows carry the derived gear id of their painted icon: the gun's magazine, the calibre's rounds
-    expect(rowsOf('ammo').find((r) => r.key === 'mags')?.item).toBe('mag-pistol_32');
+    // ammo rows carry the derived gear id of their painted icon: the gun's magazine (the engine's mag:<weapon>, which
+    // the catalog's data_ids point at the painted magazine), the calibre's rounds
+    expect(rowsOf('ammo').find((r) => r.key === 'mags')?.item).toBe('mag:service_pistol');
+    expect(gearIconUri(rowsOf('ammo').find((r) => r.key === 'mags')?.item)).toBe(gearIconUri('mag-pistol_32'));
   });
 });

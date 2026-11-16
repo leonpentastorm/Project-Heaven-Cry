@@ -262,7 +262,7 @@
       "blocks_sight": true,
       "cover": "full",
       "hp": 30,
-      "text": "A wall of packed bots raised by a RAISE Sigil. It blocks movement and sight and has 30 HP. It crumbles after 3 rounds plus the caster's Sigil duration bonus, and the word NULL unmakes it at once.",
+      "text": "A wall of packed mana raised by a RAISE Sigil. It blocks movement and sight and has 30 HP. It crumbles after 3 rounds plus the caster's Sigil duration bonus, and the word NULL unmakes it at once.",
       "adjudication": "engine",
       "provisional": true
     },

@@ -37,8 +37,9 @@ export const GEAR_ICON_IDS: readonly string[] = Object.keys(ICONS).sort();
 // The artist's painted gear icons (art/icons/gear, the catalog's `gear` map) are built by `npm run assets`
 // (tools/build_web_assets.py) as gear-<item id> (64 px) and gear-<item id>-lg (256 px) in assets.json. A painted icon is
 // full colour: never tinted or masked (paintedStyle is for white-ink icons), so the ink below does not reach it. Derived
-// gear with no item id has a gear id of its own: rounds-<calibre>, mag-<family>, armour-torso_class<N>_<name>
-// (roundsGearId, magGearId, torsoGearId); they have no monoline icon.
+// gear with no item id: loose rounds by calibre (rounds-<calibre>, roundsGearId); a gun's magazine and the body armour
+// of an Armour Class answer to the engine's own ids, mag:<weapon> and armour:<class> (the catalog's `data_ids`;
+// magGearId, torsoGearId); they have no monoline icon. gearIconUri takes every one of these ids as the engine gives it.
 let ART: Record<string, string> = ASSETS as Record<string, string>;
 /** Tests only: use this asset map instead of assets.json (null restores it). */
 export function setGearArt(map: Record<string, string> | null): void { ART = map || (ASSETS as Record<string, string>); }
@@ -46,7 +47,7 @@ const own = (k: string): string => (Object.prototype.hasOwnProperty.call(ART, k)
 /** The painted icon's URL for an item (or derived gear) id, '' when it has none. large: the 256 px size. */
 const paintedGear = (id: string, large: boolean): string => (large && own('gear-' + id + '-lg')) || own('gear-' + id);
 /** Whether the item has a painted icon (it is then drawn as it is: full colour, no ink). */
-export const hasPaintedGear = (id: string | null | undefined): boolean => !!id && (id.startsWith('rounds:') ? hasPaintedGear(roundsIdGear(id))
+export const hasPaintedGear = (id: string | null | undefined): boolean => !!id && (derivedGear(id) !== id ? hasPaintedGear(derivedGear(id))
   : !!paintedGear(id, false) || (!Object.prototype.hasOwnProperty.call(ICONS, id) && !!variantBase(id) && hasPaintedGear(variantBase(id))));
 
 const slug = (s: string) => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -64,21 +65,36 @@ export function roundsGearId(calibre: string | null | undefined, type?: string |
 export function roundsIdGear(id: string): string {
   const m = /^rounds:([^:]+)(?::(.+))?$/.exec(id || ''); return m ? roundsGearId(m[1], m[2] || null) : '';
 }
-/** Which painted magazine each gun's magazines are (the art brief's "drawn for" lists; a gun not listed has none yet). */
-export const MAG_ART: Record<string, string> = {
-  service_pistol: 'pistol_32', decrkm_autopistol: 'pistol_32', spellslinger_pistol: 'pistol_32',
-  decrkm_smg: 'smg_32', whisper_smg: 'smg_32', legion_pdw: 'smg_32', mandestra_drum_gun: 'drum_32',
-  hellraiser_service_rifle: 'rifle', adamantile_battle_rifle: 'rifle', ccec_marksman_rifle: 'rifle', legion_bullpup: 'rifle',
-  blackpoint_700: 'blackpoint_700', drifter_revolver: 'speedloader_revolver', frontier_hand_cannon: 'speedloader_50',
-  hellraiser_lmg: 'belt', hellraiser_rotary: 'belt',
-};
-/** The gear id of a gun's magazine ('mag-pistol_32'), '' for a gun with none drawn. */
-export const magGearId = (weaponId: string | null | undefined): string => (weaponId && Object.prototype.hasOwnProperty.call(MAG_ART, weaponId) ? 'mag-' + MAG_ART[weaponId] : '');
-/** The gear id of the torso armour of an Armour Class (1 to 5), '' for none. */
+/** The gear id of a gun's magazine: the engine's own id, `mag:<weapon>` (the shop's, the camp's, the rewards' and the
+ *  pack's), when a painted magazine answers to it (art/catalog.json: a `mag-*` gear entry's `data_ids`, built into
+ *  assets.json by tools/build_web_assets.py); a variant with none of its own: its base's; '' for a gun with none drawn. */
+export function magGearId(weaponId: string | null | undefined): string {
+  if (!weaponId) return '';
+  if (own('gear-mag:' + weaponId)) return 'mag:' + weaponId;
+  const b = variantBase(weaponId); return b ? magGearId(b) : '';
+}
+/** The gear id of the torso armour of an Armour Class (1 to 5): the engine's own id, `armour:<class>`, when a painted
+ *  torso answers to it (the catalog's `data_ids`, as magGearId); '' for none. */
 export function torsoGearId(armourClass: number | null | undefined): string {
-  if (!armourClass) return '';
-  const k = Object.keys(ART).find((x) => x.startsWith('gear-armour-torso_class' + armourClass + '_') && !x.endsWith('-lg'));
-  return k ? k.slice('gear-'.length) : '';
+  return armourClass && own('gear-armour:' + armourClass) ? 'armour:' + armourClass : '';
+}
+/** The engine's derived ids, to the gear id their picture is under: `rounds:<calibre>[:<type>]` (roundsIdGear),
+ *  `mag:<weapon>[:<rounds>]` (magGearId: an empty magazine, `mag:<weapon>:0`, is the same picture), `armour:<class>`
+ *  (torsoGearId). Any other id is its own. */
+function derivedGear(id: string): string {
+  if (id.startsWith('rounds:')) return roundsIdGear(id);
+  const m = /^mag:([^:]+)/.exec(id); if (m) return magGearId(m[1]);
+  const a = /^armour:(\d+)$/.exec(id); if (a) return torsoGearId(Number(a[1]));
+  return id;
+}
+
+/** The id a pack entry's picture is drawn from: a magazine `mag:<weapon>` (not its gun), loose rounds
+ *  `rounds:<calibre>[:<type>]`, else its weapon, item or own id. gearIconUri takes it as it is. */
+export function packGearId(it: { id?: string; weapon?: string; item?: string; mags?: unknown; calibre?: string; ammoType?: string | null } | null | undefined): string {
+  if (!it) return '';
+  if (it.mags && it.weapon) return 'mag:' + it.weapon;
+  if (it.calibre) return 'rounds:' + it.calibre + (it.ammoType ? ':' + it.ammoType : '');
+  return it.weapon || it.item || it.id || '';
 }
 
 // ---------- as an image (the template runtime takes text holes only: an <img> with a data URI, as glyphUri does) ----------
@@ -92,7 +108,7 @@ const URIS = new Map<string, string>();
  *  tinted marks (Sunder's weapon strike, the reload chip), where Leon's rule keeps the line art (gearLineUri). */
 export function gearIconUri(id: string | null | undefined, ink: string = GEAR_INK, opts: { line?: boolean; large?: boolean } = {}): string {
   if (!id) return '';
-  if (id.startsWith('rounds:')) return gearIconUri(roundsIdGear(id), ink, opts);
+  const d = derivedGear(id); if (d !== id) return gearIconUri(d, ink, opts); // a rounds, magazine or body-armour id: its picture's (none: '')
   if (!opts.line) { const p = paintedGear(id, !!opts.large); if (p) return p; }
   const vb = Object.prototype.hasOwnProperty.call(ICONS, id) ? '' : variantBase(id);
   if (vb) return gearIconUri(vb, ink, opts); // a variant with no picture of its own: its base's (painted first)

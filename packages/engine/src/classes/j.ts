@@ -395,7 +395,7 @@ register({
     },
     run: (h, a) => {
       const cb = h.cb!, u = h.u!, t = tileOf(cb, a.tile)!, id = 'banner-' + u.id + '-' + cb.round;
-      (cb.objects = objectsOf(cb)).push(makeObject(id, 'poi', t, { name: 'Rally banner', text: u.name + '\'s bot-thread banner.', hp: 20, max: 20 } as any));
+      (cb.objects = objectsOf(cb)).push(makeObject(id, 'poi', t, { name: 'Rally banner', text: u.name + '\'s mana-thread banner.', hp: 20, max: 20 } as any));
       stateOf(h).banner = id; say(cb, u.name + ' plants a rally banner at ' + refOf(t) + '.'); return null;
     },
   }],
@@ -1169,7 +1169,7 @@ register({
         const k = Math.min(resOf(u, 'guard'), Math.ceil(ctx.dmg / 10)); resSpend(u, 'guard', k);
         ctx.dmg = Math.max(0, ctx.dmg - 10 * k);
         const st = stateOf(h); st.lost = (st.lost || 0) + k; let line = u.name + '\'s plate hardens: ' + k + ' Guard cuts ' + 10 * k;
-        while (st.lost >= 3) { st.lost -= 3; shiftMana(cb, 2, 'bots shed by Reactive Plate'); line += ' · it sheds bots (+2 on the meter)'; }
+        while (st.lost >= 3) { st.lost -= 3; shiftMana(cb, 2, 'mana shed by Reactive Plate'); line += ' · it sheds mana (+2 on the meter)'; }
         say(cb, line + plateShare(h, k) + '.');
       };
       if (INTERPOSE !== u.id && !ctx.src?.interposed) { if (canReact(cb, u, 'protect')) react(cb, u, { kind: 'protect', event: attackEvent() }, plate); } // the plate is the reaction

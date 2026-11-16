@@ -8,7 +8,7 @@
 import React from 'react';
 import { act, getState } from './store';
 import { shopView, compareGear, type ShopCardV, type ShopViewV, type Rarity } from '@engine';
-import { gearIconUri, magGearId } from './gearIcons';
+import { gearIconUri } from './gearIcons';
 import { tipProps } from './actionTip';
 import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
@@ -23,13 +23,9 @@ const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
 /** The attribute inks of the colour system (CLAUDE.md), for a focus card's door word only. */
 const ATTR_INK: Record<string, string> = { endurance: '#F65157', strength: '#F68A38', agility: '#E3BF51', perception: '#40BAA0', intelligence: '#8BDEEE', expression: '#5394AC', insight: '#EB95B7', determination: '#9D7ADC', virtue: '#D36A90' };
 const MARK = '◆';
-/** A card's picture: the painted icon (rounds and magazines by their gear ids), else the line icon. */
-function iconOf(id: string): string {
-  const r = /^rounds:([^:]+)/.exec(id), m = /^mag:([^:]+)/.exec(id); // rules 1.55: mag:<weapon>:0 is an empty one; rules 1.56: rounds:<calibre>:<type> a special round of it
-  if (r) return gearIconUri(id, undefined, { large: true }); // gearIconUri reads a rounds id (a special round: its own picture)
-  if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
-  return gearIconUri(id, undefined, { large: true });
-}
+/** A card's picture: the one resolver (gearIcons.ts), which reads the engine's ids as they come (rounds, magazines,
+ *  body armour of a class), the same picture the sheet's GEAR tab shows. */
+const iconOf = (id: string): string => gearIconUri(id, undefined, { large: true });
 const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 const shelfHead = (name: string, note?: string) => (
   <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '6px 0 12px' }}>

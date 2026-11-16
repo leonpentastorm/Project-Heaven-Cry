@@ -22,7 +22,7 @@ import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SH
 import { moduleGroups, feelingInk, feelingIconSrc, iconStyle, feelingTip } from './feelingsView';
 import { parseStyle } from '../dc/runtime';
 import { OPT_LABEL, optValue } from './actionPickers';
-import { gearIconUri, magGearId, roundsGearId } from './gearIcons';
+import { gearIconUri, packGearId } from './gearIcons';
 import { Groups, GroupList, GroupSearch, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
 import { markUri, starUri } from './glyphs';
 import { glyphUri, SIGIL_INK } from './glyphs';
@@ -659,7 +659,7 @@ function GearTab({ c }: { c: Character }) {
     </Section>
     <Section title={'PACK (' + pack.length + ')'} aria="Pack">
       {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, flexWrap: 'wrap' }}>
-        <GearIcon id={it.mags ? magGearId(it.weapon) : it.calibre ? roundsGearId(it.calibre, it.ammoType) : it.weapon || it.item || it.id} />
+        <GearIcon id={packGearId(it)} />
         <span style={{ flex: '1 1 140px', minWidth: 0 }}>{it.name}{it.rarity && it.rarity !== 'standard' ? ' (' + it.rarity + ')' : ''}<span style={{ color: C.muted }}>{it.mags ? ' · ' + it.mags.length + ' × [' + it.mags.join(', ') + ']' : it.qty > 1 ? ' × ' + it.qty : ''}</span></span>
         {equipTo(it).map(([to, name]) => <button key={to} type="button" style={small} aria-label={name + ': ' + it.name} onClick={() => act({ type: 'sandbox/equip', charId: c.id, idx: i, to })}>{name}</button>)}
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Drop ' + it.name} onClick={() => act({ type: 'sandbox/drop', charId: c.id, idx: i })}>✕</button>

@@ -71,7 +71,7 @@
       "actions": ["move"], "verbs": ["figment_draw_fire", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-double", "glyph": "◐",
-      "text": "A second you the bots build: {=hp} HP, your Defense, your pace. It draws fire: Minions and Vermin always take it for you; Soldiers, Elites and Bosses make a Brain save. Draw fire: every enemy that can see it close by makes a Heart save or is Taunted by it.",
+      "text": "A second you, built of mana: {=hp} HP, your Defense, your pace. It draws fire: Minions and Vermin always take it for you; Soldiers, Elites and Bosses make a Brain save. Draw fire: every enemy that can see it close by makes a Heart save or is Taunted by it.",
       "adjudication": "engine", "provisional": true
     },
     {
@@ -121,7 +121,7 @@
       "hold": { "reaction": "attack" },
       "effects": [{ "op": "condition", "when": "hit", "condition": "pinned", "via": "visualization", "target": "target", "if": { "actor": "self" } }, { "op": "unmake", "when": "hit", "if": { "actor": "self" } }],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-snare", "glyph": "✱",
-      "text": "A trap of bots: {=hp} HP, Defense {=defense}, {=movement} tile an AP. Hold: the first enemy each round to enter or leave a tile next to it is Cut (one of your reactions). Trip: it Cuts an enemy next to it now. Its hit Pins the target (Body save) and the Snare is spent.", "adjudication": "engine", "provisional": true
+      "text": "A trap of mana: {=hp} HP, Defense {=defense}, {=movement} tile an AP. Hold: the first enemy each round to enter or leave a tile next to it is Cut (one of your reactions). Trip: it Cuts an enemy next to it now. Its hit Pins the target (Body save) and the Snare is spent.", "adjudication": "engine", "provisional": true
     },
     {
       "id": "hand", "name": "Hand", "icon": "figment-hand", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 2 }, "charge": 2,
@@ -129,7 +129,7 @@
       "flies": true,
       "actions": ["move"], "verbs": ["figment_hand_over", "figment_filch", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-hand", "glyph": "✋",
-      "text": "A courier of bots: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. Hand over: it gives one of your own stims to an ally next to it. Filch: it lifts a throwable (else a spare magazine) from an enemy next to it onto its tile (a Body save keeps it).", "adjudication": "engine", "provisional": true
+      "text": "A courier of mana: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. Hand over: it gives one of your own stims to an ally next to it. Filch: it lifts a throwable (else a spare magazine) from an enemy next to it onto its tile (a Body save keeps it).", "adjudication": "engine", "provisional": true
     },
     {
       "id": "ward", "name": "Ward", "icon": "figment-ward", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 4, "fork": "a" }, "charge": 3,
@@ -155,7 +155,7 @@
       "actions": ["move"], "verbs": ["figment_fix", "figment_redraw", "figment_cash_in", "let_go"],
       "auto": { "verb": "figment_fix", "target": "nearest_foe" },
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-sentinel", "glyph": "⌖",
-      "text": "A turret of bots: {=hp} HP, Defense {=defense}, armour {=armour}; it does not walk. It sees {=vision} tiles. At each of your turn starts it Fixes the nearest enemy on your AP; Fix: its shot now, at an enemy it sees.", "adjudication": "engine", "provisional": true
+      "text": "A turret of mana: {=hp} HP, Defense {=defense}, armour {=armour}; it does not walk. It sees {=vision} tiles. At each of your turn starts it Fixes the nearest enemy on your AP; Fix: its shot now, at an enemy it sees.", "adjudication": "engine", "provisional": true
     }
   ],
   "turret": {
@@ -254,7 +254,7 @@
     },
     {
       "id": "glimmer", "name": "Glimmer", "icon": "figment-glimmer", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
-      "text": "Costs {=effects.0.ap} AP, no charge: the bots paint you in light on a free tile your side sees within your projection range. Every enemy that sees it is fooled as by a Double (Minions and Vermin always; Soldiers, Elites and Bosses make a Brain save) and takes it for you until it is struck or fades (at your turn start {=numbers.fade_rounds} rounds on). One false image of you at a time: a new one (a Double's too) replaces the old. Needs the Visualizer in hand.",
+      "text": "Costs {=effects.0.ap} AP, no charge: the mana paints you in light on a free tile your side sees within your projection range. Every enemy that sees it is fooled as by a Double (Minions and Vermin always; Soldiers, Elites and Bosses make a Brain save) and takes it for you until it is struck or fades (at your turn start {=numbers.fade_rounds} rounds on). One false image of you at a time: a new one (a Double's too) replaces the old. Needs the Visualizer in hand.",
       "effects": [{ "op": "grant_action", "action": "glimmer", "site": "figment_order", "ap": 1, "uses": "at_will", "reach": { "tile": true } }],
       "numbers": { "fade_rounds": 2 },
       "adjudication": "engine", "provisional": true

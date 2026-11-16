@@ -764,11 +764,11 @@
       "mastery_level": 2,
       "adjudication": "hybrid",
       "provisional": true,
-      "text": "Kills with mana arms release one fewer bot into the air (−1 on the meter, minimum 0).",
+      "text": "Kills with mana arms release one less mana into the air (−1 on the meter, minimum 0).",
       "effects": [
         {
           "op": "narrator",
-          "note": "Kills with mana arms release one fewer bot into the air (−1 on the meter, minimum 0)."
+          "note": "Kills with mana arms release one less mana into the air (−1 on the meter, minimum 0)."
         }
       ]
     },
