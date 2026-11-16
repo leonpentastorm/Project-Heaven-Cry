@@ -1,0 +1,76 @@
+{
+  "number": 356,
+  "family": "technique_icons",
+  "id": "tech-heavy-bolt",
+  "path": "art/icons/techniques/heavy-bolt.png",
+  "name": "Heavy Bolt",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A thick crossbow bolt in flight, a heavy wake line.",
+  "avoid": "a lightning bolt \u00b7 a real crossbow make",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A thick crossbow bolt in flight, a heavy wake line.\nAvoid: a lightning bolt \u00b7 a real crossbow make\nEXACT STAGING: Heavy Bolt: ONE THICK SHORT CROSSBOW BOLT in flight pointing RIGHT, a broad triangular metal head, stout straight shaft and TWO heavy angular tail fins. ONE HEAVY STRAIGHT WHITE WAKE LINE trails left behind it. No bow, whole weapon, lightning zigzag, electric sparks, person, brand, text or target. Clear mass and weight unlike a thin dart; flat white silhouettes, transparent holes if any.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "84eda03d25f6b34efbe9cf33aaedde65b28b67b5105ea9e98f1937efcce72f77",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/356-heavy-bolt.png",
+  "source_sha256": "50c8b0df4a1b85be425535f7c4dcb2cae9a448d44b752ccfe74762a5d880bdeb",
+  "export_crop": [
+    0,
+    193,
+    1228,
+    1009
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/heavy-bolt.png",
+    "64": "art/icons/techniques/exports/64/heavy-bolt.png",
+    "48": "art/icons/techniques/exports/48/heavy-bolt.png",
+    "44": "art/icons/techniques/exports/44/heavy-bolt.png",
+    "32": "art/icons/techniques/exports/32/heavy-bolt.png",
+    "24": "art/icons/techniques/exports/24/heavy-bolt.png"
+  },
+  "framing": {
+    "scale": 0.6677524429967426,
+    "offset": [
+      102,
+      239
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "b271cb9e9f8819ff2f29a52b317db79474ceb6fdd91ba13eb3b8efb68994dbee",
+    "64": "e8c0776a5978a1ec25e84891f3175925b1cf5aab8a64e69fcd45c7240c2ae2c9",
+    "48": "f53457a01e1caf514eefb5945d56818859bb9c32683dce855a3199a76a998fb5",
+    "44": "91730396ffe2c8aa9b2c421f1f678fcf87c356791a378875cfce37d2933b8f50",
+    "32": "3d9c1afaaccf72260897b7ecc2c47126b6581fbaf89273e9b2c72114f8d7a0f4",
+    "24": "b0bbd7a98faa6088e35082c51033e4cc9c4e407aabd0d1bf6efbb5f3cc4b80d3"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

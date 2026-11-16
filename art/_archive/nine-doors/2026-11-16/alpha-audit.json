@@ -1376,6 +1376,41 @@
       "number": 355,
       "name": "Lob",
       "faint_alpha_to_solid_area_ratio": 0.05855
+    },
+    {
+      "number": 356,
+      "name": "Heavy Bolt",
+      "faint_alpha_to_solid_area_ratio": 0.04581
+    },
+    {
+      "number": 357,
+      "name": "Bead",
+      "faint_alpha_to_solid_area_ratio": 0.02693
+    },
+    {
+      "number": 358,
+      "name": "Spot",
+      "faint_alpha_to_solid_area_ratio": 0.04138
+    },
+    {
+      "number": 360,
+      "name": "Load Special",
+      "faint_alpha_to_solid_area_ratio": 0.08547
+    },
+    {
+      "number": 361,
+      "name": "Shift",
+      "faint_alpha_to_solid_area_ratio": 0.06262
+    },
+    {
+      "number": 362,
+      "name": "Vent",
+      "faint_alpha_to_solid_area_ratio": 0.03121
+    },
+    {
+      "number": 363,
+      "name": "Head Down",
+      "faint_alpha_to_solid_area_ratio": 0.02933
     }
   ],
   "excluded": [],

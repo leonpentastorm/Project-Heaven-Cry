@@ -18701,5 +18701,541 @@
       "24": "1a3219c8e2b102937973fdb830901a19cee51d79e491debe5e5db7d903fca7c0"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 356,
+    "family": "technique_icons",
+    "id": "tech-heavy-bolt",
+    "path": "art/icons/techniques/heavy-bolt.png",
+    "name": "Heavy Bolt",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, fire",
+    "paint": "A thick crossbow bolt in flight, a heavy wake line.",
+    "avoid": "a lightning bolt \u00b7 a real crossbow make",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A thick crossbow bolt in flight, a heavy wake line.\nAvoid: a lightning bolt \u00b7 a real crossbow make\nEXACT STAGING: Heavy Bolt: ONE THICK SHORT CROSSBOW BOLT in flight pointing RIGHT, a broad triangular metal head, stout straight shaft and TWO heavy angular tail fins. ONE HEAVY STRAIGHT WHITE WAKE LINE trails left behind it. No bow, whole weapon, lightning zigzag, electric sparks, person, brand, text or target. Clear mass and weight unlike a thin dart; flat white silhouettes, transparent holes if any.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "84eda03d25f6b34efbe9cf33aaedde65b28b67b5105ea9e98f1937efcce72f77",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/356-heavy-bolt.png",
+    "source_sha256": "50c8b0df4a1b85be425535f7c4dcb2cae9a448d44b752ccfe74762a5d880bdeb",
+    "export_crop": [
+      0,
+      193,
+      1228,
+      1009
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/heavy-bolt.png",
+      "64": "art/icons/techniques/exports/64/heavy-bolt.png",
+      "48": "art/icons/techniques/exports/48/heavy-bolt.png",
+      "44": "art/icons/techniques/exports/44/heavy-bolt.png",
+      "32": "art/icons/techniques/exports/32/heavy-bolt.png",
+      "24": "art/icons/techniques/exports/24/heavy-bolt.png"
+    },
+    "framing": {
+      "scale": 0.6677524429967426,
+      "offset": [
+        102,
+        239
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "b271cb9e9f8819ff2f29a52b317db79474ceb6fdd91ba13eb3b8efb68994dbee",
+      "64": "e8c0776a5978a1ec25e84891f3175925b1cf5aab8a64e69fcd45c7240c2ae2c9",
+      "48": "f53457a01e1caf514eefb5945d56818859bb9c32683dce855a3199a76a998fb5",
+      "44": "91730396ffe2c8aa9b2c421f1f678fcf87c356791a378875cfce37d2933b8f50",
+      "32": "3d9c1afaaccf72260897b7ecc2c47126b6581fbaf89273e9b2c72114f8d7a0f4",
+      "24": "b0bbd7a98faa6088e35082c51033e4cc9c4e407aabd0d1bf6efbb5f3cc4b80d3"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 357,
+    "family": "technique_icons",
+    "id": "tech-bead",
+    "path": "art/icons/techniques/bead.png",
+    "name": "Bead",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, set",
+    "paint": "A front sight post lined up on a small dot.",
+    "avoid": "a bead necklace \u00b7 a scope logo",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A front sight post lined up on a small dot.\nAvoid: a bead necklace \u00b7 a scope logo\nEXACT STAGING: Bead: ONE SIMPLE FRONT SIGHT POST at lower-center, a white U-shaped bracket with a SINGLE CENTER UPRIGHT POST. ONE SMALL WHITE DOT centered directly ABOVE the post at eye line, with clean narrow transparent gap. Alignment is the whole message. No necklace beads, scope branding, enclosing circle, crosshair, weapon body, hands, person, glow or text. Bold simple geometry, strong transparent U opening.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "6f192964d71aedab61ce471db4a31106a2c7134b73da69eba699b52a593e12e5",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/357-bead.png",
+    "source_sha256": "53401a9b17e7d5aceedbd459aef36d6d632aedc242e07677871ee1070e165ba3",
+    "export_crop": [
+      119,
+      290,
+      1192,
+      1150
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/bead.png",
+      "64": "art/icons/techniques/exports/64/bead.png",
+      "48": "art/icons/techniques/exports/48/bead.png",
+      "44": "art/icons/techniques/exports/44/bead.png",
+      "32": "art/icons/techniques/exports/32/bead.png",
+      "24": "art/icons/techniques/exports/24/bead.png"
+    },
+    "framing": {
+      "scale": 0.6729164198884958,
+      "offset": [
+        151,
+        222
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "9f6aea68448e310d53ffc0d702f27d0e8bbf1223e5ed74ed2ab0767c0f4fe20a",
+      "64": "798b4a1cfc5e780eb99075a7d10766ad43635885af4c790423281b90be6f1ddb",
+      "48": "2769fad32820cb673b0ea7dd58bb95d12413834fee46a5798196c14d3efa7a6f",
+      "44": "f2a2461784d2ad8cd24570c3fa1729a1308c26585bf7fe2be1142f763c6c1c08",
+      "32": "92b4921328eb5abc4bb98279013c3f7a60fc9d31f8768586e8406379e434a1f4",
+      "24": "2f8bbe2c8d6ea6a6194c356075f605cb0280f43d57292cacab692bca2ce07b99"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 358,
+    "family": "technique_icons",
+    "id": "tech-spot",
+    "path": "art/icons/techniques/spot.png",
+    "name": "Spot",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, set",
+    "paint": "A hand shading the eyes, a sight-line to a far dot.",
+    "avoid": "binoculars brand \u00b7 a spotlight",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A hand shading the eyes, a sight-line to a far dot.\nAvoid: binoculars brand \u00b7 a spotlight\nEXACT STAGING: Spot: ONE cropped CERAMIC MITTEN held FLAT HORIZONTALLY shading TWO TINY EYE SLITS in a CROPPED HEAD PARTIAL at lower-left; only brow/eye fragment, no full head/body or complete mascot. A SINGLE THIN WHITE SIGHT-LINE runs from under hand toward ONE SMALL FAR DOT at upper-right. No binoculars, spotlight cone, brand, rays, text or complete figure. Broad true transparent cuts separate hand and brow.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0cc2adba746e7366e17f7c11142de77c7356bdf43e3361b2218b1a4e530e2273",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/358-spot.png",
+    "source_sha256": "e3f7cf6720ef44ac8d47480323a84489d1d206b94b3b7628b22356f781f4cf08",
+    "export_crop": [
+      57,
+      216,
+      1254,
+      1109
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/spot.png",
+      "64": "art/icons/techniques/exports/64/spot.png",
+      "48": "art/icons/techniques/exports/48/spot.png",
+      "44": "art/icons/techniques/exports/44/spot.png",
+      "32": "art/icons/techniques/exports/32/spot.png",
+      "24": "art/icons/techniques/exports/24/spot.png"
+    },
+    "framing": {
+      "scale": 0.6739309260376447,
+      "offset": [
+        108,
+        211
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "d1ad8e7631a08b746f55a42a82848d5279bd4621fff1d811945f63cb9b9e388e",
+      "64": "1747c91452c4780251b5ff1655661cf2797fb28d8653fe151a75e20e2c6d90b1",
+      "48": "f13b3b791ca34bb50c91b5334445a35692f6d3e5da2b57e2a284715df3380b0d",
+      "44": "c09e5682e86ec198d7640686c550498cc7d52f717ea8fde3331304029fdba459",
+      "32": "b4769548ddf75d64642f93e61a8422457cbe2a2b9941f38a1e26413e24f3e173",
+      "24": "5a2724ba8d4ede0e0b42f39d0e40afdb305bbe590158488069c3063ef4a32b88"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 360,
+    "family": "technique_icons",
+    "id": "tech-load-special",
+    "path": "art/icons/techniques/load-special.png",
+    "name": "Load Special",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, set",
+    "paint": "One marked round pressed into a magazine's top.",
+    "avoid": "a rocket \u00b7 glowing magic",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: One marked round pressed into a magazine's top.\nAvoid: a rocket \u00b7 glowing magic\nEXACT STAGING: Load Special: ONE LARGE BLANK ROUND with ONE transparent DIAMOND MARK in its casing is pressed DOWN into the OPEN TOP of ONE short rectangular MAGAZINE by ONE cropped ceramic mitten. Round is partly entering magazine mouth, no second round or whole gun. Clear open slot cut, hand separated by broad transparent gaps. No rocket, magic glow, sparks, text, numerals, real brand or character.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "34a762f856e1eeeba50e95fba8bf36047e0dbc584321a39abb27375a8cc7afb5",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/360-load-special.png",
+    "source_sha256": "6c5b3cd457c68bd5488c04380b2c77f098af2c637858f1a1d04ccf76ad7b9af9",
+    "export_crop": [
+      0,
+      9,
+      1247,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/load-special.png",
+      "64": "art/icons/techniques/exports/64/load-special.png",
+      "48": "art/icons/techniques/exports/48/load-special.png",
+      "44": "art/icons/techniques/exports/44/load-special.png",
+      "32": "art/icons/techniques/exports/32/load-special.png",
+      "24": "art/icons/techniques/exports/24/load-special.png"
+    },
+    "framing": {
+      "scale": 0.4998022222653897,
+      "offset": [
+        200,
+        201
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "230f3f7055732152ae7922578d21b9301ace6802dff0da327c325520b38af747",
+      "64": "8ac1deeb4840624625c279b1d647c5c2f97587a524dfa142bcd250ca8a888f95",
+      "48": "5be9576ba400448bf7204ab5a05c813351f57f16e8c037a0ad5b11143762d9d0",
+      "44": "867dd485c910a3bae853ad1817d4afe64615090745fdfb7bb67f11715608ef9d",
+      "32": "7a1c27405927f8040f85376315b5b9d087c9b74ffde90c821fb4d0f8d5bf5ebf",
+      "24": "c8aa788148e2f107adac58523318edf1a05f59894b943e441fe4f5496d4ce044"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 361,
+    "family": "technique_icons",
+    "id": "tech-shift",
+    "path": "art/icons/techniques/shift.png",
+    "name": "Shift",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, set",
+    "paint": "Wick shifting his weight foot to foot, a small arrow under him.",
+    "avoid": "a gear shift \u00b7 a keyboard key",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick shifting his weight foot to foot, a small arrow under him.\nAvoid: a gear shift \u00b7 a keyboard key\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Shift: ONE Wick in a low agile stance shifting weight LEFT FOOT TO RIGHT FOOT, front boot lifts just off ground while rear knee bends, mittens relaxed apart for balance. ONE SMALL TWO-ENDED HORIZONTAL ARROW BELOW BOTH BOOTS shows lateral weight shift; it is explicitly requested for this row. No gear lever, keyboard key, duplicate body, dart, weapon, bowl, halo or extra symbols. Strong distinctive leaning pose, full silhouette safe.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "6565f44e52f8431ba87cb18c3acb4e665ad6849107cfedf3d7bb56c214620046",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/361-shift.png",
+    "source_sha256": "e62e19f9558dc1b8f6fec32f97e6174b2c229de003ef5b04be6e7dd069087b75",
+    "export_crop": [
+      0,
+      37,
+      1238,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/shift.png",
+      "64": "art/icons/techniques/exports/64/shift.png",
+      "48": "art/icons/techniques/exports/48/shift.png",
+      "44": "art/icons/techniques/exports/44/shift.png",
+      "32": "art/icons/techniques/exports/32/shift.png",
+      "24": "art/icons/techniques/exports/24/shift.png"
+    },
+    "framing": {
+      "scale": 0.5860396791461381,
+      "offset": [
+        149,
+        155
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "47de6df7c20ec6228a8712c24b4b51f6846847328c6f3f9cb0f8aff5a9aedd9a",
+      "64": "40956617d8c410aa8c46433c65ad8b9bfe743cd4c12bf6a7b6aa2603ac2774be",
+      "48": "564a096abd138cd7478425e7299874200158909f4bb3704939fed8899749f8d6",
+      "44": "4ba0a2276cdc3865a914b4e26b7ed2f5c556c928e7fdb109881227ddd74e9584",
+      "32": "bb87355cb2bc8cf54e5b5892e3cc6b797f81f74bc902ecec66930e3269545828",
+      "24": "569bf0b85e4fc26dc6860b54f09d6d61d6f00e612da8b60517daa340aa7b213a"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 362,
+    "family": "technique_icons",
+    "id": "tech-vent",
+    "path": "art/icons/techniques/vent.png",
+    "name": "Vent",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, set",
+    "paint": "A gun barrel with three heat curls.",
+    "avoid": "steam train \u00b7 fire",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A gun barrel with three heat curls.\nAvoid: steam train \u00b7 fire\nEXACT STAGING: Vent: ONE SHORT PLAIN INVENTED BARREL TUBE points diagonally right, with a large GENUINELY TRANSPARENT oval opening. Above its top exactly THREE SEPARATE WHITE HEAT CURLS rise as crisp flat S-shaped strokes, never gray steam or glow. No train, fire, flame, projectile, explosion, hand, whole gun, character or text. Tube side has one transparent vent-slot cut, no shaded filled side face.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "db8b9145d6329612951e72b5e0f912c304f1e13d6d62faa999a9801dfae916af",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/362-vent.png",
+    "source_sha256": "ebdac71488baa88b10529f6576ae27d4da2cca89ce314f280d407e674d69766b",
+    "export_crop": [
+      77,
+      83,
+      1224,
+      1204
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/vent.png",
+      "64": "art/icons/techniques/exports/64/vent.png",
+      "48": "art/icons/techniques/exports/48/vent.png",
+      "44": "art/icons/techniques/exports/44/vent.png",
+      "32": "art/icons/techniques/exports/32/vent.png",
+      "24": "art/icons/techniques/exports/24/vent.png"
+    },
+    "framing": {
+      "scale": 0.6188167046633195,
+      "offset": [
+        157,
+        165
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "21f3292345259411a80e17000121c11675afad155bb92b1c6ad06658d72829cb",
+      "64": "216aa20bbb7e0938d9fe9b26be247ee5d8741adcd15ad22fcb322f8ab5ecc2e8",
+      "48": "65ac40f05b2606f1586830a73f387ce16bbcd3603cb93417f5b7eaa171b1d69b",
+      "44": "fefd5ca02d2778a90cbeb6d08b6b087d4708c9b059a4475bb42c7319270e6675",
+      "32": "d094d9d7c9900f86ed64328ab92c78f986351b42a91db00b71f123591b91d865",
+      "24": "5ce812ac176ebeda979580dfd34816762c908aefd489d008c5b59cc65b9061cc"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 363,
+    "family": "technique_icons",
+    "id": "tech-head-down",
+    "path": "art/icons/techniques/head-down.png",
+    "name": "Head Down",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, set",
+    "paint": "Wick ducking low behind a wall, only his flame showing.",
+    "avoid": "a turtle \u00b7 a helmet",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick ducking low behind a wall, only the top of his ceramic screen head showing.\nAvoid: a turtle \u00b7 a helmet\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Head Down: apply current CERAMIC AUTOMATON casting correction to stale brief wording 'flame': NO LITERAL FLAME. ONE Wick ducks VERY LOW BEHIND ONE short low rectangular cover WALL, only the TOP OF HIS CERAMIC HEAD with its two offset fasteners and tiny upper screen edge peeks above wall. His full body stays hidden by wall. No turtle, helmet, weapon, fire, bowl, halo, star or other figure. Bold low cover silhouette with sparse masonry cuts. Square circle-safe.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "876c9165576fe80bb1b355fa7a9089cc4ca30b9b05bceac0868e2803eb3b502b",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/363-head-down.png",
+    "source_sha256": "e04ef157b51388ef7f11f2c769b0a3293c68e85c92a21a5558f11a7d088b4bb0",
+    "export_crop": [
+      0,
+      37,
+      1222,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/head-down.png",
+      "64": "art/icons/techniques/exports/64/head-down.png",
+      "48": "art/icons/techniques/exports/48/head-down.png",
+      "44": "art/icons/techniques/exports/44/head-down.png",
+      "32": "art/icons/techniques/exports/32/head-down.png",
+      "24": "art/icons/techniques/exports/24/head-down.png"
+    },
+    "framing": {
+      "scale": 0.5106710363266096,
+      "offset": [
+        200,
+        201
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "f7ca4d459a25afec65d1190d748a5f71cbc7b1762a7bfd544ef940fb4011d20b",
+      "64": "05733e65888b9e176a81cfba42ffda722206a94bbea7c3bf31e06b52ad3f3a3f",
+      "48": "a9b0c37f25b42d6fced49318cd3e67f8a0855425e95dc7e8e8b777e204616b56",
+      "44": "7c4e4bf57cc6e22d272941f1d9197d13f7fd7e1d6015ece881d9ab7c89a64f81",
+      "32": "7dcf62acd1d6a851a107e58552c33776d39cea82131b3c1fd3c25a20f7df0277",
+      "24": "82cb372b5b8861756b78cee902ef0cf77f916ff4de4059cda9fb604c5365f4b1"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   }
 ]
