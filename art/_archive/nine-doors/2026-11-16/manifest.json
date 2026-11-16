@@ -18931,6 +18931,82 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 359,
+    "family": "technique_icons",
+    "id": "tech-brace-tech",
+    "path": "art/icons/techniques/brace-tech.png",
+    "name": "Brace (technique)",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, set",
+    "paint": "A rifle's fore-end resting on a wall edge.",
+    "avoid": "a bipod (Suppressor) \u00b7 a dental brace",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Correct this exact rejected Project Heaven Cry icon. DELETE THE ENTIRE OUTER CIRCULAR BORDER. Keep one inert practice rifle horizontal. Replace the small plain rectangular block beneath it with a WIDE LOW WALL CORNER of TWO MASONRY BLOCKS showing one horizontal mortar gap and one short vertical seam; the rifle's FORE-END rests DIRECTLY ON THE TOP EDGE of this wall, barrel extends past wall edge. The wall must be wider than it is tall and clearly separate from rifle body, not an attached magazine. No ammunition, firing lines or people. Only rifle and wall corner, no surrounding circle or badge. Pure opaque white flat ink #FFFFFF only, all gaps and background GENUINELY TRANSPARENT. No black or gray pigment, no aura, glow, shadow, texture, gradient, text or border. Square icon centered inside 15% transparent margins and circular chip.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/359-wall-and-border-fix/native.png"
+    ],
+    "composition_scope": "object-only",
+    "service_revision": "Static inert training equipment after rejected input.",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/359-wall-and-border-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "4442efb9a5dbfcbcf58b3351343c2f9f913f0639ec6c46fe86896c1e457ab770",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/359-brace-tech.png",
+    "source_sha256": "674073793239aaaba16e26bca6adf03fe627e6b17e8b76680b38cedc9e6a49ca",
+    "export_crop": [
+      0,
+      71,
+      1218,
+      1134
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/brace-tech.png",
+      "64": "art/icons/techniques/exports/64/brace-tech.png",
+      "48": "art/icons/techniques/exports/48/brace-tech.png",
+      "44": "art/icons/techniques/exports/44/brace-tech.png",
+      "32": "art/icons/techniques/exports/32/brace-tech.png",
+      "24": "art/icons/techniques/exports/24/brace-tech.png"
+    },
+    "framing": {
+      "scale": 0.5817712955080329,
+      "offset": [
+        157,
+        203
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "88dd720a8ccea1bd33a33b40d3eb6f2c6dea1d09228a6c949a208098bb63dcdc",
+      "64": "1791ab8e4b1a0618cce9bb6fcd6711e62f0ec8674542f5aca62c1144a7959cdc",
+      "48": "b329b9ac0dd86f09042bde9e6251321e101ee4b6f45cda7c2aa73396f08bda8f",
+      "44": "d6bb48424436116273e288f9c1a242e972a9cac31a2b551b64cec54ecdfa1ce5",
+      "32": "b912ea4ce29b434553b159756c1a18397d13d9537176588bc8ba82cf72e70d49",
+      "24": "63a0f9858b4c1d166e942f03584d5b5913cc3c81e81e1ffcb3bd6c34685d249b"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 360,
     "family": "technique_icons",
     "id": "tech-load-special",
@@ -19315,6 +19391,84 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 365,
+    "family": "technique_icons",
+    "id": "tech-pin-down",
+    "path": "art/icons/techniques/pin-down.png",
+    "name": "Pin Down",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, take",
+    "paint": "A foe flat behind cover under three bullet lines.",
+    "avoid": "a pushpin \u00b7 a map pin",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE simple nonviolent RPG training icon in pure white flat ink on true transparency. A featureless PRACTICE DUMMY'S cropped head and shoulder crouch completely BELOW THE TOP EDGE of one solid rectangular cover block. Three separate parallel horizontal WHITE MOTION DASHES travel safely above that top edge. The cover block visibly protects the low dummy partial. No weapon, target contact, injury, dramatic scene or whole person. Broad crisp white shapes with truly transparent holes and gaps, no black/gray fill, gradients, glow, shading, text, labels or border. Square icon central 75% safe box. At 32px the protective block, low partial and three overhead dashes remain distinct.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "service_revision": "Nonviolent training/inventory abstraction after rejected output.",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "fd519d7b2645358199847c673774512457061e3a836fc77c4336aa582cbc42b4",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/365-pin-down.png",
+    "source_sha256": "3b1392429bf73ac850f4e5f6d2e7c60707d5adbcdadc3da7919650bf0b71b5ed",
+    "export_crop": [
+      0,
+      87,
+      1226,
+      1232
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/pin-down.png",
+      "64": "art/icons/techniques/exports/64/pin-down.png",
+      "48": "art/icons/techniques/exports/48/pin-down.png",
+      "44": "art/icons/techniques/exports/44/pin-down.png",
+      "32": "art/icons/techniques/exports/32/pin-down.png",
+      "24": "art/icons/techniques/exports/24/pin-down.png"
+    },
+    "framing": {
+      "scale": 0.5897507394723966,
+      "offset": [
+        150,
+        174
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4a448e2bfe5dce567c243e0bdf8919ab3cf3957f66159ecb1266313db416f98b",
+      "64": "4ea6df717971dd5b7fc93fc56e18b3da6ee4b22a4831db98e85b843d6877ddaa",
+      "48": "d54d23f43509150582817c7bd85ac08e67f5673b0d7c2c2b4cb8bcb14594a2da",
+      "44": "6ec3aabd4f3ef3b72ff79af1974a4f0083494c59da2e7076a0e9fc2587c85008",
+      "32": "5866110bda303a750b7d596120a1c8dda5a386da6daac6f770f9fd018faaf3bc",
+      "24": "d9f9329f55b3611396338eab0f02bccffa2d76c15429b3c500fbd9af83abd694"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 366,
     "family": "technique_icons",
     "id": "tech-rout",
@@ -19539,6 +19693,84 @@
       "44": "b6e05c589a55ae3d097a427dd2804c769492f263413721fd23bb461cf3c1dfec",
       "32": "1d888c71f62df072edd99dfcd77c3e5f171b8d4838f0eb64c5fc617ea57cfdbf",
       "24": "7339efeb7fd3ae6a7d5599a13ed9e3af95b0c7c657175eb3320a0befe62d0be7"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 369,
+    "family": "technique_icons",
+    "id": "tech-last-round",
+    "path": "art/icons/techniques/last-round.png",
+    "name": "Last Round",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, take",
+    "paint": "A single round standing alone in an open magazine.",
+    "avoid": "a skull \u00b7 a clock",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE flat-white technical equipment inventory icon for an RPG. A short OPEN RECTANGULAR MAGAZINE shown as two parallel side rails and a bottom plate, viewed straight-on as a simple cutaway. Exactly ONE BLANK AMMUNITION CARTRIDGE rests inside, with rounded pointed top, straight parallel casing sides and a small flat base rim. Clearly empty transparent space on either side of this sole cartridge. No hands, people, action, firing, gun body, decorative symbols or additional cartridges. Pure white #FFFFFF opaque silhouettes with generous transparent separations and transparent background; no black, gray, glow, gradient, shading, texture, numerals, text or frame. Compact square composition readable at 32px with 15% margins.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "service_revision": "Nonviolent training/inventory abstraction after rejected output.",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "5c018ff85541a27361ac68ac7b4dc4ab72cab95190f75b32162faf1d49cde0eb",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/369-last-round.png",
+    "source_sha256": "628a1e1e9b55953f9c498f08b8f1a6ba7dfa54e21997f8e1ab7eeb4313d3f436",
+    "export_crop": [
+      81,
+      65,
+      1194,
+      1220
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/last-round.png",
+      "64": "art/icons/techniques/exports/64/last-round.png",
+      "48": "art/icons/techniques/exports/48/last-round.png",
+      "44": "art/icons/techniques/exports/44/last-round.png",
+      "32": "art/icons/techniques/exports/32/last-round.png",
+      "24": "art/icons/techniques/exports/24/last-round.png"
+    },
+    "framing": {
+      "scale": 0.6177180392457534,
+      "offset": [
+        168,
+        155
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "5abd5aba25738aeab3ec363fc361c5bc0e215933c9c5cc5bb1af41210bc819e4",
+      "64": "612855b1a231948598009f336b50f92feec947598dcbf4ef256aed2ffde0dbc7",
+      "48": "67fe5b967a59b0952e43f1996a7adb529a8f24707a64ce22fce69a474d16459d",
+      "44": "dddba3161b14c90c9f2b652b87e9a538f900950ab7cde8f230794e34d54cff29",
+      "32": "6c786998b038c458f1ae352942547a4bd7a37d354b8be56770baf73393303fe0",
+      "24": "e553c0b8aa7205a06c4420c6dd0ac480dbfceb0a433faec2633ef9bc4a4df305"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },

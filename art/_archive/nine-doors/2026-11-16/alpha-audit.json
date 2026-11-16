@@ -1393,6 +1393,11 @@
       "faint_alpha_to_solid_area_ratio": 0.04138
     },
     {
+      "number": 359,
+      "name": "Brace (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.04808
+    },
+    {
       "number": 360,
       "name": "Load Special",
       "faint_alpha_to_solid_area_ratio": 0.08547
@@ -1418,6 +1423,11 @@
       "faint_alpha_to_solid_area_ratio": 0.06093
     },
     {
+      "number": 365,
+      "name": "Pin Down",
+      "faint_alpha_to_solid_area_ratio": 0.01618
+    },
+    {
       "number": 366,
       "name": "Rout",
       "faint_alpha_to_solid_area_ratio": 0.08394
@@ -1431,6 +1441,11 @@
       "number": 368,
       "name": "Storm",
       "faint_alpha_to_solid_area_ratio": 0.09357
+    },
+    {
+      "number": 369,
+      "name": "Last Round",
+      "faint_alpha_to_solid_area_ratio": 0.03161
     },
     {
       "number": 370,

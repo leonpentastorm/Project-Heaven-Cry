@@ -35080,18 +35080,39 @@
       "ink": "#FFFFFF"
     },
     "tech-brace-tech": {
-      "label": "PLACEHOLDER: Brace (technique)",
-      "path": "art/icons/techniques/brace-tech.svg",
-      "sha256": "37fa7a9e569df71f4be0386a81c2f3bc49075f1673de21a98d7ed953371191c8",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Brace (technique)",
+      "path": "art/icons/techniques/brace-tech.png",
+      "sha256": "4442efb9a5dbfcbcf58b3351343c2f9f913f0639ec6c46fe86896c1e457ab770",
+      "format": "png",
       "mode": "wick",
       "tint": "white",
-      "wanted": "art/icons/techniques/brace-tech.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #359",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-brace-tech/brace-tech.svg",
+      "previous_sha256": "37fa7a9e569df71f4be0386a81c2f3bc49075f1673de21a98d7ed953371191c8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/359-brace-tech.png",
+      "upscaled": false,
+      "brief_number": 359,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/brace-tech.png",
+        "64": "art/icons/techniques/exports/64/brace-tech.png",
+        "48": "art/icons/techniques/exports/48/brace-tech.png",
+        "44": "art/icons/techniques/exports/44/brace-tech.png",
+        "32": "art/icons/techniques/exports/32/brace-tech.png",
+        "24": "art/icons/techniques/exports/24/brace-tech.png"
+      },
+      "ink": "#FFFFFF"
     },
     "tech-load-special": {
       "label": "Load Special",
@@ -35269,18 +35290,39 @@
       "ink": "#FFFFFF"
     },
     "tech-pin-down": {
-      "label": "PLACEHOLDER: Pin Down",
-      "path": "art/icons/techniques/pin-down.svg",
-      "sha256": "019948abbb961796a2b060924cd637954e9d02e6955f88a6bd6d50f4fc5f86fa",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Pin Down",
+      "path": "art/icons/techniques/pin-down.png",
+      "sha256": "fd519d7b2645358199847c673774512457061e3a836fc77c4336aa582cbc42b4",
+      "format": "png",
       "mode": "wick",
       "tint": "white",
-      "wanted": "art/icons/techniques/pin-down.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #365",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-pin-down/pin-down.svg",
+      "previous_sha256": "019948abbb961796a2b060924cd637954e9d02e6955f88a6bd6d50f4fc5f86fa",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/365-pin-down.png",
+      "upscaled": false,
+      "brief_number": 365,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/pin-down.png",
+        "64": "art/icons/techniques/exports/64/pin-down.png",
+        "48": "art/icons/techniques/exports/48/pin-down.png",
+        "44": "art/icons/techniques/exports/44/pin-down.png",
+        "32": "art/icons/techniques/exports/32/pin-down.png",
+        "24": "art/icons/techniques/exports/24/pin-down.png"
+      },
+      "ink": "#FFFFFF"
     },
     "tech-rout": {
       "label": "Rout",
@@ -35388,18 +35430,39 @@
       "ink": "#FFFFFF"
     },
     "tech-last-round": {
-      "label": "PLACEHOLDER: Last Round",
-      "path": "art/icons/techniques/last-round.svg",
-      "sha256": "2b2dd7bf4b98ad57b578a808db43410567ca4e01faeddf7982aee1a49ba9794e",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Last Round",
+      "path": "art/icons/techniques/last-round.png",
+      "sha256": "5c018ff85541a27361ac68ac7b4dc4ab72cab95190f75b32162faf1d49cde0eb",
+      "format": "png",
       "mode": "wick",
       "tint": "white",
-      "wanted": "art/icons/techniques/last-round.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #369",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-last-round/last-round.svg",
+      "previous_sha256": "2b2dd7bf4b98ad57b578a808db43410567ca4e01faeddf7982aee1a49ba9794e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/369-last-round.png",
+      "upscaled": false,
+      "brief_number": 369,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/last-round.png",
+        "64": "art/icons/techniques/exports/64/last-round.png",
+        "48": "art/icons/techniques/exports/48/last-round.png",
+        "44": "art/icons/techniques/exports/44/last-round.png",
+        "32": "art/icons/techniques/exports/32/last-round.png",
+        "24": "art/icons/techniques/exports/24/last-round.png"
+      },
+      "ink": "#FFFFFF"
     },
     "tech-overwatch-tech": {
       "label": "Wick \u2014 Overwatch (technique)",
