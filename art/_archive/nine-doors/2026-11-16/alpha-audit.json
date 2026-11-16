@@ -428,6 +428,21 @@
       "faint_alpha_to_solid_area_ratio": 0.04386
     },
     {
+      "number": 112,
+      "name": "Sabotage",
+      "faint_alpha_to_solid_area_ratio": 0.03284
+    },
+    {
+      "number": 113,
+      "name": "Execution",
+      "faint_alpha_to_solid_area_ratio": 0.0991
+    },
+    {
+      "number": 114,
+      "name": "Called Shot",
+      "faint_alpha_to_solid_area_ratio": 0.0565
+    },
+    {
       "number": 123,
       "name": "Second Clause",
       "faint_alpha_to_solid_area_ratio": 0.06059
@@ -446,6 +461,11 @@
       "number": 126,
       "name": "Twin Draw",
       "faint_alpha_to_solid_area_ratio": 0.03205
+    },
+    {
+      "number": 127,
+      "name": "Barrage",
+      "faint_alpha_to_solid_area_ratio": 0.06537
     },
     {
       "number": 135,

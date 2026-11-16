@@ -5705,6 +5705,234 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 112,
+    "family": "move_icons",
+    "id": "move-sabotage",
+    "path": "art/icons/moves/sabotage.png",
+    "name": "Sabotage",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Operative rank II move (asked 13 Nov, C2)",
+    "paint": "A cut cable hanging out of a machine panel, the two ends apart.",
+    "avoid": "an explosion \u00b7 a robot face",
+    "section": "Ingenuity: Shadow, and the Operative",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A cut cable hanging out of a machine panel, the two ends apart.\nAvoid: an explosion \u00b7 a robot face\nEXACT STAGING: ONE simple open rectangular machine service panel with a single thick cable emerging from it. The cable is CUT in the middle: two clearly separated blunt cable ends hang apart, each showing one simple open cross-section cut. The GAP between the ends is big enough to see at 32px. No scissors, hands, tools, explosion, sparks, robot face, electrical lightning, screen letters or crowded circuitry.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c532aa4ccabcd019efd70ce7345849e437fe8934fac2bcf36efb7c6f13a8bb15",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/112-sabotage.png",
+    "source_sha256": "e07ece78df3b30e1421321dff898ec3f7fd6f43c9006a18d54bace610ec6487d",
+    "export_crop": [
+      57,
+      109,
+      1236,
+      1133
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/sabotage.png",
+      "64": "art/icons/moves/exports/64/sabotage.png",
+      "48": "art/icons/moves/exports/48/sabotage.png",
+      "44": "art/icons/moves/exports/44/sabotage.png",
+      "32": "art/icons/moves/exports/32/sabotage.png",
+      "24": "art/icons/moves/exports/24/sabotage.png"
+    },
+    "framing": {
+      "scale": 0.6184173033034417,
+      "offset": [
+        147,
+        195
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "98d03c2a6b6e30f89b3b4de688d4235656ef9b4a0d975f7353a3bed050390dbb",
+      "64": "d04ec176b74969a49fbf4fd47d10f13f8b28bf2507d386ffa2ed3eabb270d134",
+      "48": "580bef1b4e34b96543d11706dfb5c53dd3340c73c6718a0b9f737201112d30de",
+      "44": "96c32eefb53886deee1a2db13d1a74e19d8d8666c3babf32103ddadcb5640ede",
+      "32": "d9a53a1127927e18d2914379156768ba3ff8a859d9c0686fda072ff179619abb",
+      "24": "280c2ed95edc709af559b71c589da10bc6f4d012d7ea807d208d577ae80aa5db"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 113,
+    "family": "move_icons",
+    "id": "move-execution",
+    "path": "art/icons/moves/execution.png",
+    "name": "Execution",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Operative rank III move (asked 13 Nov, C2)",
+    "paint": "A reversed blade held point down over a nearly spent ring.",
+    "avoid": "a guillotine \u00b7 blood",
+    "section": "Ingenuity: Shadow, and the Operative",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A reversed blade held point down over a nearly spent ring.\nAvoid: a guillotine \u00b7 blood\nEXACT STAGING: A cropped chunky ceramic mitten at the TOP holds one plain reversed practice blade vertically POINT DOWN. The point is held STILL above, clearly NOT TOUCHING, a nearly empty ring at the bottom: only a quarter of that ring remains solid white, the rest is a faintly implied space, no gray. The large air GAP and still held weapon distinguish this from Coup's completed downward strike into a cracked ring. No person, victim, skull, hood, guillotine, block, injury or blood.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "f458210e805775913e653e38f8f377371e0dbd7fdf77ba4b4612977f798617a1",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/113-execution.png",
+    "source_sha256": "27ccf1869451d6f59171080ac3b5c602d22436729146ee2acad4ec0713473067",
+    "export_crop": [
+      27,
+      17,
+      1079,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/execution.png",
+      "64": "art/icons/moves/exports/64/execution.png",
+      "48": "art/icons/moves/exports/48/execution.png",
+      "44": "art/icons/moves/exports/44/execution.png",
+      "32": "art/icons/moves/exports/32/execution.png",
+      "24": "art/icons/moves/exports/24/execution.png"
+    },
+    "framing": {
+      "scale": 0.5568949940414731,
+      "offset": [
+        219,
+        167
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "e6894293f58460b896c9b3d02254da079c71a121885e10e57953623e9d5809ab",
+      "64": "1aab0d6010731832b36b564def7d2b98dbeb61b51a5ad612ed0b538798967461",
+      "48": "f8d170d534f8e13270740aab94ffed484a3bcc81ca1f7c2d42423bab5e6d2e8d",
+      "44": "f7fab8d522c9d5d3c4ebd6f05859f64c2d1cd78ad290d7427bca83a337e7d67d",
+      "32": "34c4aea57542ce558a08f3eef2b80f9c94a5d215bc82075bcef62d0ee783084c",
+      "24": "ae377ac00c577bb508c413b1511d5e7b16d44030915c9247eec76a5d02ff4c3a"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 114,
+    "family": "move_icons",
+    "id": "move-called-shot",
+    "path": "art/icons/moves/called-shot.png",
+    "name": "Called Shot",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Operative rank III move (asked 13 Nov, C2)",
+    "paint": "A small ring drawn round one limb of a silhouette, a sight-line to it.",
+    "avoid": "a crosshair over a head \u00b7 text",
+    "section": "Ingenuity: Shadow, and the Operative",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small ring drawn round one limb of a silhouette, a sight-line to it.\nAvoid: a crosshair over a head \u00b7 text\nEXACT STAGING: Show only a cropped lower-leg segment of a plain wooden TRAINING DUMMY, from cuff to boot, with one SMALL CLEAN RING circling the knee joint. One thin straight sight-line comes from the left edge and ENDS AT THE RING, without a projectile, impact or injury. The ring is a simple empty outline, NOT a crosshair. No head or complete person, no Wick, no text, weapon, blood or firing scene. This is a harmless practice marker on a dummy joint.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "7c17970625700d44908ced081855b8393be98fe8adad30fc34b3b3cf1f03670f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/114-called-shot.png",
+    "source_sha256": "e45341239732c1ff8a0d5222d6b5a7d193342041a7dbe52779f411257c8fe527",
+    "export_crop": [
+      18,
+      21,
+      1208,
+      1206
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/called-shot.png",
+      "64": "art/icons/moves/exports/64/called-shot.png",
+      "48": "art/icons/moves/exports/48/called-shot.png",
+      "44": "art/icons/moves/exports/44/called-shot.png",
+      "32": "art/icons/moves/exports/32/called-shot.png",
+      "24": "art/icons/moves/exports/24/called-shot.png"
+    },
+    "framing": {
+      "scale": 0.6035249381601249,
+      "offset": [
+        153,
+        154
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "a661df8dc64fd5826de3a34678ded17910bf58ca911628acb4999eb083c82062",
+      "64": "bc378168aaf9e85549eaf2587ddb24133d276440656a967528df2f0c9c3bec99",
+      "48": "9da01223a27cd142d27bc795263adaabbfe775b9893e3b83249ee2038bd544b9",
+      "44": "1ec4c48b1ddc65ff76d451326559fc0cbbd3a8e8299dc071c1766fdac9064560",
+      "32": "765ef0f60112a22eeb0eeb496ae495236d937309f7b16748e0d617007f4a8648",
+      "24": "82e1dcf7043f49225b9d3f8c260bf0308aed76b6fa98eb41a180c62c7a55d145"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 123,
     "family": "perks",
     "id": "hold-the-stroke",
@@ -5955,6 +6183,81 @@
     },
     "upscaled": false,
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 127,
+    "family": "move_icons",
+    "id": "move-barrage",
+    "path": "art/icons/moves/barrage.png",
+    "name": "Barrage",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Sigilist rank I move",
+    "paint": "Three small glyph-darts leaving a line of glyphs one after another.",
+    "avoid": "missiles with fire trails \u00b7 text",
+    "section": "Brain Power: Sigils, and the Sigilist",
+    "kind": "wick",
+    "prompt": "Correct ONLY the LETTER-LIKE glyphs in this flat white Barrage icon. Replace EVERY shape resembling H, F or any letter with a SIMPLE CLOSED HEXAGON containing one small diamond-shaped TRANSPARENT hole. Keep the existing diamond and triangular glyphs and the clear arrangement: three abstract glyphs in a short source line, then three small corresponding glyph-darts leaving in sequence toward the right with tiny trailing ticks. Source and moving copies of the corrected hexagon must match. None of the marks may be alphabetic, numeric, runic text, words, labels or readable characters. Preserve the existing bold pure-white flat graphic style, transparency, spacing and clear simple motion. No mascot, hands, weapon, missile, flame, rays, glow, gradient, gray, texture or border. One square icon, central 75% safe area and circular chip safety.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/127-letterlike-glyph-fix/native.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/127-letterlike-glyph-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "747f45405c688ae97a6dfe2dc5f8f240500e60debbf421305b6f5eb12d2977a9",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/127-barrage.png",
+    "source_sha256": "d9cae7a589debcc393db80687abda2aaffd283edb38394d0e057807d8e274136",
+    "export_crop": [
+      17,
+      248,
+      1218,
+      1013
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/barrage.png",
+      "64": "art/icons/moves/exports/64/barrage.png",
+      "48": "art/icons/moves/exports/48/barrage.png",
+      "44": "art/icons/moves/exports/44/barrage.png",
+      "32": "art/icons/moves/exports/32/barrage.png",
+      "24": "art/icons/moves/exports/24/barrage.png"
+    },
+    "framing": {
+      "scale": 0.653760858628334,
+      "offset": [
+        119,
+        262
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "51b8a48dd63a8f236f36e8fdec2b25a6725d3b74cc95f6ba15ab0a55d40b14bb",
+      "64": "f7bc57ef6595ee919709dc06e8c31e9f35775df368e6ccfdea5490d957686ff8",
+      "48": "f37c48c7af131c899606e5bd13a32cb8c127e84e80404b67c40f3259e4a42cab",
+      "44": "62b98ba6f0f83162f5958bec302e81dcc907855b11f9f125d4c288263ae248d7",
+      "32": "b41b19650a744669e4355789b4727c24cb0ea65d75e7db1d96d1c97f155db3ee",
+      "24": "0d6ca99285c93bece714532dea01988afcd90c075fab55616583980a2a504372"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
     "number": 135,

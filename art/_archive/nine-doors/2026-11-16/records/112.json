@@ -1,0 +1,76 @@
+{
+  "number": 112,
+  "family": "move_icons",
+  "id": "move-sabotage",
+  "path": "art/icons/moves/sabotage.png",
+  "name": "Sabotage",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Operative rank II move (asked 13 Nov, C2)",
+  "paint": "A cut cable hanging out of a machine panel, the two ends apart.",
+  "avoid": "an explosion \u00b7 a robot face",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A cut cable hanging out of a machine panel, the two ends apart.\nAvoid: an explosion \u00b7 a robot face\nEXACT STAGING: ONE simple open rectangular machine service panel with a single thick cable emerging from it. The cable is CUT in the middle: two clearly separated blunt cable ends hang apart, each showing one simple open cross-section cut. The GAP between the ends is big enough to see at 32px. No scissors, hands, tools, explosion, sparks, robot face, electrical lightning, screen letters or crowded circuitry.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c532aa4ccabcd019efd70ce7345849e437fe8934fac2bcf36efb7c6f13a8bb15",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/112-sabotage.png",
+  "source_sha256": "e07ece78df3b30e1421321dff898ec3f7fd6f43c9006a18d54bace610ec6487d",
+  "export_crop": [
+    57,
+    109,
+    1236,
+    1133
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/sabotage.png",
+    "64": "art/icons/moves/exports/64/sabotage.png",
+    "48": "art/icons/moves/exports/48/sabotage.png",
+    "44": "art/icons/moves/exports/44/sabotage.png",
+    "32": "art/icons/moves/exports/32/sabotage.png",
+    "24": "art/icons/moves/exports/24/sabotage.png"
+  },
+  "framing": {
+    "scale": 0.6184173033034417,
+    "offset": [
+      147,
+      195
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "98d03c2a6b6e30f89b3b4de688d4235656ef9b4a0d975f7353a3bed050390dbb",
+    "64": "d04ec176b74969a49fbf4fd47d10f13f8b28bf2507d386ffa2ed3eabb270d134",
+    "48": "580bef1b4e34b96543d11706dfb5c53dd3340c73c6718a0b9f737201112d30de",
+    "44": "96c32eefb53886deee1a2db13d1a74e19d8d8666c3babf32103ddadcb5640ede",
+    "32": "d9a53a1127927e18d2914379156768ba3ff8a859d9c0686fda072ff179619abb",
+    "24": "280c2ed95edc709af559b71c589da10bc6f4d012d7ea807d208d577ae80aa5db"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
