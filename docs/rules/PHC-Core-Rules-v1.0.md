@@ -671,7 +671,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 #### 3. Hands, off hands and dual wielding
 
 1. **Hands.** A 2H weapon fills both hands. The off hand takes a 1H weapon, a shield, a torch or a focus.
-2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Changing what a hand holds in a fight costs **1 AP a hand** (rules 1.9, World Play: Gear in a fight): drawing from the pack into one hand 1, a two-handed weapon 2, swapping main and off hand 1, putting away 1 a hand, dropping 0 (it lands in the pile on your tile). A focus drawn from the pack counts at once. Out of a fight gear changes are free.
+2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Changing what a hand holds in a fight costs **1 AP a hand** (rules 1.9, World Play: Gear in a fight): drawing from the pack into one hand 1, a two-handed weapon 2, swapping main and off hand 1, putting away 1 a hand, dropping 0 (it lands in the pile on your tile). A focus drawn from the pack counts at once. Out of a fight gear changes are free.
 3. **Single attacks.** With a weapon in each hand, attack with either one at its normal cost and modifiers.
 4. **Paired attack.** One action with both weapons. **AP = the higher attack cost + 1.** The main hand attacks at −1 and the off hand at −3, at the same target or two targets, each with its own roll. The off-hand penalty drops by 1 for every 3 points in its attack skill (Dexterity, for guns and light blades alike: rules 1.12, item 953), to a minimum of −1.
 5. **Two guns.** Each gun tracks its own ammo. **Heat is one pool for the pair** (item 956): its limit is the two guns' limits added, either gun's shot adds to it, and it cools 4 at your turn start; at the limit the gun that fires jams. Reloading one gun is 2 AP; reloading both is 3 AP (a tactical reload of both, 4; item 679).
@@ -1763,7 +1763,7 @@ Non-element Subjects keep plain Sigil visuals (cyan, square) with a glyph per ki
 
 > **Rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; decision 99).** It replaces the 1.2 Soul rules (items 68–76 where they name 1.2 numbers): Begin, Pump and Release with stage multipliers, the swell, Strain that burns and shorts with no roll, calming the heart (no vent), a second school as a half-strength rider, tones (the Sigil 1.4 elements in the Soul style), shapes, and holding as gameplay (the aura, Heart Overwatch, Resonance, Feeding). Sigil magic owns space; Outburst owns time and the body. **Every number is provisional** (items 492–521) until the damage balance pass. The design is in `docs/design/outburst-2.0-proposal.md`; the data in `soul_modules.json` (`cycle`, `strain`, `tones`, shapes as `form` modules, `retired`).
 
-An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hands 2, item 630): without one in hand, every Begin pays straight from the air at +2 Strain (the MP stays in the carried Emanator). You hold an Outburst in the heart, fill it over turns and choose the moment to let it go.
+An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hands 2, item 630): without one in hand, every Begin pays straight from the air at +2 Strain (the MP stays in the carried Emanator). *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)* You hold an Outburst in the heart, fill it over turns and choose the moment to let it go.
 
 #### 1. The heart cycle: Begin, Pump, Release
 
@@ -1786,7 +1786,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 #### 3. Strain, the burn, the Mana Short and calming the heart
 
-1. **Strain limit:** 3 + floor(Will Power ÷ 2). **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator.
+1. **Strain limit:** 3 + floor(Will Power ÷ 2). **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator. *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*
 2. **Every turn start: −1 Strain, always** (whatever you did), before the swell.
 3. **Over the limit, no roll:** each point over **burns your heart for 8 true damage at the end of your turn**. It Downs, never kills (a foe is subdued).
 4. **The Mana Short is automatic at 3 over the limit** (checked whenever Strain rises, and again at the end of your turn, for a limit that fell: item 544): you are **Stunned** (you lose your next turn), a held Outburst **goes off wild** (at a random creature within its reach, or into the air), and its element's **stage-1 rider lands on your own tile** (you take Frost's Slowed, Acid's Corroded). Then Strain falls to the limit. Will Power raises the limit; it no longer rolls you out of trouble.
@@ -1900,7 +1900,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 | **Heart Surge** (Channeler III) | Once a turn, a toggle on a Release or a snap: it fires **one stage higher** (a held one's stage really rises, rider too; past stage 4 ×2.6; a snap ×1) *(Superseded by rules 1.19: past stage 4 is one more step of the table, ×1.8)*. Double Strain: the Begin's Strain again (1, Flooded 2) once the release has landed. |
 | **Sanctuary** (Guardian III) | Halves all damage to allies inside but your own heart's burn. |
 | **Drink It In** (Guardian II) | An elemental Outburst feeds its MP price like a Raw one (it is told from a Sigil by the MP it carries). |
-| **Gift** (Bard III) | The ally pays 3 AP (Begin and Release); it goes off at **stage 1** on the Bard's MP (the design's full price) and a Begin's Strain (+2 without an Emanator). |
+| **Gift** (Bard III) | The ally pays 3 AP (Begin and Release); it goes off at **stage 1** on the Bard's MP (the design's full price) and a Begin's Strain (+2 without an Emanator). *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)* |
 | **Fed** (Heartfed) | −10% MP a point of the key gauge at Begin. **Feed a feeling** (0 AP, 2 a turn): spend 1 point for a Pump that costs no AP. Release empties the gauge. No damage bonus. |
 | **Overflow** (Heartfed) | The keyed Begin is held at stage 2 at once (no Strain on it). |
 | **Through** (Heartbinder) | Snap-cast or Release from a linked ally's tile: range, sight and the shape (cone, line, aura) run from there. |
@@ -2791,7 +2791,7 @@ Shove and Break are techniques everyone can learn (the Shove Link, the Break Fin
 - **Soul class casts** (Will Shield, Sanctuary, Puppet) cost:
   - the Soul cast AP;
   - the school base cost × the air × (1 − saving), +20% under a Right Brain Debuff, priced through `outburst_cost`;
-  - 1 Strain (2 in Flooded air, +2 without an Emanator), plus any extra the move adds;
+  - 1 Strain (2 in Flooded air, +2 without an Emanator), plus any extra the move adds; *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*
   - the meter drops MP ÷ 10.
   They release at once and are never held.
 - **Evoker class moves** (Ward, Seal, Rewrite, Quicken, Inscribe) need a ready Evoker: not locked and not Silenced.
@@ -3990,7 +3990,7 @@ Built on 12 Nov 2026 from Leon's words of that day: "MANA. Pumps should cost you
 7. **If you can't pay, you can't Pump.** The Pump is refused with the reason ("A Pump to stage 3 needs 9 MP (4): Syphon first, or Release what you hold."). Nothing turns into Strain and nothing shorts. You can still Release what you hold, Syphon, or wait for the swell.
 8. **Revert Pump gives the MP back.** Let it go gives nothing back.
 9. **A Pump's MP does not move the mana meter.** (A Begin still lowers it by its MP ÷ 10.)
-10. **Who pays.** A character's own heart, with an Emanator in a hand. A heart that draws on the air (no Emanator in hand) pays no MP for a Pump: the Begin's +2 Strain is its price. A Twin's Pumps and an enemy caster's Pumps cost no MP, as before (their numbers were fitted without it; item 1345).
+10. **Who pays.** A character's own heart, with an Emanator in a hand. A heart that draws on the air (no Emanator in hand) pays no MP for a Pump: the Begin's +2 Strain is its price. *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)* A Twin's Pumps and an enemy caster's Pumps cost no MP, as before (their numbers were fitted without it; item 1345).
 11. **Drink It In** drinks the spell's whole price: the Begin and its Pumps.
 
 ### 3. What it comes to
@@ -6913,6 +6913,21 @@ Not in slice 1 (each needs a piece the engine lacks; the draft lists them): Weat
 round are not on the damage), the shield's own swing and its follow-up (P9, P11), cover behind the tank (P10), the
 growth paths (P8), Hold the Gap (P9).
 
+## Rules 1.56 (Balance 2.0), the bare heart (Leon, 16 Nov 2026)
+
+Leon, 16 Nov 2026, on the Outbursts tab's bare-handed warning: "Keep everything as now, +4 strain on the begin, going
+into manashock eat 25% your max HP per turn no negociation. find a way to reduce strain or say bye bye, for normal soul
+mage too". In force:
+
+1. **A Begin without an Emanator in a hand costs +4 Strain** (was +2; item 4500). Everything else about drawing on the
+   air stands: no MP, the MP stays in a carried Emanator, the Begin's own Strain and the Flooded step as before. The
+   same +4 is what every move that begins an Outburst bare-handed adds (the class Outburst moves, Gift, Inner Charge):
+   one field, `soul_modules.json cycle.no_emanator_strain`, which the warning's text copies (`skills.json will_power
+   door_numbers`, held equal by the validator).
+2. **The Mana Short's burn (25% of Max HP a turn) is not in force yet** (item 4501): how "going into manashock" is read
+   (the state at 3 over, or every turn spent over the limit) is the lead's ruling, and with it whether anything that
+   keeps a unit from dropping stops the burn. Until then the burn is 8 true a point over the limit, as before.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -9102,7 +9117,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 590. **The Sigil ceiling:** 350 a hit, 500 on a critical, per creature per spell, before armour (balance-targets.md). With items 587–589 a maxed caster's strongest single-target Line (STONE · FIRE · SHOCK · CONDENSE) is about 346 (was about 1,144; 2,288 on a critical), so the ceiling only trims the extreme cases. *Rules 1.17: removed. 350 and 500 are targets, not a limit; the full Line is the Mage's peak and may pass them (item 1052).*
 591. **Weapons exceed the ceilings too** (not changed here; for the damage simulator): the breacher tube at about 290 a hit for a maxed build with a masterwork, and about 990 on a critical (Critical multiplier up to 3.4).
 630. **A focus counts only in a hand** (Leon, 8 Nov 2026; retires item 77's "the Evoker and Emanator count when carried"; closes item 354's open note). The main or the off hand; a 2H weapon fills both, so an off-hand focus doesn't count beside one (and equipping one stows it). Evokers: the Evoker, the Evoker blade, the spellslinger's pistol, the Grand staff (2H). Emanators: the Emanator, the Emanator gauntlet. The refusals read "Needs an Evoker in hand." and "Needs an Emanator in hand." Carried, a focus keeps its store (core charge, MP; rests and refills still reach it), but nothing is cast or spent from it. Enemy casters hold theirs.
-631. **No Emanator in hand: Outbursts draw on the air** (Leon, 8 Nov 2026, choosing between Hands 2's "Soul spells need an Emanator in a hand" and Soul magic's "without one, every Begin pays from the air"). Begin costs no MP and +2 Strain; the MP stays in the carried Emanator. Syphon, Crystallise and every move that spends or fills MP need the Emanator in hand.
+631. **No Emanator in hand: Outbursts draw on the air** (Leon, 8 Nov 2026, choosing between Hands 2's "Soul spells need an Emanator in a hand" and Soul magic's "without one, every Begin pays from the air"). Begin costs no MP and +2 Strain *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*; the MP stays in the carried Emanator. Syphon, Crystallise and every move that spends or fills MP need the Emanator in hand.
 632. **Putting a focus away mid-fight** (swapping a 2H weapon into the main hand, or something else into the off hand) stops new casts at once: drawing, Evoking, swapping a core, Venting, Syphon, Crystallise and MP. Glyphs already drawn stay on the ground (Evoking them needs an Evoker again). An Outburst already held stays held: it swells, can be Pumped, Fed, Steadied, let go and Released (the spec gives no rule that ends it). Disarmed leaves a focus weapon in reach: it still counts (the condition stops attacks, not casting).
 633. ~~**Swapping a focus in a fight:** a focus from the pack into the off hand is 1 AP (one hand), like any swap; a 2H weapon into the main hand is 1 AP and stows the off hand with it (one motion).~~ *(Superseded by rules 1.9: item 684. A focus into one hand is still 1 AP; a 2H weapon into the main hand is now 2 AP, one a hand, and still stows the off hand with it.)* Story and area-map casting read the same hands.
 634. **The Grand staff** (mana arms, 2H, 24 physical, reach 1, 2.5 kg, 2,400 credits, Brain Power 3, counts as an Evoker; item 353's data delta). PROVISIONAL: every number; the Grand Sigilist (shelved) doesn't need it to plant its Grand form yet.
@@ -10732,3 +10747,10 @@ Items 4240 to 4247.
     through `braceHook.gain`); the second copy of the formula in combat.ts is gone. `skills.json durability.door_line`
     is the Guard row's line. No number.
 
+### Rules 1.56 (Balance 2.0), the bare heart
+
+4500. **A bare-handed Begin (rules 1.56, the bare heart, item 1; `soul_modules.json cycle.no_emanator_strain`):** +4
+    Strain (was +2, item 631). Leon's number, 16 Nov 2026. PROVISIONAL.
+4501. **The Mana Short's burn (item 2):** 25% of Max HP a turn, Leon, 16 Nov 2026, "for normal soul mage too"; not
+    built: needs the lead's reading of when it runs (at the Mana Short, or over the limit) and whether a death-preventing
+    effect stops it. Needs a ruling.

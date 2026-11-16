@@ -19,7 +19,7 @@ import {
   checkOver, unitSees, sideSees, objectsOf, unitFromEnemy, displace,
   attackEvent,
 } from '../combat';
-import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
+import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV, SOUL_RULES } from '../data';
 import { mod, devotionXpOf, moduleSlots, packOf, packKindOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
@@ -1492,7 +1492,7 @@ register({
         if (m.emanator) m.mp -= cost; else shiftMana(cb, -Math.ceil(cost / 10)); m.cast = true;
         setForms(h, [...formsOf(h), { form: f, stage: 1 }]); vSync(h);
         emitFx(cb, 'outburst', { unit: u.id, at: u.pos, design: 'form_' + f, school: 'buff', hold: true, stage: 1 });
-        say(cb, u.name + ' draws the heart into the body: ' + FORMS[f] + ' (' + cost + ' MP' + (m.emanator ? '' : ' from the air') + ').' + strainUp(cb, rng, u, (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2), 'Inner Charge'));
+        say(cb, u.name + ' draws the heart into the body: ' + FORMS[f] + ' (' + cost + ' MP' + (m.emanator ? '' : ' from the air') + ').' + strainUp(cb, rng, u, (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : SOUL_RULES.cycle.no_emanator_strain), 'Inner Charge'));
         return null;
       } },
     { id: 'pump_form', label: 'Pump a form', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['combat', 'world'], target: 'none',

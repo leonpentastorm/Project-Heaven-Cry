@@ -17,7 +17,7 @@
 // turn card always used ('shove', 'tq:main:cut', 'cl:call.order', 'pr:hymn:x.y', 'pk:<item>#<action>', 'draw'…), so a
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
-import { WEAPON } from './data';
+import { WEAPON, SOUL_RULES } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange } from './combat';
 import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive } from './effects/cost';
@@ -755,7 +755,7 @@ const MAGIC: ActionSystem = {
       if (designs.length && !held) {
         const ap0 = designAp(mg, designs[0]);
         out.push(D('outburst', 'outbursts', 'Outburst', ap0, designs.length === 1 ? 'Begin ' + ap0 + ' AP' : designs.length + ' designs',
-          'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×' + stageMult(0) + '.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +2 Strain.'), null,
+          'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×' + stageMult(0) + '.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +' + SOUL_RULES.cycle.no_emanator_strain + ' Strain.'), null,
           { picks: [{ key: 'design', kind: 'option', renderer: 'design-cards', prompt: 'Pick a design.', optional: true, options: designs.map((d) => ({ id: d.id, label: d.name })) }, { key: 'mode', kind: 'option', prompt: 'Begin (hold it) or Snap (Begin and Release now).', optional: true, options: [{ id: 'begin', label: 'Begin' }, { id: 'snap', label: 'Snap' }] }, { key: 'aim', kind: 'tile', prompt: 'Snap: hover to preview, click a tile to aim.', when: { key: 'mode', is: 'snap' }, optional: true }], toggleOn: 'combat/outburst', preview: 'outburst' }));
       }
       if (held) {

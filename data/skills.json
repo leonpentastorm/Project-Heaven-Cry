@@ -4124,7 +4124,7 @@
       "door_bare_headline": "Using magic without a focus causes great harm.",
       "door_bare_line": "Every Outburst you Begin draws on the air at +{=door_numbers.no_emanator_strain} Strain, and Strain past your limit burns your health.",
       "door_numbers": {
-        "no_emanator_strain": 2,
+        "no_emanator_strain": 4,
         "about": "soul_modules.json cycle.no_emanator_strain, copied for the bare-handed warning's placeholder; tools/validate.py holds them equal."
       },
       "door_tab": "outbursts",

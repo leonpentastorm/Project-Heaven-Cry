@@ -3,7 +3,7 @@
 // without moving the others; the focus rule for a focus door's tab (in hand, in the pack, none anywhere). Through the
 // real screen and real actions.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, active, packOf, magicOf, FOCUS_IDS, SKILL, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, active, packOf, magicOf, FOCUS_IDS, SKILL, SOUL_RULES, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
 let snap: any = null;
@@ -160,7 +160,7 @@ describe('the focus rule never strands held work (the Outbursts tab with no Eman
     _resetTabPrefsCache(); const u = soulNoFocus('TABS-W'); const c: any = (G.characters as any)[u.charId];
     const l = screen(); l.renderVals(); l.setTab('outbursts'); const v = l.renderVals();
     expect(TP(v)).toMatchObject({ key: 'tp-outbursts', hasBare: true, bareHeadline: (SKILL.will_power as any).door_bare_headline });
-    expect(TP(v).bareLine).toMatch(/\+2 Strain/); expect(TP(v).bareLine).not.toMatch(/\{=/);
+    expect(TP(v).bareLine).toContain('+' + (SOUL_RULES as any).cycle.no_emanator_strain + ' Strain'); expect(TP(v).bareLine).not.toMatch(/\{=/);
     c.offHand = { id: FOCUS_IDS.emanator[0] }; (G.combat as any).units.find((x: any) => x.id === u.id).mg = magicOf(c); snap = view();
     expect((G.combat as any).units.find((x: any) => x.id === u.id).mg.emanator).toBe(true);
     expect(TP(screen().renderVals()).hasBare).toBe(false);

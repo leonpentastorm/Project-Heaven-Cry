@@ -21,7 +21,7 @@
     "begin_strain": 1,
     "swell_strain": 1,
     "flooded_strain": 2,
-    "no_emanator_strain": 2,
+    "no_emanator_strain": 4,
     "free_pumps": [
       {
         "will_power": 3,

@@ -60,7 +60,7 @@ export function heldOutburstOf(m: any, designs?: any[], limit?: number, ctx: Hea
   let flooded = false; try { flooded = mana != null && (E as any).manaBand?.(mana)?.id === 'flooded'; } catch { /* no band */ }
   const emanator = m?.emanator ?? m?.heart?.emanator ?? true;
   const debt = Number(m?.debt ?? m?.heart?.debt ?? 0) || 0;
-  let begin = (flooded ? cyc.flooded_strain ?? 2 : cyc.begin_strain ?? 1) + (emanator ? 0 : cyc.no_emanator_strain ?? 2);
+  let begin = (flooded ? cyc.flooded_strain ?? 2 : cyc.begin_strain ?? 1) + (emanator ? 0 : cyc.no_emanator_strain);
   // The engine's own price for a Begin (items can change it): only when nothing is held, and only when the preview got
   // as far as pricing (its AP is set past the 'outburst_cost' hook).
   const ds0 = designs || m?.designs || [];
@@ -147,7 +147,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   const held = !!hh.held, steady = !!hh.held?.steady, b = hh.beginStrain;
   const calm = 'Falls by 1 at the start of each of your turns, and more by calming the heart on top of that −1: a still turn with nothing held, your first weapon attack of the turn, tending an ally, letting go (by its stage, at most what its swells cost) or Steady (1 AP).';
   const sgn = (n: number) => (n > 0 ? '+' + n : n < 0 ? '−' + -n : '±0');
-  const why = (hh.flooded ? ' (Flooded)' : '') + (hh.emanator ? '' : ' (+' + (Number(SOUL().cycle?.no_emanator_strain) || 2) + ' from the air: no Emanator)');
+  const why = (hh.flooded ? ' (Flooded)' : '') + (hh.emanator ? '' : ' (+' + Number(SOUL().cycle?.no_emanator_strain) + ' from the air: no Emanator)');
   // Where Strain stands when your next turn starts (its −1 first; then a held Outburst swells), and the next step:
   // holding → that turn start; not holding → your next Begin.
   const atTurn = hh.onTurn ? s : Math.max(0, s - hh.turnCalm);

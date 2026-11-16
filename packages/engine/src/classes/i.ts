@@ -23,7 +23,7 @@ import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, hasAttuner, packOf, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
   classResources, migrateDesign, quiversOf, setQuivers, quiverHolds, magazineSize,
 } from '../character';
-import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
+import { WEAPON, SIGIL, SCHOOL, SOUL_REV, SOUL_RULES, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
 import { term, amountOf } from '../effects/output';
 import { rawItem } from '../effects/collect';
@@ -116,7 +116,7 @@ function soulPrice(h: Holder, school: string, baseMp: number, extraStrain = 0): 
   if (!m) return { mp: 0, ap: 2, range: SOUL_REACH, strain: 0 }; // no magic: the move is greyed with the reason (soulReady); a preview asked anyway must not throw
   const d: any = { id: 'class:' + h.itemId, name: h.info.name, school, modules: [] };
   const mp0 = Math.max(5, Math.round(baseMp * manaBand(manaOf(cb)).soul_cost_mult * (1 - (m.costSave || 0)))) * (condOn(u, 'rdebuff') ? condMods('rdebuff').soulCostMult ?? 1 : 1);
-  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: mp0, ap: Math.max(1, m.soulAp || 2), range: SOUL_REACH + (m.soulRange || 0), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2) + extraStrain, hp: 0, release: true, preview: true, cb, classMove: true });
+  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: mp0, ap: Math.max(1, m.soulAp || 2), range: SOUL_REACH + (m.soulRange || 0), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : SOUL_RULES.cycle.no_emanator_strain) + extraStrain, hp: 0, release: true, preview: true, cb, classMove: true });
   return { mp: Math.max(0, Math.round(oc.mp)), ap: Math.max(0, oc.ap), range: oc.range, strain: Math.max(0, oc.strain) };
 }
 /** Pay a Soul cast: MP (or nothing from the air without an Emanator), the meter drops MP ÷ 10, Strain (and the Mana
@@ -1324,7 +1324,7 @@ export function castGift(cb: Combat, rng: Rng, bard: Unit, ally: Unit, designId:
   const was = bard.pos; bard.pos = ally.pos;
   const held = m.held;
   try { m.held = { design: d.id, stage: GIFT_STAGE, cost, tone: toneOf(d), form: formOf(d), turns: 0, v: SOUL_REV }; freely(bard, () => releaseOutburst(cb, rng, bard, formOf(d) === 'aura' ? ally.pos : aim)); } finally { bard.pos = was; m.held = held; } // the ally paid: the giver's release takes nothing
-  say(cb, ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb) + (m.emanator ? 0 : 2)));
+  say(cb, ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb) + (m.emanator ? 0 : SOUL_RULES.cycle.no_emanator_strain)));
   return null;
 }
 /** The ally's cast of a Gift in a fight (combat/gift {unitId, aim}): the Bard in this fight whose Gift (this rest) the
