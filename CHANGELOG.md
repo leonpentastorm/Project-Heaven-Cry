@@ -63,6 +63,84 @@ faults (F1 to F7), built on the 0.30.0 release.
   with that line put back all 29 play as recorded, and the end states differ in their effects only. Golden damage
   tables unchanged.
 
+### Pressure is Dexterity's (lane 0.31-dex)
+
+Rules revision 1.63, spec items 4800 to 4822, every new number PROVISIONAL. From Leon's live play of 0.30.0: a Dexterity
+melee build got nothing from its door, the knife showed Pull Out with no Throw, and Rite in the Field boosted a glyph.
+The lead's rulings D1 to D7. One closed-list addition, approved: the predicate `rolled_with`.
+
+### Pressure at arm's length (rules 1.63 items 4800 to 4810)
+
+- **Pressure is Dexterity's door, not the gun's.** An attack rolled with Dexterity (a gun, a bow, a throw, a light blade,
+  a Dexterity glove, the Open Hand's gloves when they pick Dexterity) lays and reads Pressure. A blow rolled with
+  anything else sheds your own Pressure as before.
+- **The predicate `rolled_with`.** The skill an attack rolls with is decided once (`combat.ts previewAttack`: the
+  weapon's own, or a `roll_with`'s pick) and carried as `via` on the attack's events and the damage's source.
+- **The melee pip.** A Dexterity blow adds 1 Pressure to its target, at most 2 a target a turn (`skills.json
+  dexterity.unlocks.1`, row `pressing_blade`), and does not shed your own.
+- **Flush Out's blade twin** (Dexterity 5): a Pressed foe you hit with a Dexterity blow saves or is Afraid of you for 1
+  round, once a turn.
+- **The door's pieces read Dexterity, not range:** Near Miss, Pressure Point, Keep Their Heads Down, the four Pressure
+  forks, the Skirmisher's Fire and Move and Relocated, and Trick Shot (a blow carries through; the cover clause stays
+  ranged). Texts reworded ("Strike, step, strike").
+- **Bug fixed on the way:** `melee: false` on `attack_roll` and `to_hit` was always true (those events carried no
+  `melee`), so Fire and Move armed on any blow and Relocated's +1 went on every roll to hit, spells included.
+- **Guns do not move:** every gun rolls with Dexterity; no golden gun line moved and the balance contract passes.
+
+### The knife (item 4811)
+
+- **Throw costs no Momentum** (`techniques.json throw.numbers.momentum_cost` 0): a knife, throwing knives or a hatchet
+  can open from range.
+- **The sheet shows where Throw comes from:** the ARMS tab lists the techniques a held weapon's properties give ("COMES
+  WITH THROWN"), Pull Out says "ONLY WHILE A WEAPON IS STUCK", and the weapon line reads "Thrown: Throw".
+- **Pull Out's damage goes through the one damage path** (the weapon's scaling, the melee factor) instead of its own
+  formula: a knife at Agility 7 pulls out for 14, was 1 after armour.
+
+### Rite in the Field (item 4813)
+
+- In a fight it cuts **Crystallise** by 1 AP (II: 2), never below 1 (Steady was dropped in review: item 4820). It no longer cuts
+  the WARD glyph, prayers, Ward moves or a Guarded Begin. Data rows now; the hand-coded perk and its second Crystallise
+  button are gone (the lint baseline shrinks). Cutting Name It waits on a price predicate on a Call's id (for the lead).
+
+### Measured (item 4812)
+
+- On the range (percent of the plain rifle, levels 1 / 6 / 10, Dexterity 7): the knife with both perks 89 / 97 / 99 ->
+  96 / 109 / 109; the striking gloves 82 / 113 / 109 -> 88 / 127 / 121; 1.3 to 1.4 pips a turn (none before). Under
+  the melee line (165%), so the pip limit stays 2.
+- Survival stage 1, 20 seeds solo: the knife 0 -> 2 cleared, the Dexterity monk (Hand wraps) 10 -> 18.
+- The door-builds simulator has `dex_knife` and `dex_monk` from now on; `test/balance/dex-melee-measure.test.ts`
+  measures them (`DEX_MELEE=1`).
+- For the lead: the sabre and the gladius in an all-in Dexterity build were already over the melee line and gain 8 to
+  24 points more.
+
+### Moved on purpose
+
+- Golden tables: the Dexterity blade rows (the door row's use counter and log line; Fear on a Pressed foe; Throw's
+  Momentum; Pull Out's damage), the marksman's and the shelved gun classes' blow lines (Fire and Move), Rite in the
+  Field's rows. No gun line.
+- 16 of the 29 replays (REPLAY_FULL), re-recorded: Dexterity blows, the Skirmisher's moves on non-Dexterity rolls, and
+  Rite in the Field in the magic games.
+
+### Review fixes (items 4818 to 4822)
+
+- **A throw rolls with Dexterity whatever is thrown** (item 4818): `combat.ts weaponVia` answers a throw's skill from
+  data (`rules.json combat.attack.skill_by_attack.thrown`) and the throw is aimed by that same answer. A Raw Power
+  weapon thrown (an ork machete) rolled with Dexterity but carried `raw_power`, so Pressure Point, Keep Their Heads
+  Down, the Skirmisher's moves, the forks and Trick Shot never saw it. New reducer test.
+- **Flush Out's blade twin never frightens an Elite or a Boss** (item 4819, `target_not_tier`): two Dexterity blows a
+  turn put a free Fear on a solo Boss about half its turns. The paid Flush still can. Stage 1 solo, 20 seeds:
+  `dex_knife` 1 cleared (was 2), `dex_monk` 16 (was 18).
+- **Rite in the Field drops Steady** (item 4820): Steady costs 1 AP and the floor is 1, so its clause cut nothing; the
+  card now promises only the Crystallise cut. The test proves the cut from the rows and that Steady is untouched.
+  Name It still waits on a price predicate on a Call's id (for the lead).
+- **The pip limit stays 2** (item 4821): measured at limit 1, the sabre stays 40 to 50 points over the melee line (it is
+  over before any pip) while the knife and the gloves lose most of what their perks gave. For the lead: a refit ticket
+  for the sabre and the gladius in Dexterity hands.
+- **Moved on purpose:** 39 golden technique lines, all a Dexterity blade (combat knife, Evoker blade, sabre) against an
+  Elite (the twin's use counter and its save are gone); 5 of the 29 replays (`cover-4v6-guns-blades`,
+  `open-4v6-guns-blades`, `open-4v3-level3`, `proving-4v12-guns`, `cover-4v7-blades-walk-away`), each moved first at a
+  Dexterity blade's blow on an Elite or a Boss (the save no longer drawn). No gun line moved.
+
 ## 0.30.1 — a hotfix: an item's own action in a Survival run, injuries treated in a run, the shelves cleared of Narrator-only items
 
 From Leon's playtest of live 0.30.0 (rules 1.61 addendum, Core Rules items 4740 to 4767). Replays re-recorded on purpose: `proving-doors-hiding-watches-wave6` (its stream hash only, after int/0.30's text sweep of log lines); any further one is named in its commit.

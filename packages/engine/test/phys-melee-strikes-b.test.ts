@@ -236,7 +236,7 @@ describe('Throw', () => {
     expect(pv.notes.some((n) => /lands at G5/.test(n))).toBe(true);
     rig({ hit: true, die: 12 }); const hp = f.foe.hp;
     expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
-    expect(hp - f.foe.hp).toBe(hpLost(pv)); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(4); // a Strike: the fight's 1 is spent, the hit gives none
+    expect(hp - f.foe.hp).toBe(hpLost(pv)); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(4); // a Strike that costs no Momentum (rules 1.63, D5): the fight's 1 is kept, the hit gives none
     expect(f.pc.weapon).toBe('fists'); expect(f.char(f.pc).weapon).toBe('fists');
     expect((f.foe.stuck || []).map((x: any) => x.weapon)).toEqual(['combat_knife']); // a hit: the knife stays in the target (0.18.1)
   });
@@ -244,7 +244,7 @@ describe('Throw', () => {
     const f = fight('sabre', far);
     const pv = f.pv('throw', { targetId: f.foe.id }); expect(pv.attacks[0].pv.terms!.find((x) => /not a throwing weapon/.test(x.label))?.v).toBe(-2); expect(hasMult(pv, 0.7)).toBe(true);
     rig({ hit: false, die: 3 }); const hp = f.foe.hp; expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
-    expect(f.foe.hp).toBe(hp); expect(f.momentum(f.pc)).toBe(0);
+    expect(f.foe.hp).toBe(hp); expect(f.momentum(f.pc)).toBe(1); // rules 1.63 (D5): Throw costs no Momentum
     expect(pileAt(f.cb.objects || [], f.foe.pos)!.items!.some((x: any) => (x.item || x.pack?.weapon) === 'sabre')).toBe(true);
     expect(f.pc.weapon).toBe('fists');
   });

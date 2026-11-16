@@ -26,6 +26,18 @@ reg({ id: 'heartreader', label: 'Heartreader', way: 'l', kit: 'soldier', main: '
   weights: { empathy: 0.6, camaraderie: 0.25, dexterity: 0.15 }, allin: ['empathy', 'camaraderie', 'dexterity'], spare: ['determination', 'endurance', 'virtue'],
   perks: [], techniques: 'default', note: 'The All-in Soul empath (archetypes.json heartreader): Empathy 7, Camaraderie 3. Class: Mender (Insight).' });
 
+// Rules 1.63 (0.31, Pressure is Dexterity's): the Dexterity melee builds, measured from now on beside the doors. The
+// All-in Deadeye sheet (Dexterity 7) with a light blade or the Dexterity gloves instead of a gun; perk steps in its two
+// alpha perks (Pressure Point, Keep Their Heads Down); forks only when a measure names them (builds.ts STEPS.forks).
+const DEX_MELEE = { way: 'm', kit: 'soldier', main: 'dexterity', classId: 'marksman', armour: 1,
+  weights: { dexterity: 0.36, athletics: 0.16, reaction_speed: 0.12, pain_threshold: 0.14, guts: 0.12, vigilant: 0.10 },
+  allin: ['dexterity', 'athletics', 'reaction_speed', 'pain_threshold', 'guts', 'vigilant'], spare: ['endurance', 'strength', 'perception'],
+  perks: ['both_hands', 'running_reload'], techniques: ['lunge', 'coup', 'hamstring', 'riposte', 'parry', 'sidestep', 'half_sword', 'feint'] };
+reg({ id: 'dex_knife', label: 'Dexterity knife', policy: 'breaker', weapon: 'combat_knife', ...DEX_MELEE,
+  note: 'The All-in Deadeye sheet (Dexterity 7) with the combat knife: Pressure laid at arm\'s length (rules 1.63). Class: Skirmisher.' });
+reg({ id: 'dex_monk', label: 'Dexterity monk', policy: 'monk', weapon: 'striking_gloves', ...DEX_MELEE, techniques: 'default',
+  note: 'The All-in Deadeye sheet (Dexterity 7) with the striking gloves (the Open Hand): Pressure laid by its blows (rules 1.63). Class: Skirmisher.' });
+
 /** The all-in member of each door (survival-run.ts MEMBER rows). */
 export const DOOR_MEMBERS: Record<string, any> = {
   bulwark: { build: 'wall', variant: 'allin', level: 1, policy: 'bulwark' },
@@ -38,5 +50,8 @@ export const DOOR_MEMBERS: Record<string, any> = {
   channeler: { build: 'outburst', variant: 'allin', level: 1, policy: 'outburstRunT' },
   chaplain: { build: 'faith', variant: 'allin', level: 1, policy: 'chaplain' },
   monk: { build: 'opt_blade', variant: 'allin', level: 1, policy: 'monk', camp: 'hand_wraps' },
+  // rules 1.63 (0.31): the Dexterity melee builds (Pressure at arm's length)
+  dex_knife: { build: 'dex_knife', variant: 'allin', level: 1, policy: 'breaker', camp: 'combat_knife' },
+  dex_monk: { build: 'dex_monk', variant: 'allin', level: 1, policy: 'monk', camp: 'hand_wraps' },
 };
 export const DOORS = Object.keys(DOOR_MEMBERS);

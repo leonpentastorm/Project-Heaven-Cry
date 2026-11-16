@@ -41,7 +41,7 @@ import { NO_EMANATOR_STRAIN, designInfo, reachWords, designCards, designVerdict,
 import { actionVerdict } from '../game/verdict';
 import { oocOf, SECOND_SCHOOL, TONE, isShieldId } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
-import { armsTabVals } from './armsTab';
+import { armsTabVals, propTechniques } from './armsTab';
 import { figmentSectionVals } from './figmentsTab';
 import { STORY_PANEL_NAME, STORY_PANELS_CSS, readStoryPanels, saveStoryPanels, isDefaultOrder, startStoryDrag, keyMoveStoryPanel, squadMinHeight, SQUAD_SEATS, SQUAD_ROW_PX, SQUAD_GAP_PX } from '../game/storyPanels';
 import { panelsOf, PANEL_DRAW, offersAreaMap } from '../game/panels';
@@ -50,7 +50,9 @@ import { panelsOf, PANEL_DRAW, offersAreaMap } from '../game/panels';
 /** Rules 1.55: the engine's two skill lines of a weapon in this character's hands ("Hits with Dexterity · +3 · Damage: Strength · +30%";
  *  a focus still says "Damage scales with …"). A label ending in "with" runs into its value, any other takes a colon. */
 const skillLine = (c, inst) => (c && inst && inst.id && (WEAPON[inst.id] || ITEM[inst.id]?.focus) ? gearPreview(c, inst).lines.filter((l) => SHEET_LINE_KEYS.includes(l.key) && !(l.key === 'recoil' && l.num === 0)).map((l) => l.label + (/ with$/.test(l.label) ? ' ' : ': ') + l.value).join(' · ') : '');
-const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
+const capWord = (p) => p.charAt(0).toUpperCase() + p.slice(1);
+// rules 1.63 (D5): the line also names what the weapon's properties give (armsTab.js propTechniques: "Thrown: Throw")
+const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid), pt = propTechniques(wid).filter((x) => x.id !== t); return [pr.length ? pr.map(capWord).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : '', ...pt.map((x) => capWord(x.prop) + ': ' + (phys.TECHNIQUE[x.id]?.name || x.id))].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView, shieldsView } from '@engine';

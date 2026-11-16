@@ -12,7 +12,7 @@ import type { CostSite, StatId } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlockedOf, type ReactKind } from '../tactics';
-import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp, setStrikeRider, strikeRider, pairs, withOffHand, offWear } from '../combat';
+import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp, setStrikeRider, strikeRider, pairs, withOffHand, offWear, weaponVia } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
 import { mod, holds as holdsGear, isShieldId, followsId } from '../character';
@@ -458,8 +458,9 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
       // the round this strike fires (Load Special, the quiver): on the gun for the roll, put back after
       const rd = fires ? roundFor(t, tgt) : null, type0 = u.ammoType; if (rd) u.ammoType = rd.type;
       try {
-        // A thrown weapon is aimed with Dexterity, whatever the weapon hits with (a unit with no sheet uses its own bonus).
-        const atk0 = u.attack; if (o.thrown && t.c) u.attack = mod((t.c.skills as any).dexterity || 0);
+        // A thrown weapon is aimed with the throw's skill (combat.ts weaponVia: Dexterity), whatever the weapon hits with
+        // (a unit with no sheet uses its own bonus).
+        const atk0 = u.attack; if (o.thrown && t.c) u.attack = mod((t.c.skills as any)[weaponVia(u, 'thrown')] || 0);
         // In a preview nothing has been spent yet: the rolls this technique has already shown count as fired (rounds,
         // Heat, and Recoil unless the technique is one volley), so each later roll's card is the roll it will be.
         const n = t.preview && fires ? st.rolls || 0 : 0, keep = { ammo: u.ammo, heat: u.heat, shots: u.shotsThisTurn, jammed: u.jammed };

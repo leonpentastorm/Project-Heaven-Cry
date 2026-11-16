@@ -4,7 +4,8 @@
 //   never a forced move, a Link's or a technique's own step, a free step); −1 a damaging hit taken, unless guarding
 //   (the Guard technique up, the hit Parried, Guard points held); it carries from turn to turn
 //   a ranged hit: +1 Pressure, the first on each target each turn (+1 more past cover it is using; +2 unseen and Silent)
-//   a melee hit: the attacker sheds 1 Pressure
+//   a melee hit: the attacker sheds 1 Pressure, unless it rolled with the door's skill (rules 1.63: Dexterity); a
+//   Dexterity-rolled blow's own pip is a data row on the door (skills.json dexterity.unlocks.1)
 //   a kill by a ranged attack: +1 to every other enemy within 3 tiles that saw it; drill for everyone who hit the victim
 //   a turn's start: the held Watch ends; an enemy Suppressed loses 1 AP, Broken 2
 //   a turn's end: Pressure falls by 1 (2 in cover and unseen, or closer to the nearest enemy than the turn began)
@@ -35,7 +36,10 @@ onHook('on_hit', (ctx: any, cb) => {
   // who hit whom this round and with what (Crossfire; drill credit on the kill)
   (tgt.hitRound ||= {})[att.id] = cb.round;
   if (ctx.dmg > 0) hitWith(tgt, att.id, ctx.mode === 'melee' && WEAPON[att.weapon] ? strikeWeapon(att, 'melee').id : att.weapon);
-  if (ctx.melee) { if (pressureOf(att) && !strikeNoPressure(att)) lowerPressureOf(cb, att, P().melee_hit_sheds, 'fighting it out'); return; } // a follow sheds none (rules 1.58, N4)
+  // a blow in melee sheds the attacker's own Pressure (a follow sheds none: rules 1.58, N4), unless it was rolled with the
+  // Pressure door's skill (rules 1.63: Pressure is Dexterity's; its melee pip is a data row on the door, skills.json
+  // dexterity.unlocks.1); either way a blow lays nothing here
+  if (ctx.melee) { if (ctx.via !== P().door && pressureOf(att) && !strikeNoPressure(att)) lowerPressureOf(cb, att, P().melee_hit_sheds, 'fighting it out'); return; }
   // the first ranged hit on this target this turn (a technique that gives its own Pressure for the hit still uses it up)
   const stamp = turnStamp(cb), pt = att.pressedThis?.t === stamp ? att.pressedThis : (att.pressedThis = { t: stamp, ids: [] as string[] });
   if (pt.ids.includes(tgt.id)) return; pt.ids.push(tgt.id);

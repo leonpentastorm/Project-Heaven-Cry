@@ -825,7 +825,7 @@
           "name": "Fire and Move",
           "ap_cost": 0,
           "uses": "per_turn",
-          "text": "Once a turn, after a ranged attack, a move of {=effects.1.if.path_tiles_at_most} tile costs no AP and draws no opportunity attack. Shoot, step, shoot: standing still is the wrong answer.",
+          "text": "Once a turn, after an attack you roll with Dexterity (a shot, a throw, a light blade's cut, a glove's blow), a move of {=effects.1.if.path_tiles_at_most} tile costs no AP and draws no opportunity attack. Strike, step, strike: standing still is the wrong answer.",
           "effects": [
             {
               "op": "mark",
@@ -833,7 +833,7 @@
               "flag": "fired",
               "if": {
                 "own_turn": true,
-                "melee": false
+                "rolled_with": ["dexterity"]
               }
             },
             {
@@ -895,7 +895,7 @@
           "name": "Relocated",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Your first ranged attack after you move on your turn is at +{=effects.1.value} to hit, and a hit adds {=effects.2.value} more Pressure.",
+          "text": "Your first attack rolled with Dexterity (a shot, a throw, a light blade's cut, a glove's blow) after you move on your turn is at +{=effects.1.value} to hit, and a hit adds {=effects.2.value} more Pressure.",
           "effects": [
             {
               "op": "mark",
@@ -918,7 +918,7 @@
               "if": {
                 "actor": "self",
                 "flag": "relocated",
-                "melee": false
+                "rolled_with": ["dexterity"]
               }
             },
             {
@@ -929,7 +929,7 @@
               "target": "target",
               "if": {
                 "flag": "relocated",
-                "melee": false,
+                "rolled_with": ["dexterity"],
                 "own_turn": true
               },
               "and": [
@@ -946,7 +946,7 @@
               "flag": "relocated",
               "clear": true,
               "if": {
-                "melee": false,
+                "rolled_with": ["dexterity"],
                 "own_turn": true
               }
             },

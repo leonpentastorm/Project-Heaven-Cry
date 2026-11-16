@@ -6,6 +6,7 @@
 // the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit (plan
 // section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
 import { isPressed } from '../physical/pressure';
+import { PHYS_RULES } from '../physical/data';
 import { register, stateOf, uses, note, postStory, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
 import { itemAmount, amountMult } from '../effects/amounts';
 import { term } from '../effects/output';
@@ -169,11 +170,14 @@ register({
 // ---------- Hot-Swap (Proficiency β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Trick Shot (Dexterity Mastered) ----------
-// Once per turn, a ranged attack can ricochet (the Ricochet toggle on Attack): it ignores half cover (no −5, never
-// stopped by cover; full cover still blocks sight), and on a hit the nearest other enemy within 2 tiles of the target,
-// in the target's line of sight, takes half of what the target lost (rounded down, at least 1, no second armour; plan
-// 6b; PROVISIONAL). A mod 'trick_shot_target:<unitId>' picks the second target. Burst and auto: the first round only.
+// Once per turn, an attack rolled with Dexterity can ricochet (the Ricochet toggle on Attack; rules 1.63: Pressure's door
+// skill, PHYS_RULES.pressure.door, read through the attack's `via`): a ranged one ignores half cover (no −5, never
+// stopped by cover; full cover still blocks sight); on a hit, the nearest other enemy within 2 tiles of the target, in
+// the target's line of sight, takes half of what the target lost (rounded down, at least 1, no second armour; plan 6b;
+// PROVISIONAL): a ranged attack's round bounces, a blow's is a Carry-through. A mod 'trick_shot_target:<unitId>' picks
+// the second target. Burst and auto: the first round only.
 const tsLeft = (h: Holder) => uses(h).left('per_turn', 1) > 0;
+const tsDoor = (): string => (PHYS_RULES.pressure as any).door;
 function ricochetTarget(cb: Combat, att: Unit, tgt: Unit): Unit | null {
   const pick = (cb.mods || []).map((m) => /^trick_shot_target:(.+)$/.exec(m)?.[1]).find(Boolean);
   const ok = (v: Unit) => v !== tgt && v !== att && v.side !== att.side && alive(v) && dist(v.pos, tgt.pos) <= 2 && lineOfSight(cb, tgt.pos, v.pos);
@@ -183,19 +187,19 @@ function ricochetTarget(cb: Combat, att: Unit, tgt: Unit): Unit | null {
 register({
   id: 'trick_shot', claims: 'all',
   toggles: [{ id: 'ricochet', label: 'Ricochet', on: ['combat/attack'],
-    available: (h) => (!h.u || isMelee(WEAPON[h.u.weapon]) ? false : tsLeft(h) ? true : 'Used this turn.'),
-    preview: () => 'Once a turn: this shot ignores half cover. If it hits, half the damage bounces into another enemy within 2 tiles of the target.' }],
+    available: (h) => (!h.u ? false : tsLeft(h) ? true : 'Used this turn.'),
+    preview: () => 'Once a turn, an attack you roll with Dexterity: a shot ignores half cover; if it hits, half the damage goes on into another enemy within 2 tiles of the target (a blow\'s Carry-through).' }],
   on: {
     attack_preview: (ctx, h) => { if (ctx.att === h.u && !ctx.melee && modOn(h, 'ricochet') && tsLeft(h)) ctx.ignoreCover = true; },
     on_hit: (ctx, h) => {
-      const cb = h.cb; if (ctx.att !== h.u || ctx.melee || !cb || !modOn(h, 'ricochet') || !uses(h).take('per_turn')) return;
-      const t2 = ricochetTarget(cb, ctx.att, ctx.tgt); if (!t2) { say(cb, '(Ricochet: nobody within 2 tiles of ' + ctx.tgt.name + '.)'); return; }
-      const n = Math.max(1, Math.floor((ctx.dmg || 0) * amountMult('perk:trick_shot', 'ricochet', 'share'))), r = applyDamage(cb, t2, n, { by: ctx.att, type: 'weapon', ranged: true, shield: true, credit: 'all', weapon: ctx.att.weapon });
-      emitFx(cb, 'shot', { unit: ctx.att.id, target: t2.id, from: ctx.tgt.pos, to: t2.pos, weapon: ctx.att.weapon, cat: WEAPON[ctx.att.weapon]?.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: r.amount, killed: r.killed, chain: true, ricochet: true });
-      say(cb, 'The round ricochets into ' + t2.name + ' (Trick Shot): ' + r.amount + ' damage' + (r.killed ? (t2.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
+      const cb = h.cb; if (ctx.att !== h.u || ctx.via !== tsDoor() || !cb || !modOn(h, 'ricochet') || !uses(h).take('per_turn')) return;
+      const t2 = ricochetTarget(cb, ctx.att, ctx.tgt); if (!t2) { say(cb, '(' + (ctx.melee ? 'Carry-through' : 'Ricochet') + ': nobody within 2 tiles of ' + ctx.tgt.name + '.)'); return; }
+      const n = Math.max(1, Math.floor((ctx.dmg || 0) * amountMult('perk:trick_shot', 'ricochet', 'share'))), r = applyDamage(cb, t2, n, { by: ctx.att, type: 'weapon', melee: !!ctx.melee, ranged: !ctx.melee, via: ctx.via, shield: true, credit: 'all', weapon: ctx.att.weapon } as any);
+      emitFx(cb, ctx.melee ? 'melee' : 'shot', { unit: ctx.att.id, target: t2.id, from: ctx.tgt.pos, to: t2.pos, weapon: ctx.att.weapon, cat: WEAPON[ctx.att.weapon]?.category, mode: ctx.melee ? 'melee' : 'shot', hit: true, crit: false, fumble: false, dmg: r.amount, killed: r.killed, chain: true, ricochet: true });
+      say(cb, (ctx.melee ? 'The blow carries through into ' : 'The round ricochets into ') + t2.name + ' (Trick Shot): ' + r.amount + ' damage' + (r.killed ? (t2.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
       checkOver(cb);
     },
-    on_miss: (ctx, h) => { if (ctx.att === h.u && !ctx.melee && modOn(h, 'ricochet')) uses(h).take('per_turn'); },
+    on_miss: (ctx, h) => { if (ctx.att === h.u && ctx.via === tsDoor() && modOn(h, 'ricochet')) uses(h).take('per_turn'); },
   },
   brief: () => null,
 });

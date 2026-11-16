@@ -1074,7 +1074,7 @@ Each weapon also names the skill its attacks roll (**hits with**) and what its d
 
 1. **Momentum** runs 0 to 3 for everyone holding a melee weapon (a Fighter: 5). **A fight starts with 1.**
 2. **Only the plain attack gives Momentum:** +1 when it hits. That is Cut, a plain swing with any melee weapon, fists included. No other technique's hit gives any, and no technique gives it by its text, with two exceptions: Parry's Light line (+1), and Shield Bash's hit (+1), which pays Guard for it.
-3. **A Strike and an Opener each spend 1 Momentum** when used, and can't be used without it. Cut and Pull Out are free and spend none; Ambush costs none. **The first Opener you use in each fight costs no Momentum.** Links and Answers spend none.
+3. **A Strike and an Opener each spend 1 Momentum** when used, and can't be used without it. Cut and Pull Out are free and spend none; Ambush costs none. *(Rules 1.63, item 4811: Throw costs none too.)* **The first Opener you use in each fight costs no Momentum.** Links and Answers spend none.
 4. **The chain** is the melee techniques of one turn, in order:
    - an **Opener** is only the first of them;
    - **Strikes** and **Links** follow in any order (a Link costs 1 AP and deals no damage);
@@ -1164,8 +1164,8 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 | 11 | **Hamstring** | weapon | Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. | **Edge:** no save. **Hook:** Prone instead of Slowed. **Point:** it also can't Sprint or Disengage while Slowed. |
 | 12 | **Bind** | weapon | No damage. Lock the target's weapon with yours: until your next turn it attacks anyone but you at −2 and can't move away without a Body save. You can't use Reach while binding. | **Hook:** Brain save or it is Disarmed. **Bare:** it is Grappled. **Heavy:** the −2 becomes −4. |
 | 13 | **Half-Sword** | weapon | A short, driven thrust: ×0.8 damage, ignores 10 armour. | **Point:** ignores all armour. **Heavy:** full damage. **Bare or Blunt:** not available (greyed, with the reason). |
-| 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or **Pull Out** from next to it brings it back. On a miss it lands on the target's tile. **Comes with a Thrown weapon** (rules 1.55: the combat knife, throwing knives, the hatchet; any other weapon only when readied). | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
-| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum. Everyone knows it. *(Rules 1.55: the stuck weapon is drawn on the target's token, and the thrower's sheet says where it is.)* | |
+| 14 | **Throw** | weapon | Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or **Pull Out** from next to it brings it back. On a miss it lands on the target's tile. **Comes with a Thrown weapon** (rules 1.55: the combat knife, throwing knives, the hatchet; any other weapon only when readied). *(Rules 1.63, item 4811: it costs no Momentum.)* | **Thrown:** no penalty and full damage. Without Thrown: −2 to hit, ×0.7. **Heavy:** the target makes a Body save or is knocked Prone. |
+| 28 | **Pull Out** † | 1 | Next to an enemy with a thrown weapon stuck in it: wrench it out. The weapon comes back into your hand, the target takes half the weapon's damage and is Bleeding. No roll. It costs no Momentum. Everyone knows it. *(Rules 1.55: the stuck weapon is drawn on the target's token, and the thrower's sheet says where it is.)* *(Rules 1.63, item 4811: the damage is the one damage path's, attackDamage, at half.)* | |
 
 **Links**
 
@@ -2314,7 +2314,7 @@ counter and the dice.
 
 **Still working as before:** the Guardian's Blessed Shells (they seal a Hymn), Under the Eye, and Judgement (which spends 1
 Devotion, now 10 Devotion XP: the only spend besides a Miracle's 5 levels; item 706); Blessing power and the Faith perks; Rite in the Field (it cuts a
-Hymn's or Miracle's AP); the prayer traits; and the Factory Made and The Old Blood hooks on a Blessing landing
+Hymn's or Miracle's AP) *(superseded by rules 1.63, item 4813: it cuts Crystallise and Steady only)*; the prayer traits; and the Factory Made and The Old Blood hooks on a Blessing landing
 (`blessing_in`).
 
 ## Skills, traits and perks in play
@@ -2584,7 +2584,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 - **"Still active" Sigil** (Parallel Thought): one of your placed spells stands: a field (STAY), a trap (WAIT) or a
   turret (WATCH) (rules 1.4). Unfired glyphs, Workings' smoke, light and walls don't count.
 - **Wards and rituals** (Rite in the Field): wards are drawing a WARD glyph, Begin on a Buff (Guarded) Outburst and the
-  Warden's Ward move; rituals are Pray and Crystallise.
+  Warden's Ward move; rituals are Pray and Crystallise. *(Superseded by rules 1.63, item 4813: Rite in the Field cuts Crystallise only (item 4820).)*
 - **Upper-realm beings** are enemies with `kind: upper_realm` (or the tag `upper_realm`) on the Narrator's start_fight
   enemies or the campaign's zone NPCs.
 - **Verse** is declared by the player: Say the line in the fight (free), then Begin with "In verse" (or Release a held
@@ -6772,15 +6772,15 @@ Leon, 15 Nov 2026: "All players need to feel like they do something only they do
 a data field and PROVISIONAL (items 4440 to 4452). Nothing here adds an engine primitive.
 
 1. **Pressure is anyone's, by any ranged hit** (rules 1.12 stand): a gun's, a bow's, a thrown weapon's alike; a blow in
-   melee sheds the attacker's own. Its three states are data, each with a word, a short line and its cost in words
+   melee sheds the attacker's own. *(Rules 1.63, items 4800 to 4803: a blow rolled with Dexterity lays Pressure and sheds none.)* Its three states are data, each with a word, a short line and its cost in words
    (`techniques.json rules.pressure.states`: Pressed "aims worse", Suppressed "loses AP", Broken "loses more AP"); the
    engine's view of a unit (`physView`) reads them, and the map shows the word under the pips.
-2. **Fire and Move** (Skirmisher, gain): once a turn, after a ranged attack on your turn, a move of 1 tile costs no AP
+2. **Fire and Move** (Skirmisher, gain): once a turn, after a ranged attack on your turn, *(rules 1.63, item 4808: an attack rolled with Dexterity)* a move of 1 tile costs no AP
    and draws no opportunity attack (Slipping). Its own item beside Run and Gun (rank III), which keeps its longer step.
    The two share **one free move a turn** (review fix, 16 Nov 2026): whichever is taken puts the state `free_move_spent`
    (conditions.json; it ends with the turn) on the mover, and neither gives a free move while it is on. Run and Gun is
    asked first (`priority` 90), so a rank III Skirmisher's free move is always the longer one, with its Pressure.
-3. **Relocated** (Skirmisher, gain): your first ranged attack after you move on your turn (walk, sprint, disengage) is
+3. **Relocated** (Skirmisher, gain): your first ranged attack after you move on your turn *(rules 1.63, item 4808: attack rolled with Dexterity)* (walk, sprint, disengage) is
    at +1 to hit, and a hit adds 1 more Pressure. The flag clears on that attack's hit or miss and at the end of the turn.
 4. **Break Them** (Skirmisher, gain): Rout costs 1 AP less on your turn, never under 1 (it stacks with Fire Discipline's
    once-a-turn cut).
@@ -6789,7 +6789,7 @@ a data field and PROVISIONAL (items 4440 to 4452). Nothing here adds an engine p
    a. **Slide** (Dexterity 1; a door verb, `data/pressure.json`): 1 AP, once a turn: step to the nearest free tile next
       to cover within 3 tiles (one out of every enemy's view first), drawing no opportunity attack, and shed 1 of your
       own Pressure. With no such tile you stay and still shed it.
-   b. **Near Miss** (Dexterity 3): your ranged shot off your own turn (a held shot: Overwatch, Deny, Cover Me, Dead to
+   b. **Near Miss** (Dexterity 3): your ranged shot off your own turn *(rules 1.63, item 4804: an attack rolled with Dexterity)* (a held shot: Overwatch, Deny, Cover Me, Dead to
       Rights) that misses a hostile still adds 1 Pressure to it, once a turn for each target: a held lane keeps heads
       down even when the round goes wide. (Scoped to held shots so the plain gun line stays where it is: measured, the
       draft's every-miss version lifted the all-in gun ceiling by 2 to 6 points, past the contract's band.)
@@ -7953,7 +7953,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Tool: a one-use plot item; the Narrator decides what it can do.
     - Story: no Proficiency check, one spare-parts charge.
     - PROVISIONAL.
-149. *(C8)* **Trick Shot (6b).**
+149. *(C8)* **Trick Shot (6b).** *(Rules 1.63, item 4809: an attack rolled with Dexterity; a blow carries through.)*
     - It ignores half cover only.
     - The second target takes half of what the first target lost, at least 1, with no second armour roll.
     - The second target must be within 2 tiles of the first and in its line of sight. The default pick is the nearest,
@@ -8055,7 +8055,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Without an Emanator it does nothing: the toggle stays off and isn't offered (Leon, 7 Nov 2026; item 371).
 165. *(D4)* **Resonance.** Allies only. The best discount you've been given waits for your next Begin, and that Begin uses it
     up.
-166. *(D5)* **Rite in the Field** (PROVISIONAL mapping, needs Leon's OK). −1 / −2 AP, in combat only, with these floors:
+166. *(D5)* **Rite in the Field** (PROVISIONAL mapping, needs Leon's OK). *(Superseded by rules 1.63, item 4813.)* −1 / −2 AP, in combat only, with these floors:
     - WARD glyph: 0.5;
     - Guarded Outburst: 1;
     - Pray: 1;
@@ -11315,11 +11315,11 @@ make all the deceision right, the target is FUN and REWARD for the effort you pu
     (`Unit.shieldBy`, set in `grantShield` when a gift is larger than what stood; an equal or smaller one leaves it). The
     shield display names the giver on the base segment and inks it in the giver's door (its alpha skill with the most
     points). An old save has no giver: the segment reads as before. No number.
-4614. **Pressure Point to control (A3):** I: a ranged hit on an enemy already Pressed (Pressure 2+) lays 1 more Pressure
+4614. **Pressure Point to control (A3):** *(Rules 1.63, item 4806: "ranged" is "rolled with Dexterity".)* I: a ranged hit on an enemy already Pressed (Pressure 2+) lays 1 more Pressure
     (once a turn for each enemy), and ranged attacks deal 5% more to a Pressed enemy; II: 1 more Pressure on a Pressed
     one and 1 more again on one already Suppressed (3+), 5% more to a Pressed and 5% more again to a Suppressed one.
     Id, name and tiers kept. PROVISIONAL.
-4615. **Keep Their Heads Down to control (A3):** I: once a turn, a ranged hit on an enemy already Pressed (Pressure 2+)
+4615. **Keep Their Heads Down to control (A3):** *(Rules 1.63, item 4806: "ranged" is "rolled with Dexterity".)* I: once a turn, a ranged hit on an enemy already Pressed (Pressure 2+)
     puts it Off Balance (a Body save: it loses AP on its next turn); II: once a turn for each enemy, with no save. Keyed by
     the resource-amount predicate `target_res` (N10: `{<resource>: {at_least, at_most, at: "max"}}` on self, actor or
     target; `max` reads `effects/cost.ts resMaxOf`, Pressure's by `pressureCap`). Id, name and tiers kept. Measured
@@ -11496,7 +11496,7 @@ only when both of its options are built**: a step with one option is not offered
 4652. **Momentum, the second fork: not offered.** **Spill** waits on N21 (a kill carries no overkill); its cheaper
     wording needs the Momentum a Finisher spent as a number (no source carries it, item 4623). **Headlong** needs only
     approved pieces (N10, N23) but is not built while its step is not offered.
-4653. **Pressure, the first fork (Dexterity 4; runs on the pips):** **Converging Fire**: each ally's ranged hit on a foe
+4653. **Pressure, the first fork (Dexterity 4; runs on the pips):** *(Rules 1.63, item 4807: "ranged" is "rolled with Dexterity" in both forks of each step.)* **Converging Fire**: each ally's ranged hit on a foe
     you have hit this round adds 1 more Pressure, once a round for each foe (your mark: the content condition
     `in_your_sights`, 1 round; the mark does not say whose it is, so with two holders either's mark pays: the text says
     so, 0.30.0 review). **Walk It In**: your ranged attack that misses a foe still lays 1 Pressure on it, once a
@@ -11686,3 +11686,140 @@ every number here is PROVISIONAL.
     joined, won or lost or a field opened (`phase`, proposed): the banners of item 4900 are drawn from the fight's
     state (its phase, `over`, `field`).
 4909. **Items 4900 to 4909 are rules 1.62's.**
+### Rules 1.63 (0.31), Pressure is Dexterity's
+
+Leon, playing live 0.30.0: a melee fighter who puts 7 points into Dexterity "cannot use the perk"; the combat knife
+shows Pull Out with no Throw in sight and the Dexterity door does nothing for it but some damage; Rite in the Field is
+useless on the field and boosts a glyph although it is the Outburst door's talk skill's perk. The lead's rulings D1 to
+D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data field, PROVISIONAL where marked.
+
+4800. **Pressure is Dexterity's door, not the gun's (D1):** an attack **rolled with Dexterity** (a gun, a bow, a throw,
+    a light blade, a Dexterity glove, or a glove whose `roll_with` picked Dexterity: the Open Hand's) lays and reads
+    Pressure; a blow rolled with any other skill still only sheds the attacker's own (`techniques.json
+    rules.pressure.melee_hit_sheds`). The ranged hit's own pip (rules 1.12, the first on each target each turn) is
+    unchanged. *(Supersedes Pressure 2.0 item 1's "a blow in melee sheds the attacker's own" for a Dexterity blow.)*
+    No number.
+4801. **The predicate `rolled_with` (the one closed-list addition, approved by the lead):** words: "the attack, or the
+    damage's source attack, rolls to hit with one of these skills". The skill is decided in ONE place,
+    `combat.ts previewAttack` (`weaponVia`, or the skill `rollWithPick` put in its place), returned as the preview's
+    `via` and carried on `attack_roll`, `on_hit`, `on_miss`, a weapon's `to_hit`, `damage_out` and the damage's source
+    (`src.via`; a damage made outside an attack, `attackDamage`'s other callers, reads the striking weapon's own skill).
+    On `attack` (the preview's own hook, before `roll_with` has spoken) it is not known yet and nothing passes it.
+    Its row is in `data/effect_ops.json item_ops` and `docs/ENGINE-HOOKS.md`. No number.
+4802. **The melee pip (D2):** `skills.json dexterity.unlocks.1` row `pressing_blade`: a hit in melee rolled with
+    Dexterity adds **1** Pressure to its target, at most **2** on a target a turn (`limit.n`). PROVISIONAL: 1, 2
+    (measured, item 4812; the lead's rule: lowered to 1 only if the Dexterity melee build with both perks lands more
+    than about 10 points above the blade's ceiling, which it does not).
+4803. **No shed on a Dexterity blow (D2):** a blow rolled with Dexterity does not shed the attacker's own Pressure
+    (`physical/rules.ts` reads the door's skill, `rules.pressure.door`); any other blow sheds `melee_hit_sheds` (1) as
+    before. It holds for every unit: an enemy's sabre or knife rolls with Dexterity too. No number.
+4804. **Near Miss (D3):** an attack of yours rolled with Dexterity off your own turn (a held shot, a Riposte) that
+    misses still adds 1 Pressure, once a turn for each target (the row's `melee: false` is `rolled_with`). Scope and
+    numbers unchanged (Pressure 2.0 item 5b).
+4805. **Flush Out's blade twin (D3):** row `flush_out_blade`: from Dexterity **5**, a hit in melee rolled with Dexterity
+    on a foe at Pressure **2** or more (Pressed) makes it save (Heart, against your Dexterity) or be Afraid of you for
+    **1** round, once a turn. A Pressed foe you cut saves or is Afraid. PROVISIONAL: 5, 2, 1, once a turn.
+    *(Superseded in part by item 4819: never on an Elite or a Boss.)*
+4806. **The alpha perks (D3):** Pressure Point (`both_hands`) and Keep Their Heads Down (`running_reload`), every tier:
+    `melee: false` and `damage: ["ranged"]` become `rolled_with: ["dexterity"]`; the texts say "your hit rolled with
+    Dexterity"; the tag `guns` is `dexterity`. Numbers unchanged (items 4614, 4615).
+4807. **The forks (D3):** Converging Fire (both rows), Walk It In, Through the Gap and Lockdown gate on `rolled_with`.
+    Converging Fire then counts an ally's Dexterity blow on a foe you marked; Walk It In a Dexterity blow that misses;
+    Through the Gap and Lockdown a Dexterity blow that leaves a foe at its cap. All four read right at arm's length:
+    none had to stay ranged. Numbers unchanged (items 4653, 4654).
+4808. **The Skirmisher (D3):** Fire and Move (its `attack_roll` mark) and Relocated (`to_hit`, `hit`, `miss`) gate on
+    `rolled_with` ("Strike, step, strike"). **A found bug, fixed by the swap:** `melee` was never on the context of
+    `attack_roll` or `to_hit`, so `melee: false` there held for every roll: Fire and Move armed on any blow (a rifle
+    butt, a greatsword) and Relocated's +1 went on every roll to hit, a Sigil's and an Outburst's included. Now on an
+    attack rolled with Dexterity only. Numbers unchanged.
+4809. **Trick Shot (D3, the Mastered perk):** once a turn, an attack rolled with Dexterity (`perks/c.ts` reads the
+    attack's `via` against `rules.pressure.door`): a ranged one ignores half cover as before; on a hit of either, the
+    nearest other enemy within 2 tiles of the target takes half of what the target lost (a shot's ricochet, a blow's
+    carry-through). The cover clause is ranged only. The toggle is offered with any weapon. Numbers unchanged (item 149).
+4810. **Guns do not move (D4):** every ranged weapon a character can hold hits with Dexterity and none takes a
+    `roll_with`, so every swapped row reads the same for every shot (`test/rules163-dex.test.ts` holds the first part).
+    Proven: no golden line keyed by a ranged weapon moved, and the balance contract (`npm run balance`, the gun row at
+    the pin) passes unchanged. What moved is listed in item 4815.
+4811. **The knife (D5):** **Throw costs no Momentum** (`techniques.json throw.numbers.momentum_cost` **0**, PROVISIONAL),
+    so a knife, the throwing knives or a hatchet can open from range; the techniques that cost no Momentum are Cut,
+    Pull Out, Throw and Ambush (and the first Opener of a fight). The sheet's ARMS tab lists, beside the techniques you
+    know, those a held weapon's properties give, read from each technique's `comes_with` (Throw "COMES WITH THROWN"),
+    Pull Out says "ONLY WHILE A WEAPON IS STUCK", and the weapon's line names them ("Thrown: Throw"). **Pull Out's
+    damage goes through the one damage path** (`combat.ts attackDamage`: the stuck weapon's base, its `scales_with`
+    Stat, the Level term, the melee factor and the items', its own rarity and no mods) times `damage_pct` (50,
+    unchanged), as a blow with no roll; it was `weaponDamage` x 50% with Raw Power, a second formula. A combat knife at
+    Agility 7 pulled out of a Soldier (golden `conditions.log`): 1 damage after armour before, 14 now.
+4812. **Measured (D7)** (`test/balance/dex-melee-measure.test.ts`, the shooting range of `sim.ts`: a Soldier's numbers
+    at the level, 5,000 HP, 13 tiles off, never acts; 8 turns, 30 fights a cell; the door-builds' new `dex_knife` and
+    `dex_monk`, the All-in Deadeye sheet, Dexterity 7; perks Pressure Point and Keep Their Heads Down; forks Walk It In
+    and Lockdown). Percent of the plain rifle, before -> after, levels 1 / 6 / 10:
+    - knife, no perks: 88 / 91 / 96 -> 87 / 94 / 99; both perks: 89 / 97 / 99 -> 96 / 109 / 109; with the forks:
+      89 / 97 / 97 -> 96 / 107 / 108.
+    - striking gloves, no perks: 81 / 111 / 113 -> 82 / 110 / 113; both perks: 82 / 113 / 109 -> 88 / 127 / 121; with
+      the forks: 79 / 110 / 107 -> 89 / 126 / 120.
+    - the sabre in the same hands (the Dexterity blade line): no perks 186 / 198 / 206 -> 187 / 205 / 205; both perks
+      176 / 211 / 194 -> 200 / 227 / 217.
+    - Pips laid on the target a character turn: 0 before, 1.3 to 1.4 after; the target reached Pressed, Suppressed and
+      Broken in every fight after (none before): the yard's target never acts, so only its turn-end fall takes pips.
+    - `melee-measure` (the optimised blade build's Dexterity twin, Masterwork, 20 fights), all in, levels 1 / 5 / 10:
+      knife 103 / 96 / 107 -> 115 / 112 / 120; striking gloves 92 / 114 / 137 -> 98 / 121 / 146; sabre 180 / 181 / 238
+      -> 199 / 198 / 246; gladius 173 / 176 / 212 -> 185 / 190 / 227; hand wraps (Raw Power) unchanged.
+    - Survival stage 1 (`party-fit.ts partyRun`, solo, 20 seeds): `dex_knife` 0 -> 2 cleared (mean depth 6.5 -> 7.2);
+      `dex_monk` (the camp's Hand wraps, rolling with Dexterity through the Open Hand) 10 -> 18 cleared (12 -> 14.8).
+    The knife and the gloves with both perks land at 88 to 146%, under the melee line (165%): the pip limit stays 2.
+    *(The review's reading of the stop rule and the pip limit 1 measured: item 4821. Stage 1 after the review: item 4819.)*
+    **For the lead:** the sabre and the gladius were over the melee line before this revision in an all-in Dexterity
+    build, and the perks now working at arm's length lift them 8 to 24 points more.
+4813. **Rite in the Field (D6):** Lore Master's gamma perk (Determination's, the Outburst side) cuts, in a fight, the AP
+    of the heart's rituals, Crystallise and Steady, by **1** (Tier I) or **2** (Tier II), never below **1** AP: data
+    `cost_mod` rows on the cost sites `crystallise` and `steady` (`perks.json rite_in_the_field`). It no longer cuts the
+    WARD glyph, a prayer, a Ward move or a Guarded Outburst's Begin. The hand-coded perk (`perks/d.ts`) and its second
+    Crystallise button are deleted; the engine's own Crystallise shows the cut price; `rite_in_the_field` is out of the
+    `lint-item-ops` baseline. On the field after a fight AP is free (rules 1.55), so no AP perk does anything there: the
+    card says "In a fight". PROVISIONAL: 1, 2, 1. *(Supersedes item 166 and the "Wards and rituals" mapping.)*
+    *(Superseded in part by item 4820: Steady is dropped, the cut is Crystallise's only.)*
+4814. **Not built, for the lead (D6):** cutting Lore Master's own Call, **Name It** (to 0 AP at most), needs a price
+    predicate on the Call's id: Calls are priced at the site `call` with `{ id }` on the context, and no predicate reads
+    a priced action's id (`action` reads the site only; `cond` reads `ctx.id` but means a condition). Listed under
+    "Needs a new primitive"; the Crystallise and Steady part is shipped.
+4815. **Moved on purpose:** the golden tables' Dexterity blade rows (the door row's use counter and its log line on
+    every Dexterity blow; the blade's Fear on a Pressed foe; Throw's Momentum; Pull Out's damage, 1 -> 14 in
+    conditions.log), the marksman's and the shelved gun classes' "blow" lines (Fire and Move no longer arms on a Raw
+    Power blow, item 4808), Rite in the Field's rows (its Crystallise action is gone; its prices); 16 of the 29 replays
+    (REPLAY_FULL; the stream moved by Dexterity blows, the Skirmisher's two moves on non-Dexterity rolls, and Rite in the
+    Field in the magic games; no gun shot reads differently). No gun line of any golden table moved.
+4816. **Unchanged on purpose:** the kill's spill (+1 to the enemies within 3 that saw it) stays a ranged kill's; the
+    ranged hit's own pip stays rules.ts's for every unit. The name "Rite in the Field" is kept (a display rename is
+    Leon's call).
+4817. **Items 4800 to 4822 are rules 1.63's.**
+4818. **The throw's skill is decided once (review):** `combat.ts weaponVia` answers the throw's skill for mode `thrown`
+    from data (`rules.json combat.attack.skill_by_attack.thrown`, Dexterity), whatever the weapon thrown hits with, and
+    `physical/core.ts` aims the throw by that same answer (it had its own Dexterity override, and the attack's `via` read
+    the weapon's own skill: an ork machete thrown rolled with Dexterity but carried `raw_power`, so Pressure Point, Keep
+    Their Heads Down, Relocated, Fire and Move, the forks and Trick Shot never saw it). A throw's conditions are delivered
+    by Dexterity too (rules 1.13 already said so). Every throw, any weapon, now lays and reads Pressure as item 4800 says.
+    No number.
+4819. **Flush Out's blade twin spares Elites and Bosses (review):** the row `flush_out_blade` carries
+    `target_not_tier: ["elite", "boss"]`. Two Dexterity blows take any foe to Pressed (a Boss's cap is 2), and the
+    second's free Fear (a Heart save, no AP, once a turn) cost a solo Boss about half its turns (`npm run try`, a knife
+    at Dexterity 7 against a 5,000 HP Boss: it acted in 3 of 6 rounds, 6 of 6 at Dexterity 4). Frightening an Elite or a
+    Boss is the paid Flush's (item 4805's ranged half), which keeps them. Stage 1 after the change (20 seeds, solo,
+    `DEX-1..20`): `dex_knife` 1 cleared (mean depth 6.7), `dex_monk` 16 (13.8); before it 2 and 18. No new number.
+4820. **Rite in the Field drops Steady (review):** Steady costs 1 AP (`soul_modules.json steady_ap`) and the cut's
+    floor is 1 (the lead's D6), so the Steady clause cut nothing at either tier: it is gone from the rows and the card,
+    which now promise only what happens, Crystallise cheaper by 1 (II: 2), never below 1. The perk still does nothing
+    for a Lore Master with no Emanator until Name It can be priced (item 4814, listed for the lead). No new number.
+4821. **The pip limit stays 2 (review; the D7 stop rule):** the review read the rule as covering the sabre and the
+    gladius in the Dexterity build, which with both perks land 40 to 60 points over the melee line (165%). Measured at
+    limit 1 (`dex-melee-measure`, 30 fights a cell, levels 1 / 6 / 10), percent of the plain rifle:
+    - knife, both perks: 96 / 109 / 109 at 2 -> 89 / 101 / 101 at 1 (no perks 87 / 94 / 99 either way), and the target
+      never reaches Suppressed (Pressed in 0 to 97% of fights): the perks give back almost nothing, Leon's complaint;
+    - striking gloves, both perks: 88 / 127 / 121 -> 82 / 118 / 113;
+    - sabre, no perks 187 / 205 / 205 -> 186 / 203 / 203; both perks 200 / 227 / 217 -> 176 / 213 / 204; with the
+      forks 194 / 214 / 217 -> 193 / 211 / 216.
+    The sabre is over the line before any pip (no perks, 186 to 205%), and limit 1 leaves it 40 to 50 points over while
+    taking most of what the knife and the gloves were given. The excess is the sabre's and the gladius's own damage, not
+    the door's: limit 1 is not applied, and the D7 rule is read as the builds it named (the knife and the monk). **For
+    the lead:** a refit ticket for the sabre and the gladius in Dexterity hands (and a ruling on the reading).
+4822. **Moved on purpose (review):** see `CHANGELOG.md` 0.31.0 "Review fixes" for the golden and replay lines the
+    throw's skill and the Boss rule moved.

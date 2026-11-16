@@ -1221,7 +1221,11 @@ export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: n
   /** Every to-hit term by name (skill, weapon, range, Heat, cover, perks…): they sum to toHit. */
   terms?: Term[];
   /** The damage a hit would do before the target's armour: base, then each multiplier and flat add by name. */
-  dmg?: { base: number; terms: Term[]; mults: Term[]; total: number; crit: number; pierce: number; armour: number } }
+  dmg?: { base: number; terms: Term[]; mults: Term[]; total: number; crit: number; pierce: number; armour: number };
+  /** The skill the attack rolls to hit with (rules 1.63): the striking weapon's own (weaponVia), or the one an item's
+   * roll_with puts in its place (rollWithPick). The attack carries it as `via` (attack_roll, on_hit, on_miss, to_hit and
+   * the damage's source): what the item-op predicate `rolled_with` reads. */
+  via?: string }
 /** 'thrown' (rules 1.12): the held weapon is thrown: a ranged attack at throwing range with line of sight and cover,
  * whatever the weapon is; no rounds, Heat or Recoil. Only a technique makes one (physical/core.ts strike). */
 export type AttackMode = 'shot' | 'aimed' | 'melee' | 'burst' | 'auto' | 'thrown';
@@ -1313,17 +1317,17 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   // fists of a Disarmed blow), THE reading used by the roll, its preview and the gear card (gearpreview.ts)
   const via = weaponVia(att, mode), skillCond = condSkillMod(att, via);
   // op roll_with (rules 1.55): the attack may roll with another skill's modifier in place of that one (one choice: rollWithPick)
-  const rw = rollWithPick(charFor(att), via, hk.rollWith);
+  const rw = rollWithPick(charFor(att), via, hk.rollWith), rolled = rw ? rw.skill : via; // rules 1.63: THE skill the attack rolls with
   const terms: Term[] = [...(rw ? T(att.attack + rw.delta, 'Hits with: ' + rollWithWords(rw)) : T(att.attack, 'skill')), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
     ...T(mode === 'aimed' ? 2 : 0, 'aimed'), ...T(mode === 'auto' ? -2 : 0, 'full auto'), ...T(opts.extra || 0, 'volley'), ...T(rangePenalty, 'range'), ...T(heat, 'Heat'), ...T(armPenalty(att, useW), 'injured arm'),
     ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),
-    ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...T(levelGap(att, tgt, cb) * ENEMY_LEVELS.gap.to_hit_per_level, 'level gap'), ...(hk.terms as Term[]).filter((t) => t && t.v), ...toHitTerms(cb, att, tgt, 'weapon', { mode })]; // the one hook of every roll to hit (rolls.ts)
+    ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...T(levelGap(att, tgt, cb) * ENEMY_LEVELS.gap.to_hit_per_level, 'level gap'), ...(hk.terms as Term[]).filter((t) => t && t.v), ...toHitTerms(cb, att, tgt, 'weapon', { mode, via: rolled })]; // the one hook of every roll to hit (rolls.ts)
   if (hk.ignoreCover && coverTile0) terms.push({ v: 0, label: 'cover ignored' });
   if (farBelow(tgt, att, cb)) terms.push({ v: 0, label: 'far below your level: any hit takes it out' }); // rules 1.15
   const toHit = terms.reduce((t, x) => t + x.v, 0);
   const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
   const who = charFor(att);
-  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: !!opts.ambush && tgt.side !== att.side }) };
+  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, via: rolled, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: !!opts.ambush && tgt.side !== att.side, via: rolled }) };
 }
 /** The live character behind a PC unit, when a game is bound (multipliers come from it). */
 const charFor = (u: Unit): Character | null => { const G = boundGameRef(); return (u.charId && G?.characters?.[u.charId]) || null; };
@@ -1333,7 +1337,7 @@ const charFor = (u: Unit): Character | null => { const G = boundGameRef(); retur
  * flat adds, situational self-multipliers (mults, multiplicative) and target-specific bonuses (vs: fractions that add
  * together and are capped at +100%, plan 6a-1; stackDamage). Special ammo (rules.json ammo_types), the Ambush
  * multiplier, Weakened and the target's Critical damage taken are applied here. */
-export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean} = {}) {
+export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean; /** the skill the attack rolls with (previewAttack's `via`); left out, the striking weapon's own (weaponVia) */ via?: string } = {}) {
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
@@ -1365,10 +1369,10 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (condOn(att, 'sharpened')) M(condMods('sharpened').nextAttackMult ?? 1, 'Sharpened'); // SHARPEN (rules 1.4)
   if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (fx.statuses.includes('stunned') && condOn(tgt, 'stunned')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const tech = strikeTech(att); // THE technique of the blow (one reading: the source, damage_out and on_hit carry the same `tech`)
-  const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null, ...(tech ? { tech } : {}), ...(VOLLEY ? { volley: VOLLEY } : {}) }; // tech and volley (rules 1.56): the technique it is made with and the volley it is made in, on the source too, so its kill says so (the item-op predicates mode, free_tech)
+  const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null, via: o.via ?? weaponVia(att, mode), ...(tech ? { tech } : {}), ...(VOLLEY ? { volley: VOLLEY } : {}) }; // via (rules 1.63): the skill it was rolled with; tech and volley (rules 1.56): the technique it is made with and the volley it is made in, on the source too, so its kill says so (the item-op predicates mode, free_tech)
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
   // tech (rules 1.56, the Momentum chain 2.0): the technique the blow is made with, as on attack_roll and on_hit (`mode` and `free_tech` read it)
-  const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, tech, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0, volley: VOLLEY }; // and the volley it is made in (rules 1.56, the unarmed fighter: the predicate mode)
+  const ctx: any = { att, tgt, mode, melee, via: src.via, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, tech, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0, volley: VOLLEY }; // and the volley it is made in (rules 1.56, the unarmed fighter: the predicate mode)
   emit(cb, 'damage_out', ctx);
   if (ctx.critBonus) { critM = critOf(ctx.critBonus); critTerm.v = critM; }
   amt.add = ctx.add;
@@ -1397,9 +1401,12 @@ export type AttackOpts = { extra?: number; free?: boolean; noAp?: boolean; dmgMu
   /** the technique this attack is a strike of, when it isn't one of the plain attacks (physical/core.ts leaves the free ones out: Cut, Shot, Aimed Shot, Overwatch). A weapon's old on-hit grant fires only on a plain attack */ tech?: string;
   /** this hit gives the attacker no Momentum: a technique's strike that isn't the plain attack (the rework, 10 Nov 2026: only a plain melee attack's hit gives 1) */ noMomentum?: boolean;
   /** fields added to the shot's effects event (a technique's id and roll index: presentation only) */ fx?: Record<string, any> };
+/** The skill a throw is aimed with, whatever the weapon thrown hits with (data/rules.json combat.attack.skill_by_attack.thrown). */
+const THROW_SKILL: string = (() => { const s = (RULES as any).combat?.attack?.skill_by_attack?.thrown; if (typeof s !== 'string' || !SKILL[s]) throw new Error('data/rules.json combat.attack.skill_by_attack.thrown needs a skill id'); return s; })();
 /** The skill a weapon's conditions are delivered by (rules 1.13): the skill it hits with. Melee blows Raw Power; shots,
- * light blades and throws Dexterity. */
-export const weaponVia = (att: Unit, mode: string): string => strikeWeapon(att, mode)?.skill || 'raw_power';
+ * light blades and throws Dexterity. A throw is aimed with THROW_SKILL whatever the weapon (rules 1.63: the one place
+ * the throw's skill is decided; physical/core.ts aims the throw by it). */
+export const weaponVia = (att: Unit, mode: string): string => (mode === 'thrown' ? THROW_SKILL : strikeWeapon(att, mode)?.skill || 'raw_power');
 /** The attacks being resolved, innermost last (a serial each; never saved): what react()'s `event` names, so a unit
  * answers one attack once (rules 1.28, rule 3 of reactions-spec.md). */
 const ATTACKS: number[] = []; let ATTACK_N = 0;
@@ -1455,7 +1462,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // An ambush (spec: attacks from Hidden crit on 19-20 and use the Ambush multiplier): the first attack of each Hidden entry.
   const hiddenAmbush = ambushReady(att), ambush = (hiddenAmbush || !!opts.ambush) && tgt.side !== att.side;
   if (ambush && hiddenAmbush) att.ambushUsed = att.hideEntry || 1; // only an ambush from Hidden uses the entry's
-  const rc: any = { att, tgt, mode, die: rollD20(rng).die, toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, tech: strikeTech(att), techAp: strikeTechAp(att) ?? (VOLLEY && VOLLEY_AP != null ? VOLLEY_AP : pv.ap), cb, rng, mods: cb.mods || [] };
+  const rc: any = { att, tgt, mode, die: rollD20(rng).die, toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, via: pv.via, tech: strikeTech(att), techAp: strikeTechAp(att) ?? (VOLLEY && VOLLEY_AP != null ? VOLLEY_AP : pv.ap), cb, rng, mods: cb.mods || [] };
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
@@ -1490,7 +1497,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     ...(opts.fx || {}), ...(rc.fx || {}) });
   let damage = 0, killed = false, injury = '';
   if (hit) {
-    const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush });
+    const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush, via: pv.via });
     damage = landed(d.total, d.armour);
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
     damage = r.amount; killed = r.killed;
@@ -1528,8 +1535,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   say(cb, line);
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
   // rules 1.56 (the Momentum chain 2.0): the hit carries its technique as the roll did (rc.tech), so `mode` and `free_tech` read it on `hit`
-  if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, tech: rc.tech, cb, rng, mods: cb.mods || [] });
-  else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
+  // rules 1.63: `via`, the skill the attack rolled with (previewAttack: weaponVia, or roll_with's pick), read by `rolled_with`
+  if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, via: pv.via, volley: VOLLEY, tech: rc.tech, cb, rng, mods: cb.mods || [] });
+  else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, via: pv.via, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
   // Rules 1.32 (shadow-spec 2.6): the target of a silent attack from Hidden that is still up, and whose eyes reach the
   // attacker's tile, rolls to spot it at once (the one spotting roll, for that one looker); no reaction is spent.
   if (spotBack && att.hidden && alive(tgt) && unitSees(cb, tgt, att.pos)) spotHidden(cb, rng, tgt, att);

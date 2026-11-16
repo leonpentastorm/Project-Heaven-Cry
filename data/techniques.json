@@ -795,7 +795,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or Pull Out from next to it brings it back. On a miss it lands on the target's tile.",
+      "text": "Throw the weapon at a target in throwing range (Dexterity to hit). On a hit it stays in the target: it falls when the target does, or Pull Out from next to it brings it back. On a miss it lands on the target's tile. It costs {=numbers.momentum_cost} Momentum: a knife, the throwing knives or a hatchet can open from range.",
       "lines": [
         {
           "props": [
@@ -817,6 +817,7 @@
       "home": [],
       "particular": false,
       "numbers": {
+        "momentum_cost": 0,
         "unthrown_hit": 2,
         "unthrown_mult": 0.7
       },

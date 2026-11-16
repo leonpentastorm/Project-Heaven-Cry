@@ -4696,6 +4696,39 @@
         "arg": "bool",
         "about": "the attack or damage is (true) or is not (false) melee"
       },
+      "rolled_with": {
+        "arg": "words",
+        "about": "the attack, or the damage's source attack, rolls to hit with one of these skills (its weapon's own skill, or the one a roll_with put in its place: combat.ts previewAttack `via`)",
+        "values": [
+          "durability",
+          "pain_threshold",
+          "sensory",
+          "raw_power",
+          "guts",
+          "intimidation",
+          "dexterity",
+          "athletics",
+          "reaction_speed",
+          "ingenuity",
+          "analysis",
+          "vigilant",
+          "brain_power",
+          "rumination",
+          "eloquence",
+          "visualization",
+          "proficiency",
+          "charisma",
+          "empathy",
+          "camaraderie",
+          "implication",
+          "will_power",
+          "composure",
+          "lore_master",
+          "faith",
+          "conscience",
+          "authority"
+        ]
+      },
       "crit": {
         "arg": "bool",
         "about": "the attack is (or is not) a critical"

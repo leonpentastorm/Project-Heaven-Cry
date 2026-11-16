@@ -17,7 +17,7 @@ import { say,
   type Combat, type Unit, dist, xy, key, refOf, alive, active, unitSees, lineOfSight, moveUnit, coverTileFor, objectsOf, standable, emitFx,
 } from '../combat';
 import {
-  applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, previewOutburst, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
+  applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, previewOutburst, releaseOutburst, spellTargets, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
   RESONANCE_BONUS, resonates, fadePattern, evokeGrowth, practiceOnce, type Affected,
   takeFreeStage, freeStageLeft,
@@ -56,7 +56,6 @@ const PLACED_KINDS = new Set(['field', 'trap', 'turret', 'wall']);
 /** "Still active" (spec: Perks in play, Parallel Thought): one of your placed spells stands. Unfired glyphs, VEIL smoke,
  * LIGHT and RAISE walls don't count. */
 const placedStanding = (cb: Combat, u: Unit) => myZones(cb, u).some((z: any) => PLACED_KINDS.has(z.kind) && z.left > 0 && (z.kind !== 'turret' || z.hp == null || z.hp > 0));
-const tiles = (h: Holder) => (h.tier === 'II' ? 2 : 1);
 /** The design heals or shields (Buff heal, or Damage with Inverse on allies). */
 const mends = (d: any) => [d.school, d.school2, d.school3].some((s, i) => (s === 'buff' && ((i === 0 ? d.option : i === 1 ? d.option2 : d.option3) || d.option || 'heal') === 'heal')) || (d.modules || []).includes('inverse');
 /** The last thing this character said aloud in this round of the fight (combat/say writes "Name (round N): "…""). */
@@ -127,37 +126,8 @@ register({
 });
 
 // =====================================================================================================================
-// Rite in the Field (Lore Master). Wards and rituals cost 1 AP less in combat (II: 2). The mapping (provisional, needs
-// Leon's OK): wards = drawing a WARD glyph (floor 0.5), Begin on a Buff (Guarded) Outburst (floor 1), the Warden's Ward
-// move (stat ap_cost:ward, floor 1); rituals = Pray (floor 1) and Crystallise (floor 1, through the Perks tab's
-// "Crystallise (rite)": the engine's own Crystallise has no cost hook).
-// =====================================================================================================================
-const riteCut = (h: Holder, base: number, floor: number) => Math.max(0, Math.min(tiles(h), base - floor));
-register({
-  id: 'rite_in_the_field', claims: 'all', priority: 150,
-  stat: (h, stat, ctx) => ((stat === 'ap_cost:pray' || stat === 'ap_cost:ward') && !ow(h.cb) ? -riteCut(h, ctx?.base ?? 3, 1) : 0),
-  on: {
-    glyph_cost: (ctx, h) => { if (me(h, ctx.u) && !ow(ctx.cb) && ctx.word === 'ward') ctx.ap -= riteCut(h, ctx.ap, 0.5); },
-    outburst_cost: (ctx, h) => {
-      const d = ctx.design; if (!me(h, ctx.u) || ow(ctx.cb) || !d) return;
-      if ((d.school === 'buff' && d.option === 'defense') || (d.school2 === 'buff' && (d.option2 || d.option) === 'defense')) ctx.ap -= riteCut(h, ctx.ap, 1);
-    },
-  },
-  actions: [{
-    id: 'crystallise', label: 'Crystallise (rite)', scope: ['combat'], target: 'none',
-    ap: (h) => SPELL_AP.crystallise - riteCut(h, SPELL_AP.crystallise, 1),
-    text: 'Crystallise a mana core from the air (the meter at 10+, −10), for less AP: a ritual in the field.',
-    available: (h) => (!h.u?.mg?.emanator ? false : true),
-    run: (h) => {
-      const u = h.u!, cb = h.cb!;
-      refund(cb, u, SPELL_AP.crystallise); // the runtime took the reduced cost; crystallise() takes its full 3
-      const err = crystallise(cb, u); if (err) { pay(cb, u, SPELL_AP.crystallise); return err; }
-      return null;
-    },
-  }],
-  brief: () => null,
-});
-
+// Rite in the Field (Lore Master): data rows since rules 1.63 (D6): `cost_mod` on the `cost` site crystallise
+// (perks.json rite_in_the_field). Nothing here.
 // =====================================================================================================================
 // Clean Draw (Mastered, Brain Power 10). Once per combat, 0 AP to arm: while armed, the glyphs you draw cost no charge
 // and add no Flux (TWICE's 2 included); Evoking a spell made only of those clean glyphs costs no charge. Rules 1.4: "a
