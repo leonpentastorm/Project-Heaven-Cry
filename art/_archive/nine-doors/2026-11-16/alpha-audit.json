@@ -728,6 +728,26 @@
       "faint_alpha_to_solid_area_ratio": 0.02036
     },
     {
+      "number": 191,
+      "name": "The Ledger",
+      "faint_alpha_to_solid_area_ratio": 0.03697
+    },
+    {
+      "number": 192,
+      "name": "Inspire",
+      "faint_alpha_to_solid_area_ratio": 0.08306
+    },
+    {
+      "number": 193,
+      "name": "Take the Weight",
+      "faint_alpha_to_solid_area_ratio": 0.05714
+    },
+    {
+      "number": 194,
+      "name": "Brimming",
+      "faint_alpha_to_solid_area_ratio": 0.02799
+    },
+    {
       "number": 208,
       "name": "Clenched Heart",
       "faint_alpha_to_solid_area_ratio": 0.05902

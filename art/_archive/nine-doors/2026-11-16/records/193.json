@@ -1,0 +1,78 @@
+{
+  "number": 193,
+  "family": "move_icons",
+  "id": "move-take-the-weight",
+  "path": "art/icons/moves/take-the-weight.png",
+  "name": "Take the Weight",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Mender rank II move (asked 13 Nov, C3)",
+  "paint": "Wick taking a heavy block off a partial figure's shoulders onto his own.",
+  "avoid": "a barbell \u00b7 a coffin",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick taking a heavy block off a partial figure's shoulders onto his own.\nAvoid: a barbell \u00b7 a coffin\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Take the Weight: ONE Wick bent slightly forward, sturdy boots spread, accepting ONE big heavy rectangular block across his own shoulders. At far left only the cropped SHOULDER AND FOREARM of an ally appears, releasing that SAME block as Wick lifts it off. Show one continuous block with a clear small gap above ally shoulder and firm contact across Wick's shoulder/raised mittens. No second whole person, barbell, coffin, multiple blocks, text or sparks. Wick's screen has strained determined pixel expression.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3034b2f82eef20cc0f272eb0be1f987126ce4eb5bd72539e6f4f00fcc641efb4",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/193-take-the-weight.png",
+  "source_sha256": "d519742a8dc920ca41b147650792c44c6d8ee0118ba6779c826780e18ab60a44",
+  "export_crop": [
+    0,
+    35,
+    1236,
+    1244
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/take-the-weight.png",
+    "64": "art/icons/moves/exports/64/take-the-weight.png",
+    "48": "art/icons/moves/exports/48/take-the-weight.png",
+    "44": "art/icons/moves/exports/44/take-the-weight.png",
+    "32": "art/icons/moves/exports/32/take-the-weight.png",
+    "24": "art/icons/moves/exports/24/take-the-weight.png"
+  },
+  "framing": {
+    "scale": 0.5297821223398049,
+    "offset": [
+      184,
+      191
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5ac58d65a2d97c760343fec9b45d24b77f8b3adbf42cec543327209248b0f4c3",
+    "64": "8f0a1ed52e1cc9f12364925fd9305ba214bc77f601763f0aa2c8aeacfb0e902d",
+    "48": "073f76f1c7da567e94d22d5e50ed75d5fbc1e4072d11389bfbab7399a46a883a",
+    "44": "b94d87b5b12ce863d15f2ea70441688692d4796e676d084e9b1b87ef1c9cf235",
+    "32": "dec3beff83e7b22e710e8d5aa7bb526e429d48ff35e628c621820a8c6ce09e8f",
+    "24": "dc1ca6ca23b768b31bcee204c810d826f9bed61d5ad3690a74d9f4b115821a02"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

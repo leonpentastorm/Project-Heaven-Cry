@@ -1,0 +1,76 @@
+{
+  "number": 194,
+  "family": "move_icons",
+  "id": "move-brimming",
+  "path": "art/icons/moves/brimming.png",
+  "name": "Brimming",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Mender rank III move (asked 13 Nov, C3)",
+  "paint": "A cupped pair of hands with light overflowing the rim.",
+  "avoid": "a cup or goblet \u00b7 water",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A cupped pair of hands with light overflowing the rim.\nAvoid: a cup or goblet \u00b7 water\nEXACT STAGING: Brimming: a PAIR OF CERAMIC MITTEN HANDS CUPPED together, palms facing up, forming a shallow open bowl SHAPE using hands ONLY. Pure-white energy overflows as THREE short HARD WHITE RAYS and TWO small diamond drops spilling outward over the edges of palms. No cup, bowl OBJECT, goblet, liquid, water, flame, heart, glow or whole character. White flat ink and transparent gaps between hands and rays.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "cb09c6dfc6a25cdfb5033b4614f79ac63ac6f537a6cc206e8ec4558ed12bcb4e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/194-brimming.png",
+  "source_sha256": "54cc12425d9cc58f9b33a07e49cf80a509dbcc4c931b08cffb72bcf57ebedbd7",
+  "export_crop": [
+    0,
+    15,
+    1218,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/brimming.png",
+    "64": "art/icons/moves/exports/64/brimming.png",
+    "48": "art/icons/moves/exports/48/brimming.png",
+    "44": "art/icons/moves/exports/44/brimming.png",
+    "32": "art/icons/moves/exports/32/brimming.png",
+    "24": "art/icons/moves/exports/24/brimming.png"
+  },
+  "framing": {
+    "scale": 0.6438839577899405,
+    "offset": [
+      120,
+      113
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "f945cb4fbbbbcac0d2620b7206b177430e536caee43ec5f548102b4e78a1ae19",
+    "64": "02aa911dcbb95415f60234b85acb58d33d2c0481274c90b1e213d7d5e4be8a3d",
+    "48": "13a7ac86e1adcfdf688e8b34f11d2be01b96ade3f008fd89ce4826d170c82748",
+    "44": "6509a7fba8c854588915832da72a0b56665f05152e615e982308a613ca890983",
+    "32": "31485d3d5eeb038f4761585f7e14abfaf17c0f6c133099faa9fb2c381873325e",
+    "24": "4894d8071de62fb3f61e8dc85fb0525cfcf7bfd98cbad22ad325982d5fd944e3"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

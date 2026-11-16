@@ -1,6 +1,6 @@
 # Current continuation checkpoint — 16 November 2026
 
-Legacy delivery: 233/375 review candidates. Unfinished old rows: 142, of which 115 eligible and 27 held. New 0.30 additions: 0/41 delivered. Combined outstanding request records: 156.
+Legacy delivery: 237/375 review candidates. Unfinished old rows: 138, of which 111 eligible and 27 held. New 0.30 additions: 0/41 delivered. Combined outstanding request records: 152.
 
 The 28 old hold recipes remain enforced. Palm #258 remains preserved and held for review. None of the 41 newly queued proposals is completed merely by being queued.
 

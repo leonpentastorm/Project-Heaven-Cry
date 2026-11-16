@@ -9985,6 +9985,314 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 191,
+    "family": "move_icons",
+    "id": "move-the-ledger",
+    "path": "art/icons/moves/the-ledger.png",
+    "name": "The Ledger",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Mender rank I move (asked 13 Nov, C3)",
+    "paint": "An open ledger book with a thread for a bookmark, tally marks on the page.",
+    "avoid": "readable text or numbers \u00b7 coins",
+    "section": "Empathy: Bonds and Tending, and the Mender",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: An open ledger book with a thread for a bookmark, tally marks on the page.\nAvoid: readable text or numbers \u00b7 coins\nEXACT STAGING: The Ledger: ONE open bookkeeping ledger seen slightly from above, TWO broad white pages separated by a deep transparent spine crease. ONE thin thread bookmark hangs below the book. On pages only several small GROUPS OF TALLY STROKES, with one diagonal stroke across four short vertical strokes; clearly marks, no letters, readable words, numerals or currency. No coins, quill, hands or whole character. Broad shapes, sparse crisp transparent cuts.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "221bd7b51fd454a4d889e4f344fbbc0f3be18b18a804d9d6ccd0f6fd7ee6ca4c",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/191-the-ledger.png",
+    "source_sha256": "17263037de52800f61ffa3e18716bc2ac8052ef1711ca073b23dbef9160db519",
+    "export_crop": [
+      0,
+      264,
+      1178,
+      1178
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/the-ledger.png",
+      "64": "art/icons/moves/exports/64/the-ledger.png",
+      "48": "art/icons/moves/exports/48/the-ledger.png",
+      "44": "art/icons/moves/exports/44/the-ledger.png",
+      "32": "art/icons/moves/exports/32/the-ledger.png",
+      "24": "art/icons/moves/exports/24/the-ledger.png"
+    },
+    "framing": {
+      "scale": 0.6717843023700031,
+      "offset": [
+        116,
+        205
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "bd34b95c4d36d397f156259b3b81a478f9fc1ea60dbe98f6146692ad81988d9a",
+      "64": "02690d61c8d19b1472cb676c420502cf8edf0ff499db1f344cf723692560e557",
+      "48": "9962df1301419a40cb9446012d2751c3b3b25b26f8cc2dcfe1988fb68cbb24a2",
+      "44": "d8f157599573b511b695f9d3b27a3d46eb8426bc7c545d8b231c8164ff0d9544",
+      "32": "5ea3843239a4dd22dc526f6fea5ae9262824d94f3ac9d57e18e17f6eef9163c0",
+      "24": "325efa9cb87fb218ba10bde05b83d2b7e61bfae223e601b3bca65429246f16ba"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 192,
+    "family": "move_icons",
+    "id": "move-inspire",
+    "path": "art/icons/moves/inspire.png",
+    "name": "Inspire",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Mender rank II move (asked 13 Nov, C3)",
+    "paint": "Wick with a hand raised, a ribbon with a heart knot rising from it.",
+    "avoid": "music notes \u00b7 a megaphone",
+    "section": "Empathy: Bonds and Tending, and the Mender",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick with a hand raised, a ribbon with a heart knot rising from it.\nAvoid: music notes \u00b7 a megaphone\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Inspire: ONE Wick in an encouraging step forward, one ceramic mitten held high with palm open. ONE white ribbon begins at that raised palm and curls UPWARD into ONE clear HEART-SHAPED KNOT above it, with two short tails. Keep ribbon and heart visibly attached to the hand's gesture, no floating stars, notes, megaphone, flags or default cup/bowl. Wick's pixel face is warmly determined, capelet tilts left. Full body and ribbon stay comfortably inside safe circle.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "eae7ddd7e84cc40d1950c3d2763c4102b321a4b48684ed0b610d8eda42a93541",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/192-inspire.png",
+    "source_sha256": "b94d4437076abe9e41a3e79132d62344271e19a17e286e35b801048c5107599d",
+    "export_crop": [
+      0,
+      23,
+      1234,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/inspire.png",
+      "64": "art/icons/moves/exports/64/inspire.png",
+      "48": "art/icons/moves/exports/48/inspire.png",
+      "44": "art/icons/moves/exports/44/inspire.png",
+      "32": "art/icons/moves/exports/32/inspire.png",
+      "24": "art/icons/moves/exports/24/inspire.png"
+    },
+    "framing": {
+      "scale": 0.540990092280183,
+      "offset": [
+        178,
+        179
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "956a4f23060ff792892b6a4e0c5777cc96881e52c687436805801839f1bf2290",
+      "64": "5013564106c44683832bac42e7547e587896f449e1cad5bb62b64d2375aa7dc7",
+      "48": "8313b4c34321b79e14509bf404308eea296add916515fd96a761a70e295e2c7b",
+      "44": "67fdee20f4157059a90add39e4b5c74252fa5427fa337f7809992198cf09c77b",
+      "32": "70751193cc9832a75abf325cfa68aacf741952233042d03a56a8c2b724ce164f",
+      "24": "273f8dace45cdf7cdc9f534d4a6c8743999847749071b556893c42758a31be41"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 193,
+    "family": "move_icons",
+    "id": "move-take-the-weight",
+    "path": "art/icons/moves/take-the-weight.png",
+    "name": "Take the Weight",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Mender rank II move (asked 13 Nov, C3)",
+    "paint": "Wick taking a heavy block off a partial figure's shoulders onto his own.",
+    "avoid": "a barbell \u00b7 a coffin",
+    "section": "Empathy: Bonds and Tending, and the Mender",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick taking a heavy block off a partial figure's shoulders onto his own.\nAvoid: a barbell \u00b7 a coffin\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Take the Weight: ONE Wick bent slightly forward, sturdy boots spread, accepting ONE big heavy rectangular block across his own shoulders. At far left only the cropped SHOULDER AND FOREARM of an ally appears, releasing that SAME block as Wick lifts it off. Show one continuous block with a clear small gap above ally shoulder and firm contact across Wick's shoulder/raised mittens. No second whole person, barbell, coffin, multiple blocks, text or sparks. Wick's screen has strained determined pixel expression.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "3034b2f82eef20cc0f272eb0be1f987126ce4eb5bd72539e6f4f00fcc641efb4",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/193-take-the-weight.png",
+    "source_sha256": "d519742a8dc920ca41b147650792c44c6d8ee0118ba6779c826780e18ab60a44",
+    "export_crop": [
+      0,
+      35,
+      1236,
+      1244
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/take-the-weight.png",
+      "64": "art/icons/moves/exports/64/take-the-weight.png",
+      "48": "art/icons/moves/exports/48/take-the-weight.png",
+      "44": "art/icons/moves/exports/44/take-the-weight.png",
+      "32": "art/icons/moves/exports/32/take-the-weight.png",
+      "24": "art/icons/moves/exports/24/take-the-weight.png"
+    },
+    "framing": {
+      "scale": 0.5297821223398049,
+      "offset": [
+        184,
+        191
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "5ac58d65a2d97c760343fec9b45d24b77f8b3adbf42cec543327209248b0f4c3",
+      "64": "8f0a1ed52e1cc9f12364925fd9305ba214bc77f601763f0aa2c8aeacfb0e902d",
+      "48": "073f76f1c7da567e94d22d5e50ed75d5fbc1e4072d11389bfbab7399a46a883a",
+      "44": "b94d87b5b12ce863d15f2ea70441688692d4796e676d084e9b1b87ef1c9cf235",
+      "32": "dec3beff83e7b22e710e8d5aa7bb526e429d48ff35e628c621820a8c6ce09e8f",
+      "24": "dc1ca6ca23b768b31bcee204c810d826f9bed61d5ad3690a74d9f4b115821a02"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 194,
+    "family": "move_icons",
+    "id": "move-brimming",
+    "path": "art/icons/moves/brimming.png",
+    "name": "Brimming",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Mender rank III move (asked 13 Nov, C3)",
+    "paint": "A cupped pair of hands with light overflowing the rim.",
+    "avoid": "a cup or goblet \u00b7 water",
+    "section": "Empathy: Bonds and Tending, and the Mender",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A cupped pair of hands with light overflowing the rim.\nAvoid: a cup or goblet \u00b7 water\nEXACT STAGING: Brimming: a PAIR OF CERAMIC MITTEN HANDS CUPPED together, palms facing up, forming a shallow open bowl SHAPE using hands ONLY. Pure-white energy overflows as THREE short HARD WHITE RAYS and TWO small diamond drops spilling outward over the edges of palms. No cup, bowl OBJECT, goblet, liquid, water, flame, heart, glow or whole character. White flat ink and transparent gaps between hands and rays.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "cb09c6dfc6a25cdfb5033b4614f79ac63ac6f537a6cc206e8ec4558ed12bcb4e",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/194-brimming.png",
+    "source_sha256": "54cc12425d9cc58f9b33a07e49cf80a509dbcc4c931b08cffb72bcf57ebedbd7",
+    "export_crop": [
+      0,
+      15,
+      1218,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/brimming.png",
+      "64": "art/icons/moves/exports/64/brimming.png",
+      "48": "art/icons/moves/exports/48/brimming.png",
+      "44": "art/icons/moves/exports/44/brimming.png",
+      "32": "art/icons/moves/exports/32/brimming.png",
+      "24": "art/icons/moves/exports/24/brimming.png"
+    },
+    "framing": {
+      "scale": 0.6438839577899405,
+      "offset": [
+        120,
+        113
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "f945cb4fbbbbcac0d2620b7206b177430e536caee43ec5f548102b4e78a1ae19",
+      "64": "02aa911dcbb95415f60234b85acb58d33d2c0481274c90b1e213d7d5e4be8a3d",
+      "48": "13a7ac86e1adcfdf688e8b34f11d2be01b96ade3f008fd89ce4826d170c82748",
+      "44": "6509a7fba8c854588915832da72a0b56665f05152e615e982308a613ca890983",
+      "32": "31485d3d5eeb038f4761585f7e14abfaf17c0f6c133099faa9fb2c381873325e",
+      "24": "4894d8071de62fb3f61e8dc85fb0525cfcf7bfd98cbad22ad325982d5fd944e3"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 208,
     "family": "perks",
     "id": "heart-overload",
