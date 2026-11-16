@@ -10,7 +10,8 @@ subprocess.run([sys.executable,str(w/'update_state.py'),'--root',str(r),*map(str
 cat=read(r/'art/catalog.json');before=json.loads(subprocess.check_output(['git','show','HEAD:art/catalog.json'],cwd=r));changed={(f,k) for f,d in cat.items() if isinstance(d,dict) for k,v in d.items() if before.get(f,{}).get(k)!=v};expected={(read(a/'records'/f'{n:03}.json')['family'],read(a/'records'/f'{n:03}.json')['id']) for n in ids};assert changed<=expected,changed-expected
 for n in ids:
  p=a/'records'/f'{n:03}.json';rec=read(p)
- if n not in [323,324]:rec['generation_references']=['art/_archive/nine-doors/2026-11-16/review/reference-previews/'+x+'.png' for x in ['angel-of-the-trenches','bedside-manner','solid-image']]+['art/icons/traits/mind-without-fog.png'];write(p,rec)
+ if n not in [323,324]:
+  rec['generation_references']=[rec['revision_source']] if rec.get('revision_source') else ['art/_archive/nine-doors/2026-11-16/review/reference-previews/'+x+'.png' for x in ['angel-of-the-trenches','bedside-manner','solid-image']]+['art/icons/traits/mind-without-fog.png'];write(p,rec)
 rows=[read(p) for p in sorted((a/'records').glob('*.json'))];write(a/'manifest.json',rows)
 audit=[]
 spec=importlib.util.spec_from_file_location('repository_art_validator',r/'tools/validate_art.py');v=importlib.util.module_from_spec(spec);spec.loader.exec_module(v)

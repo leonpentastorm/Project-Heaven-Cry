@@ -731,6 +731,153 @@
     ]
   },
   {
+    "number": 13,
+    "family": "move_icons",
+    "id": "move-reactive-plate",
+    "path": "art/icons/moves/reactive-plate.png",
+    "name": "Reactive Plate",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Bulwark rank III move: plate that hardens when hit",
+    "paint": "A single armour plate on Wick's shoulder flaring with a small burst of short rays where a dart has struck it.",
+    "avoid": "fire or explosion texture \u00b7 a full suit of armour",
+    "section": "Durability: Guard, and the Bulwark",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: A single armour plate on Wick's shoulder flaring with a small burst of short rays where a dart has struck it.\nAvoid: fire or explosion texture \u00b7 a full suit of armour\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSpecific composition: Show ONE conspicuously broad shoulder plate on Wick, at about a quarter of the whole icon's width. A single short blunt dart meets that plate at its rim. Only THREE short solid impact rays show the reaction. The rest of Wick retains the usual ceramic shell and cloth capelet, not a full extra armor suit. One braced leaning pose with determined pixel face. No flame, explosion cloud or shading. Keep dart/plate/action as one coherent silhouette readable at 32px.\nMatch the first three attached production anchors for Wick's exact ceramic robot proportions, pixel-screen acting, segmented limb cuffs, boots and ink weight. Their charcoal backgrounds are preview composites only: the new drawing needs TRUE TRANSPARENCY in background and all internal cuts. The fourth reference controls identity but its meditation bowl and up-arrows MUST NOT appear. No extra star or random decoration. Keep all ink safely inside a central 75\u201380% square and 90% circle.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "1c5ca9e62c749f22d94077e699a3a70754289369e222c6673f79b70df3bfb6fe",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/013-reactive-plate.png",
+    "source_sha256": "e807924a95d79306d1b2519a9f132f635d602779b4288b12c71922b26b7483f8",
+    "export_crop": [
+      0,
+      25,
+      1236,
+      1230
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/reactive-plate.png",
+      "64": "art/icons/moves/exports/64/reactive-plate.png",
+      "48": "art/icons/moves/exports/48/reactive-plate.png",
+      "44": "art/icons/moves/exports/44/reactive-plate.png",
+      "32": "art/icons/moves/exports/32/reactive-plate.png",
+      "24": "art/icons/moves/exports/24/reactive-plate.png"
+    },
+    "framing": {
+      "scale": 0.5678784554559445,
+      "offset": [
+        161,
+        170
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "01db5bb36b9080a2a61e6972a53cc28fbb0585ca32d23614ee275a7aee0cbf04",
+      "64": "771c439c68b8f4bea01c1991ea98280820f06867fff37249f826f0148da250ff",
+      "48": "901a693f9d7b2b9bbb2f56777ab38341bc02d5a1d6cab52af4708e8ccdf4745b",
+      "44": "9cc333575f6ae4374001d0099dd159f2f6356244b9aae6cd7ac686fe5f42f60a",
+      "32": "621181382801c457a706c04f0a170412baf7f0ebf36fda2cb4fdf79c189150bd",
+      "24": "e0eb68a64fe9949e0b4259a3716b505b3337ef7239dd4c03c5e08b4c19d04068"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ]
+  },
+  {
+    "number": 14,
+    "family": "move_icons",
+    "id": "move-anchor",
+    "path": "art/icons/moves/anchor.png",
+    "name": "Anchor",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Bulwark rank III move: while Braced you can't be moved, and foes leaving you provoke",
+    "paint": "Wick standing on a ship's anchor shape sunk into the ground line, a short chain from his belt to it.",
+    "avoid": "a real ship \u00b7 water",
+    "section": "Durability: Guard, and the Bulwark",
+    "kind": "wick",
+    "prompt": "Correct ONLY the staging of this Anchor icon. Preserve Wick's exact ceramic head, pixel face, medical lantern, capelet, white flat ink style and planted stance. Move the large anchor UNDER WICK: a big horizontal anchor STOCK lies directly beneath both boots as a platform, while the curved flukes and vertical shank sink below and around that stock into a short ground line. Both boots must visibly REST ON THE ANCHOR ITSELF. The anchor occupies the lower third of the complete icon and is centered beneath the body, not sitting beside him on viewer-right. A short three-link chain comes from Wick's BELT down to the anchor ring. Neither hand holds the chain: let both mittens hang free or rest on hips, leaving the lantern heart exposed. Squat grounded confident posture; defiant pixel brows. No ship, water, weapon, scenery, halo, cup, bowl, stars or added effects. A single full figure and one anchor, clean bold pure-white ink with transparent screen and interior cuts. Remove every trace of the old anchor position beside him. Fully transparent background, safe margin 12% on all sides, square master. Do not add glow, shading, gray, texture or black paint.",
+    "refs": [],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/014-anchor-position-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "6bb5e818fe5586a6e38413ed9e50c8c08cabdeae417b80c812875f7bebecc28f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/014-anchor.png",
+    "source_sha256": "f28d8f96f06f9ac998dd6cb09d1437d03f459a2a7d1b2ffe590ac4bf9314d252",
+    "export_crop": [
+      59,
+      19,
+      1148,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/anchor.png",
+      "64": "art/icons/moves/exports/64/anchor.png",
+      "48": "art/icons/moves/exports/48/anchor.png",
+      "44": "art/icons/moves/exports/44/anchor.png",
+      "32": "art/icons/moves/exports/32/anchor.png",
+      "24": "art/icons/moves/exports/24/anchor.png"
+    },
+    "framing": {
+      "scale": 0.5969572292599792,
+      "offset": [
+        187,
+        143
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "2c6445f338337ebed93db4c29a62453ea2d3b307ab1946c3bc24a7ad11f93dd1",
+      "64": "debd2908efd717775e06644eb783239e1f2a703ac6fe4dbc9ae3870bc96b5d61",
+      "48": "4f0271b540febad0484802b622026294ef5c39fd52697b25bb0bb2947c04575e",
+      "44": "23760618b59977ef558ed5bb900f354ad29d15d2e10ee6ab025fbfb4b31a9267",
+      "32": "86137d8f5574c4fce1577b4118295f360614a72538d6a79ea030243d6a89e053",
+      "24": "be28366ef90bcc9d27a93782ea6905d9938404288a645b4a3170720efcfd078b"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/014-anchor-position-fix/native.png"
+    ]
+  },
+  {
     "number": 23,
     "family": "perks",
     "id": "breaching-strike",

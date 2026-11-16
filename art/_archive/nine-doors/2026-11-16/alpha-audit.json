@@ -58,6 +58,16 @@
       "faint_alpha_to_solid_area_ratio": 0.07481
     },
     {
+      "number": 13,
+      "name": "Reactive Plate",
+      "faint_alpha_to_solid_area_ratio": 0.06688
+    },
+    {
+      "number": 14,
+      "name": "Anchor",
+      "faint_alpha_to_solid_area_ratio": 0.0644
+    },
+    {
       "number": 23,
       "name": "Keep Swinging",
       "faint_alpha_to_solid_area_ratio": 0.04827

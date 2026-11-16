@@ -63,10 +63,10 @@
     249,
     250
   ],
-  "legacy_remaining": 195,
-  "legacy_safe_remaining": 168,
+  "legacy_remaining": 193,
+  "legacy_safe_remaining": 166,
   "authorized_030_additions": 41,
-  "combined_remaining_request_records": 209,
+  "combined_remaining_request_records": 207,
   "notes": [
     "All 28 certain/likely/check holds remain active for their old recipes.",
     "The four separately authorized 0.30 replacement depictions may reuse the old ids/paths; never use their held old Paint instructions.",
