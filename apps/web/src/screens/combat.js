@@ -6,7 +6,7 @@ import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVal
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
 import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt,
-  SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, UNTIL, CONDITION_ROWS, condId, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
+  SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, condDef, CONDITION_ROWS, condId, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
@@ -432,12 +432,13 @@ const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font
 const WITNESSED_CHIP = COND_CHIP + 'white-space: nowrap; border: 1px solid var(--faith-light, ' + FAITH_GOLD + '); color: var(--faith-light, ' + FAITH_GOLD + ')';
 /** Your own panel's condition chips: Witnessed is its resource row there (one fact, one place; Leon, live 0.24.0). */
 const ownConds = (u, g) => condChips(u, g).filter((c) => c.key !== 'c-witnessed');
-/** A condition with no fixed end (the table's UNTIL: it lasts until its rule ends it, Off Balance from a Slam or a Launch):
- *  no count of rounds, its row's own end in words (conditions.json ends_on). */
+/** A condition with no fixed end (its row's `duration.until`, the table's noTick: it lasts until its rule ends it, Off
+ *  Balance from a Slam or a Launch): no count of rounds, its row's own end in words (conditions.json ends_on). */
+const untilCond = (id) => !!(condDef(id) && condDef(id).noTick);
 const untilWords = (id) => { const r = CONDITION_ROWS.find((x) => condId(x.id) === condId(id)), e = (r && r.ends_on) || []; return e.length ? 'Until ' + e.join(', or ') + '.' : 'Until something ends it.'; };
 export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id, n]) => n > 0 && !(id === 'witnessed' && g && g.combat && g.combat.over)).map(([id, n]) => id === 'witnessed'
   ? { key: 'c-' + id, k: '◉ WITNESSED', t: witnessedTitle(u, g), style: WITNESSED_CHIP }
-  : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + (n >= UNTIL ? '' : ' · ' + n), t: condName(id) + ': ' + (condText(id) ? condText(id).replace(/\.?$/, '. ') : '') + (n >= UNTIL ? untilWords(id) : n + (n === 1 ? ' round' : ' rounds') + ' left.'),
+  : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + (untilCond(id) ? '' : ' · ' + n), t: condName(id) + ': ' + (condText(id) ? condText(id).replace(/\.?$/, '. ') : '') + (untilCond(id) ? untilWords(id) : n + (n === 1 ? ' round' : ' rounds') + ' left.'),
     style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) || condIsBoon(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
   ...(u.shield > 0 ? [{ key: 'shield', k: '+' + fmtNum(u.shield) + ' SHIELD', t: 'A shield of ' + fmtNum(u.shield) + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
 

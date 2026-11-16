@@ -88,8 +88,10 @@ describe('the Open Hand: the glove family (rules 1.56, the unarmed fighter)', ()
     expect(s.fx.some((e: any) => e.k === 'cond' && e.id === 'disarmed')).toBe(false);
   });
 
-  it('two forms on one attack land one control a turn (the shared limit), and their damage multiplies', () => {
-    const a = monk(), r = strike(a.f, a.u, ['palm', 'sweep']);
+  it('one form a blow (the 0.29.0 playtest: two at once is refused), and one control a turn (the shared limit)', () => {
+    const a = monk();
+    expect(() => strike(a.f, a.u, ['palm', 'sweep'])).toThrow(/One at a time/);
+    const r = strike(a.f, a.u, ['palm']);
     const tries = r.fx.filter((e: any) => (e.k === 'cond' && e.id === 'off_balance') || (e.k === 'stance' && e.what === 'swept'));
     expect(tries.length).toBe(1);
     const again = strike(a.f, a.u, ['sweep']); // the same turn: Sweep's Prone waits for the next turn
