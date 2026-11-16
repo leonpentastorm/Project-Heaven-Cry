@@ -266,7 +266,7 @@ export function hideAction(cb: Combat, u: Unit): string | null {
 export const ambushReady = (u: Unit) => !!u.hidden && (u.ambushUsed || 0) < (u.hideEntry || 1);
 // ---------- Camaraderie's carrier (rules 1.60 item 4610): the heal back down a thread ----------
 // Tending (`how`) a unit tied to you (`tied`) heals you a share of what it restored: at_double x (feed - 1). It is
-// healed by nobody (no giver), so it is never a heal given: no Ledger, no echo, no brake, no patron's tag.
+// healed by nobody (no giver), so it is never a heal given: no Ledger, no echo, no patron's tag.
 onHook('heal_given', (ctx: any, cb: Combat) => {
   const by: Unit | null = ctx.by, t: Unit | null = ctx.t;
   if (!by || !t || by === t || by.side !== t.side || !(ctx.n > 0) || by.dead || by.downed) return;

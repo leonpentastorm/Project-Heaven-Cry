@@ -11350,7 +11350,7 @@ stats); nothing here adds a trigger, predicate or op.
 4630. **Triage (R12):** re-worded as the Mender's Touch (an ally next to you or a Bonded ally in sight, Touch's heal, and it
     also stops Bleeding; once an ally a turn); the action, its cost site `triage`, its 2 AP and 18 MP (a Touch's is 24),
     the out-of-fight Triage and the items answering `ap_cost:triage` are kept. **Not changed:** the spec's "costs N AP"
-    names no new number; 2 AP is kept (the medic measure divides by it). The brake counts it (item 4640). No number.
+    names no new number; 2 AP is kept (the medic measure divides by it). (The brake, item 4640, is not built.) No number.
 4631. **The Rigger's Double (R13; `trickster.false_image`):** no charge (was 1) and one round longer (until your turn
     starts 3 rounds on; was 2). Without the door it still projects its Double, as before. The door's pictured Double is
     unchanged (its charge is the Picture's). PROVISIONAL: 0, 3.
@@ -11377,13 +11377,13 @@ stats); nothing here adds a trigger, predicate or op.
 4638. **Tending's Shield on a Bonded ally only (R20):** `tend.shield`'s reach is the Bond (`reach tied: bond`, anywhere
     you see); no reach in tiles. No number.
 4639. **The Ward on up to 4 allies (R22; Leon's ruling i):** `holders` 4 (was 2): the squad. PROVISIONAL: 4.
-4640. **The healing brake, per giver (Leon's ruling ii):** each Mend, Touch or Shield (and the Mender's Triage) a giver
-    gives the same target in the same round costs its MP × 1.5 for every one that giver already gave that target this
-    round (24, 36, 54 MP for three Mends; a Mend after a Shield on the same ally is ×1.5 of the Mend's own price). One
-    count per giver and target, shared by the braked verbs, on the giver's own counters (`effects/uses.ts`, per round);
-    priced at each action's own cost site (`effects/actions.ts braked`, a grant_action field `brake: true`), so the
-    preview, the refusal and the payment read one number. Two healers on one body each meet their own brake (the
-    ruling). `rules.json mending.brake.step` 0.5. PROVISIONAL.
+4640. **The healing brake, per giver (Leon's ruling ii): not built in 0.30.0, deferred.** The rule stands as ruled
+    (each Mend, Touch or Shield, and the Mender's Triage, a giver gives the same target in the same round costs its MP ×
+    1.5 for every one that giver already gave that target this round). It needs the price to see its target, and the
+    piece first built for it (a grant_action field `brake: true` read at the cost site, and an exported `braked`) was not
+    among the primitives approved for this release (item 4602), so the 0.30.0 review removed it with the rule. It waits
+    on the lead's approval of a target-aware price (the spec's N20, or that field as one general piece). No number in
+    force.
 4641. **`designsMax` reads the ladder (owed fix):** the designs a character keeps ready start at the ladder's first row
     that gives designs (`figments.json ladder`), not at a typed 3. No change in play. No number.
 4642. **The layering shield is Prayer's (owed check):** `tools/validate.py` refuses a `mend` op that names a `layer`
@@ -11467,15 +11467,16 @@ only when both of its options are built**: a step with one option is not offered
     zone op may not lay smoke). **Spotter** is built (while you are Hidden, the first weapon hit each round an ally lands
     on a Marked foe counts as an ambush, ×(1 + `rules.json shadow.ambush_bonus`), `replaces: "ambush"`, and costs you 1
     Shadow); **Lend the Dark** needs only existing pieces and is not built while its step is not offered.
-4656. **Bonds, the first fork (Empathy 4; runs on MP through the thread):** **Keep the Thread**: your Snap keeps the Bond
-    and gives no Daze, and costs Tug's MP (12, one copy; a Boss's Bond still ends on its own clock). **Short Thread**:
+4656. **Bonds, the first fork (Empathy 4; runs on MP through the thread):** **Keep the Thread**: your Snap on a Bonded enemy
+    keeps the Bond and gives no Daze, and a Snap costs Tug's MP (12, one copy; a Boss's Bond still ends on its own clock).
+    A Snap on a Bonded ally still ends the Bond (0.30.0 review: kept, it was a 1 AP heal repeated every turn; the spec
+    meant the fork for a foe; the MP is on every Snap, as a price cannot see its target, N20). **Short Thread**:
     Tending you give a Bonded ally within 2 tiles is ×1.4 (in place of the Bond's ×1.2: a `mend_mult` of 1.4 ÷ 1.2), and
     your Touch reaches 2 tiles (Touch's reach reads `pick:`). PROVISIONAL: 12, 2, 1.4, 2.
 4657. **Bonds, the second fork: not offered.** **Long Thread** waits on N20 (a price cannot see its target, so "once per
     Bonded ally a round" cannot be counted); the spec's cheaper wording (uncapped) is the one it rejects. **Shared Pulse**
     is built (your Mend on a Bonded ally also sends 25% of its heal base down every Bond you hold to an ally, the target
-    included: `forks.json amounts.pulse`, Mend's heal base × 0.25, held equal by the validator). The brake (item 4640)
-    prices every Mend; no fork makes one free.
+    included: `forks.json amounts.pulse`, Mend's heal base × 0.25, held equal by the validator). The brake (item 4640) is not built; no fork makes a Mend free.
 4658. **Prayer: no step offered.** Round of Blessings and Held Breath wait on N7 (the prayer slots as numbers), Steadfast
     on N6 (a prayer as a reaction), Benediction on N5 and N7. The cheaper wordings need what no approved piece gives: the
     next Hymn's ×1.25 needs a predicate that tells a Hymn's heal from a Whisper's (both are kind `blessing`); the held

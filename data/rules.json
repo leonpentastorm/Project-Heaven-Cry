@@ -1513,10 +1513,7 @@
       "withdrawn": "rules 1.23 (Leon, 12 Nov 2026): there is no round limit. Rules 1.20 held spells and prayers to half of a creature's max HP a round; healing is priced in AP now, and the enemies go for whoever mends the most."
     },
     "brake": {
-      "rules": "1.60 item 4640 (Leon's ruling ii, 16 Nov 2026)",
-      "provisional": true,
-      "step": 0.5,
-      "about": "The healing brake, per giver: a grant_action with `brake: true` (Tending's Mend, Touch and Shield; the Mender's Triage) costs its MP x (1 + step) for every braked Tending the same giver has given the same target this round before it (24, 36, 54 MP for three Mends). Counted on the giver (effects/uses.ts, per round, per target); priced at the action's own cost site (effects/actions.ts), so the preview shows it."
+      "deferred": "rules 1.60 item 4640 (Leon's ruling ii, 16 Nov 2026), not built in 0.30.0: a price that grows with the giver's Tendings on one target needs the price to see its target (a target-aware cost, spec N20 or a new grant_action field), a primitive not approved for this release. It waits on the lead's approval; no number is in force."
     },
     "medic": {
       "rules": "1.23",

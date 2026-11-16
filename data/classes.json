@@ -3712,12 +3712,11 @@
         "numbers": {
           "rest_mult": 3
         },
-        "text": "Your Touch, the medic's way: {=effects.0.ap} AP and {=effects.0.res.mp} MP (less than a Touch), with an Attuner in hand: an ally next to you, or a Bonded ally you see, heals {=amounts.heal.base} × your Healing given, more as you level, as a Touch does, and it also stops Bleeding. Once an ally a turn; the brake counts it as a Touch. Out of a fight, with time to work: ×{=numbers.rest_mult}, once an ally a scene.",
+        "text": "Your Touch, the medic's way: {=effects.0.ap} AP and {=effects.0.res.mp} MP (less than a Touch), with an Attuner in hand: an ally next to you, or a Bonded ally you see, heals {=amounts.heal.base} × your Healing given, more as you level, as a Touch does, and it also stops Bleeding. Once an ally a turn. Out of a fight, with time to work: ×{=numbers.rest_mult}, once an ally a scene.",
         "effects": [
           {
             "op": "grant_action",
             "action": "triage",
-            "brake": true,
             "ap": 2,
             "uses": "at_will",
             "res": {

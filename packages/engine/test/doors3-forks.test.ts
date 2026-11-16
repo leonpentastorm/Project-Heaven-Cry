@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import './helpers/yard16';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { physFight, rig } from './helpers/physfight';
-import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, RULES, type Unit, type Action } from '../src';
+import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { tiesOf } from '../src/kit';
 import { pressureOf, pressureCap } from '../src/physical/pressure';
@@ -301,6 +301,12 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
       expect(tiesOf(r.cb(), r.U(r.me.id), 'bond', 'from').some((k: any) => k.to === r.foe.id), picks[0]).toBe(kept);
     }
   });
+  it('Keep the Thread is for a foe: a Snap on a Bonded ALLY still heals and ends the Bond (it cannot repeat every turn)', () => {
+    const r = bondRig(['fork.tend.keep_the_thread']); r.bond(r.al); r.U(r.al.id).hp = 1;
+    expect(r.act('verb:tend.snap', r.U(r.al.id))).toBeNull();
+    expect(r.U(r.al.id).hp).toBeGreaterThan(1);
+    expect(tiesOf(r.cb(), r.U(r.me.id), 'bond', 'from').some((k: any) => k.to === r.al.id)).toBe(false);
+  });
   it('Short Thread: Touch reaches a Bonded ally 2 tiles away, and the Tending is ×near/through; Keep the Thread\'s holder is refused', () => {
     const healed: number[] = [];
     for (const picks of [['fork.tend.short_thread'], ['fork.tend.keep_the_thread']]) {
@@ -311,12 +317,12 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
     }
     expect(healed[0]).toBeGreaterThan(0);
   });
-  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round still pays the brake (×1.5)', () => {
+  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round costs its MP again', () => {
     const r = bondRig(['fork.tend.short_thread']); r.bond(r.al); r.U(r.al.id).hp = 1;
     const mp0 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
     const first = mp0 - r.U(r.me.id).mg.mp; r.U(r.me.id).ap = 12; r.U(r.al.id).hp = 1;
     const mp1 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
-    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(Math.round(first * (1 + RULES.mending.brake.step)));
+    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(first); // (the healing brake, item 4640, is not built: it waits on a primitive)
   });
 });
 

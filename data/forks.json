@@ -377,7 +377,7 @@
           "door_pick": "fork.tend.keep_the_thread"
         }
       ],
-      "text": "Your Snap keeps the Bond: it costs {=effects.0.value} MP and gives no Daze; the Bond holds. (Let Go still ends a Bond, free. A Boss's Bond still ends on its own clock.)",
+      "text": "Your Snap costs {=effects.0.value} MP, and on a Bonded enemy it keeps the Bond: no Daze, the Bond holds. A Snap on an ally still ends the Bond. (Let Go still ends a Bond, free. A Boss's Bond still ends on its own clock.)",
       "effects": [
         {
           "op": "cost_mod",

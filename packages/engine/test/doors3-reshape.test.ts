@@ -6,10 +6,9 @@
 // the Scrap Sentinel (rigger).
 import { describe, it, expect, afterEach } from 'vitest';
 import './helpers/yard16';
-import { CLASS, CLASS_MOVE_POOL, SKILL, RULES, applyCond, condOn, setDevotionXp, devotionThreshold, previewDescriptor, type Unit, type Action } from '../src';
+import { CLASS, CLASS_MOVE_POOL, SKILL, applyCond, condOn, setDevotionXp, devotionThreshold, type Unit, type Action } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { onHook } from '../src/effects/hooks';
-import tendingJ from '../../../data/tending.json';
 
 let SAVES: 'pass' | 'fail' | null = null;
 onHook('save', (ctx: any) => { if (SAVES === 'pass') ctx.pass = true; if (SAVES === 'fail') ctx.fail = true; });
@@ -88,45 +87,6 @@ describe('Measured Blow (rules 1.60 item 4623): once a fight, a door Finisher gi
     };
     expect(run(8)).toEqual([back, 0]); // rank III: once a fight
     expect(run(3)).toEqual([0, 0]);    // rank I: no Measured Blow
-  });
-});
-
-// ============================================================================================ the healing brake
-describe('the healing brake (rules 1.60 item 4640; Leon\'s ruling ii): per giver, per target, per round', () => {
-  const STEP: number = (RULES as any).mending.brake.step;
-  const bonder = (name: string): CharSpec => ({ name, skills: { empathy: 3 }, weapon: 'service_pistol', offHand: 'attuner', level: 5 });
-  const setup = () => {
-    const f = fightWith([bonder('First'), bonder('Second'), { name: 'Ally' }], [{ at: 'P11' }]);
-    const [a, b, ally] = f.pcs; at(f, a, '3,5'); at(f, b, '3,7'); at(f, ally, '3,6');
-    for (const u of [a, b]) { const x = f.unit(u.id); if (x.mg) x.mg.mp = 900; }
-    return { f, a, b, ally };
-  };
-  const mend = (f: F, giver: Unit, t: Unit) => { const g = f.unit(giver.id); g.ap = 9; f.unit(t.id).hp = 5; const mp = g.mg!.mp; f.act({ type: 'combat/perk', unitId: giver.id, id: 'verb:tend.mend', targetId: t.id } as Action, 'host'); return Math.round(mp - f.unit(giver.id).mg!.mp); };
-  it('the same giver on the same ally: each Mend costs (1 + step) times more; another giver meets its own brake; a new round starts over', () => {
-    const { f, a, b, ally } = setup();
-    f.turn(a);
-    const one = mend(f, a, ally), two = mend(f, a, ally), three = mend(f, a, ally);
-    expect(two).toBe(Math.round(one * (1 + STEP))); expect(three).toBe(Math.round(one * Math.pow(1 + STEP, 2)));
-    f.turn(b);
-    expect(mend(f, b, ally)).toBe(one); // two healers on one body: each meets only their own brake (the ruling)
-    f.cb.round++; f.turn(a);
-    expect(mend(f, a, ally)).toBe(one); // a new round: fresh
-  });
-  it('the preview shows the braked price before it is paid', () => {
-    const { f, a, ally } = setup(); f.turn(a);
-    const one = mend(f, a, ally);
-    const d: any = previewDescriptor(f.g, a.id, 'pk:verb:tend.mend#tend_mend', { targetId: ally.id }, 'host');
-    expect(JSON.stringify(d)).toContain(String(Math.round(one * (1 + STEP))));
-  });
-  it('a Shield after a Mend on the same ally is braked too (one count for the braked verbs)', () => {
-    const { f, a, ally } = setup(); f.turn(a);
-    f.act({ type: 'combat/perk', unitId: a.id, id: 'verb:tend.bond', targetId: ally.id } as Action, 'host'); // Shield: a Bonded ally only (R20)
-    mend(f, a, ally);
-    const g = f.unit(a.id); g.ap = 9; const mp = g.mg!.mp;
-    f.act({ type: 'combat/perk', unitId: a.id, id: 'verb:tend.shield', targetId: ally.id } as Action, 'host');
-    const shieldMp = Math.round(mp - f.unit(a.id).mg!.mp);
-    const plain = ((tendingJ as any).items.find((v: any) => v.id === 'tend.shield').effects[0].res.mp.base);
-    expect(shieldMp).toBe(Math.round(plain * (1 + STEP)));
   });
 });
 
