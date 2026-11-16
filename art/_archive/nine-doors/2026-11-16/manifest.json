@@ -7687,6 +7687,310 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 151,
+    "family": "figment_trait_icons",
+    "id": "trait-tethered",
+    "path": "art/icons/figments/trait-tethered.png",
+    "name": "Tethered",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape tied by one thin line to a small ring on the ground.",
+    "avoid": "a dog leash \u00b7 chains",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape tied by one thin line to a small ring on the ground.\nAvoid: a dog leash \u00b7 chains\nEXACT STAGING: Match the attached angular pointed kite-like abstract Figment body with two loose diamond flecks. One slim taut white tether descends diagonally from its bottom point to one small WHITE RING resting on an implied ground baseline below. Tether and ring must be large enough to read at 32px. No animal, face, collar, leash handle, chain, humanoid or Wick. Solid white flat shapes and fully transparent gaps.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "3c0976ca848b2d36c69ec2bbfd54e6e4cf6b6f2c7207d04a1709fa6944789e43",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/151-trait-tethered.png",
+    "source_sha256": "914d1a54b594909b7a8a2213b5720f3d57dc528983c9e759357cfaa1d7b5d895",
+    "export_crop": [
+      57,
+      27,
+      1127,
+      1236
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-tethered.png",
+      "64": "art/icons/figments/exports/64/trait-tethered.png",
+      "48": "art/icons/figments/exports/48/trait-tethered.png",
+      "44": "art/icons/figments/exports/44/trait-tethered.png",
+      "32": "art/icons/figments/exports/32/trait-tethered.png",
+      "24": "art/icons/figments/exports/24/trait-tethered.png"
+    },
+    "framing": {
+      "scale": 0.5599458937928923,
+      "offset": [
+        212,
+        173
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "f5b9e4cbedc2ac509298016f87e7a40bdccf00aee91a599e92334d3ac2a5cbbc",
+      "64": "135650d5098911fdde0469678648453a73258d2516759ccd0f8b2fa413814d24",
+      "48": "577f578bc8fa9663e91ae75b62942ed424b6bfd92903180a518a57adcb4943a9",
+      "44": "e2381f6ab036dfecb226da95795ffd9017b7d916cdc38adc054bb1c33d0d2185",
+      "32": "1b2766248d222477b93bce3e5982a4c7f4a5391b4ac962c832cba0e6e03be31c",
+      "24": "f49dddf393484528c7a05a51036307d64ec38998b8b970631a4de0a94c6f19a9"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 152,
+    "family": "figment_trait_icons",
+    "id": "trait-mirror",
+    "path": "art/icons/figments/trait-mirror.png",
+    "name": "Mirror",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape and its reversed copy facing it across a thin line.",
+    "avoid": "a hand mirror \u00b7 a person",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape and its reversed copy facing it across a thin line.\nAvoid: a hand mirror \u00b7 a person\nEXACT STAGING: TWO abstract angular pointed kite-like Figment bodies facing inward as reversed reflections, one on left and its horizontally FLIPPED identical copy on right. ONE slender VERTICAL DIVIDER between them, no frame. Each body has two small diamond flecks toward its outer edge. Left and right shapes clearly separated. No character, eyes, human, mirror handle or glass reflection.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "783d95ce143e3aa2b1c1ea7bc78aae6a63147be21c9523ad5d3a7258d76780a6",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/152-trait-mirror.png",
+    "source_sha256": "3dfc1ded79c5a9850cba4cc036fabd7629fa56eb5ffe1daace0d91e6395a7c04",
+    "export_crop": [
+      0,
+      41,
+      1242,
+      1196
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-mirror.png",
+      "64": "art/icons/figments/exports/64/trait-mirror.png",
+      "48": "art/icons/figments/exports/48/trait-mirror.png",
+      "44": "art/icons/figments/exports/44/trait-mirror.png",
+      "32": "art/icons/figments/exports/32/trait-mirror.png",
+      "24": "art/icons/figments/exports/24/trait-mirror.png"
+    },
+    "framing": {
+      "scale": 0.553170258037758,
+      "offset": [
+        168,
+        192
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "cb07947c4b18957c320111537b2a7332ae9543615e92bd78a6361c4506614f2d",
+      "64": "dd197661d97bf81c35c960c3863883922d4ece2f213159007ec10fe2c00ecfcc",
+      "48": "d7e84a7d652071071bd531ba21f61759b6c84f270c6374f26e221b780a6bfbf1",
+      "44": "ec1519a20bff86b754dcf40be5d19b65f52763fe18569ffa4d297512d7d86d26",
+      "32": "19cf5fc48195b7776aeb79bce311e8cdb9773fd1e200d15f875a9876a42c8a96",
+      "24": "6b8ad24a818962a592b2dd4d404e1bf2dd557654d4cf207b1cd2d2f22054a97e"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 153,
+    "family": "figment_trait_icons",
+    "id": "trait-barbed",
+    "path": "art/icons/figments/trait-barbed.png",
+    "name": "Barbed",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape with a row of short barbs along its edge.",
+    "avoid": "barbed wire \u00b7 blood",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with a row of short barbs along its edge.\nAvoid: barbed wire \u00b7 blood\nEXACT STAGING: One abstract angular pointed kite-like Figment body matching the references, two loose diamond flecks, a ROW OF FOUR SHORT TRIANGULAR BARBS projecting along its lower-left long edge. The barbs are clear bold silhouette teeth separated by transparent notches. No wire, chain, weapon handle, blood, person, robot or eye.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0e9ed5a2d62945a809f413822d2d1488d95bcf82cd96b6d842ade6d70a4ee360",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/153-trait-barbed.png",
+    "source_sha256": "9d5bee2165b213d43d466e383e9158b349a442d67e2dd0266b643201b86128c7",
+    "export_crop": [
+      87,
+      214,
+      1144,
+      1085
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-barbed.png",
+      "64": "art/icons/figments/exports/64/trait-barbed.png",
+      "48": "art/icons/figments/exports/48/trait-barbed.png",
+      "44": "art/icons/figments/exports/44/trait-barbed.png",
+      "32": "art/icons/figments/exports/32/trait-barbed.png",
+      "24": "art/icons/figments/exports/24/trait-barbed.png"
+    },
+    "framing": {
+      "scale": 0.7103189178323481,
+      "offset": [
+        136,
+        202
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "7c908449848f94ff7219d24ae22749dfe085787c0c7089d021568444c22d7290",
+      "64": "3ccfd131721016fd567e41861ef35bd5990bb15abd4efcdb3ded982435065239",
+      "48": "37df80fa09a31d792912ec7fa94037eee5d07f47d72e8e95c45c5bc17f5ea747",
+      "44": "0d825a8c140107b8a9f289d536300249258b8ddb7bb60511a325ffd52e4f9ccd",
+      "32": "fe9560c9de60471f1bd63685b9d65b003f59c4778c9a65de8e5511cb8423586d",
+      "24": "72a415db2adc7c32e00238d1911a9da50551726a935f31ae3c8d1aaba946e6f2"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 154,
+    "family": "figment_trait_icons",
+    "id": "trait-lasting",
+    "path": "art/icons/figments/trait-lasting.png",
+    "name": "Lasting",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape standing on a long horizontal line that runs off both edges.",
+    "avoid": "an hourglass \u00b7 a clock",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape standing on a long horizontal line that runs off both edges.\nAvoid: an hourglass \u00b7 a clock\nEXACT STAGING: One abstract angular pointed kite-like Figment body matching the references with two small loose diamond flecks. Its lower point TOUCHES one long straight horizontal WHITE BASELINE extending far beyond the body left and right. The line spans almost the entire safe icon width but ends INSIDE the transparent 15% margins. No clock, timer, hourglass, arrowhead, eyes, face or Wick.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "7731dfce8a5c9c5dcdea1945107b802fe60f8925f13f4c89ac516167cd5b4c13",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/154-trait-lasting.png",
+    "source_sha256": "e554896b3a048867fc2637baa0fe4c014b9fedcafc059b1270cf3b77c535188c",
+    "export_crop": [
+      87,
+      159,
+      1164,
+      1166
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-lasting.png",
+      "64": "art/icons/figments/exports/64/trait-lasting.png",
+      "48": "art/icons/figments/exports/48/trait-lasting.png",
+      "44": "art/icons/figments/exports/44/trait-lasting.png",
+      "32": "art/icons/figments/exports/32/trait-lasting.png",
+      "24": "art/icons/figments/exports/24/trait-lasting.png"
+    },
+    "framing": {
+      "scale": 0.6355057958306704,
+      "offset": [
+        170,
+        192
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "dbfbb60178a3364779a8c027dbdc6bdc01d1082e6d2331747811f1f3e3e559ca",
+      "64": "92c5f9cdd8ded1358b8af50085522ea31c8d09b7b5006bdb2960174d916d3e7f",
+      "48": "04fdb6a2a664a4be4577580d6fa9895bc1488e5abe48412398300645ca7225e2",
+      "44": "ab9b71ec90bec7a80e83de11a7d1fede5a31da0653ebcd9e83f6cca7bc5d77d7",
+      "32": "7a58c50fa2c0b065bfb88e4576dac79d4f385afbb3a40682b716bdcc18d7a461",
+      "24": "0bc00b1e802cc13f0b90411a5566eed5dc9eb7b532ab495349bdef37d9dc8242"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 157,
     "family": "move_icons",
     "id": "move-riggers-hands",
