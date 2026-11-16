@@ -66,6 +66,10 @@ for fam, prefix in (("traits", "wick-trait-"), ("perks", "wick-perk-")):
         if alias and alias != iid and alias not in C[fam]:
             for suffix in ("", "-lg"):
                 assets[prefix + alias + suffix] = assets[prefix + iid + suffix]
+# Rules 1.60 (Doors 3.0): the forks' option icons (catalog `fork_icons`, one per data/forks.json row; a placeholder until
+# drawn): wick-fork-<id>, read by apps/web/src/game/forkView.ts (forkIconOf), the door's skill portrait when missing
+for iid, a in C.get("fork_icons", {}).items():
+    emit("wick-fork-" + iid, ROOT / a["path"], (128, 128), (512, 512), 90, versioned=True)
 emit("wick-mind-without-fog", ROOT / C["traits"]["mind-without-fog"]["path"], (128, 128), (512, 512), 90)
 emit("world-outpost813", ROOT / C["illustrations"]["outpost813"]["path"], (1400, 800), (1600, 900))
 emit("emblem-ahoc-seal", ROOT / C["emblems"]["ahoc-seal-white"]["path"], (240, 240), (512, 512), 90)
