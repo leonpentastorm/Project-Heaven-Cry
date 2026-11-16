@@ -11,9 +11,10 @@ The game shows its version in the corner of the title screen and in every "Repor
 ## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
 
 Rules revisions 1.56 (two late blocks: the bare heart and the Mana Shock; a shield in either hand), 1.57 (shields are
-weapon rows), 1.58 (follow strikes) and 1.59 (the tank rulings), every new number PROVISIONAL; spec items 4308 to 4317
-and 4500 to 4543. Built on top of live 0.29.0 from three lanes merged in order: the fight tabs and the bare heart, a
-shield in either hand and the tank, the shield display. Decisions 116 to 119.
+weapon rows), 1.58 (follow strikes), 1.59 (the tank rulings) and 1.60 (Doors 3.0, slice A), every new number
+PROVISIONAL; spec items 4308 to 4317, 4500 to 4543 and 4600 to 4618. Built on top of live 0.29.0 from three lanes merged
+in order: the fight tabs and the bare heart, a shield in either hand and the tank, the shield display; then Doors 3.0's
+slice A. Decisions 116 to 120.
 
 ### The bare heart and the Mana Shock (rules 1.56; decision 116)
 
@@ -90,6 +91,26 @@ shield in either hand and the tank, the shield display. Decisions 116 to 119.
   the damage path, Durability's soak, the Bulwark's Reactive Plate and the view, so a plate holder's card says Guard
   is met first, 10 a plate, nothing kept (it said after the shields, by the general soak, one kept).
 
+### Doors 3.0, slice A: the beta feeds its door (rules 1.60; decision 120; spec `docs/design/proposals/2026-11-doors-3.0-spec.md`)
+
+- **Each attribute's beta skill feeds its door**: one number of the alpha's door × (1 + 0.01 × alpha × beta), ×2 at
+  10/10. Pain Threshold: each Guard plate soaks more. Guts: a hit or a tile wears off less Momentum. Athletics: you shed
+  more Pressure at your turn's end, and Slide reaches further. Acuity: foes need more to find you while Hidden.
+  Rumination: a higher Flux limit. Improvisation: tougher Figments. Camaraderie: Tending a Bonded ally heals you a share
+  of it. Composure: a higher Strain limit (16 at Will Power 10 and Composure 10). Conscience: every shield your prayers
+  give is stronger. What each beta did before is kept. The door's tab (and the Guard and Momentum cards) shows the number
+  now and what the next point buys; each beta's skill card names the door it feeds.
+- **Two shields deal real damage**: a shield's blow in the main hand was sized as a free follow and armour ate it (1 or
+  2 a hit). A shield's line is now its main-hand blow (Buckler 15, riot shield and pavise 20); its follow keeps its old
+  size (×0.4), and Shield Bash its old damage. The all-in wall with two shields deals 88% of a sword and a shield's damage
+  a round, clears stage 1 every time, and never stalls.
+- **The gun alpha perks are control now**: Pressure Point lays a pip on a foe already Pressed (and one more on one
+  Suppressed) with a small damage step; Keep Their Heads Down puts a Pressed foe Off Balance. A gun with both perks sits
+  4 points above its no-perk line (it was 33).
+- **The base shield names its giver** on the token's strip and the cards, in the giver's door ink.
+- Prayer shields are a blessing's to every rule that asks (they had no kind), so the Survival boon that strengthens a
+  prayer's shield now meets the Whisper of Protection too.
+
 ### Fixes
 
 - **Guard no longer spends plates on damage a Ward takes**: Durability's Guard is met after every shield, the layers
@@ -101,6 +122,8 @@ shield in either hand and the tank, the shield display. Decisions 116 to 119.
 
 - **Numbers not yet fitted:** two shields' doubled Guard, the Bulwark's pool by rank, the follow's -2 and Afterword are
   PROVISIONAL and measured only in the lanes' runs.
+- **Doors 3.0 after slice A:** the forks (N1, N2), Momentum's numbers as stats (N23), Strain and Flux as resource rows
+  (N3b), the healing brake and the rest of the reshape are later slices; the feeds' 0.01 is not fitted.
 
 ## 0.29.0 — Balance 2.0: the nine doors
 

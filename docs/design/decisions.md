@@ -463,3 +463,18 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     tank that is unkillable and slow, not one that kills as fast as a damage dealer; the measure reports fight length in
     rounds beside the clears so that trade is visible. Why the Hand wraps for the camp's tank: the cheapest one-handed
     melee weapon of the rack, so the whole budget goes to the Buckler.
+
+120. **The beta feeds its door, multiplied in each door's one function** (Leon, 16 Nov 2026: *"beta should feed it's door,
+    it's the 'make you live longer using the skill you will be good at if you are good at this attribute as a person'"*,
+    and the feeds *"need to be big enough"*; rules 1.60, spec items 4600 to 4618; `docs/design/proposals/2026-11-doors-3.0-spec.md`
+    section 3). One formula (`effects/feed.ts doorFeed`: 1 + 0.01 × alpha × beta), a product so the beta is worth most to
+    the deepest; each door names its number by a carrier in data (`skills.json <beta>.feed.carrier`), never a skill in
+    code, and multiplies in the one place the number is worked out (the plate soak, the Momentum worn off, the Pressure
+    fall, the spot TN, the Flux limit, the Figment body, the Strain limit) or through one data row reading `feed:<door>`
+    (Conscience's prayer shields, Slide's reach). Camaraderie's heal back is a listener, not a row: a number block has
+    no product of two sources. Why the contract holds the line with the feeds at ×1: a feed is a reward on top of the
+    door, as the perk steps are, and Leon's numbers are what a class earns for playing well, not a cap. In the same
+    slice: a shield's line is its main-hand blow and its follow is sized by the follow row (the cause of the two-shield
+    stall was the line, not armour or the profile); the gun alpha perks lay pips and take AP instead of adding damage,
+    keyed by the approved resource-amount predicate (N10); the base shield records its giver (the one approved field).
+
