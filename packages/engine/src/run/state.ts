@@ -18,6 +18,9 @@ import type { LoadoutPick } from './loadout';
 /** The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41); its
  *  after_fight lines are the fight cards' words for what follows a fight (the client's turnIntro.tsx). */
 export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string; after_fight: { won: string; lost: string } } = (survivalJ as any).run;
+/** The field's words and rounds (data/survival.json `field`; rules 1.62 items 4740 and 4746): the FREE ROAM banner and the
+ *  round label ({round}, {rounds}), for the screen; the engine's own count is Combat.field. */
+export const survivalField: { rounds: number; banner: { name: string; sub: string }; round_label: string } = (survivalJ as any).field;
 
 /** A mode a room can play (data/modes.json ids). */
 export type PlayMode = 'survival' | 'roguelike' | 'campaign';

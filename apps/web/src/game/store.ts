@@ -214,8 +214,10 @@ function screenFor(g: GameState): Screen { return g.phase === 'lobby' ? 'room' :
 export const homeScreen = (g: GameState | null | undefined): Screen => (g && g.phase === 'combat' ? 'combat' : g && g.run && g.run.state !== 'over' ? 'main' : g && g.phase === 'lobby' ? 'room' : 'main');
 function followPhase(prev: GameState | null, g: GameState) {
   if (S.screen === 'create' || S.screen === 'levelup' || S.screen === 'ultimate') return;
-  // A finished fight keeps its players on the grid until they click "Back to the story".
-  if (prev && prev.phase === 'combat' && g.phase !== 'combat' && S.screen === 'combat') return; // (a lost Survival run goes to the lobby: its card shows first too)
+  // A finished fight keeps its players on the grid until they click "Back to the story". Rules 1.62 item 4743: a run's
+  // field left (the vote passed, or its last round ended) goes straight on: no end card, no click.
+  const leftField = !!(prev && prev.run?.state === 'field' && g.run && g.run.state !== 'field');
+  if (prev && prev.phase === 'combat' && g.phase !== 'combat' && S.screen === 'combat' && !leftField) return; // (a lost Survival run goes to the lobby: its card shows first too)
   if (!prev || prev.phase !== g.phase) set({ screen: screenFor(g) });
   // rules 1.44: a run that has just ended (retired, or lost once its fight card is left) shows its summary first
   if (prev?.run && prev.run.state !== 'over' && g.run?.state === 'over' && S.screen !== 'combat') set({ screen: 'main' });

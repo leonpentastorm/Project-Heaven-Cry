@@ -60,6 +60,11 @@ describe('rules 1.55 item 61: the last enemy falls and the fight goes on', () =>
 });
 
 describe('rules 1.62 item 4746: the field is turns', () => {
+  it('a field saved by 0.29 or 0.30 (Combat.field true) takes its rounds at the next action (item 4747)', () => {
+    const g = toField(inFight()); g.combat.field = true;
+    const x = apply(g, { type: 'run/leave' }, 'host');
+    expect(x.combat.field).toMatchObject({ of: 3, round: 1 }); expect(x.run.state).toBe('field'); expect(x.combat.round).toBe(g.combat.round + 1);
+  });
   it('a new round opens it; the unit whose turn it is acts, another is refused; AP as in a fight; End turn passes; after its rounds the party leaves by itself', () => {
     let g = toField(inFight());
     const { mu, gu } = ids(g), f0 = g.combat.field;

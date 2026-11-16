@@ -38,7 +38,7 @@ import { storyForecastVals } from '../game/manaForecast';
 import { askConfirm, askText } from '../game/dialog';
 import { shellVals, narratorVals } from './shell';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
-import { actionVerdict } from '../game/actionFlow';
+import { actionVerdict } from '../game/verdict';
 import { oocOf, SECOND_SCHOOL, TONE, isShieldId } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
