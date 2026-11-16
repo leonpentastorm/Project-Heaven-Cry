@@ -433,7 +433,7 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 117. **The off hand follows: a property word, not a second weapon** (Leon, 16 Nov 2026: a sword-and-shield moveset where
     the shield's blows are woven into the weapon's attacks, and *"this follow strike system could be a tag on the weapon
     so it's universal and legendary just graft this tag onto your weapon"*; rules 1.58, spec items 4507 to 4521). A row
-    with the word `follows` (every shield, Afterword) or a melee weapon carrying a modifier with `adds_props: [follows]`
+    with the word `follows` (every shield, Afterword; the modifier graft was withdrawn in review, spec item 4520)
     strikes once in the off hand after each melee technique of a one-handed main weapon. Why a rider at the technique's
     tail and not a second attack: the engine has one place every own-turn melee technique ends (`useTechnique`), so the
     follow needs no mark, no handler and no copy of the attack; its preview is the same function. Why per technique and

@@ -1699,24 +1699,6 @@
           "say": "{target} is opened by Afterword{then}."
         }
       ]
-    },
-    {
-      "id": "mod_follow_graft",
-      "name": "Trailing balance",
-      "category": "mod",
-      "weight_kg": 0.1,
-      "price_credits": 400,
-      "adjudication": "engine",
-      "provisional": true,
-      "text": "Grip: re-weights a melee weapon for the off hand. It follows there: after each melee technique of your one-handed main weapon it strikes the same foe once (rules 1.58 item 4520). In the main hand it does nothing. In no shop or loot table yet.",
-      "adds_props": ["follows"],
-      "effects": [
-        {
-          "op": "mod",
-          "slot": "grip"
-        }
-      ],
-      "mod_slot": "grip"
     }
   ]
 }

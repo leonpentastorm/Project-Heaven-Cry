@@ -1610,7 +1610,7 @@ if isinstance(tq, dict):
     GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer", "follow"}, "ranged": {"fire", "press", "set", "take", "watch"}}
     AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
     SHIELD_PROPS = {"shield"}  # rules 1.57 (A1): carried by a shield's weapon row (category shield, 1H melee), and only by one
-    FOLLOW_PROPS = {"follows"}  # rules 1.58 (5e item 4507): a follows item, only a shield or a melee row (a modifier's adds_props grafts it)
+    FOLLOW_PROPS = {"follows"}  # rules 1.58 (5e item 4507): a follows item, only a shield or a melee row
     trules = tq.get("rules") or {}
     techs = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
     if len(techs) != len(items("techniques")):
@@ -1738,10 +1738,6 @@ if isinstance(tq, dict):
     for tid in ((st.get("default_melee") or []) + [x for e in items("enemies") if isinstance(e, dict) for x in ((e.get("techniques") or {}).get("melee") or [])]):
         if techs.get(tid, {}).get("group") == "follow":
             errors.append(f"techniques: '{tid}' is a follow: the engine makes it, nobody learns or lists it (rules 1.58)")
-    for i_ in items("items"):
-        ap_ = i_.get("adds_props") if isinstance(i_, dict) else None
-        if ap_ is not None and (not isinstance(ap_, list) or not set(ap_) <= FOLLOW_PROPS or i_.get("category") != "mod"):
-            errors.append(f"items:{i_.get('id')}: adds_props grafts only {sorted(FOLLOW_PROPS)} and only on a modifier row (category mod; rules 1.58 item 4520)")
     # gear gates (proposal 13.3): what a weapon or an item asks is a skill and a level
     for kind_ in ("weapons", "items"):
         for g_ in items(kind_):

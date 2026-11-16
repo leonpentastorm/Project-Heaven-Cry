@@ -847,7 +847,7 @@ Weapon skills and lore:
 | ✓ Sabre | 28 | 1.5 | 400 | |
 | Kemizuchi duelling blade | 24, +1 accuracy | 1.2 | 550 | |
 | Katana (rules 1.32) | 28 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
-| Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; in no shop or loot table; PROVISIONAL (item 4519) |
+| Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4519) |
 
 - **Combat knife · Finish It:** +50% damage against a target that is Dazed, Stunned, Bleeding or Downed. *"Every kit has one. Every story ends with one."*
 - **Throwing knives · Fan of Knives:** 3 AP; one throw each at up to two targets. *"Four problems, four solutions."*
@@ -7021,9 +7021,9 @@ not a second weapon (no +2). A weapon in the off hand beside a main-hand shield 
 A shield's system is melee.
 
 **5e. Follow strikes.**
-1. **What follows** (item 4507). A row whose `phys.props` holds `follows` is a follows item; so is a melee weapon carrying
-   a modifier that grafts the word (a fitted mod's or a variant's modifier row with `adds_props: [follows]`). Only a
-   shield or a melee-system row may carry it; the validator refuses it anywhere else, and a graft on a gun does nothing.
+1. **What follows** (item 4507). A row whose `phys.props` holds `follows` is a follows item, and nothing else is (a modifier
+   cannot graft the word: item 14). Only a shield or a melee-system row may carry it; the validator refuses it
+   anywhere else.
    A follow is always a melee blow, never a shot or a throw.
 2. **When it follows** (item 4508). While a follows item is in your **off** hand and your main hand holds a one-handed
    melee weapon (its row's `hands` is 1H: a heavy weapon held in one hand by Heavyworlder does not count; bare fists and
@@ -7067,10 +7067,13 @@ A shield's system is melee.
     its data row puts one there; none does today). The enemy turn and the AI are unchanged.
 13. **Afterword** (item 4519). The first follows weapon that is not a shield: a knife (15, Dexterity, light blades) made
     for the off hand. In the main hand it is an ordinary knife; in the off hand it only follows, at x0.25, and its follow
-    that lands leaves Bleeding (a Body save) once a turn (`mod_afterword`). Rare, 700 credits; in no shop or loot table
-    yet.
-14. **The graft** (item 4520). A modifier row with `adds_props: [follows]` grafts the word onto the melee weapon carrying
-    it (a fitted mod, a variant's modifier); the example row is `mod_follow_graft`, in no pool.
+    that lands leaves Bleeding (a Body save) once a turn (`mod_afterword`). 700 credits. Its price
+    alone keeps it rare: Survival's shop gear and weapon picks take it once their band reaches 700 (review, 16 Nov
+    2026); nothing in the data keeps it out (question 5, Leon's).
+14. **The graft** (item 4520). **Withdrawn, not built** (review, 16 Nov 2026): a modifier that grafts `follows` would be
+    a new engine field the lead had not approved, and the priced example row could be bought and fitted in Survival,
+    where it roughly doubled every technique. Afterword's own `follows` meets the request for a follows knife. A graft
+    returns only as an approved primitive with its own follow damage line.
 
 *(Guard 2.0's item 17, "the Shield Follows" on P9, is withdrawn: this revision is its follow-up; P9 stays only if Hold
 the Gap needs it. Item 4521.)*
@@ -10980,9 +10983,8 @@ Items 4240 to 4247.
 ### Rules 1.58, follow strikes (hands 5e; the reviewed second draft, built 16 Nov 2026)
 
 4507. **What follows (5e item 1, N1):** the property word `follows` (`techniques.json rules.props.follows`; the
-    validator's `FOLLOW_PROPS`: only on a shield or a `phys.system: melee` row) and a modifier row's `adds_props:
-    [follows]` (the graft: only on an `items.json` row of category `mod`). The one test is `character.ts followsId(id,
-    mods)` (a melee row with the word, or carrying a modifier that grafts it, read through `instanceMods`); the one reader
+    validator's `FOLLOW_PROPS`: only on a shield or a `phys.system: melee` row). The one test is `character.ts
+    followsId(id)` (a melee row whose `phys.props` holds the word; item 4520's graft is withdrawn); the one reader
     of the off hand is `physical/core.ts followOf(u)` (the off hand's weapon, else its carried shield). No number.
 4508. **When (5e item 2, N3):** `physical/core.ts follow(t)` at the tail of `useTechnique` (after the chain is noted) and
     of `previewTechnique` (the card's second attack entry, `follow: true`, `item`). Per technique (the lead's ruling on
@@ -11026,12 +11028,14 @@ Items 4240 to 4247.
 4519. **Afterword (5e item 13):** `weapons.json afterword` (15, Dexterity, scales with Agility, light blades, 1H, 160
     durability, 700 credits, props `light` and `follows`) and `items.json mod_afterword` (`damage_mult` 0.25 and
     Bleeding with its Body save once a turn, both `with_this` and `mode: [follow]`). The draft's "rare" is its price
-    and its absence from every pool (a weapon row has no rarity field: a grade is the instance's). Not in any shop,
-    loot table or camp list yet: it would go in `survival.json` shop stock (a rare weapon shelf) or the Forge's
-    `loot_tables.json` rare weapons when Leon places it. Icon: a placeholder (`tools/art/make_placeholders.py`) and a
+    only (a weapon row has no rarity field: a grade is the instance's): correction (review, 16 Nov 2026), a priced
+    weapon row with no `variant_of` is in `run/shop.ts` gear stock and `run/rewards.ts` weapon picks once their band
+    reaches 700. Keeping it out of those pools would need a data field the lead has not approved (question 5, Leon's). Icon: a placeholder (`tools/art/make_placeholders.py`) and a
     line in `art/briefs/ART-REQUESTS.md`. PROVISIONAL: 15, 0.25, 700.
-4520. **The graft (5e item 14):** `items.json mod_follow_graft` ("Trailing balance", grip slot, 400 credits,
-    `adds_props: [follows]`): a melee weapon carrying it follows in the off hand and does nothing in the main hand; in
-    no pool. PROVISIONAL: 400.
+4520. **The graft (5e item 14): withdrawn** (review, 16 Nov 2026). The row `mod_follow_graft` and the field
+    `adds_props` are taken out: the field was an engine addition without the lead's approval, and the row (priced,
+    grip slot) reached Survival's Forge and mod rewards, where an off-hand graft swung at full line after every
+    technique. Needs a new primitive if it returns: `adds_props` approved by the lead, with a `mode: [follow]` damage
+    line of its own. No number.
 4521. **Guard 2.0's item 17 withdrawn:** "the Shield Follows" (P9) is rules 1.58's follow strike; P9 stays only if Hold
     the Gap needs it. No number.

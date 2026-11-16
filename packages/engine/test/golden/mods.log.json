@@ -426,8 +426,6 @@
 "mod/mod_extended_mag@hellraiser_service_rifle/row:tq:main:shot@4": "Tester 1 uses Shot on Mid. / Tester 1 is revealed (attacked). / Tester 1 fires at Mid: d20 10 +5 = 15 vs 13 · hit, 105 damage · AMBUSH · revealed",
 "mod/mod_extended_mag@hellraiser_service_rifle/row:tq:main:suppress@4": "Tester 1 uses Suppress on Mid. / Tester 1 is revealed (attacked). / Tester 1 fires at Mid: d20 10 +6 = 16 vs 13 · hit, 48 damage · AMBUSH · revealed / Mid is Pressed (Tester 1: Suppress).",
 "mod/mod_extended_mag@hellraiser_service_rifle/start": "",
-"mod/mod_follow_graft@war_axe/#same": "",
-"mod/mod_follow_graft@war_axe/start": "",
 "mod/mod_foregrip@decrkm_smg/#same": "",
 "mod/mod_foregrip@decrkm_smg/pv:auto@12": "",
 "mod/mod_foregrip@decrkm_smg/pv:auto@12#2nd": "",

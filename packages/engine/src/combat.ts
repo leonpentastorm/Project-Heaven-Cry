@@ -438,7 +438,7 @@ export function setStrikeRider(f: (att: Unit) => boolean): void { strikeRiderF =
 export const strikeRider = (att: Unit | null | undefined): boolean => !!att && strikeRiderF(att);
 /** Rules 1.58 (hands 5e, 5b amended; F-d): two weapons of one system whose off-hand one is not a follows item. The one
  * test of the Both block: the paired attack, the both-hands techniques (physical/core.ts) and the Attack tab read it. */
-export const pairs = (u: Unit): boolean => !!u.offWeapon && !!WEAPON[u.offWeapon] && weaponSystem(u.weapon) === weaponSystem(u.offWeapon) && !followsId(u.offWeapon, u.offMods);
+export const pairs = (u: Unit): boolean => !!u.offWeapon && !!WEAPON[u.offWeapon] && weaponSystem(u.weapon) === weaponSystem(u.offWeapon) && !followsId(u.offWeapon);
 export const currentVolley = () => VOLLEY;
 /** Run attacks as one named volley (rules 1.12: a technique's Burst or Rake), so items that read ctx.volley and the
  * round's index (ctx.vi) see them as they see the engine's own burst and full auto. */
@@ -2294,7 +2294,7 @@ export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?
 /** Paired attack (spec: Hands): both weapons in one action. AP = the higher cost + 1; main −1, off −3 (better by 1 per 3 skill points, to −1). */
 export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | null, who: Character | null): string | null {
   if (!u.offWeapon) return 'Nothing in your off hand to attack with.';
-  if (!pairs(u)) return followsId(u.offWeapon, u.offMods) ? 'The ' + (WEAPON[u.offWeapon]?.name || 'off-hand weapon').toLowerCase() + ' follows: it is not a second weapon.' : 'Needs two weapons of one kind.';
+  if (!pairs(u)) return followsId(u.offWeapon) ? 'The ' + (WEAPON[u.offWeapon]?.name || 'off-hand weapon').toLowerCase() + ' follows: it is not a second weapon.' : 'Needs two weapons of one kind.';
   const mw = WEAPON[u.weapon], ow = WEAPON[u.offWeapon];
   const base = Math.max(attackApCost(mw, isMelee(mw) ? 'melee' : 'shot'), attackApCost(ow, isMelee(ow) ? 'melee' : 'shot')) + 1, cost = volleyAp(cb, u, t, 'paired', base);
   { const no = whyNot(cb, u, cost); if (no) return no; }

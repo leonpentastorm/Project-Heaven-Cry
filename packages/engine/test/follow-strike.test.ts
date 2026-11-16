@@ -1,10 +1,9 @@
-// Rules 1.58 (hands 5e): follow strikes. A follows item in the off hand (every shield, Afterword, a melee weapon with a
-// grafted `follows`) strikes once after each melee technique of a one-handed main weapon, as the unit's own action: its
+// Rules 1.58 (hands 5e): follow strikes. A follows item in the off hand (every shield, Afterword) strikes once after each melee technique of a one-handed main weapon, as the unit's own action: its
 // own roll at the follow row's extra, its own line, no AP; a rider (no Momentum, no Pressure, no other item's limited
 // use, no Answer to its miss); a shield's that lands gives 1 Guard once a turn. Everything through the reducer
 // (combat/technique, combat/attack, combat/paired) or the engine's own reactions. docs/design/proposals/2026-11-follow-strike.md.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, WEAPON, ITEM, heldOfChar, d20, pairs, resolveAttack, packOf, type Unit } from '../src';
+import { phys, WEAPON, ITEM, gearEntry, followsId, heldOfChar, d20, pairs, resolveAttack, packOf, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
 
@@ -20,22 +19,19 @@ const FOLLOW = phys.TECHNIQUES.find((t) => t.group === 'follow')!;
 type F = ReturnType<typeof fight>;
 /** A PC on C5 (gladius by default), its off hand as given (a shield: carried as offItem; a weapon: offWeapon), a foe on
  *  D5 with HP to spare (a second foe on D4 when asked). */
-function fight(o: { weapon?: string; off?: string | null; offMods?: string[]; dur?: number; guard?: number; m?: number; known?: string[]; traits?: string[]; foe2?: boolean; skills?: Record<string, number>; classId?: string } = {}) {
+function fight(o: { weapon?: string; off?: string | null; dur?: number; guard?: number; m?: number; known?: string[]; traits?: string[]; foe2?: boolean; skills?: Record<string, number>; classId?: string } = {}) {
   const sk = { athletics: 4, raw_power: 6, dexterity: 8, durability: o.dur ?? 3, ...(o.skills || {}) };
   const f = physFight([{ weapon: o.weapon || 'legion_gladius', known: o.known || [], skills: sk, ...(o.traits ? { traits: o.traits } : {}), ...(o.classId ? { classId: o.classId } : {}) }], [{ tier: 'soldier' }, ...(o.foe2 ? [{ tier: 'soldier' }] : [])]);
   f.cb.objects = [];
   f.put(f.pc, 'C5');
   const off = o.off === undefined ? 'buckler' : o.off, c = f.char(f.pc);
-  if (off) {
-    c.offHand = { id: off, ...(o.offMods ? { mods: o.offMods } : {}) } as any;
-    if ((WEAPON as any)[off]?.phys?.props.includes('shield')) { f.pc.offItem = off; delete (f.pc as any).offWeapon; } else { f.pc.offWeapon = off; f.pc.offAmmo = 0; if (o.offMods) f.pc.offMods = [...o.offMods]; delete (f.pc as any).offItem; }
-  }
-  // the unit was built before the hands were set here: what it holds (its hands' modifier rows) as the real draw would leave it
-  f.pc.held = heldOfChar(c);
+  c.offHand = null; if (off) c.pack = [...(c.pack || []), { ...gearEntry(off)! } as any];
   const foe = f.put(f.foe, 'D5'); foe.hp = foe.maxHp = 900;
   if (o.foe2) { const v = f.put(f.foes[1], 'D4'); v.hp = v.maxHp = 900; }
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
   f.turn(f.pc);
+  // the off hand drawn the real way: the fight's own gear change (rule 5: through the reducer)
+  if (off) { const ap = f.unit(f.pc.id).ap; f.unit(f.pc.id).ap = 9; f.act({ type: 'combat/equip', unitId: f.pc.id, item: off, to: 'off' } as any); f.unit(f.pc.id).ap = ap; }
   for (const u of f.cb.units) { delete u.openerUsed; delete (u as any).reactUsed; if (u.side === 'pc') u.hp = u.maxHp; }
   f.momentum(f.pc, o.m ?? 1); if (f.pc.resMax?.guard != null) f.pc.res!.guard = o.guard ?? 0;
   f.cb.fx = [];
@@ -48,10 +44,10 @@ const guard = (f: F) => f.unit(f.pc.id).res?.guard ?? 0;
 const calm = (f: F) => { for (let s = 1; ; s++) { const r = { state: s }; if (Array.from({ length: 12 }, () => d20(r)).every((n) => n !== 1 && n !== 20)) { f.g.rng.state = s; return; } } };
 
 describe('the data', () => {
-  it('one follow row (the engine makes it); every shield and Afterword carry `follows`; the graft is a modifier row', () => {
+  it('one follow row (the engine makes it); every shield and Afterword carry `follows`; nothing else does (no graft)', () => {
     expect(FOLLOW).toMatchObject({ system: 'melee', free: false, comes_with: [] }); expect(phys.given(FOLLOW)).toBe(true);
     for (const id of ['buckler', 'riot_shield', 'pavise', 'afterword']) expect((WEAPON as any)[id].phys.props, id).toContain('follows');
-    expect((ITEM as any).mod_follow_graft.adds_props).toEqual(['follows']);
+    expect((ITEM as any).mod_follow_graft).toBeUndefined(); expect(followsId('sabre')).toBe(false);
   });
 });
 
@@ -197,13 +193,6 @@ describe('the hand pairs', () => {
     const f = fight({ weapon: 'afterword', off: 'legion_gladius' }); rig({ hit: true });
     expect(f.bound(() => pairs(f.pc))).toBe(true);
     expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(follows(f)).toHaveLength(0);
-  });
-  it('a grafted off-hand sabre follows (the mod adds the word); in the main hand the graft does nothing', () => {
-    const f = fight({ off: 'sabre', offMods: ['mod_follow_graft'] }); calm(f); rig({ hit: true });
-    expect(f.bound(() => phys.followOf(f.pc))).toBe('sabre'); expect(f.bound(() => pairs(f.pc))).toBe(false);
-    expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(follows(f)).toHaveLength(1); expect(follows(f)[0].weapon).toBe('sabre');
-    const g = fight({ weapon: 'sabre', off: null }); const c = g.char(g.pc); c.weaponState = { ...(c.weaponState || {}), mods: ['mod_follow_graft'] } as any; rig({ hit: true });
-    expect(g.tech('cut', { targetId: g.foe.id })).toBeNull(); expect(follows(g)).toHaveLength(0);
   });
 });
 

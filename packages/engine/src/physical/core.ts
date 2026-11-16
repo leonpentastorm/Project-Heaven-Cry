@@ -97,7 +97,7 @@ const shieldsOf = (u: Unit): string[] => [u.offItem, u.swapMain || u.weapon].fil
 export const shieldOf = (u: Unit): string | null => shieldsOf(u)[0] || null;
 /** Rules 1.58 (hands 5e, N1): the off hand's follows item (its weapon, else its carried shield), or null. The one reader
  * of where the word counts: only in the off hand (character.ts followsId is what makes a follows item). */
-export const followOf = (u: Unit): string | null => (u.offWeapon ? (followsId(u.offWeapon, u.offMods) ? u.offWeapon : null) : u.offItem && followsId(u.offItem) ? u.offItem : null);
+export const followOf = (u: Unit): string | null => (u.offWeapon ? (followsId(u.offWeapon) ? u.offWeapon : null) : u.offItem && followsId(u.offItem) ? u.offItem : null);
 /** What the off hand holds for a technique: its weapon, else (a shield's techniques, worked from the off hand while it
  * holds no weapon) the shield, its own strike line, else nothing. */
 const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) || null);

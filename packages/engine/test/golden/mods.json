@@ -426,8 +426,6 @@
 "mod/mod_extended_mag@hellraiser_service_rifle/row:tq:main:shot@4": "o:weapon/shot:30+0x3.823v0 i:F2:weapon/physical:105 => F2 hp259>154 | P1 ap:9>7 ammo:36>35 heat:0>1 shotsThisTurn:0>1 hidden:1>-",
 "mod/mod_extended_mag@hellraiser_service_rifle/row:tq:main:suppress@4": "o:weapon/shot:30+0x1.912v0 i:F2:weapon/physical:48 => F2 hp259>211 | P1 ap:9>6 ammo:36>33 heat:0>2 shotsThisTurn:0>1 hidden:1>-",
 "mod/mod_extended_mag@hellraiser_service_rifle/start": "ammo36 mags[24,24,24] loose48 modsmod_extended_mag ap9 attack4 dex5 reloadAp2 bands(shot)0 bands(aimed)0 magSize36",
-"mod/mod_follow_graft@war_axe/#same": "11 of 12 steps as bare: no step but the start differs (built: true)",
-"mod/mod_follow_graft@war_axe/start": "ammo0 mags[] loose0 modsmod_follow_graft ap9 attack4 dex5 reloadAp2 bands(shot)0 bands(aimed)0 magSizenull",
 "mod/mod_foregrip@decrkm_smg/#same": "46 of 59 steps as bare",
 "mod/mod_foregrip@decrkm_smg/pv:auto@12": "ap3 hit1 vs13 45% [skill:4,full auto:-2,range:-2,Foregrip:1] dmg 19 x[Agility and Dexterity:1.5,level:1.7] =48.43 arm9",
 "mod/mod_foregrip@decrkm_smg/pv:auto@12#2nd": "ap3 hit1 vs13 45% [skill:4,full auto:-2,range:-2,Foregrip:1] dmg 19 x[Agility and Dexterity:1.5,level:1.7] =48.43 arm9",
