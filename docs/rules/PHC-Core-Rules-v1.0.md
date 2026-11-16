@@ -285,14 +285,14 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Core | Class | Attribute | Rank I | Rank II | Rank III |
 |---|---|---|---|---|---|
-| Body | Bulwark (was Defender) | Endurance | Brace (`defender.brace`) · Draw Fire (`defender.draw_fire`) | Unbroken (`adamantile_knight.unbroken`) · **Shrug It Off** (new) | Reactive Plate (`defender.reactive_plate`) · **Anchor** (new) |
-| Body | Breaker (was Fighter) | Strength | Lunge (`fighter.lunge`) · **Shove** (new) | Riposte (`fighter.riposte`) · Lingering Dread (`shade.lingering_dread`) | Finisher (`fighter.finisher`) · **Unstoppable** (new) |
-| Body | Skirmisher (was Marksman) | Agility | Fire Discipline (`marksman.fire_discipline`) · **Speed Loader** (new) | Special Ammo (`marksman.special_ammo`) · **Duck and Roll** (new) | Killzone (`marksman.killzone`) · Called Shot (`gunslinger.called_shot`) |
-| Mind | Operative (was Infiltrator) | Perception | Mark (`assassin.mark`) · **Vanish** (new) | Toxin (`assassin.toxin`) · **Field Fix** (new) | Execution (`assassin.execution`) · **Sabotage** (new) |
+| Body | Bulwark (was Defender) | Endurance | Brace (`defender.brace`) · Draw Fire (`defender.draw_fire`) | Unbroken (`adamantile_knight.unbroken`) · **Shrug It Off** (new) | Reactive Plate (`defender.reactive_plate`) · **Anchor** (new) *(Superseded by rules 1.60 items 4619, 4620: Draw Fire is Called Out.)* |
+| Body | Breaker (was Fighter) | Strength | Lunge (`fighter.lunge`) · **Shove** (new) | Riposte (`fighter.riposte`) · Lingering Dread (`shade.lingering_dread`) | Finisher (`fighter.finisher`) · **Unstoppable** (new) *(Superseded by rules 1.60 items 4621 to 4624: Wind-up, Barrel In, Read the Swing, Measured Blow.)* |
+| Body | Skirmisher (was Marksman) | Agility | Fire Discipline (`marksman.fire_discipline`) · **Speed Loader** (new) | Special Ammo (`marksman.special_ammo`) · **Duck and Roll** (new) | Killzone (`marksman.killzone`) · Called Shot (`gunslinger.called_shot`) *(Superseded by rules 1.60 items 4626, 4627: Hold the Lane; Run and Gun's own free move.)* |
+| Mind | Operative (was Infiltrator) | Perception | Mark (`assassin.mark`) · **Vanish** (new) | Toxin (`assassin.toxin`) · **Field Fix** (new) | Execution (`assassin.execution`) · **Sabotage** (new) *(Superseded by rules 1.60 item 4628: Vanish makes Fade cheaper.)* |
 | Mind | Sigilist (was Mage) | Intelligence | Barrage (`mage.barrage`) · **Core Change** (new) | Overcharge (`mage.overcharge`) · **Bleed the Flux** (new) | Payload (`mage.payload`) · Stored Spell (`scribe.stored_spell`) |
 | Mind | Rigger (was Trickster) | Expression | **Read** (new) · **False Image** (new) | Blind and Slow (`trickster.blind_and_slow`) · **Silver Tongue** (new) | Rewrite (`trickster.rewrite`) · **Sleight** (new) |
-| Soul | Mender (was Bard) | Insight | Triage (`medic.triage`) · Inspire (`bard.inspire`) | Stim Throw (`medic.stim_throw`) · Mend (`bard.mend`) | Field Surgery (`medic.field_surgery`) · **Rally** (new) |
-| Soul | Channeler | Determination | Shape (`channeler.shape`) · **Iron Heart** (new) | Storm Front (`channeler.storm_front`) · **Occult Library** (new) | Heart Surge (`channeler.heart_surge`) · **Eye of the Storm** (new) |
+| Soul | Mender (was Bard) | Insight | Triage (`medic.triage`) · Inspire (`bard.inspire`) | Stim Throw (`medic.stim_throw`) · Mend (`bard.mend`) | Field Surgery (`medic.field_surgery`) · **Rally** (new) *(Superseded by rules 1.60 item 4630: Triage is the medic's Touch.)* |
+| Soul | Channeler | Determination | Shape (`channeler.shape`) · **Iron Heart** (new) | Storm Front (`channeler.storm_front`) · **Occult Library** (new) | Heart Surge (`channeler.heart_surge`) · **Eye of the Storm** (new) *(Superseded by rules 1.60 item 4634: Heart Surge never past stage 4.)* |
 | Soul | Chaplain (was Guardian) | Virtue | Will Shield (`guardian.will_shield`) · **Command** (new) | Under the Eye (`lumeri_templar.under_the_eye`) · Blessed Shells (`lumeri_templar.blessed_shells`) | Sanctuary (`guardian.sanctuary`) · Judgement (`lumeri_templar.judgement`) |
 
 The 54 moves:
@@ -306,9 +306,9 @@ The 54 moves:
 - **Anchor:** while Braced, nothing pushes, pulls, shoves or knocks you Prone. An enemy that started its turn next to you and leaves your reach draws your opportunity attack even when it Disengages.
 - **Shove** (1 AP): an adjacent enemy is pushed 1 tile or knocked Prone (your choice) on a failed Body save against 12 + your Body debuff strength *(Superseded by rules 1.13: 12 + your strength with Raw Power, the skill that delivers it)*. A blocked push is refused before anything is spent.
 - **Unstoppable** (1 AP, once a scene): until your next turn, Fear, Shaken, Slowed and Pinned are set aside and refused, no opportunity attack is taken against you, and you gain 2 Momentum.
-- **Speed Loader:** the turn's first reload costs 1 AP less (at least 1).
+- **Speed Loader:** the turn's first reload costs 1 AP less (at least 1). *(Superseded by rules 1.60 item 4626: Hold the Lane.)*
 - **Duck and Roll** (reaction): when a ranged weapon attack targets you, step 1 tile first: out of sight, the attack isn't taken; into cover, it is at −2 (instead of half cover's −5).
-- **Vanish** (1 AP, once a turn): Hidden if no enemy sees you.
+- **Vanish** (1 AP, once a turn): Hidden if no enemy sees you. *(Superseded by rules 1.60 item 4628.)*
 - **Field Fix** (2 AP): an adjacent squadmate's jam cleared, weapon durability restored, or a machine repaired for 20.
 - **Sabotage** (2 AP): an adjacent enemy machine, turret or drone disabled for 2 rounds, a barricade passable for 2 rounds, or your tile rigged (30 and Pinned on a failed Body save for the next enemy to step on it).
 - **Core Change:** a core swap costs 1 AP. **Bleed the Flux:** a Vent costs 0 AP, and your next glyph adds 1 Flux less.
@@ -620,7 +620,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Hellraiser service rifle | Rifle | 30 | 16 | 24 | 8 | single, burst, auto | 4 kg |
 | Lever carbine | Rifle | 32 | 14 | 8 | 6 | single | 3.5 kg |
 | Lumeri scattergun | Shotgun | 40 within 4 tiles, 25 within 8 | 8 | 6 | 6 | single | 4 kg |
-| Long rifle | Rifle | 48 (rules 1.18; was 50). A Shot costs 3 AP, an Aimed Shot 4 | 30 | 5 | 6 | single | 6 kg |
+| Long rifle | Rifle | 47 (rules 1.60 item 4644; was 48, and 50 before rules 1.18). A Shot costs 3 AP, an Aimed Shot 4 | 30 | 5 | 6 | single | 6 kg |
 | .700 Blackpoint anti-materiel | Heavy | 66 (rules 1.18; was 90), ignores 10 armour | 40 | 3 | 3 | single; must be braced or prone | 15 kg |
 | Hellraiser LMG | Heavy | 25 | 18 | 100 | 14 | burst, auto; −2 to hit unless emplaced | 10 kg |
 | Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 40 | none | single | 1.5 kg |
@@ -778,7 +778,7 @@ Weapon skills and lore:
 | ✓ Lever carbine | 32 | 14 | 8 (loose) | 6 | single | 3.5 | 700 | optic, muzzle |
 | Adamantile battle rifle | 30 (rules 1.18; was 38) | 18 | 15 | 6 | single, burst | 5 | 1,300 | all four |
 | CCEC marksman rifle | 33 (rules 1.18; was 40) | 22 | 10 | 6 | single | 4.5 | 1,600 | optic, muzzle, magazine |
-| ✓ Long rifle | 48 (rules 1.18; was 50); Shot 3 AP, Aimed Shot 4 AP | 30 | 5 (loose) | 6 | single | 6 | 1,400 | optic, muzzle |
+| ✓ Long rifle | 47 (rules 1.60 item 4644; was 48, and 50 before rules 1.18); Shot 3 AP, Aimed Shot 4 AP | 30 | 5 (loose) | 6 | single | 6 | 1,400 | optic, muzzle |
 | Legion bullpup | 28 | 14 | 30 | 8 | single, burst, auto | 3.4 | 1,100 | optic, muzzle, magazine |
 
 - **Service rifle · Suppressing Fire:** 3 AP; mark a 3-tile line until your next turn. Enemies shooting from or moving through it are at −2, and the first one to move through it takes a shot from you. *"The Hellraisers' answer to every frontier."*
@@ -1112,7 +1112,7 @@ Guard is a pool of points that takes hits for you. Anyone with Durability has on
    | 4 | **Broken** | −2 AP; its first action must be to reach cover or drop Prone | players stop at 3 |
 
 2. **Tiers.** An elite stops at 3. A boss stops at 2: it can be Pressed, never Suppressed.
-3. **Protective reactions always work.** Suppressed stops the reactions you hit back or move with (a held shot, an opportunity attack, Riposte, Keep Back). It never stops the ones that protect (Parry, Take the Hit, Shrug It Off and the like).
+3. **Protective reactions always work.** Suppressed stops the reactions you hit back or move with (a held shot, an opportunity attack, Riposte, Keep Back). It never stops the ones that protect (Parry, Take the Hit, Shrug It Off and the like). *(Superseded in part by rules 1.60 item 4620: Take the Hit is retired.)*
 4. **Gaining it.**
    - The first ranged hit you land on a target each turn gives it +1.
    - +1 more if the shot goes past cover the target is standing against. A target in the open gives no extra.
@@ -1911,7 +1911,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 |---|---|
 | **Shape** (Channeler I) | Your first Pump each turn that would cost AP is free, on a Damage design. Empathy's free Pumps go first. *(Superseded by rules 1.19: Shape adds no free Pump to Empathy's; it gives the turn's one free Pump even without Empathy 3, and that Pump steps +0.1 more.)* |
 | **Storm Front** (Channeler II) | +10 MP at Begin, once a turn: once a Damage **Bolt or Lance** has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit (else the first in its area, else the aim; outside its area), at the release's multiplier, one roll each (At Once: none, half) *(since rules 1.17: ×0.8)*, with the tone's rider. Wave, Burst and Aura can't take it. |
-| **Heart Surge** (Channeler III) | Once a turn, a toggle on a Release or a snap: it fires **one stage higher** (a held one's stage really rises, rider too; past stage 4 ×2.6; a snap ×1) *(Superseded by rules 1.19: past stage 4 is one more step of the table, ×1.8)*. Double Strain: the Begin's Strain again (1, Flooded 2) once the release has landed. |
+| **Heart Surge** (Channeler III) | Once a turn, a toggle on a Release or a snap: it fires **one stage higher** (a held one's stage really rises, rider too; past stage 4 ×2.6; a snap ×1) *(Superseded by rules 1.19: past stage 4 is one more step of the table, ×1.8)*. Double Strain: the Begin's Strain again (1, Flooded 2) once the release has landed. *(Superseded by rules 1.60 item 4634: never past stage 4.)* |
 | **Sanctuary** (Guardian III) | Halves all damage to allies inside but your own heart's burn. |
 | **Drink It In** (Guardian II) | An elemental Outburst feeds its MP price like a Raw one (it is told from a Sigil by the MP it carries). |
 | **Gift** (Bard III) | The ally pays 3 AP (Begin and Release); it goes off at **stage 1** on the Bard's MP (the design's full price) and a Begin's Strain (+2 without an Emanator). *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)* |
@@ -3318,7 +3318,7 @@ This revision replaces, in rules 1.5, 1.8 and 1.17: the stage table, the Damage 
 1. **The stage table** is ×0.8 at stage 0 and **+0.2 for every stage: ×0.8, ×1.0, ×1.2, ×1.4, ×1.6.** (Rules 1.17: +0.4 a stage, to ×2.4.) A snap cast stays ×0.8.
 2. **The Damage school's base is 40** for a character (28 in rules 1.17; it was 36 when this revision was first fitted, to 125% steady and 150% at the peak. Leon, 12 Nov 2026: with the best gun at about 145% every turn the Outburst felt weak, so steady play goes to about 135% and the biggest Release to about 165%; item 1222). An enemy caster's is **24** (18), so its Outbursts deal about what the enemy table was fitted with: stage 0: 19 (was 14), stage 1: 24 (22), stage 2: 29 (29), stage 3: 34 (36), stage 4: 38 (43), before its Soul multiplier.
 3. A feeling poured into a Pump has **its own step in place of the plain +0.2**. The Release's multiplier is the table's, plus (step − 0.2) for each feeling Pump. Stages from the swell, Feeding, Overdraw and Heart Surge are plain.
-4. Heart Surge past stage 4 reads one more step of the table: ×1.8 (×2.8 in rules 1.17). The Buff school's heal reads the table as before (30 × the multiplier; its base is not raised): at stage 1 it heals 30, what it healed before rules 1.17 (36 in rules 1.17); at stage 4 with plain Pumps 48 (72), and with Rage and three +0.3 feelings 66 (81). Rules 1.17 had raised healing 9 to 20% as a side effect of its table; this gives that back (item 1204).
+4. Heart Surge past stage 4 reads one more step of the table: ×1.8 (×2.8 in rules 1.17). The Buff school's heal reads the table as before (30 × the multiplier; its base is not raised): at stage 1 it heals 30, what it healed before rules 1.17 (36 in rules 1.17); at stage 4 with plain Pumps 48 (72), and with Rage and three +0.3 feelings 66 (81). Rules 1.17 had raised healing 9 to 20% as a side effect of its table; this gives that back (item 1204). *(Superseded by rules 1.60 item 4634.)*
 
 ### 2. Each feeling goes into an Outburst once
 
@@ -4374,11 +4374,11 @@ move works with whatever the Skirmisher attacks with; only Heat stays the gun's.
 | Rank | Move | What it does |
 | --- | --- | --- |
 | I | **Fire Discipline** | Aimed attacks have +1 to hit, and with a weapon that has Heat they add none. Once a turn, on your turn, a weapon technique that costs 3 AP or more costs 1 AP less (a Burst 2, a Mag Dump, a dear blow: any weapon). The free techniques everyone has (a shot, an Aimed shot, a blow) are never cheaper (item 1813). |
-| I | **Speed Loader** | Your first main-hand reload, draw, swap or pick-up each turn costs 1 AP less (at least 1). |
+| I | **Speed Loader** | Your first main-hand reload, draw, swap or pick-up each turn costs 1 AP less (at least 1). *(Superseded by rules 1.60 item 4626: Hold the Lane.)* |
 | II | **Duck and Roll** | Unchanged (reaction, kind move). |
 | II | **Special Ammo** | One load each of armour-piercing, hollow-point and incendiary a rest, on any weapon: a magazine for a gun, a quiver of 12 for a bow (filled before the fight), and for a blade, a fist or a thrown blade a load that lasts 12 attacks or the fight. Loading is your reload's AP; 1 AP for a weapon that never reloads. Never a consumable (a grenade is its own payload). The rounds' effects are `rules.json ammo_types`. |
 | III | **Killzone** | Hold two attacks with any weapon, for twice the attack's AP: one at each of the first two different enemies that move into your line (a gun, a bow) or your reach (a melee weapon), +2 to hit each. It spends both your reactions; with one left, only one fires. |
-| III | **Run and Gun** (new) | Once a turn, after you attack, your next move of up to 2 tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds 1 more Pressure. |
+| III | **Run and Gun** (new) | Once a turn, after you attack, your next move of up to 2 tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds 1 more Pressure. *(Superseded by rules 1.60 item 4627: no longer the turn's one free move.)* |
 
 **Called Shot leaves the class** (to the Operative, Classes 3.0 step 4); its key `gunslinger.called_shot` stays.
 
@@ -4418,7 +4418,7 @@ id stays `guardian`; its display name is the Chaplain (rules 1.29). Every number
 
 | Rank | Key | Move | Rule |
 | --- | --- | --- | --- |
-| I | `guardian.ward` | **Ward** | A Whisper only the Chaplain can say; it **uses the turn's one Whisper** (1 AP; the Atheist's roll). An ally in sight, never yourself, gains a shield of **10 × Blessing power** (`amounts.ward`, profile `blessing_mend`: Blessing power × the prayer heal dial × the level's growth) for the fight, on its own layer `ward` (spent before any other shield; every other shield is the base layer, where the larger stands). **At most 2 allies** carry your Ward (a third ends the oldest); a Ward on an ally who has one tops it up, never doubles. |
+| I | `guardian.ward` | **Ward** | A Whisper only the Chaplain can say; it **uses the turn's one Whisper** (1 AP; the Atheist's roll). An ally in sight, never yourself, gains a shield of **10 × Blessing power** (`amounts.ward`, profile `blessing_mend`: Blessing power × the prayer heal dial × the level's growth) for the fight, on its own layer `ward` (spent before any other shield; every other shield is the base layer, where the larger stands). **At most 2 allies** carry your Ward (a third ends the oldest); a Ward on an ally who has one tops it up, never doubles. *(Superseded by rules 1.60 item 4639: up to 4 allies carry it.)* |
 | I | `guardian.smite` | **Smite** | Once a turn, on your own turn, when an attack with your weapon (any: a shot, a strike, a throw, two weapons, a focus's attack; trigger `hit`) hits an enemy that still stands, the patron also deals **20 × Blessing power Soul** (`amounts.smite`, Rebuke's base; no roll, armour does not lower it). Not multiplied by the technique, a critical, Verdict or ammunition (it is an item's damage, not the attack's). A hit that kills leaves it for a later hit that turn; never on another's turn (a reaction, an opportunity attack). It is a prayer: `via: faith` (a kill by prayer for the No Magic but Theirs vow), Old Overcast's is lightning (`amounts.smite_storm`, element lightning: the storm tag); not a Whisper and uses no prayer limit. The Toll-Keeper's and the Matchmaker's (taboo `kill`) are `nonlethal`: a Smite that would take the last HP subdues. An Atheist rolls the Whisper's TN on each hit it would ride (predicate `answered`); a miss leaves it unspent. It needs the prayer door open (Faith 1, not Silenced). |
 | II | `lumeri_templar.under_the_eye` | Under the Eye | As built (allies within 3 get +2 to hit while you are Witnessed; any weapon). |
 | II | `lumeri_templar.blessed_shells` | **Blessed Arms** *(Suggested; was Blessed Shells)* | As built, any weapon: a landed Hymn loads into your weapon (a round, an arrow, an edge, a thrown blade); the next hit releases it; a Smite may ride the same hit. Tag `guns` → `weapon`; the story action is "Bless your weapon". |
@@ -4671,7 +4671,7 @@ unit it sees); six moves. Supplies are no longer the class's resource; its resou
 
 | Rank | Move (key) | Cost | Effect |
 | --- | --- | --- | --- |
-| I | Triage (`medic.triage`) | 2 AP, 18 MP (rules 1.55 item 46; it was 6) | an adjacent or Bonded ally in sight: heal 4.3 and end Bleeding; once an ally a turn; out of a fight ×3, once an ally a scene |
+| I | Triage (`medic.triage`) | 2 AP, 18 MP (rules 1.55 item 46; it was 6) | an adjacent or Bonded ally in sight: heal 4.3 and end Bleeding; once an ally a turn; out of a fight ×3, once an ally a scene *(Superseded by rules 1.60 item 4630.)* |
 | I | The Ledger (`bard.ledger`) | passive | every heal you give that restores HP and every shield you give, to an ally or yourself, is counted (at most 15.5 × Healing given × level); your next damage to an enemy by your own blow, any weapon or door, adds 0.7 × the Ledger before armour and empties it; a miss spends nothing; it empties at a fight's end |
 | II | Inspire (`bard.inspire`) | 1 AP, 30 MP (rules 1.55 item 46; it was 10) | a Bonded unit in sight: give it a feeling you have felt (section 6) |
 | II | Take the Weight (`bard.take_the_weight`) | reaction (protect) | a Bonded ally in sight would go Down: it stays at 1 HP and you lose 15% of your max HP (true damage), only while above a quarter of your max HP; or a Bonded ally would be Stunned, Dazed or Afraid: you take it instead |
@@ -4799,7 +4799,7 @@ turn cheaper"; six moves, none needing Visualization:
 | II | `trickster.salvage` | **Salvage** | 1 AP, next to you: a wreck (a destroyed machine of either side) gives 2 charge (each wreck once a fight); or one of your Figments is let go with all its charge back; or a repair of 15 |
 | II | `trickster.overclock` | **Overclock** | 1 AP, once a turn: a Figment, robot, drone or turret of your side within 8 that your side sees attacks the nearest enemy it can reach now, at no AP (an attack of up to 2 AP); it takes 5 true (the Level term `deal`). Never a character |
 | III | `trickster.sleight` | **Sleight** | 1 AP, once a scene: swap places with one of your Figments or a standing ally within 6 |
-| III | `trickster.scrap_turret` | **Scrap Turret** (was Jury-Rig) | 3 AP, once a scene, one at a time: from a wreck, a pile with a weapon or a barricade next to you, a turret (`figments.json turret`: 40 HP, Defense 10, armour 5, no move; an owned unit of turn `auto`) that at each of your turn starts for 3 rounds makes its weapon's plain attack (the wreck's or pile's weapon, else the service pistol) at the nearest enemy it can reach, d20 + your Improvisation modifier, the weapon profile at your level |
+| III | `trickster.scrap_turret` | **Scrap Turret** (was Jury-Rig) | 3 AP, once a scene, one at a time: from a wreck, a pile with a weapon or a barricade next to you, a turret (`figments.json turret`: 40 HP, Defense 10, armour 5, no move; an owned unit of turn `auto`) that at each of your turn starts for 3 rounds makes its weapon's plain attack (the wreck's or pile's weapon, else the service pistol) at the nearest enemy it can reach, d20 + your Improvisation modifier, the weapon profile at your level *(Superseded by rules 1.60 item 4633: Scrap Sentinel.)* |
 
 Leave the class (keys kept in the move pool, shelved): Silver Tongue, Blind and Slow, Rewrite. Read goes to the Operative
 (on this step's branch it stands in the Operative's rank II where Field Fix was; the Shadow step sets that rank).
@@ -6586,7 +6586,7 @@ Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 p
 9. **Weight of the Wall** (`bulwark`, Durability): while you hold Guard, your weapon attacks deal 2% (II: 3%) more for each Guard, up to 10% (II: 15%).
 10. **Answer in Kind** (`shrug_it_off`, Durability): when an enemy's blow hurts you, your weapon attacks deal 8% (II: 12%) more until the end of your next turn; II: the blow also gives 1 Guard (once a round).
 11. **Iron Grip** (`iron_grip`, Raw Power): the technique Grapple and the forbid stay (a held target can't use Answers or reactions); your melee hits deal 6% (II: 12%) more to a Grappled or Prone enemy (II: also Shaken or Afraid).
-12. **Keep Swinging** (`breaching_strike`, Raw Power): when one of your Finishers drops an enemy, you gain 1 (II: 2) Momentum once it is done; II: a Finisher that hits an Elite or a Boss gives 1 Momentum.
+12. **Keep Swinging** (`breaching_strike`, Raw Power): when one of your Finishers drops an enemy, you gain 1 (II: 2) Momentum once it is done; II: a Finisher that hits an Elite or a Boss gives 1 Momentum. *(Superseded by rules 1.60 item 4625.)*
 13. **Pressure Point** (`both_hands`, Dexterity): your ranged attacks deal 10% more to a Pressed enemy (Pressure 2+); II: 15%, and 10% more again at Pressure 3+. *(Superseded by rules 1.60 item 4614.)*
 14. **Keep Their Heads Down** (`running_reload`, Dexterity): once a turn (II: once a turn for each enemy), your ranged hit gives its target 1 more Pressure. *(Superseded by rules 1.60 item 4615.)*
 15. **Long Dark** (`sleight_of_hand`, Ingenuity): your attacks made while Hidden deal 8% (II: 14%) more; it multiplies on top of the Break.
@@ -9251,7 +9251,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 522. **Shape:** the first Pump a turn that would cost AP is free (Damage designs, either school). Empathy's free Pumps are spent first. Flag: with Empathy 7, a Begin reaches stage 3 for 2 AP (Begin + 2 free + Shape).
 523. **Storm Front:** Bolt and Lance only; after the release has landed (the `outburst_after` hook), 2 arcs within 2 tiles of the first creature hit (else the first in the area, else the aim), outside the release's area, at the release's multiplier (stage + Resonance) and rider stage, one roll each; +10 MP flat.
-524. **Heart Surge:** +1 stage at release (held: the stage itself; past 4: ×2.6; a snap: ×1), once a turn; +1 Strain (2 Flooded) after the release. Replaces 1.2's ×2 and doubled durations and pushes (items 296, 401). Flag: much weaker than 1.2's ×2; Leon to confirm. *(Superseded by rules 1.19: past stage 4 is ×1.8.)*
+524. **Heart Surge:** +1 stage at release (held: the stage itself; past 4: ×2.6; a snap: ×1), once a turn; +1 Strain (2 Flooded) after the release. Replaces 1.2's ×2 and doubled durations and pushes (items 296, 401). Flag: much weaker than 1.2's ×2; Leon to confirm. *(Superseded by rules 1.19: past stage 4 is ×1.8.)* *(Superseded by rules 1.60 item 4634: never past stage 4.)*
 525. **Sanctuary:** your own burn ('strain' damage) isn't halved (was "your own Mana Short", item 299).
 526. **Gift:** the ally's 3 AP, stage 1, the Bard's full design price and a Begin's Strain (item 302).
 527. **Love Made Manifest:** Begins at stage 4 once a fight (item 346's ×3 retired).
@@ -10053,7 +10053,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1802. **Keep one for a held shot (rules 1.30, `reactions-spec.md` rule 10; `rules.json combat.reactions.keep_for_held`, 1):** a unit with more reactions than this that holds a shot keeps the last one for it: a reaction that fires by itself is refused when it would leave fewer. On by default; a unit's `keepForHeld: false` turns it off (the switch on the screen is Classes 3.0 step 10). PROVISIONAL.
 1803. **The second reaction's to-hit dial (rules 1.30; `rules.json combat.reactions.second_hit`, 0):** defined, unused. PROVISIONAL.
 1804. **Fire Discipline (rules 1.30, weapon-neutral):** Aimed attacks add no Heat (the gun's door) and have +1 to hit (any weapon: new for guns); once a turn the first attack of your own turn costs 1 AP less, at least 1 (any attack: a Burst 3 → 2, a shot 2 → 1, a melee strike). *(Superseded by item 1813: the discount is a dear technique's only.)* It replaces "one Burst a turn 2 AP" and "+1 on Aimed with a bow". A free attack on your own turn (a Lunge's strike) counts as the first. PROVISIONAL.
-1805. **Speed Loader (rules 1.30):** the first main-hand reload, swap or draw from the pack, or pick-up, each turn costs 1 AP less, at least 1 (one use a turn shared by all four). PROVISIONAL.
+1805. **Speed Loader (rules 1.30):** the first main-hand reload, swap or draw from the pack, or pick-up, each turn costs 1 AP less, at least 1 (one use a turn shared by all four). PROVISIONAL. *(Superseded by rules 1.60 item 4626.)*
 1806. **Special Ammo on any weapon (rules 1.30):** a load for a weapon with no magazine (a blade, a fist, a thrown blade) lasts 12 attacks (`numbers.load_attacks`) or the fight, costs 1 AP to load (`numbers.load_ap`), and its rounds' effects apply to that weapon's hits as a gun's (armour-piercing ×0.8 ignoring armour, hollow-point ×1.3 against doubled armour, incendiary ×0.9 and Burning). A gun, a bow and a launcher load as before. Never a grenade or other consumable. PROVISIONAL.
 1807. **Killzone (rules 1.30):** two held attacks with any weapon (a melee weapon holds strikes at enemies entering its reach), twice the attack's AP, +2 to hit each (`numbers.hit`); the first one fired spends both reactions (`numbers.spend`, 2; Leon); with one reaction left only that one fires. The second, if it fires in the next round (before your turn), spends that round's one. PROVISIONAL.
 1808. **Run and Gun (rules 1.30, new, rank III):** once a turn, after an attack of your own turn, your next move of up to 2 tiles (`numbers.tiles`) costs no AP and draws no opportunity attack (the condition `slipping`, one move); your next hit that turn adds 1 Pressure more (`numbers.pressure`). A longer move leaves it unused. PROVISIONAL.
@@ -10066,7 +10066,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1901. **Hymns from Faith 3 (rules 1.31; `prayer.hymn.faith_min` 3):** as built; Witnessed at Faith 5, the Miracle at Faith 7 and Devotion 10 unchanged. The refusal "A Hymn needs Faith 3." PROVISIONAL.
 1902. **Ward's size (rules 1.31; `classes.json guardian.ward amounts.ward.base` 10, profile `blessing_mend`):** 10 × Blessing power × the prayer heal dial × the level's growth, for the fight. Leon ruled 7 in the spec and 10 on the heal-shield spec (13 Nov, "Settled" 5: equal to Protection, it stacks on any shield); built at 10. Step 7b re-fits it. PROVISIONAL.
 1903. **Ward is the turn's Whisper (rules 1.31):** it uses the one Whisper slot; an Atheist rolls the Whisper TN (12); a miss spends the AP and the slot. Allies in sight only, never yourself (the lead's call). PROVISIONAL.
-1904. **Wards held (rules 1.31; the mend op's `holders` 2):** at most 2 allies carry one Chaplain's Ward; a third ends the oldest; a new Ward on a Warded ally tops it up (the larger stands). Its own layer `ward`, spent first. PROVISIONAL.
+1904. **Wards held (rules 1.31; the mend op's `holders` 2):** at most 2 allies carry one Chaplain's Ward; a third ends the oldest; a new Ward on a Warded ally tops it up (the larger stands). Its own layer `ward`, spent first. PROVISIONAL. *(Superseded by rules 1.60 item 4639: 4 allies.)*
 1905. **Sanctuary is a Hymn (rules 1.31; 3 AP; `reach.tile`, 6 tiles, sight):** it starts the one Hymn wait; the Faithful's overreach as a Hymn I; an Atheist rolls Hymn I's TN. An answered Sanctuary makes the Faithful Witnessed at Faith 5. PROVISIONAL.
 1906. **Sanctuary's zone (rules 1.31):** 3×3, half damage (rounded up) to allies and yourself until the start of your next turn; your own Strain burn and a Mana Short not halved (as before). PROVISIONAL.
 1907. **Sanctuary's cap (rules 1.31; `amounts.sanctuary_cap.base` 11, profile `blessing_mend`, rounded when laid):** at most 11 × Blessing power × the heal dial × the level's growth prevented in all, then the zone ends. Step 7b's heal-shield spec moves it to 21. PROVISIONAL.
@@ -10191,7 +10191,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2133. **Salvage (rules 1.34; `trickster.salvage`):** 1 AP; a wreck gives 2 charge (each wreck once a fight); reclaim a Figment with all its charge; or repair 15. The unit is the first next to you that fits (the lead's call: one action, no grid pick). PROVISIONAL.
 2134. **Overclock (rules 1.34; `trickster.overclock`):** 1 AP, once a turn, within 8: its attack (up to 2 AP) at the nearest enemy it can reach, at no AP; 5 true (Level `deal`). Never a character. Only an attack (the lead's call: the spec's "one of its actions" read as its attack). PROVISIONAL.
 2135. **Sleight (rules 1.34):** with one of your Figments (was your False Image) or a standing ally within 6. PROVISIONAL.
-2136. **Scrap Turret (rules 1.34; `trickster.scrap_turret`; was Jury-Rig):** 3 AP, once a scene, one at a time; `figments.json turret` 40 HP, Defense 10, armour 5; 3 rounds; d20 + Improvisation modifier; the weapon profile at the owner's level. PROVISIONAL.
+2136. **Scrap Turret (rules 1.34; `trickster.scrap_turret`; was Jury-Rig):** 3 AP, once a scene, one at a time; `figments.json turret` 40 HP, Defense 10, armour 5; 3 rounds; d20 + Improvisation modifier; the weapon profile at the owner's level. PROVISIONAL. *(Superseded by rules 1.60 item 4633.)*
 2137. **Leave the Rigger (rules 1.34):** Silver Tongue, Blind and Slow, Rewrite (shelved in the move pool); Read to the Operative. PROVISIONAL.
 2140. **The figments ceiling (rules 1.34; `rules.json balance.ceilings.figments`):** the Rigger all in 150, the door all in 130, door normal 104, Rigger normal 120 (Leon's budget reading). PROVISIONAL.
 2200. **The katana's family and damage (rules 1.35):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. Lead's numbers, Leon to confirm. PROVISIONAL.
@@ -10793,7 +10793,7 @@ Items 4174 to 4176.
 4204. **Weight of the Wall (item 9):** 0.02 a Guard, max 1.10; II 0.03, max 1.15 (`perks.json bulwark`). PROVISIONAL.
 4205. **Answer in Kind (item 10):** ×1.08; II ×1.12 and 1 Guard a round. PROVISIONAL.
 4206. **Iron Grip (item 11):** +6%; II +12%. PROVISIONAL.
-4207. **Keep Swinging (item 12):** 1 Momentum; II 2, and 1 on an Elite or Boss hit. The Momentum is given when the Finisher's action is done (`acted`), since a Finisher spends the meter after its strike. PROVISIONAL.
+4207. **Keep Swinging (item 12):** 1 Momentum; II 2, and 1 on an Elite or Boss hit. The Momentum is given when the Finisher's action is done (`acted`), since a Finisher spends the meter after its strike. PROVISIONAL. *(Superseded by rules 1.60 item 4625.)*
 4208. **Pressure Point (item 13):** +10% at Pressure 2; II +15% at 2, +10% more at 3 *(superseded by rules 1.60 item 4614)* (the steps read `target:pressure`; the 2 and 3 are `techniques.json rules.pressure`'s Pressed and Suppressed, held equal by `tools/validate.py` since 16 Nov 2026). PROVISIONAL.
 4209. **Keep Their Heads Down (item 14):** 1 Pressure, once a turn; II once a turn a target. PROVISIONAL. *(Superseded by rules 1.60 item 4615.)*
 4210. **Long Dark (item 15):** ×1.08; II ×1.14. PROVISIONAL.
@@ -11291,3 +11291,105 @@ make all the deceision right, the target is FUN and REWARD for the effort you pu
     (`balance-contract.test.ts`). With Composure's feed the simulator's peak Outburst policy holds a stage-4 Release into
     a second turn where it released in the first, so the one-turn peak row reads lower (114% against 177% unfed): a
     policy's reading of a bigger budget, for the lead. No number.
+
+### Rules 1.60 (Doors 3.0), slice B: the reshape (16 Nov 2026)
+
+Leon, 16 Nov 2026; the spec's section 4 (edits R1 to R22; R23 withdrawn), with Leon's rulings of the same day (item
+4601). A class move that only repeated its door is re-pointed onto the door; a move that is renamed or re-pointed keeps
+its id and key (`class:<origin>.<id>`), so a save that holds it loads and holds the new rule; a move that is replaced
+outright gets a new id, and a save holding the old class rank simply holds the new move (class moves are read from the
+class's ranks in data, never stored). Built only from existing pieces and the approved N23 (Momentum's numbers as
+stats); nothing here adds a trigger, predicate or op.
+
+4619. **Called Out (R1; `defender.draw_fire`, the id kept):** Challenge is the one taunt verb. For everyone, Challenge
+    now names one foe it can see within `reach.tiles` 2 (`skills.json durability.unlocks.1`, `grant_action reach
+    {tiles, side: foe, sight}`); its area taunt and its Heart save are unchanged, and with no class row the named foe is
+    only the aim. The Bulwark's Called Out is two data rows on that Challenge: its price's Guard is 0 (`cost_mod res
+    guard set 0` on `skill:durability.1#guard_challenge`) and the named foe is Taunted with no save (`acted`, `condition
+    taunted target skip_save`). A Boss is Taunted but never forced, worse at hitting anyone but the Bulwark: the Taunted
+    row's own rule. Draw Fire's handler is retired (`classes/i.ts`; the item-ops lint baseline shrinks by one). No number.
+4620. **Durability 3 is a perk step (R2):** Take the Hit is retired; the unlock is "Mastery 1" (`perk_choice tier_1`, as
+    every other skill's third point). Interpose, Close Guard and (a fork, later) Cover Them carry a blow for an ally.
+    Rabbit's Foot's Prey now reads "an Interpose and taunts can't pull their attacks off you". No number.
+4621. **Wind-up (R3; `fighter.wind_up`, replaces the Breaker's Shove):** you start each fight with 2 more Momentum than the
+    door's start (1): 3, within your pool. Carried by the approved stat `momentum_start` (N23), read once at the fight's
+    start (`physical/core.ts momentumStart`). The Breaker's own Shove action is retired (`classes/rev3.ts`); everyone's
+    Shove (2 AP, an opposed roll) stays. PROVISIONAL: 2.
+4622. **Barrel In (R4; `fighter.lunge`, renamed):** the same rule as the class's Lunge; the technique Lunge keeps its name.
+    No number.
+4623. **Measured Blow (R5; `fighter.finisher`, the id kept; the class's own Finisher action retired):** once a fight, when
+    one of your Finishers (Cleave, Break, Coup, Launch) is done, 1 Momentum comes back to you. **Built in a cheaper
+    wording:** the spec's "spends half your Momentum (rounded down)" needs the spent count as a number an item reads, and
+    no source carries it (`event:` reads the payload; the Finisher's spend is not on it). Built at 2 (half of a typical
+    four), it put the contract's heavy blade over its level-20 band (item 4644), so it is 1. For the lead: an
+    `event:momentum_spent` field on the Finisher's `acted` would make it exact. PROVISIONAL: 1.
+4624. **Read the Swing (R6; `fighter.read_the_swing`, in Lingering Dread's place at Breaker rank II):** once a round, a
+    melee attack that misses you gives you 1 Momentum (`miss`, `if {target: self, actor: foe, melee}`). Fear is another
+    door's outcome; the shelved Shade keeps Lingering Dread (now `status: shelved`). PROVISIONAL: 1.
+4625. **Keep Swinging (R7; `breaching_strike`, the id and tiers kept):** I: a Finisher that drops a foe makes your next
+    Strike or Opener cost no Momentum, **before the end of your next turn** (a Finisher ends this turn's chain, so "this
+    turn", as the spec wrote it, could never be used: for the lead); II: that, and a Finisher that hits an Elite or a Boss
+    gives you 1 Momentum. Carried by the content condition `swinging` (2 rounds; it ends when a Strike or an Opener is
+    used) answering the approved stat family `momentum_cost:<technique or group>` (N23, read in `physical/core.ts
+    momentumCost`, never below 0). "Momentum left after a Finisher kill" now has one source, Follow Through. PROVISIONAL.
+4626. **Hold the Lane (R8; `speed_loader`, the id kept):** your held shots (the `watch` group: Overwatch, Deny, Cover Me,
+    Dead to Rights) cost 1 AP less, at least 1 (`cost_mod` on `cost`, `tech_group: [watch]`). Speed Loader repeated Speed
+    Load. PROVISIONAL: 1.
+4627. **Run and Gun (R9):** the same rule, no longer the turn's one free move: it neither reads nor puts
+    `free_move_spent`, so the Skirmisher III may take Fire and Move's step and Run and Gun's move in one turn. No number.
+4628. **Vanish (R10; `infiltrator.vanish`, the id kept):** your Fade costs 2 Shadow less (none) (`cost_mod res shadow` on
+    `verb:shadow.fade#fade`). Its own out-of-view Hide repeated Fade. PROVISIONAL: 2.
+4629. **Mark (R11):** kept: Tag without Hidden on three foes, the Operative's better form. No change.
+4630. **Triage (R12):** re-worded as the Mender's Touch (an ally next to you or a Bonded ally in sight, Touch's heal, and it
+    also stops Bleeding; once an ally a turn); the action, its cost site `triage`, its 2 AP and 18 MP (a Touch's is 24),
+    the out-of-fight Triage and the items answering `ap_cost:triage` are kept. **Not changed:** the spec's "costs N AP"
+    names no new number; 2 AP is kept (the medic measure divides by it). The brake counts it (item 4640). No number.
+4631. **The Rigger's Double (R13; `trickster.false_image`):** no charge (was 1) and one round longer (until your turn
+    starts 3 rounds on; was 2). Without the door it still projects its Double, as before. The door's pictured Double is
+    unchanged (its charge is the Picture's). PROVISIONAL: 0, 3.
+4632. **Redline (R14; `trickster.overclock`, renamed):** the same rule; Brain Power's Overclock keeps its name. No number.
+4633. **Scrap Sentinel (R15; `trickster.scrap_turret`, the id kept):** once a scene, from a wreck, a pile with a weapon or a
+    barricade next to you, a Sentinel (the Figment form, `figments.json forms sentinel`, named by the move's
+    `figment_form`) stands for no charge, outside your held count and with no upkeep, until your turn starts 3 rounds on
+    (the Rigger's Double's `free`). No Visualization needed. The turret body that attacked by itself is gone (the
+    `figments.json turret` block stays for old saves' units). PROVISIONAL: 3.
+4634. **Heart Surge (R16):** once a turn, a Release or a snap cast fires one stage higher, **never past stage 4** (past it
+    is the Outburst door's reserved peak): at stage 4 the switch is refused and nothing is spent; a snap cast fires at
+    stage 1; it costs double Strain. The ×1.8 "one more step of the table" is gone (`classes/i.ts`, `magic.ts`). No number.
+4635. **Deliver the Sinner (R17; Faith 5):** your patron's blows (damage kind `prayer`: Smite, Amen, Rebuke, a Hymn's or
+    an intervention's harm) deal 20% more to a foe your squad has Marked (`damage_vs` on `dealing`, `target_has:
+    [marked]`: a target bonus, under the stacking rule's cap). Marking is Shadow's; the 2 AP mark is retired.
+    PROVISIONAL: 0.2.
+4636. **Last Rites (R18): not built.** The spec's "it never stands the ally up" contradicts the engine's one heal: every
+    heal that reaches a Downed unit stands it up (`effects/damage.ts healUnit`). Building it needs a rule for what a heal
+    on a Downed unit does when it does not stand it up (a ruling, not a primitive). Last Rites is unchanged (a prayer's
+    heal on a Downed ally ×1.5). For the lead.
+4637. **The Palm Staggers (R19):** the Open Hand's Palm (×0.6) makes a hit save (Body) or be **Staggered** (a new
+    conditions row: no reaction of any kind until its next turn starts; no AP lost), once a turn; it pushes nobody. A
+    Boss is Staggered as anyone. PROVISIONAL.
+4638. **Tending's Shield on a Bonded ally only (R20):** `tend.shield`'s reach is the Bond (`reach tied: bond`, anywhere
+    you see); no reach in tiles. No number.
+4639. **The Ward on up to 4 allies (R22; Leon's ruling i):** `holders` 4 (was 2): the squad. PROVISIONAL: 4.
+4640. **The healing brake, per giver (Leon's ruling ii):** each Mend, Touch or Shield (and the Mender's Triage) a giver
+    gives the same target in the same round costs its MP × 1.5 for every one that giver already gave that target this
+    round (24, 36, 54 MP for three Mends; a Mend after a Shield on the same ally is ×1.5 of the Mend's own price). One
+    count per giver and target, shared by the braked verbs, on the giver's own counters (`effects/uses.ts`, per round);
+    priced at each action's own cost site (`effects/actions.ts braked`, a grant_action field `brake: true`), so the
+    preview, the refusal and the payment read one number. Two healers on one body each meet their own brake (the
+    ruling). `rules.json mending.brake.step` 0.5. PROVISIONAL.
+4641. **`designsMax` reads the ladder (owed fix):** the designs a character keeps ready start at the ladder's first row
+    that gives designs (`figments.json ladder`), not at a typed 3. No change in play. No number.
+4642. **The layering shield is Prayer's (owed check):** `tools/validate.py` refuses a `mend` op that names a `layer`
+    outside a prayer (a grant_action with `prayer`). Shields are spent before plates (already built, rules 1.59). No
+    number.
+4643. **N23, as built here:** the stat `momentum_start` (the fight's start, `momentumStart`) and the stat family
+    `momentum_cost:<technique id or its group>` (a Strike's or an Opener's Momentum price, `momentumCost`; asked only
+    while something in the fight answers it). `tech_num:<tech>.<field>` (Rolling Start's) comes with the forks. No
+    number.
+4644. **The gun ceiling held (a fit with its dial):** `weapons.json long_rifle damage` 48 → 47. Hold the Lane (item 4626)
+    took the Skirmisher's reload and swap discount away, and the contract's optimised gun (a Masterwork long rifle) now
+    reloads its rifle where it swapped to the sidearm: its all-in line rose from 161.75% (of the 162.4% the band allows)
+    to 163.0% (level 20: 145% → 153%). Trimmed at the dial the contract names (each weapon's damage), not at a class
+    move: 160% after. Measured Blow (item 4623) was 2 Momentum when built; the heavy blade's level-20 line read 211% (the
+    band's top 206%), so it is 1 (203%). For the lead: both are fits to hold the contract, not design; Leon's "reward
+    for the effort" may want the band itself looked at. PROVISIONAL: 47, 1.
