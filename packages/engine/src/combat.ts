@@ -513,16 +513,18 @@ export const visionOf = (c: Character) => 12 + 2 * ((c.attrs.perception || 1) - 
 export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
   // Rules 1.56: a main hand holding an item (a shield, `either_hand`) strikes with the neutral bare fists; the item is
   // carried as `mainItem`, as the off hand's is as `offItem`.
+  // Item 4315: the fists behind it are plain fists (standard grade, their own durability), never the item's state.
   const mainItem = !WEAPON[c.weapon] && ITEM[c.weapon] ? c.weapon : null, w = mainItem ? WEAPON.fists : WEAPON[c.weapon] || WEAPON.service_pistol;
+  const ws = mainItem ? undefined : c.weaponState;
   return {
     id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait, level: clampEnemyLevel(c.level),
     pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor').add), // rules 1.36: × scale at the wearer's level
-    attack: mod(c.skills[w.skill] || 0) + RARITY[c.weaponState?.rarity || 'standard'].acc + skillRollMod({ c }, w.skill, { roll: 'attack', combat: true }).add + statQuery({ c }, 'attack').add, weapon: w.id,
-    movement: movement(c), init: rollD20(rng).die + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), magazineSize(w.id, c.weaponState?.mods) ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
+    attack: mod(c.skills[w.skill] || 0) + RARITY[ws?.rarity || 'standard'].acc + skillRollMod({ c }, w.skill, { roll: 'attack', combat: true }).add + statQuery({ c }, 'attack').add, weapon: w.id,
+    movement: movement(c), init: rollD20(rng).die + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), magazineSize(w.id, ws?.mods) ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
     vigilant: c.skills.vigilant || 0, overweight: overweightKg(c),
-    dmgMult: RARITY[c.weaponState?.rarity || 'standard'].dmg, dur: weaponDurOf(c), maxDur: maxDurOf(w.id, c.weaponState?.rarity), mods: [...(c.weaponState?.mods || [])],
+    dmgMult: RARITY[ws?.rarity || 'standard'].dmg, dur: mainItem ? maxDurOf(w.id) : weaponDurOf(c), maxDur: maxDurOf(w.id, ws?.rarity), mods: [...(ws?.mods || [])],
     offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, ...(c.offHand && WEAPON[c.offHand.id] && c.offHand.mods?.length ? { offMods: [...c.offHand.mods] } : {}), offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? magazineSize(c.offHand.id, c.offHand.mods) ?? 0, magazineSize(c.offHand.id, c.offHand.mods) ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,

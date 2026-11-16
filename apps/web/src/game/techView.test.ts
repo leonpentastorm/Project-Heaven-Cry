@@ -181,3 +181,19 @@ describe('a shield in the off hand: its own block, and Guard as its meter', () =
     if (sh && z.unit(z.pc.id).resMax?.guard == null) { expect(sh.meter).toBe('No Guard pool'); expect(sh.pips).toEqual([]); }
   });
 });
+
+describe('rules 1.56 item 4317: the shield block names the hand the shield is in', () => {
+  it('a shield in the main hand with a focus in the off hand: its block says main hand; an off-hand shield says off', () => {
+    const f = physFight([{ weapon: 'fists', known: [], skills: { athletics: 4, raw_power: 6, dexterity: 6, durability: 3 } }], [{ at: 'D5' }]);
+    f.put(f.pc, 'C5'); f.cb.order = [f.pc.id, ...f.cb.order.filter((id: string) => id !== f.pc.id)]; f.turn(f.pc);
+    const c = f.char(f.pc); c.pack = [{ id: 'buckler', item: 'buckler', name: 'Buckler', qty: 1, kind: 'tool' }, { id: 'evoker', item: 'evoker', name: 'Evoker', qty: 1, kind: 'focus' }] as any; c.offHand = null;
+    f.unit(f.pc.id).ap = 9;
+    f.act({ type: 'combat/equip', unitId: f.pc.id, item: 'buckler', to: 'main' } as any);
+    f.act({ type: 'combat/equip', unitId: f.pc.id, item: 'evoker', to: 'off' } as any);
+    const sh = f.bound(() => weaponBlocks(f.g, f.cb, f.unit(f.pc.id))).find((b: any) => b.shield)!;
+    expect(sh).toMatchObject({ weaponId: 'buckler', heldIn: 'main' });
+    f.act({ type: 'combat/stow', unitId: f.pc.id, slot: 'off' } as any); f.act({ type: 'combat/stow', unitId: f.pc.id, slot: 'main' } as any);
+    f.act({ type: 'combat/equip', unitId: f.pc.id, item: 'buckler', to: 'off' } as any);
+    expect(f.bound(() => weaponBlocks(f.g, f.cb, f.unit(f.pc.id))).find((b: any) => b.shield)).toMatchObject({ weaponId: 'buckler', heldIn: 'off' });
+  });
+});

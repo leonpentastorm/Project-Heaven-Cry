@@ -6936,6 +6936,11 @@ shield. Now (items 4308 to 4313; every number is the data's and PROVISIONAL):
    main hand.
 5. **The camp** (item 4312): a shield taken goes in the off hand, else in an empty main hand (no free weapon picked).
 6. **Enemies, their AI and Survival's recommended kits are untouched** (item 4313).
+7. **Fixes before release** (items 4314 to 4317): Swap hands with a shield in the main hand and a one-handed weapon in
+   the off hand carries the shield to the off hand (it was lost); the bare fists behind a main-hand shield are plain
+   fists (standard grade, their own durability; the shield's grade and wear are not theirs, and a fist's wear never
+   reaches the shield); Pull Out asks a hand that holds nothing; the fight's shield block names the hand the shield is in.
+   A carried pavise gives no Parry bonus (it was +2 by its category): intended, its text says carried it does nothing.
 
 ## Maps (rules 1.16)
 
@@ -10768,7 +10773,8 @@ Items 4240 to 4247.
     Defense, −1 Movement). `guardGain` adds `shield_gain` / `brace_shield_gain` per shield held: Brace gives 2 + 1 a
     shield (4 with two), never past the pool (`guardMax`, 4 at most). Parry's `shield_bonus` once (`holds`, the
     Shield property). Eyes in the Back's −5 reads a shield in either hand by the Shield property (the code no longer
-    names the pavise). PROVISIONAL: the stack is the lead's to judge.
+    names the pavise). Intended change: a carried pavise (no Shield property) no longer adds Parry's +2, which it did by
+    its category (item 4317). PROVISIONAL: the stack is the lead's to judge.
 4310. **Bare fists (item 3):** a main hand holding an item is `WEAPON.fists` on the unit (the neutral fallback). The
     Open Hand's `self_holds.hands.only` fails with a shield in either hand (`handsHold`). No number.
 4311. **Durability's door (item 4):** proved through the reducer with buckler + Evoker and buckler + riot shield
@@ -10779,3 +10785,18 @@ Items 4240 to 4247.
 4313. **Untouched (item 6):** enemies, the enemy AI and `survival.json` `recommended`. A shield in the main hand with a
     one-handed weapon in the off hand gets no shield techniques (the technique core works the shield from a free off
     hand); not built, for the lead.
+4314. **Swap hands keeps a main-hand shield (rules 1.56 item 7):** `combat/swap` with a non-weapon in the main hand
+    (a shield) and a one-handed weapon in the off hand puts the weapon in the main hand and the shield in the off hand
+    (an off-hand item, so it fits); before, the shield vanished (not in a hand, the pack or a pile). game.ts gearInFight
+    'swap'. No number.
+4315. **Bare fists behind a main-hand shield (item 7):** the fists' attack and damage use the standard grade and their
+    own durability (`maxDurOf('fists')`), never the shield's `weaponState`; a fist's wear is not written back onto the
+    shield (unitToCharacter skips a unit with `mainItem`). Before, a masterwork buckler gave the fists +2 to hit
+    (7 against 5) and Field Repair mended the shield against the fists' maximum. No number.
+4316. **Pull Out (item 7):** its free-hand check counts a shield in the main hand as a held hand (`u.mainItem`), as
+    takeIntoHand does; before, the AP was paid and the weapon fell to the pile. No number.
+4317. **The pavise's Parry (item 7):** Parry's +2 reads the Shield property, which the pavise does not carry, so a carried
+    pavise no longer adds +2 to a Parry (before, it did by its category). Intended: "Carried, it does nothing". The
+    shield block on the fight screen names the hand the shield is in (`WeaponBlock.heldIn`). Open, for the lead: item
+    4313's asymmetry (a shield in the main hand with a weapon in the off hand gets Defense, Guard and Parry but no shield
+    techniques) and whether the unit field `mainItem` stands (one hands rule: it mirrors `offItem`). PROVISIONAL.

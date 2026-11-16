@@ -2028,10 +2028,11 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
     case 'swap': {
       { const sw = secondWeaponWhy(c, c.weapon, c.offHand?.id); if (sw) return sw; } // the main-hand weapon becomes the second one
       if (disarmed) leaveDowned();
-      const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
+      // rules 1.56 item 4314: a non-weapon in the main hand (a shield) goes to the off hand with the weapon's place
+      const off = c.offHand!, main = c.weapon !== 'fists' && (WEAPON[c.weapon] || ITEM[c.weapon]) ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
       c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods, ...(off.name ? { name: off.name } : {}), ...(off.prop ? { prop: off.prop } : {}) };
       c.loaded = off.loaded ?? (WEAPON[off.id].magazine ?? 0); c.loadedType = c.loaded && off.ammoType ? off.ammoType : null; // each gun keeps its rounds' type
-      c.offHand = main ? { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods, ...(main.name ? { name: main.name } : {}), ...(main.prop ? { prop: main.prop } : {}), ...(WEAPON[main.id].magazine != null ? { loaded: main.loaded ?? 0, ...(main.loaded && main.ammoType ? { ammoType: main.ammoType } : {}) } : {}) } : null;
+      c.offHand = main ? { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods, ...(main.name ? { name: main.name } : {}), ...(main.prop ? { prop: main.prop } : {}), ...(WEAPON[main.id]?.magazine != null ? { loaded: main.loaded ?? 0, ...(main.loaded && main.ammoType ? { ammoType: main.ammoType } : {}) } : {}) } : null;
       break;
     }
     case 'stow': err = unequip(c, op.slot); break;
@@ -2373,7 +2374,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     c.loaded = u.ammo;
     if (c.offHand && u.offWeapon && u.offWeapon === c.offHand.id && WEAPON[c.offHand.id]?.magazine != null) { const { ammoType: _t, ...oh } = c.offHand; void _t; c.offHand = { ...oh, loaded: Math.max(0, u.offAmmo ?? 0), ...(u.offAmmo && u.offAmmoType ? { ammoType: u.offAmmoType } : {}) }; }
     magicToCharacter(c, u);
-    if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur };
+    if (u.maxDur && !u.mainItem) c.weaponState = { ...(c.weaponState || {}), dur: u.dur }; // rules 1.56 item 4315: the fists' wear is not the shield's
     { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
       if (used > 0) { let left = used; c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left) return x; const n = Math.min(left, x.qty); left -= n; return { ...x, qty: x.qty - n }; }).filter((x) => x.qty > 0 || x.mags); } }
     const pack = packOf(c).map((it) => ({ ...it }));

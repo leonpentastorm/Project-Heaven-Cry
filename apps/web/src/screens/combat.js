@@ -1555,7 +1555,7 @@ export class CombatLogic extends DCLogic {
       if (areas.some((h) => h !== 'other') && (areas.length > 1 || blocks.length)) areas.forEach((h, i) => {
         const first = atk.items.find((a) => a.area === h), b = byHand[h];
         if (i > 0) sepOf[first.key] = true;
-        headOf[first.key] = h === 'other' ? areaHead('other', 'OTHER') : h === 'both' ? areaHead('both', 'BOTH', b) : b ? areaHead(h, (blocks.filter((x) => x.hand !== 'both').length > 1 ? (h === 'main' ? 'MAIN HAND · ' : 'OFF HAND · ') : '') + b.name.toUpperCase(), b) : areaHead(h, h === 'main' ? 'MAIN HAND' : 'OFF HAND');
+        headOf[first.key] = h === 'other' ? areaHead('other', 'OTHER') : h === 'both' ? areaHead('both', 'BOTH', b) : b ? areaHead(h, (blocks.filter((x) => x.hand !== 'both').length > 1 ? ((b.heldIn || h) === 'main' ? 'MAIN HAND · ' : 'OFF HAND · ') : '') + b.name.toUpperCase(), b) : areaHead(h, h === 'main' ? 'MAIN HAND' : 'OFF HAND');
       }); }
     // Any other tab in groups (Classes 3.0 step 10): the descriptor's `sub` heads its first row (Whispers and Hymns on
     // Faith, Slip, Mark, Work and Break on Shadow, Bond, Heal and Help on Tend); a 1 px line between groups.

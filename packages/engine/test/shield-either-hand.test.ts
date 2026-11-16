@@ -149,3 +149,44 @@ describe('a Sigil drawn and Evoked with the Evoker in the off hand and a shield 
     expect(foe().hp <= hp).toBe(true);
   });
 });
+
+describe('rules 1.56 item 7: fixes before release (items 4314 to 4317)', () => {
+  it('Swap hands with a shield in the main hand carries the shield to the off hand (it was lost)', () => {
+    const f = fight(['buckler']); f.char(f.pc).pack!.push({ id: 'service_pistol', weapon: 'service_pistol', name: 'Service Pistol', qty: 1, kind: 'weapon' } as any); hold(f, 'buckler', 'main'); hold(f, 'service_pistol', 'off');
+    expect([f.char(f.pc).weapon, f.char(f.pc).offHand?.id]).toEqual(['buckler', 'service_pistol']);
+    u(f).ap = 9; f.act({ type: 'combat/swap', unitId: f.pc.id, from: 'off' } as any);
+    const c = f.char(f.pc);
+    expect([c.weapon, c.offHand?.id]).toEqual(['service_pistol', 'buckler']);
+    expect(u(f).weapon).toBe('service_pistol'); expect(u(f).offItem).toBe('buckler'); expect(u(f).mainItem ?? null).toBeNull();
+  });
+  it('the fists behind a main-hand shield are plain fists: the shield\'s grade gives no accuracy, its wear is not theirs', () => {
+    const at = (rarity?: string) => { const f = fight([]); f.char(f.pc).pack = [{ ...piece('buckler'), ...(rarity ? { rarity } : {}) }]; hold(f, 'buckler', 'main'); return f; };
+    const std = at(), mw = at('masterwork');
+    expect(u(mw).attack).toBe(u(std).attack); expect(u(mw).dmgMult).toBe(u(std).dmgMult);
+    expect([u(mw).dur, u(mw).maxDur]).toEqual([u(std).maxDur, u(std).maxDur]);
+    // a fist's wear never reaches the shield: strike, then put the shield away and read its pack line
+    rig({ hit: true, die: 12 }); mw.act({ type: 'combat/attack', unitId: mw.pc.id, targetId: mw.foe.id, mode: 'melee' } as any); rig(null);
+    expect(u(mw).dur).toBeLessThan(u(mw).maxDur!);
+    mw.act({ type: 'combat/stow', unitId: mw.pc.id, slot: 'main' } as any);
+    const line = packOf(mw.char(mw.pc)).find((x) => (x.item || x.id) === 'buckler')!;
+    expect(line.rarity).toBe('masterwork'); expect(line.dur).toBeUndefined();
+  });
+  it('Pull Out asks a free hand: a shield in the main hand and a focus in the off hand refuse it before the AP is paid', () => {
+    const f = physFight([{ weapon: 'combat_knife', known: ['throw'], skills: { athletics: 6, raw_power: 4, dexterity: 6 } }], [{ tier: 'soldier' }], { seed: 'T1' });
+    f.cb.objects = []; f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'F5'); foe.hp = foe.maxHp = 900;
+    f.turn(f.pc); rig({ hit: true, die: 12 }); expect(f.tech('throw', { targetId: f.foe.id })).toBeNull(); rig(null);
+    expect((f.unit(f.foe.id).stuck || []).length).toBe(1);
+    const c = f.char(f.pc); c.offHand = null; c.pack = [...packOf(c), piece('buckler'), piece('evoker')];
+    f.unit(f.pc.id).ap = 9; f.act({ type: 'combat/equip', unitId: f.pc.id, item: 'buckler', to: 'main' } as any);
+    f.act({ type: 'combat/equip', unitId: f.pc.id, item: 'evoker', to: 'off' } as any);
+    f.put(f.pc, 'E5'); const ap0 = f.unit(f.pc.id).ap;
+    expect(f.tech('pull_out', { targetId: f.foe.id })).toMatch(/Free a hand first/);
+    expect(f.unit(f.pc.id).ap).toBe(ap0); expect((f.unit(f.foe.id).stuck || []).length).toBe(1);
+  });
+  it('a carried pavise gives no Parry bonus (it does nothing carried; Parry reads the Shield property)', () => {
+    const f = fight(['pavise', 'buckler']); hold(f, 'pavise', 'off');
+    expect(holds(f.char(f.pc), { hands: { props: ['shield'] } })).toBe(false);
+    f.act({ type: 'combat/stow', unitId: f.pc.id, slot: 'off' } as any); hold(f, 'buckler', 'main');
+    expect(holds(f.char(f.pc), { hands: { props: ['shield'] } })).toBe(true);
+  });
+});

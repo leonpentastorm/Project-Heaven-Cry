@@ -65,6 +65,8 @@ export interface WeaponBlock {
   plain: TechChip | null; groups: ChipGroup[]; usable: number; total: number;
   watch: TechChip[];
   /** the off hand's shield (rules 1.13): its meter is Guard, its pad holds the shield's techniques and its reactions */ shield?: boolean;
+  /** the hand the shield is in, for its header (rules 1.56 item 4317: a shield may sit in the main hand; its pad is still the
+   * hand behind it, `hand`) */ heldIn?: 'main' | 'off';
   /** which pool the pips count */ meterKind?: 'momentum' | 'guard';
 }
 /** A technique's requirement as a sentence for its card ("Needs a Pressed target. "), or '' when it has none. */
@@ -123,7 +125,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
       const groups = pad.filter((gr) => gr.group !== 'watch').map((gr) => ({ key: gr.group, label: gr.group === 'answer' ? 'REACTIONS · THEY HAPPEN BY THEMSELVES' : gr.label.toUpperCase(),
         chips: gr.entries.filter((e) => !e.plain).map((e) => (gr.group === 'answer' ? reactionChip(chipOf(e, true)) : chipOf(e))) })).filter((gr) => gr.chips.length);
       const chips = groups.flatMap((gr) => gr.chips).filter((c) => !c.reaction), gd = pv && pv.guard;
-      return { hand, weaponId: shieldId, name: (ITEM as any)[shieldId]?.name || 'Shield', icon: gearIconUri(shieldId), iconOff: gearIconUri(shieldId, GEAR_INK_OFF), system: 'melee', shield: true, meterKind: 'guard',
+      return { hand, weaponId: shieldId, name: (ITEM as any)[shieldId]?.name || 'Shield', icon: gearIconUri(shieldId), iconOff: gearIconUri(shieldId, GEAR_INK_OFF), system: 'melee', shield: true, heldIn: u.offItem === shieldId ? 'off' : 'main', meterKind: 'guard',
         meter: gd ? 'Guard ' + gd.now + ' / ' + gd.max : 'No Guard pool', pips: gd ? Array.from({ length: gd.max }, (_, i) => ({ key: 'g' + i, on: i < gd.now })) : [],
         meterHint: gd ? 'Each Guard point takes ' + gd.soak + ' damage off a hit. Brace gives ' + gd.braceGain + ' Guard and the Guard technique gives ' + gd.gain + '. Raise Shield turns Momentum into Guard.' : 'You need a point of Durability to hold Guard.',
         plain: null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch: [] };
