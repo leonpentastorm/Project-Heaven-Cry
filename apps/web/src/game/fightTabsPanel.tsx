@@ -6,8 +6,8 @@
 import React from 'react';
 import { active } from '@engine';
 import { getState, subscribe } from './store';
-import { TAB_NAME, prefKey, tabIdsKnown } from './commands';
-import { loadTabPrefs, saveTabPrefs, withPresent, moveTab, setHidden, hideWhy, resetTabs, EV_TABS_CHANGED, type TabPrefs } from './tabPrefs';
+import { TAB_NAME, tabIdsKnown } from './commands';
+import { loadTabPrefs, saveTabPrefs, withPresent, moveTab, setHidden, hideWhy, resetTabs, tabKey, liveTabs, EV_TABS_CHANGED, type TabPrefs } from './tabPrefs';
 
 const C = { raised: '#1C2536', line: '#232D3F', edge: '#3B475D', text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF' };
 const note: React.CSSProperties = { fontSize: 12, lineHeight: 1.45, color: C.muted };
@@ -33,12 +33,15 @@ export function FightTabsPanel() {
   const [pick, setPick] = React.useState<string | null>(() => defaultCharacter(st));
   const charId = pick && mine.some((c) => c.id === pick) ? pick : defaultCharacter(st);
   if (!g || !charId) return <span style={note}>Each character you play keeps its own fight tabs: their order, and which ones show. Join or start a game to arrange them.</span>;
-  const key = prefKey(g, charId), p: TabPrefs = withPresent(loadTabPrefs(key), [], tabIdsKnown());
+  const key = tabKey(charId), p: TabPrefs = withPresent(loadTabPrefs(key), [], tabIdsKnown());
+  // In a fight: the tabs this character has now and the bar's order as the fight screen last drew them (the number keys
+  // are positions on that bar). A tab it does not have this fight is marked and not numbered.
+  const lv = g.combat ? liveTabs(key) : null;
   const save = (q: TabPrefs) => saveTabPrefs(key, q);
   const name = (id: string) => TAB_NAME[id] || id.charAt(0).toUpperCase() + id.slice(1);
   let shownN = 0;
   return <>
-    <span style={note}>The tabs of a fight's action panel, for one character: their order, and which ones show. Number keys follow the order shown (1 is the first tab shown). A tab the character gets later goes at the end. Yours only, kept in this browser.</span>
+    <span style={note}>The tabs of a fight's action panel, for one character: their order, and which ones show. Number keys follow the order shown (1 is the first tab shown). Until you arrange them, a tab the character gets later takes its usual place; once arranged, it goes at the end. A hidden Outbursts tab still shows while an Outburst is held. Yours only, kept in this browser, for this character in any room.</span>
     {mine.length > 1 && <div role="group" aria-label="Character" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
       {mine.map((c) => <button key={c.id} type="button" data-phc-tabs-char={c.id} aria-pressed={c.id === charId} onClick={() => setPick(c.id)} style={btn(c.id === charId)}>{c.name}</button>)}
     </div>}
@@ -46,10 +49,11 @@ export function FightTabsPanel() {
       ? <span style={note}>{(mine.find((c) => c.id === charId)?.name || 'This character') + '’s tabs show here after its first fight.'}</span>
       : <ol data-phc-fight-tabs={charId} style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
         {p.order.map((id, i) => {
-          const hidden = p.hidden.includes(id), why = hidden ? null : hideWhy(p, id), n = hidden ? '' : String(++shownN);
-          return <li key={id} data-phc-fight-tab={id} style={{ display: 'grid', gridTemplateColumns: '22px minmax(0, 1fr) auto auto auto', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 8, border: '1px solid ' + C.line, opacity: hidden ? 0.6 : 1 }}>
+          const hidden = p.hidden.includes(id), absent = !!lv && !lv.present.includes(id), why = hidden ? null : hideWhy(p, id);
+          const n = lv ? (lv.shown.includes(id) ? String(lv.shown.indexOf(id) + 1) : '') : hidden ? '' : String(++shownN);
+          return <li key={id} data-phc-fight-tab={id} data-phc-tab-absent={absent ? '' : undefined} style={{ display: 'grid', gridTemplateColumns: '22px minmax(0, 1fr) auto auto auto', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 8, border: '1px solid ' + C.line, opacity: hidden || absent ? 0.6 : 1 }}>
             <span aria-hidden style={{ fontSize: 13, fontWeight: 600, color: C.muted, textAlign: 'center' }}>{n && Number(n) <= 9 ? n : ''}</span>
-            <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.06em' }}>{name(id)}{hidden ? <span style={{ ...note, marginLeft: 8 }}>hidden</span> : null}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.06em' }}>{name(id)}{hidden ? <span style={{ ...note, marginLeft: 8 }}>hidden</span> : null}{absent ? <span style={{ ...note, marginLeft: 8 }}>not this fight</span> : null}</span>
             <button type="button" aria-label={'Move ' + name(id) + ' up'} disabled={i === 0} onClick={() => save(moveTab(p, id, -1))} style={btn(false, i === 0)}>↑</button>
             <button type="button" aria-label={'Move ' + name(id) + ' down'} disabled={i === p.order.length - 1} onClick={() => save(moveTab(p, id, 1))} style={btn(false, i === p.order.length - 1)}>↓</button>
             <button type="button" data-phc-tab-show={id} aria-pressed={!hidden} disabled={!!why} aria-label={(hidden ? 'Show ' : 'Hide ') + name(id) + (why ? ': ' + why : '')} onClick={() => save(setHidden(p, id, !hidden))} style={btn(!hidden, !!why)}>{hidden ? 'Show' : 'Hide'}</button>

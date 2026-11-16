@@ -1,11 +1,13 @@
 // The fight tabs' order and hiding, per character (Leon, 16 Nov 2026): a display preference kept in this browser
-// (localStorage 'phc.fightTabs', keyed by commands.ts prefKey: the room code and the character's id). It never enters
+// (localStorage 'phc.fightTabs', keyed by the character's id alone (tabKey): the arrangement follows the character into
+// any room). It never enters
 // the engine's state, the event log, the save or the room relay. Which tabs a character HAS is the engine's (the fight
 // screen's action list, game/commands.ts actionGroups); this module only arranges them.
 //
-//   order   every tab this character has been shown, in the order the player sees them. A tab that appears later (a
-//           new skill point, a new focus) is appended at the end: no tab ever moves on its own. A tab absent today
-//           keeps its place for when it comes back.
+//   order   every tab this character has been shown, in the order the player sees them. Not arranged (custom false):
+//           the action list's own order (the known list, commands.ts tabIdsKnown), so a tab that appears later takes
+//           its natural place. Arranged (custom true): a tab that appears later (a new skill point, a new focus) is
+//           appended at the end, so no tab the player placed moves on its own. A tab absent today keeps its place.
 //   hidden  the tabs the player chose not to see. The first tab of the order is never hidden, and at least one stays.
 //   custom  the player changed something (the order or a hidden tab); Reset to default clears it.
 // Pure functions first (tested in tabPrefs.test.ts), then the browser's storage.
@@ -26,7 +28,9 @@ export function mergeOrder(order: string[], present: string[], known?: string[])
 
 /** The prefs with today's tabs merged in (unknown ids dropped from the order and the hidden set). */
 export function withPresent(p: TabPrefs, present: string[], known?: string[]): TabPrefs {
-  const order = mergeOrder(p.order, present, known);
+  const merged = mergeOrder(p.order, present, known);
+  // not arranged: the natural order (the known list's), whenever each tab arrived
+  const order = !p.custom && known ? [...merged].sort((a, b) => known.indexOf(a) - known.indexOf(b)) : merged;
   return { order, hidden: uniq((p.hidden || []).filter((id) => order.includes(id) && id !== order[0])), custom: !!p.custom };
 }
 
@@ -83,7 +87,9 @@ function all(): Record<string, TabPrefs> {
   return cache!;
 }
 const clean = (v: any): TabPrefs => ({ order: Array.isArray(v?.order) ? v.order.filter((x: any) => typeof x === 'string') : [], hidden: Array.isArray(v?.hidden) ? v.hidden.filter((x: any) => typeof x === 'string') : [], custom: !!v?.custom });
-/** A character's prefs (key: commands.ts prefKey). */
+/** A character's key in the store: its id alone (the arrangement follows the character from room to room). */
+export const tabKey = (charId: string): string => 'char:' + charId;
+/** A character's prefs (key: tabKey). */
 export const loadTabPrefs = (key: string): TabPrefs => clean(all()[key]);
 /** Keep a character's prefs (and tell the screens). */
 export function saveTabPrefs(key: string, p: TabPrefs): void {
@@ -100,5 +106,11 @@ export function noteTabs(key: string, present: string[], known?: string[]): TabP
   }
   return q;
 }
+/** The tabs the fight screen last had for a character in this page (present: the tabs it has this fight; shown: the
+ *  bar, in order, whose position is the number key). Runtime only, never stored: the cog panel numbers what the keys do. */
+export interface LiveTabs { present: string[]; shown: string[] }
+const live: Record<string, LiveTabs> = {};
+export const noteLive = (key: string, present: string[], shown: string[]): void => { live[key] = { present: [...present], shown: [...shown] }; };
+export const liveTabs = (key: string): LiveTabs | null => live[key] || null;
 /** Tests: forget the cache (a test that swaps localStorage). */
-export const _resetTabPrefsCache = () => { cache = null; };
+export const _resetTabPrefsCache = () => { cache = null; for (const k of Object.keys(live)) delete live[k]; };

@@ -74,9 +74,10 @@ export function tabFocus(ch: any, tab: string | null | undefined): TabFocus | nu
 /** The line on top of a door's tab while its focus is only in the pack ('' otherwise). */
 export const tabFocusLine = (ch: any, tab: string | null | undefined): string => (tabFocus(ch, tab) === 'pack' ? DOORS.find((x) => x.tab === tab)?.focusLine || '' : '');
 /** The tabs a character is shown under the focus rule: a focus door's tab with no focus of its door anywhere is left
- *  out when the engine refuses the tab's first action (the door's own verb: Draw, Picture, a Tend verb). A door whose
- *  verb the engine allows with no focus (an Outburst Begun with no Emanator draws on the air) keeps its tab: the client
- *  never takes away an action the engine offers. firstRefused: the engine's refusal on the tab's first row (as
- *  firstTurnTab reads it). */
-export const focusFilter = <T>(ch: any, items: T[], tabOf: (x: T) => string, firstRefused: (x: T) => boolean): T[] =>
-  items.filter((x) => !(tabFocus(ch, tabOf(x)) === 'none' && firstRefused(x)));
+ *  out only when the engine refuses every action on it (no Draw, no Picture, no Tend verb, nothing held to order or to
+ *  release). A tab with any row the engine allows keeps its place (Scuff on the Sigils tab, a held Figment's orders,
+ *  an Outburst Begun with no Emanator, which draws on the air): the client never takes away an action the engine
+ *  offers. allRefused: whether every action row of the tab carries the engine's refusal (the caller also keeps a tab
+ *  whose held work needs it, the heart of a held Outburst). */
+export const focusFilter = <T>(ch: any, items: T[], tabOf: (x: T) => string, allRefused: (x: T) => boolean): T[] =>
+  items.filter((x) => !(tabFocus(ch, tabOf(x)) === 'none' && allRefused(x)));

@@ -62,7 +62,7 @@ import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, w
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, prefKey, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
@@ -70,7 +70,7 @@ import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine } from '../game/doorView';
-import { noteTabs, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
+import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS, sigilChip, sigilChipStyle } from '../game/resources';
@@ -1547,13 +1547,20 @@ export class CombatLogic extends DCLogic {
     // ---------- the action tabs (Move · Attack · Utility · Sigils · Outbursts): one family at a time, each scrolling on its
     // own inside the pinned column, so the grid (and every effect on it) stays in view whatever you pick ----------
     // The fight tabs (Leon, 16 Nov 2026): the focus rule first (game/doorView.ts focusFilter: a focus door's tab with no
-    // focus of that door anywhere on the character, its verb refused by the engine, is not shown), then the character's own order and hidden tabs
+    // focus of that door anywhere on the character and every action on it refused by the engine, is not shown), then the character's own order and hidden tabs
     // (game/tabPrefs.ts: a display preference kept in this browser, never game state). A tab new to the character is
-    // appended at the end of its order, so no tab moves on its own; key N is the Nth tab shown.
+    // placed in the action list's own order until the player arranges the tabs, then appended at the end, so no tab
+    // the player placed moves on its own; key N is the Nth tab shown.
     const tabChar = cur && cur.charId ? g.characters[cur.charId] : null, tabMine = !!tabChar && tabChar.owner === me;
-    groups = focusFilter(tabMine ? tabChar : null, groups, (gr) => gr.id, (gr) => { const a = gr.items.find((x) => !isPerkInfo(x.key)); return !!a && !!a.why; });
-    const tabP = tabMine ? noteTabs(prefKey(g, cur.charId), groups.map((gr) => gr.id), tabIdsKnown(groups.map((gr) => gr.id))) : NO_PREFS;
-    { const all = groups; groups = shownTabs(tabP, all.map((gr) => gr.id)).map((id) => all.find((gr) => gr.id === id)).filter(Boolean); }
+    // A tab goes only when every one of its action rows is refused; the Outbursts tab never while an Outburst is held
+    // (the heart: Release, Let it go, Steady, Pump with a feeling).
+    const heldNow = !!(cur && cur.mg && cur.mg.held);
+    groups = focusFilter(tabMine ? tabChar : null, groups, (gr) => gr.id, (gr) => { if (gr.id === 'outbursts' && heldNow) return false; const rows = gr.items.filter((x) => !isPerkInfo(x.key)); return !!rows.length && rows.every((x) => !!x.why); });
+    const tabK = tabMine ? tabKey(cur.charId) : null, tabP = tabK ? noteTabs(tabK, groups.map((gr) => gr.id), tabIdsKnown(groups.map((gr) => gr.id))) : NO_PREFS;
+    // A hidden Outbursts tab shows while an Outburst is held: hiding a tab never hides the heart.
+    { const all = groups, tabShow = heldNow ? { ...tabP, hidden: tabP.hidden.filter((x) => x !== 'outbursts') } : tabP;
+      groups = shownTabs(tabShow, all.map((gr) => gr.id)).map((id) => all.find((gr) => gr.id === id)).filter(Boolean);
+      if (tabK) noteLive(tabK, all.map((gr) => gr.id), groups.map((gr) => gr.id)); }
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));
     if (rowSel !== S.action && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
     // The Attack tab in areas (Leon, live 0.23.0): each weapon's own actions under its header (its shots and techniques,
