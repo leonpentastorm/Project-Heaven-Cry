@@ -10,7 +10,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide, CORE_CHARGE, coreChargeOf,
 } from './character';
-import { say, type Combat, type Unit, alwaysSeen, bossInTheOpen, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
+import { say, type Combat, type Unit, alwaysSeen, bossInTheOpen, dist, lineOfSight, standable, refOf, coverTileFor, coverBonus, showAttacker, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
@@ -1291,7 +1291,7 @@ const secondOf = (d: OutburstDesign) => (d.school2 && schoolSide(d.school, d.mod
 const sameWayTwice = (d: OutburstDesign) => !!d.school2 && d.school2 === d.school && optOf(d.school, d.option) === optOf(d.school2, d.option2);
 interface Hit { landed: boolean; crit: boolean; line: string }
 function rollFor(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, ignoreCover: boolean) {
-  const homing = d.modules.includes('homing'), cover = !homing && !ignoreCover && coverTileFor(cb, u.pos, t.pos) ? 5 : 0;
+  const homing = d.modules.includes('homing'), cover = !homing && !ignoreCover ? coverBonus(cb, u.pos, t.pos) : 0;
   const bonus = u.mg!.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t) + toHitAdd(cb, u, t, 'soul'); // rules 1.17: a spell reads the level gap; the one hook of every roll to hit (rolls.ts)
   const one = Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5));
   return { bonus, cover: !!cover, need: t.def, pct: one, one };
@@ -1360,6 +1360,7 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
     else if (primary && rolls(d)) {
       // Calm (rules 1.19): two rolls, the better kept, and no critical. Joy: a critical from 18 up, when it hits.
       const adv = !!REL?.calm, rd = rollD20(rng, { adv }), r1 = rd.dice[0], r2 = rd.dice[1] || 0, r = rd.die, rf = rollFor(cb, u, d, t, ign || !!REL?.ignoreCover), sr = judge('roll', rd, rf.bonus + (emit(cb, 'spell_roll', { u, t, die: r, add: 0, kind: 'soul', cb }) as any).add, t.def), tot = sr.total;
+      showAttacker(cb, u, t); // rules 1.61 item 4963: the Release that shows
       const rolled = adv ? 'd20 ' + r1 + ' and ' + r2 + ', Calm keeps ' + r : 'd20 ' + r;
       rollFx(cb, sr, u, { why: 'soul' });
       if (!sr.ok) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); out.push('misses ' + t.name + ' (' + rolled + ' → ' + tot + ' vs ' + t.def + ')'); return { landed: false, crit: false, line: '' }; }

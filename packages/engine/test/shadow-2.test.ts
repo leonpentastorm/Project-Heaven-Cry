@@ -8,7 +8,7 @@ import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { survivalRoom, startRun, chooseNode } from './helpers/survival';
 import { Rec } from './helpers/replay';
-import { previewAttack, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, actionsFor, refOf, type Unit } from '../src';
+import { previewAttack, RULES, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, actionsFor, refOf, type Unit } from '../src';
 import { resOf, seenByFoes, hideBlock, HIDE_WHY } from '../src/tactics';
 import { applyCond } from '../src/magic';
 import { price } from '../src/effects/cost';
@@ -119,6 +119,24 @@ describe('Tag and Tagged', () => {
     const u = f.turn(f.pc); at(f, u, '1,4');
     expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:shadow.tag', targetId: t.id } as any)).toThrow();
     expect(condOn(f.unit(t.id), 'marked')).toBe(false);
+  });
+});
+
+describe('rules 1.61 item 4970: the shot that shows moves no Shadow outcome', () => {
+  // An Ingenuity-1 rifle character, not Hidden, out of reach of every foe's eyes, kills a 1-HP minion: its attack shows
+  // it to the foes (Unit.shownTo, item 4963), and still the kill was seen by nobody's eyes, so '+1 for a kill nobody saw'.
+  it('an unseen kill with the reveal on gives Shadow, and the attacker is still shown to the foes', () => {
+    expect(String((RULES.combat.attack as any).attack_reveal?.until)).toBe('attacker_turn_start');
+    const KILL = DOOR.effects.find((e: any) => e.when === 'hit' && (e.if?.self_sight || []).includes('unseen'));
+    const f = fightWith([door(1)], [{ tier: 'minion' }, { tier: 'minion' }]); const t = foeAt(f, 0, '3,4', true); foeAt(f, 1, '6,4', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    expect(withGame(f.g, () => seenByFoes(f.cb, f.unit(u.id)))).toBe(false);
+    expect(f.unit(u.id).hidden).toBeFalsy(); expect(shadow(f, u)).toBe(0);
+    f.unit(t.id).hp = 1; f.unit(u.id).attack = 60; // the blow lands and drops it
+    f.act({ type: 'combat/attack', unitId: u.id, targetId: t.id, mode: 'shot' } as any);
+    expect(f.unit(t.id).hp).toBeLessThanOrEqual(0);
+    expect(f.unit(u.id).shownTo).toBe('foe');
+    expect(shadow(f, u)).toBe(KILL.value);
   });
 });
 

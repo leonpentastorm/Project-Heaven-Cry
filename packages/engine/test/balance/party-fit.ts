@@ -15,7 +15,7 @@
 // can (the foe lowest on HP), `smallmap` every fight on the solo's map (16 tiles), `duopress` the duo's pressure a head
 // at the solo's (pressure_per_char[1] = [0]; nothing else), `revive` a member Downed in a won fight stands up at REVIVE_HP.
 import { onHook } from '../../src/effects/hooks';
-import { ENC_BUDGET, WEAPON, isMelee, dist } from '../../src';
+import { ENC_BUDGET, WEAPON, isMelee, dist, RULES, COVER } from '../../src';
 import svJ from '../../../../data/survival.json';
 import { Rec } from '../helpers/replay';
 import { simRun, MEMBER, MEMBER_OLD, PARTIES } from './survival-run';
@@ -52,7 +52,7 @@ const SV: any = svJ;
 /** Lever `revive`: a character dead in a won fight stands up at this HP in place of the data's run.dead_return_hp (1 when the lever was measured; 50 since the fit, rules 1.61, so the lever is the data's now). */
 export const REVIVE_HP = 50;
 export function withLever<T>(lever: string | undefined, n: number, f: () => T): T {
-  const was = { ret: SV.run.dead_return_hp, p: ENC_BUDGET.pressurePerChar, m: ENC_BUDGET.maxFoes, s: ENC_BUDGET.share, steps: SV.map_size.steps };
+  const was = { cf: COVER.full, mem: RULES.combat.focus_memory.per_attacker, fin: RULES.combat.focus_memory.finish_share, ret: SV.run.dead_return_hp, p: ENC_BUDGET.pressurePerChar, m: ENC_BUDGET.maxFoes, s: ENC_BUDGET.share, steps: SV.map_size.steps };
   try {
     if (lever === 'perhead') {
       const p1 = was.p[0], m1 = was.m[0], sh = (row: number[]) => row.map((_, i) => row[0] * (i + 1));
@@ -66,10 +66,12 @@ export function withLever<T>(lever: string | undefined, n: number, f: () => T): 
     if (lever && lever.startsWith('set:')) for (const kv of lever.slice(4).split(';')) {
       const [k, v] = kv.split('='), arr = v.split('/').map(Number);
       if (k === 'p') ENC_BUDGET.pressurePerChar = arr; if (k === 'm') ENC_BUDGET.maxFoes = arr; if (k === 'ret') SV.run.dead_return_hp = arr[0];
+      if (k === 'mem') RULES.combat.focus_memory.per_attacker = arr[0]; if (k === 'fin') RULES.combat.focus_memory.finish_share = arr[0]; // rules 1.61 focus memory (item 4964)
+      if (k === 'cf') COVER.full = arr[0]; // rules 1.61 cover beside you (item 4960): full cover's term
     }
     void n;
     return f();
-  } finally { SV.run.dead_return_hp = was.ret; ENC_BUDGET.pressurePerChar = was.p; ENC_BUDGET.maxFoes = was.m; ENC_BUDGET.share = was.s; SV.map_size.steps = was.steps; }
+  } finally { COVER.full = was.cf; RULES.combat.focus_memory.per_attacker = was.mem; RULES.combat.focus_memory.finish_share = was.fin; SV.run.dead_return_hp = was.ret; ENC_BUDGET.pressurePerChar = was.p; ENC_BUDGET.maxFoes = was.m; ENC_BUDGET.share = was.s; SV.map_size.steps = was.steps; }
 }
 /** The cooperation wrapper (lever `focus`): the party's focus target is the visible foe lowest on HP (ties: the first
  * in the fight's order); a member first plays its policy against that foe alone, and only when that gives no attack

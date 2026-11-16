@@ -7,7 +7,7 @@
 // If you change paths() in combat.ts, change it so that this still passes. If a rule of movement changes on purpose
 // (a new cost, a new blocker), change both and say so in the commit; the replay guard will then move too.
 import { describe, expect, it } from 'vitest';
-import { paths, stepsFrom, coverTileFor, coverOf, dist, pathOpts, difficultOf, moveBlockers, objectsOf, trapKnown, xy, key, bindGame, type Combat } from '../src';
+import { paths, stepsFrom, coverTileFor, coverOf, COVER, dist, pathOpts, difficultOf, moveBlockers, objectsOf, trapKnown, xy, key, bindGame, type Combat } from '../src';
 import { isTrap, kindOf, makeObject } from '../src/objects';
 import { onHook } from '../src/effects/hooks';
 import { lobby, fightTurn, type Pc } from './helpers/replay';
@@ -44,14 +44,21 @@ function plainPaths(cb: Combat, from: string, self: string, avoid?: Set<string>)
   return { dist: d, prev };
 }
 
-/** coverTileFor as it was written first: the dictionary of all cover, walked in its order. The oracle for the one in combat.ts. */
+/** coverTileFor written plainly: the dictionary of all cover, walked in its order, with rules 1.61's facing arc and
+ * grades (item 4960: within COVER.arc degrees of the shot, nearer the shooter; an orthogonal full tile is full cover, any
+ * other counted tile half; the first full one wins, else the first counted). The oracle for the one in combat.ts. */
 function plainCoverTileFor(cb: Combat, from: string, to: string): string | null {
-  const [tx, ty] = xy(to);
-  for (const c of Object.entries(coverOf(cb)).filter(([, v]) => v.kind === 'half').map(([k]) => k)) {
-    const [cx, cy] = xy(c);
-    if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && dist(from, c) < dist(from, to)) return c;
+  if (from === to) return null;
+  const [tx, ty] = xy(to), [fx, fy] = xy(from); let first: string | null = null;
+  for (const [c, v] of Object.entries(coverOf(cb))) {
+    const [cx, cy] = xy(c), ox = cx - tx, oy = cy - ty;
+    if (Math.max(Math.abs(ox), Math.abs(oy)) !== 1 || dist(from, c) >= dist(from, to)) continue;
+    const ang = Math.acos(Math.max(-1, Math.min(1, (ox * (fx - tx) + oy * (fy - ty)) / (Math.hypot(ox, oy) * Math.hypot(fx - tx, fy - ty))))) * 180 / Math.PI;
+    if (ang > COVER.arc + 1e-6) continue;
+    const grade = v.kind === 'full' && (ox === 0 || oy === 0) ? 'full' : v.kind === 'full' ? COVER.diagonal : 'half';
+    if (grade === 'full') return c; first ||= c;
   }
-  return null;
+  return first;
 }
 
 // what an item may open for a mover (Wall Run, Make Way, augmented legs…): set per trial, answered through the real hook

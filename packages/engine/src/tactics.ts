@@ -184,7 +184,7 @@ export function spendPaidShot(cb: Combat, u: Unit): void { paidCell(cb, u).refun
 
 // ---------- sight words (Classes 3.0 P7; shadow-spec.md 2.1) ----------
 /** The words data uses for a unit's sight (predicates self_sight, actor_sight, target_sight): `seen` (not Hidden and
- * in view, after the 'sees' hook: sideSeesUnit), `unseen`, `in_view` (some living, standing enemy's eyes reach its tile,
+ * in view, after the 'sees' hook: sideSeesUnit by eyes alone, never the shot that shows), `unseen`, `in_view` (some living, standing enemy's eyes reach its tile,
  * Hidden or not: seenByFoes over unitSees), `out_of_view`. */
 export type SightWord = 'seen' | 'unseen' | 'in_view' | 'out_of_view';
 /** The sight words, in order. */
@@ -195,7 +195,7 @@ export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, Sigh
   const always = statQuery({ u, cb }, 'always_seen').add > 0;
   let inView: boolean, seen: boolean;
   if (by) { inView = always || unitSees(cb, by, u.pos); seen = always || (inView && !u.hidden); }
-  else { inView = always || seenByFoes(cb, u); seen = always || sideSeesUnit(cb, u.side === 'pc' ? 'foe' : 'pc', u); }
+  else { inView = always || seenByFoes(cb, u); seen = always || sideSeesUnit(cb, u.side === 'pc' ? 'foe' : 'pc', u, false, undefined, false); } // rules 1.61 item 4970: by eyes, not the shot that shows
   return [seen ? 'seen' : 'unseen', inView ? 'in_view' : 'out_of_view'];
 }
 

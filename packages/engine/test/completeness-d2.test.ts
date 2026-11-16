@@ -156,7 +156,7 @@ describe('the sight hook: Sworn Sibling, Upper-Touched, Chain Smoker (items 43-4
     const run = (kind: string) => {
       const s = fightOf([{ traits: ['upper_touched'] }], [{ name: 'Pale one', kind, at: 'A1' }]);
       const cb = s.g.combat!, u = cb.units.find((x) => x.side === 'pc')!, v = cb.units.find((x) => x.side === 'foe')!;
-      u.pos = '1,1'; v.pos = '9,1'; u.vision = 3;
+      u.pos = '1,1'; v.pos = '9,1'; u.vision = 3; delete v.shownTo; // rules 1.61 item 4963: a shot it fired in the opening would show it; this is the sense through the fog
       return { sensed: withGame(s.g, () => visibility(cb, 'pc').sensed.has(v.id)), cb };
     };
     expect(run('upper_realm').sensed).toBe(true); expect(run('human').sensed).toBe(false);
