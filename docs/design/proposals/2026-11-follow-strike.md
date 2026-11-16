@@ -1,6 +1,6 @@
 # Follow strikes: the off hand that swings after the main one (proposal)
 
-> **Built (16 Nov 2026) as rules 1.58** (spec items 4507 to 4521; this draft's "1.57" went to the shields-as-weapons
+> **Built (16 Nov 2026) as rules 1.58** (spec items 4522 to 4536; this draft's "1.57" went to the shields-as-weapons
 > rulings). The lead's rulings on section 11: per technique, Durability and Strength, shields as weapon rows (rules 1.57),
 > only the follow wears the off hand, Afterword rare at 700 (in no pool), no follow for class and perk strikes, two
 > shields' Defense adds. Leon's addition: `follows` may be grafted by a modifier row's `adds_props` (the example

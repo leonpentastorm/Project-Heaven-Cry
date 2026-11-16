@@ -174,7 +174,7 @@ export interface Unit {
   /** Set only while the off-hand weapon is swapped into u.weapon (a paired attack, an off-hand technique): the main hand's
    * weapon, so the Heat limit both guns pool is still main + off (Leon's ruling, 13 Nov 2026: the jam lands on the gun that fired). */
   swapMain?: string;
-  /** rules 1.58 (item 4513): the off hand's follows item's durability once a follow has worn it (written back to the
+  /** rules 1.58 (item 4528): the off hand's follows item's durability once a follow has worn it (written back to the
    * character's off-hand GearState by unitToCharacter, then dropped) */ offDur?: number;
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
   ctrl?: string; companion?: string; /** Classes 3.0 P9: an owned unit's own block (owned.ts: turn, eyes, upkeep, cover, lure); its owner is its `owned` tie's far end */ owned?: OwnedBlock;
@@ -2540,7 +2540,7 @@ export const setOffJam = (u: Unit, jam: boolean) => { if (jam) u.offJammed = tru
  * after. The off hand's weapon (`o.id` absent or u.offWeapon) brings its rounds, its jam, its ammo type and its own mods,
  * and what fn spent of them is written back (not in a preview, where Heat is put back too); any other id (a shield the
  * off hand works its techniques with) brings none of those, and its grade is the standard one. `attack`: the to-hit it
- * strikes with (its own skill). Wear (rules 1.58 item 4513): only a follow (`wear`) wears the off hand: its durability
+ * strikes with (its own skill). Wear (rules 1.58 item 4528): only a follow (`wear`) wears the off hand: its durability
  * comes in (u.offDur, else the off hand's GearState, else full) and goes back to u.offDur; every other off-hand strike
  * wears nothing, as before. */
 export function withOffHand<T>(u: Unit, fn: () => T, o: { id?: string; attack?: number; preview?: boolean; wear?: boolean } = {}): T {
@@ -2558,7 +2558,7 @@ export function withOffHand<T>(u: Unit, fn: () => T, o: { id?: string; attack?: 
     const heat = u.heat; Object.assign(u, keep); delete u.swapMain; if (!o.preview) u.heat = heat;
   }
 }
-/** The off hand's follows item's durability now and in full (rules 1.58 item 4513): what a follow wore of it this fight
+/** The off hand's follows item's durability now and in full (rules 1.58 item 4528): what a follow wore of it this fight
  * (u.offDur), else its character's off-hand GearState, else full at its grade. */
 export function offWear(u: Unit, id: string): { dur: number; max: number } {
   const st = charFor(u)?.offHand, mine = st && st.id === id ? st : null, max = maxDurOf(id, mine?.rarity);

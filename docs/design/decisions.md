@@ -432,8 +432,8 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 
 117. **The off hand follows: a property word, not a second weapon** (Leon, 16 Nov 2026: a sword-and-shield moveset where
     the shield's blows are woven into the weapon's attacks, and *"this follow strike system could be a tag on the weapon
-    so it's universal and legendary just graft this tag onto your weapon"*; rules 1.58, spec items 4507 to 4521). A row
-    with the word `follows` (every shield, Afterword; the modifier graft was withdrawn in review, spec item 4520)
+    so it's universal and legendary just graft this tag onto your weapon"*; rules 1.58, spec items 4522 to 4536). A row
+    with the word `follows` (every shield, Afterword; the modifier graft was withdrawn in review, spec item 4535)
     strikes once in the off hand after each melee technique of a one-handed main weapon. Why a rider at the technique's
     tail and not a second attack: the engine has one place every own-turn melee technique ends (`useTechnique`), so the
     follow needs no mark, no handler and no copy of the attack; its preview is the same function. Why per technique and
@@ -445,7 +445,7 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 118. **The tank hits through its door in melee only, and its reward is staying power** (Leon, 16 Nov 2026: *"Tank with
     guns need agility alpha skill or they don't hit"*, *"let them have double guard when doing a guard action, we
     already have max guard to balance it"*, *"any class that give more max guard, can be fun for the dedicated
-    guarder"*; rules 1.59, spec items 4522 to 4528). Durability's `roll_with` takes the existing predicate `melee: true`
+    guarder"*; rules 1.59, spec items 4537 to 4543). Durability's `roll_with` takes the existing predicate `melee: true`
     (no new primitive); a shield's blow scales with Endurance; two shields multiply every Guard gain by one data field
     in one function (`guardMult`); the Bulwark's larger pool rides the carrier a class already uses to raise its door's
     resource (`RES_RULES`, as the Operative's Shadow), read from its own resource row by rank. Why: Leon accepts a

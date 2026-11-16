@@ -934,7 +934,7 @@ const thingProps = (id: string): string[] => (((WEAPON[id] as any)?.phys?.props 
  * (`phys.props`). Every reader of "is a shield held" goes through it (holdsShield, the unit's off-hand item, the
  * technique core's shieldsOf, Parry's bonus, the second-weapon rule, Defense's Shield Partner). */
 export const isShieldId = (id: string | null | undefined): boolean => !!id && !!WEAPON[id] && thingProps(id).includes('shield');
-/** Rules 1.58 (hands 5e, item 4507): THE one test of "a follows item": a melee row whose `phys.props` holds `follows`
+/** Rules 1.58 (hands 5e, item 4522): THE one test of "a follows item": a melee row whose `phys.props` holds `follows`
  * (every shield, Afterword). Where it matters (the off hand) is the reader's. */
 export function followsId(id: string | null | undefined): boolean {
   const w: any = id ? WEAPON[id] : null; if (!w || w.phys?.system !== 'melee') return false;
@@ -1393,7 +1393,7 @@ export const AMMO_WHY = 'That is ammunition, not a weapon.';
  * refusal, or null. */
 export function secondWeaponWhy(c: Character, offId: string | null | undefined, mainId: string | null | undefined): string | null {
   const ow: any = offId ? WEAPON[offId] : null, mw: any = mainId ? WEAPON[mainId] : null;
-  // rules 1.58 (5a amended, item 4514): a follows item in the off hand is not a second weapon (a shield is one)
+  // rules 1.58 (5a amended, item 4529): a follows item in the off hand is not a second weapon (a shield is one)
   if (!ow || ow.id === 'fists' || isShieldId(ow.id) || followsId(ow.id) || !mw || mw.id === 'fists') return null;
   const extra = (wpGear as any)?.second_weapon_skill_extra ?? 2, req = ow.requires && Object.keys(ow.requires).length ? ow.requires : { [ow.skill || 'dexterity']: 0 };
   for (const [sk, n] of Object.entries(req)) { const need = (n as number) + extra; if ((c.skills[sk] || 0) < need) return 'A second weapon asks more: the ' + ow.name.toLowerCase() + ' in the off hand needs ' + (SKILL[sk]?.name || sk.replace('_', ' ')) + ' ' + need + '.'; }

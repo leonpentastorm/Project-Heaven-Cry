@@ -691,7 +691,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 
 #### 4. Durability
 
-1. Every weapon, shield and mod has **Durability**. An attack action wears 1 (full auto wears 2); a jam or fumble wears 5 more. *(Rules 1.58 item 4513: an off-hand weapon wears only when it follows.)*
+1. Every weapon, shield and mod has **Durability**. An attack action wears 1 (full auto wears 2); a jam or fumble wears 5 more. *(Rules 1.58 item 4528: an off-hand weapon wears only when it follows.)*
 2. **Worn** (25% or less): guns jam on a natural 1 or 2; melee loses 10% damage. *(Rules 1.50: the 25% is data, `rules.json weapons_rules.worn.share`, read by the fight and by every screen's WORN mark.)*
 3. **Broken** (0): guns can't fire, melee does half damage, shields stop protecting. Broken things can still be repaired.
 4. **Field Repair** (this defines spec item 22's missing action): 2 AP, Proficiency 3+, uses one charge of a **spare-parts kit**, restores 10% + 5% per Proficiency point above 3. Out of combat, 10 minutes per kit charge restores 50%. A gunsmith restores 100% for 10% of the weapon's price. *(Rules 1.50: in Survival the shop and the Forge are the gunsmith, `run/repair`, priced by the share of durability missing with a floor; see rules 1.50.)*
@@ -847,7 +847,7 @@ Weapon skills and lore:
 | ✓ Sabre | 28 | 1.5 | 400 | |
 | Kemizuchi duelling blade | 24, +1 accuracy | 1.2 | 550 | |
 | Katana (rules 1.32) | 28 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
-| Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4519) |
+| Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
 
 - **Combat knife · Finish It:** +50% damage against a target that is Dazed, Stunned, Bleeding or Downed. *"Every kit has one. Every story ends with one."*
 - **Throwing knives · Fan of Knives:** 3 AP; one throw each at up to two targets. *"Four problems, four solutions."*
@@ -1201,7 +1201,7 @@ A shield (an off-hand item with the **Shield** property: the buckler and the rio
 
 | # | Technique | Cost | What it does | With the right weapon |
 |---|---|---|---|---|
-| 29 | **Shield Bash** (Strike) | 2 AP, 1 Guard | Strike with the shield: bare-hand damage ×1.5, hitting with Raw Power. It costs 1 Guard in place of the Strike's 1 Momentum. On a hit you gain 1 Momentum, and the target makes a Body save or is pushed 1 tile. *(Superseded by rules 1.57 item 4503 and rules 1.58 item 4515: the shield's own line ×2.5 with Durability, for 1 AP.)* | Shield only. |
+| 29 | **Shield Bash** (Strike) | 2 AP, 1 Guard | Strike with the shield: bare-hand damage ×1.5, hitting with Raw Power. It costs 1 Guard in place of the Strike's 1 Momentum. On a hit you gain 1 Momentum, and the target makes a Body save or is pushed 1 tile. *(Superseded by rules 1.57 item 4518 and rules 1.58 item 4530: the shield's own line ×2.5 with Durability, for 1 AP.)* | Shield only. |
 | 30 | **Raise Shield** (Link) | 1 AP | Turn Momentum into Guard, 1 for 1, as much as you choose up to your pool (all of it unless you say less). Until your next turn, ranged attacks from the front are at −2 to hit you. Once a turn. | Shield only. |
 | 31 | **Shield Wall** (Answer) | reaction, 1 Guard | *When an ally next to you is the target of a ranged attack:* your ally counts as behind half cover against it (−5, unless they already have cover facing the shot or the attack ignores cover). A burst or a volley is one attack: every round of it is walled. | Shield only. |
 | 32 | **Interpose** (Answer) | reaction, 1 Guard | *When an ally next to you is hit by an attack:* you take the hit instead (Guard, rule 7). | Durability 3, any weapon or none. |
@@ -6924,7 +6924,7 @@ created; merged into the lane on 16 Nov 2026), every one `adjudication: engine`,
    The Guard row of every unit with a pool carries Durability's door line (`door_line`).
 
 Not in slice 1 (each needs a piece the engine lacks; the draft lists them): Weather the Volley (a blow's volley and its
-round are not on the damage), the shield's own swing and its follow-up (P9, P11) *(the follow-up is rules 1.58's follow strike; P9's "Shield Follows", item 17, withdrawn: item 4521)*, cover behind the tank (P10), the
+round are not on the damage), the shield's own swing and its follow-up (P9, P11) *(the follow-up is rules 1.58's follow strike; P9's "Shield Follows", item 17, withdrawn: item 4536)*, cover behind the tank (P10), the
 growth paths (P8), Hold the Gap (P9).
 
 ## Rules 1.56 (Balance 2.0), a shield in either hand
@@ -6960,43 +6960,43 @@ shield. Now (items 4308 to 4313; every number is the data's and PROVISIONAL):
 ## Rules 1.57, shields are weapon rows
 
 The lead's rulings, 16 Nov 2026, taking the shape of the follow-strike draft's N2
-(`docs/design/proposals/2026-11-follow-strike.md`). Items 4497 to 4505; every number is the data's and PROVISIONAL. This
+(`docs/design/proposals/2026-11-follow-strike.md`). Items 4512 to 4520; every number is the data's and PROVISIONAL. This
 revision overrides rules 1.56's items 4308, 4310, 4313, 4315 and 4317 where they differ. (The follow-strike draft names
 its own revision 1.57; when it is built it takes the next number.)
 
-1. **A shield is a weapon** (item 4497). The buckler, the riot shield and the pavise are `weapons.json` rows: category
+1. **A shield is a weapon** (item 4512). The buckler, the riot shield and the pavise are `weapons.json` rows: category
    `shield`, one-handed, melee (`phys.system`), the Shield property (`phys.props: [shield]`), mastery family Unarmed,
    their own strike line: buckler 6, riot shield 8, pavise 8, hitting with Durability and growing with Strength (the
    melee profile), 2 AP a blow, as any light weapon. Their Defense and Movement are the rows' own `effects`, held in
    either hand; price, weight and durability are unchanged. `either_hand` is gone: a shield goes in either hand because
    it is a one-handed weapon.
-2. **One test** (item 4498). "Is a shield held" is one test, the Shield property of the row in a hand (`isShieldId`):
+2. **One test** (item 4513). "Is a shield held" is one test, the Shield property of the row in a hand (`isShieldId`):
    the shield techniques, Brace and the Guard technique's +1 a shield, Parry's bonus, Eyes in the Back's carried shield,
    Sidestep's "ignores a carried shield", the Legion gladius's Shield Partner, the second-weapon rule and the unit's
    off-hand item all read it.
-3. **In the main hand** (item 4499) a shield is simply a one-handed melee weapon: it strikes with its own line (no bare
+3. **In the main hand** (item 4514) a shield is simply a one-handed melee weapon: it strikes with its own line (no bare
    fists behind it), wears as a weapon wears and is graded as a weapon is. The unit field `mainItem` is gone.
-4. **In the off hand a shield is not a second weapon** (item 4500): it asks no +2 (rule 5a), opens no Both block and makes
+4. **In the off hand a shield is not a second weapon** (item 4515): it asks no +2 (rule 5a), opens no Both block and makes
    no paired attack; it lends its techniques, as before.
-5. **Main-hand shield, a one-handed weapon in the off hand** (item 4501): ordinary dual wielding by the rules of today
+5. **Main-hand shield, a one-handed weapon in the off hand** (item 4516): ordinary dual wielding by the rules of today
    (the off weapon is a second weapon and asks its +2; two melee weapons open the Both block), and the shield's
    techniques come from the main hand. Item 4313's asymmetry is closed: the shield techniques come from whichever hand
    holds a shield (the off hand while it holds no weapon), once however many shields are held.
-6. **Two shields** (item 4502), as rules 1.56 item 2: each shield's Defense and Movement add (buckler + buckler +2
+6. **Two shields** (item 4517), as rules 1.56 item 2: each shield's Defense and Movement add (buckler + buckler +2
    Defense; buckler + riot shield +3 Defense, -0.5 Movement; riot + riot +4 Defense, -1 Movement); Brace and the Guard
    technique +1 Guard a shield under the unchanged cap; Parry's bonus once; the shield techniques once. The Open Hand is
    off with any shield held.
-7. **Shield Bash** (item 4503) strikes with the shield's own row (its line, the skill it hits with: Durability) at
+7. **Shield Bash** (item 4518) strikes with the shield's own row (its line, the skill it hits with: Durability) at
    `numbers.mult` 2.5 (was the bare hand x1.5 with Raw Power): a buckler's Bash is 15 as before, a riot shield's 20. Its
-   AP is unchanged (2); the follow-strike draft's 1 AP is part B's. *(Superseded by rules 1.58 item 4515: 1 AP.)*
-8. **The pavise** (item 4504, the lead's ruling): a shield row like the others, so carried it is a shield (the
+   AP is unchanged (2); the follow-strike draft's 1 AP is part B's. *(Superseded by rules 1.58 item 4530: 1 AP.)*
+8. **The pavise** (item 4519, the lead's ruling): a shield row like the others, so carried it is a shield (the
    techniques, the Parry bonus, the Guard) with no Defense of its own; planting it is still the Narrator's. Item 4317's
    "carried it does nothing" is withdrawn.
-9. **Gear and saves** (item 4505). The shop rolls a shield with the weapons (graded by the weapon rule); the Forge grades
+9. **Gear and saves** (item 4520). The shop rolls a shield with the weapons (graded by the weapon rule); the Forge grades
    a shield as a weapon; no mod fits one (its row has no mod slot). A save from before keeps a shield in a hand (an
    id: unchanged) and its pack lines are moved once at load to the weapon line they are now (grade and wear kept), in
    the packs, the camp's saved packs and the piles.
-10. **No swell with a shield** (item 4506; Leon, 16 Nov 2026: *"build the no swell when using a shield rule, not when
+10. **No swell with a shield** (item 4521; Leon, 16 Nov 2026: *"build the no swell when using a shield rule, not when
     having guard on, when you equip a shield period"*). While a character holds a shield in either hand, a held
     Outburst does not swell at the start of its turn: it keeps its stage. The Strain of holding it one more turn still
     comes, as it does at full stage (+1, +2 in Flooded air, none from Will Power 7). Only the swell from holding is
@@ -7011,8 +7011,8 @@ follow strike system could be a tag on the weapon so it's universal and legendar
 weapon"*. Design: `docs/design/proposals/2026-11-follow-strike.md` (the reviewed second draft; it names this revision
 1.57, which the shields-as-weapons rulings took). The lead's rulings on its questions: per technique (1), Durability and
 Strength (2), shields are weapon rows (3, rules 1.57), only the follow wears the off hand (4), the off-hand knife rare at
-700 credits (5), no follow for class and perk strikes (6), two shields' Defense adds (7, rules 1.57 item 6). Items 4507
-to 4521; every number is the data's and PROVISIONAL.
+700 credits (5), no follow for class and perk strikes (6), two shields' Defense adds (7, rules 1.57 item 6). Items 4522
+to 4536; every number is the data's and PROVISIONAL.
 
 **5a, amended.** A shield is a weapon row with the properties `shield` and `follows`. A follows item in the off hand is
 not a second weapon (no +2). A weapon in the off hand beside a main-hand shield is a second weapon and asks +2.
@@ -7021,62 +7021,62 @@ not a second weapon (no +2). A weapon in the off hand beside a main-hand shield 
 A shield's system is melee.
 
 **5e. Follow strikes.**
-1. **What follows** (item 4507). A row whose `phys.props` holds `follows` is a follows item, and nothing else is (a modifier
+1. **What follows** (item 4522). A row whose `phys.props` holds `follows` is a follows item, and nothing else is (a modifier
    cannot graft the word: item 14). Only a shield or a melee-system row may carry it; the validator refuses it
    anywhere else.
    A follow is always a melee blow, never a shot or a throw.
-2. **When it follows** (item 4508). While a follows item is in your **off** hand and your main hand holds a one-handed
+2. **When it follows** (item 4523). While a follows item is in your **off** hand and your main hand holds a one-handed
    melee weapon (its row's `hands` is 1H: a heavy weapon held in one hand by Heavyworlder does not count; bare fists and
    gloves do), each melee technique you use with the main hand as your own action is followed by **one** follow strike,
    after the technique has resolved, if at least one of its rolls was made. One technique, one follow, whatever the
    number of rolls (Flurry, a Finisher, a Charge). In the main hand the word does nothing.
-3. **Never** (item 4509). No follow after: a gun's technique or shot, a Burst, a throw, a blow struck with a gun hand's
+3. **Never** (item 4524). No follow after: a gun's technique or shot, a Burst, a throw, a blow struck with a gun hand's
    fists; a reaction or an Answer of any kind, or any action made inside an off-turn window; a technique made with the
    off hand or a shield's technique (Shield Bash, Raise Shield); a both-hands technique or the paired attack; a class
    move or perk action that strikes on its own (Launch, Wrecker, the Three-Cut Script); the old plain `combat/attack` in
    melee; another follow.
-4. **At whom** (item 4510). At the unit the technique's **first** roll really struck (after a redirect: Confused, a
+4. **At whom** (item 4525). At the unit the technique's **first** roll really struck (after a redirect: Confused, a
    captive held as a shield, Duck and Roll), if it is a foe, still up and within the follows item's reach. Else there is
    no follow and nothing is said. A Finisher's extra targets and a sweep's later targets never draw it.
-5. **The roll** (item 4511). Its own d20 with the follows item's own skill (`hits_with`; a shield's is Durability) plus
+5. **The roll** (item 4526). Its own d20 with the follows item's own skill (`hits_with`; a shield's is Durability) plus
    the `follow` technique's `numbers.extra` (-2), with every to-hit term a melee blow has (cover, the target's Defense,
    Durability's roll while holding Guard). No off-hand penalty. Damage: the item's line x the `follow` technique's
    `numbers.mult` (1.0) x the item's own sizing lines, through its profile and the target's armour.
-6. **A rider** (item 4512). A follow that lands fires its own item's `when: hit` lines (`with_this`). It gives no
+6. **A rider** (item 4527). A follow that lands fires its own item's `when: hit` lines (`with_this`). It gives no
    Momentum, sheds or adds no Pressure, spends no set-up mark, carries no Smite or Judged, and is not "a melee hit" for
    any perk, class move, door or deed. Lines that **size** a blow (`attack`, `to_hit`, `attack_roll`, `dealing`) apply
    to it as to any blow; lines that **react** to a blow (`hit`, `miss`, a kill, a downing) ignore it unless they are the
    follows item's own. A follow never spends another item's limited use: such a line applies only while a use is left.
    The target answers a follow with its armour, Guard soak and Parry, but a **missed follow draws no Answer** (no
    Riposte, Keep Back or Retort).
-7. **Wear** (item 4513). The follows item wears as any weapon does when it strikes (1, and 5 more on a fumble); only the
+7. **Wear** (item 4528). The follows item wears as any weapon does when it strikes (1, and 5 more on a fumble); only the
    follow wears the off hand (every other off-hand strike wears nothing, as before). At 0 durability it makes no follow;
    Worn, it takes the melee -10%. The main weapon's wear is unchanged.
-8. **Not a second weapon** (item 4514). In the off hand a follows item opens no Both block, cannot be the off hand of a
+8. **Not a second weapon** (item 4529). In the off hand a follows item opens no Both block, cannot be the off hand of a
    paired attack or a both-hands technique, and has **no off-hand attack of its own**: its off-hand block holds only
    what another property gives (a shield's techniques). It asks its own requirement in the off hand (5c), never 5a's +2.
-9. **A shield's strike** (item 4515). Each shield row has its own line (rules 1.57 item 1). Shield Bash strikes with it
+9. **A shield's strike** (item 4530). Each shield row has its own line (rules 1.57 item 1). Shield Bash strikes with it
    at `numbers.mult` 2.5, for **1 AP**.
-10. **A shield in the main hand** (item 4516). It is a melee weapon with its line. Shield in each hand: the main one
+10. **A shield in the main hand** (item 4531). It is a melee weapon with its line. Shield in each hand: the main one
     attacks, the off one follows. Shield in the main hand, ordinary one-handed melee weapon in the off hand: ordinary
     dual wielding (5b), no follow. Shield in the main hand, a focus in the off hand: no follow.
-11. **A shield's follow gives Guard** (item 4517). A shield's follow that lands gives 1 Guard, under the pool's cap, once a
+11. **A shield's follow gives Guard** (item 4532). A shield's follow that lands gives 1 Guard, under the pool's cap, once a
     turn per unit across every shield it holds (the modifier row `mod_follow_guard`, named in each shield's
-    `variant_mods`). Shield Bash and a main-hand shield's own blows never give it. *(Amended by rules 1.59 item 4525: x2 with a shield in each hand.)*
-12. **Enemies and companions** (item 4518). A unit follows only if its off hand holds a follows item (an enemy: only if
+    `variant_mods`). Shield Bash and a main-hand shield's own blows never give it. *(Amended by rules 1.59 item 4540: x2 with a shield in each hand.)*
+12. **Enemies and companions** (item 4533). A unit follows only if its off hand holds a follows item (an enemy: only if
     its data row puts one there; none does today). The enemy turn and the AI are unchanged.
-13. **Afterword** (item 4519). The first follows weapon that is not a shield: a knife (15, Dexterity, light blades) made
+13. **Afterword** (item 4534). The first follows weapon that is not a shield: a knife (15, Dexterity, light blades) made
     for the off hand. In the main hand it is an ordinary knife; in the off hand it only follows, at x0.25, and its follow
     that lands leaves Bleeding (a Body save) once a turn (`mod_afterword`). 700 credits. Its price
     alone keeps it rare: Survival's shop gear and weapon picks take it once their band reaches 700 (review, 16 Nov
     2026); nothing in the data keeps it out (question 5, Leon's).
-14. **The graft** (item 4520). **Withdrawn, not built** (review, 16 Nov 2026): a modifier that grafts `follows` would be
+14. **The graft** (item 4535). **Withdrawn, not built** (review, 16 Nov 2026): a modifier that grafts `follows` would be
     a new engine field the lead had not approved, and the priced example row could be bought and fitted in Survival,
     where it roughly doubled every technique. Afterword's own `follows` meets the request for a follows knife. A graft
     returns only as an approved primitive with its own follow damage line.
 
 *(Guard 2.0's item 17, "the Shield Follows" on P9, is withdrawn: this revision is its follow-up; P9 stays only if Hold
-the Gap needs it. Item 4521.)*
+the Gap needs it. Item 4536.)*
 
 ## Rules 1.59, the tank rulings (16 Nov 2026)
 
@@ -7085,28 +7085,28 @@ roll with durability start at lower ceiling and only get more strong when you pu
 the weapon scaling skill"*; *"the shield dmg scale with durability attribute to begin with"*; *"let them have double guard
 when doing a guard action, we already have max guard to balance it"*; *"any class that give more max guard, can be fun
 for the dedicated guarder"*. And on balance: *"the target is FUN and REWARD for the effort you put in, not a hard cap to
-cry about when something goes 2% over."* Items 4522 to 4528; every new number is the data's and PROVISIONAL.
+cry about when something goes 2% over."* Items 4537 to 4543; every new number is the data's and PROVISIONAL.
 
-1. **Durability hits in melee only** (item 4522). While you hold Guard, your **melee** attacks roll with Durability's
+1. **Durability hits in melee only** (item 4537). While you hold Guard, your **melee** attacks roll with Durability's
    modifier in place of the weapon's skill when Durability's is higher: a weapon's blow, a shield's own strike and a
    follow strike. A gun's shot, a bow's arrow and a throw roll with their own skill, Guard or no Guard.
-2. **The damage stays the weapon's** (item 4523). A blow rolled with Durability deals the weapon's own damage: it grows
+2. **The damage stays the weapon's** (item 4538). A blow rolled with Durability deals the weapon's own damage: it grows
    with the weapon's own attribute (its `scales_with`, through the melee profile), never with Durability or Endurance
    (unless the weapon itself scales with Endurance). Nothing multiplies it for rolling with Durability.
-3. **A shield's strike scales with Endurance** (item 4524). Every shield row hits with Durability and its damage grows
+3. **A shield's strike scales with Endurance** (item 4539). Every shield row hits with Durability and its damage grows
    with Endurance, Durability's attribute (was Strength).
-4. **Two shields, double Guard** (item 4525). With a shield in each hand, every Guard gain is multiplied by 2
+4. **Two shields, double Guard** (item 4540). With a shield in each hand, every Guard gain is multiplied by 2
    (`techniques.json rules.guard.two_shield_mult`): Brace (2 x 2 = 4), the Guard technique (its plain gain x 2), and a
    shield's follow plate (1 x 2). It replaces the shield's +1 for that case; one shield keeps its +1. The pool's cap is
    unchanged.
-5. **The Bulwark's pool by rank** (item 4526). The Bulwark (class id `defender`) holds a Guard pool of 5 at rank I, 6 at
+5. **The Bulwark's pool by rank** (item 4541). The Bulwark (class id `defender`) holds a Guard pool of 5 at rank I, 6 at
    rank II and 7 at rank III, whatever its Durability (`classes.json defender resource.max_by_rank`). Everyone else
    keeps `rules.guard.max` (4). The token draws up to 7 plates, two to a corner past four.
-6. **The camp's tank kit** (item 4527). Survival's Recommended loadout for a character whose top alpha skill is
+6. **The camp's tank kit** (item 4542). Survival's Recommended loadout for a character whose top alpha skill is
    Durability is the unarmed rack's free weapon, the Hand wraps (the cheapest one-handed melee weapon of the rack), and
    the Buckler in the off hand; no focus. The Buckler (200) leaves 100 of the 300 budget: Class 1 armour (150) does not
    fit; the tank profile's next buy, a stim injector (80), is taken: 20 credits are left.
-7. **Texts** (item 4528). Durability's door, its per-point rows, the shields' texts and the Bulwark's resource text say
+7. **Texts** (item 4543). Durability's door, its per-point rows, the shields' texts and the Bulwark's resource text say
    these rules and read their numbers from the data.
 
 ## Maps (rules 1.16)
@@ -10967,11 +10967,11 @@ Items 4240 to 4247.
     shield block on the fight screen names the hand the shield is in (`WeaponBlock.heldIn`). Open, for the lead: item
     4313's asymmetry (a shield in the main hand with a weapon in the off hand gets Defense, Guard and Parry but no shield
     techniques) and whether the unit field `mainItem` stands (one hands rule: it mirrors `offItem`). PROVISIONAL.
-    **Settled by rules 1.57 (A1)**: the asymmetry is closed (item 4501) and `mainItem` is gone (item 4499).
+    **Settled by rules 1.57 (A1)**: the asymmetry is closed (item 4516) and `mainItem` is gone (item 4514).
 
 ### Rules 1.57, shields are weapon rows (the lead's rulings, 16 Nov 2026)
 
-4497. **Shield rows (A1 item 1):** `weapons.json` `buckler` (damage 6), `riot_shield` (8), `pavise` (8): category
+4512. **Shield rows (A1 item 1):** `weapons.json` `buckler` (damage 6), `riot_shield` (8), `pavise` (8): category
     `shield`, `hands: 1H`, `phys {system: melee, profile: melee, props: [shield], hits_with: durability, scales_with:
     [strength]}`, `skill: durability`, `mastery_family: unarmed` (`weapon_mastery.json` unarmed lists the category),
     `effects` (Defense, Movement), `mod_slots: []`, `ap_cost.attack` 2, durability 150, price and weight as they were.
@@ -10979,29 +10979,29 @@ Items 4240 to 4247.
     it. The validator: the Shield property and category `shield` go together on a one-handed melee row; an items.json
     row carries no `phys`, `either_hand` or category `shield`; `survival.json loadout.archetypes.left_out.shield` (the
     camp's gear shelf sells them, not the rack). PROVISIONAL: the lines 6 / 8 / 8.
-4498. **One prop test (A1 item 2):** `character.ts isShieldId` (and `holdsShield`); read by `physical/core.ts shieldsOf`,
+4513. **One prop test (A1 item 2):** `character.ts isShieldId` (and `holdsShield`); read by `physical/core.ts shieldsOf`,
     `combat.ts unitFromCharacter` (`offItem`; `offWeapon` never a shield), `melee/answers.ts` (Parry), `perks/b.ts`
     (Eyes in the Back), `melee/links.ts` (Sidestep), `character.ts defense` (Shield Partner) and `secondWeaponWhy`,
     `run/loadout.ts`, `gearpreview.ts`. No number.
-4499. **Main hand (A1 item 3):** the shield is the unit's `weapon`; the fists fallback (`SHIELD_HAND`, the unit field
+4514. **Main hand (A1 item 3):** the shield is the unit's `weapon`; the fists fallback (`SHIELD_HAND`, the unit field
     `mainItem`) is gone; a main-hand shield's attack is `mod(Durability)` + its grade, its wear written back as any
     weapon's (item 4315 withdrawn). No number.
-4500. **Off hand (A1 item 4):** `secondWeaponWhy` asks nothing of an off-hand shield; the unit carries it as `offItem`,
+4515. **Off hand (A1 item 4):** `secondWeaponWhy` asks nothing of an off-hand shield; the unit carries it as `offItem`,
     so no Both block, no `combat/paired` ("Nothing in your off hand to attack with."). No number.
-4501. **The hand pairs (A1 item 5):** `physical/core.ts shieldHand`: the off hand while it holds no weapon and a shield is
+4516. **The hand pairs (A1 item 5):** `physical/core.ts shieldHand`: the off hand while it holds no weapon and a shield is
     held, else the main hand when it holds a shield and the off hand a weapon; `inShieldHand` routes a shield technique
     to that hand. A sabre beside a main-hand shield asks its +2 and opens the Both block. No number.
-4502. **Two shields (A1 item 6):** as item 4309 (the stacks measured there hold). PROVISIONAL.
-4503. **Shield Bash (A1 item 7):** `techniques.json shield_bash.numbers.mult` 1.5 -> 2.5, struck with the shield's row
+4517. **Two shields (A1 item 6):** as item 4309 (the stacks measured there hold). PROVISIONAL.
+4518. **Shield Bash (A1 item 7):** `techniques.json shield_bash.numbers.mult` 1.5 -> 2.5, struck with the shield's row
     (`inHand` swaps the shield in, `swapMain` set). Moves: the replays with the tank (riot shield) and the golden
     tables' new rows (each shield's weapon lines; Raise Shield's pad and technique lines, which the harness now plays
     with the shield as the unit's `offItem`). PROVISIONAL.
-4504. **The pavise (A1 item 8):** Shield property, no `defense_bonus`; its text says what it gives. Item 4317 withdrawn.
+4519. **The pavise (A1 item 8):** Shield property, no `defense_bonus`; its text says what it gives. Item 4317 withdrawn.
     PROVISIONAL: the lead's ruling, to confirm that the pavise was meant to become a carried shield.
-4505. **Saves (A1 item 9):** `character.ts shieldLineNow`, run by `game.ts migrateLoaded` on every sheet's pack, the
+4520. **Saves (A1 item 9):** `character.ts shieldLineNow`, run by `game.ts migrateLoaded` on every sheet's pack, the
     camp's `base.pack` and the piles of the fight and the story map; nothing is written when no old line is there. The
     shop's `stock.item_categories` lose `shield`. No number.
-4506. **No swell with a shield (A2 item 10):** `soul_modules.json cycle.swell` `{unless: {self_holds: {hands: {props:
+4521. **No swell with a shield (A2 item 10):** `soul_modules.json cycle.swell` `{unless: {self_holds: {hands: {props:
     [shield]}}}, unless_text}`: the swell row's condition slot, an `if` block of the item ops' existing predicates (no
     new predicate; the validator checks it with `check_pred`). `magic.ts swellBlockedWhy` asks it through `ifFails`;
     `heartTurnStart` skips the +1 stage while it holds (the log: "holds at stage N (A shield in hand: …)"), and the
@@ -11013,89 +11013,89 @@ Items 4240 to 4247.
 
 ### Rules 1.58, follow strikes (hands 5e; the reviewed second draft, built 16 Nov 2026)
 
-4507. **What follows (5e item 1, N1):** the property word `follows` (`techniques.json rules.props.follows`; the
+4522. **What follows (5e item 1, N1):** the property word `follows` (`techniques.json rules.props.follows`; the
     validator's `FOLLOW_PROPS`: only on a shield or a `phys.system: melee` row). The one test is `character.ts
-    followsId(id)` (a melee row whose `phys.props` holds the word; item 4520's graft is withdrawn); the one reader
+    followsId(id)` (a melee row whose `phys.props` holds the word; item 4535's graft is withdrawn); the one reader
     of the off hand is `physical/core.ts followOf(u)` (the off hand's weapon, else its carried shield). No number.
-4508. **When (5e item 2, N3):** `physical/core.ts follow(t)` at the tail of `useTechnique` (after the chain is noted) and
+4523. **When (5e item 2, N3):** `physical/core.ts follow(t)` at the tail of `useTechnique` (after the chain is noted) and
     of `previewTechnique` (the card's second attack entry, `follow: true`, `item`). Per technique (the lead's ruling on
     the draft's question 1). The main hand's row must be `hands: 1H` and melee (fists and gloves count). No number.
-4509. **Never (5e item 3):** a paired half (`_pair`), the off hand, a shield's technique (`needs.shield`: Shield Bash,
+4524. **Never (5e item 3):** a paired half (`_pair`), the off hand, a shield's technique (`needs.shield`: Shield Bash,
     Raise Shield), an Answer, a throw, a gun hand, outside the unit's own turn (`cb.reacting`, `cb.window`,
     `active(cb)`), the old `combat/attack` and class or perk strikes (they never pass through `useTechnique`; the lead's
     ruling on question 6). No number.
-4510. **At whom (5e item 4):** `strike()` records the first melee roll of the main hand really made (`act.real` after a
+4525. **At whom (5e item 4):** `strike()` records the first melee roll of the main hand really made (`act.real` after a
     redirect; in a preview the first roll that could be made) as the scratch `real`; the follow goes at it if it is a
     foe still up and within the follows item's reach (`canStrike`), else nothing happens and nothing is said. No number.
-4511. **The roll (5e item 5):** `techniques.json` row `follow` (group `follow`, never free, learned, lent or given:
+4526. **The roll (5e item 5):** `techniques.json` row `follow` (group `follow`, never free, learned, lent or given:
     `given()`; the pad never lists it) with `numbers.extra` -2 and `numbers.mult` 1.0; the follows item's own skill
     (`hits_with`, through `inHand`). PROVISIONAL: -2 and 1.0.
-4512. **A rider (5e item 6, N4):** `StrikeOpts.rider`, read through one helper `combat.ts strikeRider(att)` (registered by
+4527. **A rider (5e item 6, N4):** `StrikeOpts.rider`, read through one helper `combat.ts strikeRider(att)` (registered by
     the technique core as `setStrikeRider`): the trigger runner (`effects/triggers.ts runTriggered`) skips the
     striker's `hit`, `miss`, `kill` and `downed` lines unless they are `with_this`, and spends no limited use of any
     other line (it applies only while a use is left); the core's Answer dispatch gives no Answer to a rider's miss; the
     melee Pressure shed (`physical/rules.ts`) reads `strikeNoPressure`. A rider neither uses nor spends a set-up mark;
     it is not Cut, so it gives no Momentum. No number.
-4513. **Wear (5e item 7, F-b):** `combat.ts withOffHand(u, fn, {id, attack, preview, wear})` is the one off-hand swap
+4528. **Wear (5e item 7, F-b):** `combat.ts withOffHand(u, fn, {id, attack, preview, wear})` is the one off-hand swap
     (the technique core's `inHand`, `pairedAttack` and `shootCover` run through it; `physical/ranged/press.ts inWeapon`,
     which swaps only the weapon id for its own rounds handling, is left as it was and listed for the consolidation
     pass). Only a follow passes `wear`: the follows item's durability comes in from `u.offDur`, else the off hand's
     GearState, else full (`offWear`), and goes back to `u.offDur`; `game.ts unitToCharacter` writes it to the
     character's `offHand.dur` and drops the field. At 0 the item makes no follow; Worn, the melee -10% applies (the one
     wear line). Off-hand wear outside a follow: unchanged (the lead's ruling on question 4). No number.
-4514. **Not a second weapon (5e item 8, F-d, F-e):** `combat.ts pairs(u)` (two weapons of one system whose off one is not
+4529. **Not a second weapon (5e item 8, F-d, F-e):** `combat.ts pairs(u)` (two weapons of one system whose off one is not
     a follows item) is the one Both test: `pairedAttack` ("The X follows: it is not a second weapon."), `pairedWhy`,
     `pairedPad`, the Attack tab's descriptors and the client's `techView.ts` read it. `usable(cb, u, 'off')` offers a
     follows weapon only what another of its properties brings (none for Afterword: no off block). `secondWeaponWhy`
     asks no +2 of a follows item. No number.
-4515. **Shield Bash (5e item 9):** `techniques.json shield_bash.ap.value` 2 -> 1 (its `numbers.mult` 2.5 is rules 1.57's).
+4530. **Shield Bash (5e item 9):** `techniques.json shield_bash.ap.value` 2 -> 1 (its `numbers.mult` 2.5 is rules 1.57's).
     PROVISIONAL.
-4516. **A shield in the main hand (5e item 10):** a melee weapon with its line; a shield in each hand: the off one
+4531. **A shield in the main hand (5e item 10):** a melee weapon with its line; a shield in each hand: the off one
     follows; a weapon or a focus beside it: no follow. No number.
-4517. **A shield's Guard (5e item 11):** `items.json mod_follow_guard` (`resource guard 1`, `when: hit`, `if {with_this,
+4532. **A shield's Guard (5e item 11):** `items.json mod_follow_guard` (`resource guard 1`, `when: hit`, `if {with_this,
     mode: [follow]}`, `limit {per: per_turn, n: 1}`), named in every shield's `variant_mods`: one row, so one use a turn
     across every shield held. The plate plays through the `guard` event (`why: gain`) the follow emits. PROVISIONAL: 1.
-4518. **Enemies and companions (5e item 12):** unchanged; none holds a follows item. No number.
-4519. **Afterword (5e item 13):** `weapons.json afterword` (15, Dexterity, scales with Agility, light blades, 1H, 160
+4533. **Enemies and companions (5e item 12):** unchanged; none holds a follows item. No number.
+4534. **Afterword (5e item 13):** `weapons.json afterword` (15, Dexterity, scales with Agility, light blades, 1H, 160
     durability, 700 credits, props `light` and `follows`) and `items.json mod_afterword` (`damage_mult` 0.25 and
     Bleeding with its Body save once a turn, both `with_this` and `mode: [follow]`). The draft's "rare" is its price
     only (a weapon row has no rarity field: a grade is the instance's): correction (review, 16 Nov 2026), a priced
     weapon row with no `variant_of` is in `run/shop.ts` gear stock and `run/rewards.ts` weapon picks once their band
     reaches 700. Keeping it out of those pools would need a data field the lead has not approved (question 5, Leon's). Icon: a placeholder (`tools/art/make_placeholders.py`) and a
     line in `art/briefs/ART-REQUESTS.md`. PROVISIONAL: 15, 0.25, 700.
-4520. **The graft (5e item 14): withdrawn** (review, 16 Nov 2026). The row `mod_follow_graft` and the field
+4535. **The graft (5e item 14): withdrawn** (review, 16 Nov 2026). The row `mod_follow_graft` and the field
     `adds_props` are taken out: the field was an engine addition without the lead's approval, and the row (priced,
     grip slot) reached Survival's Forge and mod rewards, where an off-hand graft swung at full line after every
     technique. Needs a new primitive if it returns: `adds_props` approved by the lead, with a `mode: [follow]` damage
     line of its own. No number.
-4521. **Guard 2.0's item 17 withdrawn:** "the Shield Follows" (P9) is rules 1.58's follow strike; P9 stays only if Hold
+4536. **Guard 2.0's item 17 withdrawn:** "the Shield Follows" (P9) is rules 1.58's follow strike; P9 stays only if Hold
     the Gap needs it. No number.
 
 ### Rules 1.59, the tank rulings (16 Nov 2026)
 
-4522. **Durability's roll is melee only (T1):** `skills.json durability.unlocks.1.effects.0` (op `roll_with`) gains the
+4537. **Durability's roll is melee only (T1):** `skills.json durability.unlocks.1.effects.0` (op `roll_with`) gains the
     predicate `melee: true` (the attack is melee: a weapon's blow, a shield's strike, a follow). The gear card's
     `gearpreview.ts rollWithLines` names an offer only for a weapon that meets its `melee` predicate. No new primitive;
     no number.
-4523. **The damage of a blow rolled with Durability (T2):** unchanged and confirmed by test
+4538. **The damage of a blow rolled with Durability (T2):** unchanged and confirmed by test
     (`test/tank-rulings-1-59.test.ts`): the melee profile (`rules.json output.profiles.melee`) reads the weapon's
     `phys.scales_with`; Durability and Endurance add nothing to a knife's blow. No number.
-4524. **Shields scale with Endurance (T3):** `weapons.json` buckler, riot_shield, pavise `phys.scales_with` strength ->
+4539. **Shields scale with Endurance (T3):** `weapons.json` buckler, riot_shield, pavise `phys.scales_with` strength ->
     endurance (`hits_with` durability unchanged). PROVISIONAL (the shields' damage lines are unchanged).
-4525. **Two shields double Guard (T4):** `techniques.json rules.guard.two_shield_mult` 2 (mirrored in
+4540. **Two shields double Guard (T4):** `techniques.json rules.guard.two_shield_mult` 2 (mirrored in
     `skills.json durability.per_point.numbers.two_shields`, held equal by the validator), read by one function,
     `physical/core.ts guardMult(u)`: `guardGain` (Brace: brace_gain x2; the Guard technique: its plain gain x2, in place
     of shield_gain or brace_shield_gain for each shield) and `follow` (the plate the follow's own line gave, x2). The cap
     (`guardMax`) holds. PROVISIONAL: 2.
-4526. **The Bulwark's pool (T5):** `classes.json defender resource.max_by_rank` {1: 5, 2: 6, 3: 7}, provisional; read by
+4541. **The Bulwark's pool (T5):** `classes.json defender resource.max_by_rank` {1: 5, 2: 6, 3: 7}, provisional; read by
     `character.ts classResCap(c, id)` from the class's own resource row at `classRank(c)` inside `RES_RULES.guard` (the
     carrier a class already uses to raise its door's resource: the Operative's Shadow, `RES_RULES.shadow`). The
     validator holds the ranks 1 to 3 whole, never below `rules.guard.max`, never shrinking. The token's plates
     (`apps/web/src/game/fx/guard.ts`) open wider windows past four (`WIDE`) so 7 read as plates. PROVISIONAL: 5, 6, 7.
-4527. **The camp's tank kit (T6):** `survival.json loadout.recommended.weapon` the Durability row `{top: durability,
+4542. **The camp's tank kit (T6):** `survival.json loadout.recommended.weapon` the Durability row `{top: durability,
     archetype: unarmed, focus: false, profile: tank}` (was `hands: 1H`, the dearest free one-hander the character
     could carry: a gun for an all-in tank). Budget 300: Buckler 200, a stim injector 80, 20 left; Class 1 armour (150)
     is out of reach. PROVISIONAL.
-4528. **Texts (T7):** Durability's door text and `per_point` rows (pool, shield, two shields), the three shields' texts
-    (no typed "1 more Guard"), `items.json mod_follow_guard` (amended in 4525), the Bulwark's resource rule (its ranks
+4543. **Texts (T7):** Durability's door text and `per_point` rows (pool, shield, two shields), the three shields' texts
+    (no typed "1 more Guard"), `items.json mod_follow_guard` (amended in 4540), the Bulwark's resource rule (its ranks
     read `max_by_rank`). No number.

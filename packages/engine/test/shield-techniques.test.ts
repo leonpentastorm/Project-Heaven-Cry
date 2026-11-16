@@ -77,7 +77,7 @@ describe('the unit carries what its off hand holds', () => {
 });
 
 describe('Shield Bash', () => {
-  it('1 AP (rules 1.58 item 4515) and 1 Guard in place of the Momentum; a hit gives 1 Momentum and pushes on a failed Body save', () => {
+  it('1 AP (rules 1.58 item 4530) and 1 Guard in place of the Momentum; a hit gives 1 Momentum and pushes on a failed Body save', () => {
     const f = fight({ guard: 2, m: 1 }); weak(f.foe); no20(f); rig({ hit: true, die: 12 });
     const pv = f.pv('shield_bash', { targetId: f.foe.id });
     expect(pv).toMatchObject({ ok: true, ap: phys.TECHNIQUE.shield_bash.ap.value, guard: { now: 2, after: 1 }, momentum: { now: 1, after: 1 } }); expect(pv.saves![0]).toMatchObject({ unit: f.foe.id, skills: ['body'] });

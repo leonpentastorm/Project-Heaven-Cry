@@ -1646,7 +1646,7 @@
       "weight_kg": 0,
       "adjudication": "engine",
       "provisional": true,
-      "text": "A shield's follow strike that lands gives {=effects.0.value} Guard, under the pool's cap, once a turn however many shields you hold, doubled with a shield in each hand (rules 1.58 item 4517, rules 1.59 item 4525). Named in every shield's variant_mods; never fitted.",
+      "text": "A shield's follow strike that lands gives {=effects.0.value} Guard, under the pool's cap, once a turn however many shields you hold, doubled with a shield in each hand (rules 1.58 item 4532, rules 1.59 item 4540). Named in every shield's variant_mods; never fitted.",
       "effects": [
         {
           "op": "resource",
@@ -1671,7 +1671,7 @@
       "weight_kg": 0,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Afterword's follow strike does \u00d7{=effects.0.value} damage, and once a turn its follow that lands leaves Bleeding (a Body save) (rules 1.58 item 4519). Named in Afterword's variant_mods; never fitted.",
+      "text": "Afterword's follow strike does \u00d7{=effects.0.value} damage, and once a turn its follow that lands leaves Bleeding (a Body save) (rules 1.58 item 4534). Named in Afterword's variant_mods; never fitted.",
       "effects": [
         {
           "op": "damage_mult",

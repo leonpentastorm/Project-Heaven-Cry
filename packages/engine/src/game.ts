@@ -2384,7 +2384,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     if (c.offHand && u.offWeapon && u.offWeapon === c.offHand.id && WEAPON[c.offHand.id]?.magazine != null) { const { ammoType: _t, ...oh } = c.offHand; void _t; c.offHand = { ...oh, loaded: Math.max(0, u.offAmmo ?? 0), ...(u.offAmmo && u.offAmmoType ? { ammoType: u.offAmmoType } : {}) }; }
     magicToCharacter(c, u);
     if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur }; // rules 1.57 (A1): a main-hand shield wears as the weapon it is
-    if (u.offDur != null) { if (c.offHand && c.offHand.id === (u.offWeapon ?? u.offItem)) c.offHand = { ...c.offHand, dur: u.offDur }; delete u.offDur; } // rules 1.58 (item 4513): what a follow wore of the off hand, only onto that same item (a refit clears it: GEAR_FRESH)
+    if (u.offDur != null) { if (c.offHand && c.offHand.id === (u.offWeapon ?? u.offItem)) c.offHand = { ...c.offHand, dur: u.offDur }; delete u.offDur; } // rules 1.58 (item 4528): what a follow wore of the off hand, only onto that same item (a refit clears it: GEAR_FRESH)
     { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
       if (used > 0) { let left = used; c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left) return x; const n = Math.min(left, x.qty); left -= n; return { ...x, qty: x.qty - n }; }).filter((x) => x.qty > 0 || x.mags); } }
     const pack = packOf(c).map((it) => ({ ...it }));

@@ -1612,7 +1612,7 @@ if isinstance(tq, dict):
     GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer", "follow"}, "ranged": {"fire", "press", "set", "take", "watch"}}
     AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
     SHIELD_PROPS = {"shield"}  # rules 1.57 (A1): carried by a shield's weapon row (category shield, 1H melee), and only by one
-    FOLLOW_PROPS = {"follows"}  # rules 1.58 (5e item 4507): a follows item, only a shield or a melee row
+    FOLLOW_PROPS = {"follows"}  # rules 1.58 (5e item 4522): a follows item, only a shield or a melee row
     trules = tq.get("rules") or {}
     techs = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
     if len(techs) != len(items("techniques")):
@@ -1744,7 +1744,7 @@ if isinstance(tq, dict):
         gc = (t.get("numbers") or {}).get("guard_cost")
         if gc is not None and (not isinstance(gc, int) or gc < 1):
             errors.append(f"techniques:{tid}: numbers.guard_cost must be a whole number of Guard")
-    # rules 1.58 (5e, item 4507): the follow group holds the engine's follow strike only: never free, learned, lent or given
+    # rules 1.58 (5e, item 4522): the follow group holds the engine's follow strike only: never free, learned, lent or given
     for tid, t in techs.items():
         if t.get("group") == "follow" and (t.get("free") or t.get("comes_with") or t.get("innate") or t.get("particular") or t.get("system") != "melee"):
             errors.append(f"techniques:{tid}: a follow is the engine's (rules 1.58): a melee row, never free, given or particular")

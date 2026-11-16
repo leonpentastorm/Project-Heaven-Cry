@@ -522,7 +522,7 @@ function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
 function techRows(x: DescCtx): ActionDescriptor[] {
   const { cb, u, g } = x, out: ActionDescriptor[] = [];
   const shield = !u.offWeapon ? safe(() => shieldOf(u), null) : null;
-  // rules 1.58 (item 4514): a follows weapon in the off hand (Afterword) has no block of its own: it follows the main hand
+  // rules 1.58 (item 4529): a follows weapon in the off hand (Afterword) has no block of its own: it follows the main hand
   const hands: ('main' | 'off')[] = ['main', ...((u.offWeapon && WEAPON[u.offWeapon] && !safe(() => followOf(u), null)) || shield ? ['off' as const] : [])];
   const watch: ActionDescriptor[] = [], seenW = new Set<string>();
   const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, priceOf(e), apT(priceOf(e)), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent, hand: hand as any, parts: techParts(e) });

@@ -10,7 +10,7 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.30.0 (in progress) — the tank rulings
 
-Rules revision 1.59 (spec items 4522 to 4528; every new number PROVISIONAL), Leon's rulings for the Durability tank:
+Rules revision 1.59 (spec items 4537 to 4543; every new number PROVISIONAL), Leon's rulings for the Durability tank:
 a tank hits with Durability in melee only (a gun rolls with its own skill); a blow rolled with Durability keeps the
 weapon's own damage (confirmed by test); shields' blows scale with Endurance; a shield in each hand doubles every Guard
 gain (Brace, the Guard technique, the follow's plate); the Bulwark's Guard pool is 5 / 6 / 7 at ranks I / II / III
@@ -18,7 +18,7 @@ gain (Brace, the Guard technique, the follow's plate); the Bulwark's Guard pool 
 
 ## Next (after 0.29.0) — follow strikes
 
-Rules revision 1.58 (hands 5e; spec items 4507 to 4521; every new number PROVISIONAL), on top of rules 1.57's shields as
+Rules revision 1.58 (hands 5e; spec items 4522 to 4536; every new number PROVISIONAL), on top of rules 1.57's shields as
 weapons. Design: `docs/design/proposals/2026-11-follow-strike.md`.
 
 - **The off hand follows.** A shield, Afterword, or a melee weapon carrying a mod that grafts `follows`, held in the off
@@ -124,7 +124,7 @@ the alpha perks were rewritten so each one helps its own door. The full account,
   Defense and Movement add; Brace and the Guard technique +1 Guard a shield under the pool's cap; Parry and the
   shield's techniques once). The main hand holding one strikes with bare fists. The sheet, the camp, the fight's hand
   change and the Proving Ground offer the main hand for a shield.
-- **Shields are weapons** (rules 1.57, the lead's rulings of 16 Nov 2026; spec items 4497 to 4505): the buckler, the
+- **Shields are weapons** (rules 1.57, the lead's rulings of 16 Nov 2026; spec items 4512 to 4520): the buckler, the
   riot shield and the pavise are weapon rows with the Shield property. In the main hand a shield strikes with its own
   line (buckler 6, riot shield 8, pavise 8; Durability, growing with Strength), wears and is graded as a weapon; in the
   off hand it is not a second weapon. A shield in the main hand with a sword in the off hand is ordinary dual wielding,

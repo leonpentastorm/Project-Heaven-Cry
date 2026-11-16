@@ -282,7 +282,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   const weaponId = hand === 'off' ? offHeld(u) : u.weapon; if (!weaponId) return [];
   const shield = shieldHand(u, hand);
   const sys = weaponSystem(weaponId), props = shield ? ['shield'] : weaponProps(weaponId), c = u.companion ? null : charOfUnit(u);
-  // rules 1.58 (item 4514, F-e): a follows item in the off hand has no attack of its own; it offers only what another of
+  // rules 1.58 (item 4529, F-e): a follows item in the off hand has no attack of its own; it offers only what another of
   // its properties brings (a shield's techniques: the shield branch below)
   const followsOff = hand === 'off' && !shield && followOf(u) === weaponId;
   // A companion, a puppet or a unit with a fixed action list (the drone) has the free techniques its list allows, and
