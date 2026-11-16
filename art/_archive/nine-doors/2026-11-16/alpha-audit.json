@@ -1296,6 +1296,31 @@
       "number": 339,
       "name": "Pull Out",
       "faint_alpha_to_solid_area_ratio": 0.04629
+    },
+    {
+      "number": 340,
+      "name": "Sidestep",
+      "faint_alpha_to_solid_area_ratio": 0.07471
+    },
+    {
+      "number": 341,
+      "name": "Guard (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.06131
+    },
+    {
+      "number": 343,
+      "name": "Trip",
+      "faint_alpha_to_solid_area_ratio": 0.0344
+    },
+    {
+      "number": 346,
+      "name": "Riposte (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.06592
+    },
+    {
+      "number": 347,
+      "name": "Keep Back",
+      "faint_alpha_to_solid_area_ratio": 0.04313
     }
   ],
   "excluded": [],
