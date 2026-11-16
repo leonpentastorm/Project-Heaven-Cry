@@ -187,6 +187,10 @@ slice A. Decisions 116 to 120.
   and waiting for their pair: Spotter, Shared Pulse. Buildable, not built: Lend the Dark, Headlong, Ride the Edge, Clean
   Break (and with them N3b and N10's `at: "limit"`).
 - **For the lead:** Drive's −2 and plate back read every Off Balance its holder forces, not only Slam's.
+- **Measured, not tuned** (`FORKS_MEASURE=1`, the contract's all-in lines, no perk steps, feeds at ×1): Grindstone moves
+  the blade line 172% → 186% (+14 points; level 20: 203% → 225%); Walk It In the gun line 160% → 163%; the rest read +0
+  where the one-unit measure cannot express them (Converging Fire needs an ally, Rolling Start a policy that Charges,
+  Through the Gap and Lockdown movement and a foe's turn, the Bonds forks a heal row that does not reach Empathy 4).
 - **Not run:** the browser suites (figments.mjs edited for the forks at 4 and 6; tank, levelup and skeleton screens show
   the new fork sections).
 
