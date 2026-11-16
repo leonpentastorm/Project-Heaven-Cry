@@ -145,13 +145,17 @@ for (const [vw, vh] of [[1280, 720], [1600, 900]]) {
   u = await meU(p);
   if (process.env.DEBUG_FP) console.log('debug hide', u.hidden, JSON.stringify(u.res), JSON.stringify((await G(p)).combat.log.slice(-3)), await p.locator('[role="tabpanel"] button').allTextContents());
   if (u.hidden) {
-    const chip = p.locator('[data-status-group="helps"] [data-status="fx-HIDDEN"]');
+    const chip = p.locator('[data-status-strip] [data-status-group="helps"] [data-status="fx-HIDDEN"]');
     const colour = (await chip.count()) ? await chip.evaluate((el) => getComputedStyle(el).color) : '';
     ok(tag + ' Hidden is in the HELPING group, green not red (' + colour + ')', (await chip.count()) === 1 && colour !== 'rgb(246, 81, 87)');
     const under = await p.evaluate(() => { const hp = document.querySelector('[data-hp-row]'), st = document.querySelector('[data-status-strip]'); if (!hp || !st) return null; const a = hp.getBoundingClientRect(), b = st.getBoundingClientRect(); return Math.round(b.top - a.bottom); });
     ok(tag + ' the status strip sits directly under HP (gap ' + under + ' px)', under != null && under >= 0 && under <= 8);
   } else ok(tag + ' Hidden reached (Fade)', false);
   await p.screenshot({ path: shotsDir + tag + '-03-shield-hidden.png' });
+  // the token's hover card carries the same strip, small (U4)
+  { const meNow = await meU(p); const ref = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Number(meNow.pos.split(',')[0])] + (Number(meNow.pos.split(',')[1]) + 1);
+    const card = p.locator('.phc-grid button.phc-tok[aria-label^="' + ref + ' ·"] [data-token-status] [data-status-group="helps"] [data-status="fx-HIDDEN"]');
+    ok(tag + ' the token card has the strip too (Hidden in its helping group)', (await card.count()) === 1); }
 
   // everything opened
   for (const m of await p.locator('[data-meter-more]').all()) if (await m.isVisible()) await m.click().catch(() => {});

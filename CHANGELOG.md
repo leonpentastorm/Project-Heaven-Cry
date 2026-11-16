@@ -141,6 +141,40 @@ The lead's rulings D1 to D7. One closed-list addition, approved: the predicate `
   `open-4v6-guns-blades`, `open-4v3-level3`, `proving-4v12-guns`, `cover-4v7-blades-walk-away`), each moved first at a
   Dexterity blade's blow on an Elite or a Boss (the save no longer drawn). No gun line moved.
 
+### The fight panel (lane 0.31-ui)
+
+From Leon's screenshot of a character with every door open: *"i have ONE (1) singular line to scroll my attack option"*.
+A screen change; no rule moved, no closed-list addition. One data field: `conditions.json` `side`.
+
+- **One fold** (`apps/web/src/game/fold.ts`; the store beside the tab prefs in `game/tabPrefs.ts`, localStorage
+  `phc.folds`, per box id, kept over a reload): the You card, Shields, Bonds, the vow line, the squad list, the combat
+  log and the level-up screen's fork card fold to their header and open from it (keyboard too). A box may start folded
+  by a rule; a state set by hand wins. Never foldable: the action list, Confirm, End turn, the tab row.
+- **Mini meters:** one row (name, pips or a thin bar, the number); the explainer is the hover card. A meter at 0 with
+  nothing this fight folds into a "+N" chip at the row's end (a click opens it, a click on an open zero meter folds it
+  back, its first point opens it by itself); Bonds at 0 is one line. The Visualizer's value is its charge and its one
+  state word the chip (it read "EMPTY" and "STOWED" at once, and wrapped).
+- **The shield on the HP bar:** no shield track anywhere. A pale hatched segment joined to the end of the HP fill,
+  draining first; past max HP the bar rescales so it fits; the number reads "410 / 410 +30"; hovering the segment or the
+  number lists each layer (amount, giver, when it ends; the engine's shieldsView). The rule paragraph is behind a "?" on
+  the folded "Shields 30" row. The token and the initiative strip draw the same segment (their strip is gone); Guard
+  stays the plates and the pips.
+- **The status strip,** pinned under HP: HELPING (green ▲), HURTING (red ▼) and the neutral states (white ◆), a glyph and
+  a short word each, the full card on hover, past six "+N". The group is data: every row of `conditions.json` carries
+  `side` (helps / hurts / state; `tools/validate.py` checks every row, and a debuff is always hurts). Hidden helps.
+  The token's hover card carries the strip, small. "No status effects." is gone (an empty strip takes no room).
+- **Room for the actions:** the action list keeps at least four rows (`listMinPx`); the AP pips ride in the YOUR TURN
+  strip; no Say box where the mode has no Narrator (a run, the Proving Ground); the vow is one line ("Swear a vow ▸",
+  then "Vow: Stand · …"); the preview and the target are one box (the roll line and the damage line, the breakdown on
+  hover); on short windows the urgent meters are one line of minis and the tab panel's title line goes.
+- **Small:** the plain melee blow is **Hit** with every weapon (`techniques.json` `cut`'s name; the id is kept; gloves'
+  "Strike" is gone); the YOUR TURN shine no longer parks at the strip's end; a cog at the tab row's end opens the
+  Fight tabs settings; a hovered tile is no longer raised over its neighbours (its card opens on pointer hover only);
+  the Shadow wisps over a token take the pointer ("Shadow n / max").
+- **Moved on purpose:** the golden `conditions.log.json` and `mods.log.json` re-recorded for the name only ("uses Cut"
+  became "uses Hit"; 7 lines); damage tables unchanged.
+- New browser suite `apps/web/e2e/fight-panel.mjs` (1280×720 and 1600×900); unit tests `game/fold.test.ts`.
+
 ## 0.30.1 — a hotfix: an item's own action in a Survival run, injuries treated in a run, the shelves cleared of Narrator-only items
 
 From Leon's playtest of live 0.30.0 (rules 1.61 addendum, Core Rules items 4740 to 4767). Replays re-recorded on purpose: `proving-doors-hiding-watches-wave6` (its stream hash only, after int/0.30's text sweep of log lines); any further one is named in its commit.

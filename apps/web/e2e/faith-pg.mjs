@@ -208,6 +208,7 @@ await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null,
 await myTurn(); await calm();
 let u = await myU();
 ok('not Witnessed yet: it comes with your patron\'s first Hymn', !(u.conds && u.conds.witnessed));
+{ const vf = p.locator('[data-phc-vow-prompt] [data-fold="fight:vow"]'); if ((await vf.getAttribute('aria-expanded').catch(() => null)) === 'false') { await vf.click(); await pause(p, 200); } } // (0.31.0: the vow line opens its choices)
 await p.locator('[data-phc-vow-prompt] [data-vow="mercy"]').click(); await pause(p, 300);
 ok('Mercy sworn from the prompt', (await myU()).vow?.id === 'mercy');
 // A Hymn at its gate (Thunderclap, Hymn I, Devotion 5): SURE, aimed at a tile on the grid.
@@ -309,6 +310,7 @@ await act({ type: 'sandbox/stop' }); await pause(p, 800);
 await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 });
 await myTurn(); await calm();
+{ const vf = p.locator('[data-phc-vow-prompt] [data-fold="fight:vow"]'); if ((await vf.getAttribute('aria-expanded').catch(() => null)) === 'false') { await vf.click(); await pause(p, 200); } } // (0.31.0: the vow line opens its choices)
 await p.locator('[data-phc-vow-prompt] [data-vow="stand"]').click(); await pause(p, 300);
 // Step toward them this turn (no break), then back the next: the turn ends farther than it began.
 const step = async (dx) => { const gq = await G(), mu = gq.combat.units.find((x) => x.charId), [x, y] = mu.pos.split(',').map(Number), to = (x + dx) + ',' + y;

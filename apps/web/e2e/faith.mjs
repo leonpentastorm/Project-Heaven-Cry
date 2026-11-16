@@ -112,6 +112,8 @@ await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null,
 await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
 await settle(p, 1500); if (await p.locator('[data-phc-cutin]').count()) { await p.keyboard.press('Escape'); await settle(p, 500); }
 const vow = p.locator('[data-phc-vow-prompt]');
+// (0.31.0: the prompt is one line, "Swear a vow ▸", that opens the choices)
+if ((await vow.locator('[data-fold="fight:vow"]').getAttribute('aria-expanded').catch(() => null)) === 'false') { await vow.locator('[data-fold="fight:vow"]').click(); await settle(p, 200); }
 ok('round 1: the vow prompt, with the 6 vows', (await vow.count()) === 1 && (await vow.locator('[data-vow]').count()) === 6);
 await vow.locator('[data-vow="shield"]').click();
 ok('Shield asks whom (no ally here: it says so)', /SHIELD WHOM/.test(await vow.textContent()) && /No ally in this fight/.test(await vow.textContent()));
