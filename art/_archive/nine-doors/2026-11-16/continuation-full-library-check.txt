@@ -1,0 +1,3 @@
+FAIL: Production UI sizes missing: bulwark
+OK: title-screen Part A; three 4096x2304 PNGs, layered PSD, manifest/hashes, previews, coverage and sample text contrast.
+OK: all 46 archetype cards; IDs, role tags, review status, PNG format, hashes, manifest and previews.

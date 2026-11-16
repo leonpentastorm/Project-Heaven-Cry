@@ -500,6 +500,83 @@
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
   },
   {
+    "number": 9,
+    "family": "move_icons",
+    "id": "move-brace",
+    "path": "art/icons/moves/brace.png",
+    "name": "Brace",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Bulwark rank I move: Braced for a round, harder to move",
+    "paint": "Wick planted, knees bent, feet wide, both forearms crossed in front of his flame.",
+    "avoid": "any weapon \u00b7 a wall behind him",
+    "section": "Durability: Guard, and the Bulwark",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick planted, knees bent, feet wide, both forearms crossed in front of his flame.\nAvoid: any weapon \u00b7 a wall behind him\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nACTION CLARIFICATION: 'in front of his flame' is stale wording: cross BOTH ceramic forearms in a low X just beneath Wick's pixel face, in front of his lantern-heart torso. Keep the cross-armed protective BRACE distinct from a proud folded-arms pose: deeply bent knees, very wide firmly planted boots, shoulders tucked, head lowered with determined pixel brows. No weapon, barrier, wall or impact effects. Match the first three anchors' chunky articulated ceramic limbs, boot cuffs, head fasteners, small ear discs and asymmetric capelet. The final reference's bowl and arrows are NOT anatomy and must be entirely omitted. No floating star, ring or halo. White ink only, screen and interior gaps transparent. One complete figure filling a central 75\u201380% square, with clear empty margins and enough separation to fit a circular UI chip.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "d0a17d5823d90d4ca4d88e84fa68c2f39089ec4303115cc2b9ecd0afdc15bf2d",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/009-brace.png",
+    "source_sha256": "707b78a83b469d08b078a9ef4d5cac1f5165ac3ba2841e5243254f0f30876c4a",
+    "export_crop": [
+      0,
+      20,
+      1234,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/brace.png",
+      "64": "art/icons/moves/exports/64/brace.png",
+      "48": "art/icons/moves/exports/48/brace.png",
+      "44": "art/icons/moves/exports/44/brace.png",
+      "32": "art/icons/moves/exports/32/brace.png",
+      "24": "art/icons/moves/exports/24/brace.png"
+    },
+    "framing": {
+      "scale": 0.5788699537500251,
+      "offset": [
+        155,
+        155
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "24e7221093ec7cb53953d3b4b9b801de93c55aa969e6cbc81aca6605a4f40b6d",
+      "64": "c81e1df51cdf98247ae3dde5bd614e7eaf12a7515caf4320d9faa9ab943d3dec",
+      "48": "4b85b3f0774798333b4b39b2a9082a34870f5638276a376520c2611e105cc2e3",
+      "44": "95746634bcb363537556c5124509756665bb2f52be6d0cf50f19595f27e8f828",
+      "32": "2f02f30581eb44241fefee96b1f1dc113b5e87ac53c55174db7b9ff7cb4b6b5b",
+      "24": "30ab8ce49e3409b94a679ed689fafc36fcff932da04d02be18008dd428d2b273"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ]
+  },
+  {
     "number": 23,
     "family": "perks",
     "id": "breaching-strike",
@@ -10618,5 +10695,145 @@
     },
     "upscaled": false,
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 323,
+    "family": "condition_icons",
+    "id": "cond-last-turn",
+    "path": "art/icons/conditions/last-turn.png",
+    "name": "Last Turn",
+    "mode": "white-ink sign",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "State word",
+    "paint": "An hourglass with one grain left.",
+    "avoid": "a clock face with numbers \u00b7 a skull",
+    "section": "Conditions and states",
+    "kind": "sign",
+    "prompt": "Create ONE simple hourglass sign with exactly ONE small grain remaining above the narrow waist. Pure solid WHITE #FFFFFF flat vector-like ink, fully TRANSPARENT background. A clean outline silhouette with broad crisp edges, no shading, NO GLOW, NO HALO, NO BLUR, NO SHADOW and no translucent atmosphere around the shape. Only the hourglass and its single grain. The lower chamber may hold a small solid mound. No text, labels, numbers or frame. Match the attached white-ink signs. Square 1024x1024, center within a 15% transparent margin, readable at 24px.",
+    "refs": [
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 4,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "23620ba1bb3bfd7ce91a7b2bb9df46f396ba2968738e6efa11e51ab5b7e00ab0",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/323-last-turn.png",
+    "source_sha256": "f4fb33b558fb9b766f996e630aab8a81089b7e66b2a0b42976ef925a8923274d",
+    "export_crop": [
+      150,
+      20,
+      1150,
+      1235
+    ],
+    "exports": {
+      "128": "art/icons/conditions/exports/128/last-turn.png",
+      "64": "art/icons/conditions/exports/64/last-turn.png",
+      "48": "art/icons/conditions/exports/48/last-turn.png",
+      "44": "art/icons/conditions/exports/44/last-turn.png",
+      "32": "art/icons/conditions/exports/32/last-turn.png",
+      "24": "art/icons/conditions/exports/24/last-turn.png"
+    },
+    "framing": {
+      "scale": 0.6748971193415638,
+      "offset": [
+        174,
+        102
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "6e6aab1d3ae27780598d245e39b86e9a68332cc91c36475c0ccc3cd2552deb09",
+      "64": "014fd6bf66ba814709a045b79049ffc30439fb51fc681d9e29a58b7c4f9b3173",
+      "48": "b86f1a2aa80831aa90167c6fd3037ec988bc03914c8c950035452f617ebdcdd8",
+      "44": "e116288f3f9c405a81035f50f52fd56bcb75726c92c633d1f9faf9e03641cef1",
+      "32": "540bfbd831364888237cd27fa5a682f82e33e8c78e0bf436fc6dbe680e22176b",
+      "24": "4ec97c36703b65034cea2e80f8ff89aa5133d1c7f164d196301289a30ee1f987"
+    },
+    "continuation_review": "Reinspection on charcoal and quantitative alpha audit supersede the earlier preview-only rejection in continuation-attempts. Native source bytes and alpha were preserved.",
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 324,
+    "family": "condition_icons",
+    "id": "cond-augment-offline",
+    "path": "art/icons/conditions/augment-offline.png",
+    "name": "Augment Offline",
+    "mode": "white-ink sign",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Body condition",
+    "paint": "A prosthetic arm with a small cut-power mark.",
+    "avoid": "a real brand \u00b7 lightning",
+    "section": "Conditions and states",
+    "kind": "sign",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: A prosthetic arm with a small cut-power mark.\nAvoid: a real brand \u00b7 lightning\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+    "refs": [
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 4,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "20838d0654d14b71311dfe97627663e8287bc6fa69d1eed38b31d1287850adbf",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/324-augment-offline.png",
+    "source_sha256": "dbca8d4ddab95c75d9f6e992eee8190c9406fbd8688667ff5dc1b0ee1c62f200",
+    "export_crop": [
+      0,
+      17,
+      1190,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/conditions/exports/128/augment-offline.png",
+      "64": "art/icons/conditions/exports/64/augment-offline.png",
+      "48": "art/icons/conditions/exports/48/augment-offline.png",
+      "44": "art/icons/conditions/exports/44/augment-offline.png",
+      "32": "art/icons/conditions/exports/32/augment-offline.png",
+      "24": "art/icons/conditions/exports/24/augment-offline.png"
+    },
+    "framing": {
+      "scale": 0.6628940986257074,
+      "offset": [
+        117,
+        102
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "3c474d1fe4d7f2ac39d591d4ac810acdd2099e7b95b9a7fae06e3a3cb31cb67a",
+      "64": "2c1e7afd3aaad9444db2e70a7bb5916fb91a41e480d88be492a98938160f5229",
+      "48": "ff2e0d6d40903a3376e6ca66b1e18474dfd680c7fefe8bb7761e5f629945d5aa",
+      "44": "377eeb4bd10e76c392dd1a4c8d397916eb8454f8479badc6beb6fb41a56c02b8",
+      "32": "57248710119321439889ad7519f3b7338528adcb397496c58c59d67e798413a8",
+      "24": "52326f336da3fb6d67bb448cdade2b74183e229391d3f369975e35a159b35d7a"
+    },
+    "continuation_review": "Reinspection on charcoal and quantitative alpha audit supersede the earlier preview-only rejection in continuation-attempts. Native source bytes and alpha were preserved.",
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   }
 ]

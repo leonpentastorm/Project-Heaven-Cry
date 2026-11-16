@@ -1,16 +1,13 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Read [CONTINUE-0.30.md](CONTINUE-0.30.md) and [the uploaded hold list](art-hold-list-0.30.md) first. All 28 old HOLD entries (certain, likely and check) remain blocked. The old recipe text must never override the filter.
+Original ledger: **178/375 delivered**. Original unfinished: **197 = 170 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **211 request records**, including replacement/reuse checks.
 
-Original ledger: **175/375 delivered**. Of the **200 unfinished old rows**, **173 are eligible and 27 are held**. The **41 additional 0.30 request records** are queued separately, with **0 delivered**. Combined remaining requests: **214**; reuse/replacement records do not necessarily mean distinct extra paintings.
+Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
-The next old jobs remain #323 Last Turn, #324 Augment Offline, then #9 Brace. Preserve their archived attempt sources. Check actual image-generation and execution availability; do not assume the older quota reset is still the blocker.
+The latest delivered images are review candidates, never automatically approved. Preserve all originals and old assets. No gameplay or UI changes.
 
-## Eligible original jobs — preserve original priority order
+## Eligible old recipes, in priority order
 
-- P4 · #323 · Last Turn · `art/icons/conditions/last-turn.png` · white-ink sign
-- P4 · #324 · Augment Offline · `art/icons/conditions/augment-offline.png` · white-ink sign
-- P5 · #9 · Brace · `art/icons/moves/brace.png` · Wick icon
 - P5 · #11 · Unbroken · `art/icons/moves/unbroken.png` · Wick icon
 - P5 · #12 · Shrug It Off (move) · `art/icons/moves/shrug-it-off-move.png` · Wick icon
 - P5 · #13 · Reactive Plate · `art/icons/moves/reactive-plate.png` · Wick icon
@@ -182,53 +179,53 @@ The next old jobs remain #323 Last Turn, #324 Augment Offline, then #9 Brace. Pr
 - P8 · #273 · Step 4: Your starting boon · `art/icons/survival/camp/step-boon.png` · white-ink sign
 - P8 · #274 · Ready · `art/icons/survival/camp/step-ready.png` · white-ink sign
 
-## Additional 0.30 requests — source-backed, queued separately
+## Additional 0.30 requests
 
-Use `planned-jobs-0.30.json` for exact source excerpts and per-request generation gates. Prepare missing visual recipes/bindings and resolve behaviour-changing source questions before committing to those depictions. Do not duplicate a reuse candidate.
+Use planned-jobs-0.30.json for exact source excerpts, provisional names, source questions and generation gates. Follow checks reuse first; four replacement depictions use the new rules, never held old recipes.
 
-- `0.30/fork.guard.provoke` · Provoke · Wick flat-ink fork icon
-- `0.30/fork.guard.cover_them` · Cover Them · Wick flat-ink fork icon · source question 1
-- `0.30/fork.guard.stand_fast` · Stand Fast · Wick flat-ink fork icon
-- `0.30/fork.guard.drive` · Drive · Wick flat-ink fork icon · source question 11
-- `0.30/fork.shadow.light_fingers` · Light Fingers · Wick flat-ink fork icon
-- `0.30/fork.shadow.lend_the_dark` · Lend the Dark · Wick flat-ink fork icon
-- `0.30/fork.shadow.lightkiller` · Lightkiller · Wick flat-ink fork icon · source question 2
-- `0.30/fork.shadow.spotter` · Spotter · Wick flat-ink fork icon
-- `0.30/fork.tend.keep_the_thread` · Keep the Thread · Wick flat-ink fork icon · source question 7
-- `0.30/fork.tend.short_thread` · Short Thread · Wick flat-ink fork icon
-- `0.30/fork.tend.shared_pulse` · Shared Pulse · Wick flat-ink fork icon
-- `0.30/fork.tend.long_thread` · Long Thread · Wick flat-ink fork icon
-- `0.30/fork.prayer.round_of_blessings` · Round of Blessings · Wick flat-ink fork icon
-- `0.30/fork.prayer.steadfast` · Steadfast · Wick flat-ink fork icon
-- `0.30/fork.prayer.benediction` · Benediction · Wick flat-ink fork icon · source question 3
-- `0.30/fork.prayer.held_breath` · Held Breath · Wick flat-ink fork icon · source question 3
-- `0.30/fork.momentum.rolling_start` · Rolling Start · Wick flat-ink fork icon
-- `0.30/fork.momentum.grindstone` · Grindstone · Wick flat-ink fork icon
-- `0.30/fork.momentum.spill` · Spill · Wick flat-ink fork icon
-- `0.30/fork.momentum.headlong` · Headlong · Wick flat-ink fork icon
-- `0.30/fork.pressure.converging_fire` · Converging Fire · Wick flat-ink fork icon
-- `0.30/fork.pressure.walk_it_in` · Walk It In · Wick flat-ink fork icon · source question 15
-- `0.30/fork.pressure.through_the_gap` · Through the Gap · Wick flat-ink fork icon
-- `0.30/fork.pressure.lockdown` · Lockdown · Wick flat-ink fork icon · source question 6
-- `0.30/fork.sigil.overflux` · Overflux · Wick flat-ink fork icon
-- `0.30/fork.sigil.clean_vent` · Clean Vent · Wick flat-ink fork icon
-- `0.30/fork.sigil.written_in_advance` · Written in Advance · Wick flat-ink fork icon
-- `0.30/fork.sigil.running_script` · Running Script · Wick flat-ink fork icon
-- `0.30/fork.soul.ride_the_edge` · Ride the Edge · Wick flat-ink fork icon
-- `0.30/fork.soul.slow_burn` · Slow Burn · Wick flat-ink fork icon
-- `0.30/fork.soul.blood_price` · Blood Price · Wick flat-ink fork icon
-- `0.30/fork.soul.clean_break` · Clean Break · Wick flat-ink fork icon
-- `0.30/class/stand-behind-me` · Stand Behind Me · Wick icon
-- `0.30/replacement/33` · Wind-up · Wick icon · replaces held old recipe #33
-- `0.30/replacement/35` · Read the Swing · Wick icon · replaces held old recipe #35
-- `0.30/replacement/63` · Hold the Lane · Wick icon · replaces held old recipe #63
-- `0.30/replacement/163` · Scrap Sentinel · Wick icon · replaces held old recipe #163
-- `0.30/shared/follow` · Follow · Wick technique icon
-- `0.30/shared/afterword` · Afterword · painted gear icon
-- `0.30/shared/mana-shock` · Mana Shock · condition sign
-- `0.30/shared/staggered` · Staggered · condition sign
+- `0.30/fork.guard.provoke` · Provoke · queued-proposal
+- `0.30/fork.guard.cover_them` · Cover Them · queued-proposal · source questions [1]
+- `0.30/fork.guard.stand_fast` · Stand Fast · queued-proposal
+- `0.30/fork.guard.drive` · Drive · queued-proposal · source questions [11]
+- `0.30/fork.shadow.light_fingers` · Light Fingers · queued-proposal
+- `0.30/fork.shadow.lend_the_dark` · Lend the Dark · queued-proposal
+- `0.30/fork.shadow.lightkiller` · Lightkiller · queued-proposal · source questions [2]
+- `0.30/fork.shadow.spotter` · Spotter · queued-proposal
+- `0.30/fork.tend.keep_the_thread` · Keep the Thread · queued-proposal · source questions [7]
+- `0.30/fork.tend.short_thread` · Short Thread · queued-proposal
+- `0.30/fork.tend.shared_pulse` · Shared Pulse · queued-proposal
+- `0.30/fork.tend.long_thread` · Long Thread · queued-proposal
+- `0.30/fork.prayer.round_of_blessings` · Round of Blessings · queued-proposal
+- `0.30/fork.prayer.steadfast` · Steadfast · queued-proposal
+- `0.30/fork.prayer.benediction` · Benediction · queued-proposal · source questions [3]
+- `0.30/fork.prayer.held_breath` · Held Breath · queued-proposal · source questions [3]
+- `0.30/fork.momentum.rolling_start` · Rolling Start · queued-proposal
+- `0.30/fork.momentum.grindstone` · Grindstone · queued-proposal
+- `0.30/fork.momentum.spill` · Spill · queued-proposal
+- `0.30/fork.momentum.headlong` · Headlong · queued-proposal
+- `0.30/fork.pressure.converging_fire` · Converging Fire · queued-proposal
+- `0.30/fork.pressure.walk_it_in` · Walk It In · queued-proposal · source questions [15]
+- `0.30/fork.pressure.through_the_gap` · Through the Gap · queued-proposal
+- `0.30/fork.pressure.lockdown` · Lockdown · queued-proposal · source questions [6]
+- `0.30/fork.sigil.overflux` · Overflux · queued-proposal
+- `0.30/fork.sigil.clean_vent` · Clean Vent · queued-proposal
+- `0.30/fork.sigil.written_in_advance` · Written in Advance · queued-proposal
+- `0.30/fork.sigil.running_script` · Running Script · queued-proposal
+- `0.30/fork.soul.ride_the_edge` · Ride the Edge · queued-proposal
+- `0.30/fork.soul.slow_burn` · Slow Burn · queued-proposal
+- `0.30/fork.soul.blood_price` · Blood Price · queued-proposal
+- `0.30/fork.soul.clean_break` · Clean Break · queued-proposal
+- `0.30/class/stand-behind-me` · Stand Behind Me · queued-proposal
+- `0.30/replacement/33` · Wind-up · queued-proposal
+- `0.30/replacement/35` · Read the Swing · queued-proposal
+- `0.30/replacement/63` · Hold the Lane · queued-proposal
+- `0.30/replacement/163` · Scrap Sentinel · queued-proposal
+- `0.30/shared/follow` · Follow · queued-reuse-check
+- `0.30/shared/afterword` · Afterword · queued
+- `0.30/shared/mana-shock` · Mana Shock · queued
+- `0.30/shared/staggered` · Staggered · queued-proposal
 
-## Held old recipes — never paint these from the 0.29 brief
+## Held old recipes — do not paint
 
 - #10 · Draw Fire
 - #18 · Hold the Gap
@@ -258,6 +255,4 @@ Use `planned-jobs-0.30.json` for exact source excerpts and per-request generatio
 - #249 · Confessor (Office)
 - #250 · Crusader (Office)
 
-Already delivered and now held for review: #258 Palm. Preserve the asset; do not regenerate or delete it.
-
-No new gameplay, UI or placeholders are authorized by this art queue. Delivery must include real sources, exports, hashes, records and review; successful image-generation calls alone are not delivered assets.
+Already delivered and held for review: #258. Preserve these files.

@@ -1,5 +1,9 @@
 # Nine Doors artwork handoff — next GPT starts here
 
+<!-- current-continuation -->
+> **Latest delivery:** 178/375 legacy candidates; 170 eligible old jobs + 27 held; 41/41 added 0.30 requests remain. Read [CURRENT-CHECKPOINT.md](../_archive/nine-doors/2026-11-16/CURRENT-CHECKPOINT.md) and the filtered CONTINUE.md. Earlier counts/tables below are historical.
+<!-- /current-continuation -->
+
 > **0.30 scope override — 16 November 2026:** Read [CONTINUE-0.30.md](../_archive/nine-doors/2026-11-16/CONTINUE-0.30.md), [the hold list](../_archive/nine-doors/2026-11-16/art-hold-list-0.30.md) and [the filtered queue](../_archive/nine-doors/2026-11-16/CONTINUE.md) first. All 28 old HOLD recipes stay blocked. The original 200 unfinished rows are now 173 eligible + 27 held; 41 source-backed 0.30 requests are added separately. No additional art has been delivered by this queue update. The tables below remain the historical 0.29 recipes and must not override these holds or new replacement rules.
 
 Status checked against this branch: **175 of 375 requested assets delivered as review candidates; 200 rows remain.** This handoff describes the art checkpoint at `c7bd6778c80ef6ed5347ea1a4c32166204efeab4` on **`art/nine-doors-2026-11-16`**. Continue the artwork on this branch; preserve its completed work. This is an art task, not a request for reminders, new UI slots, gameplay changes or placeholders.

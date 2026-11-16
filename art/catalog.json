@@ -29935,18 +29935,39 @@
       "previous_path": "art/icons/moves/set-against-the-blow.svg"
     },
     "move-brace": {
-      "label": "PLACEHOLDER: Brace",
-      "path": "art/icons/moves/brace.svg",
-      "sha256": "a4508d1595fed76747f769ee32c59f20501ad5e5d86e41d02ec36b1ce5f3d9eb",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Brace",
+      "path": "art/icons/moves/brace.png",
+      "sha256": "d0a17d5823d90d4ca4d88e84fa68c2f39089ec4303115cc2b9ecd0afdc15bf2d",
+      "format": "png",
       "mode": "wick",
       "tint": "endurance",
-      "wanted": "art/icons/moves/brace.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #9",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-brace/brace.svg",
+      "previous_sha256": "a4508d1595fed76747f769ee32c59f20501ad5e5d86e41d02ec36b1ce5f3d9eb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/009-brace.png",
+      "upscaled": false,
+      "brief_number": 9,
+      "exports": {
+        "128": "art/icons/moves/exports/128/brace.png",
+        "64": "art/icons/moves/exports/64/brace.png",
+        "48": "art/icons/moves/exports/48/brace.png",
+        "44": "art/icons/moves/exports/44/brace.png",
+        "32": "art/icons/moves/exports/32/brace.png",
+        "24": "art/icons/moves/exports/24/brace.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-draw-fire": {
       "label": "PLACEHOLDER: Draw Fire",
@@ -36315,32 +36336,74 @@
       "previous_path": "art/icons/conditions/smitten.svg"
     },
     "cond-last-turn": {
-      "label": "PLACEHOLDER: Last Turn",
-      "path": "art/icons/conditions/last-turn.svg",
-      "sha256": "2de8af59ec2b3b7ebc6dcfcb525ac30e3c496f655ceb8ae428469bc1c09120cd",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Last Turn",
+      "path": "art/icons/conditions/last-turn.png",
+      "sha256": "23620ba1bb3bfd7ce91a7b2bb9df46f396ba2968738e6efa11e51ab5b7e00ab0",
+      "format": "png",
       "mode": "sign",
       "tint": "muted",
-      "wanted": "art/icons/conditions/last-turn.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #323",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/cond-last-turn/last-turn.svg",
+      "previous_sha256": "2de8af59ec2b3b7ebc6dcfcb525ac30e3c496f655ceb8ae428469bc1c09120cd",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/323-last-turn.png",
+      "upscaled": false,
+      "brief_number": 323,
+      "exports": {
+        "128": "art/icons/conditions/exports/128/last-turn.png",
+        "64": "art/icons/conditions/exports/64/last-turn.png",
+        "48": "art/icons/conditions/exports/48/last-turn.png",
+        "44": "art/icons/conditions/exports/44/last-turn.png",
+        "32": "art/icons/conditions/exports/32/last-turn.png",
+        "24": "art/icons/conditions/exports/24/last-turn.png"
+      },
+      "ink": "#FFFFFF"
     },
     "cond-augment-offline": {
-      "label": "PLACEHOLDER: Augment Offline",
-      "path": "art/icons/conditions/augment-offline.svg",
-      "sha256": "8fd8bd855888ab8c673e0e13a131fa290db64960c2cc6861c7772c6c7f953368",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Augment Offline",
+      "path": "art/icons/conditions/augment-offline.png",
+      "sha256": "20838d0654d14b71311dfe97627663e8287bc6fa69d1eed38b31d1287850adbf",
+      "format": "png",
       "mode": "sign",
       "tint": "muted",
-      "wanted": "art/icons/conditions/augment-offline.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #324",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/cond-augment-offline/augment-offline.svg",
+      "previous_sha256": "8fd8bd855888ab8c673e0e13a131fa290db64960c2cc6861c7772c6c7f953368",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/324-augment-offline.png",
+      "upscaled": false,
+      "brief_number": 324,
+      "exports": {
+        "128": "art/icons/conditions/exports/128/augment-offline.png",
+        "64": "art/icons/conditions/exports/64/augment-offline.png",
+        "48": "art/icons/conditions/exports/48/augment-offline.png",
+        "44": "art/icons/conditions/exports/44/augment-offline.png",
+        "32": "art/icons/conditions/exports/32/augment-offline.png",
+        "24": "art/icons/conditions/exports/24/augment-offline.png"
+      },
+      "ink": "#FFFFFF"
     }
   }
 }
