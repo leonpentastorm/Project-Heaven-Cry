@@ -1,0 +1,76 @@
+{
+  "number": 246,
+  "family": "door_emblems",
+  "id": "door-prayer",
+  "path": "art/emblems/doors/prayer.png",
+  "name": "Prayer mark (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark (the patron marks exist; this is the door's own)",
+  "paint": "Two cupped hands round a single short ray.",
+  "avoid": "the Faith boon line (hands round a flame) \u00b7 a real religion's symbol",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG object/sign icon matching the attached flat WHITE graphic references. Bold crisp silhouettes, sparse broad TRANSPARENT interior cuts, no full mascot, robot head, screen face, capelet or complete person. Cropped ceramic mittens only if requested. Pure #FFFFFF WHITE flat ink, no black or gray paint, shading, gradients, glow, texture, text or border.\nPaint: Two cupped hands round a single short ray.\nAvoid: the Faith boon line (hands round a flame) \u00b7 a real religion's symbol\nEXACT STAGING: DOOR EMBLEM at20px: TWO SIMPLE CERAMIC MITTEN HANDS CUPPED from left and right around exactly ONE SHORT STRAIGHT VERTICAL WHITE RAY suspended between palms. Empty transparent space around ray, flat white hands only with one palm cut each. NO FLAME, heart, sun, bowl/cup object, real religious emblem, cross, whole character, text or border. Keep extremely simple and bold for20px.\nOnly the specified object/partials, no extra decoration.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "e194ec6796a6dd915766f738757026199bf24ce4cc93b268f9d8bf8c122b1321",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/246-prayer.png",
+  "source_sha256": "4f98c2c8e48c4ae681fae7af729050a909c69e9024657b1951b9d06341d52f7f",
+  "export_crop": [
+    0,
+    22,
+    1238,
+    1254
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/prayer.png",
+    "64": "art/emblems/doors/exports/64/prayer.png",
+    "48": "art/emblems/doors/exports/48/prayer.png",
+    "44": "art/emblems/doors/exports/44/prayer.png",
+    "32": "art/emblems/doors/exports/32/prayer.png",
+    "24": "art/emblems/doors/exports/24/prayer.png",
+    "20": "art/emblems/doors/exports/20/prayer.png"
+  },
+  "framing": {
+    "scale": 0.6623586429725363,
+    "offset": [
+      102,
+      104
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "9dd730f705370bde3742233a120b3598aef17cb20e58706c46cfe9ec72bd164b",
+    "64": "9b3852be4bd8396283668a0d801f23c9b14075004a7265ed74e6f318c0792b87",
+    "48": "9bd719390e8d45b2da94b74910e6a34bac0e2bf0aa90aecbd5b277b694974ad4",
+    "44": "9c878a8cfe753a20f90aef01a18608639077f07d7e85f2c41cd9523df672a742",
+    "32": "463430dd70c0a4e7f6d13e29303ff7f13bd01638a8acd581c2bfe883c3007d32",
+    "24": "1f61da218c2c3df0daba1330b218c396b5e309d844bb02037984f116a9c9c8f5",
+    "20": "29bddd0454105ace8453b4c9535622aec45f46948d76a112e8089b82c4bae2f0"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

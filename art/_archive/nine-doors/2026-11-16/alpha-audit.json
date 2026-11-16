@@ -783,6 +783,11 @@
       "faint_alpha_to_solid_area_ratio": 0.08005
     },
     {
+      "number": 196,
+      "name": "Bond thread (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.05093
+    },
+    {
       "number": 208,
       "name": "Clenched Heart",
       "faint_alpha_to_solid_area_ratio": 0.05902
@@ -831,6 +836,11 @@
       "number": 217,
       "name": "Eye of the Storm",
       "faint_alpha_to_solid_area_ratio": 0.05925
+    },
+    {
+      "number": 218,
+      "name": "Outburst heart (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.02
     },
     {
       "number": 220,
@@ -961,6 +971,11 @@
       "number": 245,
       "name": "Rising (verse)",
       "faint_alpha_to_solid_area_ratio": 0.02325
+    },
+    {
+      "number": 246,
+      "name": "Prayer mark (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.02338
     },
     {
       "number": 256,

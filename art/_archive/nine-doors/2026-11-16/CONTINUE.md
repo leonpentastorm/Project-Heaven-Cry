@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **310/375 delivered**. Original unfinished: **65 = 38 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **79 request records**, including replacement/reuse checks.
+Original ledger: **313/375 delivered**. Original unfinished: **62 = 35 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **76 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -14,11 +14,8 @@ The latest delivered images are review candidates, never automatically approved.
 - P6 · #116 · The Operative (class portrait) · `art/portraits/classes/infiltrator.png` · class portrait
 - P6 · #134 · The Sigilist (class portrait) · `art/portraits/classes/mage.png` · class portrait
 - P6 · #166 · The Rigger (class portrait) · `art/portraits/classes/trickster.png` · class portrait
-- P6 · #196 · Bond thread (door emblem) · `art/emblems/doors/bond.png` · door emblem
 - P6 · #197 · The Mender (class portrait) · `art/portraits/classes/bard.png` · class portrait
-- P6 · #218 · Outburst heart (door emblem) · `art/emblems/doors/outburst.png` · door emblem
 - P6 · #219 · The Channeler (class portrait) · `art/portraits/classes/channeler.png` · class portrait
-- P6 · #246 · Prayer mark (door emblem) · `art/emblems/doors/prayer.png` · door emblem
 - P6 · #247 · The Chaplain (class portrait) · `art/portraits/classes/guardian.png` · class portrait
 - P7 · #252 · Hand wraps · `art/icons/gear/weapon-hand_wraps.png` · painted gear icon
 - P7 · #253 · Striking gloves · `art/icons/gear/weapon-striking_gloves.png` · painted gear icon

@@ -4563,6 +4563,99 @@
         "20": "art/emblems/doors/exports/20/figment.png"
       },
       "ink": "#FFFFFF"
+    },
+    "door-bond": {
+      "label": "Bond thread (door emblem)",
+      "path": "art/emblems/doors/bond.png",
+      "sha256": "1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/196-bond.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 196,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/bond.png",
+        "64": "art/emblems/doors/exports/64/bond.png",
+        "48": "art/emblems/doors/exports/48/bond.png",
+        "44": "art/emblems/doors/exports/44/bond.png",
+        "32": "art/emblems/doors/exports/32/bond.png",
+        "24": "art/emblems/doors/exports/24/bond.png",
+        "20": "art/emblems/doors/exports/20/bond.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "door-outburst": {
+      "label": "Outburst heart (door emblem)",
+      "path": "art/emblems/doors/outburst.png",
+      "sha256": "17d54abbd5a90f8b435fb9fcdb225f4c5a666fcf6901a529b9bb8582095ab3a6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/218-outburst.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 218,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/outburst.png",
+        "64": "art/emblems/doors/exports/64/outburst.png",
+        "48": "art/emblems/doors/exports/48/outburst.png",
+        "44": "art/emblems/doors/exports/44/outburst.png",
+        "32": "art/emblems/doors/exports/32/outburst.png",
+        "24": "art/emblems/doors/exports/24/outburst.png",
+        "20": "art/emblems/doors/exports/20/outburst.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "door-prayer": {
+      "label": "Prayer mark (door emblem)",
+      "path": "art/emblems/doors/prayer.png",
+      "sha256": "e194ec6796a6dd915766f738757026199bf24ce4cc93b268f9d8bf8c122b1321",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/246-prayer.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 246,
+      "exports": {
+        "128": "art/emblems/doors/exports/128/prayer.png",
+        "64": "art/emblems/doors/exports/64/prayer.png",
+        "48": "art/emblems/doors/exports/48/prayer.png",
+        "44": "art/emblems/doors/exports/44/prayer.png",
+        "32": "art/emblems/doors/exports/32/prayer.png",
+        "24": "art/emblems/doors/exports/24/prayer.png",
+        "20": "art/emblems/doors/exports/20/prayer.png"
+      },
+      "ink": "#FFFFFF"
     }
   },
   "technique_icons": {
