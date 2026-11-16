@@ -12,6 +12,7 @@
 import * as E from '@engine';
 import { unitQuiverCards, quiverCards } from '@engine';
 import { doorLineOf, feedLineOf } from './doorView';
+import { forkChipsLine } from './forkView';
 import { enchantMark } from './quiverView';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
@@ -324,7 +325,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   const resNow: Record<string, number> = u?.res || (c?.res ? c.res : {});
   // rules 1.60 (the beta feeds its door): a door resource's beta line, from the engine's view (techniques.json rules.<id>.door
   // names the door: Guard, Momentum)
-  const feedNote = (id: string): string => { const door = (E.phys as any).PHYS_RULES?.[id]?.door; const l = door ? feedLineOf(c || u, String(door)) : ''; return l ? ' ' + l + '.' : ''; };
+  // rules 1.60: the meter's door's beta feed, and (the forks) its forks held or still to do (game/forkView.ts)
+  const feedNote = (id: string): string => { const door = (E.phys as any).PHYS_RULES?.[id]?.door; const l = door ? feedLineOf(c || u, String(door)) : '', f = door && c ? forkChipsLine(c, String(door)) : ''; return (l ? ' ' + l + '.' : '') + (f ? ' ' + f + '.' : ''); };
   for (const id of Object.keys(resMax)) {
     const info = classResInfo(c, id), n = resNow[id] ?? (u ? 0 : resMax[id]), max = resMax[id];
     const ink = (RES_INK as any)[info.core] || RES_INK.body;

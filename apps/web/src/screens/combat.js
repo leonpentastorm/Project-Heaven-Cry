@@ -71,6 +71,7 @@ import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine, tabMirrors, tabBareWarning, feedLineOf } from '../game/doorView';
+import { forkChipsLine } from '../game/forkView';
 import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
@@ -1685,6 +1686,8 @@ export class CombatLogic extends DCLogic {
       hasDoor: !!tabDoor, doorSkill: tabDoor ? tabDoor.skill : '', doorLine: tabDoor ? tabDoor.line : '',
       // rules 1.60 (the beta feeds its door): the door's beta line from the engine's view of the sheet whose turn it is (game/doorView.ts feedLineOf)
       ...(() => { const fl = tabDoor && tabMine ? feedLineOf(tabChar, tabDoor.skill) : ''; return { hasFeed: !!fl, feedLine: fl }; })(),
+      // rules 1.60 (the forks): the door's forks held, and a pick still to do, as one line (game/forkView.ts, the engine's doorForkView)
+      ...(() => { const fl = tabDoor && tabMine ? forkChipsLine(tabChar, tabDoor.skill) : ''; return { hasForks: !!fl, forkLine: fl, forkStyle: 'font-size: 13px; line-height: 1.45; font-weight: 700; padding: 0 2px 2px; color: ' + (/still to do/.test(fl) ? '#FFFFFF' : '#C9D3E3') }; })(),
       // the focus rule: the door's focus only in the pack, one line on top says to put it on (skills.json door_focus_line)
       ...(() => { const fl = tabFocusLine(tabMine ? tabChar : null, tabG.id); return { hasFocusLine: !!fl, focusLine: fl, focusStyle: 'font-size: 13px; line-height: 1.45; color: #FFFFFF; padding: 0 2px 2px' }; })(), ...(() => { const bw = tabBareWarning(tabG.id), on = !!bw && !!tabMine && !!cur && !!cur.mg && !cur.mg.emanator; return { hasBare: on, bareHeadline: on ? bw.headline : '', bareLine: on ? bw.line : '', bareStyle: 'display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border: 2px solid #F65157; background: rgba(246, 81, 87, 0.12); color: #F65157', bareHeadStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.04em' }; })(), doorStyle: 'font-size: 13px; line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
