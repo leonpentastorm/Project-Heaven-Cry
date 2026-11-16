@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ARCHETYPES, apply, newGame, reachable, survivalField, RULES, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, reachable, survivalRun, RULES, type GameState, type Sheet } from '@engine';
 import { TurnIntro, _test } from './turnIntro';
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -28,7 +28,7 @@ describe('the fight\'s big banners (rules 1.62 item 4740)', () => {
     const b = _test.fightCard(f, f.combat, 'host'); expect(b.name).toBe(CARDS.joined.name); expect(b.hold).toBe(CARDS.hold_ms);
     expect(_test.endCard(f, f.combat, true).name).toBe(CARDS.won.name); expect(_test.endCard(f, f.combat, false).name).toBe(CARDS.lost.name);
     const w = apply(f, { type: 'run/skip' } as any, 'host');
-    const m = _test.fieldCard(w.combat); expect(m.name).toBe(survivalField.banner.name); expect(m.sub).toContain(String(survivalField.rounds));
+    const m = _test.fieldCard(w.combat); expect(m.name).toBe(survivalRun.after_fight.field.name); expect(m.sub).toContain(String((w.combat as any).field.of));
     // the combat speed (k) lengthens or shortens only the slides, never the hold
     expect(_test.bigTotal({ hold: CARDS.hold_ms, k: 0.5 }, false)).toBeGreaterThan(CARDS.hold_ms);
   });

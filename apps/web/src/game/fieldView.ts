@@ -3,12 +3,12 @@
 // is only its header: what lies on the ground, the pile my character's unit can reach (Take all is the fight's own
 // pickup), and the Leave vote (run/leave). Display only: the engine judges every action.
 import type { GameState, Action } from '@phc/engine';
-import { sendDescriptor, active, survivalField } from '@engine';
+import { sendDescriptor, active, survivalRun } from '@engine';
 
 const isPile = (o: any) => o && o.kind === 'pile' && Array.isArray(o.items) && o.items.length > 0 && !o.hidden;
 
 export interface FieldV { piles: number; items: number; ready: number; of: number; mine: boolean; solo: boolean; unitId: string | null; takeTile: string | null; /** Take all: the fight's pickup as its descriptor sends it (descriptors.ts), or null */ take: Action | null; isHost: boolean; waiting: string[];
-  /** Rules 1.62 item 4746: "Round 1 of 3" (data/survival.json field.round_label), '' for a field saved by 0.28.2 */ roundText: string }
+  /** Rules 1.62 item 4746: "Round 1 of 3" (data/survival.json run.after_fight.field.round), '' for a field saved by 0.28.2 */ roundText: string }
 /** The field's header: what still lies on the ground, the Leave vote, and the pile my character's unit can reach (its
  * tile or one next to it), for Take all. Null when the run is not on its field. A field saved by 0.28.2 (rules 1.55
  * item 66: no running fight) shows the vote alone: it is only left. */
@@ -23,5 +23,6 @@ export function fieldView(g: GameState | null | undefined, me: string): FieldV |
   return { piles: piles.length, items, ready, of: on.length, mine: !!r.ready[me], solo: g.players.length <= 1, unitId: u ? u.id : null, takeTile: take ? take.pos : null, take: u && take ? sendDescriptor(g as any, u.id, 'pickup', { tile: take.pos }, me) : null,
     isHost: me === g.hostId, waiting: on.filter((p) => !r.ready[p.id]).map((p) => p.name), roundText: roundLabel(cb.field) };
 }
-/** "Round 1 of 3": the field's round now (Combat.field, the engine's count) in the data's words; '' without one. */
-export const roundLabel = (f: any): string => (f && typeof f === 'object' ? survivalField.round_label.replace('{round}', String(f.round)).replace('{rounds}', String(f.of)) : '');
+/** "Round 1 of 3": the field's round now (Combat.field, the engine's count) in the data's words (survival.json
+ * run.after_fight.field.round); '' without one. */
+export const roundLabel = (f: any): string => (f && typeof f === 'object' ? survivalRun.after_fight.field.round.replace('{round}', String(f.round)).replace('{rounds}', String(f.of)) : '');

@@ -264,7 +264,7 @@ export function mendShown(cb: Combat | null, t: Unit, kind: string, r: { restore
 }
 /** The effect of a mend (mendShown's half; rules 1.62 item 4745): the heal's green number over the token (a revive's
  * HP), or the ward's. The one place a heal or shield is shown: the data `mend` op, a Soul heal, a prayer's heal or shield. */
-export function mendFx(cb: Combat | null, t: Unit, kind: string, r: { restored: number; revived: boolean; shield: number }): void {
+function mendFx(cb: Combat | null, t: Unit, kind: string, r: { restored: number; revived: boolean; shield: number }): void {
   if (!cb) return;
   if (kind === 'shield') { if (r.shield > 0) emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'ward', amount: r.shield }); return; }
   if (r.restored > 0 || r.revived) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.revived ? t.hp : r.restored, ...(r.revived ? { revive: true } : {}) });

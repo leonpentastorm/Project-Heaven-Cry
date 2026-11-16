@@ -83,7 +83,7 @@ void fx1;
 ok('FREE ROAM comes up after VICTORY as the field opens', await waitCard('field'));
 { const v = (await cards('victory'))[0], m = (await cards('field'))[0];
   ok('… after VICTORY has gone (VICTORY ' + Math.round(v?.t) + ' to ' + Math.round(v?.gone) + ' ms, FREE ROAM at ' + Math.round(m?.t) + ' ms)', !!v && !!m && !!v.gone && m.t >= v.gone - 50);
-  ok('… with the field\'s words and its rounds, from data (' + m?.text + ')', !!m && m.text.includes(SVD.field.banner.name) && m.text.includes(String(SVD.field.rounds)));
+  ok('… with the field\'s words and its rounds, from data (' + m?.text + ')', !!m && m.text.includes(SVD.run.after_fight.field.name) && m.text.includes(String(SVD.field.rounds)));
   ok('… VICTORY on screen at least the data\'s hold (' + Math.round((v?.gone || 0) - (v?.t || 0)) + ' ms)', !!v && v.gone - v.t >= CARDS.hold_ms); }
 await pause(p, 2500);
 ok('one BATTLE START, one VICTORY and one FREE ROAM for the fight, no DEFEAT', (await cards('fight')).length === 1 && (await cards('victory')).length === 1 && (await cards('field')).length === 1 && !(await cards('defeat')).length);

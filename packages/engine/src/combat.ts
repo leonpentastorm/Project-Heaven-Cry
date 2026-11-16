@@ -1598,9 +1598,9 @@ export function fightLevel(chars: { level: number }[], o: { level?: unknown; shi
   return clampEnemyLevel(fightLevelOf(chars.map((c) => c.level)) + (Number.isNaN(sh) ? 0 : Math.max(lim.min, Math.min(lim.max, Math.trunc(sh)))));
 }
 /** Rules 1.62 item 4746: a field's rounds. */
-export interface FieldRounds { from: number; of: number; round: number; done?: true }
+interface FieldRounds { from: number; of: number; round: number; done?: true }
 /** A field's rounds, or null (not a field, or one saved before rules 1.62: game.ts fieldRounds gives it its rounds). */
-export const fieldRoundsOf = (cb: Combat | null | undefined): FieldRounds | null => (cb && cb.field && typeof cb.field === 'object' ? cb.field : null);
+const fieldRoundsOf = (cb: Combat | null | undefined): FieldRounds | null => (cb && cb.field && typeof cb.field === 'object' ? cb.field : null);
 export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean; /** rules 1.15: the fight's level outright, or a shift on the squad's */ level?: number | null; levelShift?: number | null } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);

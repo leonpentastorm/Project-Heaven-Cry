@@ -8,6 +8,61 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.0 — the field is turns, the fight's big banners, and the playtest's faults
+
+Rules revision 1.62 (spec items 4740 to 4749), every new number PROVISIONAL. Leon's playtest of live 0.29.0, seven
+faults (F1 to F7), built on the 0.30.0 release.
+
+### The field is turns (F7, rules 1.62 item 4746)
+
+- **After a won Survival fight its field runs `survival.json field.rounds` (3) rounds of real turns**, then the party
+  leaves by itself, by the vote's own path (`leaveField`); a passed vote still leaves at once. The field opens on a new
+  round (the killing turn ends there): the party's turns in initiative order on their turn AP, End turn, waits (a
+  Hymn's), cooldowns, durations, once-a-turn uses (a Whisper comes back next turn), Strain and MP tick as in a fight.
+  No foe has a turn on the field; a Downed character rolls no death save there. Still no growth, no harm to a friend
+  or a surrendered unit, the item refusal. Supersedes rules 1.55 items 62, 63, 67, 69 and 70 ("no turns, AP free").
+- A field saved by 0.29 or 0.30 takes its rounds at the next action (item 4747).
+- The screen: "FREE ROAM · ROUND 1 OF 3" on the field's bar, the turn banner, the cut-in and the YOUR TURN box; End
+  turn and NOW as in a fight; the AP pips and their drain; picking which of two characters acts on the field is gone.
+
+### Movement feedback (F2, item 4741)
+
+- **The hovered tile's "−N AP · N tiles" chip and its lift had been dead in every fight since 0.28.2**: the map's tile
+  loop named its health view `hv`, the same name as the hovered tile, so the chip never matched. Renamed; the path
+  arrow, the reach squares, the chip and the AP pips are one path, the field included. `moveOptions` reads the one cost
+  site (`apFor`), so the reach squares are the tiles the move's own check accepts.
+
+### AP at contact (F3, item 4742)
+
+- A Survival fight is joined as its node is entered and every first turn is a full turn's AP (already so); the BATTLE
+  START banner now says the fight has begun. On the area map an ambush from hiding opens on the attacker's full turn
+  AP (it was the AP left of the area map's round), the strike paid from it; a Silent Kill that opens no fight takes
+  the strike from the area map's AP as before. Grim Reaper I's first-turn −1 AP now lands on that ambush turn.
+
+### The fight's banners (F1, item 4740) and no click after the vote (F4, item 4743)
+
+- **BATTLE START, VICTORY or DEFEAT, and FREE ROAM**: big banners in the middle of the screen, each fully drawn for
+  `rules.json combat.cards.hold_ms` (1250 ms) whatever the combat speed, queued in the turn banners' slot, no click,
+  clear of the action bar; words in data (`combat.cards`, `survival.json run.after_fight.field`). The old per-session
+  dedupe is gone (its key matched two fights of the same template, level and size, so a later fight lost its cards).
+- A run's won fight has no end card: leaving the field goes straight to the rewards. `run.after_fight.won` reads
+  "The field is yours".
+
+### Begin (F5, item 4744) and a prayer's heal (F6, item 4745)
+
+- The Begin button and the design cards read the reducer's own verdict on the action the click sends (the descriptor's
+  dry run, with the action's credit and toggles; the area map's through `previewAction`, `game/verdict.ts`), and the
+  magic preview's AP check counts the action's credit (a Brief's cut, Encore).
+- A prayer's heal or shield (Whisper of Health, the healing Hymns, Mother Ember's intervention, Hearthlight, Turned
+  Back, Rewoven; Protection, Saint's Shield) shows the green number or the ward through the one mend's effect
+  (`mendShown`); the Soul heal's own second copy is gone.
+
+### Moved on purpose
+
+- 6 of 29 replays re-recorded (REPLAY_FULL): a Soul heal that restores nothing no longer emits an empty heal effect;
+  with that line put back all 29 play as recorded, and the end states differ in their effects only. Golden damage
+  tables unchanged.
+
 ## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
 
 Rules revisions 1.56 (two late blocks: the bare heart and the Mana Shock; a shield in either hand), 1.57 (shields are

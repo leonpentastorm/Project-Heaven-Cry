@@ -12,7 +12,7 @@
 //    queue one after the other). BATTLE START as a fight begins (the fight's name, its setting, who goes first),
 //    VICTORY or DEFEAT when it ends (after the fight's last effect has played; in a Survival run with the line of what
 //    follows, data/survival.json run.after_fight), FREE ROAM as a won run fight's field opens (survival.json
-//    field.banner). Each is fully on screen for at least rules.json combat.cards.hold_ms (the combat speed never
+//    run.after_fight.field). Each is fully on screen for at least rules.json combat.cards.hold_ms (the combat speed never
 //    shortens it), takes no click and never covers the action bar. Only for a fight this page watched begin or end (a
 //    reload or a late join shows none). Not in the Proving Ground (its WAVE banner and wave card are its own) nor on the
 //    area map. Each carries data-phc-card (its kind) for the browser checks.
@@ -35,7 +35,7 @@
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
 import React from 'react';
-import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId, SETTING, runSetting, survivalRun, survivalField, RULES } from '@engine';
+import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
 import { roundLabel } from './fieldView';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
@@ -149,10 +149,11 @@ function endCard(g: GameState, cb: any, won: boolean): Banner {
   return { id: 'e' + Date.now(), kind: won ? 'victory' : 'defeat', kicker: cb.name, kickerColor: color, name: won ? CARDS.won.name : CARDS.lost.name, sub: after, after,
     stripe: color, slab: won ? '#FFFFFF' : '#F65157', mark: '', glyph: won ? '✓' : '✕', glyphArt: ART(won ? 'banner-fight-won' : 'banner-fight-lost'), img: '', mine: false, foe: !won, hold: CARDS.hold_ms };
 }
-/** FREE ROAM (rules 1.62 items 4740 and 4746): a won run fight's field opens; its rounds (survival.json field.banner). */
+/** FREE ROAM (rules 1.62 items 4740 and 4746): a won run fight's field opens; its rounds (the engine's count, Combat.field;
+ * the words survival.json run.after_fight.field). */
 function fieldCard(cb: any): Banner {
-  const f = cb && typeof cb.field === 'object' ? cb.field : null, sub = survivalField.banner.sub.replace('{rounds}', String(f ? f.of : survivalField.rounds));
-  return { id: 'm' + Date.now(), kind: 'field', kicker: cb.name, kickerColor: '#FFFFFF', name: survivalField.banner.name, sub, stripe: '#FFFFFF', slab: '#6FEA77', mark: '', glyph: '⟳', img: '', mine: false, foe: false, hold: CARDS.hold_ms };
+  const f = cb && typeof cb.field === 'object' ? cb.field : null, W = survivalRun.after_fight.field, sub = f ? W.sub.replace('{rounds}', String(f.of)) : '';
+  return { id: 'm' + Date.now(), kind: 'field', kicker: cb.name, kickerColor: '#FFFFFF', name: W.name, sub, stripe: '#FFFFFF', slab: '#6FEA77', mark: '', glyph: '⟳', img: '', mine: false, foe: false, hold: CARDS.hold_ms };
 }
 
 /** Would the card on the left cover this unit's tile? Then it comes in from the right instead, so the unit stays in view. */

@@ -21,7 +21,7 @@ import { type Character, type Belief, type Vow, packKindOf, mod, prayerCooldown,
 import type { Combat, Unit } from './combat';
 import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
 import { condOn, applyCond, endCond, harm, withDoor, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE, coreChargeOf } from './magic';
-import { pushAway, mendFx } from './effects/core';
+import { pushAway, mendShown } from './effects/core';
 import { setPrayerDoor } from './effects/actions';
 import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot, setResSetter } from './effects/cost';
 import { sessionN, dayOf, uses as usesOf } from './effects/uses';
@@ -942,12 +942,12 @@ function harmLine(cb: Combat, by: Unit, t: Unit, n: number | SpellAmount, type: 
 }
 function healLine(cb: Combat, by: Unit | null, t: Unit, n: number, gate: 'whisper' | 'hymn' | 'intervention' | null = null): string {
   // the percent gate and the cap (heal-shield-percent-spec.md section 4): a Whisper's and a Hymn's own share (rules.json mending.gate)
-  const r = mendSized(cb, by, t, 'heal', Math.round(n), gate ? { of: gate } : null, { healKind: 'blessing' }); mendFx(cb, t, 'heal', r); // rules 1.62 item 4745: the one mend's green number
+  const r = mendSized(cb, by, t, 'heal', Math.round(n), gate ? { of: gate } : null, { healKind: 'blessing' }); mendShown(cb, t, 'heal', r); // rules 1.62 item 4745: the one mend's green number
   return r.revived ? ' stands again at ' + t.hp + ' HP' : ' heals ' + r.restored;
 }
 /** A prayer's shield (Protection, Saint's Shield): the one mend, and its ward's effect (rules 1.62 item 4745). */
 function shieldLine(cb: Combat, by: Unit, t: Unit, n: number, gate: 'whisper' | 'hymn'): string {
-  const r = mendSized(cb, by, t, 'shield', n, { of: gate }, { healKind: 'blessing' }); mendFx(cb, t, 'shield', r);
+  const r = mendSized(cb, by, t, 'shield', n, { of: gate }, { healKind: 'blessing' }); mendShown(cb, t, 'shield', r);
   return ' gains a ' + r.shield + ' shield';
 }
 /** Reload a fighter's weapon at no AP (Resupply). */
@@ -1240,7 +1240,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
         const was = v.dead ? 'crossed' : 'fell', half = Math.ceil(v.maxHp / 2);
         v.dead = false; setDowned(v, false); v.hp = half; clearStagger(v);
         const ch = unitChar(v); if (ch) ch.dead = false;
-        mendFx(cb, v, 'heal', { restored: 0, revived: true, shield: 0 }); // the one mend's effect: a revive at its HP
+        mendShown(cb, v, 'heal', { restored: 0, revived: true, shield: 0 }); // the one mend's effect: a revive at its HP
         out += ' · ' + v.name + ' (' + was + ') is turned back at the shore: ' + half + ' HP';
       }
       return out || ' · nobody has crossed or fallen';
@@ -1292,7 +1292,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       const x: any = cb, snap: Record<string, number> = x.faithRoundHp || {}; let out = '';
       for (const v of allies) { const was = snap[v.id]; if (was == null || was <= v.hp) continue;
         const up = v.downed, hp0 = v.hp; if (up) setDowned(v, false); v.hp = Math.min(v.maxHp, was);
-        mendFx(cb, v, 'heal', { restored: v.hp - hp0, revived: up, shield: 0 }); /* the one mend's effect (rules 1.62 item 4745) */ out += ' · ' + v.name + ' is rewoven to ' + v.hp + ' HP' + (up ? ' (stands)' : ''); }
+        mendShown(cb, v, 'heal', { restored: v.hp - hp0, revived: up, shield: 0 }); /* the one mend's effect (rules 1.62 item 4745) */ out += ' · ' + v.name + ' is rewoven to ' + v.hp + ' HP' + (up ? ' (stands)' : ''); }
       if (!x.faithOrderRestore) x.faithOrderRestore = [...cb.order];
       // From the round's own initiative, once each (item 737: a second Rewoven in the round used to copy the first one's
       // extra turns too).

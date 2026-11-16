@@ -277,7 +277,7 @@ ok('node 1 fought by hand to its last foe: the fight goes on as its field (' + (
 // one click) and the rewards
 await p.waitForSelector('[data-phc-field-head]', { timeout: 30000 });
 { const head = await p.locator('[data-phc-field-head]').innerText();
-  ok('the field: "' + head + '" with what lies on the ground (' + (await p.locator('[data-phc-field-ground]').innerText()) + ')', head.includes(SVD.field.banner.name) && head.includes('ROUND 1 OF ' + SVD.field.rounds)); }
+  ok('the field: "' + head + '" with what lies on the ground (' + (await p.locator('[data-phc-field-ground]').innerText()) + ')', head.includes(SVD.run.after_fight.field.name) && head.includes('ROUND 1 OF ' + SVD.field.rounds)); }
 await p.waitForFunction(() => { const g = window.__phc.getState().game, cb = g.combat, u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && !!u.charId; }, null, { timeout: 60000 }).catch(() => {});
 ok('the field has turns: End turn is offered, no "no turns" words, no "free" for the AP, the strip has its NOW', (await p.getByRole('button', { name: 'End turn', exact: true }).first().isVisible().catch(() => false)) && (await p.locator('[data-phc-no-turns]').count()) === 0 && (await p.locator('[data-phc-ap-free]').count()) === 0 && /NOW/.test(await p.locator('.phc-init').first().innerText().catch(() => '')));
 if (await p.locator('[data-phc-field-take]').count()) { const piles = async () => (await G()).combat.objects.filter((o) => o.kind === 'pile' && o.items?.length && !o.hidden).length, before = await piles(); await p.locator('[data-phc-field-take]').click(); await settle(p, 300); ok('Take all picks up the pile in reach', (await piles()) === before - 1); }

@@ -13,7 +13,7 @@ import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, given, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, fieldRoundsOf, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
+import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -2104,10 +2104,12 @@ function focusLine(c: Character): string {
   return bits.length ? ' · ' + bits.join(', ') : '';
 }
 
+/** Rules 1.62 item 4746: the field's last round has ended (combat.ts endTurn marks it). */
+const fieldDone = (cb: Combat): boolean => !!(cb.field && typeof cb.field === 'object' && cb.field.done);
 /** Enemies act on their own turns until a PC is up or the fight ends. */
 function runEnemies(g: GameState) {
   const cb = g.combat!;
-  for (let guard = 0; guard < 40 && !checkOver(cb) && !fieldRoundsOf(cb)?.done; guard++) { // rules 1.62 item 4746: a field's last round ends it
+  for (let guard = 0; guard < 40 && !checkOver(cb) && !fieldDone(cb); guard++) { // rules 1.62 item 4746: a field's last round ends it
     const u = active(cb)!;
     // A player's unit Downed, killed or out of the fight on its own turn (a reaction, a trap, a barrel, a Mana Short), or
     // already Downed when the fight began, can't act or press End turn: its turn passes on by itself.
@@ -2125,7 +2127,7 @@ function runEnemies(g: GameState) {
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
   clearAction(cb);
-  if (fieldRoundsOf(cb)?.done && g.run?.state === 'field') { leaveField(g); return; } // rules 1.62 item 4746: the party leaves by itself
+  if (fieldDone(cb) && g.run?.state === 'field') { leaveField(g); return; } // rules 1.62 item 4746: the party leaves by itself
   if (cb.over) { if (g.sandbox) sandboxOver(g); else if (g.run) runFightOver(g); else finishCombat(g); }
 }
 

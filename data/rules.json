@@ -409,7 +409,7 @@
   },
   "combat": {
     "cards": {
-      "about": "Rules 1.62 item 4740: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each. The field's banner is survival.json field.banner.",
+      "about": "Rules 1.62 item 4740: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each. The field's banner is survival.json run.after_fight.field.",
       "hold_ms": 1250,
       "joined": { "name": "BATTLE START" },
       "won": { "name": "VICTORY" },

@@ -11594,7 +11594,7 @@ every number here is PROVISIONAL.
     as a won Survival fight's field opens (after VICTORY). Each is on screen, fully drawn, for at least
     `rules.json combat.cards.hold_ms` (1250 ms; the combat speed never shortens it); they queue one after the other
     and the turn banners wait for them. They never take a click or a key and never cover the action bar. Their words
-    are data (`combat.cards`, `survival.json field.banner`). Not in the Proving Ground (its WAVE banner) nor on the
+    are data (`combat.cards`, `survival.json run.after_fight.field`). Not in the Proving Ground (its WAVE banner) nor on the
     area map. Shown once per fight that the page watched (a reload or a late join shows none). PROVISIONAL.
 4741. **Movement on the field is movement in a fight (F2):** the reach squares, the path arrow from the token, the
     "−N AP · N tiles" chip and the AP pips with their drain are the fight's own, drawn by the one path (the field no
@@ -11618,8 +11618,12 @@ every number here is PROVISIONAL.
     action's credit too.
 4745. **A prayer's heal is shown as every heal is (F6):** a heal or a shield given by a prayer (a Whisper of Health,
     the Hymns that heal, Mother Ember's intervention, Hearthlight, Rewoven; Protection and Saint's Shield) puts the
-    one mend's effect on the fight (`mendFx`: the green number, or the ward), the same as the data `mend` op and a
-    Soul heal; no second copy of the effect.
+    one mend's effect on the fight (`mendShown`: the green number, or the ward), the same as the data `mend` op and a
+    Soul heal; no second copy of the effect. Moved on purpose: 6 of the 29 replays (REPLAY_FULL: proving-4v10-boss,
+    cover-4v7-level20-allin, open-4v7-level20-allin, proving-4v12-magic, proving-waves-long,
+    proving-doors-hiding-watches-wave6) were re-recorded because a Soul heal that restores nothing no longer puts an
+    empty heal effect on the fight; with that one line put back all 29 play as recorded, and the games' end states
+    differ in their effects only. The golden damage tables did not move.
 4746. **The field is turns (F7):** after a won Survival fight its field runs `survival.json field.rounds` (3) rounds
     of real turns. The field opens with a new round at once (the killing turn ends there; the rest of the killing
     round is not played): the party's units act in initiative order (no foe has a turn on the field, a standing one

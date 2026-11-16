@@ -10,7 +10,7 @@ import { MANA_SHOCK, WEAPON, musicTraitOf, songOf, active, paths, previewAttack,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, shieldsView, survivalField } from '@engine';
+  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, shieldsView, survivalRun } from '@engine';
 import { shieldStrip, shieldBlock } from '../game/shieldLook';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
@@ -29,7 +29,7 @@ const fieldVals = (fv) => {
   if (!fv) return { show: false };
   const ground = fv.piles ? fv.piles + (fv.piles === 1 ? ' pile' : ' piles') + ', ' + fv.items + (fv.items === 1 ? ' item' : ' items') + ' on the ground' : 'Nothing left on the ground';
   const word = 'Leave the field', tally = fv.solo ? '' : fv.ready + ' of ' + fv.of + ' ready';
-  return { show: true, head: [survivalField.banner.name, fv.roundText].filter(Boolean).join(' · ').toUpperCase(), ground, tally, hasTally: !fv.solo, canTake: !!fv.take, take: () => act(fv.take),
+  return { show: true, head: [survivalRun.after_fight.field.name, fv.roundText].filter(Boolean).join(' · ').toUpperCase(), ground, tally, hasTally: !fv.solo, canTake: !!fv.take, take: () => act(fv.take),
     takeHint: fv.takeTile ? 'Take all' : fv.piles ? 'Walk next to a pile to take it' : '', hasHint: !fv.takeTile && fv.piles > 0,
     leaveLabel: fv.mine ? '✓ ' + word : word, leave: fv.mine ? () => {} : () => act({ type: 'run/leave' }), waiting: fv.mine && fv.waiting.length ? 'Waiting for ' + fv.waiting.join(', ') + '.' : '' };
 };
