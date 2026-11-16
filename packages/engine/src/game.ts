@@ -2129,10 +2129,10 @@ function runEnemies(g: GameState) {
 
 /** A fight's end, the part every kind of fight shares (a story's and a Survival run's): vows, the fighters written back
  * to their characters, weapons left in someone dropped, companions' HP, the deaths swept, magic out, 'combat_end'. */
-function fightBack(g: GameState, cb: Combat, afterFight: boolean): boolean {
+function fightBack(g: GameState, cb: Combat, afterFight: boolean, /** rules 1.57 party fit item 2: the HP a Downed fighter stands up at (a Survival run's run.dead_return_hp; else the sheet's 1) */ standHp?: number): boolean {
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   emitHook(cb, 'combat_over', { cb, won: cb.over === 'win', g }); // rules 1.44: 'combat_over' {cb, won}: before the fighters are written back, so what it gives goes home
-  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, afterFight);
+  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, afterFight, false, standHp);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
   for (const u of cb.units) { if (u.nailed) dropNailed(cb, u); if (u.stuck) dropStuck(cb, u); } // rules 1.12: a weapon left in someone falls where they stand when the fight ends
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
@@ -2371,10 +2371,12 @@ export function portraitFor(g: GameState, name: string, seen: Record<string, num
 }
 
 /** Write a fighter back onto its character: HP, injuries, ammo, magazines, durability, parts (and kills after a fight). */
-function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: boolean, keepDowned = false) {
+function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: boolean, keepDowned = false, standHp?: number) {
   const c = g.characters[u.charId!]; if (!c) return;
-    // After a fight the Downed get up at 1 HP; on the overworld (friendly fire) they stay Downed at 0 until stimmed or treated.
-    c.hp = u.dead ? 0 : u.downed && keepDowned ? 0 : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
+    // After a fight the Downed get up at 1 HP (rules 1.57 party fit item 2: in a Survival run at run.dead_return_hp, the
+    // field the dead stand up at, never above max HP); on the overworld (friendly fire) they stay Downed at 0 until
+    // stimmed or treated.
+    c.hp = u.dead ? 0 : u.downed && keepDowned ? 0 : u.downed && standHp != null ? standUpHp(c, standHp) : Math.max(u.downed ? 1 : u.hp, 1); c.dead = u.dead;
     c.downedFails = u.downed && keepDowned && !u.dead ? u.saves.fail : 0;
     c.injuries = (u.injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg');
     // Ammo carried out of the fight (spec: Reloading); the off-hand gun's rounds too (rules 1.9, item 688).
@@ -3522,6 +3524,9 @@ function runFightOver(g: GameState) {
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
   r.note = { node: n.id, kind: n.kind, xp, credits: cr, ammo: {}, won: true, rounds: cb.round };
 }
+/** Rules 1.57 party fit item 2: the HP a character stands up at after a won fight (the one copy: the dead of rule 5 and
+ * the Downed, both at run.dead_return_hp in a run), never above its max HP. */
+function standUpHp(c: Character, hp: number): number { return Math.min(maxHp(c), hp); }
 /** Rules 1.51 (spec rule 52 d): Flux is 0 after every fight of a run. */
 function runFlux(g: GameState) { for (const id of Object.keys(g.characters)) { const m = g.story.magic?.[id]; if (m) m.flux = 0; } }
 /** Rules 1.55 item 65: the party leaves the field: the fight's own end, as every fight's (fightBack: the fighters
@@ -3530,10 +3535,10 @@ function runFieldClose(g: GameState) {
   const cb = g.combat!, r = g.run!, n = runNode(r, r.at)!, k = payKindOf(n);
   cb.over = 'win'; delete cb.field;
   const burnt = r.stats.fights[r.stats.fights.length - 1]?.burnt || {};
-  fightBack(g, cb, true); runFlux(g);
+  fightBack(g, cb, true, survivalRun.dead_return_hp); runFlux(g); // rules 1.57 party fit item 2: the Downed stand up as the dead do
   g.phase = 'story'; g.story.await = 'none'; g.story.work = null; g.combat = { ...cb };
   const chars = Object.values(g.characters), back: string[] = [], ammo: Record<string, string[]> = {};
-  for (const c of chars) if (c.dead) { c.dead = false; c.hp = Math.min(maxHp(c), survivalRun.dead_return_hp); back.push(c.id); } // rule 5
+  for (const c of chars) if (c.dead) { c.dead = false; c.hp = standUpHp(c, survivalRun.dead_return_hp); back.push(c.id); } // rule 5
   for (const c of chars) ammo[c.id] = runAmmo(c, packCount(k), burnt[c.id] || 0);
   if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP. The squad won.' });
   if (r.note) r.note = { ...r.note, ammo, ...(back.length ? { back } : {}) };

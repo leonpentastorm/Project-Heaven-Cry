@@ -126,6 +126,13 @@ describe('Survival, one stage (rules 1.41)', () => {
     expect(g.characters.c2.xp).toBe(g.characters.c1.xp); expect(g.run!.offers!.c2).toBeTruthy(); expect(g.run!.note!.back).toEqual(['c2']);
   });
 
+  it('rules 1.57 party fit item 2: a character only Downed when the party leaves the field stands at the same run.dead_return_hp as the dead (never better off dead)', () => {
+    const g0 = take(started(DUO), reachable(started(DUO).run!)[0], 2), x: GameState = JSON.parse(JSON.stringify(g0));
+    const u = x.combat!.units.find((v) => v.charId === 'c2')!; u.downed = true; u.hp = 0;
+    const g = leaveField(apply(x, { type: 'run/skip' }, 'host'));
+    expect(g.characters.c2.dead).toBe(false); expect(g.characters.c2.hp).toBe(Math.min(maxHp(g.characters.c2), SV.run.dead_return_hp));
+  });
+
   it('rule 4: the whole party down loses the run: it is over with its score and the room is back in its lobby', () => {
     const g0 = take(started(SOLO), reachable(started(SOLO).run!)[0], 1), x: GameState = JSON.parse(JSON.stringify(g0));
     for (const u of x.combat!.units) if (u.side === 'pc') { u.dead = true; u.hp = 0; }

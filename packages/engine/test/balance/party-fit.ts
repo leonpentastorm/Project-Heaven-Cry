@@ -36,11 +36,12 @@ Object.assign(CELLS, {
   trio_skirmisher: ['skirmisher', 'skirmisher', 'skirmisher'], trio_channeler: ['channeler', 'channeler', 'channeler'], trio_breaker: ['breaker', 'breaker', 'breaker'],
   mix_trio: ['breaker', 'skirmisher', 'mender'], mix_four_b: ['monk', 'skirmisher', 'chaplain', 'channeler'],
 });
-// the controls: the same sheet played without its door (is the door's policy the problem, or the door?), and the
+// the controls: the same sheet played without its door (is the door's policy the problem, or the door?; with the doors'
+// dry-gun fallback, door-policies.ts fists, since the lead's review of 16 Nov 2026), and the
 // guard's own gunner (plain_gun, normal share: the earlier reports' "solo gunner")
 const CONTROL: Record<string, any> = {
-  bulwark_plain: { build: 'wall', variant: 'allin', level: 1, policy: 'tank' }, operative_gun: { build: 'phantom', variant: 'allin', level: 1, policy: 'gunnerTac' },
-  mender_gun: { build: 'heartreader', variant: 'allin', level: 1, policy: 'gunnerTac' }, monk_plain: { build: 'opt_blade', variant: 'allin', level: 1, policy: 'optimisedTac', camp: 'hand_wraps' },
+  bulwark_plain: { build: 'wall', variant: 'allin', level: 1, policy: 'tankDry' }, operative_gun: { build: 'phantom', variant: 'allin', level: 1, policy: 'gunnerDry' },
+  mender_gun: { build: 'heartreader', variant: 'allin', level: 1, policy: 'gunnerDry' }, monk_plain: { build: 'opt_blade', variant: 'allin', level: 1, policy: 'optimisedTac', camp: 'hand_wraps' },
 };
 for (const [k, v] of Object.entries(CONTROL)) { (MEMBER as any)[k] = v; (MEMBER_OLD as any)[k] = v; }
 Object.assign(CELLS, { ctl_bulwark_tank: ['bulwark_plain'], ctl_operative_gun: ['operative_gun'], ctl_mender_gun: ['mender_gun'], ctl_monk_plain: ['monk_plain'], ctl_gunner_normal: ['gunner'] });
@@ -48,7 +49,7 @@ Object.assign(PARTIES, CELLS);
 
 // ---------------------------------------------------------------------------------------------- the levers
 const SV: any = svJ;
-/** Lever `revive`: a character Downed in a won fight stands up at this HP in place of the data's (1). */
+/** Lever `revive`: a character dead in a won fight stands up at this HP in place of the data's run.dead_return_hp (1 when the lever was measured; 50 since the fit, rules 1.57, so the lever is the data's now). */
 export const REVIVE_HP = 50;
 export function withLever<T>(lever: string | undefined, n: number, f: () => T): T {
   const was = { ret: SV.run.dead_return_hp, p: ENC_BUDGET.pressurePerChar, m: ENC_BUDGET.maxFoes, s: ENC_BUDGET.share, steps: SV.map_size.steps };

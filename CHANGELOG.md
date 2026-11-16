@@ -10,10 +10,19 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.30.0 — (in progress, lane 0.30-fit)
 
+- **G1, gun damage from Agility (rules 1.57, Core Rules items 4520 to 4524):** a character's gun shot now grows with
+  the gun's Attribute, Agility, as a melee blow grows with its own (`rules.json output.profiles.gun`: k 1.15385 x
+  (1 + 0.05 x (Agility - 1)), no skill slope; Dexterity still buys the hit). The 26 gun rows of `weapons.json` (pistols,
+  revolvers, SMGs, rifles, shotguns, heavy weapons) name `phys.profile: gun`; bows, thrown charges and the foci's
+  weapons do not. Agility 7 deals what every gun dealt before; Agility 1 x0.77, Agility 10 x1.12. Enemies are not
+  touched. The weapon card's "Damage scales with" line shows Agility on every gun. The golden tables' character gun
+  rows and 22 of the replays were re-recorded on purpose (commit b721970a). **Not green yet:** four balance guards
+  (the gun all-in ceiling, the Mender offence, the enemy table's Soldier hits at levels 1 and 3, the Survival solo
+  gunner) read a yardstick that now moves with its build's Agility; they wait on a ruling before the merge.
 - **Survival's party fit (rules 1.57):** a party of two, three or four now faces 0.9 pressure a head (`pressure_per_char`
   [1.3, 1.7, 1.3, 0.9] → [1.3, 0.9, 0.9, 0.9]), so playing together is no longer the harder way to play; a character
-  who died in a won fight stands up at 50 HP, not 1 (`run.dead_return_hp`). Measured in
-  `docs/design/proposals/2026-11-party-fit.md`.
+  who died in a won fight, or was only Downed when the party leaves the field, stands up at 50 HP, not 1
+  (`run.dead_return_hp`, one copy for both). Measured in `docs/design/proposals/2026-11-party-fit.md`.
 
 ## 0.29.0 — Balance 2.0: the nine doors
 
