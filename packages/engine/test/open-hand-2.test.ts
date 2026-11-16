@@ -102,6 +102,16 @@ describe('the forms\' limits (the reviewer\'s abuse list)', () => {
     const one = (mods: string[]) => { const { f, u } = monk(); const hp0 = f.foe.hp; dice(HIT, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: mods.map(OH) }, 'host')!)); return hp0 - f.foe.hp; };
     expect(2 * one(['jab'])).toBeLessThan(one([]));
   });
+  it('one form a blow: an attack carrying two forms is refused by the reducer (nothing spent); one form is not', () => {
+    const { f, u } = monk(); const ap0 = f.unit(u.id).ap, hp0 = f.foe.hp;
+    for (const two of [['jab', 'palm'], ['jab', 'palm', 'sweep', 'snatch']]) {
+      expect(() => dice(HIT, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: two.map(OH) }, 'host')!))).toThrow(/One at a time/);
+      expect(() => dice(HIT, () => f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'melee', mods: two.map(OH) } as any))).toThrow(/One at a time/);
+    }
+    expect(f.unit(u.id).ap).toBe(ap0); expect(f.foe.hp).toBe(hp0);
+    dice(HIT, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: [OH('palm')] }, 'host')!));
+    expect(f.foe.hp).toBeLessThan(hp0);
+  });
   it('Palm pushes a target at most once a turn, and never a Boss', () => {
     const { f, u } = monk({ tier: 'boss' }); const at0 = f.foe.pos;
     for (let i = 0; i < 2; i++) { f.unit(u.id).ap = 6; dice({ die: 15, hit: true }, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: [OH('palm')] }, 'host')!)); }

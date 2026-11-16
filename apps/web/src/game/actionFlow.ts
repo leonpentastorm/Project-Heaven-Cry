@@ -77,6 +77,17 @@ export function picksOf(d: ActionDescriptor, S: any, cb: any, cur: any, extra: P
   return { ...p, ...extra };
 }
 
+/** A switch chip clicked (Ricochet, the Open Hand's forms): the action's mods after it. An item's switches on one action
+ *  are one at a time (rules 1.56, one form a blow; the reducer refuses two): turning one on turns the item's others off,
+ *  a default-on one as '!id'. The chips stay set from one action to the next, as every switch does. */
+export function pickToggle(mods: string[] | null | undefined, tgls: { id: string; itemKey: string; on: boolean; defaultOn: boolean }[], t: { id: string; itemKey: string; on: boolean; defaultOn: boolean }): string[] {
+  const m = new Set(mods || []);
+  const off = (o: typeof t) => { m.delete(o.id); if (o.defaultOn) m.add('!' + o.id); };
+  if (t.on) off(t);
+  else { for (const o of tgls) if (o.id !== t.id && o.itemKey === t.itemKey && o.on) off(o); m.add(t.id); m.delete('!' + t.id); }
+  return [...m];
+}
+
 /** The picked action on the flow, or null when it is not (no action, not this player's turn, a system with its own
  *  screen code). extra: picks a bespoke panel made (a perk's form, a pile's checklist). */
 export function flowView(g: any, me: string | null, cur: any, S: any, extra: Picks = {}): FlowView | null {

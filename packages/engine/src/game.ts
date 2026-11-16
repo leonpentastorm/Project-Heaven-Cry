@@ -37,7 +37,7 @@ import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyN
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { scaleOf } from './effects/output';
-import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, togglesFor, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
@@ -1623,7 +1623,15 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (fld) delete (cb as any).fieldHarm; // rules 1.55 item 64: this action's own harm to a friend is looked for below
   const before = cb!.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
   // Toggles the player set on this action (Ricochet, Nonlethal…), read by items' hooks through modOn(); cleared after.
-  const mods = (a as any).mods; cb!.mods = Array.isArray(mods) ? mods.filter((x: any) => typeof x === 'string').slice(0, 8) : [];
+  const mods = (a as any).mods, modList: string[] = Array.isArray(mods) ? mods.filter((x: any) => typeof x === 'string').slice(0, 8) : [];
+  // An item's switches on one action are one at a time (rules 1.56, the Open Hand's forms: one form a blow): an action
+  // carrying two of the same item's toggles is refused. A technique carries the attack's switches (its chips' toggleOn).
+  if (modList.length > 1) for (const ty of new Set([a.type, ...(a.type === 'combat/technique' ? ['combat/attack'] : [])])) {
+    const on = togglesFor({ u, c: who, cb: cb!, g }, ty, {}, modList).filter((t) => t.on);
+    const two = on.find((t) => on.filter((o) => o.itemKey === t.itemKey).length > 1);
+    if (two) fail('One at a time: ' + on.filter((o) => o.itemKey === two.itemKey).map((o) => o.label).join(' or ') + '.');
+  }
+  cb!.mods = modList;
   const inWindow = !!cb!.window;
   // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
   const loan = lend(cb!, u, a); // the action's credit (effects/cost.ts): Encore's repeat, a Brief's cut (rules 1.13). pay() draws on it first
