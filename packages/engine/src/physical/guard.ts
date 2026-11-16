@@ -13,8 +13,10 @@
 // the plate and its policy (this soak stands aside), and one that holds the Defender's Brace Interposes by the class
 // move and its policy (the general Interpose stands aside).
 import { say, type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage, rollInjury, braceHook } from '../combat';
-import { onHook, emit, charOfUnit, statQuery } from '../effects/hooks';
-import { applyDamage } from '../effects/damage';
+import { onHook, emit, charOfUnit, statQuery, holdersOf } from '../effects/hooks';
+import { stateOf } from '../effects/index';
+import { effNum } from '../effects/num';
+import { applyDamage, shieldTotal } from '../effects/damage';
 import { landed } from '../effects/output';
 import { PHYS_RULES } from './data';
 import { technique, answer, guardOf, guardMax, guardGain, guardSoak, addGuard, spendGuard, holds } from './core';
@@ -30,6 +32,44 @@ braceHook.f = (cb: Combat, u: Unit) => {
   if (got) say(cb, '  +' + got + ' Guard (' + guardOf(u) + '/' + guardMax(u) + ').');
 };
 
+// ---------- how a unit's Guard soaks (0.30.0: the one copy) ----------
+/** How this unit's Guard soaks a blow. Read by the soak below, the Defender's Reactive Plate (classes/i.ts) and the
+ *  shield display (screenViews.ts shieldsView), so the screen says what the damage path does. */
+export interface GuardSoakPlan {
+  /** 'before': every plate it needs, in the 'reduce' phase, before any shield (the Defender's Reactive Plate);
+   *  'after': what the shields leave (Durability's Guard) */
+  phase: 'before' | 'after';
+  /** the damage one plate takes off */
+  per: number;
+  /** the plates kept back (for a reaction) */
+  keep: number;
+  /** the kept plates are spent too when what gets through would drop the unit */
+  keepUnlessDrop: boolean;
+  /** which blows it meets: 'hits' (never the unit's own harm nor a condition's tick) or 'all' */
+  meets: 'hits' | 'all';
+  /** the plates a blow of `reach` damage spends on a unit holding `have` plates and `hp` HP, and the damage they take off */
+  spend(reach: number, have: number, hp: number): { k: number; cut: number };
+}
+/** How this unit's Guard soaks a blow; null when it has no pool or its soak is switched off (the plate's policy 'off'). */
+export function guardSoakOf(u: Unit): GuardSoakPlan | null {
+  if (u.resMax?.guard == null) return null;
+  const plate = holdersOf({ u }).find((h) => h.key === DEF_PLATE);
+  let per: number, keep: number, keepUnlessDrop: boolean;
+  if (plate) {
+    // the plate's own number (its stat_mod) and its policy (set for the fight by its 0-AP actions; default: spend what it takes)
+    const pol = stateOf(plate).policy || 'auto'; if (pol === 'off') return null;
+    per = effNum(plate, 'stat_mod'); keep = pol === 'keep1' ? 1 : 0; keepUnlessDrop = false;
+  } else { per = guardSoak(u); keep = G().keep_back; keepUnlessDrop = true; }
+  return { phase: plate ? 'before' : 'after', per, keep, keepUnlessDrop, meets: plate ? 'all' : 'hits',
+    spend(reach, have, hp) {
+      const needs = Math.ceil(Math.max(0, reach) / per);
+      let k = Math.min(Math.max(0, have - keep), needs);
+      // the kept plates go too when what gets through would take the unit down (Durability's Guard only)
+      if (keepUnlessDrop && reach - k * per >= hp) k = Math.min(have, needs);
+      return { k: Math.max(0, k), cut: Math.max(0, Math.min(reach, k * per)) };
+    } };
+}
+
 // ---------- the soak ----------
 // A hit: anything that takes HP but a condition's own tick and the harm a unit does itself (the same line the Momentum
 // rule draws). The 'shield' phase is the last one before the shield takes its share, so what is left over after the
@@ -41,15 +81,12 @@ onHook('damage_in', (ctx: any, cb) => {
   if (ctx.phase !== (shielded ? 'shield' : 'reduce')) return;
   if (u.resMax?.guard == null || guardOf(u) < 1) return;
   if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;
-  if (holds(u, DEF_PLATE)) return; // the Defender's plate spends this unit's Guard, by its own policy
-  const reach = Math.floor(ctx.dmg) - (shielded ? Math.max(0, u.shield || 0) : 0); if (reach <= 0) return;
+  const plan = guardSoakOf(u); if (!plan || plan.phase !== 'after') return; // the Defender's plate spends this unit's Guard before the shields, by its own policy
+  const reach = Math.floor(ctx.dmg) - (shielded ? shieldTotal(u) : 0); if (reach <= 0) return; // after every shield, the layers too (0.30.0: a Ward was once soaked by Guard first)
   // 1 point is kept back for a reaction (Interpose, Shield Wall, Shrug It Off), unless what gets through would take
   // the unit down: then every point the hit needs is spent (the lead's tuning, 10 Nov 2026; provisional, keep_back).
-  const per = guardSoak(u), have = guardOf(u), needs = Math.ceil(reach / per);
-  let k = Math.min(Math.max(0, have - G().keep_back), needs);
-  if (reach - k * per >= u.hp) k = Math.min(have, needs);
+  const { k, cut } = plan.spend(reach, guardOf(u), u.hp);
   if (k < 1) return;
-  const cut = Math.min(reach, k * per);
   spendGuard(cb, u, k, 'soak', cut); ctx.dmg = Math.floor(ctx.dmg) - cut; ctx.guardSoaked = (ctx.guardSoaked || 0) + cut;
   say(cb, u.name + '\'s Guard takes ' + cut + ' of it (' + k + ' Guard, ' + guardOf(u) + ' left).');
 });

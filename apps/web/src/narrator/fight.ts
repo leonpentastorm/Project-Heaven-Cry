@@ -3,7 +3,7 @@
 // The prompt is the fight as it stands, the words, and the exact list of what the answer may ask the engine for; the
 // answer comes back through one tool (or as JSON), is reshaped here, and the engine validates it again before anything
 // happens (narrator/fight-ruling). Nothing here sets a number.
-import { FIGHT_CONDS, FIGHT_COND_NAME, SKILL, TN_LADDER, condName, condOn, healthView, refOf, talkOf, type FightEffect, type FightRuling, type GameState, type Unit } from '@engine';
+import { FIGHT_CONDS, FIGHT_COND_NAME, SKILL, TN_LADDER, condName, condOn, healthView, refOf, shieldsView, talkOf, type Combat, type FightEffect, type FightRuling, type GameState, type Unit } from '@engine';
 
 /** How long the host waits for a fight answer before the attempt is given back (ms). */
 export const FIGHT_TIMEOUT_MS = 20_000;
@@ -28,6 +28,9 @@ Plain speech, a taunt with nothing behind it, or words nobody could hear: answer
 
 /** How hurt a unit reads to the Narrator: the engine's word (healthView, rules.json combat.health_look), never a ladder of its own. */
 const band = (u: Unit) => (u.surrendered && !u.dead ? 'surrendered' : healthView(u).word);
+/** What stands in front of a unit's HP, as the speaker's side may know it (the engine's shieldsView words: exact for
+ *  its own side and an Analyzed foe, size words for any other), so the Narrator knows a shielded unit shrugs a blow off. */
+const shieldsOf = (cb: Combat, x: Unit, by: Unit | undefined) => { const sv = shieldsView(cb, x, by || null); return sv.words ? 'shields: ' + sv.words : ''; };
 const condsOf = (u: Unit) => Object.keys(u.conds || {}).filter((c) => condOn(u, c)).map((c) => condName(c)).join(', ');
 const NEVER = ['machine', 'robot', 'turret', 'drone'];
 /** May this enemy be named in a surrender with no check (the engine checks again)? */
@@ -41,7 +44,7 @@ export function fightTargets(g: GameState, r: FightRuling): Unit[] {
 /** The user message: the fight in a few lines, the speaker, the words, the perk's card if one, and the last log lines. */
 export function fightAsk(g: GameState, r: FightRuling): string {
   const cb = g.combat!, u = cb.units.find((x) => x.id === r.unit), c = g.characters[r.charId];
-  const units = cb.units.filter((x) => !x.dead).map((x) => `- ${x.id} ${x.name} (${x.side === (u?.side || 'pc') ? (x.id === r.unit ? 'the speaker' : 'ally') : 'enemy'}${x.tier && x.side !== (u?.side || 'pc') ? ', ' + x.tier : ''}${x.kind && x.kind !== 'human' ? ', ' + x.kind : ''}) at ${refOf(x.pos)}: ${band(x)}${condsOf(x) ? '; ' + condsOf(x) : ''}${x.side !== (u?.side || 'pc') && !x.surrendered && yields(x) ? '; may surrender' : ''}`).join('\n');
+  const units = cb.units.filter((x) => !x.dead).map((x) => `- ${x.id} ${x.name} (${x.side === (u?.side || 'pc') ? (x.id === r.unit ? 'the speaker' : 'ally') : 'enemy'}${x.tier && x.side !== (u?.side || 'pc') ? ', ' + x.tier : ''}${x.kind && x.kind !== 'human' ? ', ' + x.kind : ''}) at ${refOf(x.pos)}: ${band(x)}${shieldsOf(cb, x, u) ? '; ' + shieldsOf(cb, x, u) : ''}${condsOf(x) ? '; ' + condsOf(x) : ''}${x.side !== (u?.side || 'pc') && !x.surrendered && yields(x) ? '; may surrender' : ''}`).join('\n');
   const skills = c ? Object.entries(c.skills).filter(([, p]) => (p as number) > 0).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 10).map(([s, p]) => `${s} ${p}`).join(', ') : '';
   const said = (talkOf(cb).said || []).slice(-4).map((s) => `- ${s.who}: "${s.text}"`).join('\n');
   // The engine's own log, newest last, without the attempt itself (it is quoted below) and without older Narrator lines' dice.

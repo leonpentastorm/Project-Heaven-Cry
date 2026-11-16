@@ -52,7 +52,7 @@ const skillLine = (c, inst) => (c && inst && inst.id && (WEAPON[inst.id] || ITEM
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
-import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView } from '@engine';
+import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView, shieldsView } from '@engine';
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
@@ -1276,7 +1276,9 @@ export class MainLogic extends DCLogic {
       // Magic: conditions with rounds left, a shield, a held Outburst (spec: Conditions and saves).
       const MN = magicNow(g, c);
       for (const [id, n] of Object.entries(MN.conds)) if (n > 0) add(condName(id).toUpperCase(), n + (n === 1 ? ' round' : ' rounds') + ' left.', !['guarded', 'inspired'].includes(id));
-      if (MN.shield > 0) add('SHIELD ' + fmtNum(MN.shield), 'Soaks up the next ' + fmtNum(MN.shield) + ' damage.', false);
+      // 0.30.0: in a fight, every shield and the Guard (the engine's shieldsView, its words); on the story map, the one shield kept there
+      if (MN.cu) { const sv = shieldsView(g.combat, MN.cu, null, fmtNum); if (sv.chip || sv.guard) add(sv.chip || sv.head, [sv.words, sv.absorb, sv.absorbDrop].filter(Boolean).join('. ') + '.', false); }
+      else if (MN.shield > 0) add('SHIELD ' + fmtNum(MN.shield), 'Soaks up the next ' + fmtNum(MN.shield) + ' damage.', false);
       if (MN.held) add('HOLDING AN OUTBURST', 'Stage ' + MN.held.stage + ': it grows each round (and adds Strain) until you release it.', false);
       if (MN.strain > 0) add('STRAIN ' + MN.strain + ' / ' + strainLimit(c), 'Past the limit, the heart shorts out. It eases by 1 after a round without casting and resets after a fight.', MN.strain >= strainLimit(c));
       const ss = songStateOf(g, c), mt = musicTraitOf(c);

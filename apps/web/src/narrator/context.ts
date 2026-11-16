@@ -451,6 +451,7 @@ function liveMagic(g: GameState, c: Character): string {
   if (carriesEmanator(c)) out.push(`MP ${mpNow(c)}/${maxMp(c)}${hasEmanator(c) ? '' : ' (Emanator in the pack)'}`);
   if (carriesEvoker(c)) out.push(`Evoker ${evoChargeNow(c)} charge${hasEvoker(c) ? '' : ' (in the pack)'}, ${coresCarried(c)} spare cores`);
   if (m?.flux) out.push(`Flux ${m.flux}`); if (m?.strain) out.push(`Strain ${m.strain}`); if (m?.held) out.push('holding an Outburst');
+  if (m?.shield) out.push(`a shield of ${m.shield}`); // 0.30.0: the shield the story keeps (a fight's are in the fight's own view)
   const conds = Object.keys(m?.conds || {}); if (conds.length) out.push(conds.join(', '));
   return out.length ? ', ' + out.join(', ') : '';
 }

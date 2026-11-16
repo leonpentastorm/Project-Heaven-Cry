@@ -3,6 +3,7 @@
 // out a Bond, a cap or a reaction count itself (apps/web/src/game/boundary.test.ts).
 //   bondView      the Bond strip (bonds-spec.md section 9): your Bonds, allies and enemies apart, the cap, the Attuner
 //   reactionView  the reaction pips (reactions-spec.md section 9): reactions this round, spent, the Answers switched on
+//   shieldsView   0.30.0: a unit's shields in the order a blow meets them, Guard apart, what stands in front of the HP
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import type { Combat, Unit } from './combat';
 import type { Character } from './character';
@@ -12,7 +13,10 @@ import { condName, condOn } from './magic';
 import { UNTIL } from './condtable';
 import { maxReactions, reactionsUsed, cueLive } from './tactics';
 import { TECHNIQUE } from './physical';
-import { SKILL } from './data';
+import { SKILL, RULES, CLASSES, CLASS, CLASS_MOVE_POOL } from './data';
+import { shieldOrder, shieldTotal } from './effects/damage';
+import { guardOf, guardMax } from './physical/core';
+import { guardSoakOf } from './physical/guard';
 import { ownerOf } from './owned';
 import tendingJ from '../../../data/tending.json';
 
@@ -146,4 +150,127 @@ export function tieLines(cb: Combat | null | undefined): TieLine[] {
     out.push({ key: t.kind + ':' + t.from + ':' + t.to, kind: t.kind, from: a.id, to: b.id, fromPos: a.pos, toPos: b.pos, side, ink: line.ink, dash: side === 'foe' ? String(line.foe_dash || '') : '' });
   }
   return out;
+}
+
+// ---------- shieldsView: what stands in front of a unit's HP (0.30.0, the shield display) ----------
+// Leon, 16 Nov 2026: one pale bar over the HP made every shield look like one sum, and nobody could read how much they
+// had. This lists every shield a unit holds in the order a blow spends them (effects/damage.ts shieldOrder, the same
+// helper applyDamage spends by), the Guard pool apart, and what a blow can meet before HP. Words from rules.json
+// combat.shield_look; what a viewer may know follows the health rule (healthView): exact for a side's own and an
+// Analyzed creature, a size word for any other.
+/** One shield on a unit, in the order a blow meets it. */
+export interface ShieldEntry {
+  key: string; kind: 'layer' | 'base';
+  /** its name: a layer's is the class move that gives it (classes.json, the effect with `layer`); the base's from data */
+  name: string;
+  /** the attribute it belongs to (a layer: its class's attribute), for its ink; null: the base shield (many givers) */
+  attribute: string | null;
+  /** who gave it (a layer keeps its giver), else null */
+  by: string | null;
+  /** `by` in words (shield_look.from), '' with no giver */
+  from: string;
+  /** what is left of it; null when the viewer may not know (then `size`) */
+  amount: number | null;
+  /** its size word (shield_look.size) when the amount is not known, else null */
+  size: string | null;
+  /** its share of the unit's max HP for drawing (exact when known, the size rung's `bar` when not) */
+  bar: number;
+  lasts: string;
+  /** how a new gift of the same kind meets it: 'replaces' (the larger stands) or 'separate' (its own layer) */
+  combines: 'replaces' | 'separate';
+  how: string;
+  /** 1 is met first (Guard, when it soaks before the shields, is met before 1: `guard.first`) */
+  order: number;
+}
+/** The Guard pool (rules 1.13) as the shield display reads it: how it soaks is physical/guard.ts guardSoakOf. */
+export interface ShieldGuard {
+  name: string; plates: number; max: number;
+  /** what one plate takes off a blow (0: its soak is switched off) */
+  soak: number;
+  /** the plates kept back for a reaction */
+  keep: number;
+  /** met before every shield (the Defender's Reactive Plate) rather than after them */
+  first: boolean;
+  /** the pool in a line ("Guard 3 plates, each soaks 10") and which blows it meets, in words */
+  line: string; how: string;
+  combines: 'separate pool';
+}
+export interface ShieldsView {
+  known: boolean; maxHp: number;
+  /** the block's header */
+  head: string;
+  entries: ShieldEntry[];
+  /** the Guard pool; null with no pool or no plate */
+  guard: ShieldGuard | null;
+  /** what one blow that does not drop the unit can meet before HP; null: not known */
+  blow: number | null;
+  /** everything in front of the HP (more than `blow` only when kept plates go against a blow that would drop it); null: not known */
+  all: number | null;
+  /** `all` as a size word (shield_look.size), for a viewer who may not know the number */
+  allWord: string;
+  /** the headline: what an ordinary blow meets before HP ("Absorbs up to 88 before HP"), or its size word */
+  absorb: string;
+  /** what a blow that would drop it meets, when that is more ('' otherwise) */
+  absorbDrop: string;
+  /** the shields alone (no Guard), as one chip ("+80 SHIELD"); '' with none */
+  chip: string;
+  /** the shields alone; null: not known */
+  total: number | null;
+  /** the line an attack preview shows beside its damage: the damage is before these; '' with nothing in front of HP */
+  vs: string;
+  /** the shields and Guard in a few words (a label, the Narrator's view of the fight) */
+  words: string;
+  /** the one line on how the shields combine */
+  rule: string;
+}
+const SL = (): any => (RULES as any).combat.shield_look;
+/** A data text with its {slots} filled. */
+const fill = (t: string, v: Record<string, string | number>): string => String(t || '').replace(/\{(\w+)\}/g, (all, k: string) => (v[k] != null ? String(v[k]) : all));
+let LAYER_OF: Map<string, { name: string; attribute: string | null }> | null = null;
+/** A layer's name and attribute: the class move whose effect gives it (classes.json), read once; a layer no class
+ *  move gives reads as the base shield's name (never its id). */
+function layerSource(layer: string): { name: string; attribute: string | null } {
+  if (!LAYER_OF) {
+    LAYER_OF = new Map();
+    const has = (o: any): string | null => { if (!o || typeof o !== 'object') return null; if (typeof o.layer === 'string' && o.op) return o.layer; for (const v of Object.values(o)) { const r = has(v); if (r) return r; } return null; };
+    const note = (m: any, attr: string | null) => { const l = has(m.effects); if (l && m.name && !LAYER_OF!.has(l)) LAYER_OF!.set(l, { name: m.name, attribute: attr }); };
+    for (const c of CLASSES as any[]) for (const r of Object.values(c.ranks || {}) as any[]) for (const m of r.moves || []) note(m, c.attribute || null);
+    for (const m of Object.values(CLASS_MOVE_POOL) as any[]) note(m, CLASS[m.origin]?.attribute || null);
+  }
+  return LAYER_OF.get(layer) || { name: SL().base.name, attribute: null };
+}
+const sizeOf = (share: number): { word: string; bar: number } => { const S: any[] = SL().size; const r = S.find((x) => x.upto != null && share <= x.upto) || S[S.length - 1]; return { word: r.word, bar: r.bar }; };
+/** The shields a unit holds, as `viewer` may know them (null: as the squad sees it, like healthView). `fmt` writes a
+ *  number into the texts (the client passes its one formatter; default: plain digits). */
+export function shieldsView(cb: Combat | null, u: Unit, viewer: Pick<Unit, 'side'> | null = null, fmt: (n: number) => string = (n) => String(Math.round(n))): ShieldsView {
+  const L = SL(), known = (viewer ? viewer.side === u.side : u.side === 'pc') || !!u.analyzedBy, maxHp = Math.max(1, u.maxHp);
+  const entries: ShieldEntry[] = shieldOrder(u).map((e, i) => {
+    const src = e.layer ? layerSource(e.layer.layer) : { name: L.base.name, attribute: null }, row = e.layer ? L.layer : L.base, sz = sizeOf(e.n / maxHp);
+    const giver = e.layer && cb ? cb.units.find((x) => x.id === e.layer!.by) : null;
+    return { key: e.layer ? 'layer:' + e.layer.layer + ':' + e.layer.by : 'base', kind: e.layer ? 'layer' : 'base', name: src.name, attribute: src.attribute, by: giver ? giver.name : null,
+      from: giver ? fill(L.from, { by: giver.name }) : '',
+      amount: known ? e.n : null, size: known ? null : sz.word, bar: known ? e.n / maxHp : sz.bar, lasts: row.lasts, combines: row.combines, how: row.how, order: i + 1 };
+  });
+  // Guard: how it soaks is guardSoakOf (physical/guard.ts), the copy the damage path spends by
+  const plates = u.resMax?.guard != null ? guardOf(u) : 0, plan = plates > 0 ? guardSoakOf(u) : null, G = L.guard;
+  let guard: ShieldGuard | null = null;
+  if (plates > 0) {
+    const soak = plan ? plan.per : 0, keep = plan ? Math.min(plates, plan.keep) : 0;
+    const how = !plan ? G.off : (plan.phase === 'before' ? G.before : G.after) + (keep > 0 ? '; ' + fill(plan.keepUnlessDrop ? G.keep_unless_drop : G.keep_always, { keep }) : '');
+    guard = { name: G.name, plates, max: guardMax(u), soak, keep, first: !!plan && plan.phase === 'before',
+      line: fill(plan ? G.line : G.line_off, { name: G.name, plates, plate_word: plates === 1 ? G.plate : G.plates, per: fmt(soak) }), how, combines: 'separate pool' };
+  }
+  // what a blow meets: the shields, and the plates it may spend (an ordinary blow leaves the kept ones; one that would
+  // drop the unit takes them too when the plan says so)
+  const sh = shieldTotal(u), platesWorth = (n: number) => (guard && plan ? Math.max(0, n) * guard.soak : 0);
+  const blow = sh + platesWorth(guard ? guard.plates - guard.keep : 0);
+  const all = sh + platesWorth(guard ? (plan && plan.keepUnlessDrop ? guard.plates : guard.plates - guard.keep) : 0);
+  const allWord = sizeOf(all / maxHp).word, any = entries.length > 0 || !!guard;
+  const absorb = !any ? '' : known ? fill(L.absorb, { n: fmt(blow) }) : fill(L.absorb_size, { word: allWord });
+  const absorbDrop = any && known && all > blow ? fill(L.absorb_drop, { n: fmt(all) }) : '';
+  const chip = !entries.length ? '' : known ? fill(L.chip, { n: fmt(sh) }) : fill(L.chip_size, { word: sizeOf(sh / maxHp).word });
+  const what = entries.length ? (entries.length === 1 ? fill(L.vs_one, { name: entries[0].name }) : L.vs_shields) : L.vs_guard;
+  const vs = !any ? '' : known ? fill(L.vs, { what, n: fmt(blow) }) : fill(L.vs_size, { what, word: allWord });
+  const words = [...entries.map((e) => e.name + ' ' + (e.amount != null ? fmt(e.amount) : e.size)), ...(guard ? [guard.line] : [])].join('; ');
+  return { known, maxHp: u.maxHp, head: L.head, entries, guard, blow: known ? blow : null, all: known ? all : null, allWord, absorb, absorbDrop, chip, total: known ? sh : null, vs, words, rule: L.rule };
 }

@@ -46,6 +46,27 @@ weapons. Design: `docs/design/proposals/2026-11-follow-strike.md`.
   shows both rolls, and the follow is drawn as a second swing from the other hand (`fx/follow.ts`). The Both block and
   the off-hand block come from the engine's own tests.
 
+## 0.30.0 (in progress) — lane: the shield display
+
+- **Shields on the token and the card** (Leon, 16 Nov 2026). The token's one pale bar became a strip of one segment a
+  shield, in its source's ink, in the order a blow meets them; every card (hover, target, your panel) has a SHIELDS
+  block: each shield's name, amount and how long it lasts, Guard on its own line, what stands before HP and how they
+  combine. A friend's card now shows its shields; a foe's reads by name with a size word, never a number. The engine's
+  new `shieldsView` says it all (`data/rules.json combat.shield_look`); the damage path and the view share one copy of
+  the spend order (`shieldOrder`). Fix: Guard no longer soaks the part of a blow a shield layer (the Ward) would take
+  (it subtracted only the base shield), so plates are spent after every shield, as written.
+- **The shield display, review fixes.** One copy of how Guard soaks: `physical/guard.ts guardSoakOf` (its phase, a
+  plate's worth, the plates kept back), read by Durability's soak, the Bulwark's Reactive Plate and `shieldsView`, so a
+  plate holder's card now says Guard is met first, 10 a plate, nothing kept (it said after the shields, by the general
+  soak, one kept). The headline is what an ordinary blow meets ("Absorbs up to X before HP", a plate kept back), with
+  the drop case on its own line; every word of the block, the chip and the target card's line is the view's, from
+  `combat.shield_look`. The "+N SHIELD" chip (ally rows, your status line, the character sheet in a fight) counts every
+  shield, not the base one alone; the turn strip shows the shields under HP; the fight Narrator is told them. Your own
+  panel says Guard once (its row); the rule line is on the target card and your panel only. The token strip stands clear
+  of the HP bar and the base shield is hatched (kinds differ by more than colour). The base shield's words now hold for
+  every base shield (a giver may end it sooner or add to it); a layer no class move gives reads by the base name, never
+  its id.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a
