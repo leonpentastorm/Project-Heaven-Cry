@@ -419,7 +419,7 @@ register({
       const st = stateOf(h); st.lost = (st.lost || 0) + k;
       let shed = 0; while (st.lost >= every) { st.lost -= every; shed += bots; }
       say(cb, me.name + '\'s plate hardens: ' + k + ' Guard, ' + (was - ctx.dmg) + ' damage stopped.');
-      if (shed) shiftMana(cb, shed, 'reactive plate sheds bots');
+      if (shed) shiftMana(cb, shed, 'reactive plate sheds mana');
       emit(cb, 'plate_spent', { u: me, k, cb }); // 'plate_spent' {u, k}: Guard the plate spent (Adamantile Plate's ally shield)
     },
   },

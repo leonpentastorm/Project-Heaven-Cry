@@ -12,7 +12,7 @@
         "strength",
         "agility"
       ],
-      "economy": "Body classes run on ammunition, weapons and technology. They spend nothing from the air, but their kills and enhanced rounds release bots into it.",
+      "economy": "Body classes run on ammunition, weapons and technology. They spend nothing from the air, but their kills and enhanced rounds release mana into it.",
       "class_resources": [
         "heat",
         "momentum",
@@ -29,7 +29,7 @@
         "intelligence",
         "expression"
       ],
-      "economy": "Mind classes consume mana cores through an Evoker and create mana: every Sigil word adds Flux, and venting Flux pushes bots back into the air.",
+      "economy": "Mind classes consume mana cores through an Evoker and create mana: every Sigil word adds Flux, and venting Flux pushes mana back into the air.",
       "class_resources": [
         "flux",
         "core"

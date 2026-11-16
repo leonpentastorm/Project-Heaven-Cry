@@ -3661,7 +3661,7 @@
         "name": "Reactive Plate",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Your armour is woven with bots and hardens when struck. When you take damage, Guard is spent to block it: each point takes {=effects.0.value} off the damage, as many points as the hit needs. It costs no AP and no reaction. For every {=effects.1.every} Guard spent this way the plate sheds bots, and the ambient mana rises by {=effects.1.value}.",
+        "text": "Your armour is woven with mana and hardens when struck. When you take damage, Guard is spent to block it: each point takes {=effects.0.value} off the damage, as many points as the hit needs. It costs no AP and no reaction. For every {=effects.1.every} Guard spent this way the plate sheds mana, and the ambient mana rises by {=effects.1.value}.",
         "effects": [
           {
             "op": "stat_mod",
@@ -4438,7 +4438,7 @@
         "name": "Drink It In",
         "ap_cost": 0,
         "uses": "reaction",
-        "text": "When an enemy spell hits a shield you made, its bots feed your Emanator: gain MP equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP.",
+        "text": "When an enemy spell hits a shield you made, its mana feeds your Emanator: gain MP equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP.",
         "effects": [
           {
             "op": "resource",
@@ -6564,7 +6564,7 @@
         "guardian"
       ],
       "tutor": "Adamantile Brigade",
-      "summary": "Plate that hardens when struck and turns shed bots into shields for allies.",
+      "summary": "Plate that hardens when struck and turns shed mana into shields for allies.",
       "requires": [
         {
           "tutor": "Adamantile Brigade"

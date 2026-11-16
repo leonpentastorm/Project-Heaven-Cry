@@ -14,7 +14,7 @@ export const BAND_INK: Record<string, string> = { thin: '#8FB4CC', normal: '#C9D
 export const BAND_SKY: Record<string, string> = {
   thin: 'Clear and dry: little in the air. Outbursts cost more and heal less.',
   normal: 'Fair: the usual air. Magic at its plain price.',
-  rich: 'Heavy and humid with bots: Outbursts come cheap and heal strong.',
+  rich: 'Heavy and humid with mana: Outbursts come cheap and heal strong.',
   flooded: 'Storm: the air is saturated. Outbursts are cheapest and their element riders hit a stage harder, but every heart strains more.',
 };
 const METER = (): any => RULES?.mana?.meter || { min: 0, max: 40, events: [] };
