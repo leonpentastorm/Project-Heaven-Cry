@@ -130,6 +130,8 @@ function switches(cb: any, u: any, on: string): { id: string; itemKey: string; w
 }
 /** A design card's line without an Emanator in hand: the Strain it adds is the data's (soul_modules.json
  *  cycle.no_emanator_strain, the number the engine's Begin adds). */
+/** The Strain a bare-handed Begin adds (soul_modules.json cycle.no_emanator_strain), for any text that names it. */
+export const NO_EMANATOR_STRAIN: number = (SOUL_RULES as any).cycle.no_emanator_strain;
 export const noEmanatorText = (): string => 'No Emanator: +' + (SOUL_RULES as any).cycle.no_emanator_strain + ' Strain, paid from the air';
 const OVERDRAW = 'skill:will_power.3#overdraw';
 export function designCards(cb: any, u: any): DesignCard[] {

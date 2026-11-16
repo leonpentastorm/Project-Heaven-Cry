@@ -334,6 +334,10 @@ if (relOk) {
 await snap('15-combat-after-release');
 ({ cb, u } = await CB());
 if (!cb.over && (await myTurn()) === 'mine' && u.mg?.flux) {
+  // 0.30: the Emanator took the off hand for the Outburst above, and venting needs the Evoker in hand again (1 AP)
+  await act({ type: 'combat/equip', unitId: u.id, item: 'evoker', to: 'off' }); await pause(host, 300);
+  ({ cb, u } = await CB());
+  ok('the Evoker is back in the off hand to vent', u.mg?.evoker !== false);
   await pickAction(host, /^Vent Flux/); await pause(host, 150);
   const cv = host.getByRole('button', { name: /^Confirm/ }).first();
   if (await cv.isEnabled()) await cv.click(); await pause(host, 400);
