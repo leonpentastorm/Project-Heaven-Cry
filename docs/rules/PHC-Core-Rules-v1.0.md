@@ -6668,7 +6668,8 @@ is `adjudication: engine`.
 8. **The ladder with forks** (overrides rules 1.34's ladder): Visualization 1: the Double and the Snare, 1 held; 2: the
    Hand; 3: **fork A**, one of the Eye, the Wall or the Ward; 5: **fork B**, one of the Beast, the Blade, the Husk or the
    Sentinel, 2 held; 7: one more form from fork A, 3 held; 8: one more from fork B; 9: one more from either; 10: every
-   form. Held, designs, traits and the end of the Snap are rules 1.34's. A form chosen is kept for good.
+   form. Held, designs, traits and the end of the Snap are rules 1.34's. A form chosen is kept for good. *(Superseded
+   by rules 1.60 item 4648: fork A at 4, fork B at 6; designs, traits and held stay at 3 and 5.)*
 9. **A choice is one general action** (`door/pick`, doorpicks.ts): a door's data opens a list of options (here, a fork's
    forms), one is taken out of a fight and kept on the character (`doorPicks`). The FIGMENTS section of the MAGIC tab
    shows the open choice as chips; the level-up card shows the fork's forms.
@@ -10841,7 +10842,7 @@ Items 4240 to 4247.
 4277. **The Ward (item 7; `forms ward`):** charge 3, 40 HP, Defense 12, armour 3, movement 2; half of the first hit a round on an ally next to it (`redirect` share 0.5, once a round); Interpose within 3 tiles. PROVISIONAL.
 4278. **The Husk (item 7; `forms husk`):** charge 2, 20 HP, the owner's Defense and pace, lure; Burst `amounts.burst` base 20 on the Figment profile, explosive, radius 1, both sides. PROVISIONAL.
 4279. **The Sentinel (item 7; `forms sentinel`):** charge 4, 30 HP, Defense 10, armour 3, movement 0, vision 8, the service pistol with no ammunition limit; Fix at `figment_strike` within 8 tiles; the auto shot at the owner's turn start on the owner's AP (as the Scrap Turret). PROVISIONAL.
-4280. **The ladder with forks (item 8; `figments.json ladder`):** the points of each row, the forks' lists, the "one more" rows. PROVISIONAL.
+4280. **The ladder with forks (item 8; `figments.json ladder`):** the points of each row, the forks' lists, the "one more" rows. PROVISIONAL. *(Superseded by rules 1.60 item 4648: the forks at 4 and 6.)*
 4281. **The save migration (item 10; `figments.json migration`):** rev 1; the old ladder's forms kept (`legacy`). No number to fit.
 4282. **Open, for the lead:** (a) the Husk and Glimmer share the one false image a character has (a new one replaces a Double's); (b) a Sentinel's auto shot spends its owner's AP at turn start, as the Scrap Turret's does; (c) the Snare and the Sentinel borrow `figment_edge` and the service pistol until Balance 2.0 gives them their own weapons. Needs a ruling.
 4283. **Items 4270 to 4283 are rules 1.56 Figments 2.0's.**
@@ -11394,3 +11395,93 @@ stats); nothing here adds a trigger, predicate or op.
     move: 160% after. Measured Blow (item 4623) was 2 Momentum when built; the heavy blade's level-20 line read 211% (the
     band's top 206%), so it is 1 (203%). For the lead: both are fits to hold the contract, not design; Leon's "reward
     for the effort" may want the band itself looked at. PROVISIONAL: 47, 1.
+
+### Rules 1.60 (Doors 3.0), slice C: the forks (16 Nov 2026)
+
+Leon, 16 Nov 2026; the spec's section 2 (the forks), with Leon's rulings of the same day (item 4601) and the lead's
+approval of exactly N1, N2, N10, N3b and N23 (item 4602). Layer rule item 2 (item 4600): each door has two forks, at 4
+and 6 points of its alpha skill, two options each, picked once out of a fight and kept for good; every option runs on
+its door's own resource and needs no point in another door. **An option whose rule needs a primitive that is not
+approved is not built** (its row is in data, `shelved`, with its text and what it waits for), and **a step is offered
+only when both of its options are built**: a step with one option is not offered (a choice of one is no fork).
+
+4645. **The forks as data (N1):** `data/forks.json` (kind `forks`) holds one row per option: a door verb (`kind: verb`)
+    held only by a sheet that picked it (`requires: [{door_pick: <its id>}]`, `effects/collect.ts meetsRequires`), so a
+    picked option's rows run like any carried row; its id and icon are `fork.<door>.<name>`. Each alpha skill names its
+    two steps in `skills.json forks` (`[{id, at, of}]`, at 4 and 6), what they run on in `fork_runs_on`, and two unlock
+    rows at 4 and 6 whose text is the choice. `doorpicks.ts` registers every skill with `forks` (no door is named in
+    code); a pick is the one choice action `door/pick` (out of a fight; refused for a second option of a step, a shelved
+    option, another door's option); `doorForkView` is THE view the fight tab, the sheet and the level-up card read. A
+    pick is kept for good: once made, the level-up that opened it can no longer be taken back. No number.
+4646. **The pick is readable (N2):** the predicates `door_pick` and `no_door_pick` (a fork option id, or a list: any of
+    them) on the holder's character, and the number source `pick:<option id>` (1 when picked, else 0) in item ops and in
+    an action's own numbers (`holderNumber`). A row a fork changes (Slam's push, Snap's end, Touch's reach) reads the pick;
+    `tools/validate.py` holds its number equal to the fork's own field (within, rounds, tiles). No number.
+4647. **N23, completed:** the stat family `tech_num:<technique id>.<field>`, added in the one place a technique reads its
+    own numbers (`physical/core.ts Tech.num`), asked only while something in the fight answers it. No number.
+4648. **Figments' forks move to 4 and 6 (spec 2.9):** `figments.json ladder` fork A at 4 (was 3), fork B at 6 (was 5);
+    designs, traits and held counts stay at 3 and 5; the forms' `opens.min` follow; Visualization 3 is the perk step
+    "Mastery 1" (its old name "Eye and Wall" goes), 5 is "Two held", and 4 and 6 are the choice. Saves: a pick made at
+    3 or 5 is kept for good and counts as the step's; a character at Visualization 5 that picked only at 3 sees fork B
+    again at 6; an unstamped save (no `figRev`) keeps the old ladder's forms as before and, at 6, is offered the Husk or
+    the Sentinel (a gift, as the spec rules; no migration bump). PROVISIONAL.
+4649. **Guard, the first fork (Durability 4; runs on the plates):** **Provoke**: while you hold Guard, the first foe
+    each round whose blow lands on your plates is Taunted by you for 1 round with no save (a Boss too, never forced),
+    once the blow is done (a Taunt put on during the blow would end with it: the attack on its source ends a Taunt).
+    **Cover Them** (Leon's ruling i): an Answer; while you hold Guard, the first ranged hit each round on an ally within 2
+    tiles of you lands on you instead (the whole hit; a Burst's first round only), your plates soak it as any blow, it
+    costs 1 Guard more (`techniques.json rules.guard.interpose_cost`, one copy) and your reaction, once a round. A melee
+    hit is not covered. PROVISIONAL: 1, 2.
+4650. **Guard, the second fork (Durability 6):** **Stand Fast** (Leon's ruling i): your Slam is a shockwave: it pushes
+    nobody; every foe within 2 tiles is Taunted by you for 1 round with no save (a Boss too, never forced) and makes
+    Slam's Body save or is Off Balance; Slam's price (2 AP, 2 Guard) is unchanged. **Drive**: your Slam pushes 2 tiles;
+    the Off Balance save you force is at −2; each foe you knock Off Balance gives you back a plate (at most 2 a turn); you
+    stay, still Braced. As the spec's carrier is written, Drive's −2 and its plate back read every Off Balance its holder
+    puts on (a Slam's, and any other the holder forces), not only Slam's: no existing piece tells which action put it (for
+    the lead). PROVISIONAL: 2, −2, 2.
+4651. **Momentum, the first fork (Raw Power 4; runs on the chain):** **Rolling Start**: your Charge's straight run is 1
+    tile shorter (2; N23 `tech_num:charge.min_run`), a Charge costs no Momentum (N23 `momentum_cost:charge`, never below
+    0) and builds 1 if it hits. **Grindstone**: a plain melee hit (the free technique: Cut, or a plain swing) on the foe
+    you hit last builds 1 more (2 in all); "the foe you hit last" is the content condition `ground`, put by your melee hit
+    for 2 rounds (to the end of your next turn). A Strike or an Opener builds nothing, as before. PROVISIONAL: 1, 1, 1, 2.
+4652. **Momentum, the second fork: not offered.** **Spill** waits on N21 (a kill carries no overkill); its cheaper
+    wording needs the Momentum a Finisher spent as a number (no source carries it, item 4623). **Headlong** needs only
+    approved pieces (N10, N23) but is not built while its step is not offered.
+4653. **Pressure, the first fork (Dexterity 4; runs on the pips):** **Converging Fire**: each ally's ranged hit on a foe
+    you have hit this round adds 1 more Pressure, once a round for each foe (your mark: the content condition
+    `in_your_sights`, 1 round). **Walk It In**: your ranged attack that misses a foe still lays 1 Pressure on it, once a
+    turn for each foe. PROVISIONAL: 1, 1.
+4654. **Pressure, the second fork (Dexterity 6):** both keyed to **the foe's own cap** (N10 `target_res {pressure: {at:
+    max}}`, `pressureCap`: a Soldier Broken, an Elite Suppressed, a Boss Pressed), read **after** the attack (on
+    `acted`, for a target your ranged attack hit): an item's line on `hit` runs before the hit's own Pressure is laid, so
+    "takes it to its cap" cannot be read there. **Through the Gap**: once a turn, your next move this turn costs 1 AP
+    less (a move up to your Movement is free: the spec's "move up to your Movement for 0 AP" in the move's own price) and
+    draws no opportunity attack; it is not the turn's one free move. **Lockdown** (Leon's ruling i: its Slowed wording, as
+    a free shot needs N4): the foe is also Slowed for 1 round, no save. PROVISIONAL: 1, 1.
+4655. **Shadow: no step offered.** Light Fingers waits on N12 (the take op's `what` and `to`), Lightkiller on N9 (the
+    zone op may not lay smoke). **Spotter** is built (while you are Hidden, the first weapon hit each round an ally lands
+    on a Marked foe counts as an ambush, ×(1 + `rules.json shadow.ambush_bonus`), `replaces: "ambush"`, and costs you 1
+    Shadow); **Lend the Dark** needs only existing pieces and is not built while its step is not offered.
+4656. **Bonds, the first fork (Empathy 4; runs on MP through the thread):** **Keep the Thread**: your Snap keeps the Bond
+    and gives no Daze, and costs Tug's MP (12, one copy; a Boss's Bond still ends on its own clock). **Short Thread**:
+    Tending you give a Bonded ally within 2 tiles is ×1.4 (in place of the Bond's ×1.2: a `mend_mult` of 1.4 ÷ 1.2), and
+    your Touch reaches 2 tiles (Touch's reach reads `pick:`). PROVISIONAL: 12, 2, 1.4, 2.
+4657. **Bonds, the second fork: not offered.** **Long Thread** waits on N20 (a price cannot see its target, so "once per
+    Bonded ally a round" cannot be counted); the spec's cheaper wording (uncapped) is the one it rejects. **Shared Pulse**
+    is built (your Mend on a Bonded ally also sends 25% of its heal base down every Bond you hold to an ally, the target
+    included: `forks.json amounts.pulse`, Mend's heal base × 0.25, held equal by the validator). The brake (item 4640)
+    prices every Mend; no fork makes one free.
+4658. **Prayer: no step offered.** Round of Blessings and Held Breath wait on N7 (the prayer slots as numbers), Steadfast
+    on N6 (a prayer as a reaction), Benediction on N5 and N7. The cheaper wordings need what no approved piece gives: the
+    next Hymn's ×1.25 needs a predicate that tells a Hymn's heal from a Whisper's (both are kind `blessing`); the held
+    blessing needs a Whisper's amount on a condition row (a Whisper's heal and shield are `faith.ts` code).
+4659. **Sigils: no step offered.** Overflux waits on N15, Clean Vent on N22, Written in Advance and Running Script on N14.
+4660. **Outbursts: no step offered.** Slow Burn waits on N22, Blood Price on N18. Ride the Edge and Clean Break need only
+    approved pieces (N3b, and N10's `at: "limit"`) and are not built while their steps are not offered; so **N3b (Strain
+    and Flux as resource rows) and `at: "limit"` are not built in this slice**: nothing offered uses them, and an approved
+    primitive with no user is not added (the lead's call to reverse).
+4661. **Placeholders and art:** each option's icon id is its own id (`fork.<door>.<name>`); 32 Wick placeholders
+    (`art/icons/forks/placeholders/`, catalog `fork_icons`) until drawn (ART-REQUESTS.md). No number.
+4662. **The simulator takes the forks** with the perk steps (a fork is a reward on top of the line, as a perk step is):
+    the balance contract, which measures the line with no perk steps, takes none; a measure may name the options it
+    wants (`test/balance/builds.ts STEPS.forks`). No number.
