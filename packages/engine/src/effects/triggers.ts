@@ -23,7 +23,7 @@ import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, t
 import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
-import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile } from '../combat';
+import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
 import { WEAPON } from '../data';
 import { magsOf, type PackItem } from '../character';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
@@ -629,6 +629,8 @@ export function triggerProblem(e: any): string | null {
   if (e.limit != null) { const l = e.limit; if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per) && typeof l.reaction !== 'number')) return 'limit must be { per, n }, { cooldown } or { reaction, kind }'; if (typeof l.reaction === 'number' && !REACT_KINDS.includes(l.kind)) return 'a reaction limit names its kind (' + REACT_KINDS.join(', ') + ')'; }
   return null;
 }
+/** The triggers whose lines react to a blow (rules 1.58, N4): a rider's own item alone answers them. */
+const RIDER_SKIPS = new Set(['hit', 'miss', 'kill', 'downed']);
 /** Run one triggered effect on its hook's payload, for one holder. */
 export function runTriggered(ctx: any, h: Holder, e: any): void {
   const trig = TRIGGERS[e.when], cb = h.cb, self = h.u;
@@ -638,10 +640,15 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   const cond = e.if || {};
   if (trig.self && cond[trig.self] == null && unitOf(ev, trig.self) !== self) return; // whose event: the trigger's own role is the holder unless `if` names it
   for (const k of Object.keys(cond)) if (!PREDICATES[k]?.test(ev, cond[k])) return;
+  // rules 1.58 (N4): a rider (a follow strike) is not "a melee hit": the striker's lines that react to a blow skip it
+  // unless they are the striking item's own (with_this), and no other line spends a limited use on it (it applies only
+  // while a use is left); lines that size a blow apply as to any blow
+  const rider = ev.actor === self && cond.with_this !== true && strikeRider(self);
+  if (rider && RIDER_SKIPS.has(e.when)) return;
   const all = [e, ...(Array.isArray(e.and) ? e.and : [])], changes = all.some((x) => OPS[x.op]?.state);
   if (ev.preview && changes) return; // a preview changes nothing
   const lim = e.limit, asReaction = !!lim && typeof lim.reaction === 'number';
-  if (asReaction ? !canReact(cb, self, lim.kind, lim.of === 'owner' ? 0 : lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
+  if (asReaction ? !canReact(cb, self, lim.kind, lim.of === 'owner' ? 0 : lim.reaction) : !limitOk(ev, lim, !ev.preview && !rider)) return;
   const label = e.label || h.info.name, parts: string[] = [];
   let ran = 0;
   const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); if (r !== false) ran++; if (typeof r === 'string' && r) parts.push(r); }; // an op that returns false did nothing (a zone cleared that wasn't there)

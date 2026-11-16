@@ -8,6 +8,27 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## Next (after 0.29.0) — follow strikes
+
+Rules revision 1.58 (hands 5e; spec items 4507 to 4521; every new number PROVISIONAL), on top of rules 1.57's shields as
+weapons. Design: `docs/design/proposals/2026-11-follow-strike.md`.
+
+- **The off hand follows.** A shield, Afterword, or a melee weapon carrying a mod that grafts `follows`, held in the off
+  hand, strikes once after each melee technique of your one-handed main weapon: its own roll at -2, its own damage, no
+  AP, at the foe your first blow really struck. It is a rider: no Momentum, no Pressure, no other item's once-a-turn
+  line, and a missed follow draws no Riposte. Never after a gun, a throw, a reaction, a shield technique, a paired attack
+  or a class or perk strike, and never with a two-handed weapon (Heavyworlder's one-handed greatsword included).
+- **A shield's follow gives Guard**: the first that lands each turn gives 1 Guard, however many shields you hold.
+- **Not a second weapon**: a follows item in the off hand asks no +2, opens no Both block, makes no paired attack and has
+  no attack of its own there. A main-hand shield with a sword in the off hand is still ordinary dual wielding.
+- **Shield Bash costs 1 AP** (was 2).
+- **Wear**: only the follow wears the off hand; a follows item worn to 0 makes no follow.
+- **New gear rows, in no shop or loot table yet**: Afterword (an off-hand knife, its follow at a quarter of its damage
+  and Bleeding once a turn; 700 credits) and the Trailing balance mod (grafts `follows` onto a melee weapon).
+- **Screens**: each melee row's preview shows the follow as a second line ("then Buckler · 47% · 4 damage"), the log
+  shows both rolls, and the follow is drawn as a second swing from the other hand (`fx/follow.ts`). The Both block and
+  the off-hand block come from the engine's own tests.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a

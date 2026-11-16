@@ -6,11 +6,11 @@
 //   tq:<hand>:<id>   a technique to use (the plain attack row, or a chip picked from a pad)
 //   tpad:<hand>      a weapon's Techniques row (selecting it opens the pad)
 //   twatch           Hold a shot (selecting it opens the Watches)
-import { WEAPON, ITEM, phys, parseTechId, techParts } from '@engine';
+import { WEAPON, ITEM, phys, parseTechId, techParts, pairs } from '@engine';
 import { tipAttrs } from './actionTip';
 type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup;
 import { heatLimit } from '@engine';
-const { techniquePad, packPad, pairedPad, physView, weaponSystem, propText, TECHNIQUE, shieldOf } = phys;
+const { techniquePad, packPad, pairedPad, physView, weaponSystem, propText, TECHNIQUE, shieldOf, followOf } = phys;
 import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
 import { poseOf } from './fx/pressure';
 import { doorLineOf } from './doorView';
@@ -109,7 +109,9 @@ const reactionChip = (c: TechChip): TechChip => ({ ...c, reaction: true, apText:
 export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
   if (!cb || !u) return [];
   const shieldId = !u.offWeapon ? (() => { try { return shieldOf(u); } catch { return null; } })() : null;
-  const hands: Hand[] = ['main', ...((u.offWeapon && (WEAPON as any)[u.offWeapon]) || shieldId ? ['off' as Hand] : [])];
+  // the engine's tests (rules 1.58): a follows weapon in the off hand has no block of its own; the Both block is pairs(u)
+  const follows = (() => { try { return followOf(u); } catch { return null; } })();
+  const hands: Hand[] = ['main', ...((u.offWeapon && (WEAPON as any)[u.offWeapon] && !follows) || shieldId ? ['off' as Hand] : [])];
   const pv = (() => { try { return physView(cb, u, u.side, g); } catch { return null; } })();
   const blocks = hands.map((hand): WeaponBlock | null => {
     // A shield in the off hand: its own block. Shield Bash and Raise Shield are chips; Shield Wall and Interpose are
@@ -158,7 +160,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
   // Two weapons of one kind (two guns, two melee weapons): a third block for what both do together (Leon, 10 Nov 2026):
   // the paired attack, the techniques that can be made with each in turn, and (the screen adds it) reloading both.
   const bm = blocks.find((b) => b.hand === 'main'), bo = blocks.find((b) => b.hand === 'off');
-  if (bm && bo && !bo.shield && bm.system === bo.system) {
+  if (bm && bo && (() => { try { return pairs(u); } catch { return false; } })()) {
     let pe: PadEntry[] = []; try { pe = pairedPad(cb, u, g); } catch { pe = []; }
     const chips = pe.map((e) => chipOf(e));
     blocks.push({ hand: 'both', weaponId: bm.weaponId, name: 'Both hands', icon: bm.icon, iconOff: bm.iconOff, system: bm.system, meter: bm.name + ' + ' + bo.name, pips: [], meterHint: 'The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1. It costs the higher of the two AP costs, plus 1.',

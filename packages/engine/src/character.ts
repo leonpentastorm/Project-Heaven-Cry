@@ -934,6 +934,14 @@ const thingProps = (id: string): string[] => (((WEAPON[id] as any)?.phys?.props 
  * (`phys.props`). Every reader of "is a shield held" goes through it (holdsShield, the unit's off-hand item, the
  * technique core's shieldsOf, Parry's bonus, the second-weapon rule, Defense's Shield Partner). */
 export const isShieldId = (id: string | null | undefined): boolean => !!id && !!WEAPON[id] && thingProps(id).includes('shield');
+/** Rules 1.58 (hands 5e, items 4507 and 4520): THE one test of "a follows item": a melee row whose `phys.props` holds
+ * `follows` (every shield, Afterword), or a melee weapon carrying a modifier that grafts the word (a fitted mod's or a
+ * variant's modifier row with `adds_props`, read through instanceMods). A graft on a gun does nothing. `mods`: the
+ * instance's fitted mods (a unit's `offMods`, a GearState's `mods`). Where it matters (the off hand) is the reader's. */
+export function followsId(id: string | null | undefined, mods?: readonly string[] | null): boolean {
+  const w: any = id ? WEAPON[id] : null; if (!w || w.phys?.system !== 'melee') return false;
+  return thingProps(id!).includes('follows') || instanceMods(id, { mods }).all.some((m) => (((ITEM[m] as any)?.adds_props || []) as string[]).includes('follows'));
+}
 /** Is a shield in either hand (rules 1.56: one grant, however many are held)? */
 export const holdsShield = (c: Character): boolean => inHands(c).some(isShieldId);
 /** Rules 1.57 (A1): a pack line from before shields were weapon rows ({item: 'buckler', kind: 'tool'}) as the weapon
@@ -1385,9 +1393,10 @@ export const AMMO_WHY = 'That is ammunition, not a weapon.';
  * (a weapon with no requirement asks 2 of the skill it hits with). Torches and focuses are not weapons; a shield in the
  * off hand is not a second weapon (rules 1.57 A1, 5a amended), but a weapon beside a main-hand shield is. Returns the
  * refusal, or null. */
-export function secondWeaponWhy(c: Character, offId: string | null | undefined, mainId: string | null | undefined): string | null {
+export function secondWeaponWhy(c: Character, offId: string | null | undefined, mainId: string | null | undefined, offMods?: readonly string[] | null): string | null {
   const ow: any = offId ? WEAPON[offId] : null, mw: any = mainId ? WEAPON[mainId] : null;
-  if (!ow || ow.id === 'fists' || isShieldId(ow.id) || !mw || mw.id === 'fists') return null;
+  // rules 1.58 (5a amended, item 4514): a follows item in the off hand is not a second weapon (a shield is one)
+  if (!ow || ow.id === 'fists' || isShieldId(ow.id) || followsId(ow.id, offMods) || !mw || mw.id === 'fists') return null;
   const extra = (wpGear as any)?.second_weapon_skill_extra ?? 2, req = ow.requires && Object.keys(ow.requires).length ? ow.requires : { [ow.skill || 'dexterity']: 0 };
   for (const [sk, n] of Object.entries(req)) { const need = (n as number) + extra; if ((c.skills[sk] || 0) < need) return 'A second weapon asks more: the ' + ow.name.toLowerCase() + ' in the off hand needs ' + (SKILL[sk]?.name || sk.replace('_', ' ')) + ' ' + need + '.'; }
   return null;
@@ -1407,7 +1416,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (!wid) return 'Only weapons go in the main hand.';
     { const rq = requiresWhy(c, (WEAPON[wid] as any).requires); if (rq) return rq; }
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
-    if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid); if (sw) return sw; }
+    if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid, c.offHand.mods); if (sw) return sw; }
     take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType); // a stowed gun keeps the rounds in it (rules 1.3), and their type
     if (twoHands(c, wid) && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
     c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined, ...(it.prop ? { prop: it.prop } : {}) }; c.loaded = it.loaded ?? 0;
@@ -1418,7 +1427,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (wid ? (WEAPON[wid] as any).hands !== '1H' : item?.slot !== 'off_hand') return 'That doesn\'t go in the off hand.';
     // Rules 1.13 (proposal 13.3): what the weapon or item asks is asked in the off hand too; a second weapon asks 2 more.
     { const rq = requiresWhy(c, wid ? (WEAPON[wid] as any).requires : item?.requires); if (rq) return rq; }
-    if (wid) { const sw = secondWeaponWhy(c, wid, c.weapon); if (sw) return sw; }
+    if (wid) { const sw = secondWeaponWhy(c, wid, c.weapon, it.mods); if (sw) return sw; }
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
     // An off-hand gun holds what its pack entry held, as the main hand does (rules 1.9, item 688).
     c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(it.prop ? { prop: it.prop } : {}), ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };

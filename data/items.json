@@ -1638,6 +1638,85 @@
       "card": {
         "text": "Open guard: only light gloves in hand, Light armour or none: blows at you are at {=effects.0.value|signed} to hit."
       }
+    },
+    {
+      "id": "mod_follow_guard",
+      "name": "Shield follow",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A shield's follow strike that lands gives {=effects.0.value} Guard, under the pool's cap, once a turn however many shields you hold (rules 1.58 item 4517). Named in every shield's variant_mods; never fitted.",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "hit",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"]
+          },
+          "resource": "guard",
+          "value": 1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_afterword",
+      "name": "Afterword's edge",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Afterword's follow strike does \u00d7{=effects.0.value} damage, and once a turn its follow that lands leaves Bleeding (a Body save) (rules 1.58 item 4519). Named in Afterword's variant_mods; never fitted.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"]
+          },
+          "value": 0.25
+        },
+        {
+          "op": "condition",
+          "when": "hit",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"],
+            "target_alive": true
+          },
+          "target": "target",
+          "condition": "bleeding",
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "say": "{target} is opened by Afterword{then}."
+        }
+      ]
+    },
+    {
+      "id": "mod_follow_graft",
+      "name": "Trailing balance",
+      "category": "mod",
+      "weight_kg": 0.1,
+      "price_credits": 400,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Grip: re-weights a melee weapon for the off hand. It follows there: after each melee technique of your one-handed main weapon it strikes the same foe once (rules 1.58 item 4520). In the main hand it does nothing. In no shop or loot table yet.",
+      "adds_props": ["follows"],
+      "effects": [
+        {
+          "op": "mod",
+          "slot": "grip"
+        }
+      ],
+      "mod_slot": "grip"
     }
   ]
 }

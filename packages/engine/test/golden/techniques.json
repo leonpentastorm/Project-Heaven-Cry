@@ -539,5 +539,5 @@
 "tech/throw/maul/soldier": "o:weapon/thrown:45+0x1.647v0 i:F1:weapon/physical:65 => F1 hp259>194",
 "tech/throw/sabre/elite": "o:weapon/thrown:28+0x1.716v0 i:F2:weapon/physical:31 => F2 hp444>413",
 "tech/throw/sabre/soldier": "o:weapon/thrown:28+0x1.716v0 i:F1:weapon/physical:39 => F1 hp259>220",
-"#coverage": "29 of 65 produced a number here. None from: bead, bind, brace, charge, cover_me, crossfire, dead_to_rights, deny, drag, draw_cut, feint, flush, grapple, guard, head_down, interpose, keep_back, load_special, overwatch, parry, pull_out, raise_shield, riposte, rout, shield_bash, shield_wall, shift, shove, sidestep, snap_shot, spot, throw_down, trip, vent, walking_fire, warning_shot"
+"#coverage": "29 of 66 produced a number here. None from: bead, bind, brace, charge, cover_me, crossfire, dead_to_rights, deny, drag, draw_cut, feint, flush, follow, grapple, guard, head_down, interpose, keep_back, load_special, overwatch, parry, pull_out, raise_shield, riposte, rout, shield_bash, shield_wall, shift, shove, sidestep, snap_shot, spot, throw_down, trip, vent, walking_fire, warning_shot"
 }

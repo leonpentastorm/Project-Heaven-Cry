@@ -1015,6 +1015,7 @@
 "tech/feint/sabre": "P1 ap9>8 | short: Needs 1 AP. | again: NO An Opener is only the first melee technique of your turn. | next: P1 ap9>8 res.momentum3>2 | later: P1 ap9>8 res.momentum3>2",
 "tech/flurry/sabre": "P1 ap9>6 res.momentum3>2 | short: Needs 3 AP. | again: P1 ap9>6 res.momentum2>1; air mana15>20 | next: P1 ap9>6 res.momentum2>1; air mana15>20 | later: P1 ap9>6 res.momentum2>1; air mana15>20",
 "tech/flush": "REFUSED (no weapon of the table makes it)",
+"tech/follow": "REFUSED (no weapon of the table makes it)",
 "tech/grapple": "REFUSED (no weapon of the table makes it)",
 "tech/guard/sabre": "P1 ap9>8 | short: Needs 1 AP. | again: NO You are already on Guard. | next: P1 ap9>8 | later: P1 ap9>8",
 "tech/half_sword/sabre": "P1 ap9>7 res.momentum3>2 | short: Needs 2 AP. | again: P1 ap9>7 res.momentum2>1 | next: P1 ap9>7 res.momentum2>1 | later: P1 ap9>7 res.momentum2>1",

@@ -12,10 +12,10 @@ import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlockedOf, type ReactKind } from '../tactics';
-import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp } from '../combat';
+import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp, setStrikeRider, strikeRider, pairs, withOffHand, offWear } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
-import { mod, holds as holdsGear, isShieldId } from '../character';
+import { mod, holds as holdsGear, isShieldId, followsId } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
@@ -54,7 +54,8 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
     // What the unit has usable in each hand is worked out once, and again only after one of its reactions ran (the
     // reaction may have changed what it holds or can use): the same answer as asking for every Answer in turn.
     let sets: { main: Set<string>; off: Set<string> } | null = null;
-    for (const a of answersOn(name)) {
+    // rules 1.58 (N4): a follow strike's miss draws no Answer (Riposte); a landed one meets armour, soak and Parry
+    for (const a of name === 'on_miss' && strikeRider(ctx.att) ? [] : answersOn(name)) {
       if (!alive(u)) break;
       if (!sets) sets = { main: new Set(usable(null, u, 'main').map((x) => x.id)), off: new Set(usable(null, u, 'off').map((x) => x.id)) };
       const hand = sets.main.has(a.id) ? 'main' : sets.off.has(a.id) ? 'off' : null; if (!hand) continue;
@@ -94,6 +95,9 @@ export const techStateOf = (u: Unit, id: string): Record<string, any> => u.tech?
 const shieldsOf = (u: Unit): string[] => [u.offItem, u.swapMain || u.weapon].filter((id): id is string => isShieldId(id));
 /** The shield a unit holds (the off hand's first), or null. Its techniques come once, however many are held. */
 export const shieldOf = (u: Unit): string | null => shieldsOf(u)[0] || null;
+/** Rules 1.58 (hands 5e, N1): the off hand's follows item (its weapon, else its carried shield), or null. The one reader
+ * of where the word counts: only in the off hand (character.ts followsId is what makes a follows item). */
+export const followOf = (u: Unit): string | null => (u.offWeapon ? (followsId(u.offWeapon, u.offMods) ? u.offWeapon : null) : u.offItem && followsId(u.offItem) ? u.offItem : null);
 /** What the off hand holds for a technique: its weapon, else (a shield's techniques, worked from the off hand while it
  * holds no weapon) the shield, its own strike line, else nothing. */
 const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) || null);
@@ -273,6 +277,9 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   const weaponId = hand === 'off' ? offHeld(u) : u.weapon; if (!weaponId) return [];
   const shield = shieldHand(u, hand);
   const sys = weaponSystem(weaponId), props = shield ? ['shield'] : weaponProps(weaponId), c = u.companion ? null : charOfUnit(u);
+  // rules 1.58 (item 4514, F-e): a follows item in the off hand has no attack of its own; it offers only what another of
+  // its properties brings (a shield's techniques: the shield branch below)
+  const followsOff = hand === 'off' && !shield && followOf(u) === weaponId;
   // A companion, a puppet or a unit with a fixed action list (the drone) has the free techniques its list allows, and
   // nothing else: the reducer refuses the rest (game.ts).
   const plainOnly = !!u.companion || !!u.allowedActions || condOn(u, 'puppeted');
@@ -281,6 +288,8 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
   const out: { id: string; how: 'free' | 'lent' | 'comes' | 'ready' }[] = [];
   const comes = (d: TechDef) => d.comes_with.some((p) => props.includes(p)) && (!d.comes_while || (!!c && holdsGear(c, d.comes_while)));
   for (const d of TECHNIQUES) {
+    if (d.group === 'follow') continue; // rules 1.58: the follow strike is never offered: the engine makes it
+    if (followsOff) { if (!d.perk && !d.innate && !d.free && !wield && !plainOnly && d.system === sys && comes(d)) out.push({ id: d.id, how: 'comes' }); continue; }
     // Rules 1.13. A technique a skill gives (Interpose at Durability 3) is everyone's who has the points, whatever is in
     // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
     // and that hand offers nothing else. Neither is ever learned, readied or lent.
@@ -370,19 +379,10 @@ const cur = (att?: Unit) => { const a = ACTIVE[ACTIVE.length - 1]; return a && (
 /** Run fn with the technique's hand as the unit's weapon (the off hand is swapped in, as a paired attack does). */
 function inHand<T>(t: Tech, fn: () => T): T {
   const u = t.u; if (t.hand !== 'off' || !offHeld(u)) return fn();
-  if (!u.offWeapon) { // a shield (rules 1.57, A1): the strike is the shield's own row, with the skill it hits with
-    const sid = offHeld(u)!, keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, dmgMult: u.dmgMult };
-    const pts = (t.c?.skills as any)?.[weaponPhys(sid).hits_with];
-    u.swapMain = u.weapon; u.weapon = sid; u.ammo = 0; u.maxDur = 0; u.mods = []; u.ammoType = null; u.jammed = false; u.dmgMult = 1;
-    if (typeof pts === 'number') u.attack = mod(pts);
-    try { return fn(); } finally { Object.assign(u, keep); delete u.swapMain; }
-  }
-  const ow = WEAPON[u.offWeapon], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, heat: u.heat };
-  const pts = (t.c?.skills as any)?.[weaponPhys(ow.id).hits_with];
-  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = u.offMods || []; // rules 1.56: its own mods
-  u.ammoType = (u as any).offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
-  if (typeof pts === 'number') u.attack = mod(pts);
-  try { return fn(); } finally { if (!t.preview) { u.offAmmo = u.ammo; setOffJam(u, u.jammed); } const heat = u.heat; Object.assign(u, keep); delete u.swapMain; if (!t.preview) u.heat = heat; }
+  // the one swap (combat.ts withOffHand, rules 1.58 F-b): the off hand's weapon with its own rounds, jam and mods; a
+  // shield (rules 1.57, A1) with its own row; each with the skill it hits with. Only a follow wears the off hand.
+  const id = offHeld(u)!, pts = (t.c?.skills as any)?.[weaponPhys(id).hits_with];
+  return withOffHand(u, fn, { id, preview: t.preview, ...(typeof pts === 'number' ? { attack: mod(pts) } : {}), ...(t.def.group === 'follow' ? { wear: true } : {}) });
 }
 /** The rounds a technique uses (the ranged lane: Load Special's chambered round, sets.ts; the quiver's arrows, quiver.ts).
  * pick: the ammo type this strike fires (null type: standard), or null to leave it alone. It runs in previews too,
@@ -433,9 +433,10 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         try { pv = previewAttack(t.cb, u, tgt, mode, { free: true, noRecoil, ambush: !!o.ambush }); } finally { if (n) { u.ammo = keep.ammo; u.heat = keep.heat; u.shotsThisTurn = keep.shots; u.jammed = keep.jammed; } if (t.preview) u.attack = atk0; }
         if (pv.ok && fires) st.rolls = (st.rolls || 0) + 1;
         if (t.preview && pv.ok && mode !== 'melee') (st.far ||= []).push(tgt.id); // a ranged or thrown roll: its hit gives Pressure (the card shows it)
+        if (t.preview && pv.ok && mode === 'melee' && t.hand === 'main' && !st.real) st.real = tgt; // the first roll's unit (rules 1.58: a follow goes at it)
         if (t.preview || !pv.ok) { u.attack = atk0; if (t.preview) { t.pv.attacks.push({ target: tgt.id, pv }); if (pv.ok && fires && t.w.magazine != null && !u.infiniteAmmo && rd?.fromMag !== false) t.pv.rounds += 1; } return { ok: pv.ok, why: pv.why, hit: false, crit: false, dmg: 0, killed: false, pct: pv.ok ? pv.pct : 0, target: tgt }; }
         const m0 = momentumOf(u), su = (u as any).setUp;
-        if (su && su.t === turnStamp(t.cb) && su.target === tgt.id && (!su.only || su.only.includes(t.def.id))) st.willUseSetUp = true; // a mark for other techniques only is not spent by this one
+        if (su && !o.rider && su.t === turnStamp(t.cb) && su.target === tgt.id && (!su.only || su.only.includes(t.def.id))) st.willUseSetUp = true; // a mark for other techniques only is not spent by this one
         st.struck = (st.struck || 0) + 1;
         let r: ReturnType<typeof resolveAttack>;
         // a volley's rounds are numbered and named, as the engine's own burst and full auto are (Fire Discipline, Spray and Pray)
@@ -446,7 +447,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
           // only the plain melee attack's hit gives Momentum (the engine's +1 in resolveAttack)
           ...(isPlainMelee(t.def) && !o.noMomentum && !o.thrown ? {} : { noMomentum: true }) };
         // the shot's effects event says which technique fired it and its place among this use's rolls (presentation only)
-        ro.fx = { tech: t.def.id, vi: st.struck - 1 };
+        ro.fx = { tech: t.def.id, vi: st.struck - 1, ...(o.rider ? { follow: true } : {}) }; // rules 1.58 (F-c): a follow strike's swing
         const roll0 = () => resolveAttack(t.cb, t.rng, u, tgt, mode, t.c, ro), roll = o.chain ? () => asChain(roll0) : roll0;
         try { r = o.volley ? asVolley(typeof o.volley === 'string' ? o.volley : 'technique', roll) : roll(); } finally { u.attack = atk0; }
         if (r.refused) return { ok: false, why: r.refused, hit: false, crit: false, dmg: 0, killed: false, pct: 0, target: tgt };
@@ -454,6 +455,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
         if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
         if (t.def.system === 'melee') momentumFx(t.cb, u, m0); // the engine added the plain attack's +1 (a reaction's hit on the user shows itself)
+        if (mode === 'melee' && t.hand === 'main' && !st.real) st.real = act.real || tgt; // the first roll really made, at the unit really struck (rules 1.58: a follow goes at it)
         // the unit the attack was really made against (Confused, a captive held as a shield, Duck and Roll): riders follow it
         return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: act.real || tgt };
       } finally { if (rd) { u.ammoType = type0; rd.by.done?.(t, tgt); } }
@@ -472,7 +474,7 @@ onHook('attack_preview', (ctx: any) => {
   // Both hands (a technique made with each weapon in turn): the paired attack's penalty for this hand.
   { const pr = a ? ((a.t.args as any)._pair as PairMark | undefined) : undefined; if (pr && pr.hit) ctx.terms.push({ v: pr.hit, label: 'both hands' }); }
   // A set-up mark (Feint, Sidestep): the user's next technique against that target this turn.
-  const su = (ctx.att as any).setUp; if (su && su.t === turnStamp(ctx.cb) && su.target === ctx.tgt.id && su.hit && (!su.only || (!!a && su.only.includes(a.t.def.id)))) ctx.terms.push({ v: su.hit, label: su.label || 'set up' });
+  const su = (ctx.att as any).setUp; if (su && !a?.o.rider && su.t === turnStamp(ctx.cb) && su.target === ctx.tgt.id && su.hit && (!su.only || (!!a && su.only.includes(a.t.def.id)))) ctx.terms.push({ v: su.hit, label: su.label || 'set up' });
   // Pressed (rules 1.12): −1 to hit with ranged attacks. Melee swings are not affected.
   if (!ctx.melee && isPressed(ctx.att)) ctx.terms.push({ v: PHYS_RULES.pressure.pressed_ranged_hit, label: 'Pressed' });
 });
@@ -495,6 +497,7 @@ export function canStrike(t: Tech, target: Unit, mode?: 'melee' | 'shot' | 'aime
   ACTIVE.push({ t, o: {}, tgt: target, real: null });
   try { return inHand(t, () => previewAttack(t.cb, t.u, target, mode || (t.def.system === 'melee' ? 'melee' : 'shot'), { free: true }).ok); } finally { ACTIVE.pop(); }
 }
+setStrikeRider((att) => !!cur(att)?.o.rider); // rules 1.58 (N4): combat.ts strikeRider, the one reading of a rider
 /** True while a strike of this unit asked for no Pressure (pressure.ts reads it in its on_hit). */
 export const strikeNoPressure = (att: Unit) => !!cur(att)?.o.noPressure;
 /** The technique a unit is striking with right now, if any (pressure.ts, drill.ts). */
@@ -899,7 +902,30 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
     const now = pressureOf(v), after = Math.min(pressureCap(v), now + inHand(t, () => hitPressure(cb, u, v)).n); (t.pv.pressure ||= []).push({ unit: v.id, add: after - now, after, state: pressureState({ pressure: after } as any), onHit: true });
   }
   if (def.group === 'take' && t.tgt) { const now = pressureOf(t.tgt), after = Math.max(0, now - PHYS_RULES.pressure.take_cost); (t.pv.pressure ||= []).push({ unit: t.tgt.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
+  if (t.pv.ok) follow(t);
   return t.pv;
+}
+/** The engine's follow technique: the one row of the `follow` group (techniques.json; nobody learns it). */
+const FOLLOW_DEF = (): TechDef | undefined => TECHNIQUES.find((d) => d.group === 'follow');
+/** Rules 1.58 (hands 5e, N3): the follow strike, at the tail of a main-hand melee technique made as the unit's own
+ * action (useTechnique; previewTechnique shows it as a second attack entry, `follow: true`). Once per technique, after
+ * it resolved, at the unit its first roll really struck (a foe still up, within the follows item's reach), with the off
+ * hand's follows item: its own roll and line, the follow row's numbers (extra, mult), no AP; a rider (N4: no Momentum,
+ * no Pressure, no set-up mark, not "a melee hit"). Never: a paired half, an off-hand or shield technique, an Answer, a
+ * throw, outside the unit's own turn, with a main weapon that is not a one-handed melee row, or a follows item worn to 0. */
+function follow(t: Tech): void {
+  const u = t.u, cb = t.cb, def = t.def, st = scratch(t), fdef = FOLLOW_DEF();
+  if (!fdef || (t.args as any)._pair || t.hand !== 'main' || def.system !== 'melee' || def.group === 'answer' || def.group === 'follow' || def.needs.shield || t.wield === 'throwable') return;
+  const mw: any = WEAPON[u.weapon]; if (!mw || weaponSystem(u.weapon) !== 'melee' || mw.hands !== '1H') return;
+  if (cb.reacting || cb.window || active(cb) !== u) return;
+  const id = followOf(u), real: Unit | undefined = st.real; if (!id || !real || real.side === u.side || !alive(real)) return;
+  { const w = offWear(u, id); if (w.max && w.dur <= 0) return; }
+  const ft = buildTech(cb, u, fdef, { hand: 'off', targetId: real.id }, t.rng, t.preview);
+  const o: StrikeOpts = { target: real, extra: ft.num('extra'), mult: ft.num('mult', 1), label: WEAPON[id]?.name || fdef.name, rider: true, noPressure: true, noMomentum: true, chain: true };
+  if (t.preview) { strike(ft, o); for (const a of ft.pv.attacks) t.pv.attacks.push({ ...a, follow: true, item: id }); return; }
+  if (!canStrike(ft, real)) return; // out of its reach: no follow, and nothing is said
+  say(cb, '  ' + (WEAPON[id]?.name || fdef.name) + ' follows:');
+  const g0 = guardOf(u); strike(ft, o); if (guardOf(u) > g0) guardFx(cb, u, g0, 'gain'); // a plate its own line gave (a shield's, once a turn) plays as any gain
 }
 /** A shield's technique is the hand's whose pad carries it (shieldHand: the off hand, or a main-hand shield beside an
  * off-hand weapon; rules 1.57 A1), whichever hand the caller named. */
@@ -952,6 +978,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
   noteChain(cb, u, id);
+  follow(t); // rules 1.58 (hands 5e): the off hand's follows item strikes once after a main-hand melee technique
   if (def.group === 'take' && t.tgt) { techState(u, '_take').t = turnStamp(cb); lowerPressureOf(cb, t.tgt, PHYS_RULES.pressure.take_cost, def.name, u); }
   u.attackedTurn = u.attackedTurn || def.system === 'melee';
   checkOver(cb);
@@ -1055,7 +1082,8 @@ const offHandPenalty = (u: Unit) => Math.min(-1, -3 + Math.floor(((u as any).dex
 /** Why this unit can't use this technique with both hands (null: it can). */
 function pairedWhy(u: Unit, def: TechDef): string | null {
   if (!u.offWeapon || !WEAPON[u.offWeapon]) return 'Needs a weapon in each hand.';
-  if (weaponSystem(u.weapon) !== def.system || weaponSystem(u.offWeapon) !== def.system) return 'Needs two ' + (def.system === 'melee' ? 'melee weapons' : 'guns') + '.';
+  if (followOf(u)) return 'The ' + WEAPON[u.offWeapon].name.toLowerCase() + ' follows: it is not a second weapon.'; // rules 1.58 (5b amended)
+  if (!pairs(u) || weaponSystem(u.weapon) !== def.system) return 'Needs two ' + (def.system === 'melee' ? 'melee weapons' : 'guns') + '.';
   if (!PAIRED_TECHNIQUES.includes(def.id)) return def.name + ' is made with one weapon.';
   if (!hasUsable(u, 'main', def.id) || !hasUsable(u, 'off', def.id)) return 'Both weapons must be able to use ' + def.name + '.';
   return null;
@@ -1064,7 +1092,7 @@ const pairedAp = (cb: Combat, u: Unit, def: TechDef, args: TechArgs) => Math.max
 /** The techniques a unit could make with both hands now, as pad entries (the screen's third block). */
 export function pairedPad(cb: Combat, u: Unit, g?: any): PadEntry[] {
   if (g) return withG(g, () => pairedPad(cb, u));
-  if (!u.offWeapon || !WEAPON[u.offWeapon] || weaponSystem(u.weapon) !== weaponSystem(u.offWeapon)) return [];
+  if (!pairs(u)) return []; // rules 1.58 (F-d): the one Both test
   return PAIRED_TECHNIQUES.map((id) => TECHNIQUE[id]).filter((def) => def && !pairedWhy(u, def)).map((def): PadEntry => {
     const ap = pairedAp(cb, u, def, {}), why = whyNot(cb, u, ap) || gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
     const lf = linesFor(def, u.weapon, undefined, u);

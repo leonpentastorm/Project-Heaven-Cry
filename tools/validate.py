@@ -1607,9 +1607,10 @@ tq = data.get("techniques")
 if isinstance(tq, dict):
     MELEE_PROPS = {"edge", "point", "blunt", "hook", "reach", "heavy", "light", "bare", "thrown", "open_hand"}  # open_hand: the monk's glove family (rules 1.56)
     RANGED_PROPS = {"quick", "auto", "precise", "spread", "heavy", "blast", "arc", "silent", "loud", "drawn", "thrown"}
-    GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer"}, "ranged": {"fire", "press", "set", "take", "watch"}}
+    GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer", "follow"}, "ranged": {"fire", "press", "set", "take", "watch"}}
     AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
     SHIELD_PROPS = {"shield"}  # rules 1.57 (A1): carried by a shield's weapon row (category shield, 1H melee), and only by one
+    FOLLOW_PROPS = {"follows"}  # rules 1.58 (5e item 4507): a follows item, only a shield or a melee row (a modifier's adds_props grafts it)
     trules = tq.get("rules") or {}
     techs = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
     if len(techs) != len(items("techniques")):
@@ -1679,7 +1680,7 @@ if isinstance(tq, dict):
                 errors.append(f"techniques: starting.{key} names '{tid}', not a {sysm} technique that can be picked")
     if st.get("default_melee") and not any(techs.get(tid, {}).get("group") == "opener" for tid in st.get("default_melee")):
         errors.append("techniques: starting.default_melee needs an Opener")
-    for pr in MELEE_PROPS | RANGED_PROPS | SHIELD_PROPS:
+    for pr in MELEE_PROPS | RANGED_PROPS | SHIELD_PROPS | FOLLOW_PROPS:
         if pr not in (trules.get("props") or {}):
             errors.append(f"techniques: rules.props has no text for '{pr}'")
     wtiers = {e.get("id") for e in items("enemies") if isinstance(e, dict)}
@@ -1730,6 +1731,17 @@ if isinstance(tq, dict):
         gc = (t.get("numbers") or {}).get("guard_cost")
         if gc is not None and (not isinstance(gc, int) or gc < 1):
             errors.append(f"techniques:{tid}: numbers.guard_cost must be a whole number of Guard")
+    # rules 1.58 (5e, item 4507): the follow group holds the engine's follow strike only: never free, learned, lent or given
+    for tid, t in techs.items():
+        if t.get("group") == "follow" and (t.get("free") or t.get("comes_with") or t.get("innate") or t.get("particular") or t.get("system") != "melee"):
+            errors.append(f"techniques:{tid}: a follow is the engine's (rules 1.58): a melee row, never free, given or particular")
+    for tid in ((st.get("default_melee") or []) + [x for e in items("enemies") if isinstance(e, dict) for x in ((e.get("techniques") or {}).get("melee") or [])]):
+        if techs.get(tid, {}).get("group") == "follow":
+            errors.append(f"techniques: '{tid}' is a follow: the engine makes it, nobody learns or lists it (rules 1.58)")
+    for i_ in items("items"):
+        ap_ = i_.get("adds_props") if isinstance(i_, dict) else None
+        if ap_ is not None and (not isinstance(ap_, list) or not set(ap_) <= FOLLOW_PROPS or i_.get("category") != "mod"):
+            errors.append(f"items:{i_.get('id')}: adds_props grafts only {sorted(FOLLOW_PROPS)} and only on a modifier row (category mod; rules 1.58 item 4520)")
     # gear gates (proposal 13.3): what a weapon or an item asks is a skill and a level
     for kind_ in ("weapons", "items"):
         for g_ in items(kind_):
@@ -1752,7 +1764,7 @@ if isinstance(tq, dict):
             errors.append(f"{where}: phys.system must be melee or ranged")
             continue
         for pr in ph.get("props") or []:
-            if pr not in ((MELEE_PROPS | SHIELD_PROPS) if sysm == "melee" else RANGED_PROPS):
+            if pr not in ((MELEE_PROPS | SHIELD_PROPS | FOLLOW_PROPS) if sysm == "melee" else RANGED_PROPS):
                 errors.append(f"{where}: phys.props names '{pr}', not a {sysm} property")
         # rules 1.57 (A1, Leon, 16 Nov 2026): a shield is a weapon row: the Shield property, category shield, one-handed,
         # melee; the one prop test (character.ts isShieldId) reads the property

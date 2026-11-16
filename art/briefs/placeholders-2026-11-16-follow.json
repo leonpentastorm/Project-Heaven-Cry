@@ -1,0 +1,6 @@
+{
+  "about": "Rules 1.58 (follow strikes): the placeholder for Afterword, the first follows weapon that is not a shield (weapons.json afterword). Run tools/art/make_placeholders.py on this file; the painting replaces it by id (ART-REQUESTS.md E2f).",
+  "items": [
+    {"id": "weapon-afterword", "catalog": "gear", "family": "gear", "mode": "gear", "name": "Afterword", "label": "AW", "tint": "agility", "path": "art/icons/gear/weapon-afterword.png", "final": "art/icons/gear/weapon-afterword.png"}
+  ]
+}

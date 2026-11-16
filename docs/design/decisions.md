@@ -429,3 +429,15 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     cap; the Parry bonus and the shield's techniques come once. Why this over a new hand slot: one equip rule, old
     saves unchanged, and the fight's gear plan now asks equip itself (one copy of the rule). Enemies and the
     recommended kits are untouched.
+
+117. **The off hand follows: a property word, not a second weapon** (Leon, 16 Nov 2026: a sword-and-shield moveset where
+    the shield's blows are woven into the weapon's attacks, and *"this follow strike system could be a tag on the weapon
+    so it's universal and legendary just graft this tag onto your weapon"*; rules 1.58, spec items 4507 to 4521). A row
+    with the word `follows` (every shield, Afterword) or a melee weapon carrying a modifier with `adds_props: [follows]`
+    strikes once in the off hand after each melee technique of a one-handed main weapon. Why a rider at the technique's
+    tail and not a second attack: the engine has one place every own-turn melee technique ends (`useTechnique`), so the
+    follow needs no mark, no handler and no copy of the attack; its preview is the same function. Why per technique and
+    not once a turn: the lead's ruling on the draft's question 1 (the measure decides; once a turn is the fallback). Why
+    "not a melee hit": Momentum, Pressure and every once-a-turn line would otherwise pay twice for one action. Why the
+    Both test moved into the engine (`pairs`): the client had its own copy, and a follows weapon is the first off-hand
+    weapon that is not a second weapon.

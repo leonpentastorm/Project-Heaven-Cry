@@ -7,7 +7,7 @@ import type { Rng } from '../rng';
 import type { HookName } from '../effects/types';
 
 export type TechSystem = 'melee' | 'ranged';
-export type TechGroup = 'opener' | 'strike' | 'link' | 'finisher' | 'answer' | 'fire' | 'press' | 'set' | 'take' | 'watch';
+export type TechGroup = 'opener' | 'strike' | 'link' | 'finisher' | 'answer' | 'follow' | 'fire' | 'press' | 'set' | 'take' | 'watch';
 /** One "with the right weapon" line. props: the properties it reads (match 'any' by default for several, 'all' when the
  * data says so). stack: applies as well as the chosen line. ap: added to the technique's cost when this line applies. */
 export interface TechLine { props: string[]; match?: 'any' | 'all'; when?: string; text: string; note?: string; ap?: number; stack?: boolean }
@@ -48,7 +48,7 @@ export interface TechArgs {
 }
 export interface TechPreview {
   ok: boolean; why: string | null; id: string; ap: number; rounds: number;
-  /** every attack roll in it, with the unit it is against */ attacks: { target: string; pv: AttackPreview }[];
+  /** every attack roll in it, with the unit it is against; `follow`: the off hand's follow strike after it (rules 1.58, F-c) */ attacks: { target: string; pv: AttackPreview; follow?: boolean; /** the follows item that strikes */ item?: string }[];
   notes: string[];
   momentum?: { now: number; after: number };
   /** Guard (rules 1.13): what the unit holds and what using this leaves */ guard?: { now: number; after: number };
@@ -64,6 +64,7 @@ export interface StrikeOpts {
   /** flat to-hit, shown under the technique's name */ extra?: number;
   critMin?: number; /** a roll that hits is a critical */ critOnHit?: boolean; ignoreArmour?: number | true; ignoreCover?: boolean; reach?: number;
   label?: string; noMomentum?: boolean; noPressure?: boolean;
+  /** rules 1.58 (N4): a rider (a follow strike): not "a melee hit" (combat.ts strikeRider); it neither uses nor spends a set-up mark */ rider?: boolean;
   /** a Hidden user stays Hidden after this attack (Dead to Rights, Silent) */ quiet?: boolean;
   /** no Recoil on this roll: a roll after the first of one volley (rules 1.12: a volley's own penalty replaces Recoil) */ noRecoil?: boolean;
   /** this roll doesn't wear the weapon: a roll after the first of one attack action ("an attack action wears 1") */ noWear?: boolean;

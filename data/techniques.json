@@ -136,7 +136,8 @@
         "strike",
         "link",
         "finisher",
-        "answer"
+        "answer",
+        "follow"
       ],
       "ranged": [
         "fire",
@@ -154,6 +155,7 @@
       "link": "Links",
       "finisher": "Finishers",
       "answer": "Answers",
+      "follow": "Follows",
       "fire": "Fire",
       "press": "Press",
       "set": "Sets",
@@ -180,7 +182,8 @@
       "silent": "No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden.",
       "loud": "A cannon in the hand. A miss still gives Pressure; saves against it are harder.",
       "drawn": "Your arm is the powder. No Heat or Recoil; quivers, not magazines: its reload is Switch quiver, and a quiver is never refilled in a fight.",
-      "shield": "Carried in either hand, one to a hand. It lends its own techniques, which run on Guard and Momentum. While you hold one, a held Outburst does not swell on its own."
+      "shield": "Carried in either hand, one to a hand. It lends its own techniques, which run on Guard and Momentum. While you hold one, a held Outburst does not swell on its own.",
+      "follows": "In the off hand it follows: each melee technique your one-handed main weapon makes is followed by one blow from it, at the follow's own odds. It is not a second weapon (no Both block, no off-hand attack of its own). In the main hand it is an ordinary weapon."
     },
     "provisional": true
   },
@@ -2816,7 +2819,7 @@
       "number": 29,
       "ap": {
         "base": "flat",
-        "value": 2
+        "value": 1
       },
       "rounds": 0,
       "needs": {
@@ -2959,6 +2962,32 @@
       "adjudication": "engine",
       "provisional": true,
       "aim": "none"
+    },
+    {
+      "id": "follow",
+      "name": "Follow",
+      "system": "melee",
+      "group": "follow",
+      "number": 34,
+      "ap": {
+        "base": "flat",
+        "value": 0
+      },
+      "rounds": 0,
+      "needs": {},
+      "text": "The off hand's follow strike (rules 1.58, hands 5e): after a melee technique of your one-handed main weapon, the follows item in your off hand strikes the same foe once, at {=numbers.extra|signed} to hit and \u00d7{=numbers.mult} its own damage. No AP. It is never picked: the engine makes it.",
+      "lines": [],
+      "free": false,
+      "comes_with": [],
+      "home": [],
+      "particular": false,
+      "numbers": {
+        "extra": -2,
+        "mult": 1.0
+      },
+      "adjudication": "engine",
+      "provisional": true,
+      "aim": "enemy"
     }
   ]
 }

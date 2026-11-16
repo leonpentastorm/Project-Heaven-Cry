@@ -62,7 +62,7 @@ export const startingTechniqueChoices = (system: TechSystem): string[] => TECHNI
 /** A technique nobody learns, readies or picks: a shield gives it while it is held, or a skill gives it (rules 1.13).
  * A skill's pressed technique (not an Answer: Durability's Guard, rules 1.55 item 71) is the skill's with any weapon
  * and still learned for a weapon of its system by anyone without the points. */
-export const given = (t: TechDef | null | undefined): boolean => !!t && (!!t.needs?.shield || (!!t.innate && t.group === 'answer') || !!t.perk);
+export const given = (t: TechDef | null | undefined): boolean => !!t && (!!t.needs?.shield || (!!t.innate && t.group === 'answer') || !!t.perk || t.group === 'follow'); // rules 1.58: the follow strike is the engine's
 /** Creation's check on a sheet's picks (Sheet.techniques): the right number, known ids, one melee Opener. */
 export function startingTechniquesError(s: { skills: Record<string, number>; techniques?: { melee?: string[]; ranged?: string[] } }): string | null {
   const pick = s.techniques; if (!pick) return null; // none sent: the defaults

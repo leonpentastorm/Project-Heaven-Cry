@@ -18,14 +18,14 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, pairs } from './combat';
 import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith } from './preview';
 import type { Action, GameState } from './game';
-import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView } from './physical/core';
+import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView, followOf } from './physical/core';
 import { TECHNIQUE, weaponSystem, propText } from './physical/data';
 import { callPad, previewCall } from './calls/core';
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH } from './faith';
@@ -522,7 +522,8 @@ function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
 function techRows(x: DescCtx): ActionDescriptor[] {
   const { cb, u, g } = x, out: ActionDescriptor[] = [];
   const shield = !u.offWeapon ? safe(() => shieldOf(u), null) : null;
-  const hands: ('main' | 'off')[] = ['main', ...((u.offWeapon && WEAPON[u.offWeapon]) || shield ? ['off' as const] : [])];
+  // rules 1.58 (item 4514): a follows weapon in the off hand (Afterword) has no block of its own: it follows the main hand
+  const hands: ('main' | 'off')[] = ['main', ...((u.offWeapon && WEAPON[u.offWeapon] && !safe(() => followOf(u), null)) || shield ? ['off' as const] : [])];
   const watch: ActionDescriptor[] = [], seenW = new Set<string>();
   const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, priceOf(e), apT(priceOf(e)), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent, hand: hand as any, parts: techParts(e) });
   const sys: Record<string, string> = {};
@@ -550,7 +551,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
     for (const e of pad.find((gr: any) => gr.group === 'watch')?.entries || []) if (!seenW.has(e.id)) { seenW.add(e.id); watch.push(chip(hand, e, TWATCH)); }
   }
   // two weapons of one kind: the both-hands block (the paired attack, then the techniques made with each in turn)
-  if (hands.length === 2 && !shield && sys.main && sys.main === sys.off) {
+  if (safe(() => pairs(u), false)) { // rules 1.58 (F-d): the engine's one Both test
     const pe: any[] = safe(() => pairedPad(cb, u, g), []);
     out.push(D('paired', 'attack', sys.main === 'melee' ? 'Strike with both' : 'Fire both', 0, 'AP +1', 'Make one attack with each weapon at the same target. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack', hand: 'both' }));
     if (pe.length) {
@@ -577,13 +578,18 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
   const whole = run(fcb), pv: any = safe(() => previewSeenBy(fcb, x.side, run, ['attacks', 'pressure', 'saves', 'moves', 'notes', 'area'] as any, whole), whole);
   const name = (id: string) => x.seen.units.find((v) => v.id === id)?.name || id;
   const lines: PreviewLine[] = [];
-  for (const a of pv.attacks || []) { const q: any = a.pv; if (q) lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + (q.dmg && q.dmg.total != null ? ' · ' + Math.floor(q.dmg.total) + ' damage' : '') : q.why || 'can\'t attack') }); }
+  // rules 1.58 (F-c): the off hand's follow strike is the engine's own entry (follow: true), its second line: "then Buckler · 47% · 4"
+  const dmgOf = (q: any) => (q.dmg && q.dmg.total != null ? ' · ' + Math.floor(q.dmg.total) + ' damage' : '');
+  for (const a of pv.attacks || []) { const q: any = a.pv; if (!q) continue;
+    if (a.follow) lines.push({ k: 'odds', text: 'then ' + (WEAPON[a.item]?.name || 'the off hand') + ' · ' + (q.ok ? q.pct + '%' + dmgOf(q) : /reach/i.test(q.why || '') ? 'out of reach' : q.why || 'can\'t follow') });
+    else lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + dmgOf(q) : q.why || 'can\'t attack') }); }
   for (const n of pv.notes || []) lines.push({ k: 'note', text: n });
   if (pv.momentum) lines.push({ k: 'meter', text: 'Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : '') });
   if (pv.guard) lines.push({ k: 'meter', text: 'Guard ' + pv.guard.now + ' → ' + pv.guard.after });
   for (const q of pv.pressure || []) lines.push({ k: 'meter', text: name(q.unit) + ': Pressure ' + (q.add >= 0 ? '+' : '') + q.add + ' → ' + q.after + (q.state ? ' (' + (PRESS_STATE[q.state] ?? q.state) + ')' : '') + (q.onHit ? ' on a hit' : '') });
   for (const s of pv.saves || []) lines.push({ k: 'save', text: name(s.unit) + ' saves with ' + (s.skills || []).map((k: string) => k.replace(/_/g, ' ')).join(' or ') + ' vs TN ' + s.tn });
-  const pct = (id: string) => { const a = (pv.attacks || []).find((y: any) => y.target === id); return a && a.pv && a.pv.ok ? a.pv.pct + '%' : ''; };
+  const pct = (id: string) => { const a = (pv.attacks || []).find((y: any) => y.target === id && !y.follow), f = (pv.attacks || []).find((y: any) => y.target === id && y.follow);
+    return (a && a.pv && a.pv.ok ? a.pv.pct + '%' : '') + (a && a.pv?.ok && f && f.pv && f.pv.ok ? ' · then ' + f.pv.pct + '%' : ''); };
   const units = [...new Set([...(pv.attacks || []).map((a: any) => a.target), ...(pv.pressure || []).map((q: any) => q.unit)])].map((id) => ({ id: id as string, tag: pct(id as string), tone: 'harm' as const }));
   const tiles: GridMarks['tiles'] = [...(pv.area || []), ...(pv.moves || []).map((m: any) => m.to)].map((k: string) => ({ tile: k, kind: 'area' as const }));
   for (const [k, band] of techReach(x, t)) tiles.push({ tile: k, kind: 'reach', band });

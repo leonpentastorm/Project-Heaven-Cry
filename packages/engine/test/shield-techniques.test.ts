@@ -38,7 +38,7 @@ const offIds = (f: F) => f.pad(f.pc, 'off').flatMap((g) => g.entries.map((e) => 
 describe('the shield block', () => {
   it('a shield carries the Shield property; the three techniques come with it and are never learned', () => {
     // rules 1.57 (A1): shields are weapons.json rows with the Shield property (the pavise too, the lead's ruling)
-    for (const id of ['riot_shield', 'buckler', 'pavise']) { expect((WEAPON as any)[id].phys.props, id).toEqual(['shield']); expect((WEAPON as any)[id].category, id).toBe('shield'); }
+    for (const id of ['riot_shield', 'buckler', 'pavise']) { expect((WEAPON as any)[id].phys.props, id).toEqual(['shield', 'follows']); expect((WEAPON as any)[id].category, id).toBe('shield'); }
     for (const id of ['shield_bash', 'raise_shield', 'shield_wall']) { expect(phys.TECHNIQUE[id].comes_with, id).toEqual(['shield']); expect(phys.TECHNIQUE[id].needs.shield, id).toBe(true); expect(phys.handlerOf(id), id).not.toBeNull(); }
     expect(phys.startingTechniqueChoices('melee').filter((id) => phys.given(phys.TECHNIQUE[id]))).toEqual([]);
     const f = fight(); expect(phys.pickable(f.char(f.pc), 'sabre').filter((id) => phys.given(phys.TECHNIQUE[id]))).toEqual([]);
@@ -77,15 +77,15 @@ describe('the unit carries what its off hand holds', () => {
 });
 
 describe('Shield Bash', () => {
-  it('2 AP and 1 Guard in place of the Momentum; a hit gives 1 Momentum and pushes on a failed Body save', () => {
+  it('1 AP (rules 1.58 item 4515) and 1 Guard in place of the Momentum; a hit gives 1 Momentum and pushes on a failed Body save', () => {
     const f = fight({ guard: 2, m: 1 }); weak(f.foe); no20(f); rig({ hit: true, die: 12 });
     const pv = f.pv('shield_bash', { targetId: f.foe.id });
-    expect(pv).toMatchObject({ ok: true, ap: 2, guard: { now: 2, after: 1 }, momentum: { now: 1, after: 1 } }); expect(pv.saves![0]).toMatchObject({ unit: f.foe.id, skills: ['body'] });
+    expect(pv).toMatchObject({ ok: true, ap: phys.TECHNIQUE.shield_bash.ap.value, guard: { now: 2, after: 1 }, momentum: { now: 1, after: 1 } }); expect(pv.saves![0]).toMatchObject({ unit: f.foe.id, skills: ['body'] });
     expect(pv.attacks[0].pv.dmg!.mults.some((m) => m.label === 'Shield Bash' && m.v === phys.TECHNIQUE.shield_bash.numbers.mult)).toBe(true);
     expect([guard(f), f.momentum(f.pc), f.pc.ap, f.foe.pos]).toEqual([2, 1, 6, f.tile('D5')]); // the card changed nothing
     const hp = f.foe.hp;
     expect(f.tech('shield_bash', { targetId: f.foe.id })).toBeNull();
-    expect(f.pc.ap).toBe(4); expect(guard(f)).toBe(1); expect(f.momentum(f.pc)).toBe(2); expect(f.foe.hp).toBeLessThan(hp); expect(pushedEast(f)).toBeGreaterThanOrEqual(1);
+    expect(f.pc.ap).toBe(6 - phys.TECHNIQUE.shield_bash.ap.value!); expect(guard(f)).toBe(1); expect(f.momentum(f.pc)).toBe(2); expect(f.foe.hp).toBeLessThan(hp); expect(pushedEast(f)).toBeGreaterThanOrEqual(1);
     expect(f.pc.weapon).toBe('sabre'); // the strike was the shield's own row (rules 1.57); the main hand is as it was
     expect((f.cb.fx || []).some((e: any) => e.k === 'melee' && e.weapon === 'riot_shield')).toBe(true);
   });
@@ -93,7 +93,7 @@ describe('Shield Bash', () => {
     const f = fight({ guard: 1, m: 0 }); rig({ hit: false, die: 5 });
     expect(f.tech('shield_bash', { targetId: f.foe.id })).toBeNull();
     expect(guard(f)).toBe(0); expect(f.momentum(f.pc)).toBe(0); expect(f.foe.pos).toBe(f.tile('D5'));
-    expect(f.tech('shield_bash', { targetId: f.foe.id })).toBe('Needs 1 Guard: Brace or take Guard first.'); expect(f.pc.ap).toBe(4);
+    expect(f.tech('shield_bash', { targetId: f.foe.id })).toBe('Needs 1 Guard: Brace or take Guard first.'); expect(f.pc.ap).toBe(6 - phys.TECHNIQUE.shield_bash.ap.value!);
   });
   it('a refusal gives the Guard and the AP back; it is a melee technique of the chain', () => {
     const f = fight({ guard: 1, foeAt: 'H5' });
