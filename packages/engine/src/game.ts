@@ -37,7 +37,7 @@ import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyN
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { scaleOf } from './effects/output';
-import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, togglesFor, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, holderOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, togglesFor, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
@@ -658,7 +658,7 @@ function reduce(g: GameState, a: Action, by: string) {
   // a make, a level-up) is done on the sheets, and the fighters take it (sbChange: the one rebuild)
   if (fieldFight(g) && FIELD_SHEET.test(a.type) && !(a.type === 'gear/use' && useOf(a.item)?.via === 'stim') && !onSheets) { onSheets = true; try { sbChange(g, Object.values(g.characters), () => reduce(g, a, by)); } finally { onSheets = false; } return; }
   if (g.run && g.run.state !== 'over' && g.run.state !== 'field' && a.type === 'world/act' && a.act === 'stim') { const no = stimOffGrid(g, a, by); if (no) fail(no); return; } // rules 1.55 item 32: a stim on a friend off the map
-  if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
+  if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type) && !(RUN_ITEM.test(a.type) && g.run.state !== 'field')) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
   { const no = campGearProblem(g, a); if (no) fail(no); }
   if (g.sandbox && FREE_WORLD.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
@@ -1071,7 +1071,10 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase === 'lobby') fail('The session hasn\'t started.');
       if (g.phase === 'combat') fail('In a fight, use the Perks tab on your turn.');
       if (c!.dead) fail('The dead do nothing.');
+      const had = new Set((g.story.rulings || []).map((r) => r.id));
       const err = runPerkAction({ c: c!, g }, a.id, a, g.rng, 'story'); if (err) fail(err);
+      // rules 1.61 addendum item 4741: a run has no Narrator, so a use that leaves it a ruling is refused (nothing is spent)
+      if (g.run && (g.story.rulings || []).some((r) => !had.has(r.id))) fail('A Survival run has no Narrator to rule ' + (holderOf({ c: c! }, a.id)?.info.name || 'that') + ': it works in a story.');
       closeRoundIfDone(g);
       return;
     }
@@ -3226,13 +3229,19 @@ export type SandboxAction =
  * Narrator's, the story's, the room's sessions and rests (a run's are its Rest nodes). (The Proving Ground refuses itself.) Level-ups,
  * gear, magic and the fight's own actions are not here. */
 const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest$)/; // rules 1.54 item 1: the action's type is `rest` (it read `rest/`, which no action is)
+/** Rules 1.61 addendum item 4740 (0.30.1): an item's own out-of-fight action (story/perk: a trait's, a perk's, a class move's, a
+ * door verb's registered action with the story scope) is the engine's, so a run takes it off the field, through the one
+ * runner (runPerkAction, scope story: no AP, no unit, no story round). A use that would leave a ruling for the Narrator is
+ * refused there (story/perk). The story's own acts (world/act, poi/, talk/…) stay in RUN_REFUSED. */
+const RUN_ITEM = /^story\/perk$/;
 /** Rules 1.54 item 1 (R6): at the camp (run state `loadout`) the gear is rebuilt from the loadout's picks after every
  * change, so every `gear/*` action is refused there, in words naming the character (gearLockWhy's camp words,
  * run/state.ts). Rules 1.55: in a run, a weapon mod is fitted, swapped or taken off only by the armourer at a Forge,
  * for a fee (run/fit_mod, run/unfit_mod), so the free fit (gear/mod, and its fight form combat/swap with a mod) is
  * refused; a quiver's enchantment keeps its free fit. Null when neither holds. */
 const campGearProblem = (g: GameState, a: Action): string | null => {
-  const freeFit = (a.type === 'gear/mod' && (a as { quiver?: number }).quiver == null) || (a.type === 'combat/swap' && (a as { mod?: unknown }).mod != null);
+  const freeFit = (a.type === 'gear/mod' && (a as { quiver?: number }).quiver == null) || (a.type === 'combat/swap' && (a as { mod?: unknown }).mod != null)
+    || (a.type === 'story/perk' && a.actionId === (survivalFieldJ as any).forge.fit.extra_action); // rules 1.61 addendum item 4743: the extra slot's own fit (the Forge's run/fit_mod extra runs it, for the fee)
   if (g.run && g.run.state !== 'over' && g.run.state !== 'loadout' && freeFit) return 'In a Survival run, the armourer fits mods at a Forge, for a fee.';
   return g.run?.state === 'loadout' && a.type.startsWith('gear/') ? gearLockWhy(g, (a as { charId?: string }).charId) : null;
 };

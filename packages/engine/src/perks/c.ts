@@ -6,7 +6,7 @@
 // the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit (plan
 // section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
 import { isPressed } from '../physical/pressure';
-import { register, stateOf, uses, note, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
+import { register, stateOf, uses, note, postStory, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
 import { itemAmount, amountMult } from '../effects/amounts';
 import { term } from '../effects/output';
 import type { Combat, Unit } from '../combat';
@@ -641,7 +641,7 @@ register({
     { id: 'name_blade', label: 'Name your weapon', scope: ['story', 'world'], ap: 0, target: 'none',
       text: 'The weapon in your hand becomes your One Blade: it can\'t be Disarmed, and it gains an extra mod slot.',
       available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon] || c.weapon === 'fists') return false; return cs(c).oneBlade?.weapon === c.weapon ? 'Already your One Blade.' : true; },
-      run: (h) => { const c = h.c!, w: any = WEAPON[c.weapon]; charState(c).oneBlade = { weapon: c.weapon, fam: w.mastery_family || null }; say(h.cb, c.name + ' names the ' + w.name + ' the One Blade.'); note(h, c.name + ' named the ' + w.name + ' as the One Blade'); return null; } },
+      run: (h) => { const c = h.c!, w: any = WEAPON[c.weapon]; charState(c).oneBlade = { weapon: c.weapon, fam: w.mastery_family || null }; const line = c.name + ' names the ' + w.name + ' the One Blade.'; if (h.cb) say(h.cb, line); else postStory(h, line); return null; } }, // a record, not a ruling (rules 1.61 addendum item 4742)
     extraModAction('Fit a second mod (One Blade)', (h) => (carriedGuns(h.c!).some((g) => g.id === cs(h.c).oneBlade?.weapon) ? (extraFree(h.c!, (wid) => wid === cs(h.c).oneBlade?.weapon) ? true : 'No extra slot free.') : 'Only on your named weapon.')),
   ],
   on: {

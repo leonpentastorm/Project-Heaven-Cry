@@ -57,8 +57,9 @@ describe('Survival shop (rules 1.42)', () => {
     expect(cal.sort()).toEqual(RJ.weapons_rules.calibres.map((c: any) => c.id).filter((c: string) => takes.has(c)).sort());
     // rules 1.56: the special rounds made by calibre are listed as rounds of the held gun's calibre; enhanced as its item
     for (const t of Object.keys(SPECIAL_ROUND_ITEM)) expect(lines.some((l) => l.id === 'rounds:' + (WEAPON[gun0] as any).ammo + ':' + t)).toBe(true);
-    for (const id of ['ammo_enhanced', 'frag_grenade', 'smoke_grenade', 'flashbang', 'incendiary_grenade', 'standard_core', 'spare_parts', 'stim_injector', 'field_kit', 'ration_pack'])
+    for (const id of ['ammo_enhanced', 'frag_grenade', 'smoke_grenade', 'flashbang', 'incendiary_grenade', 'standard_core', 'spare_parts', 'stim_injector', 'field_kit'])
       expect(lines.some((l) => l.id === id)).toBe(true);
+    expect(lines.some((l) => l.id === 'ration_pack')).toBe(false); // rules 1.61 addendum item 4745
     for (const l of lines) if (!l.res) expect(linePrice(l)).toBeGreaterThan(0);
     const gun = g.characters.c1.weapon; expect(lines.some((l) => l.shelf === 'magazines' && l.id === 'mag:' + gun)).toBe(true);
     expect(lines.some((l) => l.shelf === 'magazines' && l.id === 'mag:' + gun + ':0')).toBe(true); // rules 1.55: and an empty one

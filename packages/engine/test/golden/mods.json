@@ -353,7 +353,7 @@
 "fit/run/fit-unbuilt-underslung": "REFUSED Your weapon has no underbarrel slot. | main lever_carbine{} off - pack [mod_underslung] credits 1000",
 "fit/run/fitted-unit": "mods mod_red_dot bands(shot) 1 ammo 8",
 "fit/run/gear-mod-mod_red_dot": "REFUSED In a Survival run, the armourer fits mods at a Forge, for a fee. | main lever_carbine{} off - pack [mod_red_dot] credits 1000",
-"fit/run/gun-nut-extra-mod": "REFUSED A Survival run has no Narrator and no story: the engine runs it, node by node. | main lever_carbine{mod_red_dot} off - pack [mod_scope] credits 1000",
+"fit/run/gun-nut-extra-mod": "REFUSED In a Survival run, the armourer fits mods at a Forge, for a fee. | main lever_carbine{mod_red_dot} off - pack [mod_scope] credits 1000",
 "fit/run/options": "mod:fit:1 40",
 "fit/run/swap-to-scope": "main lever_carbine{mod_scope} off - pack [mod_red_dot] credits 870",
 "fit/run/unfit-mod-mod_red_dot": "main lever_carbine{} off - pack [mod_red_dot] credits 920",

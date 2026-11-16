@@ -8,6 +8,17 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.30.1 — a hotfix: an item's own action in a Survival run, injuries treated in a run, the shelves cleared of Narrator-only items
+
+From Leon's playtest of live 0.30.0 (rules 1.61 addendum, Core Rules items 4740 to 4746).
+
+- **An item's own out-of-fight action works in a run.** Blade Recluse's "Name your weapon" at a shop was refused as story ("A Survival run has no Narrator and no story"). Off the field, a run now takes `story/perk` (a trait's, perk's, class move's or door verb's registered story action) through the one runner (`runPerkAction`), with no story round. The story's own acts (`world/act`, `poi/`, `talk/`...) stay refused. A use that would leave the Narrator a ruling is refused in words ("A Survival run has no Narrator to rule <item>"), and nothing is spent. The field after a fight is unchanged.
+- **The One Blade is a record:** naming it posts a story line, where it opened a ruling before.
+- **The extra mod slot is the Forge's in a run:** "Fit a second mod" (Blade Recluse, Gun Nut) sent directly is refused with the Forge's words, the same check as `gear/mod`; the armourer's fit with `extra` is unchanged. Golden `mods` line `fit/run/gun-nut-extra-mod` re-recorded on purpose (its refusal now names the Forge).
+- **Injuries in a run:** Field Surgery (Empathy 3, an Attuner, a field kit), the one treatment for an arm or leg injury, works in a run off the field.
+- **Shelves:** the ration pack, chalk and wax and the prayer beads (Narrator-only, nothing reads them) are `stock: false`; the ration pack is off the counter.
+- Tests: `test/run-item-actions.test.ts` (through the reducer).
+
 ## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
 
 Rules revisions 1.56 (two late blocks: the bare heart and the Mana Shock; a shield in either hand), 1.57 (shields are

@@ -558,7 +558,7 @@
       { "shelf": "special", "name": "Special rounds", "ids": [ { "id": "ammo_armor_piercing", "per": 10 }, { "id": "ammo_hollow_point", "per": 10 }, { "id": "ammo_incendiary", "per": 10 }, { "id": "ammo_enhanced", "per": 10 } ] },
       { "shelf": "thrown", "name": "Thrown", "ids": [ { "id": "frag_grenade", "per": 1 }, { "id": "smoke_grenade", "per": 1 }, { "id": "flashbang", "per": 1 }, { "id": "incendiary_grenade", "per": 1 }, { "id": "throwing_knives", "per": 1 } ] },
       { "shelf": "cores", "name": "Cores", "ids": [ { "id": "standard_core", "per": 1 } ] },
-      { "shelf": "supplies", "name": "Field supplies", "ids": [ { "id": "spare_parts", "per": 1 }, { "id": "stim_injector", "per": 1 }, { "id": "field_kit", "per": 1 }, { "id": "ration_pack", "per": 1 }, { "id": "ammo_maker", "per": 1 } ] },
+      { "shelf": "supplies", "name": "Field supplies", "ids": [ { "id": "spare_parts", "per": 1 }, { "id": "stim_injector", "per": 1 }, { "id": "field_kit", "per": 1 }, { "id": "ammo_maker", "per": 1 } ] },
       { "shelf": "restock", "name": "Restock", "ids": [] }
     ],
     "max_qty": 10,
